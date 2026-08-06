@@ -851,6 +851,21 @@ msgstr ""
 "しません。複数ファイル読み込みで channel 名を指定しない場合、自動検出は先頭ファイルを使い、残りのファイルにも互換 channel "
 "がある前提です。"
 
+#: ../../how-to/io_formats.md:159
+msgid ""
+"**FFL** (`.ffl`) is a read-only local frame-file list. GWexpy expands one-"
+"field `.gwf` entries, five-field path-first FFL entries, and three-field "
+"nested `.ffl` entries relative to the containing list, then applies the "
+"same time-span merge as a `.gwf` list. `format=\"gwf\"` is optional for "
+"`.ffl`; include cycles raise `ValueError`. Blank lines are ignored. "
+"Comments, remote URLs, and other cache syntaxes are outside this contract."
+msgstr ""
+"**FFL** (`.ffl`) は読み込み専用のローカル frame-file list です。GWexpy は、1 フィールドの `.gwf` "
+"エントリ、5 フィールドで path を先頭に置く FFL エントリ、3 フィールドの nested `.ffl` "
+"エントリを、それぞれ格納元の list を基準に解決し、`.gwf` list と同じ時刻 span マージを適用します。"
+"`.ffl` では `format=\"gwf\"` を省略できます。include cycle は `ValueError` になります。空行は無視します。"
+"コメント、remote URL、その他の cache 構文はこの契約の対象外です。"
+
 #: ../../how-to/io_formats.md:157 fc93e13ff50740e2a337873fbc0a826d
 msgid ""
 "**DTTXML** changes behavior depending on `products`. Keep public direct "
@@ -1658,4 +1673,3 @@ msgstr "<a href=\"#io-formats-ja-top\">トップへ戻る</a>"
 #~ msgstr ""
 #~ "以下は placeholder reader "
 #~ "があるだけで、一般ユーザー向けの実用形式ではありません。`.read()` は未実装として失敗します。"
-

@@ -1,0 +1,137 @@
+---
+issue: 594
+title: "Repair GWexpy Virgo/GWpy FFL read interoperability"
+base_sha: eb62c6a056a7a8992fe1f00e115d6173050c64fc
+lane: I1
+date: 2026-08-02
+
+builder:
+  agent: Codex
+  thread_id: "019fc0ab-b099-73b1-9a0b-5aa6d354c89b"
+  model: "GPT-5.6 Luna"
+  effort: max
+  role: "implementation builder"
+  environment: "conda env gwexpy"
+  worktree: "/home/washimi/.config/superpowers/worktrees/gwexpy/v0113-lane-i1"
+  skills_used:
+    - "superpowers:using-superpowers"
+    - "superpowers:brainstorming"
+    - "superpowers:writing-plans (session plan; separate plan file excluded by exact scope)"
+    - "superpowers:test-driven-development"
+    - "superpowers:verification-before-completion"
+
+scope:
+  summary: >-
+    Expand supported local Virgo/GWpy FFL cache entries to an ordered GWF path
+    list before the existing GWexpy multi-file GWF reader, with fresh-process
+    synthetic regression coverage and synchronized public documentation.
+  included:
+    - "Bounded local FFL expansion in gwexpy/timeseries/_gwf_io.py."
+    - "Synthetic real GWF/FFL tests for TimeSeries and TimeSeriesDict."
+    - "F4 design status and verification evidence."
+    - "English/Japanese public I/O documentation and redesign Japanese catalog."
+    - "This audit manifest."
+  excluded:
+    - "gwexpy/gui/loaders/loaders.py"
+    - "gwexpy/gui/README.md"
+    - "All other files"
+    - "Native frame decoding"
+    - "New runtime dependencies"
+    - "Upstream issue creation or GitHub contact"
+    - "Network access and private Virgo data"
+
+ffl_contract:
+  supported_entries:
+    - "One-field local .gwf path"
+    - "Five-field path-first FFL entry"
+    - "Three-field nested .ffl include"
+  resolution: "Relative paths resolve against the containing FFL directory and are canonicalized."
+  merge: "Expanded paths enter the existing time-span ordering and gap/overlap merge route."
+  cycle_error: "ValueError containing the deterministic canonical include chain."
+  bounds:
+    max_include_depth: 64
+    max_nonblank_entries: 100000
+  limitations:
+    - "Blank lines are ignored."
+    - "Comments, remote URLs, and other cache syntaxes are outside the public contract."
+    - "Frame decoding remains owned by the installed GWpy backend."
+
+baseline:
+  command: >-
+    rtk conda run -n gwexpy python -c '<fresh-process inline synthetic real
+    GWF/FFL writer and GWpy-only explicit format="gwf" probe>'
+  result: >-
+    The fresh process generated two real .gwf files and a five-field local .ffl
+    without Virgo data. GWpy TimeSeries.read(..., format="gwf") failed with
+    TypeError: 'str' object cannot be interpreted as an integer; GWpy
+    TimeSeriesDict.read(..., format="gwf") failed with the same TypeError.
+    This is evidence of the GWpy direct-string gap, not a release blocker.
+
+tdd:
+  red:
+    - command: >-
+        rtk conda run -n gwexpy pytest
+        tests/timeseries/test_io_gwf_ffl.py::test_ffl_format_resolution_selects_gwf_for_explicit_and_implicit_paths
+        -q -s
+      result: "1 failed: implicit .ffl resolution returned None instead of 'gwf'."
+  green:
+    - command: "rtk conda run -n gwexpy pytest tests/timeseries/test_io_gwf_ffl.py -q -s -rA"
+      result: "10 passed."
+    - command: "rtk conda run -n gwexpy pytest tests/timeseries/test_io_gwf_timeseriesdict.py -q -rA"
+      result: "66 passed, 1 skipped."
+
+verification:
+  commands:
+    - command: "rtk conda run -n gwexpy ruff check gwexpy/timeseries/_gwf_io.py tests/timeseries/test_io_gwf_ffl.py"
+      result: "All checks passed."
+    - command: "rtk conda run -n gwexpy ruff format --check gwexpy/timeseries/_gwf_io.py tests/timeseries/test_io_gwf_ffl.py"
+      result: "2 files already formatted."
+    - command: "rtk conda run -n gwexpy mypy gwexpy/timeseries/_gwf_io.py"
+      result: "Success: no issues found in 1 source file."
+    - command: "rtk conda run -n gwexpy python -c '<Babel PO parser plus EN/JA documentation consistency check>'"
+      result: "PASS; English source pair, Japanese source, and 309 parsed PO messages were checked."
+    - command: "rtk git diff --check"
+      result: "Passed with no whitespace errors."
+    - command: "rtk conda run -n gwexpy python -c '<YAML safe_load manifest audit>'"
+      result: "PASS; issue 594, base SHA, pending review, and absent reviewer/coordinator IDs verified."
+    - command: "rtk conda run -n gwexpy python -c '<exact git-status scope audit>'"
+      result: "PASS; exactly the 8 declared in-scope paths were modified or added."
+    - command: "rtk conda run -n gwexpy msgfmt --check --output-file /tmp/issue594-io-formats.mo docs_redesign/locales/ja/LC_MESSAGES/how-to/io_formats.po"
+      result: "Unavailable: msgfmt command not found; Babel PO parsing fallback passed."
+
+skipped_or_blocked_evidence:
+  optional_backend:
+    result: "One existing regression case skipped because the optional framel backend was unavailable; generic gwf synthetic reads passed."
+    release_impact: "No release blocker; skip is reported distinctly from pass."
+  pre_fix_native_failure:
+    result: >-
+      An early broad RED run against the unexpanded .ffl route exited 139 after
+      framel attempted to decode the text path. The invalid pre-fix native
+      route was not repeated; the final fresh-process suite uses the expanded
+      GWF list and passed.
+  external_data: "No network, private Virgo data, upstream issue, or native frame decoder was used."
+  dependency_changes: "None; no dependencies were installed or added."
+
+changed_files:
+  - path: gwexpy/timeseries/_gwf_io.py
+    change: "Recognize .ffl, bounded-expand supported entries, detect cycles, normalize paths, and preserve GWF metadata."
+  - path: tests/timeseries/test_io_gwf_ffl.py
+    change: "Add synthetic real GWF/FFL fixtures and fresh-process explicit/implicit, nested, cycle, metadata, and list-route tests."
+  - path: docs/developers/plans/active/2026-08-01-virgo-datadisplay-interop-design.md
+    change: "Mark F4 completed with GWpy baseline evidence and the GWexpy expansion corrective path."
+  - path: docs/web/en/user_guide/io_formats.md
+    change: "Document tested local FFL reads and supported syntax/limitations."
+  - path: docs/web/ja/user_guide/io_formats.md
+    change: "Synchronize the Japanese FFL example and limitations."
+  - path: docs_redesign/how-to/io_formats.md
+    change: "Document the same tested FFL route in the redesign source."
+  - path: docs_redesign/locales/ja/LC_MESSAGES/how-to/io_formats.po
+    change: "Add the Japanese gettext translation for the redesign FFL guidance."
+  - path: docs/developers/plans/manifests/audit-manifest-594-ffl-read.yaml
+    change: "Record base, builder, TDD, verification, scope, limitations, skips, and review state."
+
+review:
+  status: pending
+  human_review_required: true
+  physics_review_required: false
+  rationale: "I/O metadata preservation and public format behavior changed; maintainer review remains pending."

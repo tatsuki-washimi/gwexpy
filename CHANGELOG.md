@@ -84,6 +84,24 @@
   channel block carrying a leading absolute sample, now raises `ValueError`
   instead of mis-slicing the packet; no spec consulted here documents zero as
   a sentinel for 4096 Hz (#610).
+- **io (FFL)**: Virgo `.ffl` frame-file lists can now be passed straight to
+  `TimeSeries.read` / `TimeSeriesDict.read`, with or without
+  `format="gwf"`. GWpy declares `.ffl` as a supported source in its I/O layer
+  — `gwpy.io.utils.file_list` lists the extension and `gwpy.io.cache.read_cache`
+  expands it, nested includes and all — but GWexpy's own format resolution
+  excluded `.ffl` from the GWF route, so the request fell through to a path
+  that raised `TypeError: 'str' object cannot be interpreted as an integer`.
+  Measured on GWpy 4.0.1, the same call against plain GWpy raises that same
+  `TypeError`, so this is not a GWexpy regression against a working upstream:
+  it closes a capability GWpy's I/O contract declares but its read path does
+  not deliver. GWexpy now expands the list itself, accepting one-field `.gwf`
+  entries, five-field path-first FFL entries and three-field nested `.ffl`
+  includes, resolving each relative to its containing file (GWpy's traversal
+  resolves against the process working directory) and rejecting include cycles
+  and runaway include chains with `ValueError` rather than exhausting the
+  stack. A five-field *LAL* cache line, whose path comes last, fails closed
+  instead of being misread as a path. Comments, remote URLs and other cache
+  syntaxes remain outside this contract (#594).
 
 ### Compatibility
 
