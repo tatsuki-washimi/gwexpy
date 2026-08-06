@@ -183,3 +183,20 @@ def test_verify_pins_python_before_running_the_validator():
     validator = verify.index("python control/scripts/validate_release.py")
     assert setup_python < validator
     assert verify.count('python-version: "3.11"') == 1
+
+
+def test_release_smoke_covers_both_artifacts_on_python_311_and_312():
+    workflow = read_workflow()
+    smoke = workflow.split("\n  smoke:\n", maxsplit=1)[1].split("\n  publish:\n")[0]
+
+    for token in (
+        'python-version: ["3.11", "3.12"]',
+        "distribution: [wheel, sdist]",
+        "${{ matrix.python-version }}",
+        "${{ matrix.distribution }}",
+        "gwexpy.register_all()",
+        "LICENSE.sha256",
+        "artifact-sha256.txt",
+        "retention-days: 90",
+    ):
+        assert token in workflow if token == "retention-days: 90" else token in smoke

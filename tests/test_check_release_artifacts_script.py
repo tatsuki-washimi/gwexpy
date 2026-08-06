@@ -203,7 +203,9 @@ def test_release_artifact_hygiene_rejects_wheel_data_package_internal_files(
     problems = module.check_artifacts(dist)
 
     assert any(".data/purelib/gwexpy/gui/AGENTS.md" in problem for problem in problems)
-    assert any(".data/platlib/gwexpy/histogram/tests" in problem for problem in problems)
+    assert any(
+        ".data/platlib/gwexpy/histogram/tests" in problem for problem in problems
+    )
 
 
 def test_release_artifact_hygiene_rejects_symlink_members(tmp_path: Path):
@@ -264,3 +266,23 @@ def test_release_artifact_hygiene_rejects_generated_artifacts(tmp_path: Path):
     assert any(".ipynb_checkpoints" in problem for problem in problems)
     assert any("htmlcov" in problem for problem in problems)
     assert any(".DS_Store" in problem for problem in problems)
+
+
+def test_release_artifact_license_check_requires_one_matching_copy_per_format(
+    tmp_path: Path,
+):
+    module = load_script_module()
+    dist = tmp_path / "dist"
+    dist.mkdir()
+    license_path = tmp_path / "LICENSE.txt"
+    license_path.write_bytes(b"")
+    _write_wheel(
+        dist / "gwexpy-0.1.1-py3-none-any.whl",
+        ["gwexpy/__init__.py", "LICENSE.txt"],
+    )
+    _write_sdist(
+        dist / "gwexpy-0.1.1.tar.gz",
+        ["gwexpy-0.1.1/pyproject.toml", "gwexpy-0.1.1/LICENSE.txt"],
+    )
+
+    assert module.check_license_copies(dist, license_path) == []

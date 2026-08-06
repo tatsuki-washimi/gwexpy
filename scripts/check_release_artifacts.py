@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import stat
 import tarfile
 import zipfile
@@ -33,6 +34,7 @@ FORBIDDEN_NAMES = {
 }
 
 FORBIDDEN_SUFFIXES = (".pyc", ".pyo")
+LICENSE_NAME = "LICENSE.txt"
 
 
 class ArtifactMember:
@@ -154,12 +156,56 @@ def check_artifacts(dist_dir: Path) -> list[str]:
     return problems
 
 
+def _license_blobs(path: Path) -> list[bytes]:
+    """Return every canonical license member from a wheel or sdist."""
+    if path.suffix == ".whl":
+        with zipfile.ZipFile(path) as archive:
+            return [
+                archive.read(info)
+                for info in archive.infolist()
+                if Path(info.filename).name == LICENSE_NAME
+            ]
+    with tarfile.open(path, "r:*") as archive:
+        blobs: list[bytes] = []
+        for info in archive.getmembers():
+            if Path(info.name).name != LICENSE_NAME or not info.isfile():
+                continue
+            handle = archive.extractfile(info)
+            assert handle is not None
+            blobs.append(handle.read())
+        return blobs
+
+
+def check_license_copies(dist_dir: Path, license_path: Path) -> list[str]:
+    """Ensure wheel and sdist each carry one byte-identical license copy."""
+    if not license_path.is_file():
+        return [f"Reference {LICENSE_NAME} is missing: {license_path}"]
+    expected_hash = hashlib.sha256(license_path.read_bytes()).hexdigest()
+    problems: list[str] = []
+    artifacts = [*sorted(dist_dir.glob("*.whl")), *sorted(dist_dir.glob("*.tar.gz"))]
+    for artifact in artifacts:
+        copies = _license_blobs(artifact)
+        if len(copies) != 1:
+            problems.append(
+                f"{artifact.name}: expected exactly one {LICENSE_NAME}, found {len(copies)}"
+            )
+            continue
+        actual_hash = hashlib.sha256(copies[0]).hexdigest()
+        if actual_hash != expected_hash:
+            problems.append(
+                f"{artifact.name}: license hash differs from {license_path}"
+            )
+    return problems
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("dist_dir", nargs="?", default="dist")
     args = parser.parse_args(argv)
 
-    problems = check_artifacts(Path(args.dist_dir))
+    dist_dir = Path(args.dist_dir)
+    problems = check_artifacts(dist_dir)
+    problems.extend(check_license_copies(dist_dir, Path(LICENSE_NAME)))
     if not problems:
         print("Release artifacts passed hygiene checks.")
         return 0

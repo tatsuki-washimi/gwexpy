@@ -115,6 +115,11 @@ jobs:
           python -m build --outdir dist
           python scripts/check_release_artifacts.py dist
           twine check --strict dist/*
+          sha256sum LICENSE.txt | awk '{print $1}' > dist/LICENSE.sha256
+          (
+            cd dist
+            sha256sum *.whl *.tar.gz > artifact-sha256.txt
+          )
 
       - name: Upload release artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -122,17 +127,23 @@ jobs:
           name: release-artifacts-${{ needs.verify.outputs.source_sha }}
           path: source/dist
           if-no-files-found: error
+          retention-days: 90
 
   smoke:
-    name: Smoke-test built wheel
+    name: Smoke-test ${{ matrix.distribution }} on Python ${{ matrix.python-version }}
     needs: [verify, build]
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+        distribution: [wheel, sdist]
     steps:
       - name: Set up Python
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python-version }}
 
       - name: Download release artifacts
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
@@ -140,24 +151,60 @@ jobs:
           name: release-artifacts-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-artifacts
 
-      - name: Install and import wheel outside the checkout
+      - name: Install and import the selected artifact outside the checkout
         env:
           EXPECTED_VERSION: ${{ needs.verify.outputs.version }}
+          DISTRIBUTION: ${{ matrix.distribution }}
         run: |
           smoke_dir="$(mktemp -d)"
           python -m venv "$smoke_dir/venv"
-          wheel="$(find "${{ runner.temp }}/release-artifacts" -name '*.whl' -print -quit)"
-          test -n "$wheel"
+          artifact_dir="${{ runner.temp }}/release-artifacts"
+          if [[ "$DISTRIBUTION" == wheel ]]; then
+            artifact="$(find "$artifact_dir" -name '*.whl' -print -quit)"
+          else
+            artifact="$(find "$artifact_dir" -name '*.tar.gz' -print -quit)"
+          fi
+          test -n "$artifact"
+          artifact_hash="$(sha256sum "$artifact" | awk '{print $1}')"
+          grep -Fx "$artifact_hash  $(basename "$artifact")" "$artifact_dir/artifact-sha256.txt"
+          expected_license_hash="$(cat "$artifact_dir/LICENSE.sha256")"
+          python - "$artifact" "$expected_license_hash" <<'PY'
+          import hashlib
+          from pathlib import Path
+          import sys
+          import tarfile
+          import zipfile
+
+          artifact = Path(sys.argv[1])
+          expected = sys.argv[2]
+          if artifact.suffix == ".whl":
+              with zipfile.ZipFile(artifact) as archive:
+                  copies = [archive.read(info) for info in archive.infolist()
+                            if Path(info.filename).name == "LICENSE.txt"]
+          else:
+              with tarfile.open(artifact, "r:*") as archive:
+                  copies = []
+                  for info in archive.getmembers():
+                      if Path(info.name).name == "LICENSE.txt" and info.isfile():
+                          handle = archive.extractfile(info)
+                          assert handle is not None
+                          copies.append(handle.read())
+          assert len(copies) == 1, f"expected one LICENSE.txt, found {len(copies)}"
+          assert hashlib.sha256(copies[0]).hexdigest() == expected
+          PY
           "$smoke_dir/venv/bin/python" -m pip install --upgrade pip
-          "$smoke_dir/venv/bin/python" -m pip install "$(realpath "$wheel")"
+          "$smoke_dir/venv/bin/python" -m pip install "$(realpath "$artifact")"
           "$smoke_dir/venv/bin/python" - "$EXPECTED_VERSION" <<'PY'
           from pathlib import Path
           import sys
           import gwexpy
+          from gwexpy import TimeSeries
 
           assert gwexpy.__version__ == sys.argv[1]
+          gwexpy.register_all()
           package_path = Path(gwexpy.__file__).resolve()
           assert package_path.is_relative_to(Path(sys.prefix).resolve())
+          assert len(TimeSeries([0.0, 1.0], t0=0, dt=1)) == 2
           print(package_path)
           PY
 
