@@ -16,6 +16,28 @@ if TYPE_CHECKING:
 
 T_s = TypeVar("T_s", bound=Union["TimeSeries", "FrequencySeries", "Spectrogram"])
 
+_ROOT_HISTOGRAM_DTYPES = {
+    "C": np.dtype("int8"),
+    "S": np.dtype("int16"),
+    "I": np.dtype("int32"),
+    "L": np.dtype("int64"),
+    "F": np.dtype("float32"),
+    "D": np.dtype("float64"),
+}
+
+
+def _root_histogram_dtype(class_name: str) -> np.dtype | None:
+    """Return the native ROOT TH scalar dtype, if the class is known."""
+    match = class_name.rsplit("TH", 1)[-1]
+    if not match:
+        return None
+    return _ROOT_HISTOGRAM_DTYPES.get(match[-1])
+
+
+def _unsupported_root_histogram(class_name: str) -> bool:
+    """Profiles and polygon histograms have non-TH bin semantics."""
+    return class_name.startswith("TProfile") or class_name == "TH2Poly"
+
 
 def _get_label(obj: Any, unit: Any, default_name: str = "x") -> str:
     name = getattr(obj, "name", None) or default_name
@@ -270,6 +292,12 @@ def from_root(
 ) -> Union[T_s, tuple[T_s, T_s]]:
     """Create a GWexpy series object from a ROOT ``TGraph`` or ``TH1``."""
     ROOT = require_optional("ROOT")
+    class_name = obj.ClassName() if hasattr(obj, "ClassName") else type(obj).__name__
+    if _unsupported_root_histogram(class_name):
+        raise TypeError(
+            f"from_root does not support {class_name}; profile and polygon "
+            "histograms have incompatible bin semantics."
+        )
 
     # Reject collection/container types with a clear, actionable message before
     # the generic type check below.
@@ -360,32 +388,28 @@ def from_root(
         # Edges: length n + 1
         edges = np.array([obj.GetXaxis().GetBinLowEdge(i + 1) for i in range(n + 1)])
 
-        buff_ptr = obj.GetArray()
-        # buffer size n+2. ROOT bins: 0=underflow, 1..n=data, n+1=overflow
-        full_y = np.frombuffer(buff_ptr, dtype=np.float64, count=n + 2).copy()
+        # `GetArray` has implementation-dependent element type.  Read through
+        # ROOT's bin accessor to preserve the native TH{C,S,I,L,F,D} dtype;
+        # this is also the conservative fallback for an unknown rectangular TH.
+        value_dtype = _root_histogram_dtype(class_name) or np.dtype("float64")
+        full_y = np.asarray(
+            [obj.GetBinContent(index) for index in range(n + 2)], dtype=value_dtype
+        )
         y = full_y[1:-1]
         underflow = full_y[0]
         overflow = full_y[-1]
 
         if return_error or is_histogram_cls:
-            if obj.GetSumw2N() > 0:
-                err_ptr = obj.GetSumw2().GetArray()
-                err_raw_full = np.frombuffer(
-                    err_ptr, dtype=np.float64, count=n + 2
-                ).copy()
-                err_raw = err_raw_full[1:-1]
-                underflow_sw2 = err_raw_full[0]
-                overflow_sw2 = err_raw_full[-1]
-                # If it's a Histogram class, we often want sumw2 (variance)
-                # But Histogram(sumw2=...) takes Sigma^2
-                # whereas Series(error=...) takes Sigma (RMS).
-                ey = np.sqrt(err_raw).copy()
-                sw2 = err_raw.copy()
-            else:
-                ey = np.sqrt(y)
-                sw2 = y.copy()
-                underflow_sw2 = underflow
-                overflow_sw2 = overflow
+            # GetBinError is ROOT's public error oracle: it handles fSumw2
+            # and ROOT's default error rule uniformly.  Store variances in
+            # float64 regardless of the TH content dtype.
+            err_full = np.asarray(
+                [obj.GetBinError(index) for index in range(n + 2)], dtype=np.float64
+            )
+            ey = err_full[1:-1]
+            sw2 = np.square(ey, dtype=np.float64)
+            underflow_sw2 = float(err_full[0] ** 2)
+            overflow_sw2 = float(err_full[-1] ** 2)
         else:
             ey = None
             sw2 = None
