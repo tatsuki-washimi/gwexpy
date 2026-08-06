@@ -68,6 +68,13 @@ def test_vector_field_plots(vector_field):
     assert isinstance(fp, FieldPlot)
     plt.close(fp.figure)
 
+
+def test_vector_field_plot_routes_stride_to_quiver_only(vector_field):
+    """``stride`` is a vector decimation option, not a pcolormesh kwarg (#559)."""
+    fp = vector_field.plot(x="x", y="y", t=0, z=0, stride=2)
+    assert isinstance(fp, FieldPlot)
+    plt.close(fp.figure)
+
     # Quiver
     fp = vector_field.quiver(x="x", y="y", t=0, z=0)
     assert isinstance(fp, FieldPlot)

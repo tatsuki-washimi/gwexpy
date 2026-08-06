@@ -78,6 +78,40 @@ class TestZarrRoundtrip:
         assert set(tsd_in.keys()) >= {"a", "b"}
         np.testing.assert_array_equal(tsd_in["a"].value, np.ones(50))
 
+    def test_channel_selection_is_deterministic_and_fail_closed(self, tmp_path):
+        """Selection order is explicit; absent/duplicate channels are errors (#614)."""
+        path = tmp_path / "ordered.zarr"
+        TimeSeriesDict(
+            {
+                "z": TimeSeries([1.0], t0=0.0, sample_rate=1.0),
+                "a": TimeSeries([2.0], t0=0.0, sample_rate=1.0),
+            }
+        ).write(str(path), format="zarr")
+
+        assert list(TimeSeriesDict.read(str(path), format="zarr")) == ["a", "z"]
+        explicit = TimeSeriesDict.read(
+            str(path), format="zarr", channels=["z", "a"]
+        )
+        assert list(explicit) == ["z", "a"]
+        with pytest.raises(ValueError, match="duplicate"):
+            TimeSeriesDict.read(str(path), format="zarr", channels=["a", "a"])
+        with pytest.raises(ValueError, match="missing"):
+            TimeSeriesDict.read(str(path), format="zarr", channels=["missing"])
+
+    def test_single_zarr_read_requires_one_channel(self, tmp_path):
+        from gwexpy.timeseries.io.zarr_ import read_timeseries_zarr
+
+        path = tmp_path / "multiple.zarr"
+        TimeSeriesDict(
+            {
+                "a": TimeSeries([1.0], t0=0.0, sample_rate=1.0),
+                "b": TimeSeries([2.0], t0=0.0, sample_rate=1.0),
+            }
+        ).write(str(path), format="zarr")
+
+        with pytest.raises(ValueError, match="exactly one"):
+            read_timeseries_zarr(str(path))
+
     def test_attrs_preserved(self, tmp_path):
         path = tmp_path / "attrs.zarr"
         ts = TimeSeries(np.ones(10), t0=12345.0, sample_rate=256, name="x", unit="m")

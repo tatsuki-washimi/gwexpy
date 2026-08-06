@@ -370,6 +370,10 @@ class VectorField(FieldDict):
         norm_field = self.norm()
         norm_field.name = "Magnitude"
 
+        # ``stride`` belongs to quiver decimation.  Passing it through to the
+        # magnitude pcolormesh raises an unexpected-keyword TypeError (#559).
+        stride = plot_kwargs.pop("stride", None)
+
         # Add scalar magnitude
         fp.add_scalar(norm_field, x=x, y=y, slice_kwargs=slice_kwargs, **plot_kwargs)
 
@@ -377,8 +381,8 @@ class VectorField(FieldDict):
         quiver_args = {"color": "white", "alpha": 0.7}  # white arrows on colored map
 
         # If user passed stride for quiver, extract it
-        if "stride" in plot_kwargs:
-            quiver_args["stride"] = plot_kwargs["stride"]
+        if stride is not None:
+            quiver_args["stride"] = stride
 
         fp.add_vector(
             self, x=x, y=y, mode="quiver", slice_kwargs=slice_kwargs, **quiver_args

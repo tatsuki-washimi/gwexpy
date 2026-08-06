@@ -25,7 +25,6 @@ from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
 from gwexpy.io.utils import (
     apply_unit,
     ensure_dependency,
-    filter_by_channels,
     set_provenance,
 )
 
@@ -195,6 +194,20 @@ def _series_from_zarr_array(
     return apply_unit(ts, arr_unit) if arr_unit else ts
 
 
+def _select_zarr_channels(store, channels) -> list[str]:
+    """Resolve the requested array names before reading any payload."""
+    available = {str(key) for key in store.keys() if hasattr(store[key], "shape")}
+    if channels is None:
+        return sorted(available)
+    selected = [channels] if isinstance(channels, str) else list(channels)
+    if len(selected) != len(set(selected)):
+        raise ValueError("Zarr channel selection contains duplicate channel names")
+    missing = [key for key in selected if key not in available]
+    if missing:
+        raise ValueError(f"Zarr channel selection contains missing channels: {missing}")
+    return selected
+
+
 def read_timeseriesdict_zarr(
     source,
     *,
@@ -271,15 +284,10 @@ def read_timeseriesdict_zarr(
 
     tsd = TimeSeriesDict()
 
-    keys = list(channels) if channels else list(store.keys())
+    keys = _select_zarr_channels(store, channels)
 
     for key in keys:
-        if key not in store:
-            continue
         arr = store[key]
-        # Only load arrays (skip sub-groups)
-        if not hasattr(arr, "shape"):
-            continue
 
         ts = _series_from_zarr_array(
             key,
@@ -290,9 +298,6 @@ def read_timeseriesdict_zarr(
             t0_override=t0_override,
         )
         tsd[key] = ts
-
-    if channels:
-        tsd = TimeSeriesDict(filter_by_channels(tsd, channels))
 
     set_provenance(
         tsd,
@@ -306,10 +311,13 @@ def read_timeseriesdict_zarr(
 
 
 def read_timeseries_zarr(source, **kwargs) -> TimeSeries:
-    """Read a Zarr store and return the first channel."""
+    """Read exactly one channel from a Zarr store."""
     tsd = read_timeseriesdict_zarr(source, **kwargs)
-    if not tsd:
-        raise ValueError("No arrays found in Zarr store")
+    if len(tsd) != 1:
+        raise ValueError(
+            "Single Zarr read requires exactly one channel; pass channels=... "
+            "to select one from a multi-channel store."
+        )
     return tsd[next(iter(tsd.keys()))]
 
 
@@ -357,7 +365,7 @@ def read_timeseriesmatrix_zarr(
         source = str(source)
     store = zarr.open_group(source, mode="r", **kwargs)
 
-    keys = list(channels) if channels else list(store.keys())
+    keys = _select_zarr_channels(store, channels)
     matrix_entries = []
     saw_matrix_attrs = False
     required_attrs = {
@@ -368,11 +376,7 @@ def read_timeseriesmatrix_zarr(
         "gwexpy_col_index",
     }
     for key in keys:
-        if key not in store:
-            continue
         arr = store[key]
-        if not hasattr(arr, "shape"):
-            continue
 
         attrs = dict(arr.attrs)
         if any(name in attrs for name in required_attrs):
