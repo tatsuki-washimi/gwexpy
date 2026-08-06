@@ -52,7 +52,7 @@ Notable changes to the GWexpy project.
 - Clarified installation guidance around optional extras, source installs, and future release-channel transitions.
 
 ### Known Limitations And Follow-Ups
-- PyPI publication is still a human-controlled final step for issue #293. Public install docs intentionally remain GitHub/source-based until the first PyPI release is actually published; switch them to `pip install gwexpy` only after publication and post-publish smoke succeed.
+- At the time of v0.1.1, PyPI publication was a human-controlled final step for issue #293. It is now published; current installation guidance and release validation are maintained with the current release documentation.
 - `conda-forge` packaging is not published yet. Issue #294 remains the follow-up for the staged-recipes submission and fresh conda-environment smoke tests.
 - Open numerical and analysis audit follow-ups remain for noise contracts (#278), astro range assumptions and unit handling (#282), Bruco/coupling/response workflow semantics (#284), and preprocessing/decomposition/forecasting contracts (#288). Current docs/test baselines record present behavior, but these surfaces still have deferred policy decisions.
 - GUI and visual-surface follow-ups remain open for payload metadata, labels, colorbars, plot-helper semantics, and residual public-doc drift (#274, #275, #283). The GUI should still be treated as experimental.

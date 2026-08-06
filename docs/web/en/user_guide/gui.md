@@ -6,7 +6,7 @@
 
 The GWexpy source tree includes a **PyQt5-based GUI** for interactive data exploration and visualization. However, the GUI should currently be treated as an **experimental, prototype-stage interface**, not as a finalized end-user product. For reproducible and fully supported workflows, the **Python API** remains the primary interface.
 
-The GUI app and `gwexpy.gui` package are **not included in the first PyPI distribution**. The first PyPI release focuses on the Python library API; GUI stabilization is tracked separately as post-release work.
+The GUI app and `gwexpy.gui` package are **not included in the published PyPI distribution**. The published package focuses on the Python library API; GUI stabilization is tracked separately as post-release work.
 
 ## Installation
 
@@ -32,7 +32,7 @@ After installing the GUI dependencies from a source checkout or development inst
 python -m gwexpy.gui
 ```
 
-The first PyPI release does not install a `gwexpy.gui` console script or ship the `gwexpy.gui` package.
+The published PyPI package does not install a `gwexpy.gui` console script or ship the `gwexpy.gui` package.
 
 ### Programmatically
 

@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## [0.1.13] - 2026-08-06
 
 ### Behaviour-visible bug fixes
 
@@ -829,7 +829,7 @@ This is a patch release focused on plotting and I/O hotfixes.
 ### Packaging & Optional Dependencies (issue #251)
 
 - **packaging**: Added `netcdf4` extra (`netCDF4`, `xarray`) and `zarr` extra (`zarr`) to `pyproject.toml`; both are now included in the `all` convenience extra.
-- **packaging**: Removed the experimental `gwexpy.gui` package, console script, and `gui` extra from the first PyPI distribution; GUI work remains source/development-only until the post-release stabilization track is complete.
+- **packaging**: Removed the experimental `gwexpy.gui` package, console script, and `gui` extra from the published PyPI distribution; GUI work remains source/development-only until the post-release stabilization track is complete.
 - **packaging**: Tightened first-release artifact hygiene by excluding top-level tests, docs sample data, and package-internal Sphinx helper shims from built distributions.
 - **packaging**: Removed hand-edited tail from `requirements-dev.txt`; `analysis` extras are now managed exclusively through `pyproject.toml`.
 - **interop**: Fixed `_optional.py` `_EXTRA_MAP` — phantom extras (`interop`, `bio`, `stats`, `eda`) replaced with `None` entries that fall back to bare `pip install <package>`; `netCDF4`/`xarray` now point to `netcdf4` extra; `zarr` points to `zarr` extra.
@@ -911,7 +911,7 @@ This is a patch release focused on plotting and I/O hotfixes.
 
 ### Release Summary
 
-First stable release of GWexpy for SoftwareX publication. This release focuses on API stability, GWpy compatibility, and reproducible commissioning workflows.
+Early stable GWexpy release focused on API stability, GWpy compatibility, and reproducible commissioning workflows. Publication status is not asserted here.
 
 ### Changed
 
@@ -1030,7 +1030,8 @@ First stable release of GWexpy for SoftwareX publication. This release focuses o
 - Fixed unit propagation in complex matrix operations.
 - Corrected IFFT amplitude scaling for one-sided spectra.
 
-[Unreleased]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.12...HEAD
+[Unreleased]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.13...HEAD
+[0.1.13]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.12...v0.1.13
 [0.1.12]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.11...v0.1.12
 [0.1.11]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.10...v0.1.11
 [0.1.4]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.3...v0.1.4
