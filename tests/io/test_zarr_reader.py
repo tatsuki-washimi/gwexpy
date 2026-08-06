@@ -241,6 +241,27 @@ class TestZarrRoundtrip:
         assert loaded.shape == matrix.shape
         assert np.isclose(float(loaded.sample_rate.value), 16.0)
 
+    def test_matrix_reader_preserves_dict_axis_during_bounded_read(self, tmp_path):
+        """Dict-shaped stores must not be realigned through float timestamps."""
+        path = tmp_path / "bounded-dict-as-matrix.zarr"
+        t0 = 1_234_567_890.1234567
+        dt = 1.0 / 30.0
+        source = TimeSeries(np.arange(768), t0=t0, dt=dt, name="x")
+        TimeSeriesDict({"x": source}).write(str(path), format="zarr")
+
+        loaded = TimeSeriesMatrix.read(
+            str(path),
+            format="zarr",
+            start=t0 + 100 * dt,
+            end=t0 + 600 * dt,
+        )
+        expected = source[100:600]
+
+        assert loaded.shape == (1, 1, 500)
+        np.testing.assert_array_equal(loaded.value[0, 0], expected.value)
+        assert float(loaded.t0.value).hex() == float(expected.t0.value).hex()
+        assert float(loaded.dt.value).hex() == float(expected.dt.value).hex()
+
     def test_matrix_roundtrip_1col_integer_row_keys(self, tmp_path):
         from gwexpy.types.metadata import MetaData, MetaDataDict
 
