@@ -161,7 +161,13 @@ class Histogram(
 
         """
         # Validate values
+        value_dtype = np.asarray(getattr(values, "value", values)).dtype
         values_q = u.Quantity(values, unit=unit) if unit else u.Quantity(values)
+        # Astropy's default constructor promotes plain integer arrays to
+        # float64.  A ROOT TH1C/S/I/L reader has an explicit native content
+        # dtype contract, so retain the supplied numerical representation.
+        if values_q.dtype != value_dtype:
+            values_q = values_q.astype(value_dtype, copy=False)
         if values_q.unit == u.dimensionless_unscaled and not hasattr(values, "unit"):
             if unit is not None:
                 values_q = values_q * u.Unit(unit)
@@ -187,7 +193,9 @@ class Histogram(
             )
 
         if not np.all(np.diff(edg_arr) > 0):
-            raise ValueError("Histogram edges must be strictly monotonically increasing.")
+            raise ValueError(
+                "Histogram edges must be strictly monotonically increasing."
+            )
 
         self._values = values_q
         self._edges = edges_q
@@ -341,21 +349,15 @@ class Histogram(
 
         if self.sumw2 is not None or weights is not None:
             old_sw2_val = (
-                self.sumw2.value
-                if self.sumw2 is not None
-                else np.zeros_like(hist_sw2)
+                self.sumw2.value if self.sumw2 is not None else np.zeros_like(hist_sw2)
             )
             new_sw2 = old_sw2_val + hist_sw2
 
             old_under_sw2 = (
-                self.underflow_sumw2.value
-                if self.underflow_sumw2 is not None
-                else 0.0
+                self.underflow_sumw2.value if self.underflow_sumw2 is not None else 0.0
             )
             old_over_sw2 = (
-                self.overflow_sumw2.value
-                if self.overflow_sumw2 is not None
-                else 0.0
+                self.overflow_sumw2.value if self.overflow_sumw2 is not None else 0.0
             )
             new_under_sw2 = old_under_sw2 + under_sw2_inc
             new_over_sw2 = old_over_sw2 + over_sw2_inc

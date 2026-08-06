@@ -1,7 +1,7 @@
 # Test Fixtures
 
 このディレクトリには、`gwexpy` の I/O 機能を検証するためのテスト用データ、およびその生成スクリプトが含まれています。
-生成可能なフィクスチャは git で正本管理せず、`generate_fixtures.py` によって再作成します。`pytest` 実行時も collection 前に同スクリプトを呼び出して、存在チェックに依存するテストが安定して動くようにしています。
+生成可能なフィクスチャは git で正本管理せず、`generate_fixtures.py` によって再作成します。`pytest` 実行時も collection 前に同スクリプトを呼び出して、存在チェックに依存するテストが安定して動くようにしています。例外として、`data/v0.1.12-legacy.nc` は旧 NetCDF reader 互換性を守る固定・versioned fixture です。生成条件、ハッシュ、ライセンス／個人情報確認は [v0.1.12-legacy-netcdf.md](v0.1.12-legacy-netcdf.md) を参照してください。
 
 ## フィクスチャの生成
 

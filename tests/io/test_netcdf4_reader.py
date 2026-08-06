@@ -1,5 +1,8 @@
 """Tests for NetCDF4 reader/writer roundtrip."""
 
+from hashlib import sha256
+from pathlib import Path
+
 import numpy as np
 import pytest
 
@@ -9,6 +12,10 @@ pytest.importorskip("netCDF4")
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 FIXTURE_NETCDF = "tests/fixtures/data/test.nc"
+FIXTURE_V0112_LEGACY = Path("tests/fixtures/data/v0.1.12-legacy.nc")
+FIXTURE_V0112_LEGACY_SHA256 = (
+    "3ccc0cf0cb7baf444c9f90b91d98c32f24c9880fd0d2987af1a105c457911082"
+)
 
 
 class TestNetCDF4Roundtrip:
@@ -41,10 +48,12 @@ class TestNetCDF4Roundtrip:
 
     def test_multi_variable(self, tmp_path):
         path = tmp_path / "multi.nc"
-        tsd_out = TimeSeriesDict({
-            "ch1": TimeSeries(np.ones(50), t0=0, dt=0.1, name="ch1"),
-            "ch2": TimeSeries(np.zeros(50), t0=0, dt=0.1, name="ch2"),
-        })
+        tsd_out = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(np.ones(50), t0=0, dt=0.1, name="ch1"),
+                "ch2": TimeSeries(np.zeros(50), t0=0, dt=0.1, name="ch2"),
+            }
+        )
         tsd_out.write(str(path), format="nc")
 
         tsd_in = TimeSeriesDict.read(str(path), format="nc")
@@ -143,10 +152,12 @@ class TestNetCDF4Roundtrip:
     def test_v2_channel_selection_is_ordered_and_fail_closed(self, tmp_path):
         """Selection validates names before values are materialized."""
         path = tmp_path / "channels.nc"
-        tsd = TimeSeriesDict({
-            "z": TimeSeries(np.arange(3), t0=0, dt=1),
-            "a": TimeSeries(np.arange(3), t0=0, dt=1),
-        })
+        tsd = TimeSeriesDict(
+            {
+                "z": TimeSeries(np.arange(3), t0=0, dt=1),
+                "a": TimeSeries(np.arange(3), t0=0, dt=1),
+            }
+        )
         tsd.write(path, format="nc")
 
         default = TimeSeriesDict.read(path, format="nc")
@@ -168,12 +179,16 @@ class TestNetCDF4Roundtrip:
             TimeSeriesDict({"flag": invalid}).write(path, format="nc")
         assert not path.exists()
 
-    def test_v2_writer_rejects_heterogeneous_axes_before_creating_target(self, tmp_path):
+    def test_v2_writer_rejects_heterogeneous_axes_before_creating_target(
+        self, tmp_path
+    ):
         path = tmp_path / "heterogeneous.nc"
-        tsd = TimeSeriesDict({
-            "a": TimeSeries(np.arange(3), t0=0, dt=0.1),
-            "b": TimeSeries(np.arange(3), t0=0, dt=0.2),
-        })
+        tsd = TimeSeriesDict(
+            {
+                "a": TimeSeries(np.arange(3), t0=0, dt=0.1),
+                "b": TimeSeries(np.arange(3), t0=0, dt=0.2),
+            }
+        )
 
         with pytest.raises(ValueError, match="identical t0 and dt"):
             tsd.write(path, format="nc")
@@ -188,6 +203,19 @@ class TestNetCDF4Roundtrip:
 
         with pytest.warns(RuntimeWarning, match="unversioned legacy") as recorded:
             TimeSeriesDict.read(path, format="nc")
+        assert len(recorded) == 1
+
+    @pytest.mark.parametrize("reader", (TimeSeries, TimeSeriesDict, TimeSeriesMatrix))
+    def test_v0112_legacy_fixture_warns_once_per_public_read(self, reader):
+        """The immutable v0.1.12 fixture retains its one-warning contract."""
+        assert sha256(FIXTURE_V0112_LEGACY.read_bytes()).hexdigest() == (
+            FIXTURE_V0112_LEGACY_SHA256
+        )
+
+        with pytest.warns(RuntimeWarning, match="unversioned legacy") as recorded:
+            loaded = reader.read(FIXTURE_V0112_LEGACY, format="nc")
+
+        assert isinstance(loaded, reader)
         assert len(recorded) == 1
 
     def test_bundled_fixture_has_time_coordinate(self):
