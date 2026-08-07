@@ -439,6 +439,7 @@ def read_timeseriesmatrix_zarr(
                 np.asarray(ts.value, dtype=np.float64)[np.newaxis, np.newaxis, :],
                 t0=ts.t0,
                 dt=ts.dt,
+                unit=ts.unit,
                 channel_names=[key],
             )
             return apply_time_selection(matrix, start, end)

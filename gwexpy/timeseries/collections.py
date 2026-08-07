@@ -147,6 +147,14 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             return _coerce_reader_result(
                 cls, read_timeseriesdict_netcdf4(source, **reader_kwargs)
             )
+        if fmt == "zarr":
+            from gwexpy.timeseries.io.zarr_ import read_timeseriesdict_zarr
+
+            reader_kwargs = dict(kwargs)
+            reader_kwargs.pop("format", None)
+            return _coerce_reader_result(
+                cls, read_timeseriesdict_zarr(source, *args, **reader_kwargs)
+            )
         gwf_format = _resolve_gwf_format(source, fmt)
         try:
             p = Path(source)
@@ -228,9 +236,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             except TypeError as exc:
                 # Keep existing ValueError contract for malformed user inputs.
                 raise ValueError(f"Invalid input for GWF read: {exc}") from exc
-        if p is not None and (
-            fmt == "zarr" or (fmt is None and str(p).lower().endswith(".zarr"))
-        ):
+        if p is not None and fmt is None and str(p).lower().endswith(".zarr"):
             from gwexpy.timeseries.io.zarr_ import read_timeseriesdict_zarr
 
             return _coerce_reader_result(

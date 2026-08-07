@@ -323,7 +323,7 @@ class TestZarrRoundtrip:
         path = tmp_path / "bounded-dict-as-matrix.zarr"
         t0 = 1_234_567_890.1234567
         dt = 1.0 / 30.0
-        source = TimeSeries(np.arange(768), t0=t0, dt=dt, name="x")
+        source = TimeSeries(np.arange(768), t0=t0, dt=dt, name="x", unit="m")
         TimeSeriesDict({"x": source}).write(str(path), format="zarr")
 
         loaded = TimeSeriesMatrix.read(
@@ -335,9 +335,42 @@ class TestZarrRoundtrip:
         expected = source[100:600]
 
         assert loaded.shape == (1, 1, 500)
+        assert list(loaded.channel_names) == ["x"]
+        assert str(loaded[0, 0].unit) == "m"
         np.testing.assert_array_equal(loaded.value[0, 0], expected.value)
         assert float(loaded.t0.value).hex() == float(expected.t0.value).hex()
         assert float(loaded.dt.value).hex() == float(expected.dt.value).hex()
+
+    def test_dict_subclass_reads_memory_store_with_copied_provenance(self, monkeypatch):
+        """Store-object reads retain subclass type and non-aliased provenance."""
+        from gwexpy.timeseries.io import zarr_ as zarr_io
+
+        class RequestedTimeSeriesDict(TimeSeriesDict):
+            pass
+
+        store = zarr.storage.MemoryStore()
+        TimeSeriesDict(
+            {"signal": TimeSeries([1.0, 2.0], t0=10.0, sample_rate=2.0)}
+        ).write(store, format="zarr")
+
+        actual_reader = zarr_io.read_timeseriesdict_zarr
+        observed = {}
+
+        def recording_reader(source, **kwargs):
+            observed["source"] = source
+            observed["result"] = actual_reader(source, **kwargs)
+            return observed["result"]
+
+        monkeypatch.setattr(zarr_io, "read_timeseriesdict_zarr", recording_reader)
+
+        result = RequestedTimeSeriesDict.read(store, format="zarr")
+
+        assert type(result) is RequestedTimeSeriesDict
+        assert observed["source"] is store
+        assert result._gwexpy_io == observed["result"]._gwexpy_io
+        assert result._gwexpy_io is not observed["result"]._gwexpy_io
+        result._gwexpy_io["request"] = "changed"
+        assert "request" not in observed["result"]._gwexpy_io
 
     def test_matrix_roundtrip_1col_integer_row_keys(self, tmp_path):
         from gwexpy.types.metadata import MetaData, MetaDataDict
