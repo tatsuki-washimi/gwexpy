@@ -1,7 +1,14 @@
-gwexpy.interop.sdynpy\_
+﻿gwexpy.interop.sdynpy\_
 =======================
 
 .. automodule:: gwexpy.interop.sdynpy_
-   :members:
-   :undoc-members:
-   :show-inheritance:
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      from_sdynpy_frf
+      from_sdynpy_shape
+      from_sdynpy_timehistory
+   

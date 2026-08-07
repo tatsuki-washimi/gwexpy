@@ -1,7 +1,12 @@
-gwexpy.interop.metpy\_
+﻿gwexpy.interop.metpy\_
 ======================
 
 .. automodule:: gwexpy.interop.metpy_
-   :members:
-   :undoc-members:
-   :show-inheritance:
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      from_metpy_dataarray
+   

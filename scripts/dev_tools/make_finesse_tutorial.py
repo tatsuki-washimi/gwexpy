@@ -47,16 +47,13 @@ own `FrequencySeries` types.
 > it synthesises equivalent data analytically so every cell still executes.
 > Install Finesse 3 with `pip install finesse` to run the real simulation.
 """),
-
     md("## Setup"),
-
     code("""\
 import numpy as np
 import matplotlib.pyplot as plt
 
 from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
 """),
-
     md("""\
 ## 1. Finesse 3 Model — Fabry-Pérot Cavity
 
@@ -68,7 +65,6 @@ If Finesse 3 is **not** installed the cell falls back to analytic formulas
 for an equivalent optical cavity and wraps the result in `FrequencySeries`
 directly — the gwexpy objects produced by both paths are identical.
 """),
-
     code("""\
 FINESSE_AVAILABLE = False
 
@@ -117,7 +113,6 @@ else:
 print(f"FrequencySeries: {len(tf_sim)} bins, "
       f"df_min={tf_sim.frequencies[1]/tf_sim.frequencies[0]:.3f} (log-spaced)")
 """),
-
     md("""\
 ## 2. Multi-DOF Transfer Function Matrix
 
@@ -125,7 +120,6 @@ Real interferometers have multiple degrees of freedom (DARM, CARM, MICH, …).
 `from_finesse_frequency_response` returns a **FrequencySeriesMatrix** when
 multiple output / input DOF pairs are present.
 """),
-
     code("""\
 # Simulate three DOFs analytically (or via Finesse if available)
 dofs = {
@@ -174,7 +168,6 @@ ax_ph.grid(True, which="both", alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 3. Noise Projection
 
@@ -187,7 +180,6 @@ Typical noise sources in an optical cavity:
 - **shot** — shot noise at the detector
 - **thermal_mir** — mirror thermal noise (coating + substrate)
 """),
-
     code("""\
 # Representative noise ASD levels for a Fabry-Pérot cavity
 noise_sources = {
@@ -234,7 +226,6 @@ ax.grid(True, which="both", alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 4. Simulation vs. Measurement Overlay
 
@@ -243,7 +234,6 @@ with in-situ measurements.  Here we overlay the simulated cavity TF with
 a synthetic "measured" TF that includes a calibration error and a parasitic
 resonance — typical of real commissioning data.
 """),
-
     code("""\
 # Synthetic "measurement" = simulation + 5% gain error + 1 dB parasitic at 3 kHz
 rng = np.random.default_rng(42)
@@ -293,7 +283,6 @@ plt.show()
 print(f"Peak deviation: {20*np.log10(np.abs(ratio.value)).max():.2f} dB "
       f"at {freqs[np.argmax(np.abs(ratio.value))]:.0f} Hz")
 """),
-
     md("""\
 ## Summary
 
@@ -342,16 +331,13 @@ gwexpy は Finesse 3 のソリューションオブジェクトを `FrequencySer
 > されていない場合は解析的な合成データにフォールバックし、すべてのセルを
 > 実行できます。実際のシミュレーションには `pip install finesse` が必要です。
 """),
-
     md("## セットアップ"),
-
     code("""\
 import numpy as np
 import matplotlib.pyplot as plt
 
 from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
 """),
-
     md("""\
 ## 1. Finesse 3 モデル — Fabry-Pérot キャビティ
 
@@ -361,7 +347,6 @@ from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
 Finesse 3 がインストールされていない場合は、等価な光学キャビティの解析式に
 フォールバックします。どちらのパスも同一の gwexpy オブジェクトを生成します。
 """),
-
     code("""\
 FINESSE_AVAILABLE = False
 
@@ -408,7 +393,6 @@ else:
 
 print(f"FrequencySeries: {len(tf_sim)} ビン")
 """),
-
     md("""\
 ## 2. 多自由度（マルチ DOF）伝達関数マトリクス
 
@@ -416,7 +400,6 @@ print(f"FrequencySeries: {len(tf_sim)} ビン")
 複数の出力/入力 DOF ペアがある場合、`from_finesse_frequency_response` は
 自動的に **FrequencySeriesDict** を返します。
 """),
-
     code("""\
 dofs = {
     "DARM": dict(gamma=gamma * 0.8,  gain=1.0),
@@ -458,7 +441,6 @@ ax_ph.grid(True, which="both", alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 3. ノイズプロジェクション
 
@@ -470,7 +452,6 @@ plt.show()
 - **shot** — ショットノイズ
 - **thermal_mir** — ミラー熱ノイズ（コーティング + 基板）
 """),
-
     code("""\
 noise_sources = {
     "laser_freq":  lambda f: 1e-5  / (1 + (f / 100)**2)**0.5,
@@ -508,7 +489,6 @@ ax.grid(True, which="both", alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 4. シミュレーション vs. 測定データのオーバーレイ比較
 
@@ -516,7 +496,6 @@ Finesse ↔ gwexpy ブリッジの最大の利点は、シミュレーション�
 現場測定を同一のオブジェクトで比較できることです。
 ここでは、ゲイン誤差と寄生共振を含む合成「測定値」をオーバーレイします。
 """),
-
     code("""\
 rng = np.random.default_rng(42)
 f_par, Q_par = 3000.0, 20.0
@@ -555,7 +534,6 @@ plt.show()
 print(f"最大偏差: {20*np.log10(np.abs(ratio.value)).max():.2f} dB "
       f"at {freqs[np.argmax(np.abs(ratio.value))]:.0f} Hz")
 """),
-
     md("""\
 ## まとめ
 
@@ -585,11 +563,16 @@ astropy ユニット情報を持ちません。
 # Write
 # ---------------------------------------------------------------------------
 
+
 def write_nb(cells, path):
     nb = {
         "cells": cells,
         "metadata": {
-            "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+            "kernelspec": {
+                "display_name": "Python 3",
+                "language": "python",
+                "name": "python3",
+            },
             "language_info": {"name": "python", "version": "3.9.0"},
         },
         "nbformat": 4,
@@ -601,6 +584,10 @@ def write_nb(cells, path):
 
 if __name__ == "__main__":
     root = Path(__file__).parents[2]
-    write_nb(EN_CELLS, root / "docs/web/en/user_guide/tutorials/case_finesse_optics.ipynb")
-    write_nb(JA_CELLS, root / "docs/web/ja/user_guide/tutorials/case_finesse_optics.ipynb")
+    write_nb(
+        EN_CELLS, root / "docs/web/en/user_guide/tutorials/case_finesse_optics.ipynb"
+    )
+    write_nb(
+        JA_CELLS, root / "docs/web/ja/user_guide/tutorials/case_finesse_optics.ipynb"
+    )
     print("Done.")

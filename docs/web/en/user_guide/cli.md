@@ -22,7 +22,7 @@ gwexpy --version
 
 Output:
 ```
-gwexpy 0.1.0
+gwexpy <installed version>
 ```
 
 ### `gwexpy --help`

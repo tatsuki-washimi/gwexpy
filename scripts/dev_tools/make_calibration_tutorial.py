@@ -5,14 +5,23 @@ from pathlib import Path
 
 
 def md(source):
-    return {"cell_type": "markdown", "id": f"md_{abs(hash(source))%10**8:08x}",
-            "metadata": {}, "source": source}
+    return {
+        "cell_type": "markdown",
+        "id": f"md_{abs(hash(source)) % 10**8:08x}",
+        "metadata": {},
+        "source": source,
+    }
 
 
 def code(source):
-    return {"cell_type": "code", "execution_count": None,
-            "id": f"cd_{abs(hash(source))%10**8:08x}",
-            "metadata": {}, "outputs": [], "source": source}
+    return {
+        "cell_type": "code",
+        "execution_count": None,
+        "id": f"cd_{abs(hash(source)) % 10**8:08x}",
+        "metadata": {},
+        "outputs": [],
+        "source": source,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -46,9 +55,7 @@ KAGRA's calibration pipeline involves two steps:
 - `case_dttxml_calibration.ipynb` — loading pre-measured TF from DTT XML files
 - `case_transfer_function.ipynb` — estimating TF directly from time series
 """),
-
     md("## Setup"),
-
     code("""\
 import numpy as np
 import matplotlib.pyplot as plt
@@ -60,7 +67,6 @@ from gwexpy.fitting import fit_series
 from gwexpy.fitting.models import lorentzian, power_law
 from gwexpy.numerics.constants import SAFE_FLOOR
 """),
-
     md("""\
 ## 1. Synthetic Uncalibrated Data
 
@@ -71,7 +77,6 @@ The system has:
 - **Shot noise** floor flat above ~100 Hz
 - **Lines** at 60 Hz (power) and 120 Hz (harmonic)
 """),
-
     code("""\
 fs_hz = 4096           # sample rate [Hz]
 T     = 300.0          # total duration [s]
@@ -116,7 +121,6 @@ ts_raw = TimeSeries(noise_counts, t0=t0, sample_rate=fs_hz,
 print(f"Signal: {T:.0f} s at {fs_hz} Hz  ({N:,} samples)")
 print(f"RMS (counts): {np.sqrt(np.mean(ts_raw.value**2)):.2f}")
 """),
-
     md("""\
 ## 2. Stepped-Sine Injection Campaign
 
@@ -126,7 +130,6 @@ typically lasts 30–120 s.
 
 We synthesise an injection campaign with 6 frequencies spanning 10–1000 Hz.
 """),
-
     code("""\
 inj_freqs = np.array([10.0, 30.0, 100.0, 200.0, 500.0, 1000.0])
 step_dur  = 40.0   # seconds per step
@@ -161,7 +164,6 @@ ax.set_title("Raw DARM signal with stepped-sine PCal injections")
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 3. Extract Coupling Factors
 
@@ -173,7 +175,6 @@ The coupling factor $C(f_i)$ is defined as:
 
 $$C(f_i) = \\frac{\\text{ASD}_{\\text{target}}(f_i)}{\\text{ASD}_{\\text{witness}}(f_i)}$$
 """),
-
     code("""\
 rfa = ResponseFunctionAnalysis()
 
@@ -198,7 +199,6 @@ for f, cf_meas, cf_th in zip(result.injected_freqs,
     print(f"  {f:6.0f} Hz: measured={cf_meas:.3e}, theory={cf_th:.3e}, "
           f"ratio={cf_meas/cf_th:.4f}")
 """),
-
     md("""\
 ## 4. Fit the Calibration Transfer Function
 
@@ -208,7 +208,6 @@ $$C(f) = \\frac{C_0}{1 + i\\,f / f_\\text{pole}}$$
 
 The fit gives us a smooth, continuous calibration function.
 """),
-
     code("""\
 freqs_meas = result.injected_freqs
 cf_meas    = np.abs(result.coupling_factors)
@@ -231,7 +230,6 @@ C0_fit, fpole_fit = result_fit.params
 print(f"Fitted gain : {C0_fit:.3e} ct/m  (true: {COUNTS_PER_METER:.3e})")
 print(f"Fitted pole : {fpole_fit:.2f} Hz  (true: {F_POLE_HZ:.2f} Hz)")
 """),
-
     code("""\
 # Plot coupling function: measured vs. fitted model
 f_plot = np.geomspace(5, 2000, 500)
@@ -252,14 +250,12 @@ ax.grid(True, which="both", alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 5. Apply Calibration — Counts → Metres ASD
 
 With the calibration function in hand, we apply it to the raw DARM ASD
 to produce a calibrated displacement ASD in metres per root-Hz.
 """),
-
     code("""\
 # --- Compute raw ASD ---
 asd_raw = ts_darm.asd(fftlength=16.0, method="median")
@@ -298,7 +294,6 @@ ax.grid(True, which="both", alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## Summary
 
@@ -347,9 +342,7 @@ KAGRA のキャリブレーション・パイプラインは2段階で構成さ�
 3. 周波数依存キャリブレーションモデルのフィッティング
 4. キャリブレーションを適用した strain キャリブレーション済み ASD の生成
 """),
-
     md("## セットアップ"),
-
     code("""\
 import numpy as np
 import matplotlib.pyplot as plt
@@ -361,7 +354,6 @@ from gwexpy.fitting import fit_series
 from gwexpy.fitting.models import lorentzian, power_law
 from gwexpy.numerics.constants import SAFE_FLOOR
 """),
-
     md("""\
 ## 1. 合成未キャリブレーションデータの生成
 
@@ -372,7 +364,6 @@ DARM（差動アーム長）信号をカウント単位でシミュレートし�
 - **ショットノイズ** 100 Hz 以上でフラット
 - **電源周波数干渉** 60 Hz および 120 Hz
 """),
-
     code("""\
 fs_hz = 4096
 T     = 300.0
@@ -405,7 +396,6 @@ ts_raw = TimeSeries(noise_counts, t0=t0, sample_rate=fs_hz,
 print(f"信号: {T:.0f} s @ {fs_hz} Hz  ({N:,} サンプル)")
 print(f"RMS (カウント): {np.sqrt(np.mean(ts_raw.value**2)):.2f}")
 """),
-
     md("""\
 ## 2. ステップサイン注入キャンペーン
 
@@ -413,7 +403,6 @@ print(f"RMS (カウント): {np.sqrt(np.mean(ts_raw.value**2)):.2f}")
 PCal 信号を複数の離散周波数で順次注入します。
 ここでは 10〜1000 Hz の 6 周波数をシミュレートします。
 """),
-
     code("""\
 inj_freqs = np.array([10.0, 30.0, 100.0, 200.0, 500.0, 1000.0])
 step_dur  = 40.0
@@ -443,7 +432,6 @@ ax.set_title("ステップサイン PCal 注入を含む生 DARM 信号")
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 3. カップリング係数の抽出
 
@@ -452,7 +440,6 @@ plt.show()
 
 $$C(f_i) = \\frac{\\text{ASD}_{\\text{ターゲット}}(f_i)}{\\text{ASD}_{\\text{ウィットネス}}(f_i)}$$
 """),
-
     code("""\
 rfa = ResponseFunctionAnalysis()
 
@@ -475,7 +462,6 @@ for f, cf_meas, cf_th in zip(result.injected_freqs,
     print(f"  {f:6.0f} Hz: 測定={cf_meas:.3e}, 理論={cf_th:.3e}, "
           f"比={cf_meas/cf_th:.4f}")
 """),
-
     md("""\
 ## 4. キャリブレーション伝達関数のフィッティング
 
@@ -483,7 +469,6 @@ for f, cf_meas, cf_th in zip(result.injected_freqs,
 
 $$C(f) = \\frac{C_0}{1 + i\\,f / f_\\text{pole}}$$
 """),
-
     code("""\
 freqs_meas = result.injected_freqs
 cf_meas    = np.abs(result.coupling_factors)
@@ -504,7 +489,6 @@ C0_fit, fpole_fit = result_fit.params
 print(f"推定ゲイン : {C0_fit:.3e} ct/m  （真値: {COUNTS_PER_METER:.3e}）")
 print(f"推定ポール : {fpole_fit:.2f} Hz  （真値: {F_POLE_HZ:.2f} Hz）")
 """),
-
     code("""\
 f_plot = np.geomspace(5, 2000, 500)
 cf_model = cal_model_mag(f_plot, C0_fit, fpole_fit)
@@ -523,11 +507,9 @@ ax.grid(True, which="both", alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 5. キャリブレーション適用 — Counts → メートル ASD
 """),
-
     code("""\
 asd_raw = ts_darm.asd(fftlength=16.0, method="median")
 freqs_asd = asd_raw.frequencies.value
@@ -560,7 +542,6 @@ ax.grid(True, which="both", alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## まとめ
 
@@ -582,10 +563,15 @@ def write_nb(cells, path):
     nb = {
         "cells": cells,
         "metadata": {
-            "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+            "kernelspec": {
+                "display_name": "Python 3",
+                "language": "python",
+                "name": "python3",
+            },
             "language_info": {"name": "python", "version": "3.9.0"},
         },
-        "nbformat": 4, "nbformat_minor": 5,
+        "nbformat": 4,
+        "nbformat_minor": 5,
     }
     Path(path).write_text(json.dumps(nb, ensure_ascii=False, indent=1))
     print(f"Written: {path}")
@@ -593,6 +579,12 @@ def write_nb(cells, path):
 
 if __name__ == "__main__":
     root = Path(__file__).parents[2]
-    write_nb(EN_CELLS, root / "docs/web/en/user_guide/tutorials/case_calibration_pipeline.ipynb")
-    write_nb(JA_CELLS, root / "docs/web/ja/user_guide/tutorials/case_calibration_pipeline.ipynb")
+    write_nb(
+        EN_CELLS,
+        root / "docs/web/en/user_guide/tutorials/case_calibration_pipeline.ipynb",
+    )
+    write_nb(
+        JA_CELLS,
+        root / "docs/web/ja/user_guide/tutorials/case_calibration_pipeline.ipynb",
+    )
     print("Done.")

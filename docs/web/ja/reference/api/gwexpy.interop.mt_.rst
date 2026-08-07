@@ -1,4 +1,4 @@
-gwexpy.interop.mt\_
+﻿gwexpy.interop.mt\_
 ===================
 
 .. automodule:: gwexpy.interop.mt_

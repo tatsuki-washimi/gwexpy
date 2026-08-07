@@ -3,6 +3,7 @@
 
 Cleans up all corrupted or duplicate warnings blocks and re-wraps cells correctly with clean indentation.
 """
+
 import argparse
 import re
 import shutil
@@ -26,7 +27,7 @@ def clean_and_rewrap(src):
         if "warnings.simplefilter" in ls:
             continue
         # Also remove redundant warnings imports if they are in the middle
-        if re.match(r'^import\s+warnings\s*$', ls):
+        if re.match(r"^import\s+warnings\s*$", ls):
             continue
         # Remove empty lines that were just warnings stuff
         if ls == "" and len(cleaned) > 0 and cleaned[-1] == "":
@@ -39,30 +40,31 @@ def clean_and_rewrap(src):
 
     # Re-wrap
     indented = "\n".join(
-        ("    " + line) if line.strip() else ""
-        for line in body.splitlines()
+        ("    " + line) if line.strip() else "" for line in body.splitlines()
     )
     wrapped = (
         "import warnings\n"
         "with warnings.catch_warnings():\n"
-        "    warnings.simplefilter('ignore')\n\n"
-        + indented + "\n"
+        "    warnings.simplefilter('ignore')\n\n" + indented + "\n"
     )
     return wrapped
+
 
 def process_nb(path, dry_run=True):
     """Fix all code cells in the notebook that use warnings.catch_warnings."""
     nb = nbformat.read(path, as_version=4)
     changed = False
     for i, cell in enumerate(nb.cells):
-        if cell.cell_type != 'code':
+        if cell.cell_type != "code":
             continue
         # if cell has "warnings" and either "catch_warnings" or corrupted state
-        if ("warnings.catch_warnings" in cell.source or
-            "warnings.filterwarnings" in cell.source or
+        if (
+            "warnings.catch_warnings" in cell.source
+            or "warnings.filterwarnings" in cell.source
+            or
             # also catch double indentation if already fixed by v2 but with extra spaces
-            "    with warnings.catch_warnings()" in cell.source):
-
+            "    with warnings.catch_warnings()" in cell.source
+        ):
             new_source = clean_and_rewrap(cell.source)
             if new_source != cell.source:
                 print(f"[{'DRY RUN' if dry_run else 'FIXING'}] Cell {i} in {path}")
@@ -77,6 +79,7 @@ def process_nb(path, dry_run=True):
     if changed and not dry_run:
         nbformat.write(nb, path)
     return changed
+
 
 def main():
     """Discover notebooks and apply fixes."""
@@ -100,6 +103,7 @@ def main():
         print("\n[DONE] Modified:", changed_any)
     else:
         print("\n[DRY RUN] Would modify:", changed_any)
+
 
 if __name__ == "__main__":
     main()

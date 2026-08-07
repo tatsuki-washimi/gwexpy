@@ -31,7 +31,7 @@ components = ICATransform(n_components=2).fit_transform(ts_matrix)
 ## 関連チュートリアル
 
 - [ML 前処理手法](../user_guide/tutorials/ml_preprocessing_methods.md)
-- [BruCo ICA ノイズ除去](../user_guide/tutorials/case_bruco_ica_denoising.ipynb)
+- [BruCo ICA ノイズ除去](../../en/user_guide/tutorials/case_bruco_ica_denoising.ipynb)
 
 ## API リファレンス
 

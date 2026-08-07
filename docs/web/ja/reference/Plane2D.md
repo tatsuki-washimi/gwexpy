@@ -32,7 +32,7 @@ plane_t = plane.swapaxes(0, 1)
 
 ## 関連チュートリアル
 
-- [TimeSeries 基本](../user_guide/tutorials/intro_timeseries.ipynb)
+- [TimeSeries 基本](../../en/user_guide/tutorials/intro_timeseries.ipynb)
 - [ScalarField 信号処理](../user_guide/tutorials/field_scalar_signal.md)
 
 ## API リファレンス

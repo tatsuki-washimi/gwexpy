@@ -5,14 +5,23 @@ from pathlib import Path
 
 
 def md(source):
-    return {"cell_type": "markdown", "id": f"md_{abs(hash(source))%10**8:08x}",
-            "metadata": {}, "source": source}
+    return {
+        "cell_type": "markdown",
+        "id": f"md_{abs(hash(source)) % 10**8:08x}",
+        "metadata": {},
+        "source": source,
+    }
 
 
 def code(source):
-    return {"cell_type": "code", "execution_count": None,
-            "id": f"cd_{abs(hash(source))%10**8:08x}",
-            "metadata": {}, "outputs": [], "source": source}
+    return {
+        "cell_type": "code",
+        "execution_count": None,
+        "id": f"cd_{abs(hash(source)) % 10**8:08x}",
+        "metadata": {},
+        "outputs": [],
+        "source": source,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -43,9 +52,7 @@ analysis archives**.
 4. Reading back and verifying provenance
 5. Building a provenance-aware analysis pipeline helper
 """),
-
     md("## Setup"),
-
     code("""\
 import datetime
 import json
@@ -61,14 +68,12 @@ from gwexpy.timeseries import TimeSeries
 from gwexpy.frequencyseries import FrequencySeries
 from gwexpy.interop.hdf5_ import to_hdf5, from_hdf5
 """),
-
     md("""\
 ## 1. Synthetic Data
 
 We create a short DARM-like time series with a known injection for later
 verification.
 """),
-
     code("""\
 fs   = 4096.0
 T    = 64.0
@@ -89,7 +94,6 @@ ts = TimeSeries(noise + inj, t0=t0, sample_rate=fs,
                 name="K1:LSC-DARM_OUT_DQ", unit="ct")
 print(f"TimeSeries: {len(ts)} samples @ {fs} Hz, t0={t0}")
 """),
-
     md("""\
 ## 2. Writing to HDF5 with Provenance Metadata
 
@@ -100,7 +104,6 @@ We then add **provenance attributes** directly on the HDF5 dataset:
 - Timestamp of the run
 - Host information
 """),
-
     code("""\
 def build_provenance(params: dict) -> dict:
     return {
@@ -140,14 +143,12 @@ with h5py.File(hdf5_path, "w") as f:
 
 print(f"\\nHDF5 file: {hdf5_path}  ({os.path.getsize(hdf5_path)/1024:.1f} kB)")
 """),
-
     md("""\
 ## 3. Storing Derived Products with Full Lineage
 
 Each derived product (ASD, spectrogram, filtered series) should reference
 the parent dataset so the full processing chain is traceable.
 """),
-
     code("""\
 # Compute ASD
 asd = ts.asd(fftlength=analysis_params["fftlength"],
@@ -181,14 +182,12 @@ with h5py.File(hdf5_path, "a") as f:
     print("HDF5 file structure:")
     f.visititems(print_tree)
 """),
-
     md("""\
 ## 4. Reading Back and Verifying Provenance
 
 A collaborator (or future-you) can open the file and immediately understand
 what analysis produced each dataset, using what parameters and software.
 """),
-
     code("""\
 with h5py.File(hdf5_path, "r") as f:
     # Reconstruct TimeSeries
@@ -221,14 +220,12 @@ print("\\n=== ASD parent reference ===")
 print(f"  parent_dataset  : {asd_prov['parent_dataset']}")
 print(f"  processing_step : {asd_prov['processing_step']}")
 """),
-
     md("""\
 ## 5. Provenance-Aware Pipeline Helper
 
 For repeated use, wrap the provenance pattern in a reusable context manager
 that automatically attaches metadata to every dataset written inside it.
 """),
-
     code("""\
 import contextlib
 
@@ -281,13 +278,11 @@ with h5py.File(pipeline_path, "r") as f:
     params_back = json.loads(f["input/darm"].attrs["params_json"])
     print(f"Verified run_id: {params_back['run_id']}")
 """),
-
     md("""\
 ## 6. Visualise the Stored ASD (Reproducibility Check)
 
 Verify that the ASD loaded from the archive matches the in-memory result.
 """),
-
     code("""\
 import matplotlib.pyplot as plt
 
@@ -311,7 +306,6 @@ plt.show()
 max_diff = np.max(np.abs(asd2.value[1:] - asd_ar[1:]) / (asd2.value[1:] + 1e-300))
 print(f"Max relative difference: {max_diff:.2e}  (should be ~machine epsilon)")
 """),
-
     md("""\
 ## Summary
 
@@ -367,9 +361,7 @@ JA_CELLS = [
 4. 読み戻してプロバナンスを検証する
 5. プロバナンス対応解析パイプラインヘルパーを構築する
 """),
-
     md("## セットアップ"),
-
     code("""\
 import datetime
 import json
@@ -385,9 +377,7 @@ from gwexpy.timeseries import TimeSeries
 from gwexpy.frequencyseries import FrequencySeries
 from gwexpy.interop.hdf5_ import to_hdf5, from_hdf5
 """),
-
     md("## 1. 合成データの生成"),
-
     code("""\
 fs   = 4096.0
 T    = 64.0
@@ -407,7 +397,6 @@ ts = TimeSeries(noise + inj, t0=t0, sample_rate=fs,
                 name="K1:LSC-DARM_OUT_DQ", unit="ct")
 print(f"TimeSeries: {len(ts)} サンプル @ {fs} Hz, t0={t0}")
 """),
-
     md("""\
 ## 2. プロバナンス属性付きで HDF5 に書き込む
 
@@ -418,7 +407,6 @@ print(f"TimeSeries: {len(ts)} サンプル @ {fs} Hz, t0={t0}")
 - 実行タイムスタンプ
 - ホスト情報
 """),
-
     code("""\
 def build_provenance(params: dict) -> dict:
     return {
@@ -456,14 +444,12 @@ with h5py.File(hdf5_path, "w") as f:
 
 print(f"\\nHDF5 ファイル: {hdf5_path}  ({os.path.getsize(hdf5_path)/1024:.1f} kB)")
 """),
-
     md("""\
 ## 3. 派生量をリネージ情報付きで保存する
 
 各派生量（ASD、スペクトログラム、フィルタ済み時系列）には
 親データセットへの参照を含め、完全な処理チェーンを追跡できるようにします。
 """),
-
     code("""\
 asd = ts.asd(fftlength=analysis_params["fftlength"],
              overlap=analysis_params["overlap"],
@@ -493,9 +479,7 @@ with h5py.File(hdf5_path, "a") as f:
     print("HDF5 ファイル構造:")
     f.visititems(print_tree)
 """),
-
     md("## 4. 読み戻してプロバナンスを検証する"),
-
     code("""\
 with h5py.File(hdf5_path, "r") as f:
     ts_loaded = from_hdf5(TimeSeries, f["raw"], "darm")
@@ -522,9 +506,7 @@ print("\\n=== ASD 親参照 ===")
 print(f"  parent_dataset  : {asd_prov['parent_dataset']}")
 print(f"  processing_step : {asd_prov['processing_step']}")
 """),
-
     md("## 5. プロバナンス対応パイプラインヘルパー"),
-
     code("""\
 import contextlib
 
@@ -573,9 +555,7 @@ with h5py.File(pipeline_path, "r") as f:
     params_back = json.loads(f["input/darm"].attrs["params_json"])
     print(f"run_id 検証: {params_back['run_id']}")
 """),
-
     md("## 6. 再現性確認：保存済み ASD の可視化"),
-
     code("""\
 import matplotlib.pyplot as plt
 
@@ -599,7 +579,6 @@ plt.show()
 max_diff = np.max(np.abs(asd2.value[1:] - asd_ar[1:]) / (asd2.value[1:] + 1e-300))
 print(f"最大相対誤差: {max_diff:.2e}  （マシンイプシロン程度であるべき）")
 """),
-
     md("""\
 ## まとめ
 
@@ -627,10 +606,15 @@ def write_nb(cells, path):
     nb = {
         "cells": cells,
         "metadata": {
-            "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+            "kernelspec": {
+                "display_name": "Python 3",
+                "language": "python",
+                "name": "python3",
+            },
             "language_info": {"name": "python", "version": "3.9.0"},
         },
-        "nbformat": 4, "nbformat_minor": 5,
+        "nbformat": 4,
+        "nbformat_minor": 5,
     }
     Path(path).write_text(json.dumps(nb, ensure_ascii=False, indent=1))
     print(f"Written: {path}")
@@ -638,6 +622,10 @@ def write_nb(cells, path):
 
 if __name__ == "__main__":
     root = Path(__file__).parents[2]
-    write_nb(EN_CELLS, root / "docs/web/en/user_guide/tutorials/case_hdf5_provenance.ipynb")
-    write_nb(JA_CELLS, root / "docs/web/ja/user_guide/tutorials/case_hdf5_provenance.ipynb")
+    write_nb(
+        EN_CELLS, root / "docs/web/en/user_guide/tutorials/case_hdf5_provenance.ipynb"
+    )
+    write_nb(
+        JA_CELLS, root / "docs/web/ja/user_guide/tutorials/case_hdf5_provenance.ipynb"
+    )
     print("Done.")

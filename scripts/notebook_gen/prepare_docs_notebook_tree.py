@@ -202,7 +202,9 @@ def _copy_repo_tree(repo_root: Path, output_root: Path) -> None:
         shutil.copy2(source, destination)
 
 
-def _sanitize_docs_notebooks_for_ci(output_root: Path, notebook_paths: list[str]) -> None:
+def _sanitize_docs_notebooks_for_ci(
+    output_root: Path, notebook_paths: list[str]
+) -> None:
     sanitized = 0
     for rel_path in notebook_paths:
         if _sanitize_notebook_for_ci(output_root / rel_path):
@@ -426,7 +428,9 @@ def parse_args() -> argparse.Namespace:
         default="python3",
         help="Kernel name for papermill.",
     )
-    parser.add_argument("--jobs", type=int, default=4, help="Parallel notebook workers.")
+    parser.add_argument(
+        "--jobs", type=int, default=4, help="Parallel notebook workers."
+    )
     return parser.parse_args()
 
 

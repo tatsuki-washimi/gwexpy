@@ -4,6 +4,7 @@ import nbformat as nbf
 
 REPO_ROOT = Path(__file__).parent.parent.parent
 
+
 def make_notebook():
     nb = nbf.v4.new_notebook()
 
@@ -237,7 +238,7 @@ plt.show()
 """
 
     # Add cells
-    nb['cells'] = [
+    nb["cells"] = [
         nbf.v4.new_markdown_cell(intro_md),
         nbf.v4.new_code_cell(setup_code),
         nbf.v4.new_markdown_cell(noise_md),
@@ -250,16 +251,25 @@ plt.show()
         nbf.v4.new_code_cell(residual_code),
         nbf.v4.new_markdown_cell(eval_md),
         nbf.v4.new_code_cell(eval_code),
-        nbf.v4.new_markdown_cell(outro_md)
+        nbf.v4.new_markdown_cell(outro_md),
     ]
 
     # Save
-    out_path = REPO_ROOT / 'docs' / 'web' / 'en' / 'user_guide' / 'tutorials' / 'case_arima_burst_search.ipynb'
+    out_path = (
+        REPO_ROOT
+        / "docs"
+        / "web"
+        / "en"
+        / "user_guide"
+        / "tutorials"
+        / "case_arima_burst_search.ipynb"
+    )
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(out_path, 'w', encoding='utf-8') as f:
+    with open(out_path, "w", encoding="utf-8") as f:
         nbf.write(nb, f)
 
     print(f"Notebook generated: {out_path}")
+
 
 if __name__ == "__main__":
     make_notebook()

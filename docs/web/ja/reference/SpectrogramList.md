@@ -34,9 +34,9 @@ mat = lst.to_matrix()
 ## 関連チュートリアル
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
-- [Spectrogram チュートリアル](../user_guide/tutorials/intro_spectrogram.ipynb)
-- [セグメント可視化](../user_guide/tutorials/segment_visualization.ipynb)
-- [グリッチ詳細解析](../user_guide/tutorials/case_glitch_analysis.ipynb)
+- [Spectrogram チュートリアル](../../en/user_guide/tutorials/intro_spectrogram.ipynb)
+- [セグメント可視化](../../en/user_guide/tutorials/segment_visualization.ipynb)
+- [グリッチ詳細解析](../../en/user_guide/tutorials/case_glitch_analysis.ipynb)
 
 ## API リファレンス
 
@@ -73,7 +73,7 @@ Spectrogram オブジェクトのリスト。
 
 - 各マップの解釈: [Spectrogram](Spectrogram.md)
 - 整列済みコレクション解析: [SpectrogramMatrix](SpectrogramMatrix.md)
-- 実務ワークフロー: [セグメント可視化](../user_guide/tutorials/segment_visualization.ipynb), [グリッチ詳細解析](../user_guide/tutorials/case_glitch_analysis.ipynb)
+- 実務ワークフロー: [セグメント可視化](../../en/user_guide/tutorials/segment_visualization.ipynb), [グリッチ詳細解析](../../en/user_guide/tutorials/case_glitch_analysis.ipynb)
 
 :::{note}
 Spectrogram オブジェクトはメモリを大量に消費する可能性があります。

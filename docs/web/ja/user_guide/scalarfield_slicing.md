@@ -139,7 +139,7 @@ field + calibration
 (scalarfield-slicing-next-to-read-ja)=
 ## 次に読む
 
-- [ScalarField 入門チュートリアル](tutorials/field_scalar_intro.ipynb)
+- [ScalarField 入門チュートリアル](../../en/user_guide/tutorials/field_scalar_intro.ipynb)
 - [フィールド API リファレンス](../reference/api/fields.rst)
 - [数値安定性](numerical_stability.md) - 4次元演算時の精度管理
 - [アーキテクチャとデータフロー](architecture.md) - フィールド API が設計上どこに位置づくかを把握する

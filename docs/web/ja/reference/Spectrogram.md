@@ -28,15 +28,15 @@ med = sgm.percentile(50, axis="time")
 ## 関連理論
 
 - [FFT_Conventions](FFT_Conventions.md)
-- [Spectrogram チュートリアル](../user_guide/tutorials/intro_spectrogram.ipynb)
+- [Spectrogram チュートリアル](../../en/user_guide/tutorials/intro_spectrogram.ipynb)
 - [時間-周波数解析: 手法比較ガイド](../user_guide/tutorials/time_frequency_comparison.md)
 
 ## 関連チュートリアル
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
-- [Spectrogram チュートリアル](../user_guide/tutorials/intro_spectrogram.ipynb)
-- [グリッチ詳細解析](../user_guide/tutorials/case_glitch_analysis.ipynb)
-- [HHT: 解析](../user_guide/tutorials/advanced_hht.ipynb)
+- [Spectrogram チュートリアル](../../en/user_guide/tutorials/intro_spectrogram.ipynb)
+- [グリッチ詳細解析](../../en/user_guide/tutorials/case_glitch_analysis.ipynb)
+- [HHT: 解析](../../en/user_guide/tutorials/advanced_hht.ipynb)
 
 ## API リファレンス
 
@@ -87,8 +87,8 @@ med = sgm.percentile(50, axis="time")
 - 上流の時間領域入口: [TimeSeries](TimeSeries.md)
 - 時間周波数手法の比較: [時間-周波数解析: 手法比較ガイド](../user_guide/tutorials/time_frequency_comparison.md)
 - インタラクティブ比較: [時間-周波数解析: インタラクティブ比較](../user_guide/tutorials/time_frequency_analysis_comparison.md)
-- glitch の実例: [グリッチ詳細解析](../user_guide/tutorials/case_glitch_analysis.ipynb)
-- HHT との比較: [HHT: 解析](../user_guide/tutorials/advanced_hht.ipynb)
+- glitch の実例: [グリッチ詳細解析](../../en/user_guide/tutorials/case_glitch_analysis.ipynb)
+- HHT との比較: [HHT: 解析](../../en/user_guide/tutorials/advanced_hht.ipynb)
 
 ## Pickle / shelve の可搬性
 

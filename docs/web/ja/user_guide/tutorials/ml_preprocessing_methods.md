@@ -431,4 +431,4 @@ plt.show()
 **関連項目:**
 - [完全な ML パイプライン（英語）](../../../en/user_guide/tutorials/case_ml_preprocessing.ipynb) - エンドツーエンドのワークフロー
 - [数値安定性ガイド](../numerical_stability.md) - 精度に関する考慮事項
-- [高度な相関解析](advanced_correlation.ipynb) - 特徴エンジニアリング
+- [高度な相関解析](../../../en/user_guide/tutorials/advanced_correlation.ipynb) - 特徴エンジニアリング

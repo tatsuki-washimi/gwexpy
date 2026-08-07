@@ -40,7 +40,16 @@ def analyze_log(file_path):
         diagnosis = "General: Check log for details"
 
     # Extract relevant excerpt
-    keywords = [r"ERROR", "exception", "Traceback", "FAILED", "error:", r"##\[error\]", r"D\d{3}", "SyntaxError"]
+    keywords = [
+        r"ERROR",
+        "exception",
+        "Traceback",
+        "FAILED",
+        "error:",
+        r"##\[error\]",
+        r"D\d{3}",
+        "SyntaxError",
+    ]
     excerpt_lines = []
 
     for i, line in enumerate(lines):
@@ -54,10 +63,13 @@ def analyze_log(file_path):
 
     return "".join(excerpt_lines).strip(), diagnosis
 
+
 def generate_report():
     report = "# GWexpy Failure Analysis Report\n\n"
     report += "## Summary of Failed Runs\n\n"
-    report += "| Workflow | Run ID | Timestamp | Status | Short Diagnosis | Priority |\n"
+    report += (
+        "| Workflow | Run ID | Timestamp | Status | Short Diagnosis | Priority |\n"
+    )
     report += "| --- | --- | --- | --- | --- | --- |\n"
 
     all_runs = []
@@ -159,6 +171,7 @@ def generate_report():
         if os.path.exists(src):
             with open(src, "rb") as sf, open(dst, "wb") as df:
                 df.write(sf.read())
+
 
 if __name__ == "__main__":
     generate_report()

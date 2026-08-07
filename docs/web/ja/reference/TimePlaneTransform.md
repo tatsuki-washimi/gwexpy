@@ -33,7 +33,7 @@ plane = obj.at_time(0)
 
 ## 関連チュートリアル
 
-- [TimeSeries 基本](../user_guide/tutorials/intro_timeseries.ipynb)
+- [TimeSeries 基本](../../en/user_guide/tutorials/intro_timeseries.ipynb)
 - [時間周波数解析の比較](../user_guide/tutorials/time_frequency_analysis_comparison.md)
 
 ## API リファレンス

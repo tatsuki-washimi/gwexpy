@@ -7,6 +7,7 @@ Patterns covered (distilled from 69 gwexpy-using legacy files):
 Usage:
     python scripts/make_bruco_advanced_notebook.py
 """
+
 from __future__ import annotations
 
 import json
@@ -16,8 +17,10 @@ from pathlib import Path
 # Notebook builder
 # ---------------------------------------------------------------------------
 
+
 def make_nb(cells: list[dict]) -> dict:
     """Wrap cell list into a minimal nbformat-4 notebook dict."""
+
     def _cell(c: dict) -> dict:
         ctype = c.get("type", "code")
         src = c["src"] if isinstance(c["src"], list) else [c["src"]]
@@ -389,7 +392,9 @@ print("=" * 68)
 
 EN_CELLS: list[dict] = [
     # Title
-    {"type": "markdown", "src": """\
+    {
+        "type": "markdown",
+        "src": """\
 # Advanced Bruco: Bilinear Coupling and AM/FM Demodulation
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_bruco_advanced.ipynb)
@@ -407,13 +412,15 @@ data and distilled from the gwexpy usage catalog:
 > **Prerequisites**:
 > - [Noise Hunting with Bruco](advanced_bruco.ipynb)
 > - [Bruco + ICA End-to-End Denoising](case_bruco_ica_denoising.ipynb)
-"""},
+""",
+    },
     # Setup
     {"type": "markdown", "src": "## Setup"},
-    {"type": "code",     "src": SETUP_CODE},
-
+    {"type": "code", "src": SETUP_CODE},
     # Section 1 — Mock data
-    {"type": "markdown", "src": """\
+    {
+        "type": "markdown",
+        "src": """\
 ## 1. Mock Data Generation
 
 We synthesize a DARM channel that contains two types of noise beyond the Gaussian floor:
@@ -425,21 +432,25 @@ We synthesize a DARM channel that contains two types of noise beyond the Gaussia
 
 A linear Bruco scan will **not** detect bilinear coupling because the witness channels
 are individually incoherent with DARM — only their *product* is.
-"""},
+""",
+    },
     {"type": "code", "src": MOCK_DATA_CODE},
     {"type": "code", "src": ASD_OVERVIEW_CODE},
-
     # Section 2 — Linear scan
-    {"type": "markdown", "src": """\
+    {
+        "type": "markdown",
+        "src": """\
 ## 2. Linear Bruco Scan (Baseline)
 
 Run the standard Bruco coherence scan with the two individual witnesses.
 The bilinear coupling between them and DARM should remain invisible here.
-"""},
+""",
+    },
     {"type": "code", "src": LINEAR_BRUCO_CODE},
-
     # Section 3 — Bilinear
-    {"type": "markdown", "src": """\
+    {
+        "type": "markdown",
+        "src": """\
 ## 3. Bilinear Coupling Detection
 
 **Recipe** (from O4b DARM-116 Hz and IMMT bilinear commissioning analyses):
@@ -454,12 +465,14 @@ This synthetic channel mimics the product nonlinearity inside the interferometer
 If DARM contains `fast × slow`, the bilinear witness will be highly coherent with it.
 
 We then pass this extended channel set back to `Bruco.compute()`.
-"""},
+""",
+    },
     {"type": "code", "src": BILINEAR_CODE},
     {"type": "code", "src": BILINEAR_COMPARE_CODE},
-
     # Section 4 — Hilbert
-    {"type": "markdown", "src": """\
+    {
+        "type": "markdown",
+        "src": """\
 ## 4. Hilbert AM/FM Demodulation
 
 When a spectral line is amplitude- or frequency-modulated by a slow environmental
@@ -477,22 +490,26 @@ inst_freq = diff(unwrap(angle(z))) / (2π Δt)            # instantaneous freque
 
 We then correlate `inst_amp` and `inst_freq` with slow auxiliary channels to identify
 what is driving the amplitude / frequency modulation.
-"""},
+""",
+    },
     {"type": "code", "src": HILBERT_CODE},
-
     # Section 5 — AM/FM coherence
-    {"type": "markdown", "src": """\
+    {
+        "type": "markdown",
+        "src": """\
 ## 5. AM/FM Coherence with Slow Witnesses
 
 The Hilbert envelope (`inst_amp`) and instantaneous frequency (`inst_freq`)
 have their own ASD in the modulation frequency range (0 – 5 Hz here).
 We compute coherence of these signals with slow environmental witnesses to
 identify the modulation source.
-"""},
+""",
+    },
     {"type": "code", "src": AMFM_COHERENCE_CODE},
-
     # Section 6 — Summary
-    {"type": "markdown", "src": """\
+    {
+        "type": "markdown",
+        "src": """\
 ## Summary
 
 | Step | Tool | Purpose |
@@ -518,7 +535,8 @@ identify the modulation source.
 - Extend the bilinear search to all `(ch_fast, ch_slow)` pairs systematically.
 - Combine with `Spectrogram.normalize(method='snr')` to track amplitude modulation
   as a SNR spectrogram over time.
-"""},
+""",
+    },
     {"type": "code", "src": SUMMARY_TABLE_CODE},
 ]
 
@@ -528,7 +546,9 @@ identify the modulation source.
 
 JA_CELLS: list[dict] = [
     # Title
-    {"type": "markdown", "src": """\
+    {
+        "type": "markdown",
+        "src": """\
 # Bruco 応用編：バイリニアカップリングと AM/FM 復調
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_bruco_advanced.ipynb)
@@ -544,13 +564,15 @@ JA_CELLS: list[dict] = [
 > **前提知識**:
 > - [Bruco によるノイズハンティング](advanced_bruco.ipynb)
 > - [Bruco + ICA エンドツーエンド ノイズ削減](case_bruco_ica_denoising.ipynb)
-"""},
+""",
+    },
     # Setup
     {"type": "markdown", "src": "## セットアップ"},
-    {"type": "code",     "src": SETUP_CODE},
-
+    {"type": "code", "src": SETUP_CODE},
     # Section 1
-    {"type": "markdown", "src": """\
+    {
+        "type": "markdown",
+        "src": """\
 ## 1. モックデータ生成
 
 DARM チャンネルには Gaussian フロアに加え、以下の 2 種類のノイズを重畳します。
@@ -562,21 +584,25 @@ DARM チャンネルには Gaussian フロアに加え、以下の 2 種類の�
 
 線形 Bruco では個々のウィットネスチャンネルと DARM の直接コヒーレンスは低く、
 バイリニアカップリングは**検出されません**。
-"""},
+""",
+    },
     {"type": "code", "src": MOCK_DATA_CODE},
     {"type": "code", "src": ASD_OVERVIEW_CODE},
-
     # Section 2
-    {"type": "markdown", "src": """\
+    {
+        "type": "markdown",
+        "src": """\
 ## 2. 線形 Bruco スキャン（ベースライン）
 
 2 つのウィットネスチャンネルで通常の線形コヒーレンススキャンを実行します。
 バイリニアカップリングはここでは見えないことを確認します。
-"""},
+""",
+    },
     {"type": "code", "src": LINEAR_BRUCO_CODE},
-
     # Section 3
-    {"type": "markdown", "src": """\
+    {
+        "type": "markdown",
+        "src": """\
 ## 3. バイリニアカップリング検出
 
 **レシピ**（O4b DARM 116 Hz 解析・IMMT バイリニアコミッショニング解析より）:
@@ -591,12 +617,14 @@ witness_bilinear = fast_hp * slow_bp       # バイリニア合成ウィット�
 DARM が `fast × slow` を含む場合、バイリニアウィットネスとの高いコヒーレンスが現れます。
 
 拡張チャンネルセットを `Bruco.compute()` に渡して再スキャンします。
-"""},
+""",
+    },
     {"type": "code", "src": BILINEAR_CODE},
     {"type": "code", "src": BILINEAR_COMPARE_CODE},
-
     # Section 4
-    {"type": "markdown", "src": """\
+    {
+        "type": "markdown",
+        "src": """\
 ## 4. Hilbert AM/FM 復調
 
 スペクトル線がゆっくりした環境擾乱で振幅変調（AM）または周波数変調（FM）されている場合、
@@ -614,21 +642,25 @@ inst_freq = diff(unwrap(angle(z))) / (2π Δt)             # 瞬時周波数
 
 `inst_amp` および `inst_freq` を低速補助チャンネルと相関させ、
 変調源を特定します。
-"""},
+""",
+    },
     {"type": "code", "src": HILBERT_CODE},
-
     # Section 5
-    {"type": "markdown", "src": """\
+    {
+        "type": "markdown",
+        "src": """\
 ## 5. AM/FM と低速ウィットネスのコヒーレンス
 
 Hilbert 包絡線（`inst_amp`）と瞬時周波数（`inst_freq`）は
 変調周波数帯域（ここでは 0 – 5 Hz）に独自の ASD を持ちます。
 これらと低速環境チャンネルのコヒーレンスを計算し、変調源を特定します。
-"""},
+""",
+    },
     {"type": "code", "src": AMFM_COHERENCE_CODE},
-
     # Section 6
-    {"type": "markdown", "src": """\
+    {
+        "type": "markdown",
+        "src": """\
 ## まとめ
 
 | ステップ | ツール | 目的 |
@@ -654,7 +686,8 @@ Hilbert 包絡線（`inst_amp`）と瞬時周波数（`inst_freq`）は
 - バイリニアスキャンを全 `(ch_fast, ch_slow)` ペアに系統的に拡張する。
 - `Spectrogram.normalize(method='snr')` と組み合わせて
   振幅変調の時間発展を SNR スペクトログラムとして追跡する。
-"""},
+""",
+    },
     {"type": "code", "src": SUMMARY_TABLE_CODE},
 ]
 
@@ -662,6 +695,7 @@ Hilbert 包絡線（`inst_amp`）と瞬時周波数（`inst_freq`）は
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def main() -> None:
     repo = Path(__file__).resolve().parents[1]

@@ -9,7 +9,8 @@ import sys
 # \u3000: ideographic space
 # \u3040-\u30ff: hiragana/katakana
 # \u4e00-\u9fff: common CJK unified ideographs
-PAT = re.compile(r'[\u3000\u3040-\u30ff\u4e00-\u9fff]')
+PAT = re.compile(r"[\u3000\u3040-\u30ff\u4e00-\u9fff]")
+
 
 def check_file(path, exclude_patterns=None):
     """Check a single file for CJK characters."""
@@ -32,23 +33,27 @@ def check_file(path, exclude_patterns=None):
         return False
     return True
 
+
 def main():
-    parser = argparse.ArgumentParser(description="Check for Non-ASCII (CJK) characters.")
-    parser.add_argument("--root", default="gwexpy", help="Directory to scan if no files provided.")
-    parser.add_argument("--include-docs", action="store_true", help="Also scan 'docs/' directory.")
+    parser = argparse.ArgumentParser(
+        description="Check for Non-ASCII (CJK) characters."
+    )
+    parser.add_argument(
+        "--root", default="gwexpy", help="Directory to scan if no files provided."
+    )
+    parser.add_argument(
+        "--include-docs", action="store_true", help="Also scan 'docs/' directory."
+    )
     parser.add_argument("files", nargs="*", help="Specific files to check.")
     args = parser.parse_args()
 
-    exclude_dirs = [
-        os.path.join('docs', 'web', 'ja'),
-        os.path.join('docs', '_build')
-    ]
+    exclude_dirs = [os.path.join("docs", "web", "ja"), os.path.join("docs", "_build")]
 
     success = True
     if args.files:
         # Check specific files (usually from pre-commit)
         for f in args.files:
-            if not f.endswith(('.py', '.md')):
+            if not f.endswith((".py", ".md")):
                 continue
             if not check_file(f, exclude_patterns=exclude_dirs):
                 success = False
@@ -65,7 +70,7 @@ def main():
                 if any(dp.startswith(ex) for ex in exclude_dirs):
                     continue
                 for fn in fns:
-                    if not fn.endswith(('.py', '.md')):
+                    if not fn.endswith((".py", ".md")):
                         continue
                     path = os.path.join(dp, fn)
                     if not check_file(path):
@@ -76,6 +81,7 @@ def main():
     else:
         print("Success: No CJK characters found (excluding JA docs).")
         sys.exit(0)
+
 
 if __name__ == "__main__":
     main()

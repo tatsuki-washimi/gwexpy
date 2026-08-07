@@ -169,3 +169,78 @@ def test_duplicate_citation_cff_field_is_rejected(
         validator.ReleaseValidationError, match=f"2 top-level '{field}' fields"
     ):
         validator.validate_release(repo, source_sha, "v0.1.12")
+
+
+def test_frozen_tip_requires_both_fetched_remote_branches_at_source_sha(tmp_path: Path):
+    validator = load_validator()
+    repo = make_repo(tmp_path, version="0.1.13")
+    source_sha = git(repo, "rev-parse", "HEAD")
+
+    with pytest.raises(validator.ReleaseValidationError, match="origin/main"):
+        validator.validate_frozen_tip(repo, source_sha)
+
+    git(repo, "branch", "maint/0.1")
+    git(repo, "update-ref", "refs/remotes/origin/main", source_sha)
+    git(repo, "update-ref", "refs/remotes/origin/maint/0.1", source_sha)
+    validator.validate_frozen_tip(repo, source_sha)
+
+    git(repo, "commit", "--allow-empty", "-m", "branch moved")
+    moved_sha = git(repo, "rev-parse", "HEAD")
+    git(repo, "update-ref", "refs/remotes/origin/main", moved_sha)
+    with pytest.raises(validator.ReleaseValidationError, match="origin/main"):
+        validator.validate_frozen_tip(repo, source_sha)
+
+
+def test_release_validation_rejects_missing_review_evidence(tmp_path: Path):
+    validator = load_validator()
+    repo = make_repo(tmp_path)
+    source_sha = git(repo, "rev-parse", "HEAD")
+
+    with pytest.raises(validator.ReleaseValidationError, match="review evidence"):
+        validator.validate_release(
+            repo,
+            source_sha,
+            "v0.1.12",
+            review_evidence=repo / "missing-review-evidence.json",
+        )
+
+
+def test_s_to_r_rejects_any_plan_delta_beyond_checkbox_transition(tmp_path: Path):
+    validator = load_validator()
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    git(repo, "init", "-b", "main")
+    git(repo, "config", "user.name", "Release Test")
+    git(repo, "config", "user.email", "release-test@example.invalid")
+    plan = repo / "docs" / "plans" / "2026-08-06-v0.1.13-sol-no-go-followup-plan.md"
+    plan.parent.mkdir(parents=True)
+    plan.write_text("- [ ] original task\n", encoding="utf-8")
+    git(repo, "add", ".")
+    git(repo, "commit", "-m", "S")
+    reviewed_commit = git(repo, "rev-parse", "HEAD")
+    plan.write_text("- [x] rewritten task\n", encoding="utf-8")
+    git(repo, "commit", "-am", "invalid R")
+    source_sha = git(repo, "rev-parse", "HEAD")
+
+    with pytest.raises(validator.ReleaseValidationError, match="plan delta"):
+        validator.validate_s_to_r(repo, reviewed_commit, source_sha)
+
+
+def test_s_to_r_rejects_non_task_list_checkbox_change(tmp_path: Path):
+    validator = load_validator()
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    git(repo, "init", "-b", "main")
+    git(repo, "config", "user.name", "Release Test")
+    git(repo, "config", "user.email", "release-test@example.invalid")
+    plan = repo / "docs" / "plans" / "2026-08-06-v0.1.13-sol-no-go-followup-plan.md"
+    plan.parent.mkdir(parents=True)
+    plan.write_text("Narrative [ ] marker\n", encoding="utf-8")
+    git(repo, "add", ".")
+    git(repo, "commit", "-m", "S")
+    reviewed_commit = git(repo, "rev-parse", "HEAD")
+    plan.write_text("Narrative [x] marker\n", encoding="utf-8")
+    git(repo, "commit", "-am", "invalid R")
+
+    with pytest.raises(validator.ReleaseValidationError, match="plan delta"):
+        validator.validate_s_to_r(repo, reviewed_commit, git(repo, "rev-parse", "HEAD"))

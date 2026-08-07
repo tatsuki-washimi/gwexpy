@@ -32,7 +32,7 @@ sl = arr.plane(0, 0)
 
 ## 関連チュートリアル
 
-- [Field API 入門](../user_guide/tutorials/field_scalar_intro.ipynb)
+- [Field API 入門](../../en/user_guide/tutorials/field_scalar_intro.ipynb)
 - [ScalarField 信号処理](../user_guide/tutorials/field_scalar_signal.md)
 
 ## API リファレンス

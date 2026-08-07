@@ -1,7 +1,12 @@
-gwexpy.interop.openems\_
+﻿gwexpy.interop.openems\_
 ========================
 
 .. automodule:: gwexpy.interop.openems_
-   :members:
-   :undoc-members:
-   :show-inheritance:
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      from_openems_hdf5
+   

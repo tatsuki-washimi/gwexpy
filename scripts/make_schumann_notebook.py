@@ -3,6 +3,7 @@
 Usage:
     python scripts/make_schumann_notebook.py
 """
+
 from __future__ import annotations
 
 import json
@@ -12,27 +13,32 @@ from pathlib import Path
 # Helper
 # ---------------------------------------------------------------------------
 
+
 def make_nb(cells: list[tuple[str, str]]) -> dict:
     """Build a minimal nbformat v4 notebook from a list of (cell_type, source) tuples."""
     nb_cells = []
     for i, (ctype, src) in enumerate(cells):
         src = src.strip("\n")
         if ctype == "markdown":
-            nb_cells.append({
-                "cell_type": "markdown",
-                "id": f"cell-{i}",
-                "metadata": {},
-                "source": src,
-            })
+            nb_cells.append(
+                {
+                    "cell_type": "markdown",
+                    "id": f"cell-{i}",
+                    "metadata": {},
+                    "source": src,
+                }
+            )
         else:
-            nb_cells.append({
-                "cell_type": "code",
-                "execution_count": None,
-                "id": f"cell-{i}",
-                "metadata": {},
-                "outputs": [],
-                "source": src,
-            })
+            nb_cells.append(
+                {
+                    "cell_type": "code",
+                    "execution_count": None,
+                    "id": f"cell-{i}",
+                    "metadata": {},
+                    "outputs": [],
+                    "source": src,
+                }
+            )
     return {
         "nbformat": 4,
         "nbformat_minor": 5,
@@ -57,7 +63,9 @@ def make_nb(cells: list[tuple[str, str]]) -> dict:
 
 EN_CELLS: list[tuple[str, str]] = [
     # ── Title ──────────────────────────────────────────────────────────────
-    ("markdown", """\
+    (
+        "markdown",
+        """\
 # Schumann Resonance Analysis in GW Detectors
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_schumann_resonance.ipynb)
@@ -81,11 +89,13 @@ This notebook demonstrates an end-to-end characterisation workflow using gwexpy:
 > - [Spectrogram basics](intro_spectrogram.ipynb)
 > - [Advanced Fitting](advanced_fitting.ipynb)
 > - [Bootstrap PSD & GLS Fitting](case_bootstrap_gls_fitting.ipynb)
-"""),
-
+""",
+    ),
     # ── Setup ──────────────────────────────────────────────────────────────
     ("markdown", "## Setup"),
-    ("code", """\
+    (
+        "code",
+        """\
 # ruff: noqa: I001
 import matplotlib.pyplot as plt
 import numpy as np
@@ -96,10 +106,12 @@ from gwexpy.fitting.models import lorentzian_q
 from gwexpy.frequencyseries import BifrequencyMap  # noqa: F401 (shown for clarity)
 from gwexpy.spectral import bootstrap_spectrogram
 from gwexpy.timeseries import TimeSeries
-"""),
-
+""",
+    ),
     # ── Mock data ──────────────────────────────────────────────────────────
-    ("markdown", """\
+    (
+        "markdown",
+        """\
 ## 1. Mock Data: Magnetometer with Schumann Resonances
 
 We simulate a single-axis magnetometer (ELF band) measuring Earth's background
@@ -113,8 +125,11 @@ superimposed on a broadband noise floor.
 | SR2  | 14.3 Hz   | 4.5 | 2.5 nT/√Hz |
 | SR3  | 20.8 Hz   | 4.0 | 1.5 nT/√Hz |
 | SR4  | 26.4 Hz   | 3.5 | 1.0 nT/√Hz |
-"""),
-    ("code", """\
+""",
+    ),
+    (
+        "code",
+        """\
 rng = np.random.default_rng(42)
 fs = 512        # sample rate [Hz]
 T  = 300.0      # duration [s]
@@ -146,10 +161,12 @@ x = np.fft.irfft(amp * Z, n=n)
 mag = TimeSeries(x, dt=1.0 / fs, unit=u.nT,
                  name="K1:PEM-MAG_EXV_EAST_X_DQ", t0=0)
 print(f"Duration: {T:.0f} s | fs: {fs} Hz | N: {n:,}")
-"""),
-
+""",
+    ),
     # ── Quick-look ASD ─────────────────────────────────────────────────────
-    ("code", """\
+    (
+        "code",
+        """\
 # Quick-look ASD — verify Schumann peaks are present
 fig, ax = plt.subplots(figsize=(10, 4))
 asd_raw = mag.asd(fftlength=16.0, overlap=8.0)
@@ -167,10 +184,12 @@ ax.set_title('Magnetometer ASD — four Schumann resonance peaks visible')
 ax.legend()
 plt.tight_layout()
 plt.show()
-"""),
-
+""",
+    ),
     # ── Bootstrap PSD ──────────────────────────────────────────────────────
-    ("markdown", """\
+    (
+        "markdown",
+        """\
 ## 2. Bootstrap PSD Estimation
 
 `bootstrap_spectrogram` resamples the spectrogram's time columns to produce a
@@ -178,8 +197,11 @@ plt.show()
 intervals.  When `return_map=True` it also returns the **covariance `BifrequencyMap`**
 `cov_map(f1, f2)` — a 2-D matrix quantifying correlations between frequency bins,
 which is used in the GLS fitting step.
-"""),
-    ("code", """\
+""",
+    ),
+    (
+        "code",
+        """\
 # Compute spectrogram: 16 s FFT segments, 50 % Hann-window overlap
 spec = mag.spectrogram2(fftlength=16.0, overlap=8.0, window='hann')
 print(f"Spectrogram shape: {spec.shape}  (n_times × n_freqs)")
@@ -197,8 +219,11 @@ psd_boot, cov_map = bootstrap_spectrogram(
 )
 print(f"Bootstrap PSD shape : {psd_boot.shape}")
 print(f"Covariance map shape: {cov_map.shape}  ← BifrequencyMap(f1, f2)")
-"""),
-    ("code", """\
+""",
+    ),
+    (
+        "code",
+        """\
 # Plot bootstrap PSD with 1-σ confidence band derived from cov_map diagonal
 fig, ax = plt.subplots(figsize=(10, 4))
 
@@ -225,10 +250,12 @@ ax.set_title('Bootstrap PSD — median ± 1σ confidence band')
 ax.legend()
 plt.tight_layout()
 plt.show()
-"""),
-
+""",
+    ),
     # ── Lorentzian fitting ─────────────────────────────────────────────────
-    ("markdown", """\
+    (
+        "markdown",
+        """\
 ## 3. Lorentzian Q-Factor Fitting
 
 Each Schumann mode is modelled as a **Lorentzian peak** parameterised by Q-factor:
@@ -239,8 +266,11 @@ $$S(f) = \\frac{A\\,\\gamma^2}{(f - f_0)^2 + \\gamma^2}, \\quad \\gamma = \\frac
 covariance BifrequencyMap directly via `cov=cov_map`.  This accounts for
 correlations between overlapping FFT segments and gives correct parameter
 uncertainties.
-"""),
-    ("code", """\
+""",
+    ),
+    (
+        "code",
+        """\
 # Fit each Schumann mode independently in a dedicated frequency window
 fit_ranges = [(6.0, 10.5), (11.5, 17.5), (17.5, 24.5), (23.0, 30.5)]
 
@@ -262,8 +292,11 @@ for i, (f0, q0, A0, (flo, fhi)) in enumerate(
         f"  Q = {p['Q']:.2f} ± {e['Q']:.2f}  |"
         f"  A = {p['A']:.4f} ± {e['A']:.4f} nT²/Hz"
     )
-"""),
-    ("code", """\
+""",
+    ),
+    (
+        "code",
+        """\
 # Plot fitted Lorentzians over the bootstrap PSD
 fig, axes = plt.subplots(1, 4, figsize=(15, 4))
 colors = ['steelblue', 'darkorange', 'seagreen', 'crimson']
@@ -290,10 +323,12 @@ axes[0].set_ylabel('PSD [nT²/Hz]')
 plt.suptitle('GLS Lorentzian fits to Schumann resonance modes (cov_map used)', y=1.01)
 plt.tight_layout()
 plt.show()
-"""),
-
+""",
+    ),
     # ── BifrequencyMap ─────────────────────────────────────────────────────
-    ("markdown", """\
+    (
+        "markdown",
+        """\
 ## 4. Covariance Structure via BifrequencyMap
 
 The bootstrap covariance map `cov_map(f1, f2)` returned by `bootstrap_spectrogram`
@@ -307,8 +342,11 @@ For magnetometer data with narrow resonances, we expect:
 `BifrequencyMap` methods used here:
 - `.diagonal(method='mean')` — returns the variance profile (diagonal of the matrix)
 - `.get_slice(at=f0, axis='f1')` — returns a 1-D covariance slice at fixed f1
-"""),
-    ("code", """\
+""",
+    ),
+    (
+        "code",
+        """\
 from matplotlib.colors import LogNorm
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
@@ -349,8 +387,11 @@ axes[1].set_title('Diagonal of Covariance Map (≈ PSD² / N_bootstrap)')
 
 plt.tight_layout()
 plt.show()
-"""),
-    ("code", """\
+""",
+    ),
+    (
+        "code",
+        """\
 # Covariance slice at SR1 (7.83 Hz) — shows spectral width of the resonance
 cov_slice = cov_map.get_slice(at=7.83, axis='f1')
 f_sl = cov_slice.frequencies.value
@@ -369,17 +410,22 @@ ax.set_title('Covariance slice at SR1 — peak width reflects resonance bandwidt
 ax.legend()
 plt.tight_layout()
 plt.show()
-"""),
-
+""",
+    ),
     # ── Temporal tracking ──────────────────────────────────────────────────
-    ("markdown", """\
+    (
+        "markdown",
+        """\
 ## 5. Temporal Amplitude Tracking
 
 Schumann resonance amplitude varies with global lightning activity (diurnal cycle,
 seasonal effects).  We extract the band-averaged power around each mode from the
 spectrogram and convert to an **ASD time series** to monitor evolution.
-"""),
-    ("code", """\
+""",
+    ),
+    (
+        "code",
+        """\
 fig, ax = plt.subplots(figsize=(10, 4))
 times_s = spec.times.value
 colors_t = ['steelblue', 'darkorange', 'seagreen', 'crimson']
@@ -398,10 +444,12 @@ ax.set_title('Schumann resonance amplitude evolution (300 s mock observation)')
 ax.legend(ncol=2, fontsize=9)
 plt.tight_layout()
 plt.show()
-"""),
-
+""",
+    ),
     # ── Summary ────────────────────────────────────────────────────────────
-    ("markdown", """\
+    (
+        "markdown",
+        """\
 ## Summary
 
 | Step | Tool | Output |
@@ -427,7 +475,8 @@ plt.show()
 - Compute multi-channel Schumann coherence with `BifrequencyMap.propagate()` to
   estimate the magnetic coupling contribution to DARM noise.
 - Track daily/seasonal variations by looping over GPS time segments.
-"""),
+""",
+    ),
 ]
 
 
@@ -436,7 +485,9 @@ plt.show()
 # ---------------------------------------------------------------------------
 
 JA_CELLS: list[tuple[str, str]] = [
-    ("markdown", """\
+    (
+        "markdown",
+        """\
 # GW 検出器におけるシューマン共鳴解析
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_schumann_resonance.ipynb)
@@ -456,10 +507,12 @@ JA_CELLS: list[tuple[str, str]] = [
 > - [スペクトログラム基礎](intro_spectrogram.ipynb)
 > - [フィッティング上級編](advanced_fitting.ipynb)
 > - [ブートストラップ PSD & GLS フィット](case_bootstrap_gls_fitting.ipynb)
-"""),
-
+""",
+    ),
     ("markdown", "## セットアップ"),
-    ("code", """\
+    (
+        "code",
+        """\
 # ruff: noqa: I001
 import matplotlib.pyplot as plt
 import numpy as np
@@ -470,9 +523,11 @@ from gwexpy.fitting.models import lorentzian_q
 from gwexpy.frequencyseries import BifrequencyMap  # noqa: F401 (参照用)
 from gwexpy.spectral import bootstrap_spectrogram
 from gwexpy.timeseries import TimeSeries
-"""),
-
-    ("markdown", """\
+""",
+    ),
+    (
+        "markdown",
+        """\
 ## 1. モックデータ: シューマン共鳴を含む磁力計データ
 
 地球の背景電磁場を測定する 1 軸磁力計 (ELF 帯) をシミュレートします。
@@ -485,8 +540,11 @@ from gwexpy.timeseries import TimeSeries
 | SR2    | 14.3 Hz | 4.5 | 2.5 nT/√Hz |
 | SR3    | 20.8 Hz | 4.0 | 1.5 nT/√Hz |
 | SR4    | 26.4 Hz | 3.5 | 1.0 nT/√Hz |
-"""),
-    ("code", """\
+""",
+    ),
+    (
+        "code",
+        """\
 rng = np.random.default_rng(42)
 fs = 512        # サンプリングレート [Hz]
 T  = 300.0      # 継続時間 [s]
@@ -517,9 +575,11 @@ x = np.fft.irfft(amp * Z, n=n)
 mag = TimeSeries(x, dt=1.0 / fs, unit=u.nT,
                  name="K1:PEM-MAG_EXV_EAST_X_DQ", t0=0)
 print(f"継続時間: {T:.0f} s | fs: {fs} Hz | N: {n:,}")
-"""),
-
-    ("code", """\
+""",
+    ),
+    (
+        "code",
+        """\
 # クイック確認: ASD でシューマン共鳴ピークを確認
 fig, ax = plt.subplots(figsize=(10, 4))
 asd_raw = mag.asd(fftlength=16.0, overlap=8.0)
@@ -537,17 +597,22 @@ ax.set_title('磁力計 ASD — シューマン共鳴の 4 ピークが確認で
 ax.legend()
 plt.tight_layout()
 plt.show()
-"""),
-
-    ("markdown", """\
+""",
+    ),
+    (
+        "markdown",
+        """\
 ## 2. ブートストラップ PSD 推定
 
 `bootstrap_spectrogram` はスペクトログラムの時間カラムをリサンプリングし、
 **ロバストな PSD 推定値** (中央値または平均値) と非対称信頼区間を提供します。
 `return_map=True` にすると、周波数ビン間の相関を定量化する **共分散 `BifrequencyMap`**
 `cov_map(f1, f2)` も返します。これは次のステップの GLS フィットに使用されます。
-"""),
-    ("code", """\
+""",
+    ),
+    (
+        "code",
+        """\
 # スペクトログラム計算: 16 s FFT、50 % ハン窓オーバーラップ
 spec = mag.spectrogram2(fftlength=16.0, overlap=8.0, window='hann')
 print(f"スペクトログラム shape: {spec.shape}  (n_times × n_freqs)")
@@ -565,8 +630,11 @@ psd_boot, cov_map = bootstrap_spectrogram(
 )
 print(f"ブートストラップ PSD shape : {psd_boot.shape}")
 print(f"共分散マップ shape: {cov_map.shape}  ← BifrequencyMap(f1, f2)")
-"""),
-    ("code", """\
+""",
+    ),
+    (
+        "code",
+        """\
 # ブートストラップ PSD と ±1σ 信頼区間をプロット
 fig, ax = plt.subplots(figsize=(10, 4))
 
@@ -592,9 +660,11 @@ ax.set_title('ブートストラップ PSD — 中央値 ± 1σ 信頼区間')
 ax.legend()
 plt.tight_layout()
 plt.show()
-"""),
-
-    ("markdown", """\
+""",
+    ),
+    (
+        "markdown",
+        """\
 ## 3. ローレンツ Q ファクターフィット
 
 各シューマンモードを **Q ファクター型ローレンツ分布** でモデル化します:
@@ -603,8 +673,11 @@ $$S(f) = \\frac{A\\,\\gamma^2}{(f - f_0)^2 + \\gamma^2}, \\quad \\gamma = \\frac
 
 `fit_series` に `cov=cov_map` を渡すことで、オーバーラップ FFT セグメント間の
 相関を考慮した **一般化最小二乗法 (GLS)** でフィットを行い、正しいパラメータ誤差が得られます。
-"""),
-    ("code", """\
+""",
+    ),
+    (
+        "code",
+        """\
 # 各シューマンモードを専用の周波数ウィンドウで個別にフィット
 fit_ranges = [(6.0, 10.5), (11.5, 17.5), (17.5, 24.5), (23.0, 30.5)]
 
@@ -626,8 +699,11 @@ for i, (f0, q0, A0, (flo, fhi)) in enumerate(
         f"  Q = {p['Q']:.2f} ± {e['Q']:.2f}  |"
         f"  A = {p['A']:.4f} ± {e['A']:.4f} nT²/Hz"
     )
-"""),
-    ("code", """\
+""",
+    ),
+    (
+        "code",
+        """\
 # フィット済みローレンツ曲線をブートストラップ PSD に重ねてプロット
 fig, axes = plt.subplots(1, 4, figsize=(15, 4))
 colors = ['steelblue', 'darkorange', 'seagreen', 'crimson']
@@ -654,9 +730,11 @@ axes[0].set_ylabel('PSD [nT²/Hz]')
 plt.suptitle('シューマン共鳴モードへの GLS ローレンツフィット (cov_map 使用)', y=1.01)
 plt.tight_layout()
 plt.show()
-"""),
-
-    ("markdown", """\
+""",
+    ),
+    (
+        "markdown",
+        """\
 ## 4. BifrequencyMap による共分散構造の解析
 
 `bootstrap_spectrogram` が返す共分散マップ `cov_map(f1, f2)` は、
@@ -669,8 +747,11 @@ plt.show()
 ここで使用する `BifrequencyMap` メソッド:
 - `.diagonal(method='mean')` — 分散プロファイルを返す (行列の対角線)
 - `.get_slice(at=f0, axis='f1')` — f1 固定での 1 次元共分散スライスを返す
-"""),
-    ("code", """\
+""",
+    ),
+    (
+        "code",
+        """\
 from matplotlib.colors import LogNorm
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
@@ -711,8 +792,11 @@ axes[1].set_title('共分散マップの対角線 (≈ PSD² / N_bootstrap)')
 
 plt.tight_layout()
 plt.show()
-"""),
-    ("code", """\
+""",
+    ),
+    (
+        "code",
+        """\
 # SR1 (7.83 Hz) における共分散スライス — 共鳴の周波数幅を反映
 cov_slice = cov_map.get_slice(at=7.83, axis='f1')
 f_sl = cov_slice.frequencies.value
@@ -731,16 +815,21 @@ ax.set_title('SR1 における共分散スライス — ピーク幅が共鳴の
 ax.legend()
 plt.tight_layout()
 plt.show()
-"""),
-
-    ("markdown", """\
+""",
+    ),
+    (
+        "markdown",
+        """\
 ## 5. 振幅の時間追跡
 
 シューマン共鳴の振幅は世界的な落雷活動に応じて変動します (日変化・季節変化)。
 スペクトログラムから各モード周辺の帯域内平均パワーを抽出し、
 **ASD 時系列**に変換して時間変化を監視します。
-"""),
-    ("code", """\
+""",
+    ),
+    (
+        "code",
+        """\
 fig, ax = plt.subplots(figsize=(10, 4))
 times_s = spec.times.value
 colors_t = ['steelblue', 'darkorange', 'seagreen', 'crimson']
@@ -759,9 +848,11 @@ ax.set_title('シューマン共鳴振幅の時間変化 (300 s モック観測)
 ax.legend(ncol=2, fontsize=9)
 plt.tight_layout()
 plt.show()
-"""),
-
-    ("markdown", """\
+""",
+    ),
+    (
+        "markdown",
+        """\
 ## まとめ
 
 | ステップ | ツール | 出力 |
@@ -786,7 +877,8 @@ plt.show()
 - 実データの読み込み: `TimeSeries.read('K1:PEM-MAG_EXV_EAST_X_DQ', start, end)`.
 - `BifrequencyMap.propagate()` と組み合わせて、DARM ノイズへの磁気結合寄与を推定する。
 - GPS 時間セグメントをループして、シューマン共鳴パラメータの日変化・季節変化を追跡する。
-"""),
+""",
+    ),
 ]
 
 
@@ -794,11 +886,16 @@ plt.show()
 # Generate notebooks
 # ---------------------------------------------------------------------------
 
+
 def main() -> None:
     repo_root = Path(__file__).resolve().parent.parent
 
-    out_en = repo_root / "docs/web/en/user_guide/tutorials/case_schumann_resonance.ipynb"
-    out_ja = repo_root / "docs/web/ja/user_guide/tutorials/case_schumann_resonance.ipynb"
+    out_en = (
+        repo_root / "docs/web/en/user_guide/tutorials/case_schumann_resonance.ipynb"
+    )
+    out_ja = (
+        repo_root / "docs/web/ja/user_guide/tutorials/case_schumann_resonance.ipynb"
+    )
 
     for path, cells in [(out_en, EN_CELLS), (out_ja, JA_CELLS)]:
         path.parent.mkdir(parents=True, exist_ok=True)

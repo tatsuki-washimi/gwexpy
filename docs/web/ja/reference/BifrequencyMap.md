@@ -33,8 +33,8 @@ out = map2d.diagonal()
 
 ## 関連チュートリアル
 
-- [Bootstrap GLS フィッティング](../user_guide/tutorials/case_bootstrap_gls_fitting.ipynb)
-- [シューマン共振ケーススタディ](../user_guide/tutorials/case_schumann_resonance.ipynb)
+- [Bootstrap GLS フィッティング](../../en/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb)
+- [シューマン共振ケーススタディ](../../en/user_guide/tutorials/case_schumann_resonance.ipynb)
 
 ## API リファレンス
 

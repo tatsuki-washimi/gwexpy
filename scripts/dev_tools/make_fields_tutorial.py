@@ -5,14 +5,23 @@ from pathlib import Path
 
 
 def md(source):
-    return {"cell_type": "markdown", "id": f"md_{abs(hash(source))%10**8:08x}",
-            "metadata": {}, "source": source}
+    return {
+        "cell_type": "markdown",
+        "id": f"md_{abs(hash(source)) % 10**8:08x}",
+        "metadata": {},
+        "source": source,
+    }
 
 
 def code(source):
-    return {"cell_type": "code", "execution_count": None,
-            "id": f"cd_{abs(hash(source))%10**8:08x}",
-            "metadata": {}, "outputs": [], "source": source}
+    return {
+        "cell_type": "code",
+        "execution_count": None,
+        "id": f"cd_{abs(hash(source)) % 10**8:08x}",
+        "metadata": {},
+        "outputs": [],
+        "source": source,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -45,9 +54,7 @@ temporal and spatial structure — such as:
 analysis** — coherence maps, time-delay estimation, and wavenumber spectra —
 building on those foundations.
 """),
-
     md("## Setup"),
-
     code("""\
 import numpy as np
 import matplotlib.pyplot as plt
@@ -59,7 +66,6 @@ from gwexpy.fields.signal import (
     spectral_density, coherence_map, time_delay_map, compute_xcorr,
 )
 """),
-
     md("""\
 ## 1. Synthetic Beam Profile Data
 
@@ -70,7 +76,6 @@ at 100 time steps.
 The beam has a Gaussian profile with a slow random walk in centroid position
 — simulating thermal drift of the optic.
 """),
-
     code("""\
 rng = np.random.default_rng(42)
 
@@ -112,7 +117,6 @@ print(f"ScalarField shape: {sf.data.shape}")
 print(f"Axes: t={nt} steps, x={nx}, y={ny}, z=1")
 print(f"Units: {sf.unit}")
 """),
-
     md("""\
 ## 2. Mean Beam Profile and Variance Map
 
@@ -120,7 +124,6 @@ Averaging over time reveals the mean beam shape.
 The variance map shows where intensity fluctuates most — typically at
 the beam edge where pointing jitter is amplified.
 """),
-
     code("""\
 mean_profile = sf.data[:, :, :, 0].mean(axis=0)    # (nx, ny)
 var_map      = sf.data[:, :, :, 0].var(axis=0)     # (nx, ny)
@@ -146,7 +149,6 @@ plt.show()
 print(f"Peak mean intensity : {mean_profile.max():.3f} W/m²")
 print(f"Peak variance       : {var_map.max():.4f}  (edge > centre as expected)")
 """),
-
     md("""\
 ## 3. Spatial PSD — Wavenumber Spectrum
 
@@ -154,7 +156,6 @@ print(f"Peak variance       : {var_map.max():.4f}  (edge > centre as expected)")
 spatial x-axis.  The wavenumber spectrum reveals the spatial frequency content
 of the beam — a Gaussian beam has a Gaussian wavenumber spectrum.
 """),
-
     code("""\
 # PSD along x at the beam centre (y = ny//2)
 centre_slice = ScalarField(
@@ -205,7 +206,6 @@ ax2.legend()
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 4. Wavefield Propagation and Time-Delay Map
 
@@ -214,7 +214,6 @@ pulse measured at a 2-D accelerometer array.  The `time_delay_map()`
 function estimates the arrival time of the pulse at each sensor relative
 to a reference sensor — giving the apparent propagation velocity.
 """),
-
     code("""\
 # Use the built-in demo function for a propagating Gaussian
 wave = make_propagating_gaussian(
@@ -271,7 +270,6 @@ plt.tight_layout()
 plt.show()
 print(f"Estimated propagation speed: {speed_est:.2f} m/s  (true: 2.50 m/s)")
 """),
-
     md("""\
 ## 5. Coherence Map
 
@@ -280,7 +278,6 @@ a reference location as a function of frequency.  High coherence at a
 specific frequency indicates correlated oscillation — e.g. a common
 seismic mode or an optical cavity resonance seen across multiple positions.
 """),
-
     code("""\
 # Coherence map at 1 Hz relative to reference sensor
 coh = coherence_map(wave, ref_indices=(0, 0, 0), axis=0,
@@ -303,7 +300,6 @@ plt.tight_layout()
 plt.show()
 print(f"Mean coherence at {freqs_coh[bin_idx]:.2f} Hz: {coh_slice.mean():.3f}")
 """),
-
     md("""\
 ## 6. VectorField: Gradient and Norm
 
@@ -311,7 +307,6 @@ For physical fields with vector character (e.g. magnetic field, velocity),
 `VectorField` stores multiple `ScalarField` components.  Here we compute
 the beam intensity gradient — useful for wavefront sensing.
 """),
-
     code("""\
 # Intensity gradient: dI/dx and dI/dy from the mean beam profile
 grad_x = np.gradient(mean_profile, dx.value, axis=0)   # (nx, ny)
@@ -348,7 +343,6 @@ plt.show()
 print("VectorField components:", list(vf.components.keys()))
 print("Gradient norm max:", f"{grad_norm.max():.3f} W/m³")
 """),
-
     md("""\
 ## Summary
 
@@ -398,9 +392,7 @@ JA_CELLS = [
 データ構造を導入します。本チュートリアルは**高度な空間解析**
 （コヒーレンスマップ、時間遅延推定、波数スペクトル）に特化しています。
 """),
-
     md("## セットアップ"),
-
     code("""\
 import numpy as np
 import matplotlib.pyplot as plt
@@ -412,7 +404,6 @@ from gwexpy.fields.signal import (
     spectral_density, coherence_map, time_delay_map, compute_xcorr,
 )
 """),
-
     md("""\
 ## 1. 合成ビームプロファイルデータの生成
 
@@ -420,7 +411,6 @@ from gwexpy.fields.signal import (
 光強度を表す 4 次元 `ScalarField` を作成します。
 熱ドリフトによるビーム重心のゆっくりした動きをシミュレートします。
 """),
-
     code("""\
 rng = np.random.default_rng(42)
 
@@ -455,9 +445,7 @@ print(f"ScalarField 形状: {sf.data.shape}")
 print(f"軸: t={nt}, x={nx}, y={ny}, z=1")
 print(f"単位: {sf.unit}")
 """),
-
     md("## 2. 平均ビームプロファイルと分散マップ"),
-
     code("""\
 mean_profile = sf.data[:, :, :, 0].mean(axis=0)
 var_map      = sf.data[:, :, :, 0].var(axis=0)
@@ -482,9 +470,7 @@ plt.tight_layout()
 plt.show()
 print(f"ピーク平均強度: {mean_profile.max():.3f} W/m²")
 """),
-
     md("## 3. 空間 PSD — 波数スペクトル"),
-
     code("""\
 kx = np.fft.rfftfreq(nx, dx.value)
 spat_fft = np.fft.rfft(sf.data[:, :, ny//2, 0], axis=1)
@@ -504,7 +490,6 @@ ax.grid(True, which="both", alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 4. 波動場伝播と時間遅延マップ
 
@@ -512,7 +497,6 @@ plt.show()
 `time_delay_map()` は各センサーの到着時刻を参照センサーに対して推定し、
 見かけの伝播速度を求めます。
 """),
-
     code("""\
 wave = make_propagating_gaussian(
     nt=200, nx=16, ny=16, nz=1,
@@ -558,9 +542,7 @@ plt.tight_layout()
 plt.show()
 print(f"推定伝播速度: {speed_est:.2f} m/s  （真値: 2.50 m/s）")
 """),
-
     md("## 5. コヒーレンスマップ"),
-
     code("""\
 coh = coherence_map(wave, ref_indices=(0, 0, 0), axis=0,
                     fftlength=0.5, overlap=0.25)
@@ -581,9 +563,7 @@ plt.tight_layout()
 plt.show()
 print(f"{freqs_coh[bin_idx]:.2f} Hz での平均コヒーレンス: {coh_slice.mean():.3f}")
 """),
-
     md("## 6. VectorField：勾配とノルム"),
-
     code("""\
 grad_x = np.gradient(mean_profile, dx.value, axis=0)
 grad_y = np.gradient(mean_profile, dy.value, axis=1)
@@ -617,7 +597,6 @@ plt.show()
 print("VectorField 成分:", list(vf.components.keys()))
 print("勾配ノルム最大値:", f"{grad_norm.max():.3f} W/m³")
 """),
-
     md("""\
 ## まとめ
 
@@ -643,10 +622,15 @@ def write_nb(cells, path):
     nb = {
         "cells": cells,
         "metadata": {
-            "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+            "kernelspec": {
+                "display_name": "Python 3",
+                "language": "python",
+                "name": "python3",
+            },
             "language_info": {"name": "python", "version": "3.9.0"},
         },
-        "nbformat": 4, "nbformat_minor": 5,
+        "nbformat": 4,
+        "nbformat_minor": 5,
     }
     Path(path).write_text(json.dumps(nb, ensure_ascii=False, indent=1))
     print(f"Written: {path}")
@@ -654,6 +638,12 @@ def write_nb(cells, path):
 
 if __name__ == "__main__":
     root = Path(__file__).parents[2]
-    write_nb(EN_CELLS, root / "docs/web/en/user_guide/tutorials/advanced_field_analysis.ipynb")
-    write_nb(JA_CELLS, root / "docs/web/ja/user_guide/tutorials/advanced_field_analysis.ipynb")
+    write_nb(
+        EN_CELLS,
+        root / "docs/web/en/user_guide/tutorials/advanced_field_analysis.ipynb",
+    )
+    write_nb(
+        JA_CELLS,
+        root / "docs/web/ja/user_guide/tutorials/advanced_field_analysis.ipynb",
+    )
     print("Done.")

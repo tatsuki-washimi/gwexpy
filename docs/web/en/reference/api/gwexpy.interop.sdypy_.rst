@@ -1,7 +1,13 @@
-gwexpy.interop.sdypy\_
+﻿gwexpy.interop.sdypy\_
 ======================
 
 .. automodule:: gwexpy.interop.sdypy_
-   :members:
-   :undoc-members:
-   :show-inheritance:
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      from_uff_dataset55
+      from_uff_dataset58
+   

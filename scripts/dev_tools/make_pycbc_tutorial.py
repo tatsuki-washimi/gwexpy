@@ -5,14 +5,23 @@ from pathlib import Path
 
 
 def md(source):
-    return {"cell_type": "markdown", "id": f"md_{abs(hash(source))%10**8:08x}",
-            "metadata": {}, "source": source}
+    return {
+        "cell_type": "markdown",
+        "id": f"md_{abs(hash(source)) % 10**8:08x}",
+        "metadata": {},
+        "source": source,
+    }
 
 
 def code(source):
-    return {"cell_type": "code", "execution_count": None,
-            "id": f"cd_{abs(hash(source))%10**8:08x}",
-            "metadata": {}, "outputs": [], "source": source}
+    return {
+        "cell_type": "code",
+        "execution_count": None,
+        "id": f"cd_{abs(hash(source)) % 10**8:08x}",
+        "metadata": {},
+        "outputs": [],
+        "source": source,
+    }
 
 
 EN_CELLS = [
@@ -40,9 +49,7 @@ This enables a natural workflow where:
 > analytic substitute so every cell still executes.
 > Install PyCBC with `pip install pycbc` for real searches.
 """),
-
     md("## Setup"),
-
     code("""\
 import numpy as np
 import matplotlib.pyplot as plt
@@ -66,7 +73,6 @@ try:
 except ImportError:
     print("PyCBC not installed — using analytic fallback for matched filter.")
 """),
-
     md("""\
 ## 1. Synthetic DARM Data with an Injected CBC Signal
 
@@ -74,7 +80,6 @@ We create a 64 s segment of coloured noise and inject a synthetic
 binary neutron star (BNS) inspiral — a chirp signal that sweeps from
 ~30 Hz to ~1000 Hz in the last few seconds before merger.
 """),
-
     code("""\
 fs   = 4096.0
 T    = 64.0
@@ -127,14 +132,12 @@ ax.set_title("Last 3 s: DARM noise + BNS inspiral injection")
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 2. gwexpy → PyCBC Conversion
 
 `to_pycbc_timeseries()` maps a gwexpy `TimeSeries` to a
 `pycbc.types.TimeSeries`.  Metadata (t0, dt, unit) is preserved.
 """),
-
     code("""\
 if PYCBC_AVAILABLE:
     # --- Convert to PyCBC ---
@@ -153,7 +156,6 @@ else:
     print("The to/from functions accept pycbc.types.TimeSeries objects.")
     ts_back = ts_strain   # identity for subsequent cells
 """),
-
     md("""\
 ## 3. PSD / ASD Conversion
 
@@ -161,7 +163,6 @@ A matched filter requires a **noise PSD** to whiten the data.
 We estimate the ASD from the gwexpy `TimeSeries` and convert it to
 a PyCBC `FrequencySeries` for use as the matched-filter PSD.
 """),
-
     code("""\
 # Estimate ASD from gwexpy (use a quiet segment before the chirp)
 ts_quiet = TimeSeries(ts_strain.value[:int(30*fs)], t0=t0,
@@ -181,7 +182,6 @@ if PYCBC_AVAILABLE:
 else:
     print("PyCBC not available — PSD conversion demo skipped.")
 """),
-
     md("""\
 ## 4. Matched-Filter Search (BNS Template)
 
@@ -191,7 +191,6 @@ normalised SNR time series $\\rho(t)$ indicates the merger time.
 
 $$\\rho(t) = \\frac{4}{\\sigma} \\, \\text{Re} \\int_0^\\infty \\frac{\\tilde{d}(f)\\,\\tilde{h}^*(f)}{S_n(f)} e^{2\\pi i f t} \\, df$$
 """),
-
     code("""\
 if PYCBC_AVAILABLE:
     # Generate BNS template (equal mass, m1=m2=1.4 Msun)
@@ -230,14 +229,12 @@ print(f"Peak SNR: {snr_ts.value.max():.1f}  "
       f"at t = {t[snr_ts.value.argmax()]:.2f} s  "
       f"(true merger: {tc:.2f} s)")
 """),
-
     md("""\
 ## 5. Visualise the SNR Time Series
 
 Plot the matched-filter SNR as a function of time, with the injected
 merger time marked.
 """),
-
     code("""\
 fig, axes = plt.subplots(2, 1, figsize=(12, 6), sharex=True)
 
@@ -264,7 +261,6 @@ axes[1].grid(True, alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 6. Conversion Reference
 
@@ -317,9 +313,7 @@ gwexpy は自身のデータ型と PyCBC の `TimeSeries` / `FrequencySeries` �
 > **注意**: PyCBC がインストールされていなくても動作します。
 > `pip install pycbc` でインストールすれば実際の探索を実行できます。
 """),
-
     md("## セットアップ"),
-
     code("""\
 import numpy as np
 import matplotlib.pyplot as plt
@@ -343,14 +337,12 @@ try:
 except ImportError:
     print("PyCBC 未インストール — 解析的フォールバックを使用します。")
 """),
-
     md("""\
 ## 1. CBC 信号を注入した合成 DARM データ
 
 64 s のカラードノイズに合成 BNS (連星中性子星) インスパイラルを注入します。
 チャープ信号は合体直前の数秒で ~30 Hz から ~1000 Hz に掃引します。
 """),
-
     code("""\
 fs   = 4096.0
 T    = 64.0
@@ -389,9 +381,7 @@ ax.set_title("直前 3 s: DARM ノイズ + BNS インスパイラル注入")
 plt.tight_layout()
 plt.show()
 """),
-
     md("## 2. gwexpy → PyCBC 変換"),
-
     code("""\
 if PYCBC_AVAILABLE:
     ts_pycbc = to_pycbc_timeseries(ts_strain)
@@ -407,9 +397,7 @@ else:
     print("PyCBC 未インストール — 変換デモをスキップします。")
     ts_back = ts_strain
 """),
-
     md("## 3. PSD / ASD 変換"),
-
     code("""\
 ts_quiet = TimeSeries(ts_strain.value[:int(30*fs)], t0=t0,
                       sample_rate=fs, name="静穏セグメント", unit="strain")
@@ -426,7 +414,6 @@ if PYCBC_AVAILABLE:
 else:
     print("PyCBC 未インストール — PSD 変換デモをスキップします。")
 """),
-
     md("""\
 ## 4. マッチトフィルター探索（BNS テンプレート）
 
@@ -434,7 +421,6 @@ else:
 ノイズ PSD で正規化して計算します。
 正規化 SNR 時系列 $\\rho(t)$ のピークが合体時刻を示します。
 """),
-
     code("""\
 if PYCBC_AVAILABLE:
     hp, hc = pycbc.waveform.get_td_waveform(
@@ -465,9 +451,7 @@ print(f"ピーク SNR: {snr_ts.value.max():.1f}  "
       f"at t = {t[snr_ts.value.argmax()]:.2f} s  "
       f"（真の合体時刻: {tc:.2f} s）")
 """),
-
     md("## 5. SNR 時系列の可視化"),
-
     code("""\
 fig, axes = plt.subplots(2, 1, figsize=(12, 6), sharex=True)
 
@@ -491,7 +475,6 @@ axes[1].grid(True, alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 変換リファレンス
 
@@ -513,10 +496,15 @@ def write_nb(cells, path):
     nb = {
         "cells": cells,
         "metadata": {
-            "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+            "kernelspec": {
+                "display_name": "Python 3",
+                "language": "python",
+                "name": "python3",
+            },
             "language_info": {"name": "python", "version": "3.9.0"},
         },
-        "nbformat": 4, "nbformat_minor": 5,
+        "nbformat": 4,
+        "nbformat_minor": 5,
     }
     Path(path).write_text(json.dumps(nb, ensure_ascii=False, indent=1))
     print(f"Written: {path}")
@@ -524,6 +512,10 @@ def write_nb(cells, path):
 
 if __name__ == "__main__":
     root = Path(__file__).parents[2]
-    write_nb(EN_CELLS, root / "docs/web/en/user_guide/tutorials/case_pycbc_search.ipynb")
-    write_nb(JA_CELLS, root / "docs/web/ja/user_guide/tutorials/case_pycbc_search.ipynb")
+    write_nb(
+        EN_CELLS, root / "docs/web/en/user_guide/tutorials/case_pycbc_search.ipynb"
+    )
+    write_nb(
+        JA_CELLS, root / "docs/web/ja/user_guide/tutorials/case_pycbc_search.ipynb"
+    )
     print("Done.")

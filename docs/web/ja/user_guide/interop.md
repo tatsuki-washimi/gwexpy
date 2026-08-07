@@ -219,7 +219,7 @@ xarray 系の interop bridge は、GWexpy が独立した `xarray` extra を公�
 
 ## 関連ページ
 
-- [他ライブラリ連携チュートリアル](tutorials/intro_interop.ipynb)
+- [他ライブラリ連携チュートリアル](../../en/user_guide/tutorials/intro_interop.ipynb)
 - [Interop API リファレンス](../reference/api/interop)
 - [ファイル I/O 対応フォーマットガイド](io_formats)
 
@@ -227,4 +227,4 @@ xarray 系の interop bridge は、GWexpy が独立した `xarray` extra を公�
 
 - [ファイル I/O 対応フォーマットガイド](io_formats) で `Class.read(..., format=...)` と `obj.write(...)` を確認する
 - [GPS 時刻ユーティリティ](time_utilities) で GPS 時刻やタイムゾーンの補助関数を確認する
-- [他ライブラリ連携チュートリアル](tutorials/intro_interop.ipynb) で具体例を先に見る
+- [他ライブラリ連携チュートリアル](../../en/user_guide/tutorials/intro_interop.ipynb) で具体例を先に見る

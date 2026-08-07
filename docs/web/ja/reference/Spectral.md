@@ -32,8 +32,8 @@ psd = estimate_psd(ts, fftlength=1.0)
 
 ## 関連チュートリアル
 
-- [Bootstrap GLS Fitting](../user_guide/tutorials/case_bootstrap_gls_fitting.ipynb)
-- [Noise Budget](../user_guide/tutorials/case_noise_budget.ipynb)
+- [Bootstrap GLS Fitting](../../en/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb)
+- [Noise Budget](../../en/user_guide/tutorials/case_noise_budget.ipynb)
 
 ## API リファレンス
 

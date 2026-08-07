@@ -323,6 +323,6 @@ gwexpy の線形代数手法により以下が可能になります:
 ---
 
 **関連項目:**
-- [TimeSeriesMatrix チュートリアル](matrix_timeseries.ipynb)
-- [ノイズバジェット解析（ケーススタディ）](case_noise_budget.ipynb)
-- [高度な相関手法](advanced_correlation.ipynb)
+- [TimeSeriesMatrix チュートリアル](../../../en/user_guide/tutorials/matrix_timeseries.ipynb)
+- [ノイズバジェット解析（ケーススタディ）](../../../en/user_guide/tutorials/case_noise_budget.ipynb)
+- [高度な相関手法](../../../en/user_guide/tutorials/advanced_correlation.ipynb)

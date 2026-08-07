@@ -1,7 +1,12 @@
-gwexpy.interop.pyoma\_
+﻿gwexpy.interop.pyoma\_
 ======================
 
 .. automodule:: gwexpy.interop.pyoma_
-   :members:
-   :undoc-members:
-   :show-inheritance:
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      from_pyoma_results
+   

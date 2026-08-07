@@ -1,6 +1,7 @@
 # Citation
 
-If you use GWexpy in your research or publications, please cite it as follows.
+If you use GWexpy in your research or publications, cite the exact version you
+used as follows.
 
 ## BibTeX Entry
 
@@ -12,13 +13,16 @@ For reproducibility of analysis results and continued maintenance of the softwar
   title = {GWexpy: Extending GWpy with metadata-preserving multidimensional abstractions for detector commissioning},
   year = {2026},
   url = {https://github.com/tatsuki-washimi/gwexpy},
-  version = {see CITATION.cff}
+  version = {<version used>}
 }
 ```
 
 ## CITATION.cff
 
-You can also retrieve citation information directly from GitHub using the `CITATION.cff` file located in the root directory of the repository.
+For a reproducible citation, use the `CITATION.cff` file from the exact release
+tag you used (for example,
+`https://github.com/tatsuki-washimi/gwexpy/blob/<exact tag>/CITATION.cff`),
+rather than the mutable `main` branch.
 
 ## Related Works
 

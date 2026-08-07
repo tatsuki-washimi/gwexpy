@@ -77,12 +77,12 @@ myst:
 
 | アルゴリズム | 主対象 API | API ページ | 証拠 | 関連チュートリアル |
 | :--- | :--- | :--- | :--- | :--- |
-| **k-space 計算** | `ScalarField.fft_space()` | [フィールド API](../reference/api/fields.rst) / [ScalarField](../reference/ScalarField.md) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [Field 入門](tutorials/field_scalar_intro.ipynb) |
-| **Transient FFT** | `TimeSeries.fft(mode="transient")` / `TimeSeries._fft_transient` | [Time Series API](../reference/api/timeseries.rst) / [TimeSeries](../reference/TimeSeries.md) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [Signal Extraction](tutorials/case_signal_extraction.ipynb) |
-| **VIF 補正** | `calculate_correlation_factor()` | [Spectral API](../reference/api/spectral.rst) / [Spectral](../reference/Spectral.md) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [Bootstrap 用](tutorials/case_bootstrap_gls_fitting.ipynb) |
-| **予測時刻計算** | `ArimaResult.forecast()` | [Time Series API](../reference/api/timeseries.rst) / [TimeSeries](../reference/TimeSeries.md) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [Advanced ARIMA](tutorials/advanced_arima.ipynb) |
-| **MCMC / GLS 尤度** | `fit_series()` / `GeneralizedLeastSquares` | [Fitting API](../reference/api/fitting.rst) / [gwexpy.fitting](../reference/fitting.md) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [Bootstrap 用](tutorials/case_bootstrap_gls_fitting.ipynb) |
-| **適応ホワイトニング** | `whiten()` / `WhiteningModel` | [前処理 API](../reference/api/preprocessing.rst) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [ML Preprocessing 事例](tutorials/case_ml_preprocessing.ipynb) |
+| **k-space 計算** | `ScalarField.fft_space()` | [フィールド API](../reference/api/fields.rst) / [ScalarField](../reference/ScalarField.md) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [Field 入門](../../en/user_guide/tutorials/field_scalar_intro.ipynb) |
+| **Transient FFT** | `TimeSeries.fft(mode="transient")` / `TimeSeries._fft_transient` | [Time Series API](../reference/api/timeseries.rst) / [TimeSeries](../reference/TimeSeries.md) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [Signal Extraction](../../en/user_guide/tutorials/case_signal_extraction.ipynb) |
+| **VIF 補正** | `calculate_correlation_factor()` | [Spectral API](../reference/api/spectral.rst) / [Spectral](../reference/Spectral.md) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [Bootstrap 用](../../en/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb) |
+| **予測時刻計算** | `ArimaResult.forecast()` | [Time Series API](../reference/api/timeseries.rst) / [TimeSeries](../reference/TimeSeries.md) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [Advanced ARIMA](../../en/user_guide/tutorials/advanced_arima.ipynb) |
+| **MCMC / GLS 尤度** | `fit_series()` / `GeneralizedLeastSquares` | [Fitting API](../reference/api/fitting.rst) / [gwexpy.fitting](../reference/fitting.md) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [Bootstrap 用](../../en/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb) |
+| **適応ホワイトニング** | `whiten()` / `WhiteningModel` | [前処理 API](../reference/api/preprocessing.rst) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [ML Preprocessing 事例](../../en/user_guide/tutorials/case_ml_preprocessing.ipynb) |
 
 ---
 
@@ -110,7 +110,7 @@ myst:
 **参照元**: {ref}`S1 <validated-ja-source-references>`
 
 **関連チュートリアル**
-- [Field 入門](tutorials/field_scalar_intro.ipynb)
+- [Field 入門](../../en/user_guide/tutorials/field_scalar_intro.ipynb)
 
 **関連 API**
 - [Fields API](../reference/api/fields.rst)
@@ -135,7 +135,7 @@ myst:
 **参照元**: {ref}`S5 <validated-ja-source-references>`
 
 **関連チュートリアル**
-- [Signal Extraction チュートリアル](tutorials/case_signal_extraction.ipynb)
+- [Signal Extraction チュートリアル](../../en/user_guide/tutorials/case_signal_extraction.ipynb)
 
 **関連 API**
 - [Time Series API](../reference/api/timeseries.rst)
@@ -162,7 +162,7 @@ Welch 法等におけるセグメント間のオーバーラップによる有�
 **参照元**: {ref}`S2 <validated-ja-source-references>`
 
 **関連チュートリアル**
-- [Bootstrap GLS fitting 事例](tutorials/case_bootstrap_gls_fitting.ipynb)
+- [Bootstrap GLS fitting 事例](../../en/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb)
 
 **関連 API**
 - [Spectral API](../reference/api/spectral.rst)
@@ -194,7 +194,7 @@ GPS 時刻系における連続性を保証するため、LIGO 規約に従っ�
 **参照元**: {ref}`S3 <validated-ja-source-references>`
 
 **関連チュートリアル**
-- [Advanced ARIMA チュートリアル](tutorials/advanced_arima.ipynb)
+- [Advanced ARIMA チュートリアル](../../en/user_guide/tutorials/advanced_arima.ipynb)
 
 **関連 API**
 - [Time Series API](../reference/api/timeseries.rst)
@@ -216,7 +216,7 @@ MCMC の対数尤度計算では、複素残差に対してもエルミート形
 **参照元**: {ref}`S5 <validated-ja-source-references>`
 
 **関連チュートリアル**
-- [Bootstrap GLS fitting 事例](tutorials/case_bootstrap_gls_fitting.ipynb)
+- [Bootstrap GLS fitting 事例](../../en/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb)
 
 **関連 API**
 - [Time Series API](../reference/api/timeseries.rst)
@@ -242,7 +242,7 @@ MCMC の対数尤度計算では、複素残差に対してもエルミート形
 **参照元**: {ref}`S4 <validated-ja-source-references>`
 
 **関連チュートリアル**
-- [ML Preprocessing 事例](tutorials/case_ml_preprocessing.ipynb)
+- [ML Preprocessing 事例](../../en/user_guide/tutorials/case_ml_preprocessing.ipynb)
 
 **関連 API**
 - [Preprocessing API](../reference/api/preprocessing.rst)

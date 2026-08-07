@@ -7,6 +7,7 @@ Covers:
 Usage:
     python scripts/make_spectrogram_processing_notebook.py
 """
+
 from __future__ import annotations
 
 import json
@@ -386,11 +387,7 @@ EN_CELLS = [
     # 11 – summary
     {
         "cell_type": "markdown",
-        "source": (
-            "## 5. Summary\n"
-            "\n"
-            "All methods and their purposes:"
-        ),
+        "source": ("## 5. Summary\n\nAll methods and their purposes:"),
     },
     {"cell_type": "code", "source": SUMMARY_TABLE_CODE},
 ]
@@ -534,11 +531,7 @@ JA_CELLS = [
     # 11 – summary
     {
         "cell_type": "markdown",
-        "source": (
-            "## 5. まとめ\n"
-            "\n"
-            "全メソッドと目的の一覧："
-        ),
+        "source": ("## 5. まとめ\n\n全メソッドと目的の一覧："),
     },
     {"cell_type": "code", "source": SUMMARY_TABLE_CODE},
 ]
@@ -580,8 +573,12 @@ if __name__ == "__main__":
         REPO / "docs/web/ja/user_guide/tutorials/advanced_spectrogram_processing.ipynb"
     )
 
-    out_en.write_text(json.dumps(make_nb(EN_CELLS), ensure_ascii=False, indent=1) + "\n")
-    out_ja.write_text(json.dumps(make_nb(JA_CELLS), ensure_ascii=False, indent=1) + "\n")
+    out_en.write_text(
+        json.dumps(make_nb(EN_CELLS), ensure_ascii=False, indent=1) + "\n"
+    )
+    out_ja.write_text(
+        json.dumps(make_nb(JA_CELLS), ensure_ascii=False, indent=1) + "\n"
+    )
 
     print(f"Created: {out_en}")
     print(f"Created: {out_ja}")

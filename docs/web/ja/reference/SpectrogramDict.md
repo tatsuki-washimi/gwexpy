@@ -34,9 +34,9 @@ mat = dct.to_matrix()
 ## 関連チュートリアル
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
-- [Spectrogram チュートリアル](../user_guide/tutorials/intro_spectrogram.ipynb)
-- [ブートストラップ PSD & GLS フィット](../user_guide/tutorials/case_bootstrap_gls_fitting.ipynb)
-- [グリッチ詳細解析](../user_guide/tutorials/case_glitch_analysis.ipynb)
+- [Spectrogram チュートリアル](../../en/user_guide/tutorials/intro_spectrogram.ipynb)
+- [ブートストラップ PSD & GLS フィット](../../en/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb)
+- [グリッチ詳細解析](../../en/user_guide/tutorials/case_glitch_analysis.ipynb)
 
 ## API リファレンス
 
@@ -71,7 +71,7 @@ Spectrogram オブジェクトはメモリを大量に消費する可能性が�
 
 - 各マップの解釈: [Spectrogram](Spectrogram.md)
 - 整列済みグリッド解析: [SpectrogramMatrix](SpectrogramMatrix.md)
-- 実務ワークフロー: [ブートストラップ PSD & GLS フィット](../user_guide/tutorials/case_bootstrap_gls_fitting.ipynb), [グリッチ詳細解析](../user_guide/tutorials/case_glitch_analysis.ipynb)
+- 実務ワークフロー: [ブートストラップ PSD & GLS フィット](../../en/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb), [グリッチ詳細解析](../../en/user_guide/tutorials/case_glitch_analysis.ipynb)
 
 ## メソッド
 

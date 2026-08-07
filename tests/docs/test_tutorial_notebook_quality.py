@@ -2,6 +2,7 @@ import ast
 import json
 import os
 import re
+from collections import Counter
 from contextlib import contextmanager
 from pathlib import Path
 from typing import cast
@@ -29,6 +30,9 @@ STALE_TUTORIAL_CODE_SNIPPETS = [
     "hasattr(c, 'get_clim')",
     "spec = data.hht(",
 ]
+COLAB_BADGE_IMAGE_PATTERN = re.compile(
+    r"!\[([^\]]+)\]\(https://colab\.research\.google\.com/assets/colab-badge\.svg\)"
+)
 
 
 def _read_notebook(path: Path) -> dict:
@@ -112,6 +116,36 @@ def _markdown_texts(nb: dict) -> list[str]:
         source = cell.get("source", [])
         texts.append("".join(source) if isinstance(source, list) else str(source))
     return texts
+
+
+def _colab_image_alternative_labels(nb: dict) -> list[str]:
+    return [
+        label
+        for markdown in _markdown_texts(nb)
+        for label in COLAB_BADGE_IMAGE_PATTERN.findall(markdown)
+    ]
+
+
+def test_english_tutorial_colab_badge_labels_are_unique_within_notebook():
+    tutorial_root = TUTORIAL_ROOT / "en" / "user_guide" / "tutorials"
+    duplicate_labels_by_notebook = {
+        path.relative_to(ROOT): sorted(
+            label
+            for label, count in Counter(
+                _colab_image_alternative_labels(_read_notebook(path))
+            ).items()
+            if count > 1
+        )
+        for path in sorted(tutorial_root.glob("*.ipynb"))
+    }
+    duplicate_labels_by_notebook = {
+        path: labels for path, labels in duplicate_labels_by_notebook.items() if labels
+    }
+
+    assert not duplicate_labels_by_notebook, (
+        "Colab image alternative labels must be unique within each source "
+        f"notebook: {duplicate_labels_by_notebook}"
+    )
 
 
 def _localized_markdown_texts(nb: dict, locale: str) -> list[str]:

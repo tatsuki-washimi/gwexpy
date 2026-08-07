@@ -10,6 +10,7 @@ import numpy as np
 # Helper: build a minimal DTT XML in memory
 # ---------------------------------------------------------------------------
 
+
 def _b64_float32(arr: np.ndarray) -> str:
     return base64.b64encode(arr.astype(np.float32).tobytes()).decode()
 
@@ -36,7 +37,7 @@ def make_synthetic_dttxml(path: str) -> None:
     tf[0] = tf[1]  # avoid DC singularity
 
     # Coherence: high near resonance, decreasing elsewhere
-    coh = np.exp(-((freqs - f_res) / 30.0) ** 2) * 0.98 + 0.01
+    coh = np.exp(-(((freqs - f_res) / 30.0) ** 2)) * 0.98 + 0.01
 
     # PSD of input
     psd_input = np.ones(N, dtype=np.float32) * 1e-10
@@ -97,11 +98,9 @@ def make_synthetic_dttxml(path: str) -> None:
     xml = "<?xml version='1.0' encoding='utf-8'?>\n<LIGO_LW>\n"
     xml += psd_block("K1:SUS-ITMX_EXCITATION", psd_input, f0, df, N)
     xml += "\n"
-    xml += tf_block("K1:SUS-ITMX_DISP_DQ", "K1:SUS-ITMX_EXCITATION",
-                    tf, f0, df, N)
+    xml += tf_block("K1:SUS-ITMX_DISP_DQ", "K1:SUS-ITMX_EXCITATION", tf, f0, df, N)
     xml += "\n"
-    xml += coh_block("K1:SUS-ITMX_DISP_DQ", "K1:SUS-ITMX_EXCITATION",
-                     coh, f0, df, N)
+    xml += coh_block("K1:SUS-ITMX_DISP_DQ", "K1:SUS-ITMX_EXCITATION", coh, f0, df, N)
     xml += "\n</LIGO_LW>\n"
 
     Path(path).write_text(xml)
@@ -110,6 +109,7 @@ def make_synthetic_dttxml(path: str) -> None:
 # ---------------------------------------------------------------------------
 # Notebook building helpers
 # ---------------------------------------------------------------------------
+
 
 def md(source: str) -> dict:
     return {
@@ -170,9 +170,7 @@ This notebook complements `case_transfer_function.ipynb`, which demonstrates
 TF estimation from raw time series.  Here the data is already the *result* of
 a measurement saved by DTT.
 """),
-
     md("## Setup"),
-
     code("""\
 import numpy as np
 import matplotlib.pyplot as plt
@@ -180,7 +178,6 @@ import matplotlib.pyplot as plt
 from gwexpy.io.dttxml_common import extract_xml_channels, load_dttxml_products
 from gwexpy.frequencyseries import FrequencySeries
 """),
-
     md("""\
 ## 1. Create a Synthetic DTT XML File
 
@@ -195,7 +192,6 @@ The file contains three measurement products:
 | TF | complex | Displacement / Excitation transfer function |
 | COH | real | Coherence between displacement and excitation |
 """),
-
     code("""\
 import base64, struct, pathlib
 
@@ -260,14 +256,12 @@ def make_synthetic_dttxml(path):
 xml_path = "/tmp/kagra_sus_itmx.xml"
 make_synthetic_dttxml(xml_path)
 """),
-
     md("""\
 ## 2. Inspect Channels
 
 `extract_xml_channels()` returns a list of channel names and their active
 status without loading the full data — useful for a quick scan of large files.
 """),
-
     code("""\
 channels = extract_xml_channels(xml_path)
 print(f"Found {len(channels)} channel entries:")
@@ -275,7 +269,6 @@ for ch in channels:
     status = "active" if ch["active"] else "inactive"
     print(f"  [{status}] {ch['name']}")
 """),
-
     md("""\
 ## 3. Load Measurement Products
 
@@ -295,7 +288,6 @@ Pass `native=True` to use gwexpy's built-in XML parser instead of the
 `dttxml` package — this is recommended when the dttxml package is unavailable
 or when you encounter the known phase-loss bug for complex responses.
 """),
-
     code("""\
 products = load_dttxml_products(xml_path, native=True)
 
@@ -306,14 +298,12 @@ for ptype, items in products.items():
         print(f"    ChannelA={item.get('channel_a', '?')}"
               f"  N={len(item['freq'])}  df={item['freq'][1]-item['freq'][0]:.3f} Hz")
 """),
-
     md("""\
 ## 4. Bode Plot — Transfer Function
 
 Extract the TF product and wrap the data in a `FrequencySeries` to access
 gwexpy's plotting and fitting methods.
 """),
-
     code("""\
 # Extract the first TF measurement
 tf_prod = products["TF"][0]
@@ -341,7 +331,6 @@ ax_ph.grid(True, which="both", alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 5. Coherence
 
@@ -349,7 +338,6 @@ The coherence indicates the signal-to-noise quality of the measurement.
 Values close to 1 mean the output is well explained by the input;
 values below ~0.9 suggest the measurement is unreliable at those frequencies.
 """),
-
     code("""\
 coh_prod = products["COH"][0]
 coh_freqs = coh_prod["freq"]
@@ -367,7 +355,6 @@ ax.grid(True, which="both", alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 6. Fitting a Resonant-System Model
 
@@ -378,7 +365,6 @@ $$H(f) = \\frac{A \\, f_0^2}{f_0^2 - f^2 + i\\, f f_0 / Q}$$
 We use `gwexpy.fitting` to extract $f_0$ (resonance frequency), $Q$ (quality
 factor), and $A$ (gain) directly from the DTT XML data.
 """),
-
     code("""\
 from gwexpy.fitting import fit_series
 
@@ -402,7 +388,6 @@ print(f"Fitted resonance frequency : {f0_fit:.2f} Hz  (true: 100.0 Hz)")
 print(f"Fitted quality factor      : {Q_fit:.1f}   (true: 30.0)")
 print(f"Fitted gain                : {A_fit:.4f}")
 """),
-
     code("""\
 # Overlay the fitted model on the Bode plot
 f_model = np.linspace(1, 511, 2000)
@@ -432,7 +417,6 @@ ax_ph.grid(True, which="both", alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## Summary
 
@@ -473,9 +457,7 @@ JA_CELLS = [
 `case_transfer_function.ipynb`（時系列から伝達関数を推定するチュートリアル）の
 発展版として、**DTT が出力した測定済み結果**を直接扱うワークフローを示します。
 """),
-
     md("## セットアップ"),
-
     code("""\
 import numpy as np
 import matplotlib.pyplot as plt
@@ -483,7 +465,6 @@ import matplotlib.pyplot as plt
 from gwexpy.io.dttxml_common import extract_xml_channels, load_dttxml_products
 from gwexpy.frequencyseries import FrequencySeries
 """),
-
     md("""\
 ## 1. 合成 DTT XML ファイルの作成
 
@@ -498,7 +479,6 @@ from gwexpy.frequencyseries import FrequencySeries
 | TF | 複素数 | 変位 / 励振の伝達関数 |
 | COH | 実数 | 変位と励振間のコヒーレンス |
 """),
-
     code("""\
 import base64, pathlib
 
@@ -563,14 +543,12 @@ def make_synthetic_dttxml(path):
 xml_path = "/tmp/kagra_sus_itmx.xml"
 make_synthetic_dttxml(xml_path)
 """),
-
     md("""\
 ## 2. チャネルの確認
 
 `extract_xml_channels()` はデータ本体を読み込まずにチャネル名と
 アクティブ状態だけを返します。大容量ファイルのクイックスキャンに便利です。
 """),
-
     code("""\
 channels = extract_xml_channels(xml_path)
 print(f"チャネル数: {len(channels)}")
@@ -578,7 +556,6 @@ for ch in channels:
     status = "active" if ch["active"] else "inactive"
     print(f"  [{status}] {ch['name']}")
 """),
-
     md("""\
 ## 3. 測定量の読み込み
 
@@ -596,7 +573,6 @@ for ch in channels:
 `native=True` を指定すると gwexpy 組み込みパーサーを使用します。
 dttxml パッケージの複素数位相損失バグを回避できるため推奨です。
 """),
-
     code("""\
 products = load_dttxml_products(xml_path, native=True)
 
@@ -607,13 +583,11 @@ for ptype, items in products.items():
         print(f"    ChannelA={item.get('channel_a', '?')}"
               f"  N={len(item['freq'])}  df={item['freq'][1]-item['freq'][0]:.3f} Hz")
 """),
-
     md("""\
 ## 4. Bode プロット — 伝達関数の可視化
 
 TF データを取り出し、振幅と位相を周波数の関数としてプロットします。
 """),
-
     code("""\
 tf_prod = products["TF"][0]
 freqs   = tf_prod["freq"]
@@ -636,7 +610,6 @@ ax_ph.grid(True, which="both", alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 5. コヒーレンス
 
@@ -644,7 +617,6 @@ plt.show()
 よく説明されることを意味します。0.9 以下の周波数帯は
 信頼性が低く、フィッティングの対象から外すことが推奨されます。
 """),
-
     code("""\
 coh_prod = products["COH"][0]
 coh_freqs = coh_prod["freq"]
@@ -662,7 +634,6 @@ ax.grid(True, which="both", alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 6. 共振モデルのフィッティング
 
@@ -673,7 +644,6 @@ $$H(f) = \\frac{A \\, f_0^2}{f_0^2 - f^2 + i\\, f f_0 / Q}$$
 gwexpy のフィッティング機能を使って、
 共振周波数 $f_0$、Q 値、ゲイン $A$ を DTT XML データから直接推定します。
 """),
-
     code("""\
 from gwexpy.fitting import fit_series
 
@@ -697,7 +667,6 @@ print(f"推定共振周波数: {f0_fit:.2f} Hz  （真値: 100.0 Hz）")
 print(f"推定 Q 値     : {Q_fit:.1f}   （真値: 30.0）")
 print(f"推定ゲイン    : {A_fit:.4f}")
 """),
-
     code("""\
 f_model  = np.linspace(1, 511, 2000)
 tf_model = resonator_model(f_model, A_fit, f0_fit, Q_fit)
@@ -726,7 +695,6 @@ ax_ph.grid(True, which="both", alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## まとめ
 
@@ -748,6 +716,7 @@ plt.show()
 # ---------------------------------------------------------------------------
 # Write notebooks
 # ---------------------------------------------------------------------------
+
 
 def write_nb(cells, path):
     nb = {

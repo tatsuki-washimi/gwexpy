@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from datetime import datetime
+from io import FileIO
+from os import PathLike, fspath
 
 import numpy as np
 from astropy import units as u
@@ -37,6 +39,28 @@ def _import_pydub():
             "Install with `pip install 'gwexpy[audio]'`. "
             "MP3/M4A encoding also requires ffmpeg (`apt install ffmpeg` or equivalent)."
         ) from exc
+
+
+_CODEC_EXECUTABLES = frozenset({"ffmpeg", "avconv", "ffprobe", "avprobe"})
+_FFMPEG_EXPORT_FORMATS = {"m4a": "ipod"}
+
+
+def _is_missing_codec_executable(exc: FileNotFoundError) -> bool:
+    """Return whether *exc* was raised while locating an audio codec tool."""
+    try:
+        filename = fspath(exc.filename)
+    except TypeError:
+        return False
+    return filename.rsplit("/", 1)[-1] in _CODEC_EXECUTABLES
+
+
+def _pydub_source(source):
+    """Preserve streams while resolving GWpy's named ``FileIO`` objects."""
+    if isinstance(source, (str, PathLike)):
+        return source
+    if isinstance(source, FileIO) and isinstance(source.name, (str, PathLike)):
+        return source.name
+    return source
 
 
 def _format_audio_codec_error(exc: FileNotFoundError) -> ImportError:
@@ -97,9 +121,11 @@ def read_timeseriesdict_audio(
         seg_kwargs["format"] = format_hint
 
     try:
-        seg = AudioSegment.from_file(str(source), **seg_kwargs)
+        seg = AudioSegment.from_file(_pydub_source(source), **seg_kwargs)
     except FileNotFoundError as exc:
-        raise _format_audio_codec_error(exc) from exc
+        if _is_missing_codec_executable(exc):
+            raise _format_audio_codec_error(exc) from exc
+        raise
 
     n_channels = seg.channels
     sample_rate = seg.frame_rate
@@ -231,11 +257,14 @@ def write_timeseriesdict_audio(tsd, target, *, format_hint=None, **kwargs):
     if export_fmt is None:
         ext = str(target).rsplit(".", 1)[-1].lower()
         export_fmt = ext
+    export_fmt = _FFMPEG_EXPORT_FORMATS.get(export_fmt, export_fmt)
 
     try:
         seg.export(str(target), format=export_fmt, **kwargs)
     except FileNotFoundError as exc:
-        raise _format_audio_codec_error(exc) from exc
+        if _is_missing_codec_executable(exc):
+            raise _format_audio_codec_error(exc) from exc
+        raise
 
 
 def write_timeseries_audio(ts, target, **kwargs):

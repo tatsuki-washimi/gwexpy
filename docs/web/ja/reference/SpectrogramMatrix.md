@@ -34,9 +34,9 @@ out = mat.to_dict()
 ## 関連チュートリアル
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
-- [Spectrogram 行列チュートリアル](../user_guide/tutorials/matrix_spectrogram.ipynb)
+- [Spectrogram 行列チュートリアル](../../en/user_guide/tutorials/matrix_spectrogram.ipynb)
 - [時間-周波数解析: 手法比較ガイド](../user_guide/tutorials/time_frequency_comparison.md)
-- [HHT: 解析](../user_guide/tutorials/advanced_hht.ipynb)
+- [HHT: 解析](../../en/user_guide/tutorials/advanced_hht.ipynb)
 
 ## API リファレンス
 
@@ -72,7 +72,7 @@ SeriesMatrix を継承し、強力なインデックス参照、メタデータ�
 
 - 各マップの解釈: [Spectrogram](Spectrogram.md)
 - コンテナ間の往復: [SpectrogramList](SpectrogramList.md), [SpectrogramDict](SpectrogramDict.md)
-- 整列ワークフロー: [Spectrogram 行列チュートリアル](../user_guide/tutorials/matrix_spectrogram.ipynb)
+- 整列ワークフロー: [Spectrogram 行列チュートリアル](../../en/user_guide/tutorials/matrix_spectrogram.ipynb)
 
 ## 主要プロパティ
 

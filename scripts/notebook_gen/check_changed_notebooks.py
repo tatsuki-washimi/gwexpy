@@ -75,7 +75,9 @@ def list_changed_notebooks(base: str, head: str) -> list[str]:
     return [line.strip() for line in result.stdout.splitlines() if line.strip()]
 
 
-def filter_changed_notebooks(paths: Iterable[str], repo_root: Path = REPO_ROOT) -> list[Path]:
+def filter_changed_notebooks(
+    paths: Iterable[str], repo_root: Path = REPO_ROOT
+) -> list[Path]:
     """Keep only existing notebooks that should participate in notebook checks."""
     notebooks: list[Path] = []
     for rel_path in paths:
@@ -207,9 +209,19 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Run CI-style checks for notebooks changed in the current PR."
     )
-    parser.add_argument("--base", default=None, help="Base ref for git diff. Defaults to origin/main or origin/master.")
-    parser.add_argument("--head", default="HEAD", help="Head ref for git diff. Defaults to HEAD.")
-    parser.add_argument("--kernel", default="python3", help="Kernel name for papermill. Defaults to python3.")
+    parser.add_argument(
+        "--base",
+        default=None,
+        help="Base ref for git diff. Defaults to origin/main or origin/master.",
+    )
+    parser.add_argument(
+        "--head", default="HEAD", help="Head ref for git diff. Defaults to HEAD."
+    )
+    parser.add_argument(
+        "--kernel",
+        default="python3",
+        help="Kernel name for papermill. Defaults to python3.",
+    )
     parser.add_argument(
         "--output-dir",
         default=str(DEFAULT_OUTPUT_DIR),

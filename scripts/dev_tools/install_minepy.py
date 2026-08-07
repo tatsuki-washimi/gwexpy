@@ -44,6 +44,7 @@ def main():
         # 3. Extract
         print("Extracting...")
         with tarfile.open(tar_path, "r:gz") as tar:
+
             def is_within_directory(directory, target):
                 abs_directory = os.path.abspath(directory)
                 abs_target = os.path.abspath(target)
@@ -70,7 +71,7 @@ def main():
         # Remove pkg_resources import which is not available in isolated builds
         setup_content = setup_content.replace(
             "from pkg_resources import get_platform",
-            "def get_platform(): return 'linux' if sys.platform.startswith('linux') else sys.platform"
+            "def get_platform(): return 'linux' if sys.platform.startswith('linux') else sys.platform",
         )
         # We also need import sys for the patched function
         setup_content = "import sys\n" + setup_content
@@ -85,6 +86,7 @@ def main():
         mine_pyx = minepy_src_dir / "minepy" / "mine.pyx"
         if mine_pyx.exists():
             import re
+
             with open(mine_pyx, encoding="utf-8") as f:
                 pyx_content = f.read()
             # Add noexcept after every void extern declaration that lacks it
@@ -102,9 +104,15 @@ def main():
         cython_executable = shutil.which("cython")
         if not cython_executable:
             # Fallback to python -m cython
-            subprocess.run([sys.executable, "-m", "cython", "minepy/mine.pyx"], cwd=minepy_src_dir, check=True)
+            subprocess.run(
+                [sys.executable, "-m", "cython", "minepy/mine.pyx"],
+                cwd=minepy_src_dir,
+                check=True,
+            )
         else:
-            subprocess.run([cython_executable, "minepy/mine.pyx"], cwd=minepy_src_dir, check=True)
+            subprocess.run(
+                [cython_executable, "minepy/mine.pyx"], cwd=minepy_src_dir, check=True
+            )
 
         # 6. Install
         print("Installing minepy via pip...")
@@ -115,15 +123,18 @@ def main():
         res = subprocess.run(
             [sys.executable, "-m", "pip", "install", ".", "--no-build-isolation"],
             cwd=minepy_src_dir,
-            env=env
+            env=env,
         )
 
         if res.returncode == 0:
             print("\nSuccessfully installed minepy!")
-            print("You can now compute Maximal Information Coefficient (MIC) in gwexpy.")
+            print(
+                "You can now compute Maximal Information Coefficient (MIC) in gwexpy."
+            )
         else:
             print("\nError: minepy installation failed.")
             sys.exit(res.returncode)
+
 
 if __name__ == "__main__":
     main()

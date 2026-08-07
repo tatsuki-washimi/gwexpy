@@ -386,9 +386,7 @@ def _find_gwexpy_apis(source: str) -> list[str]:
     found: set[str] = set()
 
     # import 文での gwexpy 使用
-    if re.search(r"\bimport gwexpy\b", source) or re.search(
-        r"\bfrom gwexpy\b", source
-    ):
+    if re.search(r"\bimport gwexpy\b", source) or re.search(r"\bfrom gwexpy\b", source):
         found.add("gwexpy")
 
     # gwexpy クラス / 関数
@@ -503,7 +501,11 @@ def _classify_topic_by_content(
     funcs = set(f.lower() for f in functions_defined)
 
     # guardian 制御フィルタ
-    if any(f.startswith("filt_") for f in funcs) or "pre_exec" in funcs or "btn_click" in funcs:
+    if (
+        any(f.startswith("filt_") for f in funcs)
+        or "pre_exec" in funcs
+        or "btn_click" in funcs
+    ):
         return "guardian_control", "filter"
 
     # nds2 → データ取得
@@ -813,9 +815,7 @@ def generate_summary(entries: list[dict[str, Any]], catalog_path: Path) -> str:
         "|-----------|----------|--------|",
     ]
     for group_name, paths in top_groups:
-        lines.append(
-            f"| {group_name} | {len(paths)} | `{Path(paths[0]).name}` |"
-        )
+        lines.append(f"| {group_name} | {len(paths)} | `{Path(paths[0]).name}` |")
 
     if gwexpy_files:
         lines += [
@@ -827,9 +827,9 @@ def generate_summary(entries: list[dict[str, Any]], catalog_path: Path) -> str:
             "| ファイル | gwexpy API |",
             "|---------|-----------|",
         ]
-        for e in sorted(gwexpy_files, key=lambda x: len(x["gwexpy_apis"]), reverse=True)[
-            :20
-        ]:
+        for e in sorted(
+            gwexpy_files, key=lambda x: len(x["gwexpy_apis"]), reverse=True
+        )[:20]:
             apis = ", ".join(e["gwexpy_apis"][:5])
             lines.append(f"| `{e['path']}` | {apis} |")
 
@@ -928,9 +928,7 @@ def main() -> int:
     py_count = sum(1 for e in entries if e["type"] == "py")
     ipynb_count = sum(1 for e in entries if e["type"] == "ipynb")
     gwexpy_count = sum(1 for e in entries if e["gwexpy_apis"])
-    dup_groups = sum(
-        1 for e in entries if e["duplicate_group"] is not None
-    )
+    dup_groups = sum(1 for e in entries if e["duplicate_group"] is not None)
 
     print(f"完了: {len(entries):,} ファイル（.py: {py_count}, .ipynb: {ipynb_count}）")
     print(f"  gwexpy使用: {gwexpy_count} ファイル")

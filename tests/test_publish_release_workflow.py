@@ -196,7 +196,29 @@ def test_release_smoke_covers_both_artifacts_on_python_311_and_312():
         "${{ matrix.distribution }}",
         "gwexpy.register_all()",
         "LICENSE.sha256",
-        "artifact-sha256.txt",
+        "distribution-sha256.json",
         "retention-days: 90",
     ):
         assert token in workflow if token == "retention-days: 90" else token in smoke
+
+
+def test_workflow_is_payload_only_locked_and_collects_same_run_evidence():
+    workflow = read_workflow()
+    assert "--require-hashes -r requirements/release-build.txt" in workflow
+    assert "python -m build --no-isolation" in workflow
+    assert "pip install --upgrade pip build twine" not in workflow
+    assert "release-payload-${{ needs.verify.outputs.source_sha }}" in workflow
+    assert "release-sidecars-${{ needs.verify.outputs.source_sha }}" in workflow
+    publish = workflow.split("\n  publish:\n", maxsplit=1)[1]
+    assert "release-payload-${{ needs.verify.outputs.source_sha }}" in publish
+    assert "release-sidecars-${{ needs.verify.outputs.source_sha }}" not in publish
+    assert 'find "$artifact_dir"' not in workflow
+    assert "--frozen-tip" in workflow
+    assert "--review-evidence" in workflow
+    assert "audit-manifest-v0.1.13-sol-followup.yaml" in workflow
+    assert "review_evidence:" in workflow
+    assert (
+        "github.event_name == 'workflow_dispatch' && inputs.review_evidence" in workflow
+    )
+    assert "assemble_release_evidence.py" in workflow
+    assert "v0113-integration-evidence-" in workflow
