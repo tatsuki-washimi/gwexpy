@@ -181,11 +181,11 @@ jobs:
         run: |
           artifact_name="$(python control/scripts/ci/validate_release_payload.py --payload-dir "${{ runner.temp }}/release-payload" --manifest "${{ runner.temp }}/release-sidecars/distribution-sha256.json" --expected-version "$EXPECTED_VERSION" --kind "$DISTRIBUTION")"
           artifact="${{ runner.temp }}/release-payload/$artifact_name"
-          expected_license_hash="$(cat "${{ runner.temp }}/release-sidecars/LICENSE.sha256")"
+          expected_license_hash_file="${{ runner.temp }}/release-sidecars/LICENSE.sha256"
           smoke_dir="$(mktemp -d)"
           python -m venv "$smoke_dir/venv"
           "$smoke_dir/venv/bin/python" -m pip install "$artifact"
-          "$smoke_dir/venv/bin/python" - "$artifact" "$expected_license_hash" "$REPORT" <<'PY'
+          "$smoke_dir/venv/bin/python" - "$artifact" "$expected_license_hash_file" "$REPORT" <<'PY'
           import hashlib
           import json
           import os
@@ -196,7 +196,8 @@ jobs:
           import gwexpy
           from gwexpy import TimeSeries
 
-          artifact, expected_license_hash, report_path = map(Path, sys.argv[1:])
+          artifact, expected_license_hash_file, report_path = map(Path, sys.argv[1:])
+          expected_license_hash = expected_license_hash_file.read_text(encoding="ascii").strip()
           if artifact.suffix == ".whl":
               with zipfile.ZipFile(artifact) as archive:
                   copies = [archive.read(info) for info in archive.infolist() if Path(info.filename).name == "LICENSE.txt"]
@@ -205,7 +206,7 @@ jobs:
                   copies = [archive.extractfile(info).read() for info in archive.getmembers() if Path(info.name).name == "LICENSE.txt" and info.isfile()]
           assert len(copies) == 1
           embedded_license_hash = hashlib.sha256(copies[0]).hexdigest()
-          assert embedded_license_hash == expected_license_hash.read_text(encoding="ascii").strip()
+          assert embedded_license_hash == expected_license_hash
           assert gwexpy.__version__ == os.environ["EXPECTED_VERSION"]
           gwexpy.register_all()
           assert Path(gwexpy.__file__).resolve().is_relative_to(Path(sys.prefix).resolve())
@@ -213,7 +214,7 @@ jobs:
           report_path.write_text(json.dumps({
               "source_sha": os.environ["EXPECTED_SOURCE_SHA"], "python": os.environ["PYTHON_VERSION"],
               "distribution": {"kind": os.environ["DISTRIBUTION"], "file": artifact.name, "sha256": hashlib.sha256(artifact.read_bytes()).hexdigest()},
-              "repository_license_sha256": expected_license_hash.read_text(encoding="ascii").strip(),
+              "repository_license_sha256": expected_license_hash,
               "embedded_license_sha256": embedded_license_hash, "installed_version": gwexpy.__version__,
               "import_ok": True, "register_all_ok": True, "smoke_ok": True,
           }, sort_keys=True) + "\n", encoding="utf-8")

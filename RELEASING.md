@@ -6,7 +6,8 @@ dry-runs and must be launched with `--ref main`, which the workflow enforces:
 ```bash
 gh workflow run publish-release.yml --ref main \
   -f release_ref=<existing-final-tag-or-40-character-candidate-sha> \
-  -f expected_tag=<final-version-tag>
+  -f expected_tag=<final-version-tag> \
+  -f review_evidence=docs/developers/plans/manifests/audit-manifest-v0.1.13-sol-followup.yaml
 ```
 
 `release_ref` is either an existing annotated final-release tag (strict mode)

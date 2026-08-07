@@ -2,7 +2,13 @@
 
 from __future__ import annotations
 
+import hashlib
+import os
 import re
+import subprocess
+import sys
+import textwrap
+import zipfile
 from pathlib import Path
 
 WORKFLOW = (
@@ -200,6 +206,77 @@ def test_release_smoke_covers_both_artifacts_on_python_311_and_312():
         "retention-days: 90",
     ):
         assert token in workflow if token == "retention-days: 90" else token in smoke
+
+
+def test_release_smoke_executes_with_license_sidecar_path(tmp_path):
+    """The shell/Python boundary passes the sidecar path, not its hash value."""
+    workflow = read_workflow()
+    smoke = workflow.split("\n  smoke:\n", maxsplit=1)[1].split(
+        "\n  publish:\n", maxsplit=1
+    )[0]
+
+    invocation = re.search(
+        r'"\$smoke_dir/venv/bin/python" - "\$artifact" "\$(?P<name>[a-z_]+)" "\$REPORT" <<\'PY\'',
+        smoke,
+    )
+    assert invocation is not None
+    argument_name = invocation.group("name")
+
+    license_bytes = b"release-license\n"
+    license_digest = hashlib.sha256(license_bytes).hexdigest()
+    license_sidecar = tmp_path / "LICENSE.sha256"
+    license_sidecar.write_text(license_digest + "\n", encoding="ascii")
+    artifact = tmp_path / "gwexpy-0.1.13-py3-none-any.whl"
+    with zipfile.ZipFile(artifact, "w") as archive:
+        archive.writestr("gwexpy-0.1.13.dist-info/licenses/LICENSE.txt", license_bytes)
+
+    if f'{argument_name}="$(cat ' in smoke:
+        license_argument = license_digest
+    else:
+        assert (
+            f'{argument_name}="${{{{ runner.temp }}}}/release-sidecars/LICENSE.sha256"'
+            in smoke
+        )
+        license_argument = str(license_sidecar)
+
+    embedded = re.search(
+        r"<<'PY'\n(?P<body>.*?)\n          PY",
+        smoke,
+        flags=re.DOTALL,
+    )
+    assert embedded is not None
+    script = textwrap.dedent(embedded.group("body"))
+    script = script.split(
+        'assert gwexpy.__version__ == os.environ["EXPECTED_VERSION"]', maxsplit=1
+    )[0]
+    env = os.environ.copy()
+    env["MPLCONFIGDIR"] = str(tmp_path / "mpl")
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-",
+            str(artifact),
+            license_argument,
+            str(tmp_path / "report.json"),
+        ],
+        input=script,
+        text=True,
+        capture_output=True,
+        cwd=tmp_path,
+        env=env,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert argument_name == "expected_license_hash_file"
+
+
+def test_releasing_manual_dispatch_supplies_required_review_evidence():
+    releasing = (WORKFLOW.parents[2] / "RELEASING.md").read_text(encoding="utf-8")
+    assert (
+        "-f review_evidence="
+        "docs/developers/plans/manifests/"
+        "audit-manifest-v0.1.13-sol-followup.yaml"
+    ) in releasing
 
 
 def test_workflow_is_payload_only_locked_and_collects_same_run_evidence():
