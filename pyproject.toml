@@ -216,7 +216,6 @@ gwexpy = [
 include = ["gwexpy*"]
 exclude = [
   "gwexpy*.tests*",
-  "gwexpy.gui*",
   "gwexpy.utils.sphinx*",
   "typings*",
   "tests*",
@@ -280,8 +279,6 @@ ignore = [
 "scripts/*.py" = ["D"]
 "scripts/**/*.py" = ["D"]
 "docs/*.py" = ["D"]
-# GUI code: compact style is acceptable; allow Optional/Union for py39 runtime safety
-"gwexpy/gui/*" = ["E701", "E702", "UP045"]
 "gwexpy/analysis/threshold.py" = ["D416"]
 "gwexpy/astro/range.py" = ["F401"]
 "gwexpy/cli/*.py" = ["F401"]
@@ -332,13 +329,13 @@ ignore = [
 python_version = "3.11"
 ignore_missing_imports = true
 check_untyped_defs = true
-exclude = "gwexpy/gui/reference-dtt/.*|gwexpy/gui/reference_ndscope/.*|tests/.*"
+exclude = "tests/.*"
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
 testpaths = ["tests"]
 pythonpath = ["."]
-norecursedirs = ["gwexpy/gui", "gwexpy/gui/reference-dtt"]
+norecursedirs = []
 markers = [
     "gui: GUI integration tests",
     "nds: NDS server connection tests",
@@ -411,7 +408,6 @@ ignore_errors = false
 [tool.coverage.run]
 source = ["gwexpy"]
 omit = [
-    "gwexpy/gui/*",
     "gwexpy/cli/*",
     "*/test*",
 ]

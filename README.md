@@ -31,7 +31,7 @@ python -m pip install gwexpy
 conda install -c conda-forge gwexpy
 ```
 
-The experimental GUI app is not part of the supported package surface.
+The experimental GUI app is now developed and maintained in a separate repository: [tatsuki-washimi/pyaggui](https://github.com/tatsuki-washimi/pyaggui).
 
 For optional extras, external dependencies, and environment-specific setup, use the official installation guides:
 

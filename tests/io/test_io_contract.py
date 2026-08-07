@@ -17,7 +17,6 @@ from gwexpy.frequencyseries import (
     FrequencySeriesList,
     FrequencySeriesMatrix,
 )
-from gwexpy.gui.loaders.loaders import load_products
 from gwexpy.histogram import Histogram, HistogramDict, HistogramList
 from gwexpy.segments import DataQualityDict, DataQualityFlag, SegmentList
 from gwexpy.spectrogram import Spectrogram, SpectrogramDict, SpectrogramList
@@ -647,15 +646,3 @@ def test_current_public_boundary_decisions_are_recorded():
     assert entries["zarr"]["metadata_requirements"]
 
 
-def test_gwf_load_products_contract():
-    if not FIXTURE_DATA.exists():
-        pytest.skip("test.gwf fixture not found")
-    if not _has_gwf_backend():
-        pytest.skip("gwf backend not available")
-
-    products = load_products(str(FIXTURE_DATA))
-
-    assert "TS" in products
-    products_keys = set(products["TS"].keys())
-    tsd = TimeSeriesDict.read(str(FIXTURE_DATA))
-    assert products_keys == set(tsd.keys())
