@@ -402,7 +402,7 @@ JA_CELLS = [
         "source": (
             "# スペクトログラム処理：正規化とクリーニング\n"
             "\n"
-            f"[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]"
+            f"[![Colab で開く](https://colab.research.google.com/assets/colab-badge.svg)]"
             f"({COLAB_BASE}/advanced_spectrogram_processing.ipynb)\n"
             "\n"
             "このチュートリアルでは **gwexpy** が提供するスペクトログラム後処理ツール 2 種類を解説します：\n"

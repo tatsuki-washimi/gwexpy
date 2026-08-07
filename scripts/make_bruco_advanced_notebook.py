@@ -551,7 +551,7 @@ JA_CELLS: list[dict] = [
         "src": """\
 # Bruco 応用編：バイリニアカップリングと AM/FM 復調
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_bruco_advanced.ipynb)
+[![Colab で開く](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_bruco_advanced.ipynb)
 
 通常の Bruco スキャンは DARM と補助チャンネル間の**線形**コヒーレンスのみを検出します。
 実際の干渉計ノイズには**非線形**カップリング機構が多く存在し、線形スキャンでは見逃されます。

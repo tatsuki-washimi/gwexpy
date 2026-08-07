@@ -33,6 +33,43 @@ STALE_TUTORIAL_CODE_SNIPPETS = [
 COLAB_BADGE_IMAGE_PATTERN = re.compile(
     r"!\[([^\]]+)\]\(https://colab\.research\.google\.com/assets/colab-badge\.svg\)"
 )
+COLAB_BADGE_LABELS = {"en": "Open In Colab", "ja": "Colab で開く"}
+COLAB_BADGE_GENERATOR_LABEL_COUNTS = {
+    Path("scripts/fix_tutorial_notebooks.py"): {"en": 1, "ja": 0},
+    Path("scripts/make_bruco_advanced_notebook.py"): {"en": 1, "ja": 1},
+    Path("scripts/make_bruco_ica_notebook.py"): {"en": 1, "ja": 1},
+    Path("scripts/make_peak_tracking_notebook.py"): {"en": 1, "ja": 1},
+    Path("scripts/make_schumann_notebook.py"): {"en": 1, "ja": 1},
+    Path("scripts/make_spectrogram_processing_notebook.py"): {"en": 1, "ja": 1},
+    Path("scripts/make_violin_mode_notebook.py"): {"en": 1, "ja": 1},
+    Path("scripts/notebook_gen/make_arima_burst_notebook.py"): {"en": 0, "ja": 1},
+}
+COLAB_BADGE_GENERATOR_SECTION_MARKERS = {
+    Path("scripts/make_bruco_advanced_notebook.py"): {
+        "en": ("# English cells", "# Japanese cells"),
+        "ja": ("# Japanese cells", None),
+    },
+    Path("scripts/make_bruco_ica_notebook.py"): {
+        "en": ("# English notebook", "# Japanese notebook"),
+        "ja": ("# Japanese notebook", None),
+    },
+    Path("scripts/make_peak_tracking_notebook.py"): {
+        "en": ("# English cells", "# Japanese cells"),
+        "ja": ("# Japanese cells", None),
+    },
+    Path("scripts/make_schumann_notebook.py"): {
+        "en": ("# English cells", "# Japanese cells"),
+        "ja": ("# Japanese cells", None),
+    },
+    Path("scripts/make_spectrogram_processing_notebook.py"): {
+        "en": ("# English cells", "# Japanese cells"),
+        "ja": ("# Japanese cells", None),
+    },
+    Path("scripts/make_violin_mode_notebook.py"): {
+        "en": ("# English cells", "# Japanese cells"),
+        "ja": ("# Japanese cells", None),
+    },
+}
 
 
 def _read_notebook(path: Path) -> dict:
@@ -126,6 +163,32 @@ def _colab_image_alternative_labels(nb: dict) -> list[str]:
     ]
 
 
+def _localized_colab_image_alternative_labels(nb: dict, locale: str) -> list[str]:
+    wanted_tag = f"lang-{locale}"
+    return [
+        label
+        for cell in nb.get("cells", [])
+        if cell.get("cell_type") == "markdown"
+        and wanted_tag in cell.get("metadata", {}).get("tags", [])
+        for label in COLAB_BADGE_IMAGE_PATTERN.findall("".join(cell.get("source", [])))
+    ]
+
+
+def _colab_badge_label_counts(text: str) -> dict[str, int]:
+    labels = Counter(COLAB_BADGE_IMAGE_PATTERN.findall(text))
+    return {
+        locale: labels[expected_label]
+        for locale, expected_label in COLAB_BADGE_LABELS.items()
+    }
+
+
+def _generator_cell_section(
+    text: str, start_marker: str, end_marker: str | None
+) -> str:
+    section = text.split(start_marker, maxsplit=1)[1]
+    return section if end_marker is None else section.split(end_marker, maxsplit=1)[0]
+
+
 def test_english_tutorial_colab_badge_labels_are_unique_within_notebook():
     tutorial_root = TUTORIAL_ROOT / "en" / "user_guide" / "tutorials"
     duplicate_labels_by_notebook = {
@@ -146,6 +209,62 @@ def test_english_tutorial_colab_badge_labels_are_unique_within_notebook():
         "Colab image alternative labels must be unique within each source "
         f"notebook: {duplicate_labels_by_notebook}"
     )
+
+
+def test_canonical_tutorial_colab_badges_have_locale_aware_labels():
+    canonical_badge_labels = {
+        path.relative_to(ROOT): {
+            locale: _localized_colab_image_alternative_labels(
+                _read_notebook(path), locale
+            )
+            for locale in COLAB_BADGE_LABELS
+        }
+        for path in sorted(
+            (TUTORIAL_ROOT / "en" / "user_guide" / "tutorials").glob("*.ipynb")
+        )
+        if any(
+            _localized_colab_image_alternative_labels(_read_notebook(path), locale)
+            for locale in COLAB_BADGE_LABELS
+        )
+    }
+
+    assert len(canonical_badge_labels) == 40
+    assert all(
+        labels
+        == {
+            locale: [expected_label]
+            for locale, expected_label in COLAB_BADGE_LABELS.items()
+        }
+        for labels in canonical_badge_labels.values()
+    )
+
+
+def test_tutorial_colab_badge_generators_have_localized_labels_in_cell_sections():
+    generator_sources = {
+        path: (ROOT / path).read_text() for path in COLAB_BADGE_GENERATOR_LABEL_COUNTS
+    }
+    assert {
+        path: _colab_badge_label_counts(source)
+        for path, source in generator_sources.items()
+    } == COLAB_BADGE_GENERATOR_LABEL_COUNTS
+    assert {
+        path: {
+            locale: _colab_badge_label_counts(
+                _generator_cell_section(generator_sources[path], *markers)
+            )
+            for locale, markers in sections.items()
+        }
+        for path, sections in COLAB_BADGE_GENERATOR_SECTION_MARKERS.items()
+    } == {
+        path: {
+            locale: {
+                label_locale: int(label_locale == locale)
+                for label_locale in COLAB_BADGE_LABELS
+            }
+            for locale in sections
+        }
+        for path, sections in COLAB_BADGE_GENERATOR_SECTION_MARKERS.items()
+    }
 
 
 def _localized_markdown_texts(nb: dict, locale: str) -> list[str]:
@@ -764,3 +883,18 @@ def test_case_gbd_format_spectrogram_uses_auto_gps_xscale():
         and node.args[0].value == "auto-gps"
         for node in ast.walk(tree)
     )
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        TUTORIAL_ROOT / "en/user_guide/tutorials/case_calibration_pipeline.ipynb",
+        ROOT / "docs_redesign/how-to/case-studies/case_calibration_pipeline.ipynb",
+    ],
+)
+def test_calibration_notebook_formats_a_scalar_rms(path: Path):
+    nb = _read_notebook(path)
+    source = _code_cell_source_containing(nb, "RMS (counts)")
+
+    assert "ts_raw.rms().value" not in source
+    assert "np.sqrt(np.mean(ts_raw.value**2))" in source

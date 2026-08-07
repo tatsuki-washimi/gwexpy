@@ -433,6 +433,15 @@ def read_timeseriesmatrix_zarr(
             t0_override=t0_override,
             **kwargs,
         )
+        if len(tsd) == 1:
+            key, ts = next(iter(tsd.items()))
+            matrix = TimeSeriesMatrix(
+                np.asarray(ts.value, dtype=np.float64)[np.newaxis, np.newaxis, :],
+                t0=ts.t0,
+                dt=ts.dt,
+                channel_names=[key],
+            )
+            return apply_time_selection(matrix, start, end)
         return apply_time_selection(tsd.to_matrix(), start, end)
 
     seen_cells = set()

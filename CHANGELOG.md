@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.1.13] - 2026-08-06
+## [0.1.13] - 2026-08-08
 
 ### Behaviour-visible bug fixes
 

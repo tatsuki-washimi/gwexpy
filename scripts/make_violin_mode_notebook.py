@@ -369,7 +369,7 @@ JA_CELLS = [
         "source": (
             "# バイオリンモード解析\n"
             "\n"
-            f"[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]"
+            f"[![Colab で開く](https://colab.research.google.com/assets/colab-badge.svg)]"
             f"({COLAB_BASE}/case_violin_mode.ipynb)\n"
             "\n"
             "重力波検出器では鏡を吊るす懸架ファイバーが弦楽器の弦のように振動し、\n"

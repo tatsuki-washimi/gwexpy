@@ -12,7 +12,7 @@ def make_notebook():
     intro_md = """# ARIMAモデルによる突発的信号の検出
 # — バースト重力波探索のアイデア —
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_arima_burst_search.ipynb)
+[![Colab で開く](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_arima_burst_search.ipynb)
 
 ## はじめに
 重力波検出器のデータは定常的なノイズが支配的であり、バースト重力波（超新星爆発等）はこのノイズの中に埋もれた「短時間の非定常信号」として現れます。

@@ -311,7 +311,7 @@ JA_CELLS = [
     md("""\
 # Bruco + ICA エンドツーエンド ノイズ削減
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_bruco_ica_denoising.ipynb)
+[![Colab で開く](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_bruco_ica_denoising.ipynb)
 
 このノートブックでは、実際の干渉計コミッショニングで使われる **エンドツーエンドのノイズ削減ワークフロー** を示します：
 

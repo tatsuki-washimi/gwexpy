@@ -77,6 +77,15 @@ def _parse_fft_positional_args(
     return args[0], (args[1] if len(args) == 2 else None)
 
 
+def _coerce_reader_result(cls, reader_result):
+    """Wrap a collection reader result while retaining collection provenance."""
+    result = cls(reader_result)
+    provenance = getattr(reader_result, "_gwexpy_io", None)
+    if isinstance(provenance, dict):
+        result._gwexpy_io = {**provenance}
+    return result
+
+
 class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesDict):
     """A dictionary of TimeSeries, indexed by name.
 
@@ -135,7 +144,9 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
             reader_kwargs = dict(kwargs)
             reader_kwargs.pop("format", None)
-            return cls(read_timeseriesdict_netcdf4(source, **reader_kwargs))
+            return _coerce_reader_result(
+                cls, read_timeseriesdict_netcdf4(source, **reader_kwargs)
+            )
         gwf_format = _resolve_gwf_format(source, fmt)
         try:
             p = Path(source)
@@ -185,7 +196,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             reader = getattr(module, func_name)
             reader_kwargs = dict(kwargs)
             reader_kwargs.pop("format", None)
-            return cls(reader(source, *args, **reader_kwargs))
+            return _coerce_reader_result(cls, reader(source, *args, **reader_kwargs))
         if gwf_format is not None:
             from gwpy.io.gwf.core import get_channel_names
 
@@ -222,10 +233,11 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         ):
             from gwexpy.timeseries.io.zarr_ import read_timeseriesdict_zarr
 
-            return cls(
+            return _coerce_reader_result(
+                cls,
                 read_timeseriesdict_zarr(
                     p, **{k: v for k, v in kwargs.items() if k != "format"}
-                )
+                ),
             )
         if p is not None and p.is_dir() and (fmt in (None, "csv", "txt")):
             from gwexpy.io.collection_dir import read_collection_dir
@@ -996,6 +1008,9 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         new_dict = self.__class__()
         for key, ts in self.items():
             new_dict[key] = ts.crop(start=start, end=end, copy=copy)
+        provenance = getattr(self, "_gwexpy_io", None)
+        if isinstance(provenance, dict):
+            new_dict._gwexpy_io = {**provenance}
         return new_dict
 
     def append(self, other, copy=True, **kwargs) -> TimeSeriesDict:

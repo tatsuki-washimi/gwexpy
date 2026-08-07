@@ -366,7 +366,7 @@ JA_CELLS = [
         "source": (
             "# ピーク/スペクトル線の時間追跡\n"
             "\n"
-            f"[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]"
+            f"[![Colab で開く](https://colab.research.google.com/assets/colab-badge.svg)]"
             f"({COLAB_BASE}/advanced_peak_tracking.ipynb)\n"
             "\n"
             "このチュートリアルは [advanced_peak_detection.ipynb](advanced_peak_detection.ipynb) の続編です。\n"

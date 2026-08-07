@@ -226,6 +226,83 @@ class TestZarrRoundtrip:
         ts_in = read_timeseries_zarr(str(path))
         assert len(ts_in) == 20
 
+    def test_public_single_timeseries_read_preserves_data_and_identity(self, tmp_path):
+        path = tmp_path / "public-single.zarr"
+        channel = "H1:PUBLIC-ZARR"
+        source = TimeSeries(
+            np.arange(20, dtype=np.float64),
+            t0=1_234_567_890.0,
+            sample_rate=16.0,
+            name=channel,
+        )
+        TimeSeriesDict({channel: source}).write(str(path), format="zarr")
+
+        loaded = TimeSeries.read(str(path), format="zarr")
+
+        assert loaded.name == channel
+        assert str(loaded.channel) == channel
+        np.testing.assert_array_equal(loaded.value, source.value)
+        assert float(loaded.t0.value).hex() == float(source.t0.value).hex()
+        assert float(loaded.dt.value).hex() == float(source.dt.value).hex()
+
+    def test_public_single_timeseries_read_rejects_positional_arguments(self, tmp_path):
+        path = tmp_path / "public-positional.zarr"
+        TimeSeriesDict({"x": TimeSeries([1.0, 2.0], t0=10.0, sample_rate=2.0)}).write(
+            str(path), format="zarr"
+        )
+
+        with pytest.raises(TypeError, match="channels=.*start=.*end"):
+            TimeSeries.read(str(path), "ignored", format="zarr")
+
+    def test_public_single_timeseries_read_requires_one_channel(self, tmp_path):
+        path = tmp_path / "public-multi.zarr"
+        TimeSeriesDict(
+            {
+                "a": TimeSeries([1.0], t0=0.0, sample_rate=4.0),
+                "b": TimeSeries([2.0], t0=0.0, sample_rate=4.0),
+            }
+        ).write(str(path), format="zarr")
+
+        with pytest.raises(ValueError, match="exactly one channel"):
+            TimeSeries.read(str(path), format="zarr")
+
+    def test_public_single_timeseries_read_selects_explicit_channel(self, tmp_path):
+        path = tmp_path / "public-selected.zarr"
+        selected = "second"
+        TimeSeriesDict(
+            {
+                "first": TimeSeries([1.0, 2.0], t0=10.0, sample_rate=2.0),
+                selected: TimeSeries([3.0, 4.0], t0=10.0, sample_rate=2.0),
+            }
+        ).write(str(path), format="zarr")
+
+        loaded = TimeSeries.read(str(path), format="zarr", channels=selected)
+
+        assert loaded.name == selected
+        assert str(loaded.channel) == selected
+        np.testing.assert_array_equal(loaded.value, [3.0, 4.0])
+
+    def test_public_single_timeseries_read_applies_time_bounds_like_crop(
+        self, tmp_path
+    ):
+        path = tmp_path / "public-bounded.zarr"
+        source = TimeSeries(
+            np.arange(20, dtype=np.float64),
+            t0=1_234_567_890.0,
+            sample_rate=8.0,
+        )
+        TimeSeriesDict({"x": source}).write(str(path), format="zarr")
+        start = source.t0.value + 4 * source.dt.value
+        end = source.t0.value + 14 * source.dt.value
+
+        full = TimeSeries.read(str(path), format="zarr")
+        bounded = TimeSeries.read(str(path), format="zarr", start=start, end=end)
+        expected = full.crop(start, end)
+
+        np.testing.assert_array_equal(bounded.value, expected.value)
+        assert float(bounded.t0.value).hex() == float(expected.t0.value).hex()
+        assert float(bounded.dt.value).hex() == float(expected.dt.value).hex()
+
     def test_matrix_roundtrip(self, tmp_path):
         path = tmp_path / "matrix.zarr"
         matrix = TimeSeriesMatrix(

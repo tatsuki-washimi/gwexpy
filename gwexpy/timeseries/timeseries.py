@@ -156,6 +156,18 @@ class TimeSeries(
             reader_kwargs = dict(kwargs)
             reader_kwargs.pop("format", None)
             return cls(read_timeseries_netcdf4(source, **reader_kwargs))
+        if fmt == "zarr":
+            if args:
+                raise TypeError(
+                    "TimeSeries.read(..., format='zarr') does not accept "
+                    "positional reader arguments; use channels=..., start=..., "
+                    "and end=... keyword arguments."
+                )
+            from .io.zarr_ import read_timeseries_zarr
+
+            reader_kwargs = dict(kwargs)
+            reader_kwargs.pop("format", None)
+            return cls(read_timeseries_zarr(source, **reader_kwargs))
         if fmt == "csv" or (
             fmt is None
             and source_path is not None

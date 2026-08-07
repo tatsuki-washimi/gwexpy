@@ -490,7 +490,7 @@ JA_CELLS: list[tuple[str, str]] = [
         """\
 # GW 検出器におけるシューマン共鳴解析
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_schumann_resonance.ipynb)
+[![Colab で開く](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_schumann_resonance.ipynb)
 
 **シューマン共鳴**は、地球と電離層のキャビティ内で落雷によって励起されるグローバルな電磁共鳴です。
 約 7.83、14.3、20.8、26.4 Hz に鋭いスペクトルピークとして現れ、KAGRA などの第 2 世代重力波検出器の
