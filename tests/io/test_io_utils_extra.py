@@ -198,6 +198,27 @@ def test_ensure_datetime_aware_passthrough():
     assert result.tzinfo is tz1
 
 
+def test_ensure_datetime_rejects_ambiguous_and_nonexistent():
+    """Test ensure_datetime raises ValueError for ambiguous and nonexistent times."""
+    from zoneinfo import ZoneInfo
+    tz = ZoneInfo("America/New_York")
+    
+    # Nonexistent (Spring forward: 2020-03-08 02:00:00 -> 03:00:00)
+    with pytest.raises(ValueError, match="ambiguous or nonexistent"):
+        ensure_datetime("2020-03-08 02:30:00", tzinfo=tz)
+        
+    with pytest.raises(ValueError, match="ambiguous or nonexistent"):
+        ensure_datetime(_dt.datetime(2020, 3, 8, 2, 30), tzinfo=tz)
+
+    # Ambiguous (Fall back: 2020-11-01 01:00:00 -> 02:00:00 twice)
+    with pytest.raises(ValueError, match="ambiguous or nonexistent"):
+        ensure_datetime("2020-11-01 01:30:00", tzinfo=tz)
+        
+    # Unambiguous
+    dt_ok = ensure_datetime("2020-11-01 03:30:00", tzinfo=tz)
+    assert dt_ok == _dt.datetime(2020, 11, 1, 3, 30, tzinfo=tz)
+
+
 # ---------------------------------------------------------------------------
 # ensure_dependency
 # ---------------------------------------------------------------------------
