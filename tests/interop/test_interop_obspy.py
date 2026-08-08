@@ -12,7 +12,10 @@ from gwexpy.timeseries import TimeSeries
 def _make_ts(n=100, t0=1000000000.0):
     return TimeSeries(
         np.random.default_rng(42).standard_normal(n),
-        t0=t0, dt=0.01, unit="m", name="test",
+        t0=t0,
+        dt=0.01,
+        unit="m",
+        name="test",
     )
 
 
@@ -50,10 +53,12 @@ class TestFromObspy:
     def test_dict_to_stream(self):
         from gwexpy.timeseries import TimeSeriesDict
 
-        tsd = TimeSeriesDict({
-            "ch1": TimeSeries(np.ones(50), t0=1000000000.0, dt=0.01, name="ch1"),
-            "ch2": TimeSeries(np.zeros(50), t0=1000000000.0, dt=0.01, name="ch2"),
-        })
+        tsd = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(np.ones(50), t0=1000000000.0, dt=0.01, name="ch1"),
+                "ch2": TimeSeries(np.zeros(50), t0=1000000000.0, dt=0.01, name="ch2"),
+            }
+        )
         st = to_obspy(tsd)
         assert isinstance(st, obspy.Stream)
         assert len(st) == 2
@@ -71,10 +76,12 @@ class TestStreamToDict:
     def test_stream_to_timeseriesdict(self):
         from gwexpy.timeseries import TimeSeriesDict
 
-        st = obspy.Stream([
-            _make_trace(np.ones(50), channel="HHZ"),
-            _make_trace(np.zeros(50), channel="HHN"),
-        ])
+        st = obspy.Stream(
+            [
+                _make_trace(np.ones(50), channel="HHZ"),
+                _make_trace(np.zeros(50), channel="HHN"),
+            ]
+        )
         tsd = TimeSeriesDict.from_obspy(st)
         assert isinstance(tsd, TimeSeriesDict)
         assert len(tsd) == 2
@@ -85,10 +92,12 @@ class TestStreamToDict:
     def test_duplicate_keys_are_unique(self):
         from gwexpy.timeseries import TimeSeriesDict
 
-        st = obspy.Stream([
-            _make_trace(np.ones(50), channel="HHZ"),
-            _make_trace(np.full(50, 2.0), channel="HHZ"),
-        ])
+        st = obspy.Stream(
+            [
+                _make_trace(np.ones(50), channel="HHZ"),
+                _make_trace(np.full(50, 2.0), channel="HHZ"),
+            ]
+        )
         tsd = TimeSeriesDict.from_obspy(st)
         # Both traces preserved despite identical ids.
         assert len(tsd) == 2
@@ -96,10 +105,14 @@ class TestStreamToDict:
     def test_roundtrip_dict(self):
         from gwexpy.timeseries import TimeSeriesDict
 
-        tsd = TimeSeriesDict({
-            "ch1": TimeSeries(np.arange(50.0), t0=1000000000.0, dt=0.01, name="ch1"),
-            "ch2": TimeSeries(np.ones(50), t0=1000000000.0, dt=0.01, name="ch2"),
-        })
+        tsd = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(
+                    np.arange(50.0), t0=1000000000.0, dt=0.01, name="ch1"
+                ),
+                "ch2": TimeSeries(np.ones(50), t0=1000000000.0, dt=0.01, name="ch2"),
+            }
+        )
         st = to_obspy(tsd)
         tsd2 = TimeSeriesDict.from_obspy(st)
         assert len(tsd2) == 2
@@ -116,9 +129,11 @@ class TestStreamToTimeSeries:
         np.testing.assert_array_equal(ts.value, np.ones(50))
 
     def test_multi_trace_stream_raises(self):
-        st = obspy.Stream([
-            _make_trace(np.ones(50), channel="HHZ"),
-            _make_trace(np.zeros(50), channel="HHN"),
-        ])
+        st = obspy.Stream(
+            [
+                _make_trace(np.ones(50), channel="HHZ"),
+                _make_trace(np.zeros(50), channel="HHN"),
+            ]
+        )
         with pytest.raises(TypeError, match="TimeSeriesDict"):
             TimeSeries.from_obspy(st)

@@ -1,7 +1,13 @@
-gwexpy.interop.multitaper\_
+﻿gwexpy.interop.multitaper\_
 ===========================
 
 .. automodule:: gwexpy.interop.multitaper_
-   :members:
-   :undoc-members:
-   :show-inheritance:
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      from_mtspec
+      from_mtspec_array
+   

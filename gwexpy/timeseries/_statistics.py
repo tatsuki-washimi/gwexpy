@@ -7,7 +7,7 @@ and classic correlations (Pearson, Kendall, MIC).
 from __future__ import annotations
 
 import warnings
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 import numpy.typing as npt
@@ -17,6 +17,18 @@ from scipy import stats
 from gwexpy.types._stats import StatisticalMethodsMixin
 
 from ._typing import TimeSeriesAttrs
+
+if TYPE_CHECKING:
+    from .timeseries import TimeSeries
+
+
+def _stride_to_seconds(stride: float) -> float:
+    """Validate a numeric RMS stride expressed in seconds."""
+    if isinstance(stride, u.Quantity) or not isinstance(
+        stride, (int, float, np.integer, np.floating)
+    ):
+        raise TypeError("stride must be numeric seconds, not a Quantity or container")
+    return float(stride)
 
 
 class GrangerResult(float):
@@ -65,6 +77,75 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
     """
 
     # skewness and kurtosis are now inherited from StatisticalMethodsMixin
+
+    # ===============================
+    # Root-mean-square (gwpy-compatible)
+    # ===============================
+
+    def rms(  # type: ignore[override]
+        self, stride: float = 1, *, ignore_nan: bool = True
+    ) -> TimeSeries:
+        """Calculate the root-mean-square value once per ``stride`` seconds.
+
+        gwpy-compatible: returns a new `TimeSeries` holding one RMS value per
+        ``stride``-second window (``dt = stride``), mirroring
+        `gwpy.timeseries.TimeSeries.rms`. This overrides the generic numpy-style
+        ``rms`` from :class:`~gwexpy.types._stats.StatisticalMethodsMixin` (which
+        reduces along ``axis``) so that existing gwpy code such as
+        ``data.rms(10)`` keeps working.
+
+        Parameters
+        ----------
+        stride : `float`, optional
+            Stride in seconds between RMS calculations.  Quantity-like values
+            are intentionally rejected to keep the public API narrow.
+        ignore_nan : `bool`, optional
+            If true (the default), calculate each window from finite samples.
+
+        Returns
+        -------
+        rms : `TimeSeries`
+            A new `TimeSeries` of RMS values with ``dt = stride``. Any trailing
+            partial window is dropped, matching gwpy.
+
+        Raises
+        ------
+        ValueError
+            If the series is not regularly sampled, or ``stride`` is shorter
+            than one sample period.
+
+        Notes
+        -----
+        The result is dimensionless, matching GWpy.  For complex data the GWpy
+        convention ``sqrt(mean(|x|**2))`` is used.
+
+        """
+        if getattr(self, "sample_rate", None) is None:
+            raise ValueError("rms(stride) requires a regularly-sampled TimeSeries")
+        stride_s = _stride_to_seconds(stride)
+        stridesamp = int(stride_s * self.sample_rate.to("Hz").value)
+        if stridesamp < 1:
+            raise ValueError("stride is shorter than one sample period")
+        nsteps = int(self.size // stridesamp)
+        values = np.asarray(self.value)
+        # Square in at least double precision.  In particular, float32 values
+        # around 1e-23 underflow to zero when squared before the mean.
+        calc_dtype = np.complex128 if np.iscomplexobj(values) else np.float64
+        trimmed = values.astype(calc_dtype, copy=False)[: nsteps * stridesamp].reshape(
+            nsteps, stridesamp
+        )
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", "Mean of empty slice", RuntimeWarning)
+            mean = np.nanmean if ignore_nan else np.mean
+            data = np.sqrt(mean(np.abs(trimmed) ** 2, axis=1))
+        name = f"{self.name} {stride_s}-second RMS" if self.name is not None else None
+        return self.__class__(  # type: ignore[return-value]
+            data,
+            channel=self.channel,
+            t0=self.t0,
+            name=name,
+            sample_rate=1.0 / stride_s,
+        )
 
     # ===============================
     # Correlation & Causality

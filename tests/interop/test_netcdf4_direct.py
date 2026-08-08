@@ -1,6 +1,7 @@
 """
 Direct unit tests for gwexpy/interop/netcdf4_.py using MagicMock.
 """
+
 from __future__ import annotations
 
 import sys
@@ -155,9 +156,7 @@ class TestNetCDF4ChannelAndMetadata:
         ds = MagicMock()
         ds.dimensions = {}
         ds.variables = {}
-        ts = TimeSeries(
-            [1, 2, 3], t0=0, dt=1, unit="m", channel="X1:NC-CHAN"
-        )
+        ts = TimeSeries([1, 2, 3], t0=0, dt=1, unit="m", channel="X1:NC-CHAN")
         to_netcdf4(ts, ds, "ch_data")
         var_written = ds.createVariable.return_value
         assert var_written.channel == "X1:NC-CHAN"

@@ -1,7 +1,12 @@
-gwexpy.interop.meep\_
+﻿gwexpy.interop.meep\_
 =====================
 
 .. automodule:: gwexpy.interop.meep_
-   :members:
-   :undoc-members:
-   :show-inheritance:
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      from_meep_hdf5
+   

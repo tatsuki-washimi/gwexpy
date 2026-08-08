@@ -4,6 +4,7 @@ These tests create temporary HDF5 files with the Meep naming convention
 (``<field>.r`` / ``<field>.i`` pairs, or real-only ``<field>``) using h5py,
 which is available in the test environment.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -154,7 +155,9 @@ class TestBuildSpatialCoords:
         np.testing.assert_allclose(coords[0], np.arange(10) * 0.2)
 
     def test_3d_coords_with_origin(self):
-        coords = _build_spatial_coords((4, 4, 4), resolution=4.0, origin=(1.0, 2.0, 3.0))
+        coords = _build_spatial_coords(
+            (4, 4, 4), resolution=4.0, origin=(1.0, 2.0, 3.0)
+        )
         assert len(coords) == 3
         assert coords[0][0] == pytest.approx(1.0)
         assert coords[1][0] == pytest.approx(2.0)

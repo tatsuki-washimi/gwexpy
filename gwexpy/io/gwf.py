@@ -17,4 +17,6 @@ from gwpy.io.gwf import (
     num_channels,
 )
 
-__all__ = getattr(_gwpy_gwf, "__all__", [name for name in dir(_gwpy_gwf) if not name.startswith("_")])
+__all__ = getattr(
+    _gwpy_gwf, "__all__", [name for name in dir(_gwpy_gwf) if not name.startswith("_")]
+)

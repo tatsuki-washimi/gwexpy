@@ -1,4 +1,5 @@
 """Tests for gwexpy/interop/sqlite_.py."""
+
 from __future__ import annotations
 
 import sqlite3
@@ -78,7 +79,9 @@ class TestToSqlite:
     def test_data_rows_inserted(self, conn):
         ts = _make_ts(n=4)
         to_sqlite(ts, conn)
-        rows = conn.execute("SELECT * FROM samples WHERE series_id='ch1' ORDER BY i").fetchall()
+        rows = conn.execute(
+            "SELECT * FROM samples WHERE series_id='ch1' ORDER BY i"
+        ).fetchall()
         assert len(rows) == 4
 
 

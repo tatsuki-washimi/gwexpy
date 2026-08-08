@@ -1,4 +1,5 @@
 """Tests for gwexpy/interop/errors.py and gwexpy/interop/_optional.py."""
+
 from __future__ import annotations
 
 import sys
@@ -69,11 +70,13 @@ class TestRequireOptional:
     def test_returns_module_for_known_package(self):
         mod = require_optional("scipy")
         import scipy
+
         assert mod is scipy
 
     def test_returns_module_for_h5py(self):
         mod = require_optional("h5py")
         import h5py
+
         assert mod is h5py
 
     def test_missing_package_raises_import_error(self):
@@ -91,6 +94,7 @@ class TestRequireOptional:
             sys.modules.pop("iminuit", None)
             try:
                 import iminuit  # noqa: F401
+
                 # Already installed — skip
                 pytest.skip("iminuit is installed")
             except ImportError:

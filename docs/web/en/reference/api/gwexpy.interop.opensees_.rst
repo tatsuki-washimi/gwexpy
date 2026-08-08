@@ -1,7 +1,12 @@
-gwexpy.interop.opensees\_
+﻿gwexpy.interop.opensees\_
 =========================
 
 .. automodule:: gwexpy.interop.opensees_
-   :members:
-   :undoc-members:
-   :show-inheritance:
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      from_opensees_recorder
+   

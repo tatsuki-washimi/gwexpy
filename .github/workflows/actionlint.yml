@@ -1,0 +1,53 @@
+name: Actionlint
+
+on:
+  pull_request:
+    branches: [main, maint/0.1]
+    paths:
+      - ".github/workflows/**"
+      - ".github/actions/**"
+      - ".github/actionlint.yaml"
+  push:
+    branches: [main, maint/0.1]
+    paths:
+      - ".github/workflows/**"
+      - ".github/actions/**"
+      - ".github/actionlint.yaml"
+  workflow_dispatch:
+
+permissions:
+  attestations: read
+  contents: read
+
+jobs:
+  actionlint:
+    name: Release workflow static analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: bash -euo pipefail {0}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.0
+
+      - name: Download and verify actionlint
+        id: actionlint
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="1.7.12"
+          archive="actionlint_${version}_linux_amd64.tar.gz"
+          tool_dir="${RUNNER_TEMP}/actionlint-${version}"
+          mkdir -p "${tool_dir}"
+          gh release download "v${version}" --repo rhysd/actionlint \
+            --pattern "${archive}" --dir "${tool_dir}"
+          gh attestation verify "${tool_dir}/${archive}" \
+            --repo rhysd/actionlint \
+            --signer-workflow rhysd/actionlint/.github/workflows/release.yaml
+          tar -xzf "${tool_dir}/${archive}" -C "${tool_dir}" actionlint
+          "${tool_dir}/actionlint" -version | grep -Fx "${version}"
+          echo "executable=${tool_dir}/actionlint" >> "${GITHUB_OUTPUT}"
+
+      - name: Lint GitHub Actions workflows
+        run: '"${{ steps.actionlint.outputs.executable }}" -color'

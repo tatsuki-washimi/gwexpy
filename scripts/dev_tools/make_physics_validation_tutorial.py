@@ -5,14 +5,23 @@ from pathlib import Path
 
 
 def md(source):
-    return {"cell_type": "markdown", "id": f"md_{abs(hash(source))%10**8:08x}",
-            "metadata": {}, "source": source}
+    return {
+        "cell_type": "markdown",
+        "id": f"md_{abs(hash(source)) % 10**8:08x}",
+        "metadata": {},
+        "source": source,
+    }
 
 
 def code(source):
-    return {"cell_type": "code", "execution_count": None,
-            "id": f"cd_{abs(hash(source))%10**8:08x}",
-            "metadata": {}, "outputs": [], "source": source}
+    return {
+        "cell_type": "code",
+        "execution_count": None,
+        "id": f"cd_{abs(hash(source)) % 10**8:08x}",
+        "metadata": {},
+        "outputs": [],
+        "source": source,
+    }
 
 
 EN_CELLS = [
@@ -40,9 +49,7 @@ exercises** that every GW analyst should perform on their data pipelines.
 4. Safe log-scale plotting with `safe_log_scale`
 5. A checklist of physics sanity tests for an ASD pipeline
 """),
-
     md("## Setup"),
-
     code("""\
 import numpy as np
 import matplotlib.pyplot as plt
@@ -66,7 +73,6 @@ print()
 print(f"Machine epsilon (float64): {eps_for_dtype(np.float64):.2e}")
 print(f"Machine epsilon (float32): {eps_for_dtype(np.float32):.2e}")
 """),
-
     md("""\
 ## 1. Why GW Strain Needs Special Care
 
@@ -75,7 +81,6 @@ GW strain is ~10⁻²³ — only 7 orders of magnitude above machine epsilon.
 This means that **squaring strain to compute PSD, then taking log for
 plotting, can lose significant bits without careful flooring**.
 """),
-
     code("""\
 # Demonstrate the problem: strain-scale PSD near machine precision
 h_typical = 1e-23   # typical strain amplitude
@@ -102,14 +107,12 @@ print(f"safe_log10(psd_tiny)    = {val_tiny:.2f}  "
       f"(floored to {safe_log10(SAFE_FLOOR):.1f} dB)")
 print(f"safe_log10(0.0)         = {val_zero:.2f}  (not -inf!)")
 """),
-
     md("""\
 ## 2. Numerical Floors in ASD Computation
 
 gwexpy's Welch estimator uses `EPS_PSD` internally to prevent zero PSD
 values.  Here we show explicitly what happens without vs. with flooring.
 """),
-
     code("""\
 fs   = 4096.0
 T    = 16.0
@@ -150,14 +153,12 @@ ax.grid(True, which="both", alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 3. Unit-Consistent Operations with astropy.units
 
 gwexpy uses `astropy.units` throughout.  Physical validation means
 checking that unit arithmetic is self-consistent: ASD² = PSD, etc.
 """),
-
     code("""\
 # Build unit-aware FrequencySeries
 asd_u = FrequencySeries(
@@ -184,14 +185,12 @@ assert abs(rms_from_psd - rms_direct) / rms_direct < 0.05, \
     "PSD-derived RMS should agree with direct RMS to within 5%"
 print("PASS: PSD integral is consistent with direct RMS")
 """),
-
     md("""\
 ## 4. Safe Log-Scale Plotting
 
 `safe_log_scale()` converts an array to decibels with a configurable
 dynamic range, preventing -inf from appearing in plots.
 """),
-
     code("""\
 # Compute coherence (some bins will be near zero)
 ts2 = TimeSeries(noise * 0.6 + rng.normal(0, 1e-24, N),
@@ -226,14 +225,12 @@ plt.tight_layout()
 plt.show()
 print(f"safe_log_scale range: [{log_safe.min():.1f}, {log_safe.max():.1f}] dB")
 """),
-
     md("""\
 ## 5. Physics Sanity Checklist
 
 A systematic set of tests that every ASD pipeline should pass before
 results are trusted or shared.
 """),
-
     code("""\
 def check_asd_pipeline(ts_data: TimeSeries, label: str = "ASD") -> dict:
     results = {}
@@ -290,7 +287,6 @@ ts_bad = TimeSeries(np.zeros(N) + 1e-310, t0=ts.t0.value,
                     sample_rate=fs, name="near-zero data", unit="strain")
 res_bad = check_asd_pipeline(ts_bad, label="near-zero data (expected failures)")
 """),
-
     md("""\
 ## Summary
 
@@ -341,9 +337,7 @@ gwexpy の `gwexpy.numerics.constants` と `gwexpy.numerics.scaling` は
 4. `safe_log_scale` による安全な対数スケールプロット
 5. ASD パイプラインの物理健全性テストチェックリスト
 """),
-
     md("## セットアップ"),
-
     code("""\
 import numpy as np
 import matplotlib.pyplot as plt
@@ -367,7 +361,6 @@ print()
 print(f"マシンイプシロン (float64): {eps_for_dtype(np.float64):.2e}")
 print(f"マシンイプシロン (float32): {eps_for_dtype(np.float32):.2e}")
 """),
-
     md("""\
 ## 1. GW 歪みに特別な数値的注意が必要な理由
 
@@ -376,7 +369,6 @@ GW 歪みは ~10⁻²³ — マシンイプシロンの 7 桁上。
 これはつまり、**歪みを二乗して PSD を計算し、ログ変換する操作が
 適切なフロアなしに大きなビット損失を引き起こす可能性がある**ことを意味します。
 """),
-
     code("""\
 h_typical = 1e-23
 h_tiny    = 1e-30
@@ -396,9 +388,7 @@ print(f"safe_log10(psd_tiny)    = {safe_log10(psd_tiny):.2f}  "
       f"（{safe_log10(SAFE_FLOOR):.1f} dB にフロア）")
 print(f"safe_log10(0.0)         = {safe_log10(0.0):.2f}  （-inf ではない！）")
 """),
-
     md("## 2. ASD 計算における数値床"),
-
     code("""\
 fs   = 4096.0
 T    = 16.0
@@ -433,9 +423,7 @@ ax.grid(True, which="both", alpha=0.4)
 plt.tight_layout()
 plt.show()
 """),
-
     md("## 3. astropy.units による単位一貫性の確認"),
-
     code("""\
 asd_u = FrequencySeries(
     asd.value * (u.strain / u.Hz**0.5),
@@ -459,9 +447,7 @@ assert abs(rms_from_psd - rms_direct) / rms_direct < 0.05, \
     "PSD 積分 RMS はデータ直接 RMS と 5% 以内で一致すべき"
 print("PASS: PSD 積分はデータ RMS と一貫しています")
 """),
-
     md("## 4. safe_log_scale による安全な対数スケールプロット"),
-
     code("""\
 ts2 = TimeSeries(noise * 0.6 + rng.normal(0, 1e-24, N),
                  t0=ts.t0.value, sample_rate=fs, name="witness")
@@ -491,9 +477,7 @@ plt.tight_layout()
 plt.show()
 print(f"safe_log_scale 範囲: [{log_safe.min():.1f}, {log_safe.max():.1f}] dB")
 """),
-
     md("## 5. 物理健全性チェックリスト"),
-
     code("""\
 def check_asd_pipeline(ts_data: TimeSeries, label: str = "ASD") -> dict:
     results = {}
@@ -539,7 +523,6 @@ ts_bad = TimeSeries(np.zeros(N) + 1e-310, t0=ts.t0.value,
                     sample_rate=fs, name="ゼロ近傍データ", unit="strain")
 res_bad = check_asd_pipeline(ts_bad, label="ゼロ近傍データ（失敗が期待される）")
 """),
-
     md("""\
 ## まとめ
 
@@ -567,10 +550,15 @@ def write_nb(cells, path):
     nb = {
         "cells": cells,
         "metadata": {
-            "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+            "kernelspec": {
+                "display_name": "Python 3",
+                "language": "python",
+                "name": "python3",
+            },
             "language_info": {"name": "python", "version": "3.9.0"},
         },
-        "nbformat": 4, "nbformat_minor": 5,
+        "nbformat": 4,
+        "nbformat_minor": 5,
     }
     Path(path).write_text(json.dumps(nb, ensure_ascii=False, indent=1))
     print(f"Written: {path}")
@@ -578,6 +566,12 @@ def write_nb(cells, path):
 
 if __name__ == "__main__":
     root = Path(__file__).parents[2]
-    write_nb(EN_CELLS, root / "docs/web/en/user_guide/tutorials/case_physics_validation.ipynb")
-    write_nb(JA_CELLS, root / "docs/web/ja/user_guide/tutorials/case_physics_validation.ipynb")
+    write_nb(
+        EN_CELLS,
+        root / "docs/web/en/user_guide/tutorials/case_physics_validation.ipynb",
+    )
+    write_nb(
+        JA_CELLS,
+        root / "docs/web/ja/user_guide/tutorials/case_physics_validation.ipynb",
+    )
     print("Done.")

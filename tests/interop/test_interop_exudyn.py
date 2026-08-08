@@ -3,6 +3,7 @@
 Uses temporary text files and numpy arrays to simulate Exudyn output.
 Does NOT require Exudyn to be installed.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -63,17 +64,13 @@ class TestFromExudynArray:
 
     def test_unit_velocity(self):
         arr = _make_sensor_array(n_cols=1)
-        result = from_exudyn_sensor(
-            TimeSeries, arr, output_variable="Velocity"
-        )
+        result = from_exudyn_sensor(TimeSeries, arr, output_variable="Velocity")
         assert result.unit is not None  # TimeSeries has .unit
 
     def test_column_names(self):
         arr = _make_sensor_array(n_cols=2)
         names = ["ux", "uy"]
-        result = from_exudyn_sensor(
-            TimeSeriesMatrix, arr, column_names=names
-        )
+        result = from_exudyn_sensor(TimeSeriesMatrix, arr, column_names=names)
         assert isinstance(result, TimeSeriesMatrix)
 
 

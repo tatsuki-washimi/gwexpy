@@ -12,7 +12,10 @@ from gwexpy.timeseries import TimeSeries
 def _make_ts(n=100):
     return TimeSeries(
         np.random.default_rng(42).standard_normal(n),
-        t0=1000000000.0, dt=0.01, unit="m", name="test",
+        t0=1000000000.0,
+        dt=0.01,
+        unit="m",
+        name="test",
     )
 
 

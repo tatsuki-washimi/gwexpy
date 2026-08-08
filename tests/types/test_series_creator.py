@@ -1,4 +1,5 @@
 """Tests for gwexpy/types/series_creator.py."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -18,6 +19,7 @@ from gwexpy.types.series_creator import (
 # ---------------------------------------------------------------------------
 # _is_time_unit
 # ---------------------------------------------------------------------------
+
 
 class TestIsTimeUnit:
     def test_seconds(self):
@@ -41,6 +43,7 @@ class TestIsTimeUnit:
 # _is_freq_unit
 # ---------------------------------------------------------------------------
 
+
 class TestIsFreqUnit:
     def test_hz(self):
         assert _is_freq_unit(u.Hz) is True
@@ -60,6 +63,7 @@ class TestIsFreqUnit:
 # _is_angular_frequency
 # ---------------------------------------------------------------------------
 
+
 class TestIsAngularFrequency:
     def test_rad_per_s(self):
         assert _is_angular_frequency(u.rad / u.s) is True
@@ -75,6 +79,7 @@ class TestIsAngularFrequency:
 # ---------------------------------------------------------------------------
 # _to_quantity_1d
 # ---------------------------------------------------------------------------
+
 
 class TestToQuantity1d:
     def test_valid_1d(self):
@@ -98,6 +103,7 @@ class TestToQuantity1d:
 # _to_hz
 # ---------------------------------------------------------------------------
 
+
 class TestToHz:
     def test_hz_passthrough(self):
         q = u.Quantity([10.0, 20.0], u.Hz)
@@ -120,6 +126,7 @@ class TestToHz:
 # _to_angular_frequency
 # ---------------------------------------------------------------------------
 
+
 class TestToAngularFrequency:
     def test_hz_to_rad_per_s(self):
         # Line 58
@@ -131,6 +138,7 @@ class TestToAngularFrequency:
 # ---------------------------------------------------------------------------
 # as_series — time axis
 # ---------------------------------------------------------------------------
+
 
 class TestAsSeriesTime:
     def test_quantity_seconds(self):
@@ -160,6 +168,7 @@ class TestAsSeriesTime:
 # as_series — frequency axis
 # ---------------------------------------------------------------------------
 
+
 class TestAsSeriesFreq:
     def test_quantity_hz(self):
         # Line 130-155
@@ -187,20 +196,21 @@ class TestAsSeriesFreq:
 
     def test_angular_frequency_axis(self):
         # Lines 141-142 — angular frequency axis
-        axis = u.Quantity(np.linspace(0, 2*np.pi*100, 50), u.rad/u.s)
+        axis = u.Quantity(np.linspace(0, 2 * np.pi * 100, 50), u.rad / u.s)
         fs = as_series(axis)
         assert len(fs) == 50
 
     def test_angular_freq_output_unit(self):
         # Line 141-142 — value_unit is angular → _to_angular_frequency
-        axis = u.Quantity(np.linspace(0, 2*np.pi*100, 50), u.rad/u.s)
-        fs = as_series(axis, unit=u.rad/u.s)
+        axis = u.Quantity(np.linspace(0, 2 * np.pi * 100, 50), u.rad / u.s)
+        fs = as_series(axis, unit=u.rad / u.s)
         assert len(fs) == 50
 
 
 # ---------------------------------------------------------------------------
 # as_series — axis_unit path (Index with unit)
 # ---------------------------------------------------------------------------
+
 
 class TestAsSeriesAxisUnit:
     def test_axis_with_unit_attr(self):
@@ -209,10 +219,13 @@ class TestAsSeriesAxisUnit:
             def __init__(self, vals, unit):
                 self._vals = vals
                 self.unit = unit
+
             def __iter__(self):
                 return iter(self._vals)
+
             def __len__(self):
                 return len(self._vals)
+
             def __getitem__(self, key):
                 return self._vals[key]
 
@@ -224,6 +237,7 @@ class TestAsSeriesAxisUnit:
 # ---------------------------------------------------------------------------
 # as_series — non-unit path (datetime-like)
 # ---------------------------------------------------------------------------
+
 
 class TestAsSeriesNoUnit:
     def test_unsupported_type_raises(self):

@@ -5,7 +5,7 @@ Graphical User Interface
 
 .. warning::
    The GWexpy GUI (``gwexpy.gui``) is **experimental** and is not included in
-   the first PyPI distribution. For source/development use, install the GUI
+   the published PyPI distribution. For source/development use, install the GUI
    dependencies (PyQt5, pyqtgraph, qtpy, sounddevice) explicitly. The API may
    change without notice.
 

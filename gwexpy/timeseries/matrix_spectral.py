@@ -19,7 +19,9 @@ class TimeSeriesMatrixSpectralMixin:
 
     def _vectorized_fft(self, **kwargs: Any) -> Any:
         """Compute a vectorized FFT."""
-        FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
+        FrequencySeriesMatrix = ConverterRegistry.get_constructor(
+            "FrequencySeriesMatrix"
+        )
 
         # We assume regular sampling for vectorized FFT
         cast("TimeSeriesMatrix", self)._check_regular("Vectorized FFT")
@@ -57,7 +59,9 @@ class TimeSeriesMatrixSpectralMixin:
         """Compute a vectorized Welch PSD."""
         from scipy.signal import welch
 
-        FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
+        FrequencySeriesMatrix = ConverterRegistry.get_constructor(
+            "FrequencySeriesMatrix"
+        )
         from gwexpy.utils.fft_args import (
             check_deprecated_kwargs,
             get_default_overlap,
@@ -115,7 +119,9 @@ class TimeSeriesMatrixSpectralMixin:
         """Compute a vectorized CSD."""
         from scipy.signal import csd
 
-        FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
+        FrequencySeriesMatrix = ConverterRegistry.get_constructor(
+            "FrequencySeriesMatrix"
+        )
         from gwexpy.utils.fft_args import (
             check_deprecated_kwargs,
             get_default_overlap,
@@ -169,7 +175,9 @@ class TimeSeriesMatrixSpectralMixin:
         """Compute vectorized coherence."""
         from scipy.signal import coherence
 
-        FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
+        FrequencySeriesMatrix = ConverterRegistry.get_constructor(
+            "FrequencySeriesMatrix"
+        )
         from gwexpy.utils.fft_args import (
             check_deprecated_kwargs,
             get_default_overlap,
@@ -369,7 +377,9 @@ class TimeSeriesMatrixSpectralMixin:
 
     def _run_spectral_method(self, method_name: str, **kwargs: Any) -> Any:
         """Run a shared spectral method implementation."""
-        FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
+        FrequencySeriesMatrix = ConverterRegistry.get_constructor(
+            "FrequencySeriesMatrix"
+        )
 
         N, M, K = cast("TimeSeriesMatrix", self).shape
 

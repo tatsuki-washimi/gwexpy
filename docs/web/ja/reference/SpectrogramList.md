@@ -34,9 +34,9 @@ mat = lst.to_matrix()
 ## 関連チュートリアル
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
-- [Spectrogram チュートリアル](../user_guide/tutorials/intro_spectrogram.ipynb)
-- [セグメント可視化](../user_guide/tutorials/segment_visualization.ipynb)
-- [グリッチ詳細解析](../user_guide/tutorials/case_glitch_analysis.ipynb)
+- [Spectrogram チュートリアル](../../en/user_guide/tutorials/intro_spectrogram.ipynb)
+- [セグメント可視化](../../en/user_guide/tutorials/segment_visualization.ipynb)
+- [グリッチ詳細解析](../../en/user_guide/tutorials/case_glitch_analysis.ipynb)
 
 ## API リファレンス
 
@@ -57,6 +57,12 @@ Spectrogram オブジェクトのリスト。
 - 各要素は別々の provenance を持ったままバッチ描画できます
 - コンテナ自体は色スケール、正規化、ビン幅の一致を保証しません
 
+## リスト演算の互換性
+
+`TimeSeriesList` と `FrequencySeriesList` に合わせ、二項の `+` と `*` は Python のリスト演算として扱われ、組み込みの `list` を返します。
+これらの演算は要素を連結または反復するだけで、各 Spectrogram に対する算術演算ではありません。
+`SpectrogramList` を保持する一括処理には、専用のバッチメソッドを使用してください。
+
 ## よくある誤読
 
 1. スケールや単位を揃えずに明るさだけで要素間比較する
@@ -67,7 +73,7 @@ Spectrogram オブジェクトのリスト。
 
 - 各マップの解釈: [Spectrogram](Spectrogram.md)
 - 整列済みコレクション解析: [SpectrogramMatrix](SpectrogramMatrix.md)
-- 実務ワークフロー: [セグメント可視化](../user_guide/tutorials/segment_visualization.ipynb), [グリッチ詳細解析](../user_guide/tutorials/case_glitch_analysis.ipynb)
+- 実務ワークフロー: [セグメント可視化](../../en/user_guide/tutorials/segment_visualization.ipynb), [グリッチ詳細解析](../../en/user_guide/tutorials/case_glitch_analysis.ipynb)
 
 :::{note}
 Spectrogram オブジェクトはメモリを大量に消費する可能性があります。

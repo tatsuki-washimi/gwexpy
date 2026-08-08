@@ -13,8 +13,11 @@ def fetch_logs(ids, folder):
         print(f"Fetching logs for {rid}...")
         log_file = f"temp_logs/{folder}/run-{rid}-failed.log"
         # Using gh run view --log-failed
-        cmd = f"gh run view {rid} --repo tatsuki-washimi/gwexpy --log-failed > {log_file}"
+        cmd = (
+            f"gh run view {rid} --repo tatsuki-washimi/gwexpy --log-failed > {log_file}"
+        )
         subprocess.run(cmd, shell=True)
+
 
 with DOC_FAILS_PATH.open() as f:
     doc_ids = [item["databaseId"] for item in json.load(f)]

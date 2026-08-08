@@ -149,6 +149,22 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         if initlist:
             self._validate_items(self.data)
 
+    # ``TimeSeriesList`` and ``FrequencySeriesList`` are ``list`` subclasses.
+    # Keep their binary list-operator behavior even though this collection uses
+    # ``UserList`` internally for validation: concatenation/repetition returns
+    # a plain list, while ``*=`` retains the mutable collection instance.
+    def __add__(self, other):
+        return self.data + other
+
+    def __radd__(self, other):
+        return other + self.data
+
+    def __mul__(self, other):
+        return self.data * other
+
+    def __rmul__(self, other):
+        return other * self.data
+
     def _validate_items(self, items):
         for i, item in enumerate(items):
             if not isinstance(item, Spectrogram):

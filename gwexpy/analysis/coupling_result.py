@@ -1,4 +1,5 @@
 """CouplingResult: result container for a single Witness -> Target pair."""
+
 from __future__ import annotations
 
 import csv
@@ -424,14 +425,20 @@ class CouplingResult:
         """
         freqs = self.cf.xindex.value
         cf_vals = self.cf.value
-        cf_ul_vals = self.cf_ul.value if self.cf_ul is not None else np.full_like(cf_vals, np.nan)
+        cf_ul_vals = (
+            self.cf_ul.value
+            if self.cf_ul is not None
+            else np.full_like(cf_vals, np.nan)
+        )
         sig_vals = self._significance_array()
         inj_asd = np.sqrt(np.abs(self.psd_witness_inj.value))
         bkg_asd = np.sqrt(np.abs(self.psd_witness_bkg.value))
 
         with open(filepath, "w", newline="", encoding="utf-8") as fh:
             writer = csv.writer(fh)
-            writer.writerow(["frequency", "cf", "cf_ul", "significance", "inj_asd", "bkg_asd"])
+            writer.writerow(
+                ["frequency", "cf", "cf_ul", "significance", "inj_asd", "bkg_asd"]
+            )
             for row in zip(freqs, cf_vals, cf_ul_vals, sig_vals, inj_asd, bkg_asd):
                 writer.writerow(row)
 
@@ -494,7 +501,11 @@ class CouplingResult:
         """
         freqs = self.cf.xindex.value
         cf_vals = self.cf.value
-        cf_ul_vals = self.cf_ul.value if self.cf_ul is not None else np.full_like(cf_vals, np.nan)
+        cf_ul_vals = (
+            self.cf_ul.value
+            if self.cf_ul is not None
+            else np.full_like(cf_vals, np.nan)
+        )
         uncertainty = cf_ul_vals - cf_vals
         sig_vals = self._significance_array()
 
@@ -544,7 +555,13 @@ class CouplingResult:
             mask &= freqs <= freq_max
 
         fig, ax = plt.subplots(figsize=figsize)
-        ax.plot(freqs[mask], sig_vals[mask], color="tab:blue", linewidth=1.0, label="Significance")
+        ax.plot(
+            freqs[mask],
+            sig_vals[mask],
+            color="tab:blue",
+            linewidth=1.0,
+            label="Significance",
+        )
 
         if threshold > 0:
             ax.axhline(
@@ -558,9 +575,7 @@ class CouplingResult:
         ax.set_xscale("log")
         ax.set_xlabel("Frequency [Hz]")
         ax.set_ylabel(r"$(ASD_{inj} - ASD_{bkg}) / ASD_{bkg}$")
-        ax.set_title(
-            f"Significance: {self.witness_name} -> {self.target_name}"
-        )
+        ax.set_title(f"Significance: {self.witness_name} -> {self.target_name}")
         ax.legend()
         ax.grid(True, which="both", linestyle=":")
 
@@ -646,8 +661,16 @@ class CouplingResult:
         data_inj = asd_inj.value
         data_bkg = asd_bkg.value
 
-        _vmin = vmin if vmin is not None else float(np.nanpercentile(data_inj[data_inj > 0], 1))
-        _vmax = vmax if vmax is not None else float(np.nanpercentile(data_inj[data_inj > 0], 99))
+        _vmin = (
+            vmin
+            if vmin is not None
+            else float(np.nanpercentile(data_inj[data_inj > 0], 1))
+        )
+        _vmax = (
+            vmax
+            if vmax is not None
+            else float(np.nanpercentile(data_inj[data_inj > 0], 99))
+        )
         norm = LogNorm(vmin=max(_vmin, 1e-40), vmax=max(_vmax, _vmin * 2))
 
         fig, (ax_inj, ax_bkg) = plt.subplots(1, 2, figsize=figsize, sharey=True)
@@ -661,8 +684,12 @@ class CouplingResult:
             (ax_bkg, data_bkg, times_bkg, f"Background: {self.witness_name}"),
         ]:
             c = ax.pcolormesh(
-                times, freqs_plot, data.T,
-                norm=norm, shading="auto", cmap="viridis",
+                times,
+                freqs_plot,
+                data.T,
+                norm=norm,
+                shading="auto",
+                cmap="viridis",
             )
             fig.colorbar(c, ax=ax, label=f"ASD [{asd_unit}]")
 
@@ -689,9 +716,7 @@ class CouplingResult:
             ax.set_title(title)
 
         ax_bkg.set_ylabel("")
-        fig.suptitle(
-            f"ASDgram: {self.witness_name} -> {self.target_name}", y=1.02
-        )
+        fig.suptitle(f"ASDgram: {self.witness_name} -> {self.target_name}", y=1.02)
         fig.tight_layout()
         return fig
 
@@ -755,7 +780,11 @@ class CouplingResult:
             )
 
         _fftlength = fftlength if fftlength is not None else self.fftlength
-        _overlap = overlap if overlap is not None else (self.overlap if self.overlap is not None else 0.0)
+        _overlap = (
+            overlap
+            if overlap is not None
+            else (self.overlap if self.overlap is not None else 0.0)
+        )
 
         if _fftlength is None:
             raise ValueError(
@@ -771,7 +800,9 @@ class CouplingResult:
                     "ts_witness_bkg and ts_witness_inj are required for plot_rms(). "
                     "Set them when constructing CouplingResult."
                 )
-            ts_pairs.append((self.witness_name, self.ts_witness_bkg, self.ts_witness_inj))
+            ts_pairs.append(
+                (self.witness_name, self.ts_witness_bkg, self.ts_witness_inj)
+            )
         if channels in ("target", "both"):
             if self.ts_target_bkg is None or self.ts_target_inj is None:
                 raise ValueError(
@@ -920,9 +951,7 @@ class CouplingResult:
         ax.set_yscale("log")
         ax.set_xlabel("Time [s]")
         ax.set_ylabel("Frequency [Hz]")
-        ax.set_title(
-            f"SNRgram: {self.witness_name} -> {self.target_name}"
-        )
+        ax.set_title(f"SNRgram: {self.witness_name} -> {self.target_name}")
         fig.tight_layout()
         return fig
 
@@ -1009,7 +1038,15 @@ class CouplingResultCollection(dict):
         with open(filepath, "w", newline="", encoding="utf-8") as fh:
             writer = csv.writer(fh)
             writer.writerow(
-                ["channel_pair", "frequency", "cf", "cf_ul", "significance", "inj_asd", "bkg_asd"]
+                [
+                    "channel_pair",
+                    "frequency",
+                    "cf",
+                    "cf_ul",
+                    "significance",
+                    "inj_asd",
+                    "bkg_asd",
+                ]
             )
             for key, result in self.items():
                 if not isinstance(result, CouplingResult):
@@ -1054,7 +1091,11 @@ class CouplingResultCollection(dict):
         import matplotlib.pyplot as plt
 
         fig, ax = plt.subplots(figsize=figsize)
-        xlim = (freq_min, freq_max) if freq_min is not None and freq_max is not None else None
+        xlim = (
+            (freq_min, freq_max)
+            if freq_min is not None and freq_max is not None
+            else None
+        )
 
         for label, result in self.items():
             if not isinstance(result, CouplingResult):
@@ -1062,11 +1103,24 @@ class CouplingResultCollection(dict):
             cf = result.cf
             if xlim is not None:
                 cf = cf.copy().crop(*xlim)
-            ax.plot(cf.xindex.value, cf.value, marker=".", linestyle="-", markersize=3, label=label)
+            ax.plot(
+                cf.xindex.value,
+                cf.value,
+                marker=".",
+                linestyle="-",
+                markersize=3,
+                label=label,
+            )
 
         # Draw threshold line
         if threshold > 0:
-            ax.axhline(threshold, color="gray", linestyle="--", linewidth=0.8, label=f"threshold={threshold}")
+            ax.axhline(
+                threshold,
+                color="gray",
+                linestyle="--",
+                linewidth=0.8,
+                label=f"threshold={threshold}",
+            )
 
         ax.set_xscale("log")
         ax.set_yscale("log")
@@ -1134,7 +1188,7 @@ def _compute_rms_timeseries(
         spec = spec.crop_frequencies(lo, hi)
 
     freqs = spec.frequencies.value  # ndarray [Hz]
-    psd_matrix = spec.value          # ndarray (n_times, n_freqs) [unit^2/Hz]
+    psd_matrix = spec.value  # ndarray (n_times, n_freqs) [unit^2/Hz]
 
     # Integrate across frequency for each time bin (trapezoidal rule).
     # np.trapezoid for NumPy 2.0+, np.trapz for NumPy 1.x compatibility.

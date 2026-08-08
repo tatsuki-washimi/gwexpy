@@ -4,6 +4,7 @@ fitting sections.
 Usage:
     python scripts/extend_fitting_notebook.py
 """
+
 from __future__ import annotations
 
 import json
@@ -71,7 +72,7 @@ EN_NEW_CELLS = [
             "    sigma=0.5,\n"
             ")\n"
             "\n"
-            "print(f\"True  A={TRUE_A}, x0={TRUE_X0}, gamma={TRUE_GAMMA}\")\n"
+            'print(f"True  A={TRUE_A}, x0={TRUE_X0}, gamma={TRUE_GAMMA}")\n'
             "print(f\"Fit   A={res_lorenz.params['A']:.2f} ± {res_lorenz.errors['A']:.2f}\")\n"
             "print(f\"      x0={res_lorenz.params['x0']:.3f} ± {res_lorenz.errors['x0']:.3f}\")\n"
             "print(f\"      gamma={res_lorenz.params['gamma']:.3f} ± {res_lorenz.errors['gamma']:.3f}\")\n"
@@ -111,7 +112,7 @@ EN_NEW_CELLS = [
             "    sigma=0.5,\n"
             ")\n"
             "\n"
-            "print(f\"True  Q = {TRUE_Q:.2f}\")\n"
+            'print(f"True  Q = {TRUE_Q:.2f}")\n'
             "print(f\"Fit   Q = {res_q.params['Q']:.2f} ± {res_q.errors['Q']:.2f}\")\n"
             "print(f\"      x0 = {res_q.params['x0']:.3f} ± {res_q.errors['x0']:.3f} Hz\")\n"
             "\n"
@@ -158,19 +159,19 @@ EN_NEW_CELLS = [
             "                     p0={'A': 30.0, 'x0': 111.0, 'sigma': 0.6, 'gamma': 0.5},\n"
             "                     sigma=0.4)\n"
             "\n"
-            "print(f\"Lorentzian  chi2/ndof = {res_l.chi2:.1f}/{res_l.ndof}\")\n"
-            "print(f\"Voigt       chi2/ndof = {res_v.chi2:.1f}/{res_v.ndof}\")\n"
+            'print(f"Lorentzian  chi2/ndof = {res_l.chi2:.1f}/{res_l.ndof}")\n'
+            'print(f"Voigt       chi2/ndof = {res_v.chi2:.1f}/{res_v.ndof}")\n'
             "print(f\"Recovered sigma={res_v.params['sigma']:.3f} (true {TRUE_SIGMA}),\"\n"
             "      f\" gamma={res_v.params['gamma']:.3f} (true {TRUE_GAMMA_V})\")\n"
             "\n"
             "fig, axes = plt.subplots(1, 2, figsize=(14, 5))\n"
             "res_l.plot(ax=axes[0], label='Lorentzian fit')\n"
-            "axes[0].set_title(f\"Lorentzian  χ²/ndof = {res_l.chi2:.0f}/{res_l.ndof}\")\n"
+            'axes[0].set_title(f"Lorentzian  χ²/ndof = {res_l.chi2:.0f}/{res_l.ndof}")\n'
             "axes[0].set_xlabel('Frequency [Hz]')\n"
             "axes[0].legend()\n"
             "\n"
             "res_v.plot(ax=axes[1], label='Voigt fit')\n"
-            "axes[1].set_title(f\"Voigt  χ²/ndof = {res_v.chi2:.0f}/{res_v.ndof}\")\n"
+            'axes[1].set_title(f"Voigt  χ²/ndof = {res_v.chi2:.0f}/{res_v.ndof}")\n'
             "axes[1].set_xlabel('Frequency [Hz]')\n"
             "axes[1].legend()\n"
             "\n"
@@ -239,7 +240,7 @@ JA_NEW_CELLS = [
             "    sigma=0.5,\n"
             ")\n"
             "\n"
-            "print(f\"真値  A={TRUE_A}, x0={TRUE_X0}, gamma={TRUE_GAMMA}\")\n"
+            'print(f"真値  A={TRUE_A}, x0={TRUE_X0}, gamma={TRUE_GAMMA}")\n'
             "print(f\"推定  A={res_lorenz.params['A']:.2f} ± {res_lorenz.errors['A']:.2f}\")\n"
             "print(f\"      x0={res_lorenz.params['x0']:.3f} ± {res_lorenz.errors['x0']:.3f}\")\n"
             "print(f\"      gamma={res_lorenz.params['gamma']:.3f} ± {res_lorenz.errors['gamma']:.3f}\")\n"
@@ -277,7 +278,7 @@ JA_NEW_CELLS = [
             "    sigma=0.5,\n"
             ")\n"
             "\n"
-            "print(f\"真値  Q = {TRUE_Q:.2f}\")\n"
+            'print(f"真値  Q = {TRUE_Q:.2f}")\n'
             "print(f\"推定  Q = {res_q.params['Q']:.2f} ± {res_q.errors['Q']:.2f}\")\n"
             "print(f\"      x0 = {res_q.params['x0']:.3f} ± {res_q.errors['x0']:.3f} Hz\")\n"
             "\n"
@@ -321,19 +322,19 @@ JA_NEW_CELLS = [
             "                     p0={'A': 30.0, 'x0': 111.0, 'sigma': 0.6, 'gamma': 0.5},\n"
             "                     sigma=0.4)\n"
             "\n"
-            "print(f\"ローレンツ  chi2/ndof = {res_l.chi2:.1f}/{res_l.ndof}\")\n"
-            "print(f\"Voigt       chi2/ndof = {res_v.chi2:.1f}/{res_v.ndof}\")\n"
+            'print(f"ローレンツ  chi2/ndof = {res_l.chi2:.1f}/{res_l.ndof}")\n'
+            'print(f"Voigt       chi2/ndof = {res_v.chi2:.1f}/{res_v.ndof}")\n'
             "print(f\"推定  sigma={res_v.params['sigma']:.3f}（真値 {TRUE_SIGMA}）,\"\n"
             "      f\" gamma={res_v.params['gamma']:.3f}（真値 {TRUE_GAMMA_V}）\")\n"
             "\n"
             "fig, axes = plt.subplots(1, 2, figsize=(14, 5))\n"
             "res_l.plot(ax=axes[0], label='ローレンツフィット')\n"
-            "axes[0].set_title(f\"ローレンツ  χ²/ndof = {res_l.chi2:.0f}/{res_l.ndof}\")\n"
+            'axes[0].set_title(f"ローレンツ  χ²/ndof = {res_l.chi2:.0f}/{res_l.ndof}")\n'
             "axes[0].set_xlabel('周波数 [Hz]')\n"
             "axes[0].legend()\n"
             "\n"
             "res_v.plot(ax=axes[1], label='Voigt フィット')\n"
-            "axes[1].set_title(f\"Voigt  χ²/ndof = {res_v.chi2:.0f}/{res_v.ndof}\")\n"
+            'axes[1].set_title(f"Voigt  χ²/ndof = {res_v.chi2:.0f}/{res_v.ndof}")\n'
             "axes[1].set_xlabel('周波数 [Hz]')\n"
             "axes[1].legend()\n"
             "\n"

@@ -1,7 +1,12 @@
-gwexpy.interop.harmonica\_
+﻿gwexpy.interop.harmonica\_
 ==========================
 
 .. automodule:: gwexpy.interop.harmonica_
-   :members:
-   :undoc-members:
-   :show-inheritance:
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      from_harmonica_grid
+   

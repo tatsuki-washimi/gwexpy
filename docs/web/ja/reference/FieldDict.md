@@ -32,8 +32,8 @@ subset = fields.isel_all(axis0=slice(0, 4))
 
 ## 関連チュートリアル
 
-- [Field API 入門](../user_guide/tutorials/field_scalar_intro.ipynb)
-- [Field 高度ワークフロー](../user_guide/tutorials/field_advanced_workflow.ipynb)
+- [Field API 入門](../../en/user_guide/tutorials/field_scalar_intro.ipynb)
+- [Field 高度ワークフロー](../../en/user_guide/tutorials/field_advanced_workflow.ipynb)
 
 ## API リファレンス
 

@@ -1,4 +1,5 @@
 """gwexpy.noise.line_mask - Line noise masking tools."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -11,7 +12,7 @@ if TYPE_CHECKING:
 
 # Default KAGRA lines (approximate ranges for masking)
 KAGRA_LINES = [
-    (59.9, 60.1),    # Power line
+    (59.9, 60.1),  # Power line
     (119.8, 120.2),  # 2nd harmonic
     (179.7, 180.3),  # 3rd harmonic
     (239.6, 240.4),  # 4th harmonic

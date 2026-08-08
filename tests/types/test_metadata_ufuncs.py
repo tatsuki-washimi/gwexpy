@@ -67,6 +67,7 @@ def test_metadata_matrix_ufunc_multiply_scalar():
 
 # --- MetaData: repr / str ---
 
+
 def test_metadata_repr():
     m = MetaData(name="ch1", unit=u.m)
     r = repr(m)
@@ -87,6 +88,7 @@ def test_metadata_repr_html():
 
 
 # --- MetaData: unary operators ---
+
 
 def test_metadata_abs():
     m = MetaData(name="v", unit=u.m)
@@ -110,6 +112,7 @@ def test_metadata_pos():
 
 
 # --- MetaData: sub / div ---
+
 
 def test_metadata_sub_same_unit():
     m1 = MetaData(name="a", unit=u.m)
@@ -142,6 +145,7 @@ def test_metadata_rtruediv():
 
 # --- MetaData: numpy ufuncs (sqrt, square, comparison) ---
 
+
 def test_metadata_sqrt():
     m = MetaData(name="a", unit=u.m**2)
     out = np.sqrt(m)
@@ -165,6 +169,7 @@ def test_metadata_comparison_ufunc():
 
 
 # --- MetaData: from_series / as_meta ---
+
 
 def test_metadata_from_series():
     class _FakeSeries:
@@ -192,6 +197,7 @@ def test_metadata_as_meta_from_quantity():
 
 # --- MetaData: setters ---
 
+
 def test_metadata_unit_setter_string():
     m = MetaData()
     m.unit = "m"
@@ -211,6 +217,7 @@ def test_metadata_channel_setter_invalid_falls_back():
 
 
 # --- MetaDataDict: construction ---
+
 
 def test_metadatadict_from_list_of_strings():
     mdd = MetaDataDict(["ch0", "ch1", "ch2"])
@@ -247,8 +254,11 @@ def test_metadatadict_expected_size_mismatch_raises():
 
 # --- MetaDataDict: properties ---
 
+
 def test_metadatadict_names_channels_units():
-    mdd = MetaDataDict({"x": MetaData(name="x", unit=u.m), "y": MetaData(name="y", unit=u.s)})
+    mdd = MetaDataDict(
+        {"x": MetaData(name="x", unit=u.m), "y": MetaData(name="y", unit=u.s)}
+    )
     assert mdd.names == ["x", "y"]
     assert mdd.units == [u.m, u.s]
 
@@ -275,6 +285,7 @@ def test_metadatadict_repr_html():
 
 
 # --- MetaDataDict: arithmetic ---
+
 
 def test_metadatadict_sub():
     mdd1 = MetaDataDict({"a": MetaData(unit=u.m)})
@@ -337,6 +348,7 @@ def test_metadatadict_from_series_invalid_type_raises():
 
 
 # --- get_unit ---
+
 
 def test_get_unit_metadata():
     m = MetaData(unit=u.m)

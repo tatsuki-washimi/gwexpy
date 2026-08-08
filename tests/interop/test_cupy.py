@@ -1,4 +1,5 @@
 """Tests for gwexpy/interop/cupy_.py."""
+
 from __future__ import annotations
 
 import sys
@@ -21,7 +22,9 @@ class TestIsCupyAvailable:
         fake_cupy = SimpleNamespace(
             cuda=SimpleNamespace(
                 runtime=SimpleNamespace(
-                    getDeviceCount=lambda: (_ for _ in ()).throw(RuntimeError("no CUDA"))
+                    getDeviceCount=lambda: (_ for _ in ()).throw(
+                        RuntimeError("no CUDA")
+                    )
                 )
             )
         )
@@ -37,9 +40,7 @@ class TestIsCupyAvailable:
 
     def test_returns_true_when_device_available(self):
         fake_cupy = SimpleNamespace(
-            cuda=SimpleNamespace(
-                runtime=SimpleNamespace(getDeviceCount=lambda: 1)
-            )
+            cuda=SimpleNamespace(runtime=SimpleNamespace(getDeviceCount=lambda: 1))
         )
         with patch.dict(sys.modules, {"cupy": fake_cupy}):
             result = is_cupy_available()
@@ -47,9 +48,7 @@ class TestIsCupyAvailable:
 
     def test_returns_false_when_no_devices(self):
         fake_cupy = SimpleNamespace(
-            cuda=SimpleNamespace(
-                runtime=SimpleNamespace(getDeviceCount=lambda: 0)
-            )
+            cuda=SimpleNamespace(runtime=SimpleNamespace(getDeviceCount=lambda: 0))
         )
         with patch.dict(sys.modules, {"cupy": fake_cupy}):
             result = is_cupy_available()
@@ -64,6 +63,7 @@ class TestToCupyRequiresPackage:
 
     def test_cuda_driver_error_reraised_as_runtime(self):
         import numpy as np
+
         fake_cupy = SimpleNamespace(
             asarray=lambda x, dtype=None: (_ for _ in ()).throw(
                 RuntimeError("cudaErrorInsufficientDriver")
@@ -75,6 +75,7 @@ class TestToCupyRequiresPackage:
 
     def test_other_runtime_error_reraised(self):
         import numpy as np
+
         fake_cupy = SimpleNamespace(
             asarray=lambda x, dtype=None: (_ for _ in ()).throw(
                 RuntimeError("some other error")
@@ -86,6 +87,7 @@ class TestToCupyRequiresPackage:
 
     def test_converts_successfully_with_mock(self):
         import numpy as np
+
         arr = np.ones(4)
         fake_cupy = SimpleNamespace(asarray=lambda x, dtype=None: x)
         with patch.dict(sys.modules, {"cupy": fake_cupy}):
@@ -101,6 +103,7 @@ class TestFromCupyRequiresPackage:
 
     def test_converts_successfully_with_mock(self):
         import numpy as np
+
         arr = np.ones(5)
         fake_cupy = SimpleNamespace(asnumpy=lambda x: x)
         with patch.dict(sys.modules, {"cupy": fake_cupy}):

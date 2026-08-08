@@ -32,7 +32,7 @@ arr_t = arr.swapaxes(0, 1)
 
 ## 関連チュートリアル
 
-- [TimeSeries 基本](../user_guide/tutorials/intro_timeseries.ipynb)
+- [TimeSeries 基本](../../en/user_guide/tutorials/intro_timeseries.ipynb)
 - [高度な線形代数](../user_guide/tutorials/advanced_linear_algebra.md)
 
 ## API リファレンス

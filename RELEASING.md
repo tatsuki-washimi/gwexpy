@@ -6,7 +6,8 @@ dry-runs and must be launched with `--ref main`, which the workflow enforces:
 ```bash
 gh workflow run publish-release.yml --ref main \
   -f release_ref=<existing-final-tag-or-40-character-candidate-sha> \
-  -f expected_tag=<final-version-tag>
+  -f expected_tag=<final-version-tag> \
+  -f review_evidence=docs/developers/plans/manifests/audit-manifest-v0.1.13-sol-followup.yaml
 ```
 
 `release_ref` is either an existing annotated final-release tag (strict mode)
@@ -24,6 +25,65 @@ PyPI publisher, environment, and ruleset readbacks are all approved.
 After a tag push, the strict workflow must pass verify, build, smoke, and
 publish.  Confirm the PyPI distribution/version, GitHub Release, Zenodo, and
 conda follow-up state before declaring release acceptance.
+
+## Frozen source, payload, and evidence
+
+Both a candidate dispatch and a tag push run the frozen-tip validator.  After
+the human fast-forwards `maint/0.1`, the fetched `origin/main` and
+`origin/maint/0.1` tips must both equal the validated 40-character source SHA.
+A missing maintenance fetch or either moved tip is a release failure; it is
+never ignored as an optional branch.
+
+The PyPI upload artifact is a fresh `release-payload-<source-sha>` directory
+containing exactly one normalized wheel and one sdist.  `LICENSE.sha256` and
+the distribution SHA-256 manifest live only in the separate
+`release-sidecars-<source-sha>` artifact.  Smoke tests select the manifest's
+exact filename and reject missing, extra, symlinked, non-regular, substituted,
+or version-mismatched payload files.  The publish job downloads the payload
+artifact only.
+
+The four required smoke reports are named exactly
+`python-3.11-wheel.json`, `python-3.11-sdist.json`,
+`python-3.12-wheel.json`, and `python-3.12-sdist.json`.  Their collector
+accepts only typed release facts (not logs, URLs, credentials, or raw review
+text) and emits a single allowlisted aggregate artifact named
+`v0113-integration-evidence-<40-character-source-sha>`.  It is retained for
+90 days.  Record its artifact ID, API digest, `created_at`, and `expires_at`
+in UTC; acceptance requires `expires_at - created_at >= 90 days - 5 minutes`.
+Repository retention policy may cap the configured duration, and run/artifact
+deletion or expiry invalidates the evidence.
+
+Terra review evidence is advisory orchestration metadata, not identity proof,
+legal approval, or publication authorization.  It contains the reviewed
+commit, canonical `git ls-tree -r -z --full-tree` scope digest, sanitized
+finding IDs, and verdict only.  Raw reports are not collected.  Human approval
+and protected-environment controls remain the only publication authorization.
+
+The coordinator-owned
+`docs/developers/plans/manifests/audit-manifest-v0.1.13-sol-followup.yaml`
+is the sole release-gate review-evidence path for tag runs.  It must contain
+exactly one top-level `review_evidence_json: |` block whose content is the
+strict JSON review-evidence schema; duplicate JSON keys are rejected.  Manual
+dispatches may name that same repository-relative path explicitly.  The
+reviewed commit is `S`, while the validator binds it to `R` only when the
+`S..R` diff contains the coordinator manifest and/or plan alone.  Any plan
+delta must be byte-identical except for existing checkbox transitions from
+`[ ]` to `[x]`; frozen-tip validation happens only after this binding.
+
+## Locked release build toolchain
+
+`requirements/release-build.txt` is the Ubuntu/CPython 3.11 release-builder
+lock.  Generate it from a disposable environment with `pip-compile
+--generate-hashes`, including `pip`, `build`, `twine`, `setuptools`, `wheel`,
+and every transitive dependency.  Review the exact versions and SHA-256 hashes
+before replacing the file.  The workflow installs it with
+`python -m pip install --require-hashes -r requirements/release-build.txt`
+and builds with `python -m build --no-isolation`; it must never substitute a
+floating `pip install --upgrade pip build twine` command.
+
+Changing this lock invalidates the release artifact, all four smoke results,
+the evidence aggregate, and the advisory review.  Regenerate the artifacts and
+repeat the complete release review against the new source SHA.
 
 ## Where the trust boundary actually is
 

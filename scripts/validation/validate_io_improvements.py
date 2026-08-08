@@ -16,7 +16,10 @@ def test_imports():
 
     tests = [
         ("ensure_dependency", "from gwexpy.io.utils import ensure_dependency"),
-        ("register_timeseries_format", "from gwexpy.timeseries.io._registration import register_timeseries_format"),
+        (
+            "register_timeseries_format",
+            "from gwexpy.timeseries.io._registration import register_timeseries_format",
+        ),
         ("TimeSeries", "from gwexpy.timeseries import TimeSeries"),
         ("TimeSeriesDict", "from gwexpy.timeseries import TimeSeriesDict"),
         ("WAV reader", "from gwexpy.timeseries.io.wav import read_timeseriesdict_wav"),
@@ -38,6 +41,7 @@ def test_imports():
             traceback.print_exc()
 
     return passed, failed
+
 
 def test_ensure_dependency():
     """Test ensure_dependency function."""
@@ -88,6 +92,7 @@ def test_ensure_dependency():
 
     return tests_passed, tests_failed
 
+
 def test_registration_helper():
     """Test register_timeseries_format function."""
     print("\n" + "=" * 60)
@@ -103,13 +108,23 @@ def test_registration_helper():
     # Test 1: Function signature
     try:
         import inspect
+
         sig = inspect.signature(register_timeseries_format)
         params = list(sig.parameters.keys())
 
         expected_params = [
-            "format_name", "reader_dict", "reader_single", "reader_matrix",
-            "writer_dict", "writer_single", "writer_matrix",
-            "identifier_dict", "identifier_single", "extension", "auto_adapt", "force"
+            "format_name",
+            "reader_dict",
+            "reader_single",
+            "reader_matrix",
+            "writer_dict",
+            "writer_single",
+            "writer_matrix",
+            "identifier_dict",
+            "identifier_single",
+            "extension",
+            "auto_adapt",
+            "force",
         ]
 
         for param in expected_params:
@@ -123,15 +138,14 @@ def test_registration_helper():
 
     # Test 2: Registration without errors
     try:
+
         def mock_reader_dict(source, **kwargs):
             tsd = TimeSeriesDict()
             tsd["test"] = TimeSeries([1, 2, 3], t0=0, dt=1, name="test")
             return tsd
 
         register_timeseries_format(
-            "test_fmt_validation",
-            reader_dict=mock_reader_dict,
-            extension="testval"
+            "test_fmt_validation", reader_dict=mock_reader_dict, extension="testval"
         )
         print("✅ Registration execution successful")
         tests_passed += 1
@@ -142,6 +156,7 @@ def test_registration_helper():
 
     return tests_passed, tests_failed
 
+
 def test_reader_signatures():
     """Test that readers have the expected signatures."""
     print("\n" + "=" * 60)
@@ -151,9 +166,21 @@ def test_reader_signatures():
     import inspect
 
     tests = [
-        ("wav.read_timeseriesdict_wav", "from gwexpy.timeseries.io.wav import read_timeseriesdict_wav as func", ["unit", "epoch", "channels"]),
-        ("ats.read_timeseries_ats", "from gwexpy.timeseries.io.ats import read_timeseries_ats as func", ["unit", "epoch"]),
-        ("audio.read_timeseriesdict_audio", "from gwexpy.timeseries.io.audio import read_timeseriesdict_audio as func", ["epoch", "unit"]),
+        (
+            "wav.read_timeseriesdict_wav",
+            "from gwexpy.timeseries.io.wav import read_timeseriesdict_wav as func",
+            ["unit", "epoch", "channels"],
+        ),
+        (
+            "ats.read_timeseries_ats",
+            "from gwexpy.timeseries.io.ats import read_timeseries_ats as func",
+            ["unit", "epoch"],
+        ),
+        (
+            "audio.read_timeseriesdict_audio",
+            "from gwexpy.timeseries.io.audio import read_timeseriesdict_audio as func",
+            ["epoch", "unit"],
+        ),
     ]
 
     passed = 0
@@ -180,6 +207,7 @@ def test_reader_signatures():
 
     return passed, failed
 
+
 def test_pathlib_support():
     """Test that I/O readers accept pathlib.Path objects."""
     print("\n" + "=" * 60)
@@ -189,9 +217,18 @@ def test_pathlib_support():
     import inspect
 
     tests = [
-        ("ats.read_timeseries_ats", "from gwexpy.timeseries.io.ats import read_timeseries_ats as func"),
-        ("gbd.read_timeseriesdict_gbd", "from gwexpy.timeseries.io.gbd import read_timeseriesdict_gbd as func"),
-        ("wav.read_timeseriesdict_wav", "from gwexpy.timeseries.io.wav import read_timeseriesdict_wav as func"),
+        (
+            "ats.read_timeseries_ats",
+            "from gwexpy.timeseries.io.ats import read_timeseries_ats as func",
+        ),
+        (
+            "gbd.read_timeseriesdict_gbd",
+            "from gwexpy.timeseries.io.gbd import read_timeseriesdict_gbd as func",
+        ),
+        (
+            "wav.read_timeseriesdict_wav",
+            "from gwexpy.timeseries.io.wav import read_timeseriesdict_wav as func",
+        ),
     ]
 
     passed = 0
@@ -224,6 +261,7 @@ def test_pathlib_support():
             failed += 1
 
     return passed, failed
+
 
 def main():
     """Run all validation tests."""
@@ -273,6 +311,7 @@ def main():
     else:
         print(f"⚠️  {total_failed} test(s) failed - review needed")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -50,17 +50,13 @@ class TestInputValidation:
     def test_stride_greater_than_fftlength_raises(self):
         ts = _ts()
         with pytest.raises(ValueError, match="must not exceed fftlength"):
-            compute_student_t_nu(
-                ts, fftlength=_FFTLENGTH, stride=1.0, window=_WINDOW
-            )
+            compute_student_t_nu(ts, fftlength=_FFTLENGTH, stride=1.0, window=_WINDOW)
 
     def test_stride_times_fs_below_one_raises(self):
         ts = _ts(sample_rate=32)
         # stride so small that int(stride * fs) == 0
         with pytest.raises(ValueError, match="stride \\* sample_rate"):
-            compute_student_t_nu(
-                ts, fftlength=_FFTLENGTH, stride=0.001, window=_WINDOW
-            )
+            compute_student_t_nu(ts, fftlength=_FFTLENGTH, stride=0.001, window=_WINDOW)
 
     def test_fftlength_non_positive_raises(self):
         ts = _ts()
@@ -75,9 +71,7 @@ class TestInputValidation:
     def test_overlap_negative_raises(self):
         ts = _ts()
         with pytest.raises(ValueError, match="overlap must be finite"):
-            compute_student_t_nu(
-                ts, fftlength=_FFTLENGTH, overlap=-0.1, window=_WINDOW
-            )
+            compute_student_t_nu(ts, fftlength=_FFTLENGTH, overlap=-0.1, window=_WINDOW)
 
     def test_overlap_equal_to_fftlength_raises(self):
         """overlap == fftlength collapses stride to 0, which must be rejected."""
@@ -115,15 +109,20 @@ class TestInputValidation:
         """Regression: the validation additions must not reject valid calls."""
         ts = _ts()
         res = compute_student_t_nu(
-            ts, fftlength=_FFTLENGTH, stride=_FFTLENGTH / 2, window=_WINDOW,
-            overlap=None, frange=(1.0, 10.0),
+            ts,
+            fftlength=_FFTLENGTH,
+            stride=_FFTLENGTH / 2,
+            window=_WINDOW,
+            overlap=None,
+            frange=(1.0, 10.0),
         )
         assert res.value.size > 0
 
     def test_complex_input_raises(self):
         ts = TimeSeries(
             np.random.default_rng(0).standard_normal(512).astype(complex),
-            sample_rate=32, t0=0,
+            sample_rate=32,
+            t0=0,
         )
         with pytest.raises(ValueError, match="real-valued"):
             compute_student_t_nu(ts, fftlength=_FFTLENGTH, window=_WINDOW)
@@ -274,9 +273,12 @@ class TestDcNyquistNumericRegression:
 
         ts = TimeSeries(
             np.random.default_rng(12345).standard_normal(n_samples),
-            sample_rate=fs, t0=0,
+            sample_rate=fs,
+            t0=0,
         )
-        res = compute_student_t_nu(ts, fftlength=fftlength, window=window, frange=(0, 5))
+        res = compute_student_t_nu(
+            ts, fftlength=fftlength, window=window, frange=(0, 5)
+        )
         np.testing.assert_allclose(res.frequencies.value, [0, 4])
 
         dc = res.value[:, 0]

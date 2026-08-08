@@ -1,4 +1,5 @@
 """Tests for gwexpy/signal/preprocessing/whitening.py."""
+
 from __future__ import annotations
 
 import warnings
@@ -11,6 +12,7 @@ from gwexpy.signal.preprocessing.whitening import WhiteningModel, _resolve_eps, 
 # ---------------------------------------------------------------------------
 # _resolve_eps
 # ---------------------------------------------------------------------------
+
 
 class TestResolveEps:
     def test_resolve_none(self):
@@ -58,6 +60,7 @@ class TestResolveEps:
 # WhiteningModel
 # ---------------------------------------------------------------------------
 
+
 class TestWhiteningModel:
     def test_inverse_transform_basic(self):
         # Basic roundtrip
@@ -86,6 +89,7 @@ class TestWhiteningModel:
 # ---------------------------------------------------------------------------
 # whiten
 # ---------------------------------------------------------------------------
+
 
 class TestWhiten:
     def test_pca_basic(self):

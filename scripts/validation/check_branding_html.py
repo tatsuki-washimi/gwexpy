@@ -67,7 +67,11 @@ class BrandingParser(HTMLParser):
             self._current_anchor_text.append(data)
 
     def handle_endtag(self, tag: str) -> None:
-        if tag.lower() == "a" and self._current_anchor_text is not None and self.anchors:
+        if (
+            tag.lower() == "a"
+            and self._current_anchor_text is not None
+            and self.anchors
+        ):
             self.anchors[-1]["text"] = "".join(self._current_anchor_text).strip()
             self._current_anchor_text = None
 
@@ -120,7 +124,9 @@ def _validate_page(
         errors.append(f"missing meta tags: {missing}")
 
     if parser.meta.get("og:image") != expected_image:
-        errors.append(f'og:image expected "{expected_image}", got "{parser.meta.get("og:image")}"')
+        errors.append(
+            f'og:image expected "{expected_image}", got "{parser.meta.get("og:image")}"'
+        )
     if parser.meta.get("twitter:image") != expected_image:
         errors.append(
             f'twitter:image expected "{expected_image}", got "{parser.meta.get("twitter:image")}"'

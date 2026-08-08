@@ -231,17 +231,34 @@ def _normalize_gwf_gap_options(pad: Any, gap: Any) -> tuple[Any, Any]:
 
 
 def _consume_gwf_parallel_kwargs(gwf_kwargs: dict[str, Any]) -> int | None:
-    """Remove GWpy high-level parallel kwargs before low-level GWF reads."""
-    parallel = gwf_kwargs.pop("parallel", None)
-    nproc = gwf_kwargs.pop("nproc", None)
-    if parallel is None:
-        parallel = nproc
-    if parallel is None:
+    """Consume unsupported GWF parallel options without silently ignoring them."""
+    has_parallel = "parallel" in gwf_kwargs
+    has_nproc = "nproc" in gwf_kwargs
+    if has_parallel and has_nproc:
+        raise TypeError("Specify either 'parallel' or 'nproc', not both.")
+    if not has_parallel and not has_nproc:
         return None
-    try:
-        return max(int(parallel), 1)
-    except (TypeError, ValueError):
+
+    option = "parallel" if has_parallel else "nproc"
+    value = gwf_kwargs.pop(option)
+    if value is None:
         return None
+
+    if option == "parallel" and isinstance(value, (bool, np.bool_)):
+        if bool(value):
+            raise NotImplementedError("parallel GWF reads are not implemented")
+        return None
+    if option == "nproc" and isinstance(value, (bool, np.bool_)):
+        raise ValueError("nproc must be a positive integer or None")
+    if not isinstance(value, (int, np.integer)):
+        raise ValueError(f"{option} must be a positive integer, bool, or None")
+
+    count = int(value)
+    if count <= 0:
+        raise ValueError(f"{option} must be a positive integer")
+    if count > 1:
+        raise NotImplementedError("parallel GWF reads are not implemented")
+    return None
 
 
 def read_gwf_timeseriesdict(

@@ -1,4 +1,5 @@
 """Tests for Pint ↔ astropy unit conversion utilities."""
+
 from __future__ import annotations
 
 import numpy as np

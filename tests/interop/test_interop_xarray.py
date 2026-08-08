@@ -12,7 +12,10 @@ from gwexpy.timeseries import TimeSeries
 def _make_ts(n=100):
     return TimeSeries(
         np.arange(n, dtype=np.float64),
-        t0=1000000000.0, dt=0.01, unit="m", name="test",
+        t0=1000000000.0,
+        dt=0.01,
+        unit="m",
+        name="test",
     )
 
 
@@ -85,9 +88,7 @@ class TestFromXarray:
         assert ts2.channel is None
 
     def test_user_channel_overrides(self):
-        ts = TimeSeries(
-            np.arange(5.0), t0=1e9, dt=0.1, channel="X1:ORIG"
-        )
+        ts = TimeSeries(np.arange(5.0), t0=1e9, dt=0.1, channel="X1:ORIG")
         da = to_xarray(ts, time_coord="gps")
         ts2 = from_xarray(TimeSeries, da, channel="X1:OVERRIDE")
         assert str(ts2.channel) == "X1:OVERRIDE"
@@ -150,6 +151,7 @@ class TestTryParseUnit:
 
     def test_invalid_unit_returns_none_with_warning(self):
         import warnings
+
         with warnings.catch_warnings(record=True):
             warnings.simplefilter("always")
             result = _try_parse_unit("not_a_real_unit_xyz_abc_123")

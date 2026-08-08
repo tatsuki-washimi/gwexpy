@@ -41,10 +41,12 @@ def test_csv_timeseriesdict_reads_single_file(tmp_path):
 
 
 def test_csv_timeseriesdict_collection_directory_roundtrip(tmp_path):
-    tsd = TimeSeriesDict({
-        "H1:TS": _make_timeseries("H1:TS"),
-        "L1:TS": _make_timeseries("L1:TS"),
-    })
+    tsd = TimeSeriesDict(
+        {
+            "H1:TS": _make_timeseries("H1:TS"),
+            "L1:TS": _make_timeseries("L1:TS"),
+        }
+    )
     target = tmp_path / "dict.csv"
 
     tsd.write(target, format="csv")
@@ -80,9 +82,11 @@ def test_txt_timeseries_write_requires_explicit_format(tmp_path):
 
 
 def test_txt_timeseriesdict_uses_collection_directory(tmp_path):
-    tsd = TimeSeriesDict({
-        "H1:TS": _make_timeseries("H1:TS"),
-    })
+    tsd = TimeSeriesDict(
+        {
+            "H1:TS": _make_timeseries("H1:TS"),
+        }
+    )
     target = tmp_path / "dict.txt"
 
     tsd.write(target, format="txt")

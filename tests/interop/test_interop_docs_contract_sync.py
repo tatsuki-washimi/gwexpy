@@ -67,9 +67,9 @@ def test_english_guide_rows_match_contract():
         line = _find_row(guide, entry["row_match_en"])
         assert STATUS_LABELS_EN[entry["status"]] in line
         for func_name in entry["guide_api"]:
-            assert (
-                f"`{func_name}()`" in line or f"`{func_name}`" in line
-            ), f"Expected `{func_name}` (with or without ()) in guide row: {line!r}"
+            assert f"`{func_name}()`" in line or f"`{func_name}`" in line, (
+                f"Expected `{func_name}` (with or without ()) in guide row: {line!r}"
+            )
         details_link = entry.get("details_link")
         if details_link:
             assert f"[API]({details_link})" in line
@@ -82,9 +82,9 @@ def test_japanese_guide_rows_match_contract():
         line = _find_row(guide, entry["row_match_ja"])
         assert STATUS_LABELS_JA[entry["status"]] in line
         for func_name in entry["guide_api"]:
-            assert (
-                f"`{func_name}()`" in line or f"`{func_name}`" in line
-            ), f"Expected `{func_name}` (with or without ()) in guide row: {line!r}"
+            assert f"`{func_name}()`" in line or f"`{func_name}`" in line, (
+                f"Expected `{func_name}` (with or without ()) in guide row: {line!r}"
+            )
         details_link = entry.get("details_link")
         if details_link:
             assert f"[API]({details_link})" in line
@@ -109,8 +109,12 @@ def test_contract_covers_all_documented_interop_rows():
     en_guide = _read(EN_GUIDE)
     ja_guide = _read(JA_GUIDE)
 
-    contract_en_rows = {_find_row(en_guide, entry["row_match_en"]) for entry in contract}
-    contract_ja_rows = {_find_row(ja_guide, entry["row_match_ja"]) for entry in contract}
+    contract_en_rows = {
+        _find_row(en_guide, entry["row_match_en"]) for entry in contract
+    }
+    contract_ja_rows = {
+        _find_row(ja_guide, entry["row_match_ja"]) for entry in contract
+    }
 
     expected_en_rows = _collect_contract_rows(en_guide, set(STATUS_LABELS_EN.values()))
     expected_ja_rows = _collect_contract_rows(ja_guide, set(STATUS_LABELS_JA.values()))

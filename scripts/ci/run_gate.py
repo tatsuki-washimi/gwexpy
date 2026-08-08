@@ -81,6 +81,38 @@ def _aggregate_junit_counts(paths: Iterable[Path]) -> dict[str, int]:
     return totals
 
 
+def _run_strict_junit_gate(
+    gate: str,
+    junit_path: Path,
+    tests: list[str],
+    *,
+    environment: dict[str, str] | None = None,
+) -> None:
+    """Run a dedicated pytest selector and fail closed on JUnit counters."""
+    if environment is not None:
+        os.environ.update(environment)
+    junit_path.parent.mkdir(parents=True, exist_ok=True)
+    run_cmd(["pytest", "-v", f"--junit-xml={junit_path}", *tests])
+
+    try:
+        counts = _aggregate_junit_counts([junit_path])
+    except ValueError as exc:
+        raise SystemExit(f"{gate} gate: invalid JUnit report: {exc}") from exc
+
+    if (
+        counts["tests"] == 0
+        or counts["skipped"]
+        or counts["errors"]
+        or counts["failures"]
+    ):
+        raise SystemExit(
+            f"{gate} gate: tests={counts['tests']} "
+            f"skipped={counts['skipped']} errors={counts['errors']} "
+            f"failures={counts['failures']} -- expected tests>0 and "
+            "skipped=errors=failures=0"
+        )
+
+
 def run_gate(gate: str, with_fixtures: bool) -> None:
     """Run the command group for a named CI gate."""
     print("=== CI gate start ===")
@@ -222,6 +254,40 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
         run_cmd(["pytest", "-q", "tests/io/test_zarr_reader.py"])
         return
 
+    if gate == "io-gwf":
+        _run_strict_junit_gate(
+            gate,
+            Path("junit/io-gwf.xml"),
+            [
+                "tests/timeseries/test_gwf_parallel_contract.py",
+                "tests/timeseries/test_io_gwf_framel.py",
+            ],
+        )
+        return
+
+    if gate == "io-netcdf":
+        _run_strict_junit_gate(
+            gate,
+            Path("junit/io-netcdf.xml"),
+            [
+                "tests/io/test_netcdf4_reader.py",
+                "tests/timeseries/test_crop_timing_contract.py",
+            ],
+        )
+        return
+
+    if gate == "interop-root":
+        _run_strict_junit_gate(
+            gate,
+            Path("junit/interop-root.xml"),
+            [
+                "tests/histogram/test_root_interop.py",
+                "tests/histogram/test_root_interop_contracts.py",
+            ],
+            environment={"GWEXPY_RUN_ROOT": "1"},
+        )
+        return
+
     if gate == "interop-contract":
         run_cmd(
             [
@@ -240,33 +306,11 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
         # failing. Assert on the JUnit skipped count so that regression does
         # NOT go unnoticed (#493: this gate exists specifically to keep mne
         # coverage off the "runs locally only" list).
-        junit_path = Path("interop-mne-results.xml")
-        run_cmd(
-            [
-                "pytest",
-                "-v",
-                f"--junit-xml={junit_path}",
-                "tests/interop/test_interop_mne.py",
-            ]
+        _run_strict_junit_gate(
+            gate,
+            Path("interop-mne-results.xml"),
+            ["tests/interop/test_interop_mne.py"],
         )
-
-        try:
-            counts = _aggregate_junit_counts([junit_path])
-        except ValueError as exc:
-            raise SystemExit(f"interop-mne gate: invalid JUnit report: {exc}") from exc
-
-        if (
-            counts["tests"] == 0
-            or counts["skipped"]
-            or counts["errors"]
-            or counts["failures"]
-        ):
-            raise SystemExit(
-                f"interop-mne gate: tests={counts['tests']} "
-                f"skipped={counts['skipped']} errors={counts['errors']} "
-                f"failures={counts['failures']} -- expected tests>0 and "
-                "skipped=errors=failures=0"
-            )
         return
 
     raise SystemExit(f"Unknown gate: {gate}")
@@ -284,8 +328,11 @@ def main(argv: list[str] | None = None) -> int:
             "io-network-backend",
             "docs-notebook",
             "io-zarr",
+            "io-gwf",
+            "io-netcdf",
             "interop-contract",
             "interop-mne",
+            "interop-root",
         ],
     )
     parser.add_argument(

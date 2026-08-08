@@ -33,6 +33,7 @@ Examples
 >>> disp_asd = from_obspy("NLNM", quantity="displacement")
 
 """
+
 from __future__ import annotations
 
 from .colored import pink_noise, power_law, red_noise, white_noise

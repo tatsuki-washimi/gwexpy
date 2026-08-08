@@ -1,4 +1,5 @@
 """Tests for Spectrogram.normalize() method."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -83,7 +84,9 @@ class TestNormalizeMethod:
     def test_metadata_preserved(self, sample_spectrogram):
         """Times, frequencies, channel, epoch are preserved."""
         result = sample_spectrogram.normalize()
-        np.testing.assert_array_equal(result.times.value, sample_spectrogram.times.value)
+        np.testing.assert_array_equal(
+            result.times.value, sample_spectrogram.times.value
+        )
         np.testing.assert_array_equal(
             result.frequencies.value, sample_spectrogram.frequencies.value
         )

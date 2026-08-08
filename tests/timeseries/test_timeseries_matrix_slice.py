@@ -48,6 +48,7 @@ def test_label_slice_then_crop_preserves_matrix_type() -> None:
 
 # --- Core properties (matrix_core.py) ---
 
+
 def test_dt_property() -> None:
     tsm = _make_matrix()
     assert tsm.dt.to("s").value == pytest.approx(0.1)
@@ -92,6 +93,7 @@ def test_sample_rate_setter_scalar() -> None:
 
 # --- _apply_timeseries_method (via detrend) ---
 
+
 def test_apply_timeseries_method_detrend() -> None:
     rng = np.random.default_rng(42)
     data = rng.normal(size=(2, 1, 100)).astype(float)
@@ -111,6 +113,7 @@ def test_apply_timeseries_method_not_implemented() -> None:
 
 # --- _apply_timeseries_method via resample ---
 
+
 def test_apply_timeseries_method_resample() -> None:
     rng = np.random.default_rng(0)
     data = rng.normal(size=(2, 1, 200)).astype(float)
@@ -122,6 +125,7 @@ def test_apply_timeseries_method_resample() -> None:
 
 
 # --- matrix_core.py: additional coverage ---
+
 
 def test_sample_rate_property_none_dt() -> None:
     """sample_rate returns None when dt is not set."""
@@ -176,6 +180,7 @@ def test_apply_timeseries_method_inplace() -> None:
 
 # --- _apply_bivariate_spectral_method (via csd / coherence) ---
 
+
 def _make_spectral_matrix() -> TimeSeriesMatrix:
     rng = np.random.default_rng(42)
     data = rng.normal(size=(2, 1, 1024))
@@ -199,6 +204,7 @@ def test_coherence_returns_frequency_series_matrix() -> None:
 
 # --- _apply_univariate_spectral_method (via auto_coherence) ---
 
+
 def test_auto_coherence_returns_frequency_series_matrix() -> None:
     """auto_coherence() exercises _apply_univariate_spectral_method."""
     tsm = _make_spectral_matrix()
@@ -207,6 +213,7 @@ def test_auto_coherence_returns_frequency_series_matrix() -> None:
 
 
 # --- _apply_spectrogram_method (via spectrogram2) ---
+
 
 def test_spectrogram2_returns_spectrogram_matrix() -> None:
     """spectrogram2() exercises _apply_spectrogram_method."""

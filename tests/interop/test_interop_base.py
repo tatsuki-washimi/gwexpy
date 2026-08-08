@@ -1,4 +1,5 @@
 """Tests for gwexpy/interop/base.py"""
+
 from __future__ import annotations
 
 import numpy as np
@@ -10,6 +11,7 @@ from gwexpy.interop.base import from_plain_array, to_plain_array
 # ---------------------------------------------------------------------------
 # to_plain_array
 # ---------------------------------------------------------------------------
+
 
 def test_to_plain_array_ndarray():
     arr = np.array([1.0, 2.0, 3.0])
@@ -48,6 +50,7 @@ def test_to_plain_array_copy_true():
 # from_plain_array — torch/cupy branch coverage via duck typing
 # ---------------------------------------------------------------------------
 
+
 def test_from_plain_array_basic():
     from astropy import units as u
 
@@ -61,6 +64,7 @@ def test_from_plain_array_basic():
 
 def test_from_plain_array_numpy_method():
     """Array with .numpy() method → calls .numpy() before passing to cls."""
+
     class TorchLike:
         def numpy(self):
             return np.array([5.0, 6.0, 7.0])
@@ -75,6 +79,7 @@ def test_from_plain_array_numpy_method():
 
 def test_from_plain_array_get_method():
     """Array with .get() method (cupy-like) → calls .get() before passing to cls."""
+
     class CupyLike:
         def get(self):
             return np.array([8.0, 9.0])

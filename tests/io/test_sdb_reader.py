@@ -45,7 +45,9 @@ class TestSdbReader:
 
         tsd = read_timeseriesdict_sdb(str(db_path))
         # 70F = 21.111C
-        np.testing.assert_allclose(tsd["outTemp"].value[0], (70.0 - 32) / 1.8, rtol=1e-6)
+        np.testing.assert_allclose(
+            tsd["outTemp"].value[0], (70.0 - 32) / 1.8, rtol=1e-6
+        )
 
     def test_unit_conversion_pressure(self, tmp_path):
         db_path = tmp_path / "pres.sdb"
@@ -69,9 +71,7 @@ class TestSdbReader:
     def test_empty_table(self, tmp_path):
         db_path = tmp_path / "empty.sdb"
         conn = sqlite3.connect(str(db_path))
-        conn.execute(
-            "CREATE TABLE archive (dateTime INTEGER, outTemp REAL)"
-        )
+        conn.execute("CREATE TABLE archive (dateTime INTEGER, outTemp REAL)")
         conn.commit()
         conn.close()
 

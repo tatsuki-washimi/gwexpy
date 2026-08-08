@@ -1,4 +1,5 @@
 """Tests for gwexpy/interop/astropy_.py."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -15,6 +16,7 @@ def _make_ts(n=10, t0=1000000000.0, dt=1.0, unit="m"):
 class TestToAstropyTimeSeries:
     def test_basic_conversion(self):
         from astropy.timeseries import TimeSeries as APTimeSeries
+
         ts = _make_ts()
         ap = to_astropy_timeseries(ts)
         assert isinstance(ap, APTimeSeries)
@@ -41,6 +43,7 @@ class TestToAstropyTimeSeries:
 
     def test_time_format_gps(self):
         from astropy.time import Time
+
         ts = _make_ts(n=3, t0=1000000000.0)
         ap = to_astropy_timeseries(ts, time_format="gps")
         assert isinstance(ap.time, Time)
@@ -48,6 +51,7 @@ class TestToAstropyTimeSeries:
     def test_time_format_other_falls_back_to_gps(self):
         """Non-gps time_format currently falls back to gps internally."""
         from astropy.time import Time
+
         ts = _make_ts(n=3)
         ap = to_astropy_timeseries(ts, time_format="unix")
         assert isinstance(ap.time, Time)
@@ -58,6 +62,7 @@ class TestFromAstropyTimeSeries:
         import astropy.units as u
         from astropy.time import Time
         from astropy.timeseries import TimeSeries as APTimeSeries
+
         times = Time(t0 + np.arange(n) * dt, format="gps")
         data = {"value": np.arange(float(n)) * u.m}
         return APTimeSeries(data=data, time=times)
@@ -101,6 +106,7 @@ class TestFromAstropyTimeSeries:
         """Single-point series: dt defaults to 1.0."""
         from astropy.time import Time
         from astropy.timeseries import TimeSeries as APTimeSeries
+
         times = Time([1000000000.0], format="gps")
         ap = APTimeSeries(data={"value": [42.0]}, time=times)
         ts2 = from_astropy_timeseries(TimeSeries, ap)

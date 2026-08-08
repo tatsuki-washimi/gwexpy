@@ -1,4 +1,5 @@
 """Tests for ScalarField signal processing utilities (PSD, XCorr, coherence)."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -137,9 +138,7 @@ class TestComputePsdExtra:
 
     def test_noverlap_samples_path(self, sine_field):
         # fftlength=None, noverlap given → hits noverlap_calc = noverlap_samples branch
-        psd = sine_field.compute_psd(
-            (0 * u.m, 0 * u.m, 0 * u.m), noverlap=32, nfft=64
-        )
+        psd = sine_field.compute_psd((0 * u.m, 0 * u.m, 0 * u.m), noverlap=32, nfft=64)
         assert psd is not None
 
     def test_region_with_direct_spec_not_quantity(self, sine_field):
@@ -199,7 +198,8 @@ class TestSpectralDensity:
         times = np.arange(nt) * dt
         data = np.random.default_rng(7).normal(size=(nt, 1, 1, 1))
         field = ScalarField(
-            data, unit=None,
+            data,
+            unit=None,
             axis0=times,
             axis1=np.array([0.0]) * u.m,
             axis2=np.array([0.0]) * u.m,
@@ -424,7 +424,7 @@ class TestScalarFieldResampleFilter:
         # Gaussian pulse centered at t=1.0s (index 100)
         t0 = 1.0
         sigma = 0.1
-        pulse = np.exp(-((times.value - t0)**2) / (2 * sigma**2))
+        pulse = np.exp(-((times.value - t0) ** 2) / (2 * sigma**2))
 
         # Broadcast pulse to 4D
         data = pulse[:, np.newaxis, np.newaxis, np.newaxis] * np.ones((1, nx, ny, nz))
@@ -454,7 +454,9 @@ class TestScalarFieldResampleFilter:
 
         # Check dt via axis0[1] - axis0[0]
         expected_dt = 1.0 / 50.0
-        actual_dt = (resampled._axis0_index[1] - resampled._axis0_index[0]).to(u.s).value
+        actual_dt = (
+            (resampled._axis0_index[1] - resampled._axis0_index[0]).to(u.s).value
+        )
         assert_allclose(actual_dt, expected_dt, atol=1e-10)
 
         # Check axis0[0] invariance
@@ -468,8 +470,12 @@ class TestScalarFieldResampleFilter:
         """Test filter zero-phase property by checking peak position invariance."""
         # Use an explicit Butterworth filter (10Hz lowpass)
         from scipy import signal
-        fs = 1.0 / (pulse_field._axis0_index[1] - pulse_field._axis0_index[0]).to(u.s).value
-        zpk = signal.butter(4, 10, 'low', fs=fs, output='zpk')
+
+        fs = (
+            1.0
+            / (pulse_field._axis0_index[1] - pulse_field._axis0_index[0]).to(u.s).value
+        )
+        zpk = signal.butter(4, 10, "low", fs=fs, output="zpk")
 
         # Apply the filter (filtfilt=True is default)
         filtered = pulse_field.filter(zpk)

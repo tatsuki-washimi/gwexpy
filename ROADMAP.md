@@ -43,15 +43,13 @@ exhaustively; the milestone remains authoritative):
   ([#611]); GWF `parallel`/`nproc` no-op ([#588]); ndscope HDF5 writer creation kwargs
   ignored ([#590]).
 - **CI integrity**: dedicated gates that can pass with zero collected tests ([#511]).
-- **Reproducibility and precision**: Monte-Carlo provenance lost on
-  copy/slice/serialization ([#508]); `_t0_ns` float round-trip and related small
-  statistics fixes ([#513]).
 - **Documentation vs implementation**: SegmentTable reference describing unimplemented
   APIs ([#605]); GWinc docstring pointing at a nonexistent classmethod ([#608]); and
   the one-line `VectorField.plot(stride=)` fix ([#559]).
 - **Verification-only items (not release blockers)**: GWpy-only HDF5 readability
-  ([#402], stays in v0.2.0 — manual check only for this release); the Virgo `.ffl`
-  support claim ([#594] — measure, then fix the claim or add a regression test).
+  ([#402], stays in v0.2.0 — manual check only for this release). The public
+  documentation now correctly states that `.ffl` is unsupported; #594's resolution
+  is that documentation correction, not an implementation commitment.
 
 Explicitly excluded: any new feature or API, new dependencies, large refactors, and
 PR [#488] (GUI extraction — merged right after this release).
@@ -111,6 +109,9 @@ workstreams (individual issues live in the milestone and the umbrella issues):
 5. **GUI separation completion** (PR
    [#488](https://github.com/tatsuki-washimi/gwexpy/pull/488)): gwexpy ships without
    the GUI package, which now lives in the separate pyaggui project.
+6. **Deferred reproducibility and Virgo I/O**: preserve Monte-Carlo provenance across
+   copy, slice, and serialization ([#508]); complete the `_t0_ns` precision follow-up
+   ([#513]); and implement `.ffl` support only with a separately reviewed I/O contract.
 
 Non-goals for v0.2.0: coordinate transforms and reprojection (the
 [#556](https://github.com/tatsuki-washimi/gwexpy/issues/556) theme), basemap and
@@ -157,9 +158,9 @@ measurement of demand, and is deliberately kept out of the public documentation.
 2. **Differometor converters** (`#423`–`#427`). Design is settled but the existing issue bodies
    assume result objects that Differometor does not have; `#423` must be closed with the real
    API shape before `#424`–`#426` are implemented.
-3. **Virgo data-path completion** (`#591` umbrella): `.ffl` measurement feeds v0.1.13
-   (`#594`); the dataDisplay ROOT product converters (`#598`–`#600`) follow the
-   structural inventory (`#595`).
+3. **Virgo data-path completion** (`#591` umbrella): `.ffl` support is deferred to
+   v0.2.0 after its separately reviewed I/O contract; the dataDisplay ROOT product
+   converters (`#598`–`#600`) follow the structural inventory (`#595`).
 4. **LPSD / Daniell's method / huddle test.** Concepts worth evaluating for GWexpy's own
    spectral estimation, taking spicypy's API as a design reference only. No code reuse, and no
    design work has been done yet.

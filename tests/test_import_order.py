@@ -6,6 +6,7 @@ order, and that error messages guide users toward the fix.
 
 Several tests run in a **subprocess** to guarantee a clean import state.
 """
+
 from __future__ import annotations
 
 import subprocess
@@ -100,6 +101,7 @@ class TestImportOrderIsolated:
             assert not missing, f"Missing constructors: {{missing}}"
         """)
         assert result.returncode == 0, result.stderr
+
     def test_register_all_without_io(self):
         """include_io=False registers constructors but skips IO formats."""
         result = _run_isolated("""\

@@ -1,4 +1,5 @@
 """Interoperability with SDyPy and pyuff (Universal File Format)."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -126,9 +127,7 @@ def from_uff_dataset55(uff_data: dict) -> Any:
             elif stacked.ndim == 3:
                 # (n_dirs, n_modes, n_nodes) → full
                 n_dirs, nm, n_nodes = stacked.shape
-                mode_shapes = stacked.transpose(2, 0, 1).reshape(
-                    n_nodes * n_dirs, nm
-                )
+                mode_shapes = stacked.transpose(2, 0, 1).reshape(n_nodes * n_dirs, nm)
 
     if "node_nums" in uff_data:
         node_ids = np.atleast_1d(uff_data["node_nums"])

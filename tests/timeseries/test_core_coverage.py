@@ -90,7 +90,7 @@ def test_timeseries_find_peaks_with_quantities():
     # Test width as Quantity
     # We need a wider peak to test width
     data_wide = np.zeros(20)
-    data_wide[5:10] = 1.0 # peak at 7.5?
+    data_wide[5:10] = 1.0  # peak at 7.5?
     ts_wide = TimeSeries(data_wide, t0=0, dt=1 * u.s, unit=u.V)
     peaks, props = ts_wide.find_peaks(width=2 * u.s)
     # Scipy find_peaks width is tricky with zeros, but let's just ensure it doesn't crash
@@ -101,7 +101,7 @@ def test_regularity_mixin():
     # Regular series
     ts_reg = TimeSeries([1, 2, 3], t0=0, dt=1)
     assert ts_reg.is_regular is True
-    ts_reg._check_regular() # should not raise
+    ts_reg._check_regular()  # should not raise
 
     # Irregular series
     # GWpy TimeSeries defaults to regular if created with dt.

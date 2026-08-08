@@ -34,9 +34,9 @@ mat = lst.to_matrix()
 ## 関連チュートリアル
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
-- [FrequencySeries チュートリアル](../user_guide/tutorials/intro_frequencyseries.ipynb)
-- [FrequencySeries 行列チュートリアル](../user_guide/tutorials/matrix_frequencyseries.ipynb)
-- [伝達関数計測](../user_guide/tutorials/case_transfer_function.ipynb)
+- [FrequencySeries チュートリアル](../../en/user_guide/tutorials/intro_frequencyseries.ipynb)
+- [FrequencySeries 行列チュートリアル](../../en/user_guide/tutorials/matrix_frequencyseries.ipynb)
+- [伝達関数計測](../../en/user_guide/tutorials/case_transfer_function.ipynb)
 
 ## API リファレンス
 
@@ -66,7 +66,7 @@ mat = lst.to_matrix()
 
 - 各スペクトルの解釈: [FrequencySeries](FrequencySeries.md)
 - 整列済み一括解析: [FrequencySeriesMatrix](FrequencySeriesMatrix.md)
-- 実務ワークフロー: [伝達関数計測](../user_guide/tutorials/case_transfer_function.ipynb)
+- 実務ワークフロー: [伝達関数計測](../../en/user_guide/tutorials/case_transfer_function.ipynb)
 
 ## メソッド
 

@@ -31,10 +31,12 @@ def test_histogram_hdf5_roundtrip(tmp_path):
 
 
 def test_histogramdict_hdf5_roundtrip(tmp_path):
-    hd = HistogramDict({
-        "H1:A": _make_histogram("A"),
-        "L1:B": _make_histogram("B", scale=2.0),
-    })
+    hd = HistogramDict(
+        {
+            "H1:A": _make_histogram("A"),
+            "L1:B": _make_histogram("B", scale=2.0),
+        }
+    )
     path = tmp_path / "hd.h5"
 
     hd.write(path, format="hdf5")
@@ -45,10 +47,12 @@ def test_histogramdict_hdf5_roundtrip(tmp_path):
 
 
 def test_histogramlist_hdf5_roundtrip(tmp_path):
-    hl = HistogramList([
-        _make_histogram("A"),
-        _make_histogram("B", scale=3.0),
-    ])
+    hl = HistogramList(
+        [
+            _make_histogram("A"),
+            _make_histogram("B", scale=3.0),
+        ]
+    )
     path = tmp_path / "hl.h5"
 
     hl.write(path, format="hdf5")

@@ -16,7 +16,8 @@ from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 def load_products(filename: str) -> dict:
     """Load data products from various file formats.
 
-    Supported extensions: .xml (DTT XML), .gwf, .h5, .hdf5, .ffl, and generic formats supported by gwexpy.
+    Supported extensions: .xml (DTT XML), .gwf, .h5, .hdf5, and generic formats
+    supported by gwexpy. Frame file lists (.ffl) are not supported reader inputs.
     """
     if not isinstance(filename, str):
         return {}

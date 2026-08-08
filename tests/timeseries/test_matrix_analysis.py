@@ -154,9 +154,7 @@ def test_resample_time_quantity():
 
 
 def test_resample_time_bin_forwards_closed_right_and_preserves_element_metadata():
-    meta = MetaDataMatrix(
-        [[MetaData(unit=u.m, name="signal", channel="H1:TEST")]]
-    )
+    meta = MetaDataMatrix([[MetaData(unit=u.m, name="signal", channel="H1:TEST")]])
     tsm = TimeSeriesMatrix(
         np.array([[[1.0, 3.0, 5.0, 7.0]]]),
         dt=1.0 * u.s,
@@ -369,7 +367,10 @@ def test_mic():
 
 
 def test_distance_correlation():
-    pytest.importorskip("dcor")
+    try:
+        __import__("dcor")
+    except Exception as exc:
+        pytest.skip(f"dcor runtime not available ({exc})")
     tsm = _make_tsm(n_time=200)
     target = TimeSeries(
         np.random.default_rng(3).normal(size=200), dt=0.01 * u.s, t0=0.0 * u.s

@@ -3,6 +3,7 @@
 Uses mock xarray DataArrays with _metpy_axis attributes. Does NOT require
 MetPy to be installed.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -19,7 +20,11 @@ NT, NX, NY, NZ = 3, 4, 5, 6
 
 
 def _make_metpy_da(
-    nt=NT, nx=NX, ny=NY, nz=NZ, units="kelvin",
+    nt=NT,
+    nx=NX,
+    ny=NY,
+    nz=NZ,
+    units="kelvin",
 ) -> Any:
     """Simulate a MetPy-dequantified DataArray with _metpy_axis attrs."""
     data = np.random.default_rng(42).random((nt, nx, ny, nz))
@@ -76,7 +81,9 @@ class TestFromMetpyDataarray:
 
     def test_axis0_domain(self):
         da = _make_metpy_da()
-        sf = from_metpy_dataarray(ScalarField, da, dequantify=False, axis0_domain="time")
+        sf = from_metpy_dataarray(
+            ScalarField, da, dequantify=False, axis0_domain="time"
+        )
         assert sf.axis0_domain == "time"
 
     def test_2d_padded(self):

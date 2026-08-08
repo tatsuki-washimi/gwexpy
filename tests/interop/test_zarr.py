@@ -1,4 +1,5 @@
 """Tests for gwexpy/interop/zarr_.py."""
+
 from __future__ import annotations
 
 import os

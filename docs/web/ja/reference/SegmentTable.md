@@ -70,9 +70,9 @@ plt.close(plot)
 
 ## 関連チュートリアル
 
-- [SegmentTable: 基本](../user_guide/tutorials/intro_segment_table.ipynb)
-- [セグメント ASD パイプライン](../user_guide/tutorials/segment_asd_pipeline.ipynb)
-- [セグメント可視化](../user_guide/tutorials/segment_visualization.ipynb)
+- [SegmentTable: 基本](../../en/user_guide/tutorials/intro_segment_table.ipynb)
+- [セグメント ASD パイプライン](../../en/user_guide/tutorials/segment_asd_pipeline.ipynb)
+- [セグメント可視化](../../en/user_guide/tutorials/segment_visualization.ipynb)
 
 ## API リファレンス
 

@@ -9,6 +9,7 @@ determined by dt and the FFT length: df = 1 / fftlength and f_N = 1 / (2 * dt).
 NaN samples are rejected because FFT-based averaging propagates NaNs and
 invalidates the normalization; callers must pre-clean data instead.
 """
+
 from __future__ import annotations
 
 import logging
@@ -32,32 +33,42 @@ from ..frequencyseries import FrequencySeries
 logger = logging.getLogger(__name__)
 
 try:
-    from numba import njit, prange
-    from numba.core.errors import NumbaError
+    import numba as _numba
+    from numba.core.errors import NumbaError as _numba_error
 
     HAS_NUMBA = True
 except ImportError:
     HAS_NUMBA = False
-    prange = range
-    NumbaError = RuntimeError
 
-    # Create a dummy njit decorator that just returns the function
-    def njit(*args, **kwargs):
+_njit: Any
+_prange: Any
+_NumbaError: Any
+if HAS_NUMBA:
+    _njit = _numba.njit
+    _prange = _numba.prange
+    _NumbaError = _numba_error
+else:
+
+    def _fallback_njit(*args: Any, **kwargs: Any) -> Any:
         """Return a no-op decorator when Numba is unavailable."""
 
-        def decorator(func):
+        def decorator(func: Any) -> Any:
             return func
 
         return decorator
 
+    _njit = _fallback_njit
+    _prange = range
+    _NumbaError = RuntimeError
 
-@njit(parallel=True)
+
+@_njit(parallel=True)
 def _bootstrap_resample_jit(data, all_indices, use_median, ignore_nan):
     n_boot = all_indices.shape[0]
     n_freq = data.shape[1]
     resampled_stats = np.zeros((n_boot, n_freq), dtype=data.dtype)
 
-    for i in prange(n_boot):
+    for i in _prange(n_boot):
         indices = all_indices[i]
 
         # Iterate over frequency bins to save memory (avoid creating full (T, F) sample)
@@ -672,7 +683,7 @@ def bootstrap_spectrogram(
             resampled_stats = _bootstrap_resample_jit(
                 data, all_indices, use_median, ignore_nan
             )
-        except NumbaError as e:
+        except _NumbaError as e:
             # Numba can fail for various reasons (compilation, runtime)
             # Fallback to pure Python implementation
             warnings.warn(

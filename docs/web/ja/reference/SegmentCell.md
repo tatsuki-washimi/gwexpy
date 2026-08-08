@@ -30,8 +30,8 @@ segment = SegmentCell(0, 10)
 
 ## 関連チュートリアル
 
-- [SegmentTable: 基本](../user_guide/tutorials/intro_segment_table.ipynb)
-- [セグメント解析ケーススタディ](../user_guide/tutorials/case_segment_analysis.ipynb)
+- [SegmentTable: 基本](../../en/user_guide/tutorials/intro_segment_table.ipynb)
+- [セグメント解析ケーススタディ](../../en/user_guide/tutorials/case_segment_analysis.ipynb)
 
 ## API リファレンス
 

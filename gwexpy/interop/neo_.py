@@ -122,9 +122,7 @@ def from_neo(cls, sig):
     if isinstance(sig, (neo.Block, neo.Segment)):
         if isinstance(sig, neo.Block):
             signals = [
-                asig
-                for segment in sig.segments
-                for asig in segment.analogsignals
+                asig for segment in sig.segments for asig in segment.analogsignals
             ]
         else:  # neo.Segment
             signals = list(sig.analogsignals)
@@ -132,10 +130,7 @@ def from_neo(cls, sig):
         if len(signals) == 1:
             return _analogsignal_to_matrix(cls, signals[0])
         if len(signals) == 0:
-            raise ValueError(
-                "no AnalogSignal found in the neo "
-                f"{type(sig).__name__}"
-            )
+            raise ValueError(f"no AnalogSignal found in the neo {type(sig).__name__}")
         raise TypeError(
             f"neo {type(sig).__name__} contains {len(signals)} AnalogSignals; "
             "pass a single neo.AnalogSignal "

@@ -28,15 +28,15 @@ phase = fs.phase()
 ## 関連理論
 
 - [FFT_Conventions](FFT_Conventions.md)
-- [FrequencySeries チュートリアル](../user_guide/tutorials/intro_frequencyseries.ipynb)
-- [伝達関数計測](../user_guide/tutorials/case_transfer_function.ipynb)
+- [FrequencySeries チュートリアル](../../en/user_guide/tutorials/intro_frequencyseries.ipynb)
+- [伝達関数計測](../../en/user_guide/tutorials/case_transfer_function.ipynb)
 
 ## 関連チュートリアル
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
-- [FrequencySeries チュートリアル](../user_guide/tutorials/intro_frequencyseries.ipynb)
-- [ノイズバジェット解析](../user_guide/tutorials/case_noise_budget.ipynb)
-- [フィッティング上級編](../user_guide/tutorials/advanced_fitting.ipynb)
+- [FrequencySeries チュートリアル](../../en/user_guide/tutorials/intro_frequencyseries.ipynb)
+- [ノイズバジェット解析](../../en/user_guide/tutorials/case_noise_budget.ipynb)
+- [フィッティング上級編](../../en/user_guide/tutorials/advanced_fitting.ipynb)
 
 ## API リファレンス
 
@@ -89,9 +89,9 @@ phase = fs.phase()
 
 - 周波数領域規約の確認: [FFT_Conventions](FFT_Conventions.md)
 - 時間領域からの入口: [TimeSeries](TimeSeries.md)
-- フィッティングや応答推定: [フィッティング上級編](../user_guide/tutorials/advanced_fitting.ipynb)
-- 実務の例: [伝達関数計測](../user_guide/tutorials/case_transfer_function.ipynb)
-- ノイズ床比較: [ノイズバジェット解析](../user_guide/tutorials/case_noise_budget.ipynb)
+- フィッティングや応答推定: [フィッティング上級編](../../en/user_guide/tutorials/advanced_fitting.ipynb)
+- 実務の例: [伝達関数計測](../../en/user_guide/tutorials/case_transfer_function.ipynb)
+- ノイズ床比較: [ノイズバジェット解析](../../en/user_guide/tutorials/case_noise_budget.ipynb)
 
 ## Pickle / shelve の可搬性
 

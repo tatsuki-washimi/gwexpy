@@ -129,9 +129,7 @@ class TestRayleighPvalueReproducibility:
         assert not hasattr(default_result, "seed")
         assert not hasattr(default_result, "rng_provided")
 
-        seeded_result = rayleigh_pvalue(
-            spec, n_samples=10, n_monte_carlo=30, seed=7
-        )
+        seeded_result = rayleigh_pvalue(spec, n_samples=10, n_monte_carlo=30, seed=7)
         assert seeded_result.seed == 7
         assert not hasattr(seeded_result, "rng_provided")
 
@@ -143,8 +141,11 @@ class TestRayleighPvalueReproducibility:
 
         with pytest.warns(UserWarning, match="seed is ignored"):
             both_result = rayleigh_pvalue(
-                spec, n_samples=10, n_monte_carlo=30,
-                rng=np.random.default_rng(7), seed=999,
+                spec,
+                n_samples=10,
+                n_monte_carlo=30,
+                rng=np.random.default_rng(7),
+                seed=999,
             )
         assert both_result.rng_provided is True
         assert both_result.seed_unused is True
@@ -186,26 +187,18 @@ class TestComputeGauchRng:
         then read _LILLIEFORS_CACHE[(window, n_monte_carlo)] directly, which
         KeyErrors (or returns a stale unrelated distribution) once rng/seed
         bypass that cache."""
-        ts = TimeSeries(
-            np.random.default_rng(0).standard_normal(2048), sample_rate=256
-        )
-        res = compute_gauch(
-            ts, fftlength=0.25, window=10, n_monte_carlo=50, seed=42
-        )
+        ts = TimeSeries(np.random.default_rng(0).standard_normal(2048), sample_rate=256)
+        res = compute_gauch(ts, fftlength=0.25, window=10, n_monte_carlo=50, seed=42)
         assert np.isfinite(res.pvalue_map.value).any()
 
     def test_same_seed_gives_identical_result(self):
-        ts = TimeSeries(
-            np.random.default_rng(0).standard_normal(2048), sample_rate=256
-        )
+        ts = TimeSeries(np.random.default_rng(0).standard_normal(2048), sample_rate=256)
         r1 = compute_gauch(ts, fftlength=0.25, window=10, n_monte_carlo=50, seed=42)
         r2 = compute_gauch(ts, fftlength=0.25, window=10, n_monte_carlo=50, seed=42)
         np.testing.assert_array_equal(r1.pvalue_map.value, r2.pvalue_map.value)
 
     def test_metadata_recorded(self):
-        ts = TimeSeries(
-            np.random.default_rng(0).standard_normal(2048), sample_rate=256
-        )
+        ts = TimeSeries(np.random.default_rng(0).standard_normal(2048), sample_rate=256)
         default_res = compute_gauch(ts, fftlength=0.25, window=10, n_monte_carlo=50)
         assert default_res.metadata["n_monte_carlo"] == 50
         assert "seed" not in default_res.metadata
@@ -217,17 +210,19 @@ class TestComputeGauchRng:
 
         with pytest.warns(UserWarning, match="seed is ignored"):
             both_res = compute_gauch(
-                ts, fftlength=0.25, window=10, n_monte_carlo=50,
-                rng=np.random.default_rng(7), seed=999,
+                ts,
+                fftlength=0.25,
+                window=10,
+                n_monte_carlo=50,
+                rng=np.random.default_rng(7),
+                seed=999,
             )
         assert both_res.metadata["rng_provided"] is True
         assert both_res.metadata["seed_unused"] is True
 
     def test_default_path_still_uses_shared_cache(self):
         gauch_module._LILLIEFORS_CACHE.clear()
-        ts = TimeSeries(
-            np.random.default_rng(0).standard_normal(2048), sample_rate=256
-        )
+        ts = TimeSeries(np.random.default_rng(0).standard_normal(2048), sample_rate=256)
         compute_gauch(ts, fftlength=0.25, window=10, n_monte_carlo=33)
         assert (10, 33) in gauch_module._LILLIEFORS_CACHE
 

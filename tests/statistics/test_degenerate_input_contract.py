@@ -96,9 +96,7 @@ def test_null_distribution_floors_uniform_draw():
 
 
 def test_to_segments_empty_spectrogram_returns_empty_flag():
-    sp = Spectrogram(
-        np.empty((0, 4)), t0=0 * u.s, dt=1 * u.s, f0=1 * u.Hz, df=1 * u.Hz
-    )
+    sp = Spectrogram(np.empty((0, 4)), t0=0 * u.s, dt=1 * u.s, f0=1 * u.Hz, df=1 * u.Hz)
     flag = to_segments(sp)  # must not raise IndexError
     assert len(flag.active) == 0
     assert len(flag.known) == 0

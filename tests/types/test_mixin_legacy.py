@@ -1,4 +1,5 @@
 """Tests for gwexpy/types/mixin/mixin_legacy.py."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -11,21 +12,26 @@ from gwexpy.types.mixin.mixin_legacy import PhaseMethodsMixin, RegularityMixin
 # RegularityMixin
 # ---------------------------------------------------------------------------
 
+
 class SimpleRegular(RegularityMixin):
     """Minimal class with xindex."""
+
     def __init__(self, xindex):
         self.xindex = xindex
 
 
 class NoXIndex(RegularityMixin):
     """Class with no xindex attribute."""
+
     pass
 
 
 class RegularIndex(RegularityMixin):
     """Class with .regular attribute on xindex."""
+
     class _Idx:
         regular = True
+
     xindex = _Idx()
 
 
@@ -67,6 +73,7 @@ class TestRegularityMixin:
             @property
             def xindex(self):
                 return "not_an_array"  # np.asarray raises or diff fails
+
         obj = BrokenIdx()
         # np.diff("not_an_array") → TypeError → returns False
         result = obj.is_regular
@@ -81,6 +88,7 @@ class TestRegularityMixin:
         class TimeIrregular(RegularityMixin):
             xindex = np.array([0.0, 1.0, 2.5])
             __name__ = "TimeIrregular"
+
         obj = TimeIrregular()
         with pytest.raises(ValueError, match="constant dt"):
             obj._check_regular("MyMethod")
@@ -89,6 +97,7 @@ class TestRegularityMixin:
         # Lines 48-49 — "Frequency" in class name
         class FrequencyIrregular(RegularityMixin):
             xindex = np.array([0.0, 1.0, 2.5])
+
         obj = FrequencyIrregular()
         with pytest.raises(ValueError, match="frequency grid"):
             obj._check_regular("MyMethod")
@@ -97,6 +106,7 @@ class TestRegularityMixin:
         # Line 48 — "Spectrogram" in class name
         class SpectrogramIrregular(RegularityMixin):
             xindex = np.array([0.0, 1.0, 2.5])
+
         obj = SpectrogramIrregular()
         with pytest.raises(ValueError, match="frequency grid"):
             obj._check_regular()
@@ -105,6 +115,7 @@ class TestRegularityMixin:
         # Lines 50-51 — generic class name
         class GenericIrregular(RegularityMixin):
             xindex = np.array([0.0, 1.0, 2.5])
+
         obj = GenericIrregular()
         with pytest.raises(ValueError, match="constant spacing"):
             obj._check_regular()
@@ -113,6 +124,7 @@ class TestRegularityMixin:
         # Line 42 — method_name=None → uses "This method"
         class GenericIrregular(RegularityMixin):
             xindex = np.array([0.0, 1.0, 2.5])
+
         obj = GenericIrregular()
         with pytest.raises(ValueError, match="This method"):
             obj._check_regular(method_name=None)
@@ -122,8 +134,10 @@ class TestRegularityMixin:
 # PhaseMethodsMixin
 # ---------------------------------------------------------------------------
 
+
 class FakePhaseObj(PhaseMethodsMixin):
     """Fake object with radian() and degree() methods."""
+
     def radian(self, unwrap=False, **kwargs):
         return f"radian(unwrap={unwrap})"
 

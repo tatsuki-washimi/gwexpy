@@ -45,7 +45,9 @@ def test_contract_v3_policy_fields_are_normalized_for_all_formats():
         assert v3["coverage_status"] in {status.value for status in CoverageStatus}
         assert set(v3["missing_dependency_policy"]) == {"read", "write"}
         assert isinstance(v3["ci_jobs"], list)
-        assert all(job in {ci_job.value for ci_job in ContractCIJobId} for job in v3["ci_jobs"])
+        assert all(
+            job in {ci_job.value for ci_job in ContractCIJobId} for job in v3["ci_jobs"]
+        )
         assert isinstance(v3["scenario_matrix"], list)
         assert {row["scenario"] for row in v3["scenario_matrix"]} == {
             ScenarioName.POLICY.value,
@@ -104,9 +106,7 @@ def test_contract_expands_all_formats_and_core_blocking_rows():
 
     assert all(row["status"] == ScenarioStatus.PASS.value for row in policy_rows)
     assert all(row["status"] == ScenarioStatus.PASS.value for row in check_rows)
-    assert all(
-        row["status"] == ScenarioStatus.BLOCKED.value for row in blocking_rows
-    )
+    assert all(row["status"] == ScenarioStatus.BLOCKED.value for row in blocking_rows)
 
 
 def test_logical_ci_ids_are_validated():

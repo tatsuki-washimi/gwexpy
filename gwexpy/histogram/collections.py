@@ -130,7 +130,9 @@ class HistogramBaseDict(OrderedDict[str, _H]):
                 if layout == LAYOUT_DATASET or layout is None:
                     for ds_name in keys:
                         try:
-                            h = cast(_H, Histogram.read(h5f, format="hdf5", path=ds_name))
+                            h = cast(
+                                _H, Histogram.read(h5f, format="hdf5", path=ds_name)
+                            )
                         except (KeyError, ValueError, TypeError, OSError) as e:
                             logger.debug("Skipping dataset %s: %s", ds_name, e)
                             continue
@@ -141,10 +143,14 @@ class HistogramBaseDict(OrderedDict[str, _H]):
                     for grp_name in keys:
                         try:
                             grp = h5f[grp_name]
-                            h = cast(_H, Histogram.read(grp, format="hdf5", path="data"))
+                            h = cast(
+                                _H, Histogram.read(grp, format="hdf5", path="data")
+                            )
                         except (KeyError, ValueError, TypeError, OSError):
                             try:
-                                h = cast(_H, Histogram.read(grp, format="hdf5", path=None))
+                                h = cast(
+                                    _H, Histogram.read(grp, format="hdf5", path=None)
+                                )
                             except (KeyError, ValueError, TypeError, OSError) as e2:
                                 logger.debug("Skipping group %s: %s", grp_name, e2)
                                 continue
@@ -231,21 +237,47 @@ class HistogramDict(DictMapMixin, HistogramBaseDict[Histogram]):
 
     EntryClass = Histogram
 
-    rebin = _make_dict_map_method("rebin", doc="Rebin each Histogram in the dict. Returns a HistogramDict.")
-    fill = _make_dict_map_method("fill", doc="Fill each Histogram in the dict with new data.")
+    rebin = _make_dict_map_method(
+        "rebin", doc="Rebin each Histogram in the dict. Returns a HistogramDict."
+    )
+    fill = _make_dict_map_method(
+        "fill", doc="Fill each Histogram in the dict with new data."
+    )
     integral = _make_dict_plain_method(
-        "integral", doc="Compute integral of each Histogram in the dict. Returns a dict of Quantities."
+        "integral",
+        doc="Compute integral of each Histogram in the dict. Returns a dict of Quantities.",
     )
     to_density = _make_dict_plain_method(
-        "to_density", doc="Convert each Histogram to density representation. Returns a dict of Quantities."
+        "to_density",
+        doc="Convert each Histogram to density representation. Returns a dict of Quantities.",
     )
-    mean = _make_dict_plain_method("mean", doc="Compute weighted mean of each Histogram. Returns a dict of Quantities.")
-    var = _make_dict_plain_method("var", doc="Compute weighted variance of each Histogram. Returns a dict of Quantities.")
-    std = _make_dict_plain_method("std", doc="Compute weighted standard deviation of each Histogram. Returns a dict of Quantities.")
-    median = _make_dict_plain_method("median", doc="Compute median of each Histogram. Returns a dict of Quantities.")
-    quantile = _make_dict_plain_method("quantile", doc="Compute quantile of each Histogram. Returns a dict of Quantities.")
-    min = _make_dict_plain_method("min", doc="Compute lower edge of first non-zero bin for each Histogram. Returns a dict of Quantities.")
-    max = _make_dict_plain_method("max", doc="Compute upper edge of last non-zero bin for each Histogram. Returns a dict of Quantities.")
+    mean = _make_dict_plain_method(
+        "mean",
+        doc="Compute weighted mean of each Histogram. Returns a dict of Quantities.",
+    )
+    var = _make_dict_plain_method(
+        "var",
+        doc="Compute weighted variance of each Histogram. Returns a dict of Quantities.",
+    )
+    std = _make_dict_plain_method(
+        "std",
+        doc="Compute weighted standard deviation of each Histogram. Returns a dict of Quantities.",
+    )
+    median = _make_dict_plain_method(
+        "median", doc="Compute median of each Histogram. Returns a dict of Quantities."
+    )
+    quantile = _make_dict_plain_method(
+        "quantile",
+        doc="Compute quantile of each Histogram. Returns a dict of Quantities.",
+    )
+    min = _make_dict_plain_method(
+        "min",
+        doc="Compute lower edge of first non-zero bin for each Histogram. Returns a dict of Quantities.",
+    )
+    max = _make_dict_plain_method(
+        "max",
+        doc="Compute upper edge of last non-zero bin for each Histogram. Returns a dict of Quantities.",
+    )
 
 
 class HistogramBaseList(PlotMixin, list[_H]):
@@ -422,15 +454,56 @@ class HistogramList(ListMapMixin, HistogramBaseList[Histogram]):
 
     EntryClass = Histogram
 
-    rebin = _make_list_map_method("rebin", doc="Rebin each Histogram in the list. Returns a HistogramList.")
-    fill = _make_list_map_method("fill", doc="Fill each Histogram in the list with new data.")
-    to_density = _make_list_plain_method(
-        "to_density", doc="Convert each Histogram to density representation. Returns a list of Quantities."
+    @staticmethod
+    def _reject_multiplication() -> None:
+        raise TypeError(
+            "HistogramList multiplication is not supported; list repetition "
+            "would duplicate measurements."
+        )
+
+    def __mul__(self, other):
+        self._reject_multiplication()
+
+    def __rmul__(self, other):
+        self._reject_multiplication()
+
+    def __imul__(self, other):
+        self._reject_multiplication()
+
+    rebin = _make_list_map_method(
+        "rebin", doc="Rebin each Histogram in the list. Returns a HistogramList."
     )
-    mean = _make_list_map_method("mean", doc="Compute weighted mean of each Histogram. Returns a list of Quantities.")
-    var = _make_list_map_method("var", doc="Compute weighted variance of each Histogram. Returns a list of Quantities.")
-    std = _make_list_map_method("std", doc="Compute weighted standard deviation of each Histogram. Returns a list of Quantities.")
-    median = _make_list_map_method("median", doc="Compute median of each Histogram. Returns a list of Quantities.")
-    quantile = _make_list_map_method("quantile", doc="Compute quantile of each Histogram. Returns a list of Quantities.")
-    min = _make_list_map_method("min", doc="Compute lower edge of first non-zero bin for each Histogram. Returns a list of Quantities.")
-    max = _make_list_map_method("max", doc="Compute upper edge of last non-zero bin for each Histogram. Returns a list of Quantities.")
+    fill = _make_list_map_method(
+        "fill", doc="Fill each Histogram in the list with new data."
+    )
+    to_density = _make_list_plain_method(
+        "to_density",
+        doc="Convert each Histogram to density representation. Returns a list of Quantities.",
+    )
+    mean = _make_list_map_method(
+        "mean",
+        doc="Compute weighted mean of each Histogram. Returns a list of Quantities.",
+    )
+    var = _make_list_map_method(
+        "var",
+        doc="Compute weighted variance of each Histogram. Returns a list of Quantities.",
+    )
+    std = _make_list_map_method(
+        "std",
+        doc="Compute weighted standard deviation of each Histogram. Returns a list of Quantities.",
+    )
+    median = _make_list_map_method(
+        "median", doc="Compute median of each Histogram. Returns a list of Quantities."
+    )
+    quantile = _make_list_map_method(
+        "quantile",
+        doc="Compute quantile of each Histogram. Returns a list of Quantities.",
+    )
+    min = _make_list_map_method(
+        "min",
+        doc="Compute lower edge of first non-zero bin for each Histogram. Returns a list of Quantities.",
+    )
+    max = _make_list_map_method(
+        "max",
+        doc="Compute upper edge of last non-zero bin for each Histogram. Returns a list of Quantities.",
+    )

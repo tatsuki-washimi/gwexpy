@@ -20,6 +20,7 @@ Covers the confirmed findings:
   G5 SP4 — all-NaN column in return_map covariance path now emits
             logger.warning before mean-imputation.
 """
+
 from __future__ import annotations
 
 import logging

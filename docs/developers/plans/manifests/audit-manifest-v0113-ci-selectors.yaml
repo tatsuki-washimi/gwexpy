@@ -1,0 +1,38 @@
+manifest_version: 1
+release: v0.1.13
+status: frozen-after-lane-a-b-terra-approval
+purpose: >-
+  Bind the dedicated release gates to the regression tests that establish the
+  v0.1.13 I/O and interop contracts. Each gate must emit the named JUnit
+  report and reject zero-test, skipped, errored, or failed reports.
+
+gates:
+  io-gwf:
+    junit: junit/io-gwf.xml
+    tests:
+      - tests/timeseries/test_gwf_parallel_contract.py
+      - tests/timeseries/test_io_gwf_framel.py
+    requirements:
+      - framel backend is installed
+      - tests are non-skipped
+
+  io-netcdf:
+    junit: junit/io-netcdf.xml
+    tests:
+      - tests/io/test_netcdf4_reader.py
+      - tests/timeseries/test_crop_timing_contract.py
+    requirements:
+      - xarray and netCDF4 are installed
+      - tests are non-skipped
+
+  interop-root:
+    junit: junit/interop-root.xml
+    tests:
+      - tests/histogram/test_root_interop.py
+      - tests/histogram/test_root_interop_contracts.py
+    environment:
+      GWEXPY_RUN_ROOT: "1"
+      root_base: "6.36.*"
+    requirements:
+      - ROOT is installed
+      - tests are non-skipped

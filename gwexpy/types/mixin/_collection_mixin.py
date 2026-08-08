@@ -1,4 +1,5 @@
 """Mixins and factories for eliminating dict/list delegation boilerplate."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable, Iterator
@@ -88,8 +89,7 @@ def _make_dict_plain_method(method_name: str, *, doc: str = "") -> Any:
 
     def method(self, *args, **kwargs):
         return {
-            key: getattr(val, method_name)(*args, **kwargs)
-            for key, val in self.items()
+            key: getattr(val, method_name)(*args, **kwargs) for key, val in self.items()
         }
 
     method.__name__ = method_name
@@ -145,10 +145,7 @@ def _make_list_plain_method(method_name: str, *, doc: str = "") -> Any:
     """Create a delegation method returning a plain list (not a collection)."""
 
     def method(self, *args, **kwargs):
-        return [
-            getattr(val, method_name)(*args, **kwargs)
-            for val in self
-        ]
+        return [getattr(val, method_name)(*args, **kwargs) for val in self]
 
     method.__name__ = method_name
     method.__qualname__ = method_name

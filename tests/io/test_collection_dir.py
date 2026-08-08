@@ -1,4 +1,5 @@
 """Tests for gwexpy/io/collection_dir.py."""
+
 from __future__ import annotations
 
 import json

@@ -1,0 +1,162 @@
+---
+issues: [578]
+title: "Fail-closed Field collection operators and atomic in-place updates"
+date: 2026-08-06
+branch: codex/v0113-release
+worktree: "<local worktree for branch codex/v0113-release>"
+agent_role: "Implementation session"
+agent_model: "Codex"
+agent_reasoning_effort: high
+base_sha: 20188b6f2
+final_state: "Uncommitted; Terra-approved Field/List lane; no push or release action"
+
+physics_signoff:
+  status: approved
+  date: 2026-08-06
+  scope: >-
+    scalar, scalar Quantity, and Unit operator policy; incompatible-unit
+    rejection; and complete rollback after a failed in-place operation.
+  decision: >-
+    The human physics reviewer accepted this contract and judged it better than
+    the original markdown proposal.
+
+contract:
+  supported_operands:
+    multiplication_and_division: [python_scalar, numpy_scalar, scalar_Quantity, Unit]
+    addition_and_subtraction: [python_scalar, numpy_scalar, scalar_Quantity]
+  constraints:
+    - "Bare scalar addition/subtraction requires dimensionless components."
+    - "Quantity addition/subtraction requires units equivalent to every component."
+    - "Unit is restricted to multiplication and division."
+    - "ndarray, container operands, and direct NumPy ufuncs fail closed."
+    - >-
+      "FieldList + [] fails closed, but [] + FieldList retains Python's
+      unavoidable left-list concatenation behavior and returns a built-in list."
+    - "Supported in-place operations compute all component results before replacing any component."
+  preserved:
+    - collection subclass
+    - VectorField basis
+    - TensorField rank
+    - key order
+    - component name, unit, values, axes, and domain metadata
+
+design_decisions:
+  quantity_dispatch: >-
+    Field collections use a higher __array_priority__ and explicit reflected
+    operators so that Quantity * collection and Unit * collection retain the
+    collection rather than returning a bare Quantity.
+  ufunc_policy: >-
+    FieldDict and FieldList set __array_ufunc__ to None.  ScalarField retains
+    its existing ufunc implementation because this issue concerns collection
+    dispatch and ScalarField arithmetic is an established GWpy-compatible API.
+  rollback: >-
+    _inplace_operation builds a complete replacement collection before the
+    original dict/list is modified.  A dimensional incompatibility therefore
+    raises UnitConversionError without a partial component update.
+  list_family_compatibility: >-
+    TimeSeriesList, FrequencySeriesList, and SpectrogramList use native-list
+    binary concatenation/repetition semantics and return a built-in list.
+    HistogramList deliberately rejects repetition because it would duplicate
+    measurements.  FieldList implements its separate, signed-off physical
+    arithmetic contract.
+
+physics_validation:
+  dimensional_analysis:
+    - "V * m yields V m for Quantity/Unit multiplication."
+    - "V / m and m / V are preserved for both division directions."
+    - "1000 mV added to a V component yields a V result with converted value."
+  rejection:
+    - "V plus s raises UnitConversionError before any collection replacement."
+    - "A bare scalar cannot be added to a unitful component."
+  excluded: "No Fourier, PSD, or domain-transform algorithm changes."
+
+independent_review:
+  reviewer_role: "Terra Field/List lane review"
+  status: approved
+  date: 2026-08-06
+  findings: >-
+    No blocker.  The reviewer confirmed the accepted FieldList left-list
+    limitation, SpectrogramList parity with the time/frequency list classes,
+    HistogramList's intentional rejection, and Field metadata/rollback safety.
+
+commands_executed:
+  - cmd: "conda run -n gwexpy pytest tests/fields/test_field_collection_arithmetic_contracts.py -q"
+    phase: RED
+    result: "1 failed: Quantity * VectorField returned a bare Quantity."
+  - cmd: "conda run -n gwexpy pytest tests/fields/test_field_collection_arithmetic_contracts.py -q"
+    phase: RED
+    result: "8 failed after expanding the contract matrix."
+  - cmd: "conda run -n gwexpy pytest tests/fields/test_field_collection_arithmetic_contracts.py -q"
+    phase: GREEN
+    result: "12 passed."
+  - cmd: "conda run -n gwexpy pytest tests/fields/test_scalarfield_collections.py tests/fields/test_vectorfield.py tests/fields/test_tensorfield.py tests/fields/test_field_algebra_contracts.py tests/fields/test_field_collection_arithmetic_contracts.py -q"
+    result: "90 passed, 2 skipped."
+  - cmd: "conda run -n gwexpy pytest tests/fields/ -q"
+    result: "300 passed, 2 skipped."
+  - cmd: "conda run -n gwexpy ruff check gwexpy/fields/collections.py tests/fields/test_field_collection_arithmetic_contracts.py"
+    result: "passed"
+  - cmd: "conda run -n gwexpy ruff format --check gwexpy/fields/collections.py tests/fields/test_field_collection_arithmetic_contracts.py"
+    result: "passed"
+  - cmd: "conda run -n gwexpy mypy --follow-imports=skip gwexpy/fields/collections.py"
+    result: "passed"
+  - cmd: "conda run -n gwexpy mypy gwexpy/fields/collections.py"
+    result: >-
+      Seven pre-existing errors in gwexpy/statistics/gauch.py and
+      gwexpy/spectral/estimation.py; no error in collections.py.
+  - cmd: >-
+      conda run -n gwexpy pytest tests/fields
+      tests/spectrogram -q
+    result: "694 passed, 9 skipped, 1 xfailed."
+  - cmd: >-
+      conda run -n gwexpy ruff check gwexpy/fields/collections.py
+      gwexpy/spectrogram/collections.py
+      tests/fields/test_field_collection_arithmetic_contracts.py
+      tests/spectrogram/test_list_operator_compatibility.py
+    result: "passed"
+  - cmd: >-
+      conda run -n gwexpy ruff format --check gwexpy/fields/collections.py
+      gwexpy/spectrogram/collections.py
+      tests/fields/test_field_collection_arithmetic_contracts.py
+      tests/spectrogram/test_list_operator_compatibility.py
+    result: "passed"
+  - cmd: >-
+      conda run -n gwexpy mypy --follow-imports=skip
+      gwexpy/fields/collections.py gwexpy/spectrogram/collections.py
+    result: "passed"
+  - cmd: >-
+      conda run -n gwexpy sphinx-build -b html -W --keep-going
+      -D nbsphinx_execute=never -D nbsphinx_allow_errors=0 docs
+      /tmp/gwexpy-v0113-docs-html
+    result: "passed"
+
+files_changed:
+  - path: gwexpy/fields/collections.py
+    change: >-
+      Adds the explicit fail-closed operator suite for FieldList and FieldDict,
+      including reflected and atomic in-place forms.
+  - path: tests/fields/test_field_collection_arithmetic_contracts.py
+    change: >-
+      Adds Quantity/Unit dispatch, FieldList repetition, direct ufunc,
+      additive-unit, and atomic rollback regressions.
+  - path: gwexpy/spectrogram/collections.py
+    change: >-
+      Makes SpectrogramList binary concatenation and repetition match the
+      native-list behavior of TimeSeriesList and FrequencySeriesList.
+  - path: tests/spectrogram/test_list_operator_compatibility.py
+    change: >-
+      Fixes the list-family compatibility policy, including HistogramList's
+      intentional repetition rejection.
+  - path: docs/web/en/reference/FieldList.md
+    change: "Documents the FieldList left-list concatenation limitation."
+  - path: docs/web/ja/reference/FieldList.md
+    change: "Documents the FieldList left-list concatenation limitation."
+  - path: docs/web/en/reference/SpectrogramList.md
+    change: "Documents native-list binary operator compatibility."
+  - path: docs/web/ja/reference/SpectrogramList.md
+    change: "Documents native-list binary operator compatibility."
+  - path: docs/developers/plans/manifests/audit-manifest-578-field-collection-operators.yaml
+    change: "Records sign-off, contract, validation commands, and residual scope."
+
+known_residuals:
+  - "Full repository pytest, artifact installation, CI, and ROOT validation remain release-level gates."
+  - "Sol integration review remains a release-level gate."

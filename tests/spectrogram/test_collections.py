@@ -1,4 +1,5 @@
 """Tests for gwexpy/spectrogram/collections.py."""
+
 from __future__ import annotations
 
 import warnings
@@ -120,6 +121,7 @@ class TestSpectrogramListConstruction:
     def test_base_spectrogram_auto_convert(self):
         # Lines 113-115 — BaseSpectrogram → auto-convert to Spectrogram
         from gwpy.spectrogram import Spectrogram as BaseSpec
+
         data = np.random.randn(10, 8)
         times = np.arange(10) * u.s
         freqs = np.arange(8) * u.Hz
@@ -137,6 +139,7 @@ class TestSpectrogramListConstruction:
     def test_setitem_base_spectrogram_auto_convert(self):
         # Lines 122-124 — setitem with BaseSpectrogram
         from gwpy.spectrogram import Spectrogram as BaseSpec
+
         data = np.random.randn(10, 8)
         times = np.arange(10) * u.s
         freqs = np.arange(8) * u.Hz
@@ -159,6 +162,7 @@ class TestSpectrogramListConstruction:
     def test_append_base_spectrogram_auto_convert(self):
         # Lines 131-132 — append with BaseSpectrogram
         from gwpy.spectrogram import Spectrogram as BaseSpec
+
         data = np.random.randn(10, 8)
         times = np.arange(10) * u.s
         freqs = np.arange(8) * u.Hz
@@ -296,8 +300,10 @@ class TestSpectrogramDictConstruction:
         class FakeMapping:
             def keys(self):
                 return ["b"]
+
             def __getitem__(self, k):
                 return _make_sg(name=k)
+
         sd = SpectrogramDict()
         sd.update(FakeMapping())
         assert "b" in sd
@@ -430,6 +436,7 @@ class TestSpectrogramDictSetitemBase:
     def test_setitem_base_spectrogram_auto_convert(self):
         # Lines 480-481 — BaseSpectrogram auto-convert in dict
         from gwpy.spectrogram import Spectrogram as BaseSpec
+
         data = np.random.randn(10, 8)
         times = np.arange(10) * u.s
         freqs = np.arange(8) * u.Hz
@@ -586,7 +593,9 @@ class TestSpectrogramDictPhase:
         data = np.exp(1j * np.random.randn(10, 8))
         times = np.arange(10) * u.s
         freqs = np.arange(8) * u.Hz
-        sg = Spectrogram(data, times=times, frequencies=freqs, unit=u.dimensionless_unscaled)
+        sg = Spectrogram(
+            data, times=times, frequencies=freqs, unit=u.dimensionless_unscaled
+        )
         sd = SpectrogramDict({"a": sg})
         result = sd.radian()
         assert isinstance(result, SpectrogramDict)
@@ -596,7 +605,9 @@ class TestSpectrogramDictPhase:
         data = np.exp(1j * np.random.randn(10, 8))
         times = np.arange(10) * u.s
         freqs = np.arange(8) * u.Hz
-        sg = Spectrogram(data, times=times, frequencies=freqs, unit=u.dimensionless_unscaled)
+        sg = Spectrogram(
+            data, times=times, frequencies=freqs, unit=u.dimensionless_unscaled
+        )
         sd = SpectrogramDict({"a": sg})
         result = sd.degree()
         assert isinstance(result, SpectrogramDict)
@@ -613,7 +624,9 @@ class TestSpectrogramListPhase:
         data = np.exp(1j * np.random.randn(10, 8))
         times = np.arange(10) * u.s
         freqs = np.arange(8) * u.Hz
-        sg = Spectrogram(data, times=times, frequencies=freqs, unit=u.dimensionless_unscaled)
+        sg = Spectrogram(
+            data, times=times, frequencies=freqs, unit=u.dimensionless_unscaled
+        )
         sl = SpectrogramList([sg])
         result = sl.radian()
         assert isinstance(result, SpectrogramList)
@@ -623,7 +636,9 @@ class TestSpectrogramListPhase:
         data = np.exp(1j * np.random.randn(10, 8))
         times = np.arange(10) * u.s
         freqs = np.arange(8) * u.Hz
-        sg = Spectrogram(data, times=times, frequencies=freqs, unit=u.dimensionless_unscaled)
+        sg = Spectrogram(
+            data, times=times, frequencies=freqs, unit=u.dimensionless_unscaled
+        )
         sl = SpectrogramList([sg])
         result = sl.degree()
         assert isinstance(result, SpectrogramList)

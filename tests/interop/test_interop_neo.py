@@ -14,7 +14,10 @@ class TestToNeo:
     def test_ts_to_analogsignal(self):
         ts = TimeSeries(
             np.arange(100, dtype=np.float64),
-            t0=0, sample_rate=100, unit="V", name="sig",
+            t0=0,
+            sample_rate=100,
+            unit="V",
+            name="sig",
         )
         sig = to_neo(ts)
         assert isinstance(sig, neo.AnalogSignal)

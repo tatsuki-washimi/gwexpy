@@ -4,6 +4,7 @@ This module provides a configurable CSV reader that can handle instrument-
 specific formats (ADX3, custom loggers, etc.) through YAML/JSON configuration
 files rather than hard-coded logic.
 """
+
 from __future__ import annotations
 
 import csv
@@ -32,7 +33,7 @@ def _parse_comment_metadata(
             continue
         if not stripped.startswith(comment_char):
             break
-        body = stripped[len(comment_char):].strip()
+        body = stripped[len(comment_char) :].strip()
         if not body or body.startswith("gwexpy.timeseries.csv"):
             continue
         if "=" not in body:
@@ -42,9 +43,7 @@ def _parse_comment_metadata(
     return metadata
 
 
-def _detect_skip_rows(
-    lines: list[str], delimiter: str, comment_char: str
-) -> int:
+def _detect_skip_rows(lines: list[str], delimiter: str, comment_char: str) -> int:
     """Heuristic to detect how many header/comment rows to skip."""
     for i, line in enumerate(lines):
         stripped = line.strip()
@@ -102,8 +101,16 @@ def _reconstruct_timestamps(
     years = raw_data[:, time_components["year"]].astype(int)
     months = raw_data[:, time_components["month"]].astype(int)
     days = raw_data[:, time_components["day"]].astype(int)
-    hours = raw_data[:, time_components["hour"]].astype(int) if "hour" in time_components else np.zeros(nrows, dtype=int)
-    minutes = raw_data[:, time_components["minute"]].astype(int) if "minute" in time_components else np.zeros(nrows, dtype=int)
+    hours = (
+        raw_data[:, time_components["hour"]].astype(int)
+        if "hour" in time_components
+        else np.zeros(nrows, dtype=int)
+    )
+    minutes = (
+        raw_data[:, time_components["minute"]].astype(int)
+        if "minute" in time_components
+        else np.zeros(nrows, dtype=int)
+    )
 
     if "second" in time_components:
         sec_raw = raw_data[:, time_components["second"]]
@@ -120,26 +127,25 @@ def _reconstruct_timestamps(
                 f"Row {i}: month value {months[i]} is out of range [1, 12]"
             )
         if not (1 <= days[i] <= 31):
-            raise ValueError(
-                f"Row {i}: day value {days[i]} is out of range [1, 31]"
-            )
+            raise ValueError(f"Row {i}: day value {days[i]} is out of range [1, 31]")
         if not (0 <= hours[i] <= 23):
-            raise ValueError(
-                f"Row {i}: hour value {hours[i]} is out of range [0, 23]"
-            )
+            raise ValueError(f"Row {i}: hour value {hours[i]} is out of range [0, 23]")
         if not (0 <= minutes[i] <= 59):
             raise ValueError(
                 f"Row {i}: minute value {minutes[i]} is out of range [0, 59]"
             )
         if not (0 <= secs[i] <= 59):
-            raise ValueError(
-                f"Row {i}: second value {secs[i]} is out of range [0, 59]"
-            )
+            raise ValueError(f"Row {i}: second value {secs[i]} is out of range [0, 59]")
         try:
             tz = timezone if timezone is not None else _dt.UTC
             dt = _dt.datetime(
-                years[i], months[i], days[i],
-                hours[i], minutes[i], secs[i], microsecs[i],
+                years[i],
+                months[i],
+                days[i],
+                hours[i],
+                minutes[i],
+                secs[i],
+                microsecs[i],
                 tzinfo=tz,
             )
         except ValueError as exc:
@@ -187,7 +193,9 @@ def _resample_uniform(
     if method == "interpolate":
         from scipy.interpolate import interp1d
 
-        f = interp1d(times, values, kind="linear", bounds_error=False, fill_value=np.nan)
+        f = interp1d(
+            times, values, kind="linear", bounds_error=False, fill_value=np.nan
+        )
         new_values = f(new_times)
     elif method == "asfreq":
         # Nearest-neighbor resampling
@@ -384,9 +392,7 @@ def read_timeseriesdict_csv(
                 (metadata.get("name", "ch1"), 1, metadata.get("unit"), 1.0),
             ]
         else:
-            data_columns = [
-                (f"ch{i}", i, None, 1.0) for i in range(1, raw.shape[1])
-            ]
+            data_columns = [(f"ch{i}", i, None, 1.0) for i in range(1, raw.shape[1])]
 
     # --- Build TimeSeriesDict ---
     result: dict[str, Any] = {}

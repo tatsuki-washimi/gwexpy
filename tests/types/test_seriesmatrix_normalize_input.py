@@ -1,4 +1,5 @@
 """Tests for seriesmatrix_validation._normalize_input and related handlers."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -23,6 +24,7 @@ from gwexpy.types.seriesmatrix_validation import (
 # ---------------------------------------------------------------------------
 # _detect_input_type
 # ---------------------------------------------------------------------------
+
 
 def test_detect_none():
     assert _detect_input_type(None) == "none"
@@ -78,6 +80,7 @@ def test_detect_quantity_3d():
 # _normalize_input — none
 # ---------------------------------------------------------------------------
 
+
 def test_normalize_none():
     arr, attrs, xi = _normalize_input(None)
     assert arr.shape == (0, 0, 0)
@@ -86,6 +89,7 @@ def test_normalize_none():
 # ---------------------------------------------------------------------------
 # _normalize_input — scalar
 # ---------------------------------------------------------------------------
+
 
 def test_normalize_scalar():
     arr, attrs, xi = _normalize_input(3.0)
@@ -119,6 +123,7 @@ def test_normalize_scalar_with_shape_invalid():
 # _normalize_input — scalar_quantity
 # ---------------------------------------------------------------------------
 
+
 def test_normalize_scalar_quantity():
     arr, attrs, xi = _normalize_input(2.0 * u.m)
     assert arr.shape == (1, 1, 1)
@@ -133,6 +138,7 @@ def test_normalize_scalar_quantity_with_unit_conversion():
 # ---------------------------------------------------------------------------
 # _normalize_input — Series
 # ---------------------------------------------------------------------------
+
 
 def test_normalize_series():
     s = Series(np.array([1.0, 2.0, 3.0]), xindex=np.arange(3), unit=u.m)
@@ -150,6 +156,7 @@ def test_normalize_series_with_unit_conversion():
 # ---------------------------------------------------------------------------
 # _normalize_input — ndarray 1d/2d
 # ---------------------------------------------------------------------------
+
 
 def test_normalize_ndarray_1d():
     arr, attrs, xi = _normalize_input(np.array([1.0, 2.0, 3.0]))
@@ -172,6 +179,7 @@ def test_normalize_quantity_1d():
 # _normalize_input — ndarray 3d
 # ---------------------------------------------------------------------------
 
+
 def test_normalize_ndarray_3d():
     data = np.ones((2, 3, 5))
     arr, attrs, xi = _normalize_input(data)
@@ -187,6 +195,7 @@ def test_normalize_quantity_3d_with_unit():
 # ---------------------------------------------------------------------------
 # _normalize_input — list
 # ---------------------------------------------------------------------------
+
 
 def test_normalize_empty_list():
     arr, attrs, xi = _normalize_input([])
@@ -221,6 +230,7 @@ def test_normalize_list_of_series():
 # _normalize_input — dict
 # ---------------------------------------------------------------------------
 
+
 def test_normalize_dict():
     data = {"row0": [np.array([1.0, 2.0]), np.array([3.0, 4.0])]}
     arr, attrs, xi = _normalize_input(data)
@@ -237,6 +247,7 @@ def test_normalize_dict_with_dx_x0():
 # _normalize_input — seriesmatrix
 # ---------------------------------------------------------------------------
 
+
 def test_normalize_seriesmatrix():
     sm = SeriesMatrix(np.ones((2, 2, 5)), xindex=np.arange(5))
     arr, attrs, xi = _normalize_input(sm)
@@ -247,6 +258,7 @@ def test_normalize_seriesmatrix():
 # _normalize_input — unknown type raises
 # ---------------------------------------------------------------------------
 
+
 def test_normalize_unsupported_type_raises():
     with pytest.raises(TypeError, match="Unsupported data type"):
         _normalize_input(object())
@@ -255,6 +267,7 @@ def test_normalize_unsupported_type_raises():
 # ---------------------------------------------------------------------------
 # _resolve_scalar_shape
 # ---------------------------------------------------------------------------
+
 
 def test_resolve_scalar_shape_none_none():
     assert _resolve_scalar_shape(None, None) == (1, 1, 1)
@@ -277,6 +290,7 @@ def test_resolve_scalar_shape_3d():
 # _broadcast_attr
 # ---------------------------------------------------------------------------
 
+
 def test_broadcast_attr_none():
     assert _broadcast_attr(None, (2, 2), "units") is None
 
@@ -294,6 +308,7 @@ def test_broadcast_attr_mismatch_raises():
 # ---------------------------------------------------------------------------
 # _expand_key
 # ---------------------------------------------------------------------------
+
 
 def test_expand_key_single_int():
     result = _expand_key(0, 3)
@@ -313,6 +328,7 @@ def test_expand_key_ellipsis():
 # ---------------------------------------------------------------------------
 # _infer_length_from_items
 # ---------------------------------------------------------------------------
+
 
 def test_infer_length_from_series():
     s = Series(np.ones(7), xindex=np.arange(7))
@@ -340,6 +356,7 @@ def test_infer_length_scalar_no_shape():
 # ---------------------------------------------------------------------------
 # _slice_metadata_dict
 # ---------------------------------------------------------------------------
+
 
 def test_slice_metadata_dict_by_slice():
     meta = MetaDataDict(
@@ -386,6 +403,7 @@ def test_slice_metadata_dict_fallback():
 # to_series — additional branches
 # ---------------------------------------------------------------------------
 
+
 def test_to_series_scalar_quantity():
     xindex = np.arange(5, dtype=float)
     s = to_series(2.0 * u.m, xindex=xindex)
@@ -418,5 +436,3 @@ def test_to_series_scalar_with_xindex():
 def test_to_series_unsupported_type_raises():
     with pytest.raises(TypeError, match="Unsupported element type"):
         to_series({"a": 1}, xindex=np.arange(3))
-
-

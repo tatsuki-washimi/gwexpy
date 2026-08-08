@@ -6,7 +6,7 @@
 
 GWexpy のソースツリーには **PyQt5 ベースの GUI** が含まれており、対話的なデータ探索と可視化が可能です。ただし現時点では、GUI は **試作段階 / 実験的インターフェース**として扱ってください。再現性やサポートの観点では、**Python API** が引き続き主要インターフェースです。
 
-GUI アプリと `gwexpy.gui` package は **初回 PyPI 配布物には含めません**。初回 PyPI リリースは Python ライブラリ API を主対象とし、GUI の安定化は post-release 作業として別に扱います。
+GUI アプリと `gwexpy.gui` package は **公開済みPyPI配布物には含まれません**。公開済みパッケージは Python ライブラリ API を主対象とし、GUI の安定化は post-release 作業として別に扱います。
 
 ## インストール
 
@@ -32,7 +32,7 @@ pip install PyQt5 pyqtgraph qtpy sounddevice
 python -m gwexpy.gui
 ```
 
-初回 PyPI リリースでは `gwexpy.gui` console script も `gwexpy.gui` package も配布しません。
+公開済みPyPIパッケージでは `gwexpy.gui` console script も `gwexpy.gui` package も配布しません。
 
 ### プログラム内での起動
 

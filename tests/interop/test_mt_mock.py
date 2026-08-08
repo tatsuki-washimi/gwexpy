@@ -1,6 +1,7 @@
 """
 Unit tests for gwexpy/interop/mt_.py using hierarchical fake classes.
 """
+
 from __future__ import annotations
 
 import os
@@ -18,10 +19,13 @@ from gwexpy.timeseries import TimeSeries
 # Fake MTH5 Hierarchy
 # =============================================================================
 
+
 class FakeChannel:
     def __init__(self, name, data=None, sample_rate=1.0, start=0.0, units="m"):
         self.name = name
-        self.hdf5_dataset = np.asarray(data) if data is not None else np.array([0.0, 1.0])
+        self.hdf5_dataset = (
+            np.asarray(data) if data is not None else np.array([0.0, 1.0])
+        )
         self.sample_rate = sample_rate
         self.start = start
         self.units = units
@@ -38,7 +42,9 @@ class FakeRunGroup:
             raise KeyError(name)
         return self.channels[name]
 
-    def add_channel(self, name, channel_type, data=None, sample_rate=1.0, start=0.0, **kwargs):
+    def add_channel(
+        self, name, channel_type, data=None, sample_rate=1.0, start=0.0, **kwargs
+    ):
         units = kwargs.get("units", "m")
         ch = FakeChannel(name, data, sample_rate, start, units=units)
         ch.channel_type = channel_type
@@ -141,6 +147,7 @@ class FakeMTH5:
 # Tests
 # =============================================================================
 
+
 @pytest.fixture
 def mock_all():
     """Comprehensive mock for all dependencies."""
@@ -153,9 +160,12 @@ def mock_all():
 
     # Patch the reference inside mt_ directly to be 100% sure
     from gwexpy.interop._registry import ConverterRegistry
+
     with patch.object(ConverterRegistry, "get_constructor", return_value=mock_ts_class):
         with patch("gwexpy.interop.mt_.require_optional", return_value=mock_mth5_mod):
-            with patch.dict(sys.modules, {"mth5": mock_mth5_mod, "mth5.mth5": mock_mth5_mod}):
+            with patch.dict(
+                sys.modules, {"mth5": mock_mth5_mod, "mth5.mth5": mock_mth5_mod}
+            ):
                 # Mock astropy.time.Time
                 class FakeTime:
                     def __init__(self, val, format=None):
@@ -172,10 +182,9 @@ def mock_all():
 
                 with patch("astropy.time.Time", FakeTime):
                     from gwexpy.interop import mt_
+
                     yield SimpleNamespace(
-                        mt=mt_,
-                        ts_class=mock_ts_class,
-                        mth5=mock_mth5_mod
+                        mt=mt_, ts_class=mock_ts_class, mth5=mock_mth5_mod
                     )
 
 
@@ -217,8 +226,8 @@ class TestFromMTH5Mock:
         mock_all.ts_class.reset_mock()
         run.add_channel("FAIL_ALL", "electric", data=[1], start="REALLY_BAD")
         with patch("gwexpy.interop.mt_.float", side_effect=ValueError):
-             mock_all.mt.from_mth5(m, "S1", "R1", "FAIL_ALL")
-             assert float(mock_all.ts_class.call_args[1]["t0"].to_value("s")) == 0.0
+            mock_all.mt.from_mth5(m, "S1", "R1", "FAIL_ALL")
+            assert float(mock_all.ts_class.call_args[1]["t0"].to_value("s")) == 0.0
 
     def test_from_filename(self, mock_all):
         m = FakeMTH5(file_version="0.1.0")
@@ -269,7 +278,6 @@ class TestToMTH5Mock:
 
         mock_all.mt.to_mth5(ts, m, station="S1", run="R1")
         assert m.stations["S1"].runs["R1"].channels["Ex"].start == 0.0
-
 
     def test_os_remove_oserror_suppression(self, mock_all):
         m = FakeMTH5(file_version="0.1.0")

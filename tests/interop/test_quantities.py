@@ -1,4 +1,5 @@
 """Tests for gwexpy/interop/quantities_.py."""
+
 from __future__ import annotations
 
 import sys
@@ -13,6 +14,7 @@ from gwexpy.timeseries import TimeSeries
 
 def _fake_pq():
     """Return a minimal fake quantities module."""
+
     class FakeQuantity:
         # High priority so NumPy defers to __rmul__ instead of trying to broadcast
         __array_priority__ = 20.0
@@ -58,6 +60,7 @@ class TestToQuantityRequiresPackage:
     def test_raises_import_error_without_quantities(self):
         with patch.dict(sys.modules, {"quantities": None}):
             from gwexpy.interop.quantities_ import to_quantity
+
             with pytest.raises(ImportError):
                 to_quantity(TimeSeries(np.ones(5), t0=0, dt=1.0))
 
@@ -69,6 +72,7 @@ class TestToQuantity:
             import importlib
 
             from gwexpy.interop import quantities_
+
             importlib.reload(quantities_)
             ts = TimeSeries(np.arange(5.0), t0=0, dt=1.0, unit="m")
             q = quantities_.to_quantity(ts)
@@ -81,6 +85,7 @@ class TestToQuantity:
             import importlib
 
             from gwexpy.interop import quantities_
+
             importlib.reload(quantities_)
             q = quantities_.to_quantity(obj)
         np.testing.assert_array_equal(q.magnitude, np.array([1.0, 2.0]))
@@ -92,6 +97,7 @@ class TestToQuantity:
             import importlib
 
             from gwexpy.interop import quantities_
+
             importlib.reload(quantities_)
             q = quantities_.to_quantity(data)
         np.testing.assert_array_equal(q.magnitude, data)
@@ -103,6 +109,7 @@ class TestToQuantity:
             import importlib
 
             from gwexpy.interop import quantities_
+
             importlib.reload(quantities_)
             q = quantities_.to_quantity(obj)
         assert q is not None  # Should not raise
@@ -114,6 +121,7 @@ class TestToQuantity:
             import importlib
 
             from gwexpy.interop import quantities_
+
             importlib.reload(quantities_)
             q = quantities_.to_quantity(ts, units="km")
         assert q.units == "km"
@@ -147,6 +155,7 @@ class TestToQuantity:
             import importlib
 
             from gwexpy.interop import quantities_
+
             importlib.reload(quantities_)
             q = quantities_.to_quantity(obj)
         assert q is not None
@@ -155,6 +164,7 @@ class TestToQuantity:
 class TestFromQuantity:
     def test_basic(self):
         from gwexpy.interop.quantities_ import from_quantity
+
         q = SimpleNamespace(
             magnitude=np.arange(5.0),
             dimensionality=SimpleNamespace(string="m"),
@@ -165,6 +175,7 @@ class TestFromQuantity:
 
     def test_dimensionless_unit_converted_to_empty(self):
         from gwexpy.interop.quantities_ import from_quantity
+
         q = SimpleNamespace(
             magnitude=np.ones(3),
             dimensionality=SimpleNamespace(string="dimensionless"),
@@ -174,6 +185,7 @@ class TestFromQuantity:
 
     def test_unit_kwarg_override(self):
         from gwexpy.interop.quantities_ import from_quantity
+
         q = SimpleNamespace(
             magnitude=np.ones(3),
             dimensionality=SimpleNamespace(string="m"),
@@ -183,6 +195,7 @@ class TestFromQuantity:
 
     def test_t0_and_dt_passed_through(self):
         from gwexpy.interop.quantities_ import from_quantity
+
         q = SimpleNamespace(
             magnitude=np.ones(4),
             dimensionality=SimpleNamespace(string="s"),

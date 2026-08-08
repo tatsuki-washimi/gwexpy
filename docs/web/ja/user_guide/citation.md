@@ -1,6 +1,6 @@
 # 引用方法 (Citation)
 
-GWexpy を研究や論文等で使用した場合は、以下の形式で引用していただけると幸いです。
+GWexpy を研究や論文等で使用した場合は、実際に使用した版を以下の形式で引用してください。
 
 ## 論文での引用 (BibTeX)
 
@@ -9,17 +9,18 @@ GWexpy を研究や論文等で使用した場合は、以下の形式で引用�
 ```bibtex
 @software{gwexpy2026,
   author = {Washimi, Tatsuki},
-  title = {GWexpy: Extended Analysis Utilities for Gravitational Wave Data},
+  title = {GWexpy: Extending GWpy with metadata-preserving multidimensional abstractions for detector commissioning},
   year = {2026},
   url = {https://github.com/tatsuki-washimi/gwexpy},
-  doi = {10.5281/zenodo.1234567},
-  version = {0.1.1}
+  version = {<version used>}
 }
 ```
 
 ## CITATION.cff
 
-リポジトリのルートディレクトリにある `CITATION.cff` ファイルを使用して、GitHub 上で直接引用情報を取得することもできます。
+再現可能な引用には、可変な `main` ブランチではなく、使用した正確なリリースタグの
+`CITATION.cff` を使用してください（例:
+`https://github.com/tatsuki-washimi/gwexpy/blob/<exact tag>/CITATION.cff`）。
 
 ## 関連する先行研究
 

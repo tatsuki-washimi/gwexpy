@@ -35,6 +35,7 @@ _MISSING_BACKEND_MARKERS = (
 def _looks_like_missing_backend(stderr: str) -> bool:
     return any(marker in stderr for marker in _MISSING_BACKEND_MARKERS)
 
+
 ROOT = Path(__file__).resolve().parents[2]
 GENERATORS_DIR = Path(__file__).resolve().parent / "generators"
 BLOCKED_PREFIX = "gwexpy"

@@ -1,4 +1,5 @@
 """Tests for gwexpy/noise/gwinc_.py."""
+
 from __future__ import annotations
 
 import sys
@@ -14,6 +15,7 @@ from gwexpy.noise.gwinc_ import from_pygwinc
 
 def _fake_gwinc(arm_length=4000.0):
     """Return a minimal fake gwinc module."""
+
     class FakeTrace:
         psd = np.ones(10) * 1e-46  # strain^2/Hz
 
@@ -26,9 +28,7 @@ def _fake_gwinc(arm_length=4000.0):
             infra = SimpleNamespace(Length=arm_length)
             return SimpleNamespace(Infrastructure=infra)
 
-    return SimpleNamespace(
-        load_budget=lambda model: FakeBudget()
-    )
+    return SimpleNamespace(load_budget=lambda model: FakeBudget())
 
 
 class TestFromPygwincValidation:
@@ -75,7 +75,9 @@ class TestFromPygwincModels:
     def test_displacement_alias_for_darm(self):
         fake_gwinc = _fake_gwinc()
         with patch.dict(sys.modules, {"gwinc": fake_gwinc}):
-            fs = from_pygwinc("aLIGO", fmin=10.0, fmax=100.0, df=10.0, quantity="displacement")
+            fs = from_pygwinc(
+                "aLIGO", fmin=10.0, fmax=100.0, df=10.0, quantity="displacement"
+            )
         assert isinstance(fs, FrequencySeries)
 
     def test_aplus_model_alias(self):
@@ -98,9 +100,7 @@ class TestFromPygwincModels:
             def ifo(self):
                 return SimpleNamespace(Infrastructure=SimpleNamespace(Length=4000.0))
 
-        fake_gwinc_custom = SimpleNamespace(
-            load_budget=lambda m: FakeBudgetCustom()
-        )
+        fake_gwinc_custom = SimpleNamespace(load_budget=lambda m: FakeBudgetCustom())
         with patch.dict(sys.modules, {"gwinc": fake_gwinc_custom}):
             fs = from_pygwinc("aLIGO", frequencies=freqs)
         assert len(fs) == 4

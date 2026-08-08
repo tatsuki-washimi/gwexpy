@@ -1,4 +1,5 @@
 """Tests for gwexpy/types/_stats.py — StatisticalMethodsMixin."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -6,6 +7,7 @@ import pytest
 from astropy import units as u
 
 from gwexpy.timeseries import TimeSeries
+from gwexpy.types.series import Series
 from gwexpy.types.seriesmatrix import SeriesMatrix
 
 
@@ -25,6 +27,7 @@ def _make_ts(data=None, unit=None):
 # ---------------------------------------------------------------------------
 # mean
 # ---------------------------------------------------------------------------
+
 
 def test_mean_default():
     sm = _make_sm()
@@ -67,6 +70,7 @@ def test_mean_keepdims():
 # std
 # ---------------------------------------------------------------------------
 
+
 def test_std_default():
     sm = _make_sm()
     assert sm.std() > 0
@@ -89,6 +93,7 @@ def test_std_with_unit():
 # var
 # ---------------------------------------------------------------------------
 
+
 def test_var_default():
     sm = _make_sm()
     assert sm.var() > 0
@@ -110,6 +115,7 @@ def test_var_with_unit():
 # ---------------------------------------------------------------------------
 # min / max
 # ---------------------------------------------------------------------------
+
 
 def test_min_default():
     sm = _make_sm()
@@ -149,6 +155,7 @@ def test_max_with_unit():
 # median
 # ---------------------------------------------------------------------------
 
+
 def test_median_default():
     sm = _make_sm()
     assert sm.median() == pytest.approx(5.5)
@@ -183,6 +190,7 @@ def test_median_axis():
 # rms
 # ---------------------------------------------------------------------------
 
+
 def test_rms_basic():
     data = np.array([[[3.0, 4.0]]])
     sm = _make_sm(data)
@@ -191,9 +199,11 @@ def test_rms_basic():
 
 
 def test_rms_with_unit():
-    # Lines 205-213 — unit branch
-    ts = _make_ts(np.array([1.0, 2.0, 3.0]), unit=u.m)
-    result = ts.rms()
+    # Unit branch of the generic mixin rms (scalar/axis reduction). Uses a
+    # Series (1-D, carries .unit) because TimeSeries.rms is now gwpy-compatible
+    # (a stride trend); see tests/timeseries/test_rms_compat.py for that.
+    s = Series(np.array([1.0, 2.0, 3.0]), unit=u.m)
+    result = s.rms()
     assert hasattr(result, "unit")
     assert result.unit == u.m
 
@@ -221,6 +231,7 @@ def test_rms_keepdims():
 # ---------------------------------------------------------------------------
 # skewness / kurtosis
 # ---------------------------------------------------------------------------
+
 
 def test_skewness_basic():
     data = np.array([[[1.0, 2.0, 3.0, 4.0, 5.0]]])

@@ -14,6 +14,7 @@ and FrequencySeries via GWpy. This module provides an explicit interop layer
 that ensures GWexpy types are returned and adds ``to_lal`` for FrequencySeries.
 
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, TypeVar
@@ -174,7 +175,9 @@ def from_lal_frequencyseries(
     n = len(data)
     frequencies = f0 + np.arange(n) * df
 
-    return FrequencySeries(data, frequencies=frequencies, unit=unit, name=name, epoch=epoch)
+    return FrequencySeries(
+        data, frequencies=frequencies, unit=unit, name=name, epoch=epoch
+    )
 
 
 def to_lal_frequencyseries(

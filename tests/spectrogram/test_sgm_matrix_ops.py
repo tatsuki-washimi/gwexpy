@@ -8,6 +8,7 @@ Covers:
 - to_series_1Dlist() for 3D/4D and ndim < 3 error
 - _all_element_units_equivalent() for None mix and semantic match (m/cm)
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -23,7 +24,9 @@ class TestSgmGetitemStringList:
     def test_batch_selection_by_string_list(self):
         # Indexing with ['A', 'C'] on 3D (Batch, Time, Freq)
         data = np.random.rand(3, 10, 5)
-        sgm = SpectrogramMatrix(data, rows=["A", "B", "C"], times=np.arange(10), frequencies=np.arange(5))
+        sgm = SpectrogramMatrix(
+            data, rows=["A", "B", "C"], times=np.arange(10), frequencies=np.arange(5)
+        )
 
         subset = sgm[["A", "C"]]
         assert subset.shape == (2, 10, 5)
@@ -33,7 +36,9 @@ class TestSgmGetitemStringList:
 
     def test_invalid_label_keyerror(self):
         data = np.random.rand(2, 5, 5)
-        sgm = SpectrogramMatrix(data, rows=["R1", "R2"], cols=["C1"], times=np.arange(5))
+        sgm = SpectrogramMatrix(
+            data, rows=["R1", "R2"], cols=["C1"], times=np.arange(5)
+        )
 
         # Unknown row
         with pytest.raises(KeyError, match="Invalid row key: Unknown"):
@@ -64,7 +69,7 @@ class TestSgm4dToLowerDim:
             cols=["C0", "C1", "C2"],
             meta=meta,
             times=np.arange(10),
-            frequencies=np.arange(5)
+            frequencies=np.arange(5),
         )
 
         # Slice: all Rows, Col 1
@@ -98,10 +103,7 @@ class TestSgmToSeries1DList:
     def test_4d_to_list(self):
         data = np.random.rand(2, 2, 5, 5)
         sgm = SpectrogramMatrix(
-            data,
-            rows=["R1", "R2"],
-            cols=["C1", "C2"],
-            times=np.arange(5)
+            data, rows=["R1", "R2"], cols=["C1", "C2"], times=np.arange(5)
         )
         lst = sgm.to_series_1Dlist()
         assert len(lst) == 4
@@ -112,7 +114,9 @@ class TestSgmToSeries1DList:
         data = np.random.rand(5, 5)
         sgm = data.view(SpectrogramMatrix)
         # ndim is 2
-        with pytest.raises(ValueError, match="Unsupported SpectrogramMatrix dimension: 2"):
+        with pytest.raises(
+            ValueError, match="Unsupported SpectrogramMatrix dimension: 2"
+        ):
             sgm.to_series_1Dlist()
 
 
@@ -128,10 +132,7 @@ class TestSgmAllElementUnits:
     def test_semantic_equivalence_m_cm(self):
         # m and cm ARE equivalent
         data = np.random.rand(2, 1, 5, 5)
-        meta = MetaDataMatrix([
-            [MetaData(unit=u.m)],
-            [MetaData(unit=u.cm)]
-        ])
+        meta = MetaDataMatrix([[MetaData(unit=u.m)], [MetaData(unit=u.cm)]])
         sgm = SpectrogramMatrix(data, meta=meta, times=np.arange(5))
         eq, unit = sgm._all_element_units_equivalent()
         assert eq is True
@@ -158,10 +159,7 @@ class TestSgmAllElementUnits:
     def test_non_equivalent_m_s(self):
         # m and s are NOT equivalent
         data = np.random.rand(2, 1, 5, 5)
-        meta = MetaDataMatrix([
-            [MetaData(unit=u.m)],
-            [MetaData(unit=u.s)]
-        ])
+        meta = MetaDataMatrix([[MetaData(unit=u.m)], [MetaData(unit=u.s)]])
         sgm = SpectrogramMatrix(data, meta=meta, times=np.arange(5))
         eq, unit = sgm._all_element_units_equivalent()
         assert eq is False

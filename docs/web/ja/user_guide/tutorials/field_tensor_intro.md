@@ -179,5 +179,5 @@ stress_tensor_k = TensorField({
 ### 次のステップ
 
 - **VectorField**: [ベクトル場入門](field_vector_intro.md)
-- **ScalarField**: [スカラー場入門](field_scalar_intro.ipynb)
+- **ScalarField**: [スカラー場入門](../../../en/user_guide/tutorials/field_scalar_intro.ipynb)
 - **高度なトピック**: テンソル縮約、ローレンツ変換など

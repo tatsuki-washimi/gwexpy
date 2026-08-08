@@ -129,6 +129,6 @@ print(f"配列の形状: {array_5d.shape}")
 
 ### 次のステップ
 
-- **ScalarField 基礎**: [スカラー場入門](field_scalar_intro.ipynb)
+- **ScalarField 基礎**: [スカラー場入門](../../../en/user_guide/tutorials/field_scalar_intro.ipynb)
 - **TensorField**: [テンソル場入門](field_tensor_intro.md) - ランク2以上のテンソル向け
 - **高度な信号処理**: ベクトル成分へのPSD、コヒーレンスなどの適用

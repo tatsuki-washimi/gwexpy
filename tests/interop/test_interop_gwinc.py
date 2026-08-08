@@ -3,6 +3,7 @@
 These tests use mock objects to simulate the gwinc Budget / BudgetTrace API,
 so they run without requiring pygwinc to be installed.
 """
+
 from __future__ import annotations
 
 from types import SimpleNamespace
@@ -101,7 +102,9 @@ class TestFromGwincBudgetTotal:
         budget, _ = _make_budget(total_psd=psd)
         gwinc_mock = MagicMock()
         with patch("gwexpy.interop.gwinc_.require_optional", return_value=gwinc_mock):
-            fs = from_gwinc_budget(FrequencySeries, budget, frequencies=_FREQS, quantity="asd")
+            fs = from_gwinc_budget(
+                FrequencySeries, budget, frequencies=_FREQS, quantity="asd"
+            )
         np.testing.assert_allclose(fs.value, np.sqrt(psd))
 
     def test_psd_values(self):
@@ -109,14 +112,18 @@ class TestFromGwincBudgetTotal:
         budget, _ = _make_budget(total_psd=psd)
         gwinc_mock = MagicMock()
         with patch("gwexpy.interop.gwinc_.require_optional", return_value=gwinc_mock):
-            fs = from_gwinc_budget(FrequencySeries, budget, frequencies=_FREQS, quantity="psd")
+            fs = from_gwinc_budget(
+                FrequencySeries, budget, frequencies=_FREQS, quantity="psd"
+            )
         np.testing.assert_allclose(fs.value, psd)
 
     def test_asd_unit(self):
         budget, _ = _make_budget()
         gwinc_mock = MagicMock()
         with patch("gwexpy.interop.gwinc_.require_optional", return_value=gwinc_mock):
-            fs = from_gwinc_budget(FrequencySeries, budget, frequencies=_FREQS, quantity="asd")
+            fs = from_gwinc_budget(
+                FrequencySeries, budget, frequencies=_FREQS, quantity="asd"
+            )
         assert "Hz" in str(fs.unit)
 
     def test_frequencies_preserved(self):
@@ -139,6 +146,7 @@ class TestFromGwincBudgetTotal:
     def test_default_frequency_array_generated(self):
         """When frequencies=None, array is built from fmin/fmax/df."""
         budget, _ = _make_budget()
+
         # Return correct-length psd for any frequency array
         def flexible_run(freq):
             trace = _make_trace(np.ones(len(freq)) * 1e-46)
@@ -190,7 +198,9 @@ class TestFromGwincBudgetDict:
             result = from_gwinc_budget(FrequencySeriesDict, budget, frequencies=_FREQS)
         for key, fs in result.items():
             np.testing.assert_allclose(
-                fs.frequencies.value, _FREQS, err_msg=f"Frequency mismatch for key '{key}'"
+                fs.frequencies.value,
+                _FREQS,
+                err_msg=f"Frequency mismatch for key '{key}'",
             )
 
     def test_subtrace_values(self):
@@ -202,7 +212,9 @@ class TestFromGwincBudgetDict:
         budget, _ = _make_budget(sub_traces=sub)
         gwinc_mock = MagicMock()
         with patch("gwexpy.interop.gwinc_.require_optional", return_value=gwinc_mock):
-            result = from_gwinc_budget(FrequencySeriesDict, budget, frequencies=_FREQS, quantity="psd")
+            result = from_gwinc_budget(
+                FrequencySeriesDict, budget, frequencies=_FREQS, quantity="psd"
+            )
         np.testing.assert_allclose(result["Quantum"].value, quantum_psd)
 
 
@@ -218,7 +230,9 @@ class TestFromGwincBudgetTraceName:
         budget, _ = _make_budget(sub_traces=sub)
         gwinc_mock = MagicMock()
         with patch("gwexpy.interop.gwinc_.require_optional", return_value=gwinc_mock):
-            fs = from_gwinc_budget(FrequencySeries, budget, frequencies=_FREQS, trace_name="Quantum")
+            fs = from_gwinc_budget(
+                FrequencySeries, budget, frequencies=_FREQS, trace_name="Quantum"
+            )
         np.testing.assert_allclose(fs.value, np.sqrt(quantum_psd))
 
     def test_total_trace_name(self):
@@ -226,7 +240,9 @@ class TestFromGwincBudgetTraceName:
         budget, _ = _make_budget(total_psd=total_psd)
         gwinc_mock = MagicMock()
         with patch("gwexpy.interop.gwinc_.require_optional", return_value=gwinc_mock):
-            fs = from_gwinc_budget(FrequencySeries, budget, frequencies=_FREQS, trace_name="Total")
+            fs = from_gwinc_budget(
+                FrequencySeries, budget, frequencies=_FREQS, trace_name="Total"
+            )
         np.testing.assert_allclose(fs.value, np.sqrt(total_psd))
 
     def test_invalid_trace_name_raises(self):
@@ -235,7 +251,10 @@ class TestFromGwincBudgetTraceName:
         with patch("gwexpy.interop.gwinc_.require_optional", return_value=gwinc_mock):
             with pytest.raises(ValueError, match="NonExistentTrace"):
                 from_gwinc_budget(
-                    FrequencySeries, budget, frequencies=_FREQS, trace_name="NonExistentTrace"
+                    FrequencySeries,
+                    budget,
+                    frequencies=_FREQS,
+                    trace_name="NonExistentTrace",
                 )
 
 
@@ -250,7 +269,9 @@ class TestInputValidation:
         gwinc_mock = MagicMock()
         with patch("gwexpy.interop.gwinc_.require_optional", return_value=gwinc_mock):
             with pytest.raises(ValueError, match="quantity"):
-                from_gwinc_budget(FrequencySeries, budget, frequencies=_FREQS, quantity="velocity")
+                from_gwinc_budget(
+                    FrequencySeries, budget, frequencies=_FREQS, quantity="velocity"
+                )
 
     def test_fmin_ge_fmax_raises(self):
         budget, _ = _make_budget()

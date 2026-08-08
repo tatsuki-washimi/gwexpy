@@ -78,6 +78,7 @@ def test_check_no_nan_inf_raises():
 
 # --- check_unit_dimension_compatibility ---
 
+
 def test_check_unit_dimension_compatibility_ok():
     sm1 = _make_matrix(unit=u.m)
     sm2 = _make_matrix(unit=u.km)  # same dimension (length)
@@ -98,6 +99,7 @@ def test_check_unit_dimension_compatibility_expected_dim():
 
 
 # --- check_epoch_and_sampling ---
+
 
 def test_check_epoch_and_sampling_ok():
     class _FakeSM:
@@ -130,12 +132,14 @@ def test_check_epoch_and_sampling_dx_mismatch():
 
 # --- check_xindex_monotonic: decreasing is ok ---
 
+
 def test_check_xindex_monotonic_decreasing_ok():
     sm = _make_matrix(xindex=np.array([3, 2, 1]))
     assert check_xindex_monotonic(sm) is True
 
 
 # --- check_add_sub_compatibility: shape mismatch ---
+
 
 def test_check_add_sub_compatibility_raises_on_shape_mismatch():
     sm1 = SeriesMatrix(np.zeros((2, 1, 3)), unit=u.m, xindex=np.arange(3))
@@ -146,12 +150,14 @@ def test_check_add_sub_compatibility_raises_on_shape_mismatch():
 
 # --- check_no_nan_inf: clean data returns True ---
 
+
 def test_check_no_nan_inf_ok():
     sm = _make_matrix()
     assert check_no_nan_inf(sm) is True
 
 
 # --- to_series ---
+
 
 def test_to_series_from_ndarray():
     arr = np.array([1.0, 2.0, 3.0])
@@ -191,6 +197,7 @@ def test_to_series_unsupported_type_raises():
 
 # --- build_index_if_needed ---
 
+
 def test_build_index_if_needed_from_dx_x0():
     xindex = build_index_if_needed(None, dx=0.1, x0=0.0, xunit=None, length=10)
     assert len(xindex) == 10
@@ -208,6 +215,7 @@ def test_build_index_if_needed_no_args_raises():
 
 
 # --- infer_xindex_from_items ---
+
 
 def test_infer_xindex_from_items_none():
     result = infer_xindex_from_items([1, 2, 3])

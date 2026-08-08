@@ -151,13 +151,13 @@ def test_advanced_fitting_notebooks_include_fit_guardrails(relative_path: Path):
     )
     string_fit_cell = _find_code_cell_source(
         nb,
-        'result_str = ts.fit(',
-        'x_range=(-2.5, 3.5)',
+        "result_str = ts.fit(",
+        "x_range=(-2.5, 3.5)",
     )
 
     assert '"mu": (-2.0, 2.0)' in fit_cell
     assert '"sigma": (0.2, 3.0)' in fit_cell
-    assert 'x_range=(-2.5, 3.5)' in string_fit_cell
+    assert "x_range=(-2.5, 3.5)" in string_fit_cell
     assert '"mu": (-2.0, 2.0)' in string_fit_cell
     assert '"sigma": (0.2, 3.0)' in string_fit_cell
 

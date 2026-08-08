@@ -1,4 +1,5 @@
 """Tests for BrucoResult.topk(), plot_ranked(), and band-aware get_ranked_channels."""
+
 from __future__ import annotations
 
 import matplotlib

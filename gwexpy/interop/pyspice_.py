@@ -8,6 +8,7 @@ Provides conversion from PySpice Analysis results (TransientAnalysis,
 AcAnalysis, NoiseAnalysis, DistortionAnalysis) to GWexpy TimeSeries
 and FrequencySeries types.
 """
+
 from __future__ import annotations
 
 from typing import Any

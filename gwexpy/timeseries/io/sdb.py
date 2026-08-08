@@ -1,4 +1,5 @@
 """SDB reader for Davis Vantage Pro2 and WeeWX SQLite files."""
+
 from __future__ import annotations
 
 import sqlite3

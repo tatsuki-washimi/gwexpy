@@ -8,6 +8,7 @@ This module provides pytest tests for:
 4. SpectrogramMatrix.__array_ufunc__ unit behavior
 5. SpectrogramList/SpectrogramDict.to_matrix invariants
 """
+
 from __future__ import annotations
 
 import numpy as np

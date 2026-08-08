@@ -1,8 +1,13 @@
 # Changelog
 
-## Unreleased
+## [0.1.13] - 2026-08-08
 
 ### Behaviour-visible bug fixes
+
+- **timeseries**: `TimeSeries.rms(stride=1, *, ignore_nan=True)` again accepts
+  a positional numeric stride in seconds and returns a dimensionless trend
+  series. Quantity strides and generic reduction keywords are rejected, so the
+  public GWpy-compatible API has one unambiguous meaning (#451).
 
 - **types**: arithmetic between an `astropy` `Quantity` and a `SeriesMatrix`
   (`TimeSeriesMatrix`, `FrequencySeriesMatrix`, `SpectrogramMatrix`) now
@@ -84,6 +89,84 @@
   channel block carrying a leading absolute sample, now raises `ValueError`
   instead of mis-slicing the packet; no spec consulted here documents zero as
   a sentinel for 4096 Hz (#610).
+- **io (zarr)**: reading a store returned a channel chosen by dictionary
+  iteration order rather than by any stated rule, so two reads of the same
+  unchanged multi-channel store could return different data with no exception
+  and no warning. Channel selection is now resolved before any payload is
+  read: the available array names are sorted, and a `channels=` selector that
+  names a missing array or repeats a name raises `ValueError` instead of being
+  silently skipped. The single-series reader now requires the selection to
+  resolve to exactly one channel and raises `ValueError` otherwise, rather
+  than picking one on your behalf (#614).
+- **io (zarr)**: `TimeSeries.read(source, format="zarr")` raised
+  `IsADirectoryError` before it ever reached the zarr reader, because the
+  explicit format never intercepted the generic registry path and a zarr
+  directory store was then opened as a file. The documented entry point had
+  therefore never worked. `TimeSeries.read` and `TimeSeriesDict.read` now
+  dispatch `format="zarr"` (and `format="nc"`/`"netcdf4"`) directly to their
+  readers, mirroring the interception that `TimeSeriesDict.read` already
+  performed for a `.zarr` suffix (#620).
+- **io (NetCDF4)**: a write→read round trip did not return the time axis it
+  was given. `t0` was carried through a datetime-mediated conversion and `dt`
+  through integer-nanosecond quantization, so at a realistic GPS epoch — where
+  `t0` is around 1e9 s and binary64 has no spare precision — both the epoch
+  and the sample spacing came back perturbed, silently shifting every
+  timestamp in the file. Files are now written with a versioned timing schema
+  that stores `t0` as an exact binary64 hex literal plus integer GPS
+  seconds/nanoseconds, and `dt` as an exact integer ratio, so the axis
+  round-trips bit-for-bit. Files written by earlier versions carry no schema
+  marker; they are still readable, and reading one now emits a
+  `RuntimeWarning` stating that their timing precision is limited instead of
+  presenting the degraded axis as exact (#615).
+- **timeseries**: `crop()` selected samples through a materialized timestamp
+  index, so at large GPS epochs floating-point cancellation could move the
+  boundary by one sample and perturb `dt` by a few ulp. A perturbed `dt`
+  changes `sample_rate`, and the truncating `nfft` derivation amplifies that
+  into an O(1/nfft) frequency-axis error, so a spectrum computed after a crop
+  could be shifted without anything raising. Crop on a regular axis is now a
+  positional slice computed from `t0`, `dt`, and a cancellation-aware
+  tolerance, and the source `dt` is retained rather than re-derived from the
+  cropped coordinates. Irregular axes keep GWpy's existing behaviour. The same
+  correction applies to `TimeSeriesMatrix.crop` (#617).
+- **timeseries**: `TimeSeriesDict.read` discarded the `_gwexpy_io` read
+  provenance that its readers attach, because re-wrapping the reader's result
+  in the collection class did not carry the attribute across. Provenance now
+  survives the re-wrap, so the record of how a dictionary was read is
+  available on the object you get back (#618).
+- **interop (ROOT)**: `from_root` read 2-D histogram contents by reinterpreting
+  the raw bin buffer as `float64`. A `TH2F` stores `float32` contents, so the
+  buffer was decoded at the wrong width and returned plausible-looking but
+  meaningless values with no exception. Contents are now read through the ROOT
+  accessor at the class's native scalar dtype (`TH1C`/`S`/`I`/`L` as the
+  corresponding integer width, `TH1F`/`TH2F` as `float32`, `TH1D`/`TH2D` as
+  `float64`), and `Histogram` no longer promotes an integer input array to
+  `float64`, so an integer-typed ROOT histogram keeps its integer contents.
+  Bin errors are likewise read through `GetBinError` rather than reconstructed
+  from a `Sumw2` buffer (#593).
+- **fields**: arithmetic between a `Quantity` (or a bare scalar, or a `Unit`)
+  and a field collection — `FieldList`, `FieldDict`, and therefore
+  `VectorField` and `TensorField` — lost the per-component physical units and
+  axis metadata, because the collection had no operator contract of its own and
+  Astropy's `ndarray` dispatch consumed it. The collections now implement the
+  binary, reflected, and in-place operators explicitly: each component is
+  operated on individually and its axis indices, axis names, domains, offsets,
+  name, epoch, and channel are copied onto the result rather than shared with
+  the source. Dimensional errors are raised before any component is replaced,
+  so a failed in-place operation leaves the collection untouched (#578).
+- **plot**: `VectorField.plot(stride=...)` raised
+  `TypeError: got an unexpected keyword argument 'stride'` because `stride`
+  was forwarded to the magnitude `pcolormesh` as well as to the quiver layer.
+  It is now consumed before the scalar layer is drawn and applied only to the
+  quiver decimation it was always meant for (#559).
+- **docs (segments)**: the `SegmentTable` reference documented methods that do
+  not exist in the implementation. The reference now matches the shipped API
+  (#605).
+- **docs (interop)**: the `gwinc_` docstring pointed at a classmethod that does
+  not exist, and the module's stated test coverage did not match the tests that
+  actually run. Both now describe the implementation (#608).
+- **ci**: the interop gates aggregated JUnit output without checking that any
+  test had been collected, so a run that collected zero tests reported success.
+  A gate with no collected tests now fails (#511).
 
 ### Compatibility
 
@@ -145,6 +228,69 @@
   alternative now that direct ufunc application (including `np.isfinite`)
   raises `TypeError` (see the ufunc-narrowing entry above). No new API is
   added in this patch release (#623).
+- **io (API narrowing, patch release)**: readers that have no windowed read
+  path accepted `start=` and `end=` and then dropped them, returning the whole
+  file as if it were the requested span. The arguments are now rejected
+  instead. This affects the `ats.mth5` and `xml.diaggui`/`dttxml` readers.
+
+  | Call | Before | After |
+  |---|---|---|
+  | `TimeSeriesDict.read(src, format="ats.mth5", start=t0, end=t1)` | returns the full file, silently ignoring the span | raises `IoNotImplementedError` (a `NotImplementedError` subclass) |
+  | `TimeSeriesDict.read(src, format="dttxml", start=t0, end=t1)` | as above | as above |
+
+  The remedy is in the exception message: read the source in full and crop the
+  result, `TimeSeries.read(source, format=...).crop(start, end)`. Calls that
+  pass neither selector are unaffected (#611).
+- **io (GWF) (API narrowing, patch release)**: `parallel=` and `nproc=` were
+  accepted by the GWF read path and then discarded, so a caller asking for
+  parallel reads got a serial read and no indication of it. Parallel GWF reads
+  are still not implemented; the arguments now say so.
+
+  | Call | Before | After |
+  |---|---|---|
+  | `read(..., parallel=4)` / `read(..., nproc=4)` | serial read, request silently dropped | raises `NotImplementedError` |
+  | `read(..., parallel=True)` | serial read | raises `NotImplementedError` |
+  | `read(..., parallel=1)` / `nproc=1` / either set to `None` | serial read | unchanged — serial read |
+  | `read(..., nproc=0)` or a non-integer | silently dropped | raises `ValueError` |
+  | `read(..., parallel=2, nproc=2)` | one of the two silently won | raises `TypeError` |
+
+  Implementing parallel GWF reads is deferred to v0.2.0 (#588).
+- **io (ndscope HDF5) (API narrowing, patch release)**: the ndscope HDF5
+  writer accepted arbitrary keyword arguments — including dataset creation
+  options such as compression — and ignored them, so a file requested with
+  compression was written without it and nothing said so. Unknown writer
+  keywords now raise `TypeError` before the target is opened, so no partial
+  file is produced. No dataset creation option is supported in v0.1.13; the
+  supported set is defined in v0.2.0 (#590).
+- **io (zarr, GBD, NetCDF4) (API narrowing, patch release)**: the
+  single-series readers for these formats returned the first channel of a
+  multi-channel source, and a `channels=` selector naming an array that was
+  not present was silently skipped rather than reported. Both now fail
+  explicitly.
+
+  | Call | Before | After |
+  |---|---|---|
+  | single-series read of a multi-channel source | returns an arbitrary channel | raises `ValueError`; pass `channels=` to select one |
+  | `channels=["missing"]` | silently returns fewer channels, or none | raises `ValueError` naming the missing channels |
+  | `channels=["a", "a"]` | duplicate silently collapsed | raises `ValueError` |
+
+  Selectors are validated against the source's channel list before any payload
+  is read, so an invalid selection costs nothing (#614, #615).
+- **histogram (API narrowing, patch release)**: `Histogram` had no arithmetic
+  contract, and whether an expression such as `quantity * histogram` failed or
+  silently produced a value depended on the incidental interaction between the
+  histogram's `unit`/`value` attributes and Astropy's `Quantity` dispatch.
+  Uncertainty propagation for histogram arithmetic is not defined, so rather
+  than leave that balance to chance, `+ - * /` and their reflected and in-place
+  forms now raise `TypeError` on `Histogram`, and `__array_ufunc__ = None`
+  makes NumPy dispatch fail the same way instead of routing around the
+  operators. Transform the values explicitly (for example via `.value`) until
+  the propagation rules are defined (#579).
+- **interop (ROOT) (API narrowing, patch release)**: `from_root` accepted
+  `TProfile`, `TProfile2D`, and `TH2Poly` objects and decoded them as if their
+  bins had `TH1`/`TH2` semantics, which they do not. These classes now raise
+  `TypeError` naming the class rather than returning a misinterpreted result
+  (#593).
 
 ### Known limitations
 
@@ -698,6 +844,12 @@ FrequencySeries collection registry audit tests (#438).
 
 ### Tests
 
+- Added `tests/timeseries/test_rms_compat.py` pinning gwpy-compatible
+  `TimeSeries.rms(stride)` behaviour (gwpy reference parity, positional-int
+  regression for #451, trailing-window drop, NaN-per-window propagation) and
+  the gwexpy enhancements (time/dimensionless `Quantity` stride, unit
+  preservation, and `ValueError` for sub-sample/zero/negative/irregular
+  strides). Re-pointed `test_stats_mixin.py::test_rms_with_unit` onto `Series`.
 - Added plot geometry tests for mixed-container argument orders, single
   2D/3D/4D matrices, and parity with `_expand_args` expansion counts.
 - Added multi-source reader tests covering merge, gap padding, overlap
@@ -818,7 +970,7 @@ This is a patch release focused on plotting and I/O hotfixes.
 ### Packaging & Optional Dependencies (issue #251)
 
 - **packaging**: Added `netcdf4` extra (`netCDF4`, `xarray`) and `zarr` extra (`zarr`) to `pyproject.toml`; both are now included in the `all` convenience extra.
-- **packaging**: Removed the experimental `gwexpy.gui` package, console script, and `gui` extra from the first PyPI distribution; GUI work remains source/development-only until the post-release stabilization track is complete.
+- **packaging**: Removed the experimental `gwexpy.gui` package, console script, and `gui` extra from the published PyPI distribution; GUI work remains source/development-only until the post-release stabilization track is complete.
 - **packaging**: Tightened first-release artifact hygiene by excluding top-level tests, docs sample data, and package-internal Sphinx helper shims from built distributions.
 - **packaging**: Removed hand-edited tail from `requirements-dev.txt`; `analysis` extras are now managed exclusively through `pyproject.toml`.
 - **interop**: Fixed `_optional.py` `_EXTRA_MAP` — phantom extras (`interop`, `bio`, `stats`, `eda`) replaced with `None` entries that fall back to bare `pip install <package>`; `netCDF4`/`xarray` now point to `netcdf4` extra; `zarr` points to `zarr` extra.
@@ -900,7 +1052,7 @@ This is a patch release focused on plotting and I/O hotfixes.
 
 ### Release Summary
 
-First stable release of GWexpy for SoftwareX publication. This release focuses on API stability, GWpy compatibility, and reproducible commissioning workflows.
+Early stable GWexpy release focused on API stability, GWpy compatibility, and reproducible commissioning workflows. Publication status is not asserted here.
 
 ### Changed
 
@@ -1019,7 +1171,8 @@ First stable release of GWexpy for SoftwareX publication. This release focuses o
 - Fixed unit propagation in complex matrix operations.
 - Corrected IFFT amplitude scaling for one-sided spectra.
 
-[Unreleased]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.12...HEAD
+[Unreleased]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.13...HEAD
+[0.1.13]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.12...v0.1.13
 [0.1.12]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.11...v0.1.12
 [0.1.11]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.10...v0.1.11
 [0.1.4]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.3...v0.1.4

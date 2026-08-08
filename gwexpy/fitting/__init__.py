@@ -38,8 +38,6 @@ def enable_series_fit() -> None:
         Series.fit = _lazy_series_fit
 
 
-
-
 # Backward compatibility alias (used in README.md)
 enable_fitting_monkeypatch = enable_series_fit
 

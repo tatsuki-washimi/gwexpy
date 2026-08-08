@@ -122,6 +122,7 @@ def _generate_synthetic_fixtures() -> None:
     if _FIXTURE_SCRIPT.exists():
         subprocess.check_call([sys.executable, str(_FIXTURE_SCRIPT)])
 
+
 # Match gwpy's test setup for consistent plotting behavior.
 mpl_use("agg", force=True)
 rcParams.update({"text.usetex": False})

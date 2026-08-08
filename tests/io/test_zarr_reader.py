@@ -68,15 +68,49 @@ class TestZarrRoundtrip:
 
     def test_multi_channel_roundtrip(self, tmp_path):
         path = tmp_path / "multi.zarr"
-        tsd_out = TimeSeriesDict({
-            "a": TimeSeries(np.ones(50), t0=0, sample_rate=10, name="a"),
-            "b": TimeSeries(np.zeros(50), t0=0, sample_rate=10, name="b"),
-        })
+        tsd_out = TimeSeriesDict(
+            {
+                "a": TimeSeries(np.ones(50), t0=0, sample_rate=10, name="a"),
+                "b": TimeSeries(np.zeros(50), t0=0, sample_rate=10, name="b"),
+            }
+        )
         tsd_out.write(str(path), format="zarr")
 
         tsd_in = TimeSeriesDict.read(str(path), format="zarr")
         assert set(tsd_in.keys()) >= {"a", "b"}
         np.testing.assert_array_equal(tsd_in["a"].value, np.ones(50))
+
+    def test_channel_selection_is_deterministic_and_fail_closed(self, tmp_path):
+        """Selection order is explicit; absent/duplicate channels are errors (#614)."""
+        path = tmp_path / "ordered.zarr"
+        TimeSeriesDict(
+            {
+                "z": TimeSeries([1.0], t0=0.0, sample_rate=1.0),
+                "a": TimeSeries([2.0], t0=0.0, sample_rate=1.0),
+            }
+        ).write(str(path), format="zarr")
+
+        assert list(TimeSeriesDict.read(str(path), format="zarr")) == ["a", "z"]
+        explicit = TimeSeriesDict.read(str(path), format="zarr", channels=["z", "a"])
+        assert list(explicit) == ["z", "a"]
+        with pytest.raises(ValueError, match="duplicate"):
+            TimeSeriesDict.read(str(path), format="zarr", channels=["a", "a"])
+        with pytest.raises(ValueError, match="missing"):
+            TimeSeriesDict.read(str(path), format="zarr", channels=["missing"])
+
+    def test_single_zarr_read_requires_one_channel(self, tmp_path):
+        from gwexpy.timeseries.io.zarr_ import read_timeseries_zarr
+
+        path = tmp_path / "multiple.zarr"
+        TimeSeriesDict(
+            {
+                "a": TimeSeries([1.0], t0=0.0, sample_rate=1.0),
+                "b": TimeSeries([2.0], t0=0.0, sample_rate=1.0),
+            }
+        ).write(str(path), format="zarr")
+
+        with pytest.raises(ValueError, match="exactly one"):
+            read_timeseries_zarr(str(path))
 
     def test_attrs_preserved(self, tmp_path):
         path = tmp_path / "attrs.zarr"
@@ -192,6 +226,83 @@ class TestZarrRoundtrip:
         ts_in = read_timeseries_zarr(str(path))
         assert len(ts_in) == 20
 
+    def test_public_single_timeseries_read_preserves_data_and_identity(self, tmp_path):
+        path = tmp_path / "public-single.zarr"
+        channel = "H1:PUBLIC-ZARR"
+        source = TimeSeries(
+            np.arange(20, dtype=np.float64),
+            t0=1_234_567_890.0,
+            sample_rate=16.0,
+            name=channel,
+        )
+        TimeSeriesDict({channel: source}).write(str(path), format="zarr")
+
+        loaded = TimeSeries.read(str(path), format="zarr")
+
+        assert loaded.name == channel
+        assert str(loaded.channel) == channel
+        np.testing.assert_array_equal(loaded.value, source.value)
+        assert float(loaded.t0.value).hex() == float(source.t0.value).hex()
+        assert float(loaded.dt.value).hex() == float(source.dt.value).hex()
+
+    def test_public_single_timeseries_read_rejects_positional_arguments(self, tmp_path):
+        path = tmp_path / "public-positional.zarr"
+        TimeSeriesDict({"x": TimeSeries([1.0, 2.0], t0=10.0, sample_rate=2.0)}).write(
+            str(path), format="zarr"
+        )
+
+        with pytest.raises(TypeError, match="channels=.*start=.*end"):
+            TimeSeries.read(str(path), "ignored", format="zarr")
+
+    def test_public_single_timeseries_read_requires_one_channel(self, tmp_path):
+        path = tmp_path / "public-multi.zarr"
+        TimeSeriesDict(
+            {
+                "a": TimeSeries([1.0], t0=0.0, sample_rate=4.0),
+                "b": TimeSeries([2.0], t0=0.0, sample_rate=4.0),
+            }
+        ).write(str(path), format="zarr")
+
+        with pytest.raises(ValueError, match="exactly one channel"):
+            TimeSeries.read(str(path), format="zarr")
+
+    def test_public_single_timeseries_read_selects_explicit_channel(self, tmp_path):
+        path = tmp_path / "public-selected.zarr"
+        selected = "second"
+        TimeSeriesDict(
+            {
+                "first": TimeSeries([1.0, 2.0], t0=10.0, sample_rate=2.0),
+                selected: TimeSeries([3.0, 4.0], t0=10.0, sample_rate=2.0),
+            }
+        ).write(str(path), format="zarr")
+
+        loaded = TimeSeries.read(str(path), format="zarr", channels=selected)
+
+        assert loaded.name == selected
+        assert str(loaded.channel) == selected
+        np.testing.assert_array_equal(loaded.value, [3.0, 4.0])
+
+    def test_public_single_timeseries_read_applies_time_bounds_like_crop(
+        self, tmp_path
+    ):
+        path = tmp_path / "public-bounded.zarr"
+        source = TimeSeries(
+            np.arange(20, dtype=np.float64),
+            t0=1_234_567_890.0,
+            sample_rate=8.0,
+        )
+        TimeSeriesDict({"x": source}).write(str(path), format="zarr")
+        start = source.t0.value + 4 * source.dt.value
+        end = source.t0.value + 14 * source.dt.value
+
+        full = TimeSeries.read(str(path), format="zarr")
+        bounded = TimeSeries.read(str(path), format="zarr", start=start, end=end)
+        expected = full.crop(start, end)
+
+        np.testing.assert_array_equal(bounded.value, expected.value)
+        assert float(bounded.t0.value).hex() == float(expected.t0.value).hex()
+        assert float(bounded.dt.value).hex() == float(expected.dt.value).hex()
+
     def test_matrix_roundtrip(self, tmp_path):
         path = tmp_path / "matrix.zarr"
         matrix = TimeSeriesMatrix(
@@ -206,6 +317,60 @@ class TestZarrRoundtrip:
         np.testing.assert_allclose(loaded.value, matrix.value)
         assert loaded.shape == matrix.shape
         assert np.isclose(float(loaded.sample_rate.value), 16.0)
+
+    def test_matrix_reader_preserves_dict_axis_during_bounded_read(self, tmp_path):
+        """Dict-shaped stores must not be realigned through float timestamps."""
+        path = tmp_path / "bounded-dict-as-matrix.zarr"
+        t0 = 1_234_567_890.1234567
+        dt = 1.0 / 30.0
+        source = TimeSeries(np.arange(768), t0=t0, dt=dt, name="x", unit="m")
+        TimeSeriesDict({"x": source}).write(str(path), format="zarr")
+
+        loaded = TimeSeriesMatrix.read(
+            str(path),
+            format="zarr",
+            start=t0 + 100 * dt,
+            end=t0 + 600 * dt,
+        )
+        expected = source[100:600]
+
+        assert loaded.shape == (1, 1, 500)
+        assert list(loaded.channel_names) == ["x"]
+        assert str(loaded[0, 0].unit) == "m"
+        np.testing.assert_array_equal(loaded.value[0, 0], expected.value)
+        assert float(loaded.t0.value).hex() == float(expected.t0.value).hex()
+        assert float(loaded.dt.value).hex() == float(expected.dt.value).hex()
+
+    def test_dict_subclass_reads_memory_store_with_copied_provenance(self, monkeypatch):
+        """Store-object reads retain subclass type and non-aliased provenance."""
+        from gwexpy.timeseries.io import zarr_ as zarr_io
+
+        class RequestedTimeSeriesDict(TimeSeriesDict):
+            pass
+
+        store = zarr.storage.MemoryStore()
+        TimeSeriesDict(
+            {"signal": TimeSeries([1.0, 2.0], t0=10.0, sample_rate=2.0)}
+        ).write(store, format="zarr")
+
+        actual_reader = zarr_io.read_timeseriesdict_zarr
+        observed = {}
+
+        def recording_reader(source, **kwargs):
+            observed["source"] = source
+            observed["result"] = actual_reader(source, **kwargs)
+            return observed["result"]
+
+        monkeypatch.setattr(zarr_io, "read_timeseriesdict_zarr", recording_reader)
+
+        result = RequestedTimeSeriesDict.read(store, format="zarr")
+
+        assert type(result) is RequestedTimeSeriesDict
+        assert observed["source"] is store
+        assert result._gwexpy_io == observed["result"]._gwexpy_io
+        assert result._gwexpy_io is not observed["result"]._gwexpy_io
+        result._gwexpy_io["request"] = "changed"
+        assert "request" not in observed["result"]._gwexpy_io
 
     def test_matrix_roundtrip_1col_integer_row_keys(self, tmp_path):
         from gwexpy.types.metadata import MetaData, MetaDataDict

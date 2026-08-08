@@ -194,7 +194,9 @@ def voigt(x, A, x0, sigma, gamma):
     # Guard against near-zero peak (sigma → 0 or gamma → 0 limit)
     if abs(peak) < 1e-12:
         # Fall back: evaluate at x0 directly
-        peak_fallback = float(np.real(_wofz(np.complex128(1j * gamma / max(sigma, 1e-30) / np.sqrt(2)))))
+        peak_fallback = float(
+            np.real(_wofz(np.complex128(1j * gamma / max(sigma, 1e-30) / np.sqrt(2))))
+        )
         peak = peak_fallback if abs(peak_fallback) >= 1e-12 else 1.0
     return A * profile / peak
 

@@ -1,4 +1,5 @@
 """Tests for gwexpy/numerics/scaling.py"""
+
 from __future__ import annotations
 
 import numpy as np
@@ -14,6 +15,7 @@ from gwexpy.numerics.scaling import (
 # ---------------------------------------------------------------------------
 # safe_epsilon
 # ---------------------------------------------------------------------------
+
 
 def test_safe_epsilon_normal_data():
     data = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
@@ -56,6 +58,7 @@ def test_get_safe_epsilon_alias():
 # AutoScaler — _compute_scale
 # ---------------------------------------------------------------------------
 
+
 def test_autoscaler_scale_normal():
     data = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
     sc = AutoScaler(data)
@@ -86,6 +89,7 @@ def test_autoscaler_custom_eps():
 # AutoScaler — normalize / denormalize
 # ---------------------------------------------------------------------------
 
+
 def test_autoscaler_normalize():
     data = np.array([2.0, 4.0, 6.0])
     sc = AutoScaler(data)
@@ -114,6 +118,7 @@ def test_autoscaler_roundtrip():
 # AutoScaler — context manager
 # ---------------------------------------------------------------------------
 
+
 def test_autoscaler_context_manager():
     data = np.array([1.0, 2.0, 3.0])
     with AutoScaler(data) as sc:
@@ -138,6 +143,7 @@ def test_autoscaler_scale_property():
 # ---------------------------------------------------------------------------
 # safe_log_scale
 # ---------------------------------------------------------------------------
+
 
 def test_safe_log_scale_positive_data():
     data = np.array([1.0, 10.0, 100.0])

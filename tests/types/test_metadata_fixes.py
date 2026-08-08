@@ -42,6 +42,7 @@ def test_metadata_right_hand_quantity_left():
 # MetaDataMatrix setters: shape mismatch must raise ValueError
 # ---------------------------------------------------------------------------
 
+
 def test_metadatamatrix_names_setter_size_mismatch_raises():
     mat = MetaDataMatrix(shape=(2, 3))
     with pytest.raises(ValueError, match="names"):
@@ -116,6 +117,7 @@ def test_metadatamatrix_names_setter_exact_shape():
 # MetaDataMatrix ufunc: shape mismatch between two matrices raises ValueError
 # ---------------------------------------------------------------------------
 
+
 def test_metadatamatrix_ufunc_shape_mismatch_raises():
     m1 = MetaDataMatrix(shape=(2, 2))
     m2 = MetaDataMatrix(shape=(2, 3))
@@ -126,6 +128,7 @@ def test_metadatamatrix_ufunc_shape_mismatch_raises():
 # ---------------------------------------------------------------------------
 # floor_divide unit propagation
 # ---------------------------------------------------------------------------
+
 
 def test_metadata_floor_divide_unit():
     m1 = MetaData(name="a", unit=u.m)
@@ -139,13 +142,20 @@ def test_metadata_floor_divide_unit():
 # CSV round-trip: MetaDataMatrix
 # ---------------------------------------------------------------------------
 
+
 def test_metadatamatrix_csv_roundtrip(tmp_path):
-    mat = MetaDataMatrix([
-        [MetaData(name="a", unit=u.m, channel="H1:A"),
-         MetaData(name="b", unit=u.s, channel="L1:B")],
-        [MetaData(name="c", unit=u.Hz, channel="H1:C"),
-         MetaData(name="d", unit=u.dimensionless_unscaled, channel="")],
-    ])
+    mat = MetaDataMatrix(
+        [
+            [
+                MetaData(name="a", unit=u.m, channel="H1:A"),
+                MetaData(name="b", unit=u.s, channel="L1:B"),
+            ],
+            [
+                MetaData(name="c", unit=u.Hz, channel="H1:C"),
+                MetaData(name="d", unit=u.dimensionless_unscaled, channel=""),
+            ],
+        ]
+    )
     path = tmp_path / "mat.csv"
     mat.write(str(path))
     mat2 = MetaDataMatrix.read(str(path))
@@ -162,12 +172,15 @@ def test_metadatamatrix_csv_roundtrip(tmp_path):
 # CSV round-trip: MetaDataDict
 # ---------------------------------------------------------------------------
 
+
 def test_metadatadict_csv_roundtrip(tmp_path):
     pytest.importorskip("pandas")
-    mdd = MetaDataDict({
-        "x": MetaData(name="x", unit=u.m, channel="H1:X"),
-        "y": MetaData(name="y", unit=u.s, channel="L1:Y"),
-    })
+    mdd = MetaDataDict(
+        {
+            "x": MetaData(name="x", unit=u.m, channel="H1:X"),
+            "y": MetaData(name="y", unit=u.s, channel="L1:Y"),
+        }
+    )
     path = tmp_path / "mdd.csv"
     mdd.write(str(path))
     mdd2 = MetaDataDict.read(str(path))

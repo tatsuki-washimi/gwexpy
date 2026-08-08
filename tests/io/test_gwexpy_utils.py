@@ -1,4 +1,5 @@
 """Tests for gwexpy/io/utils.py."""
+
 from __future__ import annotations
 
 import datetime as _dt
@@ -208,8 +209,10 @@ class TestApplyUnit:
         class FakeSeries:
             def __init__(self):
                 self._unit = u.m
+
             def override_unit(self, unit):
                 self._unit = u.Unit(unit)
+
         obj = FakeSeries()
         result = apply_unit(obj, "V")
         assert result is obj
@@ -219,6 +222,7 @@ class TestApplyUnit:
         class SimpleObj:
             def __init__(self):
                 self.unit = u.m
+
         obj = SimpleObj()
         result = apply_unit(obj, "V")
         assert result is obj
@@ -280,6 +284,7 @@ class TestSetProvenance:
         # Lines 159-161
         class ObjWithAttrs:
             attrs = {}
+
         obj = ObjWithAttrs()
         set_provenance(obj, {"source": "test"})
         assert obj.attrs["source"] == "test"
@@ -288,6 +293,7 @@ class TestSetProvenance:
         # Line 165 — no attrs → setattr _gwexpy_io
         class PlainObj:
             pass
+
         obj = PlainObj()
         set_provenance(obj, {"source": "test"})
         assert hasattr(obj, "_gwexpy_io")
@@ -297,6 +303,7 @@ class TestSetProvenance:
         # Lines 162-163 — attrs exists but is not a dict → TypeError suppressed
         class ObjWithBadAttrs:
             attrs = "not_a_dict"
+
         obj = ObjWithBadAttrs()
         # Should not raise
         set_provenance(obj, {"source": "test"})
@@ -306,6 +313,7 @@ class TestSetProvenance:
         class BadDict(dict):
             def update(self, d=None, **kwargs):
                 raise TypeError("broken update")
+
         obj_bad = type("Obj", (), {"attrs": BadDict()})()
         # Should not raise; _gwexpy_io fallback is used
         set_provenance(obj_bad, {"source": "test"})
@@ -368,6 +376,7 @@ class TestExtractAudioMetadata:
     def test_missing_tinytag_returns_empty(self):
         # Lines 287-293 — ImportError → warn + return {}
         import sys
+
         # Temporarily hide tinytag
         tinytag_mod = sys.modules.pop("tinytag", None)
         try:

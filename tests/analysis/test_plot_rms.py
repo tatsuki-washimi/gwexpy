@@ -11,6 +11,7 @@ CouplingResult.plot_rms() および _compute_rms_timeseries() のテスト。
 7. test_compute_rms_preserves_nan        — NaN が極小値に潰れず伝播することを確認
 8. test_plot_rms_ignores_reserved_kwargs — 予約済み plot kwargs を安全に無視
 """
+
 from __future__ import annotations
 
 import matplotlib
@@ -35,7 +36,9 @@ def _make_fs(vals: np.ndarray, f0: float = 1.0, df: float = 1.0) -> FrequencySer
     return FrequencySeries(vals, f0=f0, df=df)
 
 
-def _make_ts(rng: np.random.Generator, *, t0: float = 0.0, scale: float = 1.0) -> TimeSeries:
+def _make_ts(
+    rng: np.random.Generator, *, t0: float = 0.0, scale: float = 1.0
+) -> TimeSeries:
     n = int(FS * DURATION)
     t = np.arange(n) / FS
     data = np.sin(2 * np.pi * 10.0 * t) * scale + rng.normal(0.0, scale * 0.1, n)
@@ -96,9 +99,7 @@ def test_plot_rms_both_channels():
             # grid が設定されている
             assert ax.xaxis.get_gridlines() or ax.yaxis.get_gridlines()
             # axvspan は Polygon として描画される — 少なくとも 2 個 (bkg + inj)
-            n_spans = sum(
-                1 for patch in ax.patches if hasattr(patch, "get_xy")
-            )
+            n_spans = sum(1 for patch in ax.patches if hasattr(patch, "get_xy"))
             assert n_spans >= 2, f"axvspan が少なすぎます: {n_spans}"
     finally:
         plt.close(fig)
@@ -193,11 +194,13 @@ def test_compute_rms_overlap_is_seconds():
         method="welch",
         window="hann",
     )
-    expected = np.sqrt((getattr(np, "trapezoid", None) or getattr(np, "trapz"))(
-        spec.value,
-        spec.frequencies.value,
-        axis=1,
-    ))
+    expected = np.sqrt(
+        (getattr(np, "trapezoid", None) or getattr(np, "trapz"))(
+            spec.value,
+            spec.frequencies.value,
+            axis=1,
+        )
+    )
 
     np.testing.assert_allclose(rms_ts.value, expected, rtol=1e-6)
 

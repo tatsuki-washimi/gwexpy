@@ -1,4 +1,5 @@
 """Tests for gwexpy/interop/pyspeckit_.py."""
+
 from __future__ import annotations
 
 import sys
@@ -20,6 +21,7 @@ class TestToPyspeckit:
     def test_raises_without_pyspeckit(self):
         with patch.dict(sys.modules, {"pyspeckit": None}):
             from gwexpy.interop.pyspeckit_ import to_pyspeckit
+
             with pytest.raises(ImportError):
                 to_pyspeckit(_make_fs())
 
@@ -30,12 +32,14 @@ class TestToPyspeckit:
             import importlib
 
             from gwexpy.interop import pyspeckit_
+
             importlib.reload(pyspeckit_)
             with pytest.raises(ValueError, match="frequencies"):
                 pyspeckit_.to_pyspeckit(obj)
 
     def test_basic_conversion(self):
         calls = {}
+
         def fake_spectrum(data, xarr, **kw):
             calls["data"] = data
             calls["xarr"] = xarr
@@ -46,6 +50,7 @@ class TestToPyspeckit:
             import importlib
 
             from gwexpy.interop import pyspeckit_
+
             importlib.reload(pyspeckit_)
             fs = _make_fs(n=6)
             pyspeckit_.to_pyspeckit(fs)
@@ -56,6 +61,7 @@ class TestToPyspeckit:
 class TestFromPyspeckit:
     def test_basic_conversion(self):
         from gwexpy.interop.pyspeckit_ import from_pyspeckit
+
         freqs = np.array([1.0, 2.0, 3.0, 4.0])
         fake_spec = SimpleNamespace(
             data=np.ones(4),
@@ -67,6 +73,7 @@ class TestFromPyspeckit:
 
     def test_passes_kwargs(self):
         from gwexpy.interop.pyspeckit_ import from_pyspeckit
+
         fake_spec = SimpleNamespace(
             data=np.ones(3),
             xarr=np.array([1.0, 2.0, 3.0]),

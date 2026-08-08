@@ -115,7 +115,9 @@ def build_frequencyseries_matrix(seed: int = 42) -> FrequencySeriesMatrix:
         background = 1.4e-3 * (1.0 + 0.16 * idx)
         amplitude = 0.82 + 0.18 * idx
 
-        profile = resonant_background(freqs, background, slope, amplitude, center, gamma)
+        profile = resonant_background(
+            freqs, background, slope, amplitude, center, gamma
+        )
         ripple = 0.014 * np.sin(freqs / (10.0 + idx))
         jitter = rng.normal(0.0, 6.0e-3, freqs.size)
         data[idx, 0] = np.maximum(profile * (1.0 + ripple + jitter), 1.0e-6)
@@ -183,7 +185,12 @@ def build_hero_figure(
         aspect="auto",
         cmap=str(settings["cmap"]),
         origin="lower",
-        extent=[series.frequencies.value[0], series.frequencies.value[-1], 0, fsm.shape[0]],
+        extent=[
+            series.frequencies.value[0],
+            series.frequencies.value[-1],
+            0,
+            fsm.shape[0],
+        ],
     )
     ax_matrix.set_facecolor("#fbfcfe")
     ax_fit.set_facecolor("#fbfcfe")
@@ -233,7 +240,9 @@ def build_hero_figure(
         linewidth=2.5 if style == "scientific" else 2.3,
         label="Lorentzian-style fit",
     )
-    ax_fit.axvspan(80.0, 240.0, color=str(settings["accent"]), alpha=float(settings["fit_alpha"]))
+    ax_fit.axvspan(
+        80.0, 240.0, color=str(settings["accent"]), alpha=float(settings["fit_alpha"])
+    )
     if style == "scientific":
         for freq in (60.0, 120.0, 180.0, 240.0):
             ax_fit.axvline(freq, color="#d9e2ec", linewidth=0.8, zorder=0)
@@ -244,7 +253,11 @@ def build_hero_figure(
             transform=ax_matrix.transAxes,
             fontsize=8.6,
             color="#394b59",
-            bbox={"boxstyle": "round,pad=0.25", "facecolor": "white", "edgecolor": "#d8e1eb"},
+            bbox={
+                "boxstyle": "round,pad=0.25",
+                "facecolor": "white",
+                "edgecolor": "#d8e1eb",
+            },
         )
         ax_fit.text(
             0.012,
@@ -253,7 +266,11 @@ def build_hero_figure(
             transform=ax_fit.transAxes,
             fontsize=8.6,
             color="#394b59",
-            bbox={"boxstyle": "round,pad=0.25", "facecolor": "white", "edgecolor": "#d8e1eb"},
+            bbox={
+                "boxstyle": "round,pad=0.25",
+                "facecolor": "white",
+                "edgecolor": "#d8e1eb",
+            },
         )
     ax_fit.set_xlim(8, 512)
     ax_fit.set_xlabel("Frequency [Hz]")
@@ -271,7 +288,12 @@ def build_hero_figure(
         ),
         transform=ax_fit.transAxes,
         fontsize=8.8,
-        bbox={"boxstyle": "round,pad=0.35", "facecolor": "white", "edgecolor": "#d8e1eb", "alpha": 0.96},
+        bbox={
+            "boxstyle": "round,pad=0.35",
+            "facecolor": "white",
+            "edgecolor": "#d8e1eb",
+            "alpha": 0.96,
+        },
     )
     fig.subplots_adjust(top=0.92, bottom=0.11, left=0.08, right=0.96)
 

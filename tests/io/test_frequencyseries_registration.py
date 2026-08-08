@@ -4,6 +4,7 @@ Verifies that ``import gwexpy.frequencyseries`` alone populates the GWpy
 default I/O registry with the expected read/write formats, matching the
 ``gwexpy.timeseries`` bootstrap behaviour.
 """
+
 from __future__ import annotations
 
 import subprocess

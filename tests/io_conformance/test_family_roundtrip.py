@@ -95,9 +95,7 @@ def test_eventtable_hdf5_roundtrip(tmp_path: Path) -> None:
     pytest.importorskip("h5py")
     from gwexpy.table import EventTable
 
-    expected = EventTable(
-        data=[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]], names=["a", "b"]
-    )
+    expected = EventTable(data=[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]], names=["a", "b"])
     path = tmp_path / "events.h5"
 
     expected.write(path, format="hdf5", path="events")

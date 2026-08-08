@@ -25,6 +25,7 @@ issue #444) can be verified against a known baseline.
 See ``docs/developers/guides/frequencyseries_registry_backends.md`` for the
 developer rationale.
 """
+
 from __future__ import annotations
 
 import subprocess
@@ -102,9 +103,7 @@ class TestFrequencySeriesDictRegistryBackend:
         from astropy.io import registry as astropy_reg
 
         # Register on dict (base class) so astropy MRO lookup succeeds.
-        astropy_reg.register_writer(
-            self._FORMAT_W, dict, _astropy_sentinel_writer
-        )
+        astropy_reg.register_writer(self._FORMAT_W, dict, _astropy_sentinel_writer)
         try:
             fsd = FrequencySeriesDict()
             with pytest.raises(_SentinelReached, match="astropy writer reached"):
@@ -119,7 +118,9 @@ class TestFrequencySeriesDictRegistryBackend:
         from gwpy.io.registry import default_registry as gwpy_reg
 
         gwpy_format = "gwpy-only-audit-dict"
-        gwpy_reg.register_reader(gwpy_format, FrequencySeriesDict, _gwpy_registry_sentinel)
+        gwpy_reg.register_reader(
+            gwpy_format, FrequencySeriesDict, _gwpy_registry_sentinel
+        )
         try:
             with pytest.raises((IORegistryError, _SentinelReached)) as exc_info:
                 FrequencySeriesDict.read("dummy.txt", format=gwpy_format)
@@ -160,9 +161,7 @@ class TestFrequencySeriesListRegistryBackend:
         from astropy.io import registry as astropy_reg
 
         # Register on list (base class) for astropy MRO lookup.
-        astropy_reg.register_writer(
-            self._FORMAT_W, list, _astropy_sentinel_writer
-        )
+        astropy_reg.register_writer(self._FORMAT_W, list, _astropy_sentinel_writer)
         try:
             fsl = FrequencySeriesList()
             with pytest.raises(_SentinelReached, match="astropy writer reached"):
@@ -177,7 +176,9 @@ class TestFrequencySeriesListRegistryBackend:
         from gwpy.io.registry import default_registry as gwpy_reg
 
         gwpy_format = "gwpy-only-audit-list"
-        gwpy_reg.register_reader(gwpy_format, FrequencySeriesList, _gwpy_registry_sentinel)
+        gwpy_reg.register_reader(
+            gwpy_format, FrequencySeriesList, _gwpy_registry_sentinel
+        )
         try:
             with pytest.raises((IORegistryError, _SentinelReached)) as exc_info:
                 FrequencySeriesList.read("dummy.txt", format=gwpy_format)
@@ -205,9 +206,12 @@ class TestFrequencySeriesMatrixRegistryBackend:
         from gwpy.io.registry import default_registry as gwpy_reg
 
         gwpy_format = "gwpy-matrix-audit-write"
-        gwpy_reg.register_writer(gwpy_format, FrequencySeriesMatrix, _astropy_sentinel_writer)
+        gwpy_reg.register_writer(
+            gwpy_format, FrequencySeriesMatrix, _astropy_sentinel_writer
+        )
         try:
             import numpy as np
+
             fsm = FrequencySeriesMatrix(
                 np.zeros((2, 3)),
                 f0=0.0,
@@ -225,7 +229,9 @@ class TestFrequencySeriesMatrixRegistryBackend:
         from gwpy.io.registry import default_registry as gwpy_reg
 
         gwpy_format = "gwpy-matrix-audit-read"
-        gwpy_reg.register_reader(gwpy_format, FrequencySeriesMatrix, _astropy_sentinel_reader)
+        gwpy_reg.register_reader(
+            gwpy_format, FrequencySeriesMatrix, _astropy_sentinel_reader
+        )
         try:
             with pytest.raises(_SentinelReached, match="astropy reader reached"):
                 FrequencySeriesMatrix.read("dummy.txt", format=gwpy_format)

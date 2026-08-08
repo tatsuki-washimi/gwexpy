@@ -74,4 +74,5 @@ class TestVoigtLine:
     def test_returns_frequency_series(self, frequencies):
         fs = voigt_line(50.0, 1.0, sigma=2.0, gamma=1.0, frequencies=frequencies)
         from gwexpy.frequencyseries import FrequencySeries
+
         assert isinstance(fs, FrequencySeries)

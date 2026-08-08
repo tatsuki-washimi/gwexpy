@@ -33,9 +33,9 @@ from gwexpy.analysis.bruco import BrucoResult
 # Lines-of-code counts (static, for paper comparison table)
 # ---------------------------------------------------------------------------
 LOC = {
-    "gwexpy_native": 3,   # BrucoResult(...) + update_batch(...)
+    "gwexpy_native": 3,  # BrucoResult(...) + update_batch(...)
     "gwpy_reference": 8,  # argsort + indexing
-    "naive_baseline": 12, # channel loop + per-bin insertion sort
+    "naive_baseline": 12,  # channel loop + per-bin insertion sort
 }
 
 
@@ -80,10 +80,11 @@ def _bench_gwpy_reference(
     # using GWpy TimeSeries objects: compute per-pair coherence, stack results,
     # then argsort --- without the argpartition shortcut.
     sorted_idx = np.argsort(coherences, axis=0)  # ascending, shape (M, B)
-    top_idx = sorted_idx[-top_n:, :][::-1, :]    # top-N in descending order
+    top_idx = sorted_idx[-top_n:, :][::-1, :]  # top-N in descending order
     top_values = np.take_along_axis(coherences, top_idx, axis=0)
-    top_names = [[channel_names[top_idx[k, f]] for f in range(n_bins)]
-                 for k in range(top_n)]
+    top_names = [
+        [channel_names[top_idx[k, f]] for f in range(n_bins)] for k in range(top_n)
+    ]
     _ = top_values, top_names  # consume to prevent dead-code elimination
     return time.perf_counter() - t0
 
@@ -116,10 +117,12 @@ def _bench_naive_baseline(
                 j = top_n - 1
                 while j > 0 and top_values[f][j] > top_values[f][j - 1]:
                     top_values[f][j], top_values[f][j - 1] = (
-                        top_values[f][j - 1], top_values[f][j]
+                        top_values[f][j - 1],
+                        top_values[f][j],
                     )
                     top_names[f][j], top_names[f][j - 1] = (
-                        top_names[f][j - 1], top_names[f][j]
+                        top_names[f][j - 1],
+                        top_names[f][j],
                     )
                     j -= 1
     return time.perf_counter() - t0
@@ -170,8 +173,11 @@ def _run_single(
     block_size_resolved: int | str = "n/a"
     if implementation == "gwexpy_native":
         _tmp = BrucoResult(
-            np.arange(n_bins), "Target", np.ones(n_bins),
-            top_n=top_n, block_size=block_size,
+            np.arange(n_bins),
+            "Target",
+            np.ones(n_bins),
+            top_n=top_n,
+            block_size=block_size,
         )
         block_size_resolved = _tmp.block_size
 
@@ -215,7 +221,10 @@ def _sweep(
         for n_channels in channel_counts:
             for impl in implementations:
                 # Skip naive for large problem sizes to avoid excessive runtime
-                if impl == "naive_baseline" and n_channels * n_bins > _SKIP_NAIVE_THRESHOLD:
+                if (
+                    impl == "naive_baseline"
+                    and n_channels * n_bins > _SKIP_NAIVE_THRESHOLD
+                ):
                     print(
                         f"  [{impl}] n_channels={n_channels:>5d}, n_bins={n_bins:>5d}"
                         " ... skipped (too large for naive baseline)"
@@ -227,8 +236,13 @@ def _sweep(
                     flush=True,
                 )
                 row = _run_single(
-                    n_channels, n_bins, top_n, block_size, seed,
-                    implementation=impl, n_trials=n_trials,
+                    n_channels,
+                    n_bins,
+                    top_n,
+                    block_size,
+                    seed,
+                    implementation=impl,
+                    n_trials=n_trials,
                 )
                 print(
                     f"{row['mean_time_s']:.4f} s ± {row['std_time_s']:.4f} s,"
@@ -273,15 +287,17 @@ def _plot(rows: list[dict[str, float | int | str]], output_dir: Path) -> None:
     bin_counts = sorted({int(r["n_bins"]) for r in rows})
     all_impls = list(dict.fromkeys(str(r["implementation"]) for r in rows))
 
-    fig, axes = plt.subplots(1, len(bin_counts), figsize=(5 * len(bin_counts), 4),
-                             sharey=False)
+    fig, axes = plt.subplots(
+        1, len(bin_counts), figsize=(5 * len(bin_counts), 4), sharey=False
+    )
     if len(bin_counts) == 1:
         axes = [axes]
 
     for ax, n_bins in zip(axes, bin_counts):
         for impl in all_impls:
             subset = [
-                r for r in rows
+                r
+                for r in rows
                 if int(r["n_bins"]) == n_bins and str(r["implementation"]) == impl
             ]
             if not subset:
@@ -290,7 +306,9 @@ def _plot(rows: list[dict[str, float | int | str]], output_dir: Path) -> None:
             ys = [float(r["mean_time_s"]) for r in subset]
             errs = [float(r["std_time_s"]) for r in subset]
             ax.errorbar(
-                xs, ys, yerr=errs,
+                xs,
+                ys,
+                yerr=errs,
                 marker=impl_markers[impl],
                 color=impl_colors[impl],
                 label=impl_labels.get(impl, impl),
@@ -317,7 +335,8 @@ def _plot(rows: list[dict[str, float | int | str]], output_dir: Path) -> None:
     fig2, ax2 = plt.subplots(figsize=(6, 4))
     for n_bins in bin_counts:
         subset = [
-            r for r in rows
+            r
+            for r in rows
             if int(r["n_bins"]) == n_bins
             and str(r["implementation"]) == "gwexpy_native"
         ]
@@ -365,20 +384,30 @@ def main() -> None:
     parser.add_argument("--n-bins", type=int, default=20000)
     parser.add_argument("--n-channels", type=int, default=300)
     parser.add_argument("--top-n", type=int, default=5)
-    parser.add_argument("--block-size", type=str, default=None,
-                        help="int or 'auto' (gwexpy_native only)")
+    parser.add_argument(
+        "--block-size",
+        type=str,
+        default=None,
+        help="int or 'auto' (gwexpy_native only)",
+    )
     parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--n-trials", type=int, default=3,
-                        help="Repetitions for mean/std estimation")
-    parser.add_argument("--sweep", action="store_true",
-                        help="Run parameter sweep over channels and bins")
+    parser.add_argument(
+        "--n-trials", type=int, default=3, help="Repetitions for mean/std estimation"
+    )
+    parser.add_argument(
+        "--sweep",
+        action="store_true",
+        help="Run parameter sweep over channels and bins",
+    )
     parser.add_argument(
         "--implementation",
         choices=["gwexpy_native", "gwpy_reference", "naive_baseline", "all"],
         default="gwexpy_native",
         help="Which implementation to benchmark (single-point mode)",
     )
-    parser.add_argument("--output-dir", type=str, default="docs_internal/publications/paper_softwarex")
+    parser.add_argument(
+        "--output-dir", type=str, default="docs_internal/publications/paper_softwarex"
+    )
     args = parser.parse_args()
 
     block_size = args.block_size
@@ -405,8 +434,13 @@ def main() -> None:
         )
         for impl in impls:
             row = _run_single(
-                args.n_channels, args.n_bins, args.top_n, block_size, args.seed,
-                implementation=impl, n_trials=args.n_trials,
+                args.n_channels,
+                args.n_bins,
+                args.top_n,
+                block_size,
+                args.seed,
+                implementation=impl,
+                n_trials=args.n_trials,
             )
             print(f"[{impl}]")
             print(f"  mean_time_s={row['mean_time_s']}  std={row['std_time_s']}")

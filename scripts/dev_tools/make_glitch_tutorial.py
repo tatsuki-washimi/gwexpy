@@ -5,14 +5,23 @@ from pathlib import Path
 
 
 def md(source):
-    return {"cell_type": "markdown", "id": f"md_{abs(hash(source))%10**8:08x}",
-            "metadata": {}, "source": source}
+    return {
+        "cell_type": "markdown",
+        "id": f"md_{abs(hash(source)) % 10**8:08x}",
+        "metadata": {},
+        "source": source,
+    }
 
 
 def code(source):
-    return {"cell_type": "code", "execution_count": None,
-            "id": f"cd_{abs(hash(source))%10**8:08x}",
-            "metadata": {}, "outputs": [], "source": source}
+    return {
+        "cell_type": "code",
+        "execution_count": None,
+        "id": f"cd_{abs(hash(source)) % 10**8:08x}",
+        "metadata": {},
+        "outputs": [],
+        "source": source,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -44,9 +53,7 @@ tile.  A glitch appears as a cluster of tiles with anomalously high SNR.
 - `advanced_peak_tracking.ipynb` — tracking lines over time
 - `case_bruco_advanced.ipynb` — coherence-based noise coupling
 """),
-
     md("## Setup"),
-
     code("""\
 import numpy as np
 import matplotlib.pyplot as plt
@@ -56,7 +63,6 @@ from gwexpy.signal.qtransform import q_scan, QTiling, DEFAULT_QRANGE
 from gwexpy.signal import whiten
 from gwexpy.statistics.rayleigh_test import rayleigh_test
 """),
-
     md("""\
 ## 1. Synthetic Data with Injected Glitches
 
@@ -69,7 +75,6 @@ representative of common morphologies seen in practice:
 | Scattered light | Arch-shaped frequency sweep | Mirror motion + scattering |
 | Koi fish | Low-frequency with harmonic | Suspension resonance |
 """),
-
     code("""\
 fs   = 4096.0    # sample rate [Hz]
 T    = 4.0       # segment duration [s]
@@ -127,7 +132,6 @@ ax.legend(fontsize=8)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 2. Q-Transform (Omega Scan)
 
@@ -139,7 +143,6 @@ Key parameters:
 - `frange` — frequency range in Hz
 - `mismatch` — fractional tile overlap (smaller = finer grid, slower)
 """),
-
     code("""\
 # Whiten the data first (Q-transform assumes white noise for SNR normalisation)
 ts_white = whiten(ts, fftlength=1.0, overlap=0.5)
@@ -159,14 +162,12 @@ print(f"  Peak frequency: {qgram.peak['frequency']:.1f} Hz")
 print(f"  Peak Q        : {qgram.peak.get('q', 'N/A')}")
 print(f"  Estimated FAR : {far:.2e} Hz")
 """),
-
     md("""\
 ## 3. Time-Frequency Map (Omega Scan Plot)
 
 `QGram.interpolate()` resamples the irregular Q tiles onto a regular
 time-frequency grid suitable for imshow.
 """),
-
     code("""\
 # Interpolate to a regular (time, freq) grid
 # duration and sampling control the output resolution
@@ -198,14 +199,12 @@ ax.legend(fontsize=8, loc="upper right")
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 4. Glitch Characterisation with QTiling
 
 `QTiling` lets us search a specific Q plane and extract glitch parameters
 (peak time, frequency, duration, bandwidth) for each candidate event.
 """),
-
     code("""\
 # Search around each expected glitch location
 glitch_windows = [
@@ -237,7 +236,6 @@ plt.suptitle("Glitch Morphology Comparison", fontsize=12)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 5. Statistical Significance — Rayleigh Test
 
@@ -245,7 +243,6 @@ The `rayleigh_test` measures how non-Gaussian the time-frequency energy
 distribution is.  A p-value below 0.01 in a quiet background suggests
 the data segment contains a significant non-Gaussian transient.
 """),
-
     code("""\
 # Compare a clean segment vs. a glitchy segment
 ts_clean = TimeSeries(noise, t0=t0, sample_rate=fs, name="clean")
@@ -273,7 +270,6 @@ if r_glitch.pvalue < 0.01:
 else:
     print("Segment appears Gaussian at 1% level")
 """),
-
     md("""\
 ## Summary
 
@@ -323,9 +319,7 @@ Q-変換は一定Q（一定の帯域幅対周波数比）ウィンドウで時�
 4. `QGram` からピーク SNR・時刻・周波数を抽出する
 5. グリッチの形態（継続時間、帯域幅、Q）を特定する
 """),
-
     md("## セットアップ"),
-
     code("""\
 import numpy as np
 import matplotlib.pyplot as plt
@@ -335,7 +329,6 @@ from gwexpy.signal.qtransform import q_scan, QTiling, DEFAULT_QRANGE
 from gwexpy.signal import whiten
 from gwexpy.statistics.rayleigh_test import rayleigh_test
 """),
-
     md("""\
 ## 1. グリッチを含む合成データの生成
 
@@ -347,7 +340,6 @@ from gwexpy.statistics.rayleigh_test import rayleigh_test
 | 散乱光 | アーチ状周波数スウィープ | ミラー運動 + 散乱 |
 | 鯉（Koi fish）| 低周波 + 高調波 | 懸架共振 |
 """),
-
     code("""\
 fs   = 4096.0
 T    = 4.0
@@ -402,7 +394,6 @@ ax.legend(fontsize=8)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 2. Q-変換（Omega スキャン）
 
@@ -414,7 +405,6 @@ plt.show()
 - `frange` — 周波数範囲 [Hz]
 - `mismatch` — タイルオーバーラップの割合（小さいほど細かいグリッド）
 """),
-
     code("""\
 ts_white = whiten(ts, fftlength=1.0, overlap=0.5)
 
@@ -431,9 +421,7 @@ print(f"  ピーク時刻      : t0 + {qgram.peak['time'] - t0:.3f} s")
 print(f"  ピーク周波数    : {qgram.peak['frequency']:.1f} Hz")
 print(f"  推定 FAR        : {far:.2e} Hz")
 """),
-
     md("## 3. 時間周波数マップ（Omega スキャンプロット）"),
-
     code("""\
 qscan_interp = qgram.interpolate(dt=1.0/fs, df=1.0)
 
@@ -457,9 +445,7 @@ ax.legend(fontsize=8, loc="upper right")
 plt.tight_layout()
 plt.show()
 """),
-
     md("## 4. QTiling によるグリッチ特性評価"),
-
     code("""\
 glitch_windows = [
     ("Blip",   0.8, 1.2,  50,  500, (4,  20)),
@@ -487,9 +473,7 @@ plt.suptitle("グリッチ形態比較", fontsize=12)
 plt.tight_layout()
 plt.show()
 """),
-
     md("## 5. 統計的有意性 — Rayleigh 検定"),
-
     code("""\
 ts_clean = TimeSeries(noise, t0=t0, sample_rate=fs, name="clean")
 ts_clean_w = whiten(ts_clean, fftlength=1.0)
@@ -512,7 +496,6 @@ if r_glitch.pvalue < 0.01:
 else:
     print("1% 水準でガウス分布と判定")
 """),
-
     md("""\
 ## まとめ
 
@@ -540,10 +523,15 @@ def write_nb(cells, path):
     nb = {
         "cells": cells,
         "metadata": {
-            "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+            "kernelspec": {
+                "display_name": "Python 3",
+                "language": "python",
+                "name": "python3",
+            },
             "language_info": {"name": "python", "version": "3.9.0"},
         },
-        "nbformat": 4, "nbformat_minor": 5,
+        "nbformat": 4,
+        "nbformat_minor": 5,
     }
     Path(path).write_text(json.dumps(nb, ensure_ascii=False, indent=1))
     print(f"Written: {path}")
@@ -551,6 +539,10 @@ def write_nb(cells, path):
 
 if __name__ == "__main__":
     root = Path(__file__).parents[2]
-    write_nb(EN_CELLS, root / "docs/web/en/user_guide/tutorials/case_glitch_analysis.ipynb")
-    write_nb(JA_CELLS, root / "docs/web/ja/user_guide/tutorials/case_glitch_analysis.ipynb")
+    write_nb(
+        EN_CELLS, root / "docs/web/en/user_guide/tutorials/case_glitch_analysis.ipynb"
+    )
+    write_nb(
+        JA_CELLS, root / "docs/web/ja/user_guide/tutorials/case_glitch_analysis.ipynb"
+    )
     print("Done.")

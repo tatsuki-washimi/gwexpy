@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union, cast
 
 import numpy as np
 
@@ -15,6 +15,28 @@ if TYPE_CHECKING:
     from gwexpy.timeseries import TimeSeries
 
 T_s = TypeVar("T_s", bound=Union["TimeSeries", "FrequencySeries", "Spectrogram"])
+
+_ROOT_HISTOGRAM_DTYPES = {
+    "C": np.dtype("int8"),
+    "S": np.dtype("int16"),
+    "I": np.dtype("int32"),
+    "L": np.dtype("int64"),
+    "F": np.dtype("float32"),
+    "D": np.dtype("float64"),
+}
+
+
+def _root_histogram_dtype(class_name: str) -> np.dtype | None:
+    """Return the native ROOT TH scalar dtype, if the class is known."""
+    match = class_name.rsplit("TH", 1)[-1]
+    if not match:
+        return None
+    return cast(np.dtype | None, _ROOT_HISTOGRAM_DTYPES.get(match[-1]))
+
+
+def _unsupported_root_histogram(class_name: str) -> bool:
+    """Profiles and polygon histograms have non-TH bin semantics."""
+    return class_name.startswith("TProfile") or class_name == "TH2Poly"
 
 
 def _get_label(obj: Any, unit: Any, default_name: str = "x") -> str:
@@ -270,6 +292,12 @@ def from_root(
 ) -> Union[T_s, tuple[T_s, T_s]]:
     """Create a GWexpy series object from a ROOT ``TGraph`` or ``TH1``."""
     ROOT = require_optional("ROOT")
+    class_name = obj.ClassName() if hasattr(obj, "ClassName") else type(obj).__name__
+    if _unsupported_root_histogram(class_name):
+        raise TypeError(
+            f"from_root does not support {class_name}; profile and polygon "
+            "histograms have incompatible bin semantics."
+        )
 
     # Reject collection/container types with a clear, actionable message before
     # the generic type check below.
@@ -292,47 +320,36 @@ def from_root(
     if not is_hist and not is_graph and not is_hist2d:
         raise TypeError(f"Object {obj} is neither TH1, TH2 nor TGraph")
 
-    is_histogram_cls = (cls.__name__ == "Histogram") if hasattr(cls, "__name__") else False
+    is_histogram_cls = (
+        (cls.__name__ == "Histogram") if hasattr(cls, "__name__") else False
+    )
 
     if is_hist2d:
         if is_histogram_cls:
-            raise TypeError("Histogram class does not support 2D ROOT objects yet. Use Spectrogram.")
+            raise TypeError(
+                "Histogram class does not support 2D ROOT objects yet. Use Spectrogram."
+            )
         nx = obj.GetNbinsX()
         ny = obj.GetNbinsY()
         x = np.array([obj.GetXaxis().GetBinCenter(i + 1) for i in range(nx)])
         y = np.array([obj.GetYaxis().GetBinCenter(j + 1) for j in range(ny)])
-        z = np.zeros((nx, ny))
-        ez = np.zeros((nx, ny)) if return_error else None
-
-        # Optimize reading using GetArray (returns pointer to linearized array)
-        # Array size is (nx+2)*(ny+2)
-        total_size = (nx + 2) * (ny + 2)
-        buff_ptr = obj.GetArray()
-        # Copy to numpy
-        arr_flat = np.frombuffer(buff_ptr, dtype=np.float64, count=total_size)
-
-        # Reshape to (ny+2, nx+2) to match ROOT layout [y][x]
-        arr_2d = arr_flat.reshape((ny + 2, nx + 2))
-
-        # Extract central part and transpose to getting (nx, ny) -> (Time, Freq)
-        z = arr_2d[1:-1, 1:-1].T.copy()
+        value_dtype = _root_histogram_dtype(class_name) or np.dtype("float64")
+        z = np.asarray(
+            [
+                [obj.GetBinContent(ix + 1, iy + 1) for iy in range(ny)]
+                for ix in range(nx)
+            ],
+            dtype=value_dtype,
+        )
 
         if return_error:
-            # GetSumw2() usually stores errors squared? No GetBinError uses fSumw2 if present.
-            # But direct access to errors might be tricky if fSumw2 is not just an array.
-            # TH2::GetBinError(bin) = sqrt(fSumw2[bin])
-            # Getting fSumw2 array directly: obj.GetSumw2().GetArray()
-            # If default errors (sqrt(N)), GetSumw2 might be empty.
-            if obj.GetSumw2N() > 0:
-                err_ptr = obj.GetSumw2().GetArray()
-                err_flat = np.frombuffer(err_ptr, dtype=np.float64, count=total_size)
-                err_2d = err_flat.reshape((ny + 2, nx + 2))
-                # sqrt needed? fSumw2 stores variance (sigma^2).
-                # GetBinError returns sqrt(content) if Sumw2 not set, or sqrt(Sumw2) if set.
-                ez = np.sqrt(err_2d[1:-1, 1:-1].T).copy()
-            else:
-                # Default Poisson errors
-                ez = np.sqrt(z)
+            ez = np.asarray(
+                [
+                    [obj.GetBinError(ix + 1, iy + 1) for iy in range(ny)]
+                    for ix in range(nx)
+                ],
+                dtype=np.float64,
+            )
 
         # In GWpy Spectrogram, typically shape is (Time, Freq)
         name = obj.GetName()
@@ -349,7 +366,10 @@ def from_root(
         res = cls(z, times=x, frequencies=y, unit=unit, name=name)
         if return_error:
             from typing import cast
-            err_res = cls(cast(Any, ez), times=x, frequencies=y, unit=unit, name=f"{name}_error")
+
+            err_res = cls(
+                cast(Any, ez), times=x, frequencies=y, unit=unit, name=f"{name}_error"
+            )
             return res, err_res
         return res
 
@@ -360,32 +380,28 @@ def from_root(
         # Edges: length n + 1
         edges = np.array([obj.GetXaxis().GetBinLowEdge(i + 1) for i in range(n + 1)])
 
-        buff_ptr = obj.GetArray()
-        # buffer size n+2. ROOT bins: 0=underflow, 1..n=data, n+1=overflow
-        full_y = np.frombuffer(buff_ptr, dtype=np.float64, count=n + 2).copy()
+        # `GetArray` has implementation-dependent element type.  Read through
+        # ROOT's bin accessor to preserve the native TH{C,S,I,L,F,D} dtype;
+        # this is also the conservative fallback for an unknown rectangular TH.
+        value_dtype = _root_histogram_dtype(class_name) or np.dtype("float64")
+        full_y = np.asarray(
+            [obj.GetBinContent(index) for index in range(n + 2)], dtype=value_dtype
+        )
         y = full_y[1:-1]
         underflow = full_y[0]
         overflow = full_y[-1]
 
         if return_error or is_histogram_cls:
-            if obj.GetSumw2N() > 0:
-                err_ptr = obj.GetSumw2().GetArray()
-                err_raw_full = np.frombuffer(
-                    err_ptr, dtype=np.float64, count=n + 2
-                ).copy()
-                err_raw = err_raw_full[1:-1]
-                underflow_sw2 = err_raw_full[0]
-                overflow_sw2 = err_raw_full[-1]
-                # If it's a Histogram class, we often want sumw2 (variance)
-                # But Histogram(sumw2=...) takes Sigma^2
-                # whereas Series(error=...) takes Sigma (RMS).
-                ey = np.sqrt(err_raw).copy()
-                sw2 = err_raw.copy()
-            else:
-                ey = np.sqrt(y)
-                sw2 = y.copy()
-                underflow_sw2 = underflow
-                overflow_sw2 = overflow
+            # GetBinError is ROOT's public error oracle: it handles fSumw2
+            # and ROOT's default error rule uniformly.  Store variances in
+            # float64 regardless of the TH content dtype.
+            err_full = np.asarray(
+                [obj.GetBinError(index) for index in range(n + 2)], dtype=np.float64
+            )
+            ey = err_full[1:-1]
+            sw2 = np.square(ey, dtype=np.float64)
+            underflow_sw2 = float(err_full[0] ** 2)
+            overflow_sw2 = float(err_full[-1] ** 2)
         else:
             ey = None
             sw2 = None
@@ -466,9 +482,12 @@ def from_root(
 
         if return_error:
             from typing import cast
+
             # Create a matching series for error
             if "Frequency" in cls.__name__:
-                err_res = cls(cast(Any, ey), frequencies=x, unit=unit, name=f"{name}_error")
+                err_res = cls(
+                    cast(Any, ey), frequencies=x, unit=unit, name=f"{name}_error"
+                )
             else:
                 err_res = cls(cast(Any, ey), times=x, unit=unit, name=f"{name}_error")
             return res, err_res
@@ -477,7 +496,9 @@ def from_root(
         # is_hist: Already returned above for Histogram class,
         # but for other classes we need a fallback or error.
         # Currently the logic was mixed. Let's make it consistent.
-        raise NotImplementedError("TH1 to non-Histogram class conversion not fully implemented yet.")
+        raise NotImplementedError(
+            "TH1 to non-Histogram class conversion not fully implemented yet."
+        )
 
 
 def to_tmultigraph(collection, name: Optional[str] = None) -> Any:

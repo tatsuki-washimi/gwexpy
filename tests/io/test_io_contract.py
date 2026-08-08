@@ -2,6 +2,7 @@
 
 These tests compare declared contract entries against the live GWpy registry.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -190,7 +191,9 @@ def test_registry_contract_is_registered_in_registry():
             cls = CLASS_MAP[class_name]
             canonical_reader = _reader_callable(canonical, cls)
             if canonical_reader is None:
-                assert entry["unavailable_behavior"]["read"] == "conditional_registration"
+                assert (
+                    entry["unavailable_behavior"]["read"] == "conditional_registration"
+                )
                 assert entry["optional_dependencies"]
                 continue
             for alias in aliases:
@@ -214,7 +217,9 @@ def test_registry_contract_is_registered_in_registry():
             cls = CLASS_MAP[class_name]
             canonical_writer = _writer_callable(canonical, cls)
             if canonical_writer is None:
-                assert entry["unavailable_behavior"]["write"] == "conditional_registration"
+                assert (
+                    entry["unavailable_behavior"]["write"] == "conditional_registration"
+                )
                 assert entry["optional_dependencies"]
                 continue
             for alias in aliases:
@@ -494,9 +499,7 @@ def test_current_public_boundary_decisions_are_recorded():
     assert entries["ats.mth5"]["registry_auto_identify"] is False
     assert entries["ats.mth5"]["optional_dependencies"] == ["mth5"]
     assert entries["ats.mth5"]["extras"] == ["seismic"]
-    assert (
-        entries["ats.mth5"]["unavailable_behavior"]["read"] == "raises_import_error"
-    )
+    assert entries["ats.mth5"]["unavailable_behavior"]["read"] == "raises_import_error"
     assert entries["ats.mth5"]["metadata_requirements"]
     assert _api_classes(entries["root"], "public_api", "read") == ["EventTable"]
     assert _api_classes(entries["root"], "public_api", "write") == ["EventTable"]

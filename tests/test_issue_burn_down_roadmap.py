@@ -2,8 +2,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 ROADMAP = (
-    REPO_ROOT
-    / "docs/developers/plans/active/2026-04-27-issue-burn-down-roadmap.md"
+    REPO_ROOT / "docs/developers/plans/active/2026-04-27-issue-burn-down-roadmap.md"
 )
 
 

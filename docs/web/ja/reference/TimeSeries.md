@@ -37,8 +37,8 @@ psd = ts.psd(fftlength=1.0)
 ## 関連チュートリアル
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
-- [Signal Extraction](../user_guide/tutorials/case_signal_extraction.ipynb)
-- [Advanced ARIMA](../user_guide/tutorials/advanced_arima.ipynb)
+- [Signal Extraction](../../en/user_guide/tutorials/case_signal_extraction.ipynb)
+- [Advanced ARIMA](../../en/user_guide/tutorials/advanced_arima.ipynb)
 
 ## API リファレンス
 
@@ -90,7 +90,7 @@ psd = ts.psd(fftlength=1.0)
 - 観測データ取得や direct I/O: [I/O Formats](../user_guide/io_formats.md)
 - GWpy からの移行観点: [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
 - 時間周波数解析の比較: [時間-周波数解析: 手法比較ガイド](../user_guide/tutorials/time_frequency_comparison.md)
-- ARIMA や予測系: [Advanced ARIMA](../user_guide/tutorials/advanced_arima.ipynb)
+- ARIMA や予測系: [Advanced ARIMA](../../en/user_guide/tutorials/advanced_arima.ipynb)
 
 ## 主な拡張機能 (Key Extensions)
 

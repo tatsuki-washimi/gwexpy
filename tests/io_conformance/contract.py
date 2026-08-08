@@ -88,7 +88,9 @@ _OPTIONAL_CI_JOB_BY_FORMAT = {
     "zarr": ContractCIJobId.IO_ZARR.value,
 }
 
-_DEFAULT_BLOCKING_FORMATS = frozenset({"gwf", "hdf.ndscope", "hdf5", "csv", "txt", "wav"})
+_DEFAULT_BLOCKING_FORMATS = frozenset(
+    {"gwf", "hdf.ndscope", "hdf5", "csv", "txt", "wav"}
+)
 _DEFAULT_FIXTURE_GENERATORS = {
     "gwf": "gwf",
     "hdf.ndscope": "hdf_ndscope",

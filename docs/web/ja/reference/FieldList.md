@@ -32,8 +32,8 @@ fft_fields = fields.fft_time_all()
 
 ## 関連チュートリアル
 
-- [Field API 入門](../user_guide/tutorials/field_scalar_intro.ipynb)
-- [Field 高度ワークフロー](../user_guide/tutorials/field_advanced_workflow.ipynb)
+- [Field API 入門](../../en/user_guide/tutorials/field_scalar_intro.ipynb)
+- [Field 高度ワークフロー](../../en/user_guide/tutorials/field_advanced_workflow.ipynb)
 
 ## API リファレンス
 
@@ -51,6 +51,16 @@ fft_fields = fields.fft_time_all()
 - **一括信号処理**: `fft_time_all()`, `filter_all()`, `resample_all()`
 - **一括選択**: `sel_all()`, `isel_all()`
 - **バリデーション**: リスト内のすべてのフィールドが同じ軸メタデータを共有していることを保証します。
+
+## リスト演算の互換性
+
+`FieldList` は `list` のサブクラスです。
+したがって `[] + fields` は左側の Python `list` 実装に従い、組み込みの `list` を返します。
+この式はサブクラス側で捕捉できません。
+`fields + []` は field コンテナの契約を暗黙に失わせないため、拒否されます。
+素のリストへ明示的に変換する場合は `list(fields)` を使用してください。
+
+scalar、scalar `Quantity`、`Unit` による field 演算は明示的に定義され、field のメタデータを保持します。
 
 ## 例
 

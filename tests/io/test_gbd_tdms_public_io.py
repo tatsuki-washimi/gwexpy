@@ -34,7 +34,9 @@ def test_tdms_missing_optional_dependency_raises_clean_importerror(monkeypatch):
     from gwexpy.timeseries.io import tdms as tdms_io
 
     def _boom():
-        raise ImportError("npTDMS is required for reading TDMS files. Install with `pip install nptdms`.")
+        raise ImportError(
+            "npTDMS is required for reading TDMS files. Install with `pip install nptdms`."
+        )
 
     monkeypatch.setattr(tdms_io, "_import_nptdms", _boom)
 

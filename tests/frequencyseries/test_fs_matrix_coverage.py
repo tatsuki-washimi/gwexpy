@@ -40,11 +40,7 @@ def test_fs_matrix_channel_names_reshaping():
 def test_fs_matrix_metadata_init():
     data = np.random.rand(2, 3, 10)
     fsm = FrequencySeriesMatrix(
-        data,
-        df=1,
-        rows=["R1", "R2"],
-        cols=["C1", "C2", "C3"],
-        name="TestMatrix"
+        data, df=1, rows=["R1", "R2"], cols=["C1", "C2", "C3"], name="TestMatrix"
     )
     assert fsm.name == "TestMatrix"
     assert list(fsm.rows.keys()) == ["R1", "R2"]

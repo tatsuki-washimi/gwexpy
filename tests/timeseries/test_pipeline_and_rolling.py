@@ -66,6 +66,7 @@ def test_rolling_statistics_quantity_window():
 
 # --- ImputeTransform ---
 
+
 def test_impute_transform_timeseries():
     data = np.array([1.0, np.nan, 3.0, 4.0])
     ts = TimeSeries(data, dt=1.0 * u.s, unit=u.m)
@@ -106,6 +107,7 @@ def test_impute_transform_unsupported_type():
 
 
 # --- StandardizeTransform ---
+
 
 def test_standardize_timeseries_roundtrip():
     ts = TimeSeries([1.0, 2.0, 3.0, 4.0, 5.0], dt=1.0 * u.s, unit=u.m)
@@ -174,16 +176,19 @@ def test_standardize_zero_scale():
 
 # --- Pipeline: fit / transform independently ---
 
+
 def test_pipeline_fit_then_transform():
     pytest.importorskip("sklearn")
     rng = np.random.default_rng(1)
     data = rng.normal(size=(2, 1, 64))
     mat = TimeSeriesMatrix(data, dt=0.1 * u.s, t0=0.0 * u.s)
 
-    pipe = Pipeline([
-        ("standardize", StandardizeTransform()),
-        ("pca", PCATransform(n_components=2)),
-    ])
+    pipe = Pipeline(
+        [
+            ("standardize", StandardizeTransform()),
+            ("pca", PCATransform(n_components=2)),
+        ]
+    )
     pipe.fit(mat)
     result = pipe.transform(mat)
     assert isinstance(result, TimeSeriesMatrix)

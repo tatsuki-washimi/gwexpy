@@ -10,6 +10,7 @@ Covers:
 Usage:
     python scripts/make_peak_tracking_notebook.py
 """
+
 from __future__ import annotations
 
 import json
@@ -365,7 +366,7 @@ JA_CELLS = [
         "source": (
             "# ピーク/スペクトル線の時間追跡\n"
             "\n"
-            f"[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]"
+            f"[![Colab で開く](https://colab.research.google.com/assets/colab-badge.svg)]"
             f"({COLAB_BASE}/advanced_peak_tracking.ipynb)\n"
             "\n"
             "このチュートリアルは [advanced_peak_detection.ipynb](advanced_peak_detection.ipynb) の続編です。\n"
@@ -463,6 +464,7 @@ JA_CELLS = [
     {"cell_type": "code", "source": SUMMARY_CODE},
 ]
 
+
 # ============================================================
 # Builder
 # ============================================================
@@ -494,8 +496,12 @@ if __name__ == "__main__":
     out_en = REPO / "docs/web/en/user_guide/tutorials/advanced_peak_tracking.ipynb"
     out_ja = REPO / "docs/web/ja/user_guide/tutorials/advanced_peak_tracking.ipynb"
 
-    out_en.write_text(json.dumps(make_nb(EN_CELLS), ensure_ascii=False, indent=1) + "\n")
-    out_ja.write_text(json.dumps(make_nb(JA_CELLS), ensure_ascii=False, indent=1) + "\n")
+    out_en.write_text(
+        json.dumps(make_nb(EN_CELLS), ensure_ascii=False, indent=1) + "\n"
+    )
+    out_ja.write_text(
+        json.dumps(make_nb(JA_CELLS), ensure_ascii=False, indent=1) + "\n"
+    )
 
     print(f"Created: {out_en}  ({len(EN_CELLS)} cells)")
     print(f"Created: {out_ja}  ({len(JA_CELLS)} cells)")

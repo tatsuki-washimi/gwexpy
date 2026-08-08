@@ -41,7 +41,9 @@ def test_wav_write_boundary_excludes_dict_and_keeps_matrix_read(tmp_path):
     _write_stereo_wav(path)
 
     with pytest.raises(IORegistryError):
-        TimeSeriesDict.read(path, format="wav").write(tmp_path / "dict.wav", format="wav")
+        TimeSeriesDict.read(path, format="wav").write(
+            tmp_path / "dict.wav", format="wav"
+        )
 
     matrix = TimeSeriesMatrix.read(path, format="wav")
     assert matrix.shape == (2, 1, 4)
@@ -54,4 +56,3 @@ def test_wav_load_products_matches_timeseriesdict_interpretation(tmp_path):
     products = load_products(str(path))
     assert "TS" in products
     assert sorted(products["TS"].keys()) == ["channel_0", "channel_1"]
-

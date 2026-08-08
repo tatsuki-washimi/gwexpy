@@ -34,9 +34,9 @@ out = mat.to_dict()
 ## 関連チュートリアル
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
-- [FrequencySeries 行列チュートリアル](../user_guide/tutorials/matrix_frequencyseries.ipynb)
-- [伝達関数計測](../user_guide/tutorials/case_transfer_function.ipynb)
-- [フィッティング上級編](../user_guide/tutorials/advanced_fitting.ipynb)
+- [FrequencySeries 行列チュートリアル](../../en/user_guide/tutorials/matrix_frequencyseries.ipynb)
+- [伝達関数計測](../../en/user_guide/tutorials/case_transfer_function.ipynb)
+- [フィッティング上級編](../../en/user_guide/tutorials/advanced_fitting.ipynb)
 
 ## API リファレンス
 
@@ -68,7 +68,7 @@ SeriesMatrix を継承し、インデックス参照時に FrequencySeries イ�
 
 - 各要素の解釈: [FrequencySeries](FrequencySeries.md)
 - コンテナ間の往復: [FrequencySeriesList](FrequencySeriesList.md), [FrequencySeriesDict](FrequencySeriesDict.md)
-- 整列ワークフロー: [FrequencySeries 行列チュートリアル](../user_guide/tutorials/matrix_frequencyseries.ipynb)
+- 整列ワークフロー: [FrequencySeries 行列チュートリアル](../../en/user_guide/tutorials/matrix_frequencyseries.ipynb)
 
 ## 主要プロパティ
 

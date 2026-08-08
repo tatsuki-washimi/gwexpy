@@ -9,8 +9,15 @@ from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
 
 class TestTdmsReader:
-    def _write_tdms(self, path, group_name="Group", channel_name="Signal",
-                    data=None, dt=0.001, wf_start_time=None):
+    def _write_tdms(
+        self,
+        path,
+        group_name="Group",
+        channel_name="Signal",
+        data=None,
+        dt=0.001,
+        wf_start_time=None,
+    ):
         """Write a minimal TDMS file using nptdms."""
         from nptdms import ChannelObject, GroupObject, RootObject, TdmsWriter
 

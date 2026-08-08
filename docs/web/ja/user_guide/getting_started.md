@@ -61,18 +61,18 @@ GWexpy は、Python 3.11 以上で動作する重力波データ解析ライブ�
 
 主要なコンテナの使い方を以下の順序で学ぶことを推奨します：
 
-1. [時系列データの基本](tutorials/intro_timeseries.ipynb)
-2. [周波数系列の基本](tutorials/intro_frequencyseries.ipynb)
-3. [スペクトログラムの基本](tutorials/intro_spectrogram.ipynb)
-4. [プロット機能のカスタマイズ](tutorials/intro_plotting.ipynb)
+1. [時系列データの基本](../../en/user_guide/tutorials/intro_timeseries.ipynb)
+2. [周波数系列の基本](../../en/user_guide/tutorials/intro_frequencyseries.ipynb)
+3. [スペクトログラムの基本](../../en/user_guide/tutorials/intro_spectrogram.ipynb)
+4. [プロット機能のカスタマイズ](../../en/user_guide/tutorials/intro_plotting.ipynb)
 
 ### 3. 高度な解析機能
 
 目的に応じて以下のガイドを参照してください：
 
-* **多チャンネル・行列処理**: [行列コンテナ (Matrix) の活用](tutorials/matrix_timeseries.ipynb)
-* **高次元データ**: [Field API 入門](tutorials/field_scalar_intro.ipynb) / [ScalarField のスライス操作ガイド](scalarfield_slicing.md)
-* **信号処理**: [フィッティング](tutorials/advanced_fitting.ipynb) / [HHT](tutorials/advanced_hht.ipynb) / [ARIMA](tutorials/advanced_arima.ipynb)
+* **多チャンネル・行列処理**: [行列コンテナ (Matrix) の活用](../../en/user_guide/tutorials/matrix_timeseries.ipynb)
+* **高次元データ**: [Field API 入門](../../en/user_guide/tutorials/field_scalar_intro.ipynb) / [ScalarField のスライス操作ガイド](scalarfield_slicing.md)
+* **信号処理**: [フィッティング](../../en/user_guide/tutorials/advanced_fitting.ipynb) / [HHT](../../en/user_guide/tutorials/advanced_hht.ipynb) / [ARIMA](../../en/user_guide/tutorials/advanced_arima.ipynb)
 
 ### 4. 実践的な活用
 

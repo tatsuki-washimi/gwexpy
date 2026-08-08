@@ -1,0 +1,60 @@
+review_evidence_json: |
+  {
+    "schema": "gwexpy-v0113-review-evidence-v1",
+    "entries": [
+      {
+        "lane": "A",
+        "role": "reviewer",
+        "model": "gpt-5.6-terra",
+        "effort": "high",
+        "reviewed_commit": "2780a8f7fc46b6dc130d153876d2405676775cb8",
+        "scope_paths": [
+          ".github/workflows/publish-release.yml",
+          "RELEASING.md",
+          "requirements/release-build.txt",
+          "scripts/ci/assemble_release_evidence.py",
+          "scripts/ci/validate_release_payload.py",
+          "scripts/ci/validate_release_review_evidence.py",
+          "scripts/validate_release.py",
+          "tests/fixtures/release",
+          "tests/test_publish_release_workflow.py",
+          "tests/test_release_evidence.py",
+          "tests/test_release_payload.py",
+          "tests/test_release_review_evidence.py",
+          "tests/test_validate_release_script.py"
+        ],
+        "scope_digest": "ee95843fd2c1bf933250830762578a2ca6b0a9bac5d7b1e0cf131b1829d250e2",
+        "verdict": "APPROVED",
+        "timestamp_utc": "2026-08-07T20:10:28Z",
+        "raw_report_sha256": "1d77f5465116829bf05fc9a081f8313767ad0274c6fd8c2b917343005b103dee",
+        "finding_ids": []
+      },
+      {
+        "lane": "B",
+        "role": "reviewer",
+        "model": "gpt-5.6-terra",
+        "effort": "high",
+        "reviewed_commit": "2780a8f7fc46b6dc130d153876d2405676775cb8",
+        "scope_paths": [
+          "docs/web/en/user_guide/citation.md",
+          "docs/web/en/user_guide/cli.md",
+          "docs/web/en/user_guide/installation.md",
+          "docs/web/ja/user_guide/citation.md",
+          "docs/web/ja/user_guide/cli.md",
+          "docs/web/ja/user_guide/installation.md",
+          "docs_redesign/about/citation.md",
+          "docs_redesign/how-to/cli.md",
+          "docs_redesign/locales/ja/LC_MESSAGES/about/citation.po",
+          "docs_redesign/locales/ja/LC_MESSAGES/how-to/cli.po",
+          "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po",
+          "docs_redesign/tutorials/installation.md",
+          "tests/docs/test_v0113_public_release_facts.py"
+        ],
+        "scope_digest": "bef7e7a01cec13a32bdbd7f8eaf26f073473b5c624b5473430083a9b05e671f8",
+        "verdict": "APPROVED",
+        "timestamp_utc": "2026-08-07T20:10:28Z",
+        "raw_report_sha256": "cb15929350b837ecf1f1652d2577d633123ade2738378f14c1923048cf832995",
+        "finding_ids": []
+      }
+    ]
+  }

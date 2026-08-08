@@ -1,4 +1,5 @@
 """Interoperability with scikit-rf for RF and microwave network analysis."""
+
 from __future__ import annotations
 
 from typing import Any

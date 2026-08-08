@@ -1,4 +1,5 @@
 """Tests for gwexpy/types/array.py — Array class."""
+
 from __future__ import annotations
 
 import numpy as np

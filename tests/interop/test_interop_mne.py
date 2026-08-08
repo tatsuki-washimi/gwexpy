@@ -27,6 +27,7 @@ from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
 try:
     from astropy import units as u
+
     _ASTROPY = True
 except ImportError:
     _ASTROPY = False
@@ -37,7 +38,9 @@ requires_astropy = pytest.mark.skipif(not _ASTROPY, reason="astropy not installe
 def _make_ts(n=100, name="test"):
     return TimeSeries(
         np.random.default_rng(42).standard_normal(n),
-        t0=0, dt=0.01, name=name,
+        t0=0,
+        dt=0.01,
+        name=name,
     )
 
 
@@ -51,13 +54,17 @@ def _make_spec(n_times=100, n_freqs=10, name="test"):
     times = np.linspace(0, 1, n_times)
     freqs = np.linspace(1, 50, n_freqs)
     data = np.abs(np.random.default_rng(42).standard_normal((n_times, n_freqs)))
-    return Spectrogram(data, times=times * u.s, frequencies=freqs * u.Hz, unit=u.m, name=name)
+    return Spectrogram(
+        data, times=times * u.s, frequencies=freqs * u.Hz, unit=u.m, name=name
+    )
 
 
 def _make_ts(n=100, name="test"):
     return TimeSeries(
         np.random.default_rng(42).standard_normal(n),
-        t0=0, dt=0.01, name=name,
+        t0=0,
+        dt=0.01,
+        name=name,
     )
 
 
@@ -76,19 +83,23 @@ class TestToMneRawArray:
         assert np.isclose(raw.info["sfreq"], 100.0)
 
     def test_multi_channel(self):
-        tsd = TimeSeriesDict({
-            "ch1": TimeSeries(np.ones(50), t0=0, dt=0.01, name="ch1"),
-            "ch2": TimeSeries(np.zeros(50), t0=0, dt=0.01, name="ch2"),
-        })
+        tsd = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(np.ones(50), t0=0, dt=0.01, name="ch1"),
+                "ch2": TimeSeries(np.zeros(50), t0=0, dt=0.01, name="ch2"),
+            }
+        )
         raw = to_mne_rawarray(tsd)
         assert raw.info["nchan"] == 2
         assert set(raw.ch_names) == {"ch1", "ch2"}
 
     def test_channel_names_preserved(self):
-        tsd = TimeSeriesDict({
-            "X1": TimeSeries(np.ones(20), t0=0, dt=0.1, name="X1"),
-            "Y2": TimeSeries(np.ones(20), t0=0, dt=0.1, name="Y2"),
-        })
+        tsd = TimeSeriesDict(
+            {
+                "X1": TimeSeries(np.ones(20), t0=0, dt=0.1, name="X1"),
+                "Y2": TimeSeries(np.ones(20), t0=0, dt=0.1, name="Y2"),
+            }
+        )
         raw = to_mne_rawarray(tsd)
         assert "X1" in raw.ch_names
         assert "Y2" in raw.ch_names
@@ -96,9 +107,13 @@ class TestToMneRawArray:
 
 class TestFromMneRaw:
     def test_roundtrip(self):
-        tsd = TimeSeriesDict({
-            "ch0": TimeSeries(np.arange(30, dtype=float), t0=0, dt=0.01, name="ch0"),
-        })
+        tsd = TimeSeriesDict(
+            {
+                "ch0": TimeSeries(
+                    np.arange(30, dtype=float), t0=0, dt=0.01, name="ch0"
+                ),
+            }
+        )
         raw = to_mne_rawarray(tsd)
         tsd2 = from_mne_raw(TimeSeriesDict, raw)
         assert "ch0" in tsd2
@@ -134,24 +149,30 @@ class TestFromMneRaw:
         assert raw.first_samp == 200
 
         tsd = from_mne_raw(TimeSeriesDict, raw)
-        expected_t0 = float(datetime_utc_to_gps(dt_utc)) + raw.first_samp / raw.info["sfreq"]
+        expected_t0 = (
+            float(datetime_utc_to_gps(dt_utc)) + raw.first_samp / raw.info["sfreq"]
+        )
         assert tsd["ch0"].t0.value == pytest.approx(expected_t0)
         # cropped data itself is unaffected by the offset accounting
         np.testing.assert_allclose(tsd["ch0"].value, np.arange(200, 501, dtype=float))
 
     def test_unit_map_applied(self):
-        tsd_in = TimeSeriesDict({
-            "ch1": TimeSeries(np.ones(20), t0=0, dt=0.1, name="ch1"),
-        })
+        tsd_in = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(np.ones(20), t0=0, dt=0.1, name="ch1"),
+            }
+        )
         raw = to_mne_rawarray(tsd_in)
         tsd = from_mne_raw(TimeSeriesDict, raw, unit_map={"ch1": "V"})
         assert str(tsd["ch1"].unit) == "V"
 
     def test_unit_map_none_does_not_raise(self):
         """Regression: unit_map=None must not AttributeError on None.get()."""
-        tsd_in = TimeSeriesDict({
-            "ch1": TimeSeries(np.ones(20), t0=0, dt=0.1, name="ch1"),
-        })
+        tsd_in = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(np.ones(20), t0=0, dt=0.1, name="ch1"),
+            }
+        )
         raw = to_mne_rawarray(tsd_in)
         tsd = from_mne_raw(TimeSeriesDict, raw, unit_map=None)
         assert "ch1" in tsd
@@ -175,7 +196,9 @@ class TestMeasDateContract:
     def test_roundtrip_recovers_gps_t0(self):
         ts = TimeSeries(
             np.random.default_rng(0).standard_normal(100),
-            t0=1_234_567_890, dt=0.01, name="ch0",
+            t0=1_234_567_890,
+            dt=0.01,
+            name="ch0",
         )
         raw = to_mne_rawarray(ts)
         tsd = from_mne_raw(TimeSeriesDict, raw)
@@ -216,10 +239,12 @@ class TestMeasDateContract:
         assert raw.info["meas_date"] is None
 
     def test_multi_channel_matching_t0_roundtrip(self):
-        tsd = TimeSeriesDict({
-            "ch1": TimeSeries(np.ones(50), t0=1_200_000_000, dt=0.01, name="ch1"),
-            "ch2": TimeSeries(np.zeros(50), t0=1_200_000_000, dt=0.01, name="ch2"),
-        })
+        tsd = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(np.ones(50), t0=1_200_000_000, dt=0.01, name="ch1"),
+                "ch2": TimeSeries(np.zeros(50), t0=1_200_000_000, dt=0.01, name="ch2"),
+            }
+        )
         raw = to_mne_rawarray(tsd)
         assert raw.info["meas_date"] is not None
         out = from_mne_raw(TimeSeriesDict, raw)
@@ -230,10 +255,14 @@ class TestMeasDateContract:
         """A 0.49*dt epoch mismatch must be rejected (exact ns comparison,
         not a dt-scaled tolerance) -- see #493."""
         dt = 0.01
-        tsd = TimeSeriesDict({
-            "ch1": TimeSeries(np.ones(50), t0=1_200_000_000.0, dt=dt, name="ch1"),
-            "ch2": TimeSeries(np.zeros(50), t0=1_200_000_000.0 + 0.49 * dt, dt=dt, name="ch2"),
-        })
+        tsd = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(np.ones(50), t0=1_200_000_000.0, dt=dt, name="ch1"),
+                "ch2": TimeSeries(
+                    np.zeros(50), t0=1_200_000_000.0 + 0.49 * dt, dt=dt, name="ch2"
+                ),
+            }
+        )
         with pytest.raises(ValueError, match="mismatched epoch"):
             to_mne_rawarray(tsd)
 
@@ -251,6 +280,7 @@ class TestMeasDateContract:
 # _infer_sfreq_hz
 # ---------------------------------------------------------------------------
 
+
 class TestInferSfreqHz:
     def test_sample_rate_astropy_quantity(self):
         ts = _make_ts()
@@ -266,15 +296,18 @@ class TestInferSfreqHz:
 
     def test_sample_rate_plain_value_attr(self):
         """sample_rate without .to() but with .value attribute."""
+
         class FakeSRValue:
             class _SR:
                 value = 512.0
+
             sample_rate = _SR()
 
         assert np.isclose(_infer_sfreq_hz(FakeSRValue()), 512.0)
 
     def test_sample_rate_plain_float(self):
         """sample_rate as a bare float (no .to() and no .value)."""
+
         class FakeSRFloat:
             sample_rate = 256.0
 
@@ -289,6 +322,7 @@ class TestInferSfreqHz:
 
     def test_times_path(self):
         """Falls through to times when only times is present."""
+
         class FakeTimes:
             sample_rate = None
             dt = None
@@ -303,6 +337,7 @@ class TestInferSfreqHz:
 
     def test_dt_zero_falls_through_to_error(self):
         """dt == 0 skips the dt branch and falls through to a ValueError."""
+
         class FakeDTZero:
             sample_rate = None
             dt = 0.0
@@ -314,6 +349,7 @@ class TestInferSfreqHz:
 
     def test_nothing_raises(self):
         """No usable attribute → ValueError."""
+
         class FakeEmpty:
             sample_rate = None
             dt = None
@@ -327,6 +363,7 @@ class TestInferSfreqHz:
 # ---------------------------------------------------------------------------
 # _default_ch_name
 # ---------------------------------------------------------------------------
+
 
 class TestDefaultChName:
     def test_name_attr(self):
@@ -360,6 +397,7 @@ class TestDefaultChName:
 # _select_items
 # ---------------------------------------------------------------------------
 
+
 class TestSelectItems:
     def _items(self):
         return [("ch1", 10), ("ch2", 20), ("ch3", 30)]
@@ -392,10 +430,13 @@ class TestSelectItems:
 # to_mne_rawarray — additional branches
 # ---------------------------------------------------------------------------
 
+
 class TestToMneRawArrayExtra:
     def test_picks_on_non_mapping_raises_type_error(self):
         ts = _make_ts()
-        with pytest.raises(TypeError, match="picks is only supported for mapping inputs"):
+        with pytest.raises(
+            TypeError, match="picks is only supported for mapping inputs"
+        ):
             to_mne_rawarray(ts, picks=["test"])
 
     def test_2d_input_raises_value_error(self):
@@ -422,53 +463,65 @@ class TestToMneRawArrayExtra:
             to_mne_rawarray(ts, info=info)
 
     def test_picks_string_mapping(self):
-        tsd = TimeSeriesDict({
-            "ch1": TimeSeries(np.ones(50), t0=0, dt=0.01, name="ch1"),
-            "ch2": TimeSeries(np.zeros(50), t0=0, dt=0.01, name="ch2"),
-            "ch3": TimeSeries(np.ones(50) * 2, t0=0, dt=0.01, name="ch3"),
-        })
+        tsd = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(np.ones(50), t0=0, dt=0.01, name="ch1"),
+                "ch2": TimeSeries(np.zeros(50), t0=0, dt=0.01, name="ch2"),
+                "ch3": TimeSeries(np.ones(50) * 2, t0=0, dt=0.01, name="ch3"),
+            }
+        )
         raw = to_mne_rawarray(tsd, picks=["ch1", "ch3"])
         assert set(raw.ch_names) == {"ch1", "ch3"}
         assert raw.info["nchan"] == 2
 
     def test_picks_int_mapping(self):
-        tsd = TimeSeriesDict({
-            "ch1": TimeSeries(np.ones(50), t0=0, dt=0.01, name="ch1"),
-            "ch2": TimeSeries(np.zeros(50), t0=0, dt=0.01, name="ch2"),
-            "ch3": TimeSeries(np.ones(50) * 2, t0=0, dt=0.01, name="ch3"),
-        })
+        tsd = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(np.ones(50), t0=0, dt=0.01, name="ch1"),
+                "ch2": TimeSeries(np.zeros(50), t0=0, dt=0.01, name="ch2"),
+                "ch3": TimeSeries(np.ones(50) * 2, t0=0, dt=0.01, name="ch3"),
+            }
+        )
         raw = to_mne_rawarray(tsd, picks=[0, 2])
         assert raw.info["nchan"] == 2
 
     def test_empty_picks_raises(self):
-        tsd = TimeSeriesDict({
-            "ch1": TimeSeries(np.ones(50), t0=0, dt=0.01, name="ch1"),
-        })
+        tsd = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(np.ones(50), t0=0, dt=0.01, name="ch1"),
+            }
+        )
         with pytest.raises(ValueError, match="No channels selected"):
             to_mne_rawarray(tsd, picks=["nonexistent"])
 
     def test_mismatched_sfreq_raises(self):
-        tsd = TimeSeriesDict({
-            "ch1": TimeSeries(np.ones(50), t0=0, dt=0.01, name="ch1"),
-            "ch2": TimeSeries(np.zeros(50), t0=0, dt=0.02, name="ch2"),
-        })
+        tsd = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(np.ones(50), t0=0, dt=0.01, name="ch1"),
+                "ch2": TimeSeries(np.zeros(50), t0=0, dt=0.02, name="ch2"),
+            }
+        )
         with pytest.raises(ValueError, match="same sampling frequency"):
             to_mne_rawarray(tsd)
 
     def test_custom_info_multi_channel(self):
-        tsd = TimeSeriesDict({
-            "ch1": TimeSeries(np.ones(50), t0=0, dt=0.01, name="ch1"),
-            "ch2": TimeSeries(np.zeros(50), t0=0, dt=0.01, name="ch2"),
-        })
+        tsd = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(np.ones(50), t0=0, dt=0.01, name="ch1"),
+                "ch2": TimeSeries(np.zeros(50), t0=0, dt=0.01, name="ch2"),
+            }
+        )
         info = mne.create_info(["ch1", "ch2"], sfreq=100.0, ch_types=["misc", "misc"])
         raw = to_mne_rawarray(tsd, info=info)
         assert raw.info["nchan"] == 2
 
     def test_custom_info_wrong_nchan_multi_raises(self):
-        tsd = TimeSeriesDict({
-            "ch1": TimeSeries(np.ones(50), t0=0, dt=0.01, name="ch1"),
-            "ch2": TimeSeries(np.zeros(50), t0=0, dt=0.01, name="ch2"),
-        })
+        tsd = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(np.ones(50), t0=0, dt=0.01, name="ch1"),
+                "ch2": TimeSeries(np.zeros(50), t0=0, dt=0.01, name="ch2"),
+            }
+        )
         info = mne.create_info(["x"], sfreq=100.0, ch_types=["misc"])
         with pytest.raises(ValueError, match="info expects nchan=2"):
             to_mne_rawarray(tsd, info=info)
@@ -477,6 +530,7 @@ class TestToMneRawArrayExtra:
 # ---------------------------------------------------------------------------
 # _fs_to_mne_spectrum and _mne_spectrum_to_fs
 # ---------------------------------------------------------------------------
+
 
 class TestFsToMneSpectrum:
     def test_single_fs_roundtrip(self):
@@ -495,20 +549,32 @@ class TestFsToMneSpectrum:
 
     def test_multi_channel_dict(self):
         freqs = np.linspace(0, 50, 51)
-        fsd = FrequencySeriesDict({
-            "ch1": FrequencySeries(np.ones(51) * 1e-6, frequencies=freqs * u.Hz, unit=u.m, name="ch1"),
-            "ch2": FrequencySeries(np.ones(51) * 2e-6, frequencies=freqs * u.Hz, unit=u.m, name="ch2"),
-        })
+        fsd = FrequencySeriesDict(
+            {
+                "ch1": FrequencySeries(
+                    np.ones(51) * 1e-6, frequencies=freqs * u.Hz, unit=u.m, name="ch1"
+                ),
+                "ch2": FrequencySeries(
+                    np.ones(51) * 2e-6, frequencies=freqs * u.Hz, unit=u.m, name="ch2"
+                ),
+            }
+        )
         spec_arr = _fs_to_mne_spectrum(fsd)
         data = spec_arr.get_data()
         assert data.shape == (2, 51)
 
     def test_multi_channel_dict_back(self):
         freqs = np.linspace(0, 50, 51)
-        fsd = FrequencySeriesDict({
-            "ch1": FrequencySeries(np.ones(51) * 1e-6, frequencies=freqs * u.Hz, unit=u.m, name="ch1"),
-            "ch2": FrequencySeries(np.ones(51) * 2e-6, frequencies=freqs * u.Hz, unit=u.m, name="ch2"),
-        })
+        fsd = FrequencySeriesDict(
+            {
+                "ch1": FrequencySeries(
+                    np.ones(51) * 1e-6, frequencies=freqs * u.Hz, unit=u.m, name="ch1"
+                ),
+                "ch2": FrequencySeries(
+                    np.ones(51) * 2e-6, frequencies=freqs * u.Hz, unit=u.m, name="ch2"
+                ),
+            }
+        )
         spec_arr = _fs_to_mne_spectrum(fsd)
         result = _mne_spectrum_to_fs(FrequencySeries, spec_arr)
         assert type(result).__name__ == "FrequencySeriesDict"
@@ -518,10 +584,16 @@ class TestFsToMneSpectrum:
     def test_mismatched_frequencies_raises(self):
         freqs1 = np.linspace(0, 50, 51)
         freqs2 = np.linspace(0, 100, 51)
-        fsd = FrequencySeriesDict({
-            "ch1": FrequencySeries(np.ones(51) * 1e-6, frequencies=freqs1 * u.Hz, unit=u.m, name="ch1"),
-            "ch2": FrequencySeries(np.ones(51) * 2e-6, frequencies=freqs2 * u.Hz, unit=u.m, name="ch2"),
-        })
+        fsd = FrequencySeriesDict(
+            {
+                "ch1": FrequencySeries(
+                    np.ones(51) * 1e-6, frequencies=freqs1 * u.Hz, unit=u.m, name="ch1"
+                ),
+                "ch2": FrequencySeries(
+                    np.ones(51) * 2e-6, frequencies=freqs2 * u.Hz, unit=u.m, name="ch2"
+                ),
+            }
+        )
         with pytest.raises(ValueError, match="same frequencies"):
             _fs_to_mne_spectrum(fsd)
 
@@ -542,8 +614,12 @@ class TestFsToMneSpectrum:
     def test_spectrum_3d_data_multi_epoch_average(self):
         """_mne_spectrum_to_fs averages over epochs when n_epochs > 1."""
         freqs = np.linspace(0, 50, 51)
-        fs1 = FrequencySeries(np.ones(51) * 1.0, frequencies=freqs * u.Hz, unit=u.m, name="ch0")
-        fs2 = FrequencySeries(np.ones(51) * 3.0, frequencies=freqs * u.Hz, unit=u.m, name="ch0")
+        fs1 = FrequencySeries(
+            np.ones(51) * 1.0, frequencies=freqs * u.Hz, unit=u.m, name="ch0"
+        )
+        fs2 = FrequencySeries(
+            np.ones(51) * 3.0, frequencies=freqs * u.Hz, unit=u.m, name="ch0"
+        )
         spec_arr = _fs_to_mne_spectrum(fs1)
 
         def fake_get_data():
@@ -559,6 +635,7 @@ class TestFsToMneSpectrum:
 # ---------------------------------------------------------------------------
 # _spec_to_mne_tfr and _mne_tfr_to_spec
 # ---------------------------------------------------------------------------
+
 
 class TestSpecToMneTfr:
     def test_single_spectrogram_to_tfr(self):
@@ -606,6 +683,7 @@ class TestSpecToMneTfr:
 # to_mne dispatch
 # ---------------------------------------------------------------------------
 
+
 class TestToMne:
     def test_routes_timeseries_to_rawarray(self):
         ts = _make_ts()
@@ -619,10 +697,16 @@ class TestToMne:
 
     def test_routes_frequency_series_dict_to_spectrum(self):
         freqs = np.linspace(0, 50, 51)
-        fsd = FrequencySeriesDict({
-            "ch1": FrequencySeries(np.ones(51) * 1e-6, frequencies=freqs * u.Hz, unit=u.m, name="ch1"),
-            "ch2": FrequencySeries(np.ones(51) * 2e-6, frequencies=freqs * u.Hz, unit=u.m, name="ch2"),
-        })
+        fsd = FrequencySeriesDict(
+            {
+                "ch1": FrequencySeries(
+                    np.ones(51) * 1e-6, frequencies=freqs * u.Hz, unit=u.m, name="ch1"
+                ),
+                "ch2": FrequencySeries(
+                    np.ones(51) * 2e-6, frequencies=freqs * u.Hz, unit=u.m, name="ch2"
+                ),
+            }
+        )
         result = to_mne(fsd)
         assert type(result).__name__ == "SpectrumArray"
         assert result.get_data().shape[0] == 2
@@ -644,6 +728,7 @@ class TestToMne:
 # ---------------------------------------------------------------------------
 # from_mne dispatch
 # ---------------------------------------------------------------------------
+
 
 class TestFromMne:
     def test_routes_raw_to_timeseries_dict(self):

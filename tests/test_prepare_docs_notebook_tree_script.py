@@ -169,7 +169,7 @@ def test_sanitize_notebook_for_ci_replaces_bootstrap_install_cells(tmp_path: Pat
                 "outputs": [{"output_type": "stream", "text": "ok\n"}],
                 "source": [
                     "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
-                    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\"\n",
+                    '%pip install -q "gwexpy[all]" "gwpy<5.0.0" "numpy<2.0.0" "scipy<1.13.0" "astropy<7.0.0"\n',
                 ],
             }
         ],
@@ -195,10 +195,20 @@ def test_materialize_missing_locale_notebooks_copies_en_source_to_ja(tmp_path: P
     write_notebook(en_notebook)
 
     mirror_map = module._materialize_missing_locale_notebooks(output_root)
-    ja_notebook = output_root / "docs" / "web" / "ja" / "user_guide" / "tutorials" / "shared.ipynb"
+    ja_notebook = (
+        output_root
+        / "docs"
+        / "web"
+        / "ja"
+        / "user_guide"
+        / "tutorials"
+        / "shared.ipynb"
+    )
 
     assert ja_notebook.exists()
-    assert ja_notebook.read_text(encoding="utf-8") == en_notebook.read_text(encoding="utf-8")
+    assert ja_notebook.read_text(encoding="utf-8") == en_notebook.read_text(
+        encoding="utf-8"
+    )
     assert mirror_map == {
         "docs/web/en/user_guide/tutorials/shared.ipynb": [
             "docs/web/ja/user_guide/tutorials/shared.ipynb"
@@ -210,23 +220,43 @@ def test_materialize_missing_locale_notebooks_skips_existing_ja_wrapper(tmp_path
     module = load_script_module()
     output_root = tmp_path / "out"
     en_notebook = output_root.joinpath(*TUTORIALS_ROOT, "shared.ipynb")
-    ja_wrapper = output_root / "docs" / "web" / "ja" / "user_guide" / "tutorials" / "shared.md"
+    ja_wrapper = (
+        output_root / "docs" / "web" / "ja" / "user_guide" / "tutorials" / "shared.md"
+    )
     write_notebook(en_notebook)
     ja_wrapper.parent.mkdir(parents=True, exist_ok=True)
     ja_wrapper.write_text("# Wrapper\n", encoding="utf-8")
 
     mirror_map = module._materialize_missing_locale_notebooks(output_root)
-    ja_notebook = output_root / "docs" / "web" / "ja" / "user_guide" / "tutorials" / "shared.ipynb"
+    ja_notebook = (
+        output_root
+        / "docs"
+        / "web"
+        / "ja"
+        / "user_guide"
+        / "tutorials"
+        / "shared.ipynb"
+    )
 
     assert ja_notebook.exists() is False
     assert mirror_map == {}
 
 
-def test_mirror_executed_notebook_fallbacks_overwrites_materialized_copy(tmp_path: Path):
+def test_mirror_executed_notebook_fallbacks_overwrites_materialized_copy(
+    tmp_path: Path,
+):
     module = load_script_module()
     output_root = tmp_path / "out"
     en_notebook = output_root.joinpath(*TUTORIALS_ROOT, "shared.ipynb")
-    ja_notebook = output_root / "docs" / "web" / "ja" / "user_guide" / "tutorials" / "shared.ipynb"
+    ja_notebook = (
+        output_root
+        / "docs"
+        / "web"
+        / "ja"
+        / "user_guide"
+        / "tutorials"
+        / "shared.ipynb"
+    )
     write_notebook(en_notebook)
     write_notebook(ja_notebook)
     mutate_notebook(en_notebook, "executed")
@@ -241,10 +271,14 @@ def test_mirror_executed_notebook_fallbacks_overwrites_materialized_copy(tmp_pat
         },
     )
 
-    assert ja_notebook.read_text(encoding="utf-8") == en_notebook.read_text(encoding="utf-8")
+    assert ja_notebook.read_text(encoding="utf-8") == en_notebook.read_text(
+        encoding="utf-8"
+    )
 
 
-def test_filter_notebook_markdown_for_locale_keeps_matching_language_cells(tmp_path: Path):
+def test_filter_notebook_markdown_for_locale_keeps_matching_language_cells(
+    tmp_path: Path,
+):
     module = load_script_module()
     notebook_path = tmp_path / "localized.ipynb"
     notebook = {

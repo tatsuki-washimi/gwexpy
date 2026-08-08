@@ -28,7 +28,9 @@ class _FakeDialog:
         return self.__class__.exec_result
 
 
-def test_show_channel_browser_master_adds_to_first_empty_slots(main_window, monkeypatch):
+def test_show_channel_browser_master_adds_to_first_empty_slots(
+    main_window, monkeypatch
+):
     import gwexpy.gui.ui.main_window as main_window_module
 
     _FakeDialog.init_calls.clear()
@@ -72,7 +74,9 @@ def test_show_channel_browser_start_slot_replaces_and_appends(main_window, monke
     assert states[3]["name"] == "NEW:3"
 
 
-def test_show_channel_browser_prefers_audio_source_when_enabled(main_window, monkeypatch):
+def test_show_channel_browser_prefers_audio_source_when_enabled(
+    main_window, monkeypatch
+):
     import gwexpy.gui.ui.main_window as main_window_module
 
     main_window.input_controls["ds_combo"].setCurrentText("FILE")

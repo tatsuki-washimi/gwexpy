@@ -37,9 +37,9 @@ mat = dct.to_matrix()
 ## 関連チュートリアル
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
-- [FrequencySeries チュートリアル](../user_guide/tutorials/intro_frequencyseries.ipynb)
-- [伝達関数計測](../user_guide/tutorials/case_transfer_function.ipynb)
-- [ノイズバジェット解析](../user_guide/tutorials/case_noise_budget.ipynb)
+- [FrequencySeries チュートリアル](../../en/user_guide/tutorials/intro_frequencyseries.ipynb)
+- [伝達関数計測](../../en/user_guide/tutorials/case_transfer_function.ipynb)
+- [ノイズバジェット解析](../../en/user_guide/tutorials/case_noise_budget.ipynb)
 
 ## API リファレンス
 
@@ -69,7 +69,7 @@ mat = dct.to_matrix()
 
 - 各スペクトルの解釈: [FrequencySeries](FrequencySeries.md)
 - 整列済み解析グリッドへの変換: [FrequencySeriesMatrix](FrequencySeriesMatrix.md)
-- 実務ワークフロー: [伝達関数計測](../user_guide/tutorials/case_transfer_function.ipynb), [ノイズバジェット解析](../user_guide/tutorials/case_noise_budget.ipynb)
+- 実務ワークフロー: [伝達関数計測](../../en/user_guide/tutorials/case_transfer_function.ipynb), [ノイズバジェット解析](../../en/user_guide/tutorials/case_noise_budget.ipynb)
 
 ## メソッド
 

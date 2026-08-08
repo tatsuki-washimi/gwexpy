@@ -3,6 +3,7 @@
 This is a cleaned-up port of the legacy `gbd2gwf.py` workflow, adapted for
 gwexpy TimeSeries/TimeSeriesDict readers.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -20,7 +21,6 @@ from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
 from gwexpy.io.utils import (
     datetime_to_gps,
     ensure_datetime,
-    filter_by_channels,
     parse_timezone,
     set_provenance,
 )
@@ -31,6 +31,20 @@ from ._registration import register_timeseries_format
 
 HEADER_SIZE_PATTERN = re.compile(r"HeaderSiz[e]?\s*[:=]\s*(\d+)", re.IGNORECASE)
 GBD_FULL_SCALE = 20000.0
+
+
+def _normalize_gbd_channels(channels, available: list[str]) -> list[str]:
+    """Validate selectors from the header before the data block is read."""
+    if channels is None:
+        return sorted(available)
+    selected = [channels] if isinstance(channels, str) else list(channels)
+    duplicates = sorted({name for name in selected if selected.count(name) > 1})
+    if duplicates:
+        raise ValueError(f"duplicate GBD channels requested: {duplicates}")
+    missing = [name for name in selected if name not in available]
+    if missing:
+        raise ValueError(f"GBD channels not found: {missing}")
+    return selected
 
 
 def identify_gbd(origin, filepath, fileobj, *args, **kwargs):
@@ -63,8 +77,8 @@ def identify_gbd(origin, filepath, fileobj, *args, **kwargs):
     if filepath is None:
         return False
     try:
-        with open(filepath, 'rb') as f:
-            probe = f.read(4096).decode('ascii', errors='ignore')
+        with open(filepath, "rb") as f:
+            probe = f.read(4096).decode("ascii", errors="ignore")
             return HEADER_SIZE_PATTERN.search(probe) is not None
     except OSError:
         return False
@@ -147,7 +161,12 @@ def read_timeseriesdict_gbd(
     if timezone is None:
         raise ValueError("timezone is required for GBD files")
     tzinfo = parse_timezone(timezone)
-    header, data = _read_gbd(source)
+    selected: list[str] = []
+
+    def _select(header: GBDHeader) -> None:
+        selected.extend(_normalize_gbd_channels(channels, header.order))
+
+    header, data = _read_gbd(source, before_data=_select)
 
     if epoch is not None:
         if isinstance(epoch, (int, float, np.floating)):
@@ -172,7 +191,8 @@ def read_timeseriesdict_gbd(
     )
 
     tsd = TimeSeriesDict()
-    for idx, ch in enumerate(header.order):
+    for ch in selected:
+        idx = header.order.index(ch)
         raw_values = data[:, idx]
         is_digital = ch.strip().upper() in digital_set
         if is_digital:
@@ -190,7 +210,6 @@ def read_timeseriesdict_gbd(
         )
         tsd[ch] = ts
 
-    tsd = TimeSeriesDict(filter_by_channels(tsd, channels))
     set_provenance(
         tsd,
         {
@@ -200,7 +219,7 @@ def read_timeseriesdict_gbd(
             "unit_source": "override" if unit else "gbd_default",
             "gap": "pad",
             "pad_value": pad,
-            "channels": list(channels) if channels is not None else header.order,
+            "channels": selected,
             "digital_channels": sorted(digital_set),
             "digital_mode": "binarize" if digital_set else "none",
         },
@@ -213,10 +232,10 @@ def read_timeseries_gbd(*args, channels=None, **kwargs) -> TimeSeries:
     tsd = read_timeseriesdict_gbd(*args, channels=channels, **kwargs)
     if not tsd:
         raise ValueError("No channels found in GBD file")
-    if channels:
-        first_key = next(iter(tsd.keys()))
-        return tsd[first_key]
-    # default: first in file order
+    if len(tsd) != 1:
+        raise ValueError(
+            "GBD single-series reader requires exactly one selected channel"
+        )
     return tsd[next(iter(tsd.keys()))]
 
 
@@ -226,7 +245,7 @@ def read_timeseriesmatrix_gbd(*args, channels=None, **kwargs) -> TimeSeriesMatri
     return tsd.to_matrix()
 
 
-def _read_gbd(source) -> tuple[GBDHeader, np.ndarray]:
+def _read_gbd(source, *, before_data=None) -> tuple[GBDHeader, np.ndarray]:
     close_after = False
     if isinstance(source, (str, Path)):
         fh = open(source, "rb")
@@ -237,6 +256,8 @@ def _read_gbd(source) -> tuple[GBDHeader, np.ndarray]:
     try:
         header_text, header_size = _read_header_text(fh)
         header = _parse_header(header_text, header_size)
+        if before_data is not None:
+            before_data(header)
         data = _read_data_block(fh, header)
         return header, data
     finally:

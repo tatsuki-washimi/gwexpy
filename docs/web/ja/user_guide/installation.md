@@ -27,10 +27,12 @@ myst:
 - [次に読む](#next-to-read)
 
 :::{note}
-GWexpy は PyPI に公開されています（最新リリース: v0.1.6）。
+GWexpy は [PyPI](https://pypi.org/project/gwexpy/) に公開されています。
+利用可能なバージョンは PyPI または
+[リリースページ](https://github.com/tatsuki-washimi/gwexpy/releases) で確認してください。
 conda-forge フィードストックも利用可能ですが、conda-forge パッケージは
-最新の PyPI リリースより遅れる場合があります。
-最新バージョンが必要な場合は PyPI からインストールしてください。
+PyPI のリリースより遅れる場合があります。必要なバージョンは PyPI から
+インストールしてください。
 希望のバージョンが conda-forge チャンネルで利用可能になり次第、
 `conda install -c conda-forge gwexpy` でもインストールできます。
 :::

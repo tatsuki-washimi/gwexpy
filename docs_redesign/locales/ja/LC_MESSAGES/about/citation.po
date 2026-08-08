@@ -26,8 +26,10 @@ msgstr "引用方法 (Citation)"
 
 #: ../gwexpy-pr487-docs-update/docs_redesign/about/citation.md:3
 #: 1879b93897604a839b5718493b1c4e47
-msgid "If you use GWexpy in your research or publications, please cite it as follows."
-msgstr "GWexpy を研究や論文等で使用した場合は、以下の形式で引用していただけると幸いです。"
+msgid ""
+"If you use GWexpy in your research or publications, please cite the exact version "
+"you used as follows."
+msgstr "GWexpy を研究や論文等で使用した場合は、実際に使用した正確な版を以下の形式で引用してください。"
 
 #: ../gwexpy-pr487-docs-update/docs_redesign/about/citation.md:5
 #: 6bd70f922e9b453994a26b9956c5598b
@@ -37,18 +39,16 @@ msgstr "論文での引用 (BibTeX)"
 #: ../gwexpy-pr487-docs-update/docs_redesign/about/citation.md:7
 #: 7a5f8a88c07648dca19fe2484a661f6c
 msgid ""
-"For reproducibility of analysis results and continued maintenance of the software, "
-"please use the following BibTeX entry."
-msgstr "解析結果の再現性とソフトウェアの継続的なメンテナンスのために、以下の BibTeX エントリを使用してください。"
+"For reproducibility, cite the exact version you used. Replace `<version used>` "
+"with that version and use the official title below."
+msgstr "再現性のため、実際に使用した正確な版を引用してください。`<version used>` をその版に置き換え、以下の正式タイトルを使用します。"
 
 #: ../gwexpy-pr487-docs-update/docs_redesign/about/citation.md:19
 #: 1a60ff589da041c6816236cfdd494432
 msgid ""
-"The `version` field above is pinned to the release current at the time this page was "
-"written; check the [Changelog](changelog.md) for the version you actually used."
-msgstr ""
-"上記 BibTeX の `version` フィールドは、このページを書いた時点の最新リリースに固定されています。実際に使用したバージョンは "
-"[Changelog](changelog.md) で確認してください。"
+"Find released versions on the [release page](https://github.com/tatsuki-washimi/gwexpy/releases) "
+"or in the [Changelog](changelog.md)."
+msgstr "公開済みの版は[リリースページ](https://github.com/tatsuki-washimi/gwexpy/releases)または[更新履歴](changelog.md)で確認してください。"
 
 #: ../gwexpy-pr487-docs-update/docs_redesign/about/citation.md:21
 #: 9935c536647d48c4b30621f4fbc2f05f
@@ -58,12 +58,12 @@ msgstr "CITATION.cff"
 #: ../gwexpy-pr487-docs-update/docs_redesign/about/citation.md:23
 #: b6a85fa638e948e4abe7e0dd74a6039c
 msgid ""
-"You can also retrieve citation information directly from GitHub using the "
-"[**CITATION.cff**](https://github.com/tatsuki-washimi/gwexpy/blob/main/CITATION.cff) "
-"file located in the root directory of the repository."
+"For a reproducible citation, use the `CITATION.cff` file from the exact release "
+"tag you used (for example, `https://github.com/tatsuki-washimi/gwexpy/blob/<exact "
+"tag>/CITATION.cff`), rather than the mutable `main` branch."
 msgstr ""
-"リポジトリのルートディレクトリにある [**CITATION.cff**](https://github.com/tatsuki-"
-"washimi/gwexpy/blob/main/CITATION.cff) ファイルを使用して、GitHub 上で直接引用情報を取得することもできます。"
+"再現可能な引用には、可変な `main` ブランチではなく、使用した正確なリリースタグの `CITATION.cff` を使用してください（例: "
+"`https://github.com/tatsuki-washimi/gwexpy/blob/<exact tag>/CITATION.cff`）。"
 
 #: ../gwexpy-pr487-docs-update/docs_redesign/about/citation.md:27
 #: 9619245efd7548b99bb951d4eecedc05
@@ -102,4 +102,3 @@ msgstr ""
 
 #~ msgid "**Astropy**: `Astropy Collaboration et al., ...`"
 #~ msgstr "**Astropy**: `Astropy Collaboration et al., ...`"
-

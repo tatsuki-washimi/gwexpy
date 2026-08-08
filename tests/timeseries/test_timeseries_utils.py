@@ -1,4 +1,5 @@
 """Tests for gwexpy/timeseries/utils.py"""
+
 from __future__ import annotations
 
 from types import SimpleNamespace
@@ -20,6 +21,7 @@ from gwexpy.timeseries.utils import (
 # ---------------------------------------------------------------------------
 # _coerce_t0_gps
 # ---------------------------------------------------------------------------
+
 
 def test_coerce_t0_gps_none():
     assert _coerce_t0_gps(None) is None
@@ -65,6 +67,7 @@ def test_coerce_t0_gps_invalid_raises():
 # ---------------------------------------------------------------------------
 # _extract_axis_info
 # ---------------------------------------------------------------------------
+
 
 def _fake_ts(times, dt=None, t0=None):
     """Build a minimal TimeSeries-like namespace."""
@@ -147,6 +150,7 @@ def test_extract_axis_info_t0_none_makes_irregular():
 # ---------------------------------------------------------------------------
 # _validate_common_axis
 # ---------------------------------------------------------------------------
+
 
 def _make_axis_info(n, dt=0.1 * u.s, t0=0.0 * u.s):
     times = np.arange(n) * dt
@@ -251,6 +255,7 @@ def test_validate_common_axis_irregular_no_unit_mismatch_raises():
 # _extract_freq_axis_info
 # ---------------------------------------------------------------------------
 
+
 def _fake_fs(freqs, df=None, f0=None):
     ns = SimpleNamespace(frequencies=freqs)
     if df is not None:
@@ -320,6 +325,7 @@ def test_extract_freq_axis_info_f0_none_makes_irregular():
 # ---------------------------------------------------------------------------
 # _validate_common_frequency_axis
 # ---------------------------------------------------------------------------
+
 
 def _make_freq_info(n, df=1.0 * u.Hz, f0=0.0 * u.Hz):
     freqs = np.arange(n) * 1.0 * u.Hz
@@ -411,6 +417,7 @@ def test_validate_common_frequency_axis_irregular_no_unit_mismatch_raises():
 # ---------------------------------------------------------------------------
 # _validate_common_epoch
 # ---------------------------------------------------------------------------
+
 
 def test_validate_common_epoch_empty():
     assert _validate_common_epoch([], "test") is None

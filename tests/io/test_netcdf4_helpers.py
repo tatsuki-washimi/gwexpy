@@ -73,7 +73,9 @@ class TestEncodeNetcdfVarName:
             _encode_netcdf_var_name(k)
             for k in [(0, 1), (1, 0), ("a", "b"), ("a__b", "c"), ("a", "b__c")]
         }
-        assert len(names) == 5, "Two distinct tuple keys produced the same variable name"
+        assert len(names) == 5, (
+            "Two distinct tuple keys produced the same variable name"
+        )
 
     def test_ambiguous_tuple_keys_do_not_collide(self):
         name1 = _encode_netcdf_var_name(("a", "b__c"))

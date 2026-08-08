@@ -77,6 +77,15 @@ def _parse_fft_positional_args(
     return args[0], (args[1] if len(args) == 2 else None)
 
 
+def _coerce_reader_result(cls, reader_result):
+    """Wrap a collection reader result while retaining collection provenance."""
+    result = cls(reader_result)
+    provenance = getattr(reader_result, "_gwexpy_io", None)
+    if isinstance(provenance, dict):
+        result._gwexpy_io = {**provenance}
+    return result
+
+
 class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesDict):
     """A dictionary of TimeSeries, indexed by name.
 
@@ -130,6 +139,22 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
     def read(cls, source, *args: Any, **kwargs: Any):  # type: ignore[override]
         """Read a `TimeSeriesDict` from a supported source."""
         fmt = kwargs.get("format")
+        if fmt in {"nc", "netcdf4"}:
+            from gwexpy.timeseries.io.netcdf4_ import read_timeseriesdict_netcdf4
+
+            reader_kwargs = dict(kwargs)
+            reader_kwargs.pop("format", None)
+            return _coerce_reader_result(
+                cls, read_timeseriesdict_netcdf4(source, **reader_kwargs)
+            )
+        if fmt == "zarr":
+            from gwexpy.timeseries.io.zarr_ import read_timeseriesdict_zarr
+
+            reader_kwargs = dict(kwargs)
+            reader_kwargs.pop("format", None)
+            return _coerce_reader_result(
+                cls, read_timeseriesdict_zarr(source, *args, **reader_kwargs)
+            )
         gwf_format = _resolve_gwf_format(source, fmt)
         try:
             p = Path(source)
@@ -151,8 +176,14 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             "dttxml",
         }:
             direct_readers = {
-                "mseed": ("gwexpy.timeseries.io.seismic", "read_miniseed_timeseriesdict"),
-                "miniseed": ("gwexpy.timeseries.io.seismic", "read_miniseed_timeseriesdict"),
+                "mseed": (
+                    "gwexpy.timeseries.io.seismic",
+                    "read_miniseed_timeseriesdict",
+                ),
+                "miniseed": (
+                    "gwexpy.timeseries.io.seismic",
+                    "read_miniseed_timeseriesdict",
+                ),
                 "sac": ("gwexpy.timeseries.io.seismic", "read_sac_timeseriesdict"),
                 "gse2": ("gwexpy.timeseries.io.seismic", "read_gse2_timeseriesdict"),
                 "knet": ("gwexpy.timeseries.io.seismic", "read_knet_timeseriesdict"),
@@ -162,7 +193,10 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 "ats.mth5": ("gwexpy.timeseries.io.ats", "read_timeseriesdict_ats"),
                 "gbd": ("gwexpy.timeseries.io.gbd", "read_timeseriesdict_gbd"),
                 "tdms": ("gwexpy.timeseries.io.tdms", "read_timeseriesdict_tdms"),
-                "xml.diaggui": ("gwexpy.timeseries.io.dttxml", "read_timeseriesdict_dttxml"),
+                "xml.diaggui": (
+                    "gwexpy.timeseries.io.dttxml",
+                    "read_timeseriesdict_dttxml",
+                ),
                 "dttxml": ("gwexpy.timeseries.io.dttxml", "read_timeseriesdict_dttxml"),
             }
             module_name, func_name = direct_readers[fmt]
@@ -170,7 +204,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             reader = getattr(module, func_name)
             reader_kwargs = dict(kwargs)
             reader_kwargs.pop("format", None)
-            return cls(reader(source, *args, **reader_kwargs))
+            return _coerce_reader_result(cls, reader(source, *args, **reader_kwargs))
         if gwf_format is not None:
             from gwpy.io.gwf.core import get_channel_names
 
@@ -202,19 +236,19 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             except TypeError as exc:
                 # Keep existing ValueError contract for malformed user inputs.
                 raise ValueError(f"Invalid input for GWF read: {exc}") from exc
-        if p is not None and (
-            fmt == "zarr" or (fmt is None and str(p).lower().endswith(".zarr"))
-        ):
+        if p is not None and fmt is None and str(p).lower().endswith(".zarr"):
             from gwexpy.timeseries.io.zarr_ import read_timeseriesdict_zarr
 
-            return cls(
+            return _coerce_reader_result(
+                cls,
                 read_timeseriesdict_zarr(
                     p, **{k: v for k, v in kwargs.items() if k != "format"}
-                )
+                ),
             )
         if p is not None and p.is_dir() and (fmt in (None, "csv", "txt")):
             from gwexpy.io.collection_dir import read_collection_dir
             from gwexpy.io.utils import apply_unit
+
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
             _, items = read_collection_dir(
@@ -600,7 +634,9 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         if isinstance(other, BaseTimeSeries):
             from gwexpy.interop._registry import ConverterRegistry
 
-            FrequencySeriesDict = ConverterRegistry.get_constructor("FrequencySeriesDict")
+            FrequencySeriesDict = ConverterRegistry.get_constructor(
+                "FrequencySeriesDict"
+            )
             new_dict = FrequencySeriesDict()
             for key, ts in self.items():
                 new_dict[key] = ts.csd(
@@ -657,7 +693,9 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         if isinstance(other, BaseTimeSeries):
             from gwexpy.interop._registry import ConverterRegistry
 
-            FrequencySeriesDict = ConverterRegistry.get_constructor("FrequencySeriesDict")
+            FrequencySeriesDict = ConverterRegistry.get_constructor(
+                "FrequencySeriesDict"
+            )
             new_dict = FrequencySeriesDict()
             for key, ts in self.items():
                 new_dict[key] = ts.coherence(
@@ -976,6 +1014,9 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         new_dict = self.__class__()
         for key, ts in self.items():
             new_dict[key] = ts.crop(start=start, end=end, copy=copy)
+        provenance = getattr(self, "_gwexpy_io", None)
+        if isinstance(provenance, dict):
+            new_dict._gwexpy_io = {**provenance}
         return new_dict
 
     def append(self, other, copy=True, **kwargs) -> TimeSeriesDict:
@@ -1349,7 +1390,9 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         if isinstance(other, BaseTimeSeries):
             from gwexpy.interop._registry import ConverterRegistry
 
-            FrequencySeriesList = ConverterRegistry.get_constructor("FrequencySeriesList")
+            FrequencySeriesList = ConverterRegistry.get_constructor(
+                "FrequencySeriesList"
+            )
             new_list = FrequencySeriesList()
             for ts in self:
                 list.append(
@@ -1413,7 +1456,9 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         if isinstance(other, BaseTimeSeries):
             from gwexpy.interop._registry import ConverterRegistry
 
-            FrequencySeriesList = ConverterRegistry.get_constructor("FrequencySeriesList")
+            FrequencySeriesList = ConverterRegistry.get_constructor(
+                "FrequencySeriesList"
+            )
             new_list = FrequencySeriesList()
             for ts in self:
                 list.append(
@@ -1874,6 +1919,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         if p is not None and p.is_dir() and (fmt in (None, "csv", "txt")):
             from gwexpy.io.collection_dir import read_collection_dir
             from gwexpy.io.utils import apply_unit
+
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
             _, items = read_collection_dir(

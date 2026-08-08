@@ -293,6 +293,7 @@ class TestUnitHandling:
 # _all_element_units_equivalent — edge cases
 # ---------------------------------------------------------------------------
 
+
 class TestAllElementUnitsEquivalent:
     def test_empty_meta_returns_true_none(self):
         # 0x0 matrix has size==0 units
@@ -305,20 +306,28 @@ class TestAllElementUnitsEquivalent:
     def test_none_first_unit_treated_as_dimensionless(self):
         data = np.ones((2, 2, 5))
         meta_arr = np.array(
-            [[MetaData(unit=None), MetaData(unit=None)],
-             [MetaData(unit=None), MetaData(unit=None)]]
+            [
+                [MetaData(unit=None), MetaData(unit=None)],
+                [MetaData(unit=None), MetaData(unit=None)],
+            ]
         )
-        mat = SeriesMatrix(data, xindex=np.linspace(0, 4, 5), meta=MetaDataMatrix(meta_arr))
+        mat = SeriesMatrix(
+            data, xindex=np.linspace(0, 4, 5), meta=MetaDataMatrix(meta_arr)
+        )
         ok, unit = mat._all_element_units_equivalent()
         assert ok is True
 
     def test_incompatible_units_returns_false(self):
         data = np.ones((2, 2, 5))
         meta_arr = np.array(
-            [[MetaData(unit=u.m), MetaData(unit=u.s)],
-             [MetaData(unit=u.m), MetaData(unit=u.m)]]
+            [
+                [MetaData(unit=u.m), MetaData(unit=u.s)],
+                [MetaData(unit=u.m), MetaData(unit=u.m)],
+            ]
         )
-        mat = SeriesMatrix(data, xindex=np.linspace(0, 4, 5), meta=MetaDataMatrix(meta_arr))
+        mat = SeriesMatrix(
+            data, xindex=np.linspace(0, 4, 5), meta=MetaDataMatrix(meta_arr)
+        )
         ok, unit = mat._all_element_units_equivalent()
         assert ok is False
         assert unit is None
@@ -328,14 +337,15 @@ class TestAllElementUnitsEquivalent:
 # _to_common_unit_values — unit conversion path
 # ---------------------------------------------------------------------------
 
+
 class TestToCommonUnitValues:
     def test_mixed_units_converts(self):
         # 1 km -> 1000 m conversion
         data = np.ones((1, 2, 3))
-        meta_arr = np.array(
-            [[MetaData(unit=u.m), MetaData(unit=u.km)]]
+        meta_arr = np.array([[MetaData(unit=u.m), MetaData(unit=u.km)]])
+        mat = SeriesMatrix(
+            data, xindex=np.linspace(0, 2, 3), meta=MetaDataMatrix(meta_arr)
         )
-        mat = SeriesMatrix(data, xindex=np.linspace(0, 2, 3), meta=MetaDataMatrix(meta_arr))
         out = mat._to_common_unit_values(u.m)
         # [0,0] stays 1.0 m, [0,1] becomes 1000.0 m
         np.testing.assert_allclose(out[0, 0], 1.0)
@@ -344,17 +354,23 @@ class TestToCommonUnitValues:
     def test_same_units_fast_path(self):
         data = np.ones((2, 2, 5)) * 3.0
         meta_arr = np.array(
-            [[MetaData(unit=u.m), MetaData(unit=u.m)],
-             [MetaData(unit=u.m), MetaData(unit=u.m)]]
+            [
+                [MetaData(unit=u.m), MetaData(unit=u.m)],
+                [MetaData(unit=u.m), MetaData(unit=u.m)],
+            ]
         )
-        mat = SeriesMatrix(data, xindex=np.linspace(0, 4, 5), meta=MetaDataMatrix(meta_arr))
+        mat = SeriesMatrix(
+            data, xindex=np.linspace(0, 4, 5), meta=MetaDataMatrix(meta_arr)
+        )
         out = mat._to_common_unit_values(u.m)
         np.testing.assert_array_equal(out, data)
 
     def test_none_unit_treated_as_dimensionless(self):
         data = np.ones((1, 1, 3))
         meta_arr = np.array([[MetaData(unit=None)]])
-        mat = SeriesMatrix(data, xindex=np.linspace(0, 2, 3), meta=MetaDataMatrix(meta_arr))
+        mat = SeriesMatrix(
+            data, xindex=np.linspace(0, 2, 3), meta=MetaDataMatrix(meta_arr)
+        )
         out = mat._to_common_unit_values(u.dimensionless_unscaled)
         np.testing.assert_array_equal(out, data)
 
@@ -363,11 +379,13 @@ class TestToCommonUnitValues:
 # _invert_with_rescale — singular path
 # ---------------------------------------------------------------------------
 
+
 class TestInvertWithRescale:
     def test_singular_raises_after_rescale_attempt(self):
         # All-zero matrix is singular even after rescaling
         mat_zero = np.zeros((3, 3, 1))
         from gwexpy.types.series_matrix_math import SeriesMatrixMathMixin
+
         with pytest.raises(np.linalg.LinAlgError):
             SeriesMatrixMathMixin._invert_with_rescale(mat_zero[:, :, 0])
 
@@ -375,6 +393,7 @@ class TestInvertWithRescale:
 # ---------------------------------------------------------------------------
 # trace — offset / out / dtype arguments
 # ---------------------------------------------------------------------------
+
 
 class TestTraceEdgeCases:
     def test_trace_offset_nonzero_raises(self, square_matrix_2x2):
@@ -399,6 +418,7 @@ class TestTraceEdgeCases:
 # diagonal — offset / kwargs
 # ---------------------------------------------------------------------------
 
+
 class TestDiagonalEdgeCases:
     def test_diagonal_offset_nonzero_raises(self, square_matrix_2x2):
         with pytest.raises(NotImplementedError):
@@ -418,6 +438,7 @@ class TestDiagonalEdgeCases:
 # matmul — non-SeriesMatrix path
 # ---------------------------------------------------------------------------
 
+
 class TestMatMulNonSeriesMatrix:
     def test_matmul_with_non_seriesmatrix_calls_numpy(self):
         # Confirm that __matmul__ with a non-SeriesMatrix object attempts np.matmul
@@ -436,10 +457,15 @@ class TestMatMulNonSeriesMatrix:
 # abs / angle
 # ---------------------------------------------------------------------------
 
+
 class TestAbsAngle:
     def test_abs_returns_matrix(self):
-        data = np.array([[[-1.0, 2.0, -3.0], [4.0, -5.0, 6.0]],
-                          [[-2.0, 3.0, -4.0], [1.0, -1.0, 1.0]]])
+        data = np.array(
+            [
+                [[-1.0, 2.0, -3.0], [4.0, -5.0, 6.0]],
+                [[-2.0, 3.0, -4.0], [1.0, -1.0, 1.0]],
+            ]
+        )
         mat = SeriesMatrix(data, xindex=np.linspace(0, 2, 3))
         result = mat.abs()
         assert np.all(result._value >= 0)
@@ -473,6 +499,7 @@ class TestAbsAngle:
 # ---------------------------------------------------------------------------
 # schur
 # ---------------------------------------------------------------------------
+
 
 class TestSchur:
     def _make_4x4(self):
@@ -513,7 +540,9 @@ class TestSchur:
         for i in range(4):
             for j in range(4):
                 meta_arr[i, j] = MetaData(unit=u.m if j < 2 else u.s)
-        mat = SeriesMatrix(d, xindex=np.linspace(0, 4, 5), meta=MetaDataMatrix(meta_arr))
+        mat = SeriesMatrix(
+            d, xindex=np.linspace(0, 4, 5), meta=MetaDataMatrix(meta_arr)
+        )
         with pytest.raises(u.UnitConversionError):
             mat.schur([0, 1])
 

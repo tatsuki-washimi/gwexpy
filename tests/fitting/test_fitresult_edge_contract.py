@@ -5,6 +5,7 @@ robustness sweep grouped under issue #458 (plus the G9 supplement finding).
 Each guard converts an opaque NumPy/emcee crash or a silent-NaN fit into a
 clear, actionable error.
 """
+
 from unittest.mock import MagicMock
 
 import numpy as np

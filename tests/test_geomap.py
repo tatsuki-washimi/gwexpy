@@ -7,8 +7,8 @@ def _require_pygmt_runtime():
     try:
         import pygmt
         from pygmt.exceptions import GMTCLibError
-    except ImportError:
-        pytest.skip("pygmt not available")
+    except Exception as exc:
+        pytest.skip(f"PyGMT runtime not available ({exc})")
     try:
         pygmt.Figure()
     except GMTCLibError as exc:

@@ -8,6 +8,7 @@ import qtpy.QtCore as QtCore
 
 if TYPE_CHECKING:
     from typing import Any
+
     QObject: Any = object
     QTimer: Any = object
     Signal: Any = object

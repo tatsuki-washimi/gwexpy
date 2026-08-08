@@ -1,7 +1,14 @@
-gwexpy.interop.meshio\_
+﻿gwexpy.interop.meshio\_
 =======================
 
 .. automodule:: gwexpy.interop.meshio_
-   :members:
-   :undoc-members:
-   :show-inheritance:
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      from_fenics_vtk
+      from_fenics_xdmf
+      from_meshio
+   

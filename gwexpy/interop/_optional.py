@@ -180,7 +180,7 @@ def require_optional(name: str) -> Any:
         if extra:
             install_cmd = f"pip install 'gwexpy[{extra}]'"
             if extra in _EXTRAS_INCLUDED_IN_ALL:
-                also_all = ' or \'pip install "gwexpy[all]"\''
+                also_all = " or 'pip install \"gwexpy[all]\"'"
             else:
                 also_all = ""
         else:

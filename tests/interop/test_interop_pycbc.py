@@ -3,6 +3,7 @@
 These tests inject mock pycbc modules into ``sys.modules`` so they run
 without requiring PyCBC to be installed.
 """
+
 from __future__ import annotations
 
 import sys
@@ -33,11 +34,19 @@ def pycbc_modules_mock():
 
     class FakePyCBCTimeSeries:
         def __init__(self, data, delta_t, epoch):
-            captured["ts"] = {"data": np.asarray(data), "delta_t": delta_t, "epoch": epoch}
+            captured["ts"] = {
+                "data": np.asarray(data),
+                "delta_t": delta_t,
+                "epoch": epoch,
+            }
 
     class FakePyCBCFrequencySeries:
         def __init__(self, data, delta_f, epoch):
-            captured["fs"] = {"data": np.asarray(data), "delta_f": delta_f, "epoch": epoch}
+            captured["fs"] = {
+                "data": np.asarray(data),
+                "delta_f": delta_f,
+                "epoch": epoch,
+            }
 
     pycbc_types_mock = MagicMock()
     pycbc_types_mock.TimeSeries = FakePyCBCTimeSeries

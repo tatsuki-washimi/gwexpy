@@ -70,7 +70,9 @@ def _validate_page(
         errors.append(f"missing meta tags: {missing}")
 
     if meta.get("og:image") != expected_image:
-        errors.append(f'og:image expected "{expected_image}", got "{meta.get("og:image")}"')
+        errors.append(
+            f'og:image expected "{expected_image}", got "{meta.get("og:image")}"'
+        )
     if meta.get("twitter:image") != expected_image:
         errors.append(
             f'twitter:image expected "{expected_image}", got "{meta.get("twitter:image")}"'
@@ -92,7 +94,9 @@ def _validate_page(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate rendered OGP/Twitter metadata.")
+    parser = argparse.ArgumentParser(
+        description="Validate rendered OGP/Twitter metadata."
+    )
     parser.add_argument("pages", nargs="+", help="Built HTML page paths to validate")
     args = parser.parse_args()
 

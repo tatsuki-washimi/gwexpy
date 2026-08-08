@@ -1,4 +1,5 @@
 """Tests for gwexpy/interop/_optional.py — require_optional."""
+
 from __future__ import annotations
 
 import pytest

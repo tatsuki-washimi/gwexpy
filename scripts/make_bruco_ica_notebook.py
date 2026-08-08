@@ -5,7 +5,13 @@ from pathlib import Path
 
 
 def code(src):
-    return {"cell_type": "code", "metadata": {}, "source": src, "outputs": [], "execution_count": None}
+    return {
+        "cell_type": "code",
+        "metadata": {},
+        "source": src,
+        "outputs": [],
+        "execution_count": None,
+    }
 
 
 def md(src):
@@ -33,9 +39,7 @@ This reproduces the workflow used in O4b commissioning (e.g., DARM 116 Hz line i
 > - [Bruco tutorial](advanced_bruco.ipynb) — Bruco basics
 > - [PCA/ICA tutorial](advanced_decomposition.ipynb) — decomposition basics
 """),
-
     md("## Setup"),
-
     code("""\
 # ruff: noqa: I001
 import matplotlib.pyplot as plt
@@ -45,7 +49,6 @@ from astropy import units as u
 from gwexpy.analysis import Bruco
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 """),
-
     md("""\
 ## 1. Mock Data Generation
 
@@ -56,7 +59,6 @@ We simulate a scenario where the DARM channel contains:
 Four PEM (Physical Environment Monitor) auxiliary channels each contain varying amounts
 of the same 116 Hz line.  This mirrors the real O4b commissioning case.
 """),
-
     code("""\
 rng = np.random.default_rng(42)
 
@@ -99,7 +101,6 @@ aux_dict = TimeSeriesDict({
 print(f"DARM   sample rate: {target.sample_rate}")
 print(f"Aux channels: {list(aux_dict.keys())}")
 """),
-
     code("""\
 # Visualize the line noise in the ASD before cleaning
 fig, ax = plt.subplots(figsize=(10, 4))
@@ -119,7 +120,6 @@ ax.legend(fontsize=7, ncol=2)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 2. Bruco: Identify Correlated Auxiliary Channels
 
@@ -127,7 +127,6 @@ plt.show()
 channels at each frequency.  This is the **first stage** of the pipeline:
 identify *which* sensors see the same noise as DARM.
 """),
-
     code("""\
 bruco = Bruco(target_channel=target.name, aux_channels=[])
 
@@ -142,7 +141,6 @@ result = bruco.compute(
 print("Bruco scan complete.")
 print(f"Result type: {type(result)}")
 """),
-
     code("""\
 # Show top channels near the 116 Hz line
 df = result.to_dataframe(ranks=[0])
@@ -156,7 +154,6 @@ df_line = (
 print("Top correlated channels near 116 Hz:")
 df_line
 """),
-
     code("""\
 # Coherence projection plot — shows which channels dominate at each frequency
 result.plot_projection(coherence_threshold=0.3)
@@ -165,7 +162,6 @@ plt.axvline(FREQ_LINE, color="red", ls="--", lw=1)
 plt.title("Bruco noise projection")
 plt.show()
 """),
-
     md("""\
 ## 3. ICA: Separate Noise Sources
 
@@ -179,7 +175,6 @@ X = S · A^T   (X: observed channels, S: independent sources)
 ```
 We can then subtract the noise-source contributions from DARM.
 """),
-
     code("""\
 # Pick the top-2 channels from Bruco result
 TOP_CHANNELS = df_line["channel"].dropna().unique()[:2].tolist()
@@ -194,7 +189,6 @@ tsm = TimeSeriesMatrix(
 )
 print(f"TimeSeriesMatrix shape: {tsm.shape}  (n_channels × 1 × n_samples)")
 """),
-
     code("""\
 # Run ICA
 n_components = len(channels)
@@ -223,7 +217,6 @@ plt.suptitle("ICA independent components — one should peak at 116 Hz")
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 4. Noise Subtraction and ASD Comparison
 
@@ -234,7 +227,6 @@ then subtract their contribution from DARM using the mixing matrix.
 DARM_clean = DARM - Σ_k  A[0, k] · S_k(t)     (summed over noise components k)
 ```
 """),
-
     code("""\
 # Identify the noise component: the one with the largest ASD at FREQ_LINE
 fftlength = 4.0
@@ -264,7 +256,6 @@ target_clean = TimeSeries(
     name="DARM_cleaned", t0=0,
 )
 """),
-
     code("""\
 # Compare original vs cleaned ASD
 asd_orig  = target.asd(fftlength=fftlength, overlap=overlap)
@@ -289,7 +280,6 @@ plt.show()
 
 print(f"Suppression factor at {FREQ_LINE} Hz: {ratio:.2f}×")
 """),
-
     md("""\
 ## Summary
 
@@ -321,7 +311,7 @@ JA_CELLS = [
     md("""\
 # Bruco + ICA エンドツーエンド ノイズ削減
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_bruco_ica_denoising.ipynb)
+[![Colab で開く](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_bruco_ica_denoising.ipynb)
 
 このノートブックでは、実際の干渉計コミッショニングで使われる **エンドツーエンドのノイズ削減ワークフロー** を示します：
 
@@ -335,9 +325,7 @@ JA_CELLS = [
 > - [Bruco チュートリアル](advanced_bruco.ipynb) — Bruco の基礎
 > - [PCA/ICA チュートリアル](advanced_decomposition.ipynb) — 分解手法の基礎
 """),
-
     md("## セットアップ"),
-
     code("""\
 # ruff: noqa: I001
 import matplotlib.pyplot as plt
@@ -347,7 +335,6 @@ from astropy import units as u
 from gwexpy.analysis import Bruco
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 """),
-
     md("""\
 ## 1. モックデータの生成
 
@@ -358,7 +345,6 @@ DARM チャンネルに以下が混入するシナリオをシミュレートし
 4 つの PEM（Physical Environment Monitor）補助チャンネルは、それぞれ異なる割合で同じ 116 Hz ラインを含みます。
 これは O4b コミッショニングの実際のケースを模倣しています。
 """),
-
     code("""\
 rng = np.random.default_rng(42)
 
@@ -401,7 +387,6 @@ aux_dict = TimeSeriesDict({
 print(f"DARM   サンプルレート: {target.sample_rate}")
 print(f"補助チャンネル: {list(aux_dict.keys())}")
 """),
-
     code("""\
 # クリーニング前の ASD で 116 Hz ラインを可視化
 fig, ax = plt.subplots(figsize=(10, 4))
@@ -421,14 +406,12 @@ ax.legend(fontsize=7, ncol=2)
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 2. Bruco: 相関補助チャンネルの特定
 
 `Bruco.compute()` は全補助チャンネルをスキャンし、各周波数ビンで上位 *N* 件の最相関チャンネルを返します。
 これがパイプラインの **第 1 ステージ** です：DARM と同じノイズを観測しているセンサーを特定します。
 """),
-
     code("""\
 bruco = Bruco(target_channel=target.name, aux_channels=[])
 
@@ -443,7 +426,6 @@ result = bruco.compute(
 print("Bruco スキャン完了")
 print(f"結果タイプ: {type(result)}")
 """),
-
     code("""\
 # 116 Hz ライン付近の上位チャンネルを表示
 df = result.to_dataframe(ranks=[0])
@@ -457,7 +439,6 @@ df_line = (
 print("116 Hz 付近の最相関チャンネル:")
 df_line
 """),
-
     code("""\
 # コヒーレンス投影プロット
 result.plot_projection(coherence_threshold=0.3)
@@ -466,7 +447,6 @@ plt.axvline(FREQ_LINE, color="red", ls="--", lw=1)
 plt.title("Bruco ノイズ投影")
 plt.show()
 """),
-
     md("""\
 ## 3. ICA: ノイズ源の分離
 
@@ -480,7 +460,6 @@ X = S · A^T   （X: 観測チャンネル、S: 独立成分）
 ```
 この行列を使って DARM からノイズ成分の寄与を差し引けます。
 """),
-
     code("""\
 # Bruco 結果から上位 2 チャンネルを選択
 TOP_CHANNELS = df_line["channel"].dropna().unique()[:2].tolist()
@@ -495,7 +474,6 @@ tsm = TimeSeriesMatrix(
 )
 print(f"TimeSeriesMatrix の shape: {tsm.shape}  (チャンネル数 × 1 × サンプル数)")
 """),
-
     code("""\
 # ICA の実行
 n_components = len(channels)
@@ -524,7 +502,6 @@ plt.suptitle("ICA 独立成分 — 1 つが 116 Hz にピークを持つはず")
 plt.tight_layout()
 plt.show()
 """),
-
     md("""\
 ## 4. ノイズ差し引きと ASD 比較
 
@@ -535,7 +512,6 @@ plt.show()
 DARM_clean = DARM - Σ_k  A[0, k] · S_k(t)     （ノイズ成分 k の和）
 ```
 """),
-
     code("""\
 # ノイズ成分の特定：FREQ_LINE で ASD が最大の成分を選ぶ
 fftlength = 4.0
@@ -564,7 +540,6 @@ target_clean = TimeSeries(
     name="DARM_cleaned", t0=0,
 )
 """),
-
     code("""\
 # 元の DARM とクリーン DARM の ASD を比較
 asd_orig  = target.asd(fftlength=fftlength, overlap=overlap)
@@ -589,7 +564,6 @@ plt.show()
 
 print(f"{FREQ_LINE} Hz での抑制率: {ratio:.2f} 倍")
 """),
-
     md("""\
 ## まとめ
 
@@ -619,7 +593,11 @@ def make_nb(cells):
         "nbformat": 4,
         "nbformat_minor": 2,
         "metadata": {
-            "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+            "kernelspec": {
+                "display_name": "Python 3",
+                "language": "python",
+                "name": "python3",
+            },
             "language_info": {"name": "python", "version": "3.9.0"},
         },
         "cells": cells,

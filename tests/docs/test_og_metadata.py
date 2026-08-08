@@ -37,8 +37,8 @@ def test_html_page_context_adds_page_level_og_fields(monkeypatch):
         "title": "Verification and Quality Signals",
         "metatags": (
             '<meta content="Understand what GWexpy validates publicly for '
-            'notebooks, direct I/O formats, algorithm audit notes, and '
-            'repository coverage signals, and where each evidence source '
+            "notebooks, direct I/O formats, algorithm audit notes, and "
+            "repository coverage signals, and where each evidence source "
             'lives." name="description" />'
         ),
     }
@@ -51,7 +51,9 @@ def test_html_page_context_adds_page_level_og_fields(monkeypatch):
         doctree=None,
     )
 
-    assert context["og_title"] == "Verification and Quality Signals — GWexpy Documentation"
+    assert (
+        context["og_title"] == "Verification and Quality Signals — GWexpy Documentation"
+    )
     assert (
         context["og_description"]
         == "Understand what GWexpy validates publicly for notebooks, direct I/O "
@@ -93,7 +95,10 @@ def test_html_page_context_sets_ja_language_and_description_fallback(monkeypatch
     assert context["language"] == "ja"
     assert context["og_title"] == "GWexpy Documentation"
     assert context["og_description"] == conf.html_context["og_description"]
-    assert context["og_url"] == "https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/index.html"
+    assert (
+        context["og_url"]
+        == "https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/index.html"
+    )
     assert context["og_image"] == APPROVED_OG_IMAGE
 
 

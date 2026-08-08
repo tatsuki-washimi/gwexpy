@@ -11,6 +11,17 @@ from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesList
 pytestmark = pytest.mark.root
 
 
+def test_root_histogram_dtype_mapping_is_explicit():
+    from gwexpy.interop.root_ import _root_histogram_dtype
+
+    assert _root_histogram_dtype("TH1C") == np.dtype("int8")
+    assert _root_histogram_dtype("TH2S") == np.dtype("int16")
+    assert _root_histogram_dtype("TH1I") == np.dtype("int32")
+    assert _root_histogram_dtype("TH3L") == np.dtype("int64")
+    assert _root_histogram_dtype("TH1F") == np.dtype("float32")
+    assert _root_histogram_dtype("TH2D") == np.dtype("float64")
+
+
 def get_root():
     try:
         import ROOT

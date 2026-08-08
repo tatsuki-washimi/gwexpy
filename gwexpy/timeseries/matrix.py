@@ -172,6 +172,11 @@ class TimeSeriesMatrix(  # type: ignore[misc]
                 raise ValueError(f"No data found in {gwf_format} source: {source}")
             return tsd.to_matrix()
 
+        if normalized_format in {"nc", "netcdf4"}:
+            from .io.netcdf4_ import read_timeseriesmatrix_netcdf4
+
+            return read_timeseriesmatrix_netcdf4(source, **read_kwargs)
+
         if (
             normalized_format is None
             and not read_args
@@ -330,6 +335,14 @@ class TimeSeriesMatrix(  # type: ignore[misc]
                         kwargs["names"] = cn
 
         obj = super().__new__(cls, data, **kwargs)
+        # A generated Index takes a difference of large GPS timestamps and can
+        # lose bits of a valid input dt. Keep the caller's regular-axis values
+        # authoritative, including before xindex has been materialized.
+        if times is None and dt is not None:
+            axis_unit = u.Unit(kwargs["xunit"])
+            obj._dx = u.Quantity(dt, axis_unit)
+            if t0 is not None:
+                obj._x0 = u.Quantity(kwargs["x0"], axis_unit)
 
         return cast("TimeSeriesMatrix", obj)
 

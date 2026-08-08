@@ -12,6 +12,7 @@ constants
 scaling
     :class:`AutoScaler` context manager for safe internal normalisation.
 """
+
 from __future__ import annotations
 
 from .constants import (

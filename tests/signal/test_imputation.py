@@ -1,4 +1,5 @@
 """Tests for gwexpy/signal/preprocessing/imputation.py."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -249,7 +250,9 @@ class TestImpute:
         # Use max_gap so that left_val/right_val=nan, making edge NaNs remain
         val = np.array([np.nan, 1.0, np.nan, 3.0, np.nan])
         times = np.array([0.0, 1.0, 2.0, 3.0, 4.0])
-        result = impute(val, method="interpolate", times=times, max_gap=0.5, fill_value=0.0)
+        result = impute(
+            val, method="interpolate", times=times, max_gap=0.5, fill_value=0.0
+        )
         # Edges should be filled with fill_value=0 (no valid neighbor within max_gap)
         assert result[0] == pytest.approx(0.0)
         assert result[4] == pytest.approx(0.0)
@@ -295,6 +298,7 @@ class TestImpute:
     def test_ffill_numpy_fallback(self, monkeypatch):
         # Lines 206-207 — pandas not available → _ffill_numpy fallback
         import sys
+
         monkeypatch.setitem(sys.modules, "pandas", None)
         val = np.array([1.0, np.nan, np.nan])
         result = impute(val, method="ffill")
@@ -303,6 +307,7 @@ class TestImpute:
     def test_bfill_numpy_fallback(self, monkeypatch):
         # Lines 215-216 — pandas not available → _bfill_numpy fallback
         import sys
+
         monkeypatch.setitem(sys.modules, "pandas", None)
         val = np.array([np.nan, np.nan, 3.0])
         result = impute(val, method="bfill")

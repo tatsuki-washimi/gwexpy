@@ -3,6 +3,7 @@
 Synthetic HDF5 files are created with h5py; the openEMS binaries/Python
 package are NOT required.
 """
+
 from __future__ import annotations
 
 from pathlib import Path

@@ -607,6 +607,6 @@ plt.show()
 ---
 
 **関連項目:**
-- [スペクトログラムチュートリアル](intro_spectrogram.ipynb)
-- [HHT チュートリアル](advanced_hht.ipynb)
+- [スペクトログラムチュートリアル](../../../en/user_guide/tutorials/intro_spectrogram.ipynb)
+- [HHT チュートリアル](../../../en/user_guide/tutorials/advanced_hht.ipynb)
 - Q変換 (GWpy)

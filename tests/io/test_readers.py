@@ -122,11 +122,7 @@ def test_gbd_reader_parses_minimal_file(tmp_path):
     assert len(ts) == data.shape[0]
     assert np.isclose(ts.dt.value, dt)
     expected_t0 = float(
-        to_gps(
-            datetime.strptime(start_str, "%Y/%m/%d %H:%M:%S").replace(
-                tzinfo=UTC
-            )
-        )
+        to_gps(datetime.strptime(start_str, "%Y/%m/%d %H:%M:%S").replace(tzinfo=UTC))
     )
     assert np.isclose(ts.t0.value, expected_t0)
     assert ts.unit.to_string() == "V"
@@ -142,12 +138,7 @@ def test_gbd_reader_applies_amp_range_scaling(tmp_path):
 
 
 def test_gbd_alarm_channels_are_dimensionless():
-    path = (
-        Path(__file__).resolve().parents[1]
-        / "fixtures"
-        / "data"
-        / "test.gbd"
-    )
+    path = Path(__file__).resolve().parents[1] / "fixtures" / "data" / "test.gbd"
     if not path.exists():
         pytest.skip("Sample data not available: tests/fixtures/data/test.gbd")
     tsd = TimeSeriesDict.read(path, format="gbd", timezone="UTC")

@@ -44,6 +44,7 @@ class TestPlotBootstrapFit:
     def test_basic_no_mcmc(self):
         """_plot_bootstrap_fit runs without errors when show_mcmc=False."""
         import matplotlib.pyplot as plt
+
         result = _make_fit_result()
         psd = _make_psd()
         with patch("matplotlib.pyplot.show"):  # suppress GUI
@@ -53,6 +54,7 @@ class TestPlotBootstrapFit:
     def test_with_mcmc_no_samples(self):
         """When show_mcmc=True but samples is None, uses single-plot layout."""
         import matplotlib.pyplot as plt
+
         result = _make_fit_result()
         result.samples = None  # explicitly no MCMC samples
         psd = _make_psd()
@@ -63,6 +65,7 @@ class TestPlotBootstrapFit:
     def test_psd_with_error_attrs(self):
         """Uses error_low/error_high if available on psd."""
         import matplotlib.pyplot as plt
+
         result = _make_fit_result()
         psd = _make_psd()
         # Attach asymmetric error attributes

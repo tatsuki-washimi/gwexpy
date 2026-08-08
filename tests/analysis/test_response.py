@@ -1,4 +1,5 @@
 """Tests for gwexpy/analysis/response.py."""
+
 from __future__ import annotations
 
 import matplotlib
@@ -80,6 +81,7 @@ class TestResponseFunctionResult:
 
     def test_plot_returns_ax(self):
         import matplotlib.pyplot as plt
+
         result = _make_result()
         ax = result.plot()
         assert ax is not None
@@ -87,6 +89,7 @@ class TestResponseFunctionResult:
 
     def test_plot_with_provided_ax(self):
         import matplotlib.pyplot as plt
+
         result = _make_result()
         fig, ax = plt.subplots()
         returned_ax = result.plot(ax=ax)
@@ -95,6 +98,7 @@ class TestResponseFunctionResult:
 
     def test_plot_single_step(self):
         import matplotlib.pyplot as plt
+
         result = _make_result(n_steps=1)
         ax = result.plot()
         assert ax is not None
@@ -104,6 +108,7 @@ class TestResponseFunctionResult:
 
     def test_plot_snapshot_by_step_index(self):
         import matplotlib.pyplot as plt
+
         result = _make_result()
         ax = result.plot_snapshot(step_index=0)
         assert ax is not None
@@ -111,6 +116,7 @@ class TestResponseFunctionResult:
 
     def test_plot_snapshot_by_freq(self):
         import matplotlib.pyplot as plt
+
         result = _make_result()
         ax = result.plot_snapshot(freq=10.0)
         assert ax is not None
@@ -123,6 +129,7 @@ class TestResponseFunctionResult:
 
     def test_plot_snapshot_with_ax(self):
         import matplotlib.pyplot as plt
+
         result = _make_result()
         fig, ax = plt.subplots()
         returned = result.plot_snapshot(step_index=1, ax=ax)
@@ -132,13 +139,16 @@ class TestResponseFunctionResult:
     def test_plot_snapshot_upper_limit_branch(self):
         """Test the 'No Excess' annotation branch (bkg > inj)."""
         import matplotlib.pyplot as plt
+
         n_freqs = 50
         sg_inj = _make_spectrogram(3, n_freqs)
         # Make bkg > inj to trigger the upper limit annotation
         sg_bkg_data = sg_inj.value * 10.0  # much bigger than inj
         freqs = np.linspace(1.0, 100.0, n_freqs)
         times = np.arange(3, dtype=float)
-        sg_bkg = Spectrogram(sg_bkg_data, times=times, frequencies=freqs, unit="1/Hz**0.5")
+        sg_bkg = Spectrogram(
+            sg_bkg_data, times=times, frequencies=freqs, unit="1/Hz**0.5"
+        )
         result = ResponseFunctionResult(
             spectrogram_inj=sg_inj,
             spectrogram_bkg=sg_bkg,
@@ -192,7 +202,9 @@ class TestDetectStepSegments:
     def test_returns_list_of_tuples(self):
         """Return type is list of (t_start, t_end, freq) tuples."""
         ts = _make_sine_timeseries(0.0, 30.0, 50.0, 256.0, 1.0)
-        segments = detect_step_segments(ts, fftlength=1.0, snr_threshold=2.0, min_duration=3.0)
+        segments = detect_step_segments(
+            ts, fftlength=1.0, snr_threshold=2.0, min_duration=3.0
+        )
         for seg in segments:
             assert len(seg) == 3
             t_start, t_end, freq = seg

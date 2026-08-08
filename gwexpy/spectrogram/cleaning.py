@@ -1,4 +1,5 @@
 """gwexpy.spectrogram.cleaning - Spectrogram cleaning algorithms."""
+
 from __future__ import annotations
 
 import numpy as np

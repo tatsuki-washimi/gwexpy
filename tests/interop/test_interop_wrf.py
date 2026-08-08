@@ -3,6 +3,7 @@
 Uses mock xarray DataArrays with WRF dimension names.
 Does NOT require wrf-python to be installed.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -19,7 +20,10 @@ NT, NZ, NY, NX = 2, 3, 5, 6
 
 
 def _make_wrf_da(
-    nt=NT, nz=NZ, ny=NY, nx=NX,
+    nt=NT,
+    nz=NZ,
+    ny=NY,
+    nx=NX,
 ) -> Any:
     """Simulate a wrf.getvar() output with WRF dimension names."""
     data = np.random.default_rng(7).random((nt, nz, ny, nx))

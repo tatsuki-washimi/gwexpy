@@ -9,12 +9,15 @@ from gwexpy.timeseries import TimeSeries
 FIXTURE_DATA = Path(__file__).parent.parent / "fixtures" / "data" / "test.gwf"
 CHANNEL = "K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ"
 
+
 def has_framel():
     try:
         import framel
+
         return True
     except (ImportError, RuntimeError):
         return False
+
 
 @pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
 @pytest.mark.skipif(not has_framel(), reason="framel backend not available")

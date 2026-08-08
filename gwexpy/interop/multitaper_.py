@@ -23,6 +23,7 @@ Seismological Research Letters.
 Krischer, L. et al. — https://github.com/krischer/mtspec
 
 """
+
 from __future__ import annotations
 
 from typing import Any, Literal
@@ -234,8 +235,16 @@ def from_mtspec_array(
     if not has_ci or not want_dict:
         return fs_main
 
-    ci_lo_arr = np.asarray(ci_lower, dtype=np.float64).ravel() if ci_lower is not None else spec_arr
-    ci_hi_arr = np.asarray(ci_upper, dtype=np.float64).ravel() if ci_upper is not None else spec_arr
+    ci_lo_arr = (
+        np.asarray(ci_lower, dtype=np.float64).ravel()
+        if ci_lower is not None
+        else spec_arr
+    )
+    ci_hi_arr = (
+        np.asarray(ci_upper, dtype=np.float64).ravel()
+        if ci_upper is not None
+        else spec_arr
+    )
 
     result = FrequencySeriesDict()
     result[label] = fs_main

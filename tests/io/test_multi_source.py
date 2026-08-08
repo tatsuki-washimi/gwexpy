@@ -127,9 +127,7 @@ class TestReadMultiDict:
                 {"ch": TimeSeries(np.ones(10), t0=15, dt=1, name="ch")}
             ),
         }
-        out = read_multi_dict(
-            self._fake_reader(files), ["f1", "f2"], "test", pad=-7.0
-        )
+        out = read_multi_dict(self._fake_reader(files), ["f1", "f2"], "test", pad=-7.0)
         assert len(out["ch"]) == 25
         np.testing.assert_allclose(out["ch"].value[10:15], np.full(5, -7.0))
 
@@ -144,13 +142,9 @@ class TestReadMultiDict:
 
         def recording_reader(source, **kwargs):
             seen_kwargs.update(kwargs)
-            return TimeSeriesDict(
-                {"ch": TimeSeries(np.ones(5), t0=0, dt=1, name="ch")}
-            )
+            return TimeSeriesDict({"ch": TimeSeries(np.ones(5), t0=0, dt=1, name="ch")})
 
-        read_multi_dict(
-            recording_reader, ["f1"], "test", pad=-7.0, gap="pad", unit="m"
-        )
+        read_multi_dict(recording_reader, ["f1"], "test", pad=-7.0, gap="pad", unit="m")
         assert "pad" not in seen_kwargs
         assert "gap" not in seen_kwargs
         # unrelated reader kwargs are still forwarded

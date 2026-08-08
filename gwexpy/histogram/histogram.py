@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import Any, NoReturn, cast
 
 import numpy as np
 from astropy import units as u
@@ -65,6 +65,56 @@ class Histogram(
 
     """
 
+    # Make Quantity-left operations fail through NumPy dispatch as well as the
+    # explicit Python operators below.  Without this, Astropy inspects the
+    # histogram's ``unit``/``value`` attributes and raises a conversion error
+    # after partially treating it as an array-like operand.
+    __array_ufunc__ = None
+
+    @staticmethod
+    def _reject_arithmetic() -> NoReturn:
+        """Reject unfinished arithmetic before an operand can coerce us."""
+        raise TypeError(
+            "Histogram arithmetic is not supported; transform values explicitly "
+            "until uncertainty propagation is defined."
+        )
+
+    def __add__(self, other: Any) -> NoReturn:
+        self._reject_arithmetic()
+
+    def __radd__(self, other: Any) -> NoReturn:
+        self._reject_arithmetic()
+
+    def __sub__(self, other: Any) -> NoReturn:
+        self._reject_arithmetic()
+
+    def __rsub__(self, other: Any) -> NoReturn:
+        self._reject_arithmetic()
+
+    def __mul__(self, other: Any) -> NoReturn:
+        self._reject_arithmetic()
+
+    def __rmul__(self, other: Any) -> NoReturn:
+        self._reject_arithmetic()
+
+    def __truediv__(self, other: Any) -> NoReturn:
+        self._reject_arithmetic()
+
+    def __rtruediv__(self, other: Any) -> NoReturn:
+        self._reject_arithmetic()
+
+    def __iadd__(self, other: Any) -> NoReturn:
+        self._reject_arithmetic()
+
+    def __isub__(self, other: Any) -> NoReturn:
+        self._reject_arithmetic()
+
+    def __imul__(self, other: Any) -> NoReturn:
+        self._reject_arithmetic()
+
+    def __itruediv__(self, other: Any) -> NoReturn:
+        self._reject_arithmetic()
+
     def __init__(
         self,
         values: Any,
@@ -111,7 +161,13 @@ class Histogram(
 
         """
         # Validate values
+        value_dtype = np.asarray(getattr(values, "value", values)).dtype
         values_q = u.Quantity(values, unit=unit) if unit else u.Quantity(values)
+        # Astropy's default constructor promotes plain integer arrays to
+        # float64.  A ROOT TH1C/S/I/L reader has an explicit native content
+        # dtype contract, so retain the supplied numerical representation.
+        if values_q.dtype != value_dtype:
+            values_q = values_q.astype(value_dtype, copy=False)
         if values_q.unit == u.dimensionless_unscaled and not hasattr(values, "unit"):
             if unit is not None:
                 values_q = values_q * u.Unit(unit)
@@ -137,7 +193,9 @@ class Histogram(
             )
 
         if not np.all(np.diff(edg_arr) > 0):
-            raise ValueError("Histogram edges must be strictly monotonically increasing.")
+            raise ValueError(
+                "Histogram edges must be strictly monotonically increasing."
+            )
 
         self._values = values_q
         self._edges = edges_q
@@ -291,21 +349,15 @@ class Histogram(
 
         if self.sumw2 is not None or weights is not None:
             old_sw2_val = (
-                self.sumw2.value
-                if self.sumw2 is not None
-                else np.zeros_like(hist_sw2)
+                self.sumw2.value if self.sumw2 is not None else np.zeros_like(hist_sw2)
             )
             new_sw2 = old_sw2_val + hist_sw2
 
             old_under_sw2 = (
-                self.underflow_sumw2.value
-                if self.underflow_sumw2 is not None
-                else 0.0
+                self.underflow_sumw2.value if self.underflow_sumw2 is not None else 0.0
             )
             old_over_sw2 = (
-                self.overflow_sumw2.value
-                if self.overflow_sumw2 is not None
-                else 0.0
+                self.overflow_sumw2.value if self.overflow_sumw2 is not None else 0.0
             )
             new_under_sw2 = old_under_sw2 + under_sw2_inc
             new_over_sw2 = old_over_sw2 + over_sw2_inc

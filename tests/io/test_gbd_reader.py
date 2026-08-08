@@ -11,6 +11,7 @@ from gwexpy.timeseries.io.gbd import read_timeseriesdict_gbd
 
 FIXTURE_DATA = Path(__file__).parent.parent / "fixtures" / "data" / "test.gbd"
 
+
 @pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gbd fixture not found")
 def test_read_gbd_dict():
     # GBD requires a timezone
@@ -36,11 +37,35 @@ def test_read_gbd_dict():
     assert not np.all(ts.value == 0)
     assert not np.any(np.isnan(ts.value))
 
+
 def test_read_gbd_single():
     # Read single channel
     ts = TimeSeries.read(FIXTURE_DATA, format="gbd", timezone="UTC", channels=["CH1"])
     assert ts.name == "CH1"
     assert len(ts) == 100
+
+
+@pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gbd fixture not found")
+def test_gbd_channel_selection_is_ordered_and_fail_closed():
+    selected = TimeSeriesDict.read(
+        FIXTURE_DATA,
+        format="gbd",
+        timezone="UTC",
+        channels=["AlarmOut", "CH1"],
+    )
+    assert list(selected) == ["AlarmOut", "CH1"]
+
+    with pytest.raises(ValueError, match="duplicate"):
+        TimeSeriesDict.read(
+            FIXTURE_DATA, format="gbd", timezone="UTC", channels=["CH1", "CH1"]
+        )
+    with pytest.raises(ValueError, match="not found"):
+        TimeSeriesDict.read(
+            FIXTURE_DATA, format="gbd", timezone="UTC", channels=["missing"]
+        )
+    with pytest.raises(ValueError, match="exactly one"):
+        TimeSeries.read(FIXTURE_DATA, format="gbd", timezone="UTC")
+
 
 def test_gbd_digital_channels():
     # Alarm/AlarmOut should be binarized (0 or 1)

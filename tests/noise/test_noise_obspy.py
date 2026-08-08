@@ -1,4 +1,5 @@
 """Tests for gwexpy/noise/obspy_.py."""
+
 from __future__ import annotations
 
 import sys
@@ -39,8 +40,14 @@ def _patch_obspy(fake_spec):
 
 class TestFromObspyValidation:
     def test_raises_import_error_without_obspy(self):
-        with patch.dict(sys.modules, {"obspy": None, "obspy.signal": None,
-                                       "obspy.signal.spectral_estimation": None}):
+        with patch.dict(
+            sys.modules,
+            {
+                "obspy": None,
+                "obspy.signal": None,
+                "obspy.signal.spectral_estimation": None,
+            },
+        ):
             with pytest.raises(ImportError, match="obspy"):
                 from_obspy("NLNM")
 

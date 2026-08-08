@@ -413,8 +413,8 @@ print(f"パターン 3: X と Y の位相差: {lag_at_peak:.3f}秒")
 ---
 
 **関連項目:**
-- [ScalarField チュートリアル](field_scalar_intro.ipynb)
+- [ScalarField チュートリアル](../../../en/user_guide/tutorials/field_scalar_intro.ipynb)
 - [VectorField チュートリアル](field_vector_intro.md)
-- [HHT チュートリアル](advanced_hht.ipynb)
+- [HHT チュートリアル](../../../en/user_guide/tutorials/advanced_hht.ipynb)
 - [線形代数チュートリアル](advanced_linear_algebra.md)
-- [TimeSeriesMatrix チュートリアル](matrix_timeseries.ipynb)
+- [TimeSeriesMatrix チュートリアル](../../../en/user_guide/tutorials/matrix_timeseries.ipynb)

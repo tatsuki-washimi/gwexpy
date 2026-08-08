@@ -31,7 +31,7 @@ standardized = StandardizeTransform().fit_transform(ts_matrix)
 ## 関連チュートリアル
 
 - [ML 前処理手法](../user_guide/tutorials/ml_preprocessing_methods.md)
-- [ML 前処理ケーススタディ](../user_guide/tutorials/case_ml_preprocessing.ipynb)
+- [ML 前処理ケーススタディ](../../en/user_guide/tutorials/case_ml_preprocessing.ipynb)
 
 ## API リファレンス
 

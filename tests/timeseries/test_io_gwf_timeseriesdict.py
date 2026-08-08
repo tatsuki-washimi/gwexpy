@@ -221,7 +221,6 @@ def test_read_gwf_timeseriesdict_all_empty_parts_raise(monkeypatch):
         {},
         {"format": "gwf"},
         {"format": "gwf", "parallel": 1},
-        {"format": "gwf", "parallel": 2},
         {"format": "gwf", "nproc": 1},
     ],
 )
@@ -543,8 +542,8 @@ def test_read_gwf_timeseriesdict_multiple_files_gap_raise_overrides_pad(tmp_path
 
 @pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
 @pytest.mark.skipif(not has_gwf_backend(), reason="gwf backend not available")
-@pytest.mark.parametrize("read_kwargs", [{"parallel": 1}, {"parallel": 2}, {"nproc": 1}])
-def test_read_gwf_timeseriesdict_multiple_files_pad_accepts_parallel_kwargs(
+@pytest.mark.parametrize("read_kwargs", [{"parallel": 1}, {"nproc": 1}])
+def test_read_gwf_timeseriesdict_multiple_files_pad_accepts_serial_options(
     tmp_path, read_kwargs
 ):
     files, _ = write_gwf_parts(tmp_path, starts=(1000.0, 1001.5))

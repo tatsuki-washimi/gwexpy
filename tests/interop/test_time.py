@@ -1,4 +1,5 @@
 """Tests for gwexpy/interop/_time.py."""
+
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta, timezone
@@ -42,18 +43,25 @@ class TestGpsToDatetimeUtc:
     def test_default_leap_policy_is_raise(self):
         """Default leap policy must be 'raise'."""
         import inspect
+
         sig = inspect.signature(gps_to_datetime_utc)
         assert sig.parameters["leap"].default == "raise"
 
     def test_invalid_leap_policy_raises_not_implemented(self):
         """Unknown leap policy raises NotImplementedError."""
-        with patch("gwexpy.interop._time.Time", return_value=self._make_leap_mock("second must be in 0..59")):
+        with patch(
+            "gwexpy.interop._time.Time",
+            return_value=self._make_leap_mock("second must be in 0..59"),
+        ):
             with pytest.raises(NotImplementedError, match="not implemented"):
                 gps_to_datetime_utc(0, leap="unknown")
 
     def test_non_leap_value_error_reraises(self):
         """ValueError unrelated to leap seconds is re-raised."""
-        with patch("gwexpy.interop._time.Time", return_value=self._make_leap_mock("something unrelated")):
+        with patch(
+            "gwexpy.interop._time.Time",
+            return_value=self._make_leap_mock("something unrelated"),
+        ):
             with pytest.raises(ValueError, match="something unrelated"):
                 gps_to_datetime_utc(0, leap="raise")
 
@@ -66,6 +74,7 @@ class TestGpsToDatetimeUtc:
     def _make_leap_mock(self, error_msg="leap second"):
         """Helper: return a mock Time() that triggers leap ValueError."""
         from types import SimpleNamespace
+
         ymdhms = SimpleNamespace(year=2016, month=12, day=31, hour=23, minute=59)
 
         def _to_datetime(**kwargs):
@@ -121,6 +130,7 @@ class TestDatetimeUtcToGps:
 
     def test_returns_ligotimegps(self):
         from gwpy.time import LIGOTimeGPS
+
         dt = datetime(2000, 1, 1, tzinfo=UTC)
         result = datetime_utc_to_gps(dt)
         assert isinstance(result, LIGOTimeGPS)

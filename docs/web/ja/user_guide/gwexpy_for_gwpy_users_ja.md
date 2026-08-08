@@ -23,8 +23,8 @@
 
 | 目的 | まず見る差分 | 深掘り先 |
 | --- | --- | --- |
-| 複数チャンネルをまとめて解析したい | `TimeSeriesDict.to_matrix()` → `TimeSeriesMatrix` | [Matrix チュートリアル](tutorials/matrix_timeseries.ipynb) |
-| 空間軸付きデータや複数 field をまとめて扱いたい | `ScalarField`, `FieldList`, `FieldDict` | [Field API 入門](tutorials/field_scalar_intro.ipynb), [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) |
+| 複数チャンネルをまとめて解析したい | `TimeSeriesDict.to_matrix()` → `TimeSeriesMatrix` | [Matrix チュートリアル](../../en/user_guide/tutorials/matrix_timeseries.ipynb) |
+| 空間軸付きデータや複数 field をまとめて扱いたい | `ScalarField`, `FieldList`, `FieldDict` | [Field API 入門](../../en/user_guide/tutorials/field_scalar_intro.ipynb), [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) |
 | SciPy / Statsmodels 呼び出しを整理したい | オブジェクトメソッド化された追加 API | [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) |
 | 既存の単一チャネルコードを早く移したい | import だけ差し替えてから必要箇所だけ差分 API を追加 | [クイックスタート](quickstart.md) |
 | 結果共有の互換性を知りたい | Transparent Pickle の挙動 | [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) |
@@ -68,7 +68,7 @@ csm.plot().show()
 
 関連ページ:
 
-- [Matrix チュートリアル](tutorials/matrix_timeseries.ipynb)
+- [Matrix チュートリアル](../../en/user_guide/tutorials/matrix_timeseries.ipynb)
 - [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md)
 - [TimeSeriesDict リファレンス](../reference/TimeSeriesDict.md)
 - [TimeSeriesMatrix リファレンス](../reference/TimeSeriesMatrix.md)
@@ -107,10 +107,10 @@ peaks, props = spec.find_peaks(threshold=0.2)
 関連ページ:
 
 - [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md)
-- [周波数系列チュートリアル](tutorials/intro_frequencyseries.ipynb)
-- [フィッティング](tutorials/advanced_fitting.ipynb)
-- [HHT](tutorials/advanced_hht.ipynb)
-- [ARIMA](tutorials/advanced_arima.ipynb)
+- [周波数系列チュートリアル](../../en/user_guide/tutorials/intro_frequencyseries.ipynb)
+- [フィッティング](../../en/user_guide/tutorials/advanced_fitting.ipynb)
+- [HHT](../../en/user_guide/tutorials/advanced_hht.ipynb)
+- [ARIMA](../../en/user_guide/tutorials/advanced_arima.ipynb)
 
 ## 差分レシピ 3: 単一チャネルコードは大きく変えなくてよい
 
@@ -190,7 +190,7 @@ fft_fields = fields.fft_space_all()
 
 関連ページ:
 
-- [Field API 入門](tutorials/field_scalar_intro.ipynb)
+- [Field API 入門](../../en/user_guide/tutorials/field_scalar_intro.ipynb)
 - [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md)
 - [ScalarField リファレンス](../reference/ScalarField.md)
 - [FieldList リファレンス](../reference/FieldList.md)
@@ -286,8 +286,8 @@ spec2 = FrequencySeries.from_control_frd(frd_sys)    # control.FRD → Frequency
 
 - [Interop / 変換ガイド](interop.md)
 - [python-control API リファレンス](../reference/api/gwexpy.interop.control_.rst)
-- [アクティブダンピング チュートリアル](tutorials/case_active_damping.ipynb)
-- [周波数系列チュートリアル](tutorials/intro_frequencyseries.ipynb)
+- [アクティブダンピング チュートリアル](../../en/user_guide/tutorials/case_active_damping.ipynb)
+- [周波数系列チュートリアル](../../en/user_guide/tutorials/intro_frequencyseries.ipynb)
 
 ## I/O と外部ライブラリ連携は別ページを見る
 
@@ -300,7 +300,7 @@ spec2 = FrequencySeries.from_control_frd(frd_sys)    # control.FRD → Frequency
 ## 次のステップ
 
 - [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) - 追加 API を差分観点で引く
-- [Field API 入門](tutorials/field_scalar_intro.ipynb) - `ScalarField` / `FieldList` / `FieldDict` の使い分けを見る
+- [Field API 入門](../../en/user_guide/tutorials/field_scalar_intro.ipynb) - `ScalarField` / `FieldList` / `FieldDict` の使い分けを見る
 - [チュートリアル一覧](tutorials/index.rst) - 差分レシピから実例へ進む
 - [ファイル I/O 対応フォーマットガイド](io_formats.md) - 読み書き形式を確認する
 - [Interop / 変換ガイド](interop.md) - 外部ライブラリとの橋渡しを見る

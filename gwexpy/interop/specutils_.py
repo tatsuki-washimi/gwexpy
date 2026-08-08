@@ -1,4 +1,5 @@
 """Interoperability with specutils."""
+
 from __future__ import annotations
 
 from ._optional import require_optional

@@ -52,7 +52,7 @@ Utilizing the powerful I/O capabilities of `gwexpy`, the GUI supports standard L
 | **Graphtec GBD** | `.gbd` | TS | Binary format for **Graphtec** data loggers (analog converted via range; statuses handled for `Alarm/Logic`). |
 | **Metronix ATS** | `.ats` | TS | Data format for **Metronix ADU** equipment. |
 | **Text / CSV** | `.txt`, `.csv`, `.dat` | TS | Comma or space-separated text data. |
-| **Others** | `.npy`, `.mat`, `.fits`, `.pkl`, `.ffl`, `.sdb` | TS | Support for NumPy, MATLAB, FFL, and other common scientific formats. |
+| **Others** | `.npy`, `.mat`, `.fits`, `.pkl`, `.sdb` | TS | Support for NumPy, MATLAB, and other common scientific formats. Frame file lists (`.ffl`) are not a supported reader input in v0.1.13. |
 
 > [!NOTE]
 > - **TS**: Time Series, **ASD**: Amplitude Spectral Density

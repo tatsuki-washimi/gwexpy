@@ -30,7 +30,9 @@ _MANIFEST_ONLY_GENERATORS = frozenset({"gwf"})
 
 def _file_tree(base_dir: Path) -> tuple[Path, ...]:
     return tuple(
-        sorted(path.relative_to(base_dir) for path in base_dir.rglob("*") if path.is_file())
+        sorted(
+            path.relative_to(base_dir) for path in base_dir.rglob("*") if path.is_file()
+        )
     )
 
 

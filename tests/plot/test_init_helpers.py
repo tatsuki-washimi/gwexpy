@@ -1,4 +1,5 @@
 """Tests for gwexpy.plot._init_helpers."""
+
 import matplotlib
 
 matplotlib.use("Agg")
@@ -26,8 +27,10 @@ from gwexpy.plot._init_helpers import (
 # Mock types
 # ---------------------------------------------------------------------------
 
+
 class _NamedItem:
     """Simple mutable object with an optional .name attribute."""
+
     def __init__(self, value, name=None):
         self.value = value
         self.name = name
@@ -57,6 +60,7 @@ class FakeSeriesMatrixWithName:
     def __getitem__(self, key):
         class _Val:
             name = "existing_name"
+
         return _Val()
 
     def to_series_1Dlist(self):
@@ -97,8 +101,9 @@ class FakeSpectrogramMatrix:
 
 class FakeSpectrogramMatrix4D:
     """SpectrogramMatrix with ndim==4 so the 2D-index branch is exercised."""
+
     ndim = 4
-    shape = (2, 3, 10, 8)   # nrow=2, ncol=3
+    shape = (2, 3, 10, 8)  # nrow=2, ncol=3
 
     def __getitem__(self, key):
         return f"sg4d_{key}"
@@ -115,6 +120,7 @@ class FakeSpectrogramMatrix4D:
 
 class FakeSpectrogramMatrix4DRaising:
     """SpectrogramMatrix with ndim==4 whose __getitem__ raises on first access."""
+
     ndim = 4
     shape = (2, 3, 10, 8)
     _calls = 0
@@ -138,6 +144,7 @@ class FakeSpectrogramMatrix4DRaising:
 
 class FakeSpectrogramMatrix3DRaising:
     """SpectrogramMatrix with ndim==3 whose __getitem__ raises."""
+
     ndim = 3
     shape = (2, 10, 8)
 
@@ -174,6 +181,7 @@ class FakeSpectrogramDict(dict):
 # in _expand_args when separate=True (those branches are skipped when types extend list/dict).
 class FakeFrequencySeriesListNonList:
     """Acts like a sequence but does NOT inherit from list."""
+
     def __init__(self, data):
         self._data = data
 
@@ -186,6 +194,7 @@ class FakeFrequencySeriesListNonList:
 
 class FakeFrequencySeriesDictNonDict:
     """Acts like a mapping but does NOT inherit from dict."""
+
     def __init__(self, data):
         self._data = data
 
@@ -198,6 +207,7 @@ class FakeFrequencySeriesDictNonDict:
 
 class FakeSpectrogramListNonList:
     """Acts like a sequence but does NOT inherit from list."""
+
     def __init__(self, data):
         self._data = data
 
@@ -207,6 +217,7 @@ class FakeSpectrogramListNonList:
 
 class FakeSpectrogramDictNonDict:
     """Acts like a mapping but does NOT inherit from dict."""
+
     def __init__(self, data):
         self._data = data
 
@@ -221,6 +232,7 @@ class FakeSpectrogram:
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_expand_kwargs(extra=None):
     kw = dict(
@@ -237,8 +249,14 @@ def _make_expand_kwargs(extra=None):
 
 
 def _make_defaults(
-    xscale=None, yscale=None, xlabel=None, ylabel=None,
-    norm=None, clabel=None, ylim=None, figsize=(6, 4),
+    xscale=None,
+    yscale=None,
+    xlabel=None,
+    ylabel=None,
+    norm=None,
+    clabel=None,
+    ylim=None,
+    figsize=(6, 4),
 ):
     class _Defaults:
         def determine_xscale(self, data):
@@ -272,9 +290,12 @@ def _make_defaults(
 # Tests for _filter_monitor_args
 # ===========================================================================
 
+
 class TestFilterMonitorArgs:
     def test_non_matrix_arg_passes_through(self):
-        result = _filter_monitor_args((42, "hello"), 0, FakeSeriesMatrix, FakeSpectrogramMatrix)
+        result = _filter_monitor_args(
+            (42, "hello"), 0, FakeSeriesMatrix, FakeSpectrogramMatrix
+        )
         assert result == (42, "hello")
 
     def test_series_matrix_indexed_by_int(self):
@@ -285,7 +306,9 @@ class TestFilterMonitorArgs:
 
     def test_series_matrix_indexed_by_string(self):
         m = FakeSeriesMatrix()
-        result = _filter_monitor_args((m,), "r0", FakeSeriesMatrix, FakeSpectrogramMatrix)
+        result = _filter_monitor_args(
+            (m,), "r0", FakeSeriesMatrix, FakeSpectrogramMatrix
+        )
         assert len(result) == 1
         assert result[0].value == "item_r0"
 
@@ -296,9 +319,11 @@ class TestFilterMonitorArgs:
 
     def test_spectrogram_matrix_4d_int_monitor_uses_2d_index(self):
         """ndim==4 SpectrogramMatrix with int monitor uses row/col calculation."""
+
         class _SG4D(FakeSpectrogramMatrix4D):
             # Make __name__ match the guard
             pass
+
         _SG4D.__name__ = "SpectrogramMatrix"
 
         m = _SG4D()
@@ -310,13 +335,16 @@ class TestFilterMonitorArgs:
         # FakeSpectrogramMatrix.__getitem__ raises for non-int/tuple keys,
         # and __name__ != "SpectrogramMatrix", so it falls back to appending the whole object.
         m = FakeSpectrogramMatrix()
-        result = _filter_monitor_args((m,), "r0", FakeSeriesMatrix, FakeSpectrogramMatrix)
+        result = _filter_monitor_args(
+            (m,), "r0", FakeSeriesMatrix, FakeSpectrogramMatrix
+        )
         assert result == (m,)
 
     def test_series_matrix_index_error_falls_back_to_whole_object(self):
         class _Bad(FakeSeriesMatrix):
             def __getitem__(self, key):
                 raise IndexError("boom")
+
         m = _Bad()
         result = _filter_monitor_args((m,), 0, _Bad, FakeSpectrogramMatrix)
         assert result == (m,)
@@ -325,12 +353,14 @@ class TestFilterMonitorArgs:
         class _Bad(FakeSeriesMatrix):
             def __getitem__(self, key):
                 raise TypeError("boom")
+
         m = _Bad()
         result = _filter_monitor_args((m,), 0, _Bad, FakeSpectrogramMatrix)
         assert result == (m,)
 
     def test_spectrogram_matrix_4d_raising_on_first_triggers_except_branch(self):
         """When the 4D branch raises on first try, the except block re-tries 4D path."""
+
         class _SG4DRaising:
             ndim = 4
             shape = (2, 3, 10, 8)
@@ -350,6 +380,7 @@ class TestFilterMonitorArgs:
 
     def test_spectrogram_matrix_3d_raising_in_except_appends_indexed(self):
         """3D SpectrogramMatrix that raises falls through to the else-branch in except."""
+
         class _SG3DRaising:
             ndim = 3
             shape = (2, 10, 8)
@@ -368,18 +399,24 @@ class TestFilterMonitorArgs:
 
     def test_mixed_args(self):
         m = FakeSeriesMatrix()
-        result = _filter_monitor_args(("plain", m, 99), 0, FakeSeriesMatrix, FakeSpectrogramMatrix)
+        result = _filter_monitor_args(
+            ("plain", m, 99), 0, FakeSeriesMatrix, FakeSpectrogramMatrix
+        )
         assert result[0] == "plain"
         assert result[1].value == "item_0"
         assert result[2] == 99
 
     def test_empty_args(self):
-        assert _filter_monitor_args((), 0, FakeSeriesMatrix, FakeSpectrogramMatrix) == ()
+        assert (
+            _filter_monitor_args((), 0, FakeSeriesMatrix, FakeSpectrogramMatrix) == ()
+        )
 
     def test_numpy_integer_monitor(self):
         m = FakeSeriesMatrix()
         monitor = np.int64(0)
-        result = _filter_monitor_args((m,), monitor, FakeSeriesMatrix, FakeSpectrogramMatrix)
+        result = _filter_monitor_args(
+            (m,), monitor, FakeSeriesMatrix, FakeSpectrogramMatrix
+        )
         assert len(result) == 1
         assert result[0].value == "item_0"
 
@@ -387,6 +424,7 @@ class TestFilterMonitorArgs:
 # ===========================================================================
 # Tests for _expand_args
 # ===========================================================================
+
 
 class TestExpandArgs:
     def _expand(self, args, separate, extra_kwargs=None):
@@ -440,8 +478,9 @@ class TestExpandArgs:
 
     def test_separate_true_spectrogram_matrix_extends(self):
         m = FakeSpectrogramMatrix()
-        result = self._expand([m], True,
-                              extra_kwargs={"SpectrogramMatrix": FakeSpectrogramMatrix})
+        result = self._expand(
+            [m], True, extra_kwargs={"SpectrogramMatrix": FakeSpectrogramMatrix}
+        )
         assert result == ["sg_a", "sg_b"]
 
     # --- separate == "row" ---
@@ -538,8 +577,9 @@ class TestExpandArgs:
 
     def test_separate_none_spectrogram_matrix_appends_list(self):
         m = FakeSpectrogramMatrix()
-        result = self._expand([m], None,
-                              extra_kwargs={"SpectrogramMatrix": FakeSpectrogramMatrix})
+        result = self._expand(
+            [m], None, extra_kwargs={"SpectrogramMatrix": FakeSpectrogramMatrix}
+        )
         assert result == [["sg_a", "sg_b"]]
 
     def test_empty_args(self):
@@ -558,7 +598,9 @@ class TestExpandArgs:
         fsl = FakeFrequencySeriesListNonList([7, 8, 9])
         out = []
         _expand_args(
-            [fsl], True, out,
+            [fsl],
+            True,
+            out,
             SeriesMatrix=FakeSeriesMatrix,
             SpectrogramMatrix=FakeSpectrogramMatrix,
             FrequencySeriesList=FakeFrequencySeriesListNonList,
@@ -573,7 +615,9 @@ class TestExpandArgs:
         fsd = FakeFrequencySeriesDictNonDict({"k": 42})
         out = []
         _expand_args(
-            [fsd], True, out,
+            [fsd],
+            True,
+            out,
             SeriesMatrix=FakeSeriesMatrix,
             SpectrogramMatrix=FakeSpectrogramMatrix,
             FrequencySeriesList=FakeFrequencySeriesListNonList,
@@ -588,7 +632,9 @@ class TestExpandArgs:
         fsd = FakeFrequencySeriesDictNonDict({"k": 99})
         out = []
         _expand_args(
-            [fsd], None, out,
+            [fsd],
+            None,
+            out,
             SeriesMatrix=FakeSeriesMatrix,
             SpectrogramMatrix=FakeSpectrogramMatrix,
             FrequencySeriesList=FakeFrequencySeriesListNonList,
@@ -603,7 +649,9 @@ class TestExpandArgs:
         fsl = FakeFrequencySeriesListNonList([1, 2])
         out = []
         _expand_args(
-            [fsl], None, out,
+            [fsl],
+            None,
+            out,
             SeriesMatrix=FakeSeriesMatrix,
             SpectrogramMatrix=FakeSpectrogramMatrix,
             FrequencySeriesList=FakeFrequencySeriesListNonList,
@@ -617,6 +665,7 @@ class TestExpandArgs:
 # ===========================================================================
 # Tests for _flatten_scan
 # ===========================================================================
+
 
 class TestFlattenScan:
     def test_flat_list(self):
@@ -649,13 +698,18 @@ class TestFlattenScan:
 # Tests for _extract_layout_and_fig_params
 # ===========================================================================
 
+
 class TestExtractLayoutAndFigParams:
-    def _call(self, kwargs, separate=None, geometry=None, final_args=None, defaults=None):
+    def _call(
+        self, kwargs, separate=None, geometry=None, final_args=None, defaults=None
+    ):
         if final_args is None:
             final_args = []
         if defaults is None:
             defaults = _make_defaults()
-        return _extract_layout_and_fig_params(kwargs, separate, geometry, final_args, defaults)
+        return _extract_layout_and_fig_params(
+            kwargs, separate, geometry, final_args, defaults
+        )
 
     def test_empty_kwargs(self):
         lk, fp, cl, tl, ll = self._call({})
@@ -690,8 +744,9 @@ class TestExtractLayoutAndFigParams:
         kwargs = {}
         defaults = _make_defaults(figsize=(8, 2))
         final_args = ["a", "b", "c"]
-        lk, fp, cl, tl, ll = self._call(kwargs, separate=True,
-                                         final_args=final_args, defaults=defaults)
+        lk, fp, cl, tl, ll = self._call(
+            kwargs, separate=True, final_args=final_args, defaults=defaults
+        )
         assert fp["figsize"] == (8, 2)
 
     def test_figsize_not_overwritten_if_already_set(self):
@@ -700,13 +755,34 @@ class TestExtractLayoutAndFigParams:
         assert fp["figsize"] == (3, 3)
 
     def test_layout_keys_extracted(self):
-        kwargs = {"xscale": "log", "yscale": "linear", "xlabel": "t", "ylabel": "y",
-                  "title": "T", "legend": True, "method": "pcolormesh",
-                  "sharex": True, "sharey": False, "norm": None,
-                  "xlim": (0, 1), "ylim": (0, 10)}
+        kwargs = {
+            "xscale": "log",
+            "yscale": "linear",
+            "xlabel": "t",
+            "ylabel": "y",
+            "title": "T",
+            "legend": True,
+            "method": "pcolormesh",
+            "sharex": True,
+            "sharey": False,
+            "norm": None,
+            "xlim": (0, 1),
+            "ylim": (0, 10),
+        }
         lk, fp, cl, tl, ll = self._call(kwargs)
-        for k in ["xscale", "yscale", "xlabel", "ylabel", "title", "legend",
-                   "method", "sharex", "sharey", "xlim", "ylim"]:
+        for k in [
+            "xscale",
+            "yscale",
+            "xlabel",
+            "ylabel",
+            "title",
+            "legend",
+            "method",
+            "sharex",
+            "sharey",
+            "xlim",
+            "ylim",
+        ]:
             assert k in lk
         # norm with None value is still extracted if present
         assert "norm" in lk
@@ -780,6 +856,7 @@ class TestExtractLayoutAndFigParams:
 # Tests for _apply_list_labels
 # ===========================================================================
 
+
 class TestApplyListLabels:
     def test_labels_assigned_to_lines(self):
         fig, ax = plt.subplots()
@@ -832,6 +909,7 @@ class TestApplyListLabels:
 # ===========================================================================
 # Tests for _apply_ylabel
 # ===========================================================================
+
 
 class TestApplyYlabel:
     def test_force_ylabel_applied(self):
@@ -898,6 +976,7 @@ class TestApplyYlabel:
 # Tests for _apply_individual_axis_labels
 # ===========================================================================
 
+
 class TestApplyIndividualAxisLabels:
     def test_returns_early_if_force_ylabel_set(self):
         fig, ax = plt.subplots()
@@ -949,6 +1028,7 @@ class TestApplyIndividualAxisLabels:
 # Tests for _apply_xlabel
 # ===========================================================================
 
+
 class TestApplyXlabel:
     def test_force_xlabel_applied(self):
         fig, ax = plt.subplots()
@@ -988,6 +1068,7 @@ class TestApplyXlabel:
 # Tests for _apply_layout_polish
 # ===========================================================================
 
+
 class TestApplyLayoutPolish:
     def test_constrained_layout_applied(self):
         fig, ax = plt.subplots()
@@ -1012,25 +1093,32 @@ class TestApplyLayoutPolish:
     def test_constrained_layout_with_bad_fig_raises_silently(self):
         class BadFig:
             axes = []
+
             def set_constrained_layout(self, v):
                 raise TypeError("no")
+
             def tight_layout(self):
                 pass
+
         _apply_layout_polish(BadFig(), use_cl=True, use_tl=False)
 
     def test_tight_layout_with_bad_fig_raises_silently(self):
         class BadFig:
             axes = []
+
             def set_constrained_layout(self, v):
                 pass
+
             def tight_layout(self):
                 raise ValueError("bad")
+
         _apply_layout_polish(BadFig(), use_cl=False, use_tl=True)
 
 
 # ===========================================================================
 # Tests for _force_scales
 # ===========================================================================
+
 
 class TestForceScales:
     def test_xscale_log_applied(self):
@@ -1075,6 +1163,7 @@ class TestForceScales:
 # Tests for _add_spectrogram_colorbars
 # ===========================================================================
 
+
 class TestAddSpectrogramColorbars:
     def test_no_spectrogram_does_nothing(self):
         fig, ax = plt.subplots()
@@ -1086,6 +1175,7 @@ class TestAddSpectrogramColorbars:
     def test_spectrogram_with_pcolormesh_adds_colorbar(self):
         fig, ax = plt.subplots()
         import numpy as np
+
         data = np.random.rand(4, 4)
         ax.pcolormesh(data)
         _add_spectrogram_colorbars(fig, is_spectrogram=True, det_clabel="Power")
@@ -1096,6 +1186,7 @@ class TestAddSpectrogramColorbars:
     def test_spectrogram_with_imshow_adds_colorbar(self):
         fig, ax = plt.subplots()
         import numpy as np
+
         data = np.random.rand(4, 4)
         ax.imshow(data)
         _add_spectrogram_colorbars(fig, is_spectrogram=True, det_clabel=None)
@@ -1130,6 +1221,7 @@ class TestAddSpectrogramColorbars:
 # ===========================================================================
 # Tests for _manage_sharex_labels
 # ===========================================================================
+
 
 class TestManageSharexLabels:
     def test_no_geometry_does_nothing(self):
@@ -1188,119 +1280,158 @@ class TestManageSharexLabels:
 # Tests for _determine_scales_and_labels
 # ===========================================================================
 
+
 class TestDetermineScalesAndLabels:
     def test_method_set_when_spectrogram_present(self):
         kwargs = {}
         defaults = _make_defaults()
         scan = [FakeSpectrogram()]
-        _determine_scales_and_labels(scan, kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix)
+        _determine_scales_and_labels(
+            scan, kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix
+        )
         assert kwargs["method"] == "pcolormesh"
 
     def test_method_not_overwritten_if_set(self):
         kwargs = {"method": "plot"}
         defaults = _make_defaults()
         scan = [FakeSpectrogram()]
-        _determine_scales_and_labels(scan, kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix)
+        _determine_scales_and_labels(
+            scan, kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix
+        )
         assert kwargs["method"] == "plot"
 
     def test_no_spectrogram_no_method(self):
         kwargs = {}
         defaults = _make_defaults()
-        _determine_scales_and_labels(["plain"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix)
+        _determine_scales_and_labels(
+            ["plain"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix
+        )
         assert "method" not in kwargs
 
     def test_xscale_set_from_defaults(self):
         kwargs = {}
         defaults = _make_defaults(xscale="log")
-        _determine_scales_and_labels(["x"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix)
+        _determine_scales_and_labels(
+            ["x"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix
+        )
         assert kwargs["xscale"] == "log"
 
     def test_xscale_not_overwritten_if_set(self):
         kwargs = {"xscale": "linear"}
         defaults = _make_defaults(xscale="log")
-        _determine_scales_and_labels(["x"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix)
+        _determine_scales_and_labels(
+            ["x"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix
+        )
         assert kwargs["xscale"] == "linear"
 
     def test_yscale_set_from_defaults(self):
         kwargs = {}
         defaults = _make_defaults(yscale="log")
-        _determine_scales_and_labels(["x"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix)
+        _determine_scales_and_labels(
+            ["x"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix
+        )
         assert kwargs["yscale"] == "log"
 
     def test_xlabel_set_from_defaults(self):
         kwargs = {}
         defaults = _make_defaults(xlabel="Time")
-        _determine_scales_and_labels(["x"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix)
+        _determine_scales_and_labels(
+            ["x"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix
+        )
         assert kwargs["xlabel"] == "Time"
 
     def test_ylabel_set_when_single_unit(self):
         class _Data:
             unit = None
+
         kwargs = {}
         defaults = _make_defaults(ylabel="Units")
-        _determine_scales_and_labels([_Data()], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix)
+        _determine_scales_and_labels(
+            [_Data()], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix
+        )
         assert kwargs["ylabel"] == "Units"
 
     def test_ylabel_set_when_unit_has_to_string(self):
         class _Unit:
             def to_string(self):
                 return "m/s"
+
         class _Data:
             unit = _Unit()
+
         kwargs = {}
         defaults = _make_defaults(ylabel="m/s")
-        _determine_scales_and_labels([_Data()], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix)
+        _determine_scales_and_labels(
+            [_Data()], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix
+        )
         assert kwargs["ylabel"] == "m/s"
 
     def test_ylabel_not_set_when_multiple_units(self):
         class _Unit:
             def __init__(self, s):
                 self._s = s
+
             def to_string(self):
                 return self._s
+
         class _Data:
             def __init__(self, u):
                 self.unit = u
+
         kwargs = {}
         defaults = _make_defaults(ylabel="Y")
         scan = [_Data(_Unit("m")), _Data(_Unit("s"))]
-        _determine_scales_and_labels(scan, kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix)
+        _determine_scales_and_labels(
+            scan, kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix
+        )
         assert "ylabel" not in kwargs
 
     def test_norm_set_from_defaults(self):
         kwargs = {}
         defaults = _make_defaults(norm="log")
-        _determine_scales_and_labels(["x"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix)
+        _determine_scales_and_labels(
+            ["x"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix
+        )
         assert kwargs["norm"] == "log"
 
     def test_clabel_returned(self):
         kwargs = {}
         defaults = _make_defaults(clabel="Power [dB]")
-        det_clabel = _determine_scales_and_labels(["x"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix)
+        det_clabel = _determine_scales_and_labels(
+            ["x"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix
+        )
         assert det_clabel == "Power [dB]"
 
     def test_clabel_not_returned_when_set_in_kwargs(self):
         kwargs = {"clabel": "existing"}
         defaults = _make_defaults(clabel="Power")
-        det_clabel = _determine_scales_and_labels(["x"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix)
+        det_clabel = _determine_scales_and_labels(
+            ["x"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix
+        )
         assert det_clabel is None
 
     def test_ylim_set_from_defaults(self):
         kwargs = {}
         defaults = _make_defaults(ylim=(0, 100))
-        _determine_scales_and_labels(["x"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix)
+        _determine_scales_and_labels(
+            ["x"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix
+        )
         assert kwargs["ylim"] == (0, 100)
 
     def test_specto_matrix_triggers_method(self):
         kwargs = {}
         defaults = _make_defaults()
         scan = [FakeSpectrogramMatrix()]
-        _determine_scales_and_labels(scan, kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix)
+        _determine_scales_and_labels(
+            scan, kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix
+        )
         assert kwargs.get("method") == "pcolormesh"
 
     def test_none_det_values_not_added_to_kwargs(self):
         kwargs = {}
         defaults = _make_defaults()  # all returns None
-        _determine_scales_and_labels(["x"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix)
+        _determine_scales_and_labels(
+            ["x"], kwargs, defaults, FakeSpectrogram, FakeSpectrogramMatrix
+        )
         for k in ["xscale", "yscale", "xlabel", "ylabel", "norm", "ylim"]:
             assert k not in kwargs

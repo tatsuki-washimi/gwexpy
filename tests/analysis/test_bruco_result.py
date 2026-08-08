@@ -1,4 +1,5 @@
 """Tests for BrucoResult and helper functions in gwexpy/analysis/bruco.py."""
+
 from __future__ import annotations
 
 import matplotlib
@@ -257,7 +258,9 @@ class TestDominantChannel:
         res = _make_result(n_bins=6, top_n=1)
         # A appears in 4 out of 6 bins, B in 2
         names = ["A", "B"]
-        coh = np.array([[0.9, 0.8, 0.85, 0.7, 0.2, 0.15], [0.1, 0.1, 0.1, 0.1, 0.9, 0.9]])
+        coh = np.array(
+            [[0.9, 0.8, 0.85, 0.7, 0.2, 0.15], [0.1, 0.1, 0.1, 0.1, 0.9, 0.9]]
+        )
         res.update_batch(names, coh)
         dom = res.dominant_channel(0)
         assert dom == "A"
@@ -336,6 +339,7 @@ class TestCoherenceForChannel:
 class TestToDataframe:
     def test_returns_dataframe(self):
         import pandas as pd
+
         res = _make_result_with_data()
         df = res.to_dataframe()
         assert isinstance(df, pd.DataFrame)
@@ -345,6 +349,7 @@ class TestToDataframe:
 
     def test_empty_result_returns_empty_df(self):
         import pandas as pd
+
         res = _make_result()
         df = res.to_dataframe(ranks=[99])  # out of range → filtered
         assert isinstance(df, pd.DataFrame)
@@ -352,6 +357,7 @@ class TestToDataframe:
 
     def test_stride(self):
         import pandas as pd
+
         res = _make_result_with_data(n_bins=10)
         df_full = res.to_dataframe(ranks=[0])
         df_stride = res.to_dataframe(ranks=[0], stride=2)
@@ -366,6 +372,7 @@ class TestToDataframe:
 class TestBrucoPlots:
     def test_plot_projection_returns_figure(self):
         import matplotlib.pyplot as plt
+
         res = _make_result_with_data()
         fig = res.plot_projection()
         assert fig is not None
@@ -373,6 +380,7 @@ class TestBrucoPlots:
 
     def test_plot_projection_with_channels(self):
         import matplotlib.pyplot as plt
+
         res = _make_result_with_data()
         fig = res.plot_projection(channels=["A"])
         assert fig is not None
@@ -380,6 +388,7 @@ class TestBrucoPlots:
 
     def test_plot_projection_with_ranks(self):
         import matplotlib.pyplot as plt
+
         res = _make_result_with_data()
         fig = res.plot_projection(ranks=[0, 1])
         assert fig is not None
@@ -387,6 +396,7 @@ class TestBrucoPlots:
 
     def test_plot_ranked_returns_figure(self):
         import matplotlib.pyplot as plt
+
         res = _make_result_with_data()
         fig = res.plot_ranked(top_k=2)
         assert fig is not None
@@ -394,6 +404,7 @@ class TestBrucoPlots:
 
     def test_plot_coherence_default(self):
         import matplotlib.pyplot as plt
+
         res = _make_result_with_data()
         fig = res.plot_coherence()
         assert fig is not None
@@ -401,6 +412,7 @@ class TestBrucoPlots:
 
     def test_plot_coherence_by_rank(self):
         import matplotlib.pyplot as plt
+
         res = _make_result_with_data()
         fig = res.plot_coherence(ranks=[0, 1])
         assert fig is not None
@@ -408,6 +420,7 @@ class TestBrucoPlots:
 
     def test_plot_coherence_by_channel(self):
         import matplotlib.pyplot as plt
+
         res = _make_result_with_data()
         fig = res.plot_coherence(channels=["A"])
         assert fig is not None
@@ -415,6 +428,7 @@ class TestBrucoPlots:
 
     def test_plot_coherence_with_threshold(self):
         import matplotlib.pyplot as plt
+
         res = _make_result_with_data()
         fig = res.plot_coherence(coherence_threshold=0.5)
         assert fig is not None
@@ -422,6 +436,7 @@ class TestBrucoPlots:
 
     def test_plot_coherence_psd_mode(self):
         import matplotlib.pyplot as plt
+
         res = _make_result_with_data()
         fig = res.plot_coherence(asd=False)
         assert fig is not None

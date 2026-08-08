@@ -97,10 +97,14 @@ class TestToPandasDataFrame:
     def test_dict_to_dataframe(self):
         from gwexpy.timeseries import TimeSeriesDict
 
-        d = TimeSeriesDict({
-            "ch1": TimeSeries(np.arange(5, dtype=float), dt=0.1, t0=0, name="ch1"),
-            "ch2": TimeSeries(np.arange(5, dtype=float) * 2, dt=0.1, t0=0, name="ch2"),
-        })
+        d = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(np.arange(5, dtype=float), dt=0.1, t0=0, name="ch1"),
+                "ch2": TimeSeries(
+                    np.arange(5, dtype=float) * 2, dt=0.1, t0=0, name="ch2"
+                ),
+            }
+        )
         df = d.to_pandas()
         assert isinstance(df, pd.DataFrame)
         assert set(df.columns) >= {"ch1", "ch2"}
@@ -109,6 +113,7 @@ class TestToPandasDataFrame:
     def test_empty_dict_returns_empty_dataframe(self):
         from gwexpy.interop.pandas_ import to_pandas_dataframe
         from gwexpy.timeseries import TimeSeriesDict
+
         d = TimeSeriesDict()
         df = to_pandas_dataframe(d)
         assert isinstance(df, pd.DataFrame)
@@ -120,10 +125,12 @@ class TestFromPandasDataFrame:
         from gwexpy.interop.pandas_ import from_pandas_dataframe, to_pandas_dataframe
         from gwexpy.timeseries import TimeSeriesDict
 
-        d = TimeSeriesDict({
-            "ch1": TimeSeries(np.arange(5, dtype=float), dt=0.1, t0=0),
-            "ch2": TimeSeries(np.arange(5, dtype=float) * 2, dt=0.1, t0=0),
-        })
+        d = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(np.arange(5, dtype=float), dt=0.1, t0=0),
+                "ch2": TimeSeries(np.arange(5, dtype=float) * 2, dt=0.1, t0=0),
+            }
+        )
         df = to_pandas_dataframe(d, index="gps")
         d2 = from_pandas_dataframe(TimeSeriesDict, df)
         assert len(d2) == 2
@@ -132,9 +139,11 @@ class TestFromPandasDataFrame:
         from gwexpy.interop.pandas_ import from_pandas_dataframe, to_pandas_dataframe
         from gwexpy.timeseries import TimeSeriesDict
 
-        d = TimeSeriesDict({
-            "ch1": TimeSeries(np.arange(5, dtype=float), dt=0.1, t0=0),
-        })
+        d = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(np.arange(5, dtype=float), dt=0.1, t0=0),
+            }
+        )
         df = to_pandas_dataframe(d, index="gps")
         d2 = from_pandas_dataframe(TimeSeriesDict, df, unit_map={"ch1": "m"})
         assert str(d2["ch1"].unit) == "m"
@@ -143,11 +152,13 @@ class TestFromPandasDataFrame:
 class TestToPandasSeriesExtra:
     def test_copy_true(self, ts):
         from gwexpy.interop.pandas_ import to_pandas_series
+
         s = to_pandas_series(ts, copy=True)
         assert isinstance(s, pd.Series)
         np.testing.assert_array_equal(s.values, ts.value)
 
     def test_custom_name(self, ts):
         from gwexpy.interop.pandas_ import to_pandas_series
+
         s = to_pandas_series(ts, name="custom")
         assert s.name == "custom"

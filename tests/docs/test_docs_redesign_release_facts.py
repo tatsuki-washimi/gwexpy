@@ -7,16 +7,53 @@ from pathlib import Path
 from babel.messages import pofile
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+RELEASE_VERSION = "0.1.13"
+RELEASE_DATE = "2026-08-08"
+RELEASE_HISTORY_ENTRY = f"[{RELEASE_VERSION}] - {RELEASE_DATE}"
+
+
+def test_current_release_facts_match_the_approved_values() -> None:
+    """Pin the approved v0.1.13 facts in every canonical public source."""
+    changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    citation = (REPO_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    zenodo = json.loads((REPO_ROOT / ".zenodo.json").read_text(encoding="utf-8"))
+    catalogue_path = (
+        REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"
+    )
+    with catalogue_path.open(encoding="utf-8") as stream:
+        catalogue = pofile.read_po(stream, locale="ja")
+
+    assert re.search(
+        rf"^## {re.escape(RELEASE_HISTORY_ENTRY)}$", changelog, re.MULTILINE
+    )
+    assert re.search(
+        rf"^version: {re.escape(RELEASE_VERSION)}$", citation, re.MULTILINE
+    )
+    assert re.search(
+        rf"^date-released: {re.escape(RELEASE_DATE)}$", citation, re.MULTILINE
+    )
+    assert zenodo["version"] == RELEASE_VERSION
+    assert zenodo["publication_date"] == RELEASE_DATE
+
+    release_message = catalogue.get(RELEASE_HISTORY_ENTRY)
+    assert release_message is not None
+    assert release_message.id == RELEASE_HISTORY_ENTRY
+    assert release_message.string == RELEASE_HISTORY_ENTRY
 
 
 def test_redesign_changelog_includes_the_canonical_release_history() -> None:
-    source = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(encoding="utf-8")
+    source = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
+        encoding="utf-8"
+    )
     canonical = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
 
-    assert ':::{include} ../../CHANGELOG.md' in source
+    assert ":::{include} ../../CHANGELOG.md" in source
     assert ':start-after: "# Changelog"' in source
-    canonical_releases = re.findall(r"^## (\[[^\]]+\] - \d{4}-\d{2}-\d{2})$", canonical, re.MULTILINE)
+    canonical_releases = re.findall(
+        r"^## (\[[^\]]+\] - \d{4}-\d{2}-\d{2})$", canonical, re.MULTILINE
+    )
     assert canonical_releases == [
+        RELEASE_HISTORY_ENTRY,
         "[0.1.12] - 2026-07-31",
         "[0.1.11] - 2026-07-25",
         "[0.1.10] - 2026-07-18",
@@ -36,8 +73,12 @@ def test_redesign_changelog_includes_the_canonical_release_history() -> None:
     assert not re.search(r"^## \[0\.1", source, re.MULTILINE)
 
 
-def test_redesign_changelog_japanese_catalogue_translates_every_source_message() -> None:
-    catalogue_path = REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"
+def test_redesign_changelog_japanese_catalogue_translates_every_source_message() -> (
+    None
+):
+    catalogue_path = (
+        REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"
+    )
     with catalogue_path.open(encoding="utf-8") as stream:
         catalogue = pofile.read_po(stream, locale="ja")
 

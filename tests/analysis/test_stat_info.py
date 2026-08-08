@@ -1,4 +1,5 @@
 """Tests for gwexpy/analysis/stat_info.py."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -21,20 +22,21 @@ class TestAssociationEdges:
 
         class FakeMatrix:
             def correlation_vector(self, target, method, parallel):
-                return pd.DataFrame({
-                    "channel": ["a", "b"],
-                    "score": [0.5, 0.8],
-                    "row": [0, 0],
-                    "col": [0, 1],
-                })
+                return pd.DataFrame(
+                    {
+                        "channel": ["a", "b"],
+                        "score": [0.5, 0.8],
+                        "row": [0, 0],
+                        "col": [0, 1],
+                    }
+                )
 
         class FakeTarget:
             name = "T"
 
         with pytest.raises(ValueError, match="Unknown threshold_mode"):
             association_edges(
-                FakeTarget(), FakeMatrix(),
-                threshold=0.5, threshold_mode="invalid"
+                FakeTarget(), FakeMatrix(), threshold=0.5, threshold_mode="invalid"
             )
 
     def test_basic_no_threshold(self):
@@ -42,12 +44,14 @@ class TestAssociationEdges:
 
         class FakeMatrix:
             def correlation_vector(self, target, method, parallel):
-                return pd.DataFrame({
-                    "channel": ["a", "b"],
-                    "score": [0.5, 0.8],
-                    "row": [0, 0],
-                    "col": [0, 1],
-                })
+                return pd.DataFrame(
+                    {
+                        "channel": ["a", "b"],
+                        "score": [0.5, 0.8],
+                        "row": [0, 0],
+                        "col": [0, 1],
+                    }
+                )
 
         class FakeTarget:
             name = "T"
@@ -62,17 +66,21 @@ class TestAssociationEdges:
 
         class FakeMatrix:
             def correlation_vector(self, target, method, parallel):
-                return pd.DataFrame({
-                    "channel": ["a", "b", "c"],
-                    "score": [0.3, 0.8, -0.9],
-                    "row": [0, 0, 0],
-                    "col": [0, 1, 2],
-                })
+                return pd.DataFrame(
+                    {
+                        "channel": ["a", "b", "c"],
+                        "score": [0.3, 0.8, -0.9],
+                        "row": [0, 0, 0],
+                        "col": [0, 1, 2],
+                    }
+                )
 
         class FakeTarget:
             name = "T"
 
-        result = association_edges(FakeTarget(), FakeMatrix(), threshold=0.5, threshold_mode="abs")
+        result = association_edges(
+            FakeTarget(), FakeMatrix(), threshold=0.5, threshold_mode="abs"
+        )
         assert len(result) == 2  # 0.8 and -0.9 pass |score| >= 0.5
 
     def test_threshold_raw(self):
@@ -80,17 +88,21 @@ class TestAssociationEdges:
 
         class FakeMatrix:
             def correlation_vector(self, target, method, parallel):
-                return pd.DataFrame({
-                    "channel": ["a", "b"],
-                    "score": [0.3, 0.8],
-                    "row": [0, 0],
-                    "col": [0, 1],
-                })
+                return pd.DataFrame(
+                    {
+                        "channel": ["a", "b"],
+                        "score": [0.3, 0.8],
+                        "row": [0, 0],
+                        "col": [0, 1],
+                    }
+                )
 
         class FakeTarget:
             name = "T"
 
-        result = association_edges(FakeTarget(), FakeMatrix(), threshold=0.5, threshold_mode="raw")
+        result = association_edges(
+            FakeTarget(), FakeMatrix(), threshold=0.5, threshold_mode="raw"
+        )
         assert len(result) == 1
 
     def test_threshold_percentile(self):
@@ -98,18 +110,22 @@ class TestAssociationEdges:
 
         class FakeMatrix:
             def correlation_vector(self, target, method, parallel):
-                return pd.DataFrame({
-                    "channel": ["a", "b", "c", "d"],
-                    "score": [0.1, 0.3, 0.6, 0.9],
-                    "row": [0, 0, 0, 0],
-                    "col": [0, 1, 2, 3],
-                })
+                return pd.DataFrame(
+                    {
+                        "channel": ["a", "b", "c", "d"],
+                        "score": [0.1, 0.3, 0.6, 0.9],
+                        "row": [0, 0, 0, 0],
+                        "col": [0, 1, 2, 3],
+                    }
+                )
 
         class FakeTarget:
             name = "T"
 
         # 75th percentile should keep top 1
-        result = association_edges(FakeTarget(), FakeMatrix(), threshold=75.0, threshold_mode="percentile")
+        result = association_edges(
+            FakeTarget(), FakeMatrix(), threshold=75.0, threshold_mode="percentile"
+        )
         assert len(result) >= 1
 
     def test_threshold_percentile_as_fraction(self):
@@ -117,18 +133,22 @@ class TestAssociationEdges:
 
         class FakeMatrix:
             def correlation_vector(self, target, method, parallel):
-                return pd.DataFrame({
-                    "channel": ["a", "b"],
-                    "score": [0.3, 0.9],
-                    "row": [0, 0],
-                    "col": [0, 1],
-                })
+                return pd.DataFrame(
+                    {
+                        "channel": ["a", "b"],
+                        "score": [0.3, 0.9],
+                        "row": [0, 0],
+                        "col": [0, 1],
+                    }
+                )
 
         class FakeTarget:
             name = "T"
 
         # 0.75 → 75th percentile
-        result = association_edges(FakeTarget(), FakeMatrix(), threshold=0.75, threshold_mode="percentile")
+        result = association_edges(
+            FakeTarget(), FakeMatrix(), threshold=0.75, threshold_mode="percentile"
+        )
         assert isinstance(result, pd.DataFrame)
 
     def test_topk(self):
@@ -136,12 +156,14 @@ class TestAssociationEdges:
 
         class FakeMatrix:
             def correlation_vector(self, target, method, parallel):
-                return pd.DataFrame({
-                    "channel": ["a", "b", "c"],
-                    "score": [0.3, 0.8, 0.1],
-                    "row": [0, 0, 0],
-                    "col": [0, 1, 2],
-                })
+                return pd.DataFrame(
+                    {
+                        "channel": ["a", "b", "c"],
+                        "score": [0.3, 0.8, 0.1],
+                        "row": [0, 0, 0],
+                        "col": [0, 1, 2],
+                    }
+                )
 
         class FakeTarget:
             name = "T"
@@ -154,12 +176,14 @@ class TestAssociationEdges:
 
         class FakeMatrix:
             def correlation_vector(self, target, method, parallel):
-                return pd.DataFrame({
-                    "channel": ["a"],
-                    "score": [0.5],
-                    "row": [0],
-                    "col": [0],
-                })
+                return pd.DataFrame(
+                    {
+                        "channel": ["a"],
+                        "score": [0.5],
+                        "row": [0],
+                        "col": [0],
+                    }
+                )
 
         class FakeTarget:
             name = "T"
@@ -172,12 +196,14 @@ class TestAssociationEdges:
 
         class FakeMatrix:
             def correlation_vector(self, target, method, parallel):
-                return pd.DataFrame({
-                    "channel": ["a"],
-                    "score": [0.5],
-                    "row": [0],
-                    "col": [0],
-                })
+                return pd.DataFrame(
+                    {
+                        "channel": ["a"],
+                        "score": [0.5],
+                        "row": [0],
+                        "col": [0],
+                    }
+                )
 
         result = association_edges(object(), FakeMatrix())
         assert result["source"].iloc[0] == "target"
@@ -191,11 +217,14 @@ class TestAssociationEdges:
 class TestBuildGraph:
     def _make_edges_df(self):
         import pandas as pd
-        return pd.DataFrame({
-            "source": ["A", "A"],
-            "target": ["B", "C"],
-            "score": [0.5, 0.8],
-        })
+
+        return pd.DataFrame(
+            {
+                "source": ["A", "A"],
+                "target": ["B", "C"],
+                "score": [0.5, 0.8],
+            }
+        )
 
     def test_backend_none_returns_edges(self):
         edges = [{"source": "A", "target": "B", "score": 0.5}]

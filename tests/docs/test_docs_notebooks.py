@@ -26,8 +26,9 @@ NOTEBOOKS = [
     "intro_table.ipynb",
     "intro_noise.ipynb",
     "intro_fitting.ipynb",
-    "intro_segment_table.ipynb"
+    "intro_segment_table.ipynb",
 ]
+
 
 @pytest.mark.parametrize("nb_name", NOTEBOOKS)
 def test_notebook_execution(nb_name):
@@ -39,7 +40,12 @@ def test_notebook_execution(nb_name):
 
     # Configure execution
     # We use a 300s timeout as requested
-    client = NotebookClient(nb, timeout=300, kernel_name='python3', resources={'metadata': {'path': str(NB_DIR)}})
+    client = NotebookClient(
+        nb,
+        timeout=300,
+        kernel_name="python3",
+        resources={"metadata": {"path": str(NB_DIR)}},
+    )
 
     # Set environment variables if needed (e.g., to skip slow parts)
     os.environ["SKIP_MCMC"] = "1"

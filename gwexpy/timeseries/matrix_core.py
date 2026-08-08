@@ -231,7 +231,9 @@ class TimeSeriesMatrixCoreMixin:
         self: Any, method_name: str, other: Any, *args: Any, **kwargs: Any
     ) -> Any:
         """Apply a bivariate spectral method element-wise and return a matrix."""
-        FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
+        FrequencySeriesMatrix = ConverterRegistry.get_constructor(
+            "FrequencySeriesMatrix"
+        )
 
         if not hasattr(cast("TimeSeriesMatrix", self).series_class, method_name):
             raise NotImplementedError(
@@ -305,7 +307,9 @@ class TimeSeriesMatrixCoreMixin:
         self: Any, method_name: str, *args: Any, **kwargs: Any
     ) -> Any:
         """Apply a univariate spectral method element-wise and return a matrix."""
-        FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
+        FrequencySeriesMatrix = ConverterRegistry.get_constructor(
+            "FrequencySeriesMatrix"
+        )
 
         if not hasattr(cast("TimeSeriesMatrix", self).series_class, method_name):
             raise NotImplementedError(

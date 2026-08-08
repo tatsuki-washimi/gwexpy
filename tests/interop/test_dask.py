@@ -1,4 +1,5 @@
 """Tests for gwexpy/interop/dask_.py."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -59,5 +60,11 @@ class TestFromDask:
     def test_roundtrip(self):
         ts = _make_ts(n=8)
         arr = to_dask(ts)
-        ts2 = from_dask(TimeSeries, arr, t0=float(ts.t0.value), dt=float(ts.dt.value), unit=str(ts.unit))
+        ts2 = from_dask(
+            TimeSeries,
+            arr,
+            t0=float(ts.t0.value),
+            dt=float(ts.dt.value),
+            unit=str(ts.unit),
+        )
         np.testing.assert_array_equal(ts2.value, ts.value)

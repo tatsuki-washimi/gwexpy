@@ -1,0 +1,35 @@
+schema_version: 1
+release: v0.1.13
+purpose: reconstruct the candidate after PR #631 without duplicating its patch
+recorded_at: "2026-08-06T10:56:00Z"
+source_candidate:
+  path: /tmp/gwexpy-v0113-release
+  branch: codex/v0113-release
+  head: 27eb80dec2eb461c5aca91d4169f7ecf67feb82d
+  tree: 01cffe8477db5a5faea9fcd0a64d853d6408d35f
+  pre_reconstruction_baseline: /tmp/gwexpy-v0113-audit/reconstruction-baseline.json
+pr_631:
+  head: 3c803eab40c314b43682f75410f1e974f3200c90
+  merge_commit: ccb32e431e524965a00c8874cc9ea888bc4814ef
+  local_premerge_commit: c56433504
+  patch_id: efd0805cba9f58f24a0bfce65d35f20d09836a24
+  local_premerge_commit_excluded: true
+reconstructed_candidate:
+  path: /tmp/gwexpy-v0113-rc
+  branch: codex/v0113-rc
+  base: ccb32e431e524965a00c8874cc9ea888bc4814ef
+  pre_manifest_head: 57e21b004
+  pre_manifest_tree: 01cffe8477db5a5faea9fcd0a64d853d6408d35f
+tree_equality_before_manifest: true
+cherry_picks:
+  - 3020026b9
+  - 0447aa497
+  - c301427b9
+  - 23b73db5e
+  - 7006f1506
+  - 3dce800e9
+  - 8b9f5408d
+  - 20188b6f2
+  - 5c2ba2634
+  - 27eb80dec
+secrets_included: false
