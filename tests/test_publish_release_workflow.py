@@ -156,9 +156,13 @@ def test_readback_requires_opposite_bypass_actor_policies_per_ruleset():
     assert "`creation`" in creation
     for rule in ("`update`", "`deletion`", "`non_fast_forward`"):
         assert rule not in creation, rule
-    for rule in ("`update`", "`deletion`", "`non_fast_forward`", "`tag_name_pattern`"):
+    for rule in ("`update`", "`deletion`", "`non_fast_forward`"):
         assert rule in integrity, rule
     assert "`creation`" not in integrity
+    # `tag_name_pattern` belongs to neither row: the API refuses the rule type
+    # on this repository, so requiring it here would fail every readback on a
+    # check that can never pass. See the dedicated test below.
+    assert "`tag_name_pattern`" not in integrity
 
     # Opposite bypass requirements, each stated with its failure mode.
     assert "enumerated" in creation
@@ -172,6 +176,29 @@ def test_readback_requires_opposite_bypass_actor_policies_per_ruleset():
     for field in ("`actor_type`", "`actor_id`", "`bypass_mode`"):
         assert field in prose, field
     assert "break-glass" in prose
+
+
+def test_readback_explains_the_unavailable_tag_name_rule_and_its_substitute():
+    """An absent control must be explained, not silently dropped.
+
+    `tag_name_pattern` cannot be configured on this repository -- the API
+    rejects the rule type regardless of parameters -- so the readback table
+    omits it. Omitting it without a reason would read as an oversight to the
+    next auditor, who would then either re-attempt the impossible change or
+    record a false finding. The doc must therefore say it is unavailable and
+    name what enforces the tag name in its place, so the absence is auditable
+    as a deliberate state rather than a gap.
+    """
+    prose = releasing_readback(collapse=True)
+    assert "`tag_name_pattern` is not available on this repository" in prose
+    # The evidence, so a future reader need not rediscover it by trying again.
+    assert "Invalid rule 'tag_name_pattern'" in prose
+    # Each substitute control, named where an auditor can verify it.
+    assert "release-tags-create-admin-only" in prose
+    assert "RELEASE_TAG_PATTERN" in prose
+    assert "`github.ref_name`" in prose
+    # The residual gap is stated rather than implied to be closed.
+    assert "residual gap" in prose.lower()
 
 
 def test_verify_pins_python_before_running_the_validator():
