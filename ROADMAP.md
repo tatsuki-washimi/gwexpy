@@ -12,7 +12,15 @@ moving to the first semantically complete feature release (v0.2.0).
 ## Release policy
 
 - **Patch releases (v0.x.y)** contain bug fixes only — no new features, no new public
-  APIs, no new dependencies.
+  APIs, no new dependencies. Two clarifications, so that "bug fix" is not read more
+  narrowly than intended:
+  - Making an argument that is *already accepted but silently ignored* actually take
+    effect — or raise — is a bug fix, not a new feature. The API surface does not grow;
+    it stops advertising something it never did.
+  - Narrowing a public API to correct a contract violation (for example, replacing a
+    silent wrong result with an explicit `TypeError`) is also in scope, even though it
+    is backwards-incompatible. Every such narrowing must be disclosed in `CHANGELOG.md`
+    as an explicit before/after table. v0.1.13 is the worked example.
 - **Maintenance releases** (v0.1.14, v0.2.1+) are never pre-assigned features. They are
   issued only if regressions or newly discovered bugs require them after a release.
   "Finish feature X in v0.2.1" is explicitly not allowed: a feature is either complete
@@ -23,25 +31,38 @@ moving to the first semantically complete feature release (v0.2.0).
 - Documentation, tests, and contract updates are part of each feature's definition of
   done — not a separate release theme.
 
-## v0.1.13 — Silent-corruption stabilization patch (next)
+## v0.1.13 — Silent-corruption stabilization patch (released 2026-08-08)
 
 > Close every known case where GWexpy returns wrong numbers, wrong units, or silently
 > dropped metadata without raising.
 
-Milestone: [v0.1.13](https://github.com/tatsuki-washimi/gwexpy/milestone/8). Scope by
-category (this is the only section of this document that enumerates issues
-exhaustively; the milestone remains authoritative):
+Released from `f7f836eec7e6247a01e9a1b61cc1a2121235e58d` as
+[v0.1.13](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.1.13), on PyPI as
+`gwexpy==0.1.13`, archived at [10.5281/zenodo.21849416](https://doi.org/10.5281/zenodo.21849416).
+Milestone [v0.1.13](https://github.com/tatsuki-washimi/gwexpy/milestone/8) closed with
+no open issues. The authoritative per-change record is the `[0.1.13]` section of
+`CHANGELOG.md`, including the before/after tables for every API narrowing; the
+categories below are what the release set out to do.
 
 - **Wrong numbers / units / dtype (P0)**: ROOT non-double histograms read as `float64`
   ([#593]); Quantity/Unit operands capturing containers and dropping class, unit, or
   metadata in `SeriesMatrix`, `SpectrogramMatrix`, Field collections, and `Histogram`
   ([#575], [#576], [#577], [#578], [#579]); WIN reader decoding only 8 of the 12
   sampling-rate bits ([#610]).
-- **GWpy compatibility**: `TimeSeries.rms()` signature incompatibility ([#451], fixed
-  via PR [#453]).
+- **GWpy compatibility**: `TimeSeries.rms()` signature incompatibility ([#451]). Fixed
+  inside the release candidate; PR [#453] was closed as superseded rather than merged.
 - **Accepted-but-ignored arguments**: `start`/`end` silently ignored by some readers
   ([#611]); GWF `parallel`/`nproc` no-op ([#588]); ndscope HDF5 writer creation kwargs
-  ignored ([#590]).
+  ignored ([#590]). All three now raise. Only #611 gained a working windowed read
+  path; #588 and #590 ship as fail-closed contracts, with the implementations in
+  v0.2.0.
+- **Broken or nondeterministic I/O**: `TimeSeries.read(path, format="zarr")` always
+  raising `IsADirectoryError` so the documented entry point never worked ([#620]);
+  zarr returning a nondeterministic channel ([#614]); NetCDF4 round trips perturbing
+  `t0` and `dt` ([#615]).
+- **Timing and provenance precision**: `crop` perturbing `dt` by several ulp, which the
+  truncating `nfft` derivation amplifies into an O(1/nfft) frequency-axis error
+  ([#617]); read provenance dropped by the collection re-wrap ([#618]).
 - **CI integrity**: dedicated gates that can pass with zero collected tests ([#511]).
 - **Documentation vs implementation**: SegmentTable reference describing unimplemented
   APIs ([#605]); GWinc docstring pointing at a nonexistent classmethod ([#608]); and
@@ -52,7 +73,9 @@ exhaustively; the milestone remains authoritative):
   is that documentation correction, not an implementation commitment.
 
 Explicitly excluded: any new feature or API, new dependencies, large refactors, and
-PR [#488] (GUI extraction — merged right after this release).
+PR [#488] (GUI extraction — merged right after this release). Monte-Carlo provenance
+([#508]) and the `_t0_ns` precision follow-up ([#513]) were deferred to v0.2.0 during
+the release rather than shipped here.
 
 [#593]: https://github.com/tatsuki-washimi/gwexpy/issues/593
 [#575]: https://github.com/tatsuki-washimi/gwexpy/issues/575
@@ -67,6 +90,11 @@ PR [#488] (GUI extraction — merged right after this release).
 [#588]: https://github.com/tatsuki-washimi/gwexpy/issues/588
 [#590]: https://github.com/tatsuki-washimi/gwexpy/issues/590
 [#511]: https://github.com/tatsuki-washimi/gwexpy/issues/511
+[#614]: https://github.com/tatsuki-washimi/gwexpy/issues/614
+[#615]: https://github.com/tatsuki-washimi/gwexpy/issues/615
+[#617]: https://github.com/tatsuki-washimi/gwexpy/issues/617
+[#618]: https://github.com/tatsuki-washimi/gwexpy/issues/618
+[#620]: https://github.com/tatsuki-washimi/gwexpy/issues/620
 [#508]: https://github.com/tatsuki-washimi/gwexpy/issues/508
 [#513]: https://github.com/tatsuki-washimi/gwexpy/issues/513
 [#605]: https://github.com/tatsuki-washimi/gwexpy/issues/605

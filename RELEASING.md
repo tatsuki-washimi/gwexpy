@@ -182,7 +182,32 @@ uniformly misreads one of them every time:
 | Ruleset | Required `rules[].type` | Required `bypass_actors` |
 |---|---|---|
 | `release-tags-create-admin-only` | `creation` | Exactly the actors permitted to create a release tag, enumerated. An empty list here means *no one* — not even an admin — can create a `v*` tag, so the release cannot be published at all. |
-| `release-tags-integrity` | `update`, `deletion`, `non_fast_forward`, `tag_name_pattern` | Empty. Any actor listed here may move or delete a published release tag, which is exactly the immutability this ruleset exists to provide. |
+| `release-tags-integrity` | `update`, `deletion`, `non_fast_forward` | Empty. Any actor listed here may move or delete a published release tag, which is exactly the immutability this ruleset exists to provide. |
+
+### `tag_name_pattern` is not available on this repository
+
+An earlier revision of this document listed `tag_name_pattern` as a fourth
+required rule on `release-tags-integrity`. It cannot be configured here: the
+API rejects the rule type with `422 Validation Failed / Invalid rule
+'tag_name_pattern'` regardless of the parameters supplied (verified 2026-08-08
+against four payload shapes while preparing v0.1.13). The repository is
+user-owned; the REST reference documents the type, but this repository cannot
+accept it. Do not record its absence as a configuration defect, and do not
+treat a readback without it as a failed check.
+
+What enforces the release tag name instead:
+
+- `release-tags-create-admin-only` already restricts creation of any
+  `refs/tags/v*` to the enumerated bypass actors, so an arbitrary contributor
+  cannot create a release tag of any name.
+- `scripts/validate_release.py` applies the same final-release SemVer regex
+  (`RELEASE_TAG_PATTERN`) to `expected_tag`, which on a tag push is
+  `github.ref_name`. A malformed tag fails the `verify` job, so `build`,
+  `smoke`, and `publish` never run and nothing is published.
+- The `pypi` environment permits deployment only from `v*` tags.
+
+The residual gap is cosmetic: a permitted creator can create a badly named
+`v*` tag, which then fails CI and publishes nothing.
 
 For each entry that legitimately appears on `release-tags-create-admin-only`,
 record `actor_type`, `actor_id`, and `bypass_mode`.  `bypass_mode` is what
@@ -214,31 +239,35 @@ old binding has been removed.
 
 The `pypi` environment permits `v*` tags only and does not permit branch
 deployments.  The `release-tags-create-admin-only` and
-`release-tags-integrity` rulesets use target selector `refs/tags/v*`; the
-latter additionally enforces the final-release SemVer metadata restriction:
+`release-tags-integrity` rulesets use target selector `refs/tags/v*`.
+
+The final-release SemVer restriction
 
 ```text
 ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$
 ```
 
-`release-tags-integrity` must also carry the `update`, `deletion`, and
+is enforced by `scripts/validate_release.py`, not by the ruleset -- see
+"`tag_name_pattern` is not available on this repository" above.
+
+`release-tags-integrity` must carry the `update`, `deletion`, and
 `non_fast_forward` rules, with an empty `bypass_actors`.  Without those rules
-the ruleset constrains only what a tag may be *named*, not whether an existing
-one can be moved or removed; with a bypass actor it names the operations but
-still permits them for that actor.  In either case the "Immutable tag
-operation" property claimed above does not hold.
+the ruleset does not constrain whether an existing tag can be moved or removed;
+with a bypass actor it names the operations but still permits them for that
+actor.  In either case the "Immutable tag operation" property claimed above
+does not hold.
 
 `release-tags-create-admin-only` is the mirror image: its `creation` rule is
 what makes tag creation an enumerated permission, so its `bypass_actors` must
 list every actor allowed to create a release tag.  Leaving it empty locks out
 the release itself.
 
-After creation, record both ruleset IDs and their GET responses in the release
-audit manifest, then replace the placeholders below in a docs-only PR.
+Record both ruleset IDs and their GET responses in the release audit manifest.
+The current IDs, read back on 2026-08-08 while preparing v0.1.13:
 
 ```text
-release-tags-create-admin-only: <RULESET_ID>
-release-tags-integrity: <RULESET_ID>
+release-tags-create-admin-only: 20117036
+release-tags-integrity: 20117136
 ```
 
 For an emergency recovery, first save the current ruleset JSON, then disable
