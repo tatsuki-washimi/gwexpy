@@ -4,25 +4,27 @@ If you use GWexpy in your research or publications, please cite it as follows.
 
 ## BibTeX Entry
 
-For reproducibility of analysis results and continued maintenance of the software, please use the following BibTeX entry.
+For reproducibility, cite the exact version you used. Replace `<version used>`
+with that version and use the official title below.
 
 ```bibtex
 @software{gwexpy2026,
   author = {Washimi, Tatsuki},
-  title = {GWexpy: Extended Analysis Utilities for Gravitational Wave Data},
+  title = {GWexpy: Extending GWpy with metadata-preserving multidimensional abstractions for detector commissioning},
   year = {2026},
   url = {https://github.com/tatsuki-washimi/gwexpy},
-  version = {0.1.10}
+  version = {<version used>}
 }
 ```
 
-The `version` field above is pinned to the release current at the time this page was written; check the [Changelog](changelog.md) for the version you actually used.
+Find released versions on the [release page](https://github.com/tatsuki-washimi/gwexpy/releases) or in the [Changelog](changelog.md).
 
 ## CITATION.cff
 
-You can also retrieve citation information directly from GitHub using the
-[**CITATION.cff**](https://github.com/tatsuki-washimi/gwexpy/blob/main/CITATION.cff)
-file located in the root directory of the repository.
+For a reproducible citation, use the `CITATION.cff` file from the exact release
+tag you used (for example,
+`https://github.com/tatsuki-washimi/gwexpy/blob/<exact tag>/CITATION.cff`),
+rather than the mutable `main` branch.
 
 ## Related Works
 

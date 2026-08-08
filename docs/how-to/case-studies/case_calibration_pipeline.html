@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=918d5a3b"></script>
+    <script src="../../_static/documentation_options.js?v=2a71d826"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -642,7 +642,7 @@ The system has:</p>
                     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;K1:LSC-DARM_OUT_DQ&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;ct&quot;</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Signal: </span><span class="si">{</span><span class="n">T</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> s at </span><span class="si">{</span><span class="n">fs_hz</span><span class="si">}</span><span class="s2"> Hz  (</span><span class="si">{</span><span class="n">N</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> samples)&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RMS (counts): </span><span class="si">{</span><span class="n">ts_raw</span><span class="o">.</span><span class="n">rms</span><span class="p">()</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RMS (counts): </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ts_raw</span><span class="o">.</span><span class="n">value</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

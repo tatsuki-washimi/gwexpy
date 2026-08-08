@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=13c98202"></script>
+    <script src="../_static/documentation_options.js?v=a835001f"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -426,7 +426,7 @@
 <h2>概要<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
 <p><strong>ステータス:</strong> 試作版（ソース / 開発環境専用）</p>
 <p>GWexpy のソースツリーには <strong>PyQt5 ベースの GUI</strong> が含まれており、対話的なデータ探索と可視化が可能です。ただし現時点では、GUI は <strong>試作段階 / 実験的インターフェース</strong>として扱ってください。再現性やサポートの観点では、<strong>Python API</strong> が引き続き主要インターフェースです。</p>
-<p>GUI アプリと <code class="docutils literal notranslate"><span class="pre">gwexpy.gui</span></code> package は <strong>初回 PyPI 配布物には含めません</strong>。初回 PyPI リリースは Python ライブラリ API を主対象とし、GUI の安定化は post-release 作業として別に扱います。</p>
+<p>GUI アプリと <code class="docutils literal notranslate"><span class="pre">gwexpy.gui</span></code> package は <strong>公開済み PyPI 配布物には含まれません</strong>。公開済みパッケージは Python ライブラリ API を主対象とし、GUI の安定化は post-release 作業として別に扱います。</p>
 </section>
 <section id="installation">
 <h2>インストール<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
@@ -450,7 +450,7 @@ pip<span class="w"> </span>install<span class="w"> </span>PyQt5<span class="w"> 
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>gwexpy.gui
 </pre></div>
 </div>
-<p>初回 PyPI リリースでは <code class="docutils literal notranslate"><span class="pre">gwexpy.gui</span></code> console script も <code class="docutils literal notranslate"><span class="pre">gwexpy.gui</span></code> package も配布しません。</p>
+<p>公開済み PyPI パッケージでは <code class="docutils literal notranslate"><span class="pre">gwexpy.gui</span></code> console script も <code class="docutils literal notranslate"><span class="pre">gwexpy.gui</span></code> package も配布しません。</p>
 <section id="programmatically">
 <h3>プログラム内での起動<a class="headerlink" href="#programmatically" title="Link to this heading">#</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.gui.pyaggui</span><span class="w"> </span><span class="kn">import</span> <span class="n">MainWindow</span>
