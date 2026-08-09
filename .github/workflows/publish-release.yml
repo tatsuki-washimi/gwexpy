@@ -58,7 +58,7 @@ jobs:
           fi
 
       - name: Set up Python
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.11"
 
@@ -93,7 +93,7 @@ jobs:
           path: source
 
       - name: Set up Python
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.11"
 
@@ -121,7 +121,7 @@ jobs:
           sha256sum LICENSE.txt | awk '{print $1}' > release-sidecars/LICENSE.sha256
 
       - name: Upload PyPI payload only
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: release-payload-${{ needs.verify.outputs.source_sha }}
           path: source/release-payload
@@ -129,7 +129,7 @@ jobs:
           retention-days: 90
 
       - name: Upload release sidecars separately
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: release-sidecars-${{ needs.verify.outputs.source_sha }}
           path: source/release-sidecars
@@ -155,18 +155,18 @@ jobs:
           path: control
 
       - name: Set up Python
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Download PyPI payload
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: release-payload-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-payload
 
       - name: Download detached sidecars
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: release-sidecars-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-sidecars
@@ -221,7 +221,7 @@ jobs:
           PY
 
       - name: Upload fixed-name smoke report
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: release-smoke-${{ needs.verify.outputs.source_sha }}-python-${{ matrix.python-version }}-${{ matrix.distribution }}
           path: ${{ runner.temp }}/python-${{ matrix.python-version }}-${{ matrix.distribution }}.json
@@ -242,18 +242,18 @@ jobs:
           path: source
 
       - name: Set up Python
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.11"
 
       - name: Download detached sidecars from this run
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: release-sidecars-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-sidecars
 
       - name: Download smoke reports from this run
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           pattern: release-smoke-${{ needs.verify.outputs.source_sha }}-*
           path: ${{ runner.temp }}/release-smoke
@@ -275,7 +275,7 @@ jobs:
             --output "${{ runner.temp }}/release-evidence/aggregate.json"
 
       - name: Upload 90-day integration evidence
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: v0113-integration-evidence-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-evidence/aggregate.json
@@ -296,7 +296,7 @@ jobs:
       id-token: write
     steps:
       - name: Download PyPI payload only
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: release-payload-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-payload
