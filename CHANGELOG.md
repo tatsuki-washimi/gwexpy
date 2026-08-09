@@ -21,6 +21,15 @@
   retain the legacy US customary unit assumption; `usUnits` is metadata and
   is not returned as a data channel.
 
+### Development and CI
+
+- **CI**: I/O conformance generator smoke checks now enforce a 60-second
+  production timeout and terminate the complete process group with bounded
+  SIGTERM/SIGKILL cleanup, reaping, and diagnostic output tails. The PR-fast
+  gate no longer repeats the dedicated I/O conformance suite, and workflow
+  checkouts fetch full history only where merge-base or ancestry checks need
+  it (#629, #630).
+
 ## [0.1.13] - 2026-08-08
 
 ### Behaviour-visible bug fixes
