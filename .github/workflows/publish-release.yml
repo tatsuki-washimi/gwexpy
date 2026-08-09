@@ -46,6 +46,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.release_ref || github.ref_name }}
+          # Full history is required for release ancestry validation.
           fetch-depth: 0
           path: source
 

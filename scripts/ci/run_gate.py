@@ -146,6 +146,7 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
                 "--ignore=tests/gui/",
                 "--ignore=tests/nds/",
                 "--ignore=tests/io/",
+                "--ignore=tests/io_conformance/",
                 "--ignore=tests/segments/",
                 "--ignore=tests/table/",
                 "--ignore=tests/test_geomap.py",

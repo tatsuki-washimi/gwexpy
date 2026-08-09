@@ -43,8 +43,10 @@ jobs:
       MPLCONFIGDIR: /tmp/matplotlib
     steps:
       - name: Checkout repository
+        timeout-minutes: 5
         uses: actions/checkout@v7
         with:
+          # Full history is required for base/head changed-notebook detection.
           fetch-depth: 0
 
       - name: Set up micromamba
@@ -122,9 +124,8 @@ jobs:
       MPLCONFIGDIR: /tmp/matplotlib
     steps:
       - name: Checkout repository
+        timeout-minutes: 5
         uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
 
       - name: Set up micromamba
         uses: mamba-org/setup-micromamba@v3
