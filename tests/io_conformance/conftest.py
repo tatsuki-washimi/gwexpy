@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import ast
 import os
+import signal
 import subprocess
 import sys
 import textwrap
+import time
 import warnings
 from pathlib import Path
 
@@ -39,6 +41,9 @@ def _looks_like_missing_backend(stderr: str) -> bool:
 ROOT = Path(__file__).resolve().parents[2]
 GENERATORS_DIR = Path(__file__).resolve().parent / "generators"
 BLOCKED_PREFIX = "gwexpy"
+_GENERATOR_SMOKE_TIMEOUT_SECONDS = 60
+_GENERATOR_SMOKE_TERMINATION_GRACE_SECONDS = 5
+_GENERATOR_SMOKE_TAIL_CHARACTERS = 4000
 
 
 def _generator_path(spec: GeneratorSpec) -> Path:
@@ -47,6 +52,116 @@ def _generator_path(spec: GeneratorSpec) -> Path:
     # third-party ``zarr`` package, while its spec name stays ``zarr``.
     module_leaf = spec.module_name.rsplit(".", 1)[-1]
     return GENERATORS_DIR / f"{module_leaf}.py"
+
+
+def _process_group_exists(process_group: int) -> bool:
+    """Return whether a POSIX process group still has at least one member."""
+    try:
+        os.killpg(process_group, 0)
+    except ProcessLookupError:
+        return False
+    return True
+
+
+def _as_text(output: str | bytes | None) -> str:
+    if output is None:
+        return ""
+    if isinstance(output, bytes):
+        return output.decode(errors="replace")
+    return output
+
+
+def _merge_captured_output(previous: str, current: str | bytes | None) -> str:
+    """Merge cumulative or incremental timeout output without duplication."""
+    addition = _as_text(current)
+    if not addition or previous.endswith(addition):
+        return previous
+    if addition.startswith(previous):
+        return addition
+    overlap_limit = min(len(previous), len(addition))
+    for overlap in range(overlap_limit, 0, -1):
+        if previous.endswith(addition[:overlap]):
+            return previous + addition[overlap:]
+    return previous + addition
+
+
+def _communicate_bounded(
+    process: subprocess.Popen[str],
+    timeout: float,
+    stdout: str,
+    stderr: str,
+) -> tuple[str, str, bool]:
+    """Drain pipes for at most ``timeout``, retaining partial diagnostics."""
+    try:
+        complete_stdout, complete_stderr = process.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired as exc:
+        return (
+            _merge_captured_output(stdout, exc.stdout),
+            _merge_captured_output(stderr, exc.stderr),
+            False,
+        )
+    return (
+        _merge_captured_output(stdout, complete_stdout),
+        _merge_captured_output(stderr, complete_stderr),
+        True,
+    )
+
+
+def _close_process_pipes(process: subprocess.Popen[str]) -> None:
+    """Close local pipe readers so escaped descendants cannot block cleanup."""
+    for pipe in (process.stdout, process.stderr):
+        if pipe is None:
+            continue
+        try:
+            pipe.close()
+        except OSError:
+            pass
+
+
+def _reap_process_bounded(process: subprocess.Popen[str], timeout: float) -> None:
+    """Wait a bounded time for the direct child, killing it once if necessary."""
+    try:
+        process.wait(timeout=timeout)
+        return
+    except subprocess.TimeoutExpired:
+        process.kill()
+    try:
+        process.wait(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        return
+
+
+def _terminate_timed_out_process(
+    process: subprocess.Popen[str], stdout: str, stderr: str
+) -> tuple[str, str]:
+    """Terminate a timed-out process tree and drain/reap it within hard bounds."""
+    grace = _GENERATOR_SMOKE_TERMINATION_GRACE_SECONDS
+    if os.name == "posix":
+        try:
+            os.killpg(process.pid, signal.SIGTERM)
+        except ProcessLookupError:
+            pass
+        grace_deadline = time.monotonic() + grace
+        stdout, stderr, _ = _communicate_bounded(process, grace, stdout, stderr)
+        while _process_group_exists(process.pid) and time.monotonic() < grace_deadline:
+            time.sleep(min(0.01, max(0.0, grace_deadline - time.monotonic())))
+        if _process_group_exists(process.pid):
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+    else:
+        process.terminate()
+        stdout, stderr, terminated = _communicate_bounded(
+            process, grace, stdout, stderr
+        )
+        if not terminated:
+            process.kill()
+
+    stdout, stderr, _ = _communicate_bounded(process, grace, stdout, stderr)
+    _close_process_pipes(process)
+    _reap_process_bounded(process, grace)
+    return stdout, stderr
 
 
 def _parse_generator_source(path: Path) -> ast.AST:
@@ -145,28 +260,42 @@ def _run_generator_smoke(spec: GeneratorSpec) -> None:
         """
     )
 
-    completed = subprocess.run(
+    process = subprocess.Popen(
         [sys.executable, "-c", code],
         cwd=ROOT,
         env=env,
-        capture_output=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         text=True,
-        check=False,
+        start_new_session=os.name == "posix",
     )
-    if completed.returncode != 0:
-        if _looks_like_missing_backend(completed.stderr):
+    try:
+        stdout, stderr = process.communicate(timeout=_GENERATOR_SMOKE_TIMEOUT_SECONDS)
+    except subprocess.TimeoutExpired as exc:
+        stdout, stderr = _terminate_timed_out_process(
+            process,
+            _as_text(exc.stdout),
+            _as_text(exc.stderr),
+        )
+        raise pytest.UsageError(
+            "IO conformance generator smoke check timed out for "
+            f"{spec.module_name} after {_GENERATOR_SMOKE_TIMEOUT_SECONDS}s:\n"
+            f"STDOUT (tail):\n{stdout[-_GENERATOR_SMOKE_TAIL_CHARACTERS:]}\n"
+            f"STDERR (tail):\n{stderr[-_GENERATOR_SMOKE_TAIL_CHARACTERS:]}"
+        )
+    if process.returncode != 0:
+        if _looks_like_missing_backend(stderr):
             warnings.warn(
                 f"Skipping IO conformance generator smoke check for "
                 f"{spec.module_name}: optional backend unavailable "
-                f"({completed.stderr.strip().splitlines()[-1] if completed.stderr.strip() else 'unknown'}).",
+                f"({stderr.strip().splitlines()[-1] if stderr.strip() else 'unknown'}).",
                 UserWarning,
                 stacklevel=2,
             )
             return
         raise pytest.UsageError(
             "IO conformance generator smoke check failed for "
-            f"{spec.module_name}:\nSTDOUT:\n{completed.stdout}\n"
-            f"STDERR:\n{completed.stderr}"
+            f"{spec.module_name}:\nSTDOUT:\n{stdout}\nSTDERR:\n{stderr}"
         )
 
 
