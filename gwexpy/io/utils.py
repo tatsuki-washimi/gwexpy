@@ -192,6 +192,30 @@ def datetime_to_gps(dt: _dt.datetime) -> float:
     return float(to_gps(dt))
 
 
+def _apply_tzinfo(dt: _dt.datetime, tz: _dt.tzinfo) -> _dt.datetime:
+    """Attach tzinfo to naive datetime, rejecting ambiguous or nonexistent times."""
+    if tz is _dt.UTC or tz == _dt.UTC:
+        return dt.replace(tzinfo=tz)
+    
+    dt0 = dt.replace(tzinfo=tz, fold=0)
+    dt1 = dt.replace(tzinfo=tz, fold=1)
+    
+    try:
+        utc0 = dt0.astimezone(_dt.UTC)
+        utc1 = dt1.astimezone(_dt.UTC)
+    except Exception:
+        # Fallback if tzinfo doesn't support astimezone (e.g. some mock objects)
+        return dt0
+        
+    if utc0 != utc1:
+        raise ValueError(
+            f"Local time {dt.strftime('%Y-%m-%d %H:%M:%S')} is ambiguous or nonexistent "
+            f"in timezone {tz} due to DST transitions."
+        )
+        
+    return dt0
+
+
 def ensure_datetime(value: Any, tzinfo: _dt.tzinfo | None = None) -> _dt.datetime:
     """Parse a timestamp into a timezone-aware datetime.
 
@@ -199,7 +223,7 @@ def ensure_datetime(value: Any, tzinfo: _dt.tzinfo | None = None) -> _dt.datetim
     """
     if isinstance(value, _dt.datetime):
         if value.tzinfo is None and tzinfo is not None:
-            return value.replace(tzinfo=tzinfo)
+            return _apply_tzinfo(value, tzinfo)
         if value.tzinfo is None:
             raise ValueError("Naive datetime requires timezone")
         return value
@@ -224,7 +248,7 @@ def ensure_datetime(value: Any, tzinfo: _dt.tzinfo | None = None) -> _dt.datetim
             with contextlib.suppress(ValueError):
                 dt = _dt.datetime.strptime(text, fmt)
                 if dt.tzinfo is None and tzinfo is not None:
-                    dt = dt.replace(tzinfo=tzinfo)
+                    dt = _apply_tzinfo(dt, tzinfo)
                 return dt
     raise ValueError(f"Unrecognised time value: {value!r}")
 
