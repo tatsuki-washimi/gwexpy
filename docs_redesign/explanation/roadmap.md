@@ -3,7 +3,7 @@
 This page provides the public roadmap entry point for GWexpy documentation and feature planning.
 It is intended as a lightweight overview rather than a release contract.
 
-*Last updated: 2026-08-01.*
+*Last updated: 2026-08-09.*
 
 ## How to Read This Page
 
@@ -15,8 +15,8 @@ The roadmap is public, but priorities can change based on research needs, mainte
 
 ## Near-Term Focus
 
-- Reliability hardening: eliminating the known cases where data could be returned with
-  silently wrong values, units, or dropped metadata instead of an explicit error
+- An explicit behavioural contract for container arithmetic: predictable units,
+  metadata propagation, and explicit failures instead of silent type downgrades
 - Documentation quality improvements across navigation, accessibility, and search
 - Clearer migration guidance for GWpy users
 - Better notebook and tutorial reliability in CI
@@ -29,8 +29,9 @@ The roadmap is public, but priorities can change based on research needs, mainte
   axes, and metadata preserved end to end
 - A complete segment-based analysis workflow: load segments, select, process with
   explicit error and missing-data handling, persist, and resume
-- An explicit behavioural contract for container arithmetic: predictable units,
-  metadata propagation, and explicit failures instead of silent type downgrades
+- Aggregating and summarizing many experiment segments together, without
+  hand-written loops
+- Consistent handling of physical coordinate systems for field and terrain data
 - Broader CLI coverage beyond the current prototype-stage interface
 - More analysis workflows for noise characterization and time-frequency studies
 - Expanded interoperability guides for external scientific Python libraries, including reading
@@ -48,6 +49,8 @@ left out of scope, see [Where GWexpy Sits in the GW Python Ecosystem](ecosystem)
 - Mesh-aware field models and interoperability with numerical solver outputs
 - Forecasting and inference utilities built on the matrix containers, such as Fisher
   analysis
+- A stable, documented public API surface that downstream applications and GUIs can
+  build on
 - Richer visual discovery paths across examples and reference content
 - More automation around documentation verification and sample-code validation
 - Potential improvements to theme, search quality, and interactive visual components
