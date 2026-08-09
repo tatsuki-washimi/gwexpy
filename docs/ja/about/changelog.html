@@ -483,6 +483,17 @@ retain the legacy US customary unit assumption; <code class="docutils literal no
 is not returned as a data channel.</p></li>
 </ul>
 </section>
+<section id="development-and-ci">
+<h3>Development and CI<a class="headerlink" href="#development-and-ci" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>CI</strong>: I/O conformance generator smoke checks now enforce a 60-second
+production timeout and terminate the complete process group with bounded
+SIGTERM/SIGKILL cleanup, reaping, and diagnostic output tails. The PR-fast
+gate no longer repeats the dedicated I/O conformance suite, and workflow
+checkouts fetch full history only where merge-base or ancestry checks need
+it (#629, #630).</p></li>
+</ul>
+</section>
 </section>
 <section id="id1">
 <h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.12...v0.1.13">0.1.13</a> - 2026-08-08<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
@@ -1736,6 +1747,7 @@ strides). Re-pointed <code class="docutils literal notranslate"><span class="pre
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unreleased">Unreleased</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removed-breaking">Removed (breaking)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#behaviour-visible-bug-fixes">動作に影響するバグ修正</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#development-and-ci">Development and CI</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">0.1.13 - 2026-08-08</a><ul class="pst-show_toc_level nav section-nav flex-column">
