@@ -63,7 +63,7 @@ gwexpy の利用者向け I/O ガイドです。
 | **A. GW標準** | GW 系の標準保存、共有、取得経路を使いたい | **HDF5** | GWF, HDF5, hdf.ndscope, xml.diaggui, NDS2, GWOSC |
 | **B. 地震・地球物理観測** | 既存の地震・電磁気観測フォーマットを読む | **mseed** | mseed, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5（MTH5 standalone は状況注記のみ） |
 | **C. 汎用・解析用** | 汎用保存、外部解析、交換をしたい | **CSV / TXT** または **Zarr** | CSV / TXT, NetCDF4, Zarr, ROOT |
-| **D. 計測機器・ロガー** | ロガーや機材固有の時系列を読む | **GBD** または **TDMS** | GBD, TDMS, SDB / SQLite / SQLite3, WAV, MP3, FLAC, OGG, M4A |
+| **D. 計測機器・ロガー** | ロガーや機材固有の時系列を読む | **GBD** または **TDMS** | GBD, TDMS, SDB, WAV, MP3, FLAC, OGG, M4A |
 
 > **補足**: `NDS2` と `GWOSC` はファイル形式ではなく取得経路ですが、GW 系の代表的な入口なので **A. GW標準** に含めています。表では `ネットワーク経由` として扱います。
 
@@ -103,7 +103,7 @@ ts = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 
 | 形式 / 系統 | 単一 | 複数 | そのほかの対応 |
 |---|---|---|---|
-| **GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / SDB / SQLite / SQLite3 / WAV / Audio** | `TimeSeries` | `TimeSeriesDict` | end-user 向け direct I/O の基本形 |
+| **GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / SDB / WAV / Audio** | `TimeSeries` | `TimeSeriesDict` | end-user 向け direct I/O の基本形 |
 | **CSV** | `TimeSeries` | `TimeSeriesDict` | `TimeSeriesDict` は manifest 付き collection directory にも対応 |
 | **TXT** | `TimeSeries` | `TimeSeriesDict` | 複数チャネルの direct I/O は collection directory を使う |
 | **nc / Zarr / GBD / TDMS** | `TimeSeries` | `TimeSeriesDict`, `TimeSeriesMatrix` | 行列系まで含む direct I/O |
@@ -252,26 +252,26 @@ events = EventTable.read("events.root")
 |---|:---:|---|---|---|
 | **GBD** (`.gbd`) | ○ / × | `TimeSeries.read(..., format="gbd", timezone=...)`, `TimeSeriesDict.read(..., format="gbd", timezone=...)`, `TimeSeriesMatrix.read(..., format="gbd", timezone=...)` | GRAPHTEC ロガー | public read では `timezone` 必須 |
 | **TDMS** (`.tdms`) | ○ / × | `TimeSeries.read(..., format="tdms")`, `TimeSeriesDict.read(..., format="tdms")`, `TimeSeriesMatrix.read(..., format="tdms")` | National Instruments | 読み込み専用。`nptdms` が必要 |
-| **SDB / SQLite / SQLite3** (`.sdb`, `.sqlite`, `.sqlite3`) | ○ / × | `TimeSeries.read(..., format="sdb" / "sqlite" / "sqlite3")`, `TimeSeriesDict.read(..., format="sdb" / "sqlite" / "sqlite3")` | WeeWX 等の蓄積データ | 同系統 reader。public direct I/O は読み込み専用 |
+| **SDB** (`.sdb`) | ○ / × | `TimeSeries.read(..., format="sdb")`, `TimeSeriesDict.read(..., format="sdb")` | WeeWX 等の蓄積データ | 読み込み専用。`usUnits` があれば全行が整数 `1` である必要あり |
 | **WAV** (`.wav`) | ○ / ○ | `TimeSeries.read(..., format="wav")`, `TimeSeriesDict.read(..., format="wav")`, `TimeSeries.write(..., format="wav")` | 非圧縮音声 | public write は単一路のみ。絶対時刻は保持しない |
 | **MP3 / FLAC / OGG / M4A** | ○ / ○ | `TimeSeries.read(..., format="mp3" / "flac" / "ogg" / "m4a")`, `TimeSeriesDict.read(..., format=...)`, `.write(...)` | 圧縮音声 | `pydub`、一部形式は `ffmpeg` が必要 |
 
 - 目的: ロガー系・音声系 format で注意すべき条件をまとめる
-- 入力: ロガーデータ、SQLite 系アーカイブ、音声ファイル
+- 入力: ロガーデータ、SDB アーカイブ、音声ファイル
 - 出力: `TimeSeries`, `TimeSeriesDict`, または `TimeSeriesMatrix`
 
 ```python
 from gwexpy.timeseries.collections import TimeSeriesDict
 
 logger = TimeSeriesDict.read("data.gbd", timezone="Asia/Tokyo")
-weather = TimeSeriesDict.read("archive.sqlite3", format="sqlite3")
+weather = TimeSeriesDict.read("archive.sdb", format="sdb")
 audio = TimeSeriesDict.read("sound.flac", format="flac")
 ```
 
 - **GBD** は `timezone` を省略できません。
 - **TDMS** は optional dependency の `nptdms` が必要です。
 - **MP3 / FLAC / OGG / M4A** は optional dependency の `pydub` が必要で、MP3/M4A は `ffmpeg` も必要になることが多いです。
-- **SDB / SQLite / SQLite3** は同系統の reader です。公開ページでは 3 つとも明示して混乱を避けます。
+- **SDB** は `format="sdb"` と `.sdb` の自動判定だけを受け付けます。`usUnits` 列がある場合は全行が整数 `1` でなければならず、列が無い archive は従来どおり US customary 単位を仮定します。
 - **WAV / 圧縮音声形式** は絶対時刻を持たないため、読み込み時は便宜上 `t0=0.0` として扱います。「絶対時刻がある」という意味ではありません。
 
 <a id="io-formats-ja-dev"></a>

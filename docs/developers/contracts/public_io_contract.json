@@ -530,10 +530,7 @@
         {
             "name": "sdb",
             "canonical": "sdb",
-            "aliases": [
-                "sqlite",
-                "sqlite3"
-            ],
+            "aliases": [],
             "public_api": {
                 "read": [
                     "TimeSeries",
@@ -561,11 +558,12 @@
             },
             "trusted_only": false,
             "metadata_requirements": [
-                "Published SQLite-family reads must preserve weather/archive column names and derived physical units after conversion."
+                "Published SDB reads must preserve weather/archive column names and derived physical units after conversion.",
+                "When present, every usUnits value must be the integer 1; when absent, the legacy US customary unit assumption is used."
             ],
             "notes": [
                 "Published SDB direct I/O is read-only for TimeSeries and TimeSeriesDict.",
-                "The sqlite/sqlite3 tokens are aliases in the same reader family as sdb.",
+                "Only the sdb format token and .sdb auto-identification are public.",
                 "TimeSeriesMatrix read support remains an implementation convenience path, not a published contract entry."
             ],
             "optional_dependencies": [],
