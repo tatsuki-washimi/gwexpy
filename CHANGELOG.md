@@ -15,6 +15,13 @@
 
 ### Behaviour-visible bug fixes
 
+- **io (CSV/SDB cadence)**: numeric CSV timestamps are validated from their
+  raw decimal tokens before float conversion or resampling, and SDB validates
+  ordered integer Unix-second timestamps before constructing its time axis.
+  Duplicate, backward, missing, or overlarge timestamp gaps now raise
+  `ValueError` instead of being silently accepted or repaired by resampling.
+  A declared CSV `sample_rate` is a finite positive source cadence, while
+  `resample=` remains a separate target cadence (#619).
 - **io (SDB)**: archives that provide a `usUnits` column now validate every
   row as the supported US customary unit-system code `1` and fail closed on
   NULL, text, non-integral, or other values. Archives without that column
