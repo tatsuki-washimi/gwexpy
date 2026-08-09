@@ -53,8 +53,6 @@ def load_products(filename: str) -> dict:
         ".wav": "wav",
         ".ats": "ats",
         ".sdb": "sdb",
-        ".sqlite": "sdb",
-        ".sqlite3": "sdb",
         ".mseed": "miniseed",
         ".miniseed": "miniseed",
         ".sac": "sac",

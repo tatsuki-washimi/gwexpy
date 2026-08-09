@@ -4,31 +4,88 @@ import sqlite3
 
 import numpy as np
 import pytest
+from astropy import units as u
 
 from gwexpy.timeseries.io.sdb import read_timeseries_sdb, read_timeseriesdict_sdb
 
 
-def _create_weather_db(path, n_records=10, start_unix=1700000000, interval=300):
+def _create_weather_db(
+    path, n_records=10, start_unix=1700000000, interval=300, us_units=None
+):
     """Create a minimal weather SQLite database for testing."""
     conn = sqlite3.connect(str(path))
-    conn.execute(
-        "CREATE TABLE archive ("
-        "  dateTime INTEGER,"
-        "  outTemp REAL,"
-        "  outHumidity REAL,"
-        "  barometer REAL"
-        ")"
-    )
+    schema = "dateTime INTEGER, outTemp REAL, outHumidity REAL, barometer REAL"
+    if us_units is not None:
+        schema += ", usUnits"
+    conn.execute(f"CREATE TABLE archive ({schema})")
     for i in range(n_records):
-        conn.execute(
-            "INSERT INTO archive VALUES (?, ?, ?, ?)",
-            (start_unix + i * interval, 70.0 + i, 50.0 + i * 0.5, 29.92),
-        )
+        row = (start_unix + i * interval, 70.0 + i, 50.0 + i * 0.5, 29.92)
+        if us_units is not None:
+            row += (us_units[i],)
+        placeholders = ", ".join("?" for _ in row)
+        conn.execute(f"INSERT INTO archive VALUES ({placeholders})", row)
     conn.commit()
     conn.close()
 
 
 class TestSdbReader:
+    def test_usunits_all_ones_is_valid_and_not_returned(self, tmp_path):
+        db_path = tmp_path / "units.sdb"
+        _create_weather_db(db_path, n_records=3, us_units=[1, 1, 1])
+
+        tsd = read_timeseriesdict_sdb(db_path)
+
+        assert "usUnits" not in tsd
+        assert sorted(tsd) == ["barometer", "outHumidity", "outTemp"]
+        assert tsd["outTemp"].unit == u.deg_C
+        assert tsd["barometer"].unit == u.hPa
+
+    def test_usunits_validation_supports_without_rowid_tables(self, tmp_path):
+        db_path = tmp_path / "without-rowid.sdb"
+        conn = sqlite3.connect(str(db_path))
+        conn.execute(
+            "CREATE TABLE archive ("
+            "dateTime INTEGER PRIMARY KEY, outTemp REAL, barometer REAL, "
+            "usUnits INTEGER"
+            ") WITHOUT ROWID"
+        )
+        conn.executemany(
+            "INSERT INTO archive VALUES (?, ?, ?, ?)",
+            [(1700000000, 70.0, 29.92, 1), (1700000300, 71.0, 29.92, 1)],
+        )
+        conn.commit()
+        conn.close()
+
+        tsd = read_timeseriesdict_sdb(db_path)
+
+        assert sorted(tsd) == ["barometer", "outTemp"]
+
+    @pytest.mark.parametrize(
+        ("us_units", "message"),
+        [
+            ([1, 1, 2], "dateTime 1700000600.*must be integer 1"),
+            ([1, None, 1], "dateTime 1700000300.*NULL"),
+            ([1, "metric", 1], "dateTime 1700000300.*non-numeric"),
+            ([1, 1.5, 1], "dateTime 1700000300.*non-integral"),
+        ],
+    )
+    def test_usunits_rejects_invalid_values_in_every_row(
+        self, tmp_path, us_units, message
+    ):
+        db_path = tmp_path / "invalid-units.sdb"
+        _create_weather_db(db_path, n_records=3, us_units=us_units)
+
+        with pytest.raises(ValueError, match=message):
+            read_timeseriesdict_sdb(db_path)
+
+    def test_missing_usunits_keeps_legacy_unit_assumption(self, tmp_path):
+        db_path = tmp_path / "legacy-units.sdb"
+        _create_weather_db(db_path, n_records=1)
+
+        tsd = read_timeseriesdict_sdb(db_path)
+
+        np.testing.assert_allclose(tsd["outTemp"].value[0], (70.0 - 32.0) / 1.8)
+
     def test_basic_read(self, tmp_path):
         db_path = tmp_path / "test.sdb"
         _create_weather_db(db_path)

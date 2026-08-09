@@ -122,13 +122,16 @@ These decisions are fixed before expanding P1/P2/P3 coverage:
   explicit `format="txt"`, and multi-channel `txt` uses manifest-backed
   collection directories.
 
-### `sdb` / `sqlite` / `sqlite3`
+### `sdb`
 
 - Public contract: `TimeSeries` and `TimeSeriesDict` read only.
 - Registry surface: `TimeSeriesMatrix` read adapters may exist.
-- Reason: the user guide publishes the SQLite-family weather/log archives as
-  read-only direct I/O, and the alias family must behave consistently through
-  the same public entry points.
+- Reason: the user guide publishes `.sdb` weather/log archives as read-only
+  direct I/O.  `sdb` is the only public token and `.sdb` is the only
+  auto-identified extension.
+- Units: if an archive has a `usUnits` column, every row must have integer
+  value `1`; otherwise reading fails with `ValueError`.  Archives without the
+  column retain the legacy US customary unit assumption.
 
 ### `wav`
 

@@ -63,7 +63,7 @@ For data sharing and long-term storage, prefer structured formats such as **HDF5
 | **A. GW Standards** | You want standard GW storage, exchange, or acquisition paths | **HDF5** | GWF, HDF5, hdf.ndscope, xml.diaggui, NDS2, GWOSC |
 | **B. Seismic and Geophysical Observation** | You need to read existing seismic or EM observation data | **mseed** | mseed, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5 (MTH5 standalone is status-only here) |
 | **C. General Analysis and Exchange** | You need general-purpose storage or external analysis exchange | **CSV / TXT** or **Zarr** | CSV / TXT, NetCDF4, Zarr, ROOT |
-| **D. Loggers and Instrument Formats** | You are working with device- or logger-specific time series | **GBD** or **TDMS** | GBD, TDMS, SDB / SQLite / SQLite3, WAV, MP3, FLAC, OGG, M4A |
+| **D. Loggers and Instrument Formats** | You are working with device- or logger-specific time series | **GBD** or **TDMS** | GBD, TDMS, SDB, WAV, MP3, FLAC, OGG, M4A |
 
 > **Note**: `NDS2` and `GWOSC` are not file formats. They are included in **A. GW Standards** because they are common GW data entry points. In the tables below, they are labeled as `network path`.
 
@@ -103,7 +103,7 @@ If the main question is whether a format is for a single channel or multiple cha
 
 | Format / Family | Single | Multi | Other classes |
 |---|---|---|---|
-| **GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / SDB / SQLite / SQLite3 / WAV / Audio** | `TimeSeries` | `TimeSeriesDict` | Baseline end-user direct I/O pattern |
+| **GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / SDB / WAV / Audio** | `TimeSeries` | `TimeSeriesDict` | Baseline end-user direct I/O pattern |
 | **CSV** | `TimeSeries` | `TimeSeriesDict` | `TimeSeriesDict` also supports manifest-backed collection directories |
 | **TXT** | `TimeSeries` | `TimeSeriesDict` | Multi-channel direct I/O uses collection directories |
 | **nc / Zarr / GBD / TDMS** | `TimeSeries` | `TimeSeriesDict`, `TimeSeriesMatrix` | Includes matrix-style direct I/O |
@@ -253,26 +253,26 @@ Time handling, units, and audio `t0` semantics are the main points to watch.
 |---|:---:|---|---|---|
 | **GBD** (`.gbd`) | ○ / × | `TimeSeries.read(..., format="gbd", timezone=...)`, `TimeSeriesDict.read(..., format="gbd", timezone=...)`, `TimeSeriesMatrix.read(..., format="gbd", timezone=...)` | GRAPHTEC loggers | `timezone` is required for published reads |
 | **TDMS** (`.tdms`) | ○ / × | `TimeSeries.read(..., format="tdms")`, `TimeSeriesDict.read(..., format="tdms")`, `TimeSeriesMatrix.read(..., format="tdms")` | National Instruments data | Read-only; requires `nptdms` |
-| **SDB / SQLite / SQLite3** (`.sdb`, `.sqlite`, `.sqlite3`) | ○ / × | `TimeSeries.read(..., format="sdb" / "sqlite" / "sqlite3")`, `TimeSeriesDict.read(..., format="sdb" / "sqlite" / "sqlite3")` | WeeWX and similar archives | Same reader family; public direct I/O is read-only |
+| **SDB** (`.sdb`) | ○ / × | `TimeSeries.read(..., format="sdb")`, `TimeSeriesDict.read(..., format="sdb")` | WeeWX and similar archives | Read-only; if present, every `usUnits` value must be integer `1` |
 | **WAV** (`.wav`) | ○ / ○ | `TimeSeries.read(..., format="wav")`, `TimeSeriesDict.read(..., format="wav")`, `TimeSeries.write(..., format="wav")` | Uncompressed audio | Public write is single-series only; does not preserve absolute time |
 | **MP3 / FLAC / OGG / M4A** | ○ / ○ | `TimeSeries.read(..., format="mp3" / "flac" / "ogg" / "m4a")`, `TimeSeriesDict.read(..., format=...)`, `.write(...)` | Compressed audio | Uses `pydub`; some formats also need `ffmpeg` |
 
 - Purpose: highlight logger-specific and audio-specific direct-I/O requirements
-- Input: logger data, SQLite-family archives, or audio files
+- Input: logger data, SDB archives, or audio files
 - Output: `TimeSeries`, `TimeSeriesDict`, or `TimeSeriesMatrix`
 
 ```python
 from gwexpy.timeseries.collections import TimeSeriesDict
 
 logger = TimeSeriesDict.read("data.gbd", timezone="Asia/Tokyo")
-weather = TimeSeriesDict.read("archive.sqlite3", format="sqlite3")
+weather = TimeSeriesDict.read("archive.sdb", format="sdb")
 audio = TimeSeriesDict.read("sound.flac", format="flac")
 ```
 
 - **GBD** requires `timezone`.
 - **TDMS** requires the optional `nptdms` dependency.
 - **MP3 / FLAC / OGG / M4A** require the optional `pydub` dependency. MP3/M4A commonly also need `ffmpeg`.
-- **SDB / SQLite / SQLite3** should all be named explicitly in the public page so users do not need to infer aliases.
+- **SDB** accepts only `format="sdb"` and `.sdb` auto-identification. If its `usUnits` column exists, every row must be integer `1`; archives without that column retain the legacy US customary unit assumption.
 - **WAV / compressed-audio formats** do not preserve absolute timestamps. Reading with `t0=0.0` is a convenience convention, not a claim that the source had an absolute epoch.
 
 <a id="io-formats-en-dev"></a>

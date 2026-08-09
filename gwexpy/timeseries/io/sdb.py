@@ -42,6 +42,43 @@ UNIT_CONVERSION = {
 }
 
 
+def _validate_us_units(conn: sqlite3.Connection, table: str) -> None:
+    """Require WeeWX ``usUnits`` values to be the supported unit system."""
+    cursor = conn.cursor()
+    cursor.execute(f"PRAGMA table_info({table})")  # nosec B608
+    if "usUnits" not in {info[1] for info in cursor.fetchall()}:
+        return
+
+    cursor.execute(  # nosec B608
+        f"SELECT dateTime, usUnits FROM {table} ORDER BY dateTime"
+    )
+    for date_time, value in cursor:
+        if value is None:
+            raise ValueError(
+                f"SDB usUnits validation failed at dateTime {date_time!r}: "
+                "NULL is not allowed; expected integer 1."
+            )
+        if isinstance(value, (int, np.integer)):
+            numeric_value = int(value)
+        elif isinstance(value, (float, np.floating)):
+            if not np.isfinite(value) or not value.is_integer():
+                raise ValueError(
+                    f"SDB usUnits validation failed at dateTime {date_time!r}: "
+                    f"non-integral value {value!r}; expected integer 1."
+                )
+            numeric_value = int(value)
+        else:
+            raise ValueError(
+                f"SDB usUnits validation failed at dateTime {date_time!r}: "
+                f"non-numeric value {value!r}; expected integer 1."
+            )
+        if numeric_value != 1:
+            raise ValueError(
+                f"SDB usUnits validation failed at dateTime {date_time!r}: "
+                f"value {value!r} must be integer 1."
+            )
+
+
 def read_timeseriesdict_sdb(
     source: str | Path, table="archive", columns=None, **kwargs
 ):
@@ -58,6 +95,9 @@ def read_timeseriesdict_sdb(
         Table name to read from, default 'archive'.
     columns : list, optional
         List of column names to read. If None, reads all columns found in UNIT_CONVERSION + dateTime.
+        ``usUnits`` is validated separately and is never returned as a series.
+        If the archive contains that column, every value must be integer ``1``;
+        archives without it retain the legacy US customary unit assumption.
     **kwargs
         Additional compatibility arguments accepted and ignored.  ``start`` and
         ``end`` are the exception: they used to be ignored here too, so a
@@ -84,13 +124,15 @@ def read_timeseriesdict_sdb(
 
     # gwpy's registry may pass an already-open file object for explicit
     # ``.read(..., format="sdb")`` calls; sqlite3 needs the underlying path.
-    if hasattr(source, "name"):
+    if not isinstance(source, (str, Path)) and hasattr(source, "name"):
         source = source.name
 
     # Open SQLite connection (Python 3.4+ accepts Path objects)
     conn = sqlite3.connect(source)
 
     try:
+        _validate_us_units(conn, table)
+
         # Determine columns to query
         if columns is None:
             # Check available columns in the table using PRAGMA
@@ -104,7 +146,7 @@ def read_timeseriesdict_sdb(
                 c for c in table_cols if c in UNIT_CONVERSION or c == "dateTime"
             ]
         else:
-            target_cols = columns
+            target_cols = [c for c in columns if c != "usUnits"]
             if "dateTime" not in target_cols:
                 target_cols.append("dateTime")
 
@@ -205,10 +247,9 @@ def read_timeseries_sdb(source, **kwargs):
 
 # -- Registration
 
-for fmt in ["sdb", "sqlite", "sqlite3"]:
-    register_timeseries_format(
-        fmt,
-        reader_dict=read_timeseriesdict_sdb,
-        reader_single=read_timeseries_sdb,
-        extension=fmt,
-    )
+register_timeseries_format(
+    "sdb",
+    reader_dict=read_timeseriesdict_sdb,
+    reader_single=read_timeseries_sdb,
+    extension="sdb",
+)

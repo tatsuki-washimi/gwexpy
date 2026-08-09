@@ -342,7 +342,7 @@ def test_current_public_boundary_decisions_are_recorded():
         "TimeSeriesMatrix",
     ]
     assert _api_classes(entries["sdb"], "registry_api", "write") == []
-    assert entries["sdb"]["aliases"] == ["sqlite", "sqlite3"]
+    assert entries["sdb"]["aliases"] == []
     assert entries["sdb"]["public_auto_identify"] is True
     assert entries["sdb"]["registry_auto_identify"] is True
     assert entries["sdb"]["metadata_requirements"]

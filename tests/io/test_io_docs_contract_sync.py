@@ -57,6 +57,20 @@ def test_docs_loggers_table_matches_current_public_boundary():
     assert "TimeSeriesDict.read(..., format=...)" in ja
 
 
+def test_docs_describe_the_sdb_unit_and_alias_contract():
+    contract = _load_contract()
+    en = _read(EN_GUIDE)
+    ja = _read(JA_GUIDE)
+
+    assert contract["sdb"]["aliases"] == []
+    assert "`.sqlite`" not in en
+    assert "`.sqlite3`" not in en
+    assert "`.sqlite`" not in ja
+    assert "`.sqlite3`" not in ja
+    assert "`usUnits`" in en
+    assert "`usUnits`" in ja
+
+
 def test_docs_seismic_table_matches_current_public_boundary():
     contract = _load_contract()
     en = _read(EN_GUIDE)
