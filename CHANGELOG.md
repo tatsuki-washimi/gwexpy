@@ -1,5 +1,26 @@
 # Changelog
 
+## [Unreleased]
+
+### Removed (breaking)
+
+- **io (SDB)**: the undocumented `sqlite` and `sqlite3` format aliases and
+  `.sqlite`/`.sqlite3` GUI fallbacks have been removed. Use the canonical
+  `format="sdb"` name and `.sdb` extension instead (#635).
+
+  | Before | After |
+  | --- | --- |
+  | `format="sqlite"` or `format="sqlite3"` selected the SDB reader. | Use `format="sdb"`; the removed aliases raise `IORegistryError`. |
+  | `.sqlite`/`.sqlite3` paths were routed to SDB by the GUI fallback. | Rename archives to `.sdb` or select `format="sdb"` in direct I/O; unsupported GUI paths raise `RuntimeError`. |
+
+### Behaviour-visible bug fixes
+
+- **io (SDB)**: archives that provide a `usUnits` column now validate every
+  row as the supported US customary unit-system code `1` and fail closed on
+  NULL, text, non-integral, or other values. Archives without that column
+  retain the legacy US customary unit assumption; `usUnits` is metadata and
+  is not returned as a data channel.
+
 ## [0.1.13] - 2026-08-08
 
 ### Behaviour-visible bug fixes
