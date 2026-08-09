@@ -11,6 +11,9 @@ from scipy.io import wavfile
 
 from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
 from gwexpy.io.utils import (
+    _coerce_numeric_epoch,
+    _is_numeric_epoch,
+    _reject_timezone_reinterpretation,
     apply_unit,
     datetime_to_gps,
     extract_audio_metadata,
@@ -69,6 +72,9 @@ def read_timeseriesdict_wav(
     Channels are named 'channel_0', 'channel_1', etc.
 
     """
+    timezone = kwargs.pop("timezone", None)
+    _reject_timezone_reinterpretation("wav", timezone, None)
+
     # A WAV file is a self-contained (possibly multi-channel) recording
     # without absolute timestamps, so merging multiple files is not
     # meaningful; fail early with a clear error.
@@ -92,8 +98,8 @@ def read_timeseriesdict_wav(
 
     # Epoch processing
     if epoch is not None:
-        if isinstance(epoch, (int, float)):
-            t0 = float(epoch)
+        if _is_numeric_epoch(epoch):
+            t0 = _coerce_numeric_epoch(epoch)
         elif isinstance(epoch, datetime):
             t0 = datetime_to_gps(epoch)
         else:
@@ -126,7 +132,7 @@ def read_timeseriesdict_wav(
     # Build provenance metadata
     provenance = {
         "format": "wav",
-        "epoch_source": "user" if epoch else "default",
+        "epoch_source": "user" if epoch is not None else "default",
         "unit_source": "override" if unit else "wav",
     }
 

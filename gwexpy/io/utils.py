@@ -4,6 +4,7 @@ import contextlib
 import datetime as _dt
 import importlib
 import math
+import re
 import warnings
 from collections.abc import Iterable
 from pathlib import Path
@@ -13,6 +14,73 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 import numpy as np
 from astropy import units as u
 from gwpy.time import to_gps
+
+_NUMERIC_TYPES = (int, float, np.integer, np.floating)
+_UTC_OFFSET_RE = re.compile(r"^([+-])(\d{2})(?::?(\d{2}))?$")
+_TIMEZONE_ROUTING_SENTINEL = object()
+_WARNING_STATE_SENTINEL = object()
+
+
+def _is_numeric_epoch(value: Any) -> bool:
+    """Return whether *value* is a supported scalar numeric epoch."""
+    return isinstance(value, _NUMERIC_TYPES) and not isinstance(value, (bool, np.bool_))
+
+
+def _coerce_numeric_epoch(value: Any) -> float:
+    """Coerce a supported Python or NumPy scalar epoch to ``float``."""
+    if not _is_numeric_epoch(value):
+        raise TypeError(f"epoch must be numeric, got {type(value)}")
+    return float(value)
+
+
+def _make_timezone_routing_state(
+    epoch_timezone: _dt.tzinfo | None,
+) -> tuple[object, _dt.tzinfo | None]:
+    """Create trusted state for one reader's recursive dispatch."""
+    return (_TIMEZONE_ROUTING_SENTINEL, epoch_timezone)
+
+
+def _consume_timezone_routing_state(
+    kwargs: dict[str, Any],
+) -> tuple[bool, _dt.tzinfo | None]:
+    """Consume trusted recursive state while discarding legacy caller markers."""
+    state = kwargs.pop("_timezone_routing_state", None)
+    kwargs.pop("_timezone_checked", None)
+    kwargs.pop("_epoch_timezone", None)
+    if (
+        isinstance(state, tuple)
+        and len(state) == 2
+        and state[0] is _TIMEZONE_ROUTING_SENTINEL
+        and (state[1] is None or isinstance(state[1], _dt.tzinfo))
+    ):
+        return True, state[1]
+    return False, None
+
+
+def _make_warning_state(marker: list[bool]) -> tuple[object, list[bool]]:
+    """Create trusted state for coalescing recursive reader warnings."""
+    return (_WARNING_STATE_SENTINEL, marker)
+
+
+def _consume_warning_state(
+    kwargs: dict[str, Any],
+    key: str,
+    *legacy_keys: str,
+) -> list[bool] | None:
+    """Consume trusted warning state and discard caller-forgeable markers."""
+    state = kwargs.pop(key, None)
+    for legacy_key in legacy_keys:
+        kwargs.pop(legacy_key, None)
+    if (
+        isinstance(state, tuple)
+        and len(state) == 2
+        and state[0] is _WARNING_STATE_SENTINEL
+        and isinstance(state[1], list)
+        and len(state[1]) == 1
+        and isinstance(state[1][0], bool)
+    ):
+        return state[1]
+    return None
 
 
 def parse_timezone(tz: Any) -> _dt.tzinfo:
@@ -24,27 +92,31 @@ def parse_timezone(tz: Any) -> _dt.tzinfo:
         raise ValueError("timezone must be specified for this format")
     if isinstance(tz, _dt.tzinfo):
         return tz
-    if isinstance(tz, (int, float)):
-        return _dt.timezone(_dt.timedelta(hours=float(tz)))
+    if _is_numeric_epoch(tz):
+        offset = float(tz)
+        if not math.isfinite(offset) or abs(offset) >= 24:
+            raise ValueError(f"Could not parse timezone {tz!r}")
+        try:
+            return _dt.timezone(_dt.timedelta(hours=offset))
+        except (ValueError, OverflowError) as exc:
+            raise ValueError(f"Could not parse timezone {tz!r}") from exc
     if isinstance(tz, str):
-        with contextlib.suppress(ZoneInfoNotFoundError):
-            return ZoneInfo(tz)
-        # parse \"+09:00\" or \"-0800\"
         cleaned = tz.strip()
+        with contextlib.suppress(ZoneInfoNotFoundError):
+            return ZoneInfo(cleaned)
         if cleaned.lower() in {"utc", "gmt"}:
             return _dt.UTC
-        sign = 1
-        if cleaned.startswith("-"):
-            sign = -1
-            cleaned = cleaned[1:]
-        elif cleaned.startswith("+"):
-            cleaned = cleaned[1:]
-        if ":" in cleaned:
-            hours, minutes = cleaned.split(":", 1)
-        else:
-            hours, minutes = cleaned[:2], cleaned[2:] or "0"
+        match = _UTC_OFFSET_RE.fullmatch(cleaned)
+        if match is None:
+            raise ValueError(f"Could not parse timezone {tz!r}")
+        sign_text, hours_text, minutes_text = match.groups()
+        hours = int(hours_text)
+        minutes = int(minutes_text or "0")
+        if hours > 23 or minutes > 59:
+            raise ValueError(f"Could not parse timezone {tz!r}")
+        sign = -1 if sign_text == "-" else 1
         try:
-            delta = _dt.timedelta(hours=sign * int(hours), minutes=sign * int(minutes))
+            delta = _dt.timedelta(hours=sign * hours, minutes=sign * minutes)
             return _dt.timezone(delta)
         except (
             ValueError,
@@ -53,6 +125,62 @@ def parse_timezone(tz: Any) -> _dt.tzinfo:
         ) as exc:  # pragma: no cover - defensive
             raise ValueError(f"Could not parse timezone {tz!r}") from exc
     raise ValueError(f"Unsupported timezone specifier: {tz!r}")
+
+
+def _parse_timezone_for_format(format_name: str, timezone: Any) -> _dt.tzinfo:
+    """Parse *timezone* and add reader context to invalid input errors."""
+    try:
+        return parse_timezone(timezone)
+    except ValueError as exc:
+        raise ValueError(
+            f"Could not parse timezone {timezone!r} for format '{format_name}'"
+        ) from exc
+
+
+def _reject_timezone_reinterpretation(
+    format_name: str,
+    timezone: Any,
+    epoch: Any,
+) -> _dt.tzinfo | None:
+    """Validate timezone use without reinterpreting an absolute source time.
+
+    The returned timezone is only for localizing a naive explicit ``epoch``.
+    Absolute epoch values preserve their value and report that ``timezone`` is
+    ignored.  Parsing happens before either branch so a dummy epoch can never
+    hide an invalid timezone specification.
+    """
+    if timezone is None:
+        return None
+
+    tzinfo = _parse_timezone_for_format(format_name, timezone)
+    if epoch is None:
+        raise ValueError(
+            f"timezone must not be specified for format '{format_name}'; "
+            "the format defines its time semantics"
+        )
+
+    aware_iso_epoch = False
+    if isinstance(epoch, str):
+        with contextlib.suppress(ValueError):
+            parsed_epoch = _dt.datetime.fromisoformat(
+                epoch.strip().replace("Z", "+00:00")
+            )
+            aware_iso_epoch = parsed_epoch.tzinfo is not None
+
+    if (
+        _is_numeric_epoch(epoch)
+        or (isinstance(epoch, _dt.datetime) and epoch.tzinfo is not None)
+        or aware_iso_epoch
+    ):
+        warnings.warn(
+            f"timezone is ignored for format '{format_name}' because epoch "
+            "already defines an absolute time",
+            UserWarning,
+            stacklevel=2,
+        )
+        return None
+
+    return tzinfo
 
 
 def datetime_to_gps(dt: _dt.datetime) -> float:
@@ -75,10 +203,15 @@ def ensure_datetime(value: Any, tzinfo: _dt.tzinfo | None = None) -> _dt.datetim
         if value.tzinfo is None:
             raise ValueError("Naive datetime requires timezone")
         return value
-    if isinstance(value, (int, float)):
-        return _dt.datetime.fromtimestamp(float(value), tz=_dt.UTC)
+    if _is_numeric_epoch(value):
+        return _dt.datetime.fromtimestamp(_coerce_numeric_epoch(value), tz=_dt.UTC)
     if isinstance(value, str):
         text = value.strip()
+        with contextlib.suppress(ValueError):
+            dt = _dt.datetime.fromisoformat(text.replace("Z", "+00:00"))
+            if dt.tzinfo is None and tzinfo is not None:
+                dt = dt.replace(tzinfo=tzinfo)
+            return dt
         formats = [
             "%Y/%m/%d %H:%M:%S.%f",
             "%Y/%m/%d %H:%M:%S",

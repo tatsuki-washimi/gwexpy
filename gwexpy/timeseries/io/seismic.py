@@ -2,15 +2,19 @@
 
 from __future__ import annotations
 
+import datetime as _dt
+
 import numpy as np
 
 from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
 from gwexpy.io.utils import (
+    _coerce_numeric_epoch,
+    _is_numeric_epoch,
+    _reject_timezone_reinterpretation,
     apply_unit,
     datetime_to_gps,
     ensure_datetime,
     ensure_dependency,
-    parse_timezone,
     set_provenance,
 )
 
@@ -29,20 +33,17 @@ def _import_obspy():
     return obspy
 
 
-def _trace_to_timeseries(trace, *, unit, timezone, epoch_override):
-    tzinfo = parse_timezone(timezone) if timezone else None
-    default_tz = tzinfo or parse_timezone("UTC")
+def _trace_to_timeseries(trace, *, unit, epoch_timezone, epoch_override):
     if epoch_override is not None:
         gps_start = (
-            float(epoch_override)
-            if isinstance(epoch_override, (int, float, np.floating))
-            else datetime_to_gps(ensure_datetime(epoch_override, tzinfo=tzinfo))
+            _coerce_numeric_epoch(epoch_override)
+            if _is_numeric_epoch(epoch_override)
+            else datetime_to_gps(ensure_datetime(epoch_override, tzinfo=epoch_timezone))
         )
     else:
-        # ObsPy UTCDateTime to python datetime
-        start_dt = trace.stats.starttime.datetime.replace(tzinfo=tzinfo or None)
-        if start_dt.tzinfo is None:
-            start_dt = start_dt.replace(tzinfo=default_tz)
+        # ObsPy UTCDateTime is absolute UTC.  Never reinterpret it using a
+        # caller-provided civil timezone.
+        start_dt = trace.stats.starttime.datetime.replace(tzinfo=_dt.UTC)
         gps_start = datetime_to_gps(start_dt)
 
     ts = TimeSeries(
@@ -104,7 +105,7 @@ def _read_obspy_stream(format_name, source, *, pad=np.nan, gap="pad", **kwargs):
     return stream
 
 
-def _build_dict(stream, *, channels, unit, timezone, epoch):
+def _build_dict(stream, *, channels, unit, epoch_timezone, epoch):
     traces = stream
     if channels:
         selected = []
@@ -118,7 +119,10 @@ def _build_dict(stream, *, channels, unit, timezone, epoch):
     tsd = TimeSeriesDict()
     for tr in traces:
         ts = _trace_to_timeseries(
-            tr, unit=unit, timezone=timezone, epoch_override=epoch
+            tr,
+            unit=unit,
+            epoch_timezone=epoch_timezone,
+            epoch_override=epoch,
         )
         # Handle duplicate channels if necessary, currently overwrites
         tsd[ts.name] = ts
@@ -143,18 +147,27 @@ def _read_timeseriesdict(
     # windowed read (issue #611).  Translating them to UTCDateTime and pushing
     # them down into obspy.read would also avoid loading the whole file; that is
     # a performance change, so v0.1.13 crops instead.
-    start, end = pop_time_selection(kwargs)
-
-    stream = _read_obspy_stream(format_name, source, pad=pad, gap=gap, **kwargs)
-    tsd = _build_dict(
-        stream, channels=channels, unit=unit, timezone=timezone, epoch=epoch
-    )
     canonical_format = {
         "MSEED": "mseed",
         "SAC": "sac",
         "GSE2": "gse2",
         "KNET": "knet",
     }.get(format_name, format_name.lower())
+    epoch_timezone = _reject_timezone_reinterpretation(
+        canonical_format,
+        timezone,
+        epoch,
+    )
+    start, end = pop_time_selection(kwargs)
+
+    stream = _read_obspy_stream(format_name, source, pad=pad, gap=gap, **kwargs)
+    tsd = _build_dict(
+        stream,
+        channels=channels,
+        unit=unit,
+        epoch_timezone=epoch_timezone,
+        epoch=epoch,
+    )
 
     set_provenance(
         tsd,
@@ -162,7 +175,7 @@ def _read_timeseriesdict(
             "format": canonical_format,
             "gap": "pad",
             "pad_value": pad,
-            "timezone": timezone,
+            "timezone": timezone if epoch_timezone is not None else None,
             "unit_source": "override" if unit else "file",
             "channels": list(channels) if channels else [tr.id for tr in stream],
         },

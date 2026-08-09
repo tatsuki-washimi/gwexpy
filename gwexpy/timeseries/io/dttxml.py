@@ -16,11 +16,15 @@ from gwpy.io.registry import default_registry as io_registry
 from gwexpy.io.dttxml_common import SUPPORTED_TS, load_dttxml_products
 from gwexpy.io.time_selection import reject_time_selection
 from gwexpy.io.utils import (
+    _coerce_numeric_epoch,
+    _consume_timezone_routing_state,
+    _is_numeric_epoch,
+    _make_timezone_routing_state,
+    _reject_timezone_reinterpretation,
     apply_unit,
     datetime_to_gps,
     ensure_datetime,
     filter_by_channels,
-    parse_timezone,
     set_provenance,
 )
 
@@ -32,10 +36,15 @@ _DTTXML_FORMATS = ("xml.diaggui", "dttxml")
 
 def _build_epoch(value, timezone):
     if value is None:
+        _reject_timezone_reinterpretation("xml.diaggui", timezone, None)
         return None
-    if isinstance(value, (int, float, np.floating)):
-        return float(value)
-    tzinfo = parse_timezone(timezone) if timezone else None
+    tzinfo = _reject_timezone_reinterpretation(
+        "xml.diaggui",
+        timezone,
+        value,
+    )
+    if _is_numeric_epoch(value):
+        return _coerce_numeric_epoch(value)
     if tzinfo is None:
         tzinfo = UTC
     return datetime_to_gps(ensure_datetime(value, tzinfo=tzinfo))
@@ -70,6 +79,13 @@ def read_timeseriesdict_dttxml(
     ``start``/``end`` are rejected rather than ignored (issue #611).
     """
     reject_time_selection("xml.diaggui", kwargs)
+    timezone_checked, epoch_timezone = _consume_timezone_routing_state(kwargs)
+    if not timezone_checked:
+        epoch_timezone = _reject_timezone_reinterpretation(
+            "xml.diaggui",
+            timezone,
+            epoch,
+        )
 
     multi = expand_multi_source(source)
     if multi is not None:
@@ -82,7 +98,8 @@ def read_timeseriesdict_dttxml(
             channels=channels,
             unit=unit,
             epoch=epoch,
-            timezone=timezone,
+            timezone=None,
+            _timezone_routing_state=_make_timezone_routing_state(epoch_timezone),
             **kwargs,
         )
 
@@ -99,7 +116,7 @@ def read_timeseriesdict_dttxml(
         if channels and ch not in channels:
             continue
         epoch_val = epoch if epoch is not None else info.get("epoch")
-        gps = _build_epoch(epoch_val, timezone) or 0.0
+        gps = _build_epoch(epoch_val, epoch_timezone) or 0.0
         dt = info.get("dt") or 1.0
         ts = TimeSeries(
             info.get("data", np.array([])),

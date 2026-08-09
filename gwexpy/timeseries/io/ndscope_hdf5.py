@@ -27,6 +27,8 @@ from typing import Any
 import h5py
 import numpy as np
 
+from gwexpy.io.utils import _reject_timezone_reinterpretation
+
 from .. import TimeSeries, TimeSeriesDict
 from ._multi import expand_multi_source, read_multi_dict
 from ._registration import register_timeseries_format
@@ -186,6 +188,9 @@ def read_timeseriesdict_ndscope_hdf5(
     TimeSeriesDict
 
     """
+    timezone = kwargs.pop("timezone", None)
+    _reject_timezone_reinterpretation("hdf.ndscope", timezone, None)
+
     multi = expand_multi_source(source)
     if multi is not None:
         return read_multi_dict(

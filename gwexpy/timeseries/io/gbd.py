@@ -19,9 +19,14 @@ from astropy import units as u
 
 from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
 from gwexpy.io.utils import (
+    _coerce_numeric_epoch,
+    _consume_timezone_routing_state,
+    _is_numeric_epoch,
+    _make_timezone_routing_state,
+    _parse_timezone_for_format,
+    _reject_timezone_reinterpretation,
     datetime_to_gps,
     ensure_datetime,
-    parse_timezone,
     set_provenance,
 )
 
@@ -138,6 +143,18 @@ def read_timeseriesdict_gbd(
 
     """
     start, end = pop_time_selection(kwargs)
+    timezone_checked, epoch_timezone = _consume_timezone_routing_state(kwargs)
+    if timezone is None and not timezone_checked:
+        raise ValueError("timezone is required for GBD files")
+    if not timezone_checked:
+        if epoch is None:
+            epoch_timezone = _parse_timezone_for_format("gbd", timezone)
+        else:
+            epoch_timezone = _reject_timezone_reinterpretation(
+                "gbd",
+                timezone,
+                epoch,
+            )
 
     multi = expand_multi_source(source)
     if multi is not None:
@@ -152,15 +169,13 @@ def read_timeseriesdict_gbd(
                 digital_channels=digital_channels,
                 unit=unit,
                 epoch=epoch,
+                _timezone_routing_state=_make_timezone_routing_state(epoch_timezone),
                 **kwargs,
             ),
             start,
             end,
         )
 
-    if timezone is None:
-        raise ValueError("timezone is required for GBD files")
-    tzinfo = parse_timezone(timezone)
     selected: list[str] = []
 
     def _select(header: GBDHeader) -> None:
@@ -169,13 +184,15 @@ def read_timeseriesdict_gbd(
     header, data = _read_gbd(source, before_data=_select)
 
     if epoch is not None:
-        if isinstance(epoch, (int, float, np.floating)):
-            gps_start = float(epoch)
+        if _is_numeric_epoch(epoch):
+            gps_start = _coerce_numeric_epoch(epoch)
         else:
-            gps_start = datetime_to_gps(ensure_datetime(epoch, tzinfo=tzinfo))
+            gps_start = datetime_to_gps(ensure_datetime(epoch, tzinfo=epoch_timezone))
         epoch_source = "user"
     else:
-        gps_start = datetime_to_gps(ensure_datetime(header.start_local, tzinfo=tzinfo))
+        gps_start = datetime_to_gps(
+            ensure_datetime(header.start_local, tzinfo=epoch_timezone)
+        )
         epoch_source = "timezone_start"
 
     scale_arr = np.asarray(
@@ -214,7 +231,7 @@ def read_timeseriesdict_gbd(
         tsd,
         {
             "format": "gbd",
-            "timezone": str(timezone),
+            "timezone": str(timezone) if epoch_timezone is not None else None,
             "epoch_source": epoch_source,
             "unit_source": "override" if unit else "gbd_default",
             "gap": "pad",

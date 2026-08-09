@@ -12,6 +12,7 @@ import pandas as pd
 from astropy.time import Time
 
 from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
+from gwexpy.io.utils import _reject_timezone_reinterpretation
 
 from .. import TimeSeries, TimeSeriesDict
 from ._multi import expand_multi_source, read_multi_dict
@@ -106,6 +107,9 @@ def read_timeseriesdict_sdb(
 
     """
     start, end = pop_time_selection(kwargs)
+    timezone = kwargs.pop("timezone", None)
+    kwargs.pop("epoch", None)
+    _reject_timezone_reinterpretation("sdb", timezone, None)
 
     multi = expand_multi_source(source)
     if multi is not None:

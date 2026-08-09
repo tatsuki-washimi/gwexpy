@@ -19,8 +19,14 @@ from gwexpy.io.time_selection import (
     reject_time_selection,
 )
 from gwexpy.io.utils import (
+    _coerce_numeric_epoch,
+    _consume_timezone_routing_state,
+    _is_numeric_epoch,
+    _make_timezone_routing_state,
+    _reject_timezone_reinterpretation,
     apply_unit,
     datetime_to_gps,
+    ensure_datetime,
     ensure_dependency,
     set_provenance,
 )
@@ -159,7 +165,13 @@ def _read_ats_header(fh) -> dict[str, Any]:
     }
 
 
-def read_timeseriesdict_ats(source, **kwargs):
+def read_timeseriesdict_ats(
+    source,
+    *,
+    epoch=None,
+    timezone=None,
+    **kwargs,
+):
     """Read one or more Metronix ATS files into a ``TimeSeriesDict``.
 
     Each ATS file holds a single channel; a list of paths therefore
@@ -170,15 +182,36 @@ def read_timeseriesdict_ats(source, **kwargs):
     (issue #611).
     """
     start, end = pop_time_selection(kwargs)
+    timezone_checked, epoch_timezone = _consume_timezone_routing_state(kwargs)
+    if not timezone_checked:
+        epoch_timezone = _reject_timezone_reinterpretation(
+            "ats",
+            timezone,
+            epoch,
+        )
 
     multi = expand_multi_source(source)
     if multi is not None:
         return apply_time_selection(
-            read_multi_dict(read_timeseriesdict_ats, multi, "ats", **kwargs),
+            read_multi_dict(
+                read_timeseriesdict_ats,
+                multi,
+                "ats",
+                epoch=epoch,
+                timezone=None,
+                _timezone_routing_state=_make_timezone_routing_state(epoch_timezone),
+                **kwargs,
+            ),
             start,
             end,
         )
-    ts = read_timeseries_ats(source, **kwargs)
+    ts = read_timeseries_ats(
+        source,
+        epoch=epoch,
+        timezone=None,
+        _timezone_routing_state=_make_timezone_routing_state(epoch_timezone),
+        **kwargs,
+    )
     return apply_time_selection(TimeSeriesDict({ts.name: ts}), start, end)
 
 
@@ -187,6 +220,7 @@ def read_timeseries_ats(
     *,
     unit: str | u.Unit | None = None,
     epoch: float | datetime.datetime | None = None,
+    timezone=None,
     **kwargs,
 ):
     """Read a Metronix ATS file into a TimeSeries.
@@ -201,30 +235,66 @@ def read_timeseries_ats(
     epoch : float or datetime, optional
         Override the start time (GPS seconds or datetime).
         If not provided, uses the timestamp from the ATS header.
+    timezone : str or tzinfo, optional
+        Localize a naive explicit ``epoch``. Source timestamps are absolute;
+        numeric and aware epochs preserve their value and emit a warning.
     **kwargs
         Additional keyword arguments.  ``start`` and ``end`` are honoured by
         cropping the result rather than ignored (issue #611).
 
     """
     start, end = pop_time_selection(kwargs)
+    timezone_checked, epoch_timezone = _consume_timezone_routing_state(kwargs)
+    if not timezone_checked:
+        epoch_timezone = _reject_timezone_reinterpretation(
+            "ats",
+            timezone,
+            epoch,
+        )
 
     multi = expand_multi_source(source)
     if multi is not None:
-        tsd = read_timeseriesdict_ats(multi, unit=unit, epoch=epoch, **kwargs)
+        tsd = read_timeseriesdict_ats(
+            multi,
+            unit=unit,
+            epoch=epoch,
+            timezone=None,
+            _timezone_routing_state=_make_timezone_routing_state(epoch_timezone),
+            **kwargs,
+        )
         if not tsd:
             raise ValueError("No data found in ATS files")
         return apply_time_selection(tsd[next(iter(tsd.keys()))], start, end)
 
     if hasattr(source, "read"):
-        series = _read_timeseries_ats_file(source, unit=unit, epoch=epoch, **kwargs)
+        series = _read_timeseries_ats_file(
+            source,
+            unit=unit,
+            epoch=epoch,
+            epoch_timezone=epoch_timezone,
+            **kwargs,
+        )
         return apply_time_selection(series, start, end)
 
     with open(source, mode="rb") as f:
-        series = _read_timeseries_ats_file(f, unit=unit, epoch=epoch, **kwargs)
+        series = _read_timeseries_ats_file(
+            f,
+            unit=unit,
+            epoch=epoch,
+            epoch_timezone=epoch_timezone,
+            **kwargs,
+        )
     return apply_time_selection(series, start, end)
 
 
-def _read_timeseries_ats_file(f, *, unit=None, epoch=None, **kwargs):
+def _read_timeseries_ats_file(
+    f,
+    *,
+    unit=None,
+    epoch=None,
+    epoch_timezone=None,
+    **kwargs,
+):
     hdr = _read_ats_header(f)
 
     sample_freq = float(hdr["sample_freq"])
@@ -246,10 +316,10 @@ def _read_timeseries_ats_file(f, *, unit=None, epoch=None, **kwargs):
     # Calculate t0
     if epoch is not None:
         # Epoch override
-        if isinstance(epoch, (int, float)):
-            t0 = float(epoch)
+        if _is_numeric_epoch(epoch):
+            t0 = _coerce_numeric_epoch(epoch)
         elif isinstance(epoch, datetime.datetime):
-            t0 = datetime_to_gps(epoch)
+            t0 = datetime_to_gps(ensure_datetime(epoch, tzinfo=epoch_timezone))
         else:
             raise TypeError(f"epoch must be float or datetime, got {type(epoch)}")
         epoch_source = "user"
@@ -294,6 +364,7 @@ def _read_timeseries_ats_file(f, *, unit=None, epoch=None, **kwargs):
         {
             "format": "ats",
             "epoch_source": epoch_source,
+            "timezone": str(epoch_timezone) if epoch_timezone is not None else None,
             "unit_source": "override" if unit else "ats_header",
         },
     )
@@ -325,6 +396,9 @@ def read_timeseries_ats_mth5(source, **kwargs):
     ``start``/``end`` are rejected rather than ignored (issue #611).
     """
     reject_time_selection("ats.mth5", kwargs)
+    timezone = kwargs.pop("timezone", None)
+    kwargs.pop("epoch", None)
+    _reject_timezone_reinterpretation("ats.mth5", timezone, None)
 
     try:
         mth5 = ensure_dependency("mth5")

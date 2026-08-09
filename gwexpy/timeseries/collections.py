@@ -247,7 +247,12 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             )
         if p is not None and p.is_dir() and (fmt in (None, "csv", "txt")):
             from gwexpy.io.collection_dir import read_collection_dir
-            from gwexpy.io.utils import apply_unit
+            from gwexpy.io.utils import _reject_timezone_reinterpretation, apply_unit
+
+            if fmt == "txt":
+                _reject_timezone_reinterpretation(
+                    "txt", kwargs.pop("timezone", None), None
+                )
 
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
@@ -267,6 +272,11 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             # request (issue #611).
             return apply_time_selection(out, kwargs.get("start"), kwargs.get("end"))
         if fmt in ("hdf5", "h5", "hdf"):
+            from gwexpy.io.utils import _reject_timezone_reinterpretation
+
+            _reject_timezone_reinterpretation(
+                "hdf5", kwargs.pop("timezone", None), None
+            )
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
             # This branch reopens the file and re-reads each dataset itself

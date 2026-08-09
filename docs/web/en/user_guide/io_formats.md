@@ -203,7 +203,12 @@ ats = TimeSeries.read("data.atss", format="ats.mth5")
 ```
 
 - **MiniSEED** pads gaps with `NaN` by default. Use `gap="raise"` if you want failures instead.
-- **K-NET** and **WIN / WIN32** are intentionally read-only.
+- **K-NET** and **WIN / WIN32** are intentionally read-only. ObsPy already
+  normalizes K-NET's JST header time to UTC and applies the logger correction,
+  so gwexpy's `t0` is 15 seconds earlier than the K-NET header Record Time.
+  At the gwexpy boundary, K-NET timestamps are absolute UTC.
+- **WIN header time is interpreted as UTC** because the format header is
+  timezone-naive; each top-level read reports that interpretation once.
 - **ATS.MTH5** is the limited current direct path.
 - **MTH5 standalone** is still in design/publication cleanup. Read this as **"`ats.mth5` has partial support"**, not as **"MTH5 direct I/O is generally complete."**
 
@@ -236,6 +241,10 @@ events = EventTable.read("events.root")
 ```
 
 - **CSV** remains useful for lightweight exchange and inspection. Treat simple CSV files as metadata-light: use HDF5, GWF, Zarr, NetCDF, or a manifest-backed collection directory when name, channel, and unit metadata must be preserved.
+- CSV component columns are naive civil time and use the configured
+  `timezone`. The numeric and generated sample-index routes ignore `timezone`
+  with one warning per top-level read; numeric timestamps are absolute while
+  generated indices remain relative.
 - **TXT** direct I/O is more limited: single-series paths are explicit `format="txt"`, and multi-channel paths use collection directories.
 - **Pickle** portability notes still exist in class references, but Pickle is not a published direct `.read()` / `.write()` format on this page.
 - **NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**. Field/xarray bridges belong to interop. For NetCDF, `netcdf4` is a legacy format token alias for `nc`; `.netcdf4` is not a documented auto-identified extension alias.
