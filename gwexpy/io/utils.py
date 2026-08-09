@@ -83,7 +83,10 @@ def _validate_regular_timestamps(
     quantisation_tolerance = (
         Decimal(2) * max(resolutions) if expected_dt is not None else Decimal("0")
     )
-    float_tolerance = Decimal(str(4 * math.ulp(float(cadence))))
+    relative_float_tolerance = max(
+        math.ulp(float(value - values[0])) for value in values
+    )
+    float_tolerance = Decimal(str(4 * relative_float_tolerance))
     tolerance = max(quantisation_tolerance, float_tolerance)
     if tolerance >= cadence / 2:
         raise ValueError(

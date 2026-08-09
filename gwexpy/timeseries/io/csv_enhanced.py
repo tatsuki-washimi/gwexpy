@@ -10,6 +10,7 @@ from __future__ import annotations
 import csv
 import datetime as _dt
 import io
+import math
 import warnings
 from decimal import Decimal, InvalidOperation
 from functools import partial
@@ -49,6 +50,21 @@ def _validate_and_warn_timezone_ignored(
 ) -> None:
     _parse_timezone_for_format("csv", timezone)
     _record_or_warn_timezone_ignored(marker)
+
+
+def _validate_source_sample_rate(value: Any) -> float | None:
+    """Return a finite, positive declared source sample rate."""
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        raise ValueError("CSV source sample rate must be finite and positive")
+    try:
+        rate = float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("CSV source sample rate must be finite and positive") from exc
+    if not math.isfinite(rate) or rate <= 0:
+        raise ValueError("CSV source sample rate must be finite and positive")
+    return rate
 
 
 def _parse_comment_metadata(
@@ -271,7 +287,8 @@ def read_timeseriesdict_csv(
         Timezone override (e.g. ``"Asia/Tokyo"``).  Overrides the config
         timezone if both are given.
     resample : float, optional
-        Target sample rate in Hz for resampling non-uniform data.
+        Target sample rate in Hz. The reader validates the regular source grid
+        before applying this target; resampling never repairs missing records.
         ``config.sample_rate`` declares the source cadence; ``resample`` is a
         separate target cadence applied only after source-grid validation.
     resample_method : str
@@ -333,7 +350,7 @@ def read_timeseriesdict_csv(
 
     # Override timezone/resample from function args
     tz_str = timezone if timezone is not None else cfg.timezone
-    source_rate = cfg.sample_rate
+    source_rate = _validate_source_sample_rate(cfg.sample_rate)
     target_rate = resample
     resample_meth = resample_method or cfg.resample_method or "interpolate"
     if tz_str is not None:
@@ -519,6 +536,12 @@ def read_timeseriesdict_csv(
             dt_val = 1.0 / target_rate
         elif "source_dt" in locals():
             dt_val = source_dt
+            if source_rate is None and len(ts_times) > 1:
+                # The validated cadence is the exact Decimal median, while
+                # TimeSeries needs a float interval.  For an inferred numeric
+                # CSV grid, use the endpoint average to avoid accumulating
+                # serialized-float roundoff into crop's sample index.
+                dt_val = float((ts_times[-1] - ts_times[0]) / (len(ts_times) - 1))
         elif len(ts_times) > 1:
             # The median of the diffs is robust to a gappy or irregular time
             # column, but on a uniform decimal grid every diff carries the
