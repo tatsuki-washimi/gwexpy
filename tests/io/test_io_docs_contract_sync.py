@@ -11,6 +11,7 @@ EN_GUIDE = ROOT / "docs/web/en/user_guide/io_formats.md"
 JA_GUIDE = ROOT / "docs/web/ja/user_guide/io_formats.md"
 EN_INSTALL = ROOT / "docs/web/en/user_guide/installation.md"
 JA_INSTALL = ROOT / "docs/web/ja/user_guide/installation.md"
+CONTRACT_MD = ROOT / "docs/developers/contracts/public_io_contract.md"
 
 
 def _load_contract() -> dict[str, dict]:
@@ -142,3 +143,30 @@ def test_optional_dependency_matrix_matches_contract():
     )
     assert "install with the `audio` or `all` extra" in en
     assert "`audio` または `all` extra で追加してください" in ja
+
+
+def test_docs_describe_machine_readable_time_contract() -> None:
+    contract = _load_contract()
+    contract_md = _read(CONTRACT_MD)
+    en = _read(EN_GUIDE)
+    ja = _read(JA_GUIDE)
+
+    time_bearing = {
+        canonical for canonical, entry in contract.items() if "time_semantics" in entry
+    }
+    assert len(time_bearing) == 23
+    assert "`time_semantics`" in contract_md
+    assert "`epoch_arg`" in contract_md
+    assert "`timezone_arg`" in contract_md
+    for canonical in time_bearing:
+        assert f"`{canonical}`" in contract_md
+
+    assert "numeric and generated sample-index routes ignore `timezone`" in en
+    assert "数値時刻と生成 sample-index 経路では `timezone` を無視" in ja
+    assert "15 seconds earlier than the K-NET header Record Time" in en
+    assert "K-NET ヘッダの Record Time より 15 秒早い" in ja
+    assert "At the gwexpy boundary, K-NET timestamps are absolute UTC" in en
+    assert "gwexpy 境界で K-NET の時刻は absolute UTC" in ja
+    assert "| `knet` | absolute | override | epoch localize only |" in contract_md
+    assert "WIN header time is interpreted as UTC" in en
+    assert "WIN ヘッダ時刻は UTC として解釈" in ja

@@ -39,6 +39,14 @@ Each on-disk format entry contains these fields:
   is unavailable
 - `metadata_requirements`: extra metadata rules that are part of the public contract
 - `notes`: short rationale and boundary notes
+- `time_semantics`: boundary classification for time-bearing formats;
+  `absolute`, `fixed_zone`, `naive_civil`, or `relative`
+- `epoch_arg`: explicit epoch surface; `none`, `override`, or the Zarr-specific
+  `t0_override`
+- `timezone_arg`: timezone policy; `rejected`, `required`,
+  `epoch_localize_only`, `component_localize`, or `not_accepted`
+- `time_routes`: optional route-level timing policy. CSV uses this because its
+  component, numeric, and generated-index inputs have different semantics.
 
 ### Normalized v3 Fields
 
@@ -69,6 +77,48 @@ Rules:
 ## Boundary Decisions
 
 These decisions are fixed before expanding P1/P2/P3 coverage:
+
+### Time semantics and timezone routing
+
+`timezone` never reinterprets an absolute or fixed-zone timestamp. For an
+`epoch_localize_only` format it may localize only a naive explicit `epoch`.
+When the explicit epoch is already numeric or timezone-aware, the epoch is
+preserved and a `UserWarning` reports that `timezone` was ignored. Invalid
+timezone values are rejected before any epoch-type branch.
+
+| Format | Time semantics | Epoch argument | Timezone argument |
+|---|---|---|---|
+| `gwf` | absolute | none | not accepted |
+| `hdf.ndscope` | absolute | none | not accepted |
+| `hdf5` | absolute | none | not accepted |
+| `xml.diaggui` | absolute | override | epoch localize only |
+| `csv` | absolute default; see routes below | none | component localize |
+| `txt` | absolute | none | not accepted |
+| `sdb` | absolute | none | rejected |
+| `wav` | relative | override | not accepted |
+| `flac` | relative | override | not accepted |
+| `ogg` | relative | override | not accepted |
+| `mp3` | relative | override | not accepted |
+| `m4a` | relative | override | not accepted |
+| `gbd` | naive civil | override | required |
+| `tdms` | absolute | override | epoch localize only |
+| `mseed` | absolute | override | epoch localize only |
+| `sac` | absolute | override | epoch localize only |
+| `gse2` | absolute | override | epoch localize only |
+| `knet` | absolute | override | epoch localize only |
+| `win` | fixed zone | none | rejected |
+| `ats` | absolute | override | epoch localize only |
+| `ats.mth5` | absolute | none | rejected |
+| `nc` | absolute | none | not accepted |
+| `zarr` | absolute | t0 override | not accepted |
+
+CSV route details are machine-readable under `time_routes`:
+
+| Route | Time semantics | Timezone behavior |
+|---|---|---|
+| component columns | naive civil | localize |
+| numeric time column | absolute | ignore with one warning per top-level read |
+| generated sample index | relative | ignore with one warning per top-level read |
 
 ### `hdf.ndscope`
 

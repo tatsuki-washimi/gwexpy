@@ -20,6 +20,31 @@
   NULL, text, non-integral, or other values. Archives without that column
   retain the legacy US customary unit assumption; `usUnits` is metadata and
   is not returned as a data channel.
+- **io (timezones)**: readers now distinguish source-defined absolute times,
+  naive civil times, and relative sample indices. A caller-supplied
+  `timezone=` can localize only a naive explicit `epoch=` or configured CSV
+  component columns; it can no longer reinterpret an absolute source time.
+  Absolute/numeric/aware epoch overrides preserve their instant and warn that
+  `timezone=` is ignored, while formats that do not accept timezone input fail
+  closed. Malformed offsets, non-finite offsets, and boolean timezone/epoch
+  values are rejected instead of being coerced (#633).
+
+  | Before | After |
+  | --- | --- |
+  | A seismic source at `2024-01-01 12:00:00 UTC` could be reinterpreted as Tokyo civil time, changing GPS `1388145618` to `1388113218` (−9 hours). | Source timestamps remain absolute at GPS `1388145618`; only a naive explicit `epoch=` may be localized. |
+  | `timezone=` could be silently dropped by SDB, ATS, TDMS, DTT XML, audio, WAV, NDScope HDF5, and direct HDF5/TXT collection routes. | Unsupported timezone input raises a contextual `ValueError` before optional backends or source traversal. |
+- **io (WIN/CSV warnings)**: WIN header times are explicitly interpreted as
+  UTC and emit one top-level warning even for multi-file reads (#632 partial).
+  CSV numeric-time and sample-index routes likewise emit one warning when
+  `timezone=` is ignored, while component columns continue to localize the
+  configured civil time (#634 partial).
+
+### Known limitations
+
+- **io (CSV time scale)**: numeric CSV timestamps retain the legacy GPS-second
+  interpretation. v0.1.14 does not add `time_scale=` or `time_unit=`; convert
+  non-GPS timestamps before reading. The broader time-scale ambiguity remains
+  tracked by #634 for v0.2.0.
 
 ### Development and CI
 

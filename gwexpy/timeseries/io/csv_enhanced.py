@@ -10,15 +10,43 @@ from __future__ import annotations
 import csv
 import datetime as _dt
 import io
+import warnings
+from functools import partial
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 from astropy import units as u
 
-from gwexpy.io.utils import datetime_to_gps, filter_by_channels, parse_timezone
+from gwexpy.io.utils import (
+    _consume_warning_state,
+    _make_warning_state,
+    _parse_timezone_for_format,
+    datetime_to_gps,
+    filter_by_channels,
+)
 
 from .csv_config import CSVFormatConfig
+
+_CSV_TIMEZONE_WARNING = (
+    "timezone is ignored for CSV numeric/index time routes because their "
+    "timestamps already define the time semantics"
+)
+
+
+def _record_or_warn_timezone_ignored(marker: list[bool] | None) -> None:
+    if marker is None:
+        warnings.warn(_CSV_TIMEZONE_WARNING, UserWarning, stacklevel=3)
+    else:
+        marker[0] = True
+
+
+def _validate_and_warn_timezone_ignored(
+    timezone: Any,
+    marker: list[bool] | None,
+) -> None:
+    _parse_timezone_for_format("csv", timezone)
+    _record_or_warn_timezone_ignored(marker)
 
 
 def _parse_comment_metadata(
@@ -257,24 +285,32 @@ def read_timeseriesdict_csv(
     from ._multi import expand_multi_source, read_multi_dict
 
     start, end = pop_time_selection(kwargs)
+    timezone_warning_marker = _consume_warning_state(
+        kwargs,
+        "_timezone_warning_state",
+        "_timezone_warning_marker",
+    )
 
     multi = expand_multi_source(source)
     if multi is not None:
-        return apply_time_selection(
-            read_multi_dict(
+        top_level_marker = [False]
+        merged = read_multi_dict(
+            partial(
                 read_timeseriesdict_csv,
-                multi,
-                "csv",
-                config=config,
-                channels=channels,
-                timezone=timezone,
-                resample=resample,
-                resample_method=resample_method,
-                **kwargs,
+                _timezone_warning_state=_make_warning_state(top_level_marker),
             ),
-            start,
-            end,
+            multi,
+            "csv",
+            config=config,
+            channels=channels,
+            timezone=timezone,
+            resample=resample,
+            resample_method=resample_method,
+            **kwargs,
         )
+        if top_level_marker[0]:
+            _record_or_warn_timezone_ignored(timezone_warning_marker)
+        return apply_time_selection(merged, start, end)
 
     # --- Resolve config ---
     if config is None:
@@ -293,9 +329,15 @@ def read_timeseriesdict_csv(
         raise TypeError(f"Unsupported config type: {type(config)}")
 
     # Override timezone/resample from function args
-    tz_str = timezone or cfg.timezone
+    tz_str = timezone if timezone is not None else cfg.timezone
     target_rate = resample or cfg.sample_rate
     resample_meth = resample_method or cfg.resample_method or "interpolate"
+    if tz_str is not None:
+        # Validate before any source-dependent early return. Route-specific
+        # warning/localization still happens only after the route is known.
+        _parse_timezone_for_format("csv", tz_str)
+    if tz_str is None and any(col.role == "time_component" for col in cfg.columns):
+        raise ValueError("timezone is required when using time_component columns")
 
     # --- Read raw file ---
     if hasattr(source, "read"):
@@ -374,18 +416,33 @@ def read_timeseriesdict_csv(
                 raise ValueError(
                     "timezone is required when using time_component columns"
                 )
-            tz = parse_timezone(tz_str)
+            tz = _parse_timezone_for_format("csv", tz_str)
             gps_times = _reconstruct_timestamps(raw, time_columns, tz)
         elif time_col_index is not None:
+            if tz_str is not None:
+                _validate_and_warn_timezone_ignored(
+                    tz_str,
+                    timezone_warning_marker,
+                )
             gps_times = raw[:, time_col_index]
         else:
             # No time info — use sample indices
+            if tz_str is not None:
+                _validate_and_warn_timezone_ignored(
+                    tz_str,
+                    timezone_warning_marker,
+                )
             if target_rate:
                 gps_times = np.arange(raw.shape[0]) / target_rate
             else:
                 gps_times = np.arange(raw.shape[0], dtype=float)
     else:
         # Auto-detect: first column = time, rest = data
+        if tz_str is not None:
+            _validate_and_warn_timezone_ignored(
+                tz_str,
+                timezone_warning_marker,
+            )
         gps_times = raw[:, 0]
         if raw.shape[1] == 2:
             data_columns = [

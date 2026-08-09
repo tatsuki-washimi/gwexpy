@@ -86,6 +86,56 @@ class TestParseTimezone:
         expected = _dt.timezone(_dt.timedelta(hours=8))
         assert result == expected
 
+    @pytest.mark.parametrize(
+        "value",
+        [
+            "+09:60",
+            "+24:00",
+            "-24:00",
+            "+9:00",
+            "+090",
+            "+09000",
+            "+09:0",
+            "+09:000",
+            "09:00",
+            "+0a:00",
+        ],
+    )
+    def test_malformed_or_out_of_range_offset_raises(self, value):
+        with pytest.raises(ValueError, match="Could not parse timezone"):
+            parse_timezone(value)
+
+    @pytest.mark.parametrize(
+        ("value", "expected"),
+        [
+            ("+23:59", _dt.timedelta(hours=23, minutes=59)),
+            ("-23:59", -_dt.timedelta(hours=23, minutes=59)),
+            ("-0800", -_dt.timedelta(hours=8)),
+        ],
+    )
+    def test_strict_offset_boundaries(self, value, expected):
+        assert parse_timezone(value).utcoffset(None) == expected
+
+    @pytest.mark.parametrize(
+        "value",
+        [
+            float("nan"),
+            float("inf"),
+            float("-inf"),
+            np.float64("nan"),
+            np.float64("inf"),
+            np.float64("-inf"),
+        ],
+    )
+    def test_non_finite_numeric_offset_raises_value_error(self, value):
+        with pytest.raises(ValueError, match="Could not parse timezone"):
+            parse_timezone(value)
+
+    @pytest.mark.parametrize("value", [True, False, np.bool_(True), np.bool_(False)])
+    def test_boolean_offset_is_not_numeric(self, value):
+        with pytest.raises(ValueError, match="Unsupported timezone specifier"):
+            parse_timezone(value)
+
     def test_unsupported_type_raises(self):
         # Line 55
         with pytest.raises(ValueError, match="Unsupported timezone specifier"):

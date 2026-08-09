@@ -202,7 +202,12 @@ ats = TimeSeries.read("data.atss", format="ats.mth5")
 ```
 
 - **MiniSEED** はギャップがある場合、既定では `NaN` パディングされます。`gap="raise"` で失敗させることもできます。
-- **K-NET**, **WIN / WIN32** は表のとおり読み込み専用です。
+- **K-NET**, **WIN / WIN32** は表のとおり読み込み専用です。K-NET は
+  ObsPy がヘッダの JST を UTC へ正規化し logger correction も適用済みのため、
+  gwexpy の `t0` は K-NET ヘッダの Record Time より 15 秒早い値です。
+  gwexpy 境界で K-NET の時刻は absolute UTC です。
+- **WIN ヘッダ時刻は UTC として解釈**します。ヘッダ自体は timezone-naive
+  なので、この解釈をトップレベルの read ごとに1回警告します。
 - **ATS.MTH5** は利用経路が限定される current direct path です。
 - **MTH5 standalone** は設計・公開整理中です。**「MTH5 は対応済み」ではなく、「`ats.mth5` のみ一部対応」** と読んでください。
 
@@ -235,6 +240,10 @@ events = EventTable.read("events.root")
 ```
 
 - **CSV** は素朴ですが、共有や確認には依然として有用です。単純な CSV ファイルは metadata-light と考えてください。`name`、`channel`、`unit` まで保持したい場合は HDF5、GWF、Zarr、NetCDF、または manifest 付き collection directory を使います。
+- CSV の component 列は naive civil time で、設定した `timezone` により
+  localize します。数値時刻と生成 sample-index 経路では `timezone` を無視し、
+  トップレベル read ごとに1回警告します。数値時刻は absolute、生成 index は
+  relative のままです。
 - **TXT** の direct I/O はより限定的で、単一 series は `format="txt"` 明示、複数チャネルは collection directory 前提です。
 - **Pickle** の可搬性メモは各クラスの reference に残していますが、このページでは Pickle を public direct `.read()` / `.write()` 形式としては扱いません。
 - **NetCDF4 / Zarr** はこのページでは **TimeSeries 系の direct I/O** としてだけ扱います。Field と xarray の橋渡しは interop 側を見てください。NetCDF の `netcdf4` は `nc` の旧 format token alias であり、`.netcdf4` は公開された自動判定 extension alias ではありません。

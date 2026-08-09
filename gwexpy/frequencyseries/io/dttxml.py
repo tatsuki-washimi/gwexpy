@@ -14,11 +14,13 @@ from gwexpy.io.dttxml_common import (
     load_dttxml_products,
 )
 from gwexpy.io.utils import (
+    _coerce_numeric_epoch,
+    _is_numeric_epoch,
+    _reject_timezone_reinterpretation,
     apply_unit,
     datetime_to_gps,
     ensure_datetime,
     filter_by_channels,
-    parse_timezone,
     set_provenance,
 )
 
@@ -38,10 +40,15 @@ def _looks_like_dttxml(source) -> bool:
 
 def _build_epoch(value, timezone):
     if value is None:
+        _reject_timezone_reinterpretation("xml.diaggui", timezone, None)
         return None
-    if isinstance(value, (int, float, np.floating)):
-        return float(value)
-    tzinfo = parse_timezone(timezone) if timezone else None
+    tzinfo = _reject_timezone_reinterpretation(
+        "xml.diaggui",
+        timezone,
+        value,
+    )
+    if _is_numeric_epoch(value):
+        return _coerce_numeric_epoch(value)
     if tzinfo is None:
         tzinfo = UTC
     return datetime_to_gps(ensure_datetime(value, tzinfo=tzinfo))
@@ -83,6 +90,11 @@ def read_frequencyseriesdict_dttxml(
 
     """
     del kwargs
+    epoch_timezone = _reject_timezone_reinterpretation(
+        "xml.diaggui",
+        timezone,
+        epoch,
+    )
     if products is None:
         raise ValueError("products must be specified for xml.diaggui")
     prod = str(products).upper()
@@ -98,7 +110,7 @@ def read_frequencyseriesdict_dttxml(
         if channels and ch not in channels:
             continue
         epoch_val = epoch if epoch is not None else info.get("epoch")
-        gps = _build_epoch(epoch_val, timezone)
+        gps = _build_epoch(epoch_val, epoch_timezone)
         freqs = np.asarray(info.get("frequencies") or [])
         df = info.get("df") or (np.diff(freqs)[0] if freqs.size > 1 else None)
         kwargs_fs = {"name": ch, "channel": ch}
@@ -169,6 +181,11 @@ def read_frequencyseriesmatrix_dttxml(
 
     """
     del kwargs
+    epoch_timezone = _reject_timezone_reinterpretation(
+        "xml.diaggui",
+        timezone,
+        epoch,
+    )
     if products is None:
         raise ValueError("products must be specified for xml.diaggui")
     prod = str(products).upper()
@@ -228,7 +245,7 @@ def read_frequencyseriesmatrix_dttxml(
         rows=row_labels,
         cols=col_labels,
         unit=meta_unit,
-        epoch=_build_epoch(epoch, timezone),
+        epoch=_build_epoch(epoch, epoch_timezone),
     )
     if unit:
         fsm = apply_unit(fsm, unit)

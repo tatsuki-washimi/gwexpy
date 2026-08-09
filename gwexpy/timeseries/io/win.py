@@ -23,12 +23,18 @@ from __future__ import annotations
 
 import struct
 import warnings
+from functools import partial
 from pathlib import Path
 from typing import Any, cast
 
 import numpy as np
 
-from gwexpy.io.utils import ensure_dependency
+from gwexpy.io.utils import (
+    _consume_warning_state,
+    _make_warning_state,
+    _reject_timezone_reinterpretation,
+    ensure_dependency,
+)
 from gwexpy.timeseries.io._multi import expand_multi_source, read_multi_dict
 from gwexpy.timeseries.io._registration import register_timeseries_format
 
@@ -45,6 +51,15 @@ except ImportError:
     UTCDateTime = cast(Any, None)
 
 from .. import TimeSeries, TimeSeriesDict
+
+_WIN_UTC_WARNING = "WIN header time is timezone-naive; interpreting as UTC (#632)"
+
+
+def _record_or_warn_utc_interpretation(marker: list[bool] | None) -> None:
+    if marker is None:
+        warnings.warn(_WIN_UTC_WARNING, UserWarning, stacklevel=3)
+    else:
+        marker[0] = True
 
 
 def s4(v):
@@ -219,12 +234,35 @@ def read_win_file(source, **kwargs) -> TimeSeriesDict:
     When a list of paths is given, channels found in several files are
     concatenated along the time axis (gaps padded with NaN).
     """
+    warning_marker = _consume_warning_state(
+        kwargs,
+        "_utc_warning_state",
+        "_utc_warning_marker",
+    )
+    timezone = kwargs.pop("timezone", None)
+    kwargs.pop("epoch", None)
+    _reject_timezone_reinterpretation("win", timezone, None)
+
     if not HAS_OBSPY:
         raise ImportError("obspy is required to read WIN format files")
 
     multi = expand_multi_source(source)
     if multi is not None:
-        return read_multi_dict(read_win_file, multi, "win", **kwargs)
+        top_level_marker = [False]
+        result = read_multi_dict(
+            partial(
+                read_win_file,
+                _utc_warning_state=_make_warning_state(top_level_marker),
+            ),
+            multi,
+            "win",
+            **kwargs,
+        )
+        if top_level_marker[0]:
+            _record_or_warn_utc_interpretation(warning_marker)
+        return result
+
+    _record_or_warn_utc_interpretation(warning_marker)
 
     stream = _read_win_fixed(source, **kwargs)
 

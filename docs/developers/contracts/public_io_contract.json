@@ -34,6 +34,9 @@
         {
             "name": "gwf",
             "canonical": "gwf",
+            "time_semantics": "absolute",
+            "epoch_arg": "none",
+            "timezone_arg": "not_accepted",
             "aliases": [
                 "frame",
                 "framecpp",
@@ -98,6 +101,9 @@
         {
             "name": "hdf.ndscope",
             "canonical": "hdf.ndscope",
+            "time_semantics": "absolute",
+            "epoch_arg": "none",
+            "timezone_arg": "not_accepted",
             "aliases": [
                 "ndscope-hdf5",
                 "ndscope_hdf5",
@@ -151,6 +157,9 @@
         {
             "name": "hdf5",
             "canonical": "hdf5",
+            "time_semantics": "absolute",
+            "epoch_arg": "none",
+            "timezone_arg": "not_accepted",
             "aliases": [],
             "public_api": {
                 "read": [
@@ -262,6 +271,9 @@
         {
             "name": "xml.diaggui",
             "canonical": "xml.diaggui",
+            "time_semantics": "absolute",
+            "epoch_arg": "override",
+            "timezone_arg": "epoch_localize_only",
             "aliases": [
                 "dttxml"
             ],
@@ -313,6 +325,26 @@
         {
             "name": "csv",
             "canonical": "csv",
+            "time_semantics": "absolute",
+            "epoch_arg": "none",
+            "timezone_arg": "component_localize",
+            "time_routes": [
+                {
+                    "route": "component",
+                    "time_semantics": "naive_civil",
+                    "timezone_behavior": "localize"
+                },
+                {
+                    "route": "numeric",
+                    "time_semantics": "absolute",
+                    "timezone_behavior": "ignored_with_warning"
+                },
+                {
+                    "route": "index",
+                    "time_semantics": "relative",
+                    "timezone_behavior": "ignored_with_warning"
+                }
+            ],
             "aliases": [],
             "public_api": {
                 "read": [
@@ -380,6 +412,9 @@
         {
             "name": "txt",
             "canonical": "txt",
+            "time_semantics": "absolute",
+            "epoch_arg": "none",
+            "timezone_arg": "not_accepted",
             "aliases": [],
             "public_api": {
                 "read": [
@@ -530,6 +565,9 @@
         {
             "name": "sdb",
             "canonical": "sdb",
+            "time_semantics": "absolute",
+            "epoch_arg": "none",
+            "timezone_arg": "rejected",
             "aliases": [],
             "public_api": {
                 "read": [
@@ -576,6 +614,9 @@
         {
             "name": "wav",
             "canonical": "wav",
+            "time_semantics": "relative",
+            "epoch_arg": "override",
+            "timezone_arg": "not_accepted",
             "aliases": [],
             "public_api": {
                 "read": [
@@ -629,6 +670,9 @@
         {
             "name": "flac",
             "canonical": "flac",
+            "time_semantics": "relative",
+            "epoch_arg": "override",
+            "timezone_arg": "not_accepted",
             "aliases": [],
             "public_api": {
                 "read": [
@@ -686,6 +730,9 @@
         {
             "name": "ogg",
             "canonical": "ogg",
+            "time_semantics": "relative",
+            "epoch_arg": "override",
+            "timezone_arg": "not_accepted",
             "aliases": [],
             "public_api": {
                 "read": [
@@ -743,6 +790,9 @@
         {
             "name": "mp3",
             "canonical": "mp3",
+            "time_semantics": "relative",
+            "epoch_arg": "override",
+            "timezone_arg": "not_accepted",
             "aliases": [],
             "public_api": {
                 "read": [
@@ -800,6 +850,9 @@
         {
             "name": "m4a",
             "canonical": "m4a",
+            "time_semantics": "relative",
+            "epoch_arg": "override",
+            "timezone_arg": "not_accepted",
             "aliases": [],
             "public_api": {
                 "read": [
@@ -857,6 +910,9 @@
         {
             "name": "gbd",
             "canonical": "gbd",
+            "time_semantics": "naive_civil",
+            "epoch_arg": "override",
+            "timezone_arg": "required",
             "aliases": [],
             "public_api": {
                 "read": [
@@ -905,6 +961,9 @@
         {
             "name": "tdms",
             "canonical": "tdms",
+            "time_semantics": "absolute",
+            "epoch_arg": "override",
+            "timezone_arg": "epoch_localize_only",
             "aliases": [],
             "public_api": {
                 "read": [
@@ -954,6 +1013,9 @@
         {
             "name": "mseed",
             "canonical": "mseed",
+            "time_semantics": "absolute",
+            "epoch_arg": "override",
+            "timezone_arg": "epoch_localize_only",
             "aliases": [
                 "miniseed"
             ],
@@ -1009,6 +1071,9 @@
         {
             "name": "sac",
             "canonical": "sac",
+            "time_semantics": "absolute",
+            "epoch_arg": "override",
+            "timezone_arg": "epoch_localize_only",
             "aliases": [],
             "public_api": {
                 "read": [
@@ -1061,6 +1126,9 @@
         {
             "name": "gse2",
             "canonical": "gse2",
+            "time_semantics": "absolute",
+            "epoch_arg": "override",
+            "timezone_arg": "epoch_localize_only",
             "aliases": [],
             "public_api": {
                 "read": [
@@ -1113,6 +1181,9 @@
         {
             "name": "knet",
             "canonical": "knet",
+            "time_semantics": "absolute",
+            "epoch_arg": "override",
+            "timezone_arg": "epoch_localize_only",
             "aliases": [],
             "public_api": {
                 "read": [
@@ -1160,6 +1231,9 @@
         {
             "name": "win",
             "canonical": "win",
+            "time_semantics": "fixed_zone",
+            "epoch_arg": "none",
+            "timezone_arg": "rejected",
             "aliases": [
                 "win32"
             ],
@@ -1210,6 +1284,9 @@
         {
             "name": "ats",
             "canonical": "ats",
+            "time_semantics": "absolute",
+            "epoch_arg": "override",
+            "timezone_arg": "epoch_localize_only",
             "aliases": [],
             "public_api": {
                 "read": [
@@ -1254,6 +1331,9 @@
         {
             "name": "ats.mth5",
             "canonical": "ats.mth5",
+            "time_semantics": "absolute",
+            "epoch_arg": "none",
+            "timezone_arg": "rejected",
             "aliases": [],
             "public_api": {
                 "read": [
@@ -1299,6 +1379,9 @@
         {
             "name": "nc",
             "canonical": "nc",
+            "time_semantics": "absolute",
+            "epoch_arg": "none",
+            "timezone_arg": "not_accepted",
             "aliases": [
                 "netcdf4"
             ],
@@ -1358,6 +1441,9 @@
         {
             "name": "zarr",
             "canonical": "zarr",
+            "time_semantics": "absolute",
+            "epoch_arg": "t0_override",
+            "timezone_arg": "not_accepted",
             "aliases": [],
             "public_api": {
                 "read": [

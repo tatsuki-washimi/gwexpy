@@ -16,6 +16,9 @@ from astropy import units as u
 
 from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
 from gwexpy.io.utils import (
+    _coerce_numeric_epoch,
+    _is_numeric_epoch,
+    _reject_timezone_reinterpretation,
     apply_unit,
     datetime_to_gps,
     ensure_dependency,
@@ -108,6 +111,9 @@ def read_timeseriesdict_audio(
         Additional keyword arguments accepted for reader compatibility.
 
     """
+    timezone = kwargs.pop("timezone", None)
+    _reject_timezone_reinterpretation(format_hint or "audio", timezone, None)
+
     # An audio file is a self-contained (possibly multi-channel) recording
     # without absolute timestamps, so merging multiple files is not
     # meaningful; fail early with a clear error.
@@ -148,8 +154,8 @@ def read_timeseriesdict_audio(
 
     # Epoch processing
     if epoch is not None:
-        if isinstance(epoch, (int, float)):
-            t0 = float(epoch)
+        if _is_numeric_epoch(epoch):
+            t0 = _coerce_numeric_epoch(epoch)
         elif isinstance(epoch, datetime):
             t0 = datetime_to_gps(epoch)
         else:
@@ -178,7 +184,7 @@ def read_timeseriesdict_audio(
         "sample_rate": sample_rate,
         "sample_width_bytes": sample_width,
         "original_channels": n_channels,
-        "epoch_source": "user" if epoch else "default",
+        "epoch_source": "user" if epoch is not None else "default",
         "unit_source": "override" if unit else "normalised_float",
     }
 
