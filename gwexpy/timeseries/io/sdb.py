@@ -12,7 +12,10 @@ import pandas as pd
 from astropy.time import Time
 
 from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
-from gwexpy.io.utils import _reject_timezone_reinterpretation
+from gwexpy.io.utils import (
+    _reject_timezone_reinterpretation,
+    _validate_regular_timestamps,
+)
 
 from .. import TimeSeries, TimeSeriesDict
 from ._multi import expand_multi_source, read_multi_dict
@@ -189,6 +192,18 @@ def read_timeseriesdict_sdb(
             "Table must contain 'dateTime' column for time series conversion."
         )
 
+    # Verify the native integer Unix-second grid before any conversion to
+    # float.  A source gap cannot safely be repaired by inferring a rate.
+    raw_time_values = df["dateTime"].to_list()
+    for index, value in enumerate(raw_time_values):
+        if isinstance(value, (bool, np.bool_)) or not isinstance(
+            value, (int, np.integer)
+        ):
+            raise ValueError(
+                f"SDB dateTime at index {index} must contain integer Unix seconds"
+            )
+    source_dt = _validate_regular_timestamps(raw_time_values, source="SDB")
+
     # Convert dateTime to GPS time (it's usually UNIX timestamp)
     # TimeSeries expects t0 in GPS. Unix to GPS is roughly +18s (leap seconds).
     # gwpy.time.to_gps handles datetime objects.
@@ -196,17 +211,7 @@ def read_timeseriesdict_sdb(
     time_values = np.asarray(df["dateTime"].to_numpy(), dtype=np.float64)
     t_start_unix = time_values[0]
 
-    # Calculate sampling rate/dt
-    # Assume regular?
-    if len(df) > 1:
-        # Check median delta
-        dt_vals = np.diff(time_values)
-        dt_median = float(np.median(dt_vals))
-        if dt_median == 0:
-            dt_median = 1.0  # fallback
-        sample_rate = 1.0 / dt_median
-    else:
-        sample_rate = 1.0  # default
+    sample_rate = 1.0 / source_dt
 
     # Convert to TimeSeriesDict
     tsd = TimeSeriesDict()

@@ -7,6 +7,7 @@ import math
 import re
 import warnings
 from collections.abc import Iterable
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any, cast
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -19,6 +20,82 @@ _NUMERIC_TYPES = (int, float, np.integer, np.floating)
 _UTC_OFFSET_RE = re.compile(r"^([+-])(\d{2})(?::?(\d{2}))?$")
 _TIMEZONE_ROUTING_SENTINEL = object()
 _WARNING_STATE_SENTINEL = object()
+
+
+def _validate_regular_timestamps(
+    times: Iterable[Any],
+    *,
+    source: str,
+    expected_dt: Any | None = None,
+) -> float:
+    """Validate a regular, strictly increasing source timestamp grid.
+
+    ``Decimal`` and integer inputs stay exact until the cadence has been
+    established.  This deliberately runs before readers construct floating
+    relative times: a missing record must not be disguised by interpolation or
+    by cancellation at a large absolute epoch.
+    """
+    values: list[Decimal] = []
+    for index, value in enumerate(times):
+        if isinstance(value, bool) or isinstance(value, np.bool_):
+            raise ValueError(f"{source} timestamp at index {index} is not numeric")
+        try:
+            decimal_value = value if isinstance(value, Decimal) else Decimal(str(value))
+        except (InvalidOperation, ValueError, TypeError) as exc:
+            raise ValueError(
+                f"{source} timestamp at index {index} is not numeric"
+            ) from exc
+        if not decimal_value.is_finite():
+            raise ValueError(f"{source} timestamp at index {index} is non-finite")
+        values.append(decimal_value)
+
+    if len(values) < 2:
+        return 1.0
+
+    deltas = [right - left for left, right in zip(values, values[1:], strict=False)]
+    for index, delta in enumerate(deltas):
+        if delta == 0:
+            raise ValueError(f"{source} duplicate timestamp at index {index + 1}")
+        if delta < 0:
+            raise ValueError(f"{source} backward timestamp at index {index + 1}")
+
+    cadence = (
+        Decimal(str(expected_dt))
+        if expected_dt is not None
+        else sorted(deltas)[len(deltas) // 2]
+    )
+    if not cadence.is_finite() or cadence <= 0:
+        raise ValueError(f"{source} cadence must be finite and positive")
+    # Decimal input has an explicit quantisation bound.  Subtracting two
+    # independently rounded tokens doubles that bound; the float conversion
+    # used for a relative TimeSeries grid contributes at most four ULPs.
+    resolutions: list[Decimal] = []
+    for value in values:
+        exponent = value.as_tuple().exponent
+        if not isinstance(exponent, int):  # values are finite above
+            raise AssertionError("finite Decimal had a non-integer exponent")
+        resolutions.append(
+            Decimal("0") if exponent >= 0 else Decimal(1).scaleb(exponent)
+        )
+    # An inferred cadence is compared as exact Decimal arithmetic.  A declared
+    # rate may be a non-terminating decimal, so only that comparison needs the
+    # input-token quantisation allowance.
+    quantisation_tolerance = (
+        Decimal(2) * max(resolutions) if expected_dt is not None else Decimal("0")
+    )
+    float_tolerance = Decimal(str(4 * math.ulp(float(cadence))))
+    tolerance = max(quantisation_tolerance, float_tolerance)
+    if tolerance >= cadence / 2:
+        raise ValueError(
+            f"{source} timestamp precision is insufficient for cadence {cadence}"
+        )
+    for index, delta in enumerate(deltas):
+        if abs(delta - cadence) > tolerance:
+            raise ValueError(
+                f"{source} timestamp gap at index {index + 1}: "
+                f"expected cadence {cadence}, got {delta}"
+            )
+    return float(cadence)
 
 
 def _is_numeric_epoch(value: Any) -> bool:

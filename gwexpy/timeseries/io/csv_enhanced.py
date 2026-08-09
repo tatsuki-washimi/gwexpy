@@ -11,6 +11,7 @@ import csv
 import datetime as _dt
 import io
 import warnings
+from decimal import Decimal, InvalidOperation
 from functools import partial
 from pathlib import Path
 from typing import Any
@@ -22,6 +23,7 @@ from gwexpy.io.utils import (
     _consume_warning_state,
     _make_warning_state,
     _parse_timezone_for_format,
+    _validate_regular_timestamps,
     datetime_to_gps,
     filter_by_channels,
 )
@@ -270,7 +272,8 @@ def read_timeseriesdict_csv(
         timezone if both are given.
     resample : float, optional
         Target sample rate in Hz for resampling non-uniform data.
-        Overrides config.sample_rate if both are given.
+        ``config.sample_rate`` declares the source cadence; ``resample`` is a
+        separate target cadence applied only after source-grid validation.
     resample_method : str
         Resampling method: ``"interpolate"`` or ``"asfreq"``.
     **kwargs
@@ -330,7 +333,8 @@ def read_timeseriesdict_csv(
 
     # Override timezone/resample from function args
     tz_str = timezone if timezone is not None else cfg.timezone
-    target_rate = resample or cfg.sample_rate
+    source_rate = cfg.sample_rate
+    target_rate = resample
     resample_meth = resample_method or cfg.resample_method or "interpolate"
     if tz_str is not None:
         # Validate before any source-dependent early return. Route-specific
@@ -380,9 +384,12 @@ def read_timeseriesdict_csv(
     # Parse into float array
     reader = csv.reader(io.StringIO("\n".join(data_lines)), delimiter=delimiter)
     rows = []
+    raw_tokens: list[list[str]] = []
     for row in reader:
         try:
-            rows.append([float(v.strip()) for v in row if v.strip()])
+            tokens = [v.strip() for v in row if v.strip()]
+            rows.append([float(v) for v in tokens])
+            raw_tokens.append(tokens)
         except ValueError:
             continue  # skip non-numeric rows
 
@@ -392,6 +399,7 @@ def read_timeseriesdict_csv(
     raw = np.array(rows)
 
     # --- Column mapping ---
+    time_origin = 0.0
     if cfg.columns:
         # Use explicit config
         time_columns: dict[str, int] = {}
@@ -424,7 +432,23 @@ def read_timeseriesdict_csv(
                     tz_str,
                     timezone_warning_marker,
                 )
-            gps_times = raw[:, time_col_index]
+            try:
+                exact_times = [Decimal(row[time_col_index]) for row in raw_tokens]
+            except (InvalidOperation, IndexError) as exc:
+                raise ValueError(
+                    "CSV numeric time column contains an invalid token"
+                ) from exc
+            source_dt = _validate_regular_timestamps(
+                exact_times,
+                source="CSV",
+                expected_dt=(Decimal("1") / Decimal(str(source_rate)))
+                if source_rate is not None
+                else None,
+            )
+            time_origin = float(exact_times[0])
+            gps_times = np.asarray(
+                [float(value - exact_times[0]) for value in exact_times], dtype=float
+            )
         else:
             # No time info — use sample indices
             if tz_str is not None:
@@ -432,8 +456,8 @@ def read_timeseriesdict_csv(
                     tz_str,
                     timezone_warning_marker,
                 )
-            if target_rate:
-                gps_times = np.arange(raw.shape[0]) / target_rate
+            if source_rate:
+                gps_times = np.arange(raw.shape[0]) / source_rate
             else:
                 gps_times = np.arange(raw.shape[0], dtype=float)
     else:
@@ -443,7 +467,23 @@ def read_timeseriesdict_csv(
                 tz_str,
                 timezone_warning_marker,
             )
-        gps_times = raw[:, 0]
+        try:
+            exact_times = [Decimal(row[0]) for row in raw_tokens]
+        except (InvalidOperation, IndexError) as exc:
+            raise ValueError(
+                "CSV numeric time column contains an invalid token"
+            ) from exc
+        source_dt = _validate_regular_timestamps(
+            exact_times,
+            source="CSV",
+            expected_dt=(Decimal("1") / Decimal(str(source_rate)))
+            if source_rate is not None
+            else None,
+        )
+        time_origin = float(exact_times[0])
+        gps_times = np.asarray(
+            [float(value - exact_times[0]) for value in exact_times], dtype=float
+        )
         if raw.shape[1] == 2:
             data_columns = [
                 (metadata.get("name", "ch1"), 1, metadata.get("unit"), 1.0),
@@ -477,6 +517,8 @@ def read_timeseriesdict_csv(
         # Infer sample rate
         if target_rate:
             dt_val = 1.0 / target_rate
+        elif "source_dt" in locals():
+            dt_val = source_dt
         elif len(ts_times) > 1:
             # The median of the diffs is robust to a gappy or irregular time
             # column, but on a uniform decimal grid every diff carries the
@@ -497,7 +539,7 @@ def read_timeseriesdict_csv(
 
         ts = TimeSeries(
             values,
-            t0=float(ts_times[0]),
+            t0=time_origin + float(ts_times[0]),
             dt=dt_val,
             unit=u.Unit(unit_str) if unit_str else u.dimensionless_unscaled,
             name=name,
