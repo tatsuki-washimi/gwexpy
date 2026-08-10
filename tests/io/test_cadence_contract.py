@@ -661,6 +661,17 @@ def test_csv_multi_source_resample_budget_is_global(tmp_path, monkeypatch):
         read_timeseriesdict_csv([first, second], resample=1.0)
 
 
+def test_csv_nested_multi_source_cannot_reset_resample_budget(tmp_path, monkeypatch):
+    first = tmp_path / "first-nested.csv"
+    second = tmp_path / "second-nested.csv"
+    first.write_text("0,0\n1,1\n2,2\n")
+    second.write_text("3,3\n4,4\n5,5\n")
+    monkeypatch.setattr(csv_enhanced, "_MAX_RESAMPLED_VALUES", 5)
+
+    with pytest.raises(ValueError, match="resampled output exceeds"):
+        read_timeseriesdict_csv([[first], [second]], resample=1.0)
+
+
 def test_csv_multi_source_resample_budget_allows_exact_total(tmp_path, monkeypatch):
     first = tmp_path / "first-exact.csv"
     second = tmp_path / "second-exact.csv"

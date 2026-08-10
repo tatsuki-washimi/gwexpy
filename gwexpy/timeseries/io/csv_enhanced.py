@@ -494,7 +494,11 @@ def read_timeseriesdict_csv(
     multi = expand_multi_source(source)
     if multi is not None:
         top_level_marker = [False]
-        top_level_budget = [_MAX_RESAMPLED_VALUES]
+        top_level_budget = (
+            resample_budget_state
+            if resample_budget_state is not None
+            else [_MAX_RESAMPLED_VALUES]
+        )
         merged = read_multi_dict(
             partial(
                 read_timeseriesdict_csv,
