@@ -476,6 +476,36 @@
 <section id="behaviour-visible-bug-fixes">
 <h3>動作に影響するバグ修正<a class="headerlink" href="#behaviour-visible-bug-fixes" title="Link to this heading">#</a></h3>
 <ul>
+<li><p><strong>io (ATS.MTH5)</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;ats.mth5&quot;)</span></code> now uses the
+supported <code class="docutils literal notranslate"><span class="pre">mth5.read_file(...,</span> <span class="pre">file_type=&quot;metronix&quot;)</span></code> API from <code class="docutils literal notranslate"><span class="pre">mth5&gt;=0.6.8</span></code>.
+The reader preserves raw ATSS sample values, maps Ex/Ey to mV/km and
+Hx/Hy/Hz to nT, and fails closed when data, start time, sample rate,
+component, or unit metadata is missing or inconsistent. The published path
+remains single-series only; <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;ats.mth5&quot;)</span></code>
+now raises an explicit <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> before importing the optional dependency
+instead of entering an incompatible dict route. Source timing and units are
+authoritative, so <code class="docutils literal notranslate"><span class="pre">epoch=</span></code>, <code class="docutils literal notranslate"><span class="pre">timezone=</span></code>, <code class="docutils literal notranslate"><span class="pre">unit=</span></code>, and unknown reader
+overrides now fail explicitly instead of being ignored (#619).</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Before</p></th>
+<th class="head"><p>After</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>The reader called an obsolete nested <code class="docutils literal notranslate"><span class="pre">mth5.io.metronix...read_atss</span></code> API and could fail before returning a series.</p></td>
+<td><p>The reader calls the supported top-level API and validates the returned channel contract.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;ats.mth5&quot;)</span></code> could dispatch into a single-channel implementation.</p></td>
+<td><p>The unsupported collection route fails immediately and directs callers to <code class="docutils literal notranslate"><span class="pre">TimeSeries.read</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>Reader overrides could be accepted but ignored, leaving source timing and units unchanged without notice.</p></td>
+<td><p>Unsupported timing, unit, and unknown overrides raise before dependency lookup.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
 <li><p><strong>io (CSV/SDB cadence)</strong>: numeric and configured component-column CSV
 timestamps are validated before float conversion or resampling, and SDB
 validates integer Unix-second timestamps in database storage order before
