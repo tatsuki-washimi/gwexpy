@@ -234,6 +234,17 @@ def test_numeric_csv_accepts_exact_declared_decimal_grid(tmp_path):
     assert series.dt.value == pytest.approx(0.1)
 
 
+def test_numeric_csv_accepts_serialized_binary_float_grid(tmp_path):
+    path = tmp_path / "serialized-binary-grid.csv"
+    times = np.arange(200) * 0.01
+    np.savetxt(path, np.column_stack([times, np.arange(200.0)]), delimiter=",")
+
+    series = next(iter(read_timeseriesdict_csv(path).values()))
+
+    assert len(series) == 200
+    assert series.dt.value == pytest.approx(0.01)
+
+
 def test_numeric_csv_accepts_declared_jitter_within_token_resolution(tmp_path):
     path = tmp_path / "jitter-within.csv"
     path.write_text("0.000,1\n1.001,2\n2.000,3\n")
