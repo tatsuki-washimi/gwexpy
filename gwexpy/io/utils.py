@@ -177,12 +177,38 @@ def _validate_float_time_axis(
         )
 
     half_cadence = cadence_decimal / 2
+    # GWpy's Index.define delegates to np.arange(start, stop, step).  NumPy
+    # populates that array with the quantized step ``(start + step) - start``,
+    # not necessarily with ``step`` itself.  That tiny per-sample difference
+    # can accumulate into many cadences on a long absolute-time axis.
+    effective_cadence = (origin_float + cadence_float) - origin_float
+    if not math.isfinite(effective_cadence) or effective_cadence <= 0:
+        raise ValueError(
+            f"{source} absolute time axis precision is insufficient for "
+            f"cadence {cadence_decimal} at origin {origin_decimal}"
+        )
+
+    try:
+        stop_float = origin_float + cadence_float * sample_count
+        span_float = stop_float - origin_float
+        available_samples = math.ceil(span_float / cadence_float)
+    except (OverflowError, ValueError) as exc:
+        raise ValueError(f"{source} absolute time axis is not representable") from exc
+    if (
+        not math.isfinite(stop_float)
+        or not math.isfinite(span_float)
+        or span_float <= 0
+        or available_samples < sample_count
+    ):
+        raise ValueError(f"{source} absolute time axis is not representable")
+
     # Even a single-row series publishes an exclusive span edge derived from
-    # ``t0 + dt``; check that edge as well as every multi-row endpoint.
+    # ``t0 + dt``; check that edge as well as every multi-row endpoint.  The
+    # endpoint uses NumPy's effective cadence to mirror the public Index.
     final_index = max(sample_count - 1, 1)
     for index in (0, final_index):
         exact_value = origin_decimal + cadence_decimal * index
-        represented_value = origin_float + cadence_float * index
+        represented_value = origin_float + effective_cadence * index
         if not math.isfinite(represented_value):
             raise ValueError(f"{source} absolute time axis is not representable")
         representation_error = abs(Decimal.from_float(represented_value) - exact_value)

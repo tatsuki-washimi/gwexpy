@@ -288,6 +288,19 @@ def test_numeric_csv_preserves_half_microsecond_cadence_at_large_epoch(tmp_path)
     assert np.max(np.abs(represented_relative - expected_relative)) < 2.5e-7
 
 
+def test_numeric_csv_rejects_accumulating_arange_precision_loss(tmp_path):
+    path = tmp_path / "accumulating-arange-error.csv"
+    origin = Decimal("1470000000")
+    cadence = Decimal("0.0000005")
+    path.write_text(
+        "\n".join(f"{origin + cadence * index:f},{index}" for index in range(1000))
+        + "\n"
+    )
+
+    with pytest.raises(ValueError, match="absolute time axis precision"):
+        read_timeseriesdict_csv(path)
+
+
 def test_numeric_csv_rejects_unrepresentable_submicrosecond_absolute_axis(
     tmp_path,
 ):
@@ -318,6 +331,14 @@ def test_numeric_csv_rejects_unrepresentable_float_interval(tmp_path, interval):
 
     with pytest.raises(ValueError, match="absolute time axis"):
         read_timeseriesdict_csv(path)
+
+
+def test_numeric_csv_rejects_collapsed_relative_axis_before_resampling(tmp_path):
+    path = tmp_path / "collapsed-relative-axis.csv"
+    path.write_text("0,1\n1e-400,2\n2e-400,3\n")
+
+    with pytest.raises(ValueError, match="absolute time axis"):
+        read_timeseriesdict_csv(path, resample=1.0)
 
 
 def test_numeric_csv_rejects_nat_timestamp_with_line_number(tmp_path):

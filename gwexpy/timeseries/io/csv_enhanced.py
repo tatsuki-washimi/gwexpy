@@ -634,6 +634,7 @@ def read_timeseriesdict_csv(
 
     # --- Column mapping ---
     exact_time_origin = Decimal("0")
+    has_serialized_time_axis = False
     if cfg.columns:
         # Use explicit config
         time_columns: dict[str, int] = {}
@@ -663,6 +664,7 @@ def read_timeseriesdict_csv(
                 raw, raw_tokens, row_line_numbers, time_columns, tz
             )
             exact_time_origin = exact_times[0]
+            has_serialized_time_axis = True
             source_dt = _validate_regular_timestamps(
                 exact_times,
                 source="CSV",
@@ -689,6 +691,7 @@ def read_timeseriesdict_csv(
                 else None,
             )
             exact_time_origin = exact_times[0]
+            has_serialized_time_axis = True
             gps_times = np.asarray(
                 [float(value - exact_times[0]) for value in exact_times], dtype=float
             )
@@ -720,6 +723,7 @@ def read_timeseriesdict_csv(
             else None,
         )
         exact_time_origin = exact_times[0]
+        has_serialized_time_axis = True
         gps_times = np.asarray(
             [float(value - exact_times[0]) for value in exact_times], dtype=float
         )
@@ -729,6 +733,20 @@ def read_timeseriesdict_csv(
             ]
         else:
             data_columns = [(f"ch{i}", i, None, 1.0) for i in range(1, raw.shape[1])]
+
+    if has_serialized_time_axis:
+        _validate_float_time_axis(
+            Decimal("0"),
+            source_dt,
+            sample_count=len(gps_times),
+            source="CSV source-relative",
+        )
+        if not np.all(np.isfinite(gps_times)) or (
+            len(gps_times) > 1 and not np.all(gps_times[1:] > gps_times[:-1])
+        ):
+            raise ValueError(
+                "CSV source-relative absolute time axis is not representable"
+            )
 
     if channels is not None:
         wanted_channels = set(channels)
