@@ -517,7 +517,9 @@ def test_numeric_csv_rejects_non_numeric_first_timestamp(tmp_path):
         read_timeseriesdict_csv(path)
 
 
-@pytest.mark.parametrize("first_row", ["NaT,NaT", "NaT,bad"])
+@pytest.mark.parametrize(
+    "first_row", ["NaT,NaT", "NaT,bad", '"NaT","NaT"', '"NaT","bad"']
+)
 def test_numeric_csv_rejects_nat_first_timestamp_without_numeric_value(
     tmp_path, first_row
 ):
@@ -574,6 +576,21 @@ def test_csv_rejects_resampling_over_total_value_budget(tmp_path, monkeypatch):
 
     with pytest.raises(ValueError, match="resampled output exceeds"):
         read_timeseriesdict_csv(path, resample=2.0)
+
+
+@pytest.mark.parametrize("target_rate", [1.75, np.nextafter(2.0, 0.0)])
+def test_csv_allows_resampling_up_to_total_value_budget(
+    tmp_path, monkeypatch, target_rate
+):
+    path = tmp_path / "samples.csv"
+    path.write_text("0,0\n1,10\n2,20\n")
+    monkeypatch.setattr(csv_enhanced, "_MAX_RESAMPLED_VALUES", 4)
+
+    series = next(iter(read_timeseriesdict_csv(path, resample=target_rate).values()))
+    expected_times = np.arange(4, dtype=float) / target_rate
+
+    assert len(series) == 4
+    np.testing.assert_allclose(series.value, expected_times * 10.0)
 
 
 def test_csv_validates_resample_method_for_single_row(tmp_path):

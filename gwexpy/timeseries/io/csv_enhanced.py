@@ -12,7 +12,7 @@ import datetime as _dt
 import io
 import math
 import warnings
-from decimal import Decimal, InvalidOperation
+from decimal import ROUND_FLOOR, Decimal, InvalidOperation
 from functools import partial
 from pathlib import Path
 from typing import Any
@@ -122,7 +122,7 @@ def _detect_skip_rows(lines: list[str], delimiter: str, comment_char: str) -> in
         if not stripped or stripped.startswith(comment_char):
             continue
         # Try to parse as numeric
-        parts = stripped.split(delimiter)
+        parts = next(csv.reader(io.StringIO(stripped), delimiter=delimiter))
         numeric_count = 0
         for p in parts:
             try:
@@ -342,17 +342,15 @@ def _resample_uniform(
     span = t_end - t_start
     if not math.isfinite(span) or span < 0:
         raise ValueError("CSV resampling requires a finite non-negative time span")
-    if span and validated_rate > (sample_limit - 1) / span:
+    interval_ratio = Decimal(str(span)) * Decimal(str(validated_rate))
+    if interval_ratio >= Decimal(sample_limit):
         raise ValueError(
             "CSV resampled output exceeds the "
             f"{sample_limit}-value safety limit for one source read"
         )
-    interval_ratio = span * validated_rate
-    if not math.isfinite(interval_ratio):
-        raise ValueError("CSV target sample rate produces a non-finite output grid")
     interval_count = max(
         0,
-        math.floor(math.nextafter(interval_ratio, math.inf)),
+        int(interval_ratio.to_integral_value(rounding=ROUND_FLOOR)),
     )
     sample_count = interval_count + 1
     if sample_count > sample_limit:
