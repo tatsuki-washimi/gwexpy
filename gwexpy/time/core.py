@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import datetime as _dt
 import importlib
+from decimal import ROUND_HALF_EVEN, Decimal
 from typing import Any
 
 import numpy as np
 from astropy import units as u
 from astropy.time import Time
-from gwpy.time import from_gps as _gwpy_from_gps
 from gwpy.time import tconvert as _gwpy_tconvert
 from gwpy.time import to_gps as _gwpy_to_gps
 
@@ -71,6 +72,54 @@ def _format_gps_result(result, dtype):
     raise ValueError("dtype must be None, float, 'float', or 'quantity'")
 
 
+def _datetime64_scalar_to_gps(value, *args, **kwargs):
+    """Convert one datetime64 without discarding represented nanoseconds."""
+    if np.isnat(value):
+        raise ValueError("NaT is not a valid datetime64 instant")
+    gps_decimal = Time(
+        value,
+        format="datetime64",
+        scale="utc",
+    ).to_value("gps", "decimal")
+    # Astropy 8 can return a Decimal a tiny fraction of a nanosecond below the
+    # represented datetime64 instant. LIGOTimeGPS truncates that value and
+    # would therefore lose one whole nanosecond. Quantize at the destination
+    # type's resolution while retaining Astropy's leap-second conversion.
+    gps_decimal = gps_decimal.quantize(Decimal("0.000000001"), rounding=ROUND_HALF_EVEN)
+    return _gwpy_to_gps(gps_decimal, *args, **kwargs)
+
+
+def _datetime64_array_to_gps(values, *args, **kwargs):
+    """Return exact LIGOTimeGPS elements for a datetime64 array."""
+    if np.isnat(values).any():
+        raise ValueError("NaT is not a valid datetime64 instant")
+    result = np.empty(values.shape, dtype=object)
+    for index in np.ndindex(values.shape):
+        result[index] = _datetime64_scalar_to_gps(values[index], *args, **kwargs)
+    return result
+
+
+def _as_astropy_gps_input(value):
+    """Replace LIGOTimeGPS-like values with exact Decimal GPS seconds."""
+
+    def convert(item):
+        if hasattr(item, "gpsSeconds") and hasattr(item, "gpsNanoSeconds"):
+            return Decimal(int(item.gpsSeconds)) + Decimal(
+                int(item.gpsNanoSeconds)
+            ).scaleb(-9)
+        return item
+
+    if _is_array(value):
+        values = np.asarray(value)
+        if values.dtype.kind != "O":
+            return values
+        result = np.empty(values.shape, dtype=object)
+        for index in np.ndindex(values.shape):
+            result[index] = convert(values[index])
+        return result
+    return convert(value)
+
+
 def _normalize_time_input(t):
     if pd is not None:
         if isinstance(t, pd.Timestamp):
@@ -111,19 +160,22 @@ def to_gps(t, *args, dtype=None, **kwargs):
     *args
         Additional positional arguments passed to `gwpy.time.to_gps`.
     dtype : {None, float, "float", "quantity"}, optional
-        Output mode for the converted GPS seconds. ``None`` preserves the
-        default GWpy-compatible behavior. ``float`` or ``"float"`` returns
-        Python ``float`` for scalar inputs and ``numpy.ndarray`` for array-like
-        inputs. ``"quantity"`` returns an ``astropy.units.Quantity`` in seconds,
-        which can be compared with GWpy/GWexpy time axes.
+        Output mode for the converted GPS seconds. ``None`` preserves exact
+        ``LIGOTimeGPS`` elements for NumPy ``datetime64`` inputs; other inputs
+        preserve the existing GWpy-compatible behavior. ``float`` or
+        ``"float"`` returns Python ``float`` for scalar inputs and
+        ``numpy.ndarray`` for array-like inputs. ``"quantity"`` returns an
+        ``astropy.units.Quantity`` in seconds, which can be compared with
+        GWpy/GWExpy time axes.
     **kwargs
         Additional keyword arguments passed to `gwpy.time.to_gps`.
 
     Returns
     -------
     object
-        The equivalent time in GPS seconds. With ``dtype=None``, this preserves
-        the existing GWpy-compatible return types. With ``dtype=float`` or
+        The equivalent time in GPS seconds. With ``dtype=None``, NumPy
+        ``datetime64`` scalars return ``LIGOTimeGPS`` and arrays return object
+        arrays of exact ``LIGOTimeGPS`` elements. With ``dtype=float`` or
         ``dtype="float"``, returns numeric seconds. With ``dtype="quantity"``,
         returns seconds as an ``astropy.units.Quantity``.
 
@@ -135,33 +187,36 @@ def to_gps(t, *args, dtype=None, **kwargs):
         result = t_norm.gps
     elif not _is_array(t_norm):
         if isinstance(t_norm, np.datetime64):
-            t_norm = t_norm.item()
-        result = _gwpy_to_gps(t_norm, *args, **kwargs)
+            result = _datetime64_scalar_to_gps(t_norm, *args, **kwargs)
+        else:
+            result = _gwpy_to_gps(t_norm, *args, **kwargs)
     else:
-        try:
-            unit = getattr(t_norm, "unit", None)
-            if unit is not None and hasattr(t_norm, "to_value"):
-                if unit.is_equivalent(u.s):
-                    result = np.asarray(t_norm.to_value(u.s), dtype=float)
-                elif unit.is_equivalent(u.dimensionless_unscaled):
-                    result = np.asarray(
-                        t_norm.to_value(u.dimensionless_unscaled),
-                        dtype=float,
-                    )
-                else:
-                    raise u.UnitConversionError(
-                        f"{unit!r} is not convertible to seconds for GPS conversion"
-                    )
-            else:
-                arr = np.asarray(t_norm)
-                if _is_numeric_array(arr):
+        arr = np.asarray(t_norm)
+        if arr.dtype.kind == "M":
+            result = _datetime64_array_to_gps(arr, *args, **kwargs)
+        else:
+            try:
+                unit = getattr(t_norm, "unit", None)
+                if unit is not None and hasattr(t_norm, "to_value"):
+                    if unit.is_equivalent(u.s):
+                        result = np.asarray(t_norm.to_value(u.s), dtype=float)
+                    elif unit.is_equivalent(u.dimensionless_unscaled):
+                        result = np.asarray(
+                            t_norm.to_value(u.dimensionless_unscaled),
+                            dtype=float,
+                        )
+                    else:
+                        raise u.UnitConversionError(
+                            f"{unit!r} is not convertible to seconds for GPS conversion"
+                        )
+                elif _is_numeric_array(arr):
                     result = arr.astype(float)
                 else:
                     result = Time(t_norm, *args, **kwargs).gps
-        except u.UnitConversionError:
-            raise
-        except (ValueError, TypeError):
-            result = np.array([_gwpy_to_gps(x, *args, **kwargs) for x in t_norm])
+            except u.UnitConversionError:
+                raise
+            except (ValueError, TypeError):
+                result = np.array([_gwpy_to_gps(x, *args, **kwargs) for x in t_norm])
 
     return _format_gps_result(result, dtype)
 
@@ -191,18 +246,20 @@ def from_gps(gps, *args, **kwargs):
     gps_norm = _normalize_time_input(gps)
 
     if isinstance(gps_norm, Time):
-        return gps_norm.to_datetime()
-
-    if not _is_array(gps_norm):
-        return _gwpy_from_gps(gps_norm, *args, **kwargs)
+        return gps_norm.utc.to_datetime(
+            timezone=_dt.UTC,
+            leap_second_strict="raise",
+        )
 
     try:
-        arr = np.asarray(gps_norm)
-        if arr.dtype.kind not in ("i", "u", "f"):
-            arr = arr.astype(float)
-        return Time(arr, format="gps", *args, **kwargs).to_datetime()
-    except (ValueError, TypeError):
-        return np.array([_gwpy_from_gps(x, *args, **kwargs) for x in gps_norm])
+        values = _as_astropy_gps_input(gps_norm)
+        times = Time(values, format="gps", *args, **kwargs)
+    except (ValueError, TypeError) as exc:
+        raise ValueError("GPS values could not be converted to UTC datetimes") from exc
+    return times.utc.to_datetime(
+        timezone=_dt.UTC,
+        leap_second_strict="raise",
+    )
 
 
 def tconvert(t="now", *args, **kwargs):
@@ -229,6 +286,9 @@ def tconvert(t="now", *args, **kwargs):
 
     """
     t_norm = _normalize_time_input(t)
+
+    if isinstance(t_norm, np.datetime64):
+        return to_gps(t_norm, *args, **kwargs)
 
     if not _is_array(t_norm):
         return _gwpy_tconvert(t_norm, *args, **kwargs)

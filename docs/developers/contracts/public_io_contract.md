@@ -120,6 +120,13 @@ CSV route details are machine-readable under `time_routes`:
 | numeric time column | absolute | ignore with one warning per top-level read |
 | generated sample index | relative | ignore with one warning per top-level read |
 
+Configured component columns fail closed when a naive civil timestamp is an
+ambiguous daylight-saving fold or a nonexistent gap; the resulting
+`ValueError` identifies the physical CSV line.
+Their canonical instants use continuous GPS seconds, so a UTC component stream
+that crosses a leap second without the unrepresentable `second=60` record is
+rejected as a cadence gap rather than compressed onto a POSIX timeline.
+
 Numeric and configured component-column routes validate regular source cadence
 before any requested resampling. Numeric validation uses the source decimal
 tokens, while component validation compares reconstructed continuous GPS

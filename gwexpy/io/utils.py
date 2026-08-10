@@ -410,6 +410,35 @@ def datetime_to_gps(dt: _dt.datetime) -> float:
     return float(to_gps(dt))
 
 
+def _localize_naive_datetime(
+    value: _dt.datetime,
+    tzinfo: _dt.tzinfo,
+) -> _dt.datetime:
+    """Attach *tzinfo* while rejecting ambiguous or nonexistent wall times."""
+    if value.tzinfo is not None:
+        raise ValueError("datetime must be naive before timezone localization")
+
+    wall_time = value.replace(fold=0)
+    valid: list[_dt.datetime] = []
+    for fold in (0, 1):
+        candidate = wall_time.replace(tzinfo=tzinfo, fold=fold)
+        roundtrip = candidate.astimezone(_dt.UTC).astimezone(tzinfo)
+        if roundtrip.replace(tzinfo=None, fold=0) == wall_time:
+            valid.append(candidate)
+
+    if not valid:
+        raise ValueError(
+            f"nonexistent local time {wall_time.isoformat()} in timezone {tzinfo}"
+        )
+
+    utc_instants = {candidate.astimezone(_dt.UTC) for candidate in valid}
+    if len(utc_instants) > 1:
+        raise ValueError(
+            f"ambiguous local time {wall_time.isoformat()} in timezone {tzinfo}"
+        )
+    return valid[0]
+
+
 def ensure_datetime(value: Any, tzinfo: _dt.tzinfo | None = None) -> _dt.datetime:
     """Parse a timestamp into a timezone-aware datetime.
 
@@ -417,7 +446,7 @@ def ensure_datetime(value: Any, tzinfo: _dt.tzinfo | None = None) -> _dt.datetim
     """
     if isinstance(value, _dt.datetime):
         if value.tzinfo is None and tzinfo is not None:
-            return value.replace(tzinfo=tzinfo)
+            return _localize_naive_datetime(value, tzinfo)
         if value.tzinfo is None:
             raise ValueError("Naive datetime requires timezone")
         return value
@@ -425,10 +454,13 @@ def ensure_datetime(value: Any, tzinfo: _dt.tzinfo | None = None) -> _dt.datetim
         return _dt.datetime.fromtimestamp(_coerce_numeric_epoch(value), tz=_dt.UTC)
     if isinstance(value, str):
         text = value.strip()
-        with contextlib.suppress(ValueError):
+        try:
             dt = _dt.datetime.fromisoformat(text.replace("Z", "+00:00"))
+        except ValueError:
+            pass
+        else:
             if dt.tzinfo is None and tzinfo is not None:
-                dt = dt.replace(tzinfo=tzinfo)
+                return _localize_naive_datetime(dt, tzinfo)
             return dt
         formats = [
             "%Y/%m/%d %H:%M:%S.%f",
@@ -439,11 +471,13 @@ def ensure_datetime(value: Any, tzinfo: _dt.tzinfo | None = None) -> _dt.datetim
             "%Y-%m-%d,%H:%M:%S",
         ]
         for fmt in formats:
-            with contextlib.suppress(ValueError):
+            try:
                 dt = _dt.datetime.strptime(text, fmt)
-                if dt.tzinfo is None and tzinfo is not None:
-                    dt = dt.replace(tzinfo=tzinfo)
-                return dt
+            except ValueError:
+                continue
+            if dt.tzinfo is None and tzinfo is not None:
+                return _localize_naive_datetime(dt, tzinfo)
+            return dt
     raise ValueError(f"Unrecognised time value: {value!r}")
 
 

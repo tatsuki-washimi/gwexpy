@@ -231,3 +231,6 @@ def test_docs_describe_machine_readable_time_contract() -> None:
     assert "| `knet` | absolute | override | epoch localize only |" in contract_md
     assert "WIN header time is interpreted as UTC" in en
     assert "WIN ヘッダ時刻は UTC として解釈" in ja
+    assert "Ambiguous daylight-saving folds and nonexistent gaps" in en
+    assert "ambiguous fold と nonexistent gap" in ja
+    assert "ambiguous daylight-saving fold or a nonexistent gap" in contract_md

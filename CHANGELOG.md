@@ -51,12 +51,30 @@
   Absolute/numeric/aware epoch overrides preserve their instant and warn that
   `timezone=` is ignored, while formats that do not accept timezone input fail
   closed. Malformed offsets, non-finite offsets, and boolean timezone/epoch
-  values are rejected instead of being coerced (#633).
+  values are rejected instead of being coerced. Local civil times that fall in
+  a daylight-saving fold or gap now raise `ValueError` instead of silently
+  selecting or normalizing an instant (#633, #651).
 
   | Before | After |
   | --- | --- |
   | A seismic source at `2024-01-01 12:00:00 UTC` could be reinterpreted as Tokyo civil time, changing GPS `1388145618` to `1388113218` (−9 hours). | Source timestamps remain absolute at GPS `1388145618`; only a naive explicit `epoch=` may be localized. |
   | `timezone=` could be silently dropped by SDB, ATS, TDMS, DTT XML, audio, WAV, NDScope HDF5, and direct HDF5/TXT collection routes. | Unsupported timezone input raises a contextual `ValueError` before optional backends or source traversal. |
+  | An ambiguous `2024-11-03 01:30` or nonexistent `2024-03-10 02:30` in `America/New_York` was assigned an offset by `replace(tzinfo=...)`. | Naive local times are checked by UTC round-trip; DST folds and gaps fail closed. |
+- **time (GPS/UTC conversion)**: NumPy `datetime64[s/ms/us/ns]` scalars and
+  vectors now convert through a time-aware Astropy representation, retaining
+  the instant represented by the input dtype through integer nanoseconds.
+  Default datetime64 vectors therefore return object arrays of exact
+  `LIGOTimeGPS` elements; `dtype=float` remains the explicit binary64 output
+  mode. Scalar `tconvert(datetime64)` uses the same exact route. `from_gps()`
+  now returns timezone-aware UTC `datetime` values with one rounding rule for
+  scalar, vector, and Astropy `Time` inputs. A GPS instant inside a UTC leap
+  second raises `ValueError` atomically for vector input because Python
+  `datetime` cannot represent `23:59:60` (#646, #650).
+
+  | Before | After |
+  | --- | --- |
+  | A `datetime64[ns]` scalar could become a Unix-nanosecond integer through `.item()`, while a vector was immediately rounded to binary64 GPS seconds. | All supported datetime64 resolutions preserve datetime semantics; scalar and default vector outputs retain exact integer nanoseconds in `LIGOTimeGPS`. |
+  | Vector and Astropy routes could return timezone-naive datetimes with semantics different from the scalar GWpy route. | Every `from_gps()` route returns the same UTC-aware instant and is independent of the host timezone. |
 - **io (WIN/CSV warnings)**: WIN header times are explicitly interpreted as
   UTC and emit one top-level warning even for multi-file reads (#632 partial).
   CSV numeric-time and sample-index routes likewise emit one warning when

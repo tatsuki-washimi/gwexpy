@@ -251,14 +251,19 @@ events = EventTable.read("events.root")
 
 - **CSV** remains useful for lightweight exchange and inspection. Treat simple CSV files as metadata-light: use HDF5, GWF, Zarr, NetCDF, or a manifest-backed collection directory when name, channel, and unit metadata must be preserved.
 - CSV component columns are naive civil time and use the configured
-  `timezone`. The numeric and generated sample-index routes ignore `timezone`
-  with one warning per top-level read; numeric timestamps are absolute while
-  generated indices remain relative.
+  `timezone`. Ambiguous daylight-saving folds and nonexistent gaps raise a
+  line-numbered `ValueError`; the reader never chooses an offset silently.
+  The numeric and generated sample-index routes ignore `timezone` with one
+  warning per top-level read; numeric timestamps are absolute while generated
+  indices remain relative.
 - CSV validates numeric and configured component-column source cadence before
   any requested resampling. Duplicate, backward, missing, or overlarge gaps
   raise `ValueError`, and malformed source rows include their physical line
-  number. A finite positive `sample_rate` declares source cadence and is used
-  for single-row input; without it, the legacy one-second fallback remains.
+  number. Component instants are compared on the continuous GPS timeline, so a
+  one-second UTC component stream that crosses a leap second without a
+  representable `second=60` row fails closed as a missing sample. A finite
+  positive `sample_rate` declares source cadence and is used for single-row
+  input; without it, the legacy one-second fallback remains.
   `resample=` must also be finite and positive and declares only the target
   cadence. Resampled values are evaluated on that exact grid instead of
   relabelling source samples with a different `dt`. UTC component cadence uses
