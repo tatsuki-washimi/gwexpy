@@ -209,6 +209,15 @@ ats = TimeSeries.read("data.atss", format="ats.mth5")
   At the gwexpy boundary, K-NET timestamps are absolute UTC.
 - **WIN header time is interpreted as UTC** because the format header is
   timezone-naive; each top-level read reports that interpretation once.
+- **WIN packet times must advance by exactly one second.** Duplicate or
+  backward packet times and global packet gaps raise `ValueError`.
+- **WIN channels may start late or end early.** Each channel keeps the `t0` of
+  its first packet, but an internal gap followed by reappearance, a duplicate
+  block in one packet, or a sample-rate change raises `ValueError`.
+- **Malformed WIN payloads fail closed.** Packet and channel lengths and
+  decoded sample counts are bounded, so truncated or overlong payloads do not
+  trigger oversized reads. Cumulative deltas do not wrap at int32 bounds, and
+  only a BCD year transition from `99` to `00` advances the century.
 - **ATS.MTH5** is the limited current direct path.
 - **MTH5 standalone** is still in design/publication cleanup. Read this as **"`ats.mth5` has partial support"**, not as **"MTH5 direct I/O is generally complete."**
 

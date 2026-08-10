@@ -103,127 +103,153 @@ def _read_win_fixed(filename: str | Path, century="20"):
     """
     output: dict[str, list[int]] = {}
     srates: dict[str, int] = {}
+    starts: dict[str, Any] = {}
+    last_packet_by_channel: dict[str, int] = {}
+    packet_times: list[Any] = []
+    current_century = int(century)
+    previous_bcd_year: int | None = None
 
-    # read win file
+    # Decode each packet from an exact, bounded payload.  Channel lengths must
+    # never consume bytes belonging to the following packet.
     with open(filename, "rb") as fpin:
         fpin.seek(0, 2)
-        sz = fpin.tell()
+        file_size = fpin.tell()
         fpin.seek(0)
-        leng = 0
-        status0 = 0
-        start = 0
-        while leng < sz:
+        packet_index = 0
+        while True:
             pklen = fpin.read(4)
-            if len(pklen) < 4:
+            if not pklen:
                 break
-            leng = 4
+            if len(pklen) != 4:
+                raise ValueError("truncated WIN packet length header")
+
             truelen = struct.unpack(">i", pklen)[0]
-            if truelen == 0:
-                break
-            buff = fpin.read(6)
-            leng += 6
+            if truelen < 10:
+                raise ValueError(f"invalid WIN packet length: {truelen}")
 
-            yy = f"{century}{buff[0]:02x}"
-            mm = f"{buff[1]:x}"
-            dd = f"{buff[2]:x}"
-            hh = f"{buff[3]:x}"
-            mi = f"{buff[4]:x}"
-            sec = f"{buff[5]:x}"
+            payload_length = truelen - 4
+            if payload_length > file_size - fpin.tell():
+                raise ValueError("truncated WIN packet payload")
+            payload = fpin.read(payload_length)
+            if len(payload) != payload_length:
+                raise ValueError("truncated WIN packet payload")
 
-            # Only create UTCDateTime if we actually need it / module exists
-            # Logic flow: this function is only called via read_win_file -> registry -> only if HAS_OBSPY
+            timestamp = payload[:6]
+            bcd_year = int(f"{timestamp[0]:02x}")
+            if previous_bcd_year == 99 and bcd_year == 0:
+                current_century += 1
+            previous_bcd_year = bcd_year
+            year = current_century * 100 + bcd_year
+            mm = f"{timestamp[1]:x}"
+            dd = f"{timestamp[2]:x}"
+            hh = f"{timestamp[3]:x}"
+            mi = f"{timestamp[4]:x}"
+            sec = f"{timestamp[5]:x}"
+            date = UTCDateTime(year, int(mm), int(dd), int(hh), int(mi), int(sec))
+            packet_times.append(date)
 
-            date = UTCDateTime(int(yy), int(mm), int(dd), int(hh), int(mi), int(sec))
-            if start == 0:
-                start = date
-            if status0 == 0:
-                sdata = None
-            while leng < truelen:
-                buff = fpin.read(4)
-                leng += 4
-                flag = f"{buff[0]:02x}"
-                chanum = f"{buff[1]:02x}"
-                chanum = f"{flag}{chanum}"
-                # Byte 2 packs two fields: the sample-width code in the high
-                # nibble, and the top 4 bits of a 12-bit sample rate in the low
-                # nibble, whose bottom 8 bits are byte 3.  Reading byte 3 alone
-                # truncates the rate modulo 256, so 1000 Hz decoded as 232 Hz.
-                # ObsPy fixed the same defect identically in obspy/io/win/core.py
-                # (upstream obspy#3641), which is the cross-check used here.
-                datawide = float(buff[2] >> 4)
+            offset = 6
+            packet_channels: set[str] = set()
+            while offset < len(payload):
+                remaining = len(payload) - offset
+                if remaining < 4:
+                    raise ValueError("overlong WIN packet payload")
+
+                buff = payload[offset : offset + 4]
+                offset += 4
+                chanum = f"{buff[0]:02x}{buff[1]:02x}"
+                if chanum in packet_channels:
+                    raise ValueError(
+                        f"WIN channel {chanum} occurs more than once in packet"
+                    )
+                packet_channels.add(chanum)
+
+                width_code = buff[2] >> 4
                 srate = ((buff[2] & 0x0F) << 8) | buff[3]
-                # A channel block always carries at least the leading absolute
-                # sample, so rate 0 cannot describe real data; xlen would go
-                # negative below.  Fail loudly rather than mis-slice the packet.
-                # Not a documented sentinel in any spec consulted here: if a
-                # writer is ever found that means "4096" by 0, revisit this.
                 if srate == 0:
                     raise ValueError("WIN sample rate must be positive")
-                xlen = (srate - 1) * datawide
-                if datawide == 0:
-                    xlen = srate // 2
-                    datawide = 0.5
-
-                idata00 = fpin.read(4)
-                leng += 4
-                idata22 = struct.unpack(">i", idata00)[0]
-
-                if chanum in output:
-                    output[chanum].append(idata22)
-                else:
-                    output[chanum] = [idata22]
-                    srates[chanum] = srate
-
-                xlen = int(xlen)  # ensure int
-                sdata = fpin.read(xlen)
-                leng += xlen
-
-                if len(sdata) < xlen:
-                    fpin.seek(-(xlen - len(sdata)), 1)
-                    sdata += fpin.read(xlen - len(sdata))
-                    msg = "This shouldn't happen, it's weird..."
-                    warnings.warn(msg)
-
-                if datawide == 0.5:
-                    # There are (srate - 1) deltas after the first absolute sample.
-                    _apply_4bit_deltas(output[chanum], sdata, srate - 1)
-
-                elif datawide == 1:
-                    for i in range(int(xlen // datawide)):
-                        val = np.frombuffer(sdata[i : i + 1], np.int8)[0]
-                        idata2 = output[chanum][-1] + val
-                        output[chanum].append(idata2)
-                elif datawide == 2:
-                    for i in range(int(xlen // datawide)):
-                        val = struct.unpack(">h", sdata[2 * i : 2 * (i + 1)])[0]
-                        idata2 = output[chanum][-1] + val
-                        output[chanum].append(idata2)
-                elif datawide == 3:
-                    for i in range(int(xlen // datawide)):
-                        # 24-bit signed big-endian delta: pad to 32-bit and shift back.
-                        # Using signed unpack + arithmetic shift preserves sign.
-                        chunk = sdata[3 * i : 3 * (i + 1)]
-                        val = struct.unpack(">i", chunk + b"\x00")[0] >> 8
-                        idata2 = output[chanum][-1] + val
-                        output[chanum].append(idata2)
-                elif datawide == 4:
-                    for i in range(int(xlen // datawide)):
-                        val = struct.unpack(">i", sdata[4 * i : 4 * (i + 1)])[0]
-                        idata2 = output[chanum][-1] + val
-                        output[chanum].append(idata2)
-                else:
+                if width_code > 4:
                     msg = (
-                        f"DATAWIDE is {datawide} but only values of 0.5, 1, 2, 3 or 4 "
-                        "are supported."
+                        f"DATAWIDE is {float(width_code)} but only values of 0.5, "
+                        "1, 2, 3 or 4 are supported."
                     )
                     raise NotImplementedError(msg)
 
+                xlen = srate // 2 if width_code == 0 else (srate - 1) * width_code
+                if len(payload) - offset < 4 + xlen:
+                    raise ValueError(f"truncated WIN channel {chanum} payload")
+
+                absolute = struct.unpack(">i", payload[offset : offset + 4])[0]
+                offset += 4
+                sdata = payload[offset : offset + xlen]
+                offset += xlen
+
+                if chanum in srates and srates[chanum] != srate:
+                    raise ValueError(
+                        f"WIN channel {chanum} sample rate changed from "
+                        f"{srates[chanum]} to {srate}"
+                    )
+                if (
+                    chanum in last_packet_by_channel
+                    and last_packet_by_channel[chanum] != packet_index - 1
+                ):
+                    raise ValueError(
+                        f"WIN channel {chanum} reappears after an internal packet gap"
+                    )
+
+                samples = [absolute]
+                if width_code == 0:
+                    _apply_4bit_deltas(samples, sdata, srate - 1)
+                elif width_code == 1:
+                    for raw in sdata:
+                        delta = int(np.frombuffer(bytes([raw]), np.int8)[0])
+                        samples.append(samples[-1] + delta)
+                elif width_code == 2:
+                    for i in range(srate - 1):
+                        delta = struct.unpack(">h", sdata[2 * i : 2 * (i + 1)])[0]
+                        samples.append(samples[-1] + delta)
+                elif width_code == 3:
+                    for i in range(srate - 1):
+                        chunk = sdata[3 * i : 3 * (i + 1)]
+                        delta = struct.unpack(">i", chunk + b"\x00")[0] >> 8
+                        samples.append(samples[-1] + delta)
+                else:
+                    for i in range(srate - 1):
+                        delta = struct.unpack(">i", sdata[4 * i : 4 * (i + 1)])[0]
+                        samples.append(samples[-1] + delta)
+
+                if len(samples) != srate:
+                    raise ValueError(
+                        f"WIN channel {chanum} decoded sample count {len(samples)} "
+                        f"does not match declared sample rate {srate}"
+                    )
+
+                if chanum not in output:
+                    output[chanum] = []
+                    srates[chanum] = srate
+                    starts[chanum] = date
+                output[chanum].extend(samples)
+                last_packet_by_channel[chanum] = packet_index
+
+            packet_index += 1
+
+    for previous, current in zip(packet_times, packet_times[1:], strict=False):
+        difference_ns = current.ns - previous.ns
+        if difference_ns == 0:
+            raise ValueError(f"duplicate WIN packet timestamp: {current}")
+        if difference_ns < 0:
+            raise ValueError(
+                f"backward WIN packet timestamp: {current} follows {previous}"
+            )
+        if difference_ns != 1_000_000_000:
+            raise ValueError(f"gap in WIN packet timestamps: {previous} to {current}")
+
     traces = []
     for chan in output.keys():
-        t = Trace(data=np.array(output[chan], dtype=np.int32))
+        t = Trace(data=np.array(output[chan]))
         t.stats.channel = str(chan)
         t.stats.sampling_rate = float(srates[chan])
-        t.stats.starttime = start
+        t.stats.starttime = starts[chan]
         traces.append(t)
     return Stream(traces=traces)
 
@@ -239,6 +265,9 @@ def read_win_file(source, **kwargs) -> TimeSeriesDict:
         "_utc_warning_state",
         "_utc_warning_marker",
     )
+    for key in ("start", "end"):
+        if kwargs.get(key) is None:
+            kwargs.pop(key, None)
     timezone = kwargs.pop("timezone", None)
     kwargs.pop("epoch", None)
     _reject_timezone_reinterpretation("win", timezone, None)
@@ -264,7 +293,11 @@ def read_win_file(source, **kwargs) -> TimeSeriesDict:
 
     _record_or_warn_utc_interpretation(warning_marker)
 
-    stream = _read_win_fixed(source, **kwargs)
+    stream_source = source
+    source_name = getattr(source, "name", None)
+    if not isinstance(source, (str, Path)) and isinstance(source_name, (str, Path)):
+        stream_source = source_name
+    stream = _read_win_fixed(stream_source, **kwargs)
 
     # Merge if necessary (simple gap handling)
     stream.merge(method=1, fill_value=np.nan)

@@ -30,6 +30,15 @@
   half a cadence. Resampling is capped at 10,000,000 requested-channel output
   values across the complete top-level single- or multi-file read before
   allocation (#648, #649).
+- **io (WIN)**: WIN reads now require a consecutive one-second global packet
+  cadence while preserving legitimate channel late starts, early ends, and
+  channel-local `t0`. They fail closed on internal channel gaps and
+  reappearance, duplicate channel blocks, sample-rate changes, duplicate or
+  backward packet times, global gaps, and malformed, truncated, or overlong
+  payloads. Bounded length and sample-count checks prevent oversized reads,
+  cumulative deltas avoid integer wraparound, BCD year `99` to `00` advances
+  the century, and UTC interpretation still warns once per top-level read
+  (#647).
 - **io (SDB)**: archives that provide a `usUnits` column now validate every
   row as the supported US customary unit-system code `1` and fail closed on
   NULL, text, non-integral, or other values. Archives without that column

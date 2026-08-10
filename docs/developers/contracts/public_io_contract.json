@@ -1271,11 +1271,17 @@
             },
             "trusted_only": false,
             "metadata_requirements": [
-                "Published WIN reads must preserve patched delta decoding and the resulting channel/sample-rate metadata through the TimeSeriesDict interface."
+                "Published WIN reads must preserve patched delta decoding and the resulting channel/sample-rate metadata through the TimeSeriesDict interface.",
+                "Global WIN packet timestamps must advance by exactly one second; duplicate timestamps, backward timestamps, and global gaps must raise ValueError.",
+                "A channel may start after the first packet or end before the last packet, and its first appearance defines its channel-local t0; after a channel starts, reappearance following an internal packet gap must raise ValueError.",
+                "A duplicate channel block within one packet or a sample-rate change for an existing channel must raise ValueError.",
+                "Packet and channel payload lengths and decoded sample counts must be bounded and validated so malformed, truncated, or overlong payloads raise ValueError without an oversized read.",
+                "Cumulative delta decoding must not wrap at int32 bounds, and only a BCD year transition from 99 to 00 advances the supplied century."
             ],
             "notes": [
                 "Published WIN direct I/O is read-only and collection-first through TimeSeriesDict.",
                 "The alias 'win32' must remain equivalent to canonical 'win' at the public-contract level.",
+                "WIN header time is interpreted as UTC and reported with one warning per top-level read, including multi-file reads.",
                 "Single-series and matrix registry adapters remain implementation conveniences."
             ],
             "optional_dependencies": [
