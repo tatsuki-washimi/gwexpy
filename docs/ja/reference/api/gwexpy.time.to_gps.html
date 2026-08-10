@@ -580,17 +580,20 @@ and lists.</p>
 <li><p><strong>t</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><em>datetime.datetime</em></a><em>, </em><a class="reference external" href="https://docs.astropy.org/en/stable/api/astropy.time.Time.html#astropy.time.Time" title="(in Astropy v8.0)"><em>astropy.time.Time</em></a><em>, or </em><em>array-like</em>) -- The input time(s) to convert. Supported formats include UTC strings,
 datetime objects, pandas Timestamps, or arrays of these types.</p></li>
 <li><p><strong>*args</strong> -- Additional positional arguments passed to <cite>gwpy.time.to_gps</cite>.</p></li>
-<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>&quot;float&quot;</em><em>, </em><em>&quot;quantity&quot;}</em><em>, </em><em>optional</em>) -- Output mode for the converted GPS seconds. <code class="docutils literal notranslate"><span class="pre">None</span></code> preserves the
-default GWpy-compatible behavior. <code class="docutils literal notranslate"><span class="pre">float</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;float&quot;</span></code> returns
-Python <code class="docutils literal notranslate"><span class="pre">float</span></code> for scalar inputs and <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> for array-like
-inputs. <code class="docutils literal notranslate"><span class="pre">&quot;quantity&quot;</span></code> returns an <code class="docutils literal notranslate"><span class="pre">astropy.units.Quantity</span></code> in seconds,
-which can be compared with GWpy/GWexpy time axes.</p></li>
+<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>&quot;float&quot;</em><em>, </em><em>&quot;quantity&quot;}</em><em>, </em><em>optional</em>) -- Output mode for the converted GPS seconds. <code class="docutils literal notranslate"><span class="pre">None</span></code> preserves exact
+<code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> elements for NumPy <code class="docutils literal notranslate"><span class="pre">datetime64</span></code> inputs; other inputs
+preserve the existing GWpy-compatible behavior. <code class="docutils literal notranslate"><span class="pre">float</span></code> or
+<code class="docutils literal notranslate"><span class="pre">&quot;float&quot;</span></code> returns Python <code class="docutils literal notranslate"><span class="pre">float</span></code> for scalar inputs and
+<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> for array-like inputs. <code class="docutils literal notranslate"><span class="pre">&quot;quantity&quot;</span></code> returns an
+<code class="docutils literal notranslate"><span class="pre">astropy.units.Quantity</span></code> in seconds, which can be compared with
+GWpy/GWExpy time axes.</p></li>
 <li><p><strong>**kwargs</strong> -- Additional keyword arguments passed to <cite>gwpy.time.to_gps</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">戻り値<span class="colon">:</span></dt>
-<dd class="field-even"><p>The equivalent time in GPS seconds. With <code class="docutils literal notranslate"><span class="pre">dtype=None</span></code>, this preserves
-the existing GWpy-compatible return types. With <code class="docutils literal notranslate"><span class="pre">dtype=float</span></code> or
+<dd class="field-even"><p>The equivalent time in GPS seconds. With <code class="docutils literal notranslate"><span class="pre">dtype=None</span></code>, NumPy
+<code class="docutils literal notranslate"><span class="pre">datetime64</span></code> scalars return <code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> and arrays return object
+arrays of exact <code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> elements. With <code class="docutils literal notranslate"><span class="pre">dtype=float</span></code> or
 <code class="docutils literal notranslate"><span class="pre">dtype=&quot;float&quot;</span></code>, returns numeric seconds. With <code class="docutils literal notranslate"><span class="pre">dtype=&quot;quantity&quot;</span></code>,
 returns seconds as an <code class="docutils literal notranslate"><span class="pre">astropy.units.Quantity</span></code>.</p>
 </dd>

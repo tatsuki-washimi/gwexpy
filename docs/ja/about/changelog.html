@@ -512,7 +512,9 @@ component columns; it can no longer reinterpret an absolute source time.
 Absolute/numeric/aware epoch overrides preserve their instant and warn that
 <code class="docutils literal notranslate"><span class="pre">timezone=</span></code> is ignored, while formats that do not accept timezone input fail
 closed. Malformed offsets, non-finite offsets, and boolean timezone/epoch
-values are rejected instead of being coerced (#633).</p>
+values are rejected instead of being coerced. Local civil times that fall in
+a daylight-saving fold or gap now raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> instead of silently
+selecting or normalizing an instant (#633, #651).</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Before</p></th>
@@ -525,6 +527,36 @@ values are rejected instead of being coerced (#633).</p>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">timezone=</span></code> could be silently dropped by SDB, ATS, TDMS, DTT XML, audio, WAV, NDScope HDF5, and direct HDF5/TXT collection routes.</p></td>
 <td><p>Unsupported timezone input raises a contextual <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> before optional backends or source traversal.</p></td>
+</tr>
+<tr class="row-even"><td><p>An ambiguous <code class="docutils literal notranslate"><span class="pre">2024-11-03</span> <span class="pre">01:30</span></code> or nonexistent <code class="docutils literal notranslate"><span class="pre">2024-03-10</span> <span class="pre">02:30</span></code> in <code class="docutils literal notranslate"><span class="pre">America/New_York</span></code> was assigned an offset by <code class="docutils literal notranslate"><span class="pre">replace(tzinfo=...)</span></code>.</p></td>
+<td><p>Naive local times are checked by UTC round-trip; DST folds and gaps fail closed.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+<li><p><strong>time (GPS/UTC conversion)</strong>: NumPy <code class="docutils literal notranslate"><span class="pre">datetime64[s/ms/us/ns]</span></code> scalars and
+vectors now convert through a time-aware Astropy representation, retaining
+the instant represented by the input dtype through integer nanoseconds.
+Default datetime64 vectors therefore return object arrays of exact
+<code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> elements; <code class="docutils literal notranslate"><span class="pre">dtype=float</span></code> remains the explicit binary64 output
+mode. Scalar <code class="docutils literal notranslate"><span class="pre">tconvert(datetime64)</span></code> uses the same exact route. <code class="docutils literal notranslate"><span class="pre">from_gps()</span></code>
+now returns timezone-aware UTC <code class="docutils literal notranslate"><span class="pre">datetime</span></code> values with one rounding rule for
+scalar, vector, and Astropy <code class="docutils literal notranslate"><span class="pre">Time</span></code> inputs. A GPS instant inside a UTC leap
+second raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> atomically for vector input because Python
+<code class="docutils literal notranslate"><span class="pre">datetime</span></code> cannot represent <code class="docutils literal notranslate"><span class="pre">23:59:60</span></code> (#646, #650).</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Before</p></th>
+<th class="head"><p>After</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>A <code class="docutils literal notranslate"><span class="pre">datetime64[ns]</span></code> scalar could become a Unix-nanosecond integer through <code class="docutils literal notranslate"><span class="pre">.item()</span></code>, while a vector was immediately rounded to binary64 GPS seconds.</p></td>
+<td><p>All supported datetime64 resolutions preserve datetime semantics; scalar and default vector outputs retain exact integer nanoseconds in <code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Vector and Astropy routes could return timezone-naive datetimes with semantics different from the scalar GWpy route.</p></td>
+<td><p>Every <code class="docutils literal notranslate"><span class="pre">from_gps()</span></code> route returns the same UTC-aware instant and is independent of the host timezone.</p></td>
 </tr>
 </tbody>
 </table>
