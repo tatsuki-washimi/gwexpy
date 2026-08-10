@@ -72,6 +72,24 @@ def test_docs_describe_the_sdb_unit_and_alias_contract():
     assert "`usUnits`" in ja
 
 
+def test_docs_describe_fail_closed_csv_sdb_cadence():
+    contract = _load_contract()
+    contract_md = _read(CONTRACT_MD)
+    en = _read(EN_GUIDE)
+    ja = _read(JA_GUIDE)
+
+    assert any("physical line numbers" in note for note in contract["csv"]["notes"])
+    assert any(
+        "database storage order" in requirement
+        for requirement in contract["sdb"]["metadata_requirements"]
+    )
+    assert "before any requested resampling" in contract_md
+    assert "malformed source rows include their physical line" in en
+    assert "不正な source row には物理 CSV 行番号" in ja
+    assert "database storage order" in en
+    assert "database storage order" in ja
+
+
 def test_docs_seismic_table_matches_current_public_boundary():
     contract = _load_contract()
     en = _read(EN_GUIDE)

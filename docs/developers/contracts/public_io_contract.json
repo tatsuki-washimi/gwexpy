@@ -400,6 +400,9 @@
                 "Published CSV direct I/O is limited to TimeSeries and TimeSeriesDict.",
                 "Single-file CSV is a lightweight exchange path; do not rely on it for complete name, channel, or unit metadata preservation across GWpy-compatible readers.",
                 "TimeSeriesDict supports both single-file CSV reads and manifest-backed collection-directory reads and writes.",
+                "Numeric and configured component-column timestamps must have regular source cadence before any requested resampling; malformed source rows raise ValueError with physical line numbers.",
+                "A finite positive sample_rate declares source cadence and is honoured for single-row input; without it, the legacy one-second fallback remains, while resample declares only the target cadence.",
+                "Numeric timestamps retain the legacy GPS-second interpretation; time_scale and time_unit are not part of the v0.1.14 contract.",
                 "Broader registry adapters such as TimeSeriesMatrix, FrequencySeries, Spectrogram, and EventTable remain implementation surface only."
             ],
             "optional_dependencies": [],
@@ -597,11 +600,13 @@
             "trusted_only": false,
             "metadata_requirements": [
                 "Published SDB reads must preserve weather/archive column names and derived physical units after conversion.",
-                "When present, every usUnits value must be the integer 1; when absent, the legacy US customary unit assumption is used."
+                "When present, every usUnits value must be the integer 1; when absent, the legacy US customary unit assumption is used.",
+                "dateTime values must be integer Unix seconds with regular cadence in database storage order."
             ],
             "notes": [
                 "Published SDB direct I/O is read-only for TimeSeries and TimeSeriesDict.",
                 "Only the sdb format token and .sdb auto-identification are public.",
+                "Duplicate, backward, missing, or overlarge dateTime gaps raise ValueError before a time axis is constructed.",
                 "TimeSeriesMatrix read support remains an implementation convenience path, not a published contract entry."
             ],
             "optional_dependencies": [],

@@ -120,6 +120,16 @@ CSV route details are machine-readable under `time_routes`:
 | numeric time column | absolute | ignore with one warning per top-level read |
 | generated sample index | relative | ignore with one warning per top-level read |
 
+Numeric and configured component-column routes validate regular source cadence
+before any requested resampling. Numeric validation uses the source decimal
+tokens, while component validation compares reconstructed canonical instants.
+Malformed rows raise `ValueError` with their physical CSV line number.
+A finite, positive `sample_rate` declares source cadence and is honoured for a
+single row; without it, the legacy one-second fallback remains.
+`resample=` controls only the target cadence.
+Numeric timestamps retain the legacy GPS-second interpretation; v0.1.14 does
+not add `time_scale=` or `time_unit=`.
+
 ### `hdf.ndscope`
 
 - Public contract: `TimeSeriesDict` read/write only.
@@ -182,6 +192,11 @@ CSV route details are machine-readable under `time_routes`:
 - Units: if an archive has a `usUnits` column, every row must have integer
   value `1`; otherwise reading fails with `ValueError`.  Archives without the
   column retain the legacy US customary unit assumption.
+- Timing: `dateTime` values must be integer Unix seconds with regular cadence
+  in database storage order. Duplicate, backward, missing, or overlarge gaps
+  raise `ValueError` before a time axis is constructed. Rowid tables use their
+  insertion order; `WITHOUT ROWID` tables use the declared primary-key order,
+  including direction and collation.
 
 ### `wav`
 
