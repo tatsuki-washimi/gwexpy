@@ -113,7 +113,9 @@ def test_ats_mth5_reads_independent_float64_json_fixture_without_scaling(
     np.testing.assert_array_equal(result.value, _VALUES)
     assert result.unit == expected_unit
     assert result.sample_rate == 8 * u.Hz
-    assert float(result.t0.value) == pytest.approx(datetime_to_gps(_START))
+    assert float(result.t0.value) == pytest.approx(
+        datetime_to_gps(_START), rel=0, abs=1e-6
+    )
     assert result.name == component
     assert str(result.channel) == component
 
@@ -133,7 +135,9 @@ def test_ats_mth5_calls_top_level_read_file_and_treats_naive_start_as_utc(
 
     read_file.assert_called_once_with(str(source), file_type="metronix")
     np.testing.assert_array_equal(result.value, _VALUES)
-    assert float(result.t0.value) == pytest.approx(datetime_to_gps(_START))
+    assert float(result.t0.value) == pytest.approx(
+        datetime_to_gps(_START), rel=0, abs=1e-6
+    )
 
 
 @pytest.mark.parametrize(
