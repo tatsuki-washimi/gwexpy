@@ -82,9 +82,11 @@ jobs:
           fi
           result="$(python control/scripts/validate_release.py --repo-root source --release-ref "$RELEASE_REF" --expected-tag "$EXPECTED_TAG" "${review_args[@]}" --frozen-tip)"
           printf '%s\n' "$result"
-          printf '%s\n' "$result" | awk -F= '/^source_sha=/{print "source_sha=" $2}' >> "$GITHUB_OUTPUT"
-          printf '%s\n' "$result" | awk -F= '/^version=/{print "version=" $2}' >> "$GITHUB_OUTPUT"
-          printf '%s\n' "$result" | awk -F= '/^artifact_prefix=/{print "artifact_prefix=" $2}' >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$result" | awk -F= '
+            /^source_sha=/ {print "source_sha=" $2}
+            /^version=/ {print "version=" $2}
+            /^artifact_prefix=/ {print "artifact_prefix=" $2}
+          ' >> "$GITHUB_OUTPUT"
 
   build:
     name: Build and check release artifacts
