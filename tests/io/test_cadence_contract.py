@@ -249,6 +249,20 @@ def test_numeric_csv_accepts_declared_jitter_within_token_resolution(tmp_path):
     assert series.dt.value == pytest.approx(1.0)
 
 
+def test_numeric_csv_rejects_accumulated_declared_cadence_drift(tmp_path):
+    path = tmp_path / "accumulated-drift.csv"
+    source_step = Decimal("1.001")
+    path.write_text(
+        "\n".join(f"{source_step * index:.3f},{index}" for index in range(1001)) + "\n"
+    )
+
+    with pytest.raises(ValueError, match="CSV timestamp drift"):
+        read_timeseriesdict_csv(
+            path,
+            config={"format": {"sample_rate": 1.0}},
+        )
+
+
 def test_numeric_csv_rejects_declared_jitter_outside_token_resolution(tmp_path):
     path = tmp_path / "jitter-outside.csv"
     path.write_text("0.000,1\n1.003,2\n2.000,3\n")

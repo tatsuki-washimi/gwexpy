@@ -120,6 +120,17 @@ def _validate_regular_timestamps(
                 f"{source} timestamp gap at index {index + 1}: "
                 f"expected cadence {cadence}, got {delta}"
             )
+    # Token quantisation bounds each serialized timestamp independently; it
+    # must not be re-applied at every interval, which would allow a small
+    # one-sided error to accumulate without limit while the public axis is
+    # labelled with the declared cadence.
+    for index, value in enumerate(values[1:], start=1):
+        expected_value = values[0] + cadence * index
+        if abs(value - expected_value) > tolerance:
+            raise ValueError(
+                f"{source} timestamp drift at index {index}: expected grid "
+                f"value {expected_value}, got {value}"
+            )
     return float(cadence)
 
 
