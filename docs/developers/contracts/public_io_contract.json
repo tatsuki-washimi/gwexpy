@@ -1373,11 +1373,15 @@
             },
             "trusted_only": false,
             "metadata_requirements": [
-                "Published ATS.MTH5 reads must remain a narrow single-series path and preserve MTH5-derived timing metadata when the dependency is available."
+                "Published ATS.MTH5 reads must remain a narrow single-series path and preserve MTH5-derived timing metadata when the dependency is available.",
+                "Channel data must be one-dimensional and non-empty, with a finite positive sample rate and a valid start time.",
+                "Components Ex and Ey require mV/km; Hx, Hy, and Hz require nT. Raw channel values are not rescaled."
             ],
             "notes": [
                 "Published ATS.MTH5 direct I/O is intentionally limited to TimeSeries.read(..., format='ats.mth5').",
-                "The implementation depends on mth5 and should raise ImportError with installation guidance when that dependency is unavailable."
+                "TimeSeriesDict.read(..., format='ats.mth5') is rejected before optional dependency lookup.",
+                "Source timing and units are authoritative; epoch, timezone, unit, and other reader overrides are rejected rather than ignored.",
+                "The implementation uses mth5.read_file(..., file_type='metronix') from mth5>=0.6.8 and raises ImportError with installation guidance when that dependency is unavailable."
             ],
             "optional_dependencies": [
                 "mth5"

@@ -15,6 +15,22 @@
 
 ### Behaviour-visible bug fixes
 
+- **io (ATS.MTH5)**: `TimeSeries.read(..., format="ats.mth5")` now uses the
+  supported `mth5.read_file(..., file_type="metronix")` API from `mth5>=0.6.8`.
+  The reader preserves raw ATSS sample values, maps Ex/Ey to mV/km and
+  Hx/Hy/Hz to nT, and fails closed when data, start time, sample rate,
+  component, or unit metadata is missing or inconsistent. The published path
+  remains single-series only; `TimeSeriesDict.read(..., format="ats.mth5")`
+  now raises an explicit `TypeError` before importing the optional dependency
+  instead of entering an incompatible dict route. Source timing and units are
+  authoritative, so `epoch=`, `timezone=`, `unit=`, and unknown reader
+  overrides now fail explicitly instead of being ignored (#619).
+
+  | Before | After |
+  | --- | --- |
+  | The reader called an obsolete nested `mth5.io.metronix...read_atss` API and could fail before returning a series. | The reader calls the supported top-level API and validates the returned channel contract. |
+  | `TimeSeriesDict.read(..., format="ats.mth5")` could dispatch into a single-channel implementation. | The unsupported collection route fails immediately and directs callers to `TimeSeries.read`. |
+  | Reader overrides could be accepted but ignored, leaving source timing and units unchanged without notice. | Unsupported timing, unit, and unknown overrides raise before dependency lookup. |
 - **io (CSV/SDB cadence)**: numeric and configured component-column CSV
   timestamps are validated before float conversion or resampling, and SDB
   validates integer Unix-second timestamps in database storage order before

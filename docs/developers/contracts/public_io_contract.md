@@ -294,9 +294,17 @@ not add `time_scale=` or `time_unit=`.
 ### `ats.mth5`
 
 - Public contract: `TimeSeries` read only.
-- Optional dependency: published reads require `mth5`, available through the
-  `seismic` extra; missing dependency should raise a format-specific
-  `ImportError`.
+- Optional dependency: published reads require `mth5>=0.6.8`, available through
+  the `seismic` extra; missing or incompatible dependencies raise a
+  format-specific `ImportError`.
+- Backend route: `mth5.read_file(..., file_type="metronix")` returns one
+  channel. Data must be one-dimensional and non-empty; start time and finite
+  positive sample rate are required. Ex/Ey map to mV/km and Hx/Hy/Hz to nT
+  without rescaling raw values.
+- Source timing and units are authoritative: `epoch`, `timezone`, unit, and
+  other reader overrides are rejected instead of being ignored.
+- `TimeSeriesDict.read(..., format="ats.mth5")` is rejected before optional
+  dependency lookup.
 - Reason: this is the only currently published MTH5-backed direct path and it
   remains intentionally narrow.
 
