@@ -168,14 +168,23 @@ def read_timeseriesdict_sdb(
 
         # A rowid table preserves archive insertion order.  Validate that
         # order so an out-of-order record cannot be silently repaired by a
-        # timestamp sort.  WITHOUT ROWID tables are stored in declared
-        # primary-key order, which PRAGMA reports using one-based PK ordinals.
+        # timestamp sort.  Determine WITHOUT ROWID from schema metadata rather
+        # than probing ``rowid``, which a declared column can shadow.
         cursor = conn.cursor()
-        try:
-            cursor.execute(  # nosec B608
-                f"SELECT rowid FROM {table_identifier} LIMIT 0"
+        cursor.execute(f"PRAGMA table_list({table_identifier})")  # nosec B608
+        table_records = [
+            info
+            for info in cursor.fetchall()
+            if len(info) >= 5
+            and str(info[1]).casefold() == table.casefold()
+            and info[2] == "table"
+        ]
+        if len(table_records) != 1:
+            raise ValueError(
+                "SDB source row order cannot be established from table metadata"
             )
-        except sqlite3.OperationalError:
+
+        if bool(table_records[0][4]):
             cursor.execute(f"PRAGMA index_list({table_identifier})")  # nosec B608
             primary_key_indexes = [
                 str(info[1]) for info in cursor.fetchall() if info[3] == "pk"
@@ -212,7 +221,22 @@ def read_timeseriesdict_sdb(
                     "declared primary key"
                 )
         else:
-            order_columns = ["rowid"]
+            cursor.execute(f"PRAGMA table_info({table_identifier})")  # nosec B608
+            declared_columns = {str(info[1]).casefold() for info in cursor.fetchall()}
+            hidden_rowid = next(
+                (
+                    alias
+                    for alias in ("rowid", "_rowid_", "oid")
+                    if alias.casefold() not in declared_columns
+                ),
+                None,
+            )
+            if hidden_rowid is None:
+                raise ValueError(
+                    "SDB source row order cannot be established because all "
+                    "SQLite rowid aliases are shadowed"
+                )
+            order_columns = [_quote_sqlite_identifier(hidden_rowid)]
 
         col_str = ", ".join(_quote_sqlite_identifier(c) for c in target_cols)
         order_clause = ", ".join(order_columns)

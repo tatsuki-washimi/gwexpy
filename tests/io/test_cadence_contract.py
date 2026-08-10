@@ -446,6 +446,24 @@ def test_sdb_without_rowid_supports_quoted_collated_composite_key(tmp_path):
     assert len(series) == 3
 
 
+def test_sdb_without_rowid_ignores_shadowing_rowid_column(tmp_path):
+    db = tmp_path / "without-rowid-shadow.sdb"
+    with sqlite3.connect(db) as conn:
+        conn.execute(
+            "CREATE TABLE archive ("
+            "seq INTEGER PRIMARY KEY, rowid INTEGER, "
+            "dateTime INTEGER, outTemp REAL"
+            ") WITHOUT ROWID"
+        )
+        conn.executemany(
+            "INSERT INTO archive VALUES (?, ?, ?, 70)",
+            [(1, 1, 100), (2, 3, 102), (3, 2, 101)],
+        )
+
+    with pytest.raises(ValueError, match="SDB backward timestamp"):
+        read_timeseriesdict_sdb(db)
+
+
 def test_sdb_single_row_preserves_one_second_fallback(tmp_path):
     db = tmp_path / "single.sdb"
     _write_sdb(db, [4_000_000_000])
