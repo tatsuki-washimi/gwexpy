@@ -224,14 +224,14 @@ def _read_win_fixed(filename: str | Path, century="20"):
             packet_index += 1
 
     for previous, current in zip(packet_times, packet_times[1:], strict=False):
-        difference = current - previous
-        if difference == 0:
+        difference_ns = current.ns - previous.ns
+        if difference_ns == 0:
             raise ValueError(f"duplicate WIN packet timestamp: {current}")
-        if difference < 0:
+        if difference_ns < 0:
             raise ValueError(
                 f"backward WIN packet timestamp: {current} follows {previous}"
             )
-        if difference != 1:
+        if difference_ns != 1_000_000_000:
             raise ValueError(f"gap in WIN packet timestamps: {previous} to {current}")
 
     traces = []
@@ -255,6 +255,9 @@ def read_win_file(source, **kwargs) -> TimeSeriesDict:
         "_utc_warning_state",
         "_utc_warning_marker",
     )
+    for key in ("start", "end"):
+        if kwargs.get(key) is None:
+            kwargs.pop(key, None)
     timezone = kwargs.pop("timezone", None)
     kwargs.pop("epoch", None)
     _reject_timezone_reinterpretation("win", timezone, None)
@@ -280,7 +283,11 @@ def read_win_file(source, **kwargs) -> TimeSeriesDict:
 
     _record_or_warn_utc_interpretation(warning_marker)
 
-    stream = _read_win_fixed(source, **kwargs)
+    stream_source = source
+    source_name = getattr(source, "name", None)
+    if not isinstance(source, (str, Path)) and isinstance(source_name, (str, Path)):
+        stream_source = source_name
+    stream = _read_win_fixed(stream_source, **kwargs)
 
     # Merge if necessary (simple gap handling)
     stream.merge(method=1, fill_value=np.nan)

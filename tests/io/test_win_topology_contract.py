@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 
 import gwexpy.timeseries.io.win as win_io
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
 
 def _bcd(value: int) -> int:
@@ -20,6 +21,7 @@ def _channel_block(
     rate: int = 2,
     absolute: int = 100,
     width_code: int = 1,
+    deltas: tuple[int, ...] | None = None,
 ) -> bytes:
     """Build a channel block directly from the documented WIN wire fields."""
     header = bytes(
@@ -30,13 +32,21 @@ def _channel_block(
             rate & 0xFF,
         ]
     )
+    deltas = (1,) * (rate - 1) if deltas is None else deltas
+    if len(deltas) != rate - 1:
+        raise AssertionError("test deltas must match the declared sample rate")
     if width_code == 0:
-        n_deltas = rate - 1
-        payload = bytes([0x11] * (n_deltas // 2))
-        if n_deltas % 2:
-            payload += b"\x10"
-    elif width_code == 1:
-        payload = bytes([1] * (rate - 1))
+        nibbles = [delta & 0x0F for delta in deltas]
+        if len(nibbles) % 2:
+            nibbles.append(0)
+        payload = bytes(
+            (nibbles[index] << 4) | nibbles[index + 1]
+            for index in range(0, len(nibbles), 2)
+        )
+    elif width_code in (1, 2, 3, 4):
+        payload = b"".join(
+            delta.to_bytes(width_code, "big", signed=True) for delta in deltas
+        )
     else:
         raise AssertionError(f"unsupported test width code: {width_code}")
     return header + struct.pack(">i", absolute) + payload
@@ -95,9 +105,10 @@ def test_win_rejects_nonconsecutive_global_packet_timestamps(tmp_path, seconds, 
     [
         datetime(2026, 1, 1, 0, 0, 59, tzinfo=UTC),
         datetime(2026, 1, 31, 23, 59, 59, tzinfo=UTC),
+        datetime(2026, 12, 31, 23, 59, 59, tzinfo=UTC),
     ],
 )
-def test_win_accepts_global_sequence_across_minute_and_day_boundaries(tmp_path, start):
+def test_win_accepts_global_sequence_across_calendar_boundaries(tmp_path, start):
     pytest.importorskip("obspy")
     path = _write_packets(
         tmp_path,
@@ -110,6 +121,36 @@ def test_win_accepts_global_sequence_across_minute_and_day_boundaries(tmp_path, 
 
     assert len(stream) == 1
     np.testing.assert_array_equal(stream[0].data, [10, 11, 20, 21])
+
+
+def test_win_validates_packet_cadence_with_exact_integer_timestamps(
+    tmp_path, monkeypatch
+):
+    pytest.importorskip("obspy")
+    origin = datetime(2026, 1, 1, tzinfo=UTC)
+    path = _write_packets(
+        tmp_path,
+        "exact-cadence.win",
+        _packet(origin, _channel_block(1)),
+        _packet(origin + timedelta(seconds=2), _channel_block(1)),
+    )
+
+    class ExactTimestamp:
+        def __init__(self, year, month, day, hour, minute, second):
+            value = datetime(year, month, day, hour, minute, second, tzinfo=UTC)
+            epoch_delta = value - datetime(1970, 1, 1, tzinfo=UTC)
+            self.ns = (epoch_delta.days * 86_400 + epoch_delta.seconds) * 1_000_000_000
+
+        def __sub__(self, other):
+            raise AssertionError("packet cadence must not use floating subtraction")
+
+        def __str__(self):
+            return f"ExactTimestamp(ns={self.ns})"
+
+    monkeypatch.setattr(win_io, "UTCDateTime", ExactTimestamp)
+
+    with pytest.raises(ValueError, match="gap"):
+        win_io._read_win_fixed(path)
 
 
 def test_win_allows_channel_late_start_and_early_end_and_sets_each_t0(tmp_path):
@@ -135,6 +176,118 @@ def test_win_allows_channel_late_start_and_early_end_and_sets_each_t0(tmp_path):
     assert traces["1202"].stats.starttime == win_io.UTCDateTime(
         origin + timedelta(seconds=1)
     )
+
+
+@pytest.mark.parametrize(
+    ("width_code", "deltas"),
+    [
+        (0, (-8, 7)),
+        (1, (-128, 127)),
+        (2, (-32_768, 32_767)),
+        (3, (-8_388_608, 8_388_607)),
+        (4, (-2_147_483_648, 2_147_483_647)),
+    ],
+)
+def test_win_decodes_each_codec_at_signed_delta_bounds(tmp_path, width_code, deltas):
+    pytest.importorskip("obspy")
+    origin = datetime(2026, 1, 1, tzinfo=UTC)
+    path = _write_packets(
+        tmp_path,
+        f"width-{width_code}.win",
+        _packet(
+            origin,
+            _channel_block(
+                1,
+                rate=3,
+                absolute=0,
+                width_code=width_code,
+                deltas=deltas,
+            ),
+        ),
+    )
+
+    trace = win_io._read_win_fixed(path)[0]
+
+    np.testing.assert_array_equal(trace.data, [0, deltas[0], sum(deltas)])
+    assert trace.stats.sampling_rate == 3.0
+
+
+@pytest.mark.parametrize("width_code", range(5))
+def test_win_decodes_rate_one_for_each_codec_width(tmp_path, width_code):
+    pytest.importorskip("obspy")
+    origin = datetime(2026, 1, 1, tzinfo=UTC)
+    path = _write_packets(
+        tmp_path,
+        f"rate-one-width-{width_code}.win",
+        _packet(
+            origin,
+            _channel_block(1, rate=1, absolute=-2_147_483_648, width_code=width_code),
+        ),
+    )
+
+    trace = win_io._read_win_fixed(path)[0]
+
+    np.testing.assert_array_equal(trace.data, [-2_147_483_648])
+    assert trace.stats.sampling_rate == 1.0
+
+
+def test_win_preserves_first_seen_channel_order_when_packet_order_changes(tmp_path):
+    pytest.importorskip("obspy")
+    origin = datetime(2026, 1, 1, tzinfo=UTC)
+    path = _write_packets(
+        tmp_path,
+        "channel-order.win",
+        _packet(
+            origin,
+            _channel_block(2, absolute=20),
+            _channel_block(1, absolute=10),
+        ),
+        _packet(
+            origin + timedelta(seconds=1),
+            _channel_block(1, absolute=30),
+            _channel_block(2, absolute=40),
+        ),
+    )
+
+    stream = win_io._read_win_fixed(path)
+
+    assert [trace.stats.channel for trace in stream] == ["1202", "1201"]
+    np.testing.assert_array_equal(stream[0].data, [20, 21, 40, 41])
+    np.testing.assert_array_equal(stream[1].data, [10, 11, 30, 31])
+    assert [trace.stats.sampling_rate for trace in stream] == [2.0, 2.0]
+    assert all(trace.stats.starttime == win_io.UTCDateTime(origin) for trace in stream)
+
+
+@pytest.mark.parametrize("reader", [TimeSeriesDict, TimeSeries])
+def test_win_public_readers_preserve_data_and_emit_one_utc_warning(tmp_path, reader):
+    pytest.importorskip("obspy")
+    origin = datetime(2026, 1, 1, tzinfo=UTC)
+    path = _write_packets(
+        tmp_path,
+        "public-reader.win",
+        _packet(origin, _channel_block(2, absolute=20)),
+        _packet(
+            origin + timedelta(seconds=1),
+            _channel_block(1, absolute=30),
+            _channel_block(2, absolute=40),
+        ),
+        _packet(origin + timedelta(seconds=2), _channel_block(1, absolute=10)),
+    )
+
+    with pytest.warns(UserWarning, match="#632") as caught:
+        result = reader.read(path, format="win")
+
+    assert len(caught) == 1
+    if reader is TimeSeriesDict:
+        assert list(result) == ["...1201", "...1202"]
+        np.testing.assert_array_equal(result["...1202"].value, [20, 21, 40, 41])
+        np.testing.assert_array_equal(result["...1201"].value, [30, 31, 10, 11])
+        assert result["...1202"].sample_rate.value == 2.0
+        assert result["...1201"].sample_rate.value == 2.0
+        assert (result["...1201"].t0 - result["...1202"].t0).to_value("s") == 1.0
+    else:
+        np.testing.assert_array_equal(result.value, [30, 31, 10, 11])
+        assert result.sample_rate.value == 2.0
 
 
 def test_win_rejects_channel_reappearance_after_an_internal_gap(tmp_path):
@@ -202,6 +355,21 @@ def test_win_rejects_truncated_packet_payload(tmp_path):
     path = _write_packets(tmp_path, "truncated.win", truncated)
 
     with pytest.raises(ValueError, match="truncated.*payload"):
+        win_io._read_win_fixed(path)
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        b"\x00\x00",
+        struct.pack(">i", 9) + b"\x00" * 5,
+    ],
+)
+def test_win_rejects_malformed_packet_length(tmp_path, payload):
+    pytest.importorskip("obspy")
+    path = _write_packets(tmp_path, "malformed-length.win", payload)
+
+    with pytest.raises(ValueError, match="packet length"):
         win_io._read_win_fixed(path)
 
 
