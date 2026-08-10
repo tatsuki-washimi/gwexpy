@@ -8,19 +8,17 @@ import importlib.util
 import json
 import re
 import subprocess
+import sys
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import cast
 
 RELEASE_TAG_PATTERN = re.compile(
     r"^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$"
 )
 SHA_PATTERN = re.compile(r"^[0-9a-f]{40}$")
 DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-COORDINATOR_AUDIT_PATHS = {
-    "docs/plans/2026-08-06-v0.1.13-sol-no-go-followup-plan.md",
-    "docs/developers/plans/manifests/audit-manifest-v0.1.13-sol-followup.yaml",
-}
 
 
 class ReleaseValidationError(ValueError):
@@ -33,6 +31,7 @@ class ValidationResult:
     source_sha: str
     version: str
     release_date: str
+    artifact_prefix: str
 
 
 def is_release_tag(value: str) -> bool:
@@ -224,32 +223,61 @@ def _review_validator_module():
     return module
 
 
+def _release_contract(expected_tag: str) -> dict[str, object]:
+    path = Path(__file__).with_name("ci") / "release_contract.py"
+    spec = importlib.util.spec_from_file_location("release_contract", path)
+    if spec is None or spec.loader is None:
+        raise ReleaseValidationError("release contract loader is unavailable")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    try:
+        return module.release_contract(expected_tag)
+    except module.ReleaseContractError as exc:
+        raise ReleaseValidationError(str(exc)) from exc
+
+
 def validate_review_evidence(
     repo_root: Path | str,
     evidence_path: Path | str,
     source_sha: str | None = None,
+    *,
+    expected_tag: str = "v0.1.13",
 ) -> str:
     """Validate Terra evidence at S and, when supplied, bind S safely to R."""
     root = Path(repo_root).resolve()
     candidate = Path(evidence_path)
     if not candidate.is_absolute():
         candidate = root / candidate
+    resolved_candidate = candidate.resolve()
     try:
-        candidate.resolve().relative_to(root)
+        resolved_candidate.relative_to(root)
     except ValueError as exc:
         raise ReleaseValidationError(
             "review evidence must remain inside repo root"
         ) from exc
+    contract = _release_contract(expected_tag)
+    configured_evidence = (root / str(contract["review_evidence_path"])).resolve()
+    if resolved_candidate != configured_evidence:
+        raise ReleaseValidationError(
+            "review evidence must use the configured review evidence path"
+        )
     module = _review_validator_module()
     try:
-        evidence = module.validate_review_evidence(candidate, None, {"A", "B"}, root)
+        evidence = module.validate_review_evidence(
+            candidate,
+            None,
+            None,
+            root,
+            expected_tag=expected_tag,
+        )
     except module.ReleaseReviewEvidenceError as exc:
         raise ReleaseValidationError(
             f"review evidence validation failed: {exc}"
         ) from exc
     reviewed_commit = evidence["entries"][0]["reviewed_commit"]
     if source_sha is not None:
-        validate_s_to_r(root, reviewed_commit, source_sha)
+        validate_s_to_r(root, reviewed_commit, source_sha, expected_tag=expected_tag)
     return reviewed_commit
 
 
@@ -263,9 +291,11 @@ def _git_bytes(repo_root: Path, *args: str) -> bytes:
 
 
 def _validate_plan_delta(
-    repo_root: Path, reviewed_commit: str, source_sha: str
+    repo_root: Path,
+    reviewed_commit: str,
+    source_sha: str,
+    plan: str,
 ) -> None:
-    plan = "docs/plans/2026-08-06-v0.1.13-sol-no-go-followup-plan.md"
     before = _git_bytes(repo_root, "show", f"{reviewed_commit}:{plan}").splitlines(
         keepends=True
     )
@@ -288,7 +318,11 @@ def _validate_plan_delta(
 
 
 def validate_s_to_r(
-    repo_root: Path | str, reviewed_commit: str, source_sha: str
+    repo_root: Path | str,
+    reviewed_commit: str,
+    source_sha: str,
+    *,
+    expected_tag: str = "v0.1.13",
 ) -> None:
     """Bind Terra's reviewed S to R through only coordinator-owned deltas."""
     root = Path(repo_root).resolve()
@@ -303,13 +337,15 @@ def validate_s_to_r(
         root, "diff", "--name-only", "-z", f"{reviewed_commit}..{source_sha}"
     )
     paths = {path for path in changed.split("\0") if path}
-    if not paths <= COORDINATOR_AUDIT_PATHS:
+    contract = _release_contract(expected_tag)
+    allowed_paths = set(cast(list[str], contract["s_to_r_allowed_paths"]))
+    if not paths <= allowed_paths:
         raise ReleaseValidationError(
             "S-to-R changes invalidate review evidence outside coordinator audit paths"
         )
-    plan = "docs/plans/2026-08-06-v0.1.13-sol-no-go-followup-plan.md"
+    plan = str(contract["plan_path"])
     if plan in paths:
-        _validate_plan_delta(root, reviewed_commit, source_sha)
+        _validate_plan_delta(root, reviewed_commit, source_sha, plan)
 
 
 def _tagger_utc_date(repo_root: Path, tag: str) -> str:
@@ -336,6 +372,8 @@ def validate_release(
         raise ReleaseValidationError(
             f"expected_tag is not a final SemVer tag: {expected_tag}"
         )
+    contract = _release_contract(expected_tag)
+    artifact_prefix = str(contract["artifact_prefix"])
 
     if is_release_tag(release_ref):
         if release_ref != expected_tag:
@@ -361,11 +399,20 @@ def validate_release(
             )
         _require_ancestry(root, source_sha, expected_tag)
         if review_evidence is not None:
-            validate_review_evidence(root, review_evidence, source_sha)
+            validate_review_evidence(
+                root,
+                review_evidence,
+                source_sha,
+                expected_tag=expected_tag,
+            )
         if frozen_tip:
             validate_frozen_tip(root, source_sha)
         return ValidationResult(
-            "strict", source_sha, expected_tag.removeprefix("v"), release_date
+            "strict",
+            source_sha,
+            expected_tag.removeprefix("v"),
+            release_date,
+            artifact_prefix,
         )
 
     if not SHA_PATTERN.fullmatch(release_ref):
@@ -386,11 +433,20 @@ def validate_release(
     release_date = _read_metadata(root, expected_tag)
     _require_ancestry(root, source_sha, expected_tag)
     if review_evidence is not None:
-        validate_review_evidence(root, review_evidence, source_sha)
+        validate_review_evidence(
+            root,
+            review_evidence,
+            source_sha,
+            expected_tag=expected_tag,
+        )
     if frozen_tip:
         validate_frozen_tip(root, source_sha)
     return ValidationResult(
-        "candidate", source_sha, expected_tag.removeprefix("v"), release_date
+        "candidate",
+        source_sha,
+        expected_tag.removeprefix("v"),
+        release_date,
+        artifact_prefix,
     )
 
 
@@ -409,8 +465,14 @@ def main(argv: list[str] | None = None) -> int:
                 raise ReleaseValidationError(
                     "--review-evidence-only requires --review-evidence"
                 )
+            if args.expected_tag is None:
+                raise ReleaseValidationError(
+                    "--review-evidence-only requires --expected-tag"
+                )
             reviewed_commit = validate_review_evidence(
-                args.repo_root, args.review_evidence
+                args.repo_root,
+                args.review_evidence,
+                expected_tag=args.expected_tag,
             )
             print(f"reviewed_commit={reviewed_commit}")
             return 0
@@ -418,12 +480,17 @@ def main(argv: list[str] | None = None) -> int:
             raise ReleaseValidationError(
                 "--release-ref and --expected-tag are required"
             )
+        review_evidence = args.review_evidence
+        if review_evidence is None:
+            review_evidence = Path(
+                str(_release_contract(args.expected_tag)["review_evidence_path"])
+            )
         result = validate_release(
             args.repo_root,
             args.release_ref,
             args.expected_tag,
             frozen_tip=args.frozen_tip,
-            review_evidence=args.review_evidence,
+            review_evidence=review_evidence,
         )
     except ReleaseValidationError as exc:
         print(f"release validation failed: {exc}")
@@ -432,6 +499,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"source_sha={result.source_sha}")
     print(f"version={result.version}")
     print(f"release_date={result.release_date}")
+    print(f"artifact_prefix={result.artifact_prefix}")
     return 0
 
 

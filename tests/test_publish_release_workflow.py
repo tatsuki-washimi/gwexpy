@@ -297,12 +297,12 @@ def test_release_smoke_executes_with_license_sidecar_path(tmp_path):
     assert argument_name == "expected_license_hash_file"
 
 
-def test_releasing_manual_dispatch_supplies_required_review_evidence():
+def test_releasing_manual_dispatch_supplies_v0114_review_evidence():
     releasing = (WORKFLOW.parents[2] / "RELEASING.md").read_text(encoding="utf-8")
     assert (
         "-f review_evidence="
         "docs/developers/plans/manifests/"
-        "audit-manifest-v0.1.13-sol-followup.yaml"
+        "audit-manifest-v0.1.14-release-readiness.yaml"
     ) in releasing
 
 
@@ -319,10 +319,27 @@ def test_workflow_is_payload_only_locked_and_collects_same_run_evidence():
     assert 'find "$artifact_dir"' not in workflow
     assert "--frozen-tip" in workflow
     assert "--review-evidence" in workflow
-    assert "audit-manifest-v0.1.13-sol-followup.yaml" in workflow
     assert "review_evidence:" in workflow
     assert (
         "github.event_name == 'workflow_dispatch' && inputs.review_evidence" in workflow
     )
+    assert "artifact_prefix: ${{ steps.validate.outputs.artifact_prefix }}" in workflow
+    assert 'print "artifact_prefix=" $2' in workflow
     assert "assemble_release_evidence.py" in workflow
-    assert "v0113-integration-evidence-" in workflow
+    assert (
+        "name: ${{ needs.verify.outputs.artifact_prefix }}-"
+        "${{ needs.verify.outputs.source_sha }}"
+    ) in workflow
+    assert "audit-manifest-v0.1.13-sol-followup.yaml" not in workflow
+    assert "v0113-integration-evidence-" not in workflow
+
+
+def test_workflow_dispatch_inputs_are_preserved_for_manual_candidates():
+    workflow = read_workflow()
+    dispatch = workflow.split("  workflow_dispatch:\n", maxsplit=1)[1].split(
+        "\npermissions:", maxsplit=1
+    )[0]
+
+    for name in ("release_ref", "expected_tag", "review_evidence"):
+        assert f"      {name}:" in dispatch
+    assert dispatch.count("required: true") == 3

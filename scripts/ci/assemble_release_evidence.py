@@ -4,15 +4,16 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import re
 import stat
+import sys
 from pathlib import Path
 from typing import Any
 
 SOURCE_SHA = re.compile(r"^[0-9a-f]{40}$")
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
-PAYLOAD_SCHEMA = "gwexpy-v0113-release-payload-v1"
 SMOKE_KEYS = {
     "python-3.11-wheel",
     "python-3.11-sdist",
@@ -39,6 +40,20 @@ class ReleaseEvidenceError(ValueError):
 
 class _DuplicateJSONKey(ValueError):
     """Raised by the JSON hook when an object has ambiguous keys."""
+
+
+def _release_contract(expected_tag: str) -> dict[str, Any]:
+    path = Path(__file__).with_name("release_contract.py")
+    spec = importlib.util.spec_from_file_location("release_contract", path)
+    if spec is None or spec.loader is None:
+        raise ReleaseEvidenceError("release contract loader is unavailable")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    try:
+        return module.release_contract(expected_tag)
+    except module.ReleaseContractError as exc:
+        raise ReleaseEvidenceError(str(exc)) from exc
 
 
 def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -75,10 +90,10 @@ def _keys(data: dict[str, Any], expected: set[str], context: str) -> None:
         raise ReleaseEvidenceError(f"{context} has missing or unknown keys")
 
 
-def _payload(path: Path) -> dict[str, Any]:
+def _payload(path: Path, expected_schema: str) -> dict[str, Any]:
     data = _object(path)
     _keys(data, {"schema", "source_sha", "version", "files"}, "payload manifest")
-    if data["schema"] != PAYLOAD_SCHEMA or not isinstance(data["files"], dict):
+    if data["schema"] != expected_schema or not isinstance(data["files"], dict):
         raise ReleaseEvidenceError("unsupported payload manifest")
     _keys(data["files"], {"wheel", "sdist"}, "payload files")
     for kind, suffix in (("wheel", ".whl"), ("sdist", ".tar.gz")):
@@ -191,8 +206,9 @@ def assemble_evidence(
     tag_match = RELEASE_TAG.fullmatch(expected_tag)
     if tag_match is None:
         raise ReleaseEvidenceError("expected tag must be a final SemVer release tag")
+    contract = _release_contract(expected_tag)
     manifest_path = Path(payload_manifest)
-    payload = _payload(manifest_path)
+    payload = _payload(manifest_path, str(contract["payload_schema"]))
     if payload["source_sha"] != source_sha:
         raise ReleaseEvidenceError(
             "payload source SHA does not match workflow source SHA"
@@ -202,8 +218,8 @@ def assemble_evidence(
     license_hash = _license(Path(sidecars), manifest_path)
     smoke = _smoke_reports(Path(smoke_dir), payload, license_hash, source_sha)
     return {
-        "schema": "gwexpy-v0113-integration-evidence-v1",
-        "artifact_name": f"v0113-integration-evidence-{source_sha}",
+        "schema": contract["integration_evidence_schema"],
+        "artifact_name": f"{contract['artifact_prefix']}-{source_sha}",
         "repository": repository,
         "run_id": run_id,
         "workflow_sha": workflow_sha,

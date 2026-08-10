@@ -36,7 +36,11 @@ def git(repo: Path, *args: str, env: dict[str, str] | None = None) -> str:
 
 
 def make_repo(
-    tmp_path: Path, *, version: str = "0.1.12", date: str = "2026-07-30"
+    tmp_path: Path,
+    *,
+    version: str = "0.1.13",
+    date: str = "2026-07-30",
+    maintenance_branch: bool = True,
 ) -> Path:
     repo = tmp_path / "release-repo"
     repo.mkdir(parents=True)
@@ -56,6 +60,8 @@ def make_repo(
     (repo / "CHANGELOG.md").write_text(f"## [{version}] - {date}\n", encoding="utf-8")
     git(repo, "add", ".")
     git(repo, "commit", "-m", "release candidate")
+    if maintenance_branch:
+        git(repo, "branch", "maint/0.1")
     return repo
 
 
@@ -79,33 +85,34 @@ def test_candidate_mode_resolves_only_full_sha_and_requires_absent_tag(tmp_path:
     repo = make_repo(tmp_path)
     source_sha = git(repo, "rev-parse", "HEAD")
 
-    result = validator.validate_release(repo, source_sha, "v0.1.12")
+    result = validator.validate_release(repo, source_sha, "v0.1.13")
 
     assert result.mode == "candidate"
     assert result.source_sha == source_sha
+    assert result.artifact_prefix == "v0113-integration-evidence"
     with pytest.raises(validator.ReleaseValidationError, match="full 40-character"):
-        validator.validate_release(repo, "main", "v0.1.12")
-    tag_annotated(repo, "v0.1.12")
+        validator.validate_release(repo, "main", "v0.1.13")
+    tag_annotated(repo, "v0.1.13")
     with pytest.raises(
         validator.ReleaseValidationError, match="must not already exist"
     ):
-        validator.validate_release(repo, source_sha, "v0.1.12")
+        validator.validate_release(repo, source_sha, "v0.1.13")
 
 
 def test_historical_mode_requires_annotated_tag_peel_and_utc_date(tmp_path: Path):
     validator = load_validator()
     repo = make_repo(tmp_path)
-    tag_annotated(repo, "v0.1.12")
+    tag_annotated(repo, "v0.1.13")
 
-    result = validator.validate_release(repo, "v0.1.12", "v0.1.12")
+    result = validator.validate_release(repo, "v0.1.13", "v0.1.13")
 
     assert result.mode == "strict"
     assert result.source_sha == git(repo, "rev-parse", "HEAD")
 
     light_repo = make_repo(tmp_path / "light")
-    git(light_repo, "tag", "v0.1.12")
+    git(light_repo, "tag", "v0.1.13")
     with pytest.raises(validator.ReleaseValidationError, match="annotated"):
-        validator.validate_release(light_repo, "v0.1.12", "v0.1.12")
+        validator.validate_release(light_repo, "v0.1.13", "v0.1.13")
 
 
 def test_strict_mode_rejects_tagger_date_mismatch_and_missing_maintenance_branch(
@@ -117,7 +124,9 @@ def test_strict_mode_rejects_tagger_date_mismatch_and_missing_maintenance_branch
     with pytest.raises(validator.ReleaseValidationError, match="tagger date"):
         validator.validate_release(repo, "v0.1.13", "v0.1.13")
 
-    repo = make_repo(tmp_path / "maintenance", version="0.1.13")
+    repo = make_repo(
+        tmp_path / "maintenance", version="0.1.13", maintenance_branch=False
+    )
     tag_annotated(repo, "v0.1.13")
     with pytest.raises(validator.ReleaseValidationError, match="maint/0.1"):
         validator.validate_release(repo, "v0.1.13", "v0.1.13")
@@ -134,14 +143,14 @@ def test_duplicate_changelog_release_heading_is_rejected(tmp_path: Path):
     repo = make_repo(tmp_path)
     changelog = repo / "CHANGELOG.md"
     changelog.write_text(
-        "## [0.1.12] - 2026-07-30\n\nfirst\n\n## [0.1.12] - 2026-07-31\n\nsecond\n",
+        "## [0.1.13] - 2026-07-30\n\nfirst\n\n## [0.1.13] - 2026-07-31\n\nsecond\n",
         encoding="utf-8",
     )
     git(repo, "commit", "-am", "duplicate heading")
     source_sha = git(repo, "rev-parse", "HEAD")
 
     with pytest.raises(validator.ReleaseValidationError, match="2 release headings"):
-        validator.validate_release(repo, source_sha, "v0.1.12")
+        validator.validate_release(repo, source_sha, "v0.1.13")
 
 
 @pytest.mark.parametrize(
@@ -168,7 +177,7 @@ def test_duplicate_citation_cff_field_is_rejected(
     with pytest.raises(
         validator.ReleaseValidationError, match=f"2 top-level '{field}' fields"
     ):
-        validator.validate_release(repo, source_sha, "v0.1.12")
+        validator.validate_release(repo, source_sha, "v0.1.13")
 
 
 def test_frozen_tip_requires_both_fetched_remote_branches_at_source_sha(tmp_path: Path):
@@ -179,7 +188,6 @@ def test_frozen_tip_requires_both_fetched_remote_branches_at_source_sha(tmp_path
     with pytest.raises(validator.ReleaseValidationError, match="origin/main"):
         validator.validate_frozen_tip(repo, source_sha)
 
-    git(repo, "branch", "maint/0.1")
     git(repo, "update-ref", "refs/remotes/origin/main", source_sha)
     git(repo, "update-ref", "refs/remotes/origin/maint/0.1", source_sha)
     validator.validate_frozen_tip(repo, source_sha)
@@ -200,9 +208,41 @@ def test_release_validation_rejects_missing_review_evidence(tmp_path: Path):
         validator.validate_release(
             repo,
             source_sha,
-            "v0.1.12",
+            "v0.1.13",
             review_evidence=repo / "missing-review-evidence.json",
         )
+
+
+def test_release_validation_rejects_noncontract_review_evidence_path(
+    tmp_path: Path,
+):
+    validator = load_validator()
+    repo = make_repo(tmp_path)
+    source_sha = git(repo, "rev-parse", "HEAD")
+    alternate = repo / "alternate-review.json"
+    alternate.write_text("{}\n", encoding="utf-8")
+
+    with pytest.raises(
+        validator.ReleaseValidationError,
+        match="configured review evidence path",
+    ):
+        validator.validate_release(
+            repo,
+            source_sha,
+            "v0.1.13",
+            review_evidence=alternate,
+        )
+
+
+def test_release_validation_rejects_unconfigured_semver_tag(tmp_path: Path):
+    validator = load_validator()
+    repo = make_repo(tmp_path, version="0.1.15")
+    source_sha = git(repo, "rev-parse", "HEAD")
+
+    with pytest.raises(
+        validator.ReleaseValidationError, match="unsupported release tag"
+    ):
+        validator.validate_release(repo, source_sha, "v0.1.15")
 
 
 def test_s_to_r_rejects_any_plan_delta_beyond_checkbox_transition(tmp_path: Path):
@@ -244,3 +284,37 @@ def test_s_to_r_rejects_non_task_list_checkbox_change(tmp_path: Path):
 
     with pytest.raises(validator.ReleaseValidationError, match="plan delta"):
         validator.validate_s_to_r(repo, reviewed_commit, git(repo, "rev-parse", "HEAD"))
+
+
+def test_s_to_r_uses_v0114_plan_and_allowed_paths(tmp_path: Path):
+    validator = load_validator()
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    git(repo, "init", "-b", "main")
+    git(repo, "config", "user.name", "Release Test")
+    git(repo, "config", "user.email", "release-test@example.invalid")
+    plan = repo / "docs" / "plans" / "2026-08-08-v0114-release-plan.md"
+    manifest = (
+        repo
+        / "docs"
+        / "developers"
+        / "plans"
+        / "manifests"
+        / "audit-manifest-v0.1.14-release-readiness.yaml"
+    )
+    plan.parent.mkdir(parents=True)
+    manifest.parent.mkdir(parents=True)
+    plan.write_text("- [ ] evidence commit\n", encoding="utf-8")
+    manifest.write_text("review_evidence_json: |\n  {}\n", encoding="utf-8")
+    git(repo, "add", ".")
+    git(repo, "commit", "-m", "S")
+    reviewed_commit = git(repo, "rev-parse", "HEAD")
+
+    plan.write_text("- [x] evidence commit\n", encoding="utf-8")
+    manifest.write_text(
+        'review_evidence_json: |\n  {"entries": []}\n', encoding="utf-8"
+    )
+    git(repo, "commit", "-am", "R")
+    source_sha = git(repo, "rev-parse", "HEAD")
+
+    validator.validate_s_to_r(repo, reviewed_commit, source_sha, expected_tag="v0.1.14")

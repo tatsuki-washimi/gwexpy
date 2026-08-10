@@ -5,14 +5,15 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import re
 import stat
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-SCHEMA = "gwexpy-v0113-release-payload-v1"
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 SOURCE_SHA = re.compile(r"^[0-9a-f]{40}$")
 
@@ -23,6 +24,20 @@ class ReleasePayloadError(ValueError):
 
 class _DuplicateJSONKey(ValueError):
     """Raised by the JSON hook when an object has ambiguous keys."""
+
+
+def _release_contract(version: str) -> dict[str, Any]:
+    path = Path(__file__).with_name("release_contract.py")
+    spec = importlib.util.spec_from_file_location("release_contract", path)
+    if spec is None or spec.loader is None:
+        raise ReleasePayloadError("release contract loader is unavailable")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    try:
+        return module.release_contract(f"v{version}")
+    except module.ReleaseContractError as exc:
+        raise ReleasePayloadError(str(exc)) from exc
 
 
 def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -110,13 +125,13 @@ def _regular_entries(directory: Path) -> dict[str, Path]:
 
 
 def _parse_manifest(
-    path: Path, expected_version: str
+    path: Path, expected_version: str, expected_schema: str
 ) -> tuple[str, str, tuple[str, str], tuple[str, str]]:
     data = _load_object(path)
     _require_keys(
         data, {"schema", "source_sha", "version", "files"}, "payload manifest"
     )
-    if data["schema"] != SCHEMA:
+    if data["schema"] != expected_schema:
         raise ReleasePayloadError("unsupported payload manifest schema")
     source_sha = data["source_sha"]
     if not isinstance(source_sha, str) or not SOURCE_SHA.fullmatch(source_sha):
@@ -141,8 +156,9 @@ def validate_payload(
 ) -> Payload:
     """Require exactly the manifest's one wheel and one source distribution."""
     payload = Path(payload_dir)
+    contract = _release_contract(expected_version)
     source_sha, version, wheel_spec, sdist_spec = _parse_manifest(
-        Path(manifest_path), expected_version
+        Path(manifest_path), expected_version, str(contract["payload_schema"])
     )
     entries = _regular_entries(payload)
     expected = {wheel_spec[0], sdist_spec[0]}
@@ -162,6 +178,7 @@ def write_manifest(
     """Create a manifest only when a newly-built directory has exactly two files."""
     if not SOURCE_SHA.fullmatch(source_sha):
         raise ReleasePayloadError("source_sha must be a full SHA")
+    contract = _release_contract(version)
     entries = _regular_entries(Path(payload_dir))
     wheels = [path for name, path in entries.items() if name.endswith(".whl")]
     sdists = [path for name, path in entries.items() if name.endswith(".tar.gz")]
@@ -171,7 +188,7 @@ def write_manifest(
         )
     _validate_distribution_names(wheels[0].name, sdists[0].name, version)
     data = {
-        "schema": SCHEMA,
+        "schema": contract["payload_schema"],
         "source_sha": source_sha,
         "version": version,
         "files": {
