@@ -196,6 +196,28 @@ def test_timeseriesdict_rejects_ats_mth5_before_dependency_lookup(
         TimeSeriesDict.read(tmp_path / "input.atss", format="ats.mth5")
 
 
+@pytest.mark.parametrize(
+    ("kwargs", "error", "message"),
+    [
+        ({"epoch": 0}, ValueError, "epoch override"),
+        ({"unit": "nT"}, TypeError, "unit"),
+    ],
+)
+def test_ats_mth5_rejects_unsupported_overrides_before_dependency_lookup(
+    monkeypatch,
+    kwargs,
+    error,
+    message,
+):
+    def forbidden_lookup(name):
+        raise AssertionError(f"dependency lookup must not run: {name}")
+
+    monkeypatch.setattr(ats_io, "ensure_dependency", forbidden_lookup)
+
+    with pytest.raises(error, match=message):
+        ats_io.read_timeseries_ats_mth5("input.atss", **kwargs)
+
+
 def test_seismic_and_all_extras_require_mth5_0_6_8_or_newer():
     pyproject = tomllib.loads((_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     extras = pyproject["project"]["optional-dependencies"]

@@ -409,9 +409,15 @@ def read_timeseries_ats_mth5(source, **kwargs):
     ``start``/``end`` are rejected rather than ignored (issue #611).
     """
     reject_time_selection("ats.mth5", kwargs)
+    pop_time_selection(kwargs)
     timezone = kwargs.pop("timezone", None)
-    kwargs.pop("epoch", None)
+    epoch = kwargs.pop("epoch", None)
     _reject_timezone_reinterpretation("ats.mth5", timezone, None)
+    if epoch is not None:
+        raise ValueError("ats.mth5 does not support an epoch override")
+    if kwargs:
+        names = ", ".join(sorted(kwargs))
+        raise TypeError(f"ats.mth5 does not support reader argument(s): {names}")
 
     try:
         mth5 = ensure_dependency("mth5")
