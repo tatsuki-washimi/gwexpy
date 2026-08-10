@@ -46,15 +46,23 @@ UNIT_CONVERSION = {
 }
 
 
+def _quote_sqlite_identifier(identifier: str) -> str:
+    """Return *identifier* as a safely quoted SQLite identifier."""
+    if not isinstance(identifier, str) or not identifier:
+        raise ValueError("SQLite identifiers must be non-empty strings")
+    return f'"{identifier.replace(chr(34), chr(34) * 2)}"'
+
+
 def _validate_us_units(conn: sqlite3.Connection, table: str) -> None:
     """Require WeeWX ``usUnits`` values to be the supported unit system."""
+    table_identifier = _quote_sqlite_identifier(table)
     cursor = conn.cursor()
-    cursor.execute(f"PRAGMA table_info({table})")  # nosec B608
+    cursor.execute(f"PRAGMA table_info({table_identifier})")  # nosec B608
     if "usUnits" not in {info[1] for info in cursor.fetchall()}:
         return
 
     cursor.execute(  # nosec B608
-        f"SELECT dateTime, usUnits FROM {table} ORDER BY dateTime"
+        f'SELECT "dateTime", "usUnits" FROM {table_identifier} ORDER BY "dateTime"'
     )
     for date_time, value in cursor:
         if value is None:
@@ -138,13 +146,14 @@ def read_timeseriesdict_sdb(
     conn = sqlite3.connect(source)
 
     try:
+        table_identifier = _quote_sqlite_identifier(table)
         _validate_us_units(conn, table)
 
         # Determine columns to query
         if columns is None:
             # Check available columns in the table using PRAGMA
             cursor = conn.cursor()
-            cursor.execute(f"PRAGMA table_info({table})")
+            cursor.execute(f"PRAGMA table_info({table_identifier})")
             table_cols = [info[1] for info in cursor.fetchall()]
 
             # Filter columns that we know how to convert + dynamic others?
@@ -163,27 +172,52 @@ def read_timeseriesdict_sdb(
         # primary-key order, which PRAGMA reports using one-based PK ordinals.
         cursor = conn.cursor()
         try:
-            cursor.execute(f"SELECT rowid FROM {table} LIMIT 0")  # nosec B608
-        except sqlite3.OperationalError:
-            cursor.execute(f"PRAGMA table_info({table})")  # nosec B608
-            primary_key_columns = sorted(
-                (int(info[5]), str(info[1]))
-                for info in cursor.fetchall()
-                if int(info[5]) > 0
+            cursor.execute(  # nosec B608
+                f"SELECT rowid FROM {table_identifier} LIMIT 0"
             )
-            if not primary_key_columns:
+        except sqlite3.OperationalError:
+            cursor.execute(f"PRAGMA index_list({table_identifier})")  # nosec B608
+            primary_key_indexes = [
+                str(info[1]) for info in cursor.fetchall() if info[3] == "pk"
+            ]
+            if len(primary_key_indexes) != 1:
                 raise ValueError(
                     "SDB source row order cannot be established for a "
-                    "WITHOUT ROWID table without a declared primary key"
+                    "WITHOUT ROWID table without exactly one declared primary key"
                 )
-            order_columns = [name for _, name in primary_key_columns]
+            primary_key_identifier = _quote_sqlite_identifier(primary_key_indexes[0])
+            cursor.execute(  # nosec B608
+                f"PRAGMA index_xinfo({primary_key_identifier})"
+            )
+            primary_key_parts = sorted(
+                (int(info[0]), info) for info in cursor.fetchall() if int(info[5]) == 1
+            )
+            order_columns = []
+            for _, info in primary_key_parts:
+                column_name = info[2]
+                if column_name is None or int(info[1]) < 0:
+                    raise ValueError(
+                        "SDB source row order cannot be established from an "
+                        "expression-based primary key"
+                    )
+                order_part = _quote_sqlite_identifier(str(column_name))
+                collation = info[4]
+                if collation:
+                    order_part += " COLLATE " + _quote_sqlite_identifier(str(collation))
+                order_part += " DESC" if int(info[3]) else " ASC"
+                order_columns.append(order_part)
+            if not order_columns:
+                raise ValueError(
+                    "SDB source row order cannot be established from the "
+                    "declared primary key"
+                )
         else:
             order_columns = ["rowid"]
 
-        col_str = ", ".join(target_cols)
+        col_str = ", ".join(_quote_sqlite_identifier(c) for c in target_cols)
         order_clause = ", ".join(order_columns)
         query = (  # nosec B608
-            f"SELECT {col_str} FROM {table} ORDER BY {order_clause}"
+            f"SELECT {col_str} FROM {table_identifier} ORDER BY {order_clause}"
         )
 
         # Use pandas for easy reading using the connection context

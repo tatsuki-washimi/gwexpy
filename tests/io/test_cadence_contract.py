@@ -407,6 +407,45 @@ def test_sdb_without_rowid_validates_declared_primary_key_order(tmp_path):
         read_timeseriesdict_sdb(db)
 
 
+def test_sdb_without_rowid_preserves_descending_primary_key_order(tmp_path):
+    db = tmp_path / "without-rowid-descending.sdb"
+    with sqlite3.connect(db) as conn:
+        conn.execute(
+            "CREATE TABLE archive ("
+            "seq INTEGER, dateTime INTEGER, outTemp REAL, "
+            "PRIMARY KEY (seq DESC)"
+            ") WITHOUT ROWID"
+        )
+        conn.executemany(
+            "INSERT INTO archive VALUES (?, ?, 70)",
+            [(1, 100), (2, 101), (3, 102)],
+        )
+
+    with pytest.raises(ValueError, match="SDB backward timestamp"):
+        read_timeseriesdict_sdb(db)
+
+
+def test_sdb_without_rowid_supports_quoted_collated_composite_key(tmp_path):
+    db = tmp_path / "without-rowid-composite.sdb"
+    with sqlite3.connect(db) as conn:
+        conn.execute(
+            "CREATE TABLE archive ("
+            '"group key" TEXT COLLATE NOCASE, "seq key" INTEGER, '
+            "dateTime INTEGER, outTemp REAL, "
+            'PRIMARY KEY ("group key" DESC, "seq key" ASC)'
+            ") WITHOUT ROWID"
+        )
+        conn.executemany(
+            "INSERT INTO archive VALUES (?, ?, ?, 70)",
+            [("a", 2, 102), ("B", 1, 100), ("a", 1, 101)],
+        )
+
+    series = next(iter(read_timeseriesdict_sdb(db).values()))
+
+    assert series.dt.value == pytest.approx(1.0)
+    assert len(series) == 3
+
+
 def test_sdb_single_row_preserves_one_second_fallback(tmp_path):
     db = tmp_path / "single.sdb"
     _write_sdb(db, [4_000_000_000])
