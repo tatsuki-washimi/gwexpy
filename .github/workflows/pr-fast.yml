@@ -165,6 +165,32 @@ jobs:
       - name: Run NetCDF I/O release gate
         run: python scripts/ci/run_gate.py io-netcdf
 
+  io-mth5-gate:
+    name: MTH5 I/O gate (${{ matrix.mth5-spec }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        mth5-spec: ["mth5==0.6.8", "mth5"]
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+    env:
+      PYTHONFAULTHANDLER: "1"
+    steps:
+      - name: Checkout repository
+        timeout-minutes: 5
+        uses: actions/checkout@v7
+
+      - name: Set up gwexpy environment
+        uses: ./.github/actions/setup-gwexpy
+        with:
+          extras: "${{ matrix.mth5-spec }}"
+
+      - name: Run MTH5 I/O release gate
+        run: python scripts/ci/run_gate.py io-mth5
+
   interop-root-gate:
     name: ROOT interoperability release gate
     runs-on: ubuntu-latest

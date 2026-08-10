@@ -73,6 +73,12 @@ def _run_interop_mne_gate(
             None,
         ),
         (
+            "io-mth5",
+            "junit/io-mth5.xml",
+            {"tests/io/test_ats_mth5_reader.py"},
+            None,
+        ),
+        (
             "interop-root",
             "junit/interop-root.xml",
             {

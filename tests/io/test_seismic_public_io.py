@@ -141,13 +141,18 @@ def test_ats_public_single_and_dict_entrypoints_use_fixture():
     assert len(tsd) == 1
 
 
-def test_ats_mth5_missing_dependency_raises_clean_importerror():
-    fixture = Path(__file__).resolve().parents[1] / "fixtures" / "data" / "test.ats"
-    if not fixture.exists():
-        pytest.skip("sample ATS file is missing")
+def test_ats_mth5_missing_dependency_raises_clean_importerror(monkeypatch, tmp_path):
+    from gwexpy.timeseries.io import ats as ats_io
+
+    def missing_dependency(name):
+        raise ImportError(name)
+
+    monkeypatch.setattr(ats_io, "ensure_dependency", missing_dependency)
+    source = tmp_path / "input.atss"
+    source.write_bytes(b"")
 
     with pytest.raises(ImportError):
-        TimeSeries.read(fixture, format="ats.mth5")
+        TimeSeries.read(source, format="ats.mth5")
 
 
 def test_ats_mth5_incompatible_dependency_raises_clean_importerror(
@@ -167,5 +172,5 @@ def test_ats_mth5_incompatible_dependency_raises_clean_importerror(
 
     message = str(exc.value)
     assert "ats.mth5" in message
-    assert "mth5.io.metronix.metronix_atss" in message
+    assert "mth5.read_file" in message
     assert "format='ats'" in message
