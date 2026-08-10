@@ -10,19 +10,23 @@ from __future__ import annotations
 import csv
 import datetime as _dt
 import io
+import math
 import warnings
+from decimal import ROUND_FLOOR, Decimal, InvalidOperation
 from functools import partial
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 from astropy import units as u
+from astropy.time import Time
 
 from gwexpy.io.utils import (
     _consume_warning_state,
     _make_warning_state,
     _parse_timezone_for_format,
-    datetime_to_gps,
+    _validate_float_time_axis,
+    _validate_regular_timestamps,
     filter_by_channels,
 )
 
@@ -32,6 +36,9 @@ _CSV_TIMEZONE_WARNING = (
     "timezone is ignored for CSV numeric/index time routes because their "
     "timestamps already define the time semantics"
 )
+_MAX_RESAMPLED_VALUES = 10_000_000
+_RESAMPLE_METHODS = frozenset({"interpolate", "asfreq"})
+_RESAMPLE_BUDGET_SENTINEL = object()
 
 
 def _record_or_warn_timezone_ignored(marker: list[bool] | None) -> None:
@@ -47,6 +54,82 @@ def _validate_and_warn_timezone_ignored(
 ) -> None:
     _parse_timezone_for_format("csv", timezone)
     _record_or_warn_timezone_ignored(marker)
+
+
+def _consume_resample_budget_state(kwargs: dict[str, Any]) -> list[int] | None:
+    """Consume trusted shared budget state for one top-level multi-file read."""
+    state = kwargs.pop("_resample_budget_state", None)
+    if (
+        isinstance(state, tuple)
+        and len(state) == 2
+        and state[0] is _RESAMPLE_BUDGET_SENTINEL
+        and isinstance(state[1], list)
+        and len(state[1]) == 1
+        and isinstance(state[1][0], int)
+        and not isinstance(state[1][0], bool)
+        and state[1][0] >= 0
+    ):
+        return state[1]
+    return None
+
+
+def _parse_decimal_time_column(
+    raw_tokens: list[list[str]],
+    line_numbers: list[int],
+    column_index: int,
+) -> list[Decimal]:
+    """Parse one numeric CSV time column with physical-line diagnostics."""
+    times: list[Decimal] = []
+    for row, line_number in zip(raw_tokens, line_numbers, strict=True):
+        try:
+            value = Decimal(row[column_index])
+        except (InvalidOperation, IndexError) as exc:
+            raise ValueError(
+                f"CSV line {line_number}: timestamp is non-numeric"
+            ) from exc
+        if not value.is_finite():
+            raise ValueError(f"CSV line {line_number}: timestamp is non-finite")
+        times.append(value)
+    return times
+
+
+def _validate_sample_rate(value: Any, *, role: str) -> float | None:
+    """Return a finite, positive CSV sample rate for *role*."""
+    if value is None:
+        return None
+    if isinstance(value, (bool, np.bool_)):
+        raise ValueError(f"CSV {role} sample rate must be finite and positive")
+    try:
+        rate = float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"CSV {role} sample rate must be finite and positive") from exc
+    if not math.isfinite(rate) or rate <= 0:
+        raise ValueError(f"CSV {role} sample rate must be finite and positive")
+    interval = 1.0 / rate
+    if not math.isfinite(interval) or interval <= 0:
+        raise ValueError(
+            f"CSV {role} sample rate must yield a finite positive interval"
+        )
+    return rate
+
+
+def _validate_source_sample_rate(value: Any) -> float | None:
+    """Return a finite, positive declared source sample rate."""
+    return _validate_sample_rate(value, role="source")
+
+
+def _validate_target_sample_rate(value: Any) -> float | None:
+    """Return a finite, positive requested target sample rate."""
+    return _validate_sample_rate(value, role="target")
+
+
+def _validate_resample_method(value: Any) -> str:
+    """Return a supported CSV resampling method."""
+    if not isinstance(value, str) or value not in _RESAMPLE_METHODS:
+        raise ValueError(
+            f"Unknown resample method: {value!r}. Choose 'interpolate' or 'asfreq'."
+        )
+    return value
 
 
 def _parse_comment_metadata(
@@ -78,7 +161,7 @@ def _detect_skip_rows(lines: list[str], delimiter: str, comment_char: str) -> in
         if not stripped or stripped.startswith(comment_char):
             continue
         # Try to parse as numeric
-        parts = stripped.split(delimiter)
+        parts = next(csv.reader(io.StringIO(stripped), delimiter=delimiter))
         numeric_count = 0
         for p in parts:
             try:
@@ -86,7 +169,11 @@ def _detect_skip_rows(lines: list[str], delimiter: str, comment_char: str) -> in
                 numeric_count += 1
             except ValueError:
                 pass
-        if numeric_count > len(parts) / 2:
+        # A row containing any numeric token is potentially data. Treat it as
+        # the first data row so a malformed timestamp alongside numeric sample
+        # values is reported instead of being silently discarded as a header.
+        first_token = parts[0].strip().casefold() if parts else ""
+        if numeric_count or first_token == "nat":
             return i
     return 0
 
@@ -100,17 +187,32 @@ def _detect_delimiter(sample: str) -> str:
         return ","
 
 
+def _is_float_token(value: str) -> bool:
+    """Return whether a CSV token is numeric, including non-finite floats."""
+    try:
+        float(value.strip())
+    except ValueError:
+        return False
+    return True
+
+
 def _reconstruct_timestamps(
     raw_data: np.ndarray,
+    raw_tokens: list[list[str]],
+    line_numbers: list[int],
     time_components: dict[str, int],
     timezone: _dt.tzinfo,
-) -> np.ndarray:
-    """Build GPS timestamps from separate year/month/day/hour/min/sec columns.
+) -> tuple[float, np.ndarray, list[Decimal]]:
+    """Build an origin and exact relative timestamps from time components.
 
     Parameters
     ----------
     raw_data : ndarray, shape (N, ncols)
         Raw CSV data as floats.
+    raw_tokens : list of list of str
+        Original CSV tokens, retained for exact fractional seconds.
+    line_numbers : list of int
+        Physical one-based CSV line numbers corresponding to the rows.
     time_components : dict
         Mapping from component name to column index.
     timezone : tzinfo
@@ -118,73 +220,114 @@ def _reconstruct_timestamps(
 
     Returns
     -------
-    gps_times : ndarray, shape (N,)
-        GPS timestamps.
+    time_origin, relative_times, canonical_times
+        GPS origin, float relative seconds, and continuous GPS canonical
+        instants.
 
     """
     nrows = raw_data.shape[0]
-    gps = np.empty(nrows, dtype=float)
+    component_values: dict[str, list[Decimal]] = {}
+    for component, column_index in time_components.items():
+        values = []
+        for row_index, row in enumerate(raw_tokens):
+            value = Decimal(row[column_index])
+            line_number = line_numbers[row_index]
+            if not value.is_finite():
+                raise ValueError(
+                    f"CSV line {line_number}: timestamp component "
+                    f"'{component}' is non-finite"
+                )
+            if component != "second" and value != value.to_integral_value():
+                raise ValueError(
+                    f"CSV line {line_number}: timestamp component "
+                    f"'{component}' must be an integer, got {row[column_index]!r}"
+                )
+            values.append(value)
+        component_values[component] = values
 
     # Extract component arrays
-    years = raw_data[:, time_components["year"]].astype(int)
-    months = raw_data[:, time_components["month"]].astype(int)
-    days = raw_data[:, time_components["day"]].astype(int)
-    hours = (
-        raw_data[:, time_components["hour"]].astype(int)
-        if "hour" in time_components
-        else np.zeros(nrows, dtype=int)
-    )
-    minutes = (
-        raw_data[:, time_components["minute"]].astype(int)
-        if "minute" in time_components
-        else np.zeros(nrows, dtype=int)
-    )
-
-    if "second" in time_components:
-        sec_raw = raw_data[:, time_components["second"]]
-        secs = sec_raw.astype(int)
-        microsecs = ((sec_raw - secs) * 1e6).astype(int)
-    else:
-        secs = np.zeros(nrows, dtype=int)
-        microsecs = np.zeros(nrows, dtype=int)
+    years = [int(value) for value in component_values["year"]]
+    months = [int(value) for value in component_values["month"]]
+    days = [int(value) for value in component_values["day"]]
+    hours = [int(value) for value in component_values.get("hour", [Decimal(0)] * nrows)]
+    minutes = [
+        int(value) for value in component_values.get("minute", [Decimal(0)] * nrows)
+    ]
+    second_values = component_values.get("second", [Decimal(0)] * nrows)
+    canonical_times: list[Decimal] = []
+    gps_origin = 0.0
 
     for i in range(nrows):
+        line_number = line_numbers[i]
+        second_value = second_values[i]
+        second = int(second_value)
+        fractional_second = second_value - second
         # Validate component ranges before constructing datetime
+        if not (1 <= years[i] <= 9999):
+            raise ValueError(
+                f"CSV line {line_number}: year value {years[i]} "
+                "is out of range [1, 9999]"
+            )
         if not (1 <= months[i] <= 12):
             raise ValueError(
-                f"Row {i}: month value {months[i]} is out of range [1, 12]"
+                f"CSV line {line_number}: month value {months[i]} "
+                "is out of range [1, 12]"
             )
         if not (1 <= days[i] <= 31):
-            raise ValueError(f"Row {i}: day value {days[i]} is out of range [1, 31]")
+            raise ValueError(
+                f"CSV line {line_number}: day value {days[i]} is out of range [1, 31]"
+            )
         if not (0 <= hours[i] <= 23):
-            raise ValueError(f"Row {i}: hour value {hours[i]} is out of range [0, 23]")
+            raise ValueError(
+                f"CSV line {line_number}: hour value {hours[i]} is out of range [0, 23]"
+            )
         if not (0 <= minutes[i] <= 59):
             raise ValueError(
-                f"Row {i}: minute value {minutes[i]} is out of range [0, 59]"
+                f"CSV line {line_number}: minute value {minutes[i]} "
+                "is out of range [0, 59]"
             )
-        if not (0 <= secs[i] <= 59):
-            raise ValueError(f"Row {i}: second value {secs[i]} is out of range [0, 59]")
+        if not (Decimal("0") <= second_value < Decimal("60")):
+            raise ValueError(
+                f"CSV line {line_number}: second value {second_value} "
+                "is out of range [0, 60)"
+            )
         try:
             tz = timezone if timezone is not None else _dt.UTC
-            dt = _dt.datetime(
+            whole_second = _dt.datetime(
                 years[i],
                 months[i],
                 days[i],
                 hours[i],
                 minutes[i],
-                secs[i],
-                microsecs[i],
+                second,
                 tzinfo=tz,
             )
         except ValueError as exc:
             raise ValueError(
-                f"Row {i}: invalid datetime components "
+                f"CSV line {line_number}: invalid datetime components "
                 f"({years[i]}-{months[i]:02d}-{days[i]:02d} "
-                f"{hours[i]:02d}:{minutes[i]:02d}:{secs[i]:02d})"
+                f"{hours[i]:02d}:{minutes[i]:02d}:{second:02d})"
             ) from exc
-        gps[i] = datetime_to_gps(dt)
+        utc_whole_second = whole_second.astimezone(_dt.UTC)
+        # Astropy supplies the leap-second-aware UTC -> continuous GPS mapping.
+        # Its split-JD arithmetic carries picosecond-level decimal noise for a
+        # Python whole-second datetime, so normalize that whole-second result
+        # to a nanosecond before adding the exact source-token fraction.
+        gps_whole_second = (
+            Time(utc_whole_second)
+            .to_value("gps", subfmt="decimal")
+            .quantize(Decimal("0.000000001"))
+        )
+        canonical_time = gps_whole_second + fractional_second
+        canonical_times.append(canonical_time)
+        if i == 0:
+            gps_origin = float(canonical_time)
 
-    return gps
+    relative_times = np.asarray(
+        [float(value - canonical_times[0]) for value in canonical_times],
+        dtype=float,
+    )
+    return gps_origin, relative_times, canonical_times
 
 
 def _resample_uniform(
@@ -192,6 +335,8 @@ def _resample_uniform(
     values: np.ndarray,
     sample_rate: float,
     method: str = "interpolate",
+    *,
+    max_samples: int | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
     """Resample non-uniform data to a uniform grid.
 
@@ -205,6 +350,9 @@ def _resample_uniform(
         Target sample rate in Hz.
     method : str
         ``"interpolate"`` uses scipy interp1d, ``"asfreq"`` uses nearest.
+    max_samples : int, optional
+        Maximum number of output samples to allocate for this value array.
+        Defaults to the per-source resampling safety budget.
 
     Returns
     -------
@@ -212,28 +360,77 @@ def _resample_uniform(
         Uniformly sampled arrays.
 
     """
-    dt = 1.0 / sample_rate
-    t_start = times[0]
-    t_end = times[-1]
-    n_samples = max(1, round((t_end - t_start) / dt) + 1)
-    new_times = np.linspace(t_start, t_end, n_samples)
+    validated_method = _validate_resample_method(method)
+    validated_rate = _validate_target_sample_rate(sample_rate)
+    if validated_rate is None:  # pragma: no cover - required by the signature
+        raise ValueError("CSV target sample rate must be finite and positive")
+    dt = 1.0 / validated_rate
+    source_times = np.asarray(times, dtype=float)
+    source_values = np.asarray(values)
+    if source_times.ndim != 1 or source_values.ndim != 1:
+        raise ValueError("CSV resampling requires one-dimensional time and value data")
+    if not len(source_times) or len(source_values) != len(source_times):
+        raise ValueError("CSV resampling requires non-empty time-aligned values")
+    if not np.all(np.isfinite(source_times)):
+        raise ValueError("CSV resampling requires finite source timestamps")
 
-    if method == "interpolate":
+    sample_limit = _MAX_RESAMPLED_VALUES if max_samples is None else max_samples
+    if isinstance(sample_limit, (bool, np.bool_)) or not isinstance(
+        sample_limit, (int, np.integer)
+    ):
+        raise ValueError("CSV resampling sample limit must be a positive integer")
+    sample_limit = int(sample_limit)
+    if sample_limit <= 0:
+        raise ValueError("CSV resampling sample limit must be a positive integer")
+
+    t_start = float(source_times[0])
+    t_end = float(source_times[-1])
+    span = t_end - t_start
+    if not math.isfinite(span) or span < 0:
+        raise ValueError("CSV resampling requires a finite non-negative time span")
+    interval_ratio = Decimal(str(span)) * Decimal(str(validated_rate))
+    if interval_ratio >= Decimal(sample_limit):
+        raise ValueError(
+            "CSV resampled output exceeds the "
+            f"{sample_limit}-value safety limit for one source read"
+        )
+    interval_count = max(
+        0,
+        int(interval_ratio.to_integral_value(rounding=ROUND_FLOOR)),
+    )
+    sample_count = interval_count + 1
+    if sample_count > sample_limit:
+        raise ValueError(
+            "CSV resampled output exceeds the "
+            f"{sample_limit}-value safety limit for one source read"
+        )
+    new_times = t_start + np.arange(sample_count, dtype=float) * dt
+    interpolation_times = np.clip(new_times, t_start, t_end)
+
+    if validated_method == "interpolate":
         from scipy.interpolate import interp1d
 
         f = interp1d(
-            times, values, kind="linear", bounds_error=False, fill_value=np.nan
+            source_times,
+            source_values,
+            kind="linear",
+            bounds_error=False,
+            fill_value=np.nan,
         )
-        new_values = f(new_times)
-    elif method == "asfreq":
-        # Nearest-neighbor resampling
-        indices = np.searchsorted(times, new_times, side="left")
-        indices = np.clip(indices, 0, len(values) - 1)
-        new_values = values[indices]
+        new_values = f(interpolation_times)
     else:
-        raise ValueError(
-            f"Unknown resample method: {method!r}. Choose 'interpolate' or 'asfreq'."
+        # Nearest-neighbor resampling
+        right = np.clip(
+            np.searchsorted(source_times, interpolation_times, side="left"),
+            0,
+            len(source_values) - 1,
         )
+        left = np.clip(right - 1, 0, len(source_values) - 1)
+        use_left = np.abs(interpolation_times - source_times[left]) <= np.abs(
+            source_times[right] - interpolation_times
+        )
+        indices = np.where(use_left, left, right)
+        new_values = source_values[indices]
 
     return new_times, new_values
 
@@ -269,8 +466,10 @@ def read_timeseriesdict_csv(
         Timezone override (e.g. ``"Asia/Tokyo"``).  Overrides the config
         timezone if both are given.
     resample : float, optional
-        Target sample rate in Hz for resampling non-uniform data.
-        Overrides config.sample_rate if both are given.
+        Target sample rate in Hz. The reader validates the regular source grid
+        before applying this target; resampling never repairs missing records.
+        ``config.sample_rate`` declares the source cadence; ``resample`` is a
+        separate target cadence applied only after source-grid validation.
     resample_method : str
         Resampling method: ``"interpolate"`` or ``"asfreq"``.
     **kwargs
@@ -290,14 +489,24 @@ def read_timeseriesdict_csv(
         "_timezone_warning_state",
         "_timezone_warning_marker",
     )
+    resample_budget_state = _consume_resample_budget_state(kwargs)
 
     multi = expand_multi_source(source)
     if multi is not None:
         top_level_marker = [False]
+        top_level_budget = (
+            resample_budget_state
+            if resample_budget_state is not None
+            else [_MAX_RESAMPLED_VALUES]
+        )
         merged = read_multi_dict(
             partial(
                 read_timeseriesdict_csv,
                 _timezone_warning_state=_make_warning_state(top_level_marker),
+                _resample_budget_state=(
+                    _RESAMPLE_BUDGET_SENTINEL,
+                    top_level_budget,
+                ),
             ),
             multi,
             "csv",
@@ -330,8 +539,11 @@ def read_timeseriesdict_csv(
 
     # Override timezone/resample from function args
     tz_str = timezone if timezone is not None else cfg.timezone
-    target_rate = resample or cfg.sample_rate
+    source_rate = _validate_source_sample_rate(cfg.sample_rate)
+    target_rate = _validate_target_sample_rate(resample)
     resample_meth = resample_method or cfg.resample_method or "interpolate"
+    if target_rate is not None:
+        resample_meth = _validate_resample_method(resample_meth)
     if tz_str is not None:
         # Validate before any source-dependent early return. Route-specific
         # warning/localization still happens only after the route is known.
@@ -367,24 +579,57 @@ def read_timeseriesdict_csv(
         skip = _detect_skip_rows(lines, delimiter, cfg.comment_char)
 
     # Parse data lines
-    data_lines = []
-    for line in lines[skip:]:
+    data_lines: list[tuple[int, str]] = []
+    for line_number, line in enumerate(lines[skip:], start=skip + 1):
         stripped = line.strip()
         if not stripped or stripped.startswith(cfg.comment_char):
             continue
-        data_lines.append(stripped)
+        data_lines.append((line_number, stripped))
 
     if not data_lines:
         return TimeSeriesDict()
 
+    # With no numeric row, auto-detection cannot distinguish a sole textual
+    # header from data.  Preserve the established header-only empty result;
+    # any non-numeric row after a detected header still fails below.
+    if not cfg.columns and len(data_lines) == 1:
+        only_line = data_lines[0][1]
+        only_row = next(csv.reader(io.StringIO(only_line), delimiter=delimiter))
+        if all(not _is_float_token(value) for value in only_row):
+            return TimeSeriesDict()
+
     # Parse into float array
-    reader = csv.reader(io.StringIO("\n".join(data_lines)), delimiter=delimiter)
-    rows = []
-    for row in reader:
+    rows: list[list[float]] = []
+    raw_tokens: list[list[str]] = []
+    row_line_numbers: list[int] = []
+    expected_width: int | None = None
+    required_width = max(
+        (column.column_index + 1 for column in cfg.columns if column.role != "skip"),
+        default=0,
+    )
+    for line_number, line in data_lines:
+        row = next(csv.reader(io.StringIO(line), delimiter=delimiter))
+        tokens = [value.strip() for value in row]
+        width = len(tokens)
+        if expected_width is None:
+            expected_width = width
+        elif width != expected_width:
+            raise ValueError(
+                f"CSV line {line_number} has {width} columns; expected {expected_width}"
+            )
+        if width < required_width:
+            raise ValueError(
+                f"CSV line {line_number} has {width} columns; configured "
+                f"columns require at least {required_width}"
+            )
         try:
-            rows.append([float(v.strip()) for v in row if v.strip()])
-        except ValueError:
-            continue  # skip non-numeric rows
+            rows.append([float(v) for v in tokens])
+            raw_tokens.append(tokens)
+            row_line_numbers.append(line_number)
+        except ValueError as exc:
+            raise ValueError(
+                f"CSV line {line_number} contains non-numeric data"
+            ) from exc
 
     if not rows:
         return TimeSeriesDict()
@@ -392,6 +637,8 @@ def read_timeseriesdict_csv(
     raw = np.array(rows)
 
     # --- Column mapping ---
+    exact_time_origin = Decimal("0")
+    has_serialized_time_axis = False
     if cfg.columns:
         # Use explicit config
         time_columns: dict[str, int] = {}
@@ -417,14 +664,41 @@ def read_timeseriesdict_csv(
                     "timezone is required when using time_component columns"
                 )
             tz = _parse_timezone_for_format("csv", tz_str)
-            gps_times = _reconstruct_timestamps(raw, time_columns, tz)
+            _gps_origin, gps_times, exact_times = _reconstruct_timestamps(
+                raw, raw_tokens, row_line_numbers, time_columns, tz
+            )
+            exact_time_origin = exact_times[0]
+            has_serialized_time_axis = True
+            source_dt = _validate_regular_timestamps(
+                exact_times,
+                source="CSV",
+                expected_dt=(Decimal("1") / Decimal(str(source_rate)))
+                if source_rate is not None
+                else None,
+            )
         elif time_col_index is not None:
             if tz_str is not None:
                 _validate_and_warn_timezone_ignored(
                     tz_str,
                     timezone_warning_marker,
                 )
-            gps_times = raw[:, time_col_index]
+            exact_times = _parse_decimal_time_column(
+                raw_tokens,
+                row_line_numbers,
+                time_col_index,
+            )
+            source_dt = _validate_regular_timestamps(
+                exact_times,
+                source="CSV",
+                expected_dt=(Decimal("1") / Decimal(str(source_rate)))
+                if source_rate is not None
+                else None,
+            )
+            exact_time_origin = exact_times[0]
+            has_serialized_time_axis = True
+            gps_times = np.asarray(
+                [float(value - exact_times[0]) for value in exact_times], dtype=float
+            )
         else:
             # No time info — use sample indices
             if tz_str is not None:
@@ -432,8 +706,9 @@ def read_timeseriesdict_csv(
                     tz_str,
                     timezone_warning_marker,
                 )
-            if target_rate:
-                gps_times = np.arange(raw.shape[0]) / target_rate
+            if source_rate:
+                source_dt = 1.0 / source_rate
+                gps_times = np.arange(raw.shape[0]) / source_rate
             else:
                 gps_times = np.arange(raw.shape[0], dtype=float)
     else:
@@ -443,7 +718,19 @@ def read_timeseriesdict_csv(
                 tz_str,
                 timezone_warning_marker,
             )
-        gps_times = raw[:, 0]
+        exact_times = _parse_decimal_time_column(raw_tokens, row_line_numbers, 0)
+        source_dt = _validate_regular_timestamps(
+            exact_times,
+            source="CSV",
+            expected_dt=(Decimal("1") / Decimal(str(source_rate)))
+            if source_rate is not None
+            else None,
+        )
+        exact_time_origin = exact_times[0]
+        has_serialized_time_axis = True
+        gps_times = np.asarray(
+            [float(value - exact_times[0]) for value in exact_times], dtype=float
+        )
         if raw.shape[1] == 2:
             data_columns = [
                 (metadata.get("name", "ch1"), 1, metadata.get("unit"), 1.0),
@@ -451,32 +738,72 @@ def read_timeseriesdict_csv(
         else:
             data_columns = [(f"ch{i}", i, None, 1.0) for i in range(1, raw.shape[1])]
 
+    if has_serialized_time_axis:
+        _validate_float_time_axis(
+            Decimal("0"),
+            source_dt,
+            sample_count=len(gps_times),
+            source="CSV source-relative",
+        )
+        if not np.all(np.isfinite(gps_times)) or (
+            len(gps_times) > 1 and not np.all(gps_times[1:] > gps_times[:-1])
+        ):
+            raise ValueError(
+                "CSV source-relative absolute time axis is not representable"
+            )
+
+    if channels is not None:
+        wanted_channels = set(channels)
+        data_columns = [
+            column for column in data_columns if column[0] in wanted_channels
+        ]
+
     # --- Build TimeSeriesDict ---
     result: dict[str, Any] = {}
     from .. import TimeSeries
+
+    if target_rate is not None and data_columns:
+        channel_count = len(data_columns)
+        available_budget = (
+            resample_budget_state[0]
+            if resample_budget_state is not None
+            else _MAX_RESAMPLED_VALUES
+        )
+        if channel_count > available_budget:
+            raise ValueError(
+                "CSV resampled output exceeds the "
+                f"{available_budget}-value safety limit for one source read"
+            )
+        max_samples_per_channel = available_budget // channel_count
+    else:
+        max_samples_per_channel = _MAX_RESAMPLED_VALUES
 
     for name, col_idx, unit_str, scale in data_columns:
         values = raw[:, col_idx] * scale
 
         # Resample if requested
-        if target_rate and resample_meth:
-            # Check if data is already uniform
-            dt_diff = np.diff(gps_times)
-            expected_dt = 1.0 / target_rate
-            is_uniform = np.allclose(dt_diff, expected_dt, rtol=0.05, atol=1e-6)
-
-            if not is_uniform and len(gps_times) > 1:
-                ts_times, values = _resample_uniform(
-                    gps_times, values, target_rate, resample_meth
-                )
-            else:
-                ts_times = gps_times
+        if target_rate is not None and len(gps_times) > 1:
+            ts_times, values = _resample_uniform(
+                gps_times,
+                values,
+                target_rate,
+                resample_meth,
+                max_samples=max_samples_per_channel,
+            )
         else:
             ts_times = gps_times
 
         # Infer sample rate
-        if target_rate:
+        if target_rate is not None:
             dt_val = 1.0 / target_rate
+        elif "source_dt" in locals():
+            dt_val = source_dt
+            if source_rate is None and len(ts_times) > 1:
+                # The validated cadence is the exact Decimal median, while
+                # TimeSeries needs a float interval.  For an inferred numeric
+                # CSV grid, use the endpoint average to avoid accumulating
+                # serialized-float roundoff into crop's sample index.
+                dt_val = float((ts_times[-1] - ts_times[0]) / (len(ts_times) - 1))
         elif len(ts_times) > 1:
             # The median of the diffs is robust to a gappy or irregular time
             # column, but on a uniform decimal grid every diff carries the
@@ -495,14 +822,27 @@ def read_timeseriesdict_csv(
         else:
             dt_val = 1.0
 
+        exact_series_t0 = exact_time_origin + Decimal(str(float(ts_times[0])))
+        series_t0, series_dt = _validate_float_time_axis(
+            exact_series_t0,
+            dt_val,
+            sample_count=len(values),
+            source="CSV",
+        )
         ts = TimeSeries(
             values,
-            t0=float(ts_times[0]),
-            dt=dt_val,
+            t0=series_t0,
+            dt=series_dt,
             unit=u.Unit(unit_str) if unit_str else u.dimensionless_unscaled,
             name=name,
         )
         result[name] = ts
+
+    if target_rate is not None and resample_budget_state is not None:
+        produced_values = sum(len(series) for series in result.values())
+        if produced_values > resample_budget_state[0]:  # pragma: no cover
+            raise AssertionError("CSV resample budget was exceeded after validation")
+        resample_budget_state[0] -= produced_values
 
     tsd = TimeSeriesDict(filter_by_channels(result, channels))
     return apply_time_selection(tsd, start, end)

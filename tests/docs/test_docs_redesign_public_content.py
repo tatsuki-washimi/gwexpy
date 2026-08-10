@@ -6,6 +6,19 @@ from babel.messages import pofile
 
 ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / "docs_redesign"
+CSV_TIME_SCALE_LIMITATION = (
+    "Numeric CSV timestamps retain the legacy GPS-second interpretation. "
+    "v0.1.14 does not add `time_scale=` or `time_unit=`; convert other scales "
+    "before reading."
+)
+CSV_CADENCE_CONTRACT = (
+    "CSV validates numeric and configured component-column cadence before "
+    "resampling, using continuous GPS instants for UTC components. It rejects "
+    "malformed or irregular input and any absolute float64 axis whose rounding "
+    "error or spacing is not strictly below half the cadence. `resample=` applies "
+    "only to requested channels; the 10,000,000-value cap covers all resampled "
+    "values across a top-level single- or multi-file read before allocation."
+)
 
 
 def _read(relative_path: str) -> str:
@@ -126,3 +139,40 @@ def test_corrected_public_pages_have_complete_japanese_catalogs() -> None:
             if message.id and (not message.string or "fuzzy" in message.flags)
         ]
         assert not problems, relative_path
+
+
+def test_numeric_csv_time_scale_limitation_has_japanese_translation() -> None:
+    page = _read("how-to/io_formats.md")
+    catalog_path = DOCS / "locales/ja/LC_MESSAGES/how-to/io_formats.po"
+
+    assert CSV_TIME_SCALE_LIMITATION in " ".join(page.split())
+    with catalog_path.open(encoding="utf-8") as stream:
+        catalog = pofile.read_po(stream, locale="ja")
+    translated = catalog.get(CSV_TIME_SCALE_LIMITATION)
+    assert translated is not None
+    assert translated.string == (
+        "CSV の数値時刻は従来どおり GPS 秒として解釈します。v0.1.14 では "
+        "`time_scale=` と `time_unit=` を追加しないため、他の time scale は"
+        "読み込み前に変換してください。"
+    )
+    assert "fuzzy" not in translated.flags
+
+
+def test_csv_cadence_contract_has_japanese_translation() -> None:
+    page = _read("how-to/io_formats.md")
+    catalog_path = DOCS / "locales/ja/LC_MESSAGES/how-to/io_formats.po"
+
+    assert CSV_CADENCE_CONTRACT in " ".join(page.split())
+    with catalog_path.open(encoding="utf-8") as stream:
+        catalog = pofile.read_po(stream, locale="ja")
+    translated = catalog.get(CSV_CADENCE_CONTRACT)
+    assert translated is not None
+    assert translated.string == (
+        "CSV は数値時刻と設定済み component 列の cadence を resampling 前に検証し、"
+        "UTC component には連続 GPS instant を使います。不正または不規則な入力と、"
+        "丸め誤差または spacing が cadence の半分未満ではない絶対 float64 軸を拒否します。"
+        "`resample=` は要求された channel だけに適用され、10,000,000個の上限は "
+        "top-level の単一または multi-file read 全体で allocation 前に全 resampled value "
+        "を数えます。"
+    )
+    assert "fuzzy" not in translated.flags

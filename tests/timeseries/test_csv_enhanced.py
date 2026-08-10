@@ -299,8 +299,8 @@ class TestReadCSVWithConfig:
         tsd = read_timeseriesdict_csv(p, config=cfg_path)
         assert "voltage" in tsd
 
-    def test_resample_uniform(self, tmp_path):
-        # Non-uniform times: 0, 0.1, 0.3
+    def test_reject_resample_irregular_source(self, tmp_path):
+        # A missing source timestamp must not be repaired by interpolation.
         p = write_csv(tmp_path, "0.0,1.0\n0.1,2.0\n0.3,3.0\n")
         cfg = CSVFormatConfig(
             columns=[
@@ -310,9 +310,8 @@ class TestReadCSVWithConfig:
             sample_rate=10.0,
             resample_method="interpolate",
         )
-        tsd = read_timeseriesdict_csv(p, config=cfg)
-        # dt should be ~0.1
-        assert abs(tsd["val"].dt.value - 0.1) < 0.01
+        with pytest.raises(ValueError, match="CSV timestamp"):
+            read_timeseriesdict_csv(p, config=cfg)
 
 
 class TestReadCSVTimestampReconstruction:

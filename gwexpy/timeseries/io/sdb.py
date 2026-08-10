@@ -12,7 +12,10 @@ import pandas as pd
 from astropy.time import Time
 
 from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
-from gwexpy.io.utils import _reject_timezone_reinterpretation
+from gwexpy.io.utils import (
+    _reject_timezone_reinterpretation,
+    _validate_regular_timestamps,
+)
 
 from .. import TimeSeries, TimeSeriesDict
 from ._multi import expand_multi_source, read_multi_dict
@@ -43,15 +46,23 @@ UNIT_CONVERSION = {
 }
 
 
+def _quote_sqlite_identifier(identifier: str) -> str:
+    """Return *identifier* as a safely quoted SQLite identifier."""
+    if not isinstance(identifier, str) or not identifier:
+        raise ValueError("SQLite identifiers must be non-empty strings")
+    return f'"{identifier.replace(chr(34), chr(34) * 2)}"'
+
+
 def _validate_us_units(conn: sqlite3.Connection, table: str) -> None:
     """Require WeeWX ``usUnits`` values to be the supported unit system."""
+    table_identifier = _quote_sqlite_identifier(table)
     cursor = conn.cursor()
-    cursor.execute(f"PRAGMA table_info({table})")  # nosec B608
+    cursor.execute(f"PRAGMA table_info({table_identifier})")  # nosec B608
     if "usUnits" not in {info[1] for info in cursor.fetchall()}:
         return
 
     cursor.execute(  # nosec B608
-        f"SELECT dateTime, usUnits FROM {table} ORDER BY dateTime"
+        f'SELECT "dateTime", "usUnits" FROM {table_identifier} ORDER BY "dateTime"'
     )
     for date_time, value in cursor:
         if value is None:
@@ -135,13 +146,14 @@ def read_timeseriesdict_sdb(
     conn = sqlite3.connect(source)
 
     try:
+        table_identifier = _quote_sqlite_identifier(table)
         _validate_us_units(conn, table)
 
         # Determine columns to query
         if columns is None:
             # Check available columns in the table using PRAGMA
             cursor = conn.cursor()
-            cursor.execute(f"PRAGMA table_info({table})")
+            cursor.execute(f"PRAGMA table_info({table_identifier})")
             table_cols = [info[1] for info in cursor.fetchall()]
 
             # Filter columns that we know how to convert + dynamic others?
@@ -154,8 +166,85 @@ def read_timeseriesdict_sdb(
             if "dateTime" not in target_cols:
                 target_cols.append("dateTime")
 
-        col_str = ", ".join(target_cols)
-        query = f"SELECT {col_str} FROM {table} ORDER BY dateTime"  # nosec B608
+        # A rowid table is traversed in SQLite rowid/B-tree order.  This is a
+        # deterministic storage order, not insertion chronology when an
+        # INTEGER PRIMARY KEY aliases rowid.  Validate that order so a record
+        # cannot be silently repaired by a timestamp sort. Determine WITHOUT
+        # ROWID from schema metadata rather than probing ``rowid``, which a
+        # declared column can shadow.
+        cursor = conn.cursor()
+        cursor.execute(f"PRAGMA table_list({table_identifier})")  # nosec B608
+        table_records = [
+            info
+            for info in cursor.fetchall()
+            if len(info) >= 5
+            and str(info[1]).casefold() == table.casefold()
+            and info[2] == "table"
+        ]
+        if len(table_records) != 1:
+            raise ValueError(
+                "SDB source row order cannot be established from table metadata"
+            )
+
+        if bool(table_records[0][4]):
+            cursor.execute(f"PRAGMA index_list({table_identifier})")  # nosec B608
+            primary_key_indexes = [
+                str(info[1]) for info in cursor.fetchall() if info[3] == "pk"
+            ]
+            if len(primary_key_indexes) != 1:
+                raise ValueError(
+                    "SDB source row order cannot be established for a "
+                    "WITHOUT ROWID table without exactly one declared primary key"
+                )
+            primary_key_identifier = _quote_sqlite_identifier(primary_key_indexes[0])
+            cursor.execute(  # nosec B608
+                f"PRAGMA index_xinfo({primary_key_identifier})"
+            )
+            primary_key_parts = sorted(
+                (int(info[0]), info) for info in cursor.fetchall() if int(info[5]) == 1
+            )
+            order_columns = []
+            for _, info in primary_key_parts:
+                column_name = info[2]
+                if column_name is None or int(info[1]) < 0:
+                    raise ValueError(
+                        "SDB source row order cannot be established from an "
+                        "expression-based primary key"
+                    )
+                order_part = _quote_sqlite_identifier(str(column_name))
+                collation = info[4]
+                if collation:
+                    order_part += " COLLATE " + _quote_sqlite_identifier(str(collation))
+                order_part += " DESC" if int(info[3]) else " ASC"
+                order_columns.append(order_part)
+            if not order_columns:
+                raise ValueError(
+                    "SDB source row order cannot be established from the "
+                    "declared primary key"
+                )
+        else:
+            cursor.execute(f"PRAGMA table_info({table_identifier})")  # nosec B608
+            declared_columns = {str(info[1]).casefold() for info in cursor.fetchall()}
+            hidden_rowid = next(
+                (
+                    alias
+                    for alias in ("rowid", "_rowid_", "oid")
+                    if alias.casefold() not in declared_columns
+                ),
+                None,
+            )
+            if hidden_rowid is None:
+                raise ValueError(
+                    "SDB source row order cannot be established because all "
+                    "SQLite rowid aliases are shadowed"
+                )
+            order_columns = [_quote_sqlite_identifier(hidden_rowid)]
+
+        col_str = ", ".join(_quote_sqlite_identifier(c) for c in target_cols)
+        order_clause = ", ".join(order_columns)
+        query = (  # nosec B608
+            f"SELECT {col_str} FROM {table_identifier} ORDER BY {order_clause}"
+        )
 
         # Use pandas for easy reading using the connection context
         df = pd.read_sql_query(query, conn)
@@ -189,6 +278,18 @@ def read_timeseriesdict_sdb(
             "Table must contain 'dateTime' column for time series conversion."
         )
 
+    # Verify the native integer Unix-second grid before any conversion to
+    # float.  A source gap cannot safely be repaired by inferring a rate.
+    raw_time_values = df["dateTime"].to_list()
+    for index, value in enumerate(raw_time_values):
+        if isinstance(value, (bool, np.bool_)) or not isinstance(
+            value, (int, np.integer)
+        ):
+            raise ValueError(
+                f"SDB dateTime at index {index} must contain integer Unix seconds"
+            )
+    source_dt = _validate_regular_timestamps(raw_time_values, source="SDB")
+
     # Convert dateTime to GPS time (it's usually UNIX timestamp)
     # TimeSeries expects t0 in GPS. Unix to GPS is roughly +18s (leap seconds).
     # gwpy.time.to_gps handles datetime objects.
@@ -196,17 +297,7 @@ def read_timeseriesdict_sdb(
     time_values = np.asarray(df["dateTime"].to_numpy(), dtype=np.float64)
     t_start_unix = time_values[0]
 
-    # Calculate sampling rate/dt
-    # Assume regular?
-    if len(df) > 1:
-        # Check median delta
-        dt_vals = np.diff(time_values)
-        dt_median = float(np.median(dt_vals))
-        if dt_median == 0:
-            dt_median = 1.0  # fallback
-        sample_rate = 1.0 / dt_median
-    else:
-        sample_rate = 1.0  # default
+    sample_rate = 1.0 / source_dt
 
     # Convert to TimeSeriesDict
     tsd = TimeSeriesDict()

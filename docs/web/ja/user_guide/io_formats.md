@@ -244,6 +244,17 @@ events = EventTable.read("events.root")
   localize します。数値時刻と生成 sample-index 経路では `timezone` を無視し、
   トップレベル read ごとに1回警告します。数値時刻は absolute、生成 index は
   relative のままです。
+- CSV は数値時刻と設定済み component 列の source cadence を、要求された resampling より前に検証します。
+- 重複、逆行、欠落、または過大な gap は `ValueError` となり、不正な source row には物理 CSV 行番号が含まれます。
+- 有限かつ正の `sample_rate` は source cadence を宣言し、単一行でも使われます。
+- `sample_rate` が無い単一行では従来の1秒 fallback を維持します。
+- `resample=` も有限かつ正でなければならず、target cadence だけを宣言します。
+- resampling後の値は厳密なtarget grid上で評価し、source sampleへ異なる `dt` を付け替えません。
+- UTC component の cadence は連続 GPS instant で検証し、leap-second gap を fail-closed にします。
+- 絶対 float64 軸は、丸め誤差と spacing がそれぞれ cadence の半分未満の場合だけ受理します。
+- 10,000,000個の上限は、top-level の単一または multi-file read 全体で、要求された channel の resampling 出力を allocation 前に合計します。
+- CSV の数値時刻は従来どおり GPS 秒として解釈します。
+- v0.1.14 では `time_scale=` と `time_unit=` を追加しないため、他の time scale は読み込み前に変換してください。
 - **TXT** の direct I/O はより限定的で、単一 series は `format="txt"` 明示、複数チャネルは collection directory 前提です。
 - **Pickle** の可搬性メモは各クラスの reference に残していますが、このページでは Pickle を public direct `.read()` / `.write()` 形式としては扱いません。
 - **NetCDF4 / Zarr** はこのページでは **TimeSeries 系の direct I/O** としてだけ扱います。Field と xarray の橋渡しは interop 側を見てください。NetCDF の `netcdf4` は `nc` の旧 format token alias であり、`.netcdf4` は公開された自動判定 extension alias ではありません。
@@ -280,7 +291,9 @@ audio = TimeSeriesDict.read("sound.flac", format="flac")
 - **GBD** は `timezone` を省略できません。
 - **TDMS** は optional dependency の `nptdms` が必要です。
 - **MP3 / FLAC / OGG / M4A** は optional dependency の `pydub` が必要で、MP3/M4A は `ffmpeg` も必要になることが多いです。
-- **SDB** は `format="sdb"` と `.sdb` の自動判定だけを受け付けます。`usUnits` 列がある場合は全行が整数 `1` でなければならず、列が無い archive は従来どおり US customary 単位を仮定します。
+- **SDB** は `format="sdb"` と `.sdb` の自動判定だけを受け付けます。
+- `usUnits` 列がある場合は全行が整数 `1` でなければならず、列が無い archive は従来どおり US customary 単位を仮定します。
+- 整数 Unix 秒の `dateTime` は database storage order で regular cadence でなければならず、重複、逆行、欠落、または過大な gap は `ValueError` になります。
 - **WAV / 圧縮音声形式** は絶対時刻を持たないため、読み込み時は便宜上 `t0=0.0` として扱います。「絶対時刻がある」という意味ではありません。
 
 <a id="io-formats-ja-dev"></a>

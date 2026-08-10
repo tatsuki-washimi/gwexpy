@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_PATH = ROOT / "docs/developers/contracts/public_io_contract.json"
 EN_GUIDE = ROOT / "docs/web/en/user_guide/io_formats.md"
 JA_GUIDE = ROOT / "docs/web/ja/user_guide/io_formats.md"
+REDESIGN_EN_GUIDE = ROOT / "docs_redesign/how-to/io_formats.md"
 EN_INSTALL = ROOT / "docs/web/en/user_guide/installation.md"
 JA_INSTALL = ROOT / "docs/web/ja/user_guide/installation.md"
 CONTRACT_MD = ROOT / "docs/developers/contracts/public_io_contract.md"
@@ -70,6 +71,66 @@ def test_docs_describe_the_sdb_unit_and_alias_contract():
     assert "`.sqlite3`" not in ja
     assert "`usUnits`" in en
     assert "`usUnits`" in ja
+
+
+def test_docs_describe_fail_closed_csv_sdb_cadence():
+    contract = _load_contract()
+    contract_md = _read(CONTRACT_MD)
+    en = _read(EN_GUIDE)
+    ja = _read(JA_GUIDE)
+    redesign_en = _read(REDESIGN_EN_GUIDE)
+    normalized_contract_md = " ".join(contract_md.split())
+
+    assert any("physical line numbers" in note for note in contract["csv"]["notes"])
+    assert any(
+        "exact target-cadence grid for requested channels" in note
+        for note in contract["csv"]["notes"]
+    )
+    assert any(
+        "10000000 requested-channel output values" in note
+        for note in contract["csv"]["notes"]
+    )
+    assert any(
+        "database storage order" in requirement
+        for requirement in contract["sdb"]["metadata_requirements"]
+    )
+    assert "before any requested resampling" in normalized_contract_md
+    assert "continuous GPS" in normalized_contract_md
+    assert "strictly below half the cadence" in normalized_contract_md
+    assert "top-level single- or multi-file read" in normalized_contract_md
+    assert "rowid/B-tree order" in normalized_contract_md
+    assert "insertion order" not in normalized_contract_md
+    assert "malformed source rows include their physical line" in en
+    assert "exact grid instead of" in en
+    assert "10,000,000-value cap" in en
+    assert "不正な source row には物理 CSV 行番号" in ja
+    assert "厳密なtarget grid上" in ja
+    assert "10,000,000個の上限" in ja
+    assert "database storage order" in en
+    assert "database storage order" in ja
+    for source in (" ".join(en.split()), " ".join(redesign_en.split())):
+        assert "continuous GPS" in source
+        assert "strictly below half the cadence" in source
+        assert "top-level single- or multi-file read" in source
+
+
+def test_docs_describe_numeric_csv_time_scale_limitation() -> None:
+    contract = _load_contract()
+    contract_md = _read(CONTRACT_MD)
+    en = _read(EN_GUIDE)
+    ja = _read(JA_GUIDE)
+    redesign_en = _read(REDESIGN_EN_GUIDE)
+    notes = " ".join(contract["csv"]["notes"])
+
+    for source in (notes, contract_md, en, redesign_en):
+        assert "legacy GPS-second" in source
+        assert "time_scale" in source
+        assert "time_unit" in source
+        assert "v0.1.14" in source
+    assert "従来どおり GPS 秒" in ja
+    assert "time_scale" in ja
+    assert "time_unit" in ja
+    assert "v0.1.14" in ja
 
 
 def test_docs_seismic_table_matches_current_public_boundary():

@@ -245,6 +245,22 @@ events = EventTable.read("events.root")
   `timezone`. The numeric and generated sample-index routes ignore `timezone`
   with one warning per top-level read; numeric timestamps are absolute while
   generated indices remain relative.
+- CSV validates numeric and configured component-column source cadence before
+  any requested resampling. Duplicate, backward, missing, or overlarge gaps
+  raise `ValueError`, and malformed source rows include their physical line
+  number. A finite positive `sample_rate` declares source cadence and is used
+  for single-row input; without it, the legacy one-second fallback remains.
+  `resample=` must also be finite and positive and declares only the target
+  cadence. Resampled values are evaluated on that exact grid instead of
+  relabelling source samples with a different `dt`. UTC component cadence uses
+  continuous GPS instants so leap-second gaps fail closed. Absolute float64
+  axes are accepted only when rounding error and spacing are each strictly
+  below half the cadence. The 10,000,000-value cap counts requested-channel
+  resampled output across the complete top-level single- or multi-file read
+  before allocation.
+- Numeric CSV timestamps retain the legacy GPS-second interpretation. v0.1.14
+  does not add `time_scale=` or `time_unit=`; convert other scales before
+  reading.
 - **TXT** direct I/O is more limited: single-series paths are explicit `format="txt"`, and multi-channel paths use collection directories.
 - **Pickle** portability notes still exist in class references, but Pickle is not a published direct `.read()` / `.write()` format on this page.
 - **NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**. Field/xarray bridges belong to interop. For NetCDF, `netcdf4` is a legacy format token alias for `nc`; `.netcdf4` is not a documented auto-identified extension alias.
@@ -281,7 +297,7 @@ audio = TimeSeriesDict.read("sound.flac", format="flac")
 - **GBD** requires `timezone`.
 - **TDMS** requires the optional `nptdms` dependency.
 - **MP3 / FLAC / OGG / M4A** require the optional `pydub` dependency. MP3/M4A commonly also need `ffmpeg`.
-- **SDB** accepts only `format="sdb"` and `.sdb` auto-identification. If its `usUnits` column exists, every row must be integer `1`; archives without that column retain the legacy US customary unit assumption.
+- **SDB** accepts only `format="sdb"` and `.sdb` auto-identification. If its `usUnits` column exists, every row must be integer `1`; archives without that column retain the legacy US customary unit assumption. Its integer Unix-second `dateTime` values must have regular cadence in database storage order; duplicate, backward, missing, or overlarge gaps raise `ValueError`.
 - **WAV / compressed-audio formats** do not preserve absolute timestamps. Reading with `t0=0.0` is a convenience convention, not a claim that the source had an absolute epoch.
 
 <a id="io-formats-en-dev"></a>

@@ -7,6 +7,7 @@ import math
 import re
 import warnings
 from collections.abc import Iterable
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any, cast
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -19,6 +20,223 @@ _NUMERIC_TYPES = (int, float, np.integer, np.floating)
 _UTC_OFFSET_RE = re.compile(r"^([+-])(\d{2})(?::?(\d{2}))?$")
 _TIMEZONE_ROUTING_SENTINEL = object()
 _WARNING_STATE_SENTINEL = object()
+
+
+def _validate_regular_timestamps(
+    times: Iterable[Any],
+    *,
+    source: str,
+    expected_dt: Any | None = None,
+) -> float:
+    """Validate a regular, strictly increasing source timestamp grid.
+
+    ``Decimal`` and integer inputs stay exact until the cadence has been
+    established.  This deliberately runs before readers construct floating
+    relative times: a missing record must not be disguised by interpolation or
+    by cancellation at a large absolute epoch.
+    """
+    values: list[Decimal] = []
+    exact_integer_grid = True
+    for index, value in enumerate(times):
+        if isinstance(value, bool) or isinstance(value, np.bool_):
+            raise ValueError(f"{source} timestamp at index {index} is not numeric")
+        exact_integer_grid = exact_integer_grid and isinstance(value, (int, np.integer))
+        try:
+            decimal_value = value if isinstance(value, Decimal) else Decimal(str(value))
+        except (InvalidOperation, ValueError, TypeError) as exc:
+            raise ValueError(
+                f"{source} timestamp at index {index} is not numeric"
+            ) from exc
+        if not decimal_value.is_finite():
+            raise ValueError(f"{source} timestamp at index {index} is non-finite")
+        values.append(decimal_value)
+
+    try:
+        declared_cadence = (
+            Decimal(str(expected_dt)) if expected_dt is not None else None
+        )
+    except (InvalidOperation, ValueError, TypeError) as exc:
+        raise ValueError(f"{source} cadence must be finite and positive") from exc
+    if declared_cadence is not None and (
+        not declared_cadence.is_finite() or declared_cadence <= 0
+    ):
+        raise ValueError(f"{source} cadence must be finite and positive")
+    if len(values) < 2:
+        return float(declared_cadence) if declared_cadence is not None else 1.0
+
+    deltas = [right - left for left, right in zip(values, values[1:], strict=False)]
+    for index, delta in enumerate(deltas):
+        if delta == 0:
+            raise ValueError(f"{source} duplicate timestamp at index {index + 1}")
+        if delta < 0:
+            raise ValueError(f"{source} backward timestamp at index {index + 1}")
+
+    cadence = (
+        declared_cadence
+        if declared_cadence is not None
+        else sorted(deltas)[len(deltas) // 2]
+    )
+    if not cadence.is_finite() or cadence <= 0:
+        raise ValueError(f"{source} cadence must be finite and positive")
+    # Exact Decimal agreement needs no representation allowance.  Accept it
+    # before assessing whether the source tokens are precise enough to justify
+    # a non-zero tolerance; coarse but exact tokens such as 0.0, 0.1, 0.2 are
+    # an unambiguous 10 Hz grid.
+    if all(delta == cadence for delta in deltas):
+        return float(cadence)
+    # Decimal input has an explicit quantisation bound.  Subtracting two
+    # independently rounded tokens doubles that bound; the float conversion
+    # used for a relative TimeSeries grid contributes at most four ULPs.
+    resolutions: list[Decimal] = []
+    for value in values:
+        exponent = value.as_tuple().exponent
+        if not isinstance(exponent, int):  # values are finite above
+            raise AssertionError("finite Decimal had a non-integer exponent")
+        resolutions.append(
+            Decimal("0") if exponent >= 0 else Decimal(1).scaleb(exponent)
+        )
+    # An inferred cadence is compared as exact Decimal arithmetic.  A declared
+    # rate may be a non-terminating decimal, so only that comparison needs the
+    # input-token quantisation allowance.
+    quantisation_tolerance = (
+        Decimal(2) * max(resolutions) if expected_dt is not None else Decimal("0")
+    )
+    relative_float_tolerance = max(
+        math.ulp(float(value - values[0])) for value in values
+    )
+    float_tolerance = Decimal(str(4 * relative_float_tolerance))
+    tolerance = (
+        Decimal("0")
+        if exact_integer_grid and declared_cadence is None
+        else max(quantisation_tolerance, float_tolerance)
+    )
+    if tolerance >= cadence / 2:
+        raise ValueError(
+            f"{source} timestamp precision is insufficient for cadence {cadence}"
+        )
+    for index, delta in enumerate(deltas):
+        if abs(delta - cadence) > tolerance:
+            raise ValueError(
+                f"{source} timestamp gap at index {index + 1}: "
+                f"expected cadence {cadence}, got {delta}"
+            )
+    # Token quantisation bounds each serialized timestamp independently; it
+    # must not be re-applied at every interval, which would allow a small
+    # one-sided error to accumulate without limit.  An inferred CSV grid is
+    # ultimately labelled with its endpoint-average cadence, while an explicit
+    # source rate must stay anchored to the declared cadence.
+    phase_cadence = (
+        cadence
+        if declared_cadence is not None
+        else (values[-1] - values[0]) / (len(values) - 1)
+    )
+    for index, value in enumerate(values[1:], start=1):
+        expected_value = values[0] + phase_cadence * index
+        if abs(value - expected_value) > tolerance:
+            raise ValueError(
+                f"{source} timestamp drift at index {index}: expected grid "
+                f"value {expected_value}, got {value}"
+            )
+    return float(cadence)
+
+
+def _validate_float_time_axis(
+    origin: Any,
+    cadence: Any,
+    *,
+    sample_count: int,
+    source: str,
+) -> tuple[float, float]:
+    """Return a float64 time origin/cadence only when the axis is representable.
+
+    GWpy exposes ``TimeSeries.times`` as an absolute float64 axis.  A regular
+    relative grid can therefore become irregular or collapse entirely when a
+    large absolute origin has an ULP comparable to its cadence.  Validate the
+    actual start/end arithmetic before constructing the public series and fail
+    closed unless both the rounding error and local float spacing are strictly
+    smaller than half a sample.
+    """
+    if isinstance(sample_count, (bool, np.bool_)) or not isinstance(
+        sample_count, (int, np.integer)
+    ):
+        raise ValueError(f"{source} sample count must be a positive integer")
+    sample_count = int(sample_count)
+    if sample_count <= 0:
+        raise ValueError(f"{source} sample count must be a positive integer")
+
+    try:
+        origin_decimal = origin if isinstance(origin, Decimal) else Decimal(str(origin))
+        cadence_decimal = (
+            cadence if isinstance(cadence, Decimal) else Decimal(str(cadence))
+        )
+    except (InvalidOperation, ValueError, TypeError) as exc:
+        raise ValueError(
+            f"{source} absolute time axis must be finite with positive cadence"
+        ) from exc
+    if (
+        not origin_decimal.is_finite()
+        or not cadence_decimal.is_finite()
+        or cadence_decimal <= 0
+    ):
+        raise ValueError(
+            f"{source} absolute time axis must be finite with positive cadence"
+        )
+
+    origin_float = float(origin_decimal)
+    cadence_float = float(cadence_decimal)
+    if (
+        not math.isfinite(origin_float)
+        or not math.isfinite(cadence_float)
+        or cadence_float <= 0
+    ):
+        raise ValueError(
+            f"{source} absolute time axis must be finite with positive cadence"
+        )
+
+    half_cadence = cadence_decimal / 2
+    # GWpy's Index.define delegates to np.arange(start, stop, step).  NumPy
+    # populates that array with the quantized step ``(start + step) - start``,
+    # not necessarily with ``step`` itself.  That tiny per-sample difference
+    # can accumulate into many cadences on a long absolute-time axis.
+    effective_cadence = (origin_float + cadence_float) - origin_float
+    if not math.isfinite(effective_cadence) or effective_cadence <= 0:
+        raise ValueError(
+            f"{source} absolute time axis precision is insufficient for "
+            f"cadence {cadence_decimal} at origin {origin_decimal}"
+        )
+
+    try:
+        stop_float = origin_float + cadence_float * sample_count
+        span_float = stop_float - origin_float
+        available_samples = math.ceil(span_float / cadence_float)
+    except (OverflowError, ValueError) as exc:
+        raise ValueError(f"{source} absolute time axis is not representable") from exc
+    if (
+        not math.isfinite(stop_float)
+        or not math.isfinite(span_float)
+        or span_float <= 0
+        or available_samples < sample_count
+    ):
+        raise ValueError(f"{source} absolute time axis is not representable")
+
+    # Even a single-row series publishes an exclusive span edge derived from
+    # ``t0 + dt``; check that edge as well as every multi-row endpoint.  The
+    # endpoint uses NumPy's effective cadence to mirror the public Index.
+    final_index = max(sample_count - 1, 1)
+    for index in (0, final_index):
+        exact_value = origin_decimal + cadence_decimal * index
+        represented_value = origin_float + effective_cadence * index
+        if not math.isfinite(represented_value):
+            raise ValueError(f"{source} absolute time axis is not representable")
+        representation_error = abs(Decimal.from_float(represented_value) - exact_value)
+        local_spacing = Decimal.from_float(math.ulp(represented_value))
+        if representation_error >= half_cadence or local_spacing >= half_cadence:
+            raise ValueError(
+                f"{source} absolute time axis precision is insufficient for "
+                f"cadence {cadence_decimal} at origin {origin_decimal}"
+            )
+
+    return origin_float, cadence_float
 
 
 def _is_numeric_epoch(value: Any) -> bool:
