@@ -562,6 +562,7 @@ def read_timeseriesdict_csv(
                     timezone_warning_marker,
                 )
             if source_rate:
+                source_dt = 1.0 / source_rate
                 gps_times = np.arange(raw.shape[0]) / source_rate
             else:
                 gps_times = np.arange(raw.shape[0], dtype=float)

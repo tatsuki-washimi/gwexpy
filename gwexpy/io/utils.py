@@ -78,6 +78,12 @@ def _validate_regular_timestamps(
     )
     if not cadence.is_finite() or cadence <= 0:
         raise ValueError(f"{source} cadence must be finite and positive")
+    # Exact Decimal agreement needs no representation allowance.  Accept it
+    # before assessing whether the source tokens are precise enough to justify
+    # a non-zero tolerance; coarse but exact tokens such as 0.0, 0.1, 0.2 are
+    # an unambiguous 10 Hz grid.
+    if all(delta == cadence for delta in deltas):
+        return float(cadence)
     # Decimal input has an explicit quantisation bound.  Subtracting two
     # independently rounded tokens doubles that bound; the float conversion
     # used for a relative TimeSeries grid contributes at most four ULPs.

@@ -159,19 +159,31 @@ def read_timeseriesdict_sdb(
 
         # A rowid table preserves archive insertion order.  Validate that
         # order so an out-of-order record cannot be silently repaired by a
-        # timestamp sort.  WITHOUT ROWID tables have no insertion-order key;
-        # their declared primary-key order remains the deterministic fallback.
+        # timestamp sort.  WITHOUT ROWID tables are stored in declared
+        # primary-key order, which PRAGMA reports using one-based PK ordinals.
         cursor = conn.cursor()
         try:
             cursor.execute(f"SELECT rowid FROM {table} LIMIT 0")  # nosec B608
         except sqlite3.OperationalError:
-            order_column = "dateTime"
+            cursor.execute(f"PRAGMA table_info({table})")  # nosec B608
+            primary_key_columns = sorted(
+                (int(info[5]), str(info[1]))
+                for info in cursor.fetchall()
+                if int(info[5]) > 0
+            )
+            if not primary_key_columns:
+                raise ValueError(
+                    "SDB source row order cannot be established for a "
+                    "WITHOUT ROWID table without a declared primary key"
+                )
+            order_columns = [name for _, name in primary_key_columns]
         else:
-            order_column = "rowid"
+            order_columns = ["rowid"]
 
         col_str = ", ".join(target_cols)
+        order_clause = ", ".join(order_columns)
         query = (  # nosec B608
-            f"SELECT {col_str} FROM {table} ORDER BY {order_column}"
+            f"SELECT {col_str} FROM {table} ORDER BY {order_clause}"
         )
 
         # Use pandas for easy reading using the connection context

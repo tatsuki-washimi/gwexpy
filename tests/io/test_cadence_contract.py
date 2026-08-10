@@ -158,6 +158,14 @@ def test_regular_timestamp_validator_allows_declared_cadence_with_token_precisio
     ) == pytest.approx(1.0 / 3.0)
 
 
+def test_regular_timestamp_validator_accepts_exact_declared_decimal_grid():
+    assert _validate_regular_timestamps(
+        [Decimal("0.0"), Decimal("0.1"), Decimal("0.2")],
+        source="test",
+        expected_dt=Decimal("0.1"),
+    ) == pytest.approx(0.1)
+
+
 def test_regular_timestamp_validator_accepts_serialized_float64_grid():
     """A regular float64 grid remains regular after CSV text serialization."""
     tokens = [str(index * 0.1) for index in range(10)]
@@ -205,6 +213,21 @@ def test_csv_accepts_quantized_declared_third_second_cadence(tmp_path):
     )
 
     assert series.dt.value == pytest.approx(1.0 / 3.0)
+
+
+def test_numeric_csv_accepts_exact_declared_decimal_grid(tmp_path):
+    path = tmp_path / "exact-declared-grid.csv"
+    path.write_text("0.0,1\n0.1,2\n0.2,3\n")
+
+    series = next(
+        iter(
+            read_timeseriesdict_csv(
+                path, config={"format": {"sample_rate": 10.0}}
+            ).values()
+        )
+    )
+
+    assert series.dt.value == pytest.approx(0.1)
 
 
 def test_numeric_csv_accepts_declared_jitter_within_token_resolution(tmp_path):
@@ -367,6 +390,23 @@ def test_sdb_rejects_every_irregular_integer_grid(tmp_path, timestamps):
         read_timeseriesdict_sdb(db)
 
 
+def test_sdb_without_rowid_validates_declared_primary_key_order(tmp_path):
+    db = tmp_path / "without-rowid-backward.sdb"
+    with sqlite3.connect(db) as conn:
+        conn.execute(
+            "CREATE TABLE archive ("
+            "seq INTEGER PRIMARY KEY, dateTime INTEGER, outTemp REAL"
+            ") WITHOUT ROWID"
+        )
+        conn.executemany(
+            "INSERT INTO archive VALUES (?, ?, 70)",
+            [(1, 100), (2, 102), (3, 101)],
+        )
+
+    with pytest.raises(ValueError, match="SDB backward timestamp"):
+        read_timeseriesdict_sdb(db)
+
+
 def test_sdb_single_row_preserves_one_second_fallback(tmp_path):
     db = tmp_path / "single.sdb"
     _write_sdb(db, [4_000_000_000])
@@ -525,6 +565,40 @@ def test_time_component_csv_single_row_honors_declared_rate_or_fallback(tmp_path
 
     assert declared.dt.value == pytest.approx(0.25)
     assert fallback.dt.value == pytest.approx(1.0)
+
+
+def test_time_component_csv_accepts_exact_declared_decimal_grid(tmp_path):
+    path = tmp_path / "exact-declared-components.csv"
+    path.write_text(
+        _component_csv(
+            [
+                "2026-08-10T00:00:00.0Z",
+                "2026-08-10T00:00:00.1Z",
+                "2026-08-10T00:00:00.2Z",
+            ]
+        )
+    )
+
+    series = next(
+        iter(read_timeseriesdict_csv(path, config=_config_with_rate(10.0)).values())
+    )
+
+    assert series.dt.value == pytest.approx(0.1)
+
+
+@pytest.mark.parametrize("row_count", [1, 3])
+def test_index_csv_honors_declared_source_rate(row_count, tmp_path):
+    path = tmp_path / "index-route.csv"
+    path.write_text("\n".join(str(index + 1) for index in range(row_count)) + "\n")
+    config = {
+        "format": {"sample_rate": 4.0},
+        "columns": [{"name": "value", "index": 0, "role": "data"}],
+    }
+
+    series = next(iter(read_timeseriesdict_csv(path, config=config).values()))
+
+    assert series.dt.value == pytest.approx(0.25)
+    assert len(series) == row_count
 
 
 def test_time_component_csv_preserves_half_microsecond_cadence(tmp_path):
