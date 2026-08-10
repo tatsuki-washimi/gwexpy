@@ -80,6 +80,7 @@ def test_docs_describe_fail_closed_csv_sdb_cadence():
 
     assert any("physical line numbers" in note for note in contract["csv"]["notes"])
     assert any("exact target-cadence grid" in note for note in contract["csv"]["notes"])
+    assert any("10000000 total output values" in note for note in contract["csv"]["notes"])
     assert any(
         "database storage order" in requirement
         for requirement in contract["sdb"]["metadata_requirements"]
@@ -87,8 +88,10 @@ def test_docs_describe_fail_closed_csv_sdb_cadence():
     assert "before any requested resampling" in contract_md
     assert "malformed source rows include their physical line" in en
     assert "exact grid instead of" in en
+    assert "10,000,000 total resampled output values" in en
     assert "不正な source row には物理 CSV 行番号" in ja
     assert "厳密なtarget grid上" in ja
+    assert "合計10,000,000個" in ja
     assert "database storage order" in en
     assert "database storage order" in ja
 

@@ -24,7 +24,9 @@
   positive CSV `sample_rate` declares source cadence and is honoured for a
   single row; without it, the legacy one-second fallback remains. `resample=`
   remains a separate finite, positive target cadence, and interpolated values
-  now stay aligned with the returned target-rate time axis (#648, #649).
+  now stay aligned with the returned target-rate time axis. Derived intervals
+  must also be representable, and resampling is capped at 10,000,000 output
+  values per source read before allocation (#648, #649).
 - **io (SDB)**: archives that provide a `usUnits` column now validate every
   row as the supported US customary unit-system code `1` and fail closed on
   NULL, text, non-integral, or other values. Archives without that column

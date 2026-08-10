@@ -252,7 +252,9 @@ events = EventTable.read("events.root")
   for single-row input; without it, the legacy one-second fallback remains.
   `resample=` must also be finite and positive and declares only the target
   cadence. Resampled values are evaluated on that exact grid instead of
-  relabelling source samples with a different `dt`.
+  relabelling source samples with a different `dt`. The derived interval and
+  grid size must be representable, and one source read is limited to
+  10,000,000 total resampled output values before allocation.
 - Numeric CSV timestamps retain the legacy GPS-second interpretation. v0.1.14
   does not add `time_scale=` or `time_unit=`; convert other scales before
   reading.

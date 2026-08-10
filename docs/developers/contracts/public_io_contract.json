@@ -403,6 +403,7 @@
                 "Numeric and configured component-column timestamps must have regular source cadence before any requested resampling; malformed source rows raise ValueError with physical line numbers.",
                 "A finite positive sample_rate declares source cadence and is honoured for single-row input; without it, the legacy one-second fallback remains.",
                 "resample must be a finite positive target rate; output values are evaluated on the exact target-cadence grid without relabelling source samples.",
+                "The target interval and grid size must be representable, and resampling is limited to 10000000 total output values per source read before allocation.",
                 "Numeric timestamps retain the legacy GPS-second interpretation; time_scale and time_unit are not part of the v0.1.14 contract.",
                 "Broader registry adapters such as TimeSeriesMatrix, FrequencySeries, Spectrogram, and EventTable remain implementation surface only."
             ],

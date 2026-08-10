@@ -129,6 +129,8 @@ single row; without it, the legacy one-second fallback remains.
 `resample=` must be finite and positive and controls only the target cadence.
 Output values are evaluated on that exact target-rate grid; existing source
 samples are not merely relabelled with a different `dt`.
+The derived interval and grid size must be representable, and a source read is
+limited to 10,000,000 total resampled output values before allocation.
 Numeric timestamps retain the legacy GPS-second interpretation; v0.1.14 does
 not add `time_scale=` or `time_unit=`.
 
