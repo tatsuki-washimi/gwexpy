@@ -157,8 +157,22 @@ def read_timeseriesdict_sdb(
             if "dateTime" not in target_cols:
                 target_cols.append("dateTime")
 
+        # A rowid table preserves archive insertion order.  Validate that
+        # order so an out-of-order record cannot be silently repaired by a
+        # timestamp sort.  WITHOUT ROWID tables have no insertion-order key;
+        # their declared primary-key order remains the deterministic fallback.
+        cursor = conn.cursor()
+        try:
+            cursor.execute(f"SELECT rowid FROM {table} LIMIT 0")  # nosec B608
+        except sqlite3.OperationalError:
+            order_column = "dateTime"
+        else:
+            order_column = "rowid"
+
         col_str = ", ".join(target_cols)
-        query = f"SELECT {col_str} FROM {table} ORDER BY dateTime"  # nosec B608
+        query = (  # nosec B608
+            f"SELECT {col_str} FROM {table} ORDER BY {order_column}"
+        )
 
         # Use pandas for easy reading using the connection context
         df = pd.read_sql_query(query, conn)

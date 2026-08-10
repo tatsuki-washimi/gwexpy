@@ -36,9 +36,11 @@ def _validate_regular_timestamps(
     by cancellation at a large absolute epoch.
     """
     values: list[Decimal] = []
+    exact_integer_grid = True
     for index, value in enumerate(times):
         if isinstance(value, bool) or isinstance(value, np.bool_):
             raise ValueError(f"{source} timestamp at index {index} is not numeric")
+        exact_integer_grid = exact_integer_grid and isinstance(value, (int, np.integer))
         try:
             decimal_value = value if isinstance(value, Decimal) else Decimal(str(value))
         except (InvalidOperation, ValueError, TypeError) as exc:
@@ -49,8 +51,18 @@ def _validate_regular_timestamps(
             raise ValueError(f"{source} timestamp at index {index} is non-finite")
         values.append(decimal_value)
 
+    try:
+        declared_cadence = (
+            Decimal(str(expected_dt)) if expected_dt is not None else None
+        )
+    except (InvalidOperation, ValueError, TypeError) as exc:
+        raise ValueError(f"{source} cadence must be finite and positive") from exc
+    if declared_cadence is not None and (
+        not declared_cadence.is_finite() or declared_cadence <= 0
+    ):
+        raise ValueError(f"{source} cadence must be finite and positive")
     if len(values) < 2:
-        return 1.0
+        return float(declared_cadence) if declared_cadence is not None else 1.0
 
     deltas = [right - left for left, right in zip(values, values[1:], strict=False)]
     for index, delta in enumerate(deltas):
@@ -60,8 +72,8 @@ def _validate_regular_timestamps(
             raise ValueError(f"{source} backward timestamp at index {index + 1}")
 
     cadence = (
-        Decimal(str(expected_dt))
-        if expected_dt is not None
+        declared_cadence
+        if declared_cadence is not None
         else sorted(deltas)[len(deltas) // 2]
     )
     if not cadence.is_finite() or cadence <= 0:
@@ -87,7 +99,11 @@ def _validate_regular_timestamps(
         math.ulp(float(value - values[0])) for value in values
     )
     float_tolerance = Decimal(str(4 * relative_float_tolerance))
-    tolerance = max(quantisation_tolerance, float_tolerance)
+    tolerance = (
+        Decimal("0")
+        if exact_integer_grid and declared_cadence is None
+        else max(quantisation_tolerance, float_tolerance)
+    )
     if tolerance >= cadence / 2:
         raise ValueError(
             f"{source} timestamp precision is insufficient for cadence {cadence}"

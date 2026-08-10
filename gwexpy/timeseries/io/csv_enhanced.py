@@ -19,13 +19,13 @@ from typing import Any
 
 import numpy as np
 from astropy import units as u
+from astropy.time import Time
 
 from gwexpy.io.utils import (
     _consume_warning_state,
     _make_warning_state,
     _parse_timezone_for_format,
     _validate_regular_timestamps,
-    datetime_to_gps,
     filter_by_channels,
 )
 
@@ -118,17 +118,29 @@ def _detect_delimiter(sample: str) -> str:
         return ","
 
 
+def _is_float_token(value: str) -> bool:
+    """Return whether a CSV token is numeric, including non-finite floats."""
+    try:
+        float(value.strip())
+    except ValueError:
+        return False
+    return True
+
+
 def _reconstruct_timestamps(
     raw_data: np.ndarray,
+    raw_tokens: list[list[str]],
     time_components: dict[str, int],
     timezone: _dt.tzinfo,
-) -> np.ndarray:
-    """Build GPS timestamps from separate year/month/day/hour/min/sec columns.
+) -> tuple[float, np.ndarray, list[Decimal]]:
+    """Build an origin and exact relative timestamps from time components.
 
     Parameters
     ----------
     raw_data : ndarray, shape (N, ncols)
         Raw CSV data as floats.
+    raw_tokens : list of list of str
+        Original CSV tokens, retained for exact fractional seconds.
     time_components : dict
         Mapping from component name to column index.
     timezone : tzinfo
@@ -136,12 +148,18 @@ def _reconstruct_timestamps(
 
     Returns
     -------
-    gps_times : ndarray, shape (N,)
-        GPS timestamps.
+    time_origin, relative_times, canonical_times
+        GPS origin, float relative seconds, and exact UTC canonical instants.
 
     """
     nrows = raw_data.shape[0]
-    gps = np.empty(nrows, dtype=float)
+    for component, column_index in time_components.items():
+        for row_index, value in enumerate(raw_data[:, column_index]):
+            if not np.isfinite(value):
+                raise ValueError(
+                    "CSV timestamp component "
+                    f"'{component}' at row {row_index} is non-finite"
+                )
 
     # Extract component arrays
     years = raw_data[:, time_components["year"]].astype(int)
@@ -158,15 +176,21 @@ def _reconstruct_timestamps(
         else np.zeros(nrows, dtype=int)
     )
 
-    if "second" in time_components:
-        sec_raw = raw_data[:, time_components["second"]]
-        secs = sec_raw.astype(int)
-        microsecs = ((sec_raw - secs) * 1e6).astype(int)
-    else:
-        secs = np.zeros(nrows, dtype=int)
-        microsecs = np.zeros(nrows, dtype=int)
+    second_values = (
+        [Decimal(row[time_components["second"]]) for row in raw_tokens]
+        if "second" in time_components
+        else [Decimal("0")] * nrows
+    )
+    canonical_times: list[Decimal] = []
+    gps_origin = 0.0
+    unix_epoch = _dt.datetime(1970, 1, 1, tzinfo=_dt.UTC)
 
     for i in range(nrows):
+        second_value = second_values[i]
+        if not second_value.is_finite():
+            raise ValueError(f"CSV timestamp second at row {i} is non-finite")
+        second = int(second_value)
+        fractional_second = second_value - second
         # Validate component ranges before constructing datetime
         if not (1 <= months[i] <= 12):
             raise ValueError(
@@ -180,29 +204,40 @@ def _reconstruct_timestamps(
             raise ValueError(
                 f"Row {i}: minute value {minutes[i]} is out of range [0, 59]"
             )
-        if not (0 <= secs[i] <= 59):
-            raise ValueError(f"Row {i}: second value {secs[i]} is out of range [0, 59]")
+        if not (Decimal("0") <= second_value < Decimal("60")):
+            raise ValueError(
+                f"Row {i}: second value {second_value} is out of range [0, 60)"
+            )
         try:
             tz = timezone if timezone is not None else _dt.UTC
-            dt = _dt.datetime(
+            whole_second = _dt.datetime(
                 years[i],
                 months[i],
                 days[i],
                 hours[i],
                 minutes[i],
-                secs[i],
-                microsecs[i],
+                second,
                 tzinfo=tz,
             )
         except ValueError as exc:
             raise ValueError(
                 f"Row {i}: invalid datetime components "
                 f"({years[i]}-{months[i]:02d}-{days[i]:02d} "
-                f"{hours[i]:02d}:{minutes[i]:02d}:{secs[i]:02d})"
+                f"{hours[i]:02d}:{minutes[i]:02d}:{second:02d})"
             ) from exc
-        gps[i] = datetime_to_gps(dt)
+        utc_whole_second = whole_second.astimezone(_dt.UTC)
+        elapsed = utc_whole_second - unix_epoch
+        canonical_times.append(
+            Decimal(elapsed.days * 86400 + elapsed.seconds) + fractional_second
+        )
+        if i == 0:
+            gps_origin = float(Time(utc_whole_second).gps) + float(fractional_second)
 
-    return gps
+    relative_times = np.asarray(
+        [float(value - canonical_times[0]) for value in canonical_times],
+        dtype=float,
+    )
+    return gps_origin, relative_times, canonical_times
 
 
 def _resample_uniform(
@@ -388,27 +423,38 @@ def read_timeseriesdict_csv(
         skip = _detect_skip_rows(lines, delimiter, cfg.comment_char)
 
     # Parse data lines
-    data_lines = []
-    for line in lines[skip:]:
+    data_lines: list[tuple[int, str]] = []
+    for line_number, line in enumerate(lines[skip:], start=skip + 1):
         stripped = line.strip()
         if not stripped or stripped.startswith(cfg.comment_char):
             continue
-        data_lines.append(stripped)
+        data_lines.append((line_number, stripped))
 
     if not data_lines:
         return TimeSeriesDict()
 
+    # With no numeric row, auto-detection cannot distinguish a sole textual
+    # header from data.  Preserve the established header-only empty result;
+    # any non-numeric row after a detected header still fails below.
+    if not cfg.columns and len(data_lines) == 1:
+        only_line = data_lines[0][1]
+        only_row = next(csv.reader(io.StringIO(only_line), delimiter=delimiter))
+        if all(not _is_float_token(value) for value in only_row):
+            return TimeSeriesDict()
+
     # Parse into float array
-    reader = csv.reader(io.StringIO("\n".join(data_lines)), delimiter=delimiter)
     rows = []
     raw_tokens: list[list[str]] = []
-    for row in reader:
+    for line_number, line in data_lines:
+        row = next(csv.reader(io.StringIO(line), delimiter=delimiter))
         try:
-            tokens = [v.strip() for v in row if v.strip()]
+            tokens = [value.strip() for value in row]
             rows.append([float(v) for v in tokens])
             raw_tokens.append(tokens)
-        except ValueError:
-            continue  # skip non-numeric rows
+        except ValueError as exc:
+            raise ValueError(
+                f"CSV line {line_number} contains non-numeric data"
+            ) from exc
 
     if not rows:
         return TimeSeriesDict()
@@ -442,7 +488,16 @@ def read_timeseriesdict_csv(
                     "timezone is required when using time_component columns"
                 )
             tz = _parse_timezone_for_format("csv", tz_str)
-            gps_times = _reconstruct_timestamps(raw, time_columns, tz)
+            time_origin, gps_times, exact_times = _reconstruct_timestamps(
+                raw, raw_tokens, time_columns, tz
+            )
+            source_dt = _validate_regular_timestamps(
+                exact_times,
+                source="CSV",
+                expected_dt=(Decimal("1") / Decimal(str(source_rate)))
+                if source_rate is not None
+                else None,
+            )
         elif time_col_index is not None:
             if tz_str is not None:
                 _validate_and_warn_timezone_ignored(
