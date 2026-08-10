@@ -56,6 +56,12 @@ def _config_with_rate(sample_rate: float) -> dict:
     return config
 
 
+def _component_config_with_skip_rows(skip_rows: int) -> dict:
+    config = {**_COMPONENT_CONFIG, "format": dict(_COMPONENT_CONFIG["format"])}
+    config["format"]["skip_rows"] = skip_rows
+    return config
+
+
 def _iso_canonical_instants(iso_timestamps: list[str]) -> list[Decimal]:
     """Derive exact UTC instants from ISO text independently of the reader."""
     epoch = dt.datetime(1970, 1, 1, tzinfo=dt.UTC)
@@ -275,6 +281,40 @@ def test_csv_rejects_post_header_non_numeric_row_with_line_number(tmp_path):
 
     with pytest.raises(ValueError, match=r"CSV line 3.*non-numeric"):
         read_timeseriesdict_csv(path)
+
+
+@pytest.mark.parametrize(("bad_row", "actual_width"), [("1,3", 2), ("1,3,4,5", 4)])
+def test_csv_rejects_inconsistent_row_width_with_physical_line_number(
+    tmp_path, bad_row, actual_width
+):
+    path = tmp_path / "ragged.csv"
+    path.write_text(f"# generated\ntime,a,b\n0,1,2\n{bad_row}\n")
+
+    with pytest.raises(
+        ValueError,
+        match=rf"CSV line 4.*{actual_width} columns.*expected 3",
+    ):
+        read_timeseriesdict_csv(path)
+
+
+def test_csv_rejects_row_missing_configured_column_with_physical_line_number(
+    tmp_path,
+):
+    path = tmp_path / "configured-short-row.csv"
+    path.write_text("# generated\ntime,value,required\n0,1\n")
+    config = {
+        "format": {"skip_rows": 2},
+        "columns": [
+            {"name": "time", "index": 0, "role": "time"},
+            {"name": "required", "index": 2, "role": "data"},
+        ],
+    }
+
+    with pytest.raises(
+        ValueError,
+        match=r"CSV line 3.*2 columns.*configured columns require at least 3",
+    ):
+        read_timeseriesdict_csv(path, config=config)
 
 
 @pytest.mark.parametrize("timestamps", [[1, 2, 4], [1, 2, 2]])
@@ -518,7 +558,7 @@ def test_time_component_csv_rejects_non_finite_second(tmp_path, second):
     path = tmp_path / "non-finite-components.csv"
     path.write_text(f"2026,8,10,0,0,0,1\n2026,8,10,0,0,{second},2\n")
 
-    with pytest.raises(ValueError, match="CSV timestamp.*non-finite"):
+    with pytest.raises(ValueError, match=r"CSV line 2.*second.*non-finite"):
         read_timeseriesdict_csv(path, config=_COMPONENT_CONFIG)
 
 
@@ -544,6 +584,66 @@ def test_time_component_csv_validates_source_before_explicit_resampling(tmp_path
 
     with pytest.raises(ValueError, match="CSV timestamp gap"):
         read_timeseriesdict_csv(path, config=_COMPONENT_CONFIG, resample=2.0)
+
+
+@pytest.mark.parametrize(
+    ("component", "column_index"),
+    [("year", 0), ("month", 1), ("day", 2), ("hour", 3), ("minute", 4)],
+)
+def test_time_component_csv_rejects_fractional_integer_component_at_physical_line(
+    tmp_path, component, column_index
+):
+    values = ["2026", "8", "10", "0", "0", "1", "1"]
+    values[column_index] += ".5"
+    path = tmp_path / f"fractional-{component}.csv"
+    path.write_text(
+        "# generated\n"
+        "title\n"
+        "year,month,day,hour,minute,second,value\n" + ",".join(values) + "\n"
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=rf"CSV line 4.*'{component}'.*integer",
+    ):
+        read_timeseriesdict_csv(path, config=_component_config_with_skip_rows(3))
+
+
+@pytest.mark.parametrize(
+    ("values", "match"),
+    [
+        (["10000", "8", "10", "0", "0", "1", "1"], "year"),
+        (["2026", "13", "10", "0", "0", "1", "1"], "month"),
+        (["2026", "8", "32", "0", "0", "1", "1"], "day"),
+        (["2026", "8", "10", "24", "0", "1", "1"], "hour"),
+        (["2026", "8", "10", "0", "60", "1", "1"], "minute"),
+        (["2026", "8", "10", "0", "0", "60", "1"], "second"),
+        (["2026", "2", "30", "0", "0", "1", "1"], "invalid datetime"),
+        (["2026", "8", "10", "0", "NaN", "1", "1"], "minute.*non-finite"),
+    ],
+    ids=[
+        "year-range",
+        "month-range",
+        "day-range",
+        "hour-range",
+        "minute-range",
+        "second-range",
+        "invalid-calendar-date",
+        "non-finite",
+    ],
+)
+def test_time_component_csv_validation_errors_report_physical_line(
+    tmp_path, values, match
+):
+    path = tmp_path / "invalid-component.csv"
+    path.write_text(
+        "# generated\n"
+        "title\n"
+        "year,month,day,hour,minute,second,value\n" + ",".join(values) + "\n"
+    )
+
+    with pytest.raises(ValueError, match=rf"CSV line 4.*{match}"):
+        read_timeseriesdict_csv(path, config=_component_config_with_skip_rows(3))
 
 
 @pytest.mark.parametrize(

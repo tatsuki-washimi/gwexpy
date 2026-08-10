@@ -130,6 +130,7 @@ def _is_float_token(value: str) -> bool:
 def _reconstruct_timestamps(
     raw_data: np.ndarray,
     raw_tokens: list[list[str]],
+    line_numbers: list[int],
     time_components: dict[str, int],
     timezone: _dt.tzinfo,
 ) -> tuple[float, np.ndarray, list[Decimal]]:
@@ -141,6 +142,8 @@ def _reconstruct_timestamps(
         Raw CSV data as floats.
     raw_tokens : list of list of str
         Original CSV tokens, retained for exact fractional seconds.
+    line_numbers : list of int
+        Physical one-based CSV line numbers corresponding to the rows.
     time_components : dict
         Mapping from component name to column index.
     timezone : tzinfo
@@ -153,60 +156,71 @@ def _reconstruct_timestamps(
 
     """
     nrows = raw_data.shape[0]
+    component_values: dict[str, list[Decimal]] = {}
     for component, column_index in time_components.items():
-        for row_index, value in enumerate(raw_data[:, column_index]):
-            if not np.isfinite(value):
+        values = []
+        for row_index, row in enumerate(raw_tokens):
+            value = Decimal(row[column_index])
+            line_number = line_numbers[row_index]
+            if not value.is_finite():
                 raise ValueError(
-                    "CSV timestamp component "
-                    f"'{component}' at row {row_index} is non-finite"
+                    f"CSV line {line_number}: timestamp component "
+                    f"'{component}' is non-finite"
                 )
+            if component != "second" and value != value.to_integral_value():
+                raise ValueError(
+                    f"CSV line {line_number}: timestamp component "
+                    f"'{component}' must be an integer, got {row[column_index]!r}"
+                )
+            values.append(value)
+        component_values[component] = values
 
     # Extract component arrays
-    years = raw_data[:, time_components["year"]].astype(int)
-    months = raw_data[:, time_components["month"]].astype(int)
-    days = raw_data[:, time_components["day"]].astype(int)
-    hours = (
-        raw_data[:, time_components["hour"]].astype(int)
-        if "hour" in time_components
-        else np.zeros(nrows, dtype=int)
-    )
-    minutes = (
-        raw_data[:, time_components["minute"]].astype(int)
-        if "minute" in time_components
-        else np.zeros(nrows, dtype=int)
-    )
-
-    second_values = (
-        [Decimal(row[time_components["second"]]) for row in raw_tokens]
-        if "second" in time_components
-        else [Decimal("0")] * nrows
-    )
+    years = [int(value) for value in component_values["year"]]
+    months = [int(value) for value in component_values["month"]]
+    days = [int(value) for value in component_values["day"]]
+    hours = [int(value) for value in component_values.get("hour", [Decimal(0)] * nrows)]
+    minutes = [
+        int(value) for value in component_values.get("minute", [Decimal(0)] * nrows)
+    ]
+    second_values = component_values.get("second", [Decimal(0)] * nrows)
     canonical_times: list[Decimal] = []
     gps_origin = 0.0
     unix_epoch = _dt.datetime(1970, 1, 1, tzinfo=_dt.UTC)
 
     for i in range(nrows):
+        line_number = line_numbers[i]
         second_value = second_values[i]
-        if not second_value.is_finite():
-            raise ValueError(f"CSV timestamp second at row {i} is non-finite")
         second = int(second_value)
         fractional_second = second_value - second
         # Validate component ranges before constructing datetime
+        if not (1 <= years[i] <= 9999):
+            raise ValueError(
+                f"CSV line {line_number}: year value {years[i]} "
+                "is out of range [1, 9999]"
+            )
         if not (1 <= months[i] <= 12):
             raise ValueError(
-                f"Row {i}: month value {months[i]} is out of range [1, 12]"
+                f"CSV line {line_number}: month value {months[i]} "
+                "is out of range [1, 12]"
             )
         if not (1 <= days[i] <= 31):
-            raise ValueError(f"Row {i}: day value {days[i]} is out of range [1, 31]")
+            raise ValueError(
+                f"CSV line {line_number}: day value {days[i]} is out of range [1, 31]"
+            )
         if not (0 <= hours[i] <= 23):
-            raise ValueError(f"Row {i}: hour value {hours[i]} is out of range [0, 23]")
+            raise ValueError(
+                f"CSV line {line_number}: hour value {hours[i]} is out of range [0, 23]"
+            )
         if not (0 <= minutes[i] <= 59):
             raise ValueError(
-                f"Row {i}: minute value {minutes[i]} is out of range [0, 59]"
+                f"CSV line {line_number}: minute value {minutes[i]} "
+                "is out of range [0, 59]"
             )
         if not (Decimal("0") <= second_value < Decimal("60")):
             raise ValueError(
-                f"Row {i}: second value {second_value} is out of range [0, 60)"
+                f"CSV line {line_number}: second value {second_value} "
+                "is out of range [0, 60)"
             )
         try:
             tz = timezone if timezone is not None else _dt.UTC
@@ -221,7 +235,7 @@ def _reconstruct_timestamps(
             )
         except ValueError as exc:
             raise ValueError(
-                f"Row {i}: invalid datetime components "
+                f"CSV line {line_number}: invalid datetime components "
                 f"({years[i]}-{months[i]:02d}-{days[i]:02d} "
                 f"{hours[i]:02d}:{minutes[i]:02d}:{second:02d})"
             ) from exc
@@ -443,14 +457,33 @@ def read_timeseriesdict_csv(
             return TimeSeriesDict()
 
     # Parse into float array
-    rows = []
+    rows: list[list[float]] = []
     raw_tokens: list[list[str]] = []
+    row_line_numbers: list[int] = []
+    expected_width: int | None = None
+    required_width = max(
+        (column.column_index + 1 for column in cfg.columns if column.role != "skip"),
+        default=0,
+    )
     for line_number, line in data_lines:
         row = next(csv.reader(io.StringIO(line), delimiter=delimiter))
+        tokens = [value.strip() for value in row]
+        width = len(tokens)
+        if expected_width is None:
+            expected_width = width
+        elif width != expected_width:
+            raise ValueError(
+                f"CSV line {line_number} has {width} columns; expected {expected_width}"
+            )
+        if width < required_width:
+            raise ValueError(
+                f"CSV line {line_number} has {width} columns; configured "
+                f"columns require at least {required_width}"
+            )
         try:
-            tokens = [value.strip() for value in row]
             rows.append([float(v) for v in tokens])
             raw_tokens.append(tokens)
+            row_line_numbers.append(line_number)
         except ValueError as exc:
             raise ValueError(
                 f"CSV line {line_number} contains non-numeric data"
@@ -489,7 +522,7 @@ def read_timeseriesdict_csv(
                 )
             tz = _parse_timezone_for_format("csv", tz_str)
             time_origin, gps_times, exact_times = _reconstruct_timestamps(
-                raw, raw_tokens, time_columns, tz
+                raw, raw_tokens, row_line_numbers, time_columns, tz
             )
             source_dt = _validate_regular_timestamps(
                 exact_times,
