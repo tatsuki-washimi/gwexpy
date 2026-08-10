@@ -260,6 +260,19 @@ not add `time_scale=` or `time_unit=`.
 - `win` / `win32` use conditional registration: when ObsPy is unavailable, the
   registry entry may be absent instead of a registered reader raising
   `ImportError`.
+- WIN packets must form one globally consecutive one-second sequence;
+  duplicate timestamps, backward timestamps, and global gaps raise
+  `ValueError`.
+- A WIN channel may start after the first packet or end before the last packet.
+  Its first appearance defines its channel-local `t0`. After a channel starts,
+  reappearance following an internal packet gap, a duplicate block in one
+  packet, or a sample-rate change raises `ValueError`.
+- WIN packet and channel payload lengths and decoded sample counts are bounded
+  and validated. Malformed, truncated, or overlong payloads fail before an
+  oversized read, and cumulative delta decoding does not wrap at int32 bounds.
+- Only a BCD year transition from `99` to `00` advances the supplied century.
+  WIN header time is interpreted as UTC and emits one warning per top-level
+  read, including a multi-file read.
 - Reason: these formats are intentionally documented as collection-first and
   read-only.
 

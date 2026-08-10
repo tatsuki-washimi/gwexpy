@@ -206,8 +206,16 @@ ats = TimeSeries.read("data.atss", format="ats.mth5")
   ObsPy がヘッダの JST を UTC へ正規化し logger correction も適用済みのため、
   gwexpy の `t0` は K-NET ヘッダの Record Time より 15 秒早い値です。
   gwexpy 境界で K-NET の時刻は absolute UTC です。
-- **WIN ヘッダ時刻は UTC として解釈**します。ヘッダ自体は timezone-naive
-  なので、この解釈をトップレベルの read ごとに1回警告します。
+- **WIN ヘッダ時刻は UTC として解釈**します。
+  ヘッダ自体は timezone-naive なので、この解釈をトップレベルの read ごとに1回警告します。
+- **WIN packet の時刻は1秒ずつ連続する必要があります。**
+  packet 時刻の重複、逆行、global gap は `ValueError` になります。
+- **WIN channel は先頭packetより遅く始まることも、最終packetより早く終わることもできます。**
+  各channelの最初のpacketが、そのchannel固有の `t0` になります。
+  channel開始後の内部gapと再出現、同一packet内の重複block、sample rateの変更は `ValueError` になります。
+- **不正なWIN payloadはfail-closedで拒否します。**
+  packet長、channel長、decode後のsample数を上限内で検証するため、truncatedまたはoverlongなpayloadによる過大readを避けます。
+  累積deltaはint32境界でwrapせず、BCD年が `99` から `00` へ変わる場合だけcenturyを進めます。
 - **ATS.MTH5** は利用経路が限定される current direct path です。
 - **MTH5 standalone** は設計・公開整理中です。**「MTH5 は対応済み」ではなく、「`ats.mth5` のみ一部対応」** と読んでください。
 
