@@ -35,6 +35,8 @@ _CSV_TIMEZONE_WARNING = (
     "timezone is ignored for CSV numeric/index time routes because their "
     "timestamps already define the time semantics"
 )
+_MAX_RESAMPLED_VALUES = 10_000_000
+_RESAMPLE_METHODS = frozenset({"interpolate", "asfreq"})
 
 
 def _record_or_warn_timezone_ignored(marker: list[bool] | None) -> None:
@@ -56,7 +58,7 @@ def _validate_sample_rate(value: Any, *, role: str) -> float | None:
     """Return a finite, positive CSV sample rate for *role*."""
     if value is None:
         return None
-    if isinstance(value, bool):
+    if isinstance(value, (bool, np.bool_)):
         raise ValueError(f"CSV {role} sample rate must be finite and positive")
     try:
         rate = float(value)
@@ -64,6 +66,11 @@ def _validate_sample_rate(value: Any, *, role: str) -> float | None:
         raise ValueError(f"CSV {role} sample rate must be finite and positive") from exc
     if not math.isfinite(rate) or rate <= 0:
         raise ValueError(f"CSV {role} sample rate must be finite and positive")
+    interval = 1.0 / rate
+    if not math.isfinite(interval) or interval <= 0:
+        raise ValueError(
+            f"CSV {role} sample rate must yield a finite positive interval"
+        )
     return rate
 
 
@@ -75,6 +82,15 @@ def _validate_source_sample_rate(value: Any) -> float | None:
 def _validate_target_sample_rate(value: Any) -> float | None:
     """Return a finite, positive requested target sample rate."""
     return _validate_sample_rate(value, role="target")
+
+
+def _validate_resample_method(value: Any) -> str:
+    """Return a supported CSV resampling method."""
+    if not isinstance(value, str) or value not in _RESAMPLE_METHODS:
+        raise ValueError(
+            f"Unknown resample method: {value!r}. Choose 'interpolate' or 'asfreq'."
+        )
+    return value
 
 
 def _parse_comment_metadata(
@@ -117,7 +133,8 @@ def _detect_skip_rows(lines: list[str], delimiter: str, comment_char: str) -> in
         # A row containing any numeric token is potentially data. Treat it as
         # the first data row so a malformed timestamp alongside numeric sample
         # values is reported instead of being silently discarded as a header.
-        if numeric_count:
+        first_token = parts[0].strip().casefold() if parts else ""
+        if numeric_count or first_token == "nat":
             return i
     return 0
 
@@ -272,6 +289,8 @@ def _resample_uniform(
     values: np.ndarray,
     sample_rate: float,
     method: str = "interpolate",
+    *,
+    max_samples: int | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
     """Resample non-uniform data to a uniform grid.
 
@@ -285,6 +304,9 @@ def _resample_uniform(
         Target sample rate in Hz.
     method : str
         ``"interpolate"`` uses scipy interp1d, ``"asfreq"`` uses nearest.
+    max_samples : int, optional
+        Maximum number of output samples to allocate for this value array.
+        Defaults to the per-source resampling safety budget.
 
     Returns
     -------
@@ -292,44 +314,79 @@ def _resample_uniform(
         Uniformly sampled arrays.
 
     """
+    validated_method = _validate_resample_method(method)
     validated_rate = _validate_target_sample_rate(sample_rate)
     if validated_rate is None:  # pragma: no cover - required by the signature
         raise ValueError("CSV target sample rate must be finite and positive")
     dt = 1.0 / validated_rate
-    t_start = times[0]
-    t_end = times[-1]
+    source_times = np.asarray(times, dtype=float)
+    source_values = np.asarray(values)
+    if source_times.ndim != 1 or source_values.ndim != 1:
+        raise ValueError("CSV resampling requires one-dimensional time and value data")
+    if not len(source_times) or len(source_values) != len(source_times):
+        raise ValueError("CSV resampling requires non-empty time-aligned values")
+    if not np.all(np.isfinite(source_times)):
+        raise ValueError("CSV resampling requires finite source timestamps")
+
+    sample_limit = _MAX_RESAMPLED_VALUES if max_samples is None else max_samples
+    if isinstance(sample_limit, (bool, np.bool_)) or not isinstance(
+        sample_limit, (int, np.integer)
+    ):
+        raise ValueError("CSV resampling sample limit must be a positive integer")
+    sample_limit = int(sample_limit)
+    if sample_limit <= 0:
+        raise ValueError("CSV resampling sample limit must be a positive integer")
+
+    t_start = float(source_times[0])
+    t_end = float(source_times[-1])
+    span = t_end - t_start
+    if not math.isfinite(span) or span < 0:
+        raise ValueError("CSV resampling requires a finite non-negative time span")
+    if span and validated_rate > (sample_limit - 1) / span:
+        raise ValueError(
+            "CSV resampled output exceeds the "
+            f"{sample_limit}-value safety limit for one source read"
+        )
+    interval_ratio = span * validated_rate
+    if not math.isfinite(interval_ratio):
+        raise ValueError("CSV target sample rate produces a non-finite output grid")
     interval_count = max(
         0,
-        math.floor(math.nextafter((t_end - t_start) / dt, math.inf)),
+        math.floor(math.nextafter(interval_ratio, math.inf)),
     )
-    new_times = t_start + np.arange(interval_count + 1, dtype=float) * dt
-    new_times = new_times[new_times <= np.nextafter(t_end, math.inf)]
+    sample_count = interval_count + 1
+    if sample_count > sample_limit:
+        raise ValueError(
+            "CSV resampled output exceeds the "
+            f"{sample_limit}-value safety limit for one source read"
+        )
+    new_times = t_start + np.arange(sample_count, dtype=float) * dt
     interpolation_times = np.clip(new_times, t_start, t_end)
 
-    if method == "interpolate":
+    if validated_method == "interpolate":
         from scipy.interpolate import interp1d
 
         f = interp1d(
-            times, values, kind="linear", bounds_error=False, fill_value=np.nan
+            source_times,
+            source_values,
+            kind="linear",
+            bounds_error=False,
+            fill_value=np.nan,
         )
         new_values = f(interpolation_times)
-    elif method == "asfreq":
+    else:
         # Nearest-neighbor resampling
         right = np.clip(
-            np.searchsorted(times, interpolation_times, side="left"),
+            np.searchsorted(source_times, interpolation_times, side="left"),
             0,
-            len(values) - 1,
+            len(source_values) - 1,
         )
-        left = np.clip(right - 1, 0, len(values) - 1)
-        use_left = np.abs(interpolation_times - times[left]) <= np.abs(
-            times[right] - interpolation_times
+        left = np.clip(right - 1, 0, len(source_values) - 1)
+        use_left = np.abs(interpolation_times - source_times[left]) <= np.abs(
+            source_times[right] - interpolation_times
         )
         indices = np.where(use_left, left, right)
-        new_values = values[indices]
-    else:
-        raise ValueError(
-            f"Unknown resample method: {method!r}. Choose 'interpolate' or 'asfreq'."
-        )
+        new_values = source_values[indices]
 
     return new_times, new_values
 
@@ -431,6 +488,8 @@ def read_timeseriesdict_csv(
     source_rate = _validate_source_sample_rate(cfg.sample_rate)
     target_rate = _validate_target_sample_rate(resample)
     resample_meth = resample_method or cfg.resample_method or "interpolate"
+    if target_rate is not None:
+        resample_meth = _validate_resample_method(resample_meth)
     if tz_str is not None:
         # Validate before any source-dependent early return. Route-specific
         # warning/localization still happens only after the route is known.
@@ -630,13 +689,28 @@ def read_timeseriesdict_csv(
     result: dict[str, Any] = {}
     from .. import TimeSeries
 
+    if target_rate is not None and len(gps_times) > 1 and data_columns:
+        channel_count = len(data_columns)
+        if channel_count > _MAX_RESAMPLED_VALUES:
+            raise ValueError(
+                "CSV resampled output exceeds the "
+                f"{_MAX_RESAMPLED_VALUES}-value safety limit for one source read"
+            )
+        max_samples_per_channel = _MAX_RESAMPLED_VALUES // channel_count
+    else:
+        max_samples_per_channel = _MAX_RESAMPLED_VALUES
+
     for name, col_idx, unit_str, scale in data_columns:
         values = raw[:, col_idx] * scale
 
         # Resample if requested
         if target_rate is not None and len(gps_times) > 1:
             ts_times, values = _resample_uniform(
-                gps_times, values, target_rate, resample_meth
+                gps_times,
+                values,
+                target_rate,
+                resample_meth,
+                max_samples=max_samples_per_channel,
             )
         else:
             ts_times = gps_times

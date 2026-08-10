@@ -9,6 +9,7 @@ import numpy as np
 import pytest
 
 from gwexpy.io.utils import _validate_regular_timestamps
+from gwexpy.timeseries.io import csv_enhanced
 from gwexpy.timeseries.io.csv_enhanced import read_timeseriesdict_csv
 from gwexpy.timeseries.io.sdb import read_timeseriesdict_sdb
 
@@ -516,6 +517,17 @@ def test_numeric_csv_rejects_non_numeric_first_timestamp(tmp_path):
         read_timeseriesdict_csv(path)
 
 
+@pytest.mark.parametrize("first_row", ["NaT,NaT", "NaT,bad"])
+def test_numeric_csv_rejects_nat_first_timestamp_without_numeric_value(
+    tmp_path, first_row
+):
+    path = tmp_path / "nat-first-text.csv"
+    path.write_text(f"{first_row}\n0,1\n1,2\n")
+
+    with pytest.raises(ValueError, match=r"CSV line 1.*non-numeric"):
+        read_timeseriesdict_csv(path)
+
+
 def test_csv_declared_source_rate_is_checked_before_resampling(tmp_path):
     path = tmp_path / "samples.csv"
     path.write_text("0,1\n1,2\n3,3\n")
@@ -527,7 +539,17 @@ def test_csv_declared_source_rate_is_checked_before_resampling(tmp_path):
 
 
 @pytest.mark.parametrize(
-    "target_rate", [0, -1, float("nan"), float("inf"), -float("inf"), True]
+    "target_rate",
+    [
+        0,
+        -1,
+        float("nan"),
+        float("inf"),
+        -float("inf"),
+        5e-324,
+        True,
+        np.bool_(True),
+    ],
 )
 def test_csv_rejects_non_finite_or_non_positive_target_rate(tmp_path, target_rate):
     path = tmp_path / "samples.csv"
@@ -535,6 +557,31 @@ def test_csv_rejects_non_finite_or_non_positive_target_rate(tmp_path, target_rat
 
     with pytest.raises(ValueError, match="target sample rate"):
         read_timeseriesdict_csv(path, resample=target_rate)
+
+
+def test_csv_rejects_target_rate_with_non_finite_grid_count(tmp_path):
+    path = tmp_path / "samples.csv"
+    path.write_text("0,0\n1,10\n2,20\n")
+
+    with pytest.raises(ValueError, match="resampled output exceeds"):
+        read_timeseriesdict_csv(path, resample=1e308)
+
+
+def test_csv_rejects_resampling_over_total_value_budget(tmp_path, monkeypatch):
+    path = tmp_path / "samples.csv"
+    path.write_text("0,0\n1,10\n2,20\n")
+    monkeypatch.setattr(csv_enhanced, "_MAX_RESAMPLED_VALUES", 4)
+
+    with pytest.raises(ValueError, match="resampled output exceeds"):
+        read_timeseriesdict_csv(path, resample=2.0)
+
+
+def test_csv_validates_resample_method_for_single_row(tmp_path):
+    path = tmp_path / "single.csv"
+    path.write_text("0,1\n")
+
+    with pytest.raises(ValueError, match="Unknown resample method"):
+        read_timeseriesdict_csv(path, resample=2.0, resample_method="bad")
 
 
 @pytest.mark.parametrize("target_rate", [1.4, 1.04])
@@ -810,7 +857,8 @@ def test_time_component_csv_validation_errors_report_physical_line(
 
 
 @pytest.mark.parametrize(
-    "source_rate", [0, -1, float("nan"), float("inf"), -float("inf")]
+    "source_rate",
+    [0, -1, float("nan"), float("inf"), -float("inf"), np.bool_(True)],
 )
 def test_csv_rejects_non_finite_or_non_positive_source_rate(tmp_path, source_rate):
     path = tmp_path / "samples.csv"
