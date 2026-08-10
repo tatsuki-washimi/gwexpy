@@ -380,7 +380,8 @@ def _format_ats_mth5_import_error(mth5: Any | None = None) -> ImportError:
         "format 'ats.mth5' requires mth5>=0.6.8 with the top-level "
         "mth5.read_file API. "
         f"Installed mth5 version: {version}. "
-        "Install a compatible mth5 release with Metronix ATS support, "
+        "Install gwexpy with the 'seismic' extra for a compatible mth5 "
+        "release and its Metronix reader dependencies, "
         "or use format='ats' for gwexpy's native ATS reader."
     )
 
@@ -431,7 +432,10 @@ def read_timeseries_ats_mth5(source, **kwargs):
     source_name = (
         source if isinstance(source, (str, Path)) else getattr(source, "name", source)
     )
-    channel_ts = read_file(str(source_name), file_type="metronix")
+    try:
+        channel_ts = read_file(str(source_name), file_type="metronix")
+    except ImportError as exc:
+        raise _format_ats_mth5_import_error(mth5) from exc
 
     raw_data = getattr(channel_ts, "ts", None)
     if raw_data is None:

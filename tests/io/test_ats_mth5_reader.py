@@ -140,6 +140,17 @@ def test_ats_mth5_calls_top_level_read_file_and_treats_naive_start_as_utc(
     )
 
 
+def test_ats_mth5_wraps_backend_dependency_import_error(monkeypatch):
+    read_file = Mock(side_effect=ModuleNotFoundError("No module named 'obspy'"))
+    module = SimpleNamespace(__version__="0.6.8", read_file=read_file)
+    monkeypatch.setattr(ats_io, "ensure_dependency", lambda name: module)
+
+    with pytest.raises(ImportError, match="seismic") as exc:
+        ats_io.read_timeseries_ats_mth5("input.atss")
+
+    assert isinstance(exc.value.__cause__, ModuleNotFoundError)
+
+
 @pytest.mark.parametrize(
     ("changes", "message"),
     [
