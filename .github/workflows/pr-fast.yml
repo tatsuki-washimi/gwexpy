@@ -186,7 +186,10 @@ jobs:
       - name: Set up gwexpy environment
         uses: ./.github/actions/setup-gwexpy
         with:
-          extras: "${{ matrix.mth5-spec }}"
+          # mt-io 0.0.4 declares ObsPy as optional but imports its MiniSEED
+          # reader eagerly. Match gwexpy's existing seismic extra so the
+          # isolated mth5 cells exercise the published installation contract.
+          extras: "${{ matrix.mth5-spec }} 'obspy<2'"
 
       - name: Run MTH5 I/O release gate
         run: python scripts/ci/run_gate.py io-mth5
