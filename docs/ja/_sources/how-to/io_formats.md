@@ -223,6 +223,15 @@ events = EventTable.read("events.root")
 ```
 
 - **CSV** remains useful for lightweight exchange and inspection. Treat simple CSV files as metadata-light: use HDF5, GWF, Zarr, NetCDF, or a manifest-backed collection directory when name, channel, and unit metadata must be preserved.
+- CSV validates numeric and configured component-column cadence before
+  resampling, using continuous GPS instants for UTC components. It rejects
+  malformed or irregular input and any absolute float64 axis whose rounding
+  error or spacing is not strictly below half the cadence. `resample=` applies
+  only to requested channels; the 10,000,000-value cap covers all resampled
+  values across a top-level single- or multi-file read before allocation.
+- Numeric CSV timestamps retain the legacy GPS-second interpretation. v0.1.14
+  does not add `time_scale=` or `time_unit=`; convert other scales before
+  reading.
 - **TXT** direct I/O is more limited: single-series paths are explicit `format="txt"`, and multi-channel paths use collection directories.
 - **Pickle** portability notes still exist in class references, but Pickle is not a published direct `.read()` / `.write()` format on this page.
 - **NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**. Field/xarray bridges belong to interop. For NetCDF, `netcdf4` is a legacy format token alias for `nc`; `.netcdf4` is not a documented auto-identified extension alias.

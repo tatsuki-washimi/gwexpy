@@ -997,6 +997,15 @@ The key rule here is not to mix up “format choice” with “library conversio
 </div>
 <ul class="simple">
 <li><p><strong>CSV</strong> remains useful for lightweight exchange and inspection. Treat simple CSV files as metadata-light: use HDF5, GWF, Zarr, NetCDF, or a manifest-backed collection directory when name, channel, and unit metadata must be preserved.</p></li>
+<li><p>CSV validates numeric and configured component-column cadence before
+resampling, using continuous GPS instants for UTC components. It rejects
+malformed or irregular input and any absolute float64 axis whose rounding
+error or spacing is not strictly below half the cadence. <code class="docutils literal notranslate"><span class="pre">resample=</span></code> applies
+only to requested channels; the 10,000,000-value cap covers all resampled
+values across a top-level single- or multi-file read before allocation.</p></li>
+<li><p>Numeric CSV timestamps retain the legacy GPS-second interpretation. v0.1.14
+does not add <code class="docutils literal notranslate"><span class="pre">time_scale=</span></code> or <code class="docutils literal notranslate"><span class="pre">time_unit=</span></code>; convert other scales before
+reading.</p></li>
 <li><p><strong>TXT</strong> direct I/O is more limited: single-series paths are explicit <code class="docutils literal notranslate"><span class="pre">format=&quot;txt&quot;</span></code>, and multi-channel paths use collection directories.</p></li>
 <li><p><strong>Pickle</strong> portability notes still exist in class references, but Pickle is not a published direct <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> format on this page.</p></li>
 <li><p><strong>NetCDF4 / Zarr</strong> are treated here only as <strong>direct TimeSeries-style I/O</strong>. Field/xarray bridges belong to interop. For NetCDF, <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code> is a legacy format token alias for <code class="docutils literal notranslate"><span class="pre">nc</span></code>; <code class="docutils literal notranslate"><span class="pre">.netcdf4</span></code> is not a documented auto-identified extension alias.</p></li>
