@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import importlib
-from decimal import Decimal
+from decimal import ROUND_HALF_EVEN, Decimal
 from typing import Any
 
 import numpy as np
@@ -81,6 +81,11 @@ def _datetime64_scalar_to_gps(value, *args, **kwargs):
         format="datetime64",
         scale="utc",
     ).to_value("gps", "decimal")
+    # Astropy 8 can return a Decimal a tiny fraction of a nanosecond below the
+    # represented datetime64 instant. LIGOTimeGPS truncates that value and
+    # would therefore lose one whole nanosecond. Quantize at the destination
+    # type's resolution while retaining Astropy's leap-second conversion.
+    gps_decimal = gps_decimal.quantize(Decimal("0.000000001"), rounding=ROUND_HALF_EVEN)
     return _gwpy_to_gps(gps_decimal, *args, **kwargs)
 
 
