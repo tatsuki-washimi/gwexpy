@@ -123,6 +123,79 @@ def _validate_regular_timestamps(
     return float(cadence)
 
 
+def _validate_float_time_axis(
+    origin: Any,
+    cadence: Any,
+    *,
+    sample_count: int,
+    source: str,
+) -> tuple[float, float]:
+    """Return a float64 time origin/cadence only when the axis is representable.
+
+    GWpy exposes ``TimeSeries.times`` as an absolute float64 axis.  A regular
+    relative grid can therefore become irregular or collapse entirely when a
+    large absolute origin has an ULP comparable to its cadence.  Validate the
+    actual start/end arithmetic before constructing the public series and fail
+    closed unless both the rounding error and local float spacing are strictly
+    smaller than half a sample.
+    """
+    if isinstance(sample_count, (bool, np.bool_)) or not isinstance(
+        sample_count, (int, np.integer)
+    ):
+        raise ValueError(f"{source} sample count must be a positive integer")
+    sample_count = int(sample_count)
+    if sample_count <= 0:
+        raise ValueError(f"{source} sample count must be a positive integer")
+
+    try:
+        origin_decimal = origin if isinstance(origin, Decimal) else Decimal(str(origin))
+        cadence_decimal = (
+            cadence if isinstance(cadence, Decimal) else Decimal(str(cadence))
+        )
+    except (InvalidOperation, ValueError, TypeError) as exc:
+        raise ValueError(
+            f"{source} absolute time axis must be finite with positive cadence"
+        ) from exc
+    if (
+        not origin_decimal.is_finite()
+        or not cadence_decimal.is_finite()
+        or cadence_decimal <= 0
+    ):
+        raise ValueError(
+            f"{source} absolute time axis must be finite with positive cadence"
+        )
+
+    origin_float = float(origin_decimal)
+    cadence_float = float(cadence_decimal)
+    if (
+        not math.isfinite(origin_float)
+        or not math.isfinite(cadence_float)
+        or cadence_float <= 0
+    ):
+        raise ValueError(
+            f"{source} absolute time axis must be finite with positive cadence"
+        )
+
+    half_cadence = cadence_decimal / 2
+    # Even a single-row series publishes an exclusive span edge derived from
+    # ``t0 + dt``; check that edge as well as every multi-row endpoint.
+    final_index = max(sample_count - 1, 1)
+    for index in (0, final_index):
+        exact_value = origin_decimal + cadence_decimal * index
+        represented_value = origin_float + cadence_float * index
+        if not math.isfinite(represented_value):
+            raise ValueError(f"{source} absolute time axis is not representable")
+        representation_error = abs(Decimal.from_float(represented_value) - exact_value)
+        local_spacing = Decimal.from_float(math.ulp(represented_value))
+        if representation_error >= half_cadence or local_spacing >= half_cadence:
+            raise ValueError(
+                f"{source} absolute time axis precision is insufficient for "
+                f"cadence {cadence_decimal} at origin {origin_decimal}"
+            )
+
+    return origin_float, cadence_float
+
+
 def _is_numeric_epoch(value: Any) -> bool:
     """Return whether *value* is a supported scalar numeric epoch."""
     return isinstance(value, _NUMERIC_TYPES) and not isinstance(value, (bool, np.bool_))

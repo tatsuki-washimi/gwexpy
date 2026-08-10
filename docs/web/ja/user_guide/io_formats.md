@@ -250,7 +250,9 @@ events = EventTable.read("events.root")
 - `sample_rate` が無い単一行では従来の1秒 fallback を維持します。
 - `resample=` も有限かつ正でなければならず、target cadence だけを宣言します。
 - resampling後の値は厳密なtarget grid上で評価し、source sampleへ異なる `dt` を付け替えません。
-- 導出されるintervalとgrid sizeも表現可能でなければならず、1回のsource readでresamplingする出力値はallocation前に合計10,000,000個までに制限します。
+- UTC component の cadence は連続 GPS instant で検証し、leap-second gap を fail-closed にします。
+- 絶対 float64 軸は、丸め誤差と spacing がそれぞれ cadence の半分未満の場合だけ受理します。
+- 10,000,000個の上限は、top-level の単一または multi-file read 全体で、要求された channel の resampling 出力を allocation 前に合計します。
 - CSV の数値時刻は従来どおり GPS 秒として解釈します。
 - v0.1.14 では `time_scale=` と `time_unit=` を追加しないため、他の time scale は読み込み前に変換してください。
 - **TXT** の direct I/O はより限定的で、単一 series は `format="txt"` 明示、複数チャネルは collection directory 前提です。

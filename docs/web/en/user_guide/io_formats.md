@@ -252,9 +252,12 @@ events = EventTable.read("events.root")
   for single-row input; without it, the legacy one-second fallback remains.
   `resample=` must also be finite and positive and declares only the target
   cadence. Resampled values are evaluated on that exact grid instead of
-  relabelling source samples with a different `dt`. The derived interval and
-  grid size must be representable, and one source read is limited to
-  10,000,000 total resampled output values before allocation.
+  relabelling source samples with a different `dt`. UTC component cadence uses
+  continuous GPS instants so leap-second gaps fail closed. Absolute float64
+  axes are accepted only when rounding error and spacing are each strictly
+  below half the cadence. The 10,000,000-value cap counts requested-channel
+  resampled output across the complete top-level single- or multi-file read
+  before allocation.
 - Numeric CSV timestamps retain the legacy GPS-second interpretation. v0.1.14
   does not add `time_scale=` or `time_unit=`; convert other scales before
   reading.

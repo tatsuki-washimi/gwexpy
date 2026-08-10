@@ -166,10 +166,12 @@ def read_timeseriesdict_sdb(
             if "dateTime" not in target_cols:
                 target_cols.append("dateTime")
 
-        # A rowid table preserves archive insertion order.  Validate that
-        # order so an out-of-order record cannot be silently repaired by a
-        # timestamp sort.  Determine WITHOUT ROWID from schema metadata rather
-        # than probing ``rowid``, which a declared column can shadow.
+        # A rowid table is traversed in SQLite rowid/B-tree order.  This is a
+        # deterministic storage order, not insertion chronology when an
+        # INTEGER PRIMARY KEY aliases rowid.  Validate that order so a record
+        # cannot be silently repaired by a timestamp sort. Determine WITHOUT
+        # ROWID from schema metadata rather than probing ``rowid``, which a
+        # declared column can shadow.
         cursor = conn.cursor()
         cursor.execute(f"PRAGMA table_list({table_identifier})")  # nosec B608
         table_records = [

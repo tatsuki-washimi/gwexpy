@@ -122,15 +122,18 @@ CSV route details are machine-readable under `time_routes`:
 
 Numeric and configured component-column routes validate regular source cadence
 before any requested resampling. Numeric validation uses the source decimal
-tokens, while component validation compares reconstructed canonical instants.
+tokens, while component validation compares reconstructed continuous GPS
+instants so a UTC leap-second gap cannot look like a regular civil-time grid.
 Malformed rows raise `ValueError` with their physical CSV line number.
 A finite, positive `sample_rate` declares source cadence and is honoured for a
 single row; without it, the legacy one-second fallback remains.
 `resample=` must be finite and positive and controls only the target cadence.
-Output values are evaluated on that exact target-rate grid; existing source
-samples are not merely relabelled with a different `dt`.
-The derived interval and grid size must be representable, and a source read is
-limited to 10,000,000 total resampled output values before allocation.
+Output values for requested channels are evaluated on that exact target-rate
+grid; existing source samples are not merely relabelled with a different `dt`.
+An absolute float64 time axis is accepted only when both its rounding error and
+local spacing are strictly below half the cadence. A top-level single- or
+multi-file read is limited to 10,000,000 requested-channel resampled output
+values in total before allocation.
 Numeric timestamps retain the legacy GPS-second interpretation; v0.1.14 does
 not add `time_scale=` or `time_unit=`.
 
@@ -198,9 +201,9 @@ not add `time_scale=` or `time_unit=`.
   column retain the legacy US customary unit assumption.
 - Timing: `dateTime` values must be integer Unix seconds with regular cadence
   in database storage order. Duplicate, backward, missing, or overlarge gaps
-  raise `ValueError` before a time axis is constructed. Rowid tables use their
-  insertion order; `WITHOUT ROWID` tables use the declared primary-key order,
-  including direction and collation.
+  raise `ValueError` before a time axis is constructed. Rowid tables use SQLite
+  rowid/B-tree order, which is not insertion chronology; `WITHOUT ROWID` tables
+  use the declared primary-key order, including direction and collation.
 
 ### `wav`
 

@@ -400,10 +400,10 @@
                 "Published CSV direct I/O is limited to TimeSeries and TimeSeriesDict.",
                 "Single-file CSV is a lightweight exchange path; do not rely on it for complete name, channel, or unit metadata preservation across GWpy-compatible readers.",
                 "TimeSeriesDict supports both single-file CSV reads and manifest-backed collection-directory reads and writes.",
-                "Numeric and configured component-column timestamps must have regular source cadence before any requested resampling; malformed source rows raise ValueError with physical line numbers.",
+                "Numeric and configured component-column timestamps must have regular source cadence before any requested resampling; UTC components are compared as continuous GPS instants, and malformed source rows raise ValueError with physical line numbers.",
                 "A finite positive sample_rate declares source cadence and is honoured for single-row input; without it, the legacy one-second fallback remains.",
-                "resample must be a finite positive target rate; output values are evaluated on the exact target-cadence grid without relabelling source samples.",
-                "The target interval and grid size must be representable, and resampling is limited to 10000000 total output values per source read before allocation.",
+                "resample must be a finite positive target rate; output values are evaluated on the exact target-cadence grid for requested channels without relabelling source samples.",
+                "Absolute float64 time-axis rounding error and spacing must each be strictly below half the cadence; resampling is limited to 10000000 requested-channel output values across the complete top-level single- or multi-file read before allocation.",
                 "Numeric timestamps retain the legacy GPS-second interpretation; time_scale and time_unit are not part of the v0.1.14 contract.",
                 "Broader registry adapters such as TimeSeriesMatrix, FrequencySeries, Spectrogram, and EventTable remain implementation surface only."
             ],
@@ -609,6 +609,7 @@
                 "Published SDB direct I/O is read-only for TimeSeries and TimeSeriesDict.",
                 "Only the sdb format token and .sdb auto-identification are public.",
                 "Duplicate, backward, missing, or overlarge dateTime gaps raise ValueError before a time axis is constructed.",
+                "Rowid tables use SQLite rowid/B-tree order, which is not insertion chronology; WITHOUT ROWID tables use declared primary-key order including direction and collation.",
                 "TimeSeriesMatrix read support remains an implementation convenience path, not a published contract entry."
             ],
             "optional_dependencies": [],

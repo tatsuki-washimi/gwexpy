@@ -1,12 +1,12 @@
 """Fail-closed cadence contracts for SDB and numeric CSV inputs."""
 
-import datetime as dt
 import sqlite3
 from decimal import Decimal
 from pathlib import Path
 
 import numpy as np
 import pytest
+from astropy.time import Time
 
 from gwexpy.io.utils import _validate_regular_timestamps
 from gwexpy.timeseries.io import csv_enhanced
@@ -65,18 +65,20 @@ def _component_config_with_skip_rows(skip_rows: int) -> dict:
 
 
 def _iso_canonical_instants(iso_timestamps: list[str]) -> list[Decimal]:
-    """Derive exact UTC instants from ISO text independently of the reader."""
-    epoch = dt.datetime(1970, 1, 1, tzinfo=dt.UTC)
+    """Derive continuous GPS instants from ISO text independently of the reader."""
     instants = []
     for timestamp in iso_timestamps:
         date_text, time_text = timestamp.removesuffix("Z").split("T")
         hour_text, minute_text, second_text = time_text.split(":")
         whole_second_text, dot, fraction_text = second_text.partition(".")
-        whole = dt.datetime.fromisoformat(
-            f"{date_text}T{hour_text}:{minute_text}:{whole_second_text}+00:00"
+        whole = Time(
+            f"{date_text}T{hour_text}:{minute_text}:{whole_second_text}",
+            format="isot",
+            scale="utc",
         )
-        elapsed = whole - epoch
-        instant = Decimal(elapsed.days * 86400 + elapsed.seconds)
+        instant = whole.to_value("gps", subfmt="decimal").quantize(
+            Decimal("0.000000001")
+        )
         if dot:
             instant += Decimal(f"0.{fraction_text}")
         instants.append(instant)
@@ -281,6 +283,23 @@ def test_numeric_csv_preserves_half_microsecond_cadence_at_large_epoch(tmp_path)
     series = next(iter(read_timeseriesdict_csv(path).values()))
 
     assert series.dt.value == pytest.approx(5e-7)
+    expected_relative = np.arange(3) * 5e-7
+    represented_relative = series.times.value - series.t0.value
+    assert np.max(np.abs(represented_relative - expected_relative)) < 2.5e-7
+
+
+def test_numeric_csv_rejects_unrepresentable_submicrosecond_absolute_axis(
+    tmp_path,
+):
+    path = tmp_path / "unrepresentable-axis.csv"
+    path.write_text("8000000000.000000,0\n8000000000.000001,1\n8000000000.000002,2\n")
+
+    with pytest.raises(ValueError, match="absolute time axis precision"):
+        read_timeseriesdict_csv(
+            path,
+            config={"format": {"sample_rate": 1_000_000.0}},
+            resample=2_000_000.0,
+        )
 
 
 @pytest.mark.parametrize("timestamp", ["NaN", "Inf", "-Inf"])
@@ -288,7 +307,16 @@ def test_numeric_csv_rejects_non_finite_timestamps(tmp_path, timestamp):
     path = tmp_path / "non-finite.csv"
     path.write_text(f"0,1\n{timestamp},2\n")
 
-    with pytest.raises(ValueError, match="CSV timestamp.*non-finite"):
+    with pytest.raises(ValueError, match=r"CSV line 2.*timestamp.*non-finite"):
+        read_timeseriesdict_csv(path)
+
+
+@pytest.mark.parametrize("interval", ["1e-400", "1e400"])
+def test_numeric_csv_rejects_unrepresentable_float_interval(tmp_path, interval):
+    path = tmp_path / "unrepresentable-interval.csv"
+    path.write_text(f"0,1\n{interval},2\n")
+
+    with pytest.raises(ValueError, match="absolute time axis"):
         read_timeseriesdict_csv(path)
 
 
@@ -578,6 +606,52 @@ def test_csv_rejects_resampling_over_total_value_budget(tmp_path, monkeypatch):
         read_timeseriesdict_csv(path, resample=2.0)
 
 
+def test_csv_resample_budget_counts_only_requested_channels(tmp_path, monkeypatch):
+    path = tmp_path / "selected-channel.csv"
+    path.write_text("0,0,10\n1,1,11\n2,2,12\n")
+    config = {
+        "columns": [
+            {"name": "time", "index": 0, "role": "time"},
+            {"name": "a", "index": 1, "role": "data"},
+            {"name": "b", "index": 2, "role": "data"},
+        ]
+    }
+    monkeypatch.setattr(csv_enhanced, "_MAX_RESAMPLED_VALUES", 4)
+
+    selected = read_timeseriesdict_csv(
+        path,
+        config=config,
+        channels=["a"],
+        resample=1.5,
+    )
+
+    assert list(selected) == ["a"]
+    assert len(selected["a"]) == 4
+
+
+def test_csv_multi_source_resample_budget_is_global(tmp_path, monkeypatch):
+    first = tmp_path / "first.csv"
+    second = tmp_path / "second.csv"
+    first.write_text("0,0\n1,1\n2,2\n")
+    second.write_text("3,3\n4,4\n5,5\n")
+    monkeypatch.setattr(csv_enhanced, "_MAX_RESAMPLED_VALUES", 5)
+
+    with pytest.raises(ValueError, match="resampled output exceeds"):
+        read_timeseriesdict_csv([first, second], resample=1.0)
+
+
+def test_csv_multi_source_resample_budget_allows_exact_total(tmp_path, monkeypatch):
+    first = tmp_path / "first-exact.csv"
+    second = tmp_path / "second-exact.csv"
+    first.write_text("0,0\n1,1\n2,2\n")
+    second.write_text("3,3\n4,4\n5,5\n")
+    monkeypatch.setattr(csv_enhanced, "_MAX_RESAMPLED_VALUES", 6)
+
+    series = next(iter(read_timeseriesdict_csv([first, second], resample=1.0).values()))
+
+    assert len(series) == 6
+
+
 @pytest.mark.parametrize("target_rate", [1.75, np.nextafter(2.0, 0.0)])
 def test_csv_allows_resampling_up_to_total_value_budget(
     tmp_path, monkeypatch, target_rate
@@ -632,6 +706,24 @@ def test_time_component_csv_accepts_regular_canonical_instants(tmp_path):
     )
 
     assert series.dt.value == pytest.approx(1.0)
+
+
+def test_time_component_csv_rejects_utc_leap_second_gap(tmp_path):
+    iso_timestamps = [
+        "2016-12-31T23:59:59Z",
+        "2017-01-01T00:00:00Z",
+        "2017-01-01T00:00:01Z",
+    ]
+    canonical = _iso_canonical_instants(iso_timestamps)
+    assert [right - left for left, right in zip(canonical, canonical[1:])] == [
+        Decimal("2"),
+        Decimal("1"),
+    ]
+    path = tmp_path / "utc-leap-gap.csv"
+    path.write_text(_component_csv(iso_timestamps))
+
+    with pytest.raises(ValueError, match="CSV timestamp gap"):
+        read_timeseriesdict_csv(path, config=_COMPONENT_CONFIG)
 
 
 def test_time_component_csv_accepts_declared_jitter_within_token_resolution(tmp_path):
@@ -754,19 +846,35 @@ def test_index_csv_honors_declared_source_rate(row_count, tmp_path):
     assert len(series) == row_count
 
 
-def test_time_component_csv_preserves_half_microsecond_cadence(tmp_path):
+def test_time_component_csv_rejects_unrepresentable_half_microsecond_axis(tmp_path):
     iso_timestamps = [
         "2100-08-10T00:00:00.0000000Z",
         "2100-08-10T00:00:00.0000005Z",
         "2100-08-10T00:00:00.0000010Z",
     ]
     canonical = _iso_canonical_instants(iso_timestamps)
-    assert canonical[0] > Decimal("4000000000")
+    assert canonical[0] > Decimal("3000000000")
     assert [right - left for left, right in zip(canonical, canonical[1:])] == [
         Decimal("0.0000005"),
         Decimal("0.0000005"),
     ]
+    assert np.spacing(float(canonical[0])) >= 2.5e-7
     path = tmp_path / "half-microsecond-components.csv"
+    path.write_text(_component_csv(iso_timestamps))
+
+    with pytest.raises(ValueError, match="absolute time axis precision"):
+        read_timeseriesdict_csv(path, config=_config_with_rate(2_000_000.0))
+
+
+def test_time_component_csv_preserves_representable_half_microsecond_axis(tmp_path):
+    iso_timestamps = [
+        "2026-08-10T00:00:00.0000000Z",
+        "2026-08-10T00:00:00.0000005Z",
+        "2026-08-10T00:00:00.0000010Z",
+    ]
+    canonical = _iso_canonical_instants(iso_timestamps)
+    assert np.spacing(float(canonical[0])) < 2.5e-7
+    path = tmp_path / "representable-half-microsecond-components.csv"
     path.write_text(_component_csv(iso_timestamps))
 
     series = next(
@@ -778,6 +886,9 @@ def test_time_component_csv_preserves_half_microsecond_cadence(tmp_path):
     )
 
     assert series.dt.value == pytest.approx(5e-7)
+    expected_relative = np.arange(3) * 5e-7
+    represented_relative = series.times.value - series.t0.value
+    assert np.max(np.abs(represented_relative - expected_relative)) < 2.5e-7
 
 
 @pytest.mark.parametrize("second", ["NaN", "Inf", "-Inf"])
