@@ -65,6 +65,10 @@ def test_release_contracts_cover_v0113_regression_and_v0114_lane() -> None:
         "docs/plans/2026-08-08-v0114-release-plan.md",
     ]
     assert v0114["artifact_prefix"] == "v0114-integration-evidence"
+    assert (
+        "tests/docs/test_docs_redesign_public_content.py"
+        in v0114["review_lanes"]["scientific"]
+    )
 
     scope_union = {path for paths in v0114["review_lanes"].values() for path in paths}
     assert {
