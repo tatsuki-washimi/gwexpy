@@ -247,7 +247,9 @@ events = EventTable.read("events.root")
 - CSV は数値時刻と設定済み component 列の source cadence を、要求された resampling より前に検証します。
 - 重複、逆行、欠落、または過大な gap は `ValueError` となり、不正な source row には物理 CSV 行番号が含まれます。
 - 有限かつ正の `sample_rate` は source cadence を宣言し、単一行でも使われます。
-- `sample_rate` が無い単一行では従来の1秒 fallback を維持し、`resample=` は target cadence だけを宣言します。
+- `sample_rate` が無い単一行では従来の1秒 fallback を維持します。
+- `resample=` も有限かつ正でなければならず、target cadence だけを宣言します。
+- resampling後の値は厳密なtarget grid上で評価し、source sampleへ異なる `dt` を付け替えません。
 - CSV の数値時刻は従来どおり GPS 秒として解釈します。
 - v0.1.14 では `time_scale=` と `time_unit=` を追加しないため、他の time scale は読み込み前に変換してください。
 - **TXT** の direct I/O はより限定的で、単一 series は `format="txt"` 明示、複数チャネルは collection directory 前提です。

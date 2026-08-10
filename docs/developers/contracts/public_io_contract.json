@@ -401,7 +401,8 @@
                 "Single-file CSV is a lightweight exchange path; do not rely on it for complete name, channel, or unit metadata preservation across GWpy-compatible readers.",
                 "TimeSeriesDict supports both single-file CSV reads and manifest-backed collection-directory reads and writes.",
                 "Numeric and configured component-column timestamps must have regular source cadence before any requested resampling; malformed source rows raise ValueError with physical line numbers.",
-                "A finite positive sample_rate declares source cadence and is honoured for single-row input; without it, the legacy one-second fallback remains, while resample declares only the target cadence.",
+                "A finite positive sample_rate declares source cadence and is honoured for single-row input; without it, the legacy one-second fallback remains.",
+                "resample must be a finite positive target rate; output values are evaluated on the exact target-cadence grid without relabelling source samples.",
                 "Numeric timestamps retain the legacy GPS-second interpretation; time_scale and time_unit are not part of the v0.1.14 contract.",
                 "Broader registry adapters such as TimeSeriesMatrix, FrequencySeries, Spectrogram, and EventTable remain implementation surface only."
             ],

@@ -126,7 +126,9 @@ tokens, while component validation compares reconstructed canonical instants.
 Malformed rows raise `ValueError` with their physical CSV line number.
 A finite, positive `sample_rate` declares source cadence and is honoured for a
 single row; without it, the legacy one-second fallback remains.
-`resample=` controls only the target cadence.
+`resample=` must be finite and positive and controls only the target cadence.
+Output values are evaluated on that exact target-rate grid; existing source
+samples are not merely relabelled with a different `dt`.
 Numeric timestamps retain the legacy GPS-second interpretation; v0.1.14 does
 not add `time_scale=` or `time_unit=`.
 

@@ -23,7 +23,8 @@
   `ValueError` instead of being silently accepted or repaired. A finite,
   positive CSV `sample_rate` declares source cadence and is honoured for a
   single row; without it, the legacy one-second fallback remains. `resample=`
-  remains a separate target cadence (#648, #649).
+  remains a separate finite, positive target cadence, and interpolated values
+  now stay aligned with the returned target-rate time axis (#648, #649).
 - **io (SDB)**: archives that provide a `usUnits` column now validate every
   row as the supported US customary unit-system code `1` and fail closed on
   NULL, text, non-integral, or other values. Archives without that column

@@ -250,7 +250,9 @@ events = EventTable.read("events.root")
   raise `ValueError`, and malformed source rows include their physical line
   number. A finite positive `sample_rate` declares source cadence and is used
   for single-row input; without it, the legacy one-second fallback remains.
-  `resample=` declares only the target cadence.
+  `resample=` must also be finite and positive and declares only the target
+  cadence. Resampled values are evaluated on that exact grid instead of
+  relabelling source samples with a different `dt`.
 - Numeric CSV timestamps retain the legacy GPS-second interpretation. v0.1.14
   does not add `time_scale=` or `time_unit=`; convert other scales before
   reading.
