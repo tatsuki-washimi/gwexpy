@@ -123,6 +123,46 @@ def test_win_accepts_global_sequence_across_calendar_boundaries(tmp_path, start)
     np.testing.assert_array_equal(stream[0].data, [10, 11, 20, 21])
 
 
+def test_win_advances_century_only_at_bcd_99_to_00_rollover(tmp_path):
+    pytest.importorskip("obspy")
+    start = datetime(1999, 12, 31, 23, 59, 59, tzinfo=UTC)
+    rollover = datetime(2000, 1, 1, tzinfo=UTC)
+    path = _write_packets(
+        tmp_path,
+        "century-rollover.win",
+        _packet(start, _channel_block(1, absolute=10)),
+        _packet(rollover, _channel_block(2, absolute=20)),
+    )
+
+    traces = {
+        trace.stats.channel: trace
+        for trace in win_io._read_win_fixed(path, century="19")
+    }
+
+    assert traces["1201"].stats.starttime == win_io.UTCDateTime(start)
+    assert traces["1202"].stats.starttime == win_io.UTCDateTime(rollover)
+
+
+def test_win_keeps_supplied_century_before_bcd_year_99(tmp_path):
+    pytest.importorskip("obspy")
+    start = datetime(1998, 12, 31, 23, 59, 59, tzinfo=UTC)
+    next_year = datetime(1999, 1, 1, tzinfo=UTC)
+    path = _write_packets(
+        tmp_path,
+        "same-century.win",
+        _packet(start, _channel_block(1, absolute=10)),
+        _packet(next_year, _channel_block(2, absolute=20)),
+    )
+
+    traces = {
+        trace.stats.channel: trace
+        for trace in win_io._read_win_fixed(path, century="19")
+    }
+
+    assert traces["1201"].stats.starttime == win_io.UTCDateTime(start)
+    assert traces["1202"].stats.starttime == win_io.UTCDateTime(next_year)
+
+
 def test_win_validates_packet_cadence_with_exact_integer_timestamps(
     tmp_path, monkeypatch
 ):
@@ -436,6 +476,20 @@ def test_win_rejects_malformed_packet_length(tmp_path, payload):
     path = _write_packets(tmp_path, "malformed-length.win", payload)
 
     with pytest.raises(ValueError, match="packet length"):
+        win_io._read_win_fixed(path)
+
+
+def test_win_rejects_zero_packet_length_even_with_trailing_record(tmp_path):
+    pytest.importorskip("obspy")
+    origin = datetime(2026, 1, 1, tzinfo=UTC)
+    path = _write_packets(
+        tmp_path,
+        "zero-length-with-trailing-record.win",
+        struct.pack(">i", 0),
+        _packet(origin, _channel_block(1)),
+    )
+
+    with pytest.raises(ValueError, match="invalid WIN packet length: 0"):
         win_io._read_win_fixed(path)
 
 

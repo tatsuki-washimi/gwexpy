@@ -106,6 +106,8 @@ def _read_win_fixed(filename: str | Path, century="20"):
     starts: dict[str, Any] = {}
     last_packet_by_channel: dict[str, int] = {}
     packet_times: list[Any] = []
+    current_century = int(century)
+    previous_bcd_year: int | None = None
 
     # Decode each packet from an exact, bounded payload.  Channel lengths must
     # never consume bytes belonging to the following packet.
@@ -122,8 +124,6 @@ def _read_win_fixed(filename: str | Path, century="20"):
                 raise ValueError("truncated WIN packet length header")
 
             truelen = struct.unpack(">i", pklen)[0]
-            if truelen == 0:
-                break
             if truelen < 10:
                 raise ValueError(f"invalid WIN packet length: {truelen}")
 
@@ -135,13 +135,17 @@ def _read_win_fixed(filename: str | Path, century="20"):
                 raise ValueError("truncated WIN packet payload")
 
             timestamp = payload[:6]
-            yy = f"{century}{timestamp[0]:02x}"
+            bcd_year = int(f"{timestamp[0]:02x}")
+            if previous_bcd_year == 99 and bcd_year == 0:
+                current_century += 1
+            previous_bcd_year = bcd_year
+            year = current_century * 100 + bcd_year
             mm = f"{timestamp[1]:x}"
             dd = f"{timestamp[2]:x}"
             hh = f"{timestamp[3]:x}"
             mi = f"{timestamp[4]:x}"
             sec = f"{timestamp[5]:x}"
-            date = UTCDateTime(int(yy), int(mm), int(dd), int(hh), int(mi), int(sec))
+            date = UTCDateTime(year, int(mm), int(dd), int(hh), int(mi), int(sec))
             packet_times.append(date)
 
             offset = 6
