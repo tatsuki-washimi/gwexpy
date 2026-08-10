@@ -490,6 +490,15 @@ Absolute float64 axes must have rounding error and spacing strictly below
 half a cadence. Resampling is capped at 10,000,000 requested-channel output
 values across the complete top-level single- or multi-file read before
 allocation (#648, #649).</p></li>
+<li><p><strong>io (WIN)</strong>: WIN reads now require a consecutive one-second global packet
+cadence while preserving legitimate channel late starts, early ends, and
+channel-local <code class="docutils literal notranslate"><span class="pre">t0</span></code>. They fail closed on internal channel gaps and
+reappearance, duplicate channel blocks, sample-rate changes, duplicate or
+backward packet times, global gaps, and malformed, truncated, or overlong
+payloads. Bounded length and sample-count checks prevent oversized reads,
+cumulative deltas avoid integer wraparound, BCD year <code class="docutils literal notranslate"><span class="pre">99</span></code> to <code class="docutils literal notranslate"><span class="pre">00</span></code> advances
+the century, and UTC interpretation still warns once per top-level read
+(#647).</p></li>
 <li><p><strong>io (SDB)</strong>: archives that provide a <code class="docutils literal notranslate"><span class="pre">usUnits</span></code> column now validate every
 row as the supported US customary unit-system code <code class="docutils literal notranslate"><span class="pre">1</span></code> and fail closed on
 NULL, text, non-integral, or other values. Archives without that column
