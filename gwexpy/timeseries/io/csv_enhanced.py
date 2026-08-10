@@ -12,7 +12,7 @@ import datetime as _dt
 import io
 import math
 import warnings
-from decimal import ROUND_FLOOR, Decimal, InvalidOperation
+from decimal import ROUND_FLOOR, ROUND_HALF_EVEN, Decimal, InvalidOperation
 from functools import partial
 from pathlib import Path
 from typing import Any
@@ -23,6 +23,7 @@ from astropy.time import Time
 
 from gwexpy.io.utils import (
     _consume_warning_state,
+    _localize_naive_datetime,
     _make_warning_state,
     _parse_timezone_for_format,
     _validate_float_time_axis,
@@ -36,6 +37,7 @@ _CSV_TIMEZONE_WARNING = (
     "timezone is ignored for CSV numeric/index time routes because their "
     "timestamps already define the time semantics"
 )
+_GPS_NANOSECOND = Decimal("1e-9")
 _MAX_RESAMPLED_VALUES = 10_000_000
 _RESAMPLE_METHODS = frozenset({"interpolate", "asfreq"})
 _RESAMPLE_BUDGET_SENTINEL = object()
@@ -292,15 +294,13 @@ def _reconstruct_timestamps(
                 "is out of range [0, 60)"
             )
         try:
-            tz = timezone if timezone is not None else _dt.UTC
-            whole_second = _dt.datetime(
+            naive_whole_second = _dt.datetime(
                 years[i],
                 months[i],
                 days[i],
                 hours[i],
                 minutes[i],
                 second,
-                tzinfo=tz,
             )
         except ValueError as exc:
             raise ValueError(
@@ -308,17 +308,23 @@ def _reconstruct_timestamps(
                 f"({years[i]}-{months[i]:02d}-{days[i]:02d} "
                 f"{hours[i]:02d}:{minutes[i]:02d}:{second:02d})"
             ) from exc
+        tz = timezone if timezone is not None else _dt.UTC
+        try:
+            whole_second = _localize_naive_datetime(naive_whole_second, tz)
+        except ValueError as exc:
+            raise ValueError(f"CSV line {line_number}: {exc}") from exc
         utc_whole_second = whole_second.astimezone(_dt.UTC)
-        # Astropy supplies the leap-second-aware UTC -> continuous GPS mapping.
-        # Its split-JD arithmetic carries picosecond-level decimal noise for a
-        # Python whole-second datetime, so normalize that whole-second result
-        # to a nanosecond before adding the exact source-token fraction.
-        gps_whole_second = (
+        # Astropy's split-JD conversion can leave picosecond-scale Decimal
+        # residue. Quantize that below the supported source nanosecond
+        # resolution before restoring the source token's fractional component.
+        # Do not round to an integer: pre-1972 UTC rubber seconds have a real
+        # fractional TAI/GPS offset even at a whole civil second.
+        whole_gps = (
             Time(utc_whole_second)
-            .to_value("gps", subfmt="decimal")
-            .quantize(Decimal("0.000000001"))
+            .to_value("gps", "decimal")
+            .quantize(_GPS_NANOSECOND, rounding=ROUND_HALF_EVEN)
         )
-        canonical_time = gps_whole_second + fractional_second
+        canonical_time = whole_gps + fractional_second
         canonical_times.append(canonical_time)
         if i == 0:
             gps_origin = float(canonical_time)

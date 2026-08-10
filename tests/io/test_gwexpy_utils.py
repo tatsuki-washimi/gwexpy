@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import warnings
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import pytest
@@ -231,6 +232,44 @@ class TestEnsureDatetime:
         # Lines 95-96 — string with no tz → replace tzinfo if provided
         result = ensure_datetime("2020/06/01 12:00:00", tzinfo=_dt.UTC)
         assert result.tzinfo is not None
+
+    @pytest.mark.parametrize(
+        "tz",
+        [
+            _dt.UTC,
+            ZoneInfo("Asia/Tokyo"),
+            _dt.timezone(_dt.timedelta(hours=5, minutes=30)),
+        ],
+    )
+    def test_unambiguous_naive_local_time_preserves_wall_clock(self, tz):
+        naive = _dt.datetime(2024, 1, 15, 12, 34, 56)
+
+        result = ensure_datetime(naive, tzinfo=tz)
+
+        assert result.replace(tzinfo=None) == naive
+        assert result.tzinfo == tz
+
+    @pytest.mark.parametrize(
+        "value",
+        [
+            _dt.datetime(2024, 11, 3, 1, 30),
+            "2024-11-03 01:30:00",
+        ],
+    )
+    def test_ambiguous_new_york_time_is_rejected(self, value):
+        with pytest.raises(ValueError, match="ambiguous"):
+            ensure_datetime(value, tzinfo=ZoneInfo("America/New_York"))
+
+    @pytest.mark.parametrize(
+        "value",
+        [
+            _dt.datetime(2024, 3, 10, 2, 30),
+            "2024-03-10 02:30:00",
+        ],
+    )
+    def test_nonexistent_new_york_time_is_rejected(self, value):
+        with pytest.raises(ValueError, match="nonexistent"):
+            ensure_datetime(value, tzinfo=ZoneInfo("America/New_York"))
 
     def test_unrecognized_raises(self):
         # Line 98

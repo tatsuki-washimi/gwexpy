@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 from astropy import units as u
 from astropy.time import Time
+from gwpy import time as gwpy_time
 
 from gwexpy.time.core import (
     _is_array,
@@ -199,6 +200,73 @@ def test_to_gps_numpy_datetime64():
     assert float(result) > 0
 
 
+@pytest.mark.parametrize(
+    ("resolution", "timestamp", "expected_seconds", "expected_nanoseconds"),
+    [
+        ("s", "2017-01-01T00:00:00", 1167264018, 0),
+        ("ms", "2017-01-01T00:00:00.123", 1167264018, 123_000_000),
+        ("us", "2017-01-01T00:00:00.123456", 1167264018, 123_456_000),
+        ("ns", "2017-01-01T00:00:00.123456789", 1167264018, 123_456_789),
+    ],
+)
+def test_to_gps_numpy_datetime64_preserves_represented_instant(
+    resolution, timestamp, expected_seconds, expected_nanoseconds
+):
+    value = np.datetime64(timestamp, resolution)
+
+    scalar = to_gps(value)
+    vector = to_gps(np.asarray([value]))
+
+    assert isinstance(scalar, gwpy_time.LIGOTimeGPS)
+    assert (scalar.gpsSeconds, scalar.gpsNanoSeconds) == (
+        expected_seconds,
+        expected_nanoseconds,
+    )
+    assert vector.dtype == object
+    assert (vector[0].gpsSeconds, vector[0].gpsNanoSeconds) == (
+        expected_seconds,
+        expected_nanoseconds,
+    )
+
+    float_vector = to_gps(np.asarray([value]), dtype=float)
+    assert float_vector.dtype == np.float64
+    assert float_vector[0] == float(scalar)
+
+
+def test_to_gps_numpy_datetime64_common_instant_matches_all_resolutions():
+    results = [
+        to_gps(np.datetime64("2017-01-01T00:00:00", resolution))
+        for resolution in ("s", "ms", "us", "ns")
+    ]
+
+    assert {(result.gpsSeconds, result.gpsNanoSeconds) for result in results} == {
+        (1167264018, 0)
+    }
+
+
+def test_to_gps_datetime64_vector_preserves_ns_before_leap_second():
+    value = np.datetime64("2016-12-31T23:59:59.999999999", "ns")
+
+    scalar = to_gps(value)
+    vector = to_gps(np.asarray([value]))
+
+    expected = (1167264016, 999_999_999)
+    assert (scalar.gpsSeconds, scalar.gpsNanoSeconds) == expected
+    assert (vector[0].gpsSeconds, vector[0].gpsNanoSeconds) == expected
+    assert str(vector[0]) == "1167264016.999999999"
+
+
+@pytest.mark.parametrize("resolution", ["s", "ms", "us", "ns"])
+def test_to_gps_numpy_datetime64_rejects_nat(resolution):
+    with pytest.raises(ValueError, match="NaT|finite|valid"):
+        to_gps(np.datetime64("NaT", resolution))
+
+    with pytest.raises(ValueError, match="NaT|finite|valid"):
+        to_gps(
+            np.array([np.datetime64("2017-01-01", resolution), np.datetime64("NaT")])
+        )
+
+
 # ---------------------------------------------------------------------------
 # from_gps
 # ---------------------------------------------------------------------------
@@ -229,6 +297,20 @@ def test_from_gps_astropy_time():
 def test_tconvert_scalar_gps():
     result = tconvert(1000000000)
     assert result is not None
+
+
+@pytest.mark.parametrize("resolution", ["s", "ms", "us", "ns"])
+def test_tconvert_scalar_datetime64_uses_exact_to_gps_route(resolution):
+    value = np.datetime64("2017-01-01T00:00:00.123456789", resolution)
+
+    result = tconvert(value)
+    expected = to_gps(value)
+
+    assert isinstance(result, gwpy_time.LIGOTimeGPS)
+    assert (result.gpsSeconds, result.gpsNanoSeconds) == (
+        expected.gpsSeconds,
+        expected.gpsNanoSeconds,
+    )
 
 
 def test_tconvert_array_numeric():

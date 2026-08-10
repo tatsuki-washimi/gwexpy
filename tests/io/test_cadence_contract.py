@@ -765,22 +765,63 @@ def test_time_component_csv_accepts_regular_canonical_instants(tmp_path):
     assert series.dt.value == pytest.approx(1.0)
 
 
-def test_time_component_csv_rejects_utc_leap_second_gap(tmp_path):
-    iso_timestamps = [
+@pytest.mark.parametrize(
+    ("timestamp", "reason"),
+    [
+        ("2024-11-03T01:30:00", "ambiguous"),
+        ("2024-03-10T02:30:00", "nonexistent"),
+    ],
+)
+def test_time_component_csv_rejects_dst_fold_and_gap(tmp_path, timestamp, reason):
+    path = tmp_path / "dst-components.csv"
+    path.write_text(_component_csv([timestamp]))
+    config = {**_COMPONENT_CONFIG, "format": {"timezone": "America/New_York"}}
+
+    with pytest.raises(ValueError, match=rf"CSV line 1.*{reason}"):
+        read_timeseriesdict_csv(path, config=config)
+
+
+def test_time_component_csv_rejects_missing_utc_leap_second(tmp_path):
+    timestamps = [
         "2016-12-31T23:59:59Z",
         "2017-01-01T00:00:00Z",
         "2017-01-01T00:00:01Z",
     ]
-    canonical = _iso_canonical_instants(iso_timestamps)
+    canonical = _iso_canonical_instants(timestamps)
     assert [right - left for left, right in zip(canonical, canonical[1:])] == [
         Decimal("2"),
         Decimal("1"),
     ]
-    path = tmp_path / "utc-leap-gap.csv"
-    path.write_text(_component_csv(iso_timestamps))
+    path = tmp_path / "missing-leap-second.csv"
+    path.write_text(_component_csv(timestamps))
+
+    # Independent GPS oracle: one UTC leap second lies between the first two
+    # representable Python datetime values.
+    assert [int(Time(value, scale="utc").gps) for value in timestamps] == [
+        1167264016,
+        1167264018,
+        1167264019,
+    ]
 
     with pytest.raises(ValueError, match="CSV timestamp gap"):
         read_timeseriesdict_csv(path, config=_COMPONENT_CONFIG)
+
+
+def test_time_component_csv_preserves_pre1972_rubber_second_offset(tmp_path):
+    timestamps = [
+        "1965-01-01T00:00:00Z",
+        "1965-01-01T00:00:01Z",
+        "1965-01-01T00:00:02Z",
+    ]
+    path = tmp_path / "rubber-seconds.csv"
+    path.write_text(_component_csv(timestamps))
+
+    series = next(
+        iter(read_timeseriesdict_csv(path, config=_COMPONENT_CONFIG).values())
+    )
+
+    assert series.t0.value == pytest.approx(-473731215.45987, abs=1e-7)
+    assert series.dt.value == pytest.approx(1.000000015, abs=1e-12)
 
 
 def test_time_component_csv_accepts_declared_jitter_within_token_resolution(tmp_path):
