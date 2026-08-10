@@ -77,6 +77,7 @@ def test_release_contracts_cover_v0113_regression_and_v0114_lane() -> None:
         "gwexpy/frequencyseries/io/dttxml.py",
         "gwexpy/gui/loaders/loaders.py",
         "requirements-dev.txt",
+        "tests/docs/test_docs_redesign_public_content.py",
         "tests/docs/test_docs_redesign_release_facts.py",
         "tests/test_release_gate_workflow_contract.py",
         "tests/test_run_gate_junit_contract.py",
