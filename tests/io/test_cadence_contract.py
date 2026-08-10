@@ -5,6 +5,7 @@ import sqlite3
 from decimal import Decimal
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from gwexpy.io.utils import _validate_regular_timestamps
@@ -507,6 +508,14 @@ def test_numeric_csv_rejects_irregular_source_grid(tmp_path, body, match):
         read_timeseriesdict_csv(path)
 
 
+def test_numeric_csv_rejects_non_numeric_first_timestamp(tmp_path):
+    path = tmp_path / "nat-first.csv"
+    path.write_text("NaT,1\n0,2\n1,3\n")
+
+    with pytest.raises(ValueError, match=r"CSV line 1.*non-numeric"):
+        read_timeseriesdict_csv(path)
+
+
 def test_csv_declared_source_rate_is_checked_before_resampling(tmp_path):
     path = tmp_path / "samples.csv"
     path.write_text("0,1\n1,2\n3,3\n")
@@ -515,6 +524,29 @@ def test_csv_declared_source_rate_is_checked_before_resampling(tmp_path):
         read_timeseriesdict_csv(
             path, config={"format": {"sample_rate": 1.0}}, resample=2.0
         )
+
+
+@pytest.mark.parametrize(
+    "target_rate", [0, -1, float("nan"), float("inf"), -float("inf"), True]
+)
+def test_csv_rejects_non_finite_or_non_positive_target_rate(tmp_path, target_rate):
+    path = tmp_path / "samples.csv"
+    path.write_text("0,0\n1,10\n2,20\n")
+
+    with pytest.raises(ValueError, match="target sample rate"):
+        read_timeseriesdict_csv(path, resample=target_rate)
+
+
+@pytest.mark.parametrize("target_rate", [1.4, 1.04])
+def test_csv_resample_values_follow_declared_target_grid(tmp_path, target_rate):
+    path = tmp_path / "samples.csv"
+    path.write_text("0,0\n1,10\n2,20\n")
+
+    series = next(iter(read_timeseriesdict_csv(path, resample=target_rate).values()))
+    expected_times = np.arange(len(series), dtype=float) / target_rate
+
+    assert series.dt.value == pytest.approx(1.0 / target_rate)
+    np.testing.assert_allclose(series.value, expected_times * 10.0)
 
 
 def test_time_component_csv_accepts_regular_canonical_instants(tmp_path):

@@ -52,19 +52,29 @@ def _validate_and_warn_timezone_ignored(
     _record_or_warn_timezone_ignored(marker)
 
 
-def _validate_source_sample_rate(value: Any) -> float | None:
-    """Return a finite, positive declared source sample rate."""
+def _validate_sample_rate(value: Any, *, role: str) -> float | None:
+    """Return a finite, positive CSV sample rate for *role*."""
     if value is None:
         return None
     if isinstance(value, bool):
-        raise ValueError("CSV source sample rate must be finite and positive")
+        raise ValueError(f"CSV {role} sample rate must be finite and positive")
     try:
         rate = float(value)
     except (TypeError, ValueError) as exc:
-        raise ValueError("CSV source sample rate must be finite and positive") from exc
+        raise ValueError(f"CSV {role} sample rate must be finite and positive") from exc
     if not math.isfinite(rate) or rate <= 0:
-        raise ValueError("CSV source sample rate must be finite and positive")
+        raise ValueError(f"CSV {role} sample rate must be finite and positive")
     return rate
+
+
+def _validate_source_sample_rate(value: Any) -> float | None:
+    """Return a finite, positive declared source sample rate."""
+    return _validate_sample_rate(value, role="source")
+
+
+def _validate_target_sample_rate(value: Any) -> float | None:
+    """Return a finite, positive requested target sample rate."""
+    return _validate_sample_rate(value, role="target")
 
 
 def _parse_comment_metadata(
@@ -104,7 +114,10 @@ def _detect_skip_rows(lines: list[str], delimiter: str, comment_char: str) -> in
                 numeric_count += 1
             except ValueError:
                 pass
-        if numeric_count > len(parts) / 2:
+        # A row containing any numeric token is potentially data. Treat it as
+        # the first data row so a malformed timestamp alongside numeric sample
+        # values is reported instead of being silently discarded as a header.
+        if numeric_count:
             return i
     return 0
 
@@ -279,11 +292,19 @@ def _resample_uniform(
         Uniformly sampled arrays.
 
     """
-    dt = 1.0 / sample_rate
+    validated_rate = _validate_target_sample_rate(sample_rate)
+    if validated_rate is None:  # pragma: no cover - required by the signature
+        raise ValueError("CSV target sample rate must be finite and positive")
+    dt = 1.0 / validated_rate
     t_start = times[0]
     t_end = times[-1]
-    n_samples = max(1, round((t_end - t_start) / dt) + 1)
-    new_times = np.linspace(t_start, t_end, n_samples)
+    interval_count = max(
+        0,
+        math.floor(math.nextafter((t_end - t_start) / dt, math.inf)),
+    )
+    new_times = t_start + np.arange(interval_count + 1, dtype=float) * dt
+    new_times = new_times[new_times <= np.nextafter(t_end, math.inf)]
+    interpolation_times = np.clip(new_times, t_start, t_end)
 
     if method == "interpolate":
         from scipy.interpolate import interp1d
@@ -291,11 +312,19 @@ def _resample_uniform(
         f = interp1d(
             times, values, kind="linear", bounds_error=False, fill_value=np.nan
         )
-        new_values = f(new_times)
+        new_values = f(interpolation_times)
     elif method == "asfreq":
         # Nearest-neighbor resampling
-        indices = np.searchsorted(times, new_times, side="left")
-        indices = np.clip(indices, 0, len(values) - 1)
+        right = np.clip(
+            np.searchsorted(times, interpolation_times, side="left"),
+            0,
+            len(values) - 1,
+        )
+        left = np.clip(right - 1, 0, len(values) - 1)
+        use_left = np.abs(interpolation_times - times[left]) <= np.abs(
+            times[right] - interpolation_times
+        )
+        indices = np.where(use_left, left, right)
         new_values = values[indices]
     else:
         raise ValueError(
@@ -400,7 +429,7 @@ def read_timeseriesdict_csv(
     # Override timezone/resample from function args
     tz_str = timezone if timezone is not None else cfg.timezone
     source_rate = _validate_source_sample_rate(cfg.sample_rate)
-    target_rate = resample
+    target_rate = _validate_target_sample_rate(resample)
     resample_meth = resample_method or cfg.resample_method or "interpolate"
     if tz_str is not None:
         # Validate before any source-dependent early return. Route-specific
@@ -605,23 +634,15 @@ def read_timeseriesdict_csv(
         values = raw[:, col_idx] * scale
 
         # Resample if requested
-        if target_rate and resample_meth:
-            # Check if data is already uniform
-            dt_diff = np.diff(gps_times)
-            expected_dt = 1.0 / target_rate
-            is_uniform = np.allclose(dt_diff, expected_dt, rtol=0.05, atol=1e-6)
-
-            if not is_uniform and len(gps_times) > 1:
-                ts_times, values = _resample_uniform(
-                    gps_times, values, target_rate, resample_meth
-                )
-            else:
-                ts_times = gps_times
+        if target_rate is not None and len(gps_times) > 1:
+            ts_times, values = _resample_uniform(
+                gps_times, values, target_rate, resample_meth
+            )
         else:
             ts_times = gps_times
 
         # Infer sample rate
-        if target_rate:
+        if target_rate is not None:
             dt_val = 1.0 / target_rate
         elif "source_dt" in locals():
             dt_val = source_dt
