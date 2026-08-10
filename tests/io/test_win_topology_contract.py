@@ -231,6 +231,37 @@ def test_win_decodes_rate_one_for_each_codec_width(tmp_path, width_code):
     assert trace.stats.sampling_rate == 1.0
 
 
+def test_win_preserves_inferred_integer_dtype_for_normal_samples(tmp_path):
+    pytest.importorskip("obspy")
+    origin = datetime(2026, 1, 1, tzinfo=UTC)
+    path = _write_packets(
+        tmp_path,
+        "normal-integer-dtype.win",
+        _packet(origin, _channel_block(1, absolute=100, deltas=(1,))),
+    )
+
+    trace = win_io._read_win_fixed(path)[0]
+
+    assert trace.data.dtype == np.dtype(np.int64)
+    np.testing.assert_array_equal(trace.data, [100, 101])
+
+
+def test_win_does_not_wrap_cumulative_samples_above_int32_max(tmp_path):
+    pytest.importorskip("obspy")
+    origin = datetime(2026, 1, 1, tzinfo=UTC)
+    int32_max = np.iinfo(np.int32).max
+    path = _write_packets(
+        tmp_path,
+        "cumulative-int32-overflow.win",
+        _packet(origin, _channel_block(1, absolute=int32_max, deltas=(1,))),
+    )
+
+    trace = win_io._read_win_fixed(path)[0]
+
+    assert trace.data.dtype == np.dtype(np.int64)
+    np.testing.assert_array_equal(trace.data, [int32_max, int32_max + 1])
+
+
 def test_win_preserves_first_seen_channel_order_when_packet_order_changes(tmp_path):
     pytest.importorskip("obspy")
     origin = datetime(2026, 1, 1, tzinfo=UTC)
@@ -353,6 +384,41 @@ def test_win_rejects_truncated_packet_payload(tmp_path):
     declared_size = struct.unpack(">i", packet[:4])[0]
     truncated = struct.pack(">i", declared_size + 1) + packet[4:]
     path = _write_packets(tmp_path, "truncated.win", truncated)
+
+    with pytest.raises(ValueError, match="truncated.*payload"):
+        win_io._read_win_fixed(path)
+
+
+def test_win_rejects_huge_declared_length_before_oversized_read(tmp_path, monkeypatch):
+    pytest.importorskip("obspy")
+    path = _write_packets(
+        tmp_path,
+        "huge-declared-length.win",
+        struct.pack(">i", np.iinfo(np.int32).max) + b"\x00" * 6,
+    )
+    raw_file = path.open("rb")
+
+    class GuardedFile:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            raw_file.close()
+
+        def read(self, size=-1):
+            if size > path.stat().st_size:
+                raise AssertionError("WIN reader requested an oversized allocation")
+            return raw_file.read(size)
+
+        def seek(self, *args):
+            return raw_file.seek(*args)
+
+        def tell(self):
+            return raw_file.tell()
+
+    monkeypatch.setattr(
+        win_io, "open", lambda *args, **kwargs: GuardedFile(), raising=False
+    )
 
     with pytest.raises(ValueError, match="truncated.*payload"):
         win_io._read_win_fixed(path)

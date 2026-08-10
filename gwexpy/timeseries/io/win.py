@@ -110,6 +110,9 @@ def _read_win_fixed(filename: str | Path, century="20"):
     # Decode each packet from an exact, bounded payload.  Channel lengths must
     # never consume bytes belonging to the following packet.
     with open(filename, "rb") as fpin:
+        fpin.seek(0, 2)
+        file_size = fpin.tell()
+        fpin.seek(0)
         packet_index = 0
         while True:
             pklen = fpin.read(4)
@@ -124,8 +127,11 @@ def _read_win_fixed(filename: str | Path, century="20"):
             if truelen < 10:
                 raise ValueError(f"invalid WIN packet length: {truelen}")
 
-            payload = fpin.read(truelen - 4)
-            if len(payload) != truelen - 4:
+            payload_length = truelen - 4
+            if payload_length > file_size - fpin.tell():
+                raise ValueError("truncated WIN packet payload")
+            payload = fpin.read(payload_length)
+            if len(payload) != payload_length:
                 raise ValueError("truncated WIN packet payload")
 
             timestamp = payload[:6]
@@ -192,7 +198,7 @@ def _read_win_fixed(filename: str | Path, century="20"):
                     _apply_4bit_deltas(samples, sdata, srate - 1)
                 elif width_code == 1:
                     for raw in sdata:
-                        delta = np.frombuffer(bytes([raw]), np.int8)[0]
+                        delta = int(np.frombuffer(bytes([raw]), np.int8)[0])
                         samples.append(samples[-1] + delta)
                 elif width_code == 2:
                     for i in range(srate - 1):
@@ -236,7 +242,7 @@ def _read_win_fixed(filename: str | Path, century="20"):
 
     traces = []
     for chan in output.keys():
-        t = Trace(data=np.array(output[chan], dtype=np.int32))
+        t = Trace(data=np.array(output[chan]))
         t.stats.channel = str(chan)
         t.stats.sampling_rate = float(srates[chan])
         t.stats.starttime = starts[chan]
