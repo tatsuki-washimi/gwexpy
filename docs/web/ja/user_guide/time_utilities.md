@@ -52,9 +52,14 @@ from gwexpy.time import to_gps, from_gps, tconvert, LIGOTimeGPS
 ### よくある失敗とエラー条件
 - `to_gps("not-a-time")` や `tconvert("not-a-time")` のように日時として解釈できない文字列は、`ValueError` で失敗します。
 - `from_gps("abc")` のように GPS 秒として数値化できない入力は、`ValueError` で失敗します。
+- UTC の閏秒内にある GPS instant は Python `datetime` で表現できないため、
+  `from_gps` はその scalar、またはそれを含む配列全体を `ValueError` で拒否します。
+  `23:59:60` が必要な場合は `astropy.time.Time` を直接使用してください。
 - `to_gps(..., timezone="Asia/Tokyo")` のような未対応キーワード引数は、この実装では受け付けず `TypeError` になります。タイムゾーンは文字列本体または timezone-aware `datetime` で指定してください。
 - naive な `datetime` は UTC として扱われます。ローカル時刻を表したい場合は、timezone-aware `datetime` を使ってください。
-- 夏時間の切替などで曖昧になるローカル時刻は、このページでは自動解決を保証しません。境界時刻では UTC オフセット付き文字列または明示的な timezone-aware `datetime` を推奨します。
+- naive civil time を localize する reader 経路では、夏時間の fold と gap を
+  ambiguous / nonexistent として拒否します。境界時刻では UTC オフセット付き
+  文字列または明示的な timezone-aware `datetime` を使用してください。
 
 ## 関数選択早見表
 
@@ -62,8 +67,8 @@ from gwexpy.time import to_gps, from_gps, tconvert, LIGOTimeGPS
 
 | 目的 | 使う関数 | 主な入力型 | 出力 | 主要引数 |
 | :--- | :--- | :--- | :--- | :--- |
-| **日時 → GPS秒** | `to_gps` | `str`, `datetime`, `Time`, `Series` | `LIGOTimeGPS` / `f8 ndarray` | — |
-| **GPS秒 → 日時** | `from_gps` | `int`, `float`, `LIGOTimeGPS`, `ndarray` | `datetime` / `astropy.time.Time` | — |
+| **日時 → GPS秒** | `to_gps` | `str`, `datetime`, `datetime64`, `Time`, `Series` | `LIGOTimeGPS` / `ndarray`; `dtype=float` で f8 | — |
+| **GPS秒 → 日時** | `from_gps` | `int`, `float`, `LIGOTimeGPS`, `Time`, `ndarray` | UTC-aware `datetime` / object `ndarray` | — |
 | **相互変換 (自動判定)** | `tconvert` | 上記すべて + `"now"` | 文脈に応じた型 (Scalar 優先) | — |
 | **高精度オブジェクト** | `LIGOTimeGPS` | `seconds`, `nanoseconds` | `LIGOTimeGPS` (秒+ナノ秒保持) | — |
 
@@ -99,7 +104,7 @@ tconvert(1126259462) # 固定文字列（"September 14 2015, ..."）
 
 - 目的: 複数時刻をまとめて変換する
 - 入力: 日時文字列のリストや GPS 秒の NumPy 配列
-- 出力: `numpy.ndarray` または `astropy.time.Time` 配列
+- 出力: 数値 `numpy.ndarray` または UTC-aware `datetime` の object 配列
 
 ```python
 import numpy as np
@@ -108,9 +113,9 @@ import numpy as np
 gps_list = to_gps(["2015-09-14 09:50:00", "2015-09-14 09:51:00"])
 # → array([1126259417., 1126259477.])
 
-# 浮動小数点配列から Astropy Time オブジェクトの配列へ返還
+# GPS 秒配列を UTC-aware datetime の配列へ変換
 times = from_gps(np.arange(1126259400, 1126259410))
-# → <Time object: scale='utc' format='gps' value=[1.1262594e+09 ...]>
+# → array([datetime.datetime(..., tzinfo=datetime.timezone.utc), ...])
 ```
 
 ### 3. タイムゾーンと言号（Leap Second）の注意点
@@ -216,23 +221,40 @@ to_gps(t)
 
 - 目的: 複数時刻をまとめて変換する
 - 入力: pandas の `Series`
-- 出力: GPS 秒の NumPy 配列
+- 出力: 既定では exact な object 配列、`dtype=float` では float 配列
 
 ```python
 import pandas as pd
 
 dates = pd.Series(pd.to_datetime(["2015-09-14", "2015-09-15", "2015-09-16"]))
 gps_array = to_gps(dates)
+# → array([LIGOTimeGPS(...), ...], dtype=object)
+
+gps_float = to_gps(dates, dtype=float)
 # → numpy array([1126224017., 1126310417., 1126396817.])
 ```
 
 ### NumPy datetime64 配列（ベクトル対応）
 
+`datetime64[s]` / `[ms]` / `[us]` / `[ns]` は、各 dtype が表す instant の
+まま変換します。nanosecond scalar を Unix epoch 整数へ変換しないため、
+sub-microsecond precision を失いません。既定の `dtype=None` では、
+datetime64 vector も exact な `LIGOTimeGPS` の object 配列を返し、binary64
+境界の丸めで別 instant に分類されることを防ぎます。float 配列と ULP 程度の
+精度制限を許容できる場合だけ `dtype=float` を指定してください。
+
 ```python
 import numpy as np
 
-dt64 = np.array(["2015-09-14T09:50:45", "2015-09-14T09:51:00"], dtype="datetime64[ns]")
-to_gps(dt64)
+instant = np.datetime64("2017-01-01T00:00:00.123456789", "ns")
+to_gps(instant)
+# → LIGOTimeGPS(1167264018, 123456789)
+
+to_gps(np.asarray([instant]))
+# → array([LIGOTimeGPS(1167264018, 123456789)], dtype=object)
+
+to_gps(np.asarray([instant]), dtype=float)
+# → array([1.16726402e+09])
 ```
 
 ---
@@ -242,22 +264,26 @@ to_gps(dt64)
 
 **Signature**: `from_gps(t, *args, **kwargs)`
 
-GPS 秒を人間が読みやすい時刻に変換します。スカラー入力は `datetime`、
-配列入力は `astropy.time.Time` 配列を返します。
+GPS 秒を UTC-aware な Python `datetime` に変換します。scalar 入力と
+Astropy scalar 入力は1つの `datetime`、vector 入力は `datetime` を格納した
+NumPy object 配列を返します。
 
-- 単一の `int` / `float` / `LIGOTimeGPS` を渡した場合: `datetime.datetime`
-- リスト・NumPy 配列・pandas 系のベクトル入力を渡した場合: `astropy.time.Time`
+- 単一の `int` / `float` / `LIGOTimeGPS` / scalar `Time`: UTC-aware `datetime.datetime`
+- リスト・NumPy 配列・pandas 系・vector `Time`: UTC-aware datetime を含む `numpy.ndarray[object]`
 
 ```python
 from gwexpy.time import from_gps
 
 # スカラー → datetime
 from_gps(1126259462)
-# → datetime.datetime(2015, 9, 14, 9, 50, 45, tzinfo=...)
+# → datetime.datetime(2015, 9, 14, 9, 50, 45, tzinfo=datetime.timezone.utc)
 
-# リスト → astropy Time 配列
+# リスト → UTC-aware datetime の object 配列
 from_gps([1126259462, 1126259472, 1126259482])
 ```
+
+UTC 閏秒そのものは Python `datetime` の `second=60` で表現できないため、
+1要素でも含まれていれば配列を部分的に返さず `ValueError` で失敗します。
 
 ---
 
@@ -268,6 +294,8 @@ from_gps([1126259462, 1126259472, 1126259482])
 
 `tconvert` は入力の型を自動判定し、`to_gps` または `from_gps` に振り分けます。
 GWpy の `tconvert` と同様の動作に加え、配列入力に対応しています。
+NumPy `datetime64` の scalar / vector は、`to_gps` と同じ exact 変換契約を
+使用します。
 
 - 目的: 入力型が混在する場面で 1 つの関数から変換する
 - 入力: 日時表現、GPS 秒、または `"now"`

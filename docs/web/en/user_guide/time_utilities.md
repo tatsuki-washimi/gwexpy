@@ -52,9 +52,15 @@ It is important to understand these fundamental behaviors before performing conv
 ### Common Failure Modes
 - Strings that cannot be parsed as datetimes, such as `to_gps("not-a-time")` or `tconvert("not-a-time")`, fail with `ValueError`.
 - Inputs that cannot be converted to numeric GPS seconds, such as `from_gps("abc")`, fail with `ValueError`.
+- A GPS instant that lies inside a UTC leap second cannot be represented by
+  Python `datetime`, so `from_gps` fails with `ValueError` for that scalar or
+  for the complete vector containing it. Use `astropy.time.Time` directly when
+  the `23:59:60` representation is required.
 - Unsupported keyword arguments such as `to_gps(..., timezone="Asia/Tokyo")` raise `TypeError` in the current implementation. Pass the timezone in the string itself or use a timezone-aware `datetime`.
 - Naive `datetime` inputs are treated as UTC. If you mean a local civil time, use a timezone-aware `datetime`.
-- For DST boundaries or other ambiguous local civil times, this page does not guarantee automatic resolution. Prefer explicit UTC offsets or timezone-aware `datetime` objects for boundary cases.
+- Reader routes that localize naive civil time reject daylight-saving folds
+  and gaps as ambiguous or nonexistent. Prefer an explicit UTC offset or an
+  already timezone-aware `datetime` at transition boundaries.
 
 ## Function Selection Quick Reference
 
@@ -62,8 +68,8 @@ Choose the most appropriate function for your goal.
 
 | Goal | Use | Input types | Output | Key args |
 | :--- | :--- | :--- | :--- | :--- |
-| **DateTime → GPS** | `to_gps` | `str`, `datetime`, `Time`, `Series` | `LIGOTimeGPS` / `f8 ndarray` | — |
-| **GPS → DateTime** | `from_gps` | `int`, `float`, `LIGOTimeGPS`, `ndarray` | `datetime` / `astropy.time.Time` | — |
+| **DateTime → GPS** | `to_gps` | `str`, `datetime`, `datetime64`, `Time`, `Series` | `LIGOTimeGPS` / `ndarray`; `dtype=float` for f8 | — |
+| **GPS → DateTime** | `from_gps` | `int`, `float`, `LIGOTimeGPS`, `Time`, `ndarray` | UTC-aware `datetime` / object `ndarray` | — |
 | **Convenience (Auto)** | `tconvert` | All above + `"now"` | Context-dependent (Scalar pref.) | — |
 | **High-Precision Object** | `LIGOTimeGPS` | `seconds`, `nanoseconds` | `LIGOTimeGPS` (integer s+ns) | — |
 
@@ -99,7 +105,7 @@ Passing lists or NumPy arrays will invoke optimized batch conversions.
 
 - Purpose: convert multiple timestamps in one call
 - Input: a list of datetime strings or a NumPy array of GPS seconds
-- Output: `numpy.ndarray` or `astropy.time.Time` array
+- Output: a numeric `numpy.ndarray` or an object array of UTC-aware `datetime`
 
 ```python
 import numpy as np
@@ -108,9 +114,9 @@ import numpy as np
 gps_list = to_gps(["2015-09-14 09:50:00", "2015-09-14 09:51:00"])
 # → array([1126259417., 1126259477.])
 
-# Convert numeric arrays back to Astropy Time objects
+# Convert numeric arrays to UTC-aware datetime objects
 times = from_gps(np.arange(1126259400, 1126259410))
-# → <Time object: scale='utc' format='gps' value=[1.1262594e+09 ...]>
+# → array([datetime.datetime(..., tzinfo=datetime.timezone.utc), ...])
 ```
 
 ### 3. Timezones & Leap Seconds
@@ -207,7 +213,7 @@ offset = ts.times - threshold
 
 - Purpose: convert multiple timestamps in one call
 - Input: a pandas `Series`
-- Output: a NumPy array of GPS seconds
+- Output: an exact object array by default, or a float array with `dtype=float`
 
 ```python
 import pandas as pd
@@ -215,7 +221,34 @@ from gwexpy.time import to_gps
 
 dates = pd.Series(pd.to_datetime(["2015-09-14", "2015-09-15", "2015-09-16"]))
 gps_array = to_gps(dates)
+# → array([LIGOTimeGPS(...), ...], dtype=object)
+
+gps_float = to_gps(dates, dtype=float)
 # → numpy array([1126224017., 1126310417., 1126396817.])
+```
+
+### Working with NumPy datetime64
+
+Scalar `datetime64[s]`, `[ms]`, `[us]`, and `[ns]` values are converted as the
+instant represented by that dtype. The nanosecond scalar route does not pass
+through a Unix-epoch integer, and therefore does not discard sub-microsecond
+precision. With the default `dtype=None`, datetime64 vectors are object arrays
+of exact `LIGOTimeGPS` elements so a binary64 rounding boundary cannot change
+the classified instant. Select `dtype=float` only when a float array and its
+ULP-scale precision limit are acceptable.
+
+```python
+import numpy as np
+
+instant = np.datetime64("2017-01-01T00:00:00.123456789", "ns")
+to_gps(instant)
+# → LIGOTimeGPS(1167264018, 123456789)
+
+to_gps(np.asarray([instant]))
+# → array([LIGOTimeGPS(1167264018, 123456789)], dtype=object)
+
+to_gps(np.asarray([instant]), dtype=float)
+# → array([1.16726402e+09])
 ```
 
 ---
@@ -225,15 +258,24 @@ gps_array = to_gps(dates)
 
 **Signature**: `from_gps(t, *args, **kwargs)`
 
-Converts GPS seconds into human-readable formats. Scalar inputs return `datetime` objects, while array inputs return `astropy.time.Time` objects.
+Converts GPS seconds into UTC-aware Python `datetime` values. Scalar and
+Astropy scalar inputs return one `datetime`; vector inputs return a NumPy
+object array of `datetime` values.
 
-- Scalar input such as `int`, `float`, or `LIGOTimeGPS`: returns `datetime.datetime`
-- Vector input such as a list, NumPy array, or pandas object: returns `astropy.time.Time`
+- Scalar input such as `int`, `float`, `LIGOTimeGPS`, or scalar `Time`: returns a UTC-aware `datetime.datetime`
+- Vector input such as a list, NumPy array, pandas object, or vector `Time`: returns `numpy.ndarray[object]` containing UTC-aware datetimes
 
 ```python
 from_gps(1126259462)
-# → datetime.datetime(2015, 9, 14, 9, 50, 45, tzinfo=...)
+# → datetime.datetime(2015, 9, 14, 9, 50, 45, tzinfo=datetime.timezone.utc)
+
+from_gps([1126259462, 1126259472])
+# → array([datetime.datetime(..., tzinfo=datetime.timezone.utc), ...])
 ```
+
+The conversion fails closed if any element is the instant of a UTC leap second,
+because Python `datetime` has no `second=60` representation. The vector is not
+partially returned.
 
 ---
 
@@ -243,6 +285,8 @@ from_gps(1126259462)
 **Signature**: `tconvert(t=None, *args, **kwargs)`
 
 Automatically detects the input type and dispatches to `to_gps` or `from_gps`.
+NumPy `datetime64` scalars and vectors use the same exact conversion contract
+described under `to_gps`.
 
 - Purpose: use one convenience function when the input type may vary
 - Input: a datetime-like value, a GPS value, or `"now"`

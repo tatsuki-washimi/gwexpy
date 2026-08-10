@@ -249,11 +249,16 @@ events = EventTable.read("events.root")
 
 - **CSV** は素朴ですが、共有や確認には依然として有用です。単純な CSV ファイルは metadata-light と考えてください。`name`、`channel`、`unit` まで保持したい場合は HDF5、GWF、Zarr、NetCDF、または manifest 付き collection directory を使います。
 - CSV の component 列は naive civil time で、設定した `timezone` により
-  localize します。数値時刻と生成 sample-index 経路では `timezone` を無視し、
-  トップレベル read ごとに1回警告します。数値時刻は absolute、生成 index は
-  relative のままです。
+  localize します。夏時間の ambiguous fold と nonexistent gap は、offset を
+  暗黙選択せず物理行番号付き `ValueError` で拒否します。
+  数値時刻と生成 sample-index 経路では `timezone` を無視し、トップレベル
+  read ごとに1回警告します。数値時刻は absolute、生成 index は relative の
+  ままです。
 - CSV は数値時刻と設定済み component 列の source cadence を、要求された resampling より前に検証します。
 - 重複、逆行、欠落、または過大な gap は `ValueError` となり、不正な source row には物理 CSV 行番号が含まれます。
+- component instant は連続 GPS timeline 上で比較します。UTC 閏秒をまたぐ1秒
+  cadence が `second=60` 行を表現できず欠落させた場合は、missing sample として
+  fail-closed になります。
 - 有限かつ正の `sample_rate` は source cadence を宣言し、単一行でも使われます。
 - `sample_rate` が無い単一行では従来の1秒 fallback を維持します。
 - `resample=` も有限かつ正でなければならず、target cadence だけを宣言します。
