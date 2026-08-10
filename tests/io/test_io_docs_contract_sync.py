@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_PATH = ROOT / "docs/developers/contracts/public_io_contract.json"
 EN_GUIDE = ROOT / "docs/web/en/user_guide/io_formats.md"
 JA_GUIDE = ROOT / "docs/web/ja/user_guide/io_formats.md"
+REDESIGN_EN_GUIDE = ROOT / "docs_redesign/how-to/io_formats.md"
 EN_INSTALL = ROOT / "docs/web/en/user_guide/installation.md"
 JA_INSTALL = ROOT / "docs/web/ja/user_guide/installation.md"
 CONTRACT_MD = ROOT / "docs/developers/contracts/public_io_contract.md"
@@ -94,6 +95,25 @@ def test_docs_describe_fail_closed_csv_sdb_cadence():
     assert "合計10,000,000個" in ja
     assert "database storage order" in en
     assert "database storage order" in ja
+
+
+def test_docs_describe_numeric_csv_time_scale_limitation() -> None:
+    contract = _load_contract()
+    contract_md = _read(CONTRACT_MD)
+    en = _read(EN_GUIDE)
+    ja = _read(JA_GUIDE)
+    redesign_en = _read(REDESIGN_EN_GUIDE)
+    notes = " ".join(contract["csv"]["notes"])
+
+    for source in (notes, contract_md, en, redesign_en):
+        assert "legacy GPS-second" in source
+        assert "time_scale" in source
+        assert "time_unit" in source
+        assert "v0.1.14" in source
+    assert "従来どおり GPS 秒" in ja
+    assert "time_scale" in ja
+    assert "time_unit" in ja
+    assert "v0.1.14" in ja
 
 
 def test_docs_seismic_table_matches_current_public_boundary():

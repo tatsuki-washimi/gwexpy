@@ -1580,6 +1580,16 @@ msgstr "`win32`"
 msgid "`sdb`"
 msgstr "`sdb`"
 
+#: ../../how-to/io_formats.md:226
+msgid ""
+"Numeric CSV timestamps retain the legacy GPS-second interpretation. "
+"v0.1.14 does not add `time_scale=` or `time_unit=`; convert other scales "
+"before reading."
+msgstr ""
+"CSV の数値時刻は従来どおり GPS 秒として解釈します。v0.1.14 では "
+"`time_scale=` と `time_unit=` を追加しないため、他の time scale は"
+"読み込み前に変換してください。"
+
 #: ../../how-to/io_formats.md:311 770c50350ad74bdfbefd93c08452752c
 msgid "Related Pages"
 msgstr "関連ページ"
@@ -1658,4 +1668,3 @@ msgstr "<a href=\"#io-formats-ja-top\">トップへ戻る</a>"
 #~ msgstr ""
 #~ "以下は placeholder reader "
 #~ "があるだけで、一般ユーザー向けの実用形式ではありません。`.read()` は未実装として失敗します。"
-

@@ -6,6 +6,11 @@ from babel.messages import pofile
 
 ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / "docs_redesign"
+CSV_TIME_SCALE_LIMITATION = (
+    "Numeric CSV timestamps retain the legacy GPS-second interpretation. "
+    "v0.1.14 does not add `time_scale=` or `time_unit=`; convert other scales "
+    "before reading."
+)
 
 
 def _read(relative_path: str) -> str:
@@ -126,3 +131,20 @@ def test_corrected_public_pages_have_complete_japanese_catalogs() -> None:
             if message.id and (not message.string or "fuzzy" in message.flags)
         ]
         assert not problems, relative_path
+
+
+def test_numeric_csv_time_scale_limitation_has_japanese_translation() -> None:
+    page = _read("how-to/io_formats.md")
+    catalog_path = DOCS / "locales/ja/LC_MESSAGES/how-to/io_formats.po"
+
+    assert CSV_TIME_SCALE_LIMITATION in " ".join(page.split())
+    with catalog_path.open(encoding="utf-8") as stream:
+        catalog = pofile.read_po(stream, locale="ja")
+    translated = catalog.get(CSV_TIME_SCALE_LIMITATION)
+    assert translated is not None
+    assert translated.string == (
+        "CSV の数値時刻は従来どおり GPS 秒として解釈します。v0.1.14 では "
+        "`time_scale=` と `time_unit=` を追加しないため、他の time scale は"
+        "読み込み前に変換してください。"
+    )
+    assert "fuzzy" not in translated.flags
