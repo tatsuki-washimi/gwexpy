@@ -130,7 +130,7 @@ on optional packages or optional metadata helpers.
 | **TDMS** | `nptdms` | `io` | Reader raises `ImportError` with the required `io` extra in its install guidance. |
 | **mseed / SAC / GSE2 / K-NET** | `obspy` | `seismic` | Registered reader/writer raises `ImportError` with the required `seismic` extra in its install guidance. |
 | **WIN / WIN32** | `obspy` | `seismic` | Uses conditional registration: when ObsPy is unavailable, the `win` / `win32` registry entries may be absent. |
-| **ATS.MTH5** | `mth5` | `seismic` | Reader raises `ImportError` with the required `seismic` extra in its install guidance. |
+| **ATS.MTH5** | `mth5` (>=0.6.8) | `seismic` | Reader raises `ImportError` with the required `seismic` extra in its install guidance. |
 | **nc / NetCDF4** | `xarray`, `netCDF4` | `netcdf4` | Reader/writer raises `ImportError` with the required `netcdf4` extra in its install guidance. |
 | **Zarr** | `zarr` | `zarr` | Reader/writer raises `ImportError` with the required `zarr` extra in its install guidance. |
 
@@ -186,7 +186,7 @@ In practice, **MiniSEED** is the easiest starting point when you need to place a
 | **K-NET** (`.knet`) | ○ / × | `TimeSeriesDict.read(..., format="knet")` | Strong-motion records | Read-only |
 | **WIN / WIN32** (`.win`, `.cnt`) | ○ / × | `TimeSeriesDict.read(..., format="win")`, `TimeSeriesDict.read(..., format="win32")` | Japanese WIN datasets | Improved parser, read-only |
 | **ATS** (`.ats`) | ○ / × | `TimeSeries.read(..., format="ats")`, `TimeSeriesDict.read(..., format="ats")` | Metronix observation data | Native binary reader |
-| **ATS.MTH5** (`format="ats.mth5"`) | ○ / × | `TimeSeries.read(..., format="ats.mth5")` | Single MTH5-backed path | Partial support |
+| **ATS.MTH5** (`format="ats.mth5"`) | ○ / × | `TimeSeries.read(..., format="ats.mth5")` | Single MTH5-backed path | Supported narrow route; `mth5>=0.6.8` |
 | **MTH5 standalone** (`.h5`) | In progress | Dedicated `format="mth5"` not yet exposed | Future general MTH5 direct I/O | **Not currently a public direct-I/O format**. The only direct path today is `ats.mth5` |
 
 - Purpose: compare common seismic and geophysical readers without overstating MTH5 support
@@ -218,7 +218,12 @@ ats = TimeSeries.read("data.atss", format="ats.mth5")
   decoded sample counts are bounded, so truncated or overlong payloads do not
   trigger oversized reads. Cumulative deltas do not wrap at int32 bounds, and
   only a BCD year transition from `99` to `00` advances the century.
-- **ATS.MTH5** is the limited current direct path.
+- **ATS.MTH5** is the supported narrow direct path. It calls
+  `mth5.read_file(..., file_type="metronix")`, requires one-dimensional
+  non-empty channel data plus start/rate/component/unit metadata, preserves raw
+  values, and maps Ex/Ey to mV/km and Hx/Hy/Hz to nT. Use `TimeSeries.read`;
+  the `TimeSeriesDict` route is rejected explicitly. Source timing and units
+  are authoritative, so reader overrides are rejected rather than ignored.
 - **MTH5 standalone** is still in design/publication cleanup. Read this as **"`ats.mth5` has partial support"**, not as **"MTH5 direct I/O is generally complete."**
 
 <a id="io-formats-en-c"></a>

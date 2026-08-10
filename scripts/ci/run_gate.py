@@ -277,6 +277,14 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
         )
         return
 
+    if gate == "io-mth5":
+        _run_strict_junit_gate(
+            gate,
+            Path("junit/io-mth5.xml"),
+            ["tests/io/test_ats_mth5_reader.py"],
+        )
+        return
+
     if gate == "interop-root":
         _run_strict_junit_gate(
             gate,
@@ -331,6 +339,7 @@ def main(argv: list[str] | None = None) -> int:
             "io-zarr",
             "io-gwf",
             "io-netcdf",
+            "io-mth5",
             "interop-contract",
             "interop-mne",
             "interop-root",

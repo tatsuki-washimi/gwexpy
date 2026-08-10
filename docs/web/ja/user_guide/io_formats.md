@@ -129,7 +129,7 @@ ts = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 | **TDMS** | `nptdms` | `io` | reader は必要な `io` extra の案内付きで `ImportError` を送出します。 |
 | **mseed / SAC / GSE2 / K-NET** | `obspy` | `seismic` | 登録済みの reader / writer は必要な `seismic` extra の案内付きで `ImportError` を送出します。 |
 | **WIN / WIN32** | `obspy` | `seismic` | 条件付き登録です。ObsPy がない環境では `win` / `win32` の registry entry 自体が存在しない場合があります。 |
-| **ATS.MTH5** | `mth5` | `seismic` | reader は必要な `seismic` extra の案内付きで `ImportError` を送出します。 |
+| **ATS.MTH5** | `mth5` (>=0.6.8) | `seismic` | reader は必要な `seismic` extra の案内付きで `ImportError` を送出します。 |
 | **nc / NetCDF4** | `xarray`, `netCDF4` | `netcdf4` | reader / writer は必要な `netcdf4` extra の案内付きで `ImportError` を送出します。 |
 | **Zarr** | `zarr` | `zarr` | reader / writer は必要な `zarr` extra の案内付きで `ImportError` を送出します。 |
 
@@ -185,7 +185,7 @@ open_data = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 | **K-NET** (`.knet`) | ○ / × | `TimeSeriesDict.read(..., format="knet")` | K-NET 強震記録 | 読み込み専用 |
 | **WIN / WIN32** (`.win`, `.cnt`) | ○ / × | `TimeSeriesDict.read(..., format="win")`, `TimeSeriesDict.read(..., format="win32")` | 国内 WIN データ | 改良版 parser、読み込み専用 |
 | **ATS** (`.ats`) | ○ / × | `TimeSeries.read(..., format="ats")`, `TimeSeriesDict.read(..., format="ats")` | Metronix 観測データ | ネイティブ binary reader |
-| **ATS.MTH5** (`format="ats.mth5"`) | ○ / × | `TimeSeries.read(..., format="ats.mth5")` | MTH5 経由の単一路 | 一部対応 |
+| **ATS.MTH5** (`format="ats.mth5"`) | ○ / × | `TimeSeries.read(..., format="ats.mth5")` | MTH5 経由の単一路 | 対応済みの限定 route。`mth5>=0.6.8` |
 | **MTH5 standalone** (`.h5`) | 対応中 | 専用 `format="mth5"` は未整備 | 今後の汎用 MTH5 direct I/O | **現時点では public direct-I/O 対応ではありません**。使える direct path は `ats.mth5` のみ |
 
 - 目的: 地震・地球物理系 reader の違いを、MTH5 を過大評価せずに比較する
@@ -216,7 +216,12 @@ ats = TimeSeries.read("data.atss", format="ats.mth5")
 - **不正なWIN payloadはfail-closedで拒否します。**
   packet長、channel長、decode後のsample数を上限内で検証するため、truncatedまたはoverlongなpayloadによる過大readを避けます。
   累積deltaはint32境界でwrapせず、BCD年が `99` から `00` へ変わる場合だけcenturyを進めます。
-- **ATS.MTH5** は利用経路が限定される current direct path です。
+- **ATS.MTH5** は対応済みの限定 direct path です。
+  `mth5.read_file(..., file_type="metronix")` を使い、1次元で空でない channel
+  data、start/rate/component/unit metadata を要求します。raw value は rescale
+  せず、Ex/Ey は mV/km、Hx/Hy/Hz は nT へ対応付けます。入口は
+  `TimeSeries.read` だけで、`TimeSeriesDict` route は明示的に拒否します。
+  source の時刻と単位を正本とし、reader override は無視せず拒否します。
 - **MTH5 standalone** は設計・公開整理中です。**「MTH5 は対応済み」ではなく、「`ats.mth5` のみ一部対応」** と読んでください。
 
 <a id="io-formats-ja-c"></a>

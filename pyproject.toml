@@ -87,7 +87,7 @@ control = [
 # are pre-1.0 and pinned only at the lower bound -- see D1.)
 seismic = [
   "obspy<2",
-  "mth5",
+  "mth5>=0.6.8",
   "mtpy",
   "mt_metadata",
 ]
@@ -171,7 +171,7 @@ all = [
   "control",
   # seismic
   "obspy<2",
-  "mth5",
+  "mth5>=0.6.8",
   "mtpy",
   "mt_metadata",
   # gw

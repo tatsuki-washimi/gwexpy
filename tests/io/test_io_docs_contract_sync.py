@@ -153,6 +153,10 @@ def test_docs_seismic_table_matches_current_public_boundary():
     assert contract["ats.mth5"]["public_api"]["read"] == ["TimeSeries"]
     assert "The only direct path today is `ats.mth5`" in en
     assert "使える direct path は `ats.mth5` のみ" in ja
+    assert "mth5>=0.6.8" in en
+    assert "mth5>=0.6.8" in ja
+    assert "Ex/Ey to mV/km and Hx/Hy/Hz to nT" in en
+    assert "Ex/Ey は mV/km、Hx/Hy/Hz は nT" in ja
 
 
 def test_docs_mark_frequency_dttxml_as_implementation_only():
@@ -193,6 +197,7 @@ def test_optional_dependency_matrix_matches_contract():
 
     ats_mth5 = contract["ats.mth5"]
     assert ats_mth5["extras"] == ["seismic"]
+    assert any("mth5.read_file" in note for note in ats_mth5["notes"])
     assert "required `seismic` extra" in en
     assert "必要な `seismic` extra" in ja
 

@@ -155,6 +155,11 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             return _coerce_reader_result(
                 cls, read_timeseriesdict_zarr(source, *args, **reader_kwargs)
             )
+        if fmt == "ats.mth5":
+            raise TypeError(
+                "format 'ats.mth5' supports TimeSeries.read only; "
+                "TimeSeriesDict.read is not supported"
+            )
         gwf_format = _resolve_gwf_format(source, fmt)
         try:
             p = Path(source)
@@ -169,7 +174,6 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             "win",
             "win32",
             "ats",
-            "ats.mth5",
             "gbd",
             "tdms",
             "xml.diaggui",
@@ -190,7 +194,6 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 "win": ("gwexpy.timeseries.io.win", "read_win_file"),
                 "win32": ("gwexpy.timeseries.io.win", "read_win_file"),
                 "ats": ("gwexpy.timeseries.io.ats", "read_timeseriesdict_ats"),
-                "ats.mth5": ("gwexpy.timeseries.io.ats", "read_timeseriesdict_ats"),
                 "gbd": ("gwexpy.timeseries.io.gbd", "read_timeseriesdict_gbd"),
                 "tdms": ("gwexpy.timeseries.io.tdms", "read_timeseriesdict_tdms"),
                 "xml.diaggui": (

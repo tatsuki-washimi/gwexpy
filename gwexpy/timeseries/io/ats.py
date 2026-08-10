@@ -377,83 +377,125 @@ def _format_ats_mth5_import_error(mth5: Any | None = None) -> ImportError:
         "not installed" if mth5 is None else getattr(mth5, "__version__", "unknown")
     )
     return ImportError(
-        "format 'ats.mth5' requires a compatible mth5 installation exposing "
-        "mth5.io.metronix.metronix_atss. "
+        "format 'ats.mth5' requires mth5>=0.6.8 with the top-level "
+        "mth5.read_file API. "
         f"Installed mth5 version: {version}. "
-        "Install a compatible mth5 release with Metronix ATS support, "
+        "Install gwexpy with the 'seismic' extra for a compatible mth5 "
+        "release and its Metronix reader dependencies, "
         "or use format='ats' for gwexpy's native ATS reader."
     )
+
+
+_MTH5_COMPONENT_UNITS = {
+    "ex": (u.mV / u.km, {"mv/km", "millivolt/kilometer", "millivoltperkilometer"}),
+    "ey": (u.mV / u.km, {"mv/km", "millivolt/kilometer", "millivoltperkilometer"}),
+    "hx": (u.nT, {"nt", "nanotesla"}),
+    "hy": (u.nT, {"nt", "nanotesla"}),
+    "hz": (u.nT, {"nt", "nanotesla"}),
+}
+
+
+def _normalize_mth5_unit(value: object) -> str:
+    """Normalize the limited Metronix unit spellings accepted by this route."""
+    return str(value).strip().lower().replace(" ", "")
 
 
 def read_timeseries_ats_mth5(source, **kwargs):
     """Read Metronix ATS/ATSS file using mth5 library.
 
-    This function uses `mth5.io.metronix.metronix_atss.read_atss`.
-    Note that mth5 enforces strict filename conventions (e.g. extension .atss, specific underscores)
-    to parse metadata. If your file does not adhere to these conventions, use the default
-    `read_timeseries_ats` which parses the binary header directly.
+    This function uses ``mth5.read_file(..., file_type="metronix")``.
+    MTH5 enforces the Metronix ATSS filename and companion-JSON conventions.
+    Use ``format="ats"`` for gwexpy's native binary ATS reader.
 
     ``start``/``end`` are rejected rather than ignored (issue #611).
     """
     reject_time_selection("ats.mth5", kwargs)
+    pop_time_selection(kwargs)
     timezone = kwargs.pop("timezone", None)
-    kwargs.pop("epoch", None)
+    epoch = kwargs.pop("epoch", None)
     _reject_timezone_reinterpretation("ats.mth5", timezone, None)
+    if epoch is not None:
+        raise ValueError("ats.mth5 does not support an epoch override")
+    if kwargs:
+        names = ", ".join(sorted(kwargs))
+        raise TypeError(f"ats.mth5 does not support reader argument(s): {names}")
 
     try:
         mth5 = ensure_dependency("mth5")
     except ImportError as exc:
         raise _format_ats_mth5_import_error() from exc
 
-    try:
-        metronix_atss = mth5.io.metronix.metronix_atss
-    except AttributeError as exc:
-        raise _format_ats_mth5_import_error(mth5) from exc
-
-    if not hasattr(metronix_atss, "read_atss"):
+    read_file = getattr(mth5, "read_file", None)
+    if not callable(read_file):
         raise _format_ats_mth5_import_error(mth5)
 
-    # mth5 requires .atss extension?
-    # Based on investigation, it checks .suffix in _get_file_type.
-    # If source does not end in .atss, we might fail or need to symlink.
-    # We will pass it as is and let mth5 handle (or fail).
+    source_name = (
+        source if isinstance(source, (str, Path)) else getattr(source, "name", source)
+    )
+    try:
+        channel_ts = read_file(str(source_name), file_type="metronix")
+    except ImportError as exc:
+        raise _format_ats_mth5_import_error(mth5) from exc
 
-    # mth5 read_atss returns a ChannelTS object (wrapping xarray)
-    # or sometimes directly ChannelTS?
-    # read_atss(fn) -> atss_obj.to_channel_ts()
+    raw_data = getattr(channel_ts, "ts", None)
+    if raw_data is None:
+        raise ValueError("ats.mth5 channel ts data is required")
+    data = np.asarray(raw_data)
+    if data.ndim != 1:
+        raise ValueError("ats.mth5 channel data must be one-dimensional")
+    if data.size == 0:
+        raise ValueError("ats.mth5 channel data must be non-empty")
 
-    channel_ts = metronix_atss.read_atss(str(source))
+    raw_sample_rate = getattr(channel_ts, "sample_rate", None)
+    if raw_sample_rate is None or isinstance(raw_sample_rate, (bool, np.bool_)):
+        raise ValueError("ats.mth5 sample_rate must be finite and positive")
+    try:
+        sample_rate = float(raw_sample_rate)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("ats.mth5 sample_rate must be finite and positive") from exc
+    if not np.isfinite(sample_rate) or sample_rate <= 0:
+        raise ValueError("ats.mth5 sample_rate must be finite and positive")
 
-    # Convert ChannelTS (xarray) to TimeSeries
-    # channel_ts.ts is the xarray DataArray
-    data_array = channel_ts.ts
-
-    # Extract data
-    data = data_array.data
-
-    # Extract metadata
-    # t0: start time. Obspy/MTH5 usually uses comparison-safe types.
-    # xarray time index:
-    # data_array.time[0]
-
-    import pandas as pd
-    from gwpy.time import to_gps
-
-    # Attempt to get t0 from time index
-    if len(data_array.time) > 0:
-        # Convert numpy.datetime64/pandas timestamp to GPS
-        t0_timestamp = pd.Timestamp(data_array.time.values[0])
-        t0 = to_gps(t0_timestamp)
-        dt = 1.0 / channel_ts.sample_rate
+    raw_start = getattr(channel_ts, "start", None)
+    if raw_start is None or (isinstance(raw_start, str) and not raw_start.strip()):
+        raise ValueError("ats.mth5 start metadata is required")
+    if isinstance(raw_start, datetime.datetime):
+        start = raw_start
+        if start.tzinfo is None:
+            start = start.replace(tzinfo=datetime.UTC)
     else:
-        # Fallback or error
-        t0 = 0
-        dt = 1.0
+        try:
+            start = ensure_datetime(str(raw_start), datetime.UTC)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("ats.mth5 start metadata is invalid") from exc
+    t0 = datetime_to_gps(start)
 
-    name = channel_ts.channel_metadata.id or "mth5_channel"
-    unit = channel_ts.channel_metadata.units
+    raw_component = getattr(channel_ts, "component", None)
+    if not isinstance(raw_component, str) or not raw_component.strip():
+        raise ValueError("ats.mth5 component metadata is required")
+    component = raw_component.strip().lower()
+    try:
+        unit, accepted_units = _MTH5_COMPONENT_UNITS[component]
+    except KeyError as exc:
+        raise ValueError(f"unsupported ats.mth5 component: {raw_component!r}") from exc
 
-    return TimeSeries(data, t0=t0, dt=dt, name=name, unit=unit)
+    channel_metadata = getattr(channel_ts, "channel_metadata", None)
+    raw_unit = getattr(channel_metadata, "units", None)
+    if raw_unit is None or not str(raw_unit).strip():
+        raise ValueError("ats.mth5 unit metadata is required")
+    if _normalize_mth5_unit(raw_unit) not in accepted_units:
+        raise ValueError(
+            f"ats.mth5 unit {raw_unit!r} is invalid for component {component!r}"
+        )
+
+    return TimeSeries(
+        data,
+        t0=t0,
+        sample_rate=sample_rate,
+        name=component,
+        channel=component,
+        unit=unit,
+    )
 
 
 # -- Registration

@@ -131,7 +131,7 @@ above.
 | `zarr` | `zarr` | Reading and writing Zarr array stores. |
 | `plotting` | `pygmt` | High-precision geographic mapping (GeoMap). |
 | `audio` | `pydub`, `tinytag` | Audio export, processing, and optional metadata extraction. |
-| `seismic` | `obspy`, `mth5`, `mtpy` | Seismic and magnetotelluric data. |
+| `seismic` | `obspy`, `mth5>=0.6.8`, `mtpy` | Seismic and magnetotelluric data, including the narrow `ats.mth5` reader. |
 | `control` | `control` (python-control) | Control systems and transfer functions. |
 
 ---
