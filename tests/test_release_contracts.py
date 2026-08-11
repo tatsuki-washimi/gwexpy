@@ -120,10 +120,10 @@ def test_release_contract_loader_rejects_unsafe_artifact_prefix(
         contracts.release_contract("v0.1.14")
 
 
-def test_v0114_manifest_is_a_fail_closed_review_evidence_placeholder() -> None:
+def test_v0114_manifest_is_a_sanitized_review_evidence_container() -> None:
     assert V0114_MANIFEST.is_file()
     source = V0114_MANIFEST.read_text(encoding="utf-8")
 
     assert source.count("review_evidence_json:") == 1
+    assert source.startswith("review_evidence_json: |\n")
     assert '"schema": "gwexpy-v0114-review-evidence-v1"' in source
-    assert '"entries": []' in source

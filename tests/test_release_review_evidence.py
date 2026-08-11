@@ -255,15 +255,13 @@ def test_audit_yaml_rejects_content_outside_sanitized_json_block(
         validator.validate_review_evidence(evidence, SOURCE_SHA, {"A"}, tmp_path)
 
 
-def test_v0114_placeholder_is_rejected_by_executable_review_gate():
+def test_v0114_placeholder_is_rejected_by_executable_review_gate(tmp_path: Path):
     validator = load_validator()
-    manifest = (
-        ROOT
-        / "docs"
-        / "developers"
-        / "plans"
-        / "manifests"
-        / "audit-manifest-v0.1.14-release-readiness.yaml"
+    manifest = tmp_path / "audit-manifest-v0.1.14-release-readiness.yaml"
+    manifest.write_text(
+        "review_evidence_json: |\n"
+        '  {"schema": "gwexpy-v0114-review-evidence-v1", "entries": []}\n',
+        encoding="utf-8",
     )
 
     with pytest.raises(
@@ -274,7 +272,7 @@ def test_v0114_placeholder_is_rejected_by_executable_review_gate():
             manifest,
             None,
             None,
-            ROOT,
+            tmp_path,
             expected_tag="v0.1.14",
         )
 
