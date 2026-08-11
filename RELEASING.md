@@ -7,8 +7,15 @@ dry-runs and must be launched with `--ref main`, which the workflow enforces:
 gh workflow run publish-release.yml --ref main \
   -f release_ref=<existing-final-tag-or-40-character-candidate-sha> \
   -f expected_tag=<final-version-tag> \
-  -f review_evidence=docs/developers/plans/manifests/audit-manifest-v0.1.13-sol-followup.yaml
+  -f review_evidence=docs/developers/plans/manifests/audit-manifest-v0.1.14-release-readiness.yaml
 ```
+
+The accepted tag-specific plan, evidence schema/path, review lanes, S-to-R
+paths, payload/integration schemas, and artifact prefix are defined only in
+`scripts/ci/release_contracts.json`.  A syntactically valid SemVer tag that is
+not listed there is unsupported and fails closed.  Keep the v0.1.13 entry
+unchanged as the historical release contract; add a new entry for each future
+release instead of rewriting an older one.
 
 `release_ref` is either an existing annotated final-release tag (strict mode)
 or a lowercase 40-character candidate SHA.  Branch names, abbreviated SHAs,
@@ -46,10 +53,12 @@ The four required smoke reports are named exactly
 `python-3.11-wheel.json`, `python-3.11-sdist.json`,
 `python-3.12-wheel.json`, and `python-3.12-sdist.json`.  Their collector
 accepts only typed release facts (not logs, URLs, credentials, or raw review
-text) and emits a single allowlisted aggregate artifact named
-`v0113-integration-evidence-<40-character-source-sha>`.  It is retained for
-90 days.  Record its artifact ID, API digest, `created_at`, and `expires_at`
-in UTC; acceptance requires `expires_at - created_at >= 90 days - 5 minutes`.
+text) and emits a single allowlisted aggregate artifact whose configured name
+is currently `v0114-integration-evidence-<40-character-source-sha>` (the
+historical v0.1.13 contract remains `v0113-integration-evidence-...`).  It is
+retained for 90 days.  Record its artifact ID, API digest, `created_at`, and
+`expires_at` in UTC; acceptance requires
+`expires_at - created_at >= 90 days - 5 minutes`.
 Repository retention policy may cap the configured duration, and run/artifact
 deletion or expiry invalidates the evidence.
 
@@ -59,14 +68,20 @@ commit, canonical `git ls-tree -r -z --full-tree` scope digest, sanitized
 finding IDs, and verdict only.  Raw reports are not collected.  Human approval
 and protected-environment controls remain the only publication authorization.
 
-The coordinator-owned
-`docs/developers/plans/manifests/audit-manifest-v0.1.13-sol-followup.yaml`
-is the sole release-gate review-evidence path for tag runs.  It must contain
+The coordinator-owned path selected for the expected tag by
+`scripts/ci/release_contracts.json` is the sole release-gate review-evidence
+path for tag runs.  For v0.1.14 it is
+`docs/developers/plans/manifests/audit-manifest-v0.1.14-release-readiness.yaml`.
+It must contain
 exactly one top-level `review_evidence_json: |` block whose content is the
-strict JSON review-evidence schema; duplicate JSON keys are rejected.  Manual
-dispatches may name that same repository-relative path explicitly.  The
+strict JSON review-evidence schema; no YAML text is allowed outside that block,
+and duplicate JSON keys are rejected.  The document is size-bounded, `model`
+and finding IDs are short identifiers, and `effort` is an allowlisted value so
+the S-to-R evidence commit cannot carry raw review prose in approved fields.
+Manual dispatches may name that same repository-relative path explicitly.  The
 reviewed commit is `S`, while the validator binds it to `R` only when the
-`S..R` diff contains the coordinator manifest and/or plan alone.  Any plan
+`S..R` diff contains only the tag-specific coordinator paths allowlisted in
+the same contract.  Any plan
 delta must be byte-identical except for existing checkbox transitions from
 `[ ]` to `[x]`; frozen-tip validation happens only after this binding.
 

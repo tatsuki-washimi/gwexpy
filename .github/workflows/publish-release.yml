@@ -34,6 +34,7 @@ jobs:
     outputs:
       source_sha: ${{ steps.validate.outputs.source_sha }}
       version: ${{ steps.validate.outputs.version }}
+      artifact_prefix: ${{ steps.validate.outputs.artifact_prefix }}
     steps:
       - name: Check out workflow revision for validator code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -73,12 +74,19 @@ jobs:
         env:
           RELEASE_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.release_ref || github.ref_name }}
           EXPECTED_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_tag || github.ref_name }}
-          REVIEW_EVIDENCE: ${{ github.event_name == 'workflow_dispatch' && inputs.review_evidence || 'docs/developers/plans/manifests/audit-manifest-v0.1.13-sol-followup.yaml' }}
+          REVIEW_EVIDENCE: ${{ github.event_name == 'workflow_dispatch' && inputs.review_evidence || '' }}
         run: |
-          result="$(python control/scripts/validate_release.py --repo-root source --release-ref "$RELEASE_REF" --expected-tag "$EXPECTED_TAG" --review-evidence "$REVIEW_EVIDENCE" --frozen-tip)"
+          review_args=()
+          if [[ -n "$REVIEW_EVIDENCE" ]]; then
+            review_args=(--review-evidence "$REVIEW_EVIDENCE")
+          fi
+          result="$(python control/scripts/validate_release.py --repo-root source --release-ref "$RELEASE_REF" --expected-tag "$EXPECTED_TAG" "${review_args[@]}" --frozen-tip)"
           printf '%s\n' "$result"
-          printf '%s\n' "$result" | awk -F= '/^source_sha=/{print "source_sha=" $2}' >> "$GITHUB_OUTPUT"
-          printf '%s\n' "$result" | awk -F= '/^version=/{print "version=" $2}' >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$result" | awk -F= '
+            /^source_sha=/ {print "source_sha=" $2}
+            /^version=/ {print "version=" $2}
+            /^artifact_prefix=/ {print "artifact_prefix=" $2}
+          ' >> "$GITHUB_OUTPUT"
 
   build:
     name: Build and check release artifacts
@@ -278,7 +286,7 @@ jobs:
       - name: Upload 90-day integration evidence
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: v0113-integration-evidence-${{ needs.verify.outputs.source_sha }}
+          name: ${{ needs.verify.outputs.artifact_prefix }}-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-evidence/aggregate.json
           if-no-files-found: error
           retention-days: 90

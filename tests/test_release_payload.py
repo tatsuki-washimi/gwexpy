@@ -29,20 +29,25 @@ def load_payload_validator():
     return module
 
 
-def write_payload(tmp_path: Path) -> tuple[Path, Path]:
+def write_payload(
+    tmp_path: Path,
+    *,
+    version: str = "0.1.13",
+    schema: str = "gwexpy-v0113-release-payload-v1",
+) -> tuple[Path, Path]:
     payload = tmp_path / "release-payload"
     payload.mkdir()
-    wheel = payload / "gwexpy-0.1.13-py3-none-any.whl"
-    sdist = payload / "gwexpy-0.1.13.tar.gz"
+    wheel = payload / f"gwexpy-{version}-py3-none-any.whl"
+    sdist = payload / f"gwexpy-{version}.tar.gz"
     wheel.write_bytes(b"wheel")
     sdist.write_bytes(b"sdist")
     manifest = tmp_path / "distribution-sha256.json"
     manifest.write_text(
         json.dumps(
             {
-                "schema": "gwexpy-v0113-release-payload-v1",
+                "schema": schema,
                 "source_sha": "a" * 40,
-                "version": "0.1.13",
+                "version": version,
                 "files": {
                     "wheel": {
                         "name": wheel.name,
@@ -60,13 +65,20 @@ def write_payload(tmp_path: Path) -> tuple[Path, Path]:
     return payload, manifest
 
 
-def test_payload_accepts_exactly_one_wheel_and_one_sdist_named_by_manifest(
-    tmp_path: Path,
+@pytest.mark.parametrize(
+    ("version", "schema"),
+    [
+        ("0.1.13", "gwexpy-v0113-release-payload-v1"),
+        ("0.1.14", "gwexpy-v0114-release-payload-v1"),
+    ],
+)
+def test_payload_accepts_versioned_schema_and_exact_distributions(
+    tmp_path: Path, version: str, schema: str
 ):
     validator = load_payload_validator()
-    payload, manifest = write_payload(tmp_path)
+    payload, manifest = write_payload(tmp_path, version=version, schema=schema)
 
-    result = validator.validate_payload(payload, manifest, "0.1.13")
+    result = validator.validate_payload(payload, manifest, version)
 
     assert result.wheel.name.endswith(".whl")
     assert result.sdist.name.endswith(".tar.gz")
@@ -128,3 +140,15 @@ def test_payload_rejects_duplicate_json_keys(tmp_path: Path):
 
     with pytest.raises(validator.ReleasePayloadError):
         validator.validate_payload(payload, manifest, "0.1.13")
+
+
+def test_payload_rejects_unconfigured_release_version(tmp_path: Path):
+    validator = load_payload_validator()
+    payload, manifest = write_payload(
+        tmp_path,
+        version="0.1.15",
+        schema="gwexpy-v0115-release-payload-v1",
+    )
+
+    with pytest.raises(validator.ReleasePayloadError, match="unsupported release tag"):
+        validator.validate_payload(payload, manifest, "0.1.15")

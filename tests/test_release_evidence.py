@@ -30,22 +30,30 @@ def load_collector():
     return module
 
 
-def write_evidence_inputs(tmp_path: Path) -> tuple[Path, Path, Path]:
+def write_evidence_inputs(
+    tmp_path: Path,
+    *,
+    version: str = "0.1.13",
+    payload_schema: str = "gwexpy-v0113-release-payload-v1",
+) -> tuple[Path, Path, Path]:
     sidecars = tmp_path / "sidecars"
     sidecars.mkdir()
     payload_manifest = sidecars / "distribution-sha256.json"
     payload_manifest.write_text(
         json.dumps(
             {
-                "schema": "gwexpy-v0113-release-payload-v1",
+                "schema": payload_schema,
                 "source_sha": SOURCE_SHA,
-                "version": "0.1.13",
+                "version": version,
                 "files": {
                     "wheel": {
-                        "name": "gwexpy-0.1.13-py3-none-any.whl",
+                        "name": f"gwexpy-{version}-py3-none-any.whl",
                         "sha256": "b" * 64,
                     },
-                    "sdist": {"name": "gwexpy-0.1.13.tar.gz", "sha256": "c" * 64},
+                    "sdist": {
+                        "name": f"gwexpy-{version}.tar.gz",
+                        "sha256": "c" * 64,
+                    },
                 },
             }
         ),
@@ -56,8 +64,8 @@ def write_evidence_inputs(tmp_path: Path) -> tuple[Path, Path, Path]:
     smoke.mkdir()
     for python in ("3.11", "3.12"):
         for kind, filename, digest in (
-            ("wheel", "gwexpy-0.1.13-py3-none-any.whl", "b" * 64),
-            ("sdist", "gwexpy-0.1.13.tar.gz", "c" * 64),
+            ("wheel", f"gwexpy-{version}-py3-none-any.whl", "b" * 64),
+            ("sdist", f"gwexpy-{version}.tar.gz", "c" * 64),
         ):
             (smoke / f"python-{python}-{kind}.json").write_text(
                 json.dumps(
@@ -71,7 +79,7 @@ def write_evidence_inputs(tmp_path: Path) -> tuple[Path, Path, Path]:
                         },
                         "repository_license_sha256": "d" * 64,
                         "embedded_license_sha256": "d" * 64,
-                        "installed_version": "0.1.13",
+                        "installed_version": version,
                         "import_ok": True,
                         "register_all_ok": True,
                         "smoke_ok": True,
@@ -82,9 +90,37 @@ def write_evidence_inputs(tmp_path: Path) -> tuple[Path, Path, Path]:
     return payload_manifest, sidecars, smoke
 
 
-def test_collector_requires_each_fixed_smoke_cell_exactly_once(tmp_path: Path):
+@pytest.mark.parametrize(
+    ("tag", "version", "payload_schema", "integration_schema", "prefix"),
+    [
+        (
+            "v0.1.13",
+            "0.1.13",
+            "gwexpy-v0113-release-payload-v1",
+            "gwexpy-v0113-integration-evidence-v1",
+            "v0113-integration-evidence",
+        ),
+        (
+            "v0.1.14",
+            "0.1.14",
+            "gwexpy-v0114-release-payload-v1",
+            "gwexpy-v0114-integration-evidence-v1",
+            "v0114-integration-evidence",
+        ),
+    ],
+)
+def test_collector_uses_versioned_schema_and_fixed_smoke_cells(
+    tmp_path: Path,
+    tag: str,
+    version: str,
+    payload_schema: str,
+    integration_schema: str,
+    prefix: str,
+):
     collector = load_collector()
-    payload, sidecars, smoke = write_evidence_inputs(tmp_path)
+    payload, sidecars, smoke = write_evidence_inputs(
+        tmp_path, version=version, payload_schema=payload_schema
+    )
 
     evidence = collector.assemble_evidence(
         payload,
@@ -95,10 +131,11 @@ def test_collector_requires_each_fixed_smoke_cell_exactly_once(tmp_path: Path):
         "123",
         SOURCE_SHA,
         "refs/heads/main",
-        "v0.1.13",
+        tag,
     )
 
-    assert evidence["artifact_name"] == f"v0113-integration-evidence-{SOURCE_SHA}"
+    assert evidence["schema"] == integration_schema
+    assert evidence["artifact_name"] == f"{prefix}-{SOURCE_SHA}"
     assert set(evidence["smoke"]) == {
         "python-3.11-wheel",
         "python-3.11-sdist",
@@ -180,4 +217,26 @@ def test_collector_rejects_malformed_expected_tag_and_duplicate_json_key(
             SOURCE_SHA,
             "refs/heads/main",
             "v-not-a-release",
+        )
+
+
+def test_collector_rejects_unconfigured_release_tag(tmp_path: Path):
+    collector = load_collector()
+    payload, sidecars, smoke = write_evidence_inputs(
+        tmp_path,
+        version="0.1.15",
+        payload_schema="gwexpy-v0115-release-payload-v1",
+    )
+
+    with pytest.raises(collector.ReleaseEvidenceError, match="unsupported release tag"):
+        collector.assemble_evidence(
+            payload,
+            sidecars,
+            smoke,
+            SOURCE_SHA,
+            "owner/repo",
+            "123",
+            SOURCE_SHA,
+            "refs/heads/main",
+            "v0.1.15",
         )
