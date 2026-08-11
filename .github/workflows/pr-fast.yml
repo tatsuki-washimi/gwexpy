@@ -38,6 +38,10 @@ jobs:
         # while masquerading as a cancelled run (#629).
         timeout-minutes: 5
         uses: actions/checkout@v7
+        # Review evidence is bound to the parent S commit, which must remain
+        # available when this job validates the resulting R commit.
+        with:
+          fetch-depth: 0
 
       - name: Set up gwexpy environment
         uses: ./.github/actions/setup-gwexpy
