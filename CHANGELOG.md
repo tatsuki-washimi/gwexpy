@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.1.14] - 2026-08-15
+
 ### Removed (breaking)
 
 - **io (SDB)**: the undocumented `sqlite` and `sqlite3` format aliases and
@@ -1284,7 +1286,8 @@ Early stable GWexpy release focused on API stability, GWpy compatibility, and re
 - Fixed unit propagation in complex matrix operations.
 - Corrected IFFT amplitude scaling for one-sided spectra.
 
-[Unreleased]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.13...HEAD
+[Unreleased]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.14...HEAD
+[0.1.14]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.13...v0.1.14
 [0.1.13]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.12...v0.1.13
 [0.1.12]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.11...v0.1.12
 [0.1.11]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.10...v0.1.11

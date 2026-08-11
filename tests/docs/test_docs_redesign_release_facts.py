@@ -7,13 +7,13 @@ from pathlib import Path
 from babel.messages import pofile
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-RELEASE_VERSION = "0.1.13"
-RELEASE_DATE = "2026-08-08"
+RELEASE_VERSION = "0.1.14"
+RELEASE_DATE = "2026-08-15"
 RELEASE_HISTORY_ENTRY = f"[{RELEASE_VERSION}] - {RELEASE_DATE}"
 
 
 def test_current_release_facts_match_the_approved_values() -> None:
-    """Pin the approved v0.1.13 facts in every canonical public source."""
+    """Pin the approved v0.1.14 facts in every canonical public source."""
     changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     citation = (REPO_ROOT / "CITATION.cff").read_text(encoding="utf-8")
     zenodo = json.loads((REPO_ROOT / ".zenodo.json").read_text(encoding="utf-8"))
@@ -54,6 +54,7 @@ def test_redesign_changelog_includes_the_canonical_release_history() -> None:
     )
     assert canonical_releases == [
         RELEASE_HISTORY_ENTRY,
+        "[0.1.13] - 2026-08-08",
         "[0.1.12] - 2026-07-31",
         "[0.1.11] - 2026-07-25",
         "[0.1.10] - 2026-07-18",
