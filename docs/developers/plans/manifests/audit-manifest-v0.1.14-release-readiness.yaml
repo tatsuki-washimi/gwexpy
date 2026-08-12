@@ -1,5 +1,96 @@
 review_evidence_json: |
   {
     "schema": "gwexpy-v0114-review-evidence-v1",
-    "entries": []
+    "entries": [
+      {
+        "lane": "completion",
+        "role": "reviewer",
+        "model": "gpt-5.6",
+        "effort": "high",
+        "reviewed_commit": "194f1acd3ea0fd6fee5c42d072db16994fd9dd25",
+        "scope_paths": [
+          ".zenodo.json",
+          "CHANGELOG.md",
+          "CITATION.cff",
+          "docs/developers/plans/manifests/audit-manifest-v0.1.14-release-readiness.yaml",
+          "docs/plans/2026-08-08-v0114-release-plan.md",
+          "docs_redesign/about/changelog.md",
+          "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po",
+          "gwexpy/_version.py",
+          "release_notes",
+          "tests/docs/test_docs_redesign_release_facts.py",
+          "tests/test_check_release_metadata_script.py",
+          "tests/test_validate_release_script.py"
+        ],
+        "scope_digest": "279a39e9d7c7487c96b686d6e01668cad13c12c7a13d5a1d2cd37bdfbe63ed43",
+        "verdict": "APPROVED",
+        "timestamp_utc": "2026-08-11T18:35:52Z",
+        "raw_report_sha256": "ff673fbcd68686980a65e325e9ac592fb66493f08e0cb987334b413d9bef2ce1",
+        "finding_ids": []
+      },
+      {
+        "lane": "release-security",
+        "role": "reviewer",
+        "model": "gpt-5.6",
+        "effort": "high",
+        "reviewed_commit": "194f1acd3ea0fd6fee5c42d072db16994fd9dd25",
+        "scope_paths": [
+          ".github/workflows",
+          "RELEASING.md",
+          "requirements-dev.txt",
+          "requirements/release-build.txt",
+          "scripts/ci",
+          "scripts/validate_release.py",
+          "tests/fixtures/release",
+          "tests/test_publish_release_workflow.py",
+          "tests/test_release_contracts.py",
+          "tests/test_release_evidence.py",
+          "tests/test_release_gate_workflow_contract.py",
+          "tests/test_release_payload.py",
+          "tests/test_release_review_evidence.py",
+          "tests/test_run_gate_junit_contract.py",
+          "tests/test_validate_release_script.py"
+        ],
+        "scope_digest": "dec8a33f5b5968505bd0f771934a6130f03ccd3edabac09df8c821f95a667d18",
+        "verdict": "APPROVED",
+        "timestamp_utc": "2026-08-11T18:35:52Z",
+        "raw_report_sha256": "8b14b102007ba35fa0d5461fc788c13089029b01c463163209468373e3eb9c36",
+        "finding_ids": ["RS-ADVISORY-001"]
+      },
+      {
+        "lane": "scientific",
+        "role": "reviewer",
+        "model": "gpt-5.6",
+        "effort": "high",
+        "reviewed_commit": "194f1acd3ea0fd6fee5c42d072db16994fd9dd25",
+        "scope_paths": [
+          "docs/developers/contracts",
+          "docs/web/en/user_guide/installation.md",
+          "docs/web/en/user_guide/io_formats.md",
+          "docs/web/en/user_guide/time_utilities.md",
+          "docs/web/ja/user_guide/installation.md",
+          "docs/web/ja/user_guide/io_formats.md",
+          "docs/web/ja/user_guide/time_utilities.md",
+          "docs_redesign/how-to/io_formats.md",
+          "docs_redesign/locales/ja/LC_MESSAGES/how-to/io_formats.po",
+          "gwexpy/frequencyseries/io/dttxml.py",
+          "gwexpy/gui/loaders/loaders.py",
+          "gwexpy/io",
+          "gwexpy/time",
+          "gwexpy/timeseries/collections.py",
+          "gwexpy/timeseries/io",
+          "pyproject.toml",
+          "tests/docs/test_docs_redesign_public_content.py",
+          "tests/io",
+          "tests/io_conformance",
+          "tests/time",
+          "tests/timeseries"
+        ],
+        "scope_digest": "9f9447796bc09f286df018bd4552cc4f84ed253f513c7305df1b77c5fbdddcbb",
+        "verdict": "APPROVED",
+        "timestamp_utc": "2026-08-11T18:35:52Z",
+        "raw_report_sha256": "12d7c66271bc883554e2c59acc76139f2bdf9b6d7c7f16d644c48e64607fb185",
+        "finding_ids": []
+      }
+    ]
   }
