@@ -18,3 +18,6 @@ and audit manifests.
 When adding a new plan, keep only active coordinating documents at the top of
 `active/`. Move completed issue-specific plans to `archive/` after the related
 PR or issue is closed.
+
+Undated, living canonical design documents (e.g. the capability-domain roadmap
+design) live in `../design/`, not here — see `../design/README.md`.

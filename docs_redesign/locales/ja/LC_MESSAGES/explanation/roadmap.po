@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-01 15:14+0900\n"
+"POT-Creation-Date: 2026-08-15 21:59+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -19,13 +19,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:1
-#: 342775f494f54c0e8546fed99f32a73b
+#: ../../explanation/roadmap.md:1 2fb12234068c44799aea48754473a547
 msgid "Roadmap"
 msgstr "ロードマップ"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:3
-#: 02d25207d3154138b94f86d95cac5828
+#: ../../explanation/roadmap.md:3 86fe33b4f4e745e6b96563fd2bcec317
 msgid ""
 "This page provides the public roadmap entry point for GWexpy "
 "documentation and feature planning. It is intended as a lightweight "
@@ -34,183 +32,197 @@ msgstr ""
 "このページは、GWexpy のドキュメント整備と機能計画の**公開ロードマップ入口**です。 "
 "厳密なリリース契約ではなく、どの方向へ改善を進めているかを共有するための概要として扱ってください。"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:6
-#: 73ec2b34368048d887a8cee1e334b3e8
-msgid "*Last updated: 2026-08-01.*"
-msgstr "*最終更新: 2026-08-01。*"
+#: ../../explanation/roadmap.md:6 3668d3506570437ab9a81a72db1b1fcf
+msgid "*Last updated: 2026-08-15.*"
+msgstr "*最終更新: 2026-08-15。*"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:8
-#: 313fbf95d79b44b99ea1fd966bcb4836
+#: ../../explanation/roadmap.md:8 7dca0d2382d647bca083e4589bb68a76
 msgid "How to Read This Page"
 msgstr "このページの読み方"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:10
-#: 280e412fa329468a83af4eabe297c435
+#: ../../explanation/roadmap.md:10 f393561b2e9e4f50b0ffb21ee5bb7e08
 msgid "**Near-term**: areas we expect to improve in upcoming iterations"
 msgstr "**直近**: 近いイテレーションで改善優先度が高い領域"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:11
-#: 1fd63ea462eb4974bf2c96d66a97c112
+#: ../../explanation/roadmap.md:11 fd3b98509bb14719b7cbaa9f6c4093ba
 msgid ""
 "**Mid-term**: work we want to expose more broadly after the current docs "
 "and API cleanup"
 msgstr "**中期**: 現在の docs / API 整理の後で広げていきたい領域"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:12
-#: 187d319281044a9f8a95034de2e9f6f0
+#: ../../explanation/roadmap.md:12 04b710684c604498a6a48c3fffa8983e
 msgid ""
 "**Long-term**: exploratory directions that are useful but not yet "
 "scheduled"
 msgstr "**長期**: 有用だが、まだ具体的な時期を固定していない方向性"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:14
-#: e02eb2e8dab84dad9e51d0c3b6472f90
+#: ../../explanation/roadmap.md:14 b4e33bb8881948adbb0bd4126478b34e
 msgid ""
 "The roadmap is public, but priorities can change based on research needs,"
 " maintenance cost, and upstream dependencies."
 msgstr "ロードマップは公開していますが、研究上の要請や保守コスト、上流依存の変化によって優先度は変わりえます。"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:16
-#: 572098d52dd146ff94e94dbf6c18024d
+#: ../../explanation/roadmap.md:16 cac1356e3f104372a3d662bfc4ceef08
 msgid "Near-Term Focus"
 msgstr "直近の重点項目"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:18
-msgid "Reliability hardening: eliminating the known cases where data could be returned with silently wrong values, units, or dropped metadata instead of an explicit error"
-msgstr "信頼性の強化: 明示的なエラーの代わりに、誤った値・単位・欠落したメタデータを黙って返しうる既知のケースの解消"
+#: ../../explanation/roadmap.md:18 27cbbaf684174908b5c661b6fdfd91f6
+msgid ""
+"An explicit behavioural contract for container arithmetic: predictable "
+"units, metadata propagation, and explicit failures instead of silent type"
+" downgrades"
+msgstr "コンテナ演算の明示的な動作契約：予測可能な単位とメタデータ伝播を保証し、暗黙に型を降格せず明示的に失敗する"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:19
-#: 956ad59a6eea46918ad12eab2fb70994
+#: ../../explanation/roadmap.md:20 d5b2639d615c48c7957e2ad538bd947d
 msgid ""
 "Documentation quality improvements across navigation, accessibility, and "
 "search"
 msgstr "ナビゲーション、アクセシビリティ、検索性を含むドキュメント品質改善"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:19
-#: b27790c2840a4277997e46f98c10b1a4
+#: ../../explanation/roadmap.md:21 ab9e2a071acd4df58d93b9da720bb737
 msgid "Clearer migration guidance for GWpy users"
 msgstr "GWpy ユーザー向け移行ガイドの明確化"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:20
-#: 79b5734145f84bd8ac75a96867ba6953
+#: ../../explanation/roadmap.md:22 600f66f2cda347389c1191298c442957
 msgid "Better notebook and tutorial reliability in CI"
 msgstr "notebook / tutorial の CI 上での安定性向上"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:21
-#: 1c1db4c7957c43d29c9905cd21404ea4
+#: ../../explanation/roadmap.md:23 6f507cd20dbe4709a1ac5798a897f1f2
 msgid "More explicit references between tutorials, guides, and API pages"
 msgstr "チュートリアル、ガイド、API リファレンス間の参照強化"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:23
-#: 5cac4374cc5f4baf8de21225fc1fd858
+#: ../../explanation/roadmap.md:25 52b17bcaa2d745be8901fbad7af32731
 msgid "Mid-Term Focus"
 msgstr "中期の重点項目"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:26
-msgid "Direct file reading and writing for field containers (regular-grid scalar, vector, and tensor fields), including terrain/elevation and GeoTIFF sources, with units, axes, and metadata preserved end to end"
-msgstr "フィールドコンテナ(正規格子のスカラー・ベクトル・テンソル場)のファイル直接読み書き。地形(標高)データや GeoTIFF を含め、単位・軸・メタデータを一貫して保持"
+#: ../../explanation/roadmap.md:27 fabed4d36a604a9585cf3cfc8c26a0cf
+msgid ""
+"Direct file reading and writing for field containers (regular-grid "
+"scalar, vector, and tensor fields), including terrain/elevation and "
+"GeoTIFF sources, with units, axes, and metadata preserved end to end"
+msgstr ""
+"フィールドコンテナ(正規格子のスカラー・ベクトル・テンソル場)のファイル直接読み書き。地形(標高)データや GeoTIFF "
+"を含め、単位・軸・メタデータを一貫して保持"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:29
-msgid "A complete segment-based analysis workflow: load segments, select, process with explicit error and missing-data handling, persist, and resume"
+#: ../../explanation/roadmap.md:30 ff34d208f78a4eb1ae6149b118530c1e
+msgid ""
+"A complete segment-based analysis workflow: load segments, select, "
+"process with explicit error and missing-data handling, persist, and "
+"resume"
 msgstr "セグメント単位の解析ワークフローの完結: セグメントの読み込み、選択、エラー・欠損の明示的な処理、保存、再開"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:31
-msgid "An explicit behavioural contract for container arithmetic: predictable units, metadata propagation, and explicit failures instead of silent type downgrades"
-msgstr "コンテナ演算の明示的な動作契約: 予測可能な単位、メタデータの伝播、暗黙の型降格の代わりの明示的な失敗"
+#: ../../explanation/roadmap.md:32 c825811e87144f84b8d633b6bf70813d
+msgid ""
+"Aggregating and summarizing many experiment segments together, without "
+"hand-written loops"
+msgstr "多数の実験セグメントの集約・要約を、手書きのループなしで行う"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:33
-#: ed52e8e8d3fe4089a33d45caf029a18a
+#: ../../explanation/roadmap.md:34 930a226b9e404bc89f9270c4eec979ba
+msgid ""
+"Consistent handling of physical coordinate systems for field and terrain "
+"data"
+msgstr "フィールド・地形データにおける物理座標系の一貫した取り扱い"
+
+#: ../../explanation/roadmap.md:35 309e951b1b184866be38700e86f8a5e1
 msgid "Broader CLI coverage beyond the current prototype-stage interface"
 msgstr "現在は試作段階に留まる CLI の拡張"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:26
-#: 02f4311806ea4905ad2331beb0aca4d8
+#: ../../explanation/roadmap.md:36 0cacfd11383f420dbdc037421212919b
 msgid ""
 "More analysis workflows for noise characterization and time-frequency "
 "studies"
 msgstr "ノイズ特性評価や時間周波数解析ワークフローの拡充"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:27
-#: 88bd787cb44642ea8acfeb43aa62f8ed
+#: ../../explanation/roadmap.md:37 a5f1c145ff7e46dda3bbee58a8836e4a
 msgid ""
 "Expanded interoperability guides for external scientific Python "
 "libraries, including reading HDF5 products written by data-preparation "
 "tools and importing outputs from interferometer design and simulation "
 "packages"
 msgstr ""
-"外部の科学計算 Python ライブラリとの相互運用ガイドの拡充。データ準備ツールが書き出した "
-"HDF5 プロダクトの読み込みや、干渉計の設計・シミュレーションパッケージの出力の取り込みを含む"
+"外部の科学計算 Python ライブラリとの相互運用ガイドの拡充。データ準備ツールが書き出した HDF5 "
+"プロダクトの読み込みや、干渉計の設計・シミュレーションパッケージの出力の取り込みを含む"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:30
-#: 4c0f8a02a4dc484fb2dd960e7e79e54e
+#: ../../explanation/roadmap.md:40 a6f2eb107157494691dab99a337d9e70
 msgid "More public validation notes for numerical and physics-facing algorithms"
 msgstr "数値アルゴリズムや物理前提に関する公開検証ノートの充実"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:32
-#: 16c37a709bc04642a2147cd1afd20988
+#: ../../explanation/roadmap.md:42 74dd50ef22fc4edfb0b0b3984e5bf421
 msgid ""
 "For how these bridges relate to the surrounding ecosystem, and which "
 "projects are deliberately left out of scope, see [Where GWexpy Sits in "
 "the GW Python Ecosystem](ecosystem)."
 msgstr ""
-"これらの連携が周辺エコシステムとどう関係し、どのプロジェクトを意図的に対象外としているかは"
-"[GW Python エコシステムにおける GWexpy の位置付け](ecosystem)を参照してください。"
+"これらの連携が周辺エコシステムとどう関係し、どのプロジェクトを意図的に対象外としているかは[GW Python エコシステムにおける GWexpy"
+" の位置付け](ecosystem)を参照してください。"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:35
-#: 8abadd687bd243edaa785b5c085b743d
+#: ../../explanation/roadmap.md:45 b6e5ecbb559343568d7a8b3bc96900c7
 msgid "Long-Term Directions"
 msgstr "長期的な方向性"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:44
-msgid "Spatial geometry for field data: coordinate frames, detector-aligned rotations, and layered map visualization combining terrain, physical fields, and site markers"
+#: ../../explanation/roadmap.md:47 360a6ab9891b41508a543721c46a2e71
+msgid ""
+"Spatial geometry for field data: coordinate frames, detector-aligned "
+"rotations, and layered map visualization combining terrain, physical "
+"fields, and site markers"
 msgstr "フィールドデータの空間幾何: 座標フレーム、検出器に整合した回転、地形・物理場・サイトマーカーを重ねる地図可視化"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:46
+#: ../../explanation/roadmap.md:49 3600c24c1f5140f0b6c1109aa93d8e60
 msgid "Mesh-aware field models and interoperability with numerical solver outputs"
 msgstr "メッシュ構造を保持するフィールドモデルと、数値ソルバー出力との相互運用"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:47
-msgid "Forecasting and inference utilities built on the matrix containers, such as Fisher analysis"
+#: ../../explanation/roadmap.md:50 c22ff142aee944ffbb1914ff035cb08e
+msgid ""
+"Forecasting and inference utilities built on the matrix containers, such "
+"as Fisher analysis"
 msgstr "行列コンテナ上に構築する予測・推定ユーティリティ(Fisher 解析など)"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:49
-#: acf9260184024c438adb56a69fc3f808
+#: ../../explanation/roadmap.md:52 076b49eaeb7341f79f28b58bba2a834c
+msgid ""
+"A stable, documented public API surface that downstream applications and "
+"GUIs can build on"
+msgstr "下流のアプリケーションや GUI が拠り所にできる、安定して文書化された公開 API"
+
+#: ../../explanation/roadmap.md:54 155b40f15f7341a1a852c9ea9d1d6aa4
+msgid ""
+"Consistent time interpretation (time zones, numeric time scales and "
+"epochs) and uniform reader behaviour across supported experiment data "
+"formats"
+msgstr ""
+"対応する実験データ形式間で、時刻の解釈（タイムゾーン、数値時刻のスケール、エポック）と"
+"読み取り処理の挙動を一貫させる"
+
+#: ../../explanation/roadmap.md:56 581e282d099c4b1a9af516087ef4f571
 msgid "Richer visual discovery paths across examples and reference content"
 msgstr "事例とリファレンスを横断して探せるビジュアル・ナビゲーションの強化"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:38
-#: c6eb82279b004cdaad7eca82dc8c30e4
+#: ../../explanation/roadmap.md:57 b6631b41a76746eba22a9f5893070010
 msgid ""
 "More automation around documentation verification and sample-code "
 "validation"
 msgstr "ドキュメント検証とサンプルコード検証の自動化拡張"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:39
-#: 508ac11c1eee4843a0ba168932cb0292
+#: ../../explanation/roadmap.md:58 fe170c8530ba4fbc965981a16a8c7dbf
 msgid ""
 "Potential improvements to theme, search quality, and interactive visual "
 "components"
 msgstr "テーマ、検索品質、インタラクティブ表示の改善"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:41
-#: 28a9cbf5775d46269a745420c64bc305
+#: ../../explanation/roadmap.md:60 371e422f836e45dbb6c9d212edebc6fc
 msgid "Public Tracking Sources"
 msgstr "公開トラッキング先"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:43
-#: cdc8aaa6806a4409bc592b7bab5e1fa1
+#: ../../explanation/roadmap.md:62 dd2a6cf057a644278bb617313dbaf569
 msgid ""
 "[Feedback form for lightweight bug reports and feature "
 "requests](https://forms.gle/c8jJaf9UCs5tb5cC8)"
 msgstr "[不具合報告・機能追加リクエスト用の簡易フォーム](https://forms.gle/c8jJaf9UCs5tb5cC8)"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:44
-#: 391231c01c55421dab8eb2bfd64c882c
+#: ../../explanation/roadmap.md:63 4613b978596c438998a78778ec2729fb
 msgid "[GitHub Issues](https://github.com/tatsuki-washimi/gwexpy/issues)"
 msgstr "[GitHub Issues](https://github.com/tatsuki-washimi/gwexpy/issues)"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:45
-#: 13c6339665d1431fb192300b2155cae5
+#: ../../explanation/roadmap.md:64 19f979753db7444a862bfbda2849eae9
 msgid ""
 "[Security policy](https://github.com/tatsuki-"
 "washimi/gwexpy/blob/main/SECURITY.md) for vulnerability reports; do not "
@@ -220,27 +232,28 @@ msgstr ""
 "washimi/gwexpy/blob/main/SECURITY.md)。脆弱性情報はフォームや public issue "
 "には含めないでください。"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:46
-#: 592e33bf33d44fb4ae5cdcb14f39c52c
+#: ../../explanation/roadmap.md:65 3a66f87d36754c82b6799d570b8d7bae
 msgid "[GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases)"
 msgstr "[GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases)"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:47
-#: a04420d489774c58b199faa0d70b4ae5
+#: ../../explanation/roadmap.md:66 fb5690a9be144f8381c3bf2982ce2ae4
 msgid "[Changelog](../about/changelog.md)"
 msgstr "[更新履歴](../about/changelog.md)"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:60
-msgid "[Developer roadmap (`ROADMAP.md`)](https://github.com/tatsuki-washimi/gwexpy/blob/main/ROADMAP.md) for release themes and policy details"
-msgstr "[開発者向けロードマップ(`ROADMAP.md`)](https://github.com/tatsuki-washimi/gwexpy/blob/main/ROADMAP.md) — リリーステーマと方針の詳細"
+#: ../../explanation/roadmap.md:67 d195173e3f1e4aba971d263de74d1573
+msgid ""
+"[Developer roadmap (`ROADMAP.md`)](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/ROADMAP.md) for release themes and policy "
+"details"
+msgstr ""
+"[開発者向けロードマップ(`ROADMAP.md`)](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/ROADMAP.md) — リリーステーマと方針の詳細"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:49
-#: 4bf876c3169545d59fdc16f8c845ac8f
+#: ../../explanation/roadmap.md:69 8970769909104bfe99c00337543979c7
 msgid "Scope Note"
 msgstr "補足"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:51
-#: cca411130cc245bc93b59fee62b341d9
+#: ../../explanation/roadmap.md:71 c67cbd10bb9b41538f9092bf13e4b7ba
 msgid ""
 "This roadmap is a planning aid, not a guarantee of delivery order or "
 "release timing. GWexpy is research-oriented software and some priorities "
@@ -254,3 +267,10 @@ msgstr ""
 #~ " scientific Python libraries"
 #~ msgstr "外部科学技術 Python ライブラリとの相互運用ガイド拡張"
 
+#~ msgid ""
+#~ "Reliability hardening: eliminating the known"
+#~ " cases where data could be returned"
+#~ " with silently wrong values, units, "
+#~ "or dropped metadata instead of an "
+#~ "explicit error"
+#~ msgstr "信頼性の強化: 明示的なエラーの代わりに、誤った値・単位・欠落したメタデータを黙って返しうる既知のケースの解消"

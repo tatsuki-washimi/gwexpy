@@ -11,8 +11,8 @@ Status: in-progress
   `msgfmt --check` が対象 5 カタログすべて EXIT=0)
 - **Phase 2〜4（実装）: planned**（未着手）
 
-対象マイルストーン:
-- **Phase 1（docs）= v0.2.0**（issue #404 が既に v0.2.0 milestone のため、そこに合流）
+対象テーマ:
+- **Phase 1（docs）= Ecosystem & Interoperability backlog**（#404 の過去の v0.2.0 割当とは切り分ける）
 - **Phase 2〜4（実装）= milestone 未割当の backlog**（ユーザー決定:「docs のみ先行、実装は未定」）
 
 ## Phase 1 の実施結果（2026-08-01）
@@ -68,7 +68,7 @@ core/optional/docs-only の切り分け、ライセンス方針、`gwexpy.io.gwd
 | 追跡ファイル内に `differometor` / `gwdama` / `spicypy` / `pemcoupling` の言及が **0 件** | `git grep -il -E 'differometor\|gwdama\|spicypy\|pemcoupling'` → 出力なし |
 | `README.md` の `## Why gwexpy?` は自己主張 4 箇条のみで、他ライブラリとの比較・棲み分けは皆無 | README 全文確認 |
 | Differometor issue #423–#427 は 5 本すべて open、コード・PR なし | `gh issue view 423..427` |
-| #404（pemcoupling/GWDama ライセンス方針、v0.2.0 milestone）未着手 | `gh issue view 404` |
+| #404（pemcoupling/GWDama ライセンス方針）は 2026-08-01 当時 v0.2.0 の release bucket に割り当てられていた。現在は open / milestone なしで、issue 本文も Ecosystem backlog を参照 | `gh issue view 404` |
 | #404 が更新対象に挙げる `loadmap_v0.2.0.md` は **リポジトリに存在しない** | `find` で該当なし |
 
 さらに計画立案中に、**既存 issue の前提が外部実態と食い違っている**ことが判明した（Phase 3 参照）。
@@ -152,7 +152,7 @@ core/optional/docs-only の切り分け、ライセンス方針、`gwexpy.io.gwd
 | 翻訳 | gettext。`sphinx-build -b gettext` → `sphinx-intl update -p <tmp> -l ja` → `locales/ja/LC_MESSAGES/**/*.po` を訳す |
 | explanation の toctree | `docs_redesign/explanation/index.md:74-82`（`architecture` / `prerequisites_and_conventions` / `gwexpy_for_gwpy_users` / `roadmap`） |
 | 公開 roadmap | `docs_redesign/explanation/roadmap.md`。**バージョン番号を書かない方針**。Mid-Term に既に "Expanded interoperability guides for external scientific Python libraries" がある |
-| 開発者 roadmap | ルート `ROADMAP.md`（43 行）。v0.2.0 節に interop 項目なし。**terrain/DEM 計画（v0.2.0）と既に乖離している** |
+| 開発者 roadmap | ルート `ROADMAP.md`（43 行）。v0.2.0 節に interop 項目なし。**terrain/DEM の deferred future-theme 計画と既に切り分けられている** |
 | 計画書テンプレ | `docs/developers/plans/active/2026-07-31-terrain-scalarfield-io-design.md`（`Last-updated` / `Reviewer Status` / `Status:` / 対象マイルストーン / 末尾に「イシュー本文ドラフト」） |
 | Status 語彙 | `planned` / `in-progress` / `completed (verified: <command>)` の 3 種厳格。`completed` で `verified:` 省略は規則違反 |
 
@@ -162,7 +162,7 @@ core/optional/docs-only の切り分け、ライセンス方針、`gwexpy.io.gwd
 
 | Phase | 内容 | 成果物 | milestone |
 |---|---|---|---|
-| **1** | エコシステム positioning 文書 + 第三者ライセンス方針 | docs のみ（コード変更ゼロ） | v0.2.0（#404 に合流） |
+| **1** | エコシステム positioning 文書 + 第三者ライセンス方針 | docs のみ（コード変更ゼロ） | Ecosystem backlog（#404 の旧割当を再評価） |
 | **2** | GWDama HDF5 interop 設計 | 設計 + issue ドラフト（実装は未着手） | backlog |
 | **3** | Differometor interop 再設計 + #423–#427 改訂 | 改訂 issue 本文 + 設計 | backlog |
 | **4** | spicypy 連携 | Phase 1 の docs に吸収（コード不要） | — |
@@ -264,7 +264,7 @@ toctree を触るので `explanation/index.po` も再生成・再訳が必要。
 | `docs_redesign/explanation/gwexpy_for_gwpy_users.md` | `## Treat direct I/O and external-library conversion as separate guides` の直前に、3〜5 行の positioning 段落 + `ecosystem` へのリンク（表は置かない） |
 | `docs_redesign/explanation/roadmap.md` | Mid-Term の既存行 "Expanded interoperability guides for external scientific Python libraries" を具体化（**バージョン番号は書かない**既存方針を維持）。`.po` 更新必須 |
 | `README.md` | `## Why gwexpy?`(L53) の直後に `## Where gwexpy fits` を新設。5〜7 行 + docs リンク。**表は置かず** `ecosystem.md` に一本化（二重管理回避）。README は Sphinx 対象外なので EN のみ |
-| `ROADMAP.md`（ルート） | 「Ecosystem & Interoperability（backlog）」節を新設。**ここに連携優先順位を置く**（開発者向け文書であり、公開ページのランキング禁止制約の対象外）。同時に v0.2.0 節と terrain/DEM 計画の乖離に注記を入れる |
+| `ROADMAP.md`（ルート） | 「Ecosystem & Interoperability（backlog）」節を新設。**ここに連携優先順位を置く**（開発者向け文書であり、公開ページのランキング禁止制約の対象外）。同時に現行 v0.2.0 節と deferred terrain/DEM 計画の切り分けを注記する |
 | `CONTRIBUTING.md` | `## Design Principles: Modular Extensibility`(L47) の後に「Third-party code policy」小節を追加。`LICENSES_THIRD_PARTY.md` へのリンクと vendoring 禁止を明記 |
 
 **`docs/web/` は触らない。** 凍結された非公開ツリーであり、`check_docs_sync.py` の en/ja 見出し数一致制約と
@@ -606,7 +606,7 @@ Phase 2–4 は本計画では実行しないため、検証は各 issue 側に�
 
 ### 既存 #404 の改訂（新規 issue は作らない）
 
-#404 は既に v0.2.0 milestone で内容もほぼ正しいので、本文を次のように改訂する:
+#404 は 2026-08-01 当時 v0.2.0 bucket に割り当てられていたが、現在は open / milestone なしで、issue 本文も Ecosystem backlog を参照している。以下は当時実施した本文改訂の記録である:
 
 - Deliverables の `loadmap_v0.2.0.md` 参照を削除し、「**`ROADMAP.md` および
   `docs/developers/plans/active/2026-08-01-ecosystem-interop-plan.md` を正とする**」に置換
@@ -678,4 +678,4 @@ Phase 2–4 は本計画では実行しないため、検証は各 issue 側に�
   既存の matrix container / `SegmentTable` との責務重複を検討していないため含めない
 - pemcoupling 由来の product schema / status flags の実装 — `CouplingResult` 側の設計課題であり別件
 - `docs/web/` 旧ツリーへの ecosystem ページ追加 — 凍結・非公開のため
-- ルート `ROADMAP.md` の v0.2.0 節と terrain/DEM 計画の乖離解消 — 注記を入れるに留め、全面改訂はしない
+- ルート `ROADMAP.md` の現行 v0.2.0 節と deferred terrain/DEM 計画の切り分け — 注記を入れるに留め、全面改訂はしない
