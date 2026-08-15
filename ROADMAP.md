@@ -224,15 +224,19 @@ Workstreams:
   ([#637](https://github.com/tatsuki-washimi/gwexpy/issues/637)): moving the
   `ndarray`-subclass data model to composition so that `np.sqrt(matrix)` and
   `(2 * u.s) * matrix` both return the correct class, values, units, and metadata.
-  This has a fixed decision date and a documented fallback: if the composition
-  prototype is not green against the full test suite by that date, v0.2.0 ships with
-  the current `__array_ufunc__ = None` limitation documented, and the redesign moves
-  to the next theme rather than blocking this release indefinitely.
-- **Pre-refactor performance baseline**: representative container operations are
-  benchmarked *before* the #637 redesign lands, and the redesign is required to stay
-  within a documented regression budget — bringing forward the shared benchmark
-  harness ([#581](https://github.com/tatsuki-washimi/gwexpy/issues/581)) rather than
-  discovering regressions after the fact.
+  The decision-date **method** is fixed, while the calendar date remains TBD:
+  [#675](https://github.com/tatsuki-washimi/gwexpy/issues/675) sets the date at the
+  v0.2.0 milestone mid-point and records it on #637. If the composition prototype is
+  not green against the full test suite by that date, v0.2.0 ships with the current
+  `__array_ufunc__ = None` limitation documented, and the redesign moves to the next
+  theme rather than blocking this release indefinitely.
+- **Pre-refactor performance baseline and regression budget**: representative
+  container operations are benchmarked *before* the #637 redesign lands, and the
+  redesign is required to stay within a documented regression budget. The shared
+  benchmark infrastructure ([#581](https://github.com/tatsuki-washimi/gwexpy/issues/581))
+  is a prerequisite used by multiple themes, not a v0.2.0 milestone member;
+  [#676](https://github.com/tatsuki-washimi/gwexpy/issues/676) owns the v0.2.0-specific
+  baseline and numeric budget used by this release gate.
 - **GWpy-native HDF5 readability** ([#402]): golden tests that write with GWexpy and
   read back with a GWpy-only process (no `import gwexpy`), for the containers already
   covered by HDF5 I/O.

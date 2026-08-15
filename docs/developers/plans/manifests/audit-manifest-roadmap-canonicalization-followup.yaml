@@ -1,0 +1,86 @@
+# Audit manifest for the post-PR #660 roadmap canonicalization follow-up
+# Date: 2026-08-16
+
+pull_request: pending
+branch: docs/roadmap-canonicalization-followup
+risk: docs_test_only
+
+agent_roles:
+  work:
+    name: Luna
+    responsibility: "Implement the reviewed authority, planning-gate, documentation, test, audit, and payload corrections."
+  review:
+    name: Terra
+    responsibility: "Review the complete follow-up diff and GitHub payload bundle before publication."
+  findings:
+    name: Sol
+    responsibility: "Identify post-adoption gaps through multiple final-review perspectives."
+
+skills:
+  - superpowers:executing-plans
+  - superpowers:subagent-driven-development
+  - manage_docs
+  - run_tests
+  - gwexpy_conda_jobs
+  - english-tech-writing
+
+scope:
+  summary: "Close post-adoption authority and v0.2.0 planning-gate gaps found after PR #660."
+  included:
+    - "Keep ROADMAP.md authoritative for release inclusion scope and Definition of Done."
+    - "Keep the canonical design authoritative for taxonomy, per-domain goals, theme mapping, and issue triage."
+    - "Record D19 classifying #675 and #676 as gate-supporting additions; keep #581 as shared infrastructure outside the milestone."
+    - "Correct matrix, Appendix, developer-design index, historical plan, and PR #660 audit V2 wording."
+    - "Add documentation-contract checks and prepare reviewed post-merge GitHub payloads."
+  excluded:
+    - "No runtime, public API, data-model, numerical, or physics implementation."
+    - "No commit, push, PR edit, issue comment, issue milestone assignment, or milestone mutation during preparation."
+
+commands_executed:
+  - cmd: "gwexpy_conda_jobs wrapper: pytest tests/docs/test_root_roadmap_contract.py -q"
+    result: "Wrapper resolved its external skill-store root instead of this checkout and found no tests; no repository state changed. Continued with the documented conda-run fallback."
+  - cmd: "PYTHONDONTWRITEBYTECODE=1 rtk conda run -n gwexpy python -m pytest -p no:cacheprovider tests/docs/ tests/test_issue_burn_down_roadmap.py tests/test_conda_forge_roadmap.py -q"
+    result: "166 passed, 4 skipped in an independent current-worktree run after the final link-contract addition."
+  - cmd: "PYTHONDONTWRITEBYTECODE=1 rtk conda run -n gwexpy python -m pytest -p no:cacheprovider tests/docs/test_root_roadmap_contract.py -q"
+    result: "24 passed after the final link-contract addition."
+  - cmd: "PYTHONDONTWRITEBYTECODE=1 rtk conda run -n gwexpy ruff check tests/docs/test_root_roadmap_contract.py"
+    result: "Passed."
+  - cmd: "rtk msgfmt --check -o /dev/null docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po"
+    result: "Passed with the two existing placeholder-header warnings."
+  - cmd: "rtk git diff --check"
+    result: "Passed."
+  - cmd: "old='2026-08-09-capability-domain-roadmap'; suffix='-design'; rtk git grep -n \"${old}${suffix}\""
+    result: "Zero matches; the exact historical basename remains absent repo-wide."
+  - cmd: "Manual secret/local-path patterns plus gitleaks dir scan on the GitHub payload bundle"
+    result: "No findings; four public payloads contain one follow-up merge placeholder each."
+
+validation:
+  docs_tests: "passed: 166; skipped: 4"
+  roadmap_contract_tests: "passed: 24"
+  ruff_changed_test: passed
+  msgfmt: passed_with_placeholder_header_warnings
+  old_dated_basename: zero_matches
+  design_relative_links: passed_in_contract_test
+  diff_check: passed
+  payload_secret_scan: passed
+  physics_review: not_required
+
+files_changed:
+  paths:
+    - ROADMAP.md
+    - docs/developers/design/capability-domain-roadmap.md
+    - docs/developers/design/README.md
+    - docs/developers/plans/manifests/audit-manifest-660-roadmap-canonicalization.yaml
+    - docs/developers/plans/manifests/audit-manifest-roadmap-canonicalization-followup.yaml
+    - docs/plans/2026-08-15-v020-roadmap-canonicalization.md
+    - tests/docs/test_root_roadmap_contract.py
+
+excluded_worktree_paths:
+  - ".codegraph/ (untracked local tool state; never staged or modified)"
+  - "Existing git stashes (never inspected beyond listing and never modified)"
+
+github_payload_bundle:
+  status: prepared_not_applied
+  public_payload_placeholder_count: 4
+  expected_post_application_milestone_members: 10
+  note: "#675 and #676 are added after the follow-up merge; #581 remains outside milestone #3."

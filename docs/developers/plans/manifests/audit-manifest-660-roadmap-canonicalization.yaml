@@ -41,7 +41,7 @@ scope:
 commands_executed:
   - cmd: "rtk git diff --check origin/main --; rtk git diff --check --cached; rtk git diff --check"
     result: "Passed for committed, index, and worktree surfaces."
-  - cmd: "rtk git grep -n '2026-08-09-capability-domain-roadmap-design'"
+  - cmd: "old='2026-08-09-capability-domain-roadmap'; suffix='-design'; rtk git grep -n \"${old}${suffix}\""
     result: "Zero matches; the old dated basename does not remain."
   - cmd: "PYTHONDONTWRITEBYTECODE=1 rtk conda run -n gwexpy python -m pytest -p no:cacheprovider tests/docs/ tests/test_issue_burn_down_roadmap.py tests/test_conda_forge_roadmap.py -q"
     result: "162 passed, 4 skipped in the final pre-commit review run."

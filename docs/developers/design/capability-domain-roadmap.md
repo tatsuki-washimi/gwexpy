@@ -1,6 +1,6 @@
 # Capability-domain 長期ロードマップ設計(v0.2.0 → v1.0)
 
-> Last-updated: 2026-08-15 (rev 2 — design/ への昇格、ROADMAP.md 改訂〔PR #660〕との同期)
+> Last-updated: 2026-08-16 (rev 3 — authority 境界と v0.2.0 planning gates の追補)
 
 Status: active
 Authority: canonical
@@ -18,18 +18,19 @@ Audience: maintainer-facing(ビルド済み docs には含まれない — `docs
 (アーキテクチャ/批判的/事実監査。物理視点は今回未実施)で検証したうえで、
 repo 内の一次文書として固定する。
 
-原議論の原本は `/home/washimi/.paseo/uploads/upload_86861967-8f96-460e-92b2-6229ad8b9925/v0.2.0_______.md`
-に存在するが、これは repo 外のアップロードファイルであり将来消失し得る。本文書の
-§12 Appendix に要旨を転記し、repo 内で自己完結させる。
+原議論は repo 外のセッション添付として提供されたため、永続する一次資料としては
+扱わない。本文書の §12 Appendix に要旨を転記し、repo 内で自己完結させる。
 
 ## 2. Scope / Non-scope
 
 ### Scope
 
-1. 本文書(正本)— ドメイン定義・per-domain goals・release statements・triage 規則
-2. `ROADMAP.md` の改訂設計への正本提供(実際の改訂は別コミット)
+1. 本文書(正本)— ドメイン定義・per-domain goals・theme mapping・triage 規則
+2. `ROADMAP.md`(正本)— release inclusion scope と Definition of done。本文書は
+   その release scope を taxonomy に写像するが、上書きしない
 3. 公開 roadmap (`docs_redesign/explanation/roadmap.md`) 同期の方針
-4. issue #413(v0.2.0 release notes)の記入内容の根拠
+4. issue #413(v0.2.0 release notes)は `ROADMAP.md` の release statement / DoD
+   から派生させる
 5. GitHub milestone/issue/label 同期(Phase 0 scope freeze)の根拠
 
 ### Non-scope
@@ -215,7 +216,8 @@ Histogram(#3)は実装の実態に合わせて修正する。
 
 ### 4.15 X4 — Performance / Scalability
 - **Minimum(v0.2.0)**: `#637` のデータモデル変更**前**に代表的操作の性能ベースラインを
-  取得し、変更後の退行を予算内(要具体数値化)に収める。
+  取得し、変更後の退行を予算内に収める。v0.2.0 固有の baseline と数値予算は #676、
+  共有 benchmark infrastructure は #581 が追跡する。
 - **v1.0**: `#580`/`#581` のベンチマーク基盤に基づき、測定駆動で性能改善を優先付けする
   運用が定着する。lazy/distributed execution は「実証された利用要求」が前提。
 - **Long-term**: 大規模 SegmentTable ワークフロー(demonstrated usage を前提とした
@@ -248,13 +250,19 @@ advanced analysis → API compatibility and stabilization → Later 0.x)に合�
 | X3 API stability | ◎ | — | — | — | — | — | — | ◎(#400 継続) | — | 全域適用(stability label 完了) |
 | X4 Performance | ◎(ベースライン取得) | — | — | ○(lazy 実証要求) | — | — | — | — | ○ | 全域適用 |
 
-v1.0 列は「directional な予定」ではなく **criteria 列**である(全 domain が Minimum
-goal を満たし、X1-X4 が全域適用済みであることの確認列)。他の列はすべて directional で
-あり、re-scope され得る(§7 の disclaimer と同一の位置づけ)。
+v0.2.0 列は **Committed release** の domain mapping、I/O time & dispatch から
+Later 0.x までの future-theme 列は **Directional**、v1.0 列は release theme ではなく
+**criteria 列**である(全 domain が Minimum goal を満たし、X1-X4 が全域適用済みで
+あることの確認列)。re-scope され得るのは Directional 列であり、Committed scope は
+`ROADMAP.md` の release inclusion criteria / DoD に従う。
 
-## 6. Release statements & headline user stories(正本)
+## 6. Release-theme taxonomy mapping & headline user stories
 
-`ROADMAP.md` と issue #413 はここからの転記とする。各 user story には
+Release inclusion scope と Definition of done の正本は `ROADMAP.md` であり、本文書の
+正本範囲は taxonomy・per-domain goals・theme mapping・triage 規則である。本節は
+`ROADMAP.md` の release scope を domain/foundation に写像し、将来テーマの設計根拠を
+保持するが、release scope を独立に再定義しない。issue #413 の release statement と
+migration text も `ROADMAP.md` から派生させる。各 user story には
 **実行可能な受入成果物(named end-to-end test か、グリーンで走る example notebook)**
 を紐付ける — 「必要かどうか」の判定を実行可能にするため(§9 M5 への対応)。
 
@@ -277,8 +285,10 @@ Headline user stories:
    GWpy-only process (no `import gwexpy`).
    **受入成果物**: `tests/io/test_hdf5_gwpy_compat.py`(新設)が gwpy-only subprocess で green。
 
-Definition of done: 上記3成果物が green、かつリファクタ前に取得した性能ベースライン
-に対して退行が予算内。
+Definition of done の規範的文面は `ROADMAP.md` を参照。本節の taxonomy mapping では、
+上記3成果物に加え、#676 が追跡するリファクタ前の性能ベースラインと数値化された
+退行予算を X4 gate として扱う。#581 はその測定に利用する共有 benchmark infrastructure
+であり、v0.2.0 milestone member ではない。
 
 ### I/O time and dispatch semantics(将来テーマ、domain: 6 中心)
 
@@ -473,7 +483,7 @@ No なら backlog。判定対象は user story の文言ではなく §6 で紐�
 | `2026-08-01-virgo-datadisplay-interop-design.md` | Domain 3(TH2D 区別)・Domain 7(ROOT/Virgo)の一次設計 |
 | GWDama reader の unknown-attributes ブロッカー(`ROADMAP.md` Ecosystem Backlog) | X2 Minimum の schema-policy 設計 issue と同根の課題として関連付ける |
 | `docs_redesign/explanation/roadmap.md` | 公開向け要約。バージョン番号・ドメイン番号を出さない制約下で本文書の内容を反映(D3) |
-| issue #413 | v0.2.0 (Container Semantic Contract) の release statement 転記先 |
+| issue #413 | `ROADMAP.md` の v0.2.0 release statement / DoD から派生する release notes と migration guide |
 | issue #400 | X3 Minimum のモジュール単位 stability label。v1.0 の主経路(D11) |
 | `ROADMAP.md` `## v0.1.14 — I/O contract and maintenance hardening` 節 | v0.1.14 は 2026-08-15 に released 済み(D16)。本節は per-change 正本 `CHANGELOG.md` `[0.1.14]` の要約であり、#632/#634 の partial mitigation を明記した上で、両issue の現在の帰属先は「I/O time and dispatch semantics」テーマ(本文書 §6、Directional、milestone 未設定)であると上書き宣言している |
 
@@ -509,7 +519,7 @@ No なら backlog。判定対象は user story の文言ではなく §6 で紐�
 | M10(Critic) | mesh field が bridge-not-reimplement 原則に反する可能性 | **採用**: §6 Mesh fields テーマに meshio/PyVista 委譲検討を明記 |
 | M11(Critic) | リスク登録簿・撤退条件が皆無 | **部分採用**: #637 の fallback(D10)、Advanced segment workflows の usage requirement 前提化。GWpy 5.0 対応・bus factor 等その他のリスクは本文書の範囲外 |
 | A-8(Auditor) | Histogram の v0.2.0 DoD が事実と逆(既に fail-closed 済み) | **採用**: §4.3 で全面書き換え |
-| B-1〜B-3(Auditor) | ドメイン番号スキームが3種並存、v0.2.0スコープ記述に不一致 | **採用**: 本文書を単一の正本とし、11+4分類のみを使用 |
+| B-1〜B-3(Auditor) | ドメイン番号スキームが3種並存、v0.2.0スコープ記述に不一致 | **採用**: taxonomy / triage は本文書の11+4分類、release inclusion / DoD は `ROADMAP.md` を正本とする |
 | B-4(Auditor) | v0.1.14 の結論が #653 で陳腐化 | **採用(2026-08-09 時点)、後に期限切れ**: 当初は「本文書・ROADMAP 改訂ともに v0.1.14 に言及しない」と採用したが、v0.1.14 は 2026-08-15 に実際に released され、`ROADMAP.md` は released セクションとして v0.1.13 と対称な形式で v0.1.14 を記載する方針に変更された(D16)。本裁定はその時点までの暫定判断であり、D16 が優先する |
 | 項目4(Auditor 事実照合) | #555 critical path 前段が milestone 未設定 | **採用**: Experiment data workflow テーマ開始時に一括割当する運用へ(§8 の関連付け経由でPhase 0 issue に反映) |
 | 項目12(Auditor) | GWADW 資料の page 引用が repo 内に実体なく検証不能 | **採用**: 本文書では GWADW page 引用を使わず、repo 内の一次資料(実装・既存 issue・既存設計文書)のみを根拠とする |
@@ -537,7 +547,7 @@ No なら backlog。判定対象は user story の文言ではなく §6 で紐�
 | D3 | 公開 roadmap にドメイン番号・体系語彙を出さない |
 | D4 | #413 は body 全面編集+履歴コメントで旧文言を保全する方式 |
 | D9 | v0.2.0 を二段分割(Container Semantic Contract / Experiment data workflow)。GUI・docs工事は milestone 外 |
-| D10 | #637 は期日+fallback(`__array_ufunc__=None` + documented limitation)付き blocker |
+| D10 | #637 は decision-date method + fallback(`__array_ufunc__=None` + documented limitation)付き blocker。calendar date は TBD で、#675 が milestone mid-point で確定する |
 | D11 | v1.0 は #400 モジュール単位 stability label を主経路とする criteria 節。一括宣言は補助 |
 | D12 | Histogram の v0.2.0 スコープは raises 行の登録までとし、伝播規則設計は将来テーマ |
 | D13 | Future themes は番号でなく名前で並べる。次の 1 minor のみ番号確定 |
@@ -546,9 +556,10 @@ No なら backlog。判定対象は user story の文言ではなく §6 で紐�
 | D16 | `ROADMAP.md` に v0.1.13 と対称な形式で `## v0.1.14 — I/O contract and maintenance hardening (released 2026-08-15)` 節を追加。CHANGELOG `[0.1.14]` の「#634 for v0.2.0」という当時の見込みを上書きし、#632/#634(partial mitigation)の現在の帰属は「I/O time and dispatch semantics」テーマ(Directional、milestone 未設定)であると明記。B-4(§9)の当初裁定はこれにより期限切れとなり、本決定が優先する |
 | D17 | 本文書を active-plans 領域から安定した canonical の `docs/developers/design/` パスへ `git mv` により昇格。`Status: active` / `Authority: canonical` / `Audience: maintainer-facing`。日付付きパスへの archive コピーは作らない |
 | D18 | **v0.2.0 milestone hygiene の planned application record**(merge 前に本 PR 内で確定。Step 11 は本表を再分類せず GitHub milestone にそのまま適用するのみ)。判定基準は `ROADMAP.md` `## v0.2.0 — Container Semantic Contract` 節の Definition of done(4項目、2026-08-15 rev 時点)。現在の milestone 実メンバー11件(issue 10件 + PR 1件)を下記 D18 詳細節の3分類に判定する |
+| D19 | **Post-adoption planning-gate correction**(2026-08-16 Sol completion review)。#675 と #676 を v0.2.0 の `gate-supporting` member として追加する。前者は #637 の fallback を実行可能にする decision-date gate、後者は DoD 4 の baseline / regression-budget evidence を所有する。#581 は #676 が利用する共有 benchmark infrastructure であり milestone member にはしない。GitHub milestone への適用は本 follow-up の merge 後に行い、再分類しない |
 | Open-1 | CLI の consumer layer 分類と private API 依存の矛盾は未解決(§3)。トラッキング issue #674(milestone なし、architecture decision) |
-| Open-2 | #637 の decision date は milestone mid-point で確定する方式が #637 の 2026-08-11 コメントに記録済み。トラッキング issue #675(v0.2.0 planning dependency) |
-| Open-3 | X4 の性能退行予算の具体的数値は未確定。トラッキング issue #676(#581 起点、v0.2.0 planning dependency) |
+| Open-2 | #637 の decision-date method は確定済みだが calendar date は TBD。#675 が milestone mid-point で確定する v0.2.0 gate(D19) |
+| Open-3 | X4 の性能退行予算の具体的数値は未確定。#676 が v0.2.0 固有の baseline / budget を追跡する gate で、#581 は共有 infrastructure(D19) |
 
 ### D18 詳細 — v0.2.0 milestone 実メンバー11件の分類(2026-08-15、DoD 基準で確定)
 
@@ -569,6 +580,16 @@ No なら backlog。判定対象は user story の文言ではなく §6 で紐�
 | #513 | statistics/interop: `_t0_ns` precision(deferred from v0.1.11 review) | **gate-supporting** | issue 全体は warning stacklevel、`rng` Protocol typing、bool-input guard、`_t0_ns` precision の4項目を束ねているが、v0.2.0 の carried scope は `ROADMAP.md` Workstreams が明示する `_t0_ns` 精度部分のみ。container contract の変更が高精度 epoch の保持を後退させないことを release evidence として確認する |
 
 **適用時の注意**(Step 11 向け): `unrelated` の除去では、当該 issue に上記根拠を要約した1行コメントを付け、追跡リンク喪失を防ぐ(#594/PR#625 → Ecosystem Backlog 項目3、#403 → 明示的な再帰属先なしのため milestone 除去のみ)。#401 は gate-supporting として残し、旧 P0 dependency mapping が歴史的であり Container Semantic Contract DoD に置き換えられたことをコメントする。#513 にも、4項目のうち v0.2.0 の carried scope は `_t0_ns` 精度部分のみであり、他の3項目を同 release scope へ昇格させるものではないことをコメントする。milestone description には「基準: `docs/developers/design/capability-domain-roadmap.md` D18 参照」の1行を追記する。適用前に、上記 DoD 引用が merge 後も本 D18 確定時点(2026-08-15)から変わっていないことを diff で確認する。
+
+### D19 詳細 — post-adoption planning gates(2026-08-16、Sol review 対応)
+
+| Issue | 分類 | merge 後の適用 | 根拠 |
+|---|---|---|---|
+| #675 | **gate-supporting(add)** | v0.2.0 milestone に追加し、#637 の decision-date gate を追跡する旨をコメント | #637 の calendar date 自体は TBD だが、milestone mid-point で日付を確定し fallback を発動可能にする method は確定済み。DoD 2 の fallback を運用可能にする planning gate であり、composition 実装そのものではない |
+| #676 | **gate-supporting(add)** | v0.2.0 milestone に追加し、release 固有の baseline / numeric budget を追跡する旨をコメント | `ROADMAP.md` Workstreams が明示する v0.2.0 固有の pre-#637 baseline と regression budget を所有し、DoD 4 の release evidence を提供する。#581 はこの測定にも使う共有 benchmark infrastructure であり milestone member にはしない |
+
+この追加は D18 の既存 8 members の分類を変更しない。merge 後は上表を GitHub milestone
+へ機械的に適用し、milestone description に D18 と D19 の両方を参照させる。
 
 ## 12. Appendix — 外部 AI 議論の要約(2026-08)
 
@@ -600,8 +621,8 @@ ChatGPT ログであり repo 外にあるため永続しない。この議論の
 
 - v0.1.14 の triage 提案(line 22-34、line 18 の「必ずリリースする必要はない」結論)
   — 議論終了の約 50 分後に issue #653 で実際の v0.1.14 scope(required 12件)が
-  確定しており、この会話の結論は陳腐化している。v0.1.x は別会話スコープのため
-  本文書では扱わない。
+  確定しており、この会話の結論は陳腐化している。出荷済み v0.1.14 の release policy と
+  成果は `ROADMAP.md` / `CHANGELOG.md` の記録を正とする。
 - Histogram の v0.2.0 完成条件を「silent downgrade の禁止」とする記述(line 1057,
   1145, 1153-1157)— 実装は既に v0.1.13 で fail-closed 化済みであり、事実誤認。
   §4.3 で修正済み。
