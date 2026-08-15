@@ -572,9 +572,9 @@ colorbars, and segment visualization.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="gwexpy.plot.Plot">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.plot.</span></span><span class="sig-name descname"><span class="pre">Plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.plot.Plot" title="Link to this definition">#</a></dt>
-<dd><p>ベースクラス: <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.plot.Plot/#gwpy.plot.Plot" title="(in GWpy v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a></p>
+<dd><p>ベースクラス: <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.plot.Plot/#gwpy.plot.Plot" title="(in GWpy v4.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a></p>
 <p>GWexpy-aware plotting facade for series, matrices, and spectrogram grids.</p>
-<p><cite>Plot</cite> keeps the familiar <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.plot.Plot/#gwpy.plot.Plot" title="(in GWpy v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">gwpy.plot.Plot</span></code></a> constructor while adding
+<p><cite>Plot</cite> keeps the familiar <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.plot.Plot/#gwpy.plot.Plot" title="(in GWpy v4.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">gwpy.plot.Plot</span></code></a> constructor while adding
 conveniences needed by GWexpy collections:</p>
 <ul class="simple">
 <li><p><cite>SeriesMatrix</cite> and <cite>SpectrogramMatrix</cite> inputs are expanded into per-axis
@@ -625,9 +625,9 @@ helpers such as <cite>separate</cite>, <cite>geometry</cite>, <cite>monitor</cit
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>median</strong> (<a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.types.Series/#gwpy.types.Series" title="(in GWpy v4.0.1)"><em>gwpy.types.Series</em></a>) -- Median series to plot as a line.</p></li>
-<li><p><strong>min_s</strong> (<a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.types.Series/#gwpy.types.Series" title="(in GWpy v4.0.1)"><em>gwpy.types.Series</em></a>) -- Minimum series defining the lower envelope.</p></li>
-<li><p><strong>max_s</strong> (<a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.types.Series/#gwpy.types.Series" title="(in GWpy v4.0.1)"><em>gwpy.types.Series</em></a>) -- Maximum series defining the upper envelope.</p></li>
+<li><p><strong>median</strong> (<a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.types.Series/#gwpy.types.Series" title="(in GWpy v4.0.2)"><em>gwpy.types.Series</em></a>) -- Median series to plot as a line.</p></li>
+<li><p><strong>min_s</strong> (<a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.types.Series/#gwpy.types.Series" title="(in GWpy v4.0.2)"><em>gwpy.types.Series</em></a>) -- Minimum series defining the lower envelope.</p></li>
+<li><p><strong>max_s</strong> (<a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.types.Series/#gwpy.types.Series" title="(in GWpy v4.0.2)"><em>gwpy.types.Series</em></a>) -- Maximum series defining the upper envelope.</p></li>
 <li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.11.1)"><em>matplotlib.axes.Axes</em></a><em>, </em><em>optional</em>) -- Target axes. If omitted, uses the current axes of this Plot.</p></li>
 <li><p><strong>**kwargs</strong> -- <p>Passed to <code class="docutils literal notranslate"><span class="pre">ax.plot</span></code> for the median line. Additional keys supported:</p>
 <ul>

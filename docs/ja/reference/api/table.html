@@ -585,18 +585,18 @@
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.table.segment_table.</span></span><span class="sig-name descname"><span class="pre">SegmentTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.table.segment_table.SegmentTable" title="Link to this definition">#</a></dt>
 <dd><p>ベースクラス: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Segment-keyed analysis table.</p>
-<p>Each row holds exactly one <code class="docutils literal notranslate"><span class="pre">span</span></code> (<a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.Segment/#gwpy.segments.Segment" title="(in GWpy v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">gwpy.segments.Segment</span></code></a>)
+<p>Each row holds exactly one <code class="docutils literal notranslate"><span class="pre">span</span></code> (<a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.Segment/#gwpy.segments.Segment" title="(in GWpy v4.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">gwpy.segments.Segment</span></code></a>)
 plus arbitrary meta columns and optional heavy payload columns.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>meta</strong> -- <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> with at least a <code class="docutils literal notranslate"><span class="pre">span</span></code> column whose
-elements are <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.Segment/#gwpy.segments.Segment" title="(in GWpy v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">gwpy.segments.Segment</span></code></a> objects.</p>
+elements are <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.Segment/#gwpy.segments.Segment" title="(in GWpy v4.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">gwpy.segments.Segment</span></code></a> objects.</p>
 </dd>
 <dt class="field-even">例外<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> -- If <code class="docutils literal notranslate"><span class="pre">meta</span></code> does not contain a <code class="docutils literal notranslate"><span class="pre">span</span></code> column.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><strong>TypeError</strong></a> -- If any element of the <code class="docutils literal notranslate"><span class="pre">span</span></code> column is not a
-    <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.Segment/#gwpy.segments.Segment" title="(in GWpy v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">gwpy.segments.Segment</span></code></a>.</p></li>
+    <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.Segment/#gwpy.segments.Segment" title="(in GWpy v4.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">gwpy.segments.Segment</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -643,7 +643,7 @@ elements are <a class="reference external" href="https://gwpy.readthedocs.io/en/
 <td><p>Apply <em>func</em> to each value in <em>column</em>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.table.segment_table.SegmentTable.crop" title="gwexpy.table.segment_table.SegmentTable.crop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crop</span></code></a>(column[, out_col, span_col, inplace])</p></td>
-<td><p>Crop each row's payload to its <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.Segment/#gwpy.segments.Segment" title="(in GWpy v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Segment</span></code></a>.</p></td>
+<td><p>Crop each row's payload to its <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.Segment/#gwpy.segments.Segment" title="(in GWpy v4.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Segment</span></code></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.table.segment_table.SegmentTable.asd" title="gwexpy.table.segment_table.SegmentTable.asd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asd</span></code></a>(column[, out_col])</p></td>
 <td><p>Apply ASD to each row's <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> or <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>.</p></td>
@@ -703,7 +703,7 @@ elements are <a class="reference external" href="https://gwpy.readthedocs.io/en/
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>segments</strong> -- Sequence of <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.Segment/#gwpy.segments.Segment" title="(in GWpy v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">gwpy.segments.Segment</span></code></a> objects.</p></li>
+<li><p><strong>segments</strong> -- Sequence of <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.Segment/#gwpy.segments.Segment" title="(in GWpy v4.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">gwpy.segments.Segment</span></code></a> objects.</p></li>
 <li><p><strong>**meta_columns</strong> -- Extra meta columns supplied as keyword arguments.
 Each value must have the same length as <em>segments</em>.</p></li>
 </ul>
@@ -911,7 +911,7 @@ keys must match exactly.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.table.segment_table.SegmentTable.crop">
 <span class="sig-name descname"><span class="pre">crop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">span_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'span'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gwexpy.table.segment_table.SegmentTable" title="gwexpy.table.segment_table.SegmentTable"><span class="pre">SegmentTable</span></a></span></span><a class="headerlink" href="#gwexpy.table.segment_table.SegmentTable.crop" title="Link to this definition">#</a></dt>
-<dd><p>Crop each row's payload to its <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.Segment/#gwpy.segments.Segment" title="(in GWpy v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Segment</span></code></a>.</p>
+<dd><p>Crop each row's payload to its <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.Segment/#gwpy.segments.Segment" title="(in GWpy v4.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Segment</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -936,7 +936,7 @@ keys must match exactly.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>column</strong> -- Payload column.</p></li>
 <li><p><strong>out_col</strong> -- Output column name; defaults to <code class="docutils literal notranslate"><span class="pre">column</span> <span class="pre">+</span> <span class="pre">&quot;_asd&quot;</span></code>.</p></li>
-<li><p><strong>**kwargs</strong> -- Forwarded to <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.timeseries.TimeSeries/#gwpy.timeseries.TimeSeries.asd" title="(in GWpy v4.0.1)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">asd()</span></code></a>.</p></li>
+<li><p><strong>**kwargs</strong> -- Forwarded to <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.timeseries.TimeSeries/#gwpy.timeseries.TimeSeries.asd" title="(in GWpy v4.0.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">asd()</span></code></a>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">戻り値の型<span class="colon">:</span></dt>
@@ -1178,9 +1178,9 @@ after the first call, so subsequent calls return directly.</p></li>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">#</a></h2>
 <p>SegmentTable — segment-keyed analysis container.</p>
-<p>Each row represents one analysis unit defined by a <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.Segment/#gwpy.segments.Segment" title="(in GWpy v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Segment</span></code></a>
+<p>Each row represents one analysis unit defined by a <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.Segment/#gwpy.segments.Segment" title="(in GWpy v4.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Segment</span></code></a>
 (a half-open time interval <code class="docutils literal notranslate"><span class="pre">[start,</span> <span class="pre">end)</span></code>).  Columns may be lightweight <em>meta</em>
-values or heavy <em>payload</em> objects such as <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.timeseries.TimeSeries/#gwpy.timeseries.TimeSeries" title="(in GWpy v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a>.
+values or heavy <em>payload</em> objects such as <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.timeseries.TimeSeries/#gwpy.timeseries.TimeSeries" title="(in GWpy v4.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a>.
 Payload columns are stored as <a class="reference internal" href="#gwexpy.table.segment_cell.SegmentCell" title="gwexpy.table.segment_cell.SegmentCell"><code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentCell</span></code></a>
 instances that support lazy loading and optional caching.</p>
 </section>
