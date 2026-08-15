@@ -1,0 +1,99 @@
+---
+# Audit manifest for PR #660 roadmap canonicalization
+# Date: 2026-08-15
+
+pull_request: 660
+branch: docs/longterm-roadmap
+review_worktree_branch: wip/claude-2026-08-15
+risk: docs_test_only
+
+agent_roles:
+  work:
+    name: Luna
+    responsibility: "Implement roadmap, canonical design, sibling-plan corrections, documentation tests, and public-roadmap synchronization."
+  review:
+    name: Terra
+    responsibility: "Review each implementation step for factual, structural, and false-green defects before progression."
+
+skills:
+  - mplan
+  - superpowers:subagent-driven-development
+  - manage_docs
+  - run_tests
+  - gwexpy_conda_jobs
+  - code-review-ja
+  - japanese-tech-writing
+  - superpowers:verification-before-completion
+  - superpowers:receiving-code-review
+
+scope:
+  summary: "Adopt the post-v0.1.14 canonical capability-domain roadmap and its documentation contract."
+  included:
+    - "Establish ROADMAP.md as the release-inclusion authority and GitHub milestones as applied membership."
+    - "Promote the capability-domain design to a stable canonical path and record decisions D14-D18."
+    - "Correct stale milestone/theme assignments in three sibling design plans."
+    - "Add root ROADMAP structural contract tests and synchronize the public EN/JA roadmap."
+  excluded:
+    - "No product feature, physics, numerical, runtime, public API, or data-model implementation."
+    - "No #637 composition implementation, Field I/O, SegmentTable implementation, or I/O time/dispatch implementation."
+    - "No milestone or issue mutation in this commit; D18 application remains a post-merge approval gate."
+
+commands_executed:
+  - cmd: "rtk git diff --check origin/main --; rtk git diff --check --cached; rtk git diff --check"
+    result: "Passed for committed, index, and worktree surfaces."
+  - cmd: "rtk git grep -n '2026-08-09-capability-domain-roadmap-design'"
+    result: "Zero matches; the old dated basename does not remain."
+  - cmd: "PYTHONDONTWRITEBYTECODE=1 rtk conda run -n gwexpy python -m pytest -p no:cacheprovider tests/docs/ tests/test_issue_burn_down_roadmap.py tests/test_conda_forge_roadmap.py -q"
+    result: "162 passed, 4 skipped in the final pre-commit review run."
+  - cmd: "PYTHONDONTWRITEBYTECODE=1 rtk conda run -n gwexpy ruff check tests/docs/test_root_roadmap_contract.py"
+    result: "Passed."
+  - cmd: "rtk msgfmt --check -o /dev/null docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po"
+    result: "Passed; gettext reported only the catalog's placeholder header metadata warnings."
+  - cmd: "V8 supplementary stale-assignment search across the three sibling plans"
+    result: "Zero matches; the separately recorded 24-line manual review remains the primary evidence."
+  - cmd: "Workflow-equivalent EN and JA Sphinx builds"
+    result: "Both exited 2: the unchanged optional ROOT notebook how-to/interop/intro_interop.ipynb timed out in the same cell after 600 seconds. This is a known limitation and is not recorded as a successful validation."
+
+validation:
+  docs_tests: "passed: 162; skipped: 4"
+  roadmap_contract_tests: "passed: 20 (included in docs_tests)"
+  ruff_changed_test: passed
+  msgfmt: passed_with_placeholder_header_warnings
+  old_dated_basename: zero_matches
+  pure_deletions: zero
+  v8_supplementary_search: zero_matches
+  sphinx_en: "failed: exit 2, unchanged optional ROOT notebook cell timeout after 600 seconds"
+  sphinx_ja: "failed: exit 2, unchanged optional ROOT notebook cell timeout after 600 seconds"
+  sphinx_success_claimed: false
+  sphinx_log_paths:
+    - /tmp/gwexpy-step8-docs-en2.log
+    - /tmp/gwexpy-step8-docs-ja.log
+    - /tmp/sphinx-err-fqz1yg6w.log
+    - /tmp/sphinx-err-5qek3bw5.log
+
+physics_review:
+  status: not_required
+  rationale: "Documentation and documentation-contract tests only; no physics, numerical behavior, runtime code, or data-model changes."
+
+files_changed:
+  logical_count: 12
+  paths:
+    - ROADMAP.md
+    - docs/developers/design/capability-domain-roadmap.md
+    - docs/developers/design/README.md
+    - docs/developers/plans/README.md
+    - docs/developers/plans/active/2026-07-31-terrain-scalarfield-io-design.md
+    - docs/developers/plans/active/2026-08-01-segmenttable-workflow-design.md
+    - docs/developers/plans/active/2026-08-01-ecosystem-interop-plan.md
+    - tests/docs/test_root_roadmap_contract.py
+    - docs_redesign/explanation/roadmap.md
+    - docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po
+    - docs/plans/2026-08-15-v020-roadmap-canonicalization.md
+    - docs/developers/plans/manifests/audit-manifest-660-roadmap-canonicalization.yaml
+
+excluded_worktree_paths:
+  - ".codegraph/ (untracked local tool state; never staged)"
+
+deferred_follow_ups:
+  - "After merge, apply the already-reviewed D18 classification to the v0.2.0 milestone under the explicit GitHub mutation gate."
+  - "Record the #637 decision date, performance budget, and #612 implementation readiness in the subsequent v0.2.0 execution phase."

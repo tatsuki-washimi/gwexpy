@@ -5,7 +5,7 @@
 
 Status: planned
 
-対象マイルストーン: **v0.2.0**（状態モデル・列式・永続化・結合）+ **v0.3.0**（集約統計・遅延実行・reshape）
+対象テーマ: **Experiment data workflow**（将来テーマ候補、リリース版・時期未割当）。集約統計・遅延実行・reshape は同テーマの後続候補。
 
 ---
 
@@ -30,7 +30,7 @@ scan/read → filter/select → assign/define → explode/reshape
 
 1. **v0.1 仕様の必須 API はすべて実装済みで、スタブや `NotImplementedError` は 1 つもない。** `gwexpy/table/` の本体は `segment_table.py`（1178 行）、`segment_cell.py`（117 行）、`segment_plot.py`（551 行）の 3 本。残りは gwpy への再エクスポート。テストは 4 ファイル 932 行。仕様書は `docs_internal/tech_notes/specs/SegmentTable.md`（1547 行）。
 
-2. **この領域は既に v0.2.0 の起票済みスコープである。** open issue は #355（`write()` の HDF5 ラウンドトリップ）、#405（`read()` ファクトリ）、#406（`extract_stat()`）、#407（sugar メソッドへの `parallel=`）、#408（HDF5 の provenance と schema version）。マイルストーン v0.2.0 の説明文自体が **"persistable SegmentTable workflows"** を 3 本柱の 1 つに挙げている。内部リリース計画（`docs_internal/plans/release_and_update_plan_20260724.md:85`）は #355/#405/#408 を P0（リリースブロッカー）、#406/#407 を P1 と判定済み。**本設計は白紙の新規計画ではなく、この既存スコープの再編である。**
+2. **この領域は以前 v0.2.0 候補として起票されたが、現行 v0.2.0 の凍結スコープからは deferred されている。** open issue は #355（`write()` の HDF5 ラウンドトリップ）、#405（`read()` ファクトリ）、#406（`extract_stat()`）、#407（sugar メソッドへの `parallel=`）、#408（HDF5 の provenance と schema version）。これらは **Experiment data workflow** の将来テーマ候補として再評価する。**本設計は白紙の新規計画ではなく、既存候補の再編である。**
 
 3. **`read` は既に `read_csv` の別名として存在する**（`gwexpy/table/segment_table.py:333` の `read = read_csv`）。したがって #405 の「`read()` ファクトリ追加」は**新規追加ではなく既存名の格上げ**であり、後方互換の検討が必要。CHANGELOG v0.1.1 が「`read()` を追加」と書いているのはこの別名を指しており、記述自体は誤りではない。
 
@@ -64,12 +64,12 @@ scan/read → filter/select → assign/define → explode/reshape
 
 - v0.1.x は PyPI 公開済みで、チュートリアル 4 本が eager な `crop` / `apply` / `asd` を使っている。既存メソッドの遅延化は破壊的変更になる。
 - 既存 issue #407 は「selected SegmentTable **sugar methods** に `parallel=` を足す」という書き方で、eager メソッドの存続を前提にしている。フル再設計はこの issue の前提を崩す。
-- 遅延層を先に作ると、v0.2.0 の P0（#355/#405/#408）が遅延層の完成待ちになり、リリースブロッカーが後ろに倒れる。
+- 遅延層を先に作ると、将来テーマの P0 候補（#355/#405/#408）が遅延層の完成待ちになり、実装順序が後ろに倒れる。
 
 代わりに次の構成を採る。
 
 ```
-SegmentTable  (eager, 既存API維持)  ──.frame()──▶  SegmentFrame  (lazy, v0.3.0)
+SegmentTable  (eager, 既存API維持)  ──.frame()──▶  SegmentFrame  (lazy, later phase)
       │                                                   │
       │  filter/assign/groupby は即時実行                  │  同名メソッドはグラフに記録
       ▼                                                   ▼
@@ -78,9 +78,9 @@ SegmentTable  (eager, 既存API維持)  ──.frame()──▶  SegmentFrame  (
                      └──────────── compute() ─────────────┘
 ```
 
-**両層は列式 `col()` を共用する。** `col("snr") > 5` という式オブジェクトはそれ自体が小さな計算グラフであり、eager 層では即座に評価され、遅延層ではグラフのノードとして記録される。したがって v0.2.0 で列式を正しく設計すれば、v0.3.0 の遅延層は**評価戦略の差し替えだけ**になり、投資が無駄にならない。これが「eager から始める」ことの本質的な正当化である。
+**両層は列式 `col()` を共用する。** `col("snr") > 5` という式オブジェクトはそれ自体が小さな計算グラフであり、eager 層では即座に評価され、遅延層ではグラフのノードとして記録される。したがって本テーマで列式を正しく設計すれば、後続の遅延層は**評価戦略の差し替えだけ**になり、投資が無駄にならない。これが「eager から始める」ことの本質的な正当化である。
 
-`SegmentFrame` は v0.3.0 のスコープとし、本設計では境界と契約のみを定める（実装詳細は v0.3.0 着手時に別設計書へ）。
+`SegmentFrame` は後続フェーズのスコープとし、本設計では境界と契約のみを定める（実装詳細は着手時に別設計書へ）。
 
 ### 2. 欠損・失敗の状態モデル（最優先）
 
@@ -214,7 +214,7 @@ table.select_columns(*names); table.drop_columns(*names)
 table.rename_columns(**mapping); table.assign(**exprs)
 ```
 
-既存の `select()` は**残す**（後方互換）。`filter()` が上位互換になるため、docstring に「`filter()` を推奨、`select()` は将来 deprecate 候補」と明記するに留め、v0.2.0 では削除も警告も出さない。
+既存の `select()` は**残す**（後方互換）。`filter()` が上位互換になるため、docstring に「`filter()` を推奨、`select()` は将来 deprecate 候補」と明記するに留め、このテーマでは削除も警告も出さない。
 
 **Segment 固有の検索。** 同じ `ops.py` に同居させる。
 
@@ -223,7 +223,7 @@ table.overlapping(segment); table.within(segment); table.containing(t)
 table.before(t); table.after(t); table.nearest(t)
 ```
 
-内部 index は start 時刻ソート配列 + 二分探索を既定とする（interval tree は行数が問題になってから）。`coalesce` / `pad` / `contract` / `intersection` / `subtract` などの区間代数は v0.3.0 に送る（`SegmentList` 側の既存実装との整合検討が必要なため）。
+内部 index は start 時刻ソート配列 + 二分探索を既定とする（interval tree は行数が問題になってから）。`coalesce` / `pad` / `contract` / `intersection` / `subtract` などの区間代数は後続フェーズに送る（`SegmentList` 側の既存実装との整合検討が必要なため）。
 
 ### 5. 結合と永続化
 
@@ -239,9 +239,9 @@ def read(cls, source, format=None, **kwargs) -> SegmentTable:
 
 これにより `SegmentTable.read("a.csv")` は**現在とまったく同じ挙動を保つ**。`read_csv()` は公開 API として維持する。CHANGELOG では「`read()` は別名から format 判定ファクトリへ格上げ」と説明する（事実 3 の齟齬を残さないため）。
 
-#### 5.2 永続化フォーマット（v0.2.0 は単一 HDF5）
+#### 5.2 永続化フォーマット（将来テーマでは単一 HDF5 を先行）
 
-議論はディレクトリ形式（`result.segmenttable/` + parquet + zarr）を提案したが、#355 が HDF5 を指定しており、既存 I/O 基盤（事実 9(d)）も HDF5 前提である。v0.2.0 は**単一 HDF5 ファイル**に絞る。ディレクトリ / zarr / parquet は v0.3.0 以降。
+議論はディレクトリ形式（`result.segmenttable/` + parquet + zarr）を提案したが、#355 が HDF5 を指定しており、既存 I/O 基盤（事実 9(d)）も HDF5 前提である。将来テーマでは**単一 HDF5 ファイル**を先行する。ディレクトリ / zarr / parquet は後続フェーズ。
 
 ```
 /metadata                  meta DataFrame（span は start / end の 2 列へ展開）
@@ -281,7 +281,7 @@ table.add_segment_id(fmt="{detector}-{start:.0f}-{end:.0f}")
 
 `concat` は `segment_id` 列が存在する場合のみ衝突検査を行う。
 
-### 6. groupby / aggregate と統計（v0.3.0）
+### 6. groupby / aggregate と統計（後続フェーズ）
 
 `gwexpy/table/segment/stats.py`。
 
@@ -332,8 +332,8 @@ gwexpy/table/segment/
 ├── ops.py           filter / assign / sort / select_columns / Segment 検索
 ├── combine.py       concat / join
 ├── io.py            read / write / serializer registry
-├── stats.py         groupby / aggregate / stack_spectra          (v0.3.0)
-├── frame.py         SegmentFrame                                  (v0.3.0)
+├── stats.py         groupby / aggregate / stack_spectra          (later phase)
+├── frame.py         SegmentFrame                                  (later phase)
 └── exceptions.py    CellLoadError ほか
 ```
 
@@ -345,7 +345,7 @@ gwexpy/table/segment/
 
 新 Umbrella `[Umbrella] SegmentTable analysis workflow completion` を立て、既存 5 件をその子として位置づけ直す（既存 issue は**閉じない**。議論履歴を保つため）。`S-N` は未採番のプレースホルダで、投稿時に実イシュー番号へ置換する。
 
-### v0.2.0 — 状態モデル・列式・永続化・結合
+### Experiment data workflow — 状態モデル・列式・永続化・結合
 
 | ID | タイトル（要旨） | 依存 |
 |---|---|---|
@@ -362,7 +362,7 @@ gwexpy/table/segment/
 
 クリティカルパス: **S-0 → S-1 → S-3 → S-4 → #405 → #355 → #408**。S-2 と S-5 は S-1 / S-4 完了後に並列化できる。
 
-### v0.3.0 — 集約統計・遅延実行・reshape
+### Later workflow candidates — 集約統計・遅延実行・reshape
 
 | ID | タイトル（要旨） | 依存 |
 |---|---|---|
@@ -398,10 +398,10 @@ conda run -n gwexpy ruff check gwexpy/table/
 ## リスク・未解決事項
 
 1. **HDF5 lazy 読み戻しのファイルハンドル寿命（未解決）。** `read()` が loader を仕込んだまま返すと、h5py のファイルハンドルをいつまで開いておくかという問題が出る。都度 open するか、テーブルにコンテキストマネージャを持たせるか、#355 の実装前に決める必要がある。
-2. **`select()` のセル共有をどうするか（未解決）。** 状態モデル導入後は共有が実害を生むが、契約テストが現状の共有を固定している。deep copy を既定にするのは破壊的変更であり、v0.2.0 に入れるか v0.3.0 に送るかの判断が要る。契約監査の deferred follow-up「Cache/cell isolation changes」と同じ論点。
+2. **`select()` のセル共有をどうするか（未解決）。** 状態モデル導入後は共有が実害を生むが、契約テストが現状の共有を固定している。deep copy を既定にするのは破壊的変更であり、本テーマに入れるか後続フェーズに送るかの判断が要る。契約監査の deferred follow-up「Cache/cell isolation changes」と同じ論点。
 3. **`segment_id` を既定生成しない判断のトレードオフ。** join の使い勝手が落ちる可能性がある。`add_segment_id()` ヘルパで足りるかは S-5 実装時に再評価する。
 4. **`SummaryTable` と `SegmentTable` の描画 API が重複しうる。** 描画側は別 umbrella（#558 系）が動いているため、S-8 の時点で描画の共通化方針を確認する必要がある。
-5. **`read()` 格上げのリリースノート。** 事実 3 の齟齬（CHANGELOG v0.1.1 が「`read()` 追加」と書いている）を踏まえ、v0.2.0 のリリースノートで挙動拡張であることを明示する（#413 と連携）。
+5. **`read()` 格上げのリリースノート。** 事実 3 の齟齬（CHANGELOG v0.1.1 が「`read()` 追加」と書いている）を踏まえ、#413 には v0.2.0 からの deferral のみを記録する。将来テーマを出荷する際の挙動拡張は、その release notes で別途追跡する。
 6. **`SegmentFrame` の並列実行は未検証。** GIL・pickle コスト・ファイル同時アクセス・FFT ライブラリ内部スレッドの問題は、S-10 着手時に実測が必要。本設計では輪郭のみを定める。
 7. **公開 `ROADMAP.md` に SegmentTable の記載がない**（事実 11）。本設計を進めるなら ROADMAP への反映も検討対象になる。
 
@@ -415,14 +415,14 @@ conda run -n gwexpy ruff check gwexpy/table/
 - インタラクティブ table widget、HTML/PDF 解析レポート生成。
 - pickle による任意 Python オブジェクトの無制限永続化（`allow_pickle=True` の明示時のみ）。
 - 描画 API の刷新（`ax=` 統一、`errorbar()`、カテゴリ色分け、大規模 downsampling）。議論では独立した領域として整理されており、別 umbrella で扱う。
-- メタ分析（逆分散重み付き平均、random-effects、bootstrap、共分散を考慮した統合）。v0.3.0 の Reducer 基盤が整ってから別設計とする。
+- メタ分析（逆分散重み付き平均、random-effects、bootstrap、共分散を考慮した統合）。後続の Reducer 基盤が整ってから別設計とする。
 - 仮説検定・多重比較補正。SciPy / statsmodels の薄い層で足りるため優先度は低い。
 
 ---
 
 ## 付録 — GitHub イシュー本文ドラフト(英語)
 
-v0.2.0 の Umbrella と新規サブイシュー（S-0〜S-6）のドラフトをここに置く。v0.3.0 分（S-7〜S-11）は当該マイルストーン着手時に追記する。`gh issue create` に渡す前にユーザー承認を得る。
+将来テーマの Umbrella と新規サブイシュー（S-0〜S-6）のドラフトをここに置く。後続フェーズ分（S-7〜S-11）は当該マイルストーン着手時に追記する。`gh issue create` に渡す前にユーザー承認を得る。
 
 ### `[Umbrella] SegmentTable analysis workflow completion`
 
@@ -443,7 +443,7 @@ Target closed loop:
 Design document:
 `docs/developers/plans/active/2026-08-01-segmenttable-workflow-design.md`
 
-- `SegmentTable` stays eager. A lazy `SegmentFrame` layer is added later (v0.3.0)
+- `SegmentTable` stays eager. A lazy `SegmentFrame` layer is added in a later phase.
   and is reached through `table.frame()`. Existing eager methods keep their
   semantics, so v0.1.x notebooks are unaffected.
 - Both layers share one `col()` column-expression AST. An expression exposes
@@ -456,7 +456,7 @@ Design document:
 - Persistence lands as a single HDF5 file with a mandatory `schema_version`,
   and payloads are restored lazily as loaders rather than eagerly materialised.
 
-## Relation to existing v0.2.0 issues
+## Relation to existing deferred issues
 
 This umbrella re-frames rather than replaces the already-filed work:
 
@@ -478,7 +478,7 @@ This umbrella re-frames rather than replaces the already-filed work:
   tracked separately.
 - Meta-analysis (inverse-variance weighting, random effects, bootstrap).
 
-## Sub-issues (v0.2.0)
+## Sub-issues (future theme; milestone unassigned)
 
 - [ ] #S-0 table: split `segment_table.py` into a `segment/` package
 - [ ] #S-1 table: explicit `CellStatus` state model for `SegmentCell`
@@ -495,8 +495,8 @@ This umbrella re-frames rather than replaces the already-filed work:
 
 Critical path: #S-0 -> #S-1 -> #S-3 -> #S-4 -> #405 -> #355 -> #408.
 #S-2 and #S-5 can run in parallel once #S-1 and #S-4 have landed.
-v0.3.0 sub-issues (Reducer, groupby/aggregate, spectra stacking, lazy
-`SegmentFrame`, reshape) are filed when that milestone opens.
+Later sub-issues (Reducer, groupby/aggregate, spectra stacking, lazy
+`SegmentFrame`, reshape) are filed when a future milestone opens.
 ```
 
 ### S-0 `table: split segment_table.py into a segment/ package (no behaviour change)`
@@ -679,7 +679,7 @@ existing `parse_column_filters`, already reachable through
 The internal segment index is a start-time-sorted array with binary search.
 
 `select()` is kept for backward compatibility and documented as superseded by
-`filter()`; no deprecation warning is emitted in v0.2.0.
+`filter()`; no deprecation warning is emitted in this future theme.
 
 Depends on #S-3.
 ```

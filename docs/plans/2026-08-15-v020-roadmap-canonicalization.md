@@ -27,7 +27,7 @@ v0.1.14 公開後の gwexpy において、(1) 2026-08-12 の未反映議論（t
 | rebase 衝突見込み | なし（実測: merge-base..origin/main で `ROADMAP.md`・`docs_redesign/explanation/roadmap.md`・同 po の変更 0 コミット。**したがって計画中の L 番号は rebase 後も有効**。ただし編集時は見出しで再特定する） |
 | #657 | open。body は「Done」全16項目 `[x]` の歴史的実行記録（書き換えない） |
 | #637 decision date | TBD。ただし「milestone mid-point で確定し当該コメントを更新する」方式は 2026-08-11 コメントに**記録済み** |
-| 設計文書 | `docs/developers/plans/active/2026-08-09-capability-domain-roadmap-design.md`、`Status: planned` / `Reviewer Status: draft`、§10 未チェック、§11 Open-1〜3 未解決。旧 dated path への repo 内参照は ROADMAP L9/L69/L295 の3件のみ |
+| 設計文書 | active-plans 領域の日付付き capability-domain 設計文書。`Status: planned` / `Reviewer Status: draft`、§10 未チェック、§11 Open-1〜3 未解決。旧 dated path への repo 内参照は ROADMAP L9/L69/L295 の3件のみ |
 | CHANGELOG との齟齬 | `[0.1.14]` Known limitations が「#634 for **v0.2.0**」と記載（当時の見込み）。新テーマ帰属と矛盾するため ROADMAP 側で上書き宣言が必要。#632 は Known limitations でなく変更一覧の `(#632 partial)` として記録されている |
 | root ROADMAP テスト | 存在しない（tests/ の roadmap 系2テストは別ファイルを読む） |
 | Sphinx 影響 | `docs/conf.py` の `exclude_patterns` に `developers/**` → 設計文書移動はビルド無影響。ただし canonical 文書はビルド済み docs から不可視のまま（ヘッダに maintainer-facing と明記して対処） |
@@ -75,7 +75,7 @@ v0.1.14 released を前提化。manifest 削除リスクの撤回、Zenodo DOI �
 
 **設計文書の昇格**（Step 4）
 
-- `git mv docs/developers/plans/active/2026-08-09-capability-domain-roadmap-design.md docs/developers/design/capability-domain-roadmap.md`
+- active-plans 領域の日付付き capability-domain 設計文書を `docs/developers/design/capability-domain-roadmap.md` へ `git mv`。
 - ヘッダ: `Status: active` / `Authority: canonical` / `Audience: maintainer-facing（ビルド済み docs には含まれない — docs/conf.py が developers/** を exclude）`。`Reviewer Status: draft` 解消。§10 完了は将来 `Initial adoption verification: completed <date>` の別フィールド。
 - 内容追補: §3 consumer layer 行と §5 マトリクス（11+4 ドメイン × release テーマ）に新テーマ2列 → §6 に release statement + user story + 受入成果物（**文言は Step 3 で確定した ROADMAP から転記して一致させる** — 独立執筆しない）→ §8 に v0.1.14 記載方針・§9 裁定 B-4 の期限切れ注記 → **§11 に D14〜D18 を追記**: D14 = 新テーマ2件（8/12 議論の要旨と採否を各1段落で含める — rev.2 の §13 新設は Critic 指摘により中止し、要旨は decision log に吸収）、D15 = 3状態表記、D16 = v0.1.14/15 記載方針、D17 = design/ 昇格、**D18 = milestone hygiene の判定記録**（外部レビュー2巡目指摘により前倒し — **Step 3 で確定した ROADMAP の v0.2.0 Definition of done案に基づき、Phase 4 記載の3分類基準〔DoD-required / gate-supporting / unrelated〕を実メンバ11件に適用した「planned application record」として、Step 8 の全検証通過までに本 PR 内で確定する**。merge 後の Step 11 は D18 を書き換えず GitHub milestone へ適用するのみ）→ §12 出典注記を「2026-08-12 discussion; original chat export not archived; substance captured in D14-D17」に更新。
 - `docs/developers/design/README.md` 新設（**最小骨子を指定**: `design/` = 日付なしの living 設計文書 + 既存 `design_data/`（CSV 成果物）+ `gui/`（分析メモ）。隣接 `plans/` = 日付付き実行記録、`contracts/` = 規範的 I/O contract、`reports/` = 生成レポート、という4ディレクトリ境界表のみ。6行程度）。`docs/developers/plans/README.md` に `design/` との境界1行追記。
@@ -91,7 +91,7 @@ v0.1.14 released を前提化。manifest 削除リスクの撤回、Zenodo DOI �
 **contract test 新設**（Step 6）— `tests/docs/test_root_roadmap_contract.py`。見出し照合は **case-insensitive**（main 側 sentence case との揺れを固定化しない）。全文 snapshot は不可。assert 集合:
 1. `## v0.2.0` 節が存在し、`Workstreams` と `Definition of done` のラベルを持つ（判定は行頭見出し**またはプレーンテキストのラベル行**の両方を許容、case-insensitive — 現行 ROADMAP は段落内ラベルであり、Step 3 に見出し化の指示は無い。見出し化を強制しない）
 2. DoD 項目数 ≥ 4、かつ各項目が issue 参照（`#\d+`）を1つ以上含む（0件緑防止）
-3. Future themes 節内のバージョントークン（`v\d+\.\d+`）出現 = 0
+3. Future themes 節内の `###` テーマ見出し行に、具体的なバージョン番号の先取り割当（`v\d+\.\d+` を含む見出し、例: `### v0.3.0 ...`）が無い（本文中の issue 番号や他リリースへの相互参照としての `v\d+\.\d+` は許容 — 「将来テーマに版番号を先取りしない」という本来の不変条件を、見出しレベルの割当禁止として保証する。plan-reviewer レビュー後の訂正: 当初のセクション全体バージョントークン禁止では相互参照が構造的に不可能だったため見出しレベルへ限定）
 4. `## v0.` 見出し集合 ⊆ {v0.1.13, v0.1.14, v0.2.0}（将来 minor の節が生えないことを守る。本文中の `v0.2.1+` 等は対象外）
 5. v0.2.0 節と Future themes の各テーマブロックが `Status:` 行をちょうど1つ持つ
 6. `Status: Committed` の出現 = 全文書で1箇所
@@ -118,7 +118,7 @@ merge〜hygiene 完了までの短い乖離窓は、Phase 2-1 の一方向導出
 - **#657**: body は書き換えず **final comment + close**。コメント: canonical path への採択、main 上の merge commit SHA、「original body 中の dated path は当時の作業場所」の注記。
 - **v0.2.0 milestone hygiene**: 判定基準は **merge 済み ROADMAP の v0.2.0 Definition of done（Phase 2 で凍結、merge commit SHA で参照）**。判定中の DoD 書き足しは禁止（循環防止）。各 issue を3分類:
   - `DoD-required` = DoD 文面が名指し（例: #402 は DoD 3 が名指し。DoD 4 が名指すのは #637 の性能予算。#581 は DoD ではなく Workstreams 箇条書きにのみ登場し、かつ milestone 外なので判定対象外）
-  - `gate-supporting` = 「これが無いと DoD のどの項目が検証不能になるか」を1文で書けるもの
+  - `gate-supporting` = DoD に直接名指しされないが、ROADMAP の v0.2.0 Workstreams が scope 内として明記する、または DoD の検証・release evidence に必要なもの
   - `unrelated` = 上記いずれでもない → 外す（外す際、当該 issue にテーマ帰属先を1行コメント。PR #625 も同様 — 追跡リンク喪失防止）
   - 判定対象は実メンバ 11件: #637 #612 #594 #513 #508 #413 #403 #402 #401 #400 + PR #625。**外部レビュー2巡目指摘により、この3分類・11件の判定は Step 4 で PR #660 内に D18（planned application record）として確定済み**（milestone description には「基準: capability-domain-roadmap.md D18 参照」の1行 + 既存 description への追記のみ。GitHub は意思決定記録の置き場にしない）。Step 11 では **D18 を再分類・書き換えず**、確定済みの分類を GitHub milestone にそのまま適用する（unrelated の除去 + 帰属先コメントの投稿のみ）。適用前に、Step 3 で確定した ROADMAP DoD の文言が merge 後も D18 確定時点から変わっていないことを diff で確認する。
 - **Open-1〜3 の issue 化**: Open-2（#637 decision date — 方式は #637 コメントに記録済みなので追跡 issue を立てるだけ）/ Open-3（性能退行予算）= actionable、v0.2.0 planning dependency と明記。Open-1（`gwexpy/cli/` の consumer layer 前提違反）= architecture decision issue、milestone なし。
@@ -160,16 +160,16 @@ write scope は相互排他（L1=ROADMAP のみ、L2 と L3 は別ファイル�
 - [x] **Step 0: 正本保存**（2026-08-15 実施）— 本計画を `docs/plans/2026-08-15-v020-roadmap-canonicalization.md` として保存（PR に同梱）。`~/.claude/plans/` 側はコピー
 - [x] **Step 1: rebase** — `git rebase origin/main`、V1 確認、force-with-lease push（2026-08-15 実施、V1 PASS、push 成功）
 - [x] **Step 2: PR #660 再定義**（2026-08-15 実施）— title/body を canonical adoption 版へ更新、`gh pr view` で反映確認済み
-- [ ] **Step 3: ROADMAP.md 改訂**（L1、9項目）
-- [ ] **Step 4: 設計文書昇格 + 追補 + D18（milestone hygiene 判定11件）を PR 内で確定**(L2)
-- [ ] **Step 5: 兄弟文書の事実訂正**(L3、24行)
-- [ ] **Step 6: contract test 新設**(L4、assert 9項目)
-- [ ] **Step 7: 公開 roadmap 同期**(L5)
-- [ ] **Step 8: 検証 V1〜V5 全通し + V8（補助）と L3 対照表（24行）の目視確認**
+- [x] **Step 3: ROADMAP.md 改訂**（2026-08-15 実施、9項目完了、4巡のレビューで Blocker 4件・Major 6件・Minor 8件を解消し Approved — 最終巡で v0.1.14 節の #614/#615/#620 重複記載除去〔実 milestone 9 scope に置換〕と冒頭 release-state 文の陳腐化を修正）
+- [x] **Step 4: 設計文書昇格 + 追補 + D18（milestone hygiene 判定11件）を PR 内で確定**（2026-08-15 実施、L2）— `git mv` で `docs/developers/design/capability-domain-roadmap.md` へ昇格（rename 検出で追跡）。ヘッダを `Status: active` / `Authority: canonical` / `Audience: maintainer-facing` に更新。§3 consumer layer 行に #674 を追記。§5 matrix に2新テーマ列（I/O time & dispatch semantics、API compatibility & stabilization）を追加。§6 に両テーマの release statement/user story/受入成果物/Non-goals を ROADMAP から逐語転記。§8 に v0.1.14 節の関係行を追加。§9 の B-4 裁定を D16 優先で訂正。§11 に D14–D18 を追記。D18 は `gh issue/pr view` で実測したタイトルに基づき実メンバー11件を分類（#612 #637 #402 = DoD-required、#400 #413 #401 #508 #513 = gate-supporting、#594 PR#625 #403 = unrelated）。`gate-supporting` は DoD の検証・release evidence に加え、ROADMAP Workstreams が scope 内として明記した member も保持する。#401 は Step 11 で旧 P0 mapping が歴史的である旨の superseding comment を付す。Open-1〜3 をトラッキング issue #674/#675/#676 に更新。§12 に出典注記を追加。`docs/developers/design/README.md` を新設、`docs/developers/plans/README.md` に境界1行を追加。commit/push は未実施。
+- [x] **Step 5: 兄弟文書の事実訂正**（2026-08-15 実施、L3、24行）— terrain/ScalarField 16行、SegmentTable 5行、ecosystem 3行の stale milestone/theme assignment を訂正。設計/API/依存関係は変更せず、terrain L243 の exclusion semantics は維持。`git diff --check` と V8 補助 grep（0件）を通過し、24行の旧文→新文/根拠を目視確認済み。commit/push は未実施。
+- [x] **Step 6: contract test 新設**（2026-08-15 実施、L4）— `tests/docs/test_root_roadmap_contract.py` を新設。9 invariants と parser 境界条件の回帰テストを含む20 testsを追加し、Terra の3巡レビューで false-green（version heading、Markdown reference link、path traversal、複数 deferred block等）を解消。単体20 passed、`tests/docs/` 156 passed / 4 skipped、ruff・`git diff --check` PASS。`ROADMAP.md` は `Workstreams:` を独立ラベル行にする意味不変の最小整形のみ。
+- [x] **Step 7: 公開 roadmap 同期**（2026-08-15 実施、L5）— 公開 roadmap の更新日を2026-08-15へ更新し、Long-Term Directionsにtime interpretation / reader semanticsの項目を追加。対象gettext catalogのみ同期して自然な日本語訳を追加。content-level fuzzy・空msgstr 0件、`msgfmt` PASS、公開content tests 10 passed。Terraレビューは指摘ゼロでApproved。
+- [ ] **Step 8: 検証 V1〜V5 全通し + V8（補助）と L3 対照表（24行）の目視確認** — 2026-08-15 の pre-commit 検証で V1〜V4/V8 は完了。V5 は EN/JA とも、変更されていない optional ROOT notebook `docs_redesign/how-to/interop/intro_interop.ipynb` の同一セルが 600 秒で `CellTimeoutError` となり exit 2。対象 notebook と build 設定は本 PR の差分外であり、PR 非因果の環境依存 known limitation として受容予定だが、warning 0 未達のため成功扱いにはしない。最終 commit 後に V1 を再実行してから Step 8 を close する。ログ: `/tmp/gwexpy-step8-docs-en2.log`、`/tmp/gwexpy-step8-docs-ja.log`、`/tmp/sphinx-err-fqz1yg6w.log`、`/tmp/sphinx-err-5qek3bw5.log`。
 - [ ] **Step 9: PR diff レビュー → merge**（承認ゲート）
 - [ ] **Step 10: #657 final comment + close**（承認ゲート）
 - [ ] **Step 11: milestone hygiene — Step 4 で確定済みの D18 を GitHub milestone に適用**（承認ゲート）
-- [ ] **Step 12: Open-1〜3 issue 化 + #606 申し送り**（承認ゲート）
+- [ ] **Step 12: #606 申し送り**（承認ゲート）— Open-1〜3 の issue 化は先行タスクで完了済み（#674〜#676）。重複作成しない
 - [ ] **Step 13: 完了レビュー** — 並列品質レビュー + completion-auditor（mplan フェーズ6）
 
 ## 検証
@@ -181,7 +181,7 @@ git diff --find-renames --diff-filter=D --name-status origin/main...HEAD   # →
 git diff --name-only origin/main...HEAD | sort            # → 変更ファイル一覧と一致
 
 # V2. 旧 dated path の残存参照ゼロ（許容箇所なし — 実測で歴史的参照は存在しない）
-git grep -n '2026-08-09-capability-domain-roadmap-design' && echo FAIL || echo PASS  # → PASS
+git grep -n '2026-08-09-capability-domain-roadmap''-design' && echo FAIL || echo PASS  # → PASS
 
 # V3. 文書テスト（新設 contract test 含む）
 conda run -n gwexpy python -m pytest tests/docs/ tests/test_issue_burn_down_roadmap.py \
@@ -194,6 +194,10 @@ msgfmt --check -o /dev/null docs_redesign/locales/ja/LC_MESSAGES/explanation/roa
 # V5. Sphinx: .github/workflows/docs-pages.yml の build ステップと同一コマンドで en/ja とも
 #     warning 0（en = L92 の sphinx-build、ja = L100 の sphinx-build -D language=ja。
 #     docs_redesign/README.md にはビルド手順が無い — 参照しない）
+# 2026-08-15 pre-commit 結果: EN/JA とも、変更対象外の optional ROOT notebook
+#     `how-to/interop/intro_interop.ipynb` の同一セルが 600 秒で CellTimeoutError、exit 2。
+#     notebook/build 設定に本 PR の差分はなく、PR 非因果の環境依存 known limitation として
+#     受容予定。ただし warning 0 は未達であり成功扱いにしない。ログは Step 8 行に記録。
 
 # V6. リンク実在チェックは contract test assert 7 に一本化（shell 版は廃止 — 0件マッチで
 #     偽 OK を出す構造だったため）
@@ -213,7 +217,7 @@ grep -nE '対象マイルストーン: \*{0,2}v0\.2\.0|v0\.2\.0 milestone|v0\.2\
   && echo REVIEW || echo PASS   # → PASS（0件）。REVIEW の場合は残存行を個別判断
 ```
 
-**変更ファイル一覧**（V1 の期待値）: `ROADMAP.md` / `docs/developers/design/capability-domain-roadmap.md`（rename）/ `docs/developers/design/README.md`（新規）/ `docs/developers/plans/README.md` / 兄弟3文書 / `tests/docs/test_root_roadmap_contract.py`（新規）/ `docs_redesign/explanation/roadmap.md` / `docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po` / `docs/plans/2026-08-15-v020-roadmap-canonicalization.md`（新規）
+**変更ファイル一覧**（V1 の期待値、12 logical files）: `ROADMAP.md` / `docs/developers/design/capability-domain-roadmap.md`（rename）/ `docs/developers/design/README.md`（新規）/ `docs/developers/plans/README.md` / 兄弟3文書 / `tests/docs/test_root_roadmap_contract.py`（新規）/ `docs_redesign/explanation/roadmap.md` / `docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po` / `docs/plans/2026-08-15-v020-roadmap-canonicalization.md`（新規）/ `docs/developers/plans/manifests/audit-manifest-660-roadmap-canonicalization.yaml`（新規）
 
 ## レビュー反映記録（mplan フェーズ2 → rev.3）
 
@@ -313,7 +317,7 @@ rev.7 は外部レビュー2巡目で「execution-ready」と評価され、設�
 
 ## タスク D: 追跡 issue の新規作成（3件、Phase 4 Step 12 から前倒し）
 
-設計文書 `docs/developers/plans/active/2026-08-09-capability-domain-roadmap-design.md` §11 の Open-1〜3 を基に、実行時に本文を起草して新規 issue を作成する（本計画書には概要のみ記載し、正確な文言は実行時に §11 を読み直して作成する）:
+active-plans 領域にあった capability-domain 設計文書の §11 Open-1〜3 を基に、実行時に本文を起草して新規 issue を作成する（本計画書には概要のみ記載し、正確な文言は実行時に §11 を読み直して作成する）:
 
 1. **Open-1**: `gwexpy/cli/` の consumer layer 前提違反 — architecture decision issue。**milestone なし**。
 2. **Open-2**: #637 decision date の確定トラッキング — actionable、v0.2.0 planning dependency と明記。決定方式（milestone mid-point で確定）は #637 の 2026-08-11 コメントに既に記録済みである旨を issue 本文に引用する。
@@ -356,4 +360,3 @@ rtk proxy gh issue list --search "in:title Open-1 OR Open-2 OR Open-3" --json nu
 - [x] **タスク D**: 追跡 issue 3件を新規作成、milestone 未割当（`milestone: null` を実測確認）— Open-1 = #674、Open-2 = #675（#637 の2026-08-11コメント https://github.com/tatsuki-washimi/gwexpy/issues/637#issuecomment-5248951171 を引用）、Open-3 = #676。
 
 先行タスク完了。rev.7 の Step 1（rebase）へ進む。
-

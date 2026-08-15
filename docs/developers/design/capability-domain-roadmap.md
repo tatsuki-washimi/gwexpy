@@ -1,9 +1,11 @@
 # Capability-domain 長期ロードマップ設計(v0.2.0 → v1.0)
 
-> Last-updated: 2026-08-09 (rev 1 — 初版)
-> Reviewer Status: **draft**(3視点レビュー反映済み、ユーザー最終レビュー待ち)
+> Last-updated: 2026-08-15 (rev 2 — design/ への昇格、ROADMAP.md 改訂〔PR #660〕との同期)
 
-Status: planned
+Status: active
+Authority: canonical
+Audience: maintainer-facing(ビルド済み docs には含まれない — `docs/conf.py` の
+`exclude_patterns` が `developers/**` を除外している)
 
 対象: `ROADMAP.md` / `docs_redesign/explanation/roadmap.md` / GitHub milestone・issue triage 規則。
 **実装作業は含まない。** 実装(#637 の composition 移行、Field I/O、SegmentTable 等)は別タスクで扱う。
@@ -62,7 +64,7 @@ repo 内の一次文書として固定する。
 | Cross-cutting | X2 | Persistence / Provenance / Reproducibility | 全ドメイン横断 | schema version, source files, operation parameters, software version, processing history |
 | Cross-cutting | X3 | API Stability / GWpy Compatibility | 全ドメイン横断 | stable/provisional/experimental, deprecation policy, GWpy 追随ポリシー |
 | Cross-cutting | X4 | Performance / Scalability | 全ドメイン横断 | parallel, streaming, lazy loading, memory usage, chunking, benchmark |
-| Consumer(ドメイン外) | — | GWexpy Studio / pyaggui / CLI / Jupyter | `gwexpy/cli/` 含む | public API のみを消費する側。**未解決事項**: `gwexpy/cli/` は wheel 内かつ `._version` 等の private モジュールを参照しており、「public API のみで完結」という consumer layer の前提を現時点で満たしていない。CLI を core 側の一部として扱うか、private 依存を解消して真の consumer にするかは本文書では未決定とし、Decision log に open item として残す |
+| Consumer(ドメイン外) | — | GWexpy Studio / pyaggui / CLI / Jupyter | `gwexpy/cli/` 含む | public API のみを消費する側。**未解決事項**: `gwexpy/cli/` は wheel 内かつ `._version` 等の private モジュールを参照しており、「public API のみで完結」という consumer layer の前提を現時点で満たしていない。CLI を core 側の一部として扱うか、private 依存を解消して真の consumer にするかは本文書では未決定とし、Decision log に open item として残す(トラッキング issue: #674、milestone なし) |
 
 **未解決の帰属**: `gwexpy/numerics/`, `gwexpy/detector/`, `gwexpy/astro/`, `gwexpy/utils/`
 はいずれの機能ドメインにも一対一で対応しない実装支援コードである。これらは
@@ -223,24 +225,28 @@ Histogram(#3)は実装の実態に合わせて修正する。
 
 列はリリーステーマ名(バージョン番号は次の 1 minor のみ確定、それ以降は名前で扱う。
 §11 D13 参照)。◎=primary、○=secondary、—=対象外(意図的な選択であり欠落ではない)。
+列順は `ROADMAP.md` の Future themes 節の記載順(I/O time and dispatch semantics →
+Experiment data workflow → Advanced segment workflows → Spatial geometry and layered
+visualization → Mesh-aware fields and solver interoperability → Fisher forecasting and
+advanced analysis → API compatibility and stabilization → Later 0.x)に合わせる。
 
-| Domain | v0.2.0 (Container Semantic Contract) | Experiment data workflow | Advanced segment workflows | Spatial geometry & layered viz | Mesh fields & solver interop | Fisher & advanced analysis | Later 0.x (ecosystem/app) | v1.0 |
-|---|---|---|---|---|---|---|---|---|
-| 1 Time/Frequency | ○ | — | — | — | — | — | — | criteria met |
-| 2 Matrix | ◎ | — | — | — | — | ○ | — | criteria met |
-| 3 Histogram | ○(raises 登録のみ) | — | ○(segment 集約) | ○(plotting) | ○(ROOT interop 強化) | ○(covariance fitting) | — | criteria met |
-| 4 Field | — | ◎ | — | ◎ | ○ | — | — | criteria met |
-| 5 Segment | — | ◎ | ◎ | — | — | — | — | criteria met |
-| 6 Experimental I/O | ○(golden tests) | ○ | — | — | ○ | — | ○ | criteria met |
-| 7 Interoperability | — | — | — | — | ◎ | — | ◎ | criteria met |
-| 8 General Analysis | — | — | — | — | — | ○ | — | criteria met |
-| 9 Commissioning | — | — | — | — | — | — | — | criteria met |
-| 10 Modeling | — | — | — | — | — | ◎ | — | criteria met |
-| 11 Visualization | — | — | ○ | ◎ | — | ○ | — | criteria met |
-| X1 Semantic contract | ◎ | ○ | — | — | — | — | — | 全域適用 |
-| X2 Provenance | ○ | ◎ | — | — | — | — | — | 全域適用 |
-| X3 API stability | ◎ | — | — | — | — | — | — | 全域適用(stability label 完了) |
-| X4 Performance | ◎(ベースライン取得) | — | ○(lazy 実証要求) | — | — | — | ○ | 全域適用 |
+| Domain | v0.2.0 (Container Semantic Contract) | I/O time & dispatch semantics | Experiment data workflow | Advanced segment workflows | Spatial geometry & layered viz | Mesh fields & solver interop | Fisher & advanced analysis | API compatibility & stabilization | Later 0.x (ecosystem/app) | v1.0 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 Time/Frequency | ○ | ○ | — | — | — | — | — | — | — | criteria met |
+| 2 Matrix | ◎ | — | — | — | — | — | ○ | ○(#640) | — | criteria met |
+| 3 Histogram | ○(raises 登録のみ) | — | — | ○(segment 集約) | ○(plotting) | ○(ROOT interop 強化) | ○(covariance fitting) | — | — | criteria met |
+| 4 Field | — | — | ◎ | — | ◎ | ○ | — | — | — | criteria met |
+| 5 Segment | — | — | ◎ | ◎ | — | — | — | — | — | criteria met |
+| 6 Experimental I/O | ○(golden tests) | ◎ | ○ | — | — | ○ | — | — | ○ | criteria met |
+| 7 Interoperability | — | — | — | — | — | ◎ | — | — | ◎ | criteria met |
+| 8 General Analysis | — | — | — | — | — | — | ○ | — | — | criteria met |
+| 9 Commissioning | — | — | — | — | — | — | — | — | — | criteria met |
+| 10 Modeling | — | — | — | — | — | — | ◎ | — | — | criteria met |
+| 11 Visualization | — | — | — | ○ | ◎ | — | ○ | — | — | criteria met |
+| X1 Semantic contract | ◎ | ◎(明示的 contract 化) | ○ | — | — | — | — | ○ | — | 全域適用 |
+| X2 Provenance | ○ | — | ◎ | — | — | — | — | — | — | 全域適用 |
+| X3 API stability | ◎ | — | — | — | — | — | — | ◎(#400 継続) | — | 全域適用(stability label 完了) |
+| X4 Performance | ◎(ベースライン取得) | — | — | ○(lazy 実証要求) | — | — | — | — | ○ | 全域適用 |
 
 v1.0 列は「directional な予定」ではなく **criteria 列**である(全 domain が Minimum
 goal を満たし、X1-X4 が全域適用済みであることの確認列)。他の列はすべて directional で
@@ -274,6 +280,41 @@ Headline user stories:
 Definition of done: 上記3成果物が green、かつリファクタ前に取得した性能ベースライン
 に対して退行が予算内。
 
+### I/O time and dispatch semantics(将来テーマ、domain: 6 中心)
+
+> Consistent time interpretation (time zones, numeric time scales and epochs) and
+> uniform reader behaviour across supported experiment data formats.
+
+Primary domains: 6, 1, X1。`ROADMAP.md` の記載(2026-08-15 確定)からの逐語転記:
+
+- **Track A — Time interpretation contract**(#632, #634, #636)。Headline user
+  story: a user reading data from any supported format gets a value with an
+  explicit, documented time reference, never a silently-assumed one. Affected
+  readers, and writers where applicable, interpret time through an explicit
+  timezone / scale / unit / epoch contract; the implicit legacy GPS-seconds
+  interpretation is deprecated.
+  **受入成果物**: a cross-format time-interpretation conformance matrix covering
+  #632, #634, and #636, including explicit-zone/scale cases and required
+  fail-closed cases.
+  **Non-goals**: no unrelated format expansion, and no changes to existing
+  on-disk time encodings.
+- **Track B — Dispatch / reader semantics**(#444 → #616)。Headline user story: a
+  user reading across multiple backends gets identical collection-fallback and
+  gap/pad behaviour regardless of which reader served the request. First decides
+  the collection fallback registry contract for `FrequencySeriesDict`/`List`/
+  `Matrix` `.read()`/`.write()` — whether to keep the Astropy registry or
+  converge on the GWpy default registry (#444) — then makes gap/pad behaviour
+  consistent across supported `TimeSeriesDict.read` backends (#616).
+  **受入成果物**: (a) a `FrequencySeriesDict`/`List`/`Matrix` collection
+  dispatch/reachability matrix covering the chosen registry, and (b) a
+  cross-backend `TimeSeriesDict.read` gap/pad test matrix.
+  **Non-goals**: this track does not implement a new registry mechanism, add
+  new file formats, or change unrelated backend behaviour.
+
+両 Track は独立に完了する。テーマ完了 = 両 Track が green。A→B の強制依存はない
+(Track B の実装順序が #444 → #616 なのは Track B 内部の依存であり、Track A との
+依存ではない)。
+
 ### Experiment data workflow(次テーマ、番号未確定)
 
 > Read, transform, and persist spatial Field data and per-segment experiment
@@ -306,7 +347,7 @@ Headline user stories:
   **only once a demonstrated usage requirement exists**(X4 Minimum の前提を継承。
   「数万 segment」のような未検証の数値目標は置かない)。
 
-Design groundwork: [SegmentTable workflow plan](2026-08-01-segmenttable-workflow-design.md)。
+Design groundwork: [SegmentTable workflow plan](../plans/active/2026-08-01-segmenttable-workflow-design.md)。
 
 ### Spatial geometry & layered visualization(将来テーマ)
 
@@ -324,7 +365,7 @@ Headline user stories:
 制約: `gwexpy/fields/` 変更は physics-reviewer 必須(プロジェクト規約)。担い手が
 確保できない場合、このテーマの着手を遅らせる。
 
-Design groundwork: [layered visualization plan](2026-08-01-layered-visualization-design.md)。
+Design groundwork: [layered visualization plan](../plans/active/2026-08-01-layered-visualization-design.md)。
 
 ### Mesh fields & solver interoperability(将来テーマ)
 
@@ -354,6 +395,25 @@ Headline user stories:
 
 制約: overlap reduction function は physics review gate(`ROADMAP.md` 既定)。
 review の担い手が確保できるまで着手しない。
+
+### API compatibility and stabilization(将来テーマ、foundation: X3)
+
+> Continuation of the v0.2.0 "API stability labelling" workstream (#400) that
+> establishes and documents the public API surface.
+
+Primary domains: X3, 2。X3/#400 を起点とする**継続テーマ**であり、v0.2.0 の
+API stability labelling ワークストリームの再記述ではない(重複ホーム化の防止、
+§9 M4/Critic 参照)。`ROADMAP.md` の記載(2026-08-15 確定)からの逐語転記:
+
+Covers auditing GWpy method overrides against the documented compatibility
+principle (#639), and #640, which splits into a behavioural-contract issue for
+the `ignore_nan` default mismatch between `TimeSeriesMatrix` and
+`FrequencySeriesMatrix`, and a documentation-only issue for the
+`TimeSeriesDict.append` docstring gap.
+**受入成果物**: published compatibility matrix and per-module behaviour
+contract document.
+**Non-goals**: this theme does not redesign any container's arithmetic
+behaviour — see the v0.2.0 theme above for that contract.
 
 ### Later 0.x — Ecosystem and application readiness(番号を持たない)
 
@@ -415,6 +475,7 @@ No なら backlog。判定対象は user story の文言ではなく §6 で紐�
 | `docs_redesign/explanation/roadmap.md` | 公開向け要約。バージョン番号・ドメイン番号を出さない制約下で本文書の内容を反映(D3) |
 | issue #413 | v0.2.0 (Container Semantic Contract) の release statement 転記先 |
 | issue #400 | X3 Minimum のモジュール単位 stability label。v1.0 の主経路(D11) |
+| `ROADMAP.md` `## v0.1.14 — I/O contract and maintenance hardening` 節 | v0.1.14 は 2026-08-15 に released 済み(D16)。本節は per-change 正本 `CHANGELOG.md` `[0.1.14]` の要約であり、#632/#634 の partial mitigation を明記した上で、両issue の現在の帰属先は「I/O time and dispatch semantics」テーマ(本文書 §6、Directional、milestone 未設定)であると上書き宣言している |
 
 ## 9. レビュー所見の採用/棄却判定表
 
@@ -449,7 +510,7 @@ No なら backlog。判定対象は user story の文言ではなく §6 で紐�
 | M11(Critic) | リスク登録簿・撤退条件が皆無 | **部分採用**: #637 の fallback(D10)、Advanced segment workflows の usage requirement 前提化。GWpy 5.0 対応・bus factor 等その他のリスクは本文書の範囲外 |
 | A-8(Auditor) | Histogram の v0.2.0 DoD が事実と逆(既に fail-closed 済み) | **採用**: §4.3 で全面書き換え |
 | B-1〜B-3(Auditor) | ドメイン番号スキームが3種並存、v0.2.0スコープ記述に不一致 | **採用**: 本文書を単一の正本とし、11+4分類のみを使用 |
-| B-4(Auditor) | v0.1.14 の結論が #653 で陳腐化 | **採用**: 本文書・ROADMAP 改訂ともに v0.1.14 に言及しない(別会話スコープ) |
+| B-4(Auditor) | v0.1.14 の結論が #653 で陳腐化 | **採用(2026-08-09 時点)、後に期限切れ**: 当初は「本文書・ROADMAP 改訂ともに v0.1.14 に言及しない」と採用したが、v0.1.14 は 2026-08-15 に実際に released され、`ROADMAP.md` は released セクションとして v0.1.13 と対称な形式で v0.1.14 を記載する方針に変更された(D16)。本裁定はその時点までの暫定判断であり、D16 が優先する |
 | 項目4(Auditor 事実照合) | #555 critical path 前段が milestone 未設定 | **採用**: Experiment data workflow テーマ開始時に一括割当する運用へ(§8 の関連付け経由でPhase 0 issue に反映) |
 | 項目12(Auditor) | GWADW 資料の page 引用が repo 内に実体なく検証不能 | **採用**: 本文書では GWADW page 引用を使わず、repo 内の一次資料(実装・既存 issue・既存設計文書)のみを根拠とする |
 
@@ -463,8 +524,9 @@ No なら backlog。判定対象は user story の文言ではなく §6 で紐�
 - [ ] `msgfmt --check` が roadmap.po に対して通る
 - [ ] `gh issue list --milestone v0.2.0 --limit 200` が §8 の期待構成(contract-only、約10件)と一致する
 
-Status を `completed` にするのは上記が実行され結果が確認された時点とする
-(`Status: completed (verified: <実行コマンドと結果>)` の形式、planning-docs ルール準拠)。
+上記が実行され結果が確認された時点で、ヘッダに
+`Initial adoption verification: completed <date>` を追記する。living canonical design
+としての `Status: active` は維持する。
 
 ## 11. Decision log
 
@@ -479,11 +541,41 @@ Status を `completed` にするのは上記が実行され結果が確認され
 | D11 | v1.0 は #400 モジュール単位 stability label を主経路とする criteria 節。一括宣言は補助 |
 | D12 | Histogram の v0.2.0 スコープは raises 行の登録までとし、伝播規則設計は将来テーマ |
 | D13 | Future themes は番号でなく名前で並べる。次の 1 minor のみ番号確定 |
-| Open-1 | CLI の consumer layer 分類と private API 依存の矛盾は未解決(§3) |
-| Open-2 | #637 の decision date は本文書執筆時点で未確定。Phase 0 追跡 issue に残タスク化 |
-| Open-3 | X4 の性能退行予算の具体的数値は未確定 |
+| D14 | 2026-08-12 の追加議論を受け、Future themes に「I/O time and dispatch semantics」(#632/#634/#636 の Track A + #444→#616 の Track B)と「API compatibility and stabilization」(#400 継続、#639/#640)の2テーマを新設(§6)。前者は v0.1.14 が意図的に残した時刻解釈と reader dispatch の空白を埋め、後者は X3/#400 を起点とする継続テーマとして #639/#640 の宙に浮いた帰属を解消する。§5 matrix に両テーマの列を追加 |
+| D15 | リリーステーマの状態語彙を `Committed`(v0.2.0 のみ、常に1つ)/ `Directional`(Future themes 全テーマ、version・date・scope の commitment なし)/ `Backlog`(Ecosystem & Interoperability 節のみ)の3語に固定。表示形式は見出し直下の `Status: <語>` 1行。released 節・Release policy・v1.0 criteria・Engineering hygiene は対象外(未分類の曖昧さではなく、本スキームの適用外と明記) |
+| D16 | `ROADMAP.md` に v0.1.13 と対称な形式で `## v0.1.14 — I/O contract and maintenance hardening (released 2026-08-15)` 節を追加。CHANGELOG `[0.1.14]` の「#634 for v0.2.0」という当時の見込みを上書きし、#632/#634(partial mitigation)の現在の帰属は「I/O time and dispatch semantics」テーマ(Directional、milestone 未設定)であると明記。B-4(§9)の当初裁定はこれにより期限切れとなり、本決定が優先する |
+| D17 | 本文書を active-plans 領域から安定した canonical の `docs/developers/design/` パスへ `git mv` により昇格。`Status: active` / `Authority: canonical` / `Audience: maintainer-facing`。日付付きパスへの archive コピーは作らない |
+| D18 | **v0.2.0 milestone hygiene の planned application record**(merge 前に本 PR 内で確定。Step 11 は本表を再分類せず GitHub milestone にそのまま適用するのみ)。判定基準は `ROADMAP.md` `## v0.2.0 — Container Semantic Contract` 節の Definition of done(4項目、2026-08-15 rev 時点)。現在の milestone 実メンバー11件(issue 10件 + PR 1件)を下記 D18 詳細節の3分類に判定する |
+| Open-1 | CLI の consumer layer 分類と private API 依存の矛盾は未解決(§3)。トラッキング issue #674(milestone なし、architecture decision) |
+| Open-2 | #637 の decision date は milestone mid-point で確定する方式が #637 の 2026-08-11 コメントに記録済み。トラッキング issue #675(v0.2.0 planning dependency) |
+| Open-3 | X4 の性能退行予算の具体的数値は未確定。トラッキング issue #676(#581 起点、v0.2.0 planning dependency) |
+
+### D18 詳細 — v0.2.0 milestone 実メンバー11件の分類(2026-08-15、DoD 基準で確定)
+
+判定基準: DoD 1(#612 contract matrix)/ DoD 2・4(#637 の正しさとperf regression budget)/ DoD 3(#402 HDF5 golden tests)。`DoD-required` = DoD 文面が当該 issue を名指しする。`gate-supporting` = DoD に直接名指しされないが、`ROADMAP.md` の v0.2.0 Workstreams が scope 内として明記する、または DoD の検証・release evidence に必要である。`unrelated` = 上記いずれにも該当しない。
+
+| Issue/PR | タイトル要旨(2026-08-15 実測) | 分類 | 根拠 |
+|---|---|---|---|
+| #612 | Container arithmetic contract matrix umbrella | **DoD-required** | DoD 1 が直接名指し |
+| #637 | SeriesMatrix composition redesign | **DoD-required** | DoD 2(正しさ)・DoD 4(性能予算)の両方が直接名指し |
+| #402 | GWpy-native HDF5 readability golden tests | **DoD-required** | DoD 3 が直接名指し |
+| #400 | Define v0.2.0 API stability labels and release policy | **gate-supporting** | DoD には名指しされないが、Workstreams が明記する通り「#612 の contract matrix がその状態を記録する語彙」を提供する。#400 なしでは DoD 1 の各エントリに付す stability label が未定義のまま残る |
+| #413 | Prepare v0.2.0 release notes and migration guide | **gate-supporting** | `ROADMAP.md` Release policy「Documentation ... is part of each feature's definition of done」に基づく。#413 は DoD 1-3(#612/#637/#402)の成果をユーザー向けに記録する成果物であり、DoD 番号付き項目そのものではないが release の完了要件として扱う |
+| #401 | Gate v0.2.0 release on contract audit wave #276/#278/#284/#286/#288 | **gate-supporting(要更新)** | audit dependency mapping のうち「HDF5 compatibility golden tests → #276/#278」は DoD 3(#402)の検証を裏付けるため gate-supporting と判定する。ただし同 issue の依存表は SegmentTable read/write・coupling segment schema・`method="median-mean"` など、Step 3 の二段分割(D9)で v0.2.0 の Non-goals/Bounded additions に移動済みの項目を今も P0 として記載しており陳腐化している。Step 11 適用時、当該 issue 本文の audit mapping 表を現行 DoD に合わせて更新するコメントを併せて投稿する(分類自体は変更しない) |
+| #594 | investigate(io): Virgo `.ffl` を `TimeSeries.read` に直接渡せるか実測して確定する | **unrelated** | v0.2.0 DoD の対象は container 演算契約であり、Virgo `.ffl` I/O(domain 7)とは無関係。v0.1.13 で行ったのは「`.ffl` is unsupported」という文書訂正であり、#594 は open の follow-up investigation として残った。Ecosystem & Interoperability Backlog 項目3(Virgo data-path completion)への再帰属を推奨 |
+| PR #625 | fix(io): let TimeSeries.read accept Virgo .ffl frame lists (#594) | **unrelated** | #594 と同一の理由。Ecosystem & Interoperability Backlog 項目3への再帰属を推奨 |
+| #403 | Document deprecation policy: `nproc` → `parallel` alias for v0.2.0 | **unrelated** | DoD のいずれの項目の検証にも必要なく、v0.2.0 Workstreams も scope として明記しない。`nproc`/`parallel` の実挙動は v0.1.13 で #588 として fail-closed 化済みであり、本 issue は残る deprecation 通知文書化のみが scope。Step 11 では「v0.2.0 の技術的 DoD には不要」という理由のみ付記する |
+| #508 | statistics: Monte Carlo provenance metadata doesn't survive Spectrogram copy/slice/serialization | **gate-supporting** | DoD の直接要件ではないが、`ROADMAP.md` の v0.2.0 Workstreams が「Carried-over reproducibility work」として明示的に scope 内へ置く。container contract の変更後も copy/slice/serialization で provenance を保持できることを release evidence として確認する |
+| #513 | statistics/interop: `_t0_ns` precision(deferred from v0.1.11 review) | **gate-supporting** | issue 全体は warning stacklevel、`rng` Protocol typing、bool-input guard、`_t0_ns` precision の4項目を束ねているが、v0.2.0 の carried scope は `ROADMAP.md` Workstreams が明示する `_t0_ns` 精度部分のみ。container contract の変更が高精度 epoch の保持を後退させないことを release evidence として確認する |
+
+**適用時の注意**(Step 11 向け): `unrelated` の除去では、当該 issue に上記根拠を要約した1行コメントを付け、追跡リンク喪失を防ぐ(#594/PR#625 → Ecosystem Backlog 項目3、#403 → 明示的な再帰属先なしのため milestone 除去のみ)。#401 は gate-supporting として残し、旧 P0 dependency mapping が歴史的であり Container Semantic Contract DoD に置き換えられたことをコメントする。#513 にも、4項目のうち v0.2.0 の carried scope は `_t0_ns` 精度部分のみであり、他の3項目を同 release scope へ昇格させるものではないことをコメントする。milestone description には「基準: `docs/developers/design/capability-domain-roadmap.md` D18 参照」の1行を追記する。適用前に、上記 DoD 引用が merge 後も本 D18 確定時点(2026-08-15)から変わっていないことを diff で確認する。
 
 ## 12. Appendix — 外部 AI 議論の要約(2026-08)
+
+**出典注記**: 2026-08-12 の追加議論(I/O time/dispatch semantics の2トラック構造、
+API compatibility テーマ、正本の階層設計)についても原本はセッション添付の
+ChatGPT ログであり repo 外にあるため永続しない。この議論の原文は archive せず、
+反映内容の要旨は D14〜D17(§11)に repo 内で自己完結的に記録済みである。
 
 原議論(`v0.2.0_______.md`, 2026-08-08 23:19 〜 2026-08-09 08:11)の要旨:
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-09 14:39+0900\n"
+"POT-Creation-Date: 2026-08-15 21:59+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -33,8 +33,8 @@ msgstr ""
 "厳密なリリース契約ではなく、どの方向へ改善を進めているかを共有するための概要として扱ってください。"
 
 #: ../../explanation/roadmap.md:6 3668d3506570437ab9a81a72db1b1fcf
-msgid "*Last updated: 2026-08-09.*"
-msgstr "*最終更新: 2026-08-09。*"
+msgid "*Last updated: 2026-08-15.*"
+msgstr "*最終更新: 2026-08-15。*"
 
 #: ../../explanation/roadmap.md:8 7dca0d2382d647bca083e4589bb68a76
 msgid "How to Read This Page"
@@ -71,7 +71,7 @@ msgid ""
 "An explicit behavioural contract for container arithmetic: predictable "
 "units, metadata propagation, and explicit failures instead of silent type"
 " downgrades"
-msgstr "コンテナ演算の明示的な動作契約: 予測可能な単位、メタデータの伝播、暗黙の型降格の代わりの明示的な失敗"
+msgstr "コンテナ演算の明示的な動作契約：予測可能な単位とメタデータ伝播を保証し、暗黙に型を降格せず明示的に失敗する"
 
 #: ../../explanation/roadmap.md:20 d5b2639d615c48c7957e2ad538bd947d
 msgid ""
@@ -183,37 +183,46 @@ msgid ""
 "GUIs can build on"
 msgstr "下流のアプリケーションや GUI が拠り所にできる、安定して文書化された公開 API"
 
-#: ../../explanation/roadmap.md:54 581e282d099c4b1a9af516087ef4f571
+#: ../../explanation/roadmap.md:54 155b40f15f7341a1a852c9ea9d1d6aa4
+msgid ""
+"Consistent time interpretation (time zones, numeric time scales and "
+"epochs) and uniform reader behaviour across supported experiment data "
+"formats"
+msgstr ""
+"対応する実験データ形式間で、時刻の解釈（タイムゾーン、数値時刻のスケール、エポック）と"
+"読み取り処理の挙動を一貫させる"
+
+#: ../../explanation/roadmap.md:56 581e282d099c4b1a9af516087ef4f571
 msgid "Richer visual discovery paths across examples and reference content"
 msgstr "事例とリファレンスを横断して探せるビジュアル・ナビゲーションの強化"
 
-#: ../../explanation/roadmap.md:55 b6631b41a76746eba22a9f5893070010
+#: ../../explanation/roadmap.md:57 b6631b41a76746eba22a9f5893070010
 msgid ""
 "More automation around documentation verification and sample-code "
 "validation"
 msgstr "ドキュメント検証とサンプルコード検証の自動化拡張"
 
-#: ../../explanation/roadmap.md:56 fe170c8530ba4fbc965981a16a8c7dbf
+#: ../../explanation/roadmap.md:58 fe170c8530ba4fbc965981a16a8c7dbf
 msgid ""
 "Potential improvements to theme, search quality, and interactive visual "
 "components"
 msgstr "テーマ、検索品質、インタラクティブ表示の改善"
 
-#: ../../explanation/roadmap.md:58 371e422f836e45dbb6c9d212edebc6fc
+#: ../../explanation/roadmap.md:60 371e422f836e45dbb6c9d212edebc6fc
 msgid "Public Tracking Sources"
 msgstr "公開トラッキング先"
 
-#: ../../explanation/roadmap.md:60 dd2a6cf057a644278bb617313dbaf569
+#: ../../explanation/roadmap.md:62 dd2a6cf057a644278bb617313dbaf569
 msgid ""
 "[Feedback form for lightweight bug reports and feature "
 "requests](https://forms.gle/c8jJaf9UCs5tb5cC8)"
 msgstr "[不具合報告・機能追加リクエスト用の簡易フォーム](https://forms.gle/c8jJaf9UCs5tb5cC8)"
 
-#: ../../explanation/roadmap.md:61 4613b978596c438998a78778ec2729fb
+#: ../../explanation/roadmap.md:63 4613b978596c438998a78778ec2729fb
 msgid "[GitHub Issues](https://github.com/tatsuki-washimi/gwexpy/issues)"
 msgstr "[GitHub Issues](https://github.com/tatsuki-washimi/gwexpy/issues)"
 
-#: ../../explanation/roadmap.md:62 19f979753db7444a862bfbda2849eae9
+#: ../../explanation/roadmap.md:64 19f979753db7444a862bfbda2849eae9
 msgid ""
 "[Security policy](https://github.com/tatsuki-"
 "washimi/gwexpy/blob/main/SECURITY.md) for vulnerability reports; do not "
@@ -223,15 +232,15 @@ msgstr ""
 "washimi/gwexpy/blob/main/SECURITY.md)。脆弱性情報はフォームや public issue "
 "には含めないでください。"
 
-#: ../../explanation/roadmap.md:63 3a66f87d36754c82b6799d570b8d7bae
+#: ../../explanation/roadmap.md:65 3a66f87d36754c82b6799d570b8d7bae
 msgid "[GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases)"
 msgstr "[GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases)"
 
-#: ../../explanation/roadmap.md:64 fb5690a9be144f8381c3bf2982ce2ae4
+#: ../../explanation/roadmap.md:66 fb5690a9be144f8381c3bf2982ce2ae4
 msgid "[Changelog](../about/changelog.md)"
 msgstr "[更新履歴](../about/changelog.md)"
 
-#: ../../explanation/roadmap.md:65 d195173e3f1e4aba971d263de74d1573
+#: ../../explanation/roadmap.md:67 d195173e3f1e4aba971d263de74d1573
 msgid ""
 "[Developer roadmap (`ROADMAP.md`)](https://github.com/tatsuki-"
 "washimi/gwexpy/blob/main/ROADMAP.md) for release themes and policy "
@@ -240,11 +249,11 @@ msgstr ""
 "[開発者向けロードマップ(`ROADMAP.md`)](https://github.com/tatsuki-"
 "washimi/gwexpy/blob/main/ROADMAP.md) — リリーステーマと方針の詳細"
 
-#: ../../explanation/roadmap.md:67 8970769909104bfe99c00337543979c7
+#: ../../explanation/roadmap.md:69 8970769909104bfe99c00337543979c7
 msgid "Scope Note"
 msgstr "補足"
 
-#: ../../explanation/roadmap.md:69 c67cbd10bb9b41538f9092bf13e4b7ba
+#: ../../explanation/roadmap.md:71 c67cbd10bb9b41538f9092bf13e4b7ba
 msgid ""
 "This roadmap is a planning aid, not a guarantee of delivery order or "
 "release timing. GWexpy is research-oriented software and some priorities "
@@ -265,4 +274,3 @@ msgstr ""
 #~ "or dropped metadata instead of an "
 #~ "explicit error"
 #~ msgstr "信頼性の強化: 明示的なエラーの代わりに、誤った値・単位・欠落したメタデータを黙って返しうる既知のケースの解消"
-

@@ -1,17 +1,19 @@
 # Project Roadmap
 
-This document describes release **themes and policy**. For the upcoming releases, the
-[GitHub milestones](https://github.com/tatsuki-washimi/gwexpy/milestones) are
-**authoritative for exact issue-level scope**; this document explains what each release
-means and what it deliberately excludes. The long-term shape of the library is
-organized as a set of capability domains; see [Capability domains](#capability-domains)
+This document describes release **themes and policy**. It is the canonical source of
+*inclusion criteria* — the features and quality gates that define each release's scope.
+[GitHub milestones](https://github.com/tatsuki-washimi/gwexpy/milestones) are the
+canonical source of *applied membership* derived from this document's criteria; they
+record which issues are being worked toward each release (one-directional — milestone
+membership never rewrites this document's Definition of Done). The long-term shape of
+the library is organized as a set of capability domains; see [Capability domains](#capability-domains)
 below and the
-[capability-domain roadmap design](docs/developers/plans/active/2026-08-09-capability-domain-roadmap-design.md)
+[capability-domain roadmap design](docs/developers/design/capability-domain-roadmap.md)
 for the full per-domain goals, the domain-by-theme matrix, and the issue triage rules.
 
-The v0.1.x series established security, CI, release tooling, and metadata integrity.
-The project is now closing that phase with one final stabilization patch (v0.1.13) and
-moving to the first semantically complete feature release (v0.2.0).
+The v0.1.x series established security, CI, release tooling, metadata integrity,
+and I/O correctness through v0.1.14. The project is now moving to the first
+semantically complete feature release, v0.2.0.
 
 ## Release policy
 
@@ -25,10 +27,14 @@ moving to the first semantically complete feature release (v0.2.0).
     silent wrong result with an explicit `TypeError`) is also in scope, even though it
     is backwards-incompatible. Every such narrowing must be disclosed in `CHANGELOG.md`
     as an explicit before/after table. v0.1.13 is the worked example.
-- **Maintenance releases** (v0.1.14, v0.2.1+) are never pre-assigned features. They are
+- **Maintenance releases** (v0.1.14, v0.2.1+, v0.1.15) are never pre-assigned features. They are
   issued only if regressions or newly discovered bugs require them after a release.
   "Finish feature X in v0.2.1" is explicitly not allowed: a feature is either complete
-  in v0.2.0 or deferred to a later minor.
+  in v0.2.0 or deferred to a later minor. Maintenance releases do not introduce new
+  public API; new arguments, public types, or public functions belong to the next
+  minor release. For example, a fail-closed narrowing on #632/#634 may be eligible
+  for a patch, but new `timezone=`/`time_scale=` API for either issue belongs to a
+  minor release.
 - **Milestones are not created in advance**: the milestone for the next-but-one minor
   is created only after the preceding minor has shipped. The future themes below are
   directional, not commitments.
@@ -66,7 +72,7 @@ domain gains features in every release.
 
 Per-domain minimum / v1.0 / long-term goals, the domain-by-release-theme matrix, and
 the issue triage rules are maintained in the
-[capability-domain roadmap design](docs/developers/plans/active/2026-08-09-capability-domain-roadmap-design.md).
+[capability-domain roadmap design](docs/developers/design/capability-domain-roadmap.md).
 
 ## v0.1.13 — Silent-corruption stabilization patch (released 2026-08-08)
 
@@ -107,8 +113,10 @@ categories below are what the release set out to do.
 - **Verification-only items (not release blockers)**: GWpy-only HDF5 readability
   ([#402], stays in scope for the container-semantic-contract release — manual check
   only for this release). The public documentation now correctly states that `.ffl`
-  is unsupported; #594's resolution is that documentation correction, not an
-  implementation commitment.
+  is unsupported. That correction was part of v0.1.13; [#594] remained open as a
+  follow-up investigation. PR [#625] subsequently measures the path and proposes
+  an implementation. Neither the investigation nor that implementation was part of
+  v0.1.13.
 
 Explicitly excluded: any new feature or API, new dependencies, large refactors, and
 PR [#488] (GUI extraction — open, tracked separately from any release milestone; see
@@ -143,7 +151,53 @@ completion work). Monte-Carlo provenance ([#508]) and the `_t0_ns` precision fol
 [#594]: https://github.com/tatsuki-washimi/gwexpy/issues/594
 [#488]: https://github.com/tatsuki-washimi/gwexpy/pull/488
 
+## v0.1.14 — I/O contract and maintenance hardening (released 2026-08-15)
+
+Released from `42eec70450b867f10b7a9331c3a0217ce589c564` as
+[v0.1.14](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.1.14), on PyPI as
+`gwexpy==0.1.14`, archived at [10.5281/zenodo.21941441](https://doi.org/10.5281/zenodo.21941441).
+Milestone [v0.1.14](https://github.com/tatsuki-washimi/gwexpy/milestone/9) closed with
+12 resolved issues. The authoritative per-change record is the `[0.1.14]` section of
+`CHANGELOG.md`; the categories below are what the release set out to do.
+
+- **Time-interpretation and conversion correctness**: readers now distinguish source-defined absolute times, naive civil times, and relative sample indices, with malformed offsets and DST fold/gap ambiguity failing closed instead of silently picking an instant ([#633], [#651]); NumPy `datetime64` scalars and vectors convert through a time-aware Astropy representation with exact-nanosecond precision, and `from_gps()` returns a consistent timezone-aware UTC value across scalar, vector, and Astropy `Time` inputs ([#646], [#650]).
+- **Fail-closed cadence and topology guards**: WIN reads now require consecutive one-second global packet cadence and fail closed on internal gaps, sample-rate changes, and malformed payloads ([#647]); CSV and SDB timestamps are validated before conversion, with duplicate, backward, or overlarge gaps raising instead of being silently accepted ([#648], [#649]).
+- **Experimental-I/O route and format-claim repairs**: the ATS.MTH5 reader now uses the supported `mth5` API and fails closed on missing or inconsistent metadata instead of silently degrading ([#619]); the undocumented `sqlite`/`sqlite3` SDB aliases were removed in favor of the canonical `format="sdb"` name (breaking) ([#635]).
+- **CI and release-process hardening**: the I/O conformance generator smoke check now enforces a bounded timeout with full process-group cleanup ([#629], [#630]).
+- **Partial mitigation, not resolution**: #632 received a partial mitigation — WIN header times are now explicitly interpreted as UTC with an explicit warning, but no public `timezone=` contract exists yet. #634 received a partial mitigation on the CSV/component-column warning path, but numeric CSV timestamps remain on the legacy GPS-second interpretation; v0.1.14 did not add the proposed `time_scale=`/`time_unit=` contract. Neither issue is closed by this release.
+
+Note: The CHANGELOG `[0.1.14]` entry records "#634 for v0.2.0" as a working assumption from earlier planning. The current assignment of #632 and #634 (deferred from this release), together with #636, is to the "I/O time and dispatch semantics" theme (Directional, not v0.2.0 Committed).
+
+[#633]: https://github.com/tatsuki-washimi/gwexpy/issues/633
+[#651]: https://github.com/tatsuki-washimi/gwexpy/issues/651
+[#646]: https://github.com/tatsuki-washimi/gwexpy/issues/646
+[#650]: https://github.com/tatsuki-washimi/gwexpy/issues/650
+[#647]: https://github.com/tatsuki-washimi/gwexpy/issues/647
+[#648]: https://github.com/tatsuki-washimi/gwexpy/issues/648
+[#649]: https://github.com/tatsuki-washimi/gwexpy/issues/649
+[#619]: https://github.com/tatsuki-washimi/gwexpy/issues/619
+[#635]: https://github.com/tatsuki-washimi/gwexpy/issues/635
+[#629]: https://github.com/tatsuki-washimi/gwexpy/issues/629
+[#630]: https://github.com/tatsuki-washimi/gwexpy/issues/630
+[#632]: https://github.com/tatsuki-washimi/gwexpy/issues/632
+[#634]: https://github.com/tatsuki-washimi/gwexpy/issues/634
+[#636]: https://github.com/tatsuki-washimi/gwexpy/issues/636
+
+## Release Theme Status Vocabulary
+
+Releases and future themes are classified as follows. Status labels appear as `Status: <term>` directly below the theme heading and apply to the entire theme block.
+
+| Status | Definition | When |
+|---|---|---|
+| **Committed** | Theme is represented by an active release milestone and work is underway. | v0.2.0 only; exactly one `Committed` theme exists at any time. |
+| **Directional** | Candidate theme for a future minor release; no version, date, or scope is committed. Scope may be re-assigned or dropped. | All themes in "Future themes" section. |
+| **Backlog** | Capability recognized but not yet part of the acceptance scope of any Committed or Directional theme. | "Ecosystem & Interoperability" section. |
+
+**Status vocabulary does not apply to:** released (v0.1.x) sections, Release policy, v1.0 criteria, or Engineering hygiene sections. The absence of a status label in those sections is not ambiguity — they are simply not classified by this scheme.
+
 ## v0.2.0 — Container Semantic Contract
+
+**Status: Committed**
 
 > Every supported operation on a GWexpy container preserves class, unit, axes,
 > labels, and metadata, or raises explicitly — never a silent downgrade.
@@ -154,7 +208,9 @@ arithmetic contract that every other container feature will depend on, before an
 those features are built on top of it. Field I/O and the eager SegmentTable workflow
 move to the next theme (below) so that they are built against an already-frozen
 contract rather than against a data model that is changing underneath them at the
-same time. Workstreams (individual issues live in the milestone):
+same time. Individual issues live in the milestone.
+
+Workstreams:
 
 - **Container arithmetic contract**
   ([#612](https://github.com/tatsuki-washimi/gwexpy/issues/612) umbrella): a
@@ -230,47 +286,121 @@ example notebook) would not pass without it. If a theme's timeline slips, drop t
 items that no headline user story's acceptance artifact needs, rather than the theme
 itself.
 
-- **Experiment data workflow**: read, transform, and persist spatial Field data and
-  per-segment experiment records through GWpy-style APIs, without escaping to pandas
-  for metadata-bearing state. Covers Field I/O (`ScalarField`/`VectorField`/
-  `TensorField`/`FieldDict` read/write, canonical full-fidelity HDF5, GSI DEM and
-  GeoTIFF readers with a geospatial baseline) and the eager SegmentTable workflow
-  (explicit cell status model, `errors=` policy, column expressions, row/column
-  operations, HDF5 persistence with schema version and provenance). On-disk schema
-  versioning and the unknown-field policy are decided once, as a single project-wide
-  rule, before either format ships its first file. Design:
-  [terrain/ScalarField I/O plan](docs/developers/plans/active/2026-07-31-terrain-scalarfield-io-design.md),
-  [SegmentTable workflow plan](docs/developers/plans/active/2026-08-01-segmenttable-workflow-design.md).
-- **Advanced segment workflows**: reducers, `groupby`/`aggregate`, and a lazy
-  `SegmentFrame` for aggregating across many experiment segments. A lazy or
-  out-of-core execution path is added only once a demonstrated usage requirement
-  exists — no segment-count target is set in advance. Design groundwork already in
-  the [SegmentTable workflow plan](docs/developers/plans/active/2026-08-01-segmenttable-workflow-design.md).
-- **Spatial geometry and layered visualization**: grid geometry, detector frames, and
-  component-correct rotations (#556 theme — rotating coordinates without rotating
-  vector/tensor components is treated as a defect, not an approximation), plus
-  terrain/basemap/marker layer composition (#558 series). Changes to `gwexpy/fields/`
-  require physics-reviewer sign-off per project convention; this theme does not start
-  until that review capacity is available. Design:
-  [layered visualization plan](docs/developers/plans/active/2026-08-01-layered-visualization-design.md).
-- **Mesh-aware fields and solver interoperability**: bringing simulation output
-  (OpenFOAM / FLOW-3D / SPECFEM3D / SimPEG) into the same metadata-aware workflow as
-  measured Field data. Before building a bespoke mesh topology model, this theme
-  evaluates delegating mesh representation to an existing library (`meshio`,
-  `PyVista`) — a bespoke `MeshField` (#522) is only justified if that delegation
-  cannot preserve unit/axis/metadata.
-- **Fisher forecasting and advanced analysis**: a labeled matrix layer, spectral
-  models, numerical derivatives, `FisherMatrix`, bias, and the overlap reduction
-  function (#570–#574). The overlap reduction function specifically is gated on
-  physics review and does not start until a reviewer is available.
-- **Later 0.x — Ecosystem and application readiness** (deliberately unnumbered):
-  one or more minors between the themes above and v1.0 that graduate matured
-  [Ecosystem backlog](#ecosystem--interoperability-backlog) items into a release
-  (each gets a milestone only when started), build out the headless application
-  contract that GWexpy Studio / pyaggui / the CLI need (source inspection, format
-  capability introspection, serializable operation parameters, provenance), and do
-  measurement-driven performance work building on the
-  [#581](https://github.com/tatsuki-washimi/gwexpy/issues/581) benchmark harness.
+### I/O time and dispatch semantics (domain: io)
+
+**Status: Directional**
+
+Consistent time interpretation (time zones, numeric time scales and epochs) and
+uniform reader behaviour across supported experiment data formats.
+
+- **Track A — Time interpretation contract** (#632, #634, #636). Headline user
+  story: a user reading data from any supported format gets a value with an
+  explicit, documented time reference, never a silently-assumed one. Affected
+  readers, and writers where applicable, interpret time through an explicit
+  timezone / scale / unit / epoch contract; the implicit legacy GPS-seconds
+  interpretation is deprecated. Named acceptance artifact: a cross-format
+  time-interpretation conformance matrix covering #632, #634, and #636,
+  including explicit-zone/scale cases and required fail-closed cases.
+  Non-goals: no unrelated format expansion, and no changes to existing
+  on-disk time encodings.
+- **Track B — Dispatch / reader semantics** (#444 → #616). Headline user story: a
+  user reading across multiple backends gets identical collection-fallback and
+  gap/pad behaviour regardless of which reader served the request. First decides
+  the collection fallback registry contract for `FrequencySeriesDict`/`List`/
+  `Matrix` `.read()`/`.write()` — whether to keep the Astropy registry or
+  converge on the GWpy default registry (#444) — then makes gap/pad behaviour
+  consistent across supported `TimeSeriesDict.read` backends (#616). Named
+  acceptance artifacts: (a) a `FrequencySeriesDict`/`List`/`Matrix` collection
+  dispatch/reachability matrix covering the chosen registry, and (b) a
+  cross-backend `TimeSeriesDict.read` gap/pad test matrix. Non-goals: this
+  track does not implement a new registry mechanism, add new file formats, or
+  change unrelated backend behaviour.
+
+Both tracks complete independently; theme completion = both tracks green.
+
+### Experiment data workflow
+
+**Status: Directional**
+
+Read, transform, and persist spatial Field data and
+per-segment experiment records through GWpy-style APIs, without escaping to pandas
+for metadata-bearing state. Covers Field I/O (`ScalarField`/`VectorField`/
+`TensorField`/`FieldDict` read/write, canonical full-fidelity HDF5, GSI DEM and
+GeoTIFF readers with a geospatial baseline) and the eager SegmentTable workflow
+(explicit cell status model, `errors=` policy, column expressions, row/column
+operations, HDF5 persistence with schema version and provenance). On-disk schema
+versioning and the unknown-field policy are decided once, as a single project-wide
+rule, before either format ships its first file. Design:
+[terrain/ScalarField I/O plan](docs/developers/plans/active/2026-07-31-terrain-scalarfield-io-design.md),
+[SegmentTable workflow plan](docs/developers/plans/active/2026-08-01-segmenttable-workflow-design.md).
+
+### Advanced segment workflows
+
+**Status: Directional**
+
+Reducers, `groupby`/`aggregate`, and a lazy
+`SegmentFrame` for aggregating across many experiment segments. A lazy or
+out-of-core execution path is added only once a demonstrated usage requirement
+exists — no segment-count target is set in advance. Design groundwork already in
+the [SegmentTable workflow plan](docs/developers/plans/active/2026-08-01-segmenttable-workflow-design.md).
+
+### Spatial geometry and layered visualization
+
+**Status: Directional**
+
+Grid geometry, detector frames, and
+component-correct rotations (#556 theme — rotating coordinates without rotating
+vector/tensor components is treated as a defect, not an approximation), plus
+terrain/basemap/marker layer composition (#558 series). Changes to `gwexpy/fields/`
+require physics-reviewer sign-off per project convention; this theme does not start
+until that review capacity is available. Design:
+[layered visualization plan](docs/developers/plans/active/2026-08-01-layered-visualization-design.md).
+
+### Mesh-aware fields and solver interoperability
+
+**Status: Directional**
+
+Bringing simulation output
+(OpenFOAM / FLOW-3D / SPECFEM3D / SimPEG) into the same metadata-aware workflow as
+measured Field data. Before building a bespoke mesh topology model, this theme
+evaluates delegating mesh representation to an existing library (`meshio`,
+`PyVista`) — a bespoke `MeshField` (#522) is only justified if that delegation
+cannot preserve unit/axis/metadata.
+
+### Fisher forecasting and advanced analysis
+
+**Status: Directional**
+
+A labeled matrix layer, spectral
+models, numerical derivatives, `FisherMatrix`, bias, and the overlap reduction
+function (#570–#574). The overlap reduction function specifically is gated on
+physics review and does not start until a reviewer is available.
+
+### API compatibility and stabilization (foundation: X3)
+
+**Status: Directional**
+
+Continuation of the v0.2.0 "API stability labelling" workstream (#400) that
+establishes and documents the public API surface. Covers auditing GWpy method
+overrides against the documented compatibility principle (#639), and #640, which
+splits into a behavioural-contract issue for the `ignore_nan` default mismatch
+between `TimeSeriesMatrix` and `FrequencySeriesMatrix`, and a documentation-only
+issue for the `TimeSeriesDict.append` docstring gap. Named acceptance artifact:
+published compatibility matrix and per-module behaviour contract document.
+Non-goals: this theme does not redesign any container's arithmetic behaviour —
+see [v0.2.0](#v020--container-semantic-contract) for that contract.
+
+### Later 0.x — Ecosystem and application readiness (deliberately unnumbered)
+
+**Status: Directional**
+
+One or more minors between the themes above and v1.0 that graduate matured
+[Ecosystem backlog](#ecosystem--interoperability-backlog) items into a release
+(each gets a milestone only when started), build out the headless application
+contract that GWexpy Studio / pyaggui / the CLI need (source inspection, format
+capability introspection, serializable operation parameters, provenance), and do
+measurement-driven performance work building on the
+[#581](https://github.com/tatsuki-washimi/gwexpy/issues/581) benchmark harness.
   Their number and order are decided release-by-release under the standard milestone
   rule, not fixed here.
 
@@ -292,13 +422,23 @@ incrementally as each domain's contract work actually finishes.
 Criteria:
 - Every capability domain (see [Capability domains](#capability-domains)) meets at
   least its per-domain minimum goal, as tracked in the
-  [capability-domain roadmap design](docs/developers/plans/active/2026-08-09-capability-domain-roadmap-design.md).
+  [capability-domain roadmap design](docs/developers/design/capability-domain-roadmap.md).
 - Cross-cutting foundations X1 (semantic contract) through X4 (performance) apply
   across all domains, not only the ones that happened to ship them first.
 - The public API surface is frozen under the #400 stability labels, with a
   documented deprecation window (in releases and in time).
 - No new feature domains are introduced as part of reaching v1.0 — it is a
   stabilization milestone, not a feature release.
+
+## Roadmap maintenance
+
+This document is a living guide, not a frozen specification. It is updated as follows to prevent stale decisions from becoming technical debt:
+
+- **Releases**: a new released section is added (e.g., `## v0.3.0 — ...`) only after the release ships and will include the final SHA, tag, DOI, and per-change summary.
+- **Directional → Committed escalation**: a Directional theme is promoted to Committed (assigned a v0.x.0 milestone and moved to a dedicated section) immediately when its milestone is created. This rule enforces that no Committed theme enters a release without a dedicated section and named Definition of Done.
+- **Committed uniqueness**: only one theme is Committed at any time (it is the currently open release). No pre-assignment of future milestones happens.
+- **Theme retirement**: a Directional theme is removed or archived once its named acceptance artifact (test, example, or document) is green on main and the decision to ship it or defer it further has been made.
+- **Label semantics**: `domain:*` labels on issues are a search convenience, not an authority. Domain taxonomy and per-issue triage are governed by the [capability-domain roadmap design](docs/developers/design/capability-domain-roadmap.md); this document governs release inclusion criteria (which themes and issues belong to which release). The two authorities are disjoint — this document does not redefine domain taxonomy, and the design document does not redefine release scope.
 
 ## Ecosystem & Interoperability (Backlog)
 
@@ -313,6 +453,8 @@ licence policy that constrains all of it is
 Ordered by expected value per unit of effort. This ordering is an engineering judgement, not a
 measurement of demand, and is deliberately kept out of the public documentation.
 
+**Status: Backlog**
+
 1. **GWDama HDF5 reader/writer** (`format="hdf.gwdama"`). Highest value: it needs no new
    dependency because GWDama's HDF5 layout is readable with the existing `h5py` base
    dependency, and it reuses the `hdf.ndscope` reader pattern wholesale. Blocked on three
@@ -323,9 +465,11 @@ measurement of demand, and is deliberately kept out of the public documentation.
 2. **Differometor converters** (`#423`–`#427`). Design is settled but the existing issue bodies
    assume result objects that Differometor does not have; `#423` must be closed with the real
    API shape before `#424`–`#426` are implemented.
-3. **Virgo data-path completion** (`#591` umbrella): `.ffl` support is deferred until it has a
-   separately reviewed I/O contract; the dataDisplay ROOT product converters (`#598`–`#600`)
-   follow the structural inventory (`#595`).
+3. **Virgo data-path completion** (`#591` umbrella): a separately reviewed FFL I/O
+   contract, followed by `.ffl` support once that contract lands; FFL expander
+   hardening (`#638`: exception-contract normalization and per-line bound); the
+   dataDisplay ROOT product converters (`#598`–`#600`), which follow the ROOT
+   class structural inventory (`#595`).
 4. **LPSD / Daniell's method / huddle test.** Concepts worth evaluating for GWexpy's own
    spectral estimation, taking spicypy's API as a design reference only. No code reuse, and no
    design work has been done yet.

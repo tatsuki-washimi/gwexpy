@@ -3,7 +3,7 @@
 This page provides the public roadmap entry point for GWexpy documentation and feature planning.
 It is intended as a lightweight overview rather than a release contract.
 
-*Last updated: 2026-08-09.*
+*Last updated: 2026-08-15.*
 
 ## How to Read This Page
 
@@ -51,6 +51,8 @@ left out of scope, see [Where GWexpy Sits in the GW Python Ecosystem](ecosystem)
   analysis
 - A stable, documented public API surface that downstream applications and GUIs can
   build on
+- Consistent time interpretation (time zones, numeric time scales and epochs) and
+  uniform reader behaviour across supported experiment data formats
 - Richer visual discovery paths across examples and reference content
 - More automation around documentation verification and sample-code validation
 - Potential improvements to theme, search quality, and interactive visual components

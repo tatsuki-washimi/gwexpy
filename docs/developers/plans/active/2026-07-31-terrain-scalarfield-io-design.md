@@ -5,7 +5,7 @@
 
 Status: planned
 
-対象マイルストーン: **v0.2.0**（実装開始は v0.1.12 リリースおよび `maint/0.1` 分岐後）
+対象テーマ: **Experiment data workflow**（将来テーマ候補、リリース版・時期未割当）
 
 ---
 
@@ -240,7 +240,7 @@ def to_projected(self, target_crs: str, *, resolution=None, method="bilinear") -
 
 `UnifiedReadWriteMethod` の後付け（gwpy/astropy connect 機構）は docstring 書き換え等の複雑さ（`_registration.py` の `_ensure_registry_docstring` ハックが必要になった実績）に見合わない。gwexpy 独自コンテナの前例（`SeriesMatrixIOMixin`）も手書き classmethod である。ただし同 Mixin と違い**自前ディスパッチ表は持たず**、format 解決・読み出しは `default_registry`（`register_field_format` 経由の登録）へ委譲する。これによりフォーマット追加は登録 1 行で済み、将来 `UnifiedReadWriteMethod` へ移行しても呼び出しシグネチャは不変。手書き層の責務は (i) list/zip ソースの正規化、(ii) `format=None` 時の identify と親切なエラー、(iii) 既存 interop docstring（openems/meep）が先取りしている「classmethod 接続」実態との整合、に限る。
 
-public_io_contract は v0.2.0 では**対象外を維持**し、GeoTIFF write 安定後に契約組み入れの follow-up issue（#10）で監査する。
+public_io_contract は現行の Container Semantic Contract（v0.2.0）では**対象外を維持**し、GeoTIFF write 安定後に契約組み入れの follow-up issue（#10）で監査する。
 
 ### B. GSI DEM reader — フォーマット名 "gsi-dem"、モザイクは共通ラティス検証 + NaN 充填
 
@@ -347,7 +347,7 @@ GSI reader（依存ゼロ）が extras 導入前に headline 機能として完�
 
 ## PR 分割とイシュー構成
 
-Umbrella issue 2 本 + サブイシュー構成。すべて **v0.2.0 milestone**。実装着手は v0.1.12 リリース + `maint/0.1` 分岐後。
+Umbrella issue 2 本 + サブイシュー構成。すべて **Experiment data workflow の将来テーマ候補**（milestone 未割当）。実装時期は未定。
 
 ### Umbrella A: Geospatial DEM support for ScalarField
 
@@ -405,7 +405,7 @@ PR は #1〜#8 が 1:1 対応（docs 行更新は各 PR に同梱、#11 のみ�
 
 ### Umbrella A
 
-**Title**: `[Umbrella] Geospatial DEM support for ScalarField (v0.2.0)`
+**Title**: `[Umbrella] Geospatial DEM support for ScalarField (future theme)`
 
 ```markdown
 ## Goal
@@ -447,8 +447,7 @@ staged plan), public_io_contract inclusion (follow-up audit).
 
 ## Scheduling
 
-Milestone v0.2.0. Implementation starts after the v0.1.12 release and the
-`maint/0.1` branch cut. Issues #1/#2/#3 can proceed in parallel; the critical
+Future theme; milestone unassigned. Issues #1/#2/#3 can proceed in parallel; the critical
 path is #2 → #3 → #4.
 ```
 
@@ -479,7 +478,7 @@ output is ascending), and the spatial-axis origin is not preserved through an
 `fft_space`/`ifft_space` round trip. Zero descending-axis test cases exist.
 
 Design doc: `docs/developers/plans/active/2026-07-31-terrain-scalarfield-io-design.md`
-Depends on: none. Milestone: v0.2.0.
+Depends on: none. Theme: Experiment data workflow; milestone unassigned.
 ```
 
 ### サブイシュー 2
@@ -503,7 +502,7 @@ Scope:
   validation, propagation through `__array_finalize__`, fft rejection,
   regression for existing "real"/"k" paths)
 
-Depends on: none. Milestone: v0.2.0.
+Depends on: none. Theme: Experiment data workflow; milestone unassigned.
 ```
 
 ### サブイシュー 3
@@ -528,7 +527,7 @@ Key rules (see design doc for the full propagation table):
 Tests: `tests/fields/test_scalarfield_geo_metadata.py` (row-by-row propagation
 table, pickle round-trip, frozen-ness).
 
-Depends on: #2. Milestone: v0.2.0.
+Depends on: #2. Theme: Experiment data workflow; milestone unassigned.
 ```
 
 ### サブイシュー 4
@@ -557,7 +556,7 @@ Scope:
   (no real GSI tiles bundled; manual verification steps for one real tile
   documented in the PR)
 
-Depends on: #2, #3. Milestone: v0.2.0.
+Depends on: #2, #3. Theme: Experiment data workflow; milestone unassigned.
 ```
 
 ### サブイシュー 5
@@ -583,7 +582,7 @@ Scope:
   (en/ja), conda-forge roadmap table
 - Tests: `tests/io/test_geotiff_reader.py` (importorskip)
 
-Depends on: #4. Milestone: v0.2.0.
+Depends on: #4. Theme: Experiment data workflow; milestone unassigned.
 ```
 
 ### サブイシュー 6
@@ -604,7 +603,7 @@ read keeps NaN; interpolation is a separate, recorded step).
 - Read-time alias (`fill_missing=` kwarg) is deferred until this stabilizes
   (tracked in #9)
 
-Depends on: #3. Milestone: v0.2.0.
+Depends on: #3. Theme: Experiment data workflow; milestone unassigned.
 ```
 
 ### サブイシュー 7
@@ -624,7 +623,7 @@ step for the Newtonian-noise spatial-spectrum workflow.
 - Tests: known-distance accuracy, regularity of output axes, fft_space
   passthrough, geo bookkeeping
 
-Depends on: #1, #2, #3. Milestone: v0.2.0.
+Depends on: #1, #2, #3. Theme: Experiment data workflow; milestone unassigned.
 ```
 
 ### サブイシュー 8
@@ -642,7 +641,7 @@ Depends on: #1, #2, #3. Milestone: v0.2.0.
 - Round-trip regressions: read→write→read preserves values, coordinates and
   y-orientation from both native and ascending inputs; no silent flips
 
-Depends on: #5. Milestone: v0.2.0.
+Depends on: #5. Theme: Experiment data workflow; milestone unassigned.
 ```
 
 ### サブイシュー 9（follow-up）
@@ -656,7 +655,7 @@ plan: `ScalarField.read(..., projected="EPSG:...", fill_missing="nearest")`
 calling the (by then stabilized) field-side methods. Records source/dest CRS,
 resolutions, resampling algorithm and bounds in geo.history.
 
-Depends on: #5, #6, #7. Milestone: v0.2.0 (stretch) / v0.2.x.
+Depends on: #5, #6, #7. Theme: Experiment data workflow (stretch); milestone unassigned.
 ```
 
 ### サブイシュー 10（follow-up）
@@ -670,7 +669,7 @@ Once gsi-dem/geotiff read-write stabilizes (#8), audit and add Field entries
 (formats, optional deps, unavailable_behavior, conformance generators) to the
 contract, or record the decision not to.
 
-Depends on: #8. Milestone: v0.2.x.
+Depends on: #8. Theme: Experiment data workflow; milestone unassigned.
 ```
 
 ### サブイシュー 11
@@ -682,7 +681,7 @@ End-to-end case study notebook: read GSI tiles around KAGRA (user-supplied
 files; synthetic fallback for CI), mosaic, `fill_missing`, `to_local_cartesian`,
 `fft_space` spatial spectrum. Wire into docs/web tutorials (en/ja).
 
-Depends on: #4–#8. Milestone: v0.2.0.
+Depends on: #4–#8. Theme: Experiment data workflow; milestone unassigned.
 ```
 
 ### Umbrella B
@@ -723,5 +722,5 @@ The DEM reader (Umbrella A) deliberately performs no rotation at read time;
 fields carry their native CRS/axes. This umbrella provides the later
 transformations.
 
-Milestone: v0.2.0 (design) / v0.2.x (implementation).
+Future theme (design first); milestone unassigned.
 ```
