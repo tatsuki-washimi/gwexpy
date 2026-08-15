@@ -276,3 +276,84 @@ grep -nE '対象マイルストーン: \*{0,2}v0\.2\.0|v0\.2\.0 milestone|v0\.2\
 - plan-reviewer 3巡目（2026-08-15）: needs-revision（Blocker 0 / Major 1 / Minor 0）→ 本 rev.6 で反映（V8 実測23ヒットに基づき Step 5 の対象を24行に拡張 — 選択肢 (a) 全行対象化を採用。列挙外ヒットの triage ルールも明記）。V8 パターン自体と Step 7 配置は正確と確認済み
 - plan-reviewer 4巡目（2026-08-15）: **approved**（Blocker 0 / Major 0 / Minor 0。24行列挙は実測と完全一致、「12行」残存なし、triage ルール無矛盾、rev.5→rev.6 で意図外の drift なしを確認済み）
 - 外部レビュー2巡目（2026-08-15、rev.6 に対して）: **Approve with two small revisions**（D18 を merge 後に repo へ追記する手順が post-merge の commit/push/merge 経路を欠いていた点、contract test の assert 4/8 が v0.1.14 節の消失を検出しない点）+ 参考指摘1件（V1 の rename 誤検出リスク）→ 本 rev.7 で全件反映: D18 を Step 4（PR 内）で確定させ Step 11 は適用のみに変更、contract test に assert 9（必須 release 見出しの下限チェック）を追加、V1 に `--find-renames` を追加
+---
+
+# 先行タスク: 計画書 commit&push + v0.2.0 の GitHub 早期反映（rev.7 Step 1 実行前・独立作業）
+
+## Context
+
+rev.7 は外部レビュー2巡目で「execution-ready」と評価され、設計上の blocker はない。ユーザーは Step 1（rebase）に進む前に、(a) 未 commit の計画書（rev.7）を PR #660 に同梱し、(b) v0.2.0 の新テーマ構造（Track A/B、API compatibility）と Phase 4 で計画済みだった Open-1〜3 追跡 issue を、ROADMAP.md 本文の改訂（Step 3）を待たずに GitHub 上へ先出しで告知・記録したいという意図を明示した。これは rev.7 の Step 1〜13 の番号・内容を変更しない、**独立した先行タスク**として実行する（Step 順に割り込ませない）。
+
+## 現状確認（実行前に再検証すること）
+
+- 現在の branch `docs/longterm-roadmap` は `git log` 先頭が `ae85889ac`（rev.7 内 baseline に記載の PR #660 head と一致）。つまり **このブランチ = PR #660 のブランチ**であり、ここでの commit push はそのまま PR #660 を更新する。実行直前に `git branch --show-current` と `gh pr view 660 --json headRefName,headRefOid` で再確認する。
+- `git status` で計画書以外の意図しない変更が無いことを確認してから commit 対象を計画書ファイルのみに絞る（`git add` は明示パス指定、`-A` は使わない）。
+
+## タスク A: 計画書の commit & push
+
+- 対象ファイル: `docs/plans/2026-08-15-v020-roadmap-canonicalization.md`（rev.7、`~/.claude/plans/` 側コピーは commit 対象外 — リポジトリ外のため）
+- commit message 案: `docs(roadmap): add v0.2.0 canonicalization execution plan (rev.7)`
+- push: `git push`（現在の upstream に対して。force 不要 — 新規ファイル追加のみで rebase 前のため）
+- 検証: push 後に `gh pr view 660 --json commits --jq '.commits[-1].messageHeadline'` で反映確認、`git status` がクリーンであることを確認
+
+## タスク B: PR #660 への概要コメント
+
+- 内容: rev.7 の要旨（authority の一方向化＝ROADMAP=inclusion criteria の正本／milestone=適用結果の正本、新設2テーマ〔I/O time and dispatch semantics の Track A/B、API compatibility and stabilization〕、3状態語彙、D18 の仕組み）を1コメントにまとめ、「ROADMAP.md 本体の改訂は本 PR 内で Step 3 以降として追って反映する」旨を明記。計画書パスへのリンクを含める。
+- **送信前ガードレール**（`rules/common/github-mcp-workflow.md` 準拠）: 本文全文をプレビュー提示し明示承認を得る。送信前に手動パターン + `gitleaks stdin` でスキャン。
+
+## タスク C: 関連 issue への個別コメント（7件）
+
+各 issue に、どのテーマ・Track に属するかを1〜2文で通知するコメントを投稿（milestone・version の確定は行わない — D18 適用は Step 11 まで実施しない）:
+
+- **Track A（Time interpretation contract）**: #632, #634, #636
+- **Track B（Dispatch / reader semantics、#444→#616 の依存を明記）**: #444, #616
+- **API compatibility and stabilization（X3/#400 起点の継続テーマ）**: #639, #640
+
+各コメントは PR #660 へのリンクを含め、詳細はそちらを参照するよう誘導する短文とする。7件それぞれ送信前に本文プレビュー＋承認＋機密情報スキャンを行う（バッチ承認する場合も、7件全文を一括プレビューしてから明示承認を得る）。
+
+## タスク D: 追跡 issue の新規作成（3件、Phase 4 Step 12 から前倒し）
+
+設計文書 `docs/developers/plans/active/2026-08-09-capability-domain-roadmap-design.md` §11 の Open-1〜3 を基に、実行時に本文を起草して新規 issue を作成する（本計画書には概要のみ記載し、正確な文言は実行時に §11 を読み直して作成する）:
+
+1. **Open-1**: `gwexpy/cli/` の consumer layer 前提違反 — architecture decision issue。**milestone なし**。
+2. **Open-2**: #637 decision date の確定トラッキング — actionable、v0.2.0 planning dependency と明記。決定方式（milestone mid-point で確定）は #637 の 2026-08-11 コメントに既に記録済みである旨を issue 本文に引用する。
+3. **Open-3**: 性能退行予算のベースライン計測・数値化（#581 起点）— actionable、v0.2.0 planning dependency と明記。
+
+3件とも v0.2.0 milestone には追加しない（milestone 追加は Step 11 の D18 判定・適用の対象外 — 3分類は既存メンバー11件に対して確定済みであり、新規issueをここで追加すると D18 の凍結対象が変化するため）。作成後、rev.7 の「主要ファイル」または関連箇所に issue 番号を追記するかはユーザー確認後に判断する。
+
+**送信前ガードレール**: 3件それぞれタイトル・本文全文をプレビューし明示承認を得てから作成。機密情報スキャンを実施。
+
+## 実行順序
+
+タスク A → B → C → D の順（A は他の前提、B/C/D はそれぞれ独立だが読みやすさのため順に提示・承認を得る）。全て完了後、rev.7 の Step 1（rebase）へ進む。
+
+## 検証
+
+```bash
+# タスクA
+git log -1 --oneline -- docs/plans/2026-08-15-v020-roadmap-canonicalization.md
+git status --porcelain docs/plans/2026-08-15-v020-roadmap-canonicalization.md   # → 空
+rtk proxy gh pr view 660 --json commits --jq '.commits[-1].messageHeadline'
+
+# タスクB/C/D（送信後）
+rtk proxy gh pr view 660 --json comments --jq '.comments[-1].body' | head -c 200
+rtk proxy gh issue view 632 --json comments --jq '.comments[-1].body'   # 他6件も同様
+rtk proxy gh issue list --search "in:title Open-1 OR Open-2 OR Open-3" --json number,title,milestone
+```
+
+## スコープ外（本先行タスクでは行わない）
+
+- ROADMAP.md / 設計文書本体の改訂（rev.7 Step 3〜4 で実施）
+- 既存 v0.2.0 milestone メンバー11件への milestone/label 変更（D18 適用は Step 11）
+- #657 のクローズ（Step 10）
+- PR #660 の title/body 全面改訂（Step 2）
+
+## 実施記録（2026-08-15）
+
+- [x] **タスク A**: commit `98af62d56`（`docs(roadmap): add v0.2.0 canonicalization execution plan (rev.7)`）を `docs/longterm-roadmap` へ push。PR #660 の `headRefOid` が `98af62d5617d22def761746b5683398309335fd4` に更新されたことを確認済み。
+- [x] **タスク B**: PR #660 へ概要コメント投稿済み（https://github.com/tatsuki-washimi/gwexpy/pull/660#issuecomment-5301634224）。送信前に手動パターン+gitleaks（exit 0, no leaks）でスキャン済み。
+- [x] **タスク C**: 7 issue へ Track/テーマ帰属コメントを投稿済み — Track A: #632 (issuecomment-5301658560), #634 (issuecomment-5301658711), #636 (issuecomment-5301658827)／Track B: #444 (issuecomment-5301658989), #616 (issuecomment-5301659126)／API compatibility: #639 (issuecomment-5301659298), #640 (issuecomment-5301659454)。milestone/label は変更していない。
+- [x] **タスク D**: 追跡 issue 3件を新規作成、milestone 未割当（`milestone: null` を実測確認）— Open-1 = #674、Open-2 = #675（#637 の2026-08-11コメント https://github.com/tatsuki-washimi/gwexpy/issues/637#issuecomment-5248951171 を引用）、Open-3 = #676。
+
+先行タスク完了。rev.7 の Step 1（rebase）へ進む。
+
