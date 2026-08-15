@@ -1,6 +1,6 @@
 # Capability-domain 長期ロードマップ設計(v0.2.0 → v1.0)
 
-> Last-updated: 2026-08-16 (rev 3 — authority 境界と v0.2.0 planning gates の追補)
+> Last-updated: 2026-08-16 (rev 4 — shared-infrastructure triage と release-evidence 補正)
 
 Status: active
 Authority: canonical
@@ -462,6 +462,14 @@ No なら backlog。判定対象は user story の文言ではなく §6 で紐�
 そのものであること(文言だけでの判定は恣意性が残るため、§9 M1/M5 の指摘に基づき
 成果物ベースに限定する)。
 
+**共有インフラ例外**: 複数テーマで再利用する infrastructure prerequisite は、
+(1) release 固有の受入 evidence を所有する milestone member が別に存在し、
+(2) その member と prerequisite の依存が `ROADMAP.md` / decision record / issue の
+いずれかで明示される場合に限り、milestone 外に置いてよい。v0.2.0 では #676 が
+pre-#637 baseline と numeric regression budget を所有し、#581 は共有 benchmark
+infrastructure として milestone 外に置く。この例外は release 固有の成果物に owner が
+いない状態を許可するものではない。
+
 **降格規則**: リリースが遅延した場合、いずれの headline user story の受入成果物にも
 不要な項目から milestone を外す。この規則自体は各 milestone 説明文に明記する。
 
@@ -557,6 +565,7 @@ No なら backlog。判定対象は user story の文言ではなく §6 で紐�
 | D17 | 本文書を active-plans 領域から安定した canonical の `docs/developers/design/` パスへ `git mv` により昇格。`Status: active` / `Authority: canonical` / `Audience: maintainer-facing`。日付付きパスへの archive コピーは作らない |
 | D18 | **v0.2.0 milestone hygiene の planned application record**(merge 前に本 PR 内で確定。Step 11 は本表を再分類せず GitHub milestone にそのまま適用するのみ)。判定基準は `ROADMAP.md` `## v0.2.0 — Container Semantic Contract` 節の Definition of done(4項目、2026-08-15 rev 時点)。現在の milestone 実メンバー11件(issue 10件 + PR 1件)を下記 D18 詳細節の3分類に判定する |
 | D19 | **Post-adoption planning-gate correction**(2026-08-16 Sol completion review)。#675 と #676 を v0.2.0 の `gate-supporting` member として追加する。前者は #637 の fallback を実行可能にする decision-date gate、後者は DoD 4 の baseline / regression-budget evidence を所有する。#581 は #676 が利用する共有 benchmark infrastructure であり milestone member にはしない。GitHub milestone への適用は本 follow-up の merge 後に行い、再分類しない |
+| D20 | **#413 release-evidence correction**(2026-08-16 final Sol audit)。#413 は `gate-supporting` の release-notes / migration-guide owner として v0.2.0 milestone に残すが、issue body の fixed calendar-date 表現と `nproc`→`parallel` migration 項目は現行 scope を上書きできない。closeout merge 後、body を書き換えず superseding comment を投稿する。calendar date は TBD で method / tracking owner は #675、#403 migration は D18 により v0.2.0 外。分類・milestone membership は変更しない |
 | Open-1 | CLI の consumer layer 分類と private API 依存の矛盾は未解決(§3)。トラッキング issue #674(milestone なし、architecture decision) |
 | Open-2 | #637 の decision-date method は確定済みだが calendar date は TBD。#675 が milestone mid-point で確定する v0.2.0 gate(D19) |
 | Open-3 | X4 の性能退行予算の具体的数値は未確定。#676 が v0.2.0 固有の baseline / budget を追跡する gate で、#581 は共有 infrastructure(D19) |
@@ -565,13 +574,17 @@ No なら backlog。判定対象は user story の文言ではなく §6 で紐�
 
 判定基準: DoD 1(#612 contract matrix)/ DoD 2・4(#637 の正しさとperf regression budget)/ DoD 3(#402 HDF5 golden tests)。`DoD-required` = DoD 文面が当該 issue を名指しする。`gate-supporting` = DoD に直接名指しされないが、`ROADMAP.md` の v0.2.0 Workstreams が scope 内として明記する、または DoD の検証・release evidence に必要である。`unrelated` = 上記いずれにも該当しない。
 
+Post-adoption note: #581 は D18 時点でも milestone member ではない。D19 で release 固有の
+evidence owner #676 を `gate-supporting` として追加し、§7 の共有インフラ例外に基づいて
+#581 を明示的 dependency / milestone 外の shared infrastructure として固定した。
+
 | Issue/PR | タイトル要旨(2026-08-15 実測) | 分類 | 根拠 |
 |---|---|---|---|
 | #612 | Container arithmetic contract matrix umbrella | **DoD-required** | DoD 1 が直接名指し |
 | #637 | SeriesMatrix composition redesign | **DoD-required** | DoD 2(正しさ)・DoD 4(性能予算)の両方が直接名指し |
 | #402 | GWpy-native HDF5 readability golden tests | **DoD-required** | DoD 3 が直接名指し |
 | #400 | Define v0.2.0 API stability labels and release policy | **gate-supporting** | DoD には名指しされないが、Workstreams が明記する通り「#612 の contract matrix がその状態を記録する語彙」を提供する。#400 なしでは DoD 1 の各エントリに付す stability label が未定義のまま残る |
-| #413 | Prepare v0.2.0 release notes and migration guide | **gate-supporting** | `ROADMAP.md` Release policy「Documentation ... is part of each feature's definition of done」に基づく。#413 は DoD 1-3(#612/#637/#402)の成果をユーザー向けに記録する成果物であり、DoD 番号付き項目そのものではないが release の完了要件として扱う |
+| #413 | Prepare v0.2.0 release notes and migration guide | **gate-supporting** | `ROADMAP.md` Release policy「Documentation ... is part of each feature's definition of done」に基づく。#413 は DoD 1-3(#612/#637/#402)の成果をユーザー向けに記録する成果物であり、DoD 番号付き項目そのものではないが release の完了要件として扱う。body 内の stale scope は分類を変えず D20 の comment で補正する |
 | #401 | Gate v0.2.0 release on contract audit wave #276/#278/#284/#286/#288 | **gate-supporting(要更新)** | audit dependency mapping のうち「HDF5 compatibility golden tests → #276/#278」は DoD 3(#402)の検証を裏付けるため gate-supporting と判定する。ただし同 issue の依存表は SegmentTable read/write・coupling segment schema・`method="median-mean"` など、Step 3 の二段分割(D9)で v0.2.0 の Non-goals/Bounded additions に移動済みの項目を今も P0 として記載しており陳腐化している。Step 11 適用時、当該 issue 本文の audit mapping 表を現行 DoD に合わせて更新するコメントを併せて投稿する(分類自体は変更しない) |
 | #594 | investigate(io): Virgo `.ffl` を `TimeSeries.read` に直接渡せるか実測して確定する | **unrelated** | v0.2.0 DoD の対象は container 演算契約であり、Virgo `.ffl` I/O(domain 7)とは無関係。v0.1.13 で行ったのは「`.ffl` is unsupported」という文書訂正であり、#594 は open の follow-up investigation として残った。Ecosystem & Interoperability Backlog 項目3(Virgo data-path completion)への再帰属を推奨 |
 | PR #625 | fix(io): let TimeSeries.read accept Virgo .ffl frame lists (#594) | **unrelated** | #594 と同一の理由。Ecosystem & Interoperability Backlog 項目3への再帰属を推奨 |
@@ -586,10 +599,16 @@ No なら backlog。判定対象は user story の文言ではなく §6 で紐�
 | Issue | 分類 | merge 後の適用 | 根拠 |
 |---|---|---|---|
 | #675 | **gate-supporting(add)** | v0.2.0 milestone に追加し、#637 の decision-date gate を追跡する旨をコメント | #637 の calendar date 自体は TBD だが、milestone mid-point で日付を確定し fallback を発動可能にする method は確定済み。DoD 2 の fallback を運用可能にする planning gate であり、composition 実装そのものではない |
-| #676 | **gate-supporting(add)** | v0.2.0 milestone に追加し、release 固有の baseline / numeric budget を追跡する旨をコメント | `ROADMAP.md` Workstreams が明示する v0.2.0 固有の pre-#637 baseline と regression budget を所有し、DoD 4 の release evidence を提供する。#581 はこの測定にも使う共有 benchmark infrastructure であり milestone member にはしない |
+| #676 | **gate-supporting(add)** | v0.2.0 milestone に追加し、release 固有の baseline / numeric budget を追跡する旨をコメント | `ROADMAP.md` Workstreams が明示する v0.2.0 固有の pre-#637 baseline と regression budget を所有し、DoD 4 の release evidence を提供する。§7 の共有インフラ例外により、#581 は明示的に依存する共有 benchmark infrastructure として milestone 外に置く |
 
 この追加は D18 の既存 8 members の分類を変更しない。merge 後は上表を GitHub milestone
 へ機械的に適用し、milestone description に D18 と D19 の両方を参照させる。
+
+### D20 詳細 — #413 release-evidence text correction
+
+| Issue | 分類 | closeout merge 後の適用 | 根拠 |
+|---|---|---|---|
+| #413 | **gate-supporting(retain; text correction)** | issue body は歴史記録として保持し、superseding comment を1件投稿する | #413 は DoD 成果をユーザー向け release notes / migration guide に変換する evidence owner であり milestone に残す。一方、body の「fixed decision date」は D10/D19 後の現状と異なり、calendar date は TBD、method / tracker は #675 である。また `nproc`→`parallel` migration は D18 で unrelated とした #403 の scope であり、v0.2.0 release-evidence gate から除外する。この補正は #413 の分類や milestone membership を変更しない |
 
 ## 12. Appendix — 外部 AI 議論の要約(2026-08)
 

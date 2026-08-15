@@ -361,6 +361,22 @@ def test_v020_planning_gate_trackers_are_structurally_in_scope() -> None:
     assert "#581" in section
 
 
+def test_shared_infrastructure_exception_has_a_release_evidence_owner() -> None:
+    """Shared prerequisites may stay out only when a release owner is explicit."""
+    assert "**共有インフラ例外**" in DESIGN
+    assert "release 固有の受入 evidence を所有する milestone member" in DESIGN
+    assert "#676 が\npre-#637 baseline と numeric regression budget を所有" in DESIGN
+    assert "#581 は共有 benchmark\ninfrastructure として milestone 外" in DESIGN
+
+
+def test_issue_413_text_correction_is_preclassified_without_retriage() -> None:
+    """The post-merge #413 comment must not alter its gate classification."""
+    assert "D20 詳細 — #413 release-evidence text correction" in DESIGN
+    assert "calendar date は TBD、method / tracker は #675" in DESIGN
+    assert "`nproc`→`parallel` migration は D18 で unrelated とした #403" in DESIGN
+    assert "#413 の分類や milestone membership を変更しない" in DESIGN
+
+
 def test_pr660_audit_v2_command_does_not_match_itself() -> None:
     """The historical V2 evidence must preserve an exact repo-wide zero-hit."""
     old_basename = "2026-08-09-capability-domain-roadmap" + "-design"
@@ -373,6 +389,18 @@ def test_canonical_design_links_resolve_from_their_source_files() -> None:
     """Moved design files must not retain broken source-relative links."""
     assert not _invalid_relative_markdown_links(DESIGN, DESIGN_PATH)
     assert not _invalid_relative_markdown_links(DESIGN_INDEX, DESIGN_INDEX_PATH)
+    assert "[`design_data/`](design_data/)" in DESIGN_INDEX
+    assert "[`gui/`](gui/)" in DESIGN_INDEX
+
+
+def test_backlog_status_is_immediately_below_its_heading() -> None:
+    """Backlog follows the same heading-local status contract as themes."""
+    backlog = _level_two_section(ROADMAP, "Ecosystem & Interoperability")
+    assert backlog, "ROADMAP.md must contain the Ecosystem backlog section"
+
+    nonempty_lines = [line.strip() for line in backlog.splitlines() if line.strip()]
+    assert nonempty_lines[1] == "**Status: Backlog**"
+    assert len(STATUS_RE.findall(backlog)) == 1
 
 
 def test_v020_definition_of_done_has_issue_backed_items() -> None:
