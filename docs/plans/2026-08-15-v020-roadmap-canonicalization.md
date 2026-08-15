@@ -158,8 +158,8 @@ write scope は相互排他（L1=ROADMAP のみ、L2 と L3 は別ファイル�
 ## タスクリスト
 
 - [x] **Step 0: 正本保存**（2026-08-15 実施）— 本計画を `docs/plans/2026-08-15-v020-roadmap-canonicalization.md` として保存（PR に同梱）。`~/.claude/plans/` 側はコピー
-- [ ] **Step 1: rebase** — `git rebase origin/main`、V1 確認、force-push（承認ゲート）
-- [ ] **Step 2: PR #660 再定義** — title/body 更新（承認ゲート）、`gh pr view` で反映確認
+- [x] **Step 1: rebase** — `git rebase origin/main`、V1 確認、force-with-lease push（2026-08-15 実施、V1 PASS、push 成功）
+- [x] **Step 2: PR #660 再定義**（2026-08-15 実施）— title/body を canonical adoption 版へ更新、`gh pr view` で反映確認済み
 - [ ] **Step 3: ROADMAP.md 改訂**（L1、9項目）
 - [ ] **Step 4: 設計文書昇格 + 追補 + D18（milestone hygiene 判定11件）を PR 内で確定**(L2)
 - [ ] **Step 5: 兄弟文書の事実訂正**(L3、24行)
