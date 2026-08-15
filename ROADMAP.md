@@ -446,6 +446,8 @@ This document is a living guide, not a frozen specification. It is updated as fo
 
 ## Ecosystem & Interoperability (Backlog)
 
+**Status: Backlog**
+
 Unscheduled work on connecting GWexpy to neighbouring projects. Nothing here is assigned to a
 release; items move to a milestone only when started. In the domain taxonomy, everything here
 belongs to domain 7 (scientific interoperability); graduation into a release happens through
@@ -456,8 +458,6 @@ licence policy that constrains all of it is
 
 Ordered by expected value per unit of effort. This ordering is an engineering judgement, not a
 measurement of demand, and is deliberately kept out of the public documentation.
-
-**Status: Backlog**
 
 1. **GWDama HDF5 reader/writer** (`format="hdf.gwdama"`). Highest value: it needs no new
    dependency because GWDama's HDF5 layout is readable with the existing `h5py` base

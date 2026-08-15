@@ -1,8 +1,11 @@
 # Audit manifest for the post-PR #660 roadmap canonicalization follow-up
 # Date: 2026-08-16
 
-pull_request: pending
+pull_request: 677
 branch: docs/roadmap-canonicalization-followup
+head_commit: 6120457ec86b2388cb4510021c2e2fd62b92efa7
+merge_commit: 0f2af30dffa0b9b8378d880649a3ab3fe30526e3
+merged_at: "2026-08-15T16:10:29Z"
 risk: docs_test_only
 
 agent_roles:
@@ -34,7 +37,7 @@ scope:
     - "Add documentation-contract checks and prepare reviewed post-merge GitHub payloads."
   excluded:
     - "No runtime, public API, data-model, numerical, or physics implementation."
-    - "No commit, push, PR edit, issue comment, issue milestone assignment, or milestone mutation during preparation."
+    - "No unreviewed GitHub mutation; D19 comments, assignments, and milestone-description update were applied only after PR #677 merged under the approval gate."
 
 commands_executed:
   - cmd: "gwexpy_conda_jobs wrapper: pytest tests/docs/test_root_roadmap_contract.py -q"
@@ -64,6 +67,7 @@ validation:
   diff_check: passed
   payload_secret_scan: passed
   physics_review: not_required
+  github_checks: "14/14 completed with SUCCESS before merge"
 
 files_changed:
   paths:
@@ -79,8 +83,39 @@ excluded_worktree_paths:
   - ".codegraph/ (untracked local tool state; never staged or modified)"
   - "Existing git stashes (never inspected beyond listing and never modified)"
 
+github_application:
+  status: applied_and_read_back
+  pull_request:
+    state: merged
+    checks: "14/14 SUCCESS"
+    merge_commit: 0f2af30dffa0b9b8378d880649a3ab3fe30526e3
+  comments:
+    pr_660_correction: "https://github.com/tatsuki-washimi/gwexpy/pull/660#issuecomment-5303085423"
+    issue_675: "https://github.com/tatsuki-washimi/gwexpy/issues/675#issuecomment-5303085431"
+    issue_676: "https://github.com/tatsuki-washimi/gwexpy/issues/676#issuecomment-5303085420"
+  milestone_3:
+    title: v0.2.0
+    open_members: 10
+    exact_members:
+      - 400
+      - 401
+      - 402
+      - 413
+      - 508
+      - 513
+      - 612
+      - 637
+      - 675
+      - 676
+    issue_675_assignment: v0.2.0
+    issue_676_assignment: v0.2.0
+    issue_581_assignment: null
+    description_record: "D18 adopted in 15b02978ffd3d8b98821f0bb663038a6abae1881; D19 adopted in 0f2af30dffa0b9b8378d880649a3ab3fe30526e3."
+  readback_result: "Comments present; #675/#676 assigned; exact 10-member set confirmed; #581 milestone null."
+
 github_payload_bundle:
-  status: prepared_not_applied
-  public_payload_placeholder_count: 4
-  expected_post_application_milestone_members: 10
-  note: "#675 and #676 are added after the follow-up merge; #581 remains outside milestone #3."
+  status: applied_after_merge
+  prepared_public_payload_placeholder_count: 4
+  remaining_placeholders_after_application: 0
+  applied_post_application_milestone_members: 10
+  note: "#675 and #676 were added after merge; #581 remains outside milestone #3."

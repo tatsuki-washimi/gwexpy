@@ -126,7 +126,7 @@ merge〜hygiene 完了までの短い乖離窓は、Phase 2-1 の一方向導出
 
 ### Phase 5 — v0.2.0 execution readiness【本 mplan サイクルのスコープ外・後続作業】
 
-完了条件のみ定義して引き継ぐ: (1) #637 decision date 確定（Open-2 issue close）、(2) #581 ベースライン取得と退行予算数値化（Open-3 issue close）、(3) #612 contract matrix 着手（収集数アサート付き）、(4) 設計文書 §10 の7項目実行 → `Initial adoption verification: completed <date>` 追記（`Status: active` は維持）。
+完了条件のみ定義して引き継ぐ: (1) #675 で #637 decision date を milestone mid-point に確定（Open-2 issue close）、(2) #676 で v0.2.0 固有の pre-#637 baseline を取得し退行予算を数値化（Open-3 issue close。#581 は再利用する共有 benchmark infrastructure であり milestone 外）、(3) #612 contract matrix 着手（収集数アサート付き）、(4) 設計文書 §10 の7項目実行 → `Initial adoption verification: completed <date>` 追記（`Status: active` は維持）。
 
 ## レーン表
 
@@ -170,7 +170,7 @@ write scope は相互排他（L1=ROADMAP のみ、L2 と L3 は別ファイル�
 - [x] **Step 10: #657 final comment + close**（2026-08-15 完了）— canonical path と merge SHA を finalization comment に記録し、coordination issue を completed として close（comment `#issuecomment-5302839440`）
 - [x] **Step 11: milestone hygiene — Step 4 で確定済みの D18 を GitHub milestone に適用**（2026-08-15 完了）— #594/#403/PR #625 を除外し、#401/#513 を含む retained members に補足コメント。milestone #3 は D18 を参照する description と 8 members に同期
 - [x] **Step 12: #606 申し送り**（2026-08-15 完了）— legacy roadmap の同期/redirect/retirement を #606 に記録（comment `#issuecomment-5302842396`）。Open-1〜3 は先行タスクで作成済み（#674〜#676）で重複作成なし
-- [ ] **Step 13: 完了レビュー** — 並列品質レビュー + completion-auditor（mplan フェーズ6）
+- [x] **Step 13: 完了レビュー**（2026-08-16 完了）— closeout candidate に対する completion-review approval。Terra は **Approved / stage-ready**、authority Sol は **Approved（指摘なし）**、GitHub / planned D20 application Sol は **Approved（指摘なし）**、docs / evidence Sol は manifest の skills / staged-diff minor 修正後に **Approved**。これは候補差分のレビュー完了を表す。closeout PR の CI / merge と、merge 後に機械適用する #413 superseding comment は外部適用待ちであり、本 checkbox はそれらの完了を主張しない
 
 ### Post-adoption follow-up（2026-08-16、Step 13 Sol review）
 
@@ -181,6 +181,17 @@ follow-up では runtime 実装へ踏み込まず、`ROADMAP.md` を release inc
 canonical design を taxonomy / per-domain goals / triage の正本と再確認する。#675/#676 は
 D19 で `gate-supporting(add)` と事前分類し、follow-up merge 後に milestone へ適用する。
 #581 は共有 benchmark infrastructure の前提であり、milestone member にはしない。
+
+### Final Sol audit closeout（2026-08-16、completion review 完了）
+
+PR #677 の merge と D19 適用後の再監査で、(1) §7 の一般 milestone 判定と #581 外置きの
+例外条件が未記載、(2) #413 body に fixed-date / `nproc`→`parallel` の stale scope が残存、
+(3) Backlog `Status:` の位置、design index の子ディレクトリ path、follow-up audit manifest
+の post-merge evidence に drift が見つかった。本 closeout は §7 共有インフラ例外、D20 の
+#413 superseding-comment record、構造テスト、post-merge audit evidence を追加する。
+Luna→Terra の修正・再レビュー後、authority / GitHub-D20 / docs-evidence の3視点 Sol が
+最終承認し、Step 13 を完了した。closeout PR の CI / merge と、D20 で事前分類済みの
+#413 post-merge comment は外部適用待ちであり、適用時に payload の readback を行う。
 
 ## 検証
 

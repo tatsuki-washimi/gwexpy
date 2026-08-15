@@ -1,0 +1,132 @@
+# Audit manifest for the final roadmap canonicalization audit closeout
+# Date: 2026-08-16
+
+pull_request: pending
+branch: docs/roadmap-canonicalization-audit-closeout
+base_commit: 0f2af30dffa0b9b8378d880649a3ab3fe30526e3
+risk: docs_test_only
+closeout_status: completion_review_approved_external_application_pending
+
+agent_roles:
+  work:
+    name: Luna
+    responsibility: "Implement the final Sol audit findings as documentation, contract-test, audit-record, and payload corrections."
+  review:
+    name: Terra
+    responsibility: "Review the complete closeout diff and the #413 post-merge payload before publication."
+  findings:
+    name: Sol
+    responsibility: "Audit authority, milestone policy, GitHub evidence, and documentation structure after PR #677."
+
+review_results:
+  terra:
+    result: approved_stage_ready
+    findings: none_open
+  sol_authority:
+    result: approved
+    findings: none
+  sol_github_d20_application:
+    result: approved
+    findings: none
+  sol_docs_evidence:
+    result: approved_after_minor_fix
+    findings: "Manifest skills and explicit staged-diff evidence were added; no findings remain."
+  execution_plan_step_13: completed_completion_review
+  external_application:
+    closeout_pr_ci_and_merge: pending
+    issue_413_post_merge_comment: pending_preclassified_mechanical_application
+
+skills:
+  - mplan
+  - finalize_work
+  - gwexpy_conda_jobs
+  - run_tests
+  - manage_docs
+  - git-commit-conventional
+  - pr-writer
+  - gh_pr_comment
+  - superpowers:verification-before-completion
+  - superpowers:finishing-a-development-branch
+  - superpowers:receiving-code-review
+  - superpowers:subagent-driven-development
+  - code-review-ja
+  - japanese-tech-writing
+
+scope:
+  included:
+    - "Define the shared-infrastructure milestone exception while preserving the approved #581/#676 policy."
+    - "Record D20 and prepare a superseding #413 comment without rewriting its historical body or changing membership."
+    - "Fix Backlog status placement and developer-design child-directory links."
+    - "Convert the PR #677 audit manifest to factual post-merge evidence."
+    - "Update the execution plan while leaving Step 13 pending for final review."
+  excluded:
+    - "No runtime, public API, data-model, numerical, or physics implementation."
+    - "No commit, push, PR mutation, issue comment, issue edit, milestone assignment, or milestone-description mutation during preparation."
+
+github_readback_baseline:
+  pr_677:
+    state: merged
+    head_commit: 6120457ec86b2388cb4510021c2e2fd62b92efa7
+    merge_commit: 0f2af30dffa0b9b8378d880649a3ab3fe30526e3
+    checks: "14/14 SUCCESS"
+  milestone_3:
+    open_members: 10
+    exact_members: [400, 401, 402, 413, 508, 513, 612, 637, 675, 676]
+    issue_581_assignment: null
+  issue_413:
+    assignment: v0.2.0
+    classification: gate-supporting
+    correction_needed: "Body retains stale fixed-calendar-date and nproc-to-parallel migration text; D20 prescribes a superseding comment after closeout merge."
+
+commands_executed:
+  - cmd: "PYTHONDONTWRITEBYTECODE=1 rtk conda run -n gwexpy python -m pytest -p no:cacheprovider tests/docs/ tests/test_issue_burn_down_roadmap.py tests/test_conda_forge_roadmap.py -q"
+    result: "169 passed, 4 skipped."
+  - cmd: "PYTHONDONTWRITEBYTECODE=1 rtk conda run -n gwexpy python -m pytest -p no:cacheprovider tests/docs/test_root_roadmap_contract.py -q"
+    result: "27 passed."
+  - cmd: "PYTHONDONTWRITEBYTECODE=1 rtk conda run -n gwexpy ruff check tests/docs/test_root_roadmap_contract.py"
+    result: "Passed."
+  - cmd: "rtk msgfmt --check -o /dev/null docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po"
+    result: "Passed with the two existing placeholder-header warnings."
+  - cmd: "rtk git diff --check"
+    result: "Passed."
+  - cmd: "Stage the seven explicit closeout paths; rtk git diff --cached --check; unstage the same seven paths with rtk git restore --staged"
+    result: "Passed; exactly the seven intended paths were staged for verification and the index was empty afterward."
+  - cmd: "old='2026-08-09-capability-domain-roadmap'; suffix='-design'; rtk git grep -n \"${old}${suffix}\""
+    result: "Zero matches; the exact historical basename remains absent repo-wide."
+  - cmd: "Manual secret/local-path patterns plus gitleaks dir scan on the closeout payload bundle"
+    result: "No findings; one public payload contains one closeout merge placeholder."
+
+validation:
+  docs_tests: "passed: 169; skipped: 4"
+  roadmap_contract_tests: "passed: 27"
+  ruff_changed_test: passed
+  msgfmt: passed_with_placeholder_header_warnings
+  old_dated_basename: zero_matches
+  design_relative_links: passed_in_contract_test
+  backlog_status_location: passed_in_contract_test
+  shared_infrastructure_exception: passed_in_contract_test
+  issue_413_correction_record: passed_in_contract_test
+  diff_check: passed
+  staged_diff_check: passed_and_unstaged
+  payload_secret_scan: passed
+  physics_review: not_required
+
+files_changed:
+  paths:
+    - ROADMAP.md
+    - docs/developers/design/capability-domain-roadmap.md
+    - docs/developers/design/README.md
+    - docs/developers/plans/manifests/audit-manifest-roadmap-canonicalization-followup.yaml
+    - docs/developers/plans/manifests/audit-manifest-roadmap-canonicalization-audit-closeout.yaml
+    - docs/plans/2026-08-15-v020-roadmap-canonicalization.md
+    - tests/docs/test_root_roadmap_contract.py
+
+excluded_worktree_paths:
+  - ".codegraph/ (untracked local tool state; never staged or modified)"
+  - "Existing git stashes (never modified)"
+
+github_payload_bundle:
+  status: prepared_not_applied
+  public_payload_placeholder_count: 1
+  post_merge_action: "Post the D20 superseding comment to #413, then verify #413 remains in milestone #3 and #581 remains milestone-null."
+  milestone_description_update_required: false
