@@ -12,6 +12,14 @@ from urllib.parse import unquote
 ROOT = Path(__file__).resolve().parents[2]
 ROADMAP = (ROOT / "ROADMAP.md").read_text(encoding="utf-8")
 CHANGELOG = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+DESIGN_PATH = ROOT / "docs/developers/design/capability-domain-roadmap.md"
+DESIGN_INDEX_PATH = ROOT / "docs/developers/design/README.md"
+DESIGN = DESIGN_PATH.read_text(encoding="utf-8")
+DESIGN_INDEX = DESIGN_INDEX_PATH.read_text(encoding="utf-8")
+PR660_AUDIT_MANIFEST = (
+    ROOT
+    / "docs/developers/plans/manifests/audit-manifest-660-roadmap-canonicalization.yaml"
+).read_text(encoding="utf-8")
 
 RELEASE_HEADING_RE = re.compile(
     r"^##\s+(v0\.\d+(?:\.\d+)?)(?=\s|:|\u2014|-|$)",
@@ -193,6 +201,31 @@ def _invalid_docs_links(document: str) -> list[str]:
     return sorted(invalid)
 
 
+def _invalid_relative_markdown_links(document: str, source: Path) -> list[str]:
+    """Return unsafe or missing relative Markdown links resolved from ``source``."""
+    invalid: set[str] = set()
+    repository_root = ROOT.resolve()
+    for match in re.finditer(r"(?<!!)\[[^\]]+\]\(([^)]+)\)", document):
+        destination = match.group(1).strip()
+        if destination.startswith("<") and ">" in destination:
+            destination = destination[1 : destination.index(">")]
+        else:
+            destination = destination.split(maxsplit=1)[0]
+        destination = unquote(destination).split("#", 1)[0].split("?", 1)[0]
+        if not destination or destination.startswith("/") or "://" in destination:
+            continue
+
+        resolved = (source.parent / destination).resolve()
+        try:
+            resolved.relative_to(repository_root)
+        except ValueError:
+            invalid.add(destination)
+            continue
+        if not resolved.exists():
+            invalid.add(destination)
+    return sorted(invalid)
+
+
 def test_regression_future_version_assignment_is_detected_anywhere_in_heading() -> None:
     future = """## Future themes
 
@@ -305,6 +338,41 @@ def test_v020_section_exposes_workstreams_and_definition_of_done() -> None:
     assert section, "ROADMAP.md must contain a v0.2.0 release section"
     assert _contains_label(section, "Workstreams")
     assert _contains_label(section, "Definition of done")
+
+
+def test_release_scope_authority_is_not_duplicated_in_design() -> None:
+    """ROADMAP owns release scope while the design owns taxonomy and triage."""
+    assert "canonical source of\n*inclusion criteria*" in ROADMAP
+    assert "Release inclusion scope と Definition of done の正本は `ROADMAP.md`" in DESIGN
+    assert "本文書の\n正本範囲は taxonomy・per-domain goals・theme mapping・triage 規則" in DESIGN
+    assert "Release statements & headline user stories(正本)" not in DESIGN
+    assert "`ROADMAP.md` と issue #413 はここからの転記とする" not in DESIGN
+
+
+def test_v020_planning_gate_trackers_are_structurally_in_scope() -> None:
+    """The release-specific gate owners are in scope; shared tooling is not."""
+    section = _level_two_section(ROADMAP, "v0.2.0")
+    assert section, "ROADMAP.md must contain a v0.2.0 release section"
+
+    assert "#675" in section
+    assert "#676" in section
+    assert "calendar date remains TBD" in section
+    assert "not a v0.2.0 milestone member" in section
+    assert "#581" in section
+
+
+def test_pr660_audit_v2_command_does_not_match_itself() -> None:
+    """The historical V2 evidence must preserve an exact repo-wide zero-hit."""
+    old_basename = "2026-08-09-capability-domain-roadmap" + "-design"
+
+    assert old_basename not in PR660_AUDIT_MANIFEST
+    assert "${old}${suffix}" in PR660_AUDIT_MANIFEST
+
+
+def test_canonical_design_links_resolve_from_their_source_files() -> None:
+    """Moved design files must not retain broken source-relative links."""
+    assert not _invalid_relative_markdown_links(DESIGN, DESIGN_PATH)
+    assert not _invalid_relative_markdown_links(DESIGN_INDEX, DESIGN_INDEX_PATH)
 
 
 def test_v020_definition_of_done_has_issue_backed_items() -> None:

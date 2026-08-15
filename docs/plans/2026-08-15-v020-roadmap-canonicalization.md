@@ -166,11 +166,21 @@ write scope は相互排他（L1=ROADMAP のみ、L2 と L3 は別ファイル�
 - [x] **Step 6: contract test 新設**（2026-08-15 実施、L4）— `tests/docs/test_root_roadmap_contract.py` を新設。9 invariants と parser 境界条件の回帰テストを含む20 testsを追加し、Terra の3巡レビューで false-green（version heading、Markdown reference link、path traversal、複数 deferred block等）を解消。単体20 passed、`tests/docs/` 156 passed / 4 skipped、ruff・`git diff --check` PASS。`ROADMAP.md` は `Workstreams:` を独立ラベル行にする意味不変の最小整形のみ。
 - [x] **Step 7: 公開 roadmap 同期**（2026-08-15 実施、L5）— 公開 roadmap の更新日を2026-08-15へ更新し、Long-Term Directionsにtime interpretation / reader semanticsの項目を追加。対象gettext catalogのみ同期して自然な日本語訳を追加。content-level fuzzy・空msgstr 0件、`msgfmt` PASS、公開content tests 10 passed。Terraレビューは指摘ゼロでApproved。
 - [x] **Step 8: 検証 V1〜V5 + V8（補助）と L3 対照表（24行）の目視確認**（2026-08-15、Approved with known limitation）— V1〜V4/V8 は完了し、commit 後 V1 で純粋削除0・期待12 pathname・diff check PASSを確認。V5 は EN/JA とも、変更されていない optional ROOT notebook `docs_redesign/how-to/interop/intro_interop.ipynb` の同一セルが600秒で `CellTimeoutError` となり exit 2。対象 notebook と build設定は本PRの差分外であり、PR非因果の環境依存 known limitationとして受容するが、warning 0未達のため成功扱いにはしない。ログ: `/tmp/gwexpy-step8-docs-en2.log`、`/tmp/gwexpy-step8-docs-ja.log`、`/tmp/sphinx-err-fqz1yg6w.log`、`/tmp/sphinx-err-5qek3bw5.log`。
-- [ ] **Step 9: PR diff レビュー → merge**（承認ゲート）
-- [ ] **Step 10: #657 final comment + close**（承認ゲート）
-- [ ] **Step 11: milestone hygiene — Step 4 で確定済みの D18 を GitHub milestone に適用**（承認ゲート）
-- [ ] **Step 12: #606 申し送り**（承認ゲート）— Open-1〜3 の issue 化は先行タスクで完了済み（#674〜#676）。重複作成しない
+- [x] **Step 9: PR diff レビュー → merge**（2026-08-15 完了）— Luna/Terra の実装・レビュー巡回と承認後、PR #660 を merge commit `15b02978ffd3d8b98821f0bb663038a6abae1881` で merge。merge 前に head SHA・全 check success・`MERGEABLE/CLEAN` を readback 済み
+- [x] **Step 10: #657 final comment + close**（2026-08-15 完了）— canonical path と merge SHA を finalization comment に記録し、coordination issue を completed として close（comment `#issuecomment-5302839440`）
+- [x] **Step 11: milestone hygiene — Step 4 で確定済みの D18 を GitHub milestone に適用**（2026-08-15 完了）— #594/#403/PR #625 を除外し、#401/#513 を含む retained members に補足コメント。milestone #3 は D18 を参照する description と 8 members に同期
+- [x] **Step 12: #606 申し送り**（2026-08-15 完了）— legacy roadmap の同期/redirect/retirement を #606 に記録（comment `#issuecomment-5302842396`）。Open-1〜3 は先行タスクで作成済み（#674〜#676）で重複作成なし
 - [ ] **Step 13: 完了レビュー** — 並列品質レビュー + completion-auditor（mplan フェーズ6）
+
+### Post-adoption follow-up（2026-08-16、Step 13 Sol review）
+
+Step 13 の複数視点 Sol review で、(1) §6 の release authority 二重化、(2) #675/#676 が
+v0.2.0 planning dependency とされながら milestone membership に反映されていない点、
+(3) matrix / Appendix / developer-design index / audit V2 の文言上の drift が見つかった。
+follow-up では runtime 実装へ踏み込まず、`ROADMAP.md` を release inclusion / DoD の正本、
+canonical design を taxonomy / per-domain goals / triage の正本と再確認する。#675/#676 は
+D19 で `gate-supporting(add)` と事前分類し、follow-up merge 後に milestone へ適用する。
+#581 は共有 benchmark infrastructure の前提であり、milestone member にはしない。
 
 ## 検証
 

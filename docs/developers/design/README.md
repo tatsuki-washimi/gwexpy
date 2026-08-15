@@ -5,7 +5,8 @@ architectural reference for their subject (e.g. the capability-domain roadmap
 design). They differ from `../plans/`, `../contracts/`, and `../reports/`:
 
 - `design/` (this directory): undated, maintained-in-place canonical design.
-  Also holds `design_data/` (CSV artifacts) and `gui/` (analysis notes).
+- `../design_data/`: CSV artifacts used by developer designs.
+- `../gui/`: GUI analysis notes.
 - `../plans/`: dated execution records and coordination plans (see
   `../plans/README.md`).
 - `../contracts/`: normative I/O contracts.
