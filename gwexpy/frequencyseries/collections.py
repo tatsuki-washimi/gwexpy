@@ -197,6 +197,9 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
             A new dict containing the data read from the source.
 
         """
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
         fmt = kwargs.get("format")
         try:
             p = Path(source)
@@ -264,6 +267,9 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
 
     def write(self, target, *args, **kwargs):
         """Write the mapping through the Astropy I/O registry."""
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
         from astropy.io import registry
 
         return registry.write(self, target, *args, **kwargs)
@@ -309,14 +315,10 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
     >>> from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
     >>> fsd = FrequencySeriesDict()
     >>> fsd['H1'] = FrequencySeries([1, 2], df=1)
-    >>> fsd
-    FrequencySeriesDict([('H1', <FrequencySeries([1, 2],
-                     unit=Unit(dimensionless),
-                     f0=<Quantity 0. Hz>,
-                     df=<Quantity 1. Hz>,
-                     epoch=None,
-                     name=None,
-                     channel=None)>)])
+    >>> list(fsd.keys()) == ["H1"]
+    True
+    >>> type(fsd["H1"]).__name__ == "FrequencySeries"
+    True
 
     """
 
@@ -655,6 +657,9 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
 
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
         """Write dict to file (HDF5, ROOT, etc.)."""
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
         fmt = kwargs.get("format")
         if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
             from gwexpy.interop.root_ import write_root_file
@@ -794,6 +799,9 @@ class FrequencySeriesBaseList(PlotMixin, list[_FS]):
             A new list containing the data read from the source.
 
         """
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
         fmt = kwargs.get("format")
         try:
             p = Path(source)
@@ -851,6 +859,9 @@ class FrequencySeriesBaseList(PlotMixin, list[_FS]):
 
     def write(self, target, *args, **kwargs):
         """Write the list through the Astropy I/O registry."""
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
         from astropy.io import registry
 
         return registry.write(self, target, *args, **kwargs)
@@ -1057,6 +1068,9 @@ class FrequencySeriesList(ListMapMixin, FrequencySeriesBaseList[FrequencySeries]
 
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
         """Write list to file (HDF5, ROOT, etc.)."""
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
         fmt = kwargs.get("format")
         if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
             from gwexpy.interop.root_ import write_root_file

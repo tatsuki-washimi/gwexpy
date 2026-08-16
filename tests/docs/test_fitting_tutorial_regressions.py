@@ -11,6 +11,7 @@ TUTORIAL_ROOT = ROOT / "docs" / "web"
 
 pytest.importorskip("iminuit")
 
+import gwexpy
 from gwexpy.frequencyseries import FrequencySeries
 from gwexpy.timeseries import TimeSeries
 
@@ -105,6 +106,7 @@ def test_case_violin_mode_tracking_recovers_injected_drift_within_20_percent():
     noise = rng.normal(0, 3e-22, len(t))
 
     series = TimeSeries(signal + noise, dt=1.0 / sample_rate, unit="strain")
+    gwexpy.register_all(include_io=False)
     spec = series.spectrogram2(16.0, overlap=8.0)
 
     frequencies = spec.frequencies.value

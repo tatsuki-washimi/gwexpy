@@ -84,11 +84,21 @@ def from_skrf_network(
 
     Examples
     --------
-    >>> from gwexpy.frequencyseries import FrequencySeries
-    >>> import skrf
-    >>> ntwk = skrf.Network("myfilter.s2p")
-    >>> fs_s21 = FrequencySeries.from_skrf_network(ntwk, port_pair=(1, 0))
-    >>> matrix = FrequencySeries.from_skrf_network(ntwk)
+    This example requires the optional scikit-rf package and an external
+    Touchstone file, so it is excluded from raw doctest; focused tests use fakes.
+
+    .. code-block:: python
+
+       import skrf
+
+       from gwexpy.frequencyseries import FrequencySeries
+       from gwexpy.interop import from_skrf_network
+
+       ntwk = skrf.Network("myfilter.s2p")
+       fs_s21 = from_skrf_network(
+           FrequencySeries, ntwk, port_pair=(1, 0)
+       )
+       matrix = from_skrf_network(FrequencySeries, ntwk)
 
     """
     require_optional("skrf")
@@ -205,10 +215,20 @@ def to_skrf_network(
 
     Examples
     --------
-    >>> from gwexpy.frequencyseries import FrequencySeries
-    >>> import numpy as np
-    >>> fs = FrequencySeries(np.array([0.1+0j, 0.2+0j]), frequencies=[1e9, 2e9])
-    >>> ntwk = fs.to_skrf_network()
+    This example requires the optional scikit-rf package and is excluded from
+    raw doctest; focused tests use fakes.
+
+    .. code-block:: python
+
+       import numpy as np
+
+       from gwexpy.frequencyseries import FrequencySeries
+       from gwexpy.interop import to_skrf_network
+
+       fs = FrequencySeries(
+           np.array([0.1 + 0j, 0.2 + 0j]), frequencies=[1e9, 2e9]
+       )
+       ntwk = to_skrf_network(fs)
 
     """
     skrf = require_optional("skrf")
@@ -299,10 +319,18 @@ def from_skrf_impulse_response(
 
     Examples
     --------
-    >>> from gwexpy.timeseries import TimeSeries
-    >>> import skrf
-    >>> ntwk = skrf.Network("myfilter.s2p")
-    >>> ts = TimeSeries.from_skrf_impulse_response(ntwk, port_pair=(1, 0))
+    This example requires the optional scikit-rf package and an external
+    Touchstone file, so it is excluded from raw doctest; focused tests use fakes.
+
+    .. code-block:: python
+
+       import skrf
+
+       from gwexpy.interop import from_skrf_impulse_response
+       from gwexpy.timeseries import TimeSeries
+
+       ntwk = skrf.Network("myfilter.s2p")
+       ts = from_skrf_impulse_response(TimeSeries, ntwk, port_pair=(1, 0))
 
     """
     require_optional("skrf")
@@ -360,10 +388,18 @@ def from_skrf_step_response(
 
     Examples
     --------
-    >>> from gwexpy.timeseries import TimeSeries
-    >>> import skrf
-    >>> ntwk = skrf.Network("myfilter.s2p")
-    >>> ts = TimeSeries.from_skrf_step_response(ntwk, port_pair=(1, 0))
+    This example requires the optional scikit-rf package and an external
+    Touchstone file, so it is excluded from raw doctest; focused tests use fakes.
+
+    .. code-block:: python
+
+       import skrf
+
+       from gwexpy.interop import from_skrf_step_response
+       from gwexpy.timeseries import TimeSeries
+
+       ntwk = skrf.Network("myfilter.s2p")
+       ts = from_skrf_step_response(TimeSeries, ntwk, port_pair=(1, 0))
 
     """
     require_optional("skrf")

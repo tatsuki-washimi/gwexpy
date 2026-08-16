@@ -34,6 +34,12 @@ carry a ``"frequency"`` attribute (float, Hz), axis0 uses those physical
 frequency values.  Both fall back to integer indices when the attribute is
 absent.
 
+Examples
+--------
+>>> from gwexpy.interop import DUMP_TYPE_MAP
+>>> DUMP_TYPE_MAP[0]
+('E-field', 'V/m', 'time')
+
 References
 ----------
 https://docs.openems.de/python/CSXCAD/CSProperties/CSPropDumpBox.html
@@ -306,15 +312,19 @@ def from_openems_hdf5(
 
     Examples
     --------
+    This snippet requires the optional h5py package and an external openEMS
+    HDF5 dump produced by an openEMS simulation, so it is illustrative only
+    and is excluded from raw doctest.
+
     Read all components of a time-domain E-field dump:
 
-    >>> from gwexpy.fields import VectorField
-    >>> vf = VectorField.from_openems_hdf5("e_dump.h5", dump_type=0)
+    .. code-block:: python
 
-    Read only the z-component:
+       from gwexpy.fields import ScalarField, VectorField
+       from gwexpy.interop import from_openems_hdf5
 
-    >>> from gwexpy.fields import ScalarField
-    >>> sf = ScalarField.from_openems_hdf5("e_dump.h5", component="z")
+       vf = from_openems_hdf5(VectorField, "e_dump.h5", dump_type=0)
+       sf = from_openems_hdf5(ScalarField, "e_dump.h5", component="z")
 
     """
     h5py = require_optional("h5py")

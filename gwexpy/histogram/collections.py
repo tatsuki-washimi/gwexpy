@@ -230,8 +230,10 @@ class HistogramDict(DictMapMixin, HistogramBaseDict[Histogram]):
     >>> h = Histogram([1, 2], [0, 1, 2])
     >>> hd = HistogramDict()
     >>> hd['H1'] = h
-    >>> hd
-    HistogramDict([('H1', <Histogram (nbins=2, unit=)>)])
+    >>> list(hd.keys()) == ["H1"]
+    True
+    >>> type(hd["H1"]).__name__ == "Histogram"
+    True
 
     """
 

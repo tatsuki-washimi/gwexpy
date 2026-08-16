@@ -51,10 +51,17 @@ def to_mth5(
 
     Examples
     --------
-    >>> from gwexpy.timeseries import TimeSeries
-    >>> from gwexpy.interop.mt_ import to_mth5
-    >>> ts = TimeSeries([1, 2, 3], dt=0.001, name="Ex")
-    >>> to_mth5(ts, "data.h5", station="Site01", run="Run01")
+    This example requires an external MTH5 file and filesystem state, so it
+    is intentionally excluded from raw doctest. Use the focused MTH5 tests for
+    a deterministic contract.
+
+    .. code-block:: python
+
+       from gwexpy.timeseries import TimeSeries
+       from gwexpy.interop import to_mth5
+
+       ts = TimeSeries([1, 2, 3], dt=0.001, name="Ex")
+       to_mth5(ts, "data.h5", station="Site01", run="Run01")
 
     """
     require_optional("mth5")
@@ -195,8 +202,15 @@ def from_mth5(
 
     Examples
     --------
-    >>> from gwexpy.interop.mt_ import from_mth5
-    >>> ts = from_mth5("data.h5", "Site01", "Run01", "Ex")
+    This example requires an external MTH5 file and filesystem state, so it
+    is intentionally excluded from raw doctest. Use the focused MTH5 tests for
+    a deterministic contract.
+
+    .. code-block:: python
+
+       from gwexpy.interop import from_mth5
+
+       ts = from_mth5("data.h5", "Site01", "Run01", "Ex")
 
     """
     require_optional("mth5")

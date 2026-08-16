@@ -152,10 +152,16 @@ Performance measurement scripts.
 | --- | --- |
 | `bruco_bench.py` | Benchmark three coherence-ranking implementations (gwexpy vs gwpy vs naive) |
 | `benchmark_fields.py` | Profile ScalarField and related field operations |
+| `series_matrix_benchmark.py` | Isolated B0/B1 SeriesMatrix benchmark runner and comparison protocol (#676) |
 
 ```bash
 # Example: run coherence benchmark
 python scripts/benchmarks/bruco_bench.py --n-bins 20000 --n-channels 300
+
+# Example: capture B0 from the fixed origin/main checkout
+python scripts/benchmarks/series_matrix_benchmark.py --capture-b0 \
+  --repo-root . --origin-ref origin/main \
+  --output docs/plans/evidence/v0.2.0-b0/series_matrix_b0.json
 
 # Example: validate spectral density physics
 python scripts/validation/verify_spectral_density_physics.py

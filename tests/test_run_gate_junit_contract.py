@@ -2,13 +2,18 @@
 
 from __future__ import annotations
 
+import json
 import os
+import subprocess
+import sys
 from collections.abc import Iterable
 from pathlib import Path
 
 import pytest
 
 from scripts.ci import run_gate
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 def _write_report(tmp_path: Path, name: str, xml: str) -> Path:
@@ -49,6 +54,56 @@ def _run_interop_mne_gate(
     monkeypatch.setattr(run_gate, "_aggregate_junit_counts", recording_aggregate)
     run_gate.run_gate("interop-mne", with_fixtures=False)
     return commands, aggregate_paths
+
+
+def test_docs_notebook_gate_derives_environment_in_fresh_clean_subprocess() -> None:
+    child_environment = os.environ.copy()
+    for variable in ("PYTHONNOUSERSITE", "PYTHONPATH", "PATH"):
+        child_environment.pop(variable, None)
+
+    child_script = """
+import json
+from scripts.ci import run_gate
+
+calls = []
+
+def fake_run_cmd(command, *, cwd=None, environment=None):
+    calls.append({
+        "command": command,
+        "cwd": None if cwd is None else str(cwd),
+        "environment": environment,
+    })
+
+run_gate.run_cmd = fake_run_cmd
+run_gate.run_gate("docs-notebook", with_fixtures=False)
+print(json.dumps(calls))
+"""
+    completed = subprocess.run(
+        [sys.executable, "-c", child_script],
+        cwd=REPO_ROOT,
+        env=child_environment,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    calls = json.loads(completed.stdout.splitlines()[-1])
+
+    assert len(calls) == 1
+    call = calls[0]
+    assert call["command"] == [
+        "pytest",
+        "-q",
+        "tests/docs/test_docs_notebooks.py",
+    ]
+    assert call["cwd"] == str(REPO_ROOT)
+    environment = call["environment"]
+    assert environment is not None
+    assert environment["PYTHONNOUSERSITE"] == "1"
+    assert environment["PYTHONPATH"] == str(REPO_ROOT)
+    assert environment["PATH"] == os.pathsep.join(
+        [str(Path(sys.executable).resolve().parent), os.defpath]
+    )
+    assert environment["GWEXPY_RUN_NOTEBOOK_TESTS"] == "1"
 
 
 @pytest.mark.parametrize(

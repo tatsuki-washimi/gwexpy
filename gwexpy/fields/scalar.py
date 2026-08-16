@@ -65,12 +65,7 @@ class ScalarField(FieldBase):
     >>> sf = ScalarField(data, axis0=[0, 1], axis1=[0, 1],
     ...                  axis2=[0, 1], axis3=[0, 1])
     >>> sf
-    <ScalarField([[[[1., 1.],
-                    [1., 1.]],
-    ...
-                 axis0_domain='time',
-                 space_domains={'x': 'real', 'y': 'real', 'z': 'real'},
-                 axis0_offset=None)>
+    <ScalarField(2, 2, 2, 2)@time, 1.0>
 
     """
 
@@ -1089,9 +1084,15 @@ class ScalarField(FieldBase):
 
         Examples
         --------
-        >>> # Extract xy plane at a specific time and z
-        >>> field_2d = field.slice_map2d('xy', at={'t': 0.5 * u.s, 'z': 0.0 * u.m})
-        >>> field_2d.plot_map2d()
+        This is an illustrative fragment, not a doctest: ``field`` and its
+        coordinate metadata are prepared by the surrounding application.
+
+        .. code-block:: python
+
+           field_2d = field.slice_map2d(
+               'xy', at={'t': 0.5 * u.s, 'z': 0.0 * u.m}
+           )
+           field_2d.plot_map2d()
 
         """
         from gwexpy.plot._coord import nearest_index, slice_from_index
@@ -1216,10 +1217,15 @@ class ScalarField(FieldBase):
 
         Examples
         --------
-        >>> import numpy as np
-        >>> from gwexpy.fields import ScalarField
-        >>> sf = ScalarField(np.ones((1, 10, 10, 1)))
-        >>> fig, ax = sf.plot_map2d('xy', at={'z': 0.0}) # doctest: +SKIP
+        This is an illustrative plotting fragment, not a doctest: it assumes
+        a plotting backend and an interactive display are available.
+
+        .. code-block:: python
+
+           import numpy as np
+           from gwexpy.fields import ScalarField
+           sf = ScalarField(np.ones((1, 10, 10, 1)))
+           fig, ax = sf.plot_map2d('xy', at={'z': 0.0})
 
         """
         import matplotlib.pyplot as plt
@@ -1351,10 +1357,15 @@ class ScalarField(FieldBase):
 
         Examples
         --------
-        >>> import numpy as np
-        >>> from gwexpy.fields import ScalarField
-        >>> sf = ScalarField(np.ones((1024, 1, 1, 1)))
-        >>> psd = sf.compute_psd((0, 0, 0)) # doctest: +SKIP
+        This is an illustrative fragment, not a doctest: the example requires
+        application-specific sampling metadata and plotting context.
+
+        .. code-block:: python
+
+           import numpy as np
+           from gwexpy.fields import ScalarField
+           sf = ScalarField(np.ones((1024, 1, 1, 1)))
+           psd = sf.compute_psd((0, 0, 0))
 
         """
         import matplotlib.pyplot as plt
@@ -1415,10 +1426,18 @@ class ScalarField(FieldBase):
 
         Examples
         --------
-        >>> import numpy as np
-        >>> from gwexpy.fields import ScalarField
-        >>> sf = ScalarField(np.ones((2, 4, 4, 1)))
-        >>> fig, ax = sf.plot_profile('x', at={'t': 0.5 * u.s, 'y': 0.0 * u.m, 'z': 0.0 * u.m}) # doctest: +SKIP
+        This is an illustrative plotting fragment, not a doctest: it assumes
+        coordinate units and a plotting backend supplied by the application.
+
+        .. code-block:: python
+
+           import numpy as np
+           from astropy import units as u
+           from gwexpy.fields import ScalarField
+           sf = ScalarField(np.ones((2, 4, 4, 1)))
+           fig, ax = sf.plot_profile(
+               'x', at={'t': 0.5 * u.s, 'y': 0.0 * u.m, 'z': 0.0 * u.m}
+           )
 
         """
         import matplotlib.pyplot as plt
@@ -1738,7 +1757,13 @@ class ScalarField(FieldBase):
         >>> import numpy as np
         >>> from astropy import units as u
         >>> from gwexpy.fields import ScalarField
-        >>> sf = ScalarField(np.ones((100, 10, 1, 1)))
+        >>> sf = ScalarField(
+        ...     np.ones((100, 10, 1, 1)),
+        ...     axis0=np.arange(100) * u.s,
+        ...     axis1=np.arange(10) * u.m,
+        ...     axis2=np.arange(1) * u.m,
+        ...     axis3=np.arange(1) * u.m,
+        ... )
         >>> t, x, data = sf.time_space_map('x', at={'y': 0 * u.m, 'z': 0 * u.m})
 
         """
@@ -1846,11 +1871,26 @@ class ScalarField(FieldBase):
 
         Examples
         --------
+        This is an executable doctest using Matplotlib's noninteractive Agg
+        backend, so it does not require a display or an interactive session.
+
+        >>> import matplotlib
+        >>> matplotlib.use("Agg")
+        >>> import matplotlib.pyplot as plt
         >>> import numpy as np
-        >>> from gwexpy.fields import ScalarField
+        >>> import gwexpy
         >>> from astropy import units as u
-        >>> sf = ScalarField(np.ones((100, 4, 1, 1)), axis1=np.arange(4)*u.m)
-        >>> fig, ax = sf.plot_time_space_map('x') # doctest: +SKIP
+        >>> from gwexpy.fields import ScalarField
+        >>> gwexpy.register_all(include_io=False)
+        >>> sf = ScalarField(np.ones((100, 4, 1, 1)), axis1=np.arange(4) * u.m)
+        >>> fig, ax = sf.plot_time_space_map("x")
+        >>> len(ax.collections)
+        1
+        >>> ax.get_xlabel()
+        'x [m]'
+        >>> ax.get_ylabel()
+        't []'
+        >>> plt.close(fig)
 
         """
         import matplotlib.pyplot as plt
@@ -2232,12 +2272,17 @@ class ScalarField(FieldBase):
 
         Examples
         --------
-        >>> # Time PSD
-        >>> psd_field = field.spectral_density(axis=0)
-        >>> psd_field.axis0_domain  # 'frequency'
+        This is an illustrative fragment, not a doctest: ``field`` is an
+        application-provided field with compatible time and spatial axes.
 
-        >>> # Spatial wavenumber spectrum
-        >>> kx_spec = field.spectral_density(axis='x')
+        .. code-block:: python
+
+           # Time PSD
+           psd_field = field.spectral_density(axis=0)
+           psd_field.axis0_domain  # 'frequency'
+
+           # Spatial wavenumber spectrum
+           kx_spec = field.spectral_density(axis='x')
 
         See Also
         --------
@@ -2284,12 +2329,16 @@ class ScalarField(FieldBase):
 
         Examples
         --------
-        >>> from astropy import units as u
-        >>> # Time-based specification
-        >>> psd_field = field.psd(fftlength=1.0, overlap=0.5)
-        >>> # Or sample-based specification
-        >>> psd_field = field.psd(nfft=512, noverlap=256)
-        >>> psd_field.shape  # (n_freq, nx, ny, nz)
+        This is an illustrative fragment, not a doctest: ``field`` is an
+        application-provided field with sampling metadata.
+
+        .. code-block:: python
+
+           # Time-based specification
+           psd_field = field.psd(fftlength=1.0, overlap=0.5)
+           # Or sample-based specification
+           psd_field = field.psd(nfft=512, noverlap=256)
+           psd_field.shape  # (n_freq, nx, ny, nz)
 
         See Also
         --------

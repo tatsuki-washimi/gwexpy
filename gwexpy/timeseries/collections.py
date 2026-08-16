@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import logging
 from pathlib import Path
 from typing import Any, SupportsIndex, cast
@@ -47,8 +48,10 @@ from ._gwf_io import (
     _GWF_BACKENDS,
     _extract_gwf_read_args,
     _format_gwf_import_error,
+    _GWFParallelContractError,
     _resolve_gwf_format,
     _source_for_gwf_channel_listing,
+    _validate_gwf_parallel_source,
     read_gwf_timeseriesdict,
 )
 from .spectral import coherence_matrix_from_collection, csd_matrix_from_collection
@@ -84,6 +87,59 @@ def _coerce_reader_result(cls, reader_result):
     if isinstance(provenance, dict):
         result._gwexpy_io = {**provenance}
     return result
+
+
+def _hdf5_path_sources(source: Any) -> tuple[Path, ...] | None:
+    """Return path-based HDF5 sources, leaving file-like inputs untouched."""
+    sources = source if isinstance(source, (list, tuple)) else (source,)
+    if not sources or not all(isinstance(item, (str, Path)) for item in sources):
+        return None
+    paths = tuple(Path(item) for item in sources)
+    if not all(path.suffix.lower() in {".h5", ".hdf5"} for path in paths):
+        return None
+    return paths
+
+
+def _parse_public_read_format(
+    cls: type[Any], args: tuple[Any, ...], kwargs: dict[str, Any]
+) -> tuple[str | None, tuple[Any, ...]]:
+    """Resolve a registered positional format before public-read preflight."""
+    positional = args[0] if args else None
+    if not isinstance(positional, str):
+        return kwargs.get("format"), args
+
+    from astropy.io.registry.base import IORegistryError
+    from gwpy.io.registry import default_registry
+
+    try:
+        default_registry.get_reader(positional, cls)
+    except IORegistryError:
+        return kwargs.get("format"), args
+
+    keyword_format = kwargs.get("format")
+    if keyword_format is not None:
+        raise TypeError(
+            f"{cls.__name__}.read() got multiple values for argument 'format'"
+        )
+    return positional, args[1:]
+
+
+def _public_timeseriesdict_hdf5_auto_format(source: Any) -> str | None:
+    """Resolve the only public implicit HDF5 format for ``TimeSeriesDict``."""
+    paths = _hdf5_path_sources(source)
+    if paths is None:
+        return None
+
+    from .io.ndscope_hdf5 import identify_ndscope_hdf5
+
+    if all(identify_ndscope_hdf5(TimeSeriesDict, str(path), None) for path in paths):
+        return "hdf.ndscope"
+
+    raise ValueError(
+        "TimeSeriesDict.read() requires explicit format='hdf5' for generic "
+        "HDF5 sources; only positively identified hdf.ndscope files are "
+        "auto-detected."
+    )
 
 
 class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesDict):
@@ -138,7 +194,23 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
     @classmethod
     def read(cls, source, *args: Any, **kwargs: Any):  # type: ignore[override]
         """Read a `TimeSeriesDict` from a supported source."""
-        fmt = kwargs.get("format")
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
+        fmt, args = _parse_public_read_format(cls, args, kwargs)
+        if fmt is not None:
+            kwargs["format"] = fmt
+        if fmt is None:
+            auto_format = _public_timeseriesdict_hdf5_auto_format(source)
+            if auto_format == "hdf.ndscope":
+                from .io.ndscope_hdf5 import read_timeseriesdict_ndscope_hdf5
+
+                reader_kwargs = dict(kwargs)
+                reader_kwargs.pop("format", None)
+                return _coerce_reader_result(
+                    cls,
+                    read_timeseriesdict_ndscope_hdf5(source, *args, **reader_kwargs),
+                )
         if fmt in {"nc", "netcdf4"}:
             from gwexpy.timeseries.io.netcdf4_ import read_timeseriesdict_netcdf4
 
@@ -218,6 +290,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             )
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
             backend = gwf_kwargs.pop("backend", _GWF_BACKENDS[gwf_format])
+            _validate_gwf_parallel_source(source, gwf_kwargs)
             try:
                 if channels is None:
                     channel_source = _source_for_gwf_channel_listing(source)
@@ -236,6 +309,8 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 )
             except ImportError as exc:
                 raise _format_gwf_import_error(gwf_format, exc)
+            except _GWFParallelContractError:
+                raise
             except TypeError as exc:
                 # Keep existing ValueError contract for malformed user inputs.
                 raise ValueError(f"Invalid input for GWF read: {exc}") from exc
@@ -328,7 +403,18 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
     def __reduce_ex__(self, protocol: SupportsIndex):
         from gwpy.timeseries import TimeSeriesDict as GwpyTimeSeriesDict
 
-        return (GwpyTimeSeriesDict, (dict(self),))
+        provenance = getattr(self, "_gwexpy_io", None)
+        state: dict[str, Any] = {}
+        if isinstance(provenance, dict):
+            state["_gwexpy_io"] = copy.deepcopy(provenance)
+        entry_provenance = {
+            key: copy.deepcopy(getattr(series, "_gwexpy_io"))
+            for key, series in self.items()
+            if isinstance(getattr(series, "_gwexpy_io", None), dict)
+        }
+        if entry_provenance:
+            state["_gwexpy_entry_io"] = entry_provenance
+        return (GwpyTimeSeriesDict, (dict(self),), state or None)
 
     asfreq = _make_dict_map_method(
         "asfreq", doc="Apply asfreq to each TimeSeries in the dict."
@@ -800,6 +886,9 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
         """Write the collection to a supported target."""
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
         fmt = kwargs.get("format")
         if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
             from gwexpy.interop.root_ import write_root_file
@@ -1918,6 +2007,9 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
     @classmethod
     def read(cls, source, *args: Any, **kwargs: Any):  # type: ignore[override]
         """Read a ``TimeSeriesList`` from a supported source."""
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
         fmt = kwargs.get("format")
         # Both branches below re-read each entry themselves rather than going
         # through a registered reader, and neither forwarded the bounds — so a
@@ -1987,6 +2079,9 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
 
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
         """Write TimeSeriesList to file (HDF5, ROOT, etc.)."""
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
         fmt = kwargs.get("format")
         if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
             from gwexpy.interop.root_ import write_root_file

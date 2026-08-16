@@ -7,6 +7,8 @@ import pytest
 
 mne = pytest.importorskip("mne")
 
+from gwpy.timeseries import TimeSeries as GWpyTimeSeries
+
 from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
 from gwexpy.interop._time import LeapSecondConversionError, datetime_utc_to_gps
 from gwexpy.interop.mne_ import (
@@ -176,6 +178,115 @@ class TestFromMneRaw:
         raw = to_mne_rawarray(tsd_in)
         tsd = from_mne_raw(TimeSeriesDict, raw, unit_map=None)
         assert "ch1" in tsd
+
+    def test_exact_one_nanosecond_epochs_survive_separate_roundtrips(self):
+        first = 1_200_000_000_000_000_000
+        ts_a = TimeSeries(np.ones(10), t0_ns=first, dt=0.01, name="a")
+        ts_b = TimeSeries(np.ones(10), t0_ns=first + 1, dt=0.01, name="b")
+
+        raw_a = to_mne_rawarray(ts_a)
+        raw_b = to_mne_rawarray(ts_b)
+        out_a = from_mne_raw(TimeSeriesDict, raw_a)
+        out_b = from_mne_raw(TimeSeriesDict, raw_b)
+
+        assert raw_a._gwex_t0_gps_ns == first
+        assert raw_b._gwex_t0_gps_ns == first + 1
+        assert out_a["a"].t0_gps_ns == first
+        assert out_b["b"].t0_gps_ns == first + 1
+        assert out_a["a"]._gwex_t0_gps_precision == "exact"
+        assert out_b["b"]._gwex_t0_gps_precision == "exact"
+
+    def test_non_integer_marker_offset_falls_back_to_quantized_float_epoch(self):
+        ts = TimeSeries(
+            np.ones(10),
+            t0_ns=1_200_000_000_000_000_000,
+            dt=1 / 3,
+            name="ch0",
+        )
+        raw = to_mne_rawarray(ts)
+        raw.crop(tmin=1 / 3, tmax=1.0)
+
+        restored = from_mne_raw(TimeSeriesDict, raw)["ch0"]
+
+        assert raw.first_samp == 1
+        assert restored.t0_gps_ns == 1_200_000_000_333_333_333
+        assert restored._gwex_t0_gps_precision == "quantized"
+
+    def test_public_single_series_roundtrip_preserves_exact_epoch_after_crop(self):
+        first = 1_200_000_000_000_000_001
+        ts = TimeSeries(np.arange(8, dtype=float), t0_ns=first, dt=0.01, name="ch0")
+
+        raw = ts.to_mne()
+        raw.crop(tmin=0.02, tmax=0.05)
+        restored = TimeSeries.from_mne(raw, "ch0")
+
+        assert raw.first_samp == 2
+        assert isinstance(restored, TimeSeries)
+        assert restored.t0_gps_ns == first + 20_000_000
+        assert restored._gwex_t0_gps_precision == "exact"
+        np.testing.assert_allclose(restored.value, ts.value[2:6])
+
+    def test_unmarked_raw_uses_collection_entry_class_and_float_epoch(self):
+        raw = mne.io.RawArray(
+            np.ones((1, 4)),
+            mne.create_info(["ch0"], 100.0, ["misc"]),
+        )
+        dt_utc = datetime.datetime(2020, 1, 1, tzinfo=datetime.UTC)
+        raw.set_meas_date(dt_utc)
+
+        restored = from_mne_raw(TimeSeriesDict, raw)["ch0"]
+
+        assert type(restored) is TimeSeriesDict.EntryClass
+        assert type(restored) is GWpyTimeSeries
+        assert restored.t0.value == pytest.approx(
+            float(datetime_utc_to_gps(dt_utc)), abs=1e-9
+        )
+        assert not hasattr(restored, "t0_gps_ns")
+
+    def test_crop_uses_exact_source_dt_for_integer_nanosecond_offset(self):
+        first = 1_200_000_000_000_000_001
+        ts = TimeSeries(np.ones(8), t0_ns=first, dt=0.003, name="ch0")
+
+        raw = to_mne_rawarray(ts)
+        raw.crop(tmin=0.003, tmax=0.006)
+        restored = from_mne_raw(TimeSeriesDict, raw)["ch0"]
+
+        assert raw.first_samp == 1
+        assert restored.t0_gps_ns == first + 3_000_000
+        assert restored._gwex_t0_gps_precision == "exact"
+
+    def test_changed_sfreq_invalidates_private_timebase_marker(self):
+        first = 1_200_000_000_000_000_001
+        ts = TimeSeries(np.ones(8), t0_ns=first, dt=0.003, name="ch0")
+
+        raw = to_mne_rawarray(ts)
+        raw.crop(tmin=0.001, tmax=0.004)
+        raw.resample(1000.0)
+        restored = from_mne_raw(TimeSeriesDict, raw)["ch0"]
+
+        assert type(restored) is TimeSeriesDict.EntryClass
+        assert restored.t0.value == pytest.approx(
+            float(datetime_utc_to_gps(raw.info["meas_date"]))
+            + raw.first_samp / raw.info["sfreq"],
+            abs=1e-9,
+        )
+        assert not hasattr(restored, "t0_gps_ns")
+
+    def test_invalid_timebase_marker_is_rejected_fail_closed(self):
+        ts = TimeSeries(np.ones(4), t0_ns=1_200_000_000_000_000_000, dt=0.003)
+        raw = to_mne_rawarray(ts)
+        raw._gwex_timebase_num = -3
+        raw._gwex_timebase_den = -1000
+
+        restored = from_mne_raw(TimeSeriesDict, raw)["ch0"]
+
+        assert type(restored) is TimeSeriesDict.EntryClass
+        assert restored.t0.value == pytest.approx(
+            float(datetime_utc_to_gps(raw.info["meas_date"]))
+            + raw.first_samp / raw.info["sfreq"],
+            abs=1e-9,
+        )
+        assert not hasattr(restored, "t0_gps_ns")
 
 
 class TestMeasDateContract:

@@ -16,6 +16,7 @@ except ImportError as _exc:
         "scipy is required for gwexpy.statistics. Install with: pip install scipy"
     ) from _exc
 
+from ..provenance import build_provenance
 from ..spectrogram import Spectrogram
 
 if TYPE_CHECKING:
@@ -177,6 +178,16 @@ def rayleigh_pvalue(
         frequencies=rayleigh_spec.frequencies,
         unit="",
         name=f"p-value({rayleigh_spec.name})",
+    )
+    result.provenance = build_provenance(
+        "rayleigh_pvalue",
+        {
+            "n_samples": n_samples,
+            "n_monte_carlo": n_monte_carlo,
+            "nfft": nfft,
+        },
+        rng=rng,
+        seed=seed,
     )
     result.n_monte_carlo = n_monte_carlo
     if rng is not None:

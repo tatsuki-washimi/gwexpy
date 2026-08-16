@@ -154,28 +154,33 @@ def fit_bootstrap_spectrum(
 
     Examples
     --------
-    >>> from gwexpy.fitting.highlevel import fit_bootstrap_spectrum
-    >>>
-    >>> # Define model
-    >>> def power_law(f, A, alpha):
-    ...     return A * f**alpha
-    >>>
-    >>> # Run pipeline
-    >>> result = fit_bootstrap_spectrum(
-    ...     data,
-    ...     model_fn=power_law,
-    ...     freq_range=(5, 50),
-    ...     fftlength=1.0,
-    ...     overlap=0.5,
-    ...     rebin_width=0.25,
-    ...     block_size=2.0,  # 2 seconds
-    ...     initial_params={"A": 10, "alpha": -1.5},
-    ...     run_mcmc=True,
-    ... )
-    >>>
-    >>> # Access results
-    >>> print(result.params)
-    >>> print(result.parameter_intervals)  # If MCMC was run
+    This is an illustrative fragment, not a doctest: ``data`` is an
+    application-provided spectrum and MCMC settings are workload-specific.
+
+    .. code-block:: python
+
+       from gwexpy.fitting.highlevel import fit_bootstrap_spectrum
+
+       # Define model
+       def power_law(f, A, alpha):
+           return A * f**alpha
+
+       # Run pipeline
+       result = fit_bootstrap_spectrum(
+           data,
+           model_fn=power_law,
+           freq_range=(5, 50),
+           fftlength=1.0,
+           overlap=0.5,
+           rebin_width=0.25,
+           block_size=2.0,  # 2 seconds
+           initial_params={"A": 10, "alpha": -1.5},
+           run_mcmc=True,
+       )
+
+       # Access results
+       print(result.params)
+       print(result.parameter_intervals)  # If MCMC was run
 
     Notes
     -----

@@ -195,11 +195,16 @@ def from_emg3d_field(
 
     Examples
     --------
-    >>> from gwexpy.fields import VectorField
-    >>> vf = VectorField.from_emg3d_field(field)
+    This snippet requires a pre-existing emg3d Field named ``field`` and is
+    illustrative only, so it is excluded from raw doctest.
 
-    >>> from gwexpy.fields import ScalarField
-    >>> sf = ScalarField.from_emg3d_field(field, component="z")
+    .. code-block:: python
+
+       from gwexpy.fields import ScalarField, VectorField
+       from gwexpy.interop import from_emg3d_field
+
+       vf = from_emg3d_field(VectorField, field)
+       sf = from_emg3d_field(ScalarField, field, component="z")
 
     """
     mesh = field.grid

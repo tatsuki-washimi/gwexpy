@@ -54,6 +54,9 @@ class TestSpectrogramMatrixExtra:
         try:
             import matplotlib.pyplot as plt
 
+            import gwexpy
+
+            gwexpy.register_all(include_io=False)
             _ = sgm_basic.plot(show=False)
             plt.close("all")
         except ImportError:

@@ -436,6 +436,25 @@ class SpectrogramMatrix(  # type: ignore[misc]
 
         main = sgm_inputs[0]
 
+        # A raw ndarray has no unit metadata.  Astropy-compatible add/sub
+        # therefore refuses it for a dimensional spectrogram instead of
+        # treating its values as if they were already expressed in each cell
+        # unit.  The check happens before any result allocation so the same
+        # refusal is atomic for ``+=``/``-=`` through the shared in-place path.
+        if (
+            ufunc in _ADD_SUB_UFUNCS
+            and any(
+                isinstance(inp, np.ndarray)
+                and not isinstance(inp, (SpectrogramMatrix, u.Quantity))
+                for inp in inputs
+            )
+            and not main._matrix_is_strictly_dimensionless(main)
+        ):
+            raise TypeError(
+                "SpectrogramMatrix add/sub with a raw ndarray requires "
+                "strictly dimensionless matrix cells"
+            )
+
         # 1b. Bring every other operand into `main`'s per-element units before
         #     the values are combined (issue #576).
         if ufunc in _ADD_SUB_UFUNCS or ufunc in _COMPARISON_UFUNCS:

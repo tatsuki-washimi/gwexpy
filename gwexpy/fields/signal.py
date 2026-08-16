@@ -236,14 +236,17 @@ def spectral_density(
 
     Examples
     --------
-    >>> from astropy import units as u
-    >>> from gwexpy.fields import ScalarField
-    >>> # Time PSD (all spatial points)
-    >>> psd_field = spectral_density(field, axis=0)
-    >>> psd_field.axis0_domain  # 'frequency'
+    This is an illustrative fragment, not a doctest: ``field`` is an
+    application-provided field with compatible time and spatial axes.
 
-    >>> # Spatial wavenumber spectrum along x
-    >>> kx_spec = spectral_density(field, axis='x')
+    .. code-block:: python
+
+       # Time PSD (all spatial points)
+       psd_field = spectral_density(field, axis=0)
+       psd_field.axis0_domain  # 'frequency'
+
+       # Spatial wavenumber spectrum along x
+       kx_spec = spectral_density(field, axis='x')
 
     Notes
     -----
@@ -496,13 +499,17 @@ def compute_psd(
 
     Examples
     --------
-    >>> from astropy import units as u
-    >>> psd = compute_psd(field, (1.0*u.m, 2.0*u.m, 0.0*u.m))
-    >>> psd.frequencies  # Frequency axis with units
+    This is an illustrative fragment, not a doctest: ``field`` and its
+    coordinate units are supplied by the application.
 
-    >>> # Multiple points
-    >>> points = [(0*u.m, 0*u.m, 0*u.m), (1*u.m, 0*u.m, 0*u.m)]
-    >>> psd_list = compute_psd(field, points)
+    .. code-block:: python
+
+       psd = compute_psd(field, (1.0*u.m, 2.0*u.m, 0.0*u.m))
+       psd.frequencies  # Frequency axis with units
+
+       # Multiple points
+       points = [(0*u.m, 0*u.m, 0*u.m), (1*u.m, 0*u.m, 0*u.m)]
+       psd_list = compute_psd(field, points)
 
     """
     from scipy.signal import welch
@@ -713,9 +720,13 @@ def freq_space_map(
 
     Examples
     --------
-    >>> from astropy import units as u
-    >>> fsmap = freq_space_map(field, 'x', at={'y': 0*u.m, 'z': 0*u.m})
-    >>> fsmap.shape  # (n_freq, n_x, 1, 1)
+    This is an illustrative fragment, not a doctest: ``field`` is an
+    application-provided field with spatial coordinate units.
+
+    .. code-block:: python
+
+       fsmap = freq_space_map(field, 'x', at={'y': 0*u.m, 'z': 0*u.m})
+       fsmap.shape  # (n_freq, n_x, 1, 1)
 
     See Also
     --------
@@ -925,10 +936,16 @@ def compute_xcorr(
 
     Examples
     --------
-    >>> from astropy import units as u
-    >>> xcorr = compute_xcorr(field, (0*u.m, 0*u.m, 0*u.m), (1*u.m, 0*u.m, 0*u.m))
-    >>> xcorr.times  # Lag axis
-    >>> xcorr.value  # Correlation values
+    This is an illustrative fragment, not a doctest: ``field`` is an
+    application-provided field with compatible time and spatial axes.
+
+    .. code-block:: python
+
+       xcorr = compute_xcorr(
+           field, (0*u.m, 0*u.m, 0*u.m), (1*u.m, 0*u.m, 0*u.m)
+       )
+       xcorr.times  # Lag axis
+       xcorr.value  # Correlation values
 
     Notes
     -----
@@ -1049,14 +1066,18 @@ def time_delay_map(
 
     Examples
     --------
-    >>> from astropy import units as u
-    >>> delay_map = time_delay_map(
-    ...     field,
-    ...     ref_point=(0*u.m, 0*u.m, 0*u.m),
-    ...     plane='xy',
-    ...     at={'z': 0*u.m},
-    ...     stride=0.05*u.m  # spatial stride in meters
-    ... )
+    This is an illustrative fragment, not a doctest: ``field`` and its
+    sampling/coordinate metadata are supplied by the application.
+
+    .. code-block:: python
+
+       delay_map = time_delay_map(
+           field,
+           ref_point=(0*u.m, 0*u.m, 0*u.m),
+           plane='xy',
+           at={'z': 0*u.m},
+           stride=0.05*u.m  # spatial stride in meters
+       )
 
     Notes
     -----
@@ -1287,27 +1308,31 @@ def coherence_map(
 
     Examples
     --------
-    >>> from astropy import units as u
-    >>> # Compute coherence map with time-based FFT parameters
-    >>> coh_map = coherence_map(
-    ...     field,
-    ...     ref_point=(0*u.m, 0*u.m, 0*u.m),
-    ...     plane='xy',
-    ...     at={'z': 0*u.m},
-    ...     band=(10*u.Hz, 100*u.Hz),
-    ...     fftlength=1.0,    # 1.0 seconds
-    ...     overlap=0.5,      # 0.5 seconds
-    ...     window='hann'
-    ... )
+    This is an illustrative fragment, not a doctest: ``field`` is an
+    application-provided field and the example only shows parameter choices.
 
-    >>> # Or with sample-based FFT parameters
-    >>> coh_map = coherence_map(
-    ...     field,
-    ...     ref_point=(0*u.m, 0*u.m, 0*u.m),
-    ...     nfft=1024,        # samples
-    ...     noverlap=512,     # samples
-    ...     stride=0.1*u.m    # spatial stride in meters
-    ... )
+    .. code-block:: python
+
+       # Compute coherence map with time-based FFT parameters
+       coh_map = coherence_map(
+           field,
+           ref_point=(0*u.m, 0*u.m, 0*u.m),
+           plane='xy',
+           at={'z': 0*u.m},
+           band=(10*u.Hz, 100*u.Hz),
+           fftlength=1.0,    # 1.0 seconds
+           overlap=0.5,      # 0.5 seconds
+           window='hann'
+       )
+
+       # Or with sample-based FFT parameters
+       coh_map = coherence_map(
+           field,
+           ref_point=(0*u.m, 0*u.m, 0*u.m),
+           nfft=1024,        # samples
+           noverlap=512,     # samples
+           stride=0.1*u.m    # spatial stride in meters
+       )
 
     """
     from scipy.signal import coherence

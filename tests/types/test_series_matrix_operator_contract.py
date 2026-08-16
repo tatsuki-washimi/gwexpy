@@ -15,6 +15,7 @@ ufunc implementation for the 4-D ``(Row, Col, Time, Freq)`` layout.
 
 import pickle
 import warnings
+from copy import deepcopy
 
 import numpy as np
 import pytest
@@ -26,6 +27,17 @@ from gwexpy.spectrogram import SpectrogramMatrix
 from gwexpy.timeseries import TimeSeriesMatrix
 from gwexpy.types.metadata import MetaData, MetaDataMatrix
 from gwexpy.types.seriesmatrix import SeriesMatrix
+
+from .series_matrix_contract_manifest import (
+    B0_CONTRACT,
+    EXPECTED_B0_CELL_COUNT,
+    MatrixFamily,
+    Phase,
+)
+from .test_series_matrix_contract_manifest import (
+    _assert_source_unchanged,
+    _observable_source_snapshot,
+)
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -76,8 +88,8 @@ def make_spectrogram_matrix(unit=u.V, values=None):
         times=np.arange(2) * u.s,
         frequencies=np.arange(2) * u.Hz,
         meta=_meta(unit),
-        rows=["r0", "r1"],
-        cols=["c0", "c1"],
+        rows=["r0", "r1"],  # type: ignore[list-item]
+        cols=["c0", "c1"],  # type: ignore[list-item]
         name="sgm",
     )
 
@@ -120,6 +132,98 @@ def cell_units(matrix):
 def cell_names(matrix):
     """Return the per-cell names as a nested list."""
     return [[matrix.meta[i, j].name for j in range(2)] for i in range(2)]
+
+
+def test_existing_operator_contract_is_backed_by_canonical_b0_manifest():
+    """Keep this executable operator suite tied to the single B0 ledger."""
+    assert len(B0_CONTRACT) == EXPECTED_B0_CELL_COUNT
+    assert {cell.family for cell in B0_CONTRACT} == set(MatrixFamily)
+    assert all(cell.phase is Phase.B0 for cell in B0_CONTRACT)
+    assert {"add", "sub", "mul", "truediv", "power"} <= {
+        cell.operation for cell in B0_CONTRACT
+    }
+
+
+@pytest.mark.parametrize(
+    "operation",
+    [
+        "shape",
+        "dtype",
+        "values",
+        "slicing",
+        "assignment",
+        "iteration",
+        "copy",
+        "astype",
+        "real",
+        "imag",
+        "conj",
+        "transpose",
+        "reshape",
+        "np.asarray",
+        "matrix.view(np.ndarray)",
+    ],
+)
+@pytest.mark.parametrize(
+    "factory", list(MATRIX_FACTORIES.values()), ids=list(MATRIX_FACTORIES)
+)
+def test_approved_structure_surface_is_observed_without_runtime_changes(
+    factory, operation
+):
+    """Pin the B0 shape/data surface and its current Spectrogram limitations."""
+    matrix = factory()
+    if operation == "shape":
+        assert isinstance(matrix.shape, tuple)
+    elif operation == "dtype":
+        assert isinstance(matrix.dtype, np.dtype)
+    elif operation == "values":
+        np.testing.assert_array_equal(np.asarray(matrix), matrix.value)
+    elif operation == "slicing":
+        if isinstance(matrix, SpectrogramMatrix):
+            with pytest.raises(ValueError):
+                matrix[..., :1]
+        else:
+            sliced = matrix[..., :1]
+            assert type(sliced) is type(matrix)
+            assert sliced.shape[-1] == 1
+    elif operation == "assignment":
+        assigned = matrix.copy()
+        replacement = np.zeros_like(np.asarray(assigned))
+        assigned[...] = replacement
+        np.testing.assert_array_equal(np.asarray(assigned), replacement)
+    elif operation == "iteration":
+        rows = list(matrix)
+        assert rows
+        assert all(type(row) is type(matrix) for row in rows)
+    elif operation == "copy":
+        copied = matrix.copy()
+        assert type(copied) is type(matrix)
+        assert copied is not matrix
+        assert copied.meta is not matrix.meta
+    elif operation == "astype":
+        converted = matrix.astype(np.float32)
+        assert type(converted) is type(matrix)
+        assert converted.dtype == np.dtype(np.float32)
+    elif operation == "real":
+        assert type(matrix.real) is type(matrix)
+    elif operation == "imag":
+        assert type(matrix.imag) is type(matrix)
+    elif operation == "conj":
+        assert type(matrix.conj()) is type(matrix)
+    elif operation in {"transpose", "reshape"}:
+        if isinstance(matrix, SpectrogramMatrix):
+            with pytest.raises(ValueError):
+                getattr(matrix, operation)()
+        elif operation == "transpose":
+            assert type(matrix.transpose()) is type(matrix)
+        else:
+            assert type(matrix.reshape(matrix.shape)) is type(matrix)
+    elif operation == "np.asarray":
+        assert type(np.asarray(matrix)) is np.ndarray
+    elif operation == "matrix.view(np.ndarray)":
+        assert type(matrix.view(np.ndarray)) is np.ndarray
+    else:  # pragma: no cover - protects the manifest-to-test mapping
+        raise AssertionError(operation)
 
 
 # ---------------------------------------------------------------------------
@@ -402,6 +506,14 @@ def _imul_bad_shape(m):
     m *= np.ones(99)
 
 
+def _decorate_rejection_state(matrix):
+    """Add nested mutable state covered by the authoritative snapshot helper."""
+    shared = {"nested": [np.arange(3, dtype=np.int64)]}
+    matrix.attrs["contract"] = shared
+    matrix.provenance = {"nested": [shared, {"alias": shared}]}
+    return matrix
+
+
 @pytest.mark.parametrize(
     ("failing_op", "expected_error"),
     [
@@ -414,27 +526,48 @@ def _imul_bad_shape(m):
 def test_inplace_failure_leaves_the_matrix_untouched(
     matrix, failing_op, expected_error
 ):
-    """A rejected in-place operation must not have partially written anything."""
-    before_values = np.asarray(matrix).copy()
-    before_units = cell_units(matrix)
+    """A rejected in-place operation must preserve the complete source graph."""
+    matrix = _decorate_rejection_state(matrix)
+    snapshot = _observable_source_snapshot(matrix)
 
     with pytest.raises(expected_error):
         failing_op(matrix)
 
-    np.testing.assert_array_equal(np.asarray(matrix), before_values)
-    assert cell_units(matrix) == before_units
+    _assert_source_unchanged(matrix, snapshot)
 
 
 def test_inplace_rejects_unsafe_dtype_change(matrix):
     """An integer matrix refuses a float in-place update and stays intact."""
-    integer_matrix = matrix.astype(np.int64)
-    before = np.asarray(integer_matrix).copy()
+    integer_matrix = _decorate_rejection_state(matrix.astype(np.int64))
+    snapshot = _observable_source_snapshot(integer_matrix)
 
     with pytest.raises(TypeError):
         integer_matrix.__imul__(1.5)
 
-    np.testing.assert_array_equal(np.asarray(integer_matrix), before)
-    assert np.asarray(integer_matrix).dtype == np.int64
+    _assert_source_unchanged(integer_matrix, snapshot)
+
+
+@pytest.mark.parametrize("mutation", ["equal_copy", "nested_mutation"])
+def test_rejected_inplace_snapshot_catches_equal_replacement_and_nested_mutation(
+    matrix, monkeypatch: pytest.MonkeyPatch, mutation
+):
+    """The rejection assertion detects topology-preserving and value mutations."""
+    matrix = _decorate_rejection_state(matrix)
+    snapshot = _observable_source_snapshot(matrix)
+
+    def mutate_then_raise(operand):
+        if mutation == "equal_copy":
+            matrix.provenance = deepcopy(matrix.provenance)
+        else:
+            matrix.provenance["nested"][0]["nested"][0][0] = -1
+        raise UnitConversionError()
+
+    monkeypatch.setattr(matrix, "__iadd__", mutate_then_raise)
+    with pytest.raises(UnitConversionError):
+        matrix.__iadd__(1 * u.s)
+
+    with pytest.raises(AssertionError):
+        _assert_source_unchanged(matrix, snapshot)
 
 
 # ---------------------------------------------------------------------------

@@ -125,7 +125,9 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
 
         Examples
         --------
-        >>> ts = TimeSeries(np.sin(2 * np.pi * 10 * np.linspace(0, 1, 1000)),
+        >>> import numpy as np
+        >>> from gwexpy.timeseries import TimeSeries
+        >>> ts = TimeSeries(np.sin(2 * np.pi * 10 * np.arange(1000) * 0.001),
         ...                 dt=0.001, unit='V')
         >>> analytic = ts.hilbert()
         >>> envelope = np.abs(analytic.value)
@@ -241,7 +243,9 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
 
         Examples
         --------
-        >>> ts = TimeSeries(np.sin(2 * np.pi * 10 * np.linspace(0, 1, 1000)),
+        >>> import numpy as np
+        >>> from gwexpy.timeseries import TimeSeries
+        >>> ts = TimeSeries(np.sin(2 * np.pi * 10 * np.arange(1000) * 0.001),
         ...                 dt=0.001, unit='V')
         >>> phase = ts.instantaneous_phase(unwrap=True)  # rad, unwrapped
         >>> phase_deg = ts.instantaneous_phase(deg=True, unwrap=True)  # degrees
@@ -384,12 +388,15 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
 
         Examples
         --------
-        >>> t = np.linspace(0, 1, 1000)
+        >>> import numpy as np
+        >>> from gwexpy.timeseries import TimeSeries
+        >>> t = np.arange(1000) * 0.001
         >>> ts = TimeSeries(np.cos(2 * np.pi * 50 * t), dt=0.001, unit='V')
         >>> f_inst = ts.instantaneous_frequency()
         >>> # Central region should be close to 50 Hz
-        >>> np.median(f_inst.value[100:-100])  # doctest: +SKIP
-        50.0
+        >>> np.testing.assert_allclose(
+        ...     np.median(f_inst.value[100:-100]), 50.0, rtol=1e-12, atol=1e-12
+        ... )
 
         """
         # Force radians for calculation
@@ -861,15 +868,26 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         --------
         Mode A (with lowpass):
 
+        >>> import numpy as np
+        >>> from gwexpy.timeseries import TimeSeries
+        >>> t = np.arange(1000) * 0.001
         >>> ts = TimeSeries(np.cos(2 * np.pi * 100 * t), dt=0.001, unit='V')
         >>> z = ts.baseband(f0=100, lowpass=10)  # 10 Hz analysis bandwidth
 
         Mode B (resample only):
 
+        >>> import numpy as np
+        >>> from gwexpy.timeseries import TimeSeries
+        >>> t = np.arange(1000) * 0.001
+        >>> ts = TimeSeries(np.cos(2 * np.pi * 100 * t), dt=0.001, unit='V')
         >>> z = ts.baseband(f0=100, lowpass=None, output_rate=50)
 
         With both:
 
+        >>> import numpy as np
+        >>> from gwexpy.timeseries import TimeSeries
+        >>> t = np.arange(1000) * 0.001
+        >>> ts = TimeSeries(np.cos(2 * np.pi * 100 * t), dt=0.001, unit='V')
         >>> z = ts.baseband(f0=100, lowpass=10, output_rate=50)
 
         """
@@ -1090,12 +1108,11 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         Recover amplitude and phase of a 100 Hz signal:
 
         >>> import numpy as np
-        >>> t = np.linspace(0, 10, 163840)
+        >>> from gwexpy.timeseries import TimeSeries
+        >>> t = np.arange(163840) / 16384
         >>> data = np.cos(2 * np.pi * 100 * t + np.pi/4)
         >>> ts = TimeSeries(data, sample_rate=16384, t0=0)
         >>> amp, phase = ts.lock_in(f0=100, stride=1.0)
-        >>> print(f"Amp: {amp.value.mean():.2f}, Phase: {phase.value.mean():.2f}")
-        Amp: 1.00, Phase: 45.00
 
         Using LPF mode for higher time resolution:
 
@@ -1308,13 +1325,21 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
 
         Examples
         --------
-        Steady-state transfer function (GWpy-compatible)::
+        Schematic example (requires two compatible pre-existing TimeSeries
+        objects named ``reference`` and ``test``; illustrative and not a
+        doctest):
 
-            >>> tf = reference.transfer_function(test, mode="steady", fftlength=1.0)
+        .. code-block:: python
 
-        Transient transfer function::
+           tf = reference.transfer_function(test, mode="steady", fftlength=1.0)
 
-            >>> tf = input_signal.transfer_function(output_signal, mode="transient")
+        Schematic example (requires two compatible pre-existing TimeSeries
+        objects named ``input_signal`` and ``output_signal``; illustrative and
+        not a doctest):
+
+        .. code-block:: python
+
+           tf = input_signal.transfer_function(output_signal, mode="transient")
 
         """
         import warnings

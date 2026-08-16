@@ -1073,11 +1073,13 @@ def standardize_timeseries(
 
     Examples
     --------
+    >>> from astropy import units as u
     >>> from gwexpy.timeseries import TimeSeries
     >>> from gwexpy.timeseries.preprocess import standardize_timeseries
     >>> ts = TimeSeries([1, 2, 3, 4, 5], dt=1)
     >>> ts_std, model = standardize_timeseries(ts, method='zscore')
-    >>> print(ts_std.unit)  # dimensionless
+    >>> ts_std.unit == u.dimensionless_unscaled
+    True
 
     """
     if robust is True:
@@ -1207,9 +1209,10 @@ def standardize_matrix(
 
     Examples
     --------
+    >>> import numpy as np
     >>> from gwexpy.timeseries import TimeSeriesMatrix
     >>> from gwexpy.timeseries.preprocess import standardize_matrix
-    >>> mat = TimeSeriesMatrix(np.random.randn(2, 3, 100), dt=0.01)
+    >>> mat = TimeSeriesMatrix(np.arange(600.0).reshape(2, 3, 100), dt=0.01)
     >>> mat_std = standardize_matrix(mat, axis='time')
 
     """
@@ -1350,12 +1353,14 @@ def whiten_matrix(
 
     Examples
     --------
+    >>> import numpy as np
     >>> from gwexpy.timeseries import TimeSeriesMatrix
     >>> from gwexpy.timeseries.preprocess import whiten_matrix
-    >>> mat = TimeSeriesMatrix(np.random.randn(2, 3, 100), dt=0.01)
+    >>> mat = TimeSeriesMatrix(np.arange(600.0).reshape(2, 3, 100), dt=0.01)
     >>> mat_w, model = whiten_matrix(mat, method='pca')
     >>> # PCA output is flattened
-    >>> print(mat_w.shape)  # (6, 1, 100)
+    >>> mat_w.shape
+    (6, 1, 100)
 
     """
     if method not in ("pca", "zca"):

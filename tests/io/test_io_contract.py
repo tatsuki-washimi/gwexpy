@@ -11,7 +11,9 @@ import pytest
 from astropy.io.registry.base import IORegistryError
 from gwpy.io.registry import default_registry as io_registry
 
-import gwexpy  # noqa: F401  # bootstrap registry
+import gwexpy
+
+gwexpy.register_all()
 from gwexpy.frequencyseries import (
     FrequencySeries,
     FrequencySeriesDict,

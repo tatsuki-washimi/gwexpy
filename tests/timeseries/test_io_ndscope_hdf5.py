@@ -34,6 +34,390 @@ def test_ndscope_writer_rejects_dataset_options_before_opening_target(
         )
 
 
+def _writer_series(name="K1:TEST", data=None, *, sample_rate=8.0, unit="m"):
+    if data is None:
+        data = np.arange(8.0)
+    return TimeSeries(
+        data,
+        sample_rate=sample_rate,
+        t0=1_000_000_000.0,
+        name=name,
+        unit=unit,
+    )
+
+
+@pytest.mark.parametrize(
+    ("options", "error", "message"),
+    [
+        ({"unknown": True}, TypeError, "unknown"),
+        ({"scaleoffset": 0}, TypeError, "scaleoffset"),
+        ({"chunks": 1}, TypeError, "chunks"),
+        ({"chunks": (0,)}, ValueError, "positive"),
+        ({"chunks": (True,)}, TypeError, "integral"),
+        ({"chunks": (9,)}, ValueError, "shape"),
+        ({"chunks": (2, 2)}, ValueError, "rank"),
+        ({"compression": "szip", "chunks": True}, ValueError, "compression"),
+        (
+            {"compression": "gzip", "chunks": True, "compression_opts": 10},
+            ValueError,
+            "0..9",
+        ),
+        (
+            {"compression": "gzip", "chunks": True, "compression_opts": True},
+            TypeError,
+            "integral",
+        ),
+        (
+            {"compression": "lzf", "chunks": True, "compression_opts": 1},
+            ValueError,
+            "None",
+        ),
+        ({"compression_opts": None}, ValueError, "compression"),
+        ({"shuffle": 1, "chunks": True}, TypeError, "bool"),
+        ({"chunks": None, "shuffle": True}, ValueError, "chunk"),
+        ({"chunks": False, "compression": "gzip"}, ValueError, "chunk"),
+    ],
+)
+def test_ndscope_dataset_options_validate_before_open(
+    monkeypatch, tmp_path, options, error, message
+):
+    import gwexpy.timeseries.io.ndscope_hdf5 as ndscope
+
+    source = TimeSeriesDict({"K1:TEST": _writer_series()})
+
+    def fail_if_opened(*args, **kwargs):
+        raise AssertionError("invalid requests must not open the target")
+
+    monkeypatch.setattr(ndscope.h5py, "File", fail_if_opened)
+    with pytest.raises(error, match=message):
+        ndscope.write_timeseriesdict_ndscope_hdf5(
+            source, tmp_path / "invalid.hdf5", dataset_options=options
+        )
+
+
+def test_ndscope_dataset_options_must_be_mapping_and_is_not_mutated(
+    monkeypatch, tmp_path
+):
+    import gwexpy.timeseries.io.ndscope_hdf5 as ndscope
+
+    source = TimeSeriesDict({"K1:TEST": _writer_series()})
+
+    def fail_if_opened(*args, **kwargs):
+        raise AssertionError("invalid requests must not open the target")
+
+    monkeypatch.setattr(ndscope.h5py, "File", fail_if_opened)
+    with pytest.raises(TypeError, match="Mapping"):
+        ndscope.write_timeseriesdict_ndscope_hdf5(
+            source, tmp_path / "invalid.hdf5", dataset_options=[("chunks", True)]
+        )
+
+    options = {"chunks": False}
+    with pytest.raises(ValueError, match="zero-length"):
+        ndscope.write_timeseriesdict_ndscope_hdf5(
+            TimeSeriesDict({"K1:EMPTY": _writer_series(data=np.array([]))}),
+            tmp_path / "empty.hdf5",
+            dataset_options=options,
+        )
+    assert options == {"chunks": False}
+
+
+def test_ndscope_dataset_options_apply_to_raw_and_trend_datasets(tmp_path):
+    options = {
+        "chunks": (4,),
+        "compression": "gzip",
+        "compression_opts": 6,
+        "shuffle": True,
+        "fletcher32": False,
+    }
+    original = dict(options)
+    source = TimeSeriesDict(
+        {
+            "K1:CH": _writer_series("K1:CH"),
+            "K1:CH.mean": _writer_series("K1:CH.mean", data=np.ones(8)),
+            "K1:CH.min": _writer_series("K1:CH.min", data=np.zeros(8)),
+            "K1:CH.max": _writer_series("K1:CH.max", data=np.full(8, 2.0)),
+        }
+    )
+
+    import gwexpy.timeseries.io.ndscope_hdf5 as ndscope
+
+    ndscope.write_timeseriesdict_ndscope_hdf5(
+        source, tmp_path / "filtered.hdf5", dataset_options=options
+    )
+
+    assert options == original
+    with h5py.File(tmp_path / "filtered.hdf5", "r") as h5file:
+        group = h5file["K1:CH"]
+        assert set(group) == {"raw", "mean", "min", "max"}
+        for dataset in group.values():
+            assert dataset.chunks == (4,)
+            assert dataset.compression == "gzip"
+            assert dataset.compression_opts == 6
+            assert dataset.shuffle is True
+            assert dataset.fletcher32 is False
+
+
+@pytest.mark.parametrize("compression", ["gzip", "lzf"])
+def test_ndscope_available_compression_roundtrips(tmp_path, compression):
+    import gwexpy.timeseries.io.ndscope_hdf5 as ndscope
+
+    filter_id = {
+        "gzip": h5py.h5z.FILTER_DEFLATE,
+        "lzf": h5py.h5z.FILTER_LZF,
+    }[compression]
+    if not h5py.h5z.filter_avail(filter_id):
+        pytest.skip(f"{compression} unavailable")
+
+    path = tmp_path / f"{compression}.hdf5"
+    ndscope.write_timeseriesdict_ndscope_hdf5(
+        TimeSeriesDict({"K1:TEST": _writer_series()}),
+        path,
+        dataset_options={"compression": compression},
+    )
+    with h5py.File(path, "r") as h5file:
+        assert h5file["K1:TEST/raw"].chunks is not None
+    reread = TimeSeriesDict.read(path, format="hdf.ndscope")
+    np.testing.assert_allclose(reread["K1:TEST"].value, np.arange(8.0))
+
+
+@pytest.mark.parametrize("chunks", [None, False])
+def test_ndscope_explicit_unchunked_filters_fail_before_open(
+    monkeypatch, tmp_path, chunks
+):
+    import gwexpy.timeseries.io.ndscope_hdf5 as ndscope
+
+    def fail_if_opened(*args, **kwargs):
+        raise AssertionError("explicit unchunked filters must not open the target")
+
+    monkeypatch.setattr(ndscope.h5py, "File", fail_if_opened)
+    with pytest.raises(ValueError, match="chunk"):
+        ndscope.write_timeseriesdict_ndscope_hdf5(
+            TimeSeriesDict({"K1:TEST": _writer_series()}),
+            tmp_path / f"explicit-{chunks}.hdf5",
+            dataset_options={"chunks": chunks, "compression": "gzip"},
+        )
+
+
+@pytest.mark.parametrize(
+    "names",
+    [
+        ("K1:CH.mean", "K1:CH/mean"),
+        ("K1:CH/mean", "K1:CH.mean"),
+        ("K1:CH.mean", "K1:CH/mean/raw"),
+        ("K1:CH/mean/raw", "K1:CH.mean"),
+    ],
+)
+def test_ndscope_structural_path_collision_leaves_missing_target_absent(
+    tmp_path, names
+):
+    import gwexpy.timeseries.io.ndscope_hdf5 as ndscope
+
+    source = TimeSeriesDict({name: _writer_series(name) for name in names})
+    target = tmp_path / "structural-collision.hdf5"
+
+    with pytest.raises(ValueError, match="path|conflict"):
+        ndscope.write_timeseriesdict_ndscope_hdf5(source, target)
+    assert not target.exists()
+
+
+@pytest.mark.parametrize(
+    "name", ["/K1:CH", "K1:CH/", "K1:CH//mean", "K1:CH/./mean", "K1:CH/../mean"]
+)
+def test_ndscope_invalid_path_components_fail_before_open(monkeypatch, tmp_path, name):
+    import gwexpy.timeseries.io.ndscope_hdf5 as ndscope
+
+    def fail_if_opened(*args, **kwargs):
+        raise AssertionError("invalid path components must not open the target")
+
+    monkeypatch.setattr(ndscope.h5py, "File", fail_if_opened)
+    with pytest.raises(ValueError, match="path|component"):
+        ndscope.write_timeseriesdict_ndscope_hdf5(
+            TimeSeriesDict({name: _writer_series(name)}),
+            tmp_path / "invalid-path.hdf5",
+        )
+
+
+@pytest.mark.parametrize(
+    "names",
+    [
+        ("K1:CH.mean", "K1:CH/mean"),
+        ("K1:CH/mean", "K1:CH.mean"),
+    ],
+)
+def test_ndscope_structural_path_collision_preserves_overwrite_target(tmp_path, names):
+    import gwexpy.timeseries.io.ndscope_hdf5 as ndscope
+
+    target = tmp_path / "existing-structural-collision.hdf5"
+    ndscope.write_timeseriesdict_ndscope_hdf5(
+        TimeSeriesDict({"K1:OLD": _writer_series("K1:OLD")}), target
+    )
+    before = target.read_bytes()
+    source = TimeSeriesDict({name: _writer_series(name) for name in names})
+
+    with pytest.raises(ValueError, match="path|conflict"):
+        ndscope.write_timeseriesdict_ndscope_hdf5(source, target, overwrite=True)
+    assert target.read_bytes() == before
+
+
+@pytest.mark.parametrize("compression", ["gzip", "lzf"])
+def test_ndscope_unavailable_compression_fails_before_open(
+    monkeypatch, tmp_path, compression
+):
+    import gwexpy.timeseries.io.ndscope_hdf5 as ndscope
+
+    filter_id = {
+        "gzip": h5py.h5z.FILTER_DEFLATE,
+        "lzf": h5py.h5z.FILTER_LZF,
+    }[compression]
+    real_filter_avail = ndscope.h5py.h5z.filter_avail
+
+    def unavailable(requested_filter):
+        if requested_filter == filter_id:
+            return False
+        return real_filter_avail(requested_filter)
+
+    def fail_if_opened(*args, **kwargs):
+        raise AssertionError("unavailable codecs must not open the target")
+
+    monkeypatch.setattr(ndscope.h5py.h5z, "filter_avail", unavailable)
+    monkeypatch.setattr(ndscope.h5py, "File", fail_if_opened)
+    with pytest.raises(ValueError, match="unavailable"):
+        ndscope.write_timeseriesdict_ndscope_hdf5(
+            TimeSeriesDict({"K1:TEST": _writer_series()}),
+            tmp_path / "unavailable.hdf5",
+            dataset_options={"chunks": True, "compression": compression},
+        )
+
+
+def test_ndscope_invalid_options_leave_existing_target_unchanged(monkeypatch, tmp_path):
+    import gwexpy.timeseries.io.ndscope_hdf5 as ndscope
+
+    path = tmp_path / "existing.hdf5"
+    ndscope.write_timeseriesdict_ndscope_hdf5(
+        TimeSeriesDict({"K1:OLD": _writer_series("K1:OLD")}), path
+    )
+    before = path.read_bytes()
+
+    def fail_if_opened(*args, **kwargs):
+        raise AssertionError("invalid requests must not truncate existing targets")
+
+    monkeypatch.setattr(ndscope.h5py, "File", fail_if_opened)
+    with pytest.raises(ValueError, match="compression"):
+        ndscope.write_timeseriesdict_ndscope_hdf5(
+            TimeSeriesDict({"K1:NEW": _writer_series("K1:NEW")}),
+            path,
+            overwrite=True,
+            dataset_options={"compression_opts": None},
+        )
+    assert path.read_bytes() == before
+
+
+def test_ndscope_later_entry_failure_is_atomic_before_target_open(
+    monkeypatch, tmp_path
+):
+    import gwexpy.timeseries.io.ndscope_hdf5 as ndscope
+
+    source = TimeSeriesDict(
+        {
+            "K1:CH.mean": _writer_series("K1:CH.mean", sample_rate=8.0),
+            "K1:CH.min": _writer_series("K1:CH.min", sample_rate=16.0),
+        }
+    )
+    target = tmp_path / "later-failure.hdf5"
+
+    def fail_if_opened(*args, **kwargs):
+        raise AssertionError("preflight failures must happen before opening")
+
+    monkeypatch.setattr(ndscope.h5py, "File", fail_if_opened)
+    with pytest.raises(ValueError, match="sample_rate"):
+        ndscope.write_timeseriesdict_ndscope_hdf5(source, target)
+    assert not target.exists()
+
+
+class _DuplicateStringKey:
+    def __init__(self, value, identity):
+        self.value = value
+        self.identity = identity
+
+    def __hash__(self):
+        return hash(self.identity)
+
+    def __eq__(self, other):
+        return self is other
+
+    def __str__(self):
+        return self.value
+
+
+def test_ndscope_duplicate_destinations_fail_before_open(monkeypatch, tmp_path):
+    import gwexpy.timeseries.io.ndscope_hdf5 as ndscope
+
+    series = _writer_series()
+    duplicate_raw = TimeSeriesDict(
+        {"K1:CH": series, "K1:CH.raw": _writer_series("K1:CH.raw")}
+    )
+    duplicate_trend = TimeSeriesDict(
+        {
+            _DuplicateStringKey("K1:CH.mean", 1): series,
+            _DuplicateStringKey("K1:CH.mean", 2): _writer_series("K1:CH.mean"),
+        }
+    )
+
+    def fail_if_opened(*args, **kwargs):
+        raise AssertionError("duplicate destinations must not open the target")
+
+    monkeypatch.setattr(ndscope.h5py, "File", fail_if_opened)
+    for source in (duplicate_raw, duplicate_trend):
+        with pytest.raises(ValueError, match="duplicate"):
+            ndscope.write_timeseriesdict_ndscope_hdf5(
+                source, tmp_path / "duplicate.hdf5"
+            )
+
+
+def test_ndscope_zero_length_requires_true_chunking(tmp_path):
+    import gwexpy.timeseries.io.ndscope_hdf5 as ndscope
+
+    source = TimeSeriesDict(
+        {"K1:EMPTY": _writer_series("K1:EMPTY", data=np.array([], dtype=float))}
+    )
+    path = tmp_path / "empty.hdf5"
+    ndscope.write_timeseriesdict_ndscope_hdf5(
+        source, path, dataset_options={"chunks": True}
+    )
+    with h5py.File(path, "r") as h5file:
+        assert h5file["K1:EMPTY/raw"].shape == (0,)
+        assert h5file["K1:EMPTY/raw"].chunks is not None
+
+
+@pytest.mark.parametrize(
+    "fmt", ("hdf.ndscope", "ndscope-hdf5", "ndscope_hdf5", "ndscopehdf5")
+)
+@pytest.mark.parametrize("writer_kind", ["single", "dict", "matrix"])
+def test_ndscope_registered_writer_paths_accept_dataset_options(
+    tmp_path, fmt, writer_kind
+):
+    path = tmp_path / f"{writer_kind}-{fmt}.hdf5"
+    if writer_kind == "single":
+        value = _writer_series("K1:SINGLE")
+    elif writer_kind == "dict":
+        value = TimeSeriesDict({"K1:DICT": _writer_series("K1:DICT")})
+    else:
+        value = TimeSeriesMatrix(
+            np.arange(16.0).reshape(2, 1, 8),
+            sample_rate=8.0,
+            t0=1_000_000_000.0,
+            channel_names=["K1:MATRIX-A", "K1:MATRIX-B"],
+        )
+
+    value.write(path, format=fmt, dataset_options={"chunks": True})
+    with h5py.File(path, "r") as h5file:
+        datasets = [
+            h5file[name][dataset] for name in h5file for dataset in h5file[name]
+        ]
+        assert datasets
+        assert all(dataset.chunks is not None for dataset in datasets)
+
+
 SAMPLE_HDF5 = Path(__file__).parent.parent / "fixtures" / "data" / "ndscope.h5"
 LOCAL_NDSCOPE_HDF5 = (
     Path(__file__).parent.parent / "fixtures" / "data" / "test_seis_ndscope.h5"

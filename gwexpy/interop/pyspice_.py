@@ -63,9 +63,16 @@ def from_pyspice_transient(
 
     Examples
     --------
-    >>> from gwexpy.timeseries import TimeSeries
-    >>> # analysis = simulator.transient(...)
-    >>> ts = TimeSeries.from_pyspice_transient(analysis, node="out")
+    This example requires the optional PySpice package and a live simulator
+    analysis, so it is excluded from raw doctest; focused tests use fakes.
+
+    .. code-block:: python
+
+       from gwexpy.interop import from_pyspice_transient
+       from gwexpy.timeseries import TimeSeries
+
+       # analysis = simulator.transient(...)
+       ts = from_pyspice_transient(TimeSeries, analysis, node="out")
 
     """
     require_optional("PySpice")
@@ -153,9 +160,16 @@ def from_pyspice_ac(
 
     Examples
     --------
-    >>> from gwexpy.frequencyseries import FrequencySeries
-    >>> # analysis = simulator.ac(...)
-    >>> fs = FrequencySeries.from_pyspice_ac(analysis, node="out")
+    This example requires the optional PySpice package and a live simulator
+    analysis, so it is excluded from raw doctest; focused tests use fakes.
+
+    .. code-block:: python
+
+       from gwexpy.frequencyseries import FrequencySeries
+       from gwexpy.interop import from_pyspice_ac
+
+       # analysis = simulator.ac(...)
+       fs = from_pyspice_ac(FrequencySeries, analysis, node="out")
 
     """
     require_optional("PySpice")
@@ -195,9 +209,16 @@ def from_pyspice_noise(
 
     Examples
     --------
-    >>> from gwexpy.frequencyseries import FrequencySeries
-    >>> # analysis = simulator.noise(...)
-    >>> fs = FrequencySeries.from_pyspice_noise(analysis, node="onoise")
+    This example requires the optional PySpice package and a live simulator
+    analysis, so it is excluded from raw doctest; focused tests use fakes.
+
+    .. code-block:: python
+
+       from gwexpy.frequencyseries import FrequencySeries
+       from gwexpy.interop import from_pyspice_noise
+
+       # analysis = simulator.noise(...)
+       fs = from_pyspice_noise(FrequencySeries, analysis, node="onoise")
 
     """
     require_optional("PySpice")
@@ -236,9 +257,16 @@ def from_pyspice_distortion(
 
     Examples
     --------
-    >>> from gwexpy.frequencyseries import FrequencySeries
-    >>> # analysis = simulator.distortion(...)
-    >>> fs = FrequencySeries.from_pyspice_distortion(analysis, node="out")
+    This example requires the optional PySpice package and a live simulator
+    analysis, so it is excluded from raw doctest; focused tests use fakes.
+
+    .. code-block:: python
+
+       from gwexpy.frequencyseries import FrequencySeries
+       from gwexpy.interop import from_pyspice_distortion
+
+       # analysis = simulator.distortion(...)
+       fs = from_pyspice_distortion(FrequencySeries, analysis, node="out")
 
     """
     require_optional("PySpice")

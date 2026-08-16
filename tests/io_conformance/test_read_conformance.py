@@ -266,7 +266,7 @@ def test_hdf5_explicit_read(hdf5_case: SeriesCase) -> None:
 
 
 def test_hdf5_requires_explicit_format(hdf5_case: SeriesCase) -> None:
-    with pytest.raises(IORegistryError, match="Format could not be identified"):
+    with pytest.raises(ValueError, match="explicit format='hdf5'"):
         TimeSeries.read(hdf5_case.path)
 
 

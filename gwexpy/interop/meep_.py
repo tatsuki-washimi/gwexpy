@@ -232,15 +232,19 @@ def from_meep_hdf5(
 
     Examples
     --------
+    This snippet requires the optional h5py package and an external Meep HDF5
+    output produced by a Meep simulation, so it is illustrative only and is
+    excluded from raw doctest.
+
     Read the Ez component from a frequency-domain output:
 
-    >>> from gwexpy.fields import ScalarField
-    >>> sf = ScalarField.from_meep_hdf5("ez.h5")
+    .. code-block:: python
 
-    Read all E-field components as a VectorField:
+       from gwexpy.fields import ScalarField, VectorField
+       from gwexpy.interop import from_meep_hdf5
 
-    >>> from gwexpy.fields import VectorField
-    >>> vf = VectorField.from_meep_hdf5("fields.h5")
+       sf = from_meep_hdf5(ScalarField, "ez.h5")
+       vf = from_meep_hdf5(VectorField, "fields.h5")
 
     """
     h5py = require_optional("h5py")

@@ -200,6 +200,9 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
 
     def read(self, source, *args, **kwargs):
         """Read spectrograms into the list from HDF5."""
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
         format = kwargs.get("format", "hdf5")
         new_list = self.__class__()
         if format == "hdf5":
@@ -248,6 +251,9 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
 
     def write(self, target, *args, **kwargs):
         """Write list to file."""
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
         format = kwargs.get("format", "hdf5")
         mode = kwargs.get("mode", "w")
         if format == "root" or (isinstance(target, str) and target.endswith(".root")):
@@ -604,6 +610,9 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
 
     def read(self, source, *args, **kwargs):
         """Read dictionary from HDF5 file keys -> dict keys."""
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
         format = kwargs.get("format", "hdf5")
         if format == "hdf5":
             with h5py.File(source, "r") as h5f:
@@ -651,6 +660,9 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
 
     def write(self, target, *args, **kwargs):
         """Write dictionary to file."""
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
         format = kwargs.get("format", "hdf5")
         mode = kwargs.get("mode", "w")
         if format == "root" or (isinstance(target, str) and target.endswith(".root")):

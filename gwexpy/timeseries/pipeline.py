@@ -59,6 +59,10 @@ class Transform:
 
     Examples
     --------
+    >>> import numpy as np
+    >>> from gwexpy.timeseries import TimeSeries
+    >>> from gwexpy.timeseries import ImputeTransform
+    >>> ts = TimeSeries([1.0, np.nan, 3.0], dt=1.0)
     >>> transform = ImputeTransform(method="interpolate")
     >>> filled = transform.fit_transform(ts)
     >>> filled.shape == ts.shape
@@ -105,6 +109,12 @@ class Pipeline:
 
     Examples
     --------
+    >>> import numpy as np
+    >>> from gwexpy.timeseries import ImputeTransform
+    >>> from gwexpy.timeseries import Pipeline
+    >>> from gwexpy.timeseries import StandardizeTransform
+    >>> from gwexpy.timeseries import TimeSeriesMatrix
+    >>> ts_matrix = TimeSeriesMatrix(np.arange(10.0).reshape(2, 1, 5), dt=1.0)
     >>> pipeline = Pipeline(
     ...     [
     ...         ("impute", ImputeTransform(method="interpolate")),

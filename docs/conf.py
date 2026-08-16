@@ -39,6 +39,7 @@ BRANDING_OG_DESCRIPTION = (
 # Version variables — automatically resolved by Sphinx |release| and |version|
 try:
     from importlib.metadata import version as _get_version
+
     release = _get_version("gwexpy")
 except Exception:
     # Fallback for development environments
@@ -106,6 +107,27 @@ def _default_nbsphinx_allow_errors() -> bool:
     if "NBS_ALLOW_ERRORS" in os.environ:
         return _env_flag("NBS_ALLOW_ERRORS")
     return not _env_flag("GITHUB_ACTIONS")
+
+
+_SPHINX_ALIAS_MESSAGE = "alias of %s"
+_SPHINX_JA_BAD_ALIAS = "%sの別名です。"
+_SPHINX_JA_FIXED_ALIAS = "%s の別名です。"
+
+
+def _patch_sphinx_ja_alias_catalog(app) -> None:
+    """Repair Sphinx's malformed Japanese autodoc alias translation only."""
+    if getattr(app.config, "language", None) != "ja":
+        return
+
+    from sphinx.locale import get_translator
+
+    translator = get_translator("sphinx", "general")
+    catalog = getattr(translator, "_catalog", None)
+    if (
+        isinstance(catalog, dict)
+        and catalog.get(_SPHINX_ALIAS_MESSAGE) == _SPHINX_JA_BAD_ALIAS
+    ):
+        catalog[_SPHINX_ALIAS_MESSAGE] = _SPHINX_JA_FIXED_ALIAS
 
 
 DOCS_MPL_FONT_FAMILY = ["sans-serif"]
@@ -310,7 +332,10 @@ html_context = {
     "conf_py_path": "/docs/",
     "current_language": language,
     # GitHub Pages publishes docs under /gwexpy/; user-facing docs live in /docs/web/{en,ja}/.
-    "languages": [("en", "/tatsuki-washimi/gwexpy/docs/web/en/"), ("ja", "/tatsuki-washimi/gwexpy/docs/web/ja/")],
+    "languages": [
+        ("en", "/tatsuki-washimi/gwexpy/docs/web/en/"),
+        ("ja", "/tatsuki-washimi/gwexpy/docs/web/ja/"),
+    ],
     # OGP / Metadata
     "og_title": BRANDING_OG_TITLE,
     "og_description": BRANDING_OG_DESCRIPTION,
@@ -557,5 +582,6 @@ def _build_page_url(baseurl: str, pagename: str) -> str | None:
 
 
 def setup(app):
+    _patch_sphinx_ja_alias_catalog(app)
     app.connect("html-page-context", html_page_context)
     app.add_lexer("ipython3", PythonLexer)

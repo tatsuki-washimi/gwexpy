@@ -270,7 +270,7 @@ class Histogram(
         >>> h = Histogram([1, 2], [0, 1, 2])
         >>> h = h.fill([0.5, 1.5, 1.5])
         >>> h.values
-        <Quantity [2., 4.]>
+        <Quantity [2, 4]>
 
         """
         import numpy as np

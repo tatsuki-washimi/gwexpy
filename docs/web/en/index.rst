@@ -297,6 +297,7 @@ Suggested starting points
    user_guide/scalarfield_slicing
    user_guide/gwexpy_for_gwpy_users_en
    user_guide/gwpy_added_api_index_en
+   user_guide/migration_0.2.0
 
 .. toctree::
    :maxdepth: 2

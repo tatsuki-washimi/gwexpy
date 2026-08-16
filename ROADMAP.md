@@ -240,7 +240,8 @@ Workstreams:
 - **GWpy-native HDF5 readability** ([#402]): golden tests that write with GWexpy and
   read back with a GWpy-only process (no `import gwexpy`), for the containers already
   covered by HDF5 I/O.
-- **API stability labelling** ([#400](https://github.com/tatsuki-washimi/gwexpy/issues/400)):
+- **API stability labelling** ([#400](https://github.com/tatsuki-washimi/gwexpy/issues/400);
+  [canonical API stability policy](docs/developers/contracts/api-stability-policy.md)):
   define the stable/provisional/experimental labels used from this release onward,
   since the contract above needs somewhere to record its own status.
 - **Carried-over reproducibility work**: Monte-Carlo provenance across copy, slice,
@@ -278,6 +279,30 @@ GUI removal ([#645](https://github.com/tatsuki-washimi/gwexpy/issues/645), PR [#
 and documentation-tree consolidation
 ([#606](https://github.com/tatsuki-washimi/gwexpy/issues/606)) proceed as independent
 repository-level work, not as part of this milestone (see Release policy above).
+
+### Implementation outcome (current UNRELEASED evidence)
+
+The #413 documentation and evidence lane is complete for preparation of the
+current `[Unreleased]` record. It does not publish v0.2.0, change a version,
+create a tag, or substitute for the root-owned final release gates.
+
+The focused evidence records #400, #402, #508, #513, #588, #590, #612, #676,
+#409/#410, and #411/#412 as complete or complete subject to those final gates.
+The bounded additions are recorded without overselling their scientific scope.
+The #581 contribution is limited to the benchmark infrastructure needed by
+#676, not a broad benchmark platform.
+
+#637 remains partial with release outcome deferred and `adopted: false`.
+Its composition prototype and evidence were completed in isolation, but the
+candidate runtime was not copied into integration because frozen B0 `slice`
+instability made adoption non-adoptable.
+Integration retains only the approved Phase A `SpectrogramMatrix`
+dimensional raw-ndarray add/sub atomic `TypeError` change.
+The broader #403 `nproc` migration is out of scope and deferred; #588 keeps
+`nproc` as a compatibility alias while preferring `parallel`.
+
+Field I/O and eager SegmentTable remain future-theme work, and GUI removal plus
+documentation-tree consolidation remain independent repository-level projects.
 
 ## Future themes (not scheduled)
 

@@ -968,7 +968,7 @@ def get_unit(obj) -> u.UnitBase:
     >>> get_unit(md)
     Unit("s")
     >>> get_unit(5.0)
-    Unit("dimensionless")
+    Unit(dimensionless)
     >>> get_unit(3.14)
     Unit(dimensionless)
 

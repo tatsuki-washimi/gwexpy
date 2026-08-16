@@ -1,0 +1,104 @@
+---
+release: "v0.2.0 [Unreleased]"
+date: "2026-08-17"
+branch: codex/v0.2.0-implementation
+base_commit: 6a13900672900551ccaf1b18fe78b9ce6f062e29
+scope:
+  summary: "Implement and qualify the approved v0.2.0 contract scope."
+  included:
+    - "exact GPS-nanosecond TimeSeries origins and supported interop preservation"
+    - "native HDF5 sidecars for metadata, provenance, and exact epoch state"
+    - "structured provenance propagation for supported analysis results"
+    - "parallel GWF reads and validated NDScope dataset options"
+    - "spectral median bias and coupling-segment contracts"
+    - "SeriesMatrix Phase A contracts plus frozen B0/B1 decision evidence"
+    - "API policy, migration guidance, doctest convergence, and release evidence"
+  excluded:
+    - "SeriesMatrix composition candidate adoption; B1 remains adopted: false"
+    - "the broader #403 nproc migration"
+    - "version bump, tag, release, publication, merge, and issue closure"
+skills:
+  planning:
+    - mplan
+    - superpowers:writing-plans
+  implementation:
+    - superpowers:executing-plans
+    - superpowers:subagent-driven-development
+    - superpowers:test-driven-development
+    - superpowers:systematic-debugging
+    - gwexpy_conda_jobs
+  review:
+    - superpowers:requesting-code-review
+    - superpowers:receiving-code-review
+    - superpowers:verification-before-completion
+  publication:
+    - superpowers:finishing-a-development-branch
+    - git-commit-conventional
+    - github:yeet
+    - pr-writer
+model_assignment:
+  implementation_and_tests: "Luna"
+  individual_reviews: "Terra"
+  integrated_review: "Sol"
+review:
+  individual: "PASS after all actionable findings were closed"
+  integrated: "FINAL_SOL_CLOSURE: PASS"
+  release_readiness: "local PASS; CI and minimum-dependency matrix pending"
+physics_review:
+  status: human_signoff_required
+  rationale: >-
+    The change affects data-model semantics and scientific helpers. Terra
+    reviewed the FINDCHIRP median-bias formula, independent-sample limitation,
+    coupling frequency/unit normalization, and provenance contracts; the final
+    lane rereviews passed. The draft pull request must retain the
+    needs-physics-review label for explicit human sign-off.
+verification:
+  static:
+    - command: "git diff --check"
+      result: "exit 0"
+    - command: "ruff check gwexpy/ tests/ scripts/"
+      result: "exit 0"
+    - command: "ruff format --check gwexpy/ tests/ scripts/"
+      result: "exit 0; 1045 files checked"
+    - command: "mypy gwexpy/"
+      result: "exit 0; 397 sources"
+  shared_gates:
+    - command: "python scripts/ci/run_gate.py pr-fast"
+      result: "7372 passed, 137 skipped, 28 deselected, 6 xfailed"
+    - command: "python scripts/ci/run_gate.py io-contract"
+      result: "1397 passed, 26 skipped, 1 deselected"
+    - command: "python scripts/ci/run_gate.py io-gwf"
+      result: "97 passed, 1 skipped"
+    - command: "python scripts/ci/run_gate.py interop-mne"
+      result: "76 passed"
+  full_suites:
+    - environment: "Python 3.12.12"
+      result: "9074 passed, 194 skipped, 6 xfailed"
+    - environment: "Python 3.11.14"
+      result: "8937 passed, 275 skipped, 6 xfailed"
+  documentation:
+    - command: "pytest --doctest-modules -q gwexpy/"
+      result: "99 passed in both representative environments"
+    - command: "python scripts/ci/run_gate.py docs-notebook"
+      result: "4 passed"
+    - command: "sphinx-build -b html -W --keep-going docs docs/_build/en"
+      result: "exit 0"
+    - command: "sphinx-build -b html -W --keep-going -D language=ja docs docs/_build/ja"
+      result: "exit 0"
+  post_remediation:
+    - "320 passed, 1 skipped in each representative environment"
+    - "final focused closure: 77 passed in each representative environment"
+evidence:
+  b0_sha256: ac856b9ffab86c702cb1d66a8cae7f8a826b6928eb2119a0fbf1ad73f87da01c
+  b1_sha256: 6b1fac847052d1e814f2f5501f9eed329d876a03cf67e6f637d65acc804bbd8e
+  b1_adopted: false
+  completion_ledger: docs/plans/evidence/v0.2.0/completion-ledger.md
+  release_evidence: docs/plans/evidence/v0.2.0/release-evidence.md
+authorization:
+  draft_pull_request: "authorized by USER via finishing option 2"
+  tag_release_publication: not_authorized
+  issue_updates: not_authorized
+residuals:
+  - "Python 3.11 / NumPy 1.23.2 / Astropy 5 / GWpy 4.0 remains pending CI."
+  - "The full GitHub CI matrix remains pending."
+  - "v0.2.0 remains Unreleased; merge and publication require later approval."

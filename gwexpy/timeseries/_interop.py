@@ -963,13 +963,22 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         sfreq = raw.info["sfreq"]
         dt = 1.0 / sfreq
 
-        t0 = 0
-        if raw.info["meas_date"]:
-            from gwexpy.time import to_gps
+        from gwexpy.interop.mne_ import (
+            _construct_mne_timeseries,
+            _decode_mne_raw_epoch,
+        )
 
-            t0 = to_gps(raw.info["meas_date"])
-
-        return cls(value, t0=t0, dt=dt, unit=unit, name=channel)
+        t0, origin_ns, precision, _ = _decode_mne_raw_epoch(raw)
+        return _construct_mne_timeseries(
+            cls,
+            value,
+            t0=t0,
+            dt=dt,
+            name=channel,
+            unit=unit,
+            origin_ns=origin_ns,
+            precision=precision,
+        )
 
     # ===============================
     # JSON / Dict

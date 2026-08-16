@@ -313,15 +313,17 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         """Real-valued Fast Fourier Transform.
 
         Compute the one-dimensional discrete Fourier Transform for real input.
-        This method delegates to GWpy's TimeSeries.rfft() and returns a
-        FrequencySeries with Hermitian symmetry.
+        This method delegates to GWpy's normalized ``TimeSeries.fft()``
+        implementation and returns a ``FrequencySeries`` with Hermitian
+        symmetry.  GWpy 4 removed its former ``rfft`` alias, so this public
+        compatibility method keeps the alias at the GWexpy layer.
 
         Parameters
         ----------
         *args : tuple
-            Positional arguments passed to `gwpy.timeseries.TimeSeries.rfft`
+            Positional arguments passed to `gwpy.timeseries.TimeSeries.fft`
         **kwargs : dict
-            Keyword arguments passed to `gwpy.timeseries.TimeSeries.rfft`
+            Keyword arguments passed to `gwpy.timeseries.TimeSeries.fft`
 
         Returns
         -------
@@ -339,7 +341,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         numpy.fft.rfft : NumPy's real FFT function
         TimeSeries.fft : Standard FFT with complex output (both pos/neg freqs)
         FrequencySeries.ifft : Inverse FFT
-        gwpy.timeseries.TimeSeries.rfft : GWpy's rfft implementation
+        gwpy.timeseries.TimeSeries.fft : GWpy's normalized FFT implementation
 
         Notes
         -----
@@ -357,7 +359,12 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
 
         """
         self._check_regular("rfft")
-        return self._super_ts().rfft(*args, **kwargs)
+        if len(args) > 1:
+            raise TypeError(
+                f"rfft() takes at most 1 positional argument ({len(args)} given)"
+            )
+        nfft = args[0] if args else kwargs.pop("nfft", None)
+        return self._fft_gwpy(nfft=nfft, **kwargs)
 
     def psd(self, *args: Any, **kwargs: Any) -> FrequencySeries:
         self._check_regular("psd")
@@ -516,6 +523,9 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
 
         Examples
         --------
+        >>> import numpy as np
+        >>> from gwexpy.timeseries import TimeSeries
+        >>> data = np.sin(2 * np.pi * 40 * np.arange(1024) / 1024)
         >>> ts = TimeSeries(data, sample_rate=1024)
         >>> dct_coeffs = ts.dct()
 
@@ -600,6 +610,9 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
 
         Examples
         --------
+        >>> import numpy as np
+        >>> from gwexpy.timeseries import TimeSeries
+        >>> data = np.sin(2 * np.pi * 40 * np.arange(1024) / 1024)
         >>> ts = TimeSeries(data, sample_rate=1024)
         >>> ceps = ts.cepstrum(kind='real')
         >>> # Find fundamental period from peak in cepstrum

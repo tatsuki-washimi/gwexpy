@@ -38,11 +38,8 @@ _CR.register_constructor("TimeSeriesList", TimeSeriesList)
 _CR.register_constructor("TimeSeriesMatrix", TimeSeriesMatrix)
 del _CR
 
-# Register I/O readers on import
 # Dynamic import from gwpy (PEP 562)
 import gwpy.timeseries as _gwpy_timeseries
-
-from . import io as _io  # noqa: F401
 
 
 def __getattr__(name):

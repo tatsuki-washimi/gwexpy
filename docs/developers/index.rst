@@ -8,6 +8,10 @@ Architecture & Design
    :maxdepth: 1
 
    contracts/numerical
+   contracts/doctest-policy
+   contracts/api-stability-policy
+   contracts/api-stability-policy-ja
+   contracts/hdf5_sidecar_contract
    contracts/public_interop_contract
    contracts/public_io_contract
    design/design_data/index
