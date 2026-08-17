@@ -39,6 +39,7 @@ jobs:
     env:
       PYTHONFAULTHANDLER: "1"
       PYTHONNOUSERSITE: "1"
+      PYTHONHASHSEED: "0"
       NBS_EXECUTE: never
       NBS_ALLOW_ERRORS: "0"
       MPLCONFIGDIR: /tmp/matplotlib
@@ -123,6 +124,7 @@ jobs:
     env:
       PYTHONFAULTHANDLER: "1"
       PYTHONNOUSERSITE: "1"
+      PYTHONHASHSEED: "0"
       MPLCONFIGDIR: /tmp/matplotlib
       OPENBLAS_NUM_THREADS: "1"
       OMP_NUM_THREADS: "1"
