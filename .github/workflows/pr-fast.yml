@@ -143,6 +143,8 @@ jobs:
 
       - name: Set up gwexpy environment
         uses: ./.github/actions/setup-gwexpy
+        with:
+          extras: "lalsuite"
 
       - name: Run GWF I/O release gate
         run: python scripts/ci/run_gate.py io-gwf
