@@ -77,6 +77,7 @@ nb_execution_cache_path = "_build/jupyter-cache"
 nb_execution_timeout = 600
 nb_execution_allow_errors = False
 nb_execution_raise_on_error = True
+nb_execution_show_tb = True
 
 # -- Internationalization (gettext single-source) ----------------------------
 # English is the single source; Japanese is delivered via gettext catalogs in
