@@ -204,7 +204,7 @@ assert alpha_3 == 5 / 6
 
 カップリングの coupling segment v1 の長形式では、`start_gps_ns`、`duration_ns`、`source_channel`、`response_channel`、`frequency_hz`、`coupling_factor`、`coupling_factor_unit` を必須列とします。
 upper limit の列は `upper_limit` 行でだけ許可し、周波数は Hz に正規化します。
-この schema は experimental であり、科学的に広い一般性を主張しません。
+この schema の安定性ラベルは `Experimental` であり、科学的に広い一般性を主張しません。
 
 ```python
 # static-signature-example
