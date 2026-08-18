@@ -4,8 +4,13 @@ from typing import TYPE_CHECKING, Any, Self, SupportsIndex
 
 import numpy as np
 from astropy import units as u
+from astropy.units.quantity_helper import converters_and_unit
 from gwpy.spectrogram import Spectrogram as BaseSpectrogram
 
+from gwexpy.provenance import (
+    build_operation_provenance,
+    copy_provenance,
+)
 from gwexpy.types.mixin import InteropMixin, PhaseMethodsMixin
 from gwexpy.types.mixin._plot_mixin import PlotMixin
 
@@ -91,6 +96,27 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
     """
 
+    @classmethod
+    def read(cls, source, *args, **kwargs):  # type: ignore[override]
+        """Read a ``Spectrogram`` after enabling GWexpy I/O handlers.
+
+        The format-specific handler is enabled on demand before dispatch.
+        """
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
+        return super().read(source, *args, **kwargs)
+
+    def write(self, target, *args, **kwargs):  # type: ignore[override]
+        """Write a ``Spectrogram`` after enabling GWexpy I/O handlers.
+
+        The format-specific handler is enabled on demand before dispatch.
+        """
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
+        return super().write(target, *args, **kwargs)
+
     def __getitem__(self, item: Any) -> Any:
         """Handle 1D views safely in `__getitem__`.
 
@@ -103,8 +129,161 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         if self.ndim == 1:
             from gwpy.types.series import Series
 
-            return Series.__getitem__(self, item)
-        return super().__getitem__(item)
+            out = Series.__getitem__(self, item)
+            if (
+                hasattr(self, "provenance")
+                and getattr(out, "ndim", 0) > 0
+                and hasattr(out, "__dict__")
+            ):
+                out.provenance = copy_provenance(self.provenance)
+            return out
+        out = super().__getitem__(item)
+        if (
+            hasattr(self, "provenance")
+            and getattr(out, "ndim", 0) > 0
+            and hasattr(out, "__dict__")
+        ):
+            out.provenance = copy_provenance(self.provenance)
+        return out
+
+    def copy(self, order: str = "C") -> Self:
+        """Copy the array and deep-copy its structured provenance."""
+        out = super().copy(order=order)
+        if hasattr(self, "provenance"):
+            out.provenance = copy_provenance(self.provenance)
+        return out
+
+    def __copy__(self) -> Self:
+        """Return the same metadata-preserving copy as :meth:`copy`."""
+        return self.copy()
+
+    def _multi_output_ufunc(
+        self,
+        function: Any,
+        method: str,
+        inputs: tuple[Any, ...],
+        kwargs: dict[str, Any],
+    ) -> tuple[Any, ...]:
+        """Run a multi-output ufunc without losing Spectrogram results.
+
+        GWpy's ``Array.__array_ufunc__`` assumes every result has ``.ndim``
+        and therefore cannot handle a tuple returned by NumPy.  Astropy's
+        unit conversion remains the source of truth here, while each valid
+        result is rebuilt through ``Quantity._new_view`` so GWpy axes and
+        metadata stay attached.  Dimensionless numeric outputs (such as the
+        exponent from ``frexp``) are represented by a dimensionless
+        ``Spectrogram`` rather than being silently downgraded to an ndarray.
+        """
+        converters, result_units = converters_and_unit(function, method, *inputs)
+        if not isinstance(result_units, tuple):
+            result_units = (result_units,) * function.nout
+
+        arrays = []
+        for input_, converter in zip(inputs, converters):
+            value = getattr(input_, "value", input_)
+            arrays.append(converter(value) if converter else value)
+
+        call_kwargs = dict(kwargs)
+        requested_outputs = call_kwargs.pop("out", None)
+        if requested_outputs is not None:
+            if not isinstance(requested_outputs, tuple):
+                requested_outputs = (requested_outputs,)
+            if len(requested_outputs) != function.nout:
+                raise ValueError(
+                    f"expected {function.nout} outputs, got {len(requested_outputs)}"
+                )
+
+            raw_outputs: list[Any] = []
+            for output, unit in zip(requested_outputs, result_units):
+                if output is None:
+                    raw_outputs.append(None)
+                    continue
+                if isinstance(output, Spectrogram):
+                    expected_unit = (
+                        unit if unit is not None else u.dimensionless_unscaled
+                    )
+                    if output.unit != expected_unit:
+                        raise u.UnitTypeError(
+                            f"cannot store {function.__name__} output with unit "
+                            f"{expected_unit} in Spectrogram with unit {output.unit}"
+                        )
+                    raw_outputs.append(output.view(np.ndarray))
+                    continue
+                if any(
+                    isinstance(input_, Spectrogram) and hasattr(input_, "provenance")
+                    for input_ in inputs
+                ):
+                    raise TypeError(
+                        "Spectrogram provenance requires Spectrogram outputs"
+                    )
+                raw_outputs.append(output)
+            call_kwargs["out"] = tuple(raw_outputs)
+
+        raw_result = function(*arrays, **call_kwargs)
+        raw_results = raw_result if isinstance(raw_result, tuple) else (raw_result,)
+        if requested_outputs is None:
+            return tuple(
+                self._new_view(
+                    result,
+                    unit if unit is not None else u.dimensionless_unscaled,
+                )
+                for result, unit in zip(raw_results, result_units)
+            )
+
+        typed_results = []
+        for result, output, unit in zip(raw_results, requested_outputs, result_units):
+            if isinstance(output, Spectrogram):
+                typed_results.append(output)
+            else:
+                typed_results.append(result)
+        return tuple(typed_results)
+
+    def __array_ufunc__(self, function, method, *inputs, **kwargs):
+        supported_methods = {"__call__", "reduce", "accumulate", "reduceat", "outer"}
+        if method not in supported_methods:
+            raise TypeError(
+                f"ufunc method {method!r} is not supported for Spectrogram provenance"
+            )
+        if "where" in kwargs and not np.all(np.asarray(kwargs["where"], dtype=bool)):
+            raise TypeError(
+                "ufunc where= masks are not supported for Spectrogram provenance"
+            )
+
+        input_provenance = [
+            copy_provenance(value.provenance)
+            if isinstance(value, Spectrogram) and hasattr(value, "provenance")
+            else None
+            for value in inputs
+        ]
+
+        if function.nout > 1:
+            out = self._multi_output_ufunc(function, method, inputs, kwargs)
+        else:
+            out = super().__array_ufunc__(function, method, *inputs, **kwargs)
+
+        if not any(value is not None for value in input_provenance):
+            return out
+
+        algorithm = f"numpy.{function.__name__}"
+        if method != "__call__":
+            algorithm = f"{algorithm}.{method}"
+
+        def new_provenance() -> dict[str, Any]:
+            if method == "__call__" and len(input_provenance) == 1:
+                source_provenance = input_provenance[0]
+                if source_provenance is not None:
+                    return copy_provenance(source_provenance)
+            return build_operation_provenance(
+                algorithm,
+                left=input_provenance[0] if input_provenance else None,
+                right=input_provenance[1] if len(input_provenance) > 1 else None,
+            )
+
+        results = out if isinstance(out, tuple) else (out,)
+        for result in results:
+            if getattr(result, "ndim", 0) and hasattr(result, "__dict__"):
+                result.provenance = new_provenance()
+        return out
 
     def __reduce_ex__(self, protocol: SupportsIndex):
         from gwexpy.io.pickle_compat import spectrogram_reduce_args

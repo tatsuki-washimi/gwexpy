@@ -13,9 +13,11 @@ This module integrates all Mixins into a single TimeSeries class.
 
 from __future__ import annotations
 
+from fractions import Fraction
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, SupportsIndex
 
+import numpy as np
 from astropy import units as u
 from numpy.typing import ArrayLike
 
@@ -31,8 +33,10 @@ from ._gwf_io import (
     _GWF_BACKENDS,
     _extract_gwf_read_args,
     _format_gwf_import_error,
+    _GWFParallelContractError,
     _resolve_gwf_format,
     _source_for_gwf_channel_listing,
+    _validate_gwf_parallel_source,
 )
 from ._interop import TimeSeriesInteropMixin
 from ._resampling import TimeSeriesResamplingMixin
@@ -80,6 +84,10 @@ class TimeSeries(
     t0 : `~gwpy.time.LIGOTimeGPS`, `float`, `str`, optional, default: `0`
         GPS epoch associated with these data,
         any input parsable by `~gwpy.time.to_gps` is fine.
+
+    t0_ns : int, optional
+        Total GPS nanoseconds for an exact epoch. This is keyword-only and
+        accepts values from 0 through ``2**63 - 1``.
 
     dt : `float`, `~astropy.units.Quantity`, optional, default: `1`
         Time resolution for these data.
@@ -148,7 +156,23 @@ class TimeSeries(
         This override adds explicit CSV and `.gwf` handling for deterministic
         behavior when `.read()` is called through the public API.
         """
-        fmt = kwargs.get("format")
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
+        from .collections import _parse_public_read_format
+
+        fmt, args = _parse_public_read_format(cls, args, kwargs)
+        if fmt is not None:
+            kwargs["format"] = fmt
+        if fmt is None:
+            from .collections import _hdf5_path_sources
+
+            if _hdf5_path_sources(source) is not None:
+                raise ValueError(
+                    "TimeSeries.read() requires explicit format='hdf5' for "
+                    "generic HDF5 sources; TimeSeries does not auto-detect "
+                    "hdf.ndscope."
+                )
         source_path = Path(source) if isinstance(source, (str, Path)) else None
         if fmt in {"nc", "netcdf4"}:
             from .io.netcdf4_ import read_timeseries_netcdf4
@@ -187,6 +211,7 @@ class TimeSeries(
                 allow_multiple_channels=False,
             )
             backend = gwf_kwargs.pop("backend", _GWF_BACKENDS[gwf_format])
+            _validate_gwf_parallel_source(source, gwf_kwargs)
             try:
                 if channels is None:
                     channel_source = _source_for_gwf_channel_listing(source)
@@ -207,11 +232,14 @@ class TimeSeries(
                 )
             except ImportError as exc:
                 raise _format_gwf_import_error(gwf_format, exc)
+            except _GWFParallelContractError:
+                raise
             except TypeError as exc:
                 raise ValueError(f"Invalid input for GWF read: {exc}") from exc
             if not tsd:
                 raise ValueError(f"No data found in {gwf_format} source: {source}")
-            return cls(next(iter(tsd.values())))
+            series = next(iter(tsd.values()))
+            return series if isinstance(series, cls) else cls(series)
 
         return super().read(source, *args, **kwargs)
 
@@ -220,6 +248,9 @@ class TimeSeries(
 
         This override preserves minimal metadata for direct CSV round-trips.
         """
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
         fmt = kwargs.get("format")
         target_path = Path(target) if isinstance(target, (str, Path)) else None
         if fmt == "csv" or (
@@ -241,13 +272,20 @@ class TimeSeries(
             "dt": self.dt,
         }
 
-    def __new__(cls, data: ArrayLike, *args: Any, **kwargs: Any) -> TimeSeries:
+    def __new__(
+        cls, data: ArrayLike, *args: Any, t0_ns: Any = None, **kwargs: Any
+    ) -> TimeSeries:
         """Create a new TimeSeries.
 
         This constructor extends the standard `gwpy.timeseries.TimeSeries` constructor
         by adding support for automatic GPS time coercion for `t0` and `epoch` parameters.
         """
-        from gwexpy.timeseries.utils import _coerce_t0_gps
+        from gwexpy.timeseries.utils import (
+            _coerce_t0_gps,
+            _gps_ns_to_ligo,
+            _t0_gps_ns_state,
+            _validate_t0_gps_ns,
+        )
 
         should_coerce = True
         xunit = kwargs.get("xunit", None)
@@ -262,6 +300,27 @@ class TimeSeries(
                 phys = getattr(dt.unit, "physical_type", None)
                 if dt.unit != u.dimensionless_unscaled and phys != "time":
                     should_coerce = False
+
+        state_ns: int | None = None
+        state_precision: str | None = None
+        t0_value = kwargs.get("t0")
+        epoch_value = kwargs.get("epoch")
+        supplied_epoch = next(
+            (value for value in (t0_value, epoch_value) if value is not None), None
+        )
+        if t0_ns is not None:
+            state_ns = _validate_t0_gps_ns(t0_ns)
+            state_precision = "exact"
+            for name, value in (("t0", t0_value), ("epoch", epoch_value)):
+                if value is None:
+                    continue
+                supplied_ns, _ = _t0_gps_ns_state(value)
+                if supplied_ns != state_ns:
+                    raise ValueError(f"t0_ns and {name} must agree to the nanosecond")
+            kwargs["t0"] = _gps_ns_to_ligo(state_ns)
+            kwargs.pop("epoch", None)
+        elif should_coerce and supplied_epoch is not None:
+            state_ns, state_precision = _t0_gps_ns_state(supplied_epoch)
 
         if should_coerce:
             # Determine target unit for t0/epoch normalization
@@ -295,7 +354,95 @@ class TimeSeries(
                         kwargs["epoch"] = float(epoch_q.to(target_unit).value)
                     except (u.UnitConversionError, AttributeError, TypeError):
                         kwargs["epoch"] = epoch_q
-        return super().__new__(cls, data, *args, **kwargs)
+        new = super().__new__(cls, data, *args, **kwargs)
+        new._gwex_t0_gps_ns = state_ns
+        new._gwex_t0_gps_precision = state_precision
+        return new
+
+    @property
+    def t0_gps_ns(self) -> int | None:
+        """Return the tracked total GPS origin in nanoseconds, if available."""
+        return getattr(self, "_gwex_t0_gps_ns", None)
+
+    @staticmethod
+    def _clear_t0_gps_state(result: Any) -> None:
+        if isinstance(result, TimeSeries):
+            result._gwex_t0_gps_ns = None
+            result._gwex_t0_gps_precision = None
+
+    def __getitem__(self, item: Any) -> Any:
+        """Index the series and conservatively propagate GPS nanosecond state."""
+        result = super().__getitem__(item)
+        if not isinstance(result, TimeSeries):
+            return result
+
+        if len(result) == 0:
+            self._clear_t0_gps_state(result)
+            return result
+
+        if not isinstance(item, slice):
+            self._clear_t0_gps_state(result)
+            return result
+
+        start, _, step = item.indices(len(self))
+        if step != 1:
+            self._clear_t0_gps_state(result)
+            return result
+
+        if getattr(self, "is_regular", False):
+            try:
+                cached_xindex = getattr(result, "_xindex", None)
+                exact_gps_state = (
+                    getattr(self, "_gwex_t0_gps_precision", None) == "exact"
+                )
+                if exact_gps_state:
+                    if cached_xindex is not None:
+                        result._xindex = cached_xindex.copy()
+                        source_xindex = result._xindex
+                        result_start = 0
+                    else:
+                        source_xindex = self.xindex
+                        result_start = start
+                    result._x0 = source_xindex[result_start].copy()
+                    if len(source_xindex) > 1:
+                        result._dx = source_xindex[1] - source_xindex[0]
+                    else:
+                        result._dx = self.dx.copy()
+                else:
+                    result._dx = self.dx.copy()
+                    result._x0 = u.Quantity(
+                        float(self.x0.value + start * self.dx.value), self.x0.unit
+                    )
+            except (AttributeError, TypeError, ValueError, u.UnitConversionError):
+                self._clear_t0_gps_state(result)
+                return result
+
+        origin_ns = getattr(self, "_gwex_t0_gps_ns", None)
+        precision = getattr(self, "_gwex_t0_gps_precision", None)
+        if origin_ns is None or not getattr(self, "is_regular", False):
+            self._clear_t0_gps_state(result)
+            return result
+
+        try:
+            dt = self.dt.to(u.s).value
+            if np.ndim(dt) != 0 or not np.isfinite(dt) or dt <= 0:
+                raise ValueError
+            offset_ns = Fraction(start) * Fraction(str(float(dt))) * 1_000_000_000
+        except (AttributeError, TypeError, ValueError, u.UnitConversionError):
+            self._clear_t0_gps_state(result)
+            return result
+
+        if offset_ns.denominator == 1:
+            result._gwex_t0_gps_ns = int(origin_ns) + offset_ns.numerator
+            result._gwex_t0_gps_precision = precision
+        else:
+            from gwexpy.timeseries.utils import _round_fraction_ties_even
+
+            result._gwex_t0_gps_ns = int(origin_ns) + _round_fraction_ties_even(
+                offset_ns
+            )
+            result._gwex_t0_gps_precision = "quantized"
+        return result
 
     def __array_finalize__(self, obj: Any) -> None:
         """Finalize the array after creation (slicing, view casting).

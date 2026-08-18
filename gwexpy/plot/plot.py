@@ -103,15 +103,26 @@ class Plot(BasePlot):
     --------
     Plot a matrix as aligned subplots:
 
-    >>> from gwexpy.plot import Plot
-    >>> fig = Plot(ts_matrix, separate=True, figsize=(10, 6))
-    >>> len(fig.axes) >= 1
-    True
+    This is an illustrative fragment, not a doctest: ``ts_matrix`` is an
+    application-provided matrix with plotting metadata.
+
+    .. code-block:: python
+
+       from gwexpy.plot import Plot
+       fig = Plot(ts_matrix, separate=True, figsize=(10, 6))
+       len(fig.axes) >= 1
 
     Overlay summary curves with a shaded min/max envelope:
 
-    >>> fig = Plot(median_series)
-    >>> _ = fig.plot_mmm(median_series, min_series, max_series, alpha_fill=0.15)
+    This is also an illustrative fragment, not a doctest: the three series
+    are application-provided summary data.
+
+    .. code-block:: python
+
+       fig = Plot(median_series)
+       _ = fig.plot_mmm(
+           median_series, min_series, max_series, alpha_fill=0.15
+       )
 
     See Also
     --------
@@ -320,9 +331,14 @@ class Plot(BasePlot):
 
         Examples
         --------
-        >>> plot = Plot(data)
-        >>> plot.show(close=False, block=False)  # Non-blocking, keep figure
-        >>> plot.savefig("output.png")  # Works because figure is still open
+        This is an illustrative fragment, not a doctest: ``data`` and the
+        output path are supplied by the application.
+
+        .. code-block:: python
+
+           plot = Plot(data)
+           plot.show(close=False, block=False)  # Non-blocking, keep figure
+           plot.savefig("output.png")  # Works because figure is still open
 
         Notes
         -----

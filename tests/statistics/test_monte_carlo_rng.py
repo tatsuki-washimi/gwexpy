@@ -200,13 +200,20 @@ class TestComputeGauchRng:
     def test_metadata_recorded(self):
         ts = TimeSeries(np.random.default_rng(0).standard_normal(2048), sample_rate=256)
         default_res = compute_gauch(ts, fftlength=0.25, window=10, n_monte_carlo=50)
-        assert default_res.metadata["n_monte_carlo"] == 50
+        assert default_res.n_monte_carlo == 50
+        assert "n_monte_carlo" not in default_res.metadata
         assert "seed" not in default_res.metadata
+        assert default_res.provenance["parameters"]["legacy"] == {
+            "fftlength": 0.25,
+            "n_monte_carlo": 50,
+            "stride": 0.25,
+        }
 
         seeded_res = compute_gauch(
             ts, fftlength=0.25, window=10, n_monte_carlo=50, seed=7
         )
-        assert seeded_res.metadata["seed"] == 7
+        assert seeded_res.seed == 7
+        assert seeded_res.provenance["parameters"]["legacy"]["seed"] == 7
 
         with pytest.warns(UserWarning, match="seed is ignored"):
             both_res = compute_gauch(
@@ -217,8 +224,10 @@ class TestComputeGauchRng:
                 rng=np.random.default_rng(7),
                 seed=999,
             )
-        assert both_res.metadata["rng_provided"] is True
-        assert both_res.metadata["seed_unused"] is True
+        assert both_res.rng_provided is True
+        assert both_res.seed_unused is True
+        assert both_res.provenance["parameters"]["legacy"]["rng_provided"] is True
+        assert both_res.provenance["parameters"]["legacy"]["seed_unused"] is True
 
     def test_default_path_still_uses_shared_cache(self):
         gauch_module._LILLIEFORS_CACHE.clear()

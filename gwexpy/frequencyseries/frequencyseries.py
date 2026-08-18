@@ -202,7 +202,13 @@ class FrequencySeries(
 
     @classmethod
     def read(cls, source, *args, **kwargs):  # type: ignore[override]
-        """Read a ``FrequencySeries`` from a supported source."""
+        """Read a ``FrequencySeries`` from a supported source.
+
+        The format-specific handler is enabled on demand before dispatch.
+        """
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
         fmt = kwargs.get("format")
         source_path = None
         if isinstance(source, (str, os.PathLike)):
@@ -228,6 +234,16 @@ class FrequencySeries(
             if fs is not None:
                 return fs
         return super().read(source, *args, **kwargs)
+
+    def write(self, target, *args, **kwargs):  # type: ignore[override]
+        """Write a ``FrequencySeries`` through the public I/O registry.
+
+        The format-specific handler is enabled on demand before dispatch.
+        """
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
+        return super().write(target, *args, **kwargs)
 
     def __new__(
         cls,

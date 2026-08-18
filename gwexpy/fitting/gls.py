@@ -133,11 +133,16 @@ class GeneralizedLeastSquares:
 
     Examples
     --------
-    >>> def linear(x, a, b):
-    ...     return a * x + b
-    >>> gls = GeneralizedLeastSquares(x, y, cov_inv, linear)
-    >>> m = Minuit(gls, a=1, b=0)
-    >>> m.migrad()
+    This is an illustrative fragment, not a doctest: ``x``, ``y``, and
+    ``cov_inv`` are application-specific measurements and covariance data.
+
+    .. code-block:: python
+
+       def linear(x, a, b):
+           return a * x + b
+       gls = GeneralizedLeastSquares(x, y, cov_inv, linear)
+       m = Minuit(gls, a=1, b=0)
+       m.migrad()
 
     """
 

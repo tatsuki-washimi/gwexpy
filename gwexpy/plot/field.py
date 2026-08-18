@@ -27,13 +27,19 @@ class FieldPlot(Plot):
 
         If a field is passed as the first argument, it initializes the plot
         but does not automatically render it (unless method is implicit).
-        Typically usage is:
+        Typical usage is the following illustrative fragment, not a doctest:
+        it assumes that ``field`` has been prepared by the application.
 
-        >>> plot = FieldPlot()
-        >>> plot.add_scalar(field, z=0)
+        .. code-block:: python
 
-        Or via field method:
-        >>> field.plot(z=0)
+           plot = FieldPlot()
+           plot.add_scalar(field, z=0)
+
+        Or via the field method:
+
+        .. code-block:: python
+
+           field.plot(z=0)
         """
         # If args[0] is a Field, we might consume it or just pass to super
         # but super (Plot) expects data to plot immediately in constructor usually.

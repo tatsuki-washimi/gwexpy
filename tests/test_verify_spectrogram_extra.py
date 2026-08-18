@@ -26,6 +26,9 @@ def test_spectrogram_extra_features():
     assert mean_spec_arr.shape == (10, 5)
 
     # Plot (Dry run)
+    import gwexpy
+
+    gwexpy.register_all(include_io=False)
     p = mat.plot()
     p.close()
     p2 = mat.plot(monitor=0)

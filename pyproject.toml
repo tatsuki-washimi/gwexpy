@@ -37,17 +37,15 @@ dependencies = [
   "numpy>=1.23.2,<3.0.0",
   "scipy>=1.10.0",
   "astropy>=5.0",
-  "gwpy>=4.0.0,<5.0.0",
+  "gwpy>=4.0.1,<5.0.0",
   "pandas>=1.5.0",
   "matplotlib>=3.5.0",
-  "typing_extensions",
-  "bottleneck",
+  "bottleneck>=1.4.0",
   # File I/O (upper bound guards against a major-version API break; see D1)
   "h5py>=3.0,<4",
   # GPS Time (lightweight, widely used)
   "igwn-segments",
   "ligotimegps",
-  "gpstime",
 ]
 
 [project.urls]

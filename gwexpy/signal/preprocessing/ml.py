@@ -62,26 +62,31 @@ class MLPreprocessor:
     --------
     Basic usage:
 
-    >>> from gwexpy.timeseries import TimeSeriesMatrix, TimeSeries
-    >>> from gwexpy.signal.preprocessing import MLPreprocessor
-    >>>
-    >>> # Load data
-    >>> witnesses = TimeSeriesMatrix(...)  # (n_channels, n_samples)
-    >>> strain = TimeSeries(...)            # (n_samples,)
-    >>>
-    >>> # Preprocessing pipeline
-    >>> preprocessor = MLPreprocessor(
-    ...     sample_rate=4096,
-    ...     freq_low=[55.0],
-    ...     freq_high=[65.0],
-    ...     valid_frac=0.2
-    ... )
-    >>>
-    >>> # Split -> fit -> transform
-    >>> X_train, y_train, X_valid, y_valid = preprocessor.split(witnesses, strain)
-    >>> preprocessor.fit(X_train, y_train)
-    >>> X_train_proc, y_train_proc = preprocessor.transform(X_train, y_train)
-    >>> X_valid_proc, y_valid_proc = preprocessor.transform(X_valid, y_valid)
+    This is an illustrative fragment, not a doctest: ``witnesses`` and
+    ``strain`` are application-provided training data.
+
+    .. code-block:: python
+
+       from gwexpy.timeseries import TimeSeriesMatrix, TimeSeries
+       from gwexpy.signal.preprocessing import MLPreprocessor
+
+       # Load data
+       witnesses = TimeSeriesMatrix(...)  # (n_channels, n_samples)
+       strain = TimeSeries(...)            # (n_samples,)
+
+       # Preprocessing pipeline
+       preprocessor = MLPreprocessor(
+           sample_rate=4096,
+           freq_low=[55.0],
+           freq_high=[65.0],
+           valid_frac=0.2
+       )
+
+       # Split -> fit -> transform
+       X_train, y_train, X_valid, y_valid = preprocessor.split(witnesses, strain)
+       preprocessor.fit(X_train, y_train)
+       X_train_proc, y_train_proc = preprocessor.transform(X_train, y_train)
+       X_valid_proc, y_valid_proc = preprocessor.transform(X_valid, y_valid)
 
     Notes
     -----

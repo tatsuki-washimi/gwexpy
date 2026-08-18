@@ -2,12 +2,16 @@ import ast
 import json
 import os
 import re
+import sys
 from collections import Counter
 from contextlib import contextmanager
+from dataclasses import dataclass
 from pathlib import Path
 from typing import cast
 
 import pytest
+
+from tests.docs import test_docs_notebooks as docs_notebooks
 
 ROOT = Path(__file__).resolve().parents[2]
 TUTORIAL_ROOT = ROOT / "docs" / "web"
@@ -297,6 +301,302 @@ def _code_cell_sources(nb: dict) -> list[str]:
         for cell in nb.get("cells", [])
         if cell.get("cell_type") == "code"
     ]
+
+
+CONSTRUCTOR_BOOTSTRAP_CASES = {
+    Path("en/user_guide/tutorials/intro_noise.ipynb"),
+    Path("en/user_guide/tutorials/intro_fitting.ipynb"),
+}
+
+
+@dataclass(frozen=True)
+class _NotebookEvent:
+    cell_index: int
+    kind: str
+    qualified_name: tuple[str, ...] | None = None
+
+
+def _parse_notebook_code_cell(source: str, cell_index: int) -> ast.Module:
+    normalized = "\n".join(
+        f"#{line}" if line.lstrip().startswith(("%", "!")) else line
+        for line in source.splitlines()
+    )
+    try:
+        return ast.parse(normalized)
+    except SyntaxError as exc:
+        raise AssertionError(
+            f"code cell {cell_index} is not statically parseable"
+        ) from exc
+
+
+class _NotebookDataFlow(ast.NodeVisitor):
+    def __init__(self) -> None:
+        self.cell_index = 0
+        self.bindings: dict[str, tuple[str, ...]] = {}
+        self.origins: dict[str, str] = {}
+        self.static_root_aliases: set[str] = set()
+        self.events: list[_NotebookEvent] = []
+
+    def visit_Import(self, node: ast.Import) -> None:
+        for alias in node.names:
+            qualified = tuple(alias.name.split("."))
+            if alias.name == "gwexpy":
+                name = alias.asname or "gwexpy"
+                self.bindings[name] = qualified
+                self.static_root_aliases.add(name)
+            elif alias.name.startswith("gwexpy."):
+                name = alias.asname or alias.name.split(".")[0]
+                self.bindings[name] = qualified if alias.asname else ("gwexpy",)
+
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
+        if node.module is None or not node.module.startswith("gwexpy"):
+            return
+        module = tuple(node.module.split("."))
+        for alias in node.names:
+            if alias.name == "*":
+                continue
+            name = alias.asname or alias.name
+            self.bindings[name] = module + (alias.name,)
+
+    def visit_Assign(self, node: ast.Assign) -> None:
+        self.visit(node.value)
+        origin = self._origin(node.value)
+        for target in node.targets:
+            self._assign_target(target, origin, node.value)
+
+    def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
+        if node.value is not None:
+            self.visit(node.value)
+            origin = self._origin(node.value)
+            self._assign_target(node.target, origin, node.value)
+
+    def visit_NamedExpr(self, node: ast.NamedExpr) -> None:
+        self.visit(node.value)
+        self._assign_target(node.target, self._origin(node.value), node.value)
+
+    def visit_Call(self, node: ast.Call) -> None:
+        self.visit(node.func)
+        for argument in node.args:
+            self.visit(argument)
+        for keyword in node.keywords:
+            self.visit(keyword.value)
+
+        kind = self._call_kind(node)
+        if kind is not None:
+            self.events.append(
+                _NotebookEvent(
+                    self.cell_index,
+                    kind,
+                    self._qualified_name(node.func),
+                )
+            )
+
+    def _assign_target(
+        self,
+        target: ast.AST,
+        origin: str | None,
+        value: ast.AST,
+    ) -> None:
+        if isinstance(target, ast.Name):
+            self.origins.pop(target.id, None)
+            self.static_root_aliases.discard(target.id)
+            qualified = self._qualified_name(value)
+            if qualified is not None:
+                self.bindings[target.id] = qualified
+                if qualified == ("gwexpy",):
+                    self.static_root_aliases.add(target.id)
+            else:
+                self.bindings.pop(target.id, None)
+            if origin is not None:
+                self.origins[target.id] = origin
+            return
+        if isinstance(target, (ast.Tuple, ast.List)):
+            for element in target.elts:
+                self._assign_target(element, origin, value)
+
+    def _qualified_name(self, node: ast.AST) -> tuple[str, ...] | None:
+        if isinstance(node, ast.Name):
+            return self.bindings.get(node.id)
+        if isinstance(node, ast.Attribute):
+            parent = self._qualified_name(node.value)
+            return None if parent is None else parent + (node.attr,)
+        return None
+
+    def _origin(self, node: ast.AST) -> str | None:
+        if isinstance(node, ast.Name):
+            if node.id in self.origins:
+                return self.origins[node.id]
+            qualified = self.bindings.get(node.id)
+            return "callable" if qualified and qualified[0] == "gwexpy" else None
+        if isinstance(node, ast.Attribute):
+            if self._is_gwexpy_value(node.value):
+                return "callable"
+            qualified = self._qualified_name(node)
+            return "callable" if qualified and qualified[0] == "gwexpy" else None
+        if isinstance(node, ast.Subscript):
+            return self._origin(node.value)
+        if isinstance(node, ast.Call) and self._call_kind(node) == "dependent":
+            return "value"
+        return None
+
+    def _is_gwexpy_value(self, node: ast.AST) -> bool:
+        return self._origin(node) == "value" or (
+            (qualified := self._qualified_name(node)) is not None
+            and qualified[0] == "gwexpy"
+        )
+
+    def _call_kind(self, node: ast.Call) -> str | None:
+        qualified = self._qualified_name(node.func)
+        if self._is_exact_bootstrap(node, qualified):
+            return "bootstrap"
+        if qualified is not None and qualified[0] == "gwexpy":
+            return "dependent"
+        if (
+            isinstance(node.func, ast.Name)
+            and self.origins.get(node.func.id) == "callable"
+        ):
+            return "dependent"
+        if isinstance(node.func, ast.Attribute) and self._is_gwexpy_value(
+            node.func.value
+        ):
+            return "dependent"
+        return None
+
+    def _is_exact_bootstrap(
+        self, node: ast.Call, qualified: tuple[str, ...] | None
+    ) -> bool:
+        return (
+            isinstance(node.func, ast.Attribute)
+            and isinstance(node.func.value, ast.Name)
+            and node.func.value.id in self.static_root_aliases
+            and qualified == ("gwexpy", "register_all")
+            and not node.args
+            and len(node.keywords) == 1
+            and node.keywords[0].arg == "include_io"
+            and isinstance(node.keywords[0].value, ast.Constant)
+            and node.keywords[0].value.value is False
+        )
+
+
+def _notebook_structural_events(nb: dict) -> list[_NotebookEvent]:
+    events: list[_NotebookEvent] = []
+    analyzer = _NotebookDataFlow()
+    for cell_index, source in enumerate(_code_cell_sources(nb)):
+        analyzer.cell_index = cell_index
+        event_start = len(analyzer.events)
+        analyzer.visit(_parse_notebook_code_cell(source, cell_index))
+        events.extend(analyzer.events[event_start:])
+    return events
+
+
+def _constructor_bootstrap_violations(nb: dict) -> list[str]:
+    events = _notebook_structural_events(nb)
+    bootstrap_indices = [
+        index for index, event in enumerate(events) if event.kind == "bootstrap"
+    ]
+    violations = []
+    if len(bootstrap_indices) != 1:
+        violations.append("expected exactly one explicit constructor bootstrap")
+        return violations
+
+    first_bootstrap = bootstrap_indices[0]
+    violations.extend(
+        f"cell {event.cell_index}: dependent operation before bootstrap"
+        for event in events[:first_bootstrap]
+        if event.kind == "dependent"
+    )
+    return violations
+
+
+def _notebook_with_code(*sources: str) -> dict:
+    return {
+        "cells": [
+            {"cell_type": "code", "source": source, "metadata": {}, "outputs": []}
+            for source in sources
+        ]
+    }
+
+
+def test_constructor_dependent_notebooks_bootstrap_registry_before_use():
+    for relative_path in CONSTRUCTOR_BOOTSTRAP_CASES:
+        nb = _read_tutorial_notebook(relative_path)
+        assert _constructor_bootstrap_violations(nb) == []
+
+
+@pytest.mark.parametrize(
+    "source_before_bootstrap",
+    [
+        (
+            "import gwexpy as gp\n"
+            "from gwexpy.noise import wave\n"
+            "noise = wave.pink_noise(duration=1, sample_rate=8, amplitude=1)\n"
+            "gp.register_all(include_io=False)\n"
+        ),
+        (
+            "from gwexpy.fitting.highlevel import fit_bootstrap_spectrum as fit\n"
+            "fit(data, model_fn=model, plot=True)\n"
+            "import gwexpy\n"
+            "gwexpy.register_all(include_io=False)\n"
+        ),
+        (
+            "from gwexpy.frequencyseries import FrequencySeries as FS\n"
+            "spectrum = FS(values, frequencies=freqs)\n"
+            "import gwexpy\n"
+            "gwexpy.register_all(include_io=False)\n"
+        ),
+        (
+            "import gwexpy\n"
+            "from gwexpy.noise import wave\n"
+            "noise = wave.pink_noise(duration=1, sample_rate=8, amplitude=1)\n"
+            "plot = noise.plot\n"
+            "plot()\n"
+            "gwexpy.register_all(include_io=False)\n"
+        ),
+    ],
+)
+def test_constructor_bootstrap_guard_catches_alias_and_same_cell_operations(
+    source_before_bootstrap: str,
+):
+    violations = _constructor_bootstrap_violations(
+        _notebook_with_code(source_before_bootstrap)
+    )
+    assert violations, "relevant operations before bootstrap must be rejected"
+
+
+def test_constructor_bootstrap_guard_ignores_text_that_is_not_executed():
+    nb = _notebook_with_code(
+        'description = "noise_ts.plot() fit_bootstrap_spectrum("\n'
+        "import gwexpy\n"
+        "gwexpy.register_all(include_io=False)\n"
+    )
+    assert _constructor_bootstrap_violations(nb) == []
+
+
+def test_constructor_bootstrap_guard_tracks_data_flow_across_code_cells():
+    nb = _notebook_with_code(
+        "import gwexpy as gp\nfrom gwexpy.noise import wave\n",
+        "noise = wave.pink_noise(duration=1, sample_rate=8, amplitude=1)\n",
+        "plot = noise.plot\n",
+        "plot()\n",
+        "gp.register_all(include_io=False)\n",
+    )
+    violations = _constructor_bootstrap_violations(nb)
+    assert any("dependent operation" in violation for violation in violations)
+
+
+def test_notebook_kernel_uses_current_interpreter_and_gate_environment():
+    if (
+        os.environ.get("PYTHONNOUSERSITE") != "1"
+        or os.environ.get("PYTHONPATH") != str(docs_notebooks.REPO_ROOT)
+        or sys.version_info[:2] != (3, 11)
+    ):
+        pytest.skip("requires the pinned docs-notebook gate environment")
+    assert docs_notebooks._kernel_spec_argv()[0] == sys.executable
+    assert sys.version_info[:2] == (3, 11)
+    environment = docs_notebooks._notebook_environment()
+    assert environment["PYTHONNOUSERSITE"] == "1"
+    assert environment["PYTHONPATH"] == str(docs_notebooks.REPO_ROOT)
+    assert environment["PATH"] == os.environ["PATH"]
 
 
 def _call_function_name(node: ast.AST) -> str | None:

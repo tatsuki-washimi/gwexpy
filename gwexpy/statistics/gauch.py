@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+from ..provenance import build_provenance, copy_provenance
 from ..spectrogram import Spectrogram
 
 if TYPE_CHECKING:
@@ -23,12 +24,18 @@ class GauChResult:
         pvalue_map: Spectrogram,
         statistic_map: Spectrogram,
         n_samples: int,
+        provenance: dict[str, Any] | None = None,
         **metadata: Any,
     ):
         self.pvalue_map = pvalue_map
         self.statistic_map = statistic_map
         self.n_samples = n_samples
-        self.metadata = metadata
+        if provenance is None:
+            provenance = _legacy_provenance(metadata)
+        self.provenance = copy_provenance(provenance)
+        self.metadata = self.provenance
+        for key, value in metadata.items():
+            setattr(self, key, value)
 
     def __repr__(self) -> str:
         return f"<GauChResult n_samples={self.n_samples}>"
@@ -168,13 +175,50 @@ def compute_gauch(
     elif seed is not None:
         metadata["seed"] = seed
 
+    legacy_metadata = {
+        "fftlength": fftlength,
+        "stride": stride,
+        **metadata,
+    }
+    provenance = build_provenance(
+        "gauch",
+        {
+            "fftlength": fftlength,
+            "stride": stride,
+            "window": window,
+            "overlap": overlap,
+            "n_monte_carlo": n_monte_carlo,
+        },
+        rng=rng,
+        seed=seed,
+    )
+    provenance = _with_legacy_parameters(provenance, legacy_metadata)
+    res_p.provenance = copy_provenance(provenance)
+    res_s.provenance = copy_provenance(provenance)
+
     return GauChResult(
         pvalue_map=res_p,
         statistic_map=res_s,
         n_samples=window,
-        fftlength=fftlength,
-        stride=stride,
-        **metadata,
+        provenance=provenance,
+        **legacy_metadata,
+    )
+
+
+def _with_legacy_parameters(
+    provenance: dict[str, Any], legacy: dict[str, Any]
+) -> dict[str, Any]:
+    if legacy:
+        parameters = dict(provenance["parameters"])
+        parameters["legacy"] = dict(legacy)
+        provenance = dict(provenance)
+        provenance["parameters"] = parameters
+    return provenance
+
+
+def _legacy_provenance(metadata: dict[str, Any]) -> dict[str, Any]:
+    return _with_legacy_parameters(
+        build_provenance("gauch", {"legacy": metadata}, deterministic=True), metadata
     )
 
 

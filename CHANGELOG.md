@@ -2,6 +2,32 @@
 
 ## [Unreleased]
 
+### Documentation and release evidence
+
+- **v0.2.0 migration guidance**: added paired English and Japanese notes for
+  nanosecond GPS origins, automatic HDF5 metadata and provenance restoration,
+  GWF parallel reads, the `nproc` compatibility alias, NDScope
+  `dataset_options`, strict provenance, coupling segments, `median_bias`, and
+  the explicit #637 fallback. This entry records implementation evidence for
+  an unreleased version; publication and final release verification remain
+  pending.
+- **Release evidence**: added a completion ledger, conservative API
+  classification, and a current evidence scaffold that preserve the frozen B0
+  and B1 SeriesMatrix records and leave root-owned final gates pending.
+
+### Implemented contract notes
+
+- **API labels**: the public stability policy uses exactly `stable`,
+  `provisional`, and `experimental`. `deferred` describes a release outcome,
+  not a fourth API tier.
+- **SeriesMatrix composition**: the #637 composition candidate remains
+  isolated and is not adopted. The integration fallback retains the approved
+  Phase A `SpectrogramMatrix` dimensional raw-ndarray add/sub atomic
+  `TypeError` contract.
+- **GWF and NDScope I/O**: `parallel` is preferred while `nproc` remains a
+  compatibility alias; providing both raises `TypeError`. NDScope writer
+  creation options are supplied only through `dataset_options`.
+
 ## [0.1.14] - 2026-08-15
 
 ### Removed (breaking)

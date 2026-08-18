@@ -53,8 +53,10 @@ def _theme_blocks(future_themes: str) -> list[tuple[str, str]]:
     headings = list(re.finditer(r"^###\s+(.+?)\s*$", future_themes, re.MULTILINE))
     blocks: list[tuple[str, str]] = []
     for index, heading in enumerate(headings):
-        end = headings[index + 1].start() if index + 1 < len(headings) else len(
-            future_themes
+        end = (
+            headings[index + 1].start()
+            if index + 1 < len(headings)
+            else len(future_themes)
         )
         blocks.append((heading.group(1), future_themes[heading.start() : end]))
     return blocks
@@ -178,7 +180,9 @@ def _versioned_future_headings(future_themes: str) -> list[str]:
     """Return future-theme headings that contain a concrete release version."""
     version = re.compile(r"\bv\d+\.\d+(?:\.\d+)?\b", re.IGNORECASE)
     return [
-        heading for heading, _ in _theme_blocks(future_themes) if version.search(heading)
+        heading
+        for heading, _ in _theme_blocks(future_themes)
+        if version.search(heading)
     ]
 
 
@@ -340,11 +344,28 @@ def test_v020_section_exposes_workstreams_and_definition_of_done() -> None:
     assert _contains_label(section, "Definition of done")
 
 
+def test_v020_api_stability_workstream_links_canonical_policy() -> None:
+    """The #400 workstream must point to the canonical stability policy."""
+    section = _level_two_section(ROADMAP, "v0.2.0")
+
+    assert section, "ROADMAP.md must contain a v0.2.0 release section"
+    assert "#400" in section
+    assert (
+        "[canonical API stability policy]("
+        "docs/developers/contracts/api-stability-policy.md)"
+    ) in section
+
+
 def test_release_scope_authority_is_not_duplicated_in_design() -> None:
     """ROADMAP owns release scope while the design owns taxonomy and triage."""
     assert "canonical source of\n*inclusion criteria*" in ROADMAP
-    assert "Release inclusion scope と Definition of done の正本は `ROADMAP.md`" in DESIGN
-    assert "本文書の\n正本範囲は taxonomy・per-domain goals・theme mapping・triage 規則" in DESIGN
+    assert (
+        "Release inclusion scope と Definition of done の正本は `ROADMAP.md`" in DESIGN
+    )
+    assert (
+        "本文書の\n正本範囲は taxonomy・per-domain goals・theme mapping・triage 規則"
+        in DESIGN
+    )
     assert "Release statements & headline user stories(正本)" not in DESIGN
     assert "`ROADMAP.md` と issue #413 はここからの転記とする" not in DESIGN
 
@@ -455,7 +476,9 @@ def test_committed_and_future_theme_blocks_have_one_status_each() -> None:
 def test_exactly_one_theme_is_committed() -> None:
     """The roadmap may expose only one active release theme at a time."""
     committed = [
-        status for status in STATUS_RE.findall(ROADMAP) if status.casefold() == "committed"
+        status
+        for status in STATUS_RE.findall(ROADMAP)
+        if status.casefold() == "committed"
     ]
 
     assert len(committed) == 1, f"Expected one Committed theme, found {len(committed)}"
@@ -492,4 +515,6 @@ def test_required_release_headings_are_present() -> None:
     required = {"v0.1.13", "v0.1.14", "v0.2.0"}
     actual = {match.casefold() for match in RELEASE_HEADING_RE.findall(ROADMAP)}
 
-    assert required <= actual, f"Missing required release headings: {sorted(required - actual)}"
+    assert required <= actual, (
+        f"Missing required release headings: {sorted(required - actual)}"
+    )

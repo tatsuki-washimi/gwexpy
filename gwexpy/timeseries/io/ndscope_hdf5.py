@@ -20,7 +20,9 @@ through the shared registration helper.
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
+from dataclasses import dataclass
+from numbers import Integral
 from pathlib import Path
 from typing import Any
 
@@ -36,6 +38,9 @@ from ._registration import register_timeseries_format
 # Dataset names recognised as ndscope data fields.
 _NDSCOPE_DATA_KEYS = frozenset({"raw", "mean", "min", "max"})
 _NDSCOPE_SAMPLE_RATE_KEYS = ("rate_hz", "sample_rate")
+_NDSCOPE_DATASET_OPTION_KEYS = frozenset(
+    {"chunks", "compression", "compression_opts", "shuffle", "fletcher32"}
+)
 
 
 def _sample_rate_from_attrs(attrs: Any, *, group_name: str) -> float:
@@ -271,11 +276,250 @@ def read_timeseriesdict_ndscope_hdf5(
 # ---------------------------------------------------------------------------
 
 
+@dataclass(frozen=True)
+class _NDScopeWriteEntry:
+    """Validated output mapping used after the writer preflight."""
+
+    group_name: str
+    dataset_name: str
+    data: np.ndarray
+    rate_hz: float
+    gps_start: float
+    unit: str
+
+
+def _normalise_ndscope_dataset_options(
+    dataset_options: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    """Copy and validate dataset options that do not depend on data shape."""
+    if dataset_options is None:
+        return {}
+    if not isinstance(dataset_options, Mapping):
+        raise TypeError("dataset_options must be a Mapping or None")
+
+    options = dict(dataset_options)
+    unknown = [key for key in options if key not in _NDSCOPE_DATASET_OPTION_KEYS]
+    if unknown:
+        names = ", ".join(sorted(str(key) for key in unknown))
+        raise TypeError(f"Unsupported NDScope dataset option(s): {names}")
+
+    if "chunks" in options:
+        chunks = options["chunks"]
+        if isinstance(chunks, bool):
+            options["chunks"] = chunks if chunks else None
+        elif chunks is not None and not isinstance(chunks, tuple):
+            raise TypeError("NDScope chunks must be None, a bool, or a tuple")
+
+    compression = options.get("compression")
+    if "compression" in options:
+        if compression is not None and not isinstance(compression, str):
+            raise TypeError("NDScope compression must be None, 'gzip', or 'lzf'")
+        if compression not in (None, "gzip", "lzf"):
+            raise ValueError("NDScope compression must be None, 'gzip', or 'lzf'")
+
+    if "compression_opts" in options:
+        if compression is None:
+            raise ValueError("compression_opts requires a compression")
+        compression_opts = options["compression_opts"]
+        if compression == "gzip":
+            if compression_opts is not None and (
+                isinstance(compression_opts, bool)
+                or not isinstance(compression_opts, Integral)
+            ):
+                raise TypeError("gzip compression_opts must be an integral level")
+            if compression_opts is not None and not 0 <= int(compression_opts) <= 9:
+                raise ValueError("gzip compression_opts must be in the range 0..9")
+            if compression_opts is not None:
+                options["compression_opts"] = int(compression_opts)
+        elif compression == "lzf" and compression_opts is not None:
+            raise ValueError("lzf compression_opts must be None")
+
+    for filter_name in ("shuffle", "fletcher32"):
+        if filter_name in options and type(options[filter_name]) is not bool:
+            raise TypeError(f"NDScope {filter_name} must be an exact bool")
+
+    active_filter = (
+        compression is not None
+        or options.get("shuffle") is True
+        or options.get("fletcher32") is True
+    )
+    if active_filter and "chunks" in options and options["chunks"] is None:
+        raise ValueError("NDScope filters require chunking")
+
+    if compression == "gzip" and not h5py.h5z.filter_avail(h5py.h5z.FILTER_DEFLATE):
+        raise ValueError("NDScope compression codec 'gzip' is unavailable")
+    if compression == "lzf" and not h5py.h5z.filter_avail(h5py.h5z.FILTER_LZF):
+        raise ValueError("NDScope compression codec 'lzf' is unavailable")
+
+    return options
+
+
+def _validate_ndscope_dataset_options_for_shape(
+    options: Mapping[str, Any], shape: tuple[int, ...]
+) -> None:
+    """Validate rank and size constraints for one output dataset."""
+    chunks = options.get("chunks")
+    if any(size == 0 for size in shape) and chunks is not True:
+        raise ValueError("zero-length NDScope data requires chunks=True")
+    if not isinstance(chunks, tuple):
+        return
+    if len(chunks) != len(shape):
+        raise ValueError("NDScope chunks tuple rank must match data rank")
+    for chunk, size in zip(chunks, shape):
+        if isinstance(chunk, bool) or not isinstance(chunk, Integral):
+            raise TypeError("NDScope chunk entries must be integral, not bool")
+        chunk_size = int(chunk)
+        if chunk_size <= 0:
+            raise ValueError("NDScope chunk entries must be positive")
+        if chunk_size > size:
+            raise ValueError("NDScope chunk entries cannot exceed data shape")
+
+
+def _ndscope_destination(name: str) -> tuple[str, str]:
+    """Map a public channel key to its ndscope group and dataset names."""
+    dataset_name = "raw"
+    group_name = name
+    for suffix in ("raw", "mean", "min", "max"):
+        if name.endswith(f".{suffix}"):
+            group_name = name[: -(len(suffix) + 1)]
+            dataset_name = suffix
+            break
+    if not group_name:
+        raise ValueError("NDScope channel name must not produce an empty group")
+    _canonical_ndscope_path(group_name, object_kind="group")
+    return group_name, dataset_name
+
+
+def _canonical_ndscope_path(path: str, *, object_kind: str) -> tuple[str, ...]:
+    """Return a structurally valid HDF5 path as its component tuple."""
+    if not path or path.startswith("/") or path.endswith("/"):
+        raise ValueError(
+            f"invalid NDScope {object_kind} path {path!r}: "
+            "leading/trailing slash is not allowed"
+        )
+    components = tuple(path.split("/"))
+    if any(
+        not component or component in {".", ".."} or "\x00" in component
+        for component in components
+    ):
+        raise ValueError(
+            f"invalid NDScope {object_kind} path {path!r}: "
+            "empty, '.', '..', and NUL components are not allowed"
+        )
+    return components
+
+
+def _validate_ndscope_object_paths(entries: Iterable[_NDScopeWriteEntry]) -> None:
+    """Reject structural HDF5 group/dataset path collisions."""
+    objects: dict[tuple[str, ...], str] = {}
+
+    def record(path: tuple[str, ...], object_kind: str) -> None:
+        previous = objects.get(path)
+        if previous is None:
+            objects[path] = object_kind
+            return
+        if previous == object_kind == "group":
+            return
+        if previous == object_kind:
+            raise ValueError(
+                f"duplicate NDScope {object_kind} path: {'/'.join(path)!r}"
+            )
+        raise ValueError(
+            f"NDScope HDF5 path conflict at {'/'.join(path)!r}: "
+            f"required as both {previous} and {object_kind}"
+        )
+
+    for entry in entries:
+        group_path = _canonical_ndscope_path(entry.group_name, object_kind="group")
+        for end in range(1, len(group_path) + 1):
+            record(group_path[:end], "group")
+        record(group_path + (entry.dataset_name,), "dataset")
+
+
+def _preflight_ndscope_write(
+    tsdict: TimeSeriesDict,
+    dataset_options: Mapping[str, Any] | None,
+) -> tuple[list[_NDScopeWriteEntry], dict[str, Any]]:
+    """Validate the complete write before opening or truncating the target."""
+    options = _normalise_ndscope_dataset_options(dataset_options)
+    entries: list[_NDScopeWriteEntry] = []
+    destinations: set[tuple[str, str]] = set()
+    group_meta: dict[str, tuple[float, float, str]] = {}
+
+    for key, ts in tsdict.items():
+        name = str(key)
+        group_name, dataset_name = _ndscope_destination(name)
+        destination = (group_name, dataset_name)
+        if destination in destinations:
+            raise ValueError(
+                "duplicate NDScope destination: "
+                f"group={group_name!r}, dataset={dataset_name!r}"
+            )
+        destinations.add(destination)
+
+        data = np.asarray(ts.value)
+        if data.ndim != 1:
+            raise ValueError(
+                f"NDScope dataset {name!r} must contain suitable 1-D data; "
+                f"got shape {data.shape}"
+            )
+        _validate_ndscope_dataset_options_for_shape(options, data.shape)
+
+        try:
+            rate_hz = float(ts.sample_rate.value)
+            gps_start = float(ts.t0.value)
+        except (AttributeError, TypeError, ValueError) as exc:
+            raise ValueError(
+                f"NDScope metadata for {name!r} has invalid timing values"
+            ) from exc
+        if not np.isfinite(rate_hz) or rate_hz <= 0:
+            raise ValueError(
+                f"NDScope rate_hz for {name!r} must be positive and finite"
+            )
+        if not np.isfinite(gps_start):
+            raise ValueError(f"NDScope gps_start for {name!r} must be finite")
+        unit = str(ts.unit) if ts.unit else ""
+
+        metadata = (rate_hz, gps_start, unit)
+        if group_name in group_meta and group_meta[group_name] != metadata:
+            expected = group_meta[group_name]
+            expected_value: float | str
+            actual_value: float | str
+            if rate_hz != expected[0]:
+                field = "sample_rate"
+                expected_value, actual_value = expected[0], rate_hz
+            elif gps_start != expected[1]:
+                field = "gps_start"
+                expected_value, actual_value = expected[1], gps_start
+            else:
+                field = "unit"
+                expected_value, actual_value = expected[2], unit
+            raise ValueError(
+                f"Inconsistent {field} for group {group_name!r}: "
+                f"expected {expected_value!r}, got {actual_value!r}"
+            )
+        group_meta.setdefault(group_name, metadata)
+        entries.append(
+            _NDScopeWriteEntry(
+                group_name=group_name,
+                dataset_name=dataset_name,
+                data=data,
+                rate_hz=rate_hz,
+                gps_start=gps_start,
+                unit=unit,
+            )
+        )
+
+    _validate_ndscope_object_paths(entries)
+    return entries, options
+
+
 def write_timeseriesdict_ndscope_hdf5(
     tsdict: TimeSeriesDict,
     target: str | Path,
     *,
     overwrite: bool = False,
+    dataset_options: Mapping[str, Any] | None = None,
     **kwargs: Any,
 ) -> None:
     """Write a `TimeSeriesDict` in ndscope-compatible HDF5 format.
@@ -288,69 +532,34 @@ def write_timeseriesdict_ndscope_hdf5(
         Output file path.
     overwrite : bool, optional
         If ``True``, overwrite an existing file.  Default: ``False``.
+    dataset_options : Mapping, optional
+        HDF5 dataset creation options.  Allowed keys are ``chunks``,
+        ``compression``, ``compression_opts``, ``shuffle``, and ``fletcher32``.
+        The mapping is copied and is never mutated.
     **kwargs
-        Additional keyword arguments reserved for compatibility with I/O dispatch.
+        Additional keyword arguments are rejected.  Dataset creation options
+        must be supplied through ``dataset_options``.
 
     """
     if kwargs:
         names = ", ".join(sorted(kwargs))
         raise TypeError(f"Unsupported NDScope writer keyword arguments: {names}")
 
+    entries, normalized_options = _preflight_ndscope_write(tsdict, dataset_options)
     mode = "w" if overwrite else "w-"
-    # group_meta tracks the first-seen metadata for each group so that
-    # subsequent series in the same group can be validated for consistency.
-    group_meta: dict[str, dict[str, float | str]] = {}
     with h5py.File(_resolve_source(target), mode) as f:
         groups: dict[str, h5py.Group] = {}
-        for key, ts in tsdict.items():
-            name = str(key)
-            # Determine group name and dataset name.
-            # If the channel key contains a ".raw"/".mean"/".min"/".max"
-            # suffix, split it to reconstruct the ndscope group structure.
-            ds_name = "raw"
-            grp_name = name
-            for suffix in ("raw", "mean", "min", "max"):
-                if name.endswith(f".{suffix}"):
-                    grp_name = name[: -(len(suffix) + 1)]
-                    ds_name = suffix
-                    break
-
-            rate_hz = float(ts.sample_rate.value)
-            gps_start = float(ts.t0.value)
-            unit = str(ts.unit) if ts.unit else ""
-
-            if grp_name not in groups:
-                grp = f.create_group(grp_name)
-                groups[grp_name] = grp
-                group_meta[grp_name] = {
-                    "rate_hz": rate_hz,
-                    "gps_start": gps_start,
-                    "unit": unit,
-                }
-                grp.attrs["rate_hz"] = rate_hz
-                grp.attrs["gps_start"] = gps_start
-                grp.attrs["unit"] = unit
-            else:
-                # Validate consistency with the first series in this group.
-                meta = group_meta[grp_name]
-                if rate_hz != meta["rate_hz"]:
-                    raise ValueError(
-                        f"Inconsistent sample_rate for group {grp_name!r}: "
-                        f"expected {meta['rate_hz']} Hz, got {rate_hz} Hz"
-                    )
-                if gps_start != meta["gps_start"]:
-                    raise ValueError(
-                        f"Inconsistent gps_start for group {grp_name!r}: "
-                        f"expected {meta['gps_start']}, got {gps_start}"
-                    )
-                if unit != meta["unit"]:
-                    raise ValueError(
-                        f"Inconsistent unit for group {grp_name!r}: "
-                        f"expected {meta['unit']!r}, got {unit!r}"
-                    )
-
-            grp = groups[grp_name]
-            grp.create_dataset(ds_name, data=ts.value)
+        for entry in entries:
+            if entry.group_name not in groups:
+                grp = f.require_group(entry.group_name)
+                groups[entry.group_name] = grp
+                grp.attrs["rate_hz"] = entry.rate_hz
+                grp.attrs["gps_start"] = entry.gps_start
+                grp.attrs["unit"] = entry.unit
+            grp = groups[entry.group_name]
+            grp.create_dataset(
+                entry.dataset_name, data=entry.data, **dict(normalized_options)
+            )
 
 
 # ---------------------------------------------------------------------------

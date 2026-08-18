@@ -5,6 +5,7 @@ import shelve
 from types import SimpleNamespace
 
 import numpy as np
+import pytest
 from gwpy.frequencyseries import FrequencySeries as GwpyFrequencySeries
 from gwpy.spectrogram import Spectrogram as GwpySpectrogram
 from gwpy.timeseries import TimeSeries as GwpyTimeSeries
@@ -18,6 +19,26 @@ from gwexpy.frequencyseries import (
 )
 from gwexpy.spectrogram import Spectrogram, SpectrogramDict, SpectrogramList
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesList
+
+
+def _builder_kwargs(t0_ns, precision):
+    return {
+        "dt": 1.0,
+        "t0": 0.0,
+        "_gwex_t0_gps_ns": t0_ns,
+        "_gwex_t0_gps_precision": precision,
+    }
+
+
+class _TimeseriesBuilderPayload:
+    def __init__(self, data, kwargs):
+        self.data = data
+        self.kwargs = kwargs
+
+    def __reduce__(self):
+        from gwexpy.io.pickle_compat import _build_gwpy_timeseries
+
+        return _build_gwpy_timeseries, (self.data, self.kwargs)
 
 
 def test_pickle_series_to_gwpy_types():
@@ -39,6 +60,116 @@ def test_pickle_series_to_gwpy_types():
     assert isinstance(fs2, GwpyFrequencySeries)
     assert isinstance(sg2, GwpySpectrogram)
     assert not hasattr(ts2, "_gwex_test")
+
+
+def test_pickle_preserves_only_gps_nanosecond_state_on_gwpy_timeseries():
+    ts = TimeSeries(
+        np.arange(3.0),
+        t0_ns=1_234_567_890_123_456_789,
+        dt=1.0,
+        unit="m",
+    )
+    ts._gwex_arbitrary = "must not cross the compatibility boundary"
+
+    restored = pickle.loads(pickle.dumps(ts))
+
+    assert isinstance(restored, GwpyTimeSeries)
+    assert restored._gwex_t0_gps_ns == 1_234_567_890_123_456_789
+    assert restored._gwex_t0_gps_precision == "exact"
+    assert not hasattr(restored, "_gwex_arbitrary")
+
+
+@pytest.mark.parametrize(
+    ("t0_ns", "precision", "error"),
+    [
+        (True, "exact", TypeError),
+        ("1", "exact", TypeError),
+        (-1, "exact", ValueError),
+        (2**63, "exact", ValueError),
+        (1, "invalid", ValueError),
+    ],
+)
+def test_pickle_dumps_rejects_malformed_private_gps_state(t0_ns, precision, error):
+    source = TimeSeries(np.arange(2.0), t0=0.0, dt=1.0)
+    source._gwex_t0_gps_ns = t0_ns
+    source._gwex_t0_gps_precision = precision
+
+    with pytest.raises(error):
+        pickle.dumps(source)
+
+    assert source._gwex_t0_gps_ns is t0_ns or source._gwex_t0_gps_ns == t0_ns
+    assert source._gwex_t0_gps_precision == precision
+
+
+@pytest.mark.parametrize(
+    ("t0_ns", "precision", "error"),
+    [
+        (True, "exact", TypeError),
+        ("1", "exact", TypeError),
+        (-1, "exact", ValueError),
+        (2**63, "exact", ValueError),
+        (1, "arbitrary", ValueError),
+        (None, "exact", ValueError),
+        (1, None, ValueError),
+    ],
+)
+def test_timeseries_pickle_builder_rejects_malformed_gps_state(t0_ns, precision, error):
+    from gwexpy.io.pickle_compat import _build_gwpy_timeseries
+
+    with pytest.raises(error):
+        _build_gwpy_timeseries(np.arange(2.0), _builder_kwargs(t0_ns, precision))
+    with pytest.raises(error):
+        pickle.loads(
+            pickle.dumps(
+                _TimeseriesBuilderPayload(
+                    np.arange(2.0), _builder_kwargs(t0_ns, precision)
+                )
+            )
+        )
+
+
+@pytest.mark.parametrize(
+    ("t0", "expected_ns", "expected_precision"),
+    [
+        (123, 123_000_000_000, "exact"),
+        (10.0000000005, 10_000_000_000, "quantized"),
+    ],
+)
+def test_timeseries_pickle_builder_preserves_exact_and_quantized_state(
+    t0, expected_ns, expected_precision
+):
+    source = TimeSeries(np.arange(2.0), t0=t0, dt=1.0)
+    restored = pickle.loads(pickle.dumps(source))
+
+    assert isinstance(restored, GwpyTimeSeries)
+    assert restored._gwex_t0_gps_ns == expected_ns
+    assert restored._gwex_t0_gps_precision == expected_precision
+
+
+def test_legacy_timeseries_pickle_roundtrip_without_gps_state_remains_valid():
+    source = TimeSeries(np.arange(2.0), t0=0.0, dt=1.0)
+    source._gwex_t0_gps_ns = None
+    source._gwex_t0_gps_precision = None
+
+    restored = pickle.loads(pickle.dumps(source))
+
+    assert isinstance(restored, GwpyTimeSeries)
+    assert not hasattr(restored, "_gwex_t0_gps_ns")
+    assert not hasattr(restored, "_gwex_t0_gps_precision")
+
+
+def test_legacy_timeseries_pickle_payload_without_gps_state_remains_valid():
+    from gwexpy.io.pickle_compat import _build_gwpy_timeseries
+
+    payload = pickle.dumps(
+        _TimeseriesBuilderPayload(np.arange(2.0), {"dt": 1.0, "t0": 0.0})
+    )
+
+    restored = pickle.loads(payload)
+
+    assert isinstance(restored, GwpyTimeSeries)
+    assert not hasattr(restored, "_gwex_t0_gps_ns")
+    assert not hasattr(restored, "_gwex_t0_gps_precision")
 
 
 def test_pickle_collections_to_gwpy_or_builtin():

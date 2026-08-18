@@ -205,6 +205,9 @@ class TestFrequencySeriesMatrixRegistryBackend:
         FrequencySeriesMatrix.write, unlike the collection containers."""
         from gwpy.io.registry import default_registry as gwpy_reg
 
+        from gwexpy._bootstrap import register_all
+
+        register_all(include_io=True)
         gwpy_format = "gwpy-matrix-audit-write"
         gwpy_reg.register_writer(
             gwpy_format, FrequencySeriesMatrix, _astropy_sentinel_writer
@@ -228,6 +231,9 @@ class TestFrequencySeriesMatrixRegistryBackend:
         FrequencySeriesMatrix.read."""
         from gwpy.io.registry import default_registry as gwpy_reg
 
+        from gwexpy._bootstrap import register_all
+
+        register_all(include_io=True)
         gwpy_format = "gwpy-matrix-audit-read"
         gwpy_reg.register_reader(
             gwpy_format, FrequencySeriesMatrix, _astropy_sentinel_reader
@@ -251,7 +257,9 @@ class TestCollectionsGwpyRegistrationSubprocess:
 
     def test_xml_diaggui_in_gwpy_registry_for_frequencyseriesdict(self):
         result = _run_isolated("""\
+            from gwexpy._bootstrap import register_all
             from gwpy.io.registry import default_registry as reg
+            register_all(include_io=True)
             from gwexpy.frequencyseries import FrequencySeriesDict
             fmt_names = list(reg.get_formats(FrequencySeriesDict, "Read")["Format"])
             assert "xml.diaggui" in fmt_names, f"xml.diaggui not in {fmt_names}"
@@ -265,7 +273,9 @@ class TestCollectionsGwpyRegistrationSubprocess:
         This documents the current behaviour: unlike FrequencySeriesDict, the list
         type has no entries in the gwpy registry (tracked by issue #444)."""
         result = _run_isolated("""\
+            from gwexpy._bootstrap import register_all
             from gwpy.io.registry import default_registry as reg
+            register_all(include_io=True)
             from gwexpy.frequencyseries import FrequencySeriesList
             fmt_names = list(reg.get_formats(FrequencySeriesList, "Read")["Format"])
             assert fmt_names == [], (

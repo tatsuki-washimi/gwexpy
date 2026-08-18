@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from fractions import Fraction
+from numbers import Integral
 from typing import Any, Optional, TypedDict
 
 import numpy as np
 from astropy import units as u
+from gwpy.time import LIGOTimeGPS
 
 from gwexpy.time import to_gps
 
@@ -34,6 +37,67 @@ class FreqAxisInfo(TypedDict):
     f0: Any
     n: Optional[int]
     freqs: Any
+
+
+_GPS_NS_MAX = 2**63 - 1
+
+
+def _validate_t0_gps_ns(value: Any) -> int:
+    """Validate and normalize a total GPS nanosecond value."""
+    if isinstance(value, (bool, np.bool_)) or not isinstance(value, Integral):
+        raise TypeError("t0_ns must be a Python or NumPy integral")
+    value = int(value)
+    if not 0 <= value <= _GPS_NS_MAX:
+        raise ValueError("t0_ns must be in the range 0..2**63-1")
+    return value
+
+
+def _round_fraction_ties_even(value: Fraction) -> int:
+    """Round a rational value to an integer using ties-to-even."""
+    lower, remainder = divmod(value.numerator, value.denominator)
+    doubled = 2 * remainder
+    if doubled < value.denominator:
+        return lower
+    if doubled > value.denominator:
+        return lower + 1
+    return lower if lower % 2 == 0 else lower + 1
+
+
+def _seconds_to_gps_ns(value: Any) -> int:
+    """Convert scalar GPS seconds to nanoseconds with ties-to-even rounding."""
+    value = float(value)
+    if not np.isfinite(value):
+        raise ValueError("GPS seconds must be finite")
+    return _round_fraction_ties_even(Fraction(str(value)) * 1_000_000_000)
+
+
+def _t0_gps_ns_state(value: Any) -> tuple[int, str]:
+    """Return an integer GPS nanosecond value and its precision state."""
+    if isinstance(value, LIGOTimeGPS):
+        return int(value.ns()), "exact"
+    if isinstance(value, (bool, np.bool_)):
+        return _seconds_to_gps_ns(value), "quantized"
+    if isinstance(value, Integral):
+        return int(value) * 1_000_000_000, "exact"
+    if isinstance(value, (float, np.floating)):
+        return _seconds_to_gps_ns(value), "quantized"
+
+    coerced = _coerce_t0_gps(value)
+    if coerced is None:
+        raise TypeError("t0/epoch could not be converted to GPS")
+    try:
+        seconds = coerced.to(u.s).value
+    except AttributeError:
+        seconds = coerced
+    return _seconds_to_gps_ns(seconds), "quantized"
+
+
+def _gps_ns_to_ligo(value: int) -> LIGOTimeGPS | float:
+    """Build an exact ``LIGOTimeGPS`` when its seconds fit LAL's integer API."""
+    seconds, nanoseconds = divmod(int(value), 1_000_000_000)
+    if not -(2**31) <= seconds < 2**31:
+        return float(value) / 1_000_000_000
+    return LIGOTimeGPS(seconds, nanoseconds)
 
 
 def _coerce_t0_gps(t0: Any) -> Optional[u.Quantity]:

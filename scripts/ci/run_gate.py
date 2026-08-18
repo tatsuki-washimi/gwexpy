@@ -17,11 +17,16 @@ from collections.abc import Iterable
 from pathlib import Path
 
 
-def run_cmd(cmd: list[str], *, cwd: Path | None = None) -> None:
+def run_cmd(
+    cmd: list[str],
+    *,
+    cwd: Path | None = None,
+    environment: dict[str, str] | None = None,
+) -> None:
     """Run one command and fail fast."""
     quoted = " ".join(cmd)
     print(f"\n$ {quoted}")
-    completed = subprocess.run(cmd, check=False, cwd=cwd)
+    completed = subprocess.run(cmd, check=False, cwd=cwd, env=environment)
     if completed.returncode:
         raise SystemExit(completed.returncode)
 
@@ -111,6 +116,25 @@ def _run_strict_junit_gate(
             f"failures={counts['failures']} -- expected tests>0 and "
             "skipped=errors=failures=0"
         )
+
+
+def _repository_root() -> Path:
+    return Path(__file__).resolve().parents[2]
+
+
+def _docs_notebook_environment(repo_root: Path) -> dict[str, str]:
+    environment = os.environ.copy()
+    environment.update(
+        {
+            "PYTHONNOUSERSITE": "1",
+            "PYTHONPATH": str(repo_root.resolve()),
+            "PATH": os.pathsep.join(
+                [str(Path(sys.executable).resolve().parent), os.defpath]
+            ),
+            "GWEXPY_RUN_NOTEBOOK_TESTS": "1",
+        }
+    )
+    return environment
 
 
 def run_gate(gate: str, with_fixtures: bool) -> None:
@@ -236,13 +260,19 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
         return
 
     if gate == "docs-notebook":
+        repo_root = _repository_root()
+        environment = _docs_notebook_environment(repo_root)
         if with_fixtures:
-            run_cmd(["python", "tests/fixtures/generate_fixtures.py"])
-        os.environ["GWEXPY_RUN_NOTEBOOK_TESTS"] = os.environ.get(
-            "GWEXPY_RUN_NOTEBOOK_TESTS",
-            "1",
+            run_cmd(
+                ["python", "tests/fixtures/generate_fixtures.py"],
+                cwd=repo_root,
+                environment=environment,
+            )
+        run_cmd(
+            ["pytest", "-q", "tests/docs/test_docs_notebooks.py"],
+            cwd=repo_root,
+            environment=environment,
         )
-        run_cmd(["pytest", "-q", "tests/docs/test_docs_notebooks.py"])
         return
 
     if gate == "io-zarr":

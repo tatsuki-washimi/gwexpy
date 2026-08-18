@@ -50,7 +50,7 @@ class TensorField(FieldDict):
     >>> t
     <TensorField(2, 2, 2, 2, 3, 3)@time, 1.0>
     >>> t.trace()
-    <ScalarField(...), axis0_domain='time', ...>
+    <ScalarField(2, 2, 2, 2)@time, 1.0>
 
     """
 

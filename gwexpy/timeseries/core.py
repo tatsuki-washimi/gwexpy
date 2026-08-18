@@ -3,9 +3,7 @@ from __future__ import annotations
 from gwpy.timeseries.core import (
     GWOSC_DEFAULT_HOST,
     Channel,
-    ChannelList,
     LIGOTimeGPS,
-    OrderedDict,
     SegmentList,
     Series,
     Time,
@@ -13,9 +11,6 @@ from gwpy.timeseries.core import (
     TimeSeriesBaseDict,
     TimeSeriesBaseList,
     as_series_dict_class,
-    ceil,
-    gps_types,
-    io_registry,
     to_gps,
     units,
 )
@@ -23,9 +18,7 @@ from gwpy.timeseries.core import (
 __all__ = [
     "GWOSC_DEFAULT_HOST",
     "Channel",
-    "ChannelList",
     "LIGOTimeGPS",
-    "OrderedDict",
     "SegmentList",
     "Series",
     "Time",
@@ -33,9 +26,6 @@ __all__ = [
     "TimeSeriesBaseDict",
     "TimeSeriesBaseList",
     "as_series_dict_class",
-    "ceil",
-    "gps_types",
-    "io_registry",
     "to_gps",
     "units",
 ]

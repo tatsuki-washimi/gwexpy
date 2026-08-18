@@ -147,6 +147,9 @@ class TimeSeriesMatrix(  # type: ignore[misc]
     @classmethod
     def read(cls, source, *args: Any, **kwargs: Any):  # type: ignore[override]
         """Read a `TimeSeriesMatrix` from a supported source."""
+        from gwexpy._bootstrap import ensure_io_registered
+
+        ensure_io_registered()
         read_kwargs = dict(kwargs)
         normalized_format = read_kwargs.pop("format", None)
         positional_format = args[0] if args else None

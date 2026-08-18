@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from .collections import SpectrogramDict, SpectrogramList
-from .matrix import SpectrogramMatrix
-from .spectrogram import Spectrogram
+import importlib
+import sys
 
 __all__ = [
     "Spectrogram",
@@ -13,22 +12,46 @@ __all__ = [
     "SpectrogramMatrix",
 ]
 
-# Register constructors for cross-module lookup (avoids circular imports)
-from gwexpy.interop._registry import ConverterRegistry as _CR
+_EXPORTS = {
+    "Spectrogram": (".spectrogram", "Spectrogram"),
+    "SpectrogramDict": (".collections", "SpectrogramDict"),
+    "SpectrogramList": (".collections", "SpectrogramList"),
+    "SpectrogramMatrix": (".matrix", "SpectrogramMatrix"),
+}
 
-_CR.register_constructor("Spectrogram", Spectrogram)
-_CR.register_constructor("SpectrogramDict", SpectrogramDict)
-_CR.register_constructor("SpectrogramList", SpectrogramList)
-_CR.register_constructor("SpectrogramMatrix", SpectrogramMatrix)
-del _CR
 
-# Dynamic import from gwpy (PEP 562)
-import gwpy.spectrogram as _gwpy_spectrogram
+def _register_constructors() -> None:
+    """Load and register all container constructors for explicit bootstrap."""
+    from gwexpy.interop._registry import ConverterRegistry
+
+    for name in __all__:
+        value = _load_export(name)
+        ConverterRegistry.register_constructor(name, value)
+
+
+def _load_export(name: str):
+    module_name, attribute_name = _EXPORTS[name]
+    module = importlib.import_module(module_name, __name__)
+    value = getattr(module, attribute_name)
+    from gwexpy.interop._registry import ConverterRegistry
+
+    ConverterRegistry.register_constructor(name, value)
+    globals()[name] = value
+    return value
 
 
 def __getattr__(name):
-    return getattr(_gwpy_spectrogram, name)
+    if name in _EXPORTS:
+        return _load_export(name)
+    # Preserve GWpy's compatibility namespace, but only pay its import cost
+    # when an unknown attribute is requested explicitly.
+    gwpy_spectrogram = importlib.import_module("gwpy.spectrogram")
+    return getattr(gwpy_spectrogram, name)
 
 
 def __dir__():
-    return sorted(set(__all__) | set(dir(_gwpy_spectrogram)))
+    fallback_names = {"connect", "io", "spectrogram"}
+    gwpy_spectrogram = sys.modules.get("gwpy.spectrogram")
+    if gwpy_spectrogram is not None:
+        fallback_names.update(dir(gwpy_spectrogram))
+    return sorted(set(__all__) | set(globals()) | fallback_names)

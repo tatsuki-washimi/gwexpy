@@ -52,7 +52,10 @@ GWexpy の `TimeSeries` は NumPy 配列から直接作成でき、標準的な�
 
 ```python
 import numpy as np
+import gwexpy
 from gwexpy.timeseries import TimeSeries
+
+gwexpy.register_all(include_io=False)
 
 ts = TimeSeries(np.random.randn(4096), sample_rate=4096.0, t0=0)
 ts.plot().show()
@@ -89,7 +92,10 @@ GWexpy を使いこなすための 2 つの重要な柱です。
 
 ```python
 import numpy as np
+import gwexpy
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+
+gwexpy.register_all(include_io=False)
 
 # データの作成
 tsd = TimeSeriesDict({

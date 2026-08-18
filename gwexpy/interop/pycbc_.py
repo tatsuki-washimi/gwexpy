@@ -50,11 +50,19 @@ def from_pycbc_timeseries(
 
     Examples
     --------
-    >>> from pycbc.types import TimeSeries as PyCBCTimeSeries
-    >>> import numpy as np
-    >>> pycbc_ts = PyCBCTimeSeries(np.zeros(1024), delta_t=1/1024, epoch=0)
-    >>> from gwexpy.timeseries import TimeSeries
-    >>> ts = TimeSeries.from_pycbc(pycbc_ts)
+    This example requires the optional PyCBC package and is intentionally
+    excluded from raw doctest; focused tests use fakes.
+
+    .. code-block:: python
+
+       import numpy as np
+       from pycbc.types import TimeSeries as PyCBCTimeSeries
+
+       from gwexpy.interop import from_pycbc_timeseries
+       from gwexpy.timeseries import TimeSeries
+
+       pycbc_ts = PyCBCTimeSeries(np.zeros(1024), delta_t=1 / 1024, epoch=0)
+       ts = from_pycbc_timeseries(TimeSeries, pycbc_ts)
 
     """
     require_optional("pycbc")
@@ -88,10 +96,18 @@ def to_pycbc_timeseries(
 
     Examples
     --------
-    >>> from gwexpy.timeseries import TimeSeries
-    >>> import numpy as np
-    >>> ts = TimeSeries(np.zeros(1024), t0=0, dt=1/1024)
-    >>> pycbc_ts = ts.to_pycbc()
+    This example requires the optional PyCBC package and is intentionally
+    excluded from raw doctest; focused tests use fakes.
+
+    .. code-block:: python
+
+       import numpy as np
+
+       from gwexpy.interop import to_pycbc_timeseries
+       from gwexpy.timeseries import TimeSeries
+
+       ts = TimeSeries(np.zeros(1024), t0=0, dt=1 / 1024)
+       pycbc_ts = to_pycbc_timeseries(ts)
 
     """
     require_optional("pycbc")
@@ -128,11 +144,21 @@ def from_pycbc_frequencyseries(
 
     Examples
     --------
-    >>> from pycbc.types import FrequencySeries as PyCBCFrequencySeries
-    >>> import numpy as np
-    >>> pycbc_fs = PyCBCFrequencySeries(np.zeros(512, dtype=complex), delta_f=1.0, epoch=0)
-    >>> from gwexpy.frequencyseries import FrequencySeries
-    >>> fs = FrequencySeries.from_pycbc(pycbc_fs)
+    This example requires the optional PyCBC package and is intentionally
+    excluded from raw doctest; focused tests use fakes.
+
+    .. code-block:: python
+
+       import numpy as np
+       from pycbc.types import FrequencySeries as PyCBCFrequencySeries
+
+       from gwexpy.frequencyseries import FrequencySeries
+       from gwexpy.interop import from_pycbc_frequencyseries
+
+       pycbc_fs = PyCBCFrequencySeries(
+           np.zeros(512, dtype=complex), delta_f=1.0, epoch=0
+       )
+       fs = from_pycbc_frequencyseries(FrequencySeries, pycbc_fs)
 
     """
     require_optional("pycbc")
@@ -167,10 +193,20 @@ def to_pycbc_frequencyseries(
 
     Examples
     --------
-    >>> from gwexpy.frequencyseries import FrequencySeries
-    >>> import numpy as np
-    >>> fs = FrequencySeries(np.zeros(512, dtype=complex), frequencies=np.arange(512))
-    >>> pycbc_fs = fs.to_pycbc()
+    This example requires the optional PyCBC package and is intentionally
+    excluded from raw doctest; focused tests use fakes.
+
+    .. code-block:: python
+
+       import numpy as np
+
+       from gwexpy.frequencyseries import FrequencySeries
+       from gwexpy.interop import to_pycbc_frequencyseries
+
+       fs = FrequencySeries(
+           np.zeros(512, dtype=complex), frequencies=np.arange(512)
+       )
+       pycbc_fs = to_pycbc_frequencyseries(fs)
 
     """
     require_optional("pycbc")

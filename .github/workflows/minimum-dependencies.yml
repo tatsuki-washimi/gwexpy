@@ -1,0 +1,212 @@
+name: Minimum Dependencies
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "gwexpy/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - "requirements/minimum-py311.txt"
+      - ".github/workflows/minimum-dependencies.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: minimum-dependencies-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python311-lowest-direct:
+    name: Python 3.11 lowest-direct runtime
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    env:
+      PYTHONNOUSERSITE: "1"
+      PYTHONHASHSEED: "0"
+      PYTHONFAULTHANDLER: "1"
+      MPLCONFIGDIR: /tmp/matplotlib
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      NUMEXPR_NUM_THREADS: "1"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+
+      - name: Install build tooling
+        run: python -m pip install build
+
+      - name: Build wheel
+        run: python -m build --wheel --outdir "${RUNNER_TEMP}/dist"
+
+      - name: Install minimum runtime dependencies
+        run: |
+          python -m pip install -r requirements/minimum-py311.txt
+          python -m pip check
+
+      - name: Install wheel without dependency resolution
+        run: |
+          python -m pip install --no-deps "${RUNNER_TEMP}"/dist/*.whl
+          python -m pip check
+
+      - name: Installed-wheel runtime smoke
+        working-directory: ${{ runner.temp }}
+        run: |
+          python - <<'PY'
+          import importlib.util
+          import gwexpy
+
+          assert importlib.util.find_spec("pytest") is None
+          assert importlib.util.find_spec("gpstime") is None
+
+          path = str(gwexpy.__file__)
+          assert "site-packages" in path, path
+
+          gwexpy.register_all(include_io=False)
+
+          from gwexpy import FrequencySeries, Spectrogram, TimeSeries
+
+          TimeSeries([1.0, 2.0], sample_rate=1)
+          FrequencySeries([1.0, 2.0], df=1)
+          Spectrogram([[1.0, 2.0]], dt=1, df=1)
+
+          print("gwexpy:", gwexpy.__file__)
+          print("minimum installed-wheel smoke: PASS")
+          PY
+
+      - name: Snapshot minimum runtime versions
+        run: |
+          python - <<'PY' > "${RUNNER_TEMP}/runtime-before.txt"
+          from importlib.metadata import version
+
+          for package in (
+              "gwpy",
+              "numpy",
+              "scipy",
+              "astropy",
+              "pandas",
+              "matplotlib",
+              "h5py",
+              "bottleneck",
+          ):
+              print(package, version(package))
+          PY
+          cat "${RUNNER_TEMP}/runtime-before.txt"
+
+      - name: Install qualification tooling
+        run: |
+          python -m pip install \
+            -c requirements/minimum-py311.txt \
+            pytest \
+            pytest-forked \
+            freezegun \
+            babel \
+            docutils \
+            sphinx \
+            nbformat \
+            jupyter_client \
+            nbclient \
+            iminuit \
+            "obspy<2" \
+            lalsuite
+          python -m pip check
+
+      - name: Verify minimum runtime stack was not upgraded
+        run: |
+          python - <<'PY' > "${RUNNER_TEMP}/runtime-after.txt"
+          from importlib.metadata import version
+
+          for package in (
+              "gwpy",
+              "numpy",
+              "scipy",
+              "astropy",
+              "pandas",
+              "matplotlib",
+              "h5py",
+              "bottleneck",
+          ):
+              print(package, version(package))
+          PY
+
+          diff -u \
+            "${RUNNER_TEMP}/runtime-before.txt" \
+            "${RUNNER_TEMP}/runtime-after.txt"
+
+      - name: Install source tree for tests
+        run: |
+          python -m pip install --no-deps -e .
+          python -m pip check
+
+      - name: Run focused v0.2 contract suite
+        run: |
+          python -m pytest -q -rs \
+            --junitxml="${RUNNER_TEMP}/focused.xml" \
+            tests/test_import_order.py \
+            tests/io/test_hdf5_sidecar.py \
+            tests/io/test_hdf5_timeseries_family.py \
+            tests/provenance/test_provenance_contract.py \
+            tests/timeseries/test_t0_gps_ns.py \
+            tests/timeseries/test_io_ndscope_hdf5.py \
+            tests/types/test_series_matrix_contract_manifest.py \
+            tests/types/test_series_matrix_operator_contract.py \
+            tests/signal/test_spectral_median_bias.py \
+            tests/coupling/test_segment.py
+
+      - name: Verify focused skip allowlist
+        run: |
+          python - <<'PY'
+          import os
+          import sys
+          import xml.etree.ElementTree as ET
+
+          report = os.path.join(os.environ["RUNNER_TEMP"], "focused.xml")
+          root = ET.parse(report).getroot()
+          skipped = [
+              f"{case.attrib['classname']}::{case.attrib['name']}"
+              for case in root.iter("testcase")
+              if case.find("skipped") is not None
+          ]
+          expected = [
+              "tests.timeseries.test_io_ndscope_hdf5.TestLocalSampleRateData::"
+              "test_reads_sample_rate_metadata"
+          ]
+
+          if skipped != expected:
+              print("unexpected focused skips:", skipped, file=sys.stderr)
+              raise SystemExit(1)
+
+          print("focused skip allowlist: PASS")
+          print(skipped[0])
+          PY
+
+      - name: Run broad core qualification
+        run: |
+          python -m pytest -q -rs \
+            -m "not network and not nds and not root" \
+            --ignore=tests/docs/test_docs_notebooks.py \
+            --ignore=tests/gui/ \
+            --ignore=tests/nds/ \
+            --ignore=tests/io/ \
+            --ignore=tests/io_conformance/ \
+            --ignore=tests/segments/ \
+            --ignore=tests/table/ \
+            --ignore=tests/test_geomap.py \
+            --ignore=tests/time/test_time.py \
+            --ignore=tests/test_fitting_highlevel.py \
+            --ignore=tests/timeseries/test_matrix_analysis.py \
+            --ignore=tests/types/test_series_matrix_io.py \
+            tests/

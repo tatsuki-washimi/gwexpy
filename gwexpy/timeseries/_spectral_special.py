@@ -945,6 +945,9 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
 
         Examples
         --------
+        >>> import numpy as np
+        >>> from gwexpy.timeseries import TimeSeries
+        >>> data = np.sin(2 * np.pi * 20 * np.arange(1024) / 1024)
         >>> ts = TimeSeries(data, sample_rate=1024)
         >>> spec = ts.cwt(frequencies=np.logspace(0, 2, 50))
         >>> power = np.abs(spec.value)**2  # Time-frequency power
@@ -1096,10 +1099,23 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
 
         Examples
         --------
+        Schematic example (requires the optional ``PyEMD`` package; not
+        executed in the base test environment)::
+
+        >>> import numpy as np
+        >>> from gwexpy.timeseries import TimeSeries
+        >>> data = np.sin(2 * np.pi * 5 * np.arange(1024) * 0.01)
         >>> ts = TimeSeries(data, dt=0.01, unit='V')
-        >>> imfs = ts.emd(method='eemd', eemd_trials=50, random_state=42)
-        >>> for key, imf in imfs.items():
-        ...     print(f"{key}: {imf.shape}")
+
+        The optional PyEMD invocation is illustrative and not a doctest; it
+        requires the optional ``PyEMD`` package and is covered by the optional
+        decomposition tests:
+
+        .. code-block:: python
+
+           imfs = ts.emd(method='eemd', eemd_trials=50, random_state=42)
+           for key, imf in imfs.items():
+               print(f"{key}: {imf.shape}")
 
         """
         PyEMD = require_optional("PyEMD")
@@ -1327,6 +1343,9 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
 
         Examples
         --------
+        >>> import numpy as np
+        >>> from gwexpy.timeseries import TimeSeries
+        >>> t = np.arange(1000) * 0.001
         >>> ts = TimeSeries(np.sin(2 * np.pi * 10 * t), dt=0.001, unit='V')
         >>> result = ts.hilbert_analysis(pad=100, if_smooth=10)
         >>> amplitude = result['amplitude']
@@ -1496,21 +1515,37 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
 
         Examples
         --------
-        >>> ts = TimeSeries(data, dt=0.01, unit='V')
-        >>> # Dictionary output
-        >>> result = ts.hht(emd_method='eemd', output='dict')
-        >>> imfs = result['imfs']
-        >>> inst_freq = result['if']
+        Schematic examples (require the optional ``PyEMD`` package; not
+        executed in the base test environment)::
 
-        >>> # Spectrogram output with custom settings
-        >>> spec = ts.hht(
-        ...     output='spectrogram',
-        ...     n_bins=200,
-        ...     fmin=10,
-        ...     fmax=100,
-        ...     weight='ia',
-        ...     hilbert_kwargs={'pad': 100, 'if_smooth': 10}
-        ... )
+        >>> import numpy as np
+        >>> from gwexpy.timeseries import TimeSeries
+        >>> data = np.sin(2 * np.pi * 5 * np.arange(1024) * 0.01)
+        >>> ts = TimeSeries(data, dt=0.01, unit='V')
+
+        The optional PyEMD dictionary invocation is illustrative and not a
+        doctest; it requires ``PyEMD`` and is covered by optional decomposition
+        tests:
+
+        .. code-block:: python
+
+           result = ts.hht(emd_method='eemd', output='dict')
+           imfs = result['imfs']
+           inst_freq = result['if']
+
+        The optional PyEMD spectrogram invocation is also illustrative and
+        not a doctest; it has the same prerequisite and coverage boundary:
+
+        .. code-block:: python
+
+           spec = ts.hht(
+               output='spectrogram',
+               n_bins=200,
+               fmin=10,
+               fmax=100,
+               weight='ia',
+               hilbert_kwargs={'pad': 100, 'if_smooth': 10}
+           )
 
         See Also
         --------

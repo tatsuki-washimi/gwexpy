@@ -52,7 +52,10 @@ GWexpy's `TimeSeries` can be created directly from NumPy arrays and features bui
 
 ```python
 import numpy as np
+import gwexpy
 from gwexpy.timeseries import TimeSeries
+
+gwexpy.register_all(include_io=False)
 
 ts = TimeSeries(np.random.randn(4096), sample_rate=4096.0, t0=0)
 ts.plot().show()
@@ -89,7 +92,10 @@ Minimal example for calculating cross-spectral density (CSD) between two channel
 
 ```python
 import numpy as np
+import gwexpy
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+
+gwexpy.register_all(include_io=False)
 
 # Create data
 tsd = TimeSeriesDict({

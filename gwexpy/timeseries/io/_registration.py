@@ -120,31 +120,40 @@ def register_timeseries_format(
 
     Examples
     --------
-    Simple registration with auto-adaptation:
+    Schematic example (requires the project-specific reader callable
+    ``read_timeseriesdict_gbd``; illustrative and not a doctest):
 
-    >>> register_timeseries_format(
-    ...     "gbd",
-    ...     reader_dict=read_timeseriesdict_gbd,
-    ...     extension="gbd",
-    ... )
+    .. code-block:: python
 
-    Registration with custom single reader:
+       register_timeseries_format(
+           "gbd",
+           reader_dict=read_timeseriesdict_gbd,
+           extension="gbd",
+       )
 
-    >>> register_timeseries_format(
-    ...     "ats",
-    ...     reader_dict=read_timeseriesdict_ats,
-    ...     reader_single=read_timeseries_ats,
-    ...     extension="ats",
-    ... )
+    Schematic example (requires project-specific reader callables; illustrative
+    and not a doctest):
 
-    Registration with writer support:
+    .. code-block:: python
 
-    >>> register_timeseries_format(
-    ...     "wav",
-    ...     reader_dict=read_timeseriesdict_wav,
-    ...     writer_dict=write_timeseriesdict_wav,
-    ...     extension="wav",
-    ... )
+       register_timeseries_format(
+           "ats",
+           reader_dict=read_timeseriesdict_ats,
+           reader_single=read_timeseries_ats,
+           extension="ats",
+       )
+
+    Schematic example (requires project-specific reader/writer callables;
+    illustrative and not a doctest):
+
+    .. code-block:: python
+
+       register_timeseries_format(
+           "wav",
+           reader_dict=read_timeseriesdict_wav,
+           writer_dict=write_timeseriesdict_wav,
+           extension="wav",
+       )
 
     """
     # Import here to avoid circular dependencies

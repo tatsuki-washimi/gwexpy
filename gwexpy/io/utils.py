@@ -662,8 +662,20 @@ def ensure_dependency(
 
     Examples
     --------
-    >>> xarray = ensure_dependency("xarray")  # doctest: +SKIP
-    >>> nptdms = ensure_dependency("nptdms", import_name="nptdms")  # doctest: +SKIP
+    The standard-library path is deterministic and executable:
+
+    >>> json = ensure_dependency("json", import_name="json")
+    >>> json.loads('{"ok": true}')['ok']
+    True
+
+    Optional-package setup is an illustrative fragment, not a doctest. It
+    requires the corresponding optional extras and is covered by dedicated
+    dedicated tests for optional I/O rather than this raw doctest lane:
+
+    .. code-block:: python
+
+       xarray = ensure_dependency("xarray")
+       nptdms = ensure_dependency("nptdms", import_name="nptdms")
 
     """
     try:
@@ -709,9 +721,14 @@ def extract_audio_metadata(source: str | Path) -> dict[str, Any]:
 
     Examples
     --------
-    >>> metadata = extract_audio_metadata("song.mp3")  # doctest: +SKIP
-    >>> print(metadata.get("title"))  # doctest: +SKIP
-    'Song Title'
+    The following is an illustrative external-file fragment, not a doctest.
+    It requires the optional ``tinytag`` dependency and an existing audio
+    file. Dedicated audio I/O tests cover this integration boundary.
+
+    .. code-block:: python
+
+       metadata = extract_audio_metadata("song.mp3")
+       print(metadata.get("title"))
 
     """
     try:

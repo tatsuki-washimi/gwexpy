@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from fractions import Fraction
+from numbers import Integral
 from typing import TYPE_CHECKING, Any, Protocol, cast
 
 import numpy as np
@@ -21,6 +23,12 @@ __all__ = [
 # meas_date is a Python datetime (microsecond resolution); allow ~1us of
 # round-trip slack when comparing it against a TimeSeries epoch (GPS seconds).
 _MEAS_DATE_TOLERANCE_S = 1e-6
+# The private source-dt marker is trusted only when its implied rate agrees
+# with MNE's current rate at this tight tolerance.  A changed/resampled Raw
+# therefore falls back to the ordinary floating-point epoch path.
+_TIMEBASE_SFREQ_RTOL = 1e-12
+_TIMEBASE_SFREQ_ATOL = 1e-12
+_GPS_NS_MAX = 2**63 - 1
 
 if TYPE_CHECKING:
 
@@ -111,7 +119,164 @@ def _t0_ns(ts: Any) -> int:
     proportional to ``dt`` (see #493 -- a ``dt``-scaled tolerance let
     differently-timed channels silently stack together).
     """
+    exact = getattr(ts, "t0_gps_ns", None)
+    if exact is None:
+        exact = getattr(ts, "_gwex_t0_gps_ns", None)
+    if exact is not None and getattr(ts, "_gwex_t0_gps_precision", None) == "exact":
+        return int(exact)
     return LIGOTimeGPS(_t0_seconds(ts)).ns()
+
+
+def _exact_t0_ns(ts: Any) -> int | None:
+    value = getattr(ts, "t0_gps_ns", None)
+    if value is None:
+        value = getattr(ts, "_gwex_t0_gps_ns", None)
+    if value is None or getattr(ts, "_gwex_t0_gps_precision", None) != "exact":
+        return None
+    return int(value)
+
+
+def _attach_exact_t0_marker(raw: Any, ts: Any) -> Any:
+    value = _exact_t0_ns(ts)
+    if value is not None:
+        raw._gwex_t0_gps_ns = value
+        raw._gwex_t0_gps_precision = "exact"
+        timebase = _source_dt_fraction(ts)
+        if timebase is not None:
+            raw._gwex_timebase_num = timebase.numerator
+            raw._gwex_timebase_den = timebase.denominator
+    return raw
+
+
+def _source_dt_fraction(ts: Any) -> Fraction | None:
+    try:
+        dt = getattr(ts, "dt")
+        try:
+            dt_value = float(dt.to("s").value)
+        except (AttributeError, TypeError):
+            dt_value = float(getattr(dt, "value", dt))
+        if not np.isfinite(dt_value) or dt_value <= 0:
+            return None
+        return Fraction(str(dt_value))
+    except (AttributeError, TypeError, ValueError, ZeroDivisionError):
+        return None
+
+
+def _validated_t0_marker(raw: Any) -> tuple[int, bool]:
+    marker = getattr(raw, "_gwex_t0_gps_ns", None)
+    precision = getattr(raw, "_gwex_t0_gps_precision", None)
+    if (
+        precision != "exact"
+        or isinstance(marker, (bool, np.bool_))
+        or not isinstance(marker, Integral)
+    ):
+        return 0, False
+    marker_ns = int(marker)
+    if not 0 <= marker_ns <= _GPS_NS_MAX:
+        return 0, False
+    return marker_ns, True
+
+
+def _validated_timebase_fraction(raw: Any, sfreq: Any) -> Fraction | None:
+    numerator = getattr(raw, "_gwex_timebase_num", None)
+    denominator = getattr(raw, "_gwex_timebase_den", None)
+    if (
+        isinstance(numerator, (bool, np.bool_))
+        or isinstance(denominator, (bool, np.bool_))
+        or not isinstance(numerator, Integral)
+        or not isinstance(denominator, Integral)
+    ):
+        return None
+    try:
+        numerator_value = int(numerator)
+        denominator_value = int(denominator)
+        if numerator_value <= 0 or denominator_value <= 0:
+            return None
+        timebase = Fraction(numerator_value, denominator_value)
+        sfreq_value = float(sfreq)
+    except (TypeError, ValueError, ZeroDivisionError, OverflowError):
+        return None
+    if (
+        timebase <= 0
+        or timebase.numerator != numerator_value
+        or timebase.denominator != denominator_value
+        or not np.isfinite(sfreq_value)
+        or sfreq_value <= 0
+        or not np.isclose(
+            sfreq_value,
+            float(1 / timebase),
+            rtol=_TIMEBASE_SFREQ_RTOL,
+            atol=_TIMEBASE_SFREQ_ATOL,
+        )
+    ):
+        return None
+    return timebase
+
+
+def _decode_mne_raw_epoch(raw: Any) -> tuple[float, int | None, str | None, bool]:
+    """Decode a Raw epoch, using private exact markers only when valid.
+
+    Returns ``(float_epoch, integer_epoch_ns, precision, marker_present)``.
+    The source ``dt`` marker is rejected if it is malformed or inconsistent
+    with the current MNE sampling rate, which covers resampling and mutation.
+    """
+    sfreq = raw.info["sfreq"]
+    t0 = 0.0
+    if raw.info["meas_date"]:
+        t0 = float(datetime_utc_to_gps(raw.info["meas_date"]))
+    t0 += raw.first_samp / sfreq
+
+    marker_ns, marker_present = _validated_t0_marker(raw)
+    if not marker_present:
+        return t0, None, None, False
+
+    timebase = _validated_timebase_fraction(raw, sfreq)
+    if timebase is None:
+        return t0, None, None, True
+
+    try:
+        first_samp = raw.first_samp
+        if isinstance(first_samp, (bool, np.bool_)) or not isinstance(
+            first_samp, Integral
+        ):
+            return t0, None, None, True
+        offset_ns = Fraction(int(first_samp), 1) * timebase * 1_000_000_000
+        from gwexpy.timeseries.utils import _round_fraction_ties_even
+
+        if offset_ns.denominator == 1:
+            origin_ns = marker_ns + offset_ns.numerator
+            precision = "exact"
+        else:
+            origin_ns = marker_ns + _round_fraction_ties_even(offset_ns)
+            precision = "quantized"
+    except (TypeError, ValueError, ZeroDivisionError, OverflowError):
+        return t0, None, None, True
+    if not 0 <= origin_ns <= _GPS_NS_MAX:
+        return t0, None, None, True
+    return t0, origin_ns, precision, True
+
+
+def _construct_mne_timeseries(
+    entry_class: Any,
+    data: Any,
+    *,
+    t0: float,
+    dt: float,
+    name: str,
+    unit: Any,
+    origin_ns: int | None,
+    precision: str | None,
+) -> Any:
+    kwargs: dict[str, Any] = {"dt": dt, "name": name, "unit": unit}
+    if precision == "exact" and origin_ns is not None:
+        kwargs["t0_ns"] = origin_ns
+    else:
+        kwargs["t0"] = t0
+    result = entry_class(data, **kwargs)
+    if precision == "quantized" and origin_ns is not None:
+        result._gwex_t0_gps_ns = origin_ns
+        result._gwex_t0_gps_precision = "quantized"
+    return result
 
 
 def _apply_meas_date_contract(info: Any, t0_seconds: float) -> Any:
@@ -237,7 +402,8 @@ def to_mne_rawarray(tsd, info=None, picks=None):
 
         info = _apply_meas_date_contract(info, _t0_seconds(tsd))
 
-        return mne.io.RawArray(data_1d[None, :], info)
+        raw = mne.io.RawArray(data_1d[None, :], info)
+        return _attach_exact_t0_marker(raw, tsd)
 
     # Multi-channel mapping input
     items = _select_items(list(tsd.items()), picks)
@@ -299,8 +465,14 @@ def to_mne_rawarray(tsd, info=None, picks=None):
         raise ValueError(f"info expects nchan={len(ch_names)}, got {info['nchan']}")
 
     info = _apply_meas_date_contract(info, common_t0)
-
-    return mne.io.RawArray(data, info)
+    raw = mne.io.RawArray(data, info)
+    if len(lengths) == 1:
+        exact_origins = {_exact_t0_ns(ts) for ts in series}
+        if len(exact_origins) == 1:
+            _attach_exact_t0_marker(raw, series[0])
+    elif "mat" in locals():
+        _attach_exact_t0_marker(raw, mat)
+    return raw
 
 
 def from_mne_raw(cls, raw, unit_map=None):
@@ -341,16 +513,25 @@ def from_mne_raw(cls, raw, unit_map=None):
     sfreq = raw.info["sfreq"]
     dt = 1.0 / sfreq
 
-    t0 = 0.0
-    if raw.info["meas_date"]:
-        # meas_date is an aware-UTC datetime.
-        t0 = float(datetime_utc_to_gps(raw.info["meas_date"]))
-    t0 = t0 + raw.first_samp / sfreq
+    t0, origin_ns, precision, _marker_present = _decode_mne_raw_epoch(raw)
 
     tsd = cls()
+    entry_class = tsd.EntryClass
+    if origin_ns is not None:
+        from gwexpy.timeseries import TimeSeries as entry_class
+
     for i, name in enumerate(ch_names):
         unit = unit_map.get(name) if unit_map else None
-        tsd[name] = tsd.EntryClass(data[i], t0=t0, dt=dt, name=name, unit=unit)
+        tsd[name] = _construct_mne_timeseries(
+            entry_class,
+            data[i],
+            t0=t0,
+            dt=dt,
+            name=name,
+            unit=unit,
+            origin_ns=origin_ns,
+            precision=precision,
+        )
 
     return tsd
 

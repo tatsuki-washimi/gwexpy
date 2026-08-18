@@ -17,27 +17,6 @@ from . import _warnings  # noqa: F401 – registers package-level warning filter
 # This must run before importing GWpy/LAL (which can emit warnings at import time).
 warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
 
-# -----------------------------------------------------------------------------
-# Compatibility: some minimal or newer gwpy builds used in docs/CI may lack
-# `gwpy.io.registry.register_reader` / `register_identifier` / `register_writer`.
-# Ensure the attributes exist so our IO modules' registration calls don't
-# explode during import in stripped-down environments.
-# -----------------------------------------------------------------------------
-try:  # pragma: no cover - defensive
-    import gwpy.io as _gwpy_io
-
-    _io_reg = getattr(_gwpy_io, "registry", None)
-    if _io_reg is not None:
-
-        def _noop(*_args, **_kwargs):
-            return None
-
-        for _name in ("register_reader", "register_identifier", "register_writer"):
-            if not hasattr(_io_reg, _name):
-                setattr(_io_reg, _name, _noop)  # type: ignore[attr-defined]
-except (ImportError, AttributeError):
-    pass
-
 warnings.filterwarnings(
     "ignore",
     message=r"xindex was given to .*\(\), x0 will be ignored",
@@ -73,73 +52,14 @@ warnings.filterwarnings(
     category=UserWarning,
 )
 
-# Subpackages are available via namespace
-from . import (
-    astro,
-    detector,
-    frequencyseries,
-    histogram,
-    interop,
-    io,
-    noise,
-    plot,
-    segments,
-    signal,
-    spectral,
-    spectrogram,
-    table,
-    time,
-    timeseries,
-    types,
-)
-from ._bootstrap import register_all
+from ._bootstrap import register_all as _register_all
 from ._version import __version__
-from .fields import FieldDict, FieldList, ScalarField, TensorField, VectorField
-from .frequencyseries import (
-    FrequencySeries,
-    FrequencySeriesDict,
-    FrequencySeriesList,
-    FrequencySeriesMatrix,
-)
 
-# Histogram types
-from .histogram import (
-    Histogram,
-    HistogramDict,
-    HistogramList,
-)
 
-# Signal processing utilities
-from .signal.preprocessing import (
-    StandardizationModel,
-    WhiteningModel,
-    impute,
-    standardize,
-    whiten,
-)
-from .spectrogram import (
-    Spectrogram,
-    SpectrogramDict,
-    SpectrogramList,
-    SpectrogramMatrix,
-)
+def register_all(*, include_io: bool = True) -> None:
+    """Ensure all constructors and optional I/O formats are registered."""
+    _register_all(include_io=include_io)
 
-# Core data types - explicitly imported for IDE support and clear API
-from .timeseries import (
-    TimeSeries,
-    TimeSeriesDict,
-    TimeSeriesList,
-    TimeSeriesMatrix,
-)
-
-# Types
-from .types import (
-    MetaData,
-    MetaDataDict,
-    MetaDataMatrix,
-    SeriesMatrix,
-    as_series,
-)
 
 __all__ = [
     # Bootstrap
@@ -204,22 +124,90 @@ __all__ = [
 
 if TYPE_CHECKING:  # pragma: no cover
     import gwexpy.fitting as fitting
+    import gwexpy.spectral as spectral
+
+
+_LAZY_ROOT_MODULES: dict[str, str] = {
+    name: f".{name}"
+    for name in (
+        "timeseries",
+        "frequencyseries",
+        "histogram",
+        "spectrogram",
+        "spectral",
+        "astro",
+        "detector",
+        "plot",
+        "segments",
+        "signal",
+        "table",
+        "time",
+        "types",
+        "io",
+        "interop",
+        "noise",
+        "fitting",
+    )
+}
+
+
+_LAZY_ROOT_ATTRIBUTES: dict[str, tuple[str, str]] = {
+    "TimeSeries": (".timeseries", "TimeSeries"),
+    "TimeSeriesDict": (".timeseries", "TimeSeriesDict"),
+    "TimeSeriesList": (".timeseries", "TimeSeriesList"),
+    "TimeSeriesMatrix": (".timeseries", "TimeSeriesMatrix"),
+    "FrequencySeries": (".frequencyseries", "FrequencySeries"),
+    "FrequencySeriesDict": (".frequencyseries", "FrequencySeriesDict"),
+    "FrequencySeriesList": (".frequencyseries", "FrequencySeriesList"),
+    "FrequencySeriesMatrix": (".frequencyseries", "FrequencySeriesMatrix"),
+    "Spectrogram": (".spectrogram", "Spectrogram"),
+    "SpectrogramList": (".spectrogram", "SpectrogramList"),
+    "SpectrogramDict": (".spectrogram", "SpectrogramDict"),
+    "SpectrogramMatrix": (".spectrogram", "SpectrogramMatrix"),
+    "Histogram": (".histogram", "Histogram"),
+    "HistogramDict": (".histogram", "HistogramDict"),
+    "HistogramList": (".histogram", "HistogramList"),
+    "ScalarField": (".fields", "ScalarField"),
+    "VectorField": (".fields", "VectorField"),
+    "TensorField": (".fields", "TensorField"),
+    "FieldList": (".fields", "FieldList"),
+    "FieldDict": (".fields", "FieldDict"),
+    "SeriesMatrix": (".types", "SeriesMatrix"),
+    "MetaData": (".types", "MetaData"),
+    "MetaDataDict": (".types", "MetaDataDict"),
+    "MetaDataMatrix": (".types", "MetaDataMatrix"),
+    "as_series": (".types", "as_series"),
+    "whiten": (".signal.preprocessing", "whiten"),
+    "standardize": (".signal.preprocessing", "standardize"),
+    "impute": (".signal.preprocessing", "impute"),
+    "WhiteningModel": (".signal.preprocessing", "WhiteningModel"),
+    "StandardizationModel": (".signal.preprocessing", "StandardizationModel"),
+}
+
+_LAZY_IMPORT_PREREQUISITES: dict[str, tuple[str, ...]] = {
+    ".fields": (".interop",),
+}
 
 
 def __getattr__(name: str) -> Any:
-    if name == "fitting":
+    if name in _LAZY_ROOT_MODULES:
         import importlib
 
-        mod = importlib.import_module(".fitting", __name__)
-        globals()["fitting"] = mod
+        mod = importlib.import_module(_LAZY_ROOT_MODULES[name], __name__)
+        globals()[name] = mod
         return mod
+    if name in _LAZY_ROOT_ATTRIBUTES:
+        import importlib
+
+        module_name, attribute_name = _LAZY_ROOT_ATTRIBUTES[name]
+        for prerequisite in _LAZY_IMPORT_PREREQUISITES.get(module_name, ()):
+            importlib.import_module(prerequisite, __name__)
+        module = importlib.import_module(module_name, __name__)
+        value = getattr(module, attribute_name)
+        globals()[name] = value
+        return value
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def __dir__() -> list[str]:
     return sorted(set(__all__) | set(globals().keys()))
-
-
-# Mark bootstrap as complete — all subpackages have been imported above,
-# so the registry is fully populated.
-register_all()

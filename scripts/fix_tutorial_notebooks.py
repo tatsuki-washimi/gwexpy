@@ -526,22 +526,8 @@ def _fix_case_hdf5(lang: str) -> None:
         / "case_hdf5_provenance.ipynb"
     )
     nb = _load(path)
-    for idx in (8, 12):
-        cell = nb["cells"][idx]
-        src = _cell_source(cell)
-        src = src.replace(
-            "datetime.datetime.utcnow().isoformat()",
-            "datetime.datetime.now(datetime.UTC).isoformat()",
-        )
-        src = src.replace(
-            'print(f"Pipeline archive: {archive_path}  ({archive_path.stat().st_size/1024:.1f} kB)")',
-            'print(f"Pipeline archive: temporary file  ({archive_path.stat().st_size/1024:.1f} kB)")',
-        )
-        src = src.replace(
-            'print(f"パイプラインアーカイブ: {archive_path}  ({archive_path.stat().st_size/1024:.1f} kB)")',
-            'print(f"パイプラインアーカイブ: 一時ファイル  ({archive_path.stat().st_size/1024:.1f} kB)")',
-        )
-        _set_source(cell, src)
+    # This tutorial is fully owned by make_provenance_tutorial.py. Keep the
+    # generic output sanitizer, but never patch its source by cell index.
     _sanitize_outputs(nb, lang=lang)
     _save(path, nb)
 

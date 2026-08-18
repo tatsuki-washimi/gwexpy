@@ -440,12 +440,17 @@ def overlay_spectra_segment_table(
 
     Examples
     --------
-    >>> plot = st.overlay_spectra(
-    ...     "asd",
-    ...     channel="H1:STRAIN",
-    ...     color_by="t0",
-    ...     cmap="plasma",
-    ... )
+    This is an illustrative fragment, not a doctest: ``st`` is an
+    application-provided SegmentTable containing frequency-series rows.
+
+    .. code-block:: python
+
+       plot = st.overlay_spectra(
+           "asd",
+           channel="H1:STRAIN",
+           color_by="t0",
+           cmap="plasma",
+       )
 
     """
     import matplotlib.cm as _cm

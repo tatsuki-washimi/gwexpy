@@ -121,9 +121,14 @@ class PairPlot:
 
     Examples
     --------
-    >>> from gwexpy.plot import PairPlot
-    >>> plot = PairPlot(timeseries_dict)
-    >>> plot.show()
+    This is an illustrative fragment, not a doctest: ``timeseries_dict`` is
+    an application-provided collection with compatible sampling metadata.
+
+    .. code-block:: python
+
+       from gwexpy.plot import PairPlot
+       plot = PairPlot(timeseries_dict)
+       plot.show()
 
     """
 

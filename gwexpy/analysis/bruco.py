@@ -1060,15 +1060,19 @@ class Bruco:
     Run the coherence scan with pre-fetched data when acquisition is handled
     elsewhere:
 
-    >>> result = bruco.compute(
-    ...     fftlength=4.0,
-    ...     overlap=2.0,
-    ...     top_n=3,
-    ...     target_data=target_ts,
-    ...     aux_data=aux_dict,
-    ... )
-    >>> result.top_channels(3)[0]["channel"]
-    'H1:ASC-X_TR_A_NSUM_OUT_DQ'
+    This is an illustrative fragment, not a doctest: ``target_ts`` and
+    ``aux_dict`` are application-owned data fetched outside this example.
+
+    .. code-block:: python
+
+       result = bruco.compute(
+           fftlength=4.0,
+           overlap=2.0,
+           top_n=3,
+           target_data=target_ts,
+           aux_data=aux_dict,
+       )
+       result.top_channels(3)[0]["channel"]
 
     """
 

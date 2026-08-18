@@ -70,11 +70,18 @@ def from_finesse_frequency_response(
 
     Examples
     --------
-    >>> from gwexpy.frequencyseries import FrequencySeries
-    >>> # sol = model.run(...)  # Finesse 3 simulation
-    >>> fs = FrequencySeries.from_finesse_frequency_response(
-    ...     sol, output="DARM", input_dof="EX_drive"
-    ... )
+    This illustrative fragment requires a live Finesse 3 model run that
+    provides ``sol``; it is intentionally excluded from raw doctest.
+
+    .. code-block:: python
+
+       from gwexpy.frequencyseries import FrequencySeries
+       from gwexpy.interop import from_finesse_frequency_response
+
+       # sol = model.run(...)  # Finesse 3 simulation
+       fs = from_finesse_frequency_response(
+           FrequencySeries, sol, output="DARM", input_dof="EX_drive"
+       )
 
     """
     require_optional("finesse")
@@ -216,11 +223,18 @@ def from_finesse_noise(
 
     Examples
     --------
-    >>> from gwexpy.frequencyseries import FrequencySeries
-    >>> # sol = model.run(...)  # Finesse 3 noise simulation
-    >>> fs = FrequencySeries.from_finesse_noise(
-    ...     sol, output="nDARMout", noise="laser_freq"
-    ... )
+    This illustrative fragment requires a live Finesse 3 model run that
+    provides ``sol``; it is intentionally excluded from raw doctest.
+
+    .. code-block:: python
+
+       from gwexpy.frequencyseries import FrequencySeries
+       from gwexpy.interop import from_finesse_noise
+
+       # sol = model.run(...)  # Finesse 3 noise simulation
+       fs = from_finesse_noise(
+           FrequencySeries, sol, output="nDARMout", noise="laser_freq"
+       )
 
     """
     require_optional("finesse")

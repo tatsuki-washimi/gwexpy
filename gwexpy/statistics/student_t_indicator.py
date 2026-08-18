@@ -14,6 +14,7 @@ except ImportError as _exc:
         "scipy is required for gwexpy.statistics. Install with: pip install scipy"
     ) from _exc
 
+from ..provenance import build_provenance
 from ..spectrogram import Spectrogram
 
 if TYPE_CHECKING:
@@ -252,10 +253,22 @@ def compute_student_t_nu(
     # above so t[0] == 0 corresponds to ts's first sample; see #465).
     out_times = t[window // 2 : window // 2 + n_out] + float(ts.t0.value)
 
-    return Spectrogram(
+    result = Spectrogram(
         nu_map,
         times=out_times,
         frequencies=f,
         unit="",
         name="student_t_nu",
     )
+    result.provenance = build_provenance(
+        "student_t_nu",
+        {
+            "fftlength": fftlength,
+            "stride": stride,
+            "window": window,
+            "overlap": overlap,
+            "frange": frange,
+        },
+        deterministic=True,
+    )
+    return result
