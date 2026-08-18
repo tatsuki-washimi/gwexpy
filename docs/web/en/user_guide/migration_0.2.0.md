@@ -296,10 +296,6 @@ Unsupported direct calls must fail explicitly and must never silently degrade
 to bare `ndarray` or `Quantity`; this is the required v0.2.0 contract behavior,
 not a correctness regression.
 
-`np.asarray(matrix)` intentionally returns a raw `numpy.ndarray` and therefore
-intentionally leaves the metadata-aware matrix model. This is an accepted boundary
-for v0.2.0.
-
 The future #637 redesign remains open with no assigned release version or date,
 and this page does not promise B1 adoption in v0.2.0.
 

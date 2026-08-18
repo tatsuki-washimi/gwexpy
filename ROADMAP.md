@@ -250,9 +250,11 @@ Definition of done:
 1. The class x operand x operator x side x in-place contract matrix (#612) is green,
    with unsupported combinations as explicit `raises` entries and an asserted
    collected-case count.
-2. `np.sqrt(matrix)` and `(2 * u.s) * matrix` are not adopted as v0.2.0 direct
-   B1 outcomes; instead, v0.2.0 DoD is satisfied by the documented B0/Phase-A
-   fallback branch with explicit failures for unsupported direct ufuncs.
+2. `np.sqrt(matrix)` is not adopted as a v0.2.0 direct B1 outcome; instead,
+   v0.2.0 DoD is satisfied by the documented B0/Phase-A fallback branch with
+   explicit failures for unsupported direct ufuncs. Supported operator paths,
+   including Quantity-left/right multiplication, retain B0 semantics. B1/
+   composition is not adopted for v0.2.0.
 3. HDF5 written by GWexpy for GWpy-derived containers is readable by a GWpy-only
    process (#402).
 4. The #637 redesign, if it lands, stays within the documented performance

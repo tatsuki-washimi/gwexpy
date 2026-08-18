@@ -262,9 +262,6 @@ ndarray を返します。metadata-preserving workaround ではありません�
 未対応の direct 呼び出しは silent downgrade ではなく **明示的失敗** になり、
 `ndarray` や `Quantity` への自動劣化を許容しません。
 
-`np.asarray(matrix)` は意図的に bare ndarray を返します。これは
-メタデータ主導モデルを維持しない境界として意図的に残されています。
-
 #637 の将来 redesign は v0.2.0 の確定版ではないため、採用バージョン/日付は
 このページでは定めていません。
 
