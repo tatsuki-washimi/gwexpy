@@ -224,12 +224,11 @@ Workstreams:
   ([#637](https://github.com/tatsuki-washimi/gwexpy/issues/637)): moving the
   `ndarray`-subclass data model to composition so that `np.sqrt(matrix)` and
   `(2 * u.s) * matrix` both return the correct class, values, units, and metadata.
-  The decision-date **method** is fixed, while the calendar date remains TBD:
-  [#675](https://github.com/tatsuki-washimi/gwexpy/issues/675) sets the date at the
-  v0.2.0 milestone mid-point and records it on #637. If the composition prototype is
-  not green against the full test suite by that date, v0.2.0 ships with the current
-  `__array_ufunc__ = None` limitation documented, and the redesign moves to the next
-  theme rather than blocking this release indefinitely.
+  D21 selected the v0.2.0 outcome: B0 / Phase-A fallback is documented and
+  shipped as the contract. Composition/B1 is not adopted for v0.2.0 (`adopted: false`).
+  The direct-ufunc limitation is documented as provisional. The prior #675
+  decision-date mechanism was the historical rationale while this candidate was
+  open, but it is now superseded by the D21 selection for this item.
 - **Pre-refactor performance baseline and regression budget**: representative
   container operations are benchmarked *before* the #637 redesign lands, and the
   redesign is required to stay within a documented regression budget. The shared
@@ -251,9 +250,9 @@ Definition of done:
 1. The class x operand x operator x side x in-place contract matrix (#612) is green,
    with unsupported combinations as explicit `raises` entries and an asserted
    collected-case count.
-2. `np.sqrt(matrix)` and `(2 * u.s) * matrix` both succeed with correct class, values,
-   units, and metadata (#637), or the release ships with a documented
-   `__array_ufunc__ = None` limitation per the fallback above.
+2. `np.sqrt(matrix)` and `(2 * u.s) * matrix` are not adopted as v0.2.0 direct
+   B1 outcomes; instead, v0.2.0 DoD is satisfied by the documented B0/Phase-A
+   fallback branch with explicit failures for unsupported direct ufuncs.
 3. HDF5 written by GWexpy for GWpy-derived containers is readable by a GWpy-only
    process (#402).
 4. The #637 redesign, if it lands, stays within the documented performance
@@ -292,12 +291,13 @@ The bounded additions are recorded without overselling their scientific scope.
 The #581 contribution is limited to the benchmark infrastructure needed by
 #676, not a broad benchmark platform.
 
-#637 remains partial with release outcome deferred and `adopted: false`.
+#637 is resolved for v0.2.0 by D21 as B0/Phase-A fallback.
 Its composition prototype and evidence were completed in isolation, but the
-candidate runtime was not copied into integration because frozen B0 `slice`
-instability made adoption non-adoptable.
+candidate runtime was not copied into integration because v0.2.0 intentionally
+selects the fallback branch.
 Integration retains only the approved Phase A `SpectrogramMatrix`
 dimensional raw-ndarray add/sub atomic `TypeError` change.
+B1 redesign remains future work and is not part of v0.2.0.
 The broader #403 `nproc` migration is out of scope and deferred; #588 keeps
 `nproc` as a compatibility alias while preferring `parallel`.
 

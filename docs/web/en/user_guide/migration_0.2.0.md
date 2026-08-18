@@ -254,19 +254,33 @@ segments = pd.DataFrame(
 validate(segments)
 ```
 
-## #637 composition fallback
+## SeriesMatrix direct-ufunc limitation and #637 fallback
+
+**Stability:** provisional.
 
 The #637 composition prototype and evidence were completed in isolation, but
-the candidate runtime was not copied into integration.
-The existing B1 decision and completion ledger record `adopted: false` because
-frozen B0 `slice` instability makes adoption non-adoptable.
+the candidate runtime was not copied into integration. v0.2.0 keeps the B0
+fallback and does not adopt `SeriesMatrix` composition/B1 behavior.
 
-The integration fallback is the approved Phase A contract: the dimensional
-raw-ndarray add/sub path on `SpectrogramMatrix` fails atomically with
-`TypeError` where unsupported.
-No migration to the composition runtime is implied by this page.
-Continue using the documented current `SeriesMatrix` arithmetic contract until
-a separately approved adoption decision exists.
+The canonical B0 manifest is the source-of-truth for supported and unsupported
+operations:
+
+- direct calls such as `np.sqrt(matrix)`, `np.log(matrix)`, and `np.exp(matrix)`
+  are explicit **contract failures**;
+- `np.isfinite(matrix)` and `np.isnan(matrix)` are explicit failures;
+- `np.isreal(matrix)` returns a concrete boolean matrix for `SpectrogramMatrix`
+  but raises `UnitConversionError` for the 2-D series families as documented.
+
+Unsupported direct calls must fail explicitly and must never silently degrade
+to bare `ndarray` or `Quantity`; this is the required v0.2.0 contract behavior,
+not a correctness regression.
+
+`np.asarray(matrix)` intentionally returns a raw `numpy.ndarray` and therefore
+intentionally leaves the metadata-aware matrix model. This is an accepted boundary
+for v0.2.0.
+
+The future #637 redesign remains open with no assigned release version or date,
+and this page does not promise B1 adoption in v0.2.0.
 
 ## Release status
 

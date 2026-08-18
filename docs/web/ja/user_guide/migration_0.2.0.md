@@ -226,15 +226,31 @@ segments = pd.DataFrame(
 validate(segments)
 ```
 
-## #637 composition fallback
+## SeriesMatrix direct-ufunc 制限と #637 fallback
 
-#637 の composition prototype と証拠は隔離環境で完了しましたが、candidate runtime は integration にコピーされていません。
-既存の B1 decision と completion ledger は、凍結した B0 `slice` 不安定性によって採用不能になるため `adopted: false` と記録しています。
+**安定性:** provisional。
 
-integration の fallback は承認済み Phase A contract です。
-`SpectrogramMatrix` の dimensional raw-ndarray add/sub 経路で未対応の操作は、atomic に `TypeError` で失敗します。
-このページは composition runtime への移行を意味しません。
-別途承認された adoption decision が存在するまで、現在の `SeriesMatrix` arithmetic contract を使用してください。
+#637 の composition prototype と証拠は隔離環境で完了しましたが、candidate runtime は
+integration にコピーされておらず、v0.2.0 では SeriesMatrix の composition/B1 を採用しません。
+
+B0 の公開可能な source of truth は contract ledger で、直接 ufunc の可否を
+明示します。
+
+- `np.sqrt(matrix)`、`np.log(matrix)`、`np.exp(matrix)` などの direct call は
+  v0.2.0 B0 では仕様上の失敗です。
+- `np.isfinite(matrix)` と `np.isnan(matrix)` も同様に明示的に失敗します。
+- `np.isreal(matrix)` は `SpectrogramMatrix` では bool matrix を返しますが、
+  2D 系 (`TimeSeriesMatrix` / `FrequencySeriesMatrix`) では `UnitConversionError`
+  になります。
+
+未対応の direct 呼び出しは silent downgrade ではなく **明示的失敗** になり、
+`ndarray` や `Quantity` への自動劣化を許容しません。
+
+`np.asarray(matrix)` は意図的に bare ndarray を返します。これは
+メタデータ主導モデルを維持しない境界として意図的に残されています。
+
+#637 の将来 redesign は v0.2.0 の確定版ではないため、採用バージョン/日付は
+このページでは定めていません。
 
 ## リリース状態
 

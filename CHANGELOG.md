@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+### Known limitations
+
+- **SeriesMatrix direct NumPy ufuncs — provisional limitation**
+  - v0.2.0 does not adopt the #637 B1/composition redesign.
+  - B0 remains the released contract for SeriesMatrix behavior.
+  - Direct ufunc support is limited to the explicit cells in the canonical
+    B0 manifest; all other direct calls are unsupported.
+  - Unsupported calls fail explicitly, and no silent downgrade to bare
+    `ndarray`/`Quantity` is allowed.
+  - Operator-based arithmetic remains governed by the frozen B0 contract, and
+    B1-style direct-u func support is a future target.
+  - The future B1 redesign has no assigned v0.2.0 version/date in this issue.
+
 ### Documentation and release evidence
 
 - **v0.2.0 migration guidance**: added paired English and Japanese notes for

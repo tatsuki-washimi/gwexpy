@@ -20,6 +20,22 @@ add/sub cells for every family.  `tests/types/test_series_matrix_operator_contra
 the direct behavioral checks.  A B1 implementation must update and compare
 this same ledger rather than introducing a second matrix.
 
+## v0.2.0 direct-ufunc limitation
+
+- Stability: provisional.
+- B0 is the v0.2.0 contract.
+- B1/composition is not part of v0.2.0.
+- Direct NumPy ufuncs are supported only where this canonical ledger marks them
+  as supported.
+- Unsupported direct ufunc operations fail explicitly and remain explicit in the
+  ledger; they never silently downgrade to bare `ndarray` or `Quantity`.
+- This fail-closed behavior is intentional and must be treated as observable
+  contract compliance, not a regression signal.
+- `SeriesMatrix.__array_ufunc__ = None` is the current implementation
+  mechanism used to keep the fallback behavior explicit; it is not a long-term
+  API compatibility guarantee.
+- #637 is future redesign work with no version or date commitment.
+
 ## B0 construction and structure
 
 The approved structure surface is:
