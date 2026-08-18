@@ -262,14 +262,35 @@ The #637 composition prototype and evidence were completed in isolation, but
 the candidate runtime was not copied into integration. v0.2.0 keeps the B0
 fallback and does not adopt `SeriesMatrix` composition/B1 behavior.
 
-The canonical B0 manifest is the source-of-truth for supported and unsupported
-operations:
+`np.sqrt(matrix)` is not supported as a direct NumPy ufunc under the v0.2.0 B0
+contract.
 
-- direct calls such as `np.sqrt(matrix)`, `np.log(matrix)`, and `np.exp(matrix)`
-  are explicit **contract failures**;
-- `np.isfinite(matrix)` and `np.isnan(matrix)` are explicit failures;
-- `np.isreal(matrix)` returns a concrete boolean matrix for `SpectrogramMatrix`
-  but raises `UnitConversionError` for the 2-D series families as documented.
+Use:
+
+```python
+result = matrix ** 0.5
+```
+
+This alternative is contract-tested for `TimeSeriesMatrix`, `FrequencySeriesMatrix`,
+and `SpectrogramMatrix`, and preserves B0 semantics (concrete class, numerical
+value, per-cell unit, axes, labels, and metadata).
+
+No metadata-preserving B0 alternatives are currently defined for direct
+`np.log(matrix)`, `np.exp(matrix)`, `np.isfinite(matrix)`, or `np.isnan(matrix)`.
+
+`np.isreal(matrix)` remains family-specific: it is supported directly for
+`SpectrogramMatrix`, and is `UnitConversionError` for `TimeSeriesMatrix` and
+`FrequencySeriesMatrix` under B0.
+
+Both forms below are already B0-supported:
+
+```python
+(2 * u.s) * matrix
+matrix * (2 * u.s)
+```
+
+`np.asarray(matrix)` remains the intentional metadata-escape boundary and returns a
+raw `numpy.ndarray` under B0. It is not a metadata-preserving workaround.
 
 Unsupported direct calls must fail explicitly and must never silently degrade
 to bare `ndarray` or `Quantity`; this is the required v0.2.0 contract behavior,

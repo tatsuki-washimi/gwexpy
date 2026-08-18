@@ -6,13 +6,20 @@
 
 - **SeriesMatrix direct NumPy ufuncs — provisional limitation**
   - v0.2.0 does not adopt the #637 B1/composition redesign.
-  - B0 remains the released contract for SeriesMatrix behavior.
-  - Direct ufunc support is limited to the explicit cells in the canonical
-    B0 manifest; all other direct calls are unsupported.
-  - Unsupported calls fail explicitly, and no silent downgrade to bare
-    `ndarray`/`Quantity` is allowed.
-  - Operator-based arithmetic remains governed by the frozen B0 contract, and
-    B1-style direct-u func support is a future target.
+  - B0 is the v0.2.0 contract for SeriesMatrix behavior.
+  - Direct ufunc support is limited by the frozen B0 contract represented in
+    `tests/types/series_matrix_contract_manifest.py`; unsupported direct calls
+    fail explicitly and must not downgrade silently to bare `ndarray`/`Quantity`.
+  - For a supported user-facing workaround, replace
+    `np.sqrt(matrix)` with `matrix ** 0.5`.
+  - `matrix ** 0.5` is contract-tested for
+    `TimeSeriesMatrix`, `FrequencySeriesMatrix`, and `SpectrogramMatrix` and
+    preserves concrete class, numerical value, per-cell units, axes/labels, and
+    metadata under B0.
+  - A metadata-preserving B0 workaround is not defined for
+    `np.log(matrix)`, `np.exp(matrix)`, `np.isnan(matrix)`, or
+    `np.isfinite(matrix)`.
+  - Both `(2 * u.s) * matrix` and `matrix * (2 * u.s)` are already B0-supported.
   - The future B1 redesign has no assigned v0.2.0 version/date in this issue.
 
 ### Documentation and release evidence

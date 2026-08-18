@@ -36,6 +36,23 @@ this same ledger rather than introducing a second matrix.
   API compatibility guarantee.
 - #637 is future redesign work with no version or date commitment.
 
+### User-facing alternatives
+
+- `np.sqrt(matrix)` is unsupported as a direct ufunc under B0.
+- `matrix ** 0.5` is the validated metadata-preserving operator-path workaround
+  for all three SeriesMatrix families:
+  `TimeSeriesMatrix`, `FrequencySeriesMatrix`, and `SpectrogramMatrix`.
+- `matrix ** 0.5` is a workaround via normal operator dispatch; it is not
+  direct-ufunc support and does not imply B1/composition adoption.
+- No metadata-preserving B0 alternatives are currently defined for
+  `np.log(matrix)`, `np.exp(matrix)`, `np.isfinite(matrix)`, or
+  `np.isnan(matrix)`.
+- `np.isreal(matrix)` remains family-specific: concrete boolean matrix for
+  `SpectrogramMatrix`, `UnitConversionError` for `TimeSeriesMatrix` and
+  `FrequencySeriesMatrix`.
+- Both quantity-left and quantity-right multiplication forms are already supported:
+  `(2 * u.s) * matrix` and `matrix * (2 * u.s)`.
+
 ## B0 construction and structure
 
 The approved structure surface is:

@@ -236,12 +236,28 @@ integration にコピーされておらず、v0.2.0 では SeriesMatrix の comp
 B0 の公開可能な source of truth は contract ledger で、直接 ufunc の可否を
 明示します。
 
-- `np.sqrt(matrix)`、`np.log(matrix)`、`np.exp(matrix)` などの direct call は
-  v0.2.0 B0 では仕様上の失敗です。
-- `np.isfinite(matrix)` と `np.isnan(matrix)` も同様に明示的に失敗します。
-- `np.isreal(matrix)` は `SpectrogramMatrix` では bool matrix を返しますが、
-  2D 系 (`TimeSeriesMatrix` / `FrequencySeriesMatrix`) では `UnitConversionError`
-  になります。
+`np.sqrt(matrix)` は v0.2.0 B0 の direct NumPy ufunc としては非対応です。
+
+代替として次を利用してください。
+
+```python
+result = matrix ** 0.5
+```
+
+この代替経路は `TimeSeriesMatrix`、`FrequencySeriesMatrix`、`SpectrogramMatrix`
+の3 familyすべてで contract-tested されています。B0 の
+クラス、数値、セル単位、軸、ラベル、metadata の意味は維持されます。
+
+`np.log(matrix)`、`np.exp(matrix)`、`np.isfinite(matrix)`、`np.isnan(matrix)` に対する
+metadata-preserving な B0 workaround は現在未定義です。
+
+`np.isreal(matrix)` は `SpectrogramMatrix` でのみ direct support で、`TimeSeriesMatrix`
+と `FrequencySeriesMatrix` では B0 で未対応（`UnitConversionError`）です。
+
+`(2 * u.s) * matrix` と `matrix * (2 * u.s)` は両方とも既に B0 で対応済みです。
+
+`np.asarray(matrix)` は metadata model を離脱する raw-array の境界で、意図的に bare
+ndarray を返します。metadata-preserving workaround ではありません。
 
 未対応の direct 呼び出しは silent downgrade ではなく **明示的失敗** になり、
 `ndarray` や `Quantity` への自動劣化を許容しません。
