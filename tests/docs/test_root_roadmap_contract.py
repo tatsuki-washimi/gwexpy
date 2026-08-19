@@ -371,13 +371,20 @@ def test_release_scope_authority_is_not_duplicated_in_design() -> None:
 
 
 def test_v020_planning_gate_trackers_are_structurally_in_scope() -> None:
-    """The release-specific gate owners are in scope; shared tooling is not."""
+    """The release-specific gate owners are in scope; shared tooling is not.
+
+    D21 selected the B0/Phase-A fallback for v0.2.0, so the #675 decision-date
+    mechanism is superseded and no calendar date is set retroactively.  The
+    section must therefore say that #675 was superseded rather than leave a
+    pending calendar date; the remaining gate-owner structure is unchanged.
+    """
     section = _level_two_section(ROADMAP, "v0.2.0")
     assert section, "ROADMAP.md must contain a v0.2.0 release section"
 
     assert "#675" in section
     assert "#676" in section
-    assert "calendar date remains TBD" in section
+    assert "superseded by the D21 selection" in section
+    assert "calendar date remains TBD" not in section
     assert "not a v0.2.0 milestone member" in section
     assert "#581" in section
 

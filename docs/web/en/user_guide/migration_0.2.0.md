@@ -254,19 +254,69 @@ segments = pd.DataFrame(
 validate(segments)
 ```
 
-## #637 composition fallback
+## SeriesMatrix direct-ufunc limitation and #637 fallback
+
+**Stability:** provisional.
 
 The #637 composition prototype and evidence were completed in isolation, but
-the candidate runtime was not copied into integration.
-The existing B1 decision and completion ledger record `adopted: false` because
-frozen B0 `slice` instability makes adoption non-adoptable.
+the candidate runtime was not copied into integration. The existing B1 decision
+and completion ledger record `adopted: false` because frozen B0 `slice`
+instability made the candidate non-adoptable; taking that evidence into account,
+the D21 ruling then selected the B0 fallback as the v0.2.0 outcome. v0.2.0
+therefore keeps the B0 fallback and does not adopt `SeriesMatrix` composition/B1
+behavior.
 
-The integration fallback is the approved Phase A contract: the dimensional
-raw-ndarray add/sub path on `SpectrogramMatrix` fails atomically with
-`TypeError` where unsupported.
-No migration to the composition runtime is implied by this page.
-Continue using the documented current `SeriesMatrix` arithmetic contract until
-a separately approved adoption decision exists.
+### Unsupported direct ufunc and its supported alternative
+
+`np.sqrt(matrix)` is not supported as a direct NumPy ufunc under the v0.2.0 B0
+contract. Use the operator path instead:
+
+```python
+# static-signature-example
+# np.sqrt(matrix) is an unsupported direct ufunc under B0 and raises TypeError.
+result = matrix ** 0.5
+```
+
+This alternative is contract-tested for `TimeSeriesMatrix`, `FrequencySeriesMatrix`,
+and `SpectrogramMatrix`, and preserves B0 semantics (concrete class, numerical
+value, per-cell unit, axes, labels, and metadata).
+
+No metadata-preserving B0 alternatives are currently defined for direct
+`np.log(matrix)`, `np.exp(matrix)`, `np.isfinite(matrix)`, or `np.isnan(matrix)`.
+
+`np.isreal(matrix)` remains family-specific: it is supported directly for
+`SpectrogramMatrix`, and is `UnitConversionError` for `TimeSeriesMatrix` and
+`FrequencySeriesMatrix` under B0.
+
+### Quantity multiplication
+
+This is a separate category: it is not an `unsupported -> alternative` pair.
+Both operand orders are **already B0-supported**, so no migration is required.
+
+```python
+# static-signature-example
+# Both orders are supported under B0; neither is a workaround for the other.
+left = (2 * u.s) * matrix
+right = matrix * (2 * u.s)
+```
+
+`np.asarray(matrix)` remains the intentional metadata-escape boundary and returns a
+raw `numpy.ndarray` under B0. It is not a metadata-preserving workaround.
+
+Unsupported direct calls must fail explicitly and must never silently degrade
+to bare `ndarray` or `Quantity`; this is the required v0.2.0 contract behavior,
+not a correctness regression.
+
+The future #637 redesign remains open with no assigned release version or date,
+and this page does not promise B1 adoption in v0.2.0.
+
+Making the runtime error message itself point at the supported alternative is
+tracked as future design work in
+[#681](https://github.com/tatsuki-washimi/gwexpy/issues/681). v0.2.0 does not
+change runtime behavior for this, and no release version or date is assigned to
+#681. Its scope is limited to the diagnostic for unsupported direct ufuncs; it
+does not reopen the B1/composition redesign. Until then, use the alternatives
+documented above.
 
 ## Release status
 

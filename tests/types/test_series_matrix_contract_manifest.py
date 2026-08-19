@@ -1001,6 +1001,31 @@ def test_container_arithmetic_docs_match_spectrogram_ndarray_manifest() -> None:
     assert "preserves dimensional cells" not in document
 
 
+def test_container_arithmetic_docs_pin_the_sqrt_workaround_scope() -> None:
+    """The advertised `matrix ** 0.5` workaround must name its own guarantee.
+
+    The migration guides tell users to replace `np.sqrt(matrix)` with
+    `matrix ** 0.5`.  That promise is backed by a targeted operator-contract
+    regression test, not by the canonical 318-cell manifest, whose scalar power
+    cells are pinned at exponent 2.  Pin both halves so the document cannot
+    drift back into claiming manifest coverage it does not have.
+    """
+    document = " ".join(
+        (
+            Path(__file__).parents[2]
+            / "docs/developers/contracts/container_arithmetic_contract.md"
+        )
+        .read_text(encoding="utf-8")
+        .split()
+    )
+    assert "targeted operator-contract regression test" in document
+    assert "test_sqrt_workaround_preserves_the_whole_b0_surface" in document
+    assert (
+        "The canonical 318-cell manifest does not itself enumerate a `0.5` "
+        "exponent cell" in document
+    )
+
+
 def test_b0_manifest_covers_approved_surface_for_every_family() -> None:
     required = {
         "shape",

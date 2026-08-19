@@ -275,12 +275,16 @@ Headline user stories:
 1. Container arithmetic follows a declarative, human-reviewed contract matrix
    (class × operand × operator × side × in-place); unsupported cells are explicit
    `raises` entries; the suite asserts its collected-case count.
-   **受入成果物**: `tests/types/test_container_arithmetic_contract.py`(新設、収集数アサート付き)が green。
-2. `np.sqrt(matrix)` and `(2 * u.s) * matrix` both return the correct class,
-   values, units, and metadata via the SeriesMatrix composition redesign.
-   **受入成果物**: `tests/types/test_series_matrix_ufunc.py` の当該ケースが green。
-   決定日までに green にならない場合は `__array_ufunc__ = None` の documented
-   limitation で出荷し、再設計は次テーマへ(D10)。
+   **受入成果物**: `tests/types/test_series_matrix_contract_manifest.py`(収集数アサート付き)が green。
+2. `np.sqrt(matrix)` is not adopted as a v0.2.0 direct B1 outcome (#637);
+   instead, v0.2.0 DoD is satisfied by the documented B0/Phase-A fallback branch
+   with explicit failures for unsupported direct ufuncs. Supported operator paths,
+   including Quantity-left/right multiplication, retain B0 semantics. B1/
+   composition is not adopted for v0.2.0.
+   **受入成果物**: `tests/types/test_series_matrix_operator_contract.py` の当該ケースが
+   green。B0 契約セルの正本は `tests/types/series_matrix_contract_manifest.py` で、
+   その凍結は `tests/types/test_series_matrix_contract_manifest.py` が検証する。
+   fallback を選択したのは D21(D10 の decision-date 機構は superseded)。
 3. HDF5 written by GWexpy for GWpy-derived containers is readable by a
    GWpy-only process (no `import gwexpy`).
    **受入成果物**: `tests/io/test_hdf5_gwpy_compat.py`(新設)が gwpy-only subprocess で green。
@@ -555,7 +559,7 @@ infrastructure として milestone 外に置く。この例外は release 固有
 | D3 | 公開 roadmap にドメイン番号・体系語彙を出さない |
 | D4 | #413 は body 全面編集+履歴コメントで旧文言を保全する方式 |
 | D9 | v0.2.0 を二段分割(Container Semantic Contract / Experiment data workflow)。GUI・docs工事は milestone 外 |
-| D10 | #637 は decision-date method + fallback(`__array_ufunc__=None` + documented limitation)付き blocker。calendar date は TBD で、#675 が milestone mid-point で確定する |
+| D10 | #637 は decision-date method + fallback(`__array_ufunc__=None` + documented limitation)付き blocker。calendar date は TBD で、#675 が milestone mid-point で確定する **(2026-08-18: D21 により superseded。本行は歴史的記録として保持し、書き換えない)** |
 | D11 | v1.0 は #400 モジュール単位 stability label を主経路とする criteria 節。一括宣言は補助 |
 | D12 | Histogram の v0.2.0 スコープは raises 行の登録までとし、伝播規則設計は将来テーマ |
 | D13 | Future themes は番号でなく名前で並べる。次の 1 minor のみ番号確定 |
@@ -566,8 +570,8 @@ infrastructure として milestone 外に置く。この例外は release 固有
 | D18 | **v0.2.0 milestone hygiene の planned application record**(merge 前に本 PR 内で確定。Step 11 は本表を再分類せず GitHub milestone にそのまま適用するのみ)。判定基準は `ROADMAP.md` `## v0.2.0 — Container Semantic Contract` 節の Definition of done(4項目、2026-08-15 rev 時点)。現在の milestone 実メンバー11件(issue 10件 + PR 1件)を下記 D18 詳細節の3分類に判定する |
 | D19 | **Post-adoption planning-gate correction**(2026-08-16 Sol completion review)。#675 と #676 を v0.2.0 の `gate-supporting` member として追加する。前者は #637 の fallback を実行可能にする decision-date gate、後者は DoD 4 の baseline / regression-budget evidence を所有する。#581 は #676 が利用する共有 benchmark infrastructure であり milestone member にはしない。GitHub milestone への適用は本 follow-up の merge 後に行い、再分類しない |
 | D20 | **#413 release-evidence correction**(2026-08-16 final Sol audit)。#413 は `gate-supporting` の release-notes / migration-guide owner として v0.2.0 milestone に残すが、issue body の fixed calendar-date 表現と `nproc`→`parallel` migration 項目は現行 scope を上書きできない。closeout merge 後、body を書き換えず superseding comment を投稿する。calendar date は TBD で method / tracking owner は #675、#403 migration は D18 により v0.2.0 外。分類・milestone membership は変更しない |
+| D21 | **v0.2.0 SeriesMatrix fallback selection**(2026-08-18 maintainer ruling、#637)。v0.2.0 の outcome として **B0 / Phase-A fallback** を正式契約に採用し、composition/B1 は v0.2.0 では**採用しない**。B0 契約で明示的に支持されない direct NumPy ufunc は documented provisional limitation であり v0.2.0 の correctness defect ではない(supported な操作は class/units/axes/labels/metadata を保持し、unsupported は明示的に失敗する。bare ndarray / Quantity への silent downgrade は許容しない)。`__array_ufunc__ = None` は fail-closed 挙動の実装手段であって長期互換性保証ではなく、外部から観測可能な B0 契約が保証対象である。これにより **D10 の decision-date 機構(#675 が milestone mid-point で確定)は期限切れとなり、本決定が優先する**(D16 が §9 B-4 を上書きしたのと同じ扱い)。B1 再設計は future design work として open のまま残り、version / date の commitment を持たない。`adopted: false` の位置づけは下記 D21 詳細を参照。本 ruling は merge / tag / publication / v0.2.0 release を承認するものではない |
 | Open-1 | CLI の consumer layer 分類と private API 依存の矛盾は未解決(§3)。トラッキング issue #674(milestone なし、architecture decision) |
-| Open-2 | #637 の decision-date method は確定済みだが calendar date は TBD。#675 が milestone mid-point で確定する v0.2.0 gate(D19) |
 | Open-3 | X4 の性能退行予算の具体的数値は未確定。#676 が v0.2.0 固有の baseline / budget を追跡する gate で、#581 は共有 infrastructure(D19) |
 
 ### D18 詳細 — v0.2.0 milestone 実メンバー11件の分類(2026-08-15、DoD 基準で確定)
@@ -609,6 +613,58 @@ evidence owner #676 を `gate-supporting` として追加し、§7 の共有イ�
 | Issue | 分類 | closeout merge 後の適用 | 根拠 |
 |---|---|---|---|
 | #413 | **gate-supporting(retain; text correction)** | issue body は歴史記録として保持し、superseding comment を1件投稿する | #413 は DoD 成果をユーザー向け release notes / migration guide に変換する evidence owner であり milestone に残す。一方、body の「fixed decision date」は D10/D19 後の現状と異なり、calendar date は TBD、method / tracker は #675 である。また `nproc`→`parallel` migration は D18 で unrelated とした #403 の scope であり、v0.2.0 release-evidence gate から除外する。この補正は #413 の分類や milestone membership を変更しない |
+
+### D21 詳細 — v0.2.0 SeriesMatrix fallback selection(2026-08-18)
+
+出典: #637 の maintainer ruling(2026-08-18T10:10:23Z)。
+
+#### 決定内容
+
+| 項目 | 決定 |
+|---|---|
+| v0.2.0 の outcome | **B0 / Phase-A fallback** を正式契約として採用する |
+| composition / B1 | v0.2.0 では**採用しない** |
+| #675 decision-date 機構 | 本決定により **superseded**。calendar decision date を遡って作る必要はない |
+| B1 再設計 | future design work。**version / date の commitment を持たない** |
+
+v0.2.0 の public contract は `tests/types/series_matrix_contract_manifest.py` と
+`docs/developers/contracts/container_arithmetic_contract.md` が表す frozen B0 contract である。
+
+#### `adopted: false` の位置づけ(二段構造)
+
+`adopted: false` は D21 が作り出した判断ではない。次の二段で読む:
+
+1. **B1 evidence / completion ledger** は、frozen B0 `slice` instability により candidate を
+   non-adoptable と記録している(`docs/plans/evidence/v0.2.0-b1/completion-ledger.md`、
+   `docs/plans/evidence/v0.2.0/completion-ledger.md`)。
+2. **その evidence を踏まえたうえで**、D21 は v0.2.0 の outcome として B0 fallback を選択した。
+
+したがって「D21 が意図的に fallback を選んだ」とだけ書くことも、
+「slice instability が D21 の理由である」と書くことも、いずれも不正確である。
+
+#### Open-2 の解決
+
+**Open-2(「#637 の decision-date method は確定済みだが calendar date は TBD。#675 が
+milestone mid-point で確定する v0.2.0 gate」)は D21 により解決したため、§11 の Open items
+表から除外した。** #675 の decision-date mechanism は superseded であり、**calendar date を
+retroactive に設定しない**。残る Open-N はリナンバーしない(Open-1 / Open-3 の識別子は不変)。
+D10 および D20 に含まれる decision-date 関連の歴史的記述は、当時の記録として書き換えない。
+
+#### Follow-up repository/GitHub synchronization(D21 の決定内容ではない)
+
+以下は D21 が決めた事柄ではなく、**D21 を GitHub 状態へ反映するための運用手順**である。
+正典に運用手順を混ぜないため、決定本文とは節を分けて記録する。適用は別途承認を要する。
+
+| 対象 | 適用予定 |
+|---|---|
+| #637 | open のまま維持し、v0.2.0 milestone から外す |
+| #637 body | release-blocker 記述を D21 outcome へ同期する(D4 方式 — body を更新し、旧文言を履歴コメントで保全する) |
+| #675 | `not planned` で close する |
+| #413 | **変更しない**(no-touch invariant。D20 の superseding comment は別作業) |
+| v0.2.0 milestone description | 旧 decision-date 文言を D21 参照へ差し替える |
+
+適用順序は「#637 の意味論を先に同期してから release milestone から外す」。
+D21 ruling 自体は merge / tag / publication / v0.2.0 release を承認していない。
 
 ## 12. Appendix — 外部 AI 議論の要約(2026-08)
 

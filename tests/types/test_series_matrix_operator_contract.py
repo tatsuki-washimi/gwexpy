@@ -979,6 +979,79 @@ def test_power_accepts_scalar_exponents(matrix, exponent):
     assert result.meta[0, 0].unit == u.V ** float(np.asarray(exponent))
 
 
+def test_sqrt_workaround_preserves_the_whole_b0_surface(matrix):
+    """``matrix ** 0.5`` is the documented replacement for ``np.sqrt(matrix)``.
+
+    ``np.sqrt(matrix)`` is an unsupported direct ufunc under B0, and the
+    migration guides advertise ``matrix ** 0.5`` as the metadata-preserving
+    operator-path alternative.  ``test_power_accepts_scalar_exponents`` only
+    checks that the exponent reaches the unit of one cell, and the value/class
+    checks next to it are pinned to exponent 2, so nothing covered the claim
+    that the advertised workaround keeps the whole B0 surface intact.  This
+    test is that coverage, for all three families.
+
+    Identity is deliberately semantic: axes, labels and per-cell metadata are
+    compared by value, not by ``is``.  ``attrs`` is the one exception, and it is
+    family-specific because the frozen B0 manifest makes it so: the scalar power
+    cell defaults to ``AttrsExpectation.EMPTY`` for ``SpectrogramMatrix`` and
+    ``AttrsExpectation.DEEP_COPY`` for the two 3-D series families.  The
+    deep-copy families must therefore end up with an equal but *unshared*
+    mapping, not merely an equal one.
+    """
+    matrix.attrs["contract"] = {"nested": [1, 2, 3]}
+    snapshot = _observable_source_snapshot(matrix)
+
+    result = matrix**0.5
+
+    # Concrete class, not a bare ndarray/Quantity downgrade.
+    assert type(result) is type(matrix)
+
+    # Numerical agreement with the ufunc the workaround stands in for.
+    np.testing.assert_allclose(np.asarray(result), np.sqrt(np.asarray(matrix)))
+
+    # Every cell unit carries the exponent, not just meta[0, 0].
+    for row in cell_units(result):
+        for unit in row:
+            assert unit == u.V**0.5
+
+    # Axes survive by value.
+    if isinstance(matrix, SpectrogramMatrix):
+        np.testing.assert_allclose(
+            result.times.to_value(u.s), matrix.times.to_value(u.s)
+        )
+        np.testing.assert_allclose(
+            result.frequencies.to_value(u.Hz), matrix.frequencies.to_value(u.Hz)
+        )
+    else:
+        np.testing.assert_allclose(np.asarray(result.xindex), np.asarray(matrix.xindex))
+
+    # Epoch survives for every family (manifest: EpochExpectation.PRESERVE).
+    assert result.epoch == matrix.epoch
+
+    # Row/column labels survive by value.
+    assert list(result.rows.keys()) == list(matrix.rows.keys())
+    assert list(result.cols.keys()) == list(matrix.cols.keys())
+
+    # Per-cell name/channel survive; only the unit changes.
+    assert cell_names(result) == cell_names(matrix)
+    for i in range(2):
+        for j in range(2):
+            assert result.meta[i, j].channel == matrix.meta[i, j].channel
+
+    # attrs: family-specific per the frozen B0 manifest.
+    if isinstance(matrix, SpectrogramMatrix):
+        assert result.attrs == {}
+    else:
+        assert result.attrs == matrix.attrs
+        assert result.attrs is not matrix.attrs
+        assert result.attrs["contract"] is not matrix.attrs["contract"]
+        result.attrs["contract"]["nested"].append(4)
+        assert matrix.attrs["contract"]["nested"] == [1, 2, 3]
+
+    # The source matrix is untouched by the whole operation.
+    _assert_source_unchanged(matrix, snapshot)
+
+
 def test_power_rejects_dimensional_exponent(matrix):
     """``matrix ** (1 * u.s)`` has no meaning and is refused."""
     with pytest.raises(UnitConversionError):
