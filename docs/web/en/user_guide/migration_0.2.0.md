@@ -259,15 +259,21 @@ validate(segments)
 **Stability:** provisional.
 
 The #637 composition prototype and evidence were completed in isolation, but
-the candidate runtime was not copied into integration. v0.2.0 keeps the B0
-fallback and does not adopt `SeriesMatrix` composition/B1 behavior.
+the candidate runtime was not copied into integration. The existing B1 decision
+and completion ledger record `adopted: false` because frozen B0 `slice`
+instability made the candidate non-adoptable; taking that evidence into account,
+the D21 ruling then selected the B0 fallback as the v0.2.0 outcome. v0.2.0
+therefore keeps the B0 fallback and does not adopt `SeriesMatrix` composition/B1
+behavior.
+
+### Unsupported direct ufunc and its supported alternative
 
 `np.sqrt(matrix)` is not supported as a direct NumPy ufunc under the v0.2.0 B0
-contract.
-
-Use:
+contract. Use the operator path instead:
 
 ```python
+# static-signature-example
+# np.sqrt(matrix) is an unsupported direct ufunc under B0 and raises TypeError.
 result = matrix ** 0.5
 ```
 
@@ -282,11 +288,16 @@ No metadata-preserving B0 alternatives are currently defined for direct
 `SpectrogramMatrix`, and is `UnitConversionError` for `TimeSeriesMatrix` and
 `FrequencySeriesMatrix` under B0.
 
-Both forms below are already B0-supported:
+### Quantity multiplication
+
+This is a separate category: it is not an `unsupported -> alternative` pair.
+Both operand orders are **already B0-supported**, so no migration is required.
 
 ```python
-(2 * u.s) * matrix
-matrix * (2 * u.s)
+# static-signature-example
+# Both orders are supported under B0; neither is a workaround for the other.
+left = (2 * u.s) * matrix
+right = matrix * (2 * u.s)
 ```
 
 `np.asarray(matrix)` remains the intentional metadata-escape boundary and returns a
@@ -298,6 +309,14 @@ not a correctness regression.
 
 The future #637 redesign remains open with no assigned release version or date,
 and this page does not promise B1 adoption in v0.2.0.
+
+Making the runtime error message itself point at the supported alternative is
+tracked as future design work in
+[#681](https://github.com/tatsuki-washimi/gwexpy/issues/681). v0.2.0 does not
+change runtime behavior for this, and no release version or date is assigned to
+#681. Its scope is limited to the diagnostic for unsupported direct ufuncs; it
+does not reopen the B1/composition redesign. Until then, use the alternatives
+documented above.
 
 ## Release status
 

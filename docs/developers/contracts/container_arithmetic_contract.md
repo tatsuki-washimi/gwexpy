@@ -42,6 +42,14 @@ this same ledger rather than introducing a second matrix.
 - `matrix ** 0.5` is the validated metadata-preserving operator-path workaround
   for all three SeriesMatrix families:
   `TimeSeriesMatrix`, `FrequencySeriesMatrix`, and `SpectrogramMatrix`.
+- That claim is guaranteed by a targeted operator-contract regression test,
+  `test_sqrt_workaround_preserves_the_whole_b0_surface` in
+  `tests/types/test_series_matrix_operator_contract.py`, which pins the concrete
+  class, the values against `np.sqrt`, every cell unit, the axes, the row and
+  column labels, the per-cell name and channel, the epoch, the family-specific
+  attrs semantics, and the absence of source mutation.
+  The canonical 318-cell manifest does not itself enumerate a `0.5` exponent
+  cell; its scalar power cells are pinned at exponent 2.
 - `matrix ** 0.5` is a workaround via normal operator dispatch; it is not
   direct-ufunc support and does not imply B1/composition adoption.
 - No metadata-preserving B0 alternatives are currently defined for
@@ -52,6 +60,12 @@ this same ledger rather than introducing a second matrix.
   `FrequencySeriesMatrix`.
 - Both quantity-left and quantity-right multiplication forms are already supported:
   `(2 * u.s) * matrix` and `matrix * (2 * u.s)`.
+- Improving the runtime error message so that an unsupported direct ufunc can
+  itself point at the supported alternative is tracked as future design work in
+  [#681](https://github.com/tatsuki-washimi/gwexpy/issues/681). v0.2.0 does not
+  change runtime behavior for this, and no release version or date is assigned
+  to #681. Its scope is the diagnostic only; it does not reopen the B1/
+  composition redesign.
 
 ## B0 construction and structure
 

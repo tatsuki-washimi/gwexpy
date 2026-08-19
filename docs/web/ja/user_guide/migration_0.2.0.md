@@ -231,16 +231,22 @@ validate(segments)
 **安定性:** provisional。
 
 #637 の composition prototype と証拠は隔離環境で完了しましたが、candidate runtime は
-integration にコピーされておらず、v0.2.0 では SeriesMatrix の composition/B1 を採用しません。
+integration にコピーされていません。既存の B1 decision と completion ledger は、凍結した
+B0 `slice` 不安定性によって candidate が採用不能になるため `adopted: false` と記録して
+います。その evidence を踏まえたうえで、D21 の裁定は v0.2.0 の outcome として B0 fallback
+を選択しました。したがって v0.2.0 では SeriesMatrix の composition/B1 を採用しません。
 
 B0 の公開可能な source of truth は contract ledger で、直接 ufunc の可否を
 明示します。
 
-`np.sqrt(matrix)` は v0.2.0 B0 の direct NumPy ufunc としては非対応です。
+### 非対応の direct ufunc と、その supported な代替
 
-代替として次を利用してください。
+`np.sqrt(matrix)` は v0.2.0 B0 の direct NumPy ufunc としては非対応です。
+代替として operator 経路を利用してください。
 
 ```python
+# static-signature-example
+# np.sqrt(matrix) は B0 では非対応の direct ufunc で、TypeError になります。
 result = matrix ** 0.5
 ```
 
@@ -254,7 +260,17 @@ metadata-preserving な B0 workaround は現在未定義です。
 `np.isreal(matrix)` は `SpectrogramMatrix` でのみ direct support で、`TimeSeriesMatrix`
 と `FrequencySeriesMatrix` では B0 で未対応（`UnitConversionError`）です。
 
-`(2 * u.s) * matrix` と `matrix * (2 * u.s)` は両方とも既に B0 で対応済みです。
+### Quantity 乗算
+
+これは別カテゴリで、`unsupported -> alternative` の組ではありません。
+左右どちらの順序も**既に B0 で対応済み**であり、移行は不要です。
+
+```python
+# static-signature-example
+# どちらの順序も B0 で supported です。一方が他方の workaround ではありません。
+left = (2 * u.s) * matrix
+right = matrix * (2 * u.s)
+```
 
 `np.asarray(matrix)` は metadata model を離脱する raw-array の境界で、意図的に bare
 ndarray を返します。metadata-preserving workaround ではありません。
@@ -264,6 +280,14 @@ ndarray を返します。metadata-preserving workaround ではありません�
 
 #637 の将来 redesign は v0.2.0 の確定版ではないため、採用バージョン/日付は
 このページでは定めていません。
+
+未対応の direct ufunc のエラーメッセージ自体が supported な代替を案内できるように
+する改善は、将来の設計課題として
+[#681](https://github.com/tatsuki-washimi/gwexpy/issues/681) で追跡しています。
+v0.2.0 ではこのための runtime 挙動を変更せず、#681 にリリースバージョン/日付は
+割り当てていません。#681 のスコープは未対応 direct ufunc の diagnostic に限定され、
+B1/composition の再設計を再開するものではありません。それまでは上記の代替を
+利用してください。
 
 ## リリース状態
 

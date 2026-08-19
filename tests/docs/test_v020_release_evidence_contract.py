@@ -787,7 +787,13 @@ def test_bilingual_migrations_have_ast_valid_paired_examples_and_roundtrip(
 
     english_fences = _python_fences(english)
     japanese_fences = _python_fences(japanese)
-    assert len(english_fences) == len(japanese_fences) == 12
+    # v0.2.0 adds two bilingual static examples to the migration contract -- the
+    # unsupported-direct-ufunc/supported-alternative pair (`matrix ** 0.5`) and the
+    # already-supported Quantity multiplication orders -- so the expected
+    # paired-example count is raised from 12 to 14.  Both languages must carry
+    # both new examples; this is a promotion of new examples into the guard, not
+    # a relaxation of it.
+    assert len(english_fences) == len(japanese_fences) == 14
     for language, fences in (("en", english_fences), ("ja", japanese_fences)):
         assert sum("# executable-roundtrip" in source for source in fences) == 1
         assert all(
