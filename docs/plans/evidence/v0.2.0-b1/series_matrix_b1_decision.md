@@ -2,7 +2,8 @@
 
 **D21 selects B0 for v0.2.0.**  B1 is deferred: `adopted: false`.
 
-The release retains the reviewed 318-cell B0 contract and does not implement general direct NumPy ufunc composition; no candidate runtime is adopted.
+The release retains the reviewed 390-cell B0 contract.  It supersedes the
+prior 318-cell candidate, which physics/data-model review rejected.  B1 does not implement general direct NumPy ufunc composition, and no candidate runtime is adopted.
 Unsupported direct ufuncs therefore continue to fail explicitly rather than
 silently returning an ndarray or Quantity.
 
