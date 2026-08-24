@@ -11,6 +11,18 @@ Spectrogram
 Overview
 --------
 
+Provenance
+----------
+
+``Spectrogram.provenance`` is an optional detached mapping for analysis
+results.  Its stable v0.2.0 form has
+``schema="gwexpy.spectrogram.provenance"`` and ``schema_version=1``.
+Only JSON-safe values are accepted; live objects such as random-number
+generators are rejected.  The mapping is retained by copy, slicing,
+Spectrogram-preserving arithmetic, pickle, and explicit HDF5 round-trips.
+HDF5 stores it as a GWexpy file-level sidecar, so the native GWpy dataset
+remains readable by GWpy.
+
 .. note::
    Learning path:
    Use this page after the introductory spectrogram tutorial or when a time-frequency workflow needs exact API details.

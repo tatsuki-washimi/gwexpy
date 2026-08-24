@@ -44,6 +44,14 @@ def _build_gwpy_spectrogram(data, kwargs: dict[str, Any]):
     return Spectrogram(data, **kwargs)
 
 
+def _build_gwexpy_spectrogram(data, kwargs: dict[str, Any], provenance: dict[str, Any]):
+    from gwexpy.spectrogram import Spectrogram
+
+    result = Spectrogram(data, **kwargs)
+    result.provenance = provenance
+    return result
+
+
 def _series_kwargs(series) -> dict[str, Any]:
     return {
         "unit": getattr(series, "unit", None),
@@ -96,10 +104,13 @@ def frequencyseries_reduce_args(
 
 def spectrogram_reduce_args(
     sg,
-) -> tuple[Callable[[Any, dict[str, Any]], Any], tuple[Any, dict[str, Any]]]:
+) -> tuple[Callable[..., Any], tuple[Any, ...]]:
     """Return pickle reduce arguments for a GWpy-compatible spectrogram."""
     kwargs = _series_kwargs(sg)
     kwargs["times"] = getattr(sg, "times", None)
     kwargs["frequencies"] = getattr(sg, "frequencies", None)
     data = np.asarray(sg.value)
-    return _build_gwpy_spectrogram, (data, kwargs)
+    provenance = getattr(sg, "provenance", None)
+    if provenance is None:
+        return _build_gwpy_spectrogram, (data, kwargs)
+    return _build_gwexpy_spectrogram, (data, kwargs, provenance)

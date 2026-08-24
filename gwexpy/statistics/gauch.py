@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 
 from ..spectrogram import Spectrogram
+from ..spectrogram.provenance import analysis_provenance
 
 if TYPE_CHECKING:
     from ..timeseries import TimeSeries
@@ -159,6 +160,22 @@ def compute_gauch(
 
     res_p = Spectrogram(pvalue_map, frequencies=spec.frequencies, times=out_times)
     res_s = Spectrogram(statistic_map, frequencies=spec.frequencies, times=out_times)
+
+    provenance = analysis_provenance(
+        "compute_gauch",
+        {
+            "fftlength": fftlength,
+            "stride": stride,
+            "window": window,
+            "overlap": overlap,
+            "n_monte_carlo": n_monte_carlo,
+        },
+        seed=seed,
+        rng_provided=rng is not None,
+        seed_unused=rng is not None and seed is not None,
+    )
+    res_p.provenance = provenance
+    res_s.provenance = provenance
 
     metadata: dict[str, Any] = {"n_monte_carlo": n_monte_carlo}
     if rng is not None:

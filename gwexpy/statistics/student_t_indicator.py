@@ -15,6 +15,7 @@ except ImportError as _exc:
     ) from _exc
 
 from ..spectrogram import Spectrogram
+from ..spectrogram.provenance import analysis_provenance
 
 if TYPE_CHECKING:
     from ..timeseries import TimeSeries
@@ -252,10 +253,21 @@ def compute_student_t_nu(
     # above so t[0] == 0 corresponds to ts's first sample; see #465).
     out_times = t[window // 2 : window // 2 + n_out] + float(ts.t0.value)
 
-    return Spectrogram(
+    result = Spectrogram(
         nu_map,
         times=out_times,
         frequencies=f,
         unit="",
         name="student_t_nu",
     )
+    result.provenance = analysis_provenance(
+        "compute_student_t_nu",
+        {
+            "fftlength": fftlength,
+            "stride": stride,
+            "window": window,
+            "overlap": overlap,
+            "frange": None if frange is None else list(frange),
+        },
+    )
+    return result

@@ -17,6 +17,7 @@ except ImportError as _exc:
     ) from _exc
 
 from ..spectrogram import Spectrogram
+from ..spectrogram.provenance import analysis_provenance
 
 if TYPE_CHECKING:
     pass
@@ -177,6 +178,13 @@ def rayleigh_pvalue(
         frequencies=rayleigh_spec.frequencies,
         unit="",
         name=f"p-value({rayleigh_spec.name})",
+    )
+    result.provenance = analysis_provenance(
+        "rayleigh_pvalue",
+        {"n_samples": n_samples, "n_monte_carlo": n_monte_carlo, "nfft": nfft},
+        seed=seed,
+        rng_provided=rng is not None,
+        seed_unused=rng is not None and seed is not None,
     )
     result.n_monte_carlo = n_monte_carlo
     if rng is not None:
