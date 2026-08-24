@@ -65,9 +65,25 @@ jobs:
           python-version: "3.11"
 
       - name: Fetch frozen protected branch tips
+        env:
+          EXPECTED_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_tag || github.ref_name }}
         run: |
-          git -C source fetch origin +refs/heads/main:refs/remotes/origin/main
-          git -C source fetch origin +refs/heads/maint/0.1:refs/remotes/origin/maint/0.1
+          if ! protected_refs_output="$(python control/scripts/ci/release_contract.py --protected-ref "$EXPECTED_TAG")"; then
+            echo "release contract lookup failed" >&2
+            exit 1
+          fi
+          if [[ -z "$protected_refs_output" ]]; then
+            echo "release contract has no protected refs" >&2
+            exit 1
+          fi
+          mapfile -t protected_refs <<< "$protected_refs_output"
+          if (( ${#protected_refs[@]} == 0 )); then
+            echo "release contract has no protected refs" >&2
+            exit 1
+          fi
+          for protected_ref in "${protected_refs[@]}"; do
+            git -C source fetch origin "+refs/heads/${protected_ref}:refs/remotes/origin/${protected_ref}"
+          done
 
       - name: Validate metadata, tag mode, ancestry, and frozen tips
         id: validate

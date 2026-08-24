@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -31,12 +32,12 @@ def load_contract_module():
     return module
 
 
-def test_release_contracts_cover_v0113_regression_and_v0114_lane() -> None:
+def test_release_contracts_cover_frozen_v011x_releases_and_v020_lane() -> None:
     assert CONTRACTS_PATH.is_file()
     data = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
 
     assert data["schema"] == "gwexpy-release-contracts-v1"
-    assert set(data["releases"]) == {"v0.1.13", "v0.1.14"}
+    assert set(data["releases"]) == {"v0.1.13", "v0.1.14", "v0.2.0"}
 
     v0113 = data["releases"]["v0.1.13"]
     assert v0113["plan_path"] == (
@@ -48,6 +49,7 @@ def test_release_contracts_cover_v0113_regression_and_v0114_lane() -> None:
     assert v0113["review_evidence_schema"] == ("gwexpy-v0113-review-evidence-v1")
     assert set(v0113["review_lanes"]) == {"A", "B"}
     assert v0113["artifact_prefix"] == "v0113-integration-evidence"
+    assert v0113["protected_refs"] == ["main", "maint/0.1"]
 
     v0114 = data["releases"]["v0.1.14"]
     assert v0114["plan_path"] == "docs/plans/2026-08-08-v0114-release-plan.md"
@@ -65,6 +67,7 @@ def test_release_contracts_cover_v0113_regression_and_v0114_lane() -> None:
         "docs/plans/2026-08-08-v0114-release-plan.md",
     ]
     assert v0114["artifact_prefix"] == "v0114-integration-evidence"
+    assert v0114["protected_refs"] == ["main", "maint/0.1"]
     assert (
         "tests/docs/test_docs_redesign_public_content.py"
         in v0114["review_lanes"]["scientific"]
@@ -88,12 +91,32 @@ def test_release_contracts_cover_v0113_regression_and_v0114_lane() -> None:
         "tests/timeseries",
     } <= scope_union
 
+    v020 = data["releases"]["v0.2.0"]
+    assert v020["protected_refs"] == ["main", "maint/0.2"]
+
 
 def test_release_contract_loader_rejects_unknown_tags() -> None:
     contracts = load_contract_module()
 
     with pytest.raises(contracts.ReleaseContractError, match="unsupported release tag"):
         contracts.release_contract("v0.1.15")
+
+
+def test_release_contract_loader_rejects_unknown_schema(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    contracts = load_contract_module()
+    data = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
+    data["schema"] = "gwexpy-release-contracts-v2"
+    modified = tmp_path / "release_contracts.json"
+    modified.write_text(json.dumps(data), encoding="utf-8")
+    monkeypatch.setattr(contracts, "CONTRACT_PATH", modified)
+
+    with pytest.raises(
+        contracts.ReleaseContractError, match="invalid release contracts"
+    ):
+        contracts.release_contract("v0.1.14")
 
 
 def test_release_contract_loader_returns_defensive_values() -> None:
@@ -118,6 +141,73 @@ def test_release_contract_loader_rejects_unsafe_artifact_prefix(
 
     with pytest.raises(contracts.ReleaseContractError, match="artifact_prefix"):
         contracts.release_contract("v0.1.14")
+
+
+@pytest.mark.parametrize(
+    "protected_refs",
+    [
+        ["main"],
+        ["main", "main"],
+        ["main", "maint/0.2", "maint/0.1"],
+        ["main", "../maint/0.2"],
+        ["main", "refs/heads/maint/0.2"],
+        ["main", "main//evil"],
+        ["main", ".hidden"],
+        ["main", "main/.hidden"],
+        ["main", "main/foo.lock"],
+        ["main", "maint/\x00evil"],
+        ["main", 2],
+    ],
+)
+def test_release_contract_loader_rejects_invalid_protected_refs(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    protected_refs: list[object],
+) -> None:
+    contracts = load_contract_module()
+    data = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
+    data["releases"]["v0.1.14"]["protected_refs"] = protected_refs
+    modified = tmp_path / "release_contracts.json"
+    modified.write_text(json.dumps(data), encoding="utf-8")
+    monkeypatch.setattr(contracts, "CONTRACT_PATH", modified)
+
+    with pytest.raises(contracts.ReleaseContractError, match="protected refs"):
+        contracts.release_contract("v0.1.14")
+
+
+def test_release_contract_loader_rejects_branch_checkout_shorthand(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    repo = tmp_path / "checkout-history"
+    repo.mkdir()
+    for args in (
+        ("init", "-b", "main"),
+        ("config", "user.name", "Release Test"),
+        ("config", "user.email", "release-test@example.invalid"),
+        ("commit", "--allow-empty", "-m", "initial"),
+        ("branch", "previous"),
+        ("checkout", "previous"),
+        ("checkout", "main"),
+    ):
+        subprocess.run(["git", *args], cwd=repo, check=True, capture_output=True)
+
+    contracts = load_contract_module()
+    data = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
+    data["releases"]["v0.1.14"]["protected_refs"] = ["@{-1}", "main"]
+    modified = tmp_path / "release_contracts.json"
+    modified.write_text(json.dumps(data), encoding="utf-8")
+    monkeypatch.setattr(contracts, "CONTRACT_PATH", modified)
+    monkeypatch.chdir(repo)
+
+    with pytest.raises(contracts.ReleaseContractError, match="protected refs"):
+        contracts.release_contract("v0.1.14")
+
+
+def test_release_contract_cli_emits_exact_tag_protected_refs() -> None:
+    contracts = load_contract_module()
+
+    assert contracts.protected_refs("v0.2.0") == ["main", "maint/0.2"]
 
 
 def test_v0114_manifest_is_a_sanitized_review_evidence_container() -> None:

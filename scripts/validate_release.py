@@ -176,33 +176,31 @@ def _branch_ref(repo_root: Path, branch: str) -> str:
     raise ReleaseValidationError(f"required ancestry branch {branch!r} is unavailable")
 
 
-def _require_ancestry(repo_root: Path, source_sha: str, tag: str) -> None:
-    match = RELEASE_TAG_PATTERN.fullmatch(tag)
-    assert match is not None
-    version = tuple(int(part) for part in match.groups())
-    branch = (
-        "maint/0.1"
-        if version[0] == 0 and version[1] == 1 and version[2] > 12
-        else "main"
-    )
-    ref = _branch_ref(repo_root, branch)
-    result = subprocess.run(
-        ["git", "merge-base", "--is-ancestor", source_sha, ref],
-        cwd=repo_root,
-        check=False,
-    )
-    if result.returncode:
-        raise ReleaseValidationError(f"{source_sha} is not an ancestor of {branch}")
+def _require_ancestry(repo_root: Path, source_sha: str, expected_tag: str) -> None:
+    protected_refs = cast(list[str], _release_contract(expected_tag)["protected_refs"])
+    for branch in protected_refs:
+        ref = _branch_ref(repo_root, str(branch))
+        result = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", source_sha, ref],
+            cwd=repo_root,
+            check=False,
+        )
+        if result.returncode:
+            raise ReleaseValidationError(f"{source_sha} is not an ancestor of {branch}")
 
 
-def validate_frozen_tip(repo_root: Path | str, source_sha: str) -> None:
-    """Require both fetched protected branch tips to equal *source_sha*."""
+def validate_frozen_tip(
+    repo_root: Path | str, source_sha: str, *, expected_tag: str = "v0.1.13"
+) -> None:
+    """Require every fetched contract protected tip to equal *source_sha*."""
     root = Path(repo_root).resolve()
     if not SHA_PATTERN.fullmatch(source_sha):
         raise ReleaseValidationError(
             "frozen-tip source SHA must be a full lowercase SHA"
         )
-    for ref in ("refs/remotes/origin/main", "refs/remotes/origin/maint/0.1"):
+    protected_refs = cast(list[str], _release_contract(expected_tag)["protected_refs"])
+    for branch in protected_refs:
+        ref = f"refs/remotes/origin/{branch}"
         if not _ref_exists(root, ref):
             raise ReleaseValidationError(
                 f"frozen-tip requires fetched {ref.removeprefix('refs/remotes/')}"
@@ -406,7 +404,7 @@ def validate_release(
                 expected_tag=expected_tag,
             )
         if frozen_tip:
-            validate_frozen_tip(root, source_sha)
+            validate_frozen_tip(root, source_sha, expected_tag=expected_tag)
         return ValidationResult(
             "strict",
             source_sha,
@@ -440,7 +438,7 @@ def validate_release(
             expected_tag=expected_tag,
         )
     if frozen_tip:
-        validate_frozen_tip(root, source_sha)
+        validate_frozen_tip(root, source_sha, expected_tag=expected_tag)
     return ValidationResult(
         "candidate",
         source_sha,

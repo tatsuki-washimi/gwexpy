@@ -3,13 +3,18 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.util
+import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import textwrap
 import zipfile
 from pathlib import Path
+
+import pytest
 
 WORKFLOW = (
     Path(__file__).resolve().parents[1]
@@ -343,3 +348,130 @@ def test_workflow_dispatch_inputs_are_preserved_for_manual_candidates():
     for name in ("release_ref", "expected_tag", "review_evidence"):
         assert f"      {name}:" in dispatch
     assert dispatch.count("required: true") == 3
+
+
+def test_workflow_fetches_the_exact_tags_contract_protected_refs():
+    workflow = read_workflow()
+    fetch = workflow.split(
+        "      - name: Fetch frozen protected branch tips\n", maxsplit=1
+    )[1].split("\n      - name: Validate metadata", maxsplit=1)[0]
+
+    assert "python control/scripts/ci/release_contract.py --protected-ref" in fetch
+    assert "$EXPECTED_TAG" in fetch
+    assert "release contract lookup failed" in fetch
+    assert "+refs/heads/${protected_ref}:refs/remotes/origin/${protected_ref}" in fetch
+    assert "maint/0.1" not in fetch
+
+
+def test_workflow_rejects_empty_contract_ref_output(tmp_path: Path):
+    workflow = read_workflow()
+    fetch = workflow.split(
+        "      - name: Fetch frozen protected branch tips\n", maxsplit=1
+    )[1].split("\n      - name: Validate metadata", maxsplit=1)[0]
+    script = textwrap.dedent(fetch.split("        run: |\n", maxsplit=1)[1])
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    fake_python = fake_bin / "python"
+    fake_python.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
+    fake_python.chmod(0o755)
+
+    result = subprocess.run(
+        ["bash", "-e", "-c", script],
+        cwd=tmp_path,
+        env=os.environ
+        | {
+            "EXPECTED_TAG": "v0.2.0",
+            "PATH": f"{fake_bin}:{os.environ['PATH']}",
+        },
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert result.returncode == 1
+    assert result.stderr == "release contract has no protected refs\n"
+
+
+def test_releasing_documents_tag_specific_integration_artifact_prefixes():
+    releasing = (WORKFLOW.parents[2] / "RELEASING.md").read_text(encoding="utf-8")
+
+    assert "selected from the exact release contract" in releasing
+    assert "`v020-integration-evidence-<40-character-source-sha>`" in releasing
+    assert "currently `v0114-integration-evidence" not in releasing
+
+
+def test_workflow_contract_revision_disagreement_fails_closed(tmp_path: Path):
+    """The workflow producer and validator consumer must use one revision.
+
+    A hypothetical mixed revision fetches v0.2.0's `maint/0.2` from one
+    control tree while a validator from another requires `maint/0.3`.  The
+    validator must reject the missing second revision's ref rather than
+    accepting the successfully fetched first revision's refs.
+    """
+    root = WORKFLOW.parents[2]
+
+    def write_control_revision(name: str, maintenance_ref: str) -> Path:
+        control = tmp_path / name / "scripts"
+        ci = control / "ci"
+        ci.mkdir(parents=True)
+        for filename in ("release_contract.py", "release_contracts.json"):
+            shutil.copy2(root / "scripts" / "ci" / filename, ci / filename)
+        shutil.copy2(root / "scripts" / "validate_release.py", control)
+        contracts_path = ci / "release_contracts.json"
+        contracts = json.loads(contracts_path.read_text(encoding="utf-8"))
+        contracts["releases"]["v0.2.0"]["protected_refs"] = [
+            "main",
+            maintenance_ref,
+        ]
+        contracts_path.write_text(json.dumps(contracts), encoding="utf-8")
+        return control
+
+    producer = write_control_revision("producer", "maint/0.2")
+    consumer = write_control_revision("consumer", "maint/0.3")
+    emitted = subprocess.run(
+        [
+            sys.executable,
+            str(producer / "ci" / "release_contract.py"),
+            "--protected-ref",
+            "v0.2.0",
+        ],
+        text=True,
+        capture_output=True,
+        check=True,
+    ).stdout.splitlines()
+    assert emitted == ["main", "maint/0.2"]
+
+    repo = tmp_path / "source"
+    repo.mkdir()
+    for args in (
+        ("init", "-b", "main"),
+        ("config", "user.name", "Release Test"),
+        ("config", "user.email", "release-test@example.invalid"),
+        ("commit", "--allow-empty", "-m", "source"),
+    ):
+        subprocess.run(["git", *args], cwd=repo, check=True, capture_output=True)
+    source_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repo,
+        check=True,
+        text=True,
+        capture_output=True,
+    ).stdout.strip()
+    for ref in emitted:
+        subprocess.run(
+            ["git", "update-ref", f"refs/remotes/origin/{ref}", source_sha],
+            cwd=repo,
+            check=True,
+            capture_output=True,
+        )
+
+    spec = importlib.util.spec_from_file_location(
+        "consumer_validate_release", consumer / "validate_release.py"
+    )
+    assert spec and spec.loader
+    validator = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = validator
+    spec.loader.exec_module(validator)
+
+    with pytest.raises(validator.ReleaseValidationError, match="origin/maint/0.3"):
+        validator.validate_frozen_tip(repo, source_sha, expected_tag="v0.2.0")
