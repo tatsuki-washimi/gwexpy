@@ -91,6 +91,13 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
     def _super_ts(self) -> TimeSeriesAttrs:
         return cast(TimeSeriesAttrs, super())
 
+    def _restore_spectral_metadata(self, result: FrequencySeries) -> FrequencySeries:
+        """Restore input metadata that backend spectral routines may drop."""
+        result.name = self.name
+        result.channel = self.channel
+        result.epoch = self.epoch
+        return result
+
     def _prepare_data_for_transform(
         self,
         data: npt.ArrayLike | None = None,
@@ -364,14 +371,14 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         res = self._super_ts().psd(*args, **kwargs)
-        return res.view(FrequencySeries)
+        return self._restore_spectral_metadata(res.view(FrequencySeries))
 
     def asd(self, *args: Any, **kwargs: Any) -> FrequencySeries:
         self._check_regular("asd")
         FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         res = self._super_ts().asd(*args, **kwargs)
-        return res.view(FrequencySeries)
+        return self._restore_spectral_metadata(res.view(FrequencySeries))
 
     def csd(self, other: Any, *args: Any, **kwargs: Any) -> FrequencySeries:
         self._check_regular("csd")

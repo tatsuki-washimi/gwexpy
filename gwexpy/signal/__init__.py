@@ -3,7 +3,7 @@ from __future__ import annotations
 # gwexpy.signal
 # Extends gwpy.signal with additional preprocessing and analysis utilities.
 # Local preprocessing module
-from . import preprocessing
+from . import preprocessing, spectral
 from .preprocessing import (
     StandardizationModel as StandardizationModel,
 )
@@ -21,6 +21,7 @@ from .preprocessing import (
 )
 
 __all__ = [
+    "spectral",
     "preprocessing",
     "WhiteningModel",
     "whiten",
@@ -39,6 +40,7 @@ def __getattr__(name):
 
 def __dir__():
     local_names = {
+        "spectral",
         "preprocessing",
         "WhiteningModel",
         "whiten",
