@@ -102,14 +102,60 @@ class TestImportOrderIsolated:
         """)
         assert result.returncode == 0, result.stderr
 
-    def test_register_all_without_io(self):
-        """include_io=False registers constructors but skips IO formats."""
+    def test_public_register_all_is_idempotent_in_clean_process(self):
+        """Repeated public registration preserves identities and behavior."""
         result = _run_isolated("""\
-            from gwexpy._bootstrap import register_all
-            register_all(include_io=False)
+            import numpy as np
+            import gwexpy
             from gwexpy.interop._registry import ConverterRegistry
-            assert ConverterRegistry.has_constructor("TimeSeries")
-            assert ConverterRegistry.has_constructor("FrequencySeries")
+            from gwexpy.spectrogram import Spectrogram
+            from gwexpy.timeseries import TimeSeries
+
+            before = {
+                name: ConverterRegistry.get_constructor(name)
+                for name in ("TimeSeries", "Spectrogram")
+            }
+            gwexpy.register_all()
+            gwexpy.register_all()
+            after = {
+                name: ConverterRegistry.get_constructor(name)
+                for name in before
+            }
+            assert all(before[name] is after[name] for name in before)
+
+            ts = TimeSeries(np.ones(16), sample_rate=4)
+            assert isinstance(
+                ts.spectrogram(stride=2, fftlength=2, overlap=1), Spectrogram
+            )
+        """)
+        assert result.returncode == 0, result.stderr
+
+    def test_direct_timeseries_import_keeps_spectrogram_registration(self):
+        """Public TimeSeries import supports later spectrogram generation."""
+        result = _run_isolated("""\
+            import numpy as np
+            from gwexpy.timeseries import TimeSeries
+
+            ts = TimeSeries(np.ones(16), sample_rate=4)
+            spec = ts.spectrogram(stride=2, fftlength=2, overlap=1)
+            from gwexpy.spectrogram import Spectrogram
+            assert isinstance(spec, Spectrogram)
+            assert spec.ndim == 2
+        """)
+        assert result.returncode == 0, result.stderr
+
+    def test_reverse_direct_import_order_keeps_both_registrations(self):
+        """Reverse public imports still support spectrogram generation."""
+        result = _run_isolated("""\
+            import numpy as np
+            from gwexpy.spectrogram import Spectrogram
+            from gwexpy.timeseries import TimeSeries
+
+            ts = TimeSeries(np.ones(16), sample_rate=4)
+            spec = ts.spectrogram(stride=2, fftlength=2, overlap=1)
+            assert isinstance(spec, Spectrogram)
+            assert spec.shape[0] > 0
+            assert spec.shape[1] > 0
         """)
         assert result.returncode == 0, result.stderr
 
@@ -151,13 +197,6 @@ class TestImportOrderIsolated:
 
 class TestRegistryBehavior:
     """Tests that can run in the current process (gwexpy is already imported)."""
-
-    def test_register_all_is_idempotent(self):
-        """Calling register_all() multiple times raises no errors."""
-        import gwexpy
-
-        gwexpy.register_all()
-        gwexpy.register_all()  # second call — should be a no-op
 
     def test_all_expected_constructors_registered(self):
         """After import gwexpy, all expected constructors exist."""
