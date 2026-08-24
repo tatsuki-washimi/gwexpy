@@ -83,12 +83,12 @@ def _safe_branch_ref(value: str) -> bool:
     """Return whether *value* satisfies Git's complete branch-name grammar."""
     try:
         result = subprocess.run(
-            ["git", "check-ref-format", "--branch", value],
+            ["git", "check-ref-format", f"refs/heads/{value}"],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             check=False,
         )
-    except OSError:
+    except (OSError, ValueError):
         return False
     return result.returncode == 0
 

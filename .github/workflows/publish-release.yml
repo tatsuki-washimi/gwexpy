@@ -72,6 +72,10 @@ jobs:
             echo "release contract lookup failed" >&2
             exit 1
           fi
+          if [[ -z "$protected_refs_output" ]]; then
+            echo "release contract has no protected refs" >&2
+            exit 1
+          fi
           mapfile -t protected_refs <<< "$protected_refs_output"
           if (( ${#protected_refs[@]} == 0 )); then
             echo "release contract has no protected refs" >&2

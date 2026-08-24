@@ -363,6 +363,43 @@ def test_workflow_fetches_the_exact_tags_contract_protected_refs():
     assert "maint/0.1" not in fetch
 
 
+def test_workflow_rejects_empty_contract_ref_output(tmp_path: Path):
+    workflow = read_workflow()
+    fetch = workflow.split(
+        "      - name: Fetch frozen protected branch tips\n", maxsplit=1
+    )[1].split("\n      - name: Validate metadata", maxsplit=1)[0]
+    script = textwrap.dedent(fetch.split("        run: |\n", maxsplit=1)[1])
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    fake_python = fake_bin / "python"
+    fake_python.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
+    fake_python.chmod(0o755)
+
+    result = subprocess.run(
+        ["bash", "-e", "-c", script],
+        cwd=tmp_path,
+        env=os.environ
+        | {
+            "EXPECTED_TAG": "v0.2.0",
+            "PATH": f"{fake_bin}:{os.environ['PATH']}",
+        },
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert result.returncode == 1
+    assert result.stderr == "release contract has no protected refs\n"
+
+
+def test_releasing_documents_tag_specific_integration_artifact_prefixes():
+    releasing = (WORKFLOW.parents[2] / "RELEASING.md").read_text(encoding="utf-8")
+
+    assert "selected from the exact release contract" in releasing
+    assert "`v020-integration-evidence-<40-character-source-sha>`" in releasing
+    assert "currently `v0114-integration-evidence" not in releasing
+
+
 def test_workflow_contract_revision_disagreement_fails_closed(tmp_path: Path):
     """The workflow producer and validator consumer must use one revision.
 

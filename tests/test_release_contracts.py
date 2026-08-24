@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -154,6 +155,7 @@ def test_release_contract_loader_rejects_unsafe_artifact_prefix(
         ["main", ".hidden"],
         ["main", "main/.hidden"],
         ["main", "main/foo.lock"],
+        ["main", "maint/\x00evil"],
         ["main", 2],
     ],
 )
@@ -168,6 +170,35 @@ def test_release_contract_loader_rejects_invalid_protected_refs(
     modified = tmp_path / "release_contracts.json"
     modified.write_text(json.dumps(data), encoding="utf-8")
     monkeypatch.setattr(contracts, "CONTRACT_PATH", modified)
+
+    with pytest.raises(contracts.ReleaseContractError, match="protected refs"):
+        contracts.release_contract("v0.1.14")
+
+
+def test_release_contract_loader_rejects_branch_checkout_shorthand(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    repo = tmp_path / "checkout-history"
+    repo.mkdir()
+    for args in (
+        ("init", "-b", "main"),
+        ("config", "user.name", "Release Test"),
+        ("config", "user.email", "release-test@example.invalid"),
+        ("commit", "--allow-empty", "-m", "initial"),
+        ("branch", "previous"),
+        ("checkout", "previous"),
+        ("checkout", "main"),
+    ):
+        subprocess.run(["git", *args], cwd=repo, check=True, capture_output=True)
+
+    contracts = load_contract_module()
+    data = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
+    data["releases"]["v0.1.14"]["protected_refs"] = ["@{-1}", "main"]
+    modified = tmp_path / "release_contracts.json"
+    modified.write_text(json.dumps(data), encoding="utf-8")
+    monkeypatch.setattr(contracts, "CONTRACT_PATH", modified)
+    monkeypatch.chdir(repo)
 
     with pytest.raises(contracts.ReleaseContractError, match="protected refs"):
         contracts.release_contract("v0.1.14")

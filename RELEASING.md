@@ -55,10 +55,11 @@ The four required smoke reports are named exactly
 `python-3.11-wheel.json`, `python-3.11-sdist.json`,
 `python-3.12-wheel.json`, and `python-3.12-sdist.json`.  Their collector
 accepts only typed release facts (not logs, URLs, credentials, or raw review
-text) and emits a single allowlisted aggregate artifact whose configured name
-is currently `v0114-integration-evidence-<40-character-source-sha>` (the
-historical v0.1.13 contract remains `v0113-integration-evidence-...`).  It is
-retained for 90 days.  Record its artifact ID, API digest, `created_at`, and
+text) and emits a single allowlisted aggregate artifact whose name is selected from the exact release contract:
+`v0113-integration-evidence-<40-character-source-sha>`,
+`v0114-integration-evidence-<40-character-source-sha>`, or
+`v020-integration-evidence-<40-character-source-sha>`.  It is retained for
+90 days.  Record its artifact ID, API digest, `created_at`, and
 `expires_at` in UTC; acceptance requires
 `expires_at - created_at >= 90 days - 5 minutes`.
 Repository retention policy may cap the configured duration, and run/artifact
