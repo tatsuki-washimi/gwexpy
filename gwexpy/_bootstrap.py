@@ -21,8 +21,6 @@ Examples
 
 from __future__ import annotations
 
-_constructors_bootstrapped = False
-_io_bootstrapped = False
 _bootstrapped = False
 
 
@@ -40,8 +38,8 @@ def register_all(*, include_io: bool = True) -> None:
         only constructors.
 
     """
-    global _constructors_bootstrapped, _io_bootstrapped, _bootstrapped
-    if _constructors_bootstrapped and (not include_io or _io_bootstrapped):
+    global _bootstrapped
+    if _bootstrapped:
         return
 
     # Force-import subpackages that register constructors.
@@ -59,7 +57,4 @@ def register_all(*, include_io: bool = True) -> None:
         import gwexpy.frequencyseries.io  # noqa: F401
         import gwexpy.timeseries.io  # noqa: F401
 
-        _io_bootstrapped = True
-
-    _constructors_bootstrapped = True
-    _bootstrapped = _constructors_bootstrapped and _io_bootstrapped
+    _bootstrapped = True

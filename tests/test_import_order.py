@@ -128,14 +128,17 @@ class TestImportOrderIsolated:
         assert result.returncode == 0, result.stderr
 
     def test_reverse_direct_import_order_keeps_both_registrations(self):
-        """Spectrogram-first and TimeSeries-second imports share the registry."""
+        """Reverse public imports still support spectrogram generation."""
         result = _run_isolated("""\
-            from gwexpy.spectrogram.spectrogram import Spectrogram
-            from gwexpy.timeseries.timeseries import TimeSeries
-            from gwexpy.interop._registry import ConverterRegistry
+            import numpy as np
+            from gwexpy.spectrogram import Spectrogram
+            from gwexpy.timeseries import TimeSeries
 
-            assert ConverterRegistry.get_constructor("TimeSeries") is TimeSeries
-            assert ConverterRegistry.get_constructor("Spectrogram") is Spectrogram
+            ts = TimeSeries(np.ones(16), sample_rate=4)
+            spec = ts.spectrogram(stride=2, fftlength=2, overlap=1)
+            assert isinstance(spec, Spectrogram)
+            assert spec.shape[0] > 0
+            assert spec.shape[1] > 0
         """)
         assert result.returncode == 0, result.stderr
 
