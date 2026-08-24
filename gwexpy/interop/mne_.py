@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from fractions import Fraction
+from operator import index
 from typing import TYPE_CHECKING, Any, Protocol, cast
 
 import numpy as np
@@ -21,6 +23,7 @@ __all__ = [
 # meas_date is a Python datetime (microsecond resolution); allow ~1us of
 # round-trip slack when comparing it against a TimeSeries epoch (GPS seconds).
 _MEAS_DATE_TOLERANCE_S = 1e-6
+_GWEX_T0_GPS_NS_ATTR = "_gwex_t0_gps_ns"
 
 if TYPE_CHECKING:
 
@@ -96,6 +99,9 @@ def _default_ch_name(ts: Any, *, fallback: str) -> str:
 
 def _t0_seconds(ts: Any) -> float:
     """Return a TimeSeries-like object's epoch as GPS seconds (float), or 0.0."""
+    exact_ns = getattr(ts, "t0_gps_ns", None)
+    if exact_ns is not None:
+        return index(exact_ns) / 1e9
     t0 = getattr(ts, "t0", None)
     if t0 is None:
         return 0.0
@@ -111,7 +117,21 @@ def _t0_ns(ts: Any) -> int:
     proportional to ``dt`` (see #493 -- a ``dt``-scaled tolerance let
     differently-timed channels silently stack together).
     """
+    exact_ns = getattr(ts, "t0_gps_ns", None)
+    if exact_ns is not None:
+        return index(exact_ns)
     return LIGOTimeGPS(_t0_seconds(ts)).ns()
+
+
+def _sample_offset_ns(first_samp: int, sfreq: float) -> int:
+    """Return an exact integer-nanosecond MNE sample offset, or fail closed."""
+    offset = Fraction(1_000_000_000 * first_samp, 1) / Fraction(str(sfreq))
+    if offset.denominator != 1:
+        raise ValueError(
+            "cannot preserve an exact GPS-nanosecond epoch through an MNE "
+            "sample offset that is not an integral number of nanoseconds"
+        )
+    return offset.numerator
 
 
 def _apply_meas_date_contract(info: Any, t0_seconds: float) -> Any:
@@ -235,9 +255,12 @@ def to_mne_rawarray(tsd, info=None, picks=None):
         elif int(info["nchan"]) != 1:
             raise ValueError(f"info expects nchan=1, got {info['nchan']}")
 
-        info = _apply_meas_date_contract(info, _t0_seconds(tsd))
+        exact_t0_ns = _t0_ns(tsd)
+        info = _apply_meas_date_contract(info, exact_t0_ns / 1e9)
 
-        return mne.io.RawArray(data_1d[None, :], info)
+        raw = mne.io.RawArray(data_1d[None, :], info)
+        setattr(raw, _GWEX_T0_GPS_NS_ATTR, exact_t0_ns)
+        return raw
 
     # Multi-channel mapping input
     items = _select_items(list(tsd.items()), picks)
@@ -266,7 +289,7 @@ def to_mne_rawarray(tsd, info=None, picks=None):
                 "epochs across channels and no alignment was requested (use a "
                 "TimeSeriesDict with to_matrix() for alignment instead)"
             )
-        common_t0 = _t0_seconds(series[0])
+        common_t0_ns = _t0_ns(series[0])
     elif hasattr(tsd, "to_matrix"):
         try:
             tsd_sel = cast("_TimeSeriesDictLike", tsd.__class__())
@@ -281,7 +304,7 @@ def to_mne_rawarray(tsd, info=None, picks=None):
             if data.shape[0] != len(ch_names):
                 raise ValueError("Unexpected channel dimension after alignment")
             ch_names = list(getattr(mat, "channel_names", ch_names))
-            common_t0 = _t0_seconds(mat)
+            common_t0_ns = _t0_ns(mat)
         except (ValueError, TypeError, AttributeError, IndexError, KeyError) as e:
             raise ValueError(
                 "Channels have mismatched lengths and could not be aligned via to_matrix()"
@@ -298,9 +321,11 @@ def to_mne_rawarray(tsd, info=None, picks=None):
     elif int(info["nchan"]) != len(ch_names):
         raise ValueError(f"info expects nchan={len(ch_names)}, got {info['nchan']}")
 
-    info = _apply_meas_date_contract(info, common_t0)
+    info = _apply_meas_date_contract(info, common_t0_ns / 1e9)
 
-    return mne.io.RawArray(data, info)
+    raw = mne.io.RawArray(data, info)
+    setattr(raw, _GWEX_T0_GPS_NS_ATTR, common_t0_ns)
+    return raw
 
 
 def from_mne_raw(cls, raw, unit_map=None):
@@ -341,16 +366,30 @@ def from_mne_raw(cls, raw, unit_map=None):
     sfreq = raw.info["sfreq"]
     dt = 1.0 / sfreq
 
+    exact_t0_ns = getattr(raw, _GWEX_T0_GPS_NS_ATTR, None)
     t0 = 0.0
-    if raw.info["meas_date"]:
+    if exact_t0_ns is None and raw.info["meas_date"]:
         # meas_date is an aware-UTC datetime.
         t0 = float(datetime_utc_to_gps(raw.info["meas_date"]))
-    t0 = t0 + raw.first_samp / sfreq
+    if exact_t0_ns is None:
+        t0 = t0 + raw.first_samp / sfreq
+    else:
+        exact_t0_ns = index(exact_t0_ns) + _sample_offset_ns(raw.first_samp, sfreq)
 
     tsd = cls()
+    if exact_t0_ns is not None:
+        # GWpy's TimeSeriesDict.EntryClass is its base TimeSeries, which has
+        # no exact epoch authority.  Preserve the exact MNE transport value
+        # by restoring GWexpy's public TimeSeries implementation instead.
+        from gwexpy.timeseries import TimeSeries
+
+        entry_class = TimeSeries
+    else:
+        entry_class = tsd.EntryClass
     for i, name in enumerate(ch_names):
         unit = unit_map.get(name) if unit_map else None
-        tsd[name] = tsd.EntryClass(data[i], t0=t0, dt=dt, name=name, unit=unit)
+        epoch_kwargs = {"t0_ns": exact_t0_ns} if exact_t0_ns is not None else {"t0": t0}
+        tsd[name] = entry_class(data[i], dt=dt, name=name, unit=unit, **epoch_kwargs)
 
     return tsd
 

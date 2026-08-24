@@ -13,6 +13,8 @@ This module integrates all Mixins into a single TimeSeries class.
 
 from __future__ import annotations
 
+from fractions import Fraction
+from operator import index
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, SupportsIndex
 
@@ -80,6 +82,11 @@ class TimeSeries(
     t0 : `~gwpy.time.LIGOTimeGPS`, `float`, `str`, optional, default: `0`
         GPS epoch associated with these data,
         any input parsable by `~gwpy.time.to_gps` is fine.
+
+    t0_ns : `int`, optional, keyword-only
+        Exact GPS epoch in integer nanoseconds. This is the authoritative
+        epoch representation for :attr:`t0_gps_ns`; it cannot be combined
+        with ``t0``, ``epoch``, ``x0``, or ``times``.
 
     dt : `float`, `~astropy.units.Quantity`, optional, default: `1`
         Time resolution for these data.
@@ -241,13 +248,40 @@ class TimeSeries(
             "dt": self.dt,
         }
 
-    def __new__(cls, data: ArrayLike, *args: Any, **kwargs: Any) -> TimeSeries:
+    def __new__(
+        cls, data: ArrayLike, *args: Any, t0_ns: int | None = None, **kwargs: Any
+    ) -> TimeSeries:
         """Create a new TimeSeries.
 
         This constructor extends the standard `gwpy.timeseries.TimeSeries` constructor
-        by adding support for automatic GPS time coercion for `t0` and `epoch` parameters.
+        by adding support for automatic GPS time coercion for ``t0`` and
+        ``epoch`` parameters, plus an exact integer-nanosecond ``t0_ns``
+        authority.
         """
         from gwexpy.timeseries.utils import _coerce_t0_gps
+
+        exact_t0_ns: int | None = None
+        if t0_ns is not None:
+            try:
+                exact_t0_ns = index(t0_ns)
+            except TypeError as exc:
+                raise TypeError(
+                    "t0_ns must be an integer number of GPS nanoseconds"
+                ) from exc
+
+            # ``t0`` can be positional in GWpy's constructor, whose first two
+            # positional parameters after data are ``unit`` and ``t0``.
+            # A second positional argument is therefore a competing epoch
+            # authority.  Do not try to compare a float/time-like value with
+            # an exact integer: callers must select one authority explicitly.
+            conflicting = {"t0", "epoch", "x0", "times"}.intersection(kwargs)
+            if len(args) >= 2 or conflicting:
+                names = ", ".join(sorted(conflicting))
+                if len(args) >= 2:
+                    names = ", ".join(filter(None, (names, "positional t0")))
+                raise TypeError(
+                    f"t0_ns cannot be combined with another epoch authority ({names})"
+                )
 
         should_coerce = True
         xunit = kwargs.get("xunit", None)
@@ -295,7 +329,73 @@ class TimeSeries(
                         kwargs["epoch"] = float(epoch_q.to(target_unit).value)
                     except (u.UnitConversionError, AttributeError, TypeError):
                         kwargs["epoch"] = epoch_q
-        return super().__new__(cls, data, *args, **kwargs)
+        if exact_t0_ns is not None:
+            # GWpy's public axis is float/Quantity based.  Retain that view
+            # for compatibility, while keeping the supplied integer as the
+            # only exact authority.  Normalise into the actual axis unit so
+            # GWpy does not reinterpret seconds as (for example) nanoseconds.
+            target_unit = u.s
+            dt = kwargs.get("dt")
+            if isinstance(dt, u.Quantity):
+                target_unit = dt.unit
+            elif kwargs.get("xunit") is not None:
+                try:
+                    target_unit = u.Unit(kwargs["xunit"])
+                except (TypeError, ValueError):
+                    pass
+            kwargs["t0"] = float(u.Quantity(exact_t0_ns, u.ns).to_value(target_unit))
+
+        new = super().__new__(cls, data, *args, **kwargs)
+        if exact_t0_ns is not None:
+            new._gwex_t0_gps_ns = exact_t0_ns
+        return new
+
+    @property
+    def t0_gps_ns(self) -> int:
+        """GPS epoch as exact integer nanoseconds.
+
+        Objects constructed with ``t0_ns=`` return the original integer
+        authority without a float conversion.  Legacy objects constructed
+        with GWpy's float-compatible epoch inputs retain their historical
+        behaviour and are normalised through ``LIGOTimeGPS`` on demand.
+        """
+        exact = getattr(self, "_gwex_t0_gps_ns", None)
+        if exact is not None:
+            return int(exact)
+
+        from gwpy.time import LIGOTimeGPS
+
+        value = self.t0.to_value(u.s) if hasattr(self.t0, "to_value") else self.t0
+        return LIGOTimeGPS(float(value)).ns()
+
+    def __getitem__(self, item: Any) -> Any:
+        """Preserve an exact epoch authority when a regular slice advances it."""
+        result = super().__getitem__(item)
+        exact = getattr(self, "_gwex_t0_gps_ns", None)
+        if (
+            exact is None
+            or not isinstance(item, slice)
+            or not isinstance(result, type(self))
+        ):
+            return result
+
+        try:
+            # Convert through the decimal representation of seconds, rather
+            # than Astropy's float unit factor (which can turn exactly 1 s
+            # into 999999999.9999999 ns).
+            dt_ns_fraction = Fraction(str(self.dt.to_value(u.s))) * 1_000_000_000
+            if dt_ns_fraction.denominator != 1:
+                raise ValueError
+            dt_ns = dt_ns_fraction.numerator
+        except (AttributeError, TypeError, ValueError, OverflowError) as exc:
+            raise ValueError(
+                "cannot preserve t0_gps_ns through a slice whose dt is not "
+                "an integer number of nanoseconds"
+            ) from exc
+
+        start, _, _ = item.indices(len(self))
+        result._gwex_t0_gps_ns = int(exact) + start * dt_ns
+        return result
 
     def __array_finalize__(self, obj: Any) -> None:
         """Finalize the array after creation (slicing, view casting).

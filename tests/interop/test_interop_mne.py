@@ -177,6 +177,39 @@ class TestFromMneRaw:
         tsd = from_mne_raw(TimeSeriesDict, raw, unit_map=None)
         assert "ch1" in tsd
 
+    def test_exact_t0_ns_roundtrip_preserves_one_nanosecond_distinction(self):
+        epoch_ns = 1_234_567_890_123_456_789
+
+        restored_epochs = []
+        for offset in (0, 1):
+            ts = TimeSeries(np.ones(20), t0_ns=epoch_ns + offset, dt=0.01, name="ch0")
+            raw = to_mne_rawarray(ts)
+            tsd = from_mne_raw(TimeSeriesDict, raw)
+            restored_epochs.append(tsd["ch0"].t0_gps_ns)
+
+        assert restored_epochs == [epoch_ns, epoch_ns + 1]
+
+    def test_exact_t0_ns_roundtrip_adds_an_integral_sample_offset(self):
+        epoch_ns = 1_234_567_890_123_456_789
+        ts = TimeSeries(np.ones(20), t0_ns=epoch_ns, dt=1e-6, name="ch0")
+
+        raw = to_mne_rawarray(ts)
+        raw.crop(tmin=3e-6)
+        tsd = from_mne_raw(TimeSeriesDict, raw)
+
+        assert raw.first_samp == 3
+        assert tsd["ch0"].t0_gps_ns == epoch_ns + 3_000
+
+    def test_timeseries_from_mne_preserves_an_exact_epoch(self):
+        epoch_ns = 1_234_567_890_123_456_789
+        raw = to_mne_rawarray(
+            TimeSeries(np.ones(20), t0_ns=epoch_ns, dt=0.01, name="ch0")
+        )
+
+        restored = TimeSeries.from_mne(raw, channel="ch0")
+
+        assert restored.t0_gps_ns == epoch_ns
+
 
 class TestMeasDateContract:
     """#493: to_mne_rawarray's t0 <-> info['meas_date'] contract."""
@@ -263,6 +296,20 @@ class TestMeasDateContract:
                 ),
             }
         )
+        with pytest.raises(ValueError, match="mismatched epoch"):
+            to_mne_rawarray(tsd)
+
+    def test_multi_channel_one_nanosecond_mismatch_raises_at_large_epoch(self):
+        epoch_ns = 1_234_567_890_123_456_789
+        tsd = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(np.ones(50), t0_ns=epoch_ns, dt=0.01, name="ch1"),
+                "ch2": TimeSeries(
+                    np.zeros(50), t0_ns=epoch_ns + 1, dt=0.01, name="ch2"
+                ),
+            }
+        )
+
         with pytest.raises(ValueError, match="mismatched epoch"):
             to_mne_rawarray(tsd)
 

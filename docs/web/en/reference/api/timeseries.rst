@@ -35,6 +35,11 @@ Overview
 TimeSeries Class
 ----------------
 
+For nanosecond-exact GPS epochs, pass ``t0_ns=`` as an integer. The
+read-only ``t0_gps_ns`` property returns that exact integer; the inherited
+``t0`` property remains the GWpy-compatible float/Quantity view. ``t0_ns``
+cannot be combined with ``t0``, ``epoch``, ``x0``, or ``times``.
+
 .. autoclass:: TimeSeries
    :no-index:
    :members:
