@@ -66,6 +66,8 @@ class Operand(str, Enum):
     PYTHON_LIST = "python_list"
     PYTHON_TUPLE = "python_tuple"
     VECTOR_QUANTITY = "vector_quantity"
+    SPECTROGRAM_ROW_SLICE = "spectrogram_row_slice"
+    SPECTROGRAM_COLUMN_SLICE = "spectrogram_column_slice"
 
 
 class ResultExpectation(str, Enum):
@@ -128,6 +130,8 @@ class ValueExpectation(str, Enum):
     DTYPE_EXACT = "exact input dtype"
     VALUES_EXACT = "exact input values"
     SLICE_EXACT = "exact sliced values"
+    SPECTROGRAM_ROW_SLICE_EXACT = "exact row-sliced spectrogram values"
+    SPECTROGRAM_COLUMN_SLICE_EXACT = "exact column-sliced spectrogram values"
     ASSIGNMENT_ZERO = "assignment writes exact zeros"
     ITERATION_ROWS_EXACT = "iteration yields exact row values"
     COPY_EXACT = "copy preserves exact values"
@@ -213,6 +217,8 @@ _BINARY_OPERANDS: Final[tuple[Operand, ...]] = tuple(
         Operand.PYTHON_LIST,
         Operand.PYTHON_TUPLE,
         Operand.VECTOR_QUANTITY,
+        Operand.SPECTROGRAM_ROW_SLICE,
+        Operand.SPECTROGRAM_COLUMN_SLICE,
     }
 )
 
@@ -495,16 +501,32 @@ def _structure_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
         ),
     ]
     if family is MatrixFamily.SPECTROGRAM:
-        cells.insert(
-            3,
-            _error(
+        cells[3:3] = [
+            _result(
                 family,
                 "slicing",
-                Operand.NONE,
-                ValueError,
+                Operand.SPECTROGRAM_ROW_SLICE,
                 surface=Surface.STRUCTURE,
+                expected_result=ResultExpectation.MATRIX,
+                unit_expectation=UnitExpectation.PRESERVE_CELL_UNITS,
+                metadata_expectation=MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS,
+                axis_expectation=AxisExpectation.PRESERVE_SPECTROGRAM_AXES,
+                value_expectation=ValueExpectation.SPECTROGRAM_ROW_SLICE_EXACT,
+                attrs_expectation=AttrsExpectation.DEEP_COPY,
             ),
-        )
+            _result(
+                family,
+                "slicing",
+                Operand.SPECTROGRAM_COLUMN_SLICE,
+                surface=Surface.STRUCTURE,
+                expected_result=ResultExpectation.MATRIX,
+                unit_expectation=UnitExpectation.PRESERVE_CELL_UNITS,
+                metadata_expectation=MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS,
+                axis_expectation=AxisExpectation.PRESERVE_SPECTROGRAM_AXES,
+                value_expectation=ValueExpectation.SPECTROGRAM_COLUMN_SLICE_EXACT,
+                attrs_expectation=AttrsExpectation.DEEP_COPY,
+            ),
+        ]
         cells.append(
             _error(
                 family,
@@ -1156,7 +1178,7 @@ def _build_manifest() -> tuple[ContractCell, ...]:
 
 
 B0_CONTRACT: Final[tuple[ContractCell, ...]] = _build_manifest()
-EXPECTED_B0_CELL_COUNT: Final[int] = 453
+EXPECTED_B0_CELL_COUNT: Final[int] = 454
 assert len(B0_CONTRACT) == EXPECTED_B0_CELL_COUNT
 
 

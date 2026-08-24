@@ -5,7 +5,9 @@ raw JSON capture is intentionally not tracked.  The 318-cell B0 contract
 candidate associated with the earlier review was rejected by physics/data-model
 review.  The later 390-cell candidate was also superseded after final review
 found incomplete nested metadata/attrs and exponent-boundary coverage.  The
-current executable B0 ledger contains exactly 453 cells; this historical
+subsequent 453-cell candidate was superseded after review found missing
+supported SpectrogramMatrix slice and axis/epoch independence coverage.  The
+current executable B0 ledger contains exactly 454 cells; this historical
 benchmark capture does not validate the semantics of any rejected candidate
 or measure the later contract fixes.
 

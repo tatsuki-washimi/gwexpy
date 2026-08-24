@@ -22,6 +22,12 @@ from .matrix_core import SpectrogramMatrixCoreMixin
 from .spectrogram import Spectrogram
 
 
+def _selected_metadata_keys(keys: list[str], selector: Any) -> list[str]:
+    """Return an independent list of explicit keys selected by *selector*."""
+    positions = np.atleast_1d(np.arange(len(keys))[selector])
+    return [deepcopy(keys[int(position)]) for position in positions]
+
+
 class SpectrogramMatrix(  # type: ignore[misc]
     PhaseMethodsMixin,
     SpectrogramMatrixCoreMixin,
@@ -294,7 +300,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
         return result
 
     @property
-    def real(self) -> SeriesMatrix:
+    def real(self) -> SpectrogramMatrix:
         """Return a fully independent real component with both axes intact."""
         return self._component_result(
             self.view(np.ndarray).real,
@@ -306,7 +312,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
         self.value.real = value
 
     @property
-    def imag(self) -> SeriesMatrix:
+    def imag(self) -> SpectrogramMatrix:
         """Return a fully independent imaginary component with both axes intact."""
         return self._component_result(
             self.view(np.ndarray).imag,
@@ -702,13 +708,14 @@ class SpectrogramMatrix(  # type: ignore[misc]
         if result_data.shape == main.shape:
             obj = self.__class__(
                 result_data,
-                times=main.times,
-                frequencies=main.frequencies,
+                times=self._resupplied_frequencies(main.times),
+                frequencies=self._resupplied_frequencies(main.frequencies),
                 rows=_copy_metadata_dict(main.rows, "row") if main.rows else main.rows,
                 cols=_copy_metadata_dict(main.cols, "col") if main.cols else main.cols,
                 meta=new_meta,
                 name=main.name,
                 unit=_infer_unit(new_meta),
+                epoch=main.epoch,
             )
             obj.attrs = deepcopy(main.attrs)
             return obj
@@ -954,10 +961,14 @@ class SpectrogramMatrix(  # type: ignore[misc]
         ret._value = ret.view(np.ndarray)
 
         # Propagate global props
-        ret.times = getattr(self, "times", None)
-        ret.frequencies = getattr(self, "frequencies", None)
+        ret.times = self._resupplied_frequencies(getattr(self, "times", None))
+        ret.frequencies = self._resupplied_frequencies(
+            getattr(self, "frequencies", None)
+        )
         ret.unit = getattr(self, "unit", None)
         ret.epoch = getattr(self, "epoch", None)
+        if self.ndim == 4 and ret.ndim == 4:
+            ret.name = self.name
         ret.attrs = deepcopy(getattr(self, "attrs", {}))
 
         # Propagate/Slice Metadata (Rows, Cols, Meta)
@@ -988,9 +999,13 @@ class SpectrogramMatrix(  # type: ignore[misc]
             c_key = key[1] if isinstance(key, tuple) and len(key) > 1 else slice(None)
 
             if self.rows:
-                ret.rows = _slice_metadata_dict(self.rows, r_key, "row")
+                ret.rows = _copy_metadata_dict(
+                    _slice_metadata_dict(self.rows, r_key, "row"), "row"
+                )
             if self.cols:
-                ret.cols = _slice_metadata_dict(self.cols, c_key, "col")
+                ret.cols = _copy_metadata_dict(
+                    _slice_metadata_dict(self.cols, c_key, "col"), "col"
+                )
             if self.meta is not None:
                 try:
                     # meta is (Row, Col)
@@ -998,7 +1013,17 @@ class SpectrogramMatrix(  # type: ignore[misc]
                     if isinstance(key, tuple) and len(key) <= 2:
                         sliced = self.meta[key]
                         if isinstance(sliced, np.ndarray):
-                            ret.meta = sliced.view(MetaDataMatrix)  # type: ignore[assignment]
+                            ret.meta = _copy_metadata_matrix(
+                                MetaDataMatrix(
+                                    np.asarray(sliced, dtype=object),
+                                    row_keys=_selected_metadata_keys(
+                                        self.meta.row_keys, r_key
+                                    ),
+                                    col_keys=_selected_metadata_keys(
+                                        self.meta.col_keys, c_key
+                                    ),
+                                )
+                            )
                         else:
                             ret.meta = sliced
                     else:

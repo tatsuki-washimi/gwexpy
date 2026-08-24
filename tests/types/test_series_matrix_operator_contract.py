@@ -146,6 +146,29 @@ def test_existing_operator_contract_is_backed_by_canonical_b0_manifest():
 
 
 @pytest.mark.parametrize(
+    "factory", list(MATRIX_FACTORIES.values()), ids=list(MATRIX_FACTORIES)
+)
+@pytest.mark.parametrize("operation", ["copy", "conj"])
+def test_structural_metadata_copies_split_shared_nested_cell_payloads(
+    factory, operation
+):
+    """A new logical cell must not inherit a sibling's nested mutable payload."""
+    matrix = factory()
+    shared = {"nested": {"state": "source"}}
+    matrix.meta[0, 0]["shared_payload"] = shared
+    matrix.meta[0, 1]["shared_payload"] = shared
+
+    result = matrix.copy() if operation == "copy" else matrix.conj()
+
+    assert (
+        result.meta[0, 0]["shared_payload"] is not result.meta[0, 1]["shared_payload"]
+    )
+    result.meta[0, 0]["shared_payload"]["nested"]["state"] = "result-only"
+    assert result.meta[0, 1]["shared_payload"]["nested"]["state"] == "source"
+    assert matrix.meta[0, 0]["shared_payload"]["nested"]["state"] == "source"
+
+
+@pytest.mark.parametrize(
     "operation",
     [
         "shape",

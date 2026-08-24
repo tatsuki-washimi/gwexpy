@@ -5,7 +5,7 @@ import pickle
 import warnings
 from collections import OrderedDict
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Optional, SupportsIndex, cast
+from typing import TYPE_CHECKING, Any, Optional, Self, SupportsIndex, cast
 
 import numpy as np
 from astropy import units as u
@@ -186,11 +186,7 @@ def _copy_xindex(xindex: Any) -> Any:
 
 def _copy_metadata_matrix(meta: MetaDataMatrix) -> MetaDataMatrix:
     """Deep-copy a metadata matrix and its per-cell metadata entries."""
-    return MetaDataMatrix(
-        deepcopy(np.asarray(meta, dtype=object)),
-        row_keys=deepcopy(getattr(meta, "row_keys", None)),
-        col_keys=deepcopy(getattr(meta, "col_keys", None)),
-    )
+    return _copy_meta_cells(meta)
 
 
 def _copy_metadata_dict(meta: MetaDataDict, key_prefix: str) -> MetaDataDict:
@@ -486,11 +482,14 @@ class SeriesMatrix(  # type: ignore[misc]
         )
 
     @property
-    def real(self) -> SeriesMatrix:
+    def real(self) -> Self:
         """Return the real component without aliasing public metadata."""
-        return self._component_result(
-            self.view(np.ndarray).real,
-            name=f"{self.name}.real" if self.name else "",
+        return cast(
+            Self,
+            self._component_result(
+                self.view(np.ndarray).real,
+                name=f"{self.name}.real" if self.name else "",
+            ),
         )
 
     @real.setter
@@ -498,22 +497,28 @@ class SeriesMatrix(  # type: ignore[misc]
         self.view(np.ndarray).real = value
 
     @property
-    def imag(self) -> SeriesMatrix:
+    def imag(self) -> Self:
         """Return the imaginary component without aliasing public metadata."""
-        return self._component_result(
-            self.view(np.ndarray).imag,
-            name=f"{self.name}.imag" if self.name else "",
+        return cast(
+            Self,
+            self._component_result(
+                self.view(np.ndarray).imag,
+                name=f"{self.name}.imag" if self.name else "",
+            ),
         )
 
     @imag.setter
     def imag(self, value: Any) -> None:
         self.view(np.ndarray).imag = value
 
-    def conj(self) -> SeriesMatrix:
+    def conj(self) -> Self:
         """Return the conjugate with fully independent public metadata."""
-        return self._component_result(
-            np.conjugate(self.view(np.ndarray)),
-            name=self.name,
+        return cast(
+            Self,
+            self._component_result(
+                np.conjugate(self.view(np.ndarray)),
+                name=self.name,
+            ),
         )
 
     def copy(self, order: Any = "C") -> Any:
