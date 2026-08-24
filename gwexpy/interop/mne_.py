@@ -378,6 +378,11 @@ def to_mne_rawarray(tsd, info=None, picks=None):
     ``TimeSeriesDict`` input -- sampling-frequency or epoch mismatches are
     never auto-aligned and must be resolved by the caller beforehand.
 
+    A mixed exact/legacy mapping uses MNE's one shared official time axis for
+    the legacy channels, while GWexpy retains exact epochs as private
+    per-channel in-memory metadata. Exact channels must still agree exactly on
+    epoch and sample interval; exact/exact conflicts are rejected.
+
     """
     mne = require_optional("mne")
 

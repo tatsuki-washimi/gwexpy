@@ -367,6 +367,27 @@ class TestFromMneRaw:
         assert restored["legacy"].t0.value == pytest.approx(1_000_000_000)
         assert not hasattr(restored["legacy"], "_gwex_t0_gps_ns")
 
+    def test_timeseries_from_mne_legacy_channel_keeps_cropped_sample_offset(self):
+        exact = to_mne_rawarray(
+            TimeSeries(
+                np.ones(8), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="exact"
+            )
+        )
+        raw = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0=1_000_000_000, dt=0.01, name="legacy")
+        )
+        raw.add_channels([exact])
+        raw.crop(tmin=0.03)
+
+        from_mapping = from_mne_raw(TimeSeriesDict, raw)["legacy"]
+        from_single = TimeSeries.from_mne(raw, channel="legacy")
+
+        assert raw.first_samp == 3
+        assert from_single.t0.value == pytest.approx(
+            from_mapping.t0.value, rel=0, abs=1e-7
+        )
+        assert from_single.t0.value == pytest.approx(1_000_000_000.03, rel=0, abs=1e-7)
+
     def test_mapping_rejects_exact_channels_with_different_intervals(self):
         epoch_ns = 1_234_567_890_123_456_789
         channels = TimeSeriesDict(

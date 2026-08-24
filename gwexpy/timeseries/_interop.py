@@ -9,6 +9,7 @@ This module provides interoperability with other libraries as a mixin class:
 
 from __future__ import annotations
 
+from operator import index
 from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
@@ -981,6 +982,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
             from gwexpy.time import to_gps
 
             t0 = to_gps(raw.info["meas_date"])
+        t0 = t0 + index(raw.first_samp) / sfreq
 
         return cls(value, t0=t0, dt=dt, unit=unit, name=channel)
 
