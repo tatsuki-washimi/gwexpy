@@ -7,7 +7,9 @@ review.  The later 390-cell candidate was also superseded after final review
 found incomplete nested metadata/attrs and exponent-boundary coverage.  The
 subsequent 453-cell candidate was superseded after review found missing
 supported SpectrogramMatrix slice and axis/epoch independence coverage.  The
-current executable B0 ledger contains exactly 454 cells; this historical
+later 454-cell candidate was superseded after review found incomplete
+equivalent-selector and 3-D batch-slice coverage.  The current executable B0
+ledger contains exactly 460 cells; this historical
 benchmark capture does not validate the semantics of any rejected candidate
 or measure the later contract fixes.
 

@@ -5,7 +5,7 @@ contract before issue #637.  It does not adopt or implement the #637
 composition redesign.
 
 The executable canonical ledger is the typed `B0_CONTRACT` in
-`tests/types/series_matrix_contract_manifest.py`.  It contains exactly 454
+`tests/types/series_matrix_contract_manifest.py`.  It contains exactly 460
 cells across `TimeSeriesMatrix`, `FrequencySeriesMatrix`, and
 `SpectrogramMatrix`.  The typed adapter in
 `tests/types/test_series_matrix_contract_manifest.py` executes every cell once
@@ -19,9 +19,12 @@ nested metadata/attrs preservation, explicit metadata matrix keys, and the
 full dimensional/non-scalar exponent boundary.  The subsequent 453-cell
 candidate was also superseded: it omitted supported SpectrogramMatrix row and
 column slice behavior and did not prove independent axes/epoch and sibling
-metadata payloads.  The 454-cell ledger covers the scalar add/sub and ndarray
-dimensionality cases, reviewed metadata/attrs/exponent categories, and both
-supported SpectrogramMatrix metadata-axis slices.  `tests/types/test_series_matrix_operator_contract.py`
+metadata payloads.  The later 454-cell candidate was superseded after review
+found that it did not freeze equivalent full-rank and dimension-reducing
+SpectrogramMatrix selectors or 3-D batch-slice branches.  The 460-cell ledger
+covers the scalar add/sub and ndarray dimensionality cases, reviewed
+metadata/attrs/exponent categories, and every supported SpectrogramMatrix
+structural slice selector.  `tests/types/test_series_matrix_operator_contract.py`
 retains direct behavioral regressions.  A B1 implementation must update and
 compare this same ledger rather than introducing a second matrix.
 
@@ -32,7 +35,7 @@ The approved structure surface is:
 | Surface | B0 rule |
 | --- | --- |
 | `shape`, `dtype`, values | Preserve NumPy shape, dtype, and values according to the concrete matrix class. |
-| Slicing, assignment, iteration | Preserve the concrete matrix family where the current implementation supports the operation; `SpectrogramMatrix[:1, :]` and `SpectrogramMatrix[:, :1]` preserve name, epoch, time/frequency axes, explicit metadata keys, and deep-independent metadata/attrs. Assignment is value-based and does not change the matrix identity. |
+| Slicing, assignment, iteration | Preserve the concrete matrix family where the current implementation supports the operation; the equivalent `SpectrogramMatrix[:1, :]`/`[:1, :, :, :]`, `[:, :1]`/`[:, :1, :, :]`, `[0, :]`/`[0, :, :, :]`, `[:, 0]`/`[:, 0, :, :]`, and 3-D `[:1]`/`[:1, :, :]` selectors preserve name, epoch, time/frequency axes, explicit metadata keys, and deep-independent metadata/attrs. Time/frequency subsampling raises explicitly. Assignment is value-based and does not change the matrix identity. |
 | `copy`, `astype` | Return an independent concrete matrix with copied metadata and axes. `astype` changes only the requested dtype. |
 | `real`, `imag`, `conj` | Return the concrete matrix class and preserve per-cell units. SpectrogramMatrix `real`/`imag` results have deep-independent metadata/attrs and preserve both time and frequency axes. |
 | `transpose`, `reshape` | Preserve the concrete class for the 3-D series families. B0 currently raises `ValueError` for these operations on `SpectrogramMatrix`; that observed exception is frozen honestly in the manifest. |

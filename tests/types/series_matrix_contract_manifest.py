@@ -68,6 +68,12 @@ class Operand(str, Enum):
     VECTOR_QUANTITY = "vector_quantity"
     SPECTROGRAM_ROW_SLICE = "spectrogram_row_slice"
     SPECTROGRAM_COLUMN_SLICE = "spectrogram_column_slice"
+    SPECTROGRAM_ROW_SLICE_FULL = "spectrogram_row_slice_full_rank"
+    SPECTROGRAM_COLUMN_SLICE_FULL = "spectrogram_column_slice_full_rank"
+    SPECTROGRAM_ROW_REDUCED_SLICE = "spectrogram_row_reduced_slice"
+    SPECTROGRAM_COLUMN_REDUCED_SLICE = "spectrogram_column_reduced_slice"
+    SPECTROGRAM_BATCH_SLICE = "spectrogram_batch_slice"
+    SPECTROGRAM_BATCH_SLICE_FULL = "spectrogram_batch_slice_full_rank"
 
 
 class ResultExpectation(str, Enum):
@@ -132,6 +138,9 @@ class ValueExpectation(str, Enum):
     SLICE_EXACT = "exact sliced values"
     SPECTROGRAM_ROW_SLICE_EXACT = "exact row-sliced spectrogram values"
     SPECTROGRAM_COLUMN_SLICE_EXACT = "exact column-sliced spectrogram values"
+    SPECTROGRAM_ROW_REDUCED_SLICE_EXACT = "exact row-reduced spectrogram values"
+    SPECTROGRAM_COLUMN_REDUCED_SLICE_EXACT = "exact column-reduced spectrogram values"
+    SPECTROGRAM_BATCH_SLICE_EXACT = "exact batch-sliced spectrogram values"
     ASSIGNMENT_ZERO = "assignment writes exact zeros"
     ITERATION_ROWS_EXACT = "iteration yields exact row values"
     COPY_EXACT = "copy preserves exact values"
@@ -218,6 +227,12 @@ _BINARY_OPERANDS: Final[tuple[Operand, ...]] = tuple(
         Operand.PYTHON_TUPLE,
         Operand.VECTOR_QUANTITY,
         Operand.SPECTROGRAM_ROW_SLICE,
+        Operand.SPECTROGRAM_ROW_SLICE_FULL,
+        Operand.SPECTROGRAM_COLUMN_SLICE_FULL,
+        Operand.SPECTROGRAM_ROW_REDUCED_SLICE,
+        Operand.SPECTROGRAM_COLUMN_REDUCED_SLICE,
+        Operand.SPECTROGRAM_BATCH_SLICE,
+        Operand.SPECTROGRAM_BATCH_SLICE_FULL,
         Operand.SPECTROGRAM_COLUMN_SLICE,
     }
 )
@@ -524,6 +539,78 @@ def _structure_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
                 metadata_expectation=MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS,
                 axis_expectation=AxisExpectation.PRESERVE_SPECTROGRAM_AXES,
                 value_expectation=ValueExpectation.SPECTROGRAM_COLUMN_SLICE_EXACT,
+                attrs_expectation=AttrsExpectation.DEEP_COPY,
+            ),
+            _result(
+                family,
+                "slicing",
+                Operand.SPECTROGRAM_ROW_SLICE_FULL,
+                surface=Surface.STRUCTURE,
+                expected_result=ResultExpectation.MATRIX,
+                unit_expectation=UnitExpectation.PRESERVE_CELL_UNITS,
+                metadata_expectation=MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS,
+                axis_expectation=AxisExpectation.PRESERVE_SPECTROGRAM_AXES,
+                value_expectation=ValueExpectation.SPECTROGRAM_ROW_SLICE_EXACT,
+                attrs_expectation=AttrsExpectation.DEEP_COPY,
+            ),
+            _result(
+                family,
+                "slicing",
+                Operand.SPECTROGRAM_COLUMN_SLICE_FULL,
+                surface=Surface.STRUCTURE,
+                expected_result=ResultExpectation.MATRIX,
+                unit_expectation=UnitExpectation.PRESERVE_CELL_UNITS,
+                metadata_expectation=MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS,
+                axis_expectation=AxisExpectation.PRESERVE_SPECTROGRAM_AXES,
+                value_expectation=ValueExpectation.SPECTROGRAM_COLUMN_SLICE_EXACT,
+                attrs_expectation=AttrsExpectation.DEEP_COPY,
+            ),
+            _result(
+                family,
+                "slicing",
+                Operand.SPECTROGRAM_ROW_REDUCED_SLICE,
+                surface=Surface.STRUCTURE,
+                expected_result=ResultExpectation.MATRIX,
+                unit_expectation=UnitExpectation.PRESERVE_CELL_UNITS,
+                metadata_expectation=MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS,
+                axis_expectation=AxisExpectation.PRESERVE_SPECTROGRAM_AXES,
+                value_expectation=ValueExpectation.SPECTROGRAM_ROW_REDUCED_SLICE_EXACT,
+                attrs_expectation=AttrsExpectation.DEEP_COPY,
+            ),
+            _result(
+                family,
+                "slicing",
+                Operand.SPECTROGRAM_COLUMN_REDUCED_SLICE,
+                surface=Surface.STRUCTURE,
+                expected_result=ResultExpectation.MATRIX,
+                unit_expectation=UnitExpectation.PRESERVE_CELL_UNITS,
+                metadata_expectation=MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS,
+                axis_expectation=AxisExpectation.PRESERVE_SPECTROGRAM_AXES,
+                value_expectation=ValueExpectation.SPECTROGRAM_COLUMN_REDUCED_SLICE_EXACT,
+                attrs_expectation=AttrsExpectation.DEEP_COPY,
+            ),
+            _result(
+                family,
+                "slicing",
+                Operand.SPECTROGRAM_BATCH_SLICE,
+                surface=Surface.STRUCTURE,
+                expected_result=ResultExpectation.MATRIX,
+                unit_expectation=UnitExpectation.PRESERVE_CELL_UNITS,
+                metadata_expectation=MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS,
+                axis_expectation=AxisExpectation.PRESERVE_SPECTROGRAM_AXES,
+                value_expectation=ValueExpectation.SPECTROGRAM_BATCH_SLICE_EXACT,
+                attrs_expectation=AttrsExpectation.DEEP_COPY,
+            ),
+            _result(
+                family,
+                "slicing",
+                Operand.SPECTROGRAM_BATCH_SLICE_FULL,
+                surface=Surface.STRUCTURE,
+                expected_result=ResultExpectation.MATRIX,
+                unit_expectation=UnitExpectation.PRESERVE_CELL_UNITS,
+                metadata_expectation=MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS,
+                axis_expectation=AxisExpectation.PRESERVE_SPECTROGRAM_AXES,
+                value_expectation=ValueExpectation.SPECTROGRAM_BATCH_SLICE_EXACT,
                 attrs_expectation=AttrsExpectation.DEEP_COPY,
             ),
         ]
@@ -1178,7 +1265,7 @@ def _build_manifest() -> tuple[ContractCell, ...]:
 
 
 B0_CONTRACT: Final[tuple[ContractCell, ...]] = _build_manifest()
-EXPECTED_B0_CELL_COUNT: Final[int] = 454
+EXPECTED_B0_CELL_COUNT: Final[int] = 460
 assert len(B0_CONTRACT) == EXPECTED_B0_CELL_COUNT
 
 

@@ -168,9 +168,12 @@ def _matrix(cell: ContractCell):
         matrix.attrs["contract"] = {"nested": ["value", {"calibration": [1, 2, 3]}]}
         shared_payload = {"nested": {"source": "shared"}}
         matrix.meta[0, 0]["shared_payload"] = shared_payload
-        matrix.meta[0, 1]["shared_payload"] = shared_payload
-        matrix.rows[next(iter(matrix.rows))]["calibration"] = {"nested": ["row"]}
-        matrix.cols[next(iter(matrix.cols))]["calibration"] = {"nested": ["col"]}
+        if matrix.meta.shape[1] > 1:
+            matrix.meta[0, 1]["shared_payload"] = shared_payload
+        for row in matrix.rows.values():
+            row["calibration"] = {"nested": ["row"]}
+        for column in matrix.cols.values():
+            column["calibration"] = {"nested": ["col"]}
         matrix.provenance = {
             "schema": "contract",
             "nested": [{"array": np.arange(3, dtype=np.int64)}],
@@ -197,6 +200,27 @@ def _matrix(cell: ContractCell):
                 name="fsm",
             )
         )
+    if cell.operand in {
+        Operand.SPECTROGRAM_BATCH_SLICE,
+        Operand.SPECTROGRAM_BATCH_SLICE_FULL,
+    }:
+        metadata = _meta(unit)
+        return decorate(
+            SpectrogramMatrix(
+                np.arange(8, dtype=float).reshape(2, 2, 2) + 1,
+                times=np.arange(2) * u.s,
+                frequencies=np.arange(2) * u.Hz,
+                meta=MetaDataMatrix(
+                    np.array([[metadata[0, 0]], [metadata[1, 0]]], dtype=object),
+                    row_keys=list(metadata.row_keys),
+                    col_keys=[metadata.col_keys[0]],
+                ),
+                rows=["r0", "r1"],  # type: ignore[list-item]
+                cols=["c0"],  # type: ignore[list-item]
+                name="sgm",
+                epoch=1234567890.25,
+            )
+        )
     return decorate(
         SpectrogramMatrix(
             np.arange(16, dtype=float).reshape(2, 2, 2, 2) + 1,
@@ -213,18 +237,56 @@ def _matrix(cell: ContractCell):
 
 def _assert_spectrogram_slice_metadata(cell: ContractCell, matrix, result) -> None:
     """Check sliced matrix metadata against the original, not a derived view."""
-    if cell.operand is Operand.SPECTROGRAM_ROW_SLICE:
+    if cell.operand in {
+        Operand.SPECTROGRAM_ROW_SLICE,
+        Operand.SPECTROGRAM_ROW_SLICE_FULL,
+    }:
         source_indices = tuple((0, column) for column in range(matrix.meta.shape[1]))
         expected_row_keys = matrix.meta.row_keys[:1]
         expected_col_keys = matrix.meta.col_keys
         source_rows = list(matrix.rows)[:1]
         source_cols = list(matrix.cols)
-    else:
+        source_row_metadata = matrix.rows
+        source_col_metadata = matrix.cols
+    elif cell.operand in {
+        Operand.SPECTROGRAM_COLUMN_SLICE,
+        Operand.SPECTROGRAM_COLUMN_SLICE_FULL,
+    }:
         source_indices = tuple((row, 0) for row in range(matrix.meta.shape[0]))
         expected_row_keys = matrix.meta.row_keys
         expected_col_keys = matrix.meta.col_keys[:1]
         source_rows = list(matrix.rows)
         source_cols = list(matrix.cols)[:1]
+        source_row_metadata = matrix.rows
+        source_col_metadata = matrix.cols
+    elif cell.operand is Operand.SPECTROGRAM_ROW_REDUCED_SLICE:
+        source_indices = tuple((0, column) for column in range(matrix.meta.shape[1]))
+        expected_row_keys = matrix.meta.col_keys
+        expected_col_keys = matrix.meta.row_keys[:1]
+        source_rows = list(matrix.cols)
+        source_cols = list(matrix.rows)[:1]
+        source_row_metadata = matrix.cols
+        source_col_metadata = matrix.rows
+    elif cell.operand is Operand.SPECTROGRAM_COLUMN_REDUCED_SLICE:
+        source_indices = tuple((row, 0) for row in range(matrix.meta.shape[0]))
+        expected_row_keys = matrix.meta.row_keys
+        expected_col_keys = matrix.meta.col_keys[:1]
+        source_rows = list(matrix.rows)
+        source_cols = list(matrix.cols)[:1]
+        source_row_metadata = matrix.rows
+        source_col_metadata = matrix.cols
+    else:
+        assert cell.operand in {
+            Operand.SPECTROGRAM_BATCH_SLICE,
+            Operand.SPECTROGRAM_BATCH_SLICE_FULL,
+        }
+        source_indices = ((0, 0),)
+        expected_row_keys = matrix.meta.row_keys[:1]
+        expected_col_keys = matrix.meta.col_keys
+        source_rows = list(matrix.rows)[:1]
+        source_cols = list(matrix.cols)
+        source_row_metadata = matrix.rows
+        source_col_metadata = matrix.cols
 
     assert result.meta.row_keys == expected_row_keys
     assert result.meta.col_keys == expected_col_keys
@@ -239,11 +301,11 @@ def _assert_spectrogram_slice_metadata(cell: ContractCell, matrix, result) -> No
     assert list(result.rows) == source_rows
     assert list(result.cols) == source_cols
     for key in source_rows:
-        assert result.rows[key] is not matrix.rows[key]
-        _assert_deep_equal(dict(result.rows[key]), dict(matrix.rows[key]))
+        assert result.rows[key] is not source_row_metadata[key]
+        _assert_deep_equal(dict(result.rows[key]), dict(source_row_metadata[key]))
     for key in source_cols:
-        assert result.cols[key] is not matrix.cols[key]
-        _assert_deep_equal(dict(result.cols[key]), dict(matrix.cols[key]))
+        assert result.cols[key] is not source_col_metadata[key]
+        _assert_deep_equal(dict(result.cols[key]), dict(source_col_metadata[key]))
 
     result.meta[0, 0]["calibration"]["nested"][1]["gain"] = "slice-only"
     assert (
@@ -251,16 +313,28 @@ def _assert_spectrogram_slice_metadata(cell: ContractCell, matrix, result) -> No
         != "slice-only"
     )
     result.rows[source_rows[0]]["calibration"]["nested"].append("slice-only")
-    assert "slice-only" not in matrix.rows[source_rows[0]]["calibration"]["nested"]
+    assert (
+        "slice-only" not in source_row_metadata[source_rows[0]]["calibration"]["nested"]
+    )
     result.cols[source_cols[0]]["calibration"]["nested"].append("slice-only")
-    assert "slice-only" not in matrix.cols[source_cols[0]]["calibration"]["nested"]
-    if cell.operand is Operand.SPECTROGRAM_ROW_SLICE:
+    assert (
+        "slice-only" not in source_col_metadata[source_cols[0]]["calibration"]["nested"]
+    )
+    if (
+        cell.operand
+        in {
+            Operand.SPECTROGRAM_ROW_SLICE,
+            Operand.SPECTROGRAM_ROW_SLICE_FULL,
+            Operand.SPECTROGRAM_ROW_REDUCED_SLICE,
+        }
+        and result.meta.size > 1
+    ):
         assert (
-            result.meta[0, 0]["shared_payload"]
-            is not result.meta[0, 1]["shared_payload"]
+            result.meta.flat[0]["shared_payload"]
+            is not result.meta.flat[1]["shared_payload"]
         )
-        result.meta[0, 0]["shared_payload"]["nested"]["source"] = "slice-only"
-        assert result.meta[0, 1]["shared_payload"]["nested"]["source"] == "shared"
+        result.meta.flat[0]["shared_payload"]["nested"]["source"] = "slice-only"
+        assert result.meta.flat[1]["shared_payload"]["nested"]["source"] == "shared"
         assert matrix.meta[0, 0]["shared_payload"]["nested"]["source"] == "shared"
 
 
@@ -313,9 +387,36 @@ def _invoke(cell: ContractCell, matrix):
                 (lambda: matrix[:1, :])
                 if cell.operand is Operand.SPECTROGRAM_ROW_SLICE
                 else (
-                    (lambda: matrix[:, :1])
-                    if cell.operand is Operand.SPECTROGRAM_COLUMN_SLICE
-                    else (lambda: matrix[..., :1])
+                    (lambda: matrix[:1, :, :, :])
+                    if cell.operand is Operand.SPECTROGRAM_ROW_SLICE_FULL
+                    else (
+                        (lambda: matrix[:, :1])
+                        if cell.operand is Operand.SPECTROGRAM_COLUMN_SLICE
+                        else (
+                            (lambda: matrix[:, :1, :, :])
+                            if cell.operand is Operand.SPECTROGRAM_COLUMN_SLICE_FULL
+                            else (
+                                (lambda: matrix[0, :])
+                                if cell.operand is Operand.SPECTROGRAM_ROW_REDUCED_SLICE
+                                else (
+                                    (lambda: matrix[:, 0])
+                                    if cell.operand
+                                    is Operand.SPECTROGRAM_COLUMN_REDUCED_SLICE
+                                    else (
+                                        (lambda: matrix[:1])
+                                        if cell.operand
+                                        is Operand.SPECTROGRAM_BATCH_SLICE
+                                        else (
+                                            (lambda: matrix[:1, :, :])
+                                            if cell.operand
+                                            is Operand.SPECTROGRAM_BATCH_SLICE_FULL
+                                            else (lambda: matrix[..., :1])
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
                 )
             ),
             "assignment": lambda: _assign(matrix),
@@ -715,6 +816,12 @@ def _expected_values(
         return before[:1, :]
     if expected is ValueExpectation.SPECTROGRAM_COLUMN_SLICE_EXACT:
         return before[:, :1]
+    if expected is ValueExpectation.SPECTROGRAM_ROW_REDUCED_SLICE_EXACT:
+        return before[0, :]
+    if expected is ValueExpectation.SPECTROGRAM_COLUMN_REDUCED_SLICE_EXACT:
+        return before[:, 0]
+    if expected is ValueExpectation.SPECTROGRAM_BATCH_SLICE_EXACT:
+        return before[:1]
     if expected is ValueExpectation.ASSIGNMENT_ZERO:
         return np.zeros_like(before)
     if expected is ValueExpectation.ASTYPE_EXACT:
@@ -766,10 +873,23 @@ def _assert_units(
         UnitExpectation.EXACT_INV_V: 1 / u.V,
     }
     if expectation is UnitExpectation.PRESERVE_CELL_UNITS:
-        if cell.operand is Operand.SPECTROGRAM_ROW_SLICE:
+        if cell.operand in {
+            Operand.SPECTROGRAM_ROW_SLICE,
+            Operand.SPECTROGRAM_ROW_SLICE_FULL,
+            Operand.SPECTROGRAM_ROW_REDUCED_SLICE,
+        }:
             expected = before_units[: matrix.meta.shape[1]]
-        elif cell.operand is Operand.SPECTROGRAM_COLUMN_SLICE:
+        elif cell.operand in {
+            Operand.SPECTROGRAM_COLUMN_SLICE,
+            Operand.SPECTROGRAM_COLUMN_SLICE_FULL,
+            Operand.SPECTROGRAM_COLUMN_REDUCED_SLICE,
+        }:
             expected = before_units[:: matrix.meta.shape[1]]
+        elif cell.operand in {
+            Operand.SPECTROGRAM_BATCH_SLICE,
+            Operand.SPECTROGRAM_BATCH_SLICE_FULL,
+        }:
+            expected = before_units[:1]
         else:
             expected = before_units
     else:
@@ -840,6 +960,18 @@ def _assert_metadata(cell: ContractCell, matrix, result) -> None:
         result.meta[index] is not matrix.meta[index]
         for index in np.ndindex(result.meta.shape)
     )
+    if cell.operand in {
+        Operand.SPECTROGRAM_ROW_SLICE,
+        Operand.SPECTROGRAM_COLUMN_SLICE,
+        Operand.SPECTROGRAM_ROW_SLICE_FULL,
+        Operand.SPECTROGRAM_COLUMN_SLICE_FULL,
+        Operand.SPECTROGRAM_ROW_REDUCED_SLICE,
+        Operand.SPECTROGRAM_COLUMN_REDUCED_SLICE,
+        Operand.SPECTROGRAM_BATCH_SLICE,
+        Operand.SPECTROGRAM_BATCH_SLICE_FULL,
+    }:
+        _assert_spectrogram_slice_metadata(cell, matrix, result)
+        return
     if cell.operand is Operand.SPECTROGRAM_ROW_SLICE:
         expected_labels = _labels(matrix)[: matrix.meta.shape[1]]
     elif cell.operand is Operand.SPECTROGRAM_COLUMN_SLICE:
@@ -868,13 +1000,7 @@ def _assert_metadata(cell: ContractCell, matrix, result) -> None:
     for key in matrix.cols:
         if key in result.cols:
             assert result.cols[key] is not matrix.cols[key]
-    if cell.operand in {
-        Operand.SPECTROGRAM_ROW_SLICE,
-        Operand.SPECTROGRAM_COLUMN_SLICE,
-    }:
-        _assert_spectrogram_slice_metadata(cell, matrix, result)
-    else:
-        _assert_deep_metadata_payload(matrix, result)
+    _assert_deep_metadata_payload(matrix, result)
 
 
 def _assert_object_metadata(cell: ContractCell, matrix, result) -> None:
@@ -1109,12 +1235,12 @@ def execute_contract_cell(cell: ContractCell) -> ContractObservation:
 
 def test_b0_manifest_has_a_literal_cell_count_and_unique_ids() -> None:
     assert len(B0_CONTRACT) == EXPECTED_B0_CELL_COUNT
-    assert EXPECTED_B0_CELL_COUNT == 454
+    assert EXPECTED_B0_CELL_COUNT == 460
     ids = [cell.id for cell in B0_CONTRACT]
     assert len(ids) == len(set(ids))
 
 
-def test_spectrogram_slice_cells_cover_both_metadata_axes() -> None:
+def test_spectrogram_slice_cells_cover_every_supported_selector_form() -> None:
     cells = [
         cell
         for cell in B0_CONTRACT
@@ -1123,6 +1249,12 @@ def test_spectrogram_slice_cells_cover_both_metadata_axes() -> None:
     assert {cell.operand for cell in cells} == {
         Operand.SPECTROGRAM_ROW_SLICE,
         Operand.SPECTROGRAM_COLUMN_SLICE,
+        Operand.SPECTROGRAM_ROW_SLICE_FULL,
+        Operand.SPECTROGRAM_COLUMN_SLICE_FULL,
+        Operand.SPECTROGRAM_ROW_REDUCED_SLICE,
+        Operand.SPECTROGRAM_COLUMN_REDUCED_SLICE,
+        Operand.SPECTROGRAM_BATCH_SLICE,
+        Operand.SPECTROGRAM_BATCH_SLICE_FULL,
     }
     assert all(cell.expected_result is ResultExpectation.MATRIX for cell in cells)
     assert all(

@@ -6,12 +6,13 @@ from typing import TYPE_CHECKING, Any, cast
 import numpy as np
 from astropy import units as u
 
+from .metadata import MetaData, MetaDataMatrix
 from .seriesmatrix_validation import _expand_key, _slice_metadata_dict
 
 if TYPE_CHECKING:
     from gwpy.types.index import Index
 
-    from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
+    from gwexpy.types.metadata import MetaDataDict
 
 
 def _resolve_label_key(key: Any, resolver: Any) -> Any:
@@ -75,6 +76,33 @@ def _copy_axis_index(index: Any) -> Any:
         return index.copy()
     except (IndexError, KeyError, TypeError, ValueError, AttributeError):
         return deepcopy(index)
+
+
+def _copy_metadata_cells_independently(
+    metadata: np.ndarray,
+    *,
+    row_keys: list[str],
+    col_keys: list[str],
+) -> MetaDataMatrix:
+    """Copy every selected metadata cell with an independent deepcopy memo.
+
+    A single ``deepcopy(object_array)`` deliberately preserves aliases within
+    that array.  A logical matrix result must not preserve an alias between
+    two metadata cells, even when the source deliberately shares a nested
+    payload, so copy each cell's mapping independently.
+    """
+    copied = np.empty(metadata.shape, dtype=object)
+    for index in np.ndindex(metadata.shape):
+        source = metadata[index]
+        if not isinstance(source, MetaData):
+            raise TypeError(
+                f"SeriesMatrix metadata cell at {index} is "
+                f"{type(source).__name__}, expected MetaData"
+            )
+        copied[index] = MetaData(**deepcopy(dict(source)))
+    return MetaDataMatrix(
+        copied, row_keys=deepcopy(row_keys), col_keys=deepcopy(col_keys)
+    )
 
 
 class SeriesMatrixIndexingMixin:
@@ -233,10 +261,8 @@ class SeriesMatrixIndexingMixin:
         # ndarray object slicing preserves object references.  A logical
         # SeriesMatrix slice must not: mutating a sliced MetaData/label/attrs
         # object must never mutate its source matrix (D21 data-model rule).
-        from .metadata import MetaDataMatrix
-
-        result.meta = MetaDataMatrix(
-            deepcopy(np.asarray(new_meta, dtype=object)),
+        result.meta = _copy_metadata_cells_independently(
+            np.asarray(new_meta, dtype=object),
             row_keys=_slice_meta_keys(
                 list(self.meta.row_keys), meta_ri, self.meta.shape[0]
             ),

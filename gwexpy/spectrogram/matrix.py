@@ -28,6 +28,42 @@ def _selected_metadata_keys(keys: list[str], selector: Any) -> list[str]:
     return [deepcopy(keys[int(position)]) for position in positions]
 
 
+def _selector_positions(selector: Any, axis_length: int) -> list[int]:
+    """Return the ordered positions selected by one structural selector."""
+    positions = np.atleast_1d(np.arange(axis_length)[selector])
+    if positions.ndim != 1:
+        raise ValueError("SpectrogramMatrix structural selectors must be 1-dimensional")
+    return [int(position) for position in positions]
+
+
+def _is_full_selector(selector: Any, axis_length: int) -> bool:
+    """Whether *selector* keeps every element of a sample axis in order."""
+    return isinstance(selector, slice) and selector.indices(axis_length) == (
+        0,
+        axis_length,
+        1,
+    )
+
+
+def _normalise_spectrogram_key(key: Any, ndim: int) -> tuple[Any, ...]:
+    """Expand abbreviated keys while retaining explicit sample-axis intent."""
+    items = key if isinstance(key, tuple) else (key,)
+    ellipsis_positions = [index for index, item in enumerate(items) if item is Ellipsis]
+    if len(ellipsis_positions) > 1:
+        raise IndexError("an index can only have a single ellipsis")
+    if ellipsis_positions:
+        ellipsis_index = ellipsis_positions[0]
+        fill = ndim - (len(items) - 1)
+        if fill < 0:
+            raise IndexError("too many indices for SpectrogramMatrix")
+        items = (
+            items[:ellipsis_index] + (slice(None),) * fill + items[ellipsis_index + 1 :]
+        )
+    if len(items) > ndim:
+        raise IndexError("too many indices for SpectrogramMatrix")
+    return tuple(items) + (slice(None),) * (ndim - len(items))
+
+
 class SpectrogramMatrix(  # type: ignore[misc]
     PhaseMethodsMixin,
     SpectrogramMatrixCoreMixin,
@@ -855,220 +891,177 @@ class SpectrogramMatrix(  # type: ignore[misc]
             raise KeyError(f"Invalid column key: {key}")
 
     def __getitem__(self, key):
+        """Return a metadata-safe structural slice or a single Spectrogram.
+
+        Only structural (batch/row/column) selection is a B0 matrix slice.
+        Time/frequency subsampling would need separate axis reconstruction, so
+        it is rejected rather than returning a matrix with stale axes.
+        """
         from gwexpy.types.seriesmatrix_validation import _slice_metadata_dict
 
-        # Handle label-based indexing
-        if isinstance(key, str):
-            try:
-                key = self.row_index(key)
-            except KeyError:
-                raise
+        if self.ndim not in (3, 4):
+            raise ValueError(f"Unsupported SpectrogramMatrix dimension: {self.ndim}")
 
-        if (
-            isinstance(key, (list, np.ndarray))
-            and len(key) > 0
-            and isinstance(key[0], str)
+        row_only_abbreviation = not isinstance(key, tuple)
+        normalised = list(_normalise_spectrogram_key(key, self.ndim))
+        if isinstance(normalised[0], str):
+            normalised[0] = self.row_index(normalised[0])
+        elif (
+            isinstance(normalised[0], (list, np.ndarray))
+            and len(normalised[0]) > 0
+            and isinstance(normalised[0][0], str)
         ):
-            key = [self.row_index(k) for k in key]
+            normalised[0] = [self.row_index(item) for item in normalised[0]]
+        if self.ndim == 4:
+            if isinstance(normalised[1], str):
+                normalised[1] = self.col_index(normalised[1])
+            elif (
+                isinstance(normalised[1], (list, np.ndarray))
+                and len(normalised[1]) > 0
+                and isinstance(normalised[1][0], str)
+            ):
+                normalised[1] = [self.col_index(item) for item in normalised[1]]
+        elif isinstance(normalised[1], str):
+            # A 3-D matrix has no labelled time axis.  Keep the established
+            # invalid-label boundary instead of treating the string as an
+            # unsafe sample slice.
+            raise IndexError(
+                f"Invalid 3-D SpectrogramMatrix time selector: {normalised[1]}"
+            )
 
-        # Handle tuple keys (Row, Col) or (Row, Col, Time, Freq)
-        if isinstance(key, tuple):
-            new_key = list(key)
-
-            # Row index (0)
-            if len(new_key) > 0:
-                if isinstance(new_key[0], str):
-                    new_key[0] = self.row_index(new_key[0])
-                elif (
-                    isinstance(new_key[0], (list, np.ndarray))
-                    and len(new_key[0]) > 0
-                    and isinstance(new_key[0][0], str)
-                ):
-                    new_key[0] = [self.row_index(k) for k in new_key[0]]
-
-            # Col index (1) - only if we have at least 2 dims relevant to metadata (4D case or 3D with abuse?)
-            # SpectrogramMatrix 4D: (Row, Col, Time, Freq). 3D: (Batch, Time, Freq).
-            # For 3D, col index is not applicable in the same way, but let's assume standard behavior.
-            if len(new_key) > 1:
-                # Check if second element is string
-                if isinstance(new_key[1], str):
-                    try:
-                        new_key[1] = self.col_index(new_key[1])
-                    except (KeyError, IndexError):
-                        # If columns are not defined or key not found, it might be a time-slice?
-                        # But for 4D matrix, dim 1 IS Col.
-                        if self.ndim == 4:
-                            raise
-                        pass
-                elif (
-                    isinstance(new_key[1], (list, np.ndarray))
-                    and len(new_key[1]) > 0
-                    and isinstance(new_key[1][0], str)
-                ):
-                    if self.ndim == 4:
-                        new_key[1] = [self.col_index(k) for k in new_key[1]]
-
-            key = tuple(new_key)
-
-        # Access raw data
-        raw_data = self.view(np.ndarray)[key]
-
-        # Check for scalar element extraction (returning Spectrogram)
-        is_single_element = False
-        r_idx, c_idx = 0, 0
-
-        if self.ndim == 3:  # (Batch, Time, Freq)
-            if isinstance(key, (int, np.integer)):
-                is_single_element = True
-                r_idx = int(key)
-                c_idx = 0
-        elif self.ndim == 4:  # (Row, Col, Time, Freq)
-            if isinstance(key, tuple) and len(key) >= 2:
-                r, c = key[0], key[1]
-                if isinstance(r, (int, np.integer)) and isinstance(
-                    c, (int, np.integer)
-                ):
-                    is_single_element = True
-                    r_idx, c_idx = int(r), int(c)
-
-        if is_single_element:
-            # Return Spectrogram
-            meta = self.meta[r_idx, c_idx] if self.meta is not None else None
-            unit = meta.unit if meta else self.unit
-            name = meta.name if meta and meta.name else self.name
-            channel = meta.channel if meta else None
-
-            # raw_data should be (Time, Freq)
-            if raw_data.ndim != 2:
-                # Should not happen if indices are correct for 3D/4D
+        structural_dims = 1 if self.ndim == 3 else 2
+        for selector, axis_length in zip(
+            normalised[structural_dims:], self.shape[structural_dims:]
+        ):
+            if not _is_full_selector(selector, axis_length):
                 raise ValueError(
-                    f"Extracted data has wrong dimension for Spectrogram: {raw_data.ndim} (expected 2)"
+                    "SpectrogramMatrix B0 supports structural slicing only; "
+                    "time/frequency subsampling has no safe axis contract"
                 )
 
+        normalised_key = tuple(normalised)
+        raw_data = self.view(np.ndarray)[normalised_key]
+        row_selector = normalised[0]
+        column_selector = normalised[1] if self.ndim == 4 else slice(None)
+        row_scalar = isinstance(row_selector, (int, np.integer))
+        column_scalar = isinstance(column_selector, (int, np.integer))
+
+        if (self.ndim == 3 and row_scalar) or (
+            self.ndim == 4 and row_scalar and column_scalar
+        ):
+            metadata_index = (
+                int(row_selector),
+                0 if self.ndim == 3 else int(cast(Any, column_selector)),
+            )
+            metadata = self.meta[metadata_index] if self.meta is not None else None
+            if raw_data.ndim != 2:
+                raise ValueError(
+                    "SpectrogramMatrix scalar structural selection must produce "
+                    "a two-dimensional Spectrogram"
+                )
             return self.series_class(
                 raw_data,
-                times=self.times,
-                frequencies=self.frequencies,
-                unit=unit,
-                name=name,
-                channel=channel,
+                times=self._resupplied_frequencies(self.times),
+                frequencies=self._resupplied_frequencies(self.frequencies),
+                unit=metadata.unit if metadata else self.unit,
+                name=metadata.name if metadata and metadata.name else self.name,
+                channel=metadata.channel if metadata else None,
                 epoch=getattr(self, "epoch", None),
             )
 
-        # Return Sub-Matrix
-        # We assume raw_data is ndarray. View as SpectrogramMatrix.
-        ret = np.asarray(raw_data).view(type(self))
-        ret._value = ret.view(np.ndarray)
-
-        # Propagate global props
-        ret.times = self._resupplied_frequencies(getattr(self, "times", None))
-        ret.frequencies = self._resupplied_frequencies(
-            getattr(self, "frequencies", None)
-        )
-        ret.unit = getattr(self, "unit", None)
-        ret.epoch = getattr(self, "epoch", None)
-        if self.ndim == 4 and ret.ndim == 4:
-            ret.name = self.name
-        ret.attrs = deepcopy(getattr(self, "attrs", {}))
-
-        # Propagate/Slice Metadata (Rows, Cols, Meta)
-        # This is complex for general slicing. Simplification:
-        # If ndim preserved, try to slice rows/cols.
-        # If ndim reduced (e.g. 4D -> 3D), adjust.
-        # Basic case: Batch slicing on 3D or Row slicing on 4D
-
-        main_key = key[0] if isinstance(key, tuple) else key
-
-        # 3D: (Batch, T, F) -> Slice batch
-        if self.ndim == 3 and ret.ndim == 3:
-            if self.rows:
-                ret.rows = _slice_metadata_dict(self.rows, main_key, "row")
-            if self.meta is not None:
-                # meta is (N, 1)
-                try:
-                    sliced = self.meta[main_key]
-                    if isinstance(sliced, np.ndarray):
-                        ret.meta = sliced.view(MetaDataMatrix)  # type: ignore[assignment]
-                    else:
-                        ret.meta = sliced
-                except (IndexError, TypeError):
-                    pass
-        # 4D: (Row, Col, T, F) -> Slice row, maybe col
-        elif self.ndim == 4 and ret.ndim == 4:
-            r_key = key[0] if isinstance(key, tuple) else key
-            c_key = key[1] if isinstance(key, tuple) and len(key) > 1 else slice(None)
-
-            if self.rows:
-                ret.rows = _copy_metadata_dict(
-                    _slice_metadata_dict(self.rows, r_key, "row"), "row"
-                )
-            if self.cols:
-                ret.cols = _copy_metadata_dict(
-                    _slice_metadata_dict(self.cols, c_key, "col"), "col"
-                )
-            if self.meta is not None:
-                try:
-                    # meta is (Row, Col)
-                    # If key is simple tuple (slice, slice)
-                    if isinstance(key, tuple) and len(key) <= 2:
-                        sliced = self.meta[key]
-                        if isinstance(sliced, np.ndarray):
-                            ret.meta = _copy_metadata_matrix(
-                                MetaDataMatrix(
-                                    np.asarray(sliced, dtype=object),
-                                    row_keys=_selected_metadata_keys(
-                                        self.meta.row_keys, r_key
-                                    ),
-                                    col_keys=_selected_metadata_keys(
-                                        self.meta.col_keys, c_key
-                                    ),
-                                )
-                            )
-                        else:
-                            ret.meta = sliced
-                    else:
-                        # complex slicing?
-                        pass
-                except (IndexError, TypeError, KeyError):
-                    pass
-        # 4D -> 3D reduction (e.g. slice out one Row or one Col)
-        elif self.ndim == 4 and ret.ndim == 3:
-            # Case A: row is scalar, col is slice -> result Batch is Col
-            # Case B: row is slice, col is scalar -> result Batch is Row
-            r_idx = key[0] if isinstance(key, tuple) else key
-            col_idx: Any = (
-                key[1] if isinstance(key, tuple) and len(key) > 1 else slice(None)
+        def copied_metadata(cells, row_keys, col_keys):
+            source_cells = np.empty((len(cells), len(cells[0])), dtype=object)
+            for row, source_row in enumerate(cells):
+                for column, source_index in enumerate(source_row):
+                    source_cells[row, column] = self.meta[source_index]
+            return _copy_metadata_matrix(
+                MetaDataMatrix(source_cells, row_keys=row_keys, col_keys=col_keys)
             )
 
-            is_row_scalar = isinstance(r_idx, (int, np.integer))
-            is_col_scalar = isinstance(col_idx, (int, np.integer))
+        ret = np.asarray(raw_data).view(type(self))
+        ret._value = ret.view(np.ndarray)
+        ret.times = self._resupplied_frequencies(self.times)
+        ret.frequencies = self._resupplied_frequencies(self.frequencies)
+        ret.unit = self.unit
+        # Iteration historically indexes a 4-D matrix as ``matrix[row]`` and
+        # exposes an anonymous 3-D row view.  Preserve that distinct B0
+        # iteration surface; explicit ``matrix[row, :]`` is a logical slice
+        # and keeps the matrix name.
+        ret.name = (
+            "" if self.ndim == 4 and row_only_abbreviation and row_scalar else self.name
+        )
+        ret.epoch = getattr(self, "epoch", None)
+        ret.attrs = deepcopy(getattr(self, "attrs", {}))
 
-            if is_row_scalar:
-                # Batch = Col
-                if self.cols:
-                    ret.rows = _slice_metadata_dict(self.cols, col_idx, "row")
-            elif is_col_scalar:
-                # Batch = Row
-                if self.rows:
-                    ret.rows = _slice_metadata_dict(self.rows, r_idx, "row")
+        if self.ndim == 3:
+            row_positions = _selector_positions(row_selector, self.shape[0])
+            if raw_data.shape != (len(row_positions), *self.shape[1:]):
+                raise ValueError(
+                    "unsupported paired advanced SpectrogramMatrix selector"
+                )
+            ret.rows = _copy_metadata_dict(
+                _slice_metadata_dict(self.rows, row_selector, "row"), "row"
+            )
+            ret.cols = _copy_metadata_dict(self.cols, "col")
+            ret.meta = copied_metadata(
+                [[(row, 0)] for row in row_positions],
+                _selected_metadata_keys(self.meta.row_keys, row_selector),
+                deepcopy(self.meta.col_keys),
+            )
+        else:
+            row_positions = _selector_positions(row_selector, self.shape[0])
+            column_positions = _selector_positions(column_selector, self.shape[1])
+            if not row_scalar and not column_scalar:
+                if raw_data.shape != (
+                    len(row_positions),
+                    len(column_positions),
+                    *self.shape[2:],
+                ):
+                    raise ValueError(
+                        "unsupported paired advanced SpectrogramMatrix selector"
+                    )
+                ret.rows = _copy_metadata_dict(
+                    _slice_metadata_dict(self.rows, row_selector, "row"), "row"
+                )
+                ret.cols = _copy_metadata_dict(
+                    _slice_metadata_dict(self.cols, column_selector, "col"), "col"
+                )
+                ret.meta = copied_metadata(
+                    [
+                        [(row, column) for column in column_positions]
+                        for row in row_positions
+                    ],
+                    _selected_metadata_keys(self.meta.row_keys, row_selector),
+                    _selected_metadata_keys(self.meta.col_keys, column_selector),
+                )
+            elif row_scalar:
+                ret.rows = _copy_metadata_dict(
+                    _slice_metadata_dict(self.cols, column_selector, "row"), "row"
+                )
+                ret.cols = _copy_metadata_dict(
+                    _slice_metadata_dict(self.rows, row_selector, "col"), "col"
+                )
+                ret.meta = copied_metadata(
+                    [[(row_positions[0], column)] for column in column_positions],
+                    _selected_metadata_keys(self.meta.col_keys, column_selector),
+                    _selected_metadata_keys(self.meta.row_keys, row_selector),
+                )
+            else:
+                ret.rows = _copy_metadata_dict(
+                    _slice_metadata_dict(self.rows, row_selector, "row"), "row"
+                )
+                ret.cols = _copy_metadata_dict(
+                    _slice_metadata_dict(self.cols, column_selector, "col"), "col"
+                )
+                ret.meta = copied_metadata(
+                    [[(row, column_positions[0])] for row in row_positions],
+                    _selected_metadata_keys(self.meta.row_keys, row_selector),
+                    _selected_metadata_keys(self.meta.col_keys, column_selector),
+                )
 
-            if self.meta is not None:
-                try:
-                    sliced = self.meta[r_idx, col_idx]
-                    if isinstance(sliced, np.ndarray):
-                        # Ensure meta for 3D is (N, 1)
-                        ret.meta = sliced.reshape(-1, 1).view(MetaDataMatrix)
-                    else:
-                        # Scalar meta?
-                        pass
-                except (IndexError, TypeError, KeyError):
-                    pass
-
-        # Propagate custom attributes
-        for k, v in getattr(self, "__dict__", {}).items():
-            if k.startswith("_gwex_"):
-                ret.__dict__[k] = v
-
+        for attribute, value in getattr(self, "__dict__", {}).items():
+            if attribute.startswith("_gwex_"):
+                ret.__dict__[attribute] = deepcopy(value)
         return ret
 
     def to_series_2Dlist(self):

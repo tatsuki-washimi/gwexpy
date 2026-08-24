@@ -95,6 +95,243 @@ def make_spectrogram_matrix(unit=u.V, values=None):
     )
 
 
+def _slicing_spectrogram_matrix(*, three_dimensional=False):
+    """Build a non-default, nested-metadata fixture for slice contracts."""
+    if three_dimensional:
+        metadata = MetaDataMatrix(
+            np.array(
+                [
+                    [MetaData(unit=u.V, name="b0", cell={"nested": [0]})],
+                    [MetaData(unit=u.V, name="b1", cell={"nested": [1]})],
+                ],
+                dtype=object,
+            ),
+            row_keys=["meta-batch-0", "meta-batch-1"],
+            col_keys=["meta-single-col"],
+        )
+        matrix = SpectrogramMatrix(
+            np.arange(8, dtype=float).reshape(2, 2, 2),
+            times=np.array([10.0, 11.0]) * u.s,
+            frequencies=np.array([20.0, 21.0]) * u.Hz,
+            meta=metadata,
+            rows={
+                "batch-0": MetaData(row={"nested": [0]}),
+                "batch-1": MetaData(row={"nested": [1]}),
+            },
+            cols={"single-col": MetaData(column={"nested": [0]})},
+            name="three-dimensional-slice",
+            epoch=1234567890.25,
+        )
+    else:
+        matrix = make_spectrogram_matrix()
+        matrix.times = np.array([10.0, 11.0]) * u.s
+        matrix.frequencies = np.array([20.0, 21.0]) * u.Hz
+        matrix.epoch = 1234567890.25
+        matrix.name = "four-dimensional-slice"
+        matrix.meta.row_keys = ["meta-row-0", "meta-row-1"]
+        matrix.meta.col_keys = ["meta-col-0", "meta-col-1"]
+        for row, key in enumerate(matrix.rows):
+            matrix.rows[key]["row"] = {"nested": [row, {"payload": key}]}
+        for column, key in enumerate(matrix.cols):
+            matrix.cols[key]["column"] = {"nested": [column, {"payload": key}]}
+
+    shared = {"nested": {"owner": "source"}}
+    for index in np.ndindex(matrix.meta.shape):
+        matrix.meta[index]["cell"] = {"nested": [index, {"owner": "source"}]}
+        matrix.meta[index]["shared"] = shared
+    matrix.attrs = {"calibration": {"nested": [{"owner": "source"}]}}
+    return matrix
+
+
+def _assert_independent_spectrogram_slice(
+    source,
+    result,
+    source_cells,
+    row_keys,
+    col_keys,
+    metadata_row_keys,
+    metadata_col_keys,
+):
+    """Assert a slice owns every public metadata and axis payload it exposes."""
+    assert type(result) is SpectrogramMatrix
+    assert result.name == source.name
+    assert result.epoch == source.epoch
+    assert result.meta.row_keys == metadata_row_keys
+    assert result.meta.col_keys == metadata_col_keys
+    assert list(result.rows) == row_keys
+    assert list(result.cols) == col_keys
+    assert result.times is not source.times
+    assert result.frequencies is not source.frequencies
+    np.testing.assert_allclose(result.times.to_value(u.s), source.times.to_value(u.s))
+    np.testing.assert_allclose(
+        result.frequencies.to_value(u.Hz), source.frequencies.to_value(u.Hz)
+    )
+    source_times = source.times.copy()
+    source_frequencies = source.frequencies.copy()
+    result.times[0] = result.times[0] + 1 * u.s
+    result.frequencies[0] = result.frequencies[0] + 1 * u.Hz
+    np.testing.assert_allclose(source.times.to_value(u.s), source_times.to_value(u.s))
+    np.testing.assert_allclose(
+        source.frequencies.to_value(u.Hz), source_frequencies.to_value(u.Hz)
+    )
+    for result_index, source_index in zip(np.ndindex(result.meta.shape), source_cells):
+        assert result.meta[result_index] is not source.meta[source_index]
+        assert dict(result.meta[result_index]) == dict(source.meta[source_index])
+    for key in row_keys:
+        source_metadata = source.rows.get(key, source.cols.get(key))
+        assert result.rows[key] is not source_metadata
+        assert dict(result.rows[key]) == dict(source_metadata)
+    for key in col_keys:
+        source_metadata = source.cols.get(key, source.rows.get(key))
+        assert result.cols[key] is not source_metadata
+        assert dict(result.cols[key]) == dict(source_metadata)
+    assert result.attrs is not source.attrs
+    assert result.attrs == source.attrs
+    result.meta[0, 0]["cell"]["nested"][1]["owner"] = "result"
+    assert source.meta[source_cells[0]]["cell"]["nested"][1]["owner"] == "source"
+    result.attrs["calibration"]["nested"][0]["owner"] = "result"
+    assert source.attrs["calibration"]["nested"][0]["owner"] == "source"
+    if result.meta.size > 1:
+        assert result.meta.flat[0]["shared"] is not result.meta.flat[1]["shared"]
+        result.meta.flat[0]["shared"]["nested"]["owner"] = "result"
+        assert result.meta.flat[1]["shared"]["nested"]["owner"] == "source"
+
+
+@pytest.mark.parametrize(
+    (
+        "selectors",
+        "shape",
+        "source_cells",
+        "row_keys",
+        "col_keys",
+        "metadata_row_keys",
+        "metadata_col_keys",
+    ),
+    [
+        (
+            (slice(None, 1), slice(None)),
+            (1, 2, 2, 2),
+            ((0, 0), (0, 1)),
+            ["r0"],
+            ["c0", "c1"],
+            ["meta-row-0"],
+            ["meta-col-0", "meta-col-1"],
+        ),
+        (
+            (slice(None), slice(None, 1)),
+            (2, 1, 2, 2),
+            ((0, 0), (1, 0)),
+            ["r0", "r1"],
+            ["c0"],
+            ["meta-row-0", "meta-row-1"],
+            ["meta-col-0"],
+        ),
+        (
+            (0, slice(None)),
+            (2, 2, 2),
+            ((0, 0), (0, 1)),
+            ["c0", "c1"],
+            ["r0"],
+            ["meta-col-0", "meta-col-1"],
+            ["meta-row-0"],
+        ),
+        (
+            (slice(None), 0),
+            (2, 2, 2),
+            ((0, 0), (1, 0)),
+            ["r0", "r1"],
+            ["c0"],
+            ["meta-row-0", "meta-row-1"],
+            ["meta-col-0"],
+        ),
+    ],
+    ids=["row", "column", "row-reduced", "column-reduced"],
+)
+def test_spectrogram_slice_selector_forms_are_equivalent_and_independent(
+    selectors,
+    shape,
+    source_cells,
+    row_keys,
+    col_keys,
+    metadata_row_keys,
+    metadata_col_keys,
+):
+    """Abbreviated and full-rank 4-D selectors expose identical safe state."""
+    abbreviated_source = _slicing_spectrogram_matrix()
+    full_source = _slicing_spectrogram_matrix()
+    abbreviated = abbreviated_source[selectors]
+    full = full_source[(*selectors, slice(None), slice(None))]
+
+    assert abbreviated.shape == full.shape == shape
+    np.testing.assert_allclose(np.asarray(abbreviated), np.asarray(full))
+    _assert_independent_spectrogram_slice(
+        abbreviated_source,
+        abbreviated,
+        source_cells,
+        row_keys,
+        col_keys,
+        metadata_row_keys,
+        metadata_col_keys,
+    )
+    _assert_independent_spectrogram_slice(
+        full_source,
+        full,
+        source_cells,
+        row_keys,
+        col_keys,
+        metadata_row_keys,
+        metadata_col_keys,
+    )
+
+
+def test_spectrogram_three_dimensional_batch_slice_forms_are_equivalent():
+    """The 3-D batch shorthand and full-rank form share the safe slice rule."""
+    abbreviated_source = _slicing_spectrogram_matrix(three_dimensional=True)
+    full_source = _slicing_spectrogram_matrix(three_dimensional=True)
+    abbreviated = abbreviated_source[:1]
+    full = full_source[:1, :, :]
+
+    assert abbreviated.shape == full.shape == (1, 2, 2)
+    np.testing.assert_allclose(np.asarray(abbreviated), np.asarray(full))
+    _assert_independent_spectrogram_slice(
+        abbreviated_source,
+        abbreviated,
+        ((0, 0),),
+        ["batch-0"],
+        ["single-col"],
+        ["meta-batch-0"],
+        ["meta-single-col"],
+    )
+    _assert_independent_spectrogram_slice(
+        full_source,
+        full,
+        ((0, 0),),
+        ["batch-0"],
+        ["single-col"],
+        ["meta-batch-0"],
+        ["meta-single-col"],
+    )
+
+
+@pytest.mark.parametrize(
+    "series_factory", [make_timeseries_matrix, make_frequencyseries_matrix]
+)
+def test_series_sample_slice_breaks_shared_metadata_payload_aliases(series_factory):
+    """A sample slice deep-copies every logical metadata cell independently."""
+    source = series_factory()
+    shared = {"nested": {"owner": "source"}}
+    source.meta[0, 0]["shared"] = shared
+    source.meta[0, 1]["shared"] = shared
+
+    result = source[..., :1]
+
+    assert result.meta[0, 0]["shared"] is not source.meta[0, 0]["shared"]
+    assert result.meta[0, 0]["shared"] is not result.meta[0, 1]["shared"]
+    result.meta[0, 0]["shared"]["nested"]["owner"] = "result"
+    assert source.meta[0, 0]["shared"]["nested"]["owner"] == "source"
+    assert result.meta[0, 1]["shared"]["nested"]["owner"] == "source"
+
+
 MATRIX_FACTORIES = {
     "TimeSeriesMatrix": make_timeseries_matrix,
     "FrequencySeriesMatrix": make_frequencyseries_matrix,
