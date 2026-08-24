@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from fractions import Fraction
 from operator import index
+from types import MethodType
 from typing import TYPE_CHECKING, Any, Protocol, cast
 
 import numpy as np
+from astropy import units as u
 from gwpy.time import LIGOTimeGPS
 
 from gwexpy.interop._registry import ConverterRegistry
@@ -24,6 +25,9 @@ __all__ = [
 # round-trip slack when comparing it against a TimeSeries epoch (GPS seconds).
 _MEAS_DATE_TOLERANCE_S = 1e-6
 _GWEX_T0_GPS_NS_ATTR = "_gwex_t0_gps_ns"
+_GWEX_CHANNEL_T0_GPS_NS_ATTR = "_gwex_channel_t0_gps_ns"
+_GWEX_CHANNEL_DT_GPS_NS_ATTR = "_gwex_channel_dt_gps_ns"
+_GWEX_MEAS_DATE_ATTR = "_gwex_exact_meas_date"
 
 if TYPE_CHECKING:
 
@@ -117,21 +121,132 @@ def _t0_ns(ts: Any) -> int:
     proportional to ``dt`` (see #493 -- a ``dt``-scaled tolerance let
     differently-timed channels silently stack together).
     """
-    exact_ns = getattr(ts, "t0_gps_ns", None)
+    exact_ns = getattr(ts, "_gwex_t0_gps_ns", None)
+    if exact_ns is None:
+        exact_ns = getattr(ts, "t0_gps_ns", None)
     if exact_ns is not None:
         return index(exact_ns)
     return LIGOTimeGPS(_t0_seconds(ts)).ns()
 
 
-def _sample_offset_ns(first_samp: int, sfreq: float) -> int:
-    """Return an exact integer-nanosecond MNE sample offset, or fail closed."""
-    offset = Fraction(1_000_000_000 * first_samp, 1) / Fraction(str(sfreq))
-    if offset.denominator != 1:
-        raise ValueError(
-            "cannot preserve an exact GPS-nanosecond epoch through an MNE "
-            "sample offset that is not an integral number of nanoseconds"
+def _strict_exact_ns(value: Any) -> int:
+    """Validate metadata as an integer GPS-nanosecond value."""
+    if isinstance(value, (bool, np.bool_)):
+        raise TypeError("exact GPS metadata must be an integer nanosecond value")
+    try:
+        return index(value)
+    except TypeError as exc:
+        raise TypeError(
+            "exact GPS metadata must be an integer nanosecond value"
+        ) from exc
+
+
+def _exact_authority(ts: Any) -> int | None:
+    value = getattr(ts, "_gwex_t0_gps_ns", None)
+    return None if value is None else _strict_exact_ns(value)
+
+
+def _exact_dt_authority(ts: Any) -> int | None:
+    value = getattr(ts, "_gwex_dt_gps_ns", None)
+    return None if value is None else _strict_exact_ns(value)
+
+
+def _raw_exact_epochs(raw: Any) -> dict[str, int]:
+    """Return exact per-channel epochs after validating private metadata."""
+    if hasattr(raw, _GWEX_MEAS_DATE_ATTR) and getattr(
+        raw, _GWEX_MEAS_DATE_ATTR
+    ) != raw.info.get("meas_date"):
+        raise ValueError("official meas_date conflicts with exact GPS metadata")
+
+    raw_global = getattr(raw, _GWEX_T0_GPS_NS_ATTR, None)
+    raw_mapping = getattr(raw, _GWEX_CHANNEL_T0_GPS_NS_ATTR, None)
+    if raw_mapping is not None and not isinstance(raw_mapping, Mapping):
+        raise TypeError(
+            "exact GPS metadata must map channel names to integer nanoseconds"
         )
-    return offset.numerator
+    epochs = (
+        {str(name): _strict_exact_ns(value) for name, value in raw_mapping.items()}
+        if raw_mapping is not None
+        else {}
+    )
+    if raw_global is not None:
+        global_ns = _strict_exact_ns(raw_global)
+        if epochs and any(value != global_ns for value in epochs.values()):
+            raise ValueError("conflicting exact GPS metadata")
+        for name in raw.ch_names:
+            epochs.setdefault(name, global_ns)
+    return epochs
+
+
+def _raw_exact_dt(raw: Any, name: str) -> int:
+    mapping = getattr(raw, _GWEX_CHANNEL_DT_GPS_NS_ATTR, None)
+    if not isinstance(mapping, Mapping) or name not in mapping:
+        raise ValueError(
+            "cannot preserve exact GPS metadata through an MNE sample offset "
+            "without an integral source sample interval"
+        )
+    return _strict_exact_ns(mapping[name])
+
+
+def _raw_channel_epoch(raw: Any, name: str) -> int | None:
+    epochs = _raw_exact_epochs(raw)
+    if name not in epochs:
+        return None
+    return epochs[name] + raw.first_samp * _raw_exact_dt(raw, name)
+
+
+def _install_add_channels_guard(raw: Any) -> None:
+    """Reject conflicting exact epochs before MNE mutates an in-memory Raw."""
+    if getattr(raw, "_gwex_exact_add_channels_guard", False):
+        return
+    original = raw.add_channels
+
+    def guarded(self: Any, add_list: Any, *args: Any, **kwargs: Any) -> Any:
+        current = _raw_exact_epochs(self)
+        current_dt = dict(getattr(self, _GWEX_CHANNEL_DT_GPS_NS_ATTR, {}) or {})
+        additions: dict[str, int] = {}
+        additions_dt: dict[str, int] = {}
+        for other in add_list:
+            other_epochs = _raw_exact_epochs(other)
+            additions.update(other_epochs)
+            other_dt = getattr(other, _GWEX_CHANNEL_DT_GPS_NS_ATTR, {}) or {}
+            if other_epochs and not isinstance(other_dt, Mapping):
+                raise TypeError(
+                    "exact GPS metadata must map channel names to intervals"
+                )
+            additions_dt.update(other_dt)
+        exact_values = set(current.values()) | set(additions.values())
+        if len(exact_values) > 1:
+            raise ValueError("cannot add channels with mismatched exact GPS epochs")
+        result = original(add_list, *args, **kwargs)
+        if current or additions:
+            merged = {**current, **additions}
+            merged_dt = {**current_dt, **additions_dt}
+            setattr(self, _GWEX_CHANNEL_T0_GPS_NS_ATTR, merged)
+            setattr(self, _GWEX_CHANNEL_DT_GPS_NS_ATTR, merged_dt)
+            if len(merged) == len(self.ch_names) and len(set(merged.values())) == 1:
+                setattr(self, _GWEX_T0_GPS_NS_ATTR, next(iter(merged.values())))
+            else:
+                self.__dict__.pop(_GWEX_T0_GPS_NS_ATTR, None)
+            setattr(self, _GWEX_MEAS_DATE_ATTR, self.info.get("meas_date"))
+        return result
+
+    raw.add_channels = MethodType(guarded, raw)
+    raw._gwex_exact_add_channels_guard = True
+
+
+def _attach_exact_metadata(
+    raw: Any, epochs: dict[str, int], dt_ns: dict[str, int]
+) -> None:
+    """Attach exact in-memory channel metadata and protect ``add_channels``."""
+    if not epochs:
+        return
+    setattr(raw, _GWEX_CHANNEL_T0_GPS_NS_ATTR, dict(epochs))
+    setattr(raw, _GWEX_CHANNEL_DT_GPS_NS_ATTR, dict(dt_ns))
+    if len(epochs) == len(raw.ch_names) and len(set(epochs.values())) == 1:
+        setattr(raw, _GWEX_T0_GPS_NS_ATTR, next(iter(epochs.values())))
+    setattr(raw, _GWEX_MEAS_DATE_ATTR, raw.info.get("meas_date"))
+    _install_add_channels_guard(raw)
 
 
 def _apply_meas_date_contract(info: Any, t0_seconds: float) -> Any:
@@ -259,7 +374,18 @@ def to_mne_rawarray(tsd, info=None, picks=None):
         info = _apply_meas_date_contract(info, exact_t0_ns / 1e9)
 
         raw = mne.io.RawArray(data_1d[None, :], info)
-        setattr(raw, _GWEX_T0_GPS_NS_ATTR, exact_t0_ns)
+        source_exact_ns = _exact_authority(tsd)
+        source_dt_ns = _exact_dt_authority(tsd)
+        if source_exact_ns is not None and source_dt_ns is None:
+            raise ValueError(
+                "cannot preserve exact GPS metadata through an MNE sample offset "
+                "without an integral source sample interval"
+            )
+        if source_exact_ns is not None:
+            assert source_dt_ns is not None
+            _attach_exact_metadata(
+                raw, {ch_name: source_exact_ns}, {ch_name: source_dt_ns}
+            )
         return raw
 
     # Multi-channel mapping input
@@ -276,6 +402,21 @@ def to_mne_rawarray(tsd, info=None, picks=None):
             raise ValueError("All channels must share the same sampling frequency")
 
     lengths = {len(ts) for ts in series}
+    exact_epochs = {
+        name: exact
+        for name, ts in zip(ch_names, series, strict=True)
+        if (exact := _exact_authority(ts)) is not None
+    }
+    exact_dt_ns = {
+        name: exact
+        for name, ts in zip(ch_names, series, strict=True)
+        if (exact := _exact_dt_authority(ts)) is not None
+    }
+    if exact_epochs and set(exact_dt_ns) != set(exact_epochs):
+        raise ValueError(
+            "cannot preserve exact GPS metadata through an MNE sample offset "
+            "without an integral source sample interval"
+        )
     if len(lengths) == 1:
         data = np.stack([np.asarray(ts.value) for ts in series], axis=0)
         # Same-length channels are stacked as-is (no alignment), so their
@@ -292,6 +433,8 @@ def to_mne_rawarray(tsd, info=None, picks=None):
         common_t0_ns = _t0_ns(series[0])
     elif hasattr(tsd, "to_matrix"):
         try:
+            if len(set(exact_epochs.values())) > 1:
+                raise ValueError("exact channel epochs differ before alignment")
             tsd_sel = cast("_TimeSeriesDictLike", tsd.__class__())
             for k, ts in items:
                 tsd_sel[k] = ts
@@ -304,7 +447,9 @@ def to_mne_rawarray(tsd, info=None, picks=None):
             if data.shape[0] != len(ch_names):
                 raise ValueError("Unexpected channel dimension after alignment")
             ch_names = list(getattr(mat, "channel_names", ch_names))
-            common_t0_ns = _t0_ns(mat)
+            common_t0_ns = (
+                next(iter(exact_epochs.values())) if exact_epochs else _t0_ns(mat)
+            )
         except (ValueError, TypeError, AttributeError, IndexError, KeyError) as e:
             raise ValueError(
                 "Channels have mismatched lengths and could not be aligned via to_matrix()"
@@ -324,7 +469,8 @@ def to_mne_rawarray(tsd, info=None, picks=None):
     info = _apply_meas_date_contract(info, common_t0_ns / 1e9)
 
     raw = mne.io.RawArray(data, info)
-    setattr(raw, _GWEX_T0_GPS_NS_ATTR, common_t0_ns)
+    if exact_epochs:
+        _attach_exact_metadata(raw, exact_epochs, exact_dt_ns)
     return raw
 
 
@@ -366,30 +512,34 @@ def from_mne_raw(cls, raw, unit_map=None):
     sfreq = raw.info["sfreq"]
     dt = 1.0 / sfreq
 
-    exact_t0_ns = getattr(raw, _GWEX_T0_GPS_NS_ATTR, None)
+    exact_epochs = _raw_exact_epochs(raw)
     t0 = 0.0
-    if exact_t0_ns is None and raw.info["meas_date"]:
+    if not exact_epochs and raw.info["meas_date"]:
         # meas_date is an aware-UTC datetime.
         t0 = float(datetime_utc_to_gps(raw.info["meas_date"]))
-    if exact_t0_ns is None:
+    if not exact_epochs:
         t0 = t0 + raw.first_samp / sfreq
-    else:
-        exact_t0_ns = index(exact_t0_ns) + _sample_offset_ns(raw.first_samp, sfreq)
 
     tsd = cls()
-    if exact_t0_ns is not None:
-        # GWpy's TimeSeriesDict.EntryClass is its base TimeSeries, which has
-        # no exact epoch authority.  Preserve the exact MNE transport value
-        # by restoring GWexpy's public TimeSeries implementation instead.
-        from gwexpy.timeseries import TimeSeries
-
-        entry_class = TimeSeries
-    else:
-        entry_class = tsd.EntryClass
     for i, name in enumerate(ch_names):
         unit = unit_map.get(name) if unit_map else None
-        epoch_kwargs = {"t0_ns": exact_t0_ns} if exact_t0_ns is not None else {"t0": t0}
-        tsd[name] = entry_class(data[i], dt=dt, name=name, unit=unit, **epoch_kwargs)
+        exact_t0_ns = _raw_channel_epoch(raw, name)
+        epoch_kwargs: dict[str, Any]
+        if exact_t0_ns is not None:
+            # GWpy's TimeSeriesDict.EntryClass is its base TimeSeries, which
+            # cannot represent the exact authority.
+            from gwexpy.timeseries import TimeSeries
+
+            entry_class = TimeSeries
+            epoch_kwargs = {"t0_ns": exact_t0_ns}
+            entry_dt = _raw_exact_dt(raw, name) * u.ns
+        else:
+            entry_class = tsd.EntryClass
+            epoch_kwargs = {"t0": t0}
+            entry_dt = dt
+        tsd[name] = entry_class(
+            data[i], dt=entry_dt, name=name, unit=unit, **epoch_kwargs
+        )
 
     return tsd
 

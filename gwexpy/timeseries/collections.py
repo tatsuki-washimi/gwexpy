@@ -1000,6 +1000,22 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             # Not always. We should force keys as names?
             # "Must preserve channel ordering from input."
         )
+        exact_epochs: list[int | None] = [
+            getattr(series, "_gwex_t0_gps_ns", None) for series in series_list
+        ]
+        if (
+            all(epoch is not None for epoch in exact_epochs)
+            and len(set(exact_epochs)) == 1
+        ):
+            setattr(matrix, "_gwex_t0_gps_ns", exact_epochs[0])
+        exact_intervals: list[int | None] = [
+            getattr(series, "_gwex_dt_gps_ns", None) for series in series_list
+        ]
+        if (
+            all(interval is not None for interval in exact_intervals)
+            and len(set(exact_intervals)) == 1
+        ):
+            setattr(matrix, "_gwex_dt_gps_ns", exact_intervals[0])
         # Assign channel names from keys
         matrix.channel_names = keys
         return matrix
@@ -1680,6 +1696,22 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
             data,
             times=times,
         )
+        exact_epochs: list[int | None] = [
+            getattr(series, "_gwex_t0_gps_ns", None) for series in self
+        ]
+        if (
+            all(epoch is not None for epoch in exact_epochs)
+            and len(set(exact_epochs)) == 1
+        ):
+            setattr(matrix, "_gwex_t0_gps_ns", exact_epochs[0])
+        exact_intervals: list[int | None] = [
+            getattr(series, "_gwex_dt_gps_ns", None) for series in self
+        ]
+        if (
+            all(interval is not None for interval in exact_intervals)
+            and len(set(exact_intervals)) == 1
+        ):
+            setattr(matrix, "_gwex_dt_gps_ns", exact_intervals[0])
         if names:
             matrix.channel_names = names
         return matrix

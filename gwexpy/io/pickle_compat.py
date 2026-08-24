@@ -26,6 +26,12 @@ def _build_gwpy_timeseries(data, kwargs: dict[str, Any]):
     return TimeSeries(data, **kwargs)
 
 
+def _build_gwexpy_timeseries(data, kwargs: dict[str, Any]):
+    from gwexpy.timeseries import TimeSeries
+
+    return TimeSeries(data, **kwargs)
+
+
 def _build_gwpy_frequencyseries(data, kwargs: dict[str, Any]):
     from gwpy.frequencyseries import FrequencySeries
 
@@ -51,6 +57,17 @@ def timeseries_reduce_args(
     ts,
 ) -> tuple[Callable[[Any, dict[str, Any]], Any], tuple[Any, dict[str, Any]]]:
     """Return pickle reduce arguments for a GWpy-compatible time series."""
+    exact_t0_ns = getattr(ts, "_gwex_t0_gps_ns", None)
+    if exact_t0_ns is not None:
+        kwargs = {
+            "unit": getattr(ts, "unit", None),
+            "name": getattr(ts, "name", None),
+            "channel": getattr(ts, "channel", None),
+            "t0_ns": exact_t0_ns,
+            "dt": getattr(ts, "dt", None),
+        }
+        return _build_gwexpy_timeseries, (np.asarray(ts.value), kwargs)
+
     kwargs = _series_kwargs(ts)
     times = getattr(ts, "times", None)
     if times is not None:

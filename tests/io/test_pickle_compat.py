@@ -5,6 +5,8 @@ import shelve
 from types import SimpleNamespace
 
 import numpy as np
+import pytest
+from astropy import units as u
 from gwpy.frequencyseries import FrequencySeries as GwpyFrequencySeries
 from gwpy.spectrogram import Spectrogram as GwpySpectrogram
 from gwpy.timeseries import TimeSeries as GwpyTimeSeries
@@ -39,6 +41,19 @@ def test_pickle_series_to_gwpy_types():
     assert isinstance(fs2, GwpyFrequencySeries)
     assert isinstance(sg2, GwpySpectrogram)
     assert not hasattr(ts2, "_gwex_test")
+
+
+@pytest.mark.parametrize("protocol", range(pickle.HIGHEST_PROTOCOL + 1))
+def test_pickle_exact_timeseries_preserves_gwexpy_type_and_epoch(protocol):
+    epoch_ns = 1_234_567_890_123_456_789
+    series = TimeSeries(np.arange(3.0), t0_ns=epoch_ns, dt=7 * u.ns, unit="m")
+
+    restored = pickle.loads(pickle.dumps(series, protocol=protocol))
+
+    assert isinstance(restored, TimeSeries)
+    assert restored.t0_gps_ns == epoch_ns
+    assert restored.dt == 7 * u.ns
+    np.testing.assert_array_equal(restored.value, series.value)
 
 
 def test_pickle_collections_to_gwpy_or_builtin():

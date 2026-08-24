@@ -12,6 +12,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
+from astropy import units as u
 
 from gwexpy.types.mixin import InteropMixin
 
@@ -963,12 +964,17 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         sfreq = raw.info["sfreq"]
         dt = 1.0 / sfreq
 
-        from gwexpy.interop.mne_ import _GWEX_T0_GPS_NS_ATTR, _sample_offset_ns
+        from gwexpy.interop.mne_ import _raw_channel_epoch, _raw_exact_dt
 
-        exact_t0_ns = getattr(raw, _GWEX_T0_GPS_NS_ATTR, None)
+        exact_t0_ns = _raw_channel_epoch(raw, channel)
         if exact_t0_ns is not None:
-            exact_t0_ns = int(exact_t0_ns) + _sample_offset_ns(raw.first_samp, sfreq)
-            return cls(value, t0_ns=exact_t0_ns, dt=dt, unit=unit, name=channel)
+            return cls(
+                value,
+                t0_ns=exact_t0_ns,
+                dt=_raw_exact_dt(raw, channel) * u.ns,
+                unit=unit,
+                name=channel,
+            )
 
         t0 = 0
         if raw.info["meas_date"]:

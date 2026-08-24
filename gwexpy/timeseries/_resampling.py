@@ -608,7 +608,17 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
             self._check_regular("Signal processing resample")
             from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
-            return BaseTimeSeries.resample(self, rate, *args, **kwargs)
+            result = BaseTimeSeries.resample(self, rate, *args, **kwargs)
+            exact_t0_ns = getattr(self, "_gwex_t0_gps_ns", None)
+            if exact_t0_ns is not None:
+                from ._epoch import _integral_dt_gps_ns
+
+                result._gwex_t0_gps_ns = exact_t0_ns
+                try:
+                    result._gwex_dt_gps_ns = _integral_dt_gps_ns(result.dt)
+                except (TypeError, ValueError):
+                    result.__dict__.pop("_gwex_dt_gps_ns", None)
+            return result
 
     # ===============================
     # _resample_time_bin - Internal

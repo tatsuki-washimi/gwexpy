@@ -13,11 +13,11 @@ This module integrates all Mixins into a single TimeSeries class.
 
 from __future__ import annotations
 
-from fractions import Fraction
 from operator import index
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, SupportsIndex
+from typing import TYPE_CHECKING, Any, Literal, SupportsIndex
 
+import numpy as np
 from astropy import units as u
 from numpy.typing import ArrayLike
 
@@ -29,6 +29,7 @@ from ._analysis import TimeSeriesAnalysisMixin
 
 # Import Core Base
 from ._core import TimeSeriesCore
+from ._epoch import _integer_gps_ns, _integral_dt_gps_ns
 from ._gwf_io import (
     _GWF_BACKENDS,
     _extract_gwf_read_args,
@@ -243,6 +244,12 @@ class TimeSeries(
 
     def _get_meta_for_constructor(self) -> dict[str, Any]:
         """Reconstruct the object for SignalAnalysisMixin."""
+        exact_t0_ns = getattr(self, "_gwex_t0_gps_ns", None)
+        if exact_t0_ns is not None:
+            return {
+                "t0_ns": exact_t0_ns,
+                "dt": self.dt,
+            }
         return {
             "t0": self.t0,
             "dt": self.dt,
@@ -262,6 +269,8 @@ class TimeSeries(
 
         exact_t0_ns: int | None = None
         if t0_ns is not None:
+            if isinstance(t0_ns, (bool, np.bool_)):
+                raise TypeError("t0_ns must be an integer number of GPS nanoseconds")
             try:
                 exact_t0_ns = index(t0_ns)
             except TypeError as exc:
@@ -348,6 +357,14 @@ class TimeSeries(
         new = super().__new__(cls, data, *args, **kwargs)
         if exact_t0_ns is not None:
             new._gwex_t0_gps_ns = exact_t0_ns
+            dt_source = kwargs.get("dt", 1.0)
+            try:
+                new._gwex_dt_gps_ns = _integral_dt_gps_ns(dt_source)
+            except (TypeError, ValueError):
+                # Construction remains compatible for non-integral sampling
+                # periods; operations requiring an exact derived epoch fail
+                # closed when they encounter one.
+                pass
         return new
 
     @property
@@ -368,32 +385,95 @@ class TimeSeries(
         value = self.t0.to_value(u.s) if hasattr(self.t0, "to_value") else self.t0
         return LIGOTimeGPS(float(value)).ns()
 
+    @property
+    def t0(self) -> Any:
+        """GWpy-compatible epoch view, synchronized with exact metadata."""
+        from gwpy.timeseries import TimeSeries as BaseTimeSeries
+
+        return BaseTimeSeries.t0.__get__(self, type(self))
+
+    @t0.setter
+    def t0(self, value: Any) -> None:
+        self._set_exact_epoch(value, alias="t0")
+
+    @t0.deleter
+    def t0(self) -> None:
+        from gwpy.timeseries import TimeSeries as BaseTimeSeries
+
+        BaseTimeSeries.t0.__delete__(self)
+        self.__dict__.pop("_gwex_t0_gps_ns", None)
+
+    @property
+    def x0(self) -> Any:
+        """GWpy-compatible axis-origin alias, synchronized with ``t0_ns``."""
+        from gwpy.timeseries import TimeSeries as BaseTimeSeries
+
+        return BaseTimeSeries.x0.__get__(self, type(self))
+
+    @x0.setter
+    def x0(self, value: Any) -> None:
+        self._set_exact_epoch(value, alias="x0")
+
+    @x0.deleter
+    def x0(self) -> None:
+        from gwpy.timeseries import TimeSeries as BaseTimeSeries
+
+        BaseTimeSeries.x0.__delete__(self)
+        self.__dict__.pop("_gwex_t0_gps_ns", None)
+
+    def _set_exact_epoch(self, value: Any, *, alias: str) -> None:
+        """Set a GWpy epoch alias without desynchronizing exact authority."""
+        from gwpy.timeseries import TimeSeries as BaseTimeSeries
+
+        exact_t0_ns = getattr(self, "_gwex_t0_gps_ns", None)
+        if exact_t0_ns is not None:
+            new_t0_ns = _integer_gps_ns(value)
+        else:
+            new_t0_ns = None
+
+        if alias == "t0":
+            BaseTimeSeries.t0.__set__(self, value)
+        else:
+            BaseTimeSeries.x0.__set__(self, value)
+        if new_t0_ns is not None:
+            self._gwex_t0_gps_ns = new_t0_ns
+
+    def copy(self, order: Literal["C", "F", "A", "K"] = "C") -> TimeSeries:
+        """Copy this series without reconstructing its exact epoch from ``t0``."""
+        from gwpy.timeseries import TimeSeries as BaseTimeSeries
+
+        result = BaseTimeSeries.copy(self, order=order)
+        exact_t0_ns = getattr(self, "_gwex_t0_gps_ns", None)
+        if exact_t0_ns is not None:
+            result._gwex_t0_gps_ns = exact_t0_ns
+        exact_dt_ns = getattr(self, "_gwex_dt_gps_ns", None)
+        if exact_dt_ns is not None:
+            result._gwex_dt_gps_ns = exact_dt_ns
+        return result
+
     def __getitem__(self, item: Any) -> Any:
         """Preserve an exact epoch authority when a regular slice advances it."""
         result = super().__getitem__(item)
         exact = getattr(self, "_gwex_t0_gps_ns", None)
+        slice_item = item[0] if isinstance(item, tuple) and len(item) == 1 else item
         if (
             exact is None
-            or not isinstance(item, slice)
+            or not isinstance(slice_item, slice)
             or not isinstance(result, type(self))
         ):
             return result
 
         try:
-            # Convert through the decimal representation of seconds, rather
-            # than Astropy's float unit factor (which can turn exactly 1 s
-            # into 999999999.9999999 ns).
-            dt_ns_fraction = Fraction(str(self.dt.to_value(u.s))) * 1_000_000_000
-            if dt_ns_fraction.denominator != 1:
-                raise ValueError
-            dt_ns = dt_ns_fraction.numerator
+            dt_ns = getattr(self, "_gwex_dt_gps_ns", None)
+            if dt_ns is None:
+                dt_ns = _integral_dt_gps_ns(self.dt)
         except (AttributeError, TypeError, ValueError, OverflowError) as exc:
             raise ValueError(
                 "cannot preserve t0_gps_ns through a slice whose dt is not "
                 "an integer number of nanoseconds"
             ) from exc
 
-        start, _, _ = item.indices(len(self))
+        start, _, _ = slice_item.indices(len(self))
         result._gwex_t0_gps_ns = int(exact) + start * dt_ns
         return result
 

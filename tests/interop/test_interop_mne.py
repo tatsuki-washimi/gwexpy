@@ -200,6 +200,12 @@ class TestFromMneRaw:
         assert raw.first_samp == 3
         assert tsd["ch0"].t0_gps_ns == epoch_ns + 3_000
 
+    def test_exact_epoch_rejects_nonintegral_mne_sample_interval(self):
+        with pytest.raises(ValueError, match="integral source sample interval"):
+            to_mne_rawarray(
+                TimeSeries(np.ones(8), t0_ns=0, dt=(1 / 3) * u.ns, name="ch0")
+            )
+
     def test_timeseries_from_mne_preserves_an_exact_epoch(self):
         epoch_ns = 1_234_567_890_123_456_789
         raw = to_mne_rawarray(
@@ -209,6 +215,85 @@ class TestFromMneRaw:
         restored = TimeSeries.from_mne(raw, channel="ch0")
 
         assert restored.t0_gps_ns == epoch_ns
+
+    @pytest.mark.parametrize("dt_ns", [3, 7, 100, 1000, 1_000_000])
+    def test_exact_mne_roundtrip_preserves_source_sample_interval(self, dt_ns):
+        epoch_ns = 1_234_567_890_123_456_789
+        raw = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=epoch_ns, dt=dt_ns * u.ns, name="ch0")
+        )
+
+        single = TimeSeries.from_mne(raw, channel="ch0")
+        mapping = from_mne_raw(TimeSeriesDict, raw)["ch0"]
+
+        for restored in (single, mapping):
+            assert restored._gwex_dt_gps_ns == dt_ns
+            assert restored[1:].t0_gps_ns == epoch_ns + dt_ns
+
+    @pytest.mark.parametrize("dt", [3e-9, 7e-9, 100e-9, 1000e-9, 1e-3])
+    def test_exact_epoch_crop_uses_source_sample_interval(self, dt):
+        epoch_ns = 1_234_567_890_123_456_789
+        expected_offset_ns = int(round(dt * 1e9))
+        raw = to_mne_rawarray(TimeSeries(np.ones(8), t0_ns=epoch_ns, dt=dt, name="ch0"))
+
+        raw.crop(tmin=dt)
+        restored = from_mne_raw(TimeSeriesDict, raw)
+
+        assert raw.first_samp == 1
+        assert restored["ch0"].t0_gps_ns == epoch_ns + expected_offset_ns
+
+    def test_add_channels_rejects_mismatched_exact_epochs_atomically(self):
+        epoch_ns = 1_234_567_890_123_456_789
+        raw = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=epoch_ns, dt=0.01, name="ch0")
+        )
+        later = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=epoch_ns + 1, dt=0.01, name="ch1")
+        )
+
+        with pytest.raises(ValueError, match="mismatched exact GPS epochs"):
+            raw.add_channels([later])
+
+        assert raw.ch_names == ["ch0"]
+        assert raw._gwex_t0_gps_ns == epoch_ns
+
+    def test_add_channels_preserves_matching_exact_channel_epochs(self):
+        epoch_ns = 1_234_567_890_123_456_789
+        raw = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=epoch_ns, dt=7e-9, name="ch0")
+        )
+        matching = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=epoch_ns, dt=7e-9, name="ch1")
+        )
+
+        raw.add_channels([matching])
+        restored = from_mne_raw(TimeSeriesDict, raw)
+
+        assert {series.t0_gps_ns for series in restored.values()} == {epoch_ns}
+
+    def test_exact_raw_rejects_mutated_official_meas_date(self):
+        raw = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=1_234_567_890_123_456_789, dt=0.01)
+        )
+        raw.set_meas_date(datetime.datetime(2020, 1, 1, tzinfo=datetime.UTC))
+
+        with pytest.raises(ValueError, match="conflicts with exact GPS metadata"):
+            from_mne_raw(TimeSeriesDict, raw)
+
+    @pytest.mark.parametrize("invalid", [1.0, "1"])
+    def test_timeseries_from_mne_rejects_noninteger_private_epoch(self, invalid):
+        raw = to_mne_rawarray(TimeSeries(np.ones(8), t0_ns=0, dt=0.01))
+        raw._gwex_t0_gps_ns = invalid
+
+        with pytest.raises(TypeError, match="exact GPS metadata"):
+            TimeSeries.from_mne(raw, channel="ch0")
+
+    def test_timeseries_from_mne_rejects_conflicting_private_epoch_metadata(self):
+        raw = to_mne_rawarray(TimeSeries(np.ones(8), t0_ns=0, dt=0.01))
+        raw._gwex_channel_t0_gps_ns = {"ch0": 1}
+
+        with pytest.raises(ValueError, match="conflicting exact GPS metadata"):
+            TimeSeries.from_mne(raw, channel="ch0")
 
 
 class TestMeasDateContract:
@@ -312,6 +397,25 @@ class TestMeasDateContract:
 
         with pytest.raises(ValueError, match="mismatched epoch"):
             to_mne_rawarray(tsd)
+
+    def test_differing_length_exact_channels_keep_their_common_epoch(self):
+        epoch_ns = 1_234_567_890_123_456_789
+        tsd = TimeSeriesDict(
+            {
+                "ch1": TimeSeries(np.ones(8), t0_ns=epoch_ns, dt=0.01, name="ch1"),
+                "ch2": TimeSeries(np.zeros(10), t0_ns=epoch_ns, dt=0.01, name="ch2"),
+            }
+        )
+
+        raw = to_mne_rawarray(tsd)
+        restored = from_mne_raw(TimeSeriesDict, raw)
+        matrix = tsd.to_matrix()
+
+        assert raw._gwex_t0_gps_ns == epoch_ns
+        assert matrix._gwex_t0_gps_ns == epoch_ns
+        assert matrix._gwex_dt_gps_ns == 10_000_000
+        assert {series.t0_gps_ns for series in restored.values()} == {epoch_ns}
+        assert {series._gwex_dt_gps_ns for series in restored.values()} == {10_000_000}
 
     def test_leap_second_t0_raises(self):
         """A t0 landing exactly on the 2016-12-31 leap second is rejected
