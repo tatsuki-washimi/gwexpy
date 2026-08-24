@@ -28,6 +28,14 @@ def test_median_bias_matches_allen_findchirp_oracle(n, expected):
     assert median_bias(n) == pytest.approx(expected, rel=1e-15, abs=1e-15)
 
 
+@pytest.mark.parametrize("n", [np.int8(3), np.int64(50), np.uint8(3), np.uint64(50)])
+def test_median_bias_accepts_positive_numpy_integer_input(n):
+    """Accept signed and unsigned NumPy integer segment counts."""
+    assert median_bias(n) == pytest.approx(
+        ALLEN_MEDIAN_BIAS[int(n)], rel=1e-15, abs=1e-15
+    )
+
+
 @pytest.mark.parametrize("n", ALLEN_MEDIAN_BIAS)
 def test_median_bias_matches_lal_oracle_when_available(n):
     """Agree with the official LAL implementation when LAL is installed."""
