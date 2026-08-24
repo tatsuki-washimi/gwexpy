@@ -74,6 +74,17 @@ class Operand(str, Enum):
     SPECTROGRAM_COLUMN_REDUCED_SLICE = "spectrogram_column_reduced_slice"
     SPECTROGRAM_BATCH_SLICE = "spectrogram_batch_slice"
     SPECTROGRAM_BATCH_SLICE_FULL = "spectrogram_batch_slice_full_rank"
+    SPECTROGRAM_BATCH_SCALAR_FIRST = "spectrogram_batch_scalar_first"
+    SPECTROGRAM_BATCH_SCALAR_LAST = "spectrogram_batch_scalar_last"
+    SPECTROGRAM_CELL_SCALAR_POSITIVE = "spectrogram_cell_scalar_positive"
+    SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW = "spectrogram_cell_scalar_negative_row"
+    SPECTROGRAM_CELL_SCALAR_NEGATIVE_COLUMN = "spectrogram_cell_scalar_negative_column"
+    SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW_COLUMN = (
+        "spectrogram_cell_scalar_negative_row_column"
+    )
+    SAMPLE_INDEX_FIRST = "sample_index_first"
+    SAMPLE_INDEX_LAST_NEGATIVE = "sample_index_last_negative"
+    SAMPLE_INDEX_LAST_POSITIVE = "sample_index_last_positive"
 
 
 class ResultExpectation(str, Enum):
@@ -83,6 +94,7 @@ class ResultExpectation(str, Enum):
     NUMPY_DTYPE = "numpy.dtype"
     NUMPY_ARRAY = "numpy.ndarray"
     VALUES_ARRAY = "numpy.ndarray-compatible values"
+    SERIES = "concrete scalar series class"
     MATRIX = "same concrete matrix class"
     BOOL_MATRIX = "same concrete matrix class with numpy.bool_ values"
     ITERATION = "iterator of concrete matrix row views"
@@ -116,6 +128,7 @@ class MetadataExpectation(str, Enum):
     DEEP_COPY_CELLS_ROWS_COLUMNS = (
         "deep-independent cells, rows, columns, names, and channels"
     )
+    SCALAR_SERIES_CELL = "preserve selected scalar cell metadata and attrs"
     INPLACE_PRESERVE = "preserve in-place metadata"
     ITERATION_ROWS = "preserve row element metadata and labels"
 
@@ -141,6 +154,8 @@ class ValueExpectation(str, Enum):
     SPECTROGRAM_ROW_REDUCED_SLICE_EXACT = "exact row-reduced spectrogram values"
     SPECTROGRAM_COLUMN_REDUCED_SLICE_EXACT = "exact column-reduced spectrogram values"
     SPECTROGRAM_BATCH_SLICE_EXACT = "exact batch-sliced spectrogram values"
+    SPECTROGRAM_SCALAR_EXACT = "exact scalar spectrogram values"
+    SAMPLE_INDEX_EXACT = "exact integer-selected sample values"
     ASSIGNMENT_ZERO = "assignment writes exact zeros"
     ITERATION_ROWS_EXACT = "iteration yields exact row values"
     COPY_EXACT = "copy preserves exact values"
@@ -178,6 +193,7 @@ class NameExpectation(str, Enum):
     IMAG_SUFFIX = "append .imag to matrix name"
     TRANSPOSE_SUFFIX = "append .T to matrix name"
     ROW_ELEMENT_EMPTY = "row element has an empty matrix name"
+    CELL_NAME = "preserve selected cell name"
 
 
 class EpochExpectation(str, Enum):
@@ -233,6 +249,15 @@ _BINARY_OPERANDS: Final[tuple[Operand, ...]] = tuple(
         Operand.SPECTROGRAM_COLUMN_REDUCED_SLICE,
         Operand.SPECTROGRAM_BATCH_SLICE,
         Operand.SPECTROGRAM_BATCH_SLICE_FULL,
+        Operand.SPECTROGRAM_BATCH_SCALAR_FIRST,
+        Operand.SPECTROGRAM_BATCH_SCALAR_LAST,
+        Operand.SPECTROGRAM_CELL_SCALAR_POSITIVE,
+        Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW,
+        Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_COLUMN,
+        Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW_COLUMN,
+        Operand.SAMPLE_INDEX_FIRST,
+        Operand.SAMPLE_INDEX_LAST_NEGATIVE,
+        Operand.SAMPLE_INDEX_LAST_POSITIVE,
         Operand.SPECTROGRAM_COLUMN_SLICE,
     }
 )
@@ -613,6 +638,29 @@ def _structure_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
                 value_expectation=ValueExpectation.SPECTROGRAM_BATCH_SLICE_EXACT,
                 attrs_expectation=AttrsExpectation.DEEP_COPY,
             ),
+            *(
+                _result(
+                    family,
+                    "scalar_selection",
+                    operand,
+                    surface=Surface.STRUCTURE,
+                    expected_result=ResultExpectation.SERIES,
+                    unit_expectation=UnitExpectation.PRESERVE_CELL_UNITS,
+                    metadata_expectation=MetadataExpectation.SCALAR_SERIES_CELL,
+                    axis_expectation=AxisExpectation.PRESERVE_SPECTROGRAM_AXES,
+                    value_expectation=ValueExpectation.SPECTROGRAM_SCALAR_EXACT,
+                    name_expectation=NameExpectation.CELL_NAME,
+                    attrs_expectation=AttrsExpectation.DEEP_COPY,
+                )
+                for operand in (
+                    Operand.SPECTROGRAM_BATCH_SCALAR_FIRST,
+                    Operand.SPECTROGRAM_BATCH_SCALAR_LAST,
+                    Operand.SPECTROGRAM_CELL_SCALAR_POSITIVE,
+                    Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW,
+                    Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_COLUMN,
+                    Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW_COLUMN,
+                )
+            ),
         ]
         cells.append(
             _error(
@@ -633,8 +681,7 @@ def _structure_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
             )
         )
     else:
-        cells.insert(
-            3,
+        cells[3:3] = [
             _result(
                 family,
                 "slicing",
@@ -647,7 +694,26 @@ def _structure_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
                 value_expectation=ValueExpectation.SLICE_EXACT,
                 attrs_expectation=AttrsExpectation.DEEP_COPY,
             ),
-        )
+            *(
+                _result(
+                    family,
+                    "sample_selection",
+                    operand,
+                    surface=Surface.STRUCTURE,
+                    expected_result=ResultExpectation.MATRIX,
+                    unit_expectation=UnitExpectation.PRESERVE_CELL_UNITS,
+                    metadata_expectation=MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS,
+                    axis_expectation=AxisExpectation.SLICE_SAMPLE_AXIS,
+                    value_expectation=ValueExpectation.SAMPLE_INDEX_EXACT,
+                    attrs_expectation=AttrsExpectation.DEEP_COPY,
+                )
+                for operand in (
+                    Operand.SAMPLE_INDEX_FIRST,
+                    Operand.SAMPLE_INDEX_LAST_NEGATIVE,
+                    Operand.SAMPLE_INDEX_LAST_POSITIVE,
+                )
+            ),
+        ]
         cells.append(
             _result(
                 family,
@@ -1265,7 +1331,7 @@ def _build_manifest() -> tuple[ContractCell, ...]:
 
 
 B0_CONTRACT: Final[tuple[ContractCell, ...]] = _build_manifest()
-EXPECTED_B0_CELL_COUNT: Final[int] = 460
+EXPECTED_B0_CELL_COUNT: Final[int] = 472
 assert len(B0_CONTRACT) == EXPECTED_B0_CELL_COUNT
 
 

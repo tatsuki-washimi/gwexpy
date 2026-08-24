@@ -9,7 +9,9 @@ subsequent 453-cell candidate was superseded after review found missing
 supported SpectrogramMatrix slice and axis/epoch independence coverage.  The
 later 454-cell candidate was superseded after review found incomplete
 equivalent-selector and 3-D batch-slice coverage.  The current executable B0
-ledger contains exactly 460 cells; this historical
+ledger's later 460-cell candidate was superseded after review found missing
+scalar Spectrogram epoch and negative integer sample-index coverage.  The
+current executable B0 ledger contains exactly 472 cells; this historical
 benchmark capture does not validate the semantics of any rejected candidate
 or measure the later contract fixes.
 

@@ -959,15 +959,21 @@ class SpectrogramMatrix(  # type: ignore[misc]
                     "SpectrogramMatrix scalar structural selection must produce "
                     "a two-dimensional Spectrogram"
                 )
-            return self.series_class(
+            result = self.series_class(
                 raw_data,
                 times=self._resupplied_frequencies(self.times),
                 frequencies=self._resupplied_frequencies(self.frequencies),
                 unit=metadata.unit if metadata else self.unit,
                 name=metadata.name if metadata and metadata.name else self.name,
                 channel=metadata.channel if metadata else None,
-                epoch=getattr(self, "epoch", None),
             )
+            # With explicit times, GWpy derives epoch from the time axis;
+            # passing ``epoch``/``t0`` separately is ignored and can make the
+            # two public time authorities disagree.  The copied axis is the
+            # authority, so a physically coherent matrix keeps its epoch
+            # without shifting either axis.
+            result.attrs = deepcopy(getattr(self, "attrs", {}))
+            return result
 
         def copied_metadata(cells, row_keys, col_keys):
             source_cells = np.empty((len(cells), len(cells[0])), dtype=object)

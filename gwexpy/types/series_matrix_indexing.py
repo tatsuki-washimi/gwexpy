@@ -105,6 +105,21 @@ def _copy_metadata_cells_independently(
     )
 
 
+def _normalise_integer_sample_index(selector: Any, sample_count: int) -> Any:
+    """Normalize one integer sample selector with ordinary Python semantics."""
+    if not isinstance(selector, (int, np.integer)):
+        return selector
+    position = int(selector)
+    if position < 0:
+        position += sample_count
+    if position < 0 or position >= sample_count:
+        raise IndexError(
+            f"SeriesMatrix sample index {selector} is out of bounds for "
+            f"an axis with size {sample_count}"
+        )
+    return position
+
+
 class SeriesMatrixIndexingMixin:
     """Mixin for SeriesMatrix indexing and slicing operations."""
 
@@ -149,6 +164,8 @@ class SeriesMatrixIndexingMixin:
         # 1. Expand key to full 3D coordinates
         expanded_key = _expand_key(key, 3)
         r, c, s = expanded_key
+        integer_sample_selector = isinstance(s, (int, np.integer))
+        s = _normalise_integer_sample_index(s, self.shape[-1])
 
         # 2. Check if we are selecting a single cell (row key and col key are scalars)
         is_scalar_r = isinstance(r, (int, np.integer, str))
@@ -274,6 +291,8 @@ class SeriesMatrixIndexingMixin:
         result.cols = deepcopy(new_cols)
         result.xindex = new_xindex
         result.attrs = deepcopy(getattr(self, "attrs", {}))
+        if integer_sample_selector:
+            result.name = getattr(self, "name", "")
 
         return result
 

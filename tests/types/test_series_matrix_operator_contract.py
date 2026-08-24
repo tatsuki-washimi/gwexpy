@@ -24,7 +24,7 @@ from astropy import units as u
 from astropy.units import UnitConversionError
 
 from gwexpy.frequencyseries import FrequencySeriesMatrix
-from gwexpy.spectrogram import SpectrogramMatrix
+from gwexpy.spectrogram import Spectrogram, SpectrogramMatrix
 from gwexpy.timeseries import TimeSeriesMatrix
 from gwexpy.types.metadata import MetaData, MetaDataMatrix
 from gwexpy.types.seriesmatrix import SeriesMatrix
@@ -111,7 +111,7 @@ def _slicing_spectrogram_matrix(*, three_dimensional=False):
         )
         matrix = SpectrogramMatrix(
             np.arange(8, dtype=float).reshape(2, 2, 2),
-            times=np.array([10.0, 11.0]) * u.s,
+            times=np.array([1234567890.25, 1234567891.25]) * u.s,
             frequencies=np.array([20.0, 21.0]) * u.Hz,
             meta=metadata,
             rows={
@@ -124,7 +124,7 @@ def _slicing_spectrogram_matrix(*, three_dimensional=False):
         )
     else:
         matrix = make_spectrogram_matrix()
-        matrix.times = np.array([10.0, 11.0]) * u.s
+        matrix.times = np.array([1234567890.25, 1234567891.25]) * u.s
         matrix.frequencies = np.array([20.0, 21.0]) * u.Hz
         matrix.epoch = 1234567890.25
         matrix.name = "four-dimensional-slice"
@@ -330,6 +330,97 @@ def test_series_sample_slice_breaks_shared_metadata_payload_aliases(series_facto
     result.meta[0, 0]["shared"]["nested"]["owner"] = "result"
     assert source.meta[0, 0]["shared"]["nested"]["owner"] == "source"
     assert result.meta[0, 1]["shared"]["nested"]["owner"] == "source"
+
+
+@pytest.mark.parametrize(
+    ("three_dimensional", "selector", "source_index"),
+    [
+        (True, 0, (0, 0)),
+        (True, -1, (1, 0)),
+        (False, (0, 1), (0, 1)),
+        (False, (-1, 1), (1, 1)),
+        (False, (0, -1), (0, 1)),
+        (False, (-1, -1), (1, 1)),
+    ],
+    ids=[
+        "3d-positive",
+        "3d-negative",
+        "4d-positive",
+        "4d-negative-row",
+        "4d-negative-column",
+        "4d-negative-row-column",
+    ],
+)
+def test_spectrogram_scalar_structural_selection_preserves_epoch_and_axes(
+    three_dimensional, selector, source_index
+):
+    """Scalar structural selection keeps epoch despite explicit time samples."""
+    source = _slicing_spectrogram_matrix(three_dimensional=three_dimensional)
+    result = source[selector]
+
+    assert type(result) is Spectrogram
+    result_epoch = result.epoch.gps if hasattr(result.epoch, "gps") else result.epoch
+    source_epoch = source.epoch.gps if hasattr(source.epoch, "gps") else source.epoch
+    assert result_epoch == source_epoch
+    assert result.unit == source.meta[source_index].unit
+    assert result.name == source.meta[source_index].name
+    assert result.channel == source.meta[source_index].channel
+    np.testing.assert_array_equal(
+        np.asarray(result),
+        np.asarray(source)[selector if three_dimensional else source_index],
+    )
+    assert result.times is not source.times
+    assert result.frequencies is not source.frequencies
+    source_times = source.times.copy()
+    source_frequencies = source.frequencies.copy()
+    result.times[0] = result.times[0] + 1 * u.s
+    result.frequencies[0] = result.frequencies[0] + 1 * u.Hz
+    np.testing.assert_array_equal(source.times, source_times)
+    np.testing.assert_array_equal(source.frequencies, source_frequencies)
+    assert result.attrs is not source.attrs
+    assert result.attrs == source.attrs
+
+
+@pytest.mark.parametrize(
+    "series_factory", [make_timeseries_matrix, make_frequencyseries_matrix]
+)
+@pytest.mark.parametrize(
+    "sample_index", [0, -1, 3], ids=["first", "negative-last", "positive-last"]
+)
+def test_series_integer_sample_selection_normalizes_negative_indices(
+    series_factory, sample_index
+):
+    """An integer sample selector returns one sample with its selected axis bin."""
+    source = series_factory()
+    result = source[..., sample_index]
+    normalized = sample_index if sample_index >= 0 else source.shape[-1] + sample_index
+
+    assert type(result) is type(source)
+    assert result.shape == (*source.shape[:2], 1)
+    np.testing.assert_array_equal(
+        np.asarray(result), np.asarray(source)[..., normalized : normalized + 1]
+    )
+    assert result.xindex is not source.xindex
+    np.testing.assert_array_equal(
+        result.xindex, source.xindex[normalized : normalized + 1]
+    )
+    source_axis = source.xindex.copy()
+    result.xindex[0] = result.xindex[0] + 1 * result.xindex.unit
+    np.testing.assert_array_equal(source.xindex, source_axis)
+
+
+@pytest.mark.parametrize(
+    "series_factory", [make_timeseries_matrix, make_frequencyseries_matrix]
+)
+@pytest.mark.parametrize(
+    "sample_index", [-5, 4], ids=["negative-out-of-range", "positive-out-of-range"]
+)
+def test_series_integer_sample_selection_rejects_out_of_range_indices(
+    series_factory, sample_index
+):
+    """Integer sample selection keeps normal Python bounds failures."""
+    with pytest.raises(IndexError):
+        _ = series_factory()[..., sample_index]
 
 
 MATRIX_FACTORIES = {

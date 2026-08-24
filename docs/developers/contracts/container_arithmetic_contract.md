@@ -5,7 +5,7 @@ contract before issue #637.  It does not adopt or implement the #637
 composition redesign.
 
 The executable canonical ledger is the typed `B0_CONTRACT` in
-`tests/types/series_matrix_contract_manifest.py`.  It contains exactly 460
+`tests/types/series_matrix_contract_manifest.py`.  It contains exactly 472
 cells across `TimeSeriesMatrix`, `FrequencySeriesMatrix`, and
 `SpectrogramMatrix`.  The typed adapter in
 `tests/types/test_series_matrix_contract_manifest.py` executes every cell once
@@ -22,9 +22,12 @@ column slice behavior and did not prove independent axes/epoch and sibling
 metadata payloads.  The later 454-cell candidate was superseded after review
 found that it did not freeze equivalent full-rank and dimension-reducing
 SpectrogramMatrix selectors or 3-D batch-slice branches.  The 460-cell ledger
-covers the scalar add/sub and ndarray dimensionality cases, reviewed
-metadata/attrs/exponent categories, and every supported SpectrogramMatrix
-structural slice selector.  `tests/types/test_series_matrix_operator_contract.py`
+was superseded after review found missing scalar Spectrogram extraction epoch
+coverage and SeriesMatrix negative integer sample-index coverage.  The
+472-cell ledger covers the scalar add/sub and ndarray dimensionality cases,
+reviewed metadata/attrs/exponent categories, every supported
+SpectrogramMatrix structural slice selector, scalar extraction, and integer
+sample selection.  `tests/types/test_series_matrix_operator_contract.py`
 retains direct behavioral regressions.  A B1 implementation must update and
 compare this same ledger rather than introducing a second matrix.
 

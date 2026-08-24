@@ -203,12 +203,14 @@ def _matrix(cell: ContractCell):
     if cell.operand in {
         Operand.SPECTROGRAM_BATCH_SLICE,
         Operand.SPECTROGRAM_BATCH_SLICE_FULL,
+        Operand.SPECTROGRAM_BATCH_SCALAR_FIRST,
+        Operand.SPECTROGRAM_BATCH_SCALAR_LAST,
     }:
         metadata = _meta(unit)
         return decorate(
             SpectrogramMatrix(
                 np.arange(8, dtype=float).reshape(2, 2, 2) + 1,
-                times=np.arange(2) * u.s,
+                times=np.array([1234567890.25, 1234567891.25]) * u.s,
                 frequencies=np.arange(2) * u.Hz,
                 meta=MetaDataMatrix(
                     np.array([[metadata[0, 0]], [metadata[1, 0]]], dtype=object),
@@ -221,10 +223,21 @@ def _matrix(cell: ContractCell):
                 epoch=1234567890.25,
             )
         )
+    times = (
+        np.array([1234567890.25, 1234567891.25]) * u.s
+        if cell.operand
+        in {
+            Operand.SPECTROGRAM_CELL_SCALAR_POSITIVE,
+            Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW,
+            Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_COLUMN,
+            Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW_COLUMN,
+        }
+        else np.arange(2) * u.s
+    )
     return decorate(
         SpectrogramMatrix(
             np.arange(16, dtype=float).reshape(2, 2, 2, 2) + 1,
-            times=np.arange(2) * u.s,
+            times=times,
             frequencies=np.arange(2) * u.Hz,
             meta=_meta(unit),
             rows=["r0", "r1"],  # type: ignore[list-item]
@@ -377,8 +390,46 @@ def _operand(cell: ContractCell, matrix):
     raise AssertionError(f"no operand adapter for {cell.operand}")
 
 
+def _scalar_metadata_index(cell: ContractCell, matrix) -> tuple[int, int]:
+    """Return the source metadata cell selected by one scalar B0 operand."""
+    indices = {
+        Operand.SPECTROGRAM_BATCH_SCALAR_FIRST: (0, 0),
+        Operand.SPECTROGRAM_BATCH_SCALAR_LAST: (matrix.meta.shape[0] - 1, 0),
+        Operand.SPECTROGRAM_CELL_SCALAR_POSITIVE: (0, 1),
+        Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW: (matrix.meta.shape[0] - 1, 1),
+        Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_COLUMN: (0, matrix.meta.shape[1] - 1),
+        Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW_COLUMN: (
+            matrix.meta.shape[0] - 1,
+            matrix.meta.shape[1] - 1,
+        ),
+    }
+    return indices[cell.operand]
+
+
+def _epoch_value(value):
+    """Compare a GWpy ``Time`` epoch with matrix numeric epoch storage."""
+    return value.gps if hasattr(value, "gps") else value
+
+
 def _invoke(cell: ContractCell, matrix):
     if cell.surface is Surface.STRUCTURE:
+        if cell.operation == "scalar_selection":
+            selectors = {
+                Operand.SPECTROGRAM_BATCH_SCALAR_FIRST: 0,
+                Operand.SPECTROGRAM_BATCH_SCALAR_LAST: -1,
+                Operand.SPECTROGRAM_CELL_SCALAR_POSITIVE: (0, 1),
+                Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW: (-1, 1),
+                Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_COLUMN: (0, -1),
+                Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW_COLUMN: (-1, -1),
+            }
+            return matrix[selectors[cell.operand]]
+        if cell.operation == "sample_selection":
+            selectors = {
+                Operand.SAMPLE_INDEX_FIRST: 0,
+                Operand.SAMPLE_INDEX_LAST_NEGATIVE: -1,
+                Operand.SAMPLE_INDEX_LAST_POSITIVE: matrix.shape[-1] - 1,
+            }
+            return matrix[..., selectors[cell.operand]]
         operations = {
             "shape": lambda: matrix.shape,
             "dtype": lambda: matrix.dtype,
@@ -822,6 +873,16 @@ def _expected_values(
         return before[:, 0]
     if expected is ValueExpectation.SPECTROGRAM_BATCH_SLICE_EXACT:
         return before[:1]
+    if expected is ValueExpectation.SPECTROGRAM_SCALAR_EXACT:
+        metadata_index = _scalar_metadata_index(cell, matrix)
+        return before[metadata_index[0]] if before.ndim == 3 else before[metadata_index]
+    if expected is ValueExpectation.SAMPLE_INDEX_EXACT:
+        selector = {
+            Operand.SAMPLE_INDEX_FIRST: 0,
+            Operand.SAMPLE_INDEX_LAST_NEGATIVE: matrix.shape[-1] - 1,
+            Operand.SAMPLE_INDEX_LAST_POSITIVE: matrix.shape[-1] - 1,
+        }[cell.operand]
+        return before[..., selector : selector + 1]
     if expected is ValueExpectation.ASSIGNMENT_ZERO:
         return np.zeros_like(before)
     if expected is ValueExpectation.ASTYPE_EXACT:
@@ -873,6 +934,10 @@ def _assert_units(
         UnitExpectation.EXACT_INV_V: 1 / u.V,
     }
     if expectation is UnitExpectation.PRESERVE_CELL_UNITS:
+        if cell.expected_result is ResultExpectation.SERIES:
+            metadata_index = _scalar_metadata_index(cell, matrix)
+            assert result.unit == matrix.meta[metadata_index].unit
+            return
         if cell.operand in {
             Operand.SPECTROGRAM_ROW_SLICE,
             Operand.SPECTROGRAM_ROW_SLICE_FULL,
@@ -904,6 +969,15 @@ def _assert_metadata(cell: ContractCell, matrix, result) -> None:
         MetadataExpectation.NOT_APPLICABLE,
         MetadataExpectation.RAW_ARRAY,
     }:
+        return
+    if expectation is MetadataExpectation.SCALAR_SERIES_CELL:
+        metadata = matrix.meta[_scalar_metadata_index(cell, matrix)]
+        assert result.name == metadata.name
+        assert result.channel == metadata.channel
+        assert result.attrs is not matrix.attrs
+        _assert_deep_equal(result.attrs, matrix.attrs)
+        result.attrs["contract"]["nested"][1]["calibration"].append("scalar-only")
+        assert "scalar-only" not in matrix.attrs["contract"]["nested"][1]["calibration"]
         return
     if expectation is MetadataExpectation.ITERATION_ROWS:
         for index, row in enumerate(result):
@@ -1005,7 +1079,10 @@ def _assert_metadata(cell: ContractCell, matrix, result) -> None:
 
 def _assert_object_metadata(cell: ContractCell, matrix, result) -> None:
     assert cell.epoch_expectation is EpochExpectation.PRESERVE
-    assert result.epoch == matrix.epoch
+    assert _epoch_value(result.epoch) == _epoch_value(matrix.epoch)
+    if cell.name_expectation is NameExpectation.CELL_NAME:
+        assert result.name == matrix.meta[_scalar_metadata_index(cell, matrix)].name
+        return
     name = {
         NameExpectation.PRESERVE: matrix.name,
         NameExpectation.REAL_SUFFIX: f"{matrix.name}.real",
@@ -1054,9 +1131,14 @@ def _assert_axes(cell: ContractCell, matrix, result) -> None:
             target.xindex[0] = target.xindex[0] + 1 * target.xindex.unit
             np.testing.assert_array_equal(matrix.xindex, source_xindex)
     elif expectation is AxisExpectation.SLICE_SAMPLE_AXIS:
+        sample_index = {
+            Operand.SAMPLE_INDEX_FIRST: 0,
+            Operand.SAMPLE_INDEX_LAST_NEGATIVE: len(matrix.xindex) - 1,
+            Operand.SAMPLE_INDEX_LAST_POSITIVE: len(matrix.xindex) - 1,
+        }.get(cell.operand, 0)
         np.testing.assert_array_equal(
             target.xindex.to_value(target.xindex.unit),
-            matrix.xindex.to_value(matrix.xindex.unit)[:1],
+            matrix.xindex.to_value(matrix.xindex.unit)[sample_index : sample_index + 1],
         )
         assert target.xindex is not matrix.xindex
         source_xindex = matrix.xindex.copy()
@@ -1185,13 +1267,19 @@ def _assert_observed_result(
     elif expected is ResultExpectation.ITERATION:
         assert type(result) is list
         _assert_iteration_contract(cell, matrix, result, before_units)
+    elif expected is ResultExpectation.SERIES:
+        assert type(result) is matrix.series_class
     elif expected in {ResultExpectation.MATRIX, ResultExpectation.BOOL_MATRIX}:
         assert type(result) is type(matrix)
         if expected is ResultExpectation.BOOL_MATRIX:
             assert result.dtype == np.dtype(np.bool_)
     else:  # pragma: no cover - EXCEPTION is handled before this function
         raise AssertionError(expected)
-    if expected in {ResultExpectation.MATRIX, ResultExpectation.BOOL_MATRIX}:
+    if expected in {
+        ResultExpectation.MATRIX,
+        ResultExpectation.BOOL_MATRIX,
+        ResultExpectation.SERIES,
+    }:
         _assert_units(cell, matrix, result, before_units)
         _assert_metadata(cell, matrix, result)
         _assert_object_metadata(cell, matrix, result)
@@ -1235,7 +1323,7 @@ def execute_contract_cell(cell: ContractCell) -> ContractObservation:
 
 def test_b0_manifest_has_a_literal_cell_count_and_unique_ids() -> None:
     assert len(B0_CONTRACT) == EXPECTED_B0_CELL_COUNT
-    assert EXPECTED_B0_CELL_COUNT == 460
+    assert EXPECTED_B0_CELL_COUNT == 472
     ids = [cell.id for cell in B0_CONTRACT]
     assert len(ids) == len(set(ids))
 
@@ -1261,6 +1349,33 @@ def test_spectrogram_slice_cells_cover_every_supported_selector_form() -> None:
         cell.metadata_expectation is MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS
         for cell in cells
     )
+
+
+def test_scalar_and_integer_sample_selector_cells_are_complete() -> None:
+    scalar_cells = {
+        cell.operand
+        for cell in B0_CONTRACT
+        if cell.family is MatrixFamily.SPECTROGRAM
+        and cell.operation == "scalar_selection"
+    }
+    assert scalar_cells == {
+        Operand.SPECTROGRAM_BATCH_SCALAR_FIRST,
+        Operand.SPECTROGRAM_BATCH_SCALAR_LAST,
+        Operand.SPECTROGRAM_CELL_SCALAR_POSITIVE,
+        Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW,
+        Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_COLUMN,
+        Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW_COLUMN,
+    }
+    for family in (MatrixFamily.TIME_SERIES, MatrixFamily.FREQUENCY_SERIES):
+        assert {
+            cell.operand
+            for cell in B0_CONTRACT
+            if cell.family is family and cell.operation == "sample_selection"
+        } == {
+            Operand.SAMPLE_INDEX_FIRST,
+            Operand.SAMPLE_INDEX_LAST_NEGATIVE,
+            Operand.SAMPLE_INDEX_LAST_POSITIVE,
+        }
 
 
 def test_b0_manifest_cells_have_typed_complete_expectations() -> None:
