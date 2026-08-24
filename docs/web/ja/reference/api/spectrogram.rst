@@ -19,6 +19,7 @@ v0.2.0 の形式は ``schema="gwexpy.spectrogram.provenance"`` と ``schema_vers
 JSON 安全な値だけを受け付けます。
 乱数生成器のような実行時オブジェクトは受け付けません。
 このマッピングは copy、スライス、Spectrogram を返す算術演算、pickle、明示的な HDF5 往復で保持されます。
+GWpy が ``.h5``、``.hdf``、``.hdf5`` のファイル名から HDF5 を推論する場合も sidecar を保持します。
 HDF5 では GWexpy のファイルレベル sidecar に保存するため、GWpy は本来のデータセットをそのまま読めます。
 
 .. note::

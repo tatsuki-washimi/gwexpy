@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import pickle
 
+import h5py
 import numpy as np
 import pytest
 from gwpy.spectrogram import Spectrogram as GwpySpectrogram
@@ -115,15 +116,50 @@ def test_provenance_survives_pickle_and_hdf5_roundtrips(tmp_path) -> None:
     assert restored.provenance == _provenance()
 
 
-def test_provenance_survives_hdf5_collection_roundtrip(tmp_path) -> None:
+@pytest.mark.parametrize("suffix", [".hdf5", ".h5"])
+def test_provenance_is_written_when_hdf5_format_is_inferred(
+    tmp_path, suffix: str
+) -> None:
     spec = _spectrogram()
     spec.provenance = _provenance()
-    path = tmp_path / "provenance-list.hdf5"
+    path = tmp_path / f"provenance-inferred{suffix}"
 
-    SpectrogramList([spec]).write(path, format="hdf5")
+    spec.write(path)
+
+    with h5py.File(path, "r") as h5file:
+        sidecar = json.loads(h5file.attrs["gwexpy_provenance"])
+    assert sidecar["/provenance"] == _provenance()
+
+
+@pytest.mark.parametrize("suffix", [".hdf5", ".h5"])
+def test_provenance_is_read_when_hdf5_format_is_inferred(tmp_path, suffix: str) -> None:
+    spec = _spectrogram()
+    spec.provenance = _provenance()
+    path = tmp_path / f"provenance-inferred{suffix}"
+    spec.write(path, format="hdf5")
+
+    restored = Spectrogram.read(path)
+
+    assert isinstance(restored, Spectrogram)
+    assert restored.provenance == _provenance()
+
+
+@pytest.mark.parametrize("layout", ["gwpy", "group"])
+def test_provenance_survives_hdf5_collection_roundtrip(tmp_path, layout: str) -> None:
+    spec = _spectrogram()
+    spec.provenance = _provenance()
+    second = _spectrogram()
+    second.provenance = {
+        **_provenance(),
+        "analysis": {"method": "second", "parameters": {}},
+    }
+    path = tmp_path / f"provenance-list-{layout}.hdf5"
+
+    SpectrogramList([spec, second]).write(path, format="hdf5", layout=layout)
     restored = SpectrogramList().read(path, format="hdf5")
 
     assert restored[0].provenance == _provenance()
+    assert restored[1].provenance == second.provenance
 
 
 def test_statistics_publish_consistent_versioned_provenance() -> None:

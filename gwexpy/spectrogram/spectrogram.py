@@ -15,6 +15,8 @@ from gwexpy.types.mixin._plot_mixin import PlotMixin
 
 from .provenance import HDF5_PROVENANCE_ATTRIBUTE, validated_provenance
 
+_HDF5_SUFFIXES = frozenset({".h5", ".hdf", ".hdf5"})
+
 if TYPE_CHECKING:
     from astropy.units import Quantity
 
@@ -122,7 +124,10 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
     def write(self, target: Any, *args: Any, **kwargs: Any) -> Any:
         """Write normally and append validated provenance to HDF5 datasets."""
         result = super().write(target, *args, **kwargs)
-        if kwargs.get("format") == "hdf5" and self.provenance is not None:
+        if (
+            self._is_hdf5_io(target, kwargs.get("format"))
+            and self.provenance is not None
+        ):
             self._write_hdf5_provenance(target, kwargs.get("path"))
         return result
 
@@ -130,7 +135,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
     def read(cls, source: Any, *args: Any, **kwargs: Any) -> Self:
         """Read normally and restore the optional GWexpy HDF5 sidecar."""
         result = super().read(source, *args, **kwargs)
-        if kwargs.get("format") == "hdf5":
+        if cls._is_hdf5_io(source, kwargs.get("format")):
             if isinstance(result, BaseSpectrogram) and not isinstance(result, cls):
                 result = cls(
                     result.value,
@@ -147,6 +152,16 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             if provenance is not None:
                 result.provenance = provenance
         return result
+
+    @staticmethod
+    def _is_hdf5_io(target: Any, format_name: Any) -> bool:
+        """Identify explicit or suffix-inferred HDF5 without consuming kwargs."""
+        if format_name is not None:
+            return format_name == "hdf5"
+        return (
+            isinstance(target, (str, Path))
+            and Path(target).suffix.lower() in _HDF5_SUFFIXES
+        )
 
     def _write_hdf5_provenance(self, target: Any, path: str | None) -> None:
         dataset_path = path or self.name

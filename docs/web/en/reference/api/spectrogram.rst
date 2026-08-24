@@ -20,6 +20,8 @@ results.  Its stable v0.2.0 form has
 Only JSON-safe values are accepted; live objects such as random-number
 generators are rejected.  The mapping is retained by copy, slicing,
 Spectrogram-preserving arithmetic, pickle, and explicit HDF5 round-trips.
+The HDF5 sidecar is also retained when GWpy infers HDF5 from a ``.h5``,
+``.hdf``, or ``.hdf5`` filename.
 HDF5 stores it as a GWexpy file-level sidecar, so the native GWpy dataset
 remains readable by GWpy.
 
