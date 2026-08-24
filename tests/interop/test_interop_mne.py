@@ -293,6 +293,127 @@ class TestFromMneRaw:
 
         assert {series.t0_gps_ns for series in restored.values()} == {epoch_ns}
 
+    def test_cropped_exact_receiver_rejects_same_base_with_different_effective_epoch(
+        self,
+    ):
+        epoch_ns = 1_234_567_890_123_456_789
+        receiver = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=epoch_ns, dt=0.01, name="receiver")
+        )
+        receiver.crop(tmin=0.02)
+        incoming = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=epoch_ns, dt=0.01, name="incoming")
+        )
+        incoming.crop(tmax=0.05)
+
+        with pytest.raises(ValueError, match="mismatched exact GPS epochs"):
+            receiver.add_channels([incoming])
+
+        assert receiver.ch_names == ["receiver"]
+        assert receiver._gwex_channel_t0_gps_ns == {"receiver": epoch_ns}
+
+    def test_add_channels_accepts_equivalent_exact_effective_epochs(self):
+        epoch_ns = 1_234_567_890_123_456_789
+        receiver = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=epoch_ns, dt=0.01, name="receiver")
+        )
+        receiver.crop(tmin=0.02)
+        incoming = to_mne_rawarray(
+            TimeSeries(
+                np.ones(8), t0_ns=epoch_ns + 20_000_000, dt=0.01, name="incoming"
+            )
+        )
+        incoming.crop(tmax=0.05)
+
+        receiver.add_channels([incoming])
+        restored = from_mne_raw(TimeSeriesDict, receiver)
+
+        assert receiver.first_samp == 2
+        assert receiver._gwex_channel_t0_gps_ns == {
+            "receiver": epoch_ns,
+            "incoming": epoch_ns,
+        }
+        assert {series.t0_gps_ns for series in restored.values()} == {
+            epoch_ns + 20_000_000
+        }
+
+    @pytest.mark.parametrize("legacy_first", [True, False])
+    def test_add_channels_preserves_mixed_effective_epochs_across_coordinates(
+        self, legacy_first
+    ):
+        legacy = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0=1_000_000_000, dt=0.01, name="legacy")
+        )
+        legacy.crop(tmin=0.02)
+        exact_epoch_ns = 1_234_567_890_123_456_789
+        exact = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=exact_epoch_ns, dt=0.01, name="exact")
+        )
+        exact.crop(tmax=0.05)
+        receiver, incoming = (legacy, exact) if legacy_first else (exact, legacy)
+
+        receiver.add_channels([incoming])
+        restored = from_mne_raw(TimeSeriesDict, receiver)
+
+        assert restored["exact"].t0_gps_ns == exact_epoch_ns
+        assert restored["legacy"].t0.value == pytest.approx(
+            1_000_000_000.02, rel=0, abs=1e-7
+        )
+
+    def test_legacy_add_channels_rejects_different_effective_epochs_atomically(self):
+        receiver = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0=1_000_000_000, dt=0.01, name="receiver")
+        )
+        receiver.crop(tmin=0.02)
+        incoming = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0=1_000_000_000, dt=0.01, name="incoming")
+        )
+        incoming.crop(tmax=0.05)
+
+        with pytest.raises(ValueError, match="mismatched effective legacy epochs"):
+            receiver.add_channels([incoming])
+
+        assert receiver.ch_names == ["receiver"]
+
+    def test_legacy_add_channels_accepts_equivalent_effective_epochs(self):
+        receiver = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0=1_000_000_000, dt=0.01, name="receiver")
+        )
+        receiver.crop(tmin=0.02)
+        incoming = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0=1_000_000_000.02, dt=0.01, name="incoming")
+        )
+        incoming.crop(tmax=0.05)
+
+        receiver.add_channels([incoming])
+        restored = from_mne_raw(TimeSeriesDict, receiver)
+
+        for series in restored.values():
+            assert series.t0.value == pytest.approx(1_000_000_000.02, rel=0, abs=1e-7)
+
+    @pytest.mark.parametrize("clone_factory", [lambda raw: raw.copy(), copy.deepcopy])
+    def test_copied_cropped_receiver_rebases_exact_metadata(self, clone_factory):
+        epoch_ns = 1_234_567_890_123_456_789
+        original = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=epoch_ns, dt=0.01, name="receiver")
+        )
+        original.crop(tmin=0.02)
+        clone = clone_factory(original)
+        incoming = to_mne_rawarray(
+            TimeSeries(
+                np.ones(8), t0_ns=epoch_ns + 20_000_000, dt=0.01, name="incoming"
+            )
+        )
+        incoming.crop(tmax=0.05)
+
+        clone.add_channels([incoming])
+
+        assert original.ch_names == ["receiver"]
+        assert clone._gwex_channel_t0_gps_ns == {
+            "receiver": epoch_ns,
+            "incoming": epoch_ns,
+        }
+
     @pytest.mark.parametrize("clone_factory", [lambda raw: raw.copy(), copy.deepcopy])
     def test_add_channels_on_raw_clone_isolated_from_original(self, clone_factory):
         epoch_ns = 1_234_567_890_123_456_789
