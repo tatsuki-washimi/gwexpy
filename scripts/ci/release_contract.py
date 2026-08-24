@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import copy
 import json
 import re
@@ -12,6 +13,7 @@ CONTRACT_PATH = Path(__file__).with_name("release_contracts.json")
 CONTRACT_SCHEMA = "gwexpy-release-contracts-v1"
 RELEASE_TAG = re.compile(r"^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
 ARTIFACT_PREFIX = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+PROTECTED_REF = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9._/-]*[A-Za-z0-9])?$")
 CONTRACT_KEYS = {
     "plan_path",
     "review_evidence_path",
@@ -21,6 +23,7 @@ CONTRACT_KEYS = {
     "review_lanes",
     "s_to_r_allowed_paths",
     "artifact_prefix",
+    "protected_refs",
 }
 
 
@@ -59,6 +62,26 @@ def _sorted_unique(values: object) -> bool:
     )
 
 
+def _protected_refs(values: object) -> bool:
+    if (
+        not isinstance(values, list)
+        or len(values) != 2
+        or not all(isinstance(value, str) for value in values)
+    ):
+        return False
+    return (
+        values == sorted(set(values), key=lambda item: item.encode("utf-8"))
+        and "main" in values
+        and all(
+            PROTECTED_REF.fullmatch(value) is not None
+            and not value.startswith("refs/")
+            and ".." not in value
+            and "@{" not in value
+            for value in values
+        )
+    )
+
+
 def _validate_contract(tag: str, contract: object) -> dict[str, Any]:
     if not isinstance(contract, dict) or set(contract) != CONTRACT_KEYS:
         raise ReleaseContractError(f"invalid release contract for {tag}")
@@ -93,6 +116,8 @@ def _validate_contract(tag: str, contract: object) -> dict[str, Any]:
         raise ReleaseContractError(f"S-to-R paths omit the plan for {tag}")
     if contract["review_evidence_path"] not in contract["s_to_r_allowed_paths"]:
         raise ReleaseContractError(f"S-to-R paths omit review evidence for {tag}")
+    if not _protected_refs(contract["protected_refs"]):
+        raise ReleaseContractError(f"invalid protected refs for {tag}")
     return contract
 
 
@@ -130,3 +155,25 @@ def release_contract(tag: str) -> dict[str, Any]:
     except KeyError as exc:
         raise ReleaseContractError(f"unsupported release tag: {tag}") from exc
     return copy.deepcopy(contract)
+
+
+def protected_refs(tag: str) -> list[str]:
+    """Return the validated protected branch names for an exact release tag."""
+    return list(release_contract(tag)["protected_refs"])
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Print exact-tag protected refs for workflow consumption."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--protected-ref", metavar="EXPECTED_TAG", required=True)
+    args = parser.parse_args(argv)
+    try:
+        print(*protected_refs(args.protected_ref), sep="\n")
+    except ReleaseContractError as exc:
+        print(f"release contract failed: {exc}")
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

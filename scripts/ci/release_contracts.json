@@ -43,7 +43,11 @@
         "docs/developers/plans/manifests/audit-manifest-v0.1.13-sol-followup.yaml",
         "docs/plans/2026-08-06-v0.1.13-sol-no-go-followup-plan.md"
       ],
-      "artifact_prefix": "v0113-integration-evidence"
+      "artifact_prefix": "v0113-integration-evidence",
+      "protected_refs": [
+        "main",
+        "maint/0.1"
+      ]
     },
     "v0.1.14": {
       "plan_path": "docs/plans/2026-08-08-v0114-release-plan.md",
@@ -111,7 +115,38 @@
         "docs/developers/plans/manifests/audit-manifest-v0.1.14-release-readiness.yaml",
         "docs/plans/2026-08-08-v0114-release-plan.md"
       ],
-      "artifact_prefix": "v0114-integration-evidence"
+      "artifact_prefix": "v0114-integration-evidence",
+      "protected_refs": [
+        "main",
+        "maint/0.1"
+      ]
+    },
+    "v0.2.0": {
+      "plan_path": "docs/plans/2026-08-15-v020-roadmap-canonicalization.md",
+      "review_evidence_path": "docs/developers/plans/manifests/audit-manifest-v020-release-readiness.yaml",
+      "review_evidence_schema": "gwexpy-v020-review-evidence-v1",
+      "payload_schema": "gwexpy-v020-release-payload-v1",
+      "integration_evidence_schema": "gwexpy-v020-integration-evidence-v1",
+      "review_lanes": {
+        "release-security": [
+          ".github/workflows",
+          "RELEASING.md",
+          "scripts/ci",
+          "scripts/validate_release.py",
+          "tests/test_publish_release_workflow.py",
+          "tests/test_release_contracts.py",
+          "tests/test_validate_release_script.py"
+        ]
+      },
+      "s_to_r_allowed_paths": [
+        "docs/developers/plans/manifests/audit-manifest-v020-release-readiness.yaml",
+        "docs/plans/2026-08-15-v020-roadmap-canonicalization.md"
+      ],
+      "artifact_prefix": "v020-integration-evidence",
+      "protected_refs": [
+        "main",
+        "maint/0.2"
+      ]
     }
   }
 }

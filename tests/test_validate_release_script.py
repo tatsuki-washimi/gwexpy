@@ -40,7 +40,7 @@ def make_repo(
     *,
     version: str = "0.1.13",
     date: str = "2026-07-30",
-    maintenance_branch: bool = True,
+    maintenance_branch: str | None = "maint/0.1",
 ) -> Path:
     repo = tmp_path / "release-repo"
     repo.mkdir(parents=True)
@@ -60,8 +60,8 @@ def make_repo(
     (repo / "CHANGELOG.md").write_text(f"## [{version}] - {date}\n", encoding="utf-8")
     git(repo, "add", ".")
     git(repo, "commit", "-m", "release candidate")
-    if maintenance_branch:
-        git(repo, "branch", "maint/0.1")
+    if maintenance_branch is not None:
+        git(repo, "branch", maintenance_branch)
     return repo
 
 
@@ -125,7 +125,7 @@ def test_strict_mode_rejects_tagger_date_mismatch_and_missing_maintenance_branch
         validator.validate_release(repo, "v0.1.13", "v0.1.13")
 
     repo = make_repo(
-        tmp_path / "maintenance", version="0.1.13", maintenance_branch=False
+        tmp_path / "maintenance", version="0.1.13", maintenance_branch=None
     )
     tag_annotated(repo, "v0.1.13")
     with pytest.raises(validator.ReleaseValidationError, match="maint/0.1"):
@@ -197,6 +197,31 @@ def test_frozen_tip_requires_both_fetched_remote_branches_at_source_sha(tmp_path
     git(repo, "update-ref", "refs/remotes/origin/main", moved_sha)
     with pytest.raises(validator.ReleaseValidationError, match="origin/main"):
         validator.validate_frozen_tip(repo, source_sha)
+
+
+def test_v020_requires_its_exact_contract_protected_refs(tmp_path: Path):
+    validator = load_validator()
+    repo = make_repo(
+        tmp_path,
+        version="0.2.0",
+        maintenance_branch="maint/0.2",
+    )
+    source_sha = git(repo, "rev-parse", "HEAD")
+    git(repo, "update-ref", "refs/remotes/origin/main", source_sha)
+    git(repo, "update-ref", "refs/remotes/origin/maint/0.2", source_sha)
+
+    result = validator.validate_release(
+        repo,
+        source_sha,
+        "v0.2.0",
+        frozen_tip=True,
+        review_evidence=None,
+    )
+
+    assert result.version == "0.2.0"
+    git(repo, "update-ref", "-d", "refs/remotes/origin/maint/0.2")
+    with pytest.raises(validator.ReleaseValidationError, match="origin/maint/0.2"):
+        validator.validate_frozen_tip(repo, source_sha, expected_tag="v0.2.0")
 
 
 def test_release_validation_rejects_missing_review_evidence(tmp_path: Path):

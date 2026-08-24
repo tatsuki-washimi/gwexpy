@@ -11,7 +11,7 @@ gh workflow run publish-release.yml --ref main \
 ```
 
 The accepted tag-specific plan, evidence schema/path, review lanes, S-to-R
-paths, payload/integration schemas, and artifact prefix are defined only in
+paths, payload/integration schemas, artifact prefix, and protected refs are defined only in
 `scripts/ci/release_contracts.json`.  A syntactically valid SemVer tag that is
 not listed there is unsupported and fails closed.  Keep the v0.1.13 entry
 unchanged as the historical release contract; add a new entry for each future
@@ -35,11 +35,13 @@ conda follow-up state before declaring release acceptance.
 
 ## Frozen source, payload, and evidence
 
-Both a candidate dispatch and a tag push run the frozen-tip validator.  After
-the human fast-forwards `maint/0.1`, the fetched `origin/main` and
-`origin/maint/0.1` tips must both equal the validated 40-character source SHA.
-A missing maintenance fetch or either moved tip is a release failure; it is
-never ignored as an optional branch.
+Both a candidate dispatch and a tag push run the frozen-tip validator.  It
+loads the exact expected tag's `protected_refs` from the release contract and
+requires every fetched `origin/<protected-ref>` tip to equal the validated
+40-character source SHA.  The frozen v0.1.13 and v0.1.14 contracts require
+`main` and `maint/0.1`; v0.2.0 requires exactly `main` and `maint/0.2`.
+A missing protected-ref fetch or any moved tip is a release failure; it is
+never ignored as optional.
 
 The PyPI upload artifact is a fresh `release-payload-<source-sha>` directory
 containing exactly one normalized wheel and one sdist.  `LICENSE.sha256` and

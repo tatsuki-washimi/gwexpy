@@ -343,3 +343,16 @@ def test_workflow_dispatch_inputs_are_preserved_for_manual_candidates():
     for name in ("release_ref", "expected_tag", "review_evidence"):
         assert f"      {name}:" in dispatch
     assert dispatch.count("required: true") == 3
+
+
+def test_workflow_fetches_the_exact_tags_contract_protected_refs():
+    workflow = read_workflow()
+    fetch = workflow.split(
+        "      - name: Fetch frozen protected branch tips\n", maxsplit=1
+    )[1].split("\n      - name: Validate metadata", maxsplit=1)[0]
+
+    assert "python control/scripts/ci/release_contract.py --protected-ref" in fetch
+    assert "$EXPECTED_TAG" in fetch
+    assert "release contract lookup failed" in fetch
+    assert "+refs/heads/${protected_ref}:refs/remotes/origin/${protected_ref}" in fetch
+    assert "maint/0.1" not in fetch
