@@ -63,6 +63,9 @@ class Operand(str, Enum):
     QUANTITY = "quantity"
     UNIT = "unit"
     SAME_CLASS_MATRIX = "same_class_matrix"
+    PYTHON_LIST = "python_list"
+    PYTHON_TUPLE = "python_tuple"
+    VECTOR_QUANTITY = "vector_quantity"
 
 
 class ResultExpectation(str, Enum):
@@ -201,6 +204,17 @@ class ContractCell:
 
 
 _FAMILIES: Final[tuple[MatrixFamily, ...]] = tuple(MatrixFamily)
+_BINARY_OPERANDS: Final[tuple[Operand, ...]] = tuple(
+    operand
+    for operand in Operand
+    if operand
+    not in {
+        Operand.NONE,
+        Operand.PYTHON_LIST,
+        Operand.PYTHON_TUPLE,
+        Operand.VECTOR_QUANTITY,
+    }
+)
 
 
 def _id(
@@ -247,11 +261,7 @@ def _result(
     scenario: InputScenario = InputScenario.DEFAULT,
 ) -> ContractCell:
     if attrs_expectation is None:
-        attrs_expectation = (
-            AttrsExpectation.EMPTY
-            if family is MatrixFamily.SPECTROGRAM
-            else AttrsExpectation.DEEP_COPY
-        )
+        attrs_expectation = AttrsExpectation.DEEP_COPY
     if metadata_expectation is None:
         metadata_expectation = MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS
     return ContractCell(
@@ -393,11 +403,7 @@ def _structure_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
             axis_expectation=preserve_axis,
             value_expectation=ValueExpectation.ITERATION_ROWS_EXACT,
             name_expectation=NameExpectation.ROW_ELEMENT_EMPTY,
-            attrs_expectation=(
-                AttrsExpectation.EMPTY
-                if family is MatrixFamily.SPECTROGRAM
-                else AttrsExpectation.DEEP_COPY
-            ),
+            attrs_expectation=AttrsExpectation.DEEP_COPY,
         ),
         _result(
             family,
@@ -429,7 +435,7 @@ def _structure_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
             metadata_expectation=(
                 MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS
                 if family is MatrixFamily.SPECTROGRAM
-                else MetadataExpectation.DEEP_COPY_CELLS_SHARED_ROWS_COLUMNS
+                else MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS
             ),
             axis_expectation=preserve_axis,
             value_expectation=ValueExpectation.REAL_EXACT,
@@ -446,7 +452,7 @@ def _structure_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
             metadata_expectation=(
                 MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS
                 if family is MatrixFamily.SPECTROGRAM
-                else MetadataExpectation.DEEP_COPY_CELLS_SHARED_ROWS_COLUMNS
+                else MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS
             ),
             axis_expectation=preserve_axis,
             value_expectation=ValueExpectation.IMAG_EXACT,
@@ -651,13 +657,22 @@ def _ndarray_add_sub_inplace_cell(
     )
 
 
-def _non_scalar_power_cell(family: MatrixFamily, operand: Operand) -> ContractCell:
+def _power_error_cell(
+    family: MatrixFamily,
+    operand: Operand,
+    *,
+    surface: Surface = Surface.ARITHMETIC,
+    mutation: Mutation = Mutation.PURE,
+    scenario: InputScenario = InputScenario.DEFAULT,
+) -> ContractCell:
     return _error(
         family,
         "power",
         operand,
         UnitConversionError,
-        surface=Surface.ARITHMETIC,
+        surface=surface,
+        mutation=mutation,
+        scenario=scenario,
     )
 
 
@@ -826,11 +841,7 @@ def _binary_expectation(
         attrs_expectation=(
             AttrsExpectation.PRESERVE
             if mutation is Mutation.INPLACE
-            else (
-                AttrsExpectation.EMPTY
-                if family is MatrixFamily.SPECTROGRAM
-                else AttrsExpectation.DEEP_COPY
-            )
+            else AttrsExpectation.DEEP_COPY
         ),
     )
 
@@ -903,27 +914,25 @@ def _operator_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
                     )
                 )
     for operation in ("mul", "truediv"):
-        for operand in Operand:
-            if operand is not Operand.NONE:
-                cells.append(
-                    _binary_expectation(
-                        family,
-                        operation,
-                        operand,
-                        surface=Surface.ARITHMETIC,
-                    )
+        for operand in _BINARY_OPERANDS:
+            cells.append(
+                _binary_expectation(
+                    family,
+                    operation,
+                    operand,
+                    surface=Surface.ARITHMETIC,
                 )
-        for operand in Operand:
-            if operand is not Operand.NONE:
-                cells.append(
-                    _binary_expectation(
-                        family,
-                        operation,
-                        operand,
-                        surface=Surface.REFLECTED,
-                        side=Side.LEFT,
-                    )
+            )
+        for operand in _BINARY_OPERANDS:
+            cells.append(
+                _binary_expectation(
+                    family,
+                    operation,
+                    operand,
+                    surface=Surface.REFLECTED,
+                    side=Side.LEFT,
                 )
+            )
     for operand in (Operand.PYTHON_SCALAR, Operand.NUMPY_SCALAR):
         cells.append(
             _result(
@@ -941,8 +950,23 @@ def _operator_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
                 value_expectation=ValueExpectation.POWER_EXACT,
             )
         )
-    for operand in (Operand.NDARRAY, Operand.QUANTITY, Operand.SAME_CLASS_MATRIX):
-        cells.append(_non_scalar_power_cell(family, operand))
+    for operand in (
+        Operand.NDARRAY,
+        Operand.PYTHON_LIST,
+        Operand.PYTHON_TUPLE,
+        Operand.VECTOR_QUANTITY,
+        Operand.SAME_CLASS_MATRIX,
+    ):
+        for scenario in (
+            InputScenario.DEFAULT,
+            InputScenario.DIMENSIONLESS_MATRIX,
+        ):
+            cells.append(_power_error_cell(family, operand, scenario=scenario))
+    for scenario in (
+        InputScenario.DEFAULT,
+        InputScenario.DIMENSIONLESS_MATRIX,
+    ):
+        cells.append(_power_error_cell(family, Operand.QUANTITY, scenario=scenario))
     cells.append(
         _error(
             family,
@@ -952,16 +976,21 @@ def _operator_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
             surface=Surface.ARITHMETIC,
         )
     )
-    cells.append(
-        _error(
-            family,
-            "power",
-            Operand.PYTHON_SCALAR,
-            TypeError,
-            surface=Surface.REFLECTED,
-            side=Side.LEFT,
+    for scenario in (
+        InputScenario.DEFAULT,
+        InputScenario.DIMENSIONLESS_MATRIX,
+    ):
+        cells.append(
+            _error(
+                family,
+                "power",
+                Operand.PYTHON_SCALAR,
+                TypeError,
+                surface=Surface.REFLECTED,
+                side=Side.LEFT,
+                scenario=scenario,
+            )
         )
-    )
     for operation in ("add", "sub"):
         cells.append(
             _binary_expectation(
@@ -1042,16 +1071,39 @@ def _operator_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
             attrs_expectation=AttrsExpectation.PRESERVE,
         )
     )
-    cells.append(
-        _error(
-            family,
-            "power",
-            Operand.QUANTITY,
-            UnitConversionError,
-            surface=Surface.INPLACE,
-            mutation=Mutation.INPLACE,
+    for operand in (
+        Operand.NDARRAY,
+        Operand.PYTHON_LIST,
+        Operand.PYTHON_TUPLE,
+        Operand.VECTOR_QUANTITY,
+        Operand.SAME_CLASS_MATRIX,
+    ):
+        for scenario in (
+            InputScenario.DEFAULT,
+            InputScenario.DIMENSIONLESS_MATRIX,
+        ):
+            cells.append(
+                _power_error_cell(
+                    family,
+                    operand,
+                    surface=Surface.INPLACE,
+                    mutation=Mutation.INPLACE,
+                    scenario=scenario,
+                )
+            )
+    for scenario in (
+        InputScenario.DEFAULT,
+        InputScenario.DIMENSIONLESS_MATRIX,
+    ):
+        cells.append(
+            _power_error_cell(
+                family,
+                Operand.QUANTITY,
+                surface=Surface.INPLACE,
+                mutation=Mutation.INPLACE,
+                scenario=scenario,
+            )
         )
-    )
     for operation in ("lt", "le", "eq", "ne", "gt", "ge"):
         for operand in (
             Operand.PYTHON_SCALAR,
@@ -1104,7 +1156,7 @@ def _build_manifest() -> tuple[ContractCell, ...]:
 
 
 B0_CONTRACT: Final[tuple[ContractCell, ...]] = _build_manifest()
-EXPECTED_B0_CELL_COUNT: Final[int] = 390
+EXPECTED_B0_CELL_COUNT: Final[int] = 453
 assert len(B0_CONTRACT) == EXPECTED_B0_CELL_COUNT
 
 

@@ -122,12 +122,14 @@ def _copy_meta_cells(
                 f"MetaDataMatrix cell at {idx} is {type(src).__name__}, "
                 "expected MetaData"
             )
-        arr[idx] = MetaData(
-            name=src.name,
-            channel=src.channel,
-            unit=src.unit if unit is _UNSET_UNIT_SENTINEL else unit,
-        )
-    return MetaDataMatrix(arr)
+        payload = deepcopy(dict(src))
+        payload["unit"] = src.unit if unit is _UNSET_UNIT_SENTINEL else unit
+        arr[idx] = MetaData(**payload)
+    return MetaDataMatrix(
+        arr,
+        row_keys=deepcopy(getattr(meta_matrix, "row_keys", None)),
+        col_keys=deepcopy(getattr(meta_matrix, "col_keys", None)),
+    )
 
 
 def _scalar_power_exponent(operand: Any) -> Any:
@@ -184,7 +186,11 @@ def _copy_xindex(xindex: Any) -> Any:
 
 def _copy_metadata_matrix(meta: MetaDataMatrix) -> MetaDataMatrix:
     """Deep-copy a metadata matrix and its per-cell metadata entries."""
-    return MetaDataMatrix(deepcopy(np.asarray(meta, dtype=object)))
+    return MetaDataMatrix(
+        deepcopy(np.asarray(meta, dtype=object)),
+        row_keys=deepcopy(getattr(meta, "row_keys", None)),
+        col_keys=deepcopy(getattr(meta, "col_keys", None)),
+    )
 
 
 def _copy_metadata_dict(meta: MetaDataDict, key_prefix: str) -> MetaDataDict:
@@ -354,12 +360,18 @@ class SeriesMatrix(  # type: ignore[misc]
                 names_arr = data_attrs.get("name", None)
                 channels_arr = data_attrs.get("channel", None)
 
-            meta_matrix = _make_meta_matrix(
-                shape=value_array.shape[:2],
-                units=units_arr,
-                names=names_arr,
-                channels=channels_arr,
-            )
+            if meta is not None:
+                meta_matrix = _copy_metadata_matrix(meta)
+                meta_matrix.units = units_arr
+                meta_matrix.names = names_arr
+                meta_matrix.channels = channels_arr
+            else:
+                meta_matrix = _make_meta_matrix(
+                    shape=value_array.shape[:2],
+                    units=units_arr,
+                    names=names_arr,
+                    channels=channels_arr,
+                )
 
         if xindex is None:
             if detected_xindex is not None:
@@ -458,6 +470,169 @@ class SeriesMatrix(  # type: ignore[misc]
         for key, val in getattr(obj, "__dict__", {}).items():
             if key.startswith("_gwex_") and key not in self.__dict__:
                 self.__dict__[key] = val
+
+    def _component_result(self, values: np.ndarray, *, name: str | None) -> Any:
+        """Rebuild a unary component with fully independent public metadata."""
+        matrix_cls = cast(Any, self.__class__)
+        return matrix_cls(
+            values,
+            xindex=_copy_xindex(self.xindex),
+            meta=_copy_metadata_matrix(self.meta),
+            rows=_copy_metadata_dict(self.rows, "row") if self.rows else self.rows,
+            cols=_copy_metadata_dict(self.cols, "col") if self.cols else self.cols,
+            name=name,
+            epoch=self.epoch,
+            attrs=deepcopy(self.attrs),
+        )
+
+    @property
+    def real(self) -> SeriesMatrix:
+        """Return the real component without aliasing public metadata."""
+        return self._component_result(
+            self.view(np.ndarray).real,
+            name=f"{self.name}.real" if self.name else "",
+        )
+
+    @real.setter
+    def real(self, value: Any) -> None:
+        self.view(np.ndarray).real = value
+
+    @property
+    def imag(self) -> SeriesMatrix:
+        """Return the imaginary component without aliasing public metadata."""
+        return self._component_result(
+            self.view(np.ndarray).imag,
+            name=f"{self.name}.imag" if self.name else "",
+        )
+
+    @imag.setter
+    def imag(self, value: Any) -> None:
+        self.view(np.ndarray).imag = value
+
+    def conj(self) -> SeriesMatrix:
+        """Return the conjugate with fully independent public metadata."""
+        return self._component_result(
+            np.conjugate(self.view(np.ndarray)),
+            name=self.name,
+        )
+
+    def copy(self, order: Any = "C") -> Any:
+        """Copy values and every public metadata field independently.
+
+        This narrow override retains explicit ``MetaDataMatrix`` row/column
+        keys, which the legacy structural mixin predates.
+        """
+        matrix_cls = cast(Any, self.__class__)
+        return matrix_cls(
+            np.array(self.view(np.ndarray), copy=True, order=order),
+            meta=_copy_metadata_matrix(self.meta),
+            rows=_copy_metadata_dict(self.rows, "row"),
+            cols=_copy_metadata_dict(self.cols, "col"),
+            xindex=_copy_xindex(self.xindex),
+            name=self.name,
+            epoch=self.epoch,
+            attrs=deepcopy(self.attrs),
+        )
+
+    def astype(
+        self,
+        dtype: Any,
+        order: Any = "K",
+        casting: Any = "unsafe",
+        subok: Any = True,
+        copy: Any = True,
+    ) -> Any:
+        """Cast values while retaining independent public metadata."""
+        values = self.value.astype(
+            dtype, order=order, casting=casting, subok=subok, copy=copy
+        )
+        if not copy and values is self.value:
+            return self
+        matrix_cls = cast(Any, self.__class__)
+        return matrix_cls(
+            values,
+            meta=_copy_metadata_matrix(self.meta),
+            rows=_copy_metadata_dict(self.rows, "row"),
+            cols=_copy_metadata_dict(self.cols, "col"),
+            xindex=_copy_xindex(self.xindex),
+            name=self.name,
+            epoch=self.epoch,
+            attrs=deepcopy(self.attrs),
+        )
+
+    def transpose(self, *axes: Any) -> Any:
+        """Transpose rows/columns with independent, correctly keyed metadata."""
+        if axes:
+            return np.transpose(self.value, axes)
+        matrix_cls = cast(Any, self.__class__)
+        return matrix_cls(
+            np.transpose(self.value, (1, 0, 2)),
+            meta=MetaDataMatrix(
+                deepcopy(np.asarray(self.meta, dtype=object).T),
+                row_keys=deepcopy(self.meta.col_keys),
+                col_keys=deepcopy(self.meta.row_keys),
+            ),
+            rows=_copy_metadata_dict(self.cols, "row"),
+            cols=_copy_metadata_dict(self.rows, "col"),
+            xindex=_copy_xindex(self.xindex),
+            name=f"{self.name}.T" if self.name else "",
+            epoch=self.epoch,
+            attrs=deepcopy(self.attrs),
+        )
+
+    @property
+    def T(self) -> SeriesMatrix:
+        """Return the B0 row/column transpose."""
+        return cast(SeriesMatrix, self.transpose())
+
+    def reshape(
+        self,
+        *shape: Any,
+        order: Any = "C",
+        copy: Any = None,
+    ) -> Any:
+        """Reshape without sharing B0 public state with the source."""
+        requested = (
+            tuple(shape[0])
+            if len(shape) == 1 and isinstance(shape[0], (tuple, list))
+            else tuple(shape)
+        )
+        nsamp = self._value.shape[2]
+        if len(requested) == 2:
+            target_shape = (*requested, nsamp)
+        elif len(requested) == 3:
+            if requested[2] != nsamp:
+                raise ValueError(
+                    f"Cannot reshape sample axis: expected {nsamp}, got {requested[2]}"
+                )
+            target_shape = requested
+        else:
+            raise ValueError("Reshape target must be 2D or 3D")
+        target_shape = cast(
+            tuple[int, int, int], tuple(int(size) for size in target_shape)
+        )
+        values = self._value.reshape(target_shape, order=order)
+        if copy is not None:
+            values = np.array(values, copy=copy)
+        meta_values = deepcopy(
+            np.asarray(self.meta, dtype=object).reshape(target_shape[:2], order=order)
+        )
+        same_layout = target_shape[:2] == self.meta.shape
+        matrix_cls = cast(Any, self.__class__)
+        return matrix_cls(
+            values,
+            meta=MetaDataMatrix(
+                meta_values,
+                row_keys=deepcopy(self.meta.row_keys) if same_layout else None,
+                col_keys=deepcopy(self.meta.col_keys) if same_layout else None,
+            ),
+            rows=_copy_metadata_dict(self.rows, "row") if same_layout else None,
+            cols=_copy_metadata_dict(self.cols, "col") if same_layout else None,
+            xindex=_copy_xindex(self.xindex),
+            name=self.name,
+            epoch=self.epoch,
+            attrs=deepcopy(self.attrs),
+        )
 
     def _reduce_with_protocol(self, protocol: int) -> tuple[Any, ...]:
         """Include SeriesMatrix metadata in ndarray-subclass pickle state."""
@@ -558,13 +733,17 @@ class SeriesMatrix(  # type: ignore[misc]
         for i in range(N):
             for j in range(M):
                 source = self.meta[i, j]
-                meta_array[i, j] = MetaData(
-                    unit=unit, name=source.name, channel=source.channel
-                )
+                payload = deepcopy(dict(source))
+                payload["unit"] = unit
+                meta_array[i, j] = MetaData(**payload)
         return self.__class__(
             broadcast,
             xindex=self.xindex,
-            meta=MetaDataMatrix(meta_array),
+            meta=MetaDataMatrix(
+                meta_array,
+                row_keys=deepcopy(getattr(self.meta, "row_keys", None)),
+                col_keys=deepcopy(getattr(self.meta, "col_keys", None)),
+            ),
             shape=shape,
         )
 
@@ -662,23 +841,28 @@ class SeriesMatrix(  # type: ignore[misc]
             raise TypeError("SeriesMatrix does not support the 'where' argument")
         ufunc_kwargs = {k: v for k, v in kwargs.items() if k not in ("out", "where")}
 
+        # Reject every non-scalar exponent before operand broadcasting or
+        # dtype coercion.  Lists and tuples otherwise take a generic
+        # ``NotImplemented`` path and leak a TypeError instead of the unit
+        # contract's atomic UnitConversionError.
+        if ufunc is np.power and len(inputs) == 2:
+            # A bare Unit has no exponent value and retains the established
+            # explicit TypeError path below.  Every value-bearing non-scalar
+            # exponent is rejected here before casting or broadcasting.
+            if (
+                not isinstance(inputs[1], u.UnitBase)
+                and _scalar_power_exponent(inputs[1]) is None
+            ):
+                raise u.UnitConversionError(
+                    "power with a non-scalar exponent is not supported for SeriesMatrix"
+                )
+
         casted_inputs = []
         for inp in inputs:
             casted = self._cast_ufunc_operand(inp)
             if casted is NotImplemented:
                 return NotImplemented
             casted_inputs.append(casted)
-
-        # The per-cell metadata model has one unit per series, not one unit
-        # per sample.  A non-scalar exponent would require sample-dependent
-        # units even when the base happens to be dimensionless, so reject it
-        # before values or metadata are computed.  This is also the atomic
-        # preflight shared by ``**=``.
-        if ufunc is np.power and len(inputs) == 2:
-            if _scalar_power_exponent(inputs[1]) is None:
-                raise u.UnitConversionError(
-                    "power with a non-scalar exponent is not supported for SeriesMatrix"
-                )
 
         check_shape_xindex_compatibility(*casted_inputs)
 

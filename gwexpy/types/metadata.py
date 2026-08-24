@@ -4,6 +4,7 @@ import importlib
 import warnings
 from collections import OrderedDict
 from collections.abc import Iterable
+from copy import deepcopy
 from html import escape
 from typing import TYPE_CHECKING, Any, cast
 
@@ -212,9 +213,9 @@ class MetaData(dict):
         """Coerce an object into a MetaData instance.
 
         If *obj* is already a ``MetaData`` instance it is returned unchanged.
-        Otherwise a new ``MetaData`` is constructed whose **name** and
-        **channel** are inherited from ``self`` and whose **unit** is inferred
-        from *obj* via :func:`get_unit`.
+        Otherwise an independent ``MetaData`` copy retains every field from
+        ``self`` and replaces only its **unit**, inferred from *obj* via
+        :func:`get_unit`.
 
         Parameters
         ----------
@@ -228,7 +229,13 @@ class MetaData(dict):
         """
         if isinstance(obj, MetaData):
             return obj
-        return MetaData(name=self.name, channel=self.channel, unit=get_unit(obj))
+        return self._copy_with_unit(get_unit(obj))
+
+    def _copy_with_unit(self, unit):
+        """Return an independent metadata copy with only its unit replaced."""
+        payload = deepcopy(dict(self))
+        payload["unit"] = unit
+        return MetaData(**payload)
 
     def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
         """NumPy ufunc protocol for unit propagation.
@@ -269,20 +276,16 @@ class MetaData(dict):
         if len(inputs) == 1:
             lhs = self
             if ufunc in _UFUNC_UNIT_PRESERVING:
-                return MetaData(name=lhs.name, channel=lhs.channel, unit=lhs.unit)
+                return lhs._copy_with_unit(lhs.unit)
             unary_power = _UFUNC_UNARY_POWERS.get(ufunc)
             if unary_power is not None:
-                return MetaData(
-                    name=lhs.name, channel=lhs.channel, unit=lhs.unit**unary_power
-                )
+                return lhs._copy_with_unit(lhs.unit**unary_power)
             if ufunc in _UFUNC_TRANSCENDENTAL:
                 if not lhs.unit.is_equivalent(1):
                     raise UnitConversionError(
                         f"{ufunc.__name__} requires dimensionless input"
                     )
-                return MetaData(
-                    name=lhs.name, channel=lhs.channel, unit=u.dimensionless_unscaled
-                )
+                return lhs._copy_with_unit(u.dimensionless_unscaled)
             return NotImplemented
 
         # binary operations (two or more operands)
@@ -303,9 +306,7 @@ class MetaData(dict):
                 raise UnitConversionError("Exponent must be dimensionless")
 
             base = lhs if isinstance(lhs, MetaData) else self
-            return MetaData(
-                name=base.name, channel=base.channel, unit=lhs_unit**exponent
-            )
+            return base._copy_with_unit(lhs_unit**exponent)
 
         lhs = self.as_meta(lhs_raw)
         rhs = self.as_meta(rhs_raw)
@@ -317,16 +318,14 @@ class MetaData(dict):
             if not lhs_unit.is_equivalent(rhs_unit):
                 raise UnitConversionError(f"{ufunc.__name__} requires compatible units")
             base = lhs if isinstance(lhs, MetaData) else rhs
-            return MetaData(name=base.name, channel=base.channel, unit=lhs_unit)
+            return base._copy_with_unit(lhs_unit)
 
         # comparisons -> dimensionless (bool result)
         if ufunc in _UFUNC_COMPARISON:
             if not lhs_unit.is_equivalent(rhs_unit):
                 raise UnitConversionError(f"{ufunc.__name__} requires compatible units")
             base = lhs if isinstance(lhs, MetaData) else rhs
-            return MetaData(
-                name=base.name, channel=base.channel, unit=u.dimensionless_unscaled
-            )
+            return base._copy_with_unit(u.dimensionless_unscaled)
 
         # multiplication/division
         if ufunc in _UFUNC_MULT_DIV:
@@ -335,7 +334,7 @@ class MetaData(dict):
             else:
                 new_unit = lhs_unit / rhs_unit
             base = lhs if isinstance(lhs, MetaData) else rhs
-            return MetaData(name=base.name, channel=base.channel, unit=new_unit)
+            return base._copy_with_unit(new_unit)
 
         return NotImplemented
 
@@ -623,7 +622,9 @@ class MetaDataMatrix(np.ndarray):
     supporting vectorized attribute access (names, units, channels).
     """
 
-    def __new__(cls, input_array=None, shape=None, default=None):
+    def __new__(
+        cls, input_array=None, shape=None, default=None, row_keys=None, col_keys=None
+    ):
         """Create a MetaDataMatrix from an array-like or shape.
 
         Parameters
@@ -634,6 +635,10 @@ class MetaDataMatrix(np.ndarray):
             Target shape used when ``input_array`` is omitted.
         default : MetaData or dict, optional
             Default value to fill when ``shape`` is given without ``input_array``.
+        row_keys : sequence of str, optional
+            Explicit row labels retained by a derived metadata matrix.
+        col_keys : sequence of str, optional
+            Explicit column labels retained by a derived metadata matrix.
 
         Returns
         -------
@@ -682,6 +687,11 @@ class MetaDataMatrix(np.ndarray):
         self, input_array=None, shape=None, default=None, row_keys=None, col_keys=None
     ):
         N, M = self.shape
+        if isinstance(input_array, MetaDataMatrix):
+            if row_keys is None:
+                row_keys = deepcopy(getattr(input_array, "row_keys", None))
+            if col_keys is None:
+                col_keys = deepcopy(getattr(input_array, "col_keys", None))
         self.row_keys = (
             list(row_keys) if row_keys is not None else [f"row{i}" for i in range(N)]
         )
@@ -887,7 +897,7 @@ class MetaDataMatrix(np.ndarray):
             lambda *args: ufunc(*args, **ufunc_kwargs), otypes=[object]
         )
         result = apply_elem(*arr_inputs)  # shape (N, M)
-        return MetaDataMatrix(result)
+        return MetaDataMatrix(result, row_keys=self.row_keys, col_keys=self.col_keys)
 
     def __mul__(self, other):
         return np.multiply(cast(Any, self), other)

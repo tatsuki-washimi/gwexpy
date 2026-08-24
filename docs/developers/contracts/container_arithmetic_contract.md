@@ -5,23 +5,22 @@ contract before issue #637.  It does not adopt or implement the #637
 composition redesign.
 
 The executable canonical ledger is the typed `B0_CONTRACT` in
-`tests/types/series_matrix_contract_manifest.py`.  It contains exactly 390
+`tests/types/series_matrix_contract_manifest.py`.  It contains exactly 453
 cells across `TimeSeriesMatrix`, `FrequencySeriesMatrix`, and
 `SpectrogramMatrix`.  The typed adapter in
 `tests/types/test_series_matrix_contract_manifest.py` executes every cell once
 and consumes typed result-class, unit, metadata, axis, value, and mutation
 expectations directly.  It checks exact values, dtypes, shapes, view aliasing,
 per-cell names/channels, row/column metadata, and family axes, or an exact
-exception.  The earlier 318-cell candidate was rejected by physics/data-model
-review because it omitted active scalar add/sub behaviour.  The replacement
-adds 72 scalar cells: Python and NumPy unitless scalars, dimensional failure
-and dimensionless success scenarios, pure and reflected directions, and
-atomic in-place forms for every family and both add/sub operators.  The
-ndarray scenarios remain split between a dimensionless-matrix success and a
-dimensional-incompatibility failure for both directions and all three
-families.  `tests/types/test_series_matrix_operator_contract.py` retains
-the direct behavioral checks.  A B1 implementation must update and compare
-this same ledger rather than introducing a second matrix.
+exception.  Physics/data-model review rejected the earlier 318-cell candidate
+because it omitted active scalar add/sub behaviour.  It also supersedes the
+later 390-cell candidate: that candidate did not completely cover arbitrary
+nested metadata/attrs preservation, explicit metadata matrix keys, and the
+full dimensional/non-scalar exponent boundary.  The 453-cell ledger covers
+the scalar add/sub and ndarray dimensionality cases, plus the reviewed
+metadata, attrs, and exponent categories.  `tests/types/test_series_matrix_operator_contract.py`
+retains direct behavioral regressions.  A B1 implementation must update and
+compare this same ledger rather than introducing a second matrix.
 
 ## B0 construction and structure
 
@@ -69,9 +68,12 @@ failed operation must not mutate an operand.
   meaningful.  Quantity-left and Unit-left forms must retain the matrix class;
   they must not collapse to a bare `Quantity`.
 * `power` accepts a dimensionless scalar exponent and raises each cell unit to
-  that exponent.  A dimensional exponent or any non-scalar exponent raises
+  that exponent.  A dimensional exponent or any value-bearing non-scalar
+  exponent (list, tuple, ndarray, vector Quantity, or matrix) raises
   `UnitConversionError` before values or metadata are changed, including a
-  matrix-valued SpectrogramMatrix exponent.  `sqrt` is a
+  matrix-valued SpectrogramMatrix exponent.  The explicitly unsupported
+  reflected matrix-exponent surface continues to raise `TypeError`; it is not
+  a B1 composition fallback.  `sqrt` is a
   documented target rule for B1, but direct `np.sqrt(matrix)` remains a B0
   rejection (see below).
 * Comparisons (`<`, `<=`, `==`, `!=`, `>`, `>=`) return the concrete matrix
@@ -173,6 +175,6 @@ required before any numeric adoption claim.
 
 ## D21 data-model approval
 
-This B0 contract freezes unit, metadata, axis, label, and mutation semantics.
-It requires explicit human D21/data-model sign-off before merge or release.
-AI review is advisory and cannot provide that sign-off.
+This B0 contract freezes unit, metadata, axis, label, attrs, and mutation
+semantics.  It requires explicit human D21/data-model sign-off before merge or
+release.  AI review is advisory and cannot provide that sign-off.

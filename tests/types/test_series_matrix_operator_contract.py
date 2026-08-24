@@ -13,6 +13,7 @@ affected the family as a whole, and because `SpectrogramMatrix` carries its own
 ufunc implementation for the 4-D ``(Row, Col, Time, Freq)`` layout.
 """
 
+import operator
 import pickle
 import warnings
 from copy import deepcopy
@@ -1003,6 +1004,104 @@ def test_power_rejects_non_scalar_exponent_on_dimensionless_base(series_factory)
         matrix ** np.array([1.0, 2.0, 3.0, 4.0])
     np.testing.assert_array_equal(np.asarray(matrix), before)
     assert matrix.meta[0, 0].unit == u.dimensionless_unscaled
+
+
+@pytest.mark.parametrize(
+    "factory", list(MATRIX_FACTORIES.values()), ids=list(MATRIX_FACTORIES)
+)
+@pytest.mark.parametrize(
+    "unit", [u.V, u.dimensionless_unscaled], ids=["dimensional", "dimensionless"]
+)
+def test_power_rejects_every_non_scalar_exponent_before_operand_casting(factory, unit):
+    """Lists, tuples, vectors, and matrices all fail atomically at the boundary."""
+    prototype = factory(unit=unit)
+    exponent_factories = {
+        "list": lambda matrix: [1.0] * matrix.shape[-1],
+        "tuple": lambda matrix: (1.0,) * matrix.shape[-1],
+        "ndarray": lambda matrix: np.ones(matrix.shape[-1]),
+        "vector_quantity": lambda matrix: np.ones(matrix.shape[-1]) * u.s,
+        "matrix": lambda matrix: matrix.copy(),
+    }
+    for make_exponent in exponent_factories.values():
+        matrix = factory(unit=unit)
+        snapshot = _observable_source_snapshot(matrix)
+        with pytest.raises(UnitConversionError):
+            matrix ** make_exponent(matrix)
+        _assert_source_unchanged(matrix, snapshot)
+
+    for base_unit in (u.V, u.dimensionless_unscaled):
+        matrix = factory(unit=base_unit)
+        snapshot = _observable_source_snapshot(matrix)
+        with pytest.raises(UnitConversionError):
+            matrix ** (2 * u.s)
+        _assert_source_unchanged(matrix, snapshot)
+
+        matrix = factory(unit=base_unit)
+        snapshot = _observable_source_snapshot(matrix)
+        with pytest.raises(UnitConversionError):
+            matrix.__ipow__(2 * u.s)
+        _assert_source_unchanged(matrix, snapshot)
+
+        matrix = factory(unit=unit)
+        snapshot = _observable_source_snapshot(matrix)
+        with pytest.raises(UnitConversionError):
+            matrix.__ipow__(make_exponent(matrix))
+        _assert_source_unchanged(matrix, snapshot)
+
+    # ``__rpow__`` is deliberately not a B0 composition surface: the matrix
+    # would be a per-sample exponent.  Its explicit TypeError is atomically
+    # non-mutating, rather than a hidden NumPy composition fallback.
+    snapshot = _observable_source_snapshot(prototype)
+    with pytest.raises(TypeError):
+        2**prototype
+    _assert_source_unchanged(prototype, snapshot)
+
+
+@pytest.mark.parametrize(
+    "scalar",
+    [
+        True,
+        False,
+        np.bool_(True),
+        np.int64(2),
+        np.float32(2),
+        np.float64(2),
+    ],
+    ids=[
+        "python_true",
+        "python_false",
+        "numpy_bool",
+        "numpy_int",
+        "numpy_float32",
+        "numpy_float64",
+    ],
+)
+def test_spectrogram_unitless_scalar_categories_match_add_sub_unit_rules(scalar):
+    """The advertised NumPy-scalar category includes bool, integer, and float."""
+    for operation in (operator.add, operator.sub):
+        for reflected in (False, True):
+            matrix = make_spectrogram_matrix(unit=u.V)
+            snapshot = _observable_source_snapshot(matrix)
+            with pytest.raises(UnitConversionError):
+                (operation(scalar, matrix) if reflected else operation(matrix, scalar))
+            _assert_source_unchanged(matrix, snapshot)
+
+        matrix = make_spectrogram_matrix(unit=u.V)
+        snapshot = _observable_source_snapshot(matrix)
+        with pytest.raises(UnitConversionError):
+            matrix.__iadd__(scalar) if operation is operator.add else matrix.__isub__(
+                scalar
+            )
+        _assert_source_unchanged(matrix, snapshot)
+
+        for reflected in (False, True):
+            dimensionless = make_spectrogram_matrix(unit=u.dimensionless_unscaled)
+            result = (
+                operation(scalar, dimensionless)
+                if reflected
+                else operation(dimensionless, scalar)
+            )
+            assert type(result) is SpectrogramMatrix
 
 
 @pytest.mark.parametrize(

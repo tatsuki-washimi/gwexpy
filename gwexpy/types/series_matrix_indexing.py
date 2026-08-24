@@ -58,6 +58,17 @@ def _as_position_list(key: Any, axis_len: int) -> list[int]:
     return positions
 
 
+def _slice_meta_keys(keys: list[str], key: Any, axis_len: int) -> list[str]:
+    """Return metadata axis keys selected by one normalized matrix selector."""
+    if isinstance(key, slice):
+        return deepcopy(keys[key])
+    if isinstance(key, (int, np.integer)):
+        return [deepcopy(keys[int(key)])]
+    if _is_advanced_axis_selector(key):
+        return [deepcopy(keys[index]) for index in _as_position_list(key, axis_len)]
+    return deepcopy(keys)
+
+
 class SeriesMatrixIndexingMixin:
     """Mixin for SeriesMatrix indexing and slicing operations."""
 
@@ -216,7 +227,15 @@ class SeriesMatrixIndexingMixin:
         # object must never mutate its source matrix (D21 data-model rule).
         from .metadata import MetaDataMatrix
 
-        result.meta = MetaDataMatrix(deepcopy(np.asarray(new_meta, dtype=object)))
+        result.meta = MetaDataMatrix(
+            deepcopy(np.asarray(new_meta, dtype=object)),
+            row_keys=_slice_meta_keys(
+                list(self.meta.row_keys), meta_ri, self.meta.shape[0]
+            ),
+            col_keys=_slice_meta_keys(
+                list(self.meta.col_keys), meta_ci, self.meta.shape[1]
+            ),
+        )
         result.rows = deepcopy(new_rows)
         result.cols = deepcopy(new_cols)
         result.xindex = new_xindex

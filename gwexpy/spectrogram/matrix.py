@@ -9,7 +9,11 @@ from astropy import units as u
 from gwexpy.types.metadata import MetaData, MetaDataDict, MetaDataMatrix
 from gwexpy.types.mixin import PhaseMethodsMixin
 from gwexpy.types.seriesmatrix import SeriesMatrix
-from gwexpy.types.seriesmatrix_base import _copy_metadata_dict, _scalar_power_exponent
+from gwexpy.types.seriesmatrix_base import (
+    _copy_metadata_dict,
+    _copy_metadata_matrix,
+    _scalar_power_exponent,
+)
 from gwexpy.types.typing import ArrayLike, IndexLike, MetaDataCollectionType, UnitLike
 
 from .collections import SpectrogramDict, SpectrogramList
@@ -229,6 +233,10 @@ class SpectrogramMatrix(  # type: ignore[misc]
         them, such as `clip`/`round`, which rebuild via `copy`).
         """
         new = super().copy(order=order)
+        new.meta = _copy_metadata_matrix(self.meta)
+        new.rows = _copy_metadata_dict(self.rows, "row") if self.rows else self.rows
+        new.cols = _copy_metadata_dict(self.cols, "col") if self.cols else self.cols
+        new.attrs = deepcopy(self.attrs)
         new.frequencies = self._resupplied_frequencies(self.frequencies)
         return new
 
@@ -248,6 +256,10 @@ class SpectrogramMatrix(  # type: ignore[misc]
         )
         if new is self:
             return new
+        new.meta = _copy_metadata_matrix(self.meta)
+        new.rows = _copy_metadata_dict(self.rows, "row") if self.rows else self.rows
+        new.cols = _copy_metadata_dict(self.cols, "col") if self.cols else self.cols
+        new.attrs = deepcopy(self.attrs)
         new.frequencies = self._resupplied_frequencies(self.frequencies)
         return new
 
@@ -259,18 +271,11 @@ class SpectrogramMatrix(  # type: ignore[misc]
         dimensionless: bool = False,
     ) -> SpectrogramMatrix:
         """Rebuild a unary component/predicate result without aliasing state."""
-        if self.meta is None:
-            new_meta = None
-        else:
-            cells = np.empty(self.meta.shape, dtype=object)
-            for idx in np.ndindex(self.meta.shape):
-                source = cast(MetaData, self.meta[idx])
-                cells[idx] = MetaData(
-                    name=source.name,
-                    channel=source.channel,
-                    unit=(u.dimensionless_unscaled if dimensionless else source.unit),
-                )
-            new_meta = MetaDataMatrix(cells)
+        new_meta = _copy_metadata_matrix(self.meta) if self.meta is not None else None
+        if dimensionless and new_meta is not None:
+            new_meta.units = np.full(
+                new_meta.shape, u.dimensionless_unscaled, dtype=object
+            )
         result = self.__class__(
             values,
             times=self._resupplied_frequencies(self.times),
@@ -289,7 +294,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
         return result
 
     @property
-    def real(self) -> SpectrogramMatrix:
+    def real(self) -> SeriesMatrix:
         """Return a fully independent real component with both axes intact."""
         return self._component_result(
             self.view(np.ndarray).real,
@@ -301,7 +306,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
         self.value.real = value
 
     @property
-    def imag(self) -> SpectrogramMatrix:
+    def imag(self) -> SeriesMatrix:
         """Return a fully independent imaginary component with both axes intact."""
         return self._component_result(
             self.view(np.ndarray).imag,
@@ -311,6 +316,13 @@ class SpectrogramMatrix(  # type: ignore[misc]
     @imag.setter
     def imag(self, value: Any) -> None:
         self.value.imag = value
+
+    def conj(self) -> SpectrogramMatrix:
+        """Return a conjugate with axes and public metadata independent."""
+        return self._component_result(
+            np.conjugate(self.view(np.ndarray)),
+            name=self.name,
+        )
 
     def __array_finalize__(self, obj: Any) -> None:
         if obj is None:
@@ -475,6 +487,20 @@ class SpectrogramMatrix(  # type: ignore[misc]
         }
         _MUL_DIV_UFUNCS = {np.multiply, np.divide, np.floor_divide, np.true_divide}
 
+        # Check the exponent before any operand is normalized.  In particular,
+        # Python lists and tuples are unsupported arithmetic operands, but are
+        # still definitively non-scalar exponents and must take the atomic
+        # UnitConversionError path rather than leaking a TypeError.
+        if ufunc is np.power and len(inputs) == 2:
+            if (
+                not isinstance(inputs[1], u.UnitBase)
+                and _scalar_power_exponent(inputs[1]) is None
+            ):
+                raise u.UnitConversionError(
+                    "power with a non-scalar exponent is not supported for "
+                    "SpectrogramMatrix"
+                )
+
         # 1. Unpack inputs
         args = []
         sgm_inputs = []  # SpectrogramMatrix instances
@@ -484,7 +510,17 @@ class SpectrogramMatrix(  # type: ignore[misc]
                 args.append(inp.view(np.ndarray))
                 sgm_inputs.append(inp)
             elif isinstance(
-                inp, (u.Quantity, np.ndarray, float, int, complex, np.number)
+                inp,
+                (
+                    u.Quantity,
+                    np.ndarray,
+                    bool,
+                    np.bool_,
+                    float,
+                    int,
+                    complex,
+                    np.number,
+                ),
             ):
                 # np.number (e.g. np.int64) does not subclass Python int, so
                 # it needs its own branch here even though it is already
@@ -509,17 +545,6 @@ class SpectrogramMatrix(  # type: ignore[misc]
 
         main = sgm_inputs[0]
 
-        # A SeriesMatrix has one unit per logical series.  Exponents varying
-        # over samples or cells would require a unit per value, which this
-        # model cannot represent.  Refuse before numerical work so every
-        # failure, including ``**=``, is atomic.
-        if ufunc is np.power and len(inputs) == 2:
-            if _scalar_power_exponent(inputs[1]) is None:
-                raise u.UnitConversionError(
-                    "power with a non-scalar exponent is not supported for "
-                    "SpectrogramMatrix"
-                )
-
         if ufunc is np.isreal:
             if len(inputs) != 1 or inputs[0] is not main:
                 return NotImplemented
@@ -538,7 +563,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
             main
         ):
             has_unitless_operand = any(
-                isinstance(inp, (int, float, complex, np.number))
+                isinstance(inp, (bool, np.bool_, int, float, complex, np.number))
                 or (
                     isinstance(inp, np.ndarray)
                     and not isinstance(inp, (SpectrogramMatrix, u.Quantity))
@@ -602,11 +627,9 @@ class SpectrogramMatrix(  # type: ignore[misc]
                         new_unit = self._scalar_result_unit(
                             ufunc, inputs, main, old_unit
                         )
-                    new_meta_arr[idx] = MetaData(
-                        name=old_meta.name,
-                        channel=old_meta.channel,
-                        unit=new_unit,
-                    )
+                    payload = deepcopy(dict(old_meta))
+                    payload["unit"] = new_unit
+                    new_meta_arr[idx] = MetaData(**payload)
 
             elif is_binary_matrix_op:
                 # Binary matrix operation: check per-element unit compatibility
@@ -653,16 +676,18 @@ class SpectrogramMatrix(  # type: ignore[misc]
                                     raise
                                 new_unit = u1
 
-                        new_meta_arr[idx] = MetaData(
-                            name=m1.name,
-                            channel=m1.channel,
-                            unit=new_unit,
-                        )
+                        payload = deepcopy(dict(m1))
+                        payload["unit"] = new_unit
+                        new_meta_arr[idx] = MetaData(**payload)
                 else:
                     # Other matrix has no meta; keep main's meta
                     new_meta_arr = main.meta.copy()
 
-            new_meta = MetaDataMatrix(new_meta_arr)
+            new_meta = MetaDataMatrix(
+                new_meta_arr,
+                row_keys=deepcopy(getattr(main.meta, "row_keys", None)),
+                col_keys=deepcopy(getattr(main.meta, "col_keys", None)),
+            )
 
         def _infer_unit(meta):
             if meta is None:
@@ -685,6 +710,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
                 name=main.name,
                 unit=_infer_unit(new_meta),
             )
+            obj.attrs = deepcopy(main.attrs)
             return obj
 
         return result_data
@@ -932,6 +958,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
         ret.frequencies = getattr(self, "frequencies", None)
         ret.unit = getattr(self, "unit", None)
         ret.epoch = getattr(self, "epoch", None)
+        ret.attrs = deepcopy(getattr(self, "attrs", {}))
 
         # Propagate/Slice Metadata (Rows, Cols, Meta)
         # This is complex for general slicing. Simplification:

@@ -114,21 +114,44 @@ class ContractObservation:
 
 
 def _meta(unit: u.UnitBase) -> MetaDataMatrix:
-    return MetaDataMatrix(
+    metadata = MetaDataMatrix(
         np.array(
             [
                 [
-                    MetaData(unit=unit, name="a00", channel="X1:A00"),
-                    MetaData(unit=unit, name="a01", channel="X1:A01"),
+                    MetaData(
+                        unit=unit,
+                        name="a00",
+                        channel="X1:A00",
+                        calibration={"nested": ["a00", {"gain": 1.0}]},
+                    ),
+                    MetaData(
+                        unit=unit,
+                        name="a01",
+                        channel="X1:A01",
+                        calibration={"nested": ["a01", {"gain": 1.1}]},
+                    ),
                 ],
                 [
-                    MetaData(unit=unit, name="a10", channel="X1:A10"),
-                    MetaData(unit=unit, name="a11", channel="X1:A11"),
+                    MetaData(
+                        unit=unit,
+                        name="a10",
+                        channel="X1:A10",
+                        calibration={"nested": ["a10", {"gain": 1.2}]},
+                    ),
+                    MetaData(
+                        unit=unit,
+                        name="a11",
+                        channel="X1:A11",
+                        calibration={"nested": ["a11", {"gain": 1.3}]},
+                    ),
                 ],
             ],
             dtype=object,
         )
     )
+    metadata.row_keys = ["meta-row-a", "meta-row-b"]
+    metadata.col_keys = ["meta-col-a", "meta-col-b"]
+    return metadata
 
 
 def _matrix(cell: ContractCell):
@@ -139,7 +162,9 @@ def _matrix(cell: ContractCell):
     )
 
     def decorate(matrix):
-        matrix.attrs["contract"] = {"nested": ["value"]}
+        matrix.attrs["contract"] = {"nested": ["value", {"calibration": [1, 2, 3]}]}
+        matrix.rows[next(iter(matrix.rows))]["calibration"] = {"nested": ["row"]}
+        matrix.cols[next(iter(matrix.cols))]["calibration"] = {"nested": ["col"]}
         matrix.provenance = {
             "schema": "contract",
             "nested": [{"array": np.arange(3, dtype=np.int64)}],
@@ -179,6 +204,19 @@ def _matrix(cell: ContractCell):
     )
 
 
+@pytest.mark.parametrize("family", list(MatrixFamily))
+def test_contract_fixture_retains_arbitrary_metadata_and_explicit_keys(
+    family: MatrixFamily,
+) -> None:
+    cell = next(cell for cell in B0_CONTRACT if cell.family is family)
+    matrix = _matrix(cell)
+    assert matrix.meta.row_keys == ["meta-row-a", "meta-row-b"]
+    assert matrix.meta.col_keys == ["meta-col-a", "meta-col-b"]
+    assert matrix.meta[0, 0]["calibration"] == {"nested": ["a00", {"gain": 1.0}]}
+    assert matrix.rows[next(iter(matrix.rows))]["calibration"] == {"nested": ["row"]}
+    assert matrix.cols[next(iter(matrix.cols))]["calibration"] == {"nested": ["col"]}
+
+
 def _operand(cell: ContractCell, matrix):
     if cell.operand.value == "python_scalar":
         return 2
@@ -196,6 +234,12 @@ def _operand(cell: ContractCell, matrix):
         return u.s
     if cell.operand.value == "same_class_matrix":
         return matrix.copy()
+    if cell.operand is Operand.PYTHON_LIST:
+        return [1.0] * matrix.shape[-1]
+    if cell.operand is Operand.PYTHON_TUPLE:
+        return (1.0,) * matrix.shape[-1]
+    if cell.operand is Operand.VECTOR_QUANTITY:
+        return np.ones(matrix.shape[-1]) * u.s
     raise AssertionError(f"no operand adapter for {cell.operand}")
 
 
@@ -271,6 +315,54 @@ def _labels(matrix) -> tuple[tuple[str, str], ...]:
     )
 
 
+def _metadata_payload(metadata: MetaData) -> dict:
+    """Return all custom metadata fields while leaving unit assertions separate."""
+    payload = deepcopy(dict(metadata))
+    payload.pop("unit")
+    return payload
+
+
+def _assert_deep_metadata_payload(source, result) -> None:
+    """Assert public metadata content and nested independence for a new result."""
+    transposed = result.name == f"{source.name}.T"
+    assert result.meta.row_keys == (
+        source.meta.col_keys if transposed else source.meta.row_keys
+    )
+    assert result.meta.col_keys == (
+        source.meta.row_keys if transposed else source.meta.col_keys
+    )
+    for index in np.ndindex(result.meta.shape):
+        source_index = index[::-1] if transposed else index
+        _assert_deep_equal(
+            _metadata_payload(source.meta[source_index]),
+            _metadata_payload(result.meta[index]),
+        )
+        assert (
+            result.meta[index]["calibration"]
+            is not source.meta[source_index]["calibration"]
+        )
+    result.meta[(0, 0)]["calibration"]["nested"][1]["gain"] = "result-only"
+    assert (
+        source.meta[(0, 0) if not transposed else (0, 0)]["calibration"]["nested"][1][
+            "gain"
+        ]
+        != "result-only"
+    )
+    source_rows = source.cols if transposed else source.rows
+    source_cols = source.rows if transposed else source.cols
+    assert list(result.rows) == list(source_rows)
+    assert list(result.cols) == list(source_cols)
+    for key in source_rows:
+        _assert_deep_equal(dict(source_rows[key]), dict(result.rows[key]))
+        assert result.rows[key] is not source_rows[key]
+    for key in source_cols:
+        _assert_deep_equal(dict(source_cols[key]), dict(result.cols[key]))
+        assert result.cols[key] is not source_cols[key]
+    first_row_key = next(iter(result.rows))
+    result.rows[first_row_key]["calibration"]["nested"].append("result-only")
+    assert "result-only" not in source_rows[first_row_key]["calibration"]["nested"]
+
+
 def _slot_names(value) -> tuple[str, ...]:
     names: list[str] = []
     for cls in type(value).__mro__:
@@ -282,8 +374,8 @@ def _slot_names(value) -> tuple[str, ...]:
 
 
 def _observable_source_state(matrix):
-    """Return the complete observable source state for pure operations."""
-    state = dict(vars(matrix))
+    """Return project-owned public state, excluding third-party lazy caches."""
+    state = {}
     for name in (
         "unit",
         "meta",
@@ -352,23 +444,6 @@ def _observable_aliases(matrix):
             for tuple_index, item in enumerate(value):
                 visit(item, f"{path}[{tuple_index}]")
             return
-        if hasattr(value, "__dict__") and not isinstance(value, type):
-            aliases[path] = value_id
-            if value_id in seen:
-                return
-            seen.add(value_id)
-            for name, item in vars(value).items():
-                visit(item, f"{path}.{name}")
-            return
-        slots = _slot_names(value)
-        if slots:
-            aliases[path] = value_id
-            if value_id in seen:
-                return
-            seen.add(value_id)
-            for name in slots:
-                if hasattr(value, name):
-                    visit(getattr(value, name), f"{path}.{name}")
 
     for name, value in _observable_source_state(matrix).items():
         visit(value, name)
@@ -425,20 +500,6 @@ def _assert_deep_equal(expected, actual, _seen=None) -> None:
         for expected_item, actual_item in zip(expected, actual):
             _assert_deep_equal(expected_item, actual_item, _seen)
         return
-    slots = _slot_names(expected)
-    if slots:
-        assert type(actual) is type(expected)
-        for name in slots:
-            if hasattr(expected, name):
-                assert hasattr(actual, name)
-                _assert_deep_equal(
-                    getattr(expected, name), getattr(actual, name), _seen
-                )
-        return
-    if hasattr(expected, "__dict__") and not isinstance(expected, type):
-        assert type(actual) is type(expected)
-        _assert_deep_equal(vars(expected), vars(actual), _seen)
-        return
     assert actual == expected
 
 
@@ -452,6 +513,19 @@ def test_pure_alias_snapshot_accepts_unchanged_nested_provenance() -> None:
     cell = next(cell for cell in B0_CONTRACT if cell.operation == "shape")
     matrix = _matrix(cell)
     snapshot = _observable_source_snapshot(matrix)
+
+    _assert_source_unchanged(matrix, snapshot)
+
+
+def test_public_snapshot_ignores_third_party_lazy_caches() -> None:
+    """Astropy/GWpy implementation caches are outside the B0 mutation boundary."""
+    cell = next(cell for cell in B0_CONTRACT if cell.operation == "shape")
+    matrix = _matrix(cell)
+    channel = matrix.meta[0, 0].channel
+    channel._b0_lazy_cache = {"ready": False}
+    snapshot = _observable_source_snapshot(matrix)
+
+    channel._b0_lazy_cache["ready"] = True
 
     _assert_source_unchanged(matrix, snapshot)
 
@@ -711,6 +785,7 @@ def _assert_metadata(cell: ContractCell, matrix, result) -> None:
     for key in matrix.cols:
         if key in result.cols:
             assert result.cols[key] is not matrix.cols[key]
+    _assert_deep_metadata_payload(matrix, result)
 
 
 def _assert_object_metadata(cell: ContractCell, matrix, result) -> None:
@@ -725,9 +800,18 @@ def _assert_object_metadata(cell: ContractCell, matrix, result) -> None:
     assert result.name == name
     if cell.attrs_expectation is AttrsExpectation.DEEP_COPY:
         assert result.attrs is not matrix.attrs
-        assert result.attrs == matrix.attrs
+        _assert_deep_equal(matrix.attrs, result.attrs)
         if "contract" in matrix.attrs:
             assert result.attrs["contract"] is not matrix.attrs["contract"]
+            assert (
+                result.attrs["contract"]["nested"][1]
+                is not matrix.attrs["contract"]["nested"][1]
+            )
+            result.attrs["contract"]["nested"][1]["calibration"].append("result-only")
+            assert (
+                "result-only"
+                not in matrix.attrs["contract"]["nested"][1]["calibration"]
+            )
     elif cell.attrs_expectation is AttrsExpectation.SHARED:
         assert result.attrs is matrix.attrs
     elif cell.attrs_expectation is AttrsExpectation.PRESERVE:
@@ -821,6 +905,10 @@ def _assert_iteration_contract(
             assert row.attrs == matrix.attrs
             assert row.attrs is not matrix.attrs
             assert row.attrs["contract"] is not matrix.attrs["contract"]
+            row.attrs["contract"]["nested"][1]["calibration"].append("row-only")
+            assert (
+                "row-only" not in matrix.attrs["contract"]["nested"][1]["calibration"]
+            )
         else:
             assert cell.attrs_expectation is AttrsExpectation.EMPTY
             assert row.attrs == {}
@@ -914,7 +1002,7 @@ def execute_contract_cell(cell: ContractCell) -> ContractObservation:
 
 def test_b0_manifest_has_a_literal_cell_count_and_unique_ids() -> None:
     assert len(B0_CONTRACT) == EXPECTED_B0_CELL_COUNT
-    assert EXPECTED_B0_CELL_COUNT == 390
+    assert EXPECTED_B0_CELL_COUNT == 453
     ids = [cell.id for cell in B0_CONTRACT]
     assert len(ids) == len(set(ids))
 
@@ -1063,6 +1151,54 @@ def test_add_sub_scalar_cross_product_is_complete() -> None:
                             assert cell.exception_class is UnitConversionError
                         else:
                             assert cell.expected_result is ResultExpectation.MATRIX
+
+
+def test_non_scalar_power_cross_product_is_complete() -> None:
+    operands = {
+        Operand.NDARRAY,
+        Operand.PYTHON_LIST,
+        Operand.PYTHON_TUPLE,
+        Operand.VECTOR_QUANTITY,
+        Operand.SAME_CLASS_MATRIX,
+    }
+    for family in MatrixFamily:
+        for operand in operands:
+            for scenario in (
+                InputScenario.DEFAULT,
+                InputScenario.DIMENSIONLESS_MATRIX,
+            ):
+                for surface, mutation in (
+                    (Surface.ARITHMETIC, Mutation.PURE),
+                    (Surface.INPLACE, Mutation.INPLACE),
+                ):
+                    matches = [
+                        cell
+                        for cell in B0_CONTRACT
+                        if cell.family is family
+                        and cell.operation == "power"
+                        and cell.operand is operand
+                        and cell.surface is surface
+                        and cell.mutation is mutation
+                        and cell.scenario is scenario
+                    ]
+                    assert len(matches) == 1
+                    assert matches[0].exception_class is UnitConversionError
+        for scenario in (
+            InputScenario.DEFAULT,
+            InputScenario.DIMENSIONLESS_MATRIX,
+        ):
+            reflected = [
+                cell
+                for cell in B0_CONTRACT
+                if cell.family is family
+                and cell.operation == "power"
+                and cell.operand is Operand.PYTHON_SCALAR
+                and cell.surface is Surface.REFLECTED
+                and cell.side is Side.LEFT
+                and cell.scenario is scenario
+            ]
+            assert len(reflected) == 1
+            assert reflected[0].exception_class is TypeError
 
 
 def test_direct_ufunc_cells_honestly_pin_b0_rejection() -> None:

@@ -3,7 +3,11 @@
 Captured: 2026-08-25.  This is the compact tracked record for issue #676; the
 raw JSON capture is intentionally not tracked.  The 318-cell B0 contract
 candidate associated with the earlier review was rejected by physics/data-model
-review; this benchmark record does not validate that candidate's semantics.
+review.  The later 390-cell candidate was also superseded after final review
+found incomplete nested metadata/attrs and exponent-boundary coverage.  The
+current executable B0 ledger contains exactly 453 cells; this historical
+benchmark capture does not validate the semantics of any rejected candidate
+or measure the later contract fixes.
 
 - fixed SHA: `6a13900672900551ccaf1b18fe78b9ce6f062e29`
 - recorded raw capture SHA-256: `5fcdab552f8c910812335e81dfb4e0f170543f69ba78f18a63784191a80bf3b5`
