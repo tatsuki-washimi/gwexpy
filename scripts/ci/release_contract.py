@@ -6,6 +6,7 @@ import argparse
 import copy
 import json
 import re
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -13,7 +14,6 @@ CONTRACT_PATH = Path(__file__).with_name("release_contracts.json")
 CONTRACT_SCHEMA = "gwexpy-release-contracts-v1"
 RELEASE_TAG = re.compile(r"^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
 ARTIFACT_PREFIX = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-PROTECTED_REF = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9._/-]*[A-Za-z0-9])?$")
 CONTRACT_KEYS = {
     "plan_path",
     "review_evidence_path",
@@ -73,13 +73,24 @@ def _protected_refs(values: object) -> bool:
         values == sorted(set(values), key=lambda item: item.encode("utf-8"))
         and "main" in values
         and all(
-            PROTECTED_REF.fullmatch(value) is not None
-            and not value.startswith("refs/")
-            and ".." not in value
-            and "@{" not in value
+            not value.startswith("refs/") and _safe_branch_ref(value)
             for value in values
         )
     )
+
+
+def _safe_branch_ref(value: str) -> bool:
+    """Return whether *value* satisfies Git's complete branch-name grammar."""
+    try:
+        result = subprocess.run(
+            ["git", "check-ref-format", "--branch", value],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
+    except OSError:
+        return False
+    return result.returncode == 0
 
 
 def _validate_contract(tag: str, contract: object) -> dict[str, Any]:

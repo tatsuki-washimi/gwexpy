@@ -150,6 +150,10 @@ def test_release_contract_loader_rejects_unsafe_artifact_prefix(
         ["main", "maint/0.2", "maint/0.1"],
         ["main", "../maint/0.2"],
         ["main", "refs/heads/maint/0.2"],
+        ["main", "main//evil"],
+        ["main", ".hidden"],
+        ["main", "main/.hidden"],
+        ["main", "main/foo.lock"],
         ["main", 2],
     ],
 )
