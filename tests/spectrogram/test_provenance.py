@@ -347,6 +347,139 @@ def test_hdf5_core_write_failure_restores_existing_dataset_and_sidecar(
         assert h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE] == before_sidecar
 
 
+def test_hdf5_group_collision_is_rejected_without_mutating_the_group(tmp_path) -> None:
+    spec = _spectrogram()
+    spec.provenance = _provenance()
+    path = tmp_path / "group-collision.hdf5"
+    with h5py.File(path, "w") as h5file:
+        group = h5file.create_group("provenance")
+        group.attrs["sentinel"] = "keep"
+
+        with pytest.raises(ValueError, match="existing HDF5 group"):
+            spec.write(h5file, format="hdf5", path="provenance", overwrite=True)
+
+        assert isinstance(h5file["provenance"], h5py.Group)
+        assert h5file["provenance"].attrs["sentinel"] == "keep"
+        assert not any(key.startswith("__gwexpy_provenance_") for key in h5file)
+
+
+def test_hdf5_handle_rollback_preserves_hard_link_identity(
+    tmp_path, monkeypatch
+) -> None:
+    original = _spectrogram()
+    original.provenance = _provenance()
+    replacement = original + 100
+    replacement.provenance = _provenance()
+    path = tmp_path / "hard-links.hdf5"
+
+    with h5py.File(path, "w") as h5file:
+        original.write(h5file, format="hdf5", path="disk")
+        h5file["alias"] = h5file["disk"]
+        before_address = h5py.h5o.get_info(h5file["disk"].id).addr
+
+        monkeypatch.setattr(
+            provenance_hdf5,
+            "_commit_sidecar",
+            lambda *args, **kwargs: (_ for _ in ()).throw(
+                RuntimeError("sidecar failed")
+            ),
+        )
+        with pytest.raises(RuntimeError, match="sidecar failed"):
+            replacement.write(
+                h5file,
+                format="hdf5",
+                path="disk",
+                overwrite=True,
+            )
+
+        assert h5py.h5o.get_info(h5file["disk"].id).addr == before_address
+        assert h5py.h5o.get_info(h5file["alias"].id).addr == before_address
+        np.testing.assert_equal(h5file["disk"][()], original.value)
+        assert not any(key.startswith("__gwexpy_provenance_") for key in h5file)
+
+
+def test_hdf5_overwrite_replaces_an_existing_non_hdf5_path(tmp_path) -> None:
+    spec = _spectrogram()
+    spec.provenance = _provenance()
+    path = tmp_path / "replace-non-hdf5.hdf5"
+    path.write_bytes(b"not an HDF5 file")
+
+    spec.write(path, format="hdf5", overwrite=True)
+
+    assert Spectrogram.read(path, format="hdf5").provenance == _provenance()
+
+
+def test_hdf5_path_overwrite_preflights_an_existing_hdf5_sidecar(tmp_path) -> None:
+    original = _spectrogram()
+    path = tmp_path / "overwrite-preflight.hdf5"
+    original.write(path, format="hdf5")
+    with h5py.File(path, "r+") as h5file:
+        before = h5file["provenance"][()].copy()
+        h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE] = "not-json"
+
+    replacement = original + 100
+    replacement.provenance = _provenance()
+    with pytest.raises(ProvenanceSidecarError, match="invalid"):
+        replacement.write(path, format="hdf5", overwrite=True)
+
+    with h5py.File(path, "r") as h5file:
+        np.testing.assert_equal(h5file["provenance"][()], before)
+
+
+def test_hdf5_append_does_not_copy_the_existing_file(tmp_path, monkeypatch) -> None:
+    original = Spectrogram(np.ones((512, 512)), dt=1, f0=0, df=1, name="large-disk")
+    original.provenance = _provenance()
+    path = tmp_path / "large-append.hdf5"
+    original.write(path, format="hdf5")
+
+    def fail_temporary_file(*args, **kwargs) -> None:
+        raise AssertionError("append must not make a whole-file backup")
+
+    monkeypatch.setattr(provenance_hdf5.tempfile, "mkstemp", fail_temporary_file)
+    replacement = original + 1
+    replacement.provenance = _provenance()
+    replacement.write(path, format="hdf5", append=True, overwrite=True)
+
+    with h5py.File(path, "r") as h5file:
+        np.testing.assert_equal(h5file["large-disk"][()], replacement.value)
+        assert not any(key.startswith("__gwexpy_provenance_") for key in h5file)
+
+
+def test_hdf5_existing_path_rejection_starts_no_transaction(
+    tmp_path, monkeypatch
+) -> None:
+    spec = _spectrogram()
+    path = tmp_path / "mode-rejection.hdf5"
+    spec.write(path, format="hdf5")
+
+    def fail_transaction(*args, **kwargs) -> None:
+        raise AssertionError("rejected writes must not start a transaction")
+
+    monkeypatch.setattr(provenance_hdf5.tempfile, "mkstemp", fail_transaction)
+    with pytest.raises(OSError, match="File exists"):
+        spec.write(path, format="hdf5")
+
+
+def test_hdf5_path_replacement_cleans_its_temporary_file_on_failure(tmp_path) -> None:
+    original = _spectrogram()
+    original.provenance = _provenance()
+    path = tmp_path / "temporary-cleanup.hdf5"
+    original.write(path, format="hdf5")
+
+    replacement = original + 100
+    replacement.provenance = _provenance()
+    with pytest.raises(ValueError):
+        replacement.write(
+            path,
+            format="hdf5",
+            overwrite=True,
+            compression="not-a-filter",
+        )
+
+    assert not list(tmp_path.glob(".temporary-cleanup.hdf5.gwexpy-*.hdf5"))
+    assert Spectrogram.read(path, format="hdf5").provenance == _provenance()
+
+
 def test_hdf5_sidecar_size_is_bounded(tmp_path) -> None:
     spec = _spectrogram()
     path = tmp_path / "oversized.hdf5"

@@ -18,6 +18,7 @@ arbitrary code during loading.
 """
 
 from collections.abc import Callable
+from functools import partial
 from typing import Any
 
 import numpy as np
@@ -115,5 +116,7 @@ def spectrogram_reduce_args(
     data = np.asarray(sg.value)
     provenance = getattr(sg, "provenance", None)
     if provenance is None:
-        return _build_gwpy_spectrogram, (data, kwargs)
+        from gwpy.spectrogram import Spectrogram as GwpySpectrogram
+
+        return partial(GwpySpectrogram, **kwargs), (data,)
     return _build_gwexpy_spectrogram, (data, kwargs, provenance)

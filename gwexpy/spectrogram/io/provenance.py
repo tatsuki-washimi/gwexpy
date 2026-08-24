@@ -10,15 +10,16 @@ from __future__ import annotations
 
 import json
 import os
-import shutil
 import tempfile
 import threading
 import uuid
+import weakref
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import h5py
 from gwpy.io import hdf5 as gwpy_hdf5
+from gwpy.io.hdf5 import identify_hdf5
 from gwpy.io.registry import default_registry as io_registry
 from gwpy.spectrogram import Spectrogram as BaseSpectrogram
 
@@ -33,10 +34,13 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 
-# A single re-entrant lock is deliberately bounded: it serializes every
-# in-process sidecar read-modify-write, including callers that mix paths and
-# open handles for the same file, without retaining a growing lock registry.
-_SIDECAR_LOCK = threading.RLock()
+# Locks are keyed by the HDF5 file identity and held only while a write
+# transaction updates data plus its root sidecar. Weak values drop idle locks,
+# so the registry does not retain an unbounded history of paths.
+_FILE_LOCKS: weakref.WeakValueDictionary[str, threading.RLock] = (
+    weakref.WeakValueDictionary()
+)
+_FILE_LOCKS_GUARD = threading.Lock()
 
 
 def _decode_sidecar(raw: Any) -> str:
@@ -129,7 +133,53 @@ def _rollback_group(h5file: h5py.File) -> h5py.Group:
             return h5file.create_group(path)
 
 
-def _restore_dataset(
+def _file_lock_key(target: str | Path | h5py.HLObject) -> str:
+    if isinstance(target, (str, Path)):
+        return os.path.abspath(os.fspath(target))
+    h5file = target.file
+    return h5file.filename or f"h5-object:{h5file.id.id}"
+
+
+def _file_lock(target: str | Path | h5py.HLObject) -> threading.RLock:
+    """Return the transient in-process lock for one HDF5 file/container."""
+    key = _file_lock_key(target)
+    with _FILE_LOCKS_GUARD:
+        lock = _FILE_LOCKS.get(key)
+        if lock is None:
+            lock = threading.RLock()
+            _FILE_LOCKS[key] = lock
+        return lock
+
+
+def _target_object(
+    container: h5py.Group | h5py.File,
+    candidate_path: str | None,
+) -> h5py.Dataset | None:
+    """Preflight an existing target without ever treating a group as data."""
+    if candidate_path is None or candidate_path not in container:
+        return None
+    target = container[candidate_path]
+    if isinstance(target, h5py.Group):
+        raise ValueError(
+            f"cannot write Spectrogram to existing HDF5 group {target.name!r}"
+        )
+    if not isinstance(target, h5py.Dataset):
+        raise ValueError(f"unsupported existing HDF5 target {target.name!r}")
+    return target
+
+
+def _create_rollback_hard_link(h5file: h5py.File, dataset: h5py.Dataset) -> h5py.Group:
+    """Keep the original object alive without copying data or link topology."""
+    rollback = _rollback_group(h5file)
+    try:
+        rollback["dataset"] = dataset
+    except BaseException:
+        del h5file[rollback.name]
+        raise
+    return rollback
+
+
+def _restore_dataset_link(
     container: h5py.Group | h5py.File,
     h5file: h5py.File,
     candidate_path: str | None,
@@ -137,16 +187,14 @@ def _restore_dataset(
     rollback: h5py.Group | None,
 ) -> None:
     if candidate_path is not None and candidate_path in container:
-        del container[candidate_path]
+        candidate = container[candidate_path]
+        if isinstance(candidate, h5py.Dataset):
+            del container[candidate_path]
     if prior_path is None:
         return
     if rollback is None:  # pragma: no cover - internal rollback invariant
         raise RuntimeError("missing HDF5 provenance rollback snapshot")
-    parent_path, _, leaf = prior_path.rpartition("/")
-    parent = h5file[parent_path or "/"]
-    if leaf in parent:
-        del parent[leaf]
-    parent.copy(rollback["dataset"], leaf)
+    h5file.move(rollback["dataset"].name, prior_path)
 
 
 def _write_to_open_container(
@@ -160,21 +208,24 @@ def _write_to_open_container(
     h5file = container.file
     _read_sidecar(h5file)  # fail before the core writer changes anything
     candidate_path = path if path is not None else getattr(array, "name", None)
+    existing = _target_object(container, candidate_path)
+    if existing is not None and not kwargs.get("overwrite", False):
+        # Match GWpy's normal collision error without creating a temporary
+        # hard link or touching the sidecar.
+        return writer(array, container, path=path, **kwargs)
+
     prior_path: str | None = None
     rollback: h5py.Group | None = None
-    if candidate_path is not None and candidate_path in container:
-        old = container[candidate_path]
-        if isinstance(old, h5py.Dataset):
-            prior_path = old.name
-            rollback = _rollback_group(h5file)
-            h5file.copy(old, rollback, name="dataset")
     sidecar_snapshot = _sidecar_attr_snapshot(h5file)
+    if existing is not None:
+        prior_path = existing.name
+        rollback = _create_rollback_hard_link(h5file, existing)
     try:
         dataset = writer(array, container, path=path, **kwargs)
         _commit_sidecar(h5file, dataset, array.provenance)
         return dataset
     except BaseException:
-        _restore_dataset(container, h5file, candidate_path, prior_path, rollback)
+        _restore_dataset_link(container, h5file, candidate_path, prior_path, rollback)
         _restore_sidecar_attr(h5file, sidecar_snapshot)
         raise
     finally:
@@ -189,34 +240,34 @@ def _write_path_transaction(
     writer: Callable[..., h5py.Dataset],
     kwargs: dict[str, Any],
 ) -> h5py.Dataset:
-    """Use a full-file backup to roll back a pathname write on failure."""
+    """Write replacement paths to a complete sibling temp file then replace."""
     filepath = Path(target)
     existed = filepath.exists()
-    backup_name: str | None = None
-    if existed:
-        with h5py.File(filepath, "r") as h5file:
-            _read_sidecar(h5file)
-        descriptor, backup_name = tempfile.mkstemp(
-            prefix="gwexpy-provenance-", suffix=".hdf5"
-        )
-        os.close(descriptor)
-        shutil.copy2(filepath, backup_name)
     append = bool(kwargs.get("append", False))
     overwrite = bool(kwargs.get("overwrite", False))
     if existed and not (append or overwrite):
         raise OSError(f"File exists: {filepath}")
-    try:
-        with h5py.File(filepath, "a" if append else "w") as h5file:
+    if existed and append:
+        with h5py.File(filepath, "r+") as h5file:
             return _write_to_open_container(array, h5file, path, writer, kwargs)
-    except BaseException:
-        if existed and backup_name is not None:
-            shutil.copy2(backup_name, filepath)
-        elif filepath.exists():
-            filepath.unlink()
-        raise
+    if existed and h5py.is_hdf5(filepath):
+        with h5py.File(filepath, "r") as h5file:
+            _read_sidecar(h5file)
+
+    descriptor, temporary_name = tempfile.mkstemp(
+        dir=filepath.parent,
+        prefix=f".{filepath.name}.gwexpy-",
+        suffix=".hdf5",
+    )
+    os.close(descriptor)
+    try:
+        with h5py.File(temporary_name, "w") as h5file:
+            result = _write_to_open_container(array, h5file, path, writer, kwargs)
+        os.replace(temporary_name, filepath)
+        return result
     finally:
-        if backup_name is not None:
-            os.unlink(backup_name)
+        if os.path.exists(temporary_name):
+            os.unlink(temporary_name)
 
 
 def register_hdf5_provenance_io(cls: type[Any]) -> None:
@@ -227,18 +278,17 @@ def register_hdf5_provenance_io(cls: type[Any]) -> None:
     def read_hdf5_spectrogram(
         source: Any, path: str | None = None, **kwargs: Any
     ) -> Any:
-        with _SIDECAR_LOCK:
-            if isinstance(source, (str, Path)):
-                with h5py.File(source, "r") as h5file:
-                    provenance = _sidecar_provenance(h5file, path)
-                    result = base_reader(h5file, path=path, **kwargs)
-            elif isinstance(source, h5py.HLObject):
-                provenance = _sidecar_provenance(source, path)
-                result = base_reader(source, path=path, **kwargs)
-            else:
-                with h5py.File(source, "r") as h5file:
-                    provenance = _sidecar_provenance(h5file, path)
-                    result = base_reader(h5file, path=path, **kwargs)
+        if isinstance(source, (str, Path)):
+            with h5py.File(source, "r") as h5file:
+                provenance = _sidecar_provenance(h5file, path)
+                result = base_reader(h5file, path=path, **kwargs)
+        elif isinstance(source, h5py.HLObject):
+            provenance = _sidecar_provenance(source, path)
+            result = base_reader(source, path=path, **kwargs)
+        else:
+            with h5py.File(source, "r") as h5file:
+                provenance = _sidecar_provenance(h5file, path)
+                result = base_reader(h5file, path=path, **kwargs)
         result = result.view(cls)
         if provenance is not None:
             result.provenance = provenance
@@ -247,10 +297,11 @@ def register_hdf5_provenance_io(cls: type[Any]) -> None:
     def write_hdf5_spectrogram(
         array: Any, target: Any, path: str | None = None, **kwargs: Any
     ) -> h5py.Dataset:
-        with _SIDECAR_LOCK:
-            if isinstance(target, (str, Path)):
+        if isinstance(target, (str, Path)):
+            with _file_lock(target):
                 return _write_path_transaction(array, target, path, base_writer, kwargs)
-            if isinstance(target, (h5py.File, h5py.Group)):
+        if isinstance(target, (h5py.File, h5py.Group)):
+            with _file_lock(target):
                 return _write_to_open_container(
                     array, target, path, base_writer, kwargs
                 )
@@ -258,5 +309,4 @@ def register_hdf5_provenance_io(cls: type[Any]) -> None:
 
     io_registry.register_reader("hdf5", cls, read_hdf5_spectrogram, force=True)
     io_registry.register_writer("hdf5", cls, write_hdf5_spectrogram, force=True)
-    identifier = io_registry._identifiers[("hdf5", BaseSpectrogram)]
-    io_registry.register_identifier("hdf5", cls, identifier, force=True)
+    io_registry.register_identifier("hdf5", cls, identify_hdf5, force=True)

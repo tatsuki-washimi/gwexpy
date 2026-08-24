@@ -56,6 +56,19 @@ def test_pickle_exact_timeseries_preserves_gwexpy_type_and_epoch(protocol):
     np.testing.assert_array_equal(restored.value, series.value)
 
 
+def test_provenance_free_spectrogram_pickle_uses_only_gwpy_callables():
+    sg = Spectrogram(
+        np.arange(6.0).reshape(2, 3),
+        times=np.arange(2.0),
+        frequencies=np.arange(3.0),
+        unit="m",
+    )
+
+    payload = pickle.dumps(sg)
+    assert b"gwexpy.io.pickle_compat" not in payload
+    assert isinstance(pickle.loads(payload), GwpySpectrogram)
+
+
 def test_pickle_collections_to_gwpy_or_builtin():
     ts = TimeSeries(np.arange(3.0), sample_rate=1.0, t0=0, unit="m")
     tsd = TimeSeriesDict({"H1:TEST": ts})
