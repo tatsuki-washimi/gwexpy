@@ -144,6 +144,21 @@ def test_provenance_is_read_when_hdf5_format_is_inferred(tmp_path, suffix: str) 
     assert restored.provenance == _provenance()
 
 
+def test_hdf_suffix_is_not_claimed_for_implicit_hdf5_dispatch(tmp_path) -> None:
+    assert not Spectrogram._is_hdf5_io(tmp_path / "provenance.hdf", None)
+
+
+def test_provenance_survives_explicit_hdf_format(tmp_path) -> None:
+    spec = _spectrogram()
+    spec.provenance = _provenance()
+    path = tmp_path / "provenance-explicit.hdf"
+
+    spec.write(path, format="hdf5")
+    restored = Spectrogram.read(path, format="hdf5")
+
+    assert restored.provenance == _provenance()
+
+
 @pytest.mark.parametrize("layout", ["gwpy", "group"])
 def test_provenance_survives_hdf5_collection_roundtrip(tmp_path, layout: str) -> None:
     spec = _spectrogram()

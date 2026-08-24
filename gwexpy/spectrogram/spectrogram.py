@@ -15,7 +15,7 @@ from gwexpy.types.mixin._plot_mixin import PlotMixin
 
 from .provenance import HDF5_PROVENANCE_ATTRIBUTE, validated_provenance
 
-_HDF5_SUFFIXES = frozenset({".h5", ".hdf", ".hdf5"})
+_HDF5_SUFFIXES = frozenset({".h5", ".hdf5"})
 
 if TYPE_CHECKING:
     from astropy.units import Quantity
