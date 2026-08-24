@@ -10,6 +10,33 @@ from gwexpy.frequencyseries import FrequencySeries
 from gwexpy.signal.spectral import median_mean
 from gwexpy.timeseries import TimeSeries
 
+PERIODIC_HANN_8 = np.array(
+    [
+        0.0,
+        0.14644660940672627,
+        0.5,
+        0.8535533905932737,
+        1.0,
+        0.8535533905932737,
+        0.5,
+        0.14644660940672627,
+    ],
+)
+
+# Frozen values from a direct lal.REAL8AverageSpectrumMedianMean call with
+# the deterministic fixture below, segment length 8, stride 4, and the
+# periodic Hann window above.  The wrapper registered by GWexpy is not used
+# to produce this independent primary-backend oracle.
+DIRECT_LAL_MEDIAN_MEAN_ORACLE = np.array(
+    [
+        5.2039104290153642e-04,
+        4.5514643305049218e-01,
+        1.3215889243883394e-01,
+        1.4029171593092043e-03,
+        2.2255780045281741e-05,
+    ],
+)
+
 
 def _fixture_timeseries() -> TimeSeries:
     """Build a deterministic, exactly segmentable physical fixture."""
@@ -61,7 +88,12 @@ def test_median_mean_public_dispatch_contract_without_lal(monkeypatch):
     asd = timeseries.asd(method="median-mean", **kwargs)
 
     assert len(backend_calls) == 2
-    assert all(call[0] == 8 for call in backend_calls)
+    for segmentlength, noverlap, window, plan in backend_calls:
+        assert segmentlength == 8
+        assert noverlap == 4
+        assert isinstance(window, np.ndarray)
+        np.testing.assert_allclose(window, PERIODIC_HANN_8, rtol=0, atol=0)
+        assert plan is None
     assert isinstance(psd, FrequencySeries)
     assert isinstance(asd, FrequencySeries)
     assert psd.unit == u.V**2 / u.Hz
@@ -74,6 +106,93 @@ def test_median_mean_public_dispatch_contract_without_lal(monkeypatch):
         assert result.name == timeseries.name
         assert result.channel == timeseries.channel
         assert result.epoch == timeseries.epoch
+
+
+def _direct_lal_median_mean(timeseries: TimeSeries) -> np.ndarray:
+    """Evaluate the public LAL median-mean routine independently."""
+    lal = pytest.importorskip("lal")
+    lal_timeseries = timeseries.to_lal()
+    sequence = lal.CreateREAL8Sequence(PERIODIC_HANN_8.size)
+    sequence.data = PERIODIC_HANN_8.copy()
+    window = lal.CreateREAL8WindowFromSequence(sequence)
+    plan = lal.CreateForwardREAL8FFTPlan(8, 1)
+    spectrum = lal.CreateREAL8FrequencySeries(
+        timeseries.name or "",
+        lal_timeseries.epoch,
+        0.0,
+        1.0 / 8,
+        lal.StrainUnit,
+        5,
+    )
+    assert (
+        lal.REAL8AverageSpectrumMedianMean(
+            spectrum,
+            lal_timeseries,
+            8,
+            4,
+            window,
+            plan,
+        )
+        == 0
+    )
+    return np.asarray(spectrum.data.data).copy()
+
+
+def test_median_mean_public_psd_matches_direct_lal_oracle():
+    """Match an independent LAL calculation, including PSD metadata."""
+    pytest.importorskip("lal")
+    timeseries = _fixture_timeseries()
+    psd = timeseries.psd(
+        method="median-mean",
+        fftlength=1,
+        overlap=0.5,
+        window="hann",
+    )
+
+    reference = _direct_lal_median_mean(timeseries)
+    np.testing.assert_allclose(
+        reference,
+        DIRECT_LAL_MEDIAN_MEAN_ORACLE,
+        rtol=1e-6,
+        atol=0,
+    )
+    np.testing.assert_allclose(psd.value, reference, rtol=1e-6, atol=0)
+    assert isinstance(psd, FrequencySeries)
+    assert psd.unit == u.V**2 / u.Hz
+    np.testing.assert_allclose(psd.frequencies.value, np.arange(5, dtype=float))
+    assert psd.name == timeseries.name
+    assert psd.channel == timeseries.channel
+    assert psd.epoch == timeseries.epoch
+
+
+def test_median_mean_public_psd_matches_direct_pycbc_oracle():
+    """Match PyCBC's independent median-mean implementation when available."""
+    pycbc_psd = pytest.importorskip("pycbc.psd")
+    from pycbc.types import TimeSeries as PyCBCTimeSeries
+
+    timeseries = _fixture_timeseries()
+    psd = timeseries.psd(
+        method="median-mean",
+        fftlength=1,
+        overlap=0.5,
+        window="hann",
+    )
+    reference = pycbc_psd.welch(
+        PyCBCTimeSeries(np.asarray(timeseries.value), delta_t=timeseries.dt.value),
+        seg_len=8,
+        seg_stride=4,
+        window=PERIODIC_HANN_8,
+        avg_method="median-mean",
+        require_exact_data_fit=True,
+    )
+    reference_values = np.asarray(reference.numpy())
+    np.testing.assert_allclose(
+        reference_values,
+        DIRECT_LAL_MEDIAN_MEAN_ORACLE,
+        rtol=1e-6,
+        atol=0,
+    )
+    np.testing.assert_allclose(psd.value, reference_values, rtol=1e-6, atol=0)
 
 
 def test_median_mean_psd_and_asd_preserve_contract():
