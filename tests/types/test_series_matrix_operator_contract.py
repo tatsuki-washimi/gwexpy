@@ -168,6 +168,50 @@ def test_structural_metadata_copies_split_shared_nested_cell_payloads(
     assert matrix.meta[0, 0]["shared_payload"]["nested"]["state"] == "source"
 
 
+def _assert_independent_sample_axis(source, result) -> None:
+    """Mutate a result axis and prove it cannot affect the source axis."""
+    before = source.xindex.copy()
+    assert result.xindex is not source.xindex
+    result.xindex[0] = result.xindex[0] + 1 * result.xindex.unit
+    np.testing.assert_array_equal(source.xindex, before)
+
+
+@pytest.mark.parametrize(
+    "operation",
+    [
+        pytest.param(lambda matrix: matrix + 2 * u.V, id="pure"),
+        pytest.param(lambda matrix: 2 * u.s * matrix, id="quantity-left"),
+        pytest.param(lambda matrix: matrix < 100 * u.V, id="comparison"),
+        pytest.param(lambda matrix: matrix.copy(), id="copy"),
+        pytest.param(lambda matrix: matrix.conj(), id="conj"),
+        pytest.param(lambda matrix: matrix[..., :1], id="slicing"),
+    ],
+)
+@pytest.mark.parametrize(
+    "factory", list(SERIES_FAMILY_FACTORIES.values()), ids=list(SERIES_FAMILY_FACTORIES)
+)
+def test_logical_series_results_own_their_sample_axis(factory, operation):
+    """Every out-of-place SeriesMatrix result owns a non-aliased sample axis."""
+    matrix = factory()
+    _assert_independent_sample_axis(matrix, operation(matrix))
+
+
+@pytest.mark.parametrize(
+    "factory", list(SERIES_FAMILY_FACTORIES.values()), ids=list(SERIES_FAMILY_FACTORIES)
+)
+def test_inplace_series_results_retain_the_existing_sample_axis(factory):
+    """B0 in-place operations retain the source object and its existing axis."""
+    matrix = factory()
+    axis = matrix.xindex
+    before = axis.copy()
+
+    result = matrix.__iadd__(2 * u.V)
+
+    assert result is matrix
+    assert result.xindex is axis
+    np.testing.assert_array_equal(result.xindex, before)
+
+
 @pytest.mark.parametrize(
     "operation",
     [

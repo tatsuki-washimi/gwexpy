@@ -69,6 +69,14 @@ def _slice_meta_keys(keys: list[str], key: Any, axis_len: int) -> list[str]:
     return deepcopy(keys)
 
 
+def _copy_axis_index(index: Any) -> Any:
+    """Copy a sliced axis without assuming a particular GWpy index type."""
+    try:
+        return index.copy()
+    except (IndexError, KeyError, TypeError, ValueError, AttributeError):
+        return deepcopy(index)
+
+
 class SeriesMatrixIndexingMixin:
     """Mixin for SeriesMatrix indexing and slicing operations."""
 
@@ -214,9 +222,9 @@ class SeriesMatrixIndexingMixin:
         # 6. Slice xindex
         if self.xindex is not None:
             if isinstance(s, (int, np.integer)):
-                new_xindex = self.xindex[s : s + 1]
+                new_xindex = _copy_axis_index(self.xindex[s : s + 1])
             else:
-                new_xindex = self.xindex[s]
+                new_xindex = _copy_axis_index(self.xindex[s])
         else:
             new_xindex = None
 

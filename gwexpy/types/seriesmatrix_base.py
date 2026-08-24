@@ -743,7 +743,7 @@ class SeriesMatrix(  # type: ignore[misc]
                 meta_array[i, j] = MetaData(**payload)
         return self.__class__(
             broadcast,
-            xindex=self.xindex,
+            xindex=_copy_xindex(self.xindex),
             meta=MetaDataMatrix(
                 meta_array,
                 row_keys=deepcopy(getattr(self.meta, "row_keys", None)),
@@ -900,7 +900,7 @@ class SeriesMatrix(  # type: ignore[misc]
         cols = self.cols
         return self.__class__(
             result_values,
-            xindex=self.xindex,
+            xindex=_copy_xindex(self.xindex),
             meta=result_meta_matrix,
             units=result_meta_matrix.units,
             rows=_copy_metadata_dict(rows, "row") if rows else rows,

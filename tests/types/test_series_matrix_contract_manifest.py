@@ -922,11 +922,20 @@ def _assert_axes(cell: ContractCell, matrix, result) -> None:
             target.xindex.to_value(target.xindex.unit),
             matrix.xindex.to_value(matrix.xindex.unit),
         )
+        if target is not matrix:
+            source_xindex = matrix.xindex.copy()
+            assert target.xindex is not matrix.xindex
+            target.xindex[0] = target.xindex[0] + 1 * target.xindex.unit
+            np.testing.assert_array_equal(matrix.xindex, source_xindex)
     elif expectation is AxisExpectation.SLICE_SAMPLE_AXIS:
         np.testing.assert_array_equal(
             target.xindex.to_value(target.xindex.unit),
             matrix.xindex.to_value(matrix.xindex.unit)[:1],
         )
+        assert target.xindex is not matrix.xindex
+        source_xindex = matrix.xindex.copy()
+        target.xindex[0] = target.xindex[0] + 1 * target.xindex.unit
+        np.testing.assert_array_equal(matrix.xindex, source_xindex)
     elif expectation is AxisExpectation.TRANSPOSE_ROW_COLUMN_SAMPLE:
         assert list(target.rows.keys()) == list(matrix.cols.keys())
         assert list(target.cols.keys()) == list(matrix.rows.keys())
