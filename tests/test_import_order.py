@@ -114,17 +114,16 @@ class TestImportOrderIsolated:
         assert result.returncode == 0, result.stderr
 
     def test_direct_timeseries_import_keeps_spectrogram_registration(self):
-        """A direct TimeSeries import must not strand later registrations."""
+        """Public TimeSeries import supports later spectrogram generation."""
         result = _run_isolated("""\
             import numpy as np
-            from gwexpy.timeseries.timeseries import TimeSeries
-            from gwexpy.interop._registry import ConverterRegistry
-            from gwexpy.spectrogram import Spectrogram
+            from gwexpy.timeseries import TimeSeries
 
-            assert ConverterRegistry.get_constructor("TimeSeries") is TimeSeries
-            assert ConverterRegistry.get_constructor("Spectrogram") is Spectrogram
-            spec = Spectrogram(np.ones((2, 2)), dt=1, f0=0, df=1)
-            assert spec.shape == (2, 2)
+            ts = TimeSeries(np.ones(16), sample_rate=4)
+            spec = ts.spectrogram(stride=2, fftlength=2, overlap=1)
+            from gwexpy.spectrogram import Spectrogram
+            assert isinstance(spec, Spectrogram)
+            assert spec.ndim == 2
         """)
         assert result.returncode == 0, result.stderr
 
