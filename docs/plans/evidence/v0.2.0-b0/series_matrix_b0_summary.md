@@ -10,6 +10,8 @@ raw JSON capture is intentionally not tracked.
 - protocol: 3 warm-ups, 7 independent child processes, at least 250 ms per
   measured batch, up to 3 attempts, and a 5% MAD/median stability threshold
 - result: all six operations were stable; the stability gate was adoptable
+- approval: this B0 data-model contract requires explicit human D21/data-model
+  sign-off before merge or release; AI review is advisory and cannot provide it
 
 | Operation | Median seconds | MAD seconds |
 | --- | ---: | ---: |

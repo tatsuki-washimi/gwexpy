@@ -150,9 +150,17 @@ applies the stability gate before numeric comparison, so any unstable baseline
 or candidate operation is non-adoptable.
 
 Candidate evidence also accepts a SHA-256 over an explicitly supplied,
-target-relative frozen runtime-file set.  A B0 result is marked
-`decision: pending` and `issue_637: not evaluated in B0`; the current frozen
-slice evidence is truthfully marked unstable and
-`stability_gate.adoptable: false`.  It must never claim that the #637 candidate
-passed.  A clean freeze recapture is required before numeric adoption work.
+target-relative frozen runtime-file set.  The B0 capture summarized in
+`docs/plans/evidence/v0.2.0-b0/series_matrix_b0_summary.md` is fixed at
+`6a13900672900551ccaf1b18fe78b9ce6f062e29`, has raw-capture digest
+`5fcdab552f8c910812335e81dfb4e0f170543f69ba78f18a63784191a80bf3b5`,
+and records all six operations as stable with an adoptable stability gate.
+Its `decision: pending` and `issue_637: not evaluated in B0` fields do not
+adopt or evaluate a #637 candidate.  A separate B1 capture and comparison are
+required before any numeric adoption claim.
 
+## D21 data-model approval
+
+This B0 contract freezes unit, metadata, axis, label, and mutation semantics.
+It requires explicit human D21/data-model sign-off before merge or release.
+AI review is advisory and cannot provide that sign-off.
