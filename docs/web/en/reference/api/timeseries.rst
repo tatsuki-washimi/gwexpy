@@ -42,6 +42,10 @@ cannot be combined with ``t0``, ``epoch``, ``x0``, or ``times``.
 MNE conversions preserve this metadata for in-memory ``Raw`` round trips;
 MNE file serialization is outside this exact-epoch contract.
 
+Pickles of exact-epoch objects preserve their GWexpy type and therefore
+require GWexpy when unpickled. Legacy objects without exact epoch authority
+retain the project's GWpy-only pickle portability.
+
 .. autoclass:: TimeSeries
    :no-index:
    :members:

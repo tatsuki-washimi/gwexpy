@@ -192,33 +192,63 @@ def _raw_channel_epoch(raw: Any, name: str) -> int | None:
     epochs = _raw_exact_epochs(raw)
     if name not in epochs:
         return None
-    return epochs[name] + raw.first_samp * _raw_exact_dt(raw, name)
+    return epochs[name] + index(raw.first_samp) * _raw_exact_dt(raw, name)
+
+
+def _raw_legacy_meas_date(raw: Any, exact_epochs: Mapping[str, int]) -> Any:
+    """Return the official epoch when ``raw`` has a legacy channel."""
+    if any(name not in exact_epochs for name in raw.ch_names):
+        return raw.info.get("meas_date")
+    return _NO_LEGACY_MEAS_DATE
+
+
+_NO_LEGACY_MEAS_DATE = object()
 
 
 def _install_add_channels_guard(raw: Any) -> None:
     """Reject conflicting exact epochs before MNE mutates an in-memory Raw."""
     if getattr(raw, "_gwex_exact_add_channels_guard", False):
         return
-    original = raw.add_channels
 
     def guarded(self: Any, add_list: Any, *args: Any, **kwargs: Any) -> Any:
         current = _raw_exact_epochs(self)
-        current_dt = dict(getattr(self, _GWEX_CHANNEL_DT_GPS_NS_ATTR, {}) or {})
+        current_dt = {name: _raw_exact_dt(self, name) for name in current}
         additions: dict[str, int] = {}
         additions_dt: dict[str, int] = {}
+        legacy_meas_dates = [_raw_legacy_meas_date(self, current)]
         for other in add_list:
             other_epochs = _raw_exact_epochs(other)
             additions.update(other_epochs)
-            other_dt = getattr(other, _GWEX_CHANNEL_DT_GPS_NS_ATTR, {}) or {}
-            if other_epochs and not isinstance(other_dt, Mapping):
-                raise TypeError(
-                    "exact GPS metadata must map channel names to intervals"
-                )
-            additions_dt.update(other_dt)
+            additions_dt.update(
+                {name: _raw_exact_dt(other, name) for name in other_epochs}
+            )
+            legacy_meas_dates.append(_raw_legacy_meas_date(other, other_epochs))
+        if not current and not additions:
+            return type(self).add_channels(self, add_list, *args, **kwargs)
         exact_values = set(current.values()) | set(additions.values())
         if len(exact_values) > 1:
             raise ValueError("cannot add channels with mismatched exact GPS epochs")
-        result = original(add_list, *args, **kwargs)
+        exact_intervals = set(current_dt.values()) | set(additions_dt.values())
+        if len(exact_intervals) > 1:
+            raise ValueError(
+                "cannot add channels with mismatched exact GPS sample intervals"
+            )
+        legacy_meas_dates = [
+            value for value in legacy_meas_dates if value is not _NO_LEGACY_MEAS_DATE
+        ]
+        if legacy_meas_dates and any(
+            value != legacy_meas_dates[0] for value in legacy_meas_dates[1:]
+        ):
+            raise ValueError(
+                "legacy channels have mismatched official meas_date values"
+            )
+
+        # Look up the class method at call time.  Copy/deepcopy can duplicate
+        # this instance-bound guard, so closing over ``raw.add_channels`` would
+        # instead mutate the original Raw object.
+        result = type(self).add_channels(self, add_list, *args, **kwargs)
+        if legacy_meas_dates:
+            self.set_meas_date(legacy_meas_dates[0])
         if current or additions:
             merged = {**current, **additions}
             merged_dt = {**current_dt, **additions_dt}
@@ -386,6 +416,8 @@ def to_mne_rawarray(tsd, info=None, picks=None):
             _attach_exact_metadata(
                 raw, {ch_name: source_exact_ns}, {ch_name: source_dt_ns}
             )
+        else:
+            _install_add_channels_guard(raw)
         return raw
 
     # Multi-channel mapping input
@@ -417,20 +449,32 @@ def to_mne_rawarray(tsd, info=None, picks=None):
             "cannot preserve exact GPS metadata through an MNE sample offset "
             "without an integral source sample interval"
         )
+    if len(set(exact_dt_ns.values())) > 1:
+        raise ValueError(
+            "All exact channels must share matching exact sample intervals"
+        )
+
+    legacy_series = [ts for ts in series if _exact_authority(ts) is None]
     if len(lengths) == 1:
         data = np.stack([np.asarray(ts.value) for ts in series], axis=0)
         # Same-length channels are stacked as-is (no alignment), so their
         # epochs must match exactly -- an exact ns comparison (not a
         # dt-scaled tolerance) so genuinely different acquisition times are
         # never silently stacked together (#493).
-        t0_ns_values = {_t0_ns(ts) for ts in series}
+        t0_ns_values = {_t0_ns(ts) for ts in series if _exact_authority(ts) is not None}
         if len(t0_ns_values) > 1:
             raise ValueError(
                 "All channels must share the same epoch (t0); found mismatched "
                 "epochs across channels and no alignment was requested (use a "
                 "TimeSeriesDict with to_matrix() for alignment instead)"
             )
-        common_t0_ns = _t0_ns(series[0])
+        legacy_t0_ns_values = {_t0_ns(ts) for ts in legacy_series}
+        if len(legacy_t0_ns_values) > 1:
+            raise ValueError(
+                "All legacy channels have a mismatched epoch (t0) and cannot "
+                "share an MNE Raw time axis"
+            )
+        common_t0_ns = _t0_ns(legacy_series[0]) if legacy_series else _t0_ns(series[0])
     elif hasattr(tsd, "to_matrix"):
         try:
             if len(set(exact_epochs.values())) > 1:
@@ -448,7 +492,11 @@ def to_mne_rawarray(tsd, info=None, picks=None):
                 raise ValueError("Unexpected channel dimension after alignment")
             ch_names = list(getattr(mat, "channel_names", ch_names))
             common_t0_ns = (
-                next(iter(exact_epochs.values())) if exact_epochs else _t0_ns(mat)
+                _t0_ns(legacy_series[0])
+                if legacy_series
+                else next(iter(exact_epochs.values()))
+                if exact_epochs
+                else _t0_ns(mat)
             )
         except (ValueError, TypeError, AttributeError, IndexError, KeyError) as e:
             raise ValueError(
@@ -471,6 +519,8 @@ def to_mne_rawarray(tsd, info=None, picks=None):
     raw = mne.io.RawArray(data, info)
     if exact_epochs:
         _attach_exact_metadata(raw, exact_epochs, exact_dt_ns)
+    else:
+        _install_add_channels_guard(raw)
     return raw
 
 
@@ -512,13 +562,11 @@ def from_mne_raw(cls, raw, unit_map=None):
     sfreq = raw.info["sfreq"]
     dt = 1.0 / sfreq
 
-    exact_epochs = _raw_exact_epochs(raw)
     t0 = 0.0
-    if not exact_epochs and raw.info["meas_date"]:
+    if raw.info["meas_date"]:
         # meas_date is an aware-UTC datetime.
         t0 = float(datetime_utc_to_gps(raw.info["meas_date"]))
-    if not exact_epochs:
-        t0 = t0 + raw.first_samp / sfreq
+    t0 = t0 + index(raw.first_samp) / sfreq
 
     tsd = cls()
     for i, name in enumerate(ch_names):

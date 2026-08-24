@@ -45,6 +45,14 @@ def test_t0_ns_preserves_exact_epoch_through_copy_and_slice() -> None:
     assert series[3:].t0_gps_ns == epoch_ns + 30
 
 
+def test_t0_ns_derives_an_exact_interval_from_sample_rate() -> None:
+    epoch_ns = 1_234_567_890_123_456_789
+    series = TimeSeries(np.arange(4.0), t0_ns=epoch_ns, sample_rate=1000)
+
+    assert series._gwex_dt_gps_ns == 1_000_000
+    assert series[1:].t0_gps_ns == epoch_ns + 1_000_000
+
+
 def test_t0_ns_preserves_exact_epoch_through_gwpy_copy_and_deepcopy() -> None:
     epoch_ns = 1_234_567_890_123_456_789
     series = TimeSeries(np.arange(5.0), t0_ns=epoch_ns, dt=7 * u.ns)
@@ -62,6 +70,36 @@ def test_t0_ns_slice_uses_exact_unit_aware_sample_offsets(dt: u.Quantity) -> Non
 
     assert series[1:].t0_gps_ns == epoch_ns + expected_offset_ns
     assert series[(slice(2, None),)].t0_gps_ns == epoch_ns + 2 * expected_offset_ns
+
+
+def test_t0_ns_slice_step_updates_the_exact_sample_interval() -> None:
+    epoch_ns = 1_234_567_890_123_456_789
+    series = TimeSeries(np.arange(6.0), t0_ns=epoch_ns, dt=7 * u.ns)
+
+    stepped = series[(slice(1, None, 2),)]
+
+    assert stepped.t0_gps_ns == epoch_ns + 7
+    assert stepped._gwex_dt_gps_ns == 14
+    assert stepped[1:].t0_gps_ns == epoch_ns + 21
+    assert stepped[1:]._gwex_dt_gps_ns == 14
+
+
+def test_t0_ns_negative_slice_step_updates_epoch_and_interval() -> None:
+    epoch_ns = 1_234_567_890_123_456_789
+    series = TimeSeries(np.arange(5.0), t0_ns=epoch_ns, dt=7 * u.ns)
+
+    reversed_series = series[4::-2]
+
+    assert reversed_series.t0_gps_ns == epoch_ns + 28
+    assert reversed_series._gwex_dt_gps_ns == -14
+    assert reversed_series[1:].t0_gps_ns == epoch_ns + 14
+
+
+def test_t0_ns_zero_slice_step_keeps_python_error_semantics() -> None:
+    series = TimeSeries(np.arange(2.0), t0_ns=0, dt=7 * u.ns)
+
+    with pytest.raises(ValueError, match="slice step cannot be zero"):
+        series[::0]
 
 
 def test_t0_ns_slice_rejects_a_non_integral_nanosecond_interval() -> None:

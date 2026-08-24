@@ -357,9 +357,8 @@ class TimeSeries(
         new = super().__new__(cls, data, *args, **kwargs)
         if exact_t0_ns is not None:
             new._gwex_t0_gps_ns = exact_t0_ns
-            dt_source = kwargs.get("dt", 1.0)
             try:
-                new._gwex_dt_gps_ns = _integral_dt_gps_ns(dt_source)
+                new._gwex_dt_gps_ns = _integral_dt_gps_ns(new.dt)
             except (TypeError, ValueError):
                 # Construction remains compatible for non-integral sampling
                 # periods; operations requiring an exact derived epoch fail
@@ -473,8 +472,9 @@ class TimeSeries(
                 "an integer number of nanoseconds"
             ) from exc
 
-        start, _, _ = slice_item.indices(len(self))
+        start, _, step = slice_item.indices(len(self))
         result._gwex_t0_gps_ns = int(exact) + start * dt_ns
+        result._gwex_dt_gps_ns = dt_ns * step
         return result
 
     def __array_finalize__(self, obj: Any) -> None:

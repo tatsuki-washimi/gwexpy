@@ -1,6 +1,8 @@
 """Tests for MNE interop adapter."""
 
+import copy
 import datetime
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -15,6 +17,7 @@ from gwexpy.interop.mne_ import (
     _infer_sfreq_hz,
     _mne_spectrum_to_fs,
     _mne_tfr_to_spec,
+    _raw_channel_epoch,
     _select_items,
     _spec_to_mne_tfr,
     from_mne,
@@ -103,6 +106,25 @@ class TestToMneRawArray:
         raw = to_mne_rawarray(tsd)
         assert "X1" in raw.ch_names
         assert "Y2" in raw.ch_names
+
+    @pytest.mark.parametrize("exact_first", [True, False])
+    def test_mixed_exact_and_legacy_mapping_keeps_legacy_official_epoch(
+        self, exact_first
+    ):
+        epoch_ns = 1_234_567_890_123_456_789
+        exact = TimeSeries(np.ones(8), t0_ns=epoch_ns, dt=0.01, name="exact")
+        legacy = TimeSeries(np.ones(8), t0=1_000_000_000, dt=0.01, name="legacy")
+        items = [("exact", exact), ("legacy", legacy)]
+        if not exact_first:
+            items.reverse()
+
+        raw = to_mne_rawarray(TimeSeriesDict(items))
+        restored = from_mne_raw(TimeSeriesDict, raw)
+
+        assert raw.info["meas_date"] is not None
+        assert restored["exact"].t0_gps_ns == epoch_ns
+        assert restored["legacy"].t0.value == pytest.approx(1_000_000_000)
+        assert not hasattr(restored["legacy"], "_gwex_t0_gps_ns")
 
 
 class TestFromMneRaw:
@@ -270,6 +292,102 @@ class TestFromMneRaw:
         restored = from_mne_raw(TimeSeriesDict, raw)
 
         assert {series.t0_gps_ns for series in restored.values()} == {epoch_ns}
+
+    @pytest.mark.parametrize("clone_factory", [lambda raw: raw.copy(), copy.deepcopy])
+    def test_add_channels_on_raw_clone_isolated_from_original(self, clone_factory):
+        epoch_ns = 1_234_567_890_123_456_789
+        original = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=epoch_ns, dt=7e-9, name="ch0")
+        )
+        clone = clone_factory(original)
+        addition = to_mne_rawarray(
+            TimeSeries(np.full(8, 2.0), t0_ns=epoch_ns, dt=7e-9, name="ch1")
+        )
+
+        clone.add_channels([addition])
+
+        assert original.ch_names == ["ch0"]
+        np.testing.assert_array_equal(original.get_data(), np.ones((1, 8)))
+        assert original._gwex_channel_t0_gps_ns == {"ch0": epoch_ns}
+        assert clone.ch_names == ["ch0", "ch1"]
+        np.testing.assert_array_equal(clone.get_data()[1], np.full(8, 2.0))
+        assert clone._gwex_channel_t0_gps_ns == {"ch0": epoch_ns, "ch1": epoch_ns}
+
+    @pytest.mark.parametrize("clone_factory", [lambda raw: raw.copy(), copy.deepcopy])
+    def test_raw_clone_rejects_mismatched_exact_addition_atomically(
+        self, clone_factory
+    ):
+        epoch_ns = 1_234_567_890_123_456_789
+        original = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=epoch_ns, dt=7e-9, name="ch0")
+        )
+        clone = clone_factory(original)
+        addition = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=epoch_ns + 1, dt=7e-9, name="ch1")
+        )
+
+        with pytest.raises(ValueError, match="mismatched exact GPS epochs"):
+            clone.add_channels([addition])
+
+        for raw in (original, clone):
+            assert raw.ch_names == ["ch0"]
+            assert raw._gwex_channel_t0_gps_ns == {"ch0": epoch_ns}
+
+    def test_add_channels_rejects_mismatched_exact_intervals_atomically(self):
+        epoch_ns = 1_234_567_890_123_456_789
+        raw = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=epoch_ns, dt=1_000_000 * u.ns, name="ch0")
+        )
+        addition = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=epoch_ns, dt=1_000_001 * u.ns, name="ch1")
+        )
+
+        with pytest.raises(ValueError, match="mismatched exact GPS sample intervals"):
+            raw.add_channels([addition])
+
+        assert raw.ch_names == ["ch0"]
+        assert raw._gwex_channel_dt_gps_ns == {"ch0": 1_000_000}
+
+    @pytest.mark.parametrize("exact_first", [True, False])
+    def test_add_channels_keeps_legacy_meas_date_and_exact_authority(self, exact_first):
+        epoch_ns = 1_234_567_890_123_456_789
+        exact = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=epoch_ns, dt=0.01, name="exact")
+        )
+        legacy = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0=1_000_000_000, dt=0.01, name="legacy")
+        )
+        receiver, addition = (exact, legacy) if exact_first else (legacy, exact)
+
+        receiver.add_channels([addition])
+        restored = from_mne_raw(TimeSeriesDict, receiver)
+
+        assert receiver.info["meas_date"] == legacy.info["meas_date"]
+        assert restored["exact"].t0_gps_ns == epoch_ns
+        assert restored["legacy"].t0.value == pytest.approx(1_000_000_000)
+        assert not hasattr(restored["legacy"], "_gwex_t0_gps_ns")
+
+    def test_mapping_rejects_exact_channels_with_different_intervals(self):
+        epoch_ns = 1_234_567_890_123_456_789
+        channels = TimeSeriesDict(
+            {
+                "ch0": TimeSeries(np.ones(8), t0_ns=epoch_ns, dt=1_000_000 * u.ns),
+                "ch1": TimeSeries(np.ones(8), t0_ns=epoch_ns, dt=1_000_001 * u.ns),
+            }
+        )
+
+        with pytest.raises(ValueError, match="matching exact sample intervals"):
+            to_mne_rawarray(channels)
+
+    def test_raw_sample_offset_uses_a_python_integer_before_multiplication(self):
+        raw = SimpleNamespace(
+            ch_names=["ch0"],
+            first_samp=np.int64(np.iinfo(np.int64).max),
+            _gwex_channel_t0_gps_ns={"ch0": 0},
+            _gwex_channel_dt_gps_ns={"ch0": 2},
+        )
+
+        assert _raw_channel_epoch(raw, "ch0") == 2 * np.iinfo(np.int64).max
 
     def test_exact_raw_rejects_mutated_official_meas_date(self):
         raw = to_mne_rawarray(
