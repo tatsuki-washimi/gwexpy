@@ -2,15 +2,24 @@
 
 from __future__ import annotations
 
+import inspect
 import json
 import pickle
 
 import h5py
 import numpy as np
 import pytest
+from astropy.io.registry import IORegistryError
+from gwpy.io.registry import UnifiedReadWriteMethod
 from gwpy.spectrogram import Spectrogram as GwpySpectrogram
 
 from gwexpy.spectrogram import Spectrogram, SpectrogramList
+from gwexpy.spectrogram.io import provenance as provenance_hdf5
+from gwexpy.spectrogram.provenance import (
+    HDF5_PROVENANCE_ATTRIBUTE,
+    MAX_HDF5_PROVENANCE_SIDECAR_BYTES,
+    ProvenanceSidecarError,
+)
 from gwexpy.statistics.gauch import compute_gauch
 from gwexpy.statistics.rayleigh_test import rayleigh_pvalue
 from gwexpy.statistics.student_t_indicator import compute_student_t_nu
@@ -55,11 +64,11 @@ def test_provenance_is_versioned_json_mapping_with_detached_state() -> None:
 @pytest.mark.parametrize(
     "value",
     [
-        None,
         {"schema": "gwexpy.spectrogram.provenance"},
         {"schema_version": 1},
         {"schema": "other", "schema_version": 1},
         {"schema": "gwexpy.spectrogram.provenance", "schema_version": 2},
+        {"schema": "gwexpy.spectrogram.provenance", "schema_version": True},
         {
             "schema": "gwexpy.spectrogram.provenance",
             "schema_version": 1,
@@ -86,6 +95,23 @@ def test_legacy_spectrogram_has_no_provenance_value() -> None:
     assert _spectrogram().provenance is None
 
 
+def test_provenance_accepts_json_numeric_scalars_and_can_be_cleared() -> None:
+    spec = _spectrogram()
+    spec.provenance = {
+        "schema": "gwexpy.spectrogram.provenance",
+        "schema_version": np.int64(1),
+        "analysis": {"parameters": {"count": np.int32(2), "scale": np.float64(3.5)}},
+    }
+
+    assert spec.provenance == {
+        "schema": "gwexpy.spectrogram.provenance",
+        "schema_version": 1,
+        "analysis": {"parameters": {"count": 2, "scale": 3.5}},
+    }
+    spec.provenance = None
+    assert spec.provenance is None
+
+
 def test_provenance_survives_copy_slice_and_arithmetic_without_aliasing() -> None:
     spec = _spectrogram()
     spec.provenance = _provenance()
@@ -97,6 +123,37 @@ def test_provenance_survives_copy_slice_and_arithmetic_without_aliasing() -> Non
         changed = result.provenance
         changed["analysis"]["parameters"]["seed"] = 100  # type: ignore[index]
         assert result.provenance == _provenance()
+
+
+@pytest.mark.parametrize("operation", ["rebin", "normalize", "clean"])
+def test_explicit_axis_operations_detach_provenance(operation: str) -> None:
+    spec = _spectrogram()
+    spec.provenance = _provenance()
+
+    if operation == "rebin":
+        result = spec.rebin(dt=2, df=2)
+    elif operation == "normalize":
+        result = spec.normalize()
+    else:
+        result = spec.clean(method="threshold", threshold=1.0e9)
+
+    assert result.provenance == _provenance()
+    observed = result.provenance
+    observed["analysis"]["parameters"]["seed"] = 999  # type: ignore[index]
+    assert spec.provenance == _provenance()
+
+
+def test_unified_io_descriptors_remain_available() -> None:
+    assert isinstance(
+        inspect.getattr_static(Spectrogram, "read"), UnifiedReadWriteMethod
+    )
+    assert isinstance(
+        inspect.getattr_static(Spectrogram, "write"), UnifiedReadWriteMethod
+    )
+    assert callable(Spectrogram.read.help)
+    assert callable(Spectrogram.write.help)
+    assert callable(Spectrogram.read.list_formats)
+    assert callable(Spectrogram.write.list_formats)
 
 
 def test_provenance_survives_pickle_and_hdf5_roundtrips(tmp_path) -> None:
@@ -144,8 +201,10 @@ def test_provenance_is_read_when_hdf5_format_is_inferred(tmp_path, suffix: str) 
     assert restored.provenance == _provenance()
 
 
-def test_hdf_suffix_is_not_claimed_for_implicit_hdf5_dispatch(tmp_path) -> None:
-    assert not Spectrogram._is_hdf5_io(tmp_path / "provenance.hdf", None)
+def test_hdf_suffix_requires_explicit_hdf5_format(tmp_path) -> None:
+    spec = _spectrogram()
+    with pytest.raises(IORegistryError):
+        spec.write(tmp_path / "provenance.hdf")
 
 
 def test_provenance_survives_explicit_hdf_format(tmp_path) -> None:
@@ -157,6 +216,148 @@ def test_provenance_survives_explicit_hdf_format(tmp_path) -> None:
     restored = Spectrogram.read(path, format="hdf5")
 
     assert restored.provenance == _provenance()
+
+
+def test_hdf5_handle_inference_uses_the_actual_dataset_path(tmp_path) -> None:
+    spec = _spectrogram()
+    spec.name = "human-name"
+    spec.provenance = _provenance()
+    path = tmp_path / "handle.hdf5"
+
+    with h5py.File(path, "w") as h5file:
+        spec.write(h5file, path="disk-key")
+        restored = Spectrogram.read(h5file, path="disk-key")
+        assert restored.provenance == _provenance()
+        assert json.loads(h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE]) == {
+            "/disk-key": _provenance()
+        }
+
+
+def test_hdf5_group_handle_inference_uses_the_actual_dataset_path(tmp_path) -> None:
+    spec = _spectrogram()
+    spec.name = "human-name"
+    spec.provenance = _provenance()
+    path = tmp_path / "group-handle.hdf5"
+
+    with h5py.File(path, "w") as h5file:
+        group = h5file.create_group("container")
+        spec.write(group, path="disk-key")
+        restored = Spectrogram.read(group, path="disk-key")
+        assert restored.provenance == _provenance()
+        assert json.loads(h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE]) == {
+            "/container/disk-key": _provenance()
+        }
+
+
+def test_overwriting_with_no_provenance_removes_stale_hdf5_sidecar(tmp_path) -> None:
+    spec = _spectrogram()
+    spec.provenance = _provenance()
+    path = tmp_path / "clear.hdf5"
+    spec.write(path, format="hdf5")
+
+    spec.provenance = None
+    spec.write(path, format="hdf5", append=True, overwrite=True)
+
+    with h5py.File(path, "r") as h5file:
+        assert "/provenance" not in json.loads(h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE])
+    assert Spectrogram.read(path, format="hdf5").provenance is None
+
+
+def test_invalid_hdf5_sidecar_is_preflighted_before_overwrite(tmp_path) -> None:
+    original = _spectrogram()
+    path = tmp_path / "preflight.hdf5"
+    original.write(path, format="hdf5")
+    with h5py.File(path, "r+") as h5file:
+        before = h5file["provenance"][()].copy()
+        h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE] = "not-json"
+
+    replacement = _spectrogram() + 100
+    replacement.provenance = _provenance()
+    with pytest.raises(ProvenanceSidecarError, match="invalid"):
+        replacement.write(path, format="hdf5", append=True, overwrite=True)
+
+    with h5py.File(path, "r") as h5file:
+        np.testing.assert_equal(h5file["provenance"][()], before)
+
+
+def test_hdf5_sidecar_failure_rolls_back_existing_dataset_and_sidecar(
+    tmp_path, monkeypatch
+) -> None:
+    original = _spectrogram()
+    original.provenance = _provenance()
+    path = tmp_path / "rollback-existing.hdf5"
+    original.write(path, format="hdf5")
+    with h5py.File(path, "r") as h5file:
+        before_data = h5file["provenance"][()].copy()
+        before_sidecar = h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE]
+
+    def fail_sidecar(*args, **kwargs) -> None:
+        raise RuntimeError("sidecar write failed")
+
+    monkeypatch.setattr(provenance_hdf5, "_commit_sidecar", fail_sidecar)
+    replacement = original + 100
+    replacement.provenance = _provenance()
+    with pytest.raises(RuntimeError, match="sidecar write failed"):
+        replacement.write(path, format="hdf5", append=True, overwrite=True)
+
+    with h5py.File(path, "r") as h5file:
+        np.testing.assert_equal(h5file["provenance"][()], before_data)
+        assert h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE] == before_sidecar
+
+
+def test_hdf5_sidecar_failure_leaves_no_new_dataset(tmp_path, monkeypatch) -> None:
+    spec = _spectrogram()
+    spec.provenance = _provenance()
+    path = tmp_path / "rollback-new.hdf5"
+
+    monkeypatch.setattr(
+        provenance_hdf5,
+        "_commit_sidecar",
+        lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("sidecar failed")),
+    )
+    with pytest.raises(RuntimeError, match="sidecar failed"):
+        spec.write(path, format="hdf5")
+    assert not path.exists()
+
+
+def test_hdf5_core_write_failure_restores_existing_dataset_and_sidecar(
+    tmp_path,
+) -> None:
+    original = _spectrogram()
+    original.provenance = _provenance()
+    path = tmp_path / "rollback-core.hdf5"
+    original.write(path, format="hdf5")
+    with h5py.File(path, "r") as h5file:
+        before_data = h5file["provenance"][()].copy()
+        before_sidecar = h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE]
+
+    replacement = original + 100
+    replacement.provenance = _provenance()
+    with pytest.raises(ValueError):
+        replacement.write(
+            path,
+            format="hdf5",
+            append=True,
+            overwrite=True,
+            compression="not-a-filter",
+        )
+
+    with h5py.File(path, "r") as h5file:
+        np.testing.assert_equal(h5file["provenance"][()], before_data)
+        assert h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE] == before_sidecar
+
+
+def test_hdf5_sidecar_size_is_bounded(tmp_path) -> None:
+    spec = _spectrogram()
+    path = tmp_path / "oversized.hdf5"
+    spec.write(path, format="hdf5")
+    with h5py.File(path, "r+") as h5file:
+        h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE] = "x" * (
+            MAX_HDF5_PROVENANCE_SIDECAR_BYTES + 1
+        )
+
+    with pytest.raises(ProvenanceSidecarError, match="too large"):
+        Spectrogram.read(path, format="hdf5")
 
 
 @pytest.mark.parametrize("layout", ["gwpy", "group"])
@@ -175,6 +376,27 @@ def test_provenance_survives_hdf5_collection_roundtrip(tmp_path, layout: str) ->
 
     assert restored[0].provenance == _provenance()
     assert restored[1].provenance == second.provenance
+
+
+@pytest.mark.parametrize(
+    "sidecar",
+    [
+        "not-json",
+        json.dumps({"/0": {"schema": "unknown", "schema_version": 1}}),
+    ],
+)
+def test_collection_read_does_not_hide_invalid_provenance_sidecar(
+    tmp_path, sidecar: str
+) -> None:
+    spec = _spectrogram()
+    spec.provenance = _provenance()
+    path = tmp_path / "broken-collection.hdf5"
+    SpectrogramList([spec]).write(path, format="hdf5")
+    with h5py.File(path, "r+") as h5file:
+        h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE] = sidecar
+
+    with pytest.raises(ProvenanceSidecarError, match="invalid"):
+        SpectrogramList().read(path, format="hdf5")
 
 
 def test_statistics_publish_consistent_versioned_provenance() -> None:
@@ -245,3 +467,27 @@ def test_rng_provenance_is_a_safe_descriptor_not_a_live_generator() -> None:
         "seed_unused": False,
     }
     assert "Generator" not in json.dumps(result.provenance)
+
+
+def test_stride_provenance_does_not_claim_an_unused_overlap() -> None:
+    ts = TimeSeries(np.random.default_rng(10).normal(size=512), sample_rate=128)
+
+    gauch = compute_gauch(
+        ts,
+        fftlength=0.25,
+        stride=0.25,
+        overlap=0.125,
+        window=8,
+        n_monte_carlo=12,
+        seed=7,
+    )
+    gauch_parameters = gauch.pvalue_map.provenance["analysis"]["parameters"]
+    assert "overlap" not in gauch_parameters
+    assert gauch_parameters["overlap_ignored"] is True
+
+    student = compute_student_t_nu(
+        ts, fftlength=0.25, stride=0.25, overlap=0.125, window=8
+    )
+    student_parameters = student.provenance["analysis"]["parameters"]
+    assert "overlap" not in student_parameters
+    assert student_parameters["overlap_ignored"] is True

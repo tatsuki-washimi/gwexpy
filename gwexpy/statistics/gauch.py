@@ -83,6 +83,7 @@ def compute_gauch(
             stacklevel=2,
         )
 
+    stride_was_provided = stride is not None
     if stride is None:
         if overlap is None:
             stride = fftlength
@@ -161,15 +162,19 @@ def compute_gauch(
     res_p = Spectrogram(pvalue_map, frequencies=spec.frequencies, times=out_times)
     res_s = Spectrogram(statistic_map, frequencies=spec.frequencies, times=out_times)
 
+    provenance_parameters: dict[str, Any] = {
+        "fftlength": fftlength,
+        "stride": stride,
+        "window": window,
+        "n_monte_carlo": n_monte_carlo,
+    }
+    if stride_was_provided and overlap is not None:
+        provenance_parameters["overlap_ignored"] = True
+    else:
+        provenance_parameters["overlap"] = overlap
     provenance = analysis_provenance(
         "compute_gauch",
-        {
-            "fftlength": fftlength,
-            "stride": stride,
-            "window": window,
-            "overlap": overlap,
-            "n_monte_carlo": n_monte_carlo,
-        },
+        provenance_parameters,
         seed=seed,
         rng_provided=rng is not None,
         seed_unused=rng is not None and seed is not None,

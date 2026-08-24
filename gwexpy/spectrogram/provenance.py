@@ -8,9 +8,19 @@ import math
 from collections.abc import Mapping
 from typing import Any
 
+import numpy as np
+
 PROVENANCE_SCHEMA = "gwexpy.spectrogram.provenance"
 PROVENANCE_SCHEMA_VERSION = 1
 HDF5_PROVENANCE_ATTRIBUTE = "gwexpy_provenance"
+# A root attribute is intentionally kept small: provenance is metadata, not an
+# unbounded analysis log.  The later HDF5 atomicity work owns any larger-scale
+# storage design.
+MAX_HDF5_PROVENANCE_SIDECAR_BYTES = 1_000_000
+
+
+class ProvenanceSidecarError(ValueError):
+    """Raised when an HDF5 provenance sidecar is malformed or unsafe."""
 
 
 def validated_provenance(value: Mapping[str, Any]) -> dict[str, Any]:
@@ -18,18 +28,21 @@ def validated_provenance(value: Mapping[str, Any]) -> dict[str, Any]:
 
     The mapping is deliberately restricted to the JSON data model: mappings
     with string keys, lists, strings, booleans, integers, finite floats, and
-    ``None``.  This rejects live RNGs, NumPy scalar coercions, NaNs, tuples,
-    and arbitrary objects rather than converting them ambiguously.
+    ``None``.  NumPy boolean, integer, and floating scalar values are
+    normalized to their strict Python JSON counterparts.  This rejects live
+    RNGs, NaNs, tuples, and arbitrary objects rather than converting them
+    ambiguously.
     """
     if not isinstance(value, Mapping):
         raise TypeError("provenance must be a mapping")
-    if value.get("schema") != PROVENANCE_SCHEMA:
+    normalized = _json_value(value, path="provenance")
+    if normalized.get("schema") != PROVENANCE_SCHEMA:
         raise ValueError(f"provenance schema must be {PROVENANCE_SCHEMA!r}")
-    if value.get("schema_version") != PROVENANCE_SCHEMA_VERSION:
+    schema_version = normalized.get("schema_version")
+    if type(schema_version) is not int or schema_version != PROVENANCE_SCHEMA_VERSION:
         raise ValueError(
             f"provenance schema_version must be {PROVENANCE_SCHEMA_VERSION!r}"
         )
-    normalized = _json_value(value, path="provenance")
     # json.dumps is both a final validation and a guard against future changes
     # to _json_value accidentally widening the accepted value domain.
     json.dumps(normalized, allow_nan=False, sort_keys=True)
@@ -65,6 +78,12 @@ def analysis_provenance(
 
 
 def _json_value(value: Any, *, path: str) -> Any:
+    if isinstance(value, np.bool_):
+        return bool(value)
+    if isinstance(value, np.integer):
+        return int(value)
+    if isinstance(value, np.floating):
+        value = float(value)
     if value is None or isinstance(value, (str, bool, int)):
         return value
     if isinstance(value, float):

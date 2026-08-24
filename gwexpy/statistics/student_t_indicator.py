@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -107,6 +107,7 @@ def compute_student_t_nu(
 
     _require_finite_positive("fftlength", fftlength)
 
+    stride_was_provided = stride is not None
     if stride is None:
         if overlap is None:
             stride = fftlength
@@ -260,14 +261,18 @@ def compute_student_t_nu(
         unit="",
         name="student_t_nu",
     )
+    provenance_parameters: dict[str, Any] = {
+        "fftlength": fftlength,
+        "stride": stride,
+        "window": window,
+        "frange": None if frange is None else list(frange),
+    }
+    if stride_was_provided and overlap is not None:
+        provenance_parameters["overlap_ignored"] = True
+    else:
+        provenance_parameters["overlap"] = overlap
     result.provenance = analysis_provenance(
         "compute_student_t_nu",
-        {
-            "fftlength": fftlength,
-            "stride": stride,
-            "window": window,
-            "overlap": overlap,
-            "frange": None if frange is None else list(frange),
-        },
+        provenance_parameters,
     )
     return result

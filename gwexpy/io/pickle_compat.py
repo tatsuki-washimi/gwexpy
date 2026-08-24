@@ -5,8 +5,11 @@ Pickle / shelve compatibility helpers.
 
 Design goal
 -----------
-Enable "Level2" portability: objects pickled from gwexpy should be unpicklable
-in an environment that has **GWpy** installed but does **not** have gwexpy.
+Legacy Spectrogram payloads without provenance retain "Level2" portability:
+they unpickle with **GWpy** installed but without gwexpy.  A provenance-enabled
+Spectrogram intentionally needs gwexpy at unpickle time so it can restore the
+validated GWexpy mapping; use the HDF5 sidecar when GWpy-only portability is
+required for a provenance-bearing payload.
 
 Security
 --------

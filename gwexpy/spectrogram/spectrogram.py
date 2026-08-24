@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import copy
-import json
 from collections.abc import Mapping
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Self, SupportsIndex
 
 import numpy as np
@@ -13,9 +11,7 @@ from gwpy.spectrogram import Spectrogram as BaseSpectrogram
 from gwexpy.types.mixin import InteropMixin, PhaseMethodsMixin
 from gwexpy.types.mixin._plot_mixin import PlotMixin
 
-from .provenance import HDF5_PROVENANCE_ATTRIBUTE, validated_provenance
-
-_HDF5_SUFFIXES = frozenset({".h5", ".hdf5"})
+from .provenance import validated_provenance
 
 if TYPE_CHECKING:
     from astropy.units import Quantity
@@ -118,105 +114,8 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         return None if provenance is None else copy.deepcopy(provenance)
 
     @provenance.setter
-    def provenance(self, value: Mapping[str, Any]) -> None:
-        self._provenance = validated_provenance(value)
-
-    def write(self, target: Any, *args: Any, **kwargs: Any) -> Any:
-        """Write normally and append validated provenance to HDF5 datasets."""
-        result = super().write(target, *args, **kwargs)
-        if (
-            self._is_hdf5_io(target, kwargs.get("format"))
-            and self.provenance is not None
-        ):
-            self._write_hdf5_provenance(target, kwargs.get("path"))
-        return result
-
-    @classmethod
-    def read(cls, source: Any, *args: Any, **kwargs: Any) -> Self:
-        """Read normally and restore the optional GWexpy HDF5 sidecar."""
-        result = super().read(source, *args, **kwargs)
-        if cls._is_hdf5_io(source, kwargs.get("format")):
-            if isinstance(result, BaseSpectrogram) and not isinstance(result, cls):
-                result = cls(
-                    result.value,
-                    times=result.times,
-                    frequencies=result.frequencies,
-                    unit=result.unit,
-                    name=result.name,
-                    channel=result.channel,
-                )
-            provenance = cls._read_hdf5_provenance(
-                source,
-                kwargs.get("path") or getattr(result, "name", None),
-            )
-            if provenance is not None:
-                result.provenance = provenance
-        return result
-
-    @staticmethod
-    def _is_hdf5_io(target: Any, format_name: Any) -> bool:
-        """Identify explicit or suffix-inferred HDF5 without consuming kwargs."""
-        if format_name is not None:
-            return format_name == "hdf5"
-        return (
-            isinstance(target, (str, Path))
-            and Path(target).suffix.lower() in _HDF5_SUFFIXES
-        )
-
-    def _write_hdf5_provenance(self, target: Any, path: str | None) -> None:
-        dataset_path = path or self.name
-        if not dataset_path:
-            return
-        import h5py
-
-        if isinstance(target, (str, Path)):
-            with h5py.File(target, "r+") as h5file:
-                self._store_hdf5_provenance(h5file, dataset_path)
-        elif isinstance(target, (h5py.File, h5py.Group)):
-            self._store_hdf5_provenance(target, dataset_path)
-
-    def _store_hdf5_provenance(self, container: Any, path: str) -> None:
-        dataset = container[path]
-        h5file = dataset.file
-        encoded = h5file.attrs.get(HDF5_PROVENANCE_ATTRIBUTE, "{}")
-        if isinstance(encoded, bytes):
-            encoded = encoded.decode("utf-8")
-        sidecar = json.loads(encoded)
-        if not isinstance(sidecar, dict):
-            raise ValueError("HDF5 provenance sidecar must be a JSON object")
-        sidecar[dataset.name] = self.provenance
-        h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE] = json.dumps(
-            sidecar,
-            allow_nan=False,
-            sort_keys=True,
-        )
-
-    @staticmethod
-    def _read_hdf5_provenance(source: Any, path: str | None) -> dict[str, Any] | None:
-        if not path:
-            return None
-        import h5py
-
-        if isinstance(source, (str, Path)):
-            with h5py.File(source, "r") as h5file:
-                return Spectrogram._provenance_from_hdf5(h5file, path)
-        if isinstance(source, (h5py.File, h5py.Group)):
-            return Spectrogram._provenance_from_hdf5(source, path)
-        return None
-
-    @staticmethod
-    def _provenance_from_hdf5(container: Any, path: str) -> dict[str, Any] | None:
-        dataset = container[path]
-        encoded = dataset.file.attrs.get(HDF5_PROVENANCE_ATTRIBUTE)
-        if encoded is None:
-            return None
-        if isinstance(encoded, bytes):
-            encoded = encoded.decode("utf-8")
-        sidecar = json.loads(encoded)
-        if not isinstance(sidecar, dict):
-            raise ValueError("HDF5 provenance sidecar must be a JSON object")
-        provenance = sidecar.get(dataset.name)
-        return None if provenance is None else validated_provenance(provenance)
+    def provenance(self, value: Mapping[str, Any] | None) -> None:
+        self._provenance = None if value is None else validated_provenance(value)
 
     def __getitem__(self, item: Any) -> Any:
         """Handle 1D views safely in `__getitem__`.
@@ -254,7 +153,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         their one-dimensional TimeSeries/FrequencySeries constructors use it as
         part of the output series metadata.
         """
-        return self.__class__(
+        result = self.__class__(
             data,
             times=times,
             frequencies=frequencies,
@@ -262,6 +161,8 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             name=self.name,
             channel=self.channel,
         )
+        result.provenance = self.provenance
+        return result
 
     @staticmethod
     def _axis_step_value(value: Any, unit: str) -> float:
@@ -1153,4 +1054,9 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         return fs_list, times
 
 
-# Import Matrix, List, and Dict to maintain backward compatibility if this file is imported
+# Register HDF5 hooks after the subclass exists.  Keeping the inherited GWpy
+# UnifiedReadWriteMethod descriptors intact preserves ``help`` and format
+# registry APIs while dispatching provenance-aware HDF5 functions for this class.
+from .io.provenance import register_hdf5_provenance_io
+
+register_hdf5_provenance_io(Spectrogram)

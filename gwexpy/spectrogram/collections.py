@@ -6,8 +6,6 @@ from collections import UserDict, UserList
 from typing import SupportsIndex
 
 import h5py
-
-logger = logging.getLogger(__name__)
 from astropy import units as u
 from gwpy.spectrogram import Spectrogram as BaseSpectrogram
 
@@ -27,7 +25,10 @@ from gwexpy.io.hdf5_collection import (
 from gwexpy.types.mixin import PhaseMethodsMixin
 from gwexpy.types.mixin._plot_mixin import PlotMixin
 
+from .provenance import ProvenanceSidecarError
 from .spectrogram import Spectrogram
+
+logger = logging.getLogger(__name__)
 
 
 def _resolve_crop_compat_args(*args, **kwargs):
@@ -212,6 +213,8 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
                             new_list.append(
                                 Spectrogram.read(h5f, format="hdf5", path=ds_name)
                             )
+                        except ProvenanceSidecarError:
+                            raise
                         except (KeyError, ValueError, TypeError, OSError) as e:
                             logger.debug("Skipping dataset %s: %s", ds_name, e)
                     self.extend(new_list)
@@ -223,9 +226,13 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
                             new_list.append(
                                 Spectrogram.read(grp, format="hdf5", path="data")
                             )
+                        except ProvenanceSidecarError:
+                            raise
                         except (KeyError, ValueError, TypeError, OSError):
                             try:
                                 new_list.append(Spectrogram.read(grp, format="hdf5"))
+                            except ProvenanceSidecarError:
+                                raise
                             except (KeyError, ValueError, TypeError, OSError) as e2:
                                 logger.debug("Skipping group %s: %s", grp_name, e2)
                     self.extend(new_list)
@@ -236,6 +243,8 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
                 for k in keys:
                     try:
                         new_list.append(Spectrogram.read(f[k], format="hdf5"))
+                    except ProvenanceSidecarError:
+                        raise
                     except (TypeError, ValueError, AttributeError):
                         pass
         else:
@@ -614,6 +623,8 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
                     for ds_name in order:
                         try:
                             s = Spectrogram.read(h5f, format="hdf5", path=ds_name)
+                        except ProvenanceSidecarError:
+                            raise
                         except (KeyError, ValueError, TypeError, OSError) as e:
                             logger.debug("Skipping dataset %s: %s", ds_name, e)
                             continue
@@ -625,9 +636,13 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
                         try:
                             grp = h5f[grp_name]
                             s = Spectrogram.read(grp, format="hdf5", path="data")
+                        except ProvenanceSidecarError:
+                            raise
                         except (KeyError, ValueError, TypeError, OSError):
                             try:
                                 s = Spectrogram.read(grp, format="hdf5")
+                            except ProvenanceSidecarError:
+                                raise
                             except (KeyError, ValueError, TypeError, OSError) as e2:
                                 logger.debug("Skipping group %s: %s", grp_name, e2)
                                 continue
@@ -640,6 +655,8 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
                     try:
                         s = Spectrogram.read(f[k], format="hdf5")
                         self[k] = s
+                    except ProvenanceSidecarError:
+                        raise
                     except (TypeError, ValueError, AttributeError):
                         pass
         else:
