@@ -988,18 +988,21 @@ def test_power_rejects_dimensional_exponent(matrix):
 def test_power_rejects_non_scalar_exponent_on_dimensional_base(series_factory):
     """A per-sample exponent cannot be expressed with one unit per cell."""
     matrix = series_factory()
+    before = np.asarray(matrix).copy()
     with pytest.raises(UnitConversionError):
         matrix ** np.array([1.0, 2.0, 3.0, 4.0])
+    np.testing.assert_array_equal(np.asarray(matrix), before)
+    assert matrix.meta[0, 0].unit == u.V
 
 
-def test_power_allows_non_scalar_exponent_on_dimensionless_base(series_factory):
-    """A dimensionless base survives an array exponent."""
+def test_power_rejects_non_scalar_exponent_on_dimensionless_base(series_factory):
+    """A per-sample exponent is unsupported even for a dimensionless base."""
     matrix = series_factory(unit=u.dimensionless_unscaled)
-    result = matrix ** np.array([1.0, 2.0, 3.0, 4.0])
-    assert result.meta[0, 0].unit == u.dimensionless_unscaled
-    np.testing.assert_allclose(
-        np.asarray(result), np.asarray(matrix) ** np.array([1.0, 2.0, 3.0, 4.0])
-    )
+    before = np.asarray(matrix).copy()
+    with pytest.raises(UnitConversionError):
+        matrix ** np.array([1.0, 2.0, 3.0, 4.0])
+    np.testing.assert_array_equal(np.asarray(matrix), before)
+    assert matrix.meta[0, 0].unit == u.dimensionless_unscaled
 
 
 @pytest.mark.parametrize(

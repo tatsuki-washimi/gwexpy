@@ -5,18 +5,21 @@ contract before issue #637.  It does not adopt or implement the #637
 composition redesign.
 
 The executable canonical ledger is the typed `B0_CONTRACT` in
-`tests/types/series_matrix_contract_manifest.py`.  It contains exactly 318
+`tests/types/series_matrix_contract_manifest.py`.  It contains exactly 390
 cells across `TimeSeriesMatrix`, `FrequencySeriesMatrix`, and
 `SpectrogramMatrix`.  The typed adapter in
 `tests/types/test_series_matrix_contract_manifest.py` executes every cell once
 and consumes typed result-class, unit, metadata, axis, value, and mutation
 expectations directly.  It checks exact values, dtypes, shapes, view aliasing,
 per-cell names/channels, row/column metadata, and family axes, or an exact
-exception.  The 24-cell increase over the earlier 294-cell ledger is intentional: each
-add/sub ndarray case is split into a dimensionless-matrix success scenario and
-a dimensional-incompatibility scenario for both operand directions and all
-three families; the same two scenarios are also covered by ndarray in-place
-add/sub cells for every family.  `tests/types/test_series_matrix_operator_contract.py` retains
+exception.  The earlier 318-cell candidate was rejected by physics/data-model
+review because it omitted active scalar add/sub behaviour.  The replacement
+adds 72 scalar cells: Python and NumPy unitless scalars, dimensional failure
+and dimensionless success scenarios, pure and reflected directions, and
+atomic in-place forms for every family and both add/sub operators.  The
+ndarray scenarios remain split between a dimensionless-matrix success and a
+dimensional-incompatibility failure for both directions and all three
+families.  `tests/types/test_series_matrix_operator_contract.py` retains
 the direct behavioral checks.  A B1 implementation must update and compare
 this same ledger rather than introducing a second matrix.
 
@@ -29,7 +32,7 @@ The approved structure surface is:
 | `shape`, `dtype`, values | Preserve NumPy shape, dtype, and values according to the concrete matrix class. |
 | Slicing, assignment, iteration | Preserve the concrete matrix family where the current implementation supports the operation; assignment is value-based and does not change the matrix identity. |
 | `copy`, `astype` | Return an independent concrete matrix with copied metadata and axes. `astype` changes only the requested dtype. |
-| `real`, `imag`, `conj` | Return the concrete matrix class and preserve per-cell units. SeriesMatrix axes are preserved; SpectrogramMatrix records the observed time-axis-only result for `real`/`imag`. |
+| `real`, `imag`, `conj` | Return the concrete matrix class and preserve per-cell units. SpectrogramMatrix `real`/`imag` results have deep-independent metadata/attrs and preserve both time and frequency axes. |
 | `transpose`, `reshape` | Preserve the concrete class for the 3-D series families. B0 currently raises `ValueError` for these operations on `SpectrogramMatrix`; that observed exception is frozen honestly in the manifest. |
 | `np.asarray(matrix)` | Return a plain `numpy.ndarray` containing the values. |
 | `matrix.view(np.ndarray)` | Return a plain raw `numpy.ndarray` view containing the values. |
@@ -50,13 +53,14 @@ All supported out-of-place arithmetic returns the concrete matrix family.  A
 failed operation must not mutate an operand.
 
 * Addition and subtraction convert compatible quantities to the left
-  operand's cell units.  A unitless ndarray is accepted for a dimensionless
-  matrix and is refused with `astropy.units.UnitConversionError` for the
-  dimensional TimeSeriesMatrix/FrequencySeriesMatrix cases.  The
-  dimensionless ndarray cases succeed.  The manifest records all six dimensional
-  SpectrogramMatrix raw-ndarray add/sub cells, covering pure, reflected, and
-  in-place operations, are exact atomic `TypeError` failures.  There is no
-  dimensional-cell-preservation exception for this ndarray input.
+  operand's cell units.  Unitless Python scalars, NumPy scalars, and raw
+  ndarrays are accepted only for a dimensionless matrix.  Dimensional inputs
+  fail atomically with `astropy.units.UnitConversionError`; the manifest
+  records all six dimensional SpectrogramMatrix raw-ndarray add/sub cells,
+  covering pure, reflected, and in-place operations, as exact atomic
+  `UnitConversionError` failures.  The dimensionless ndarray cases succeed;
+  the dimensionless scalar cases also succeed.  There is no
+  dimensional-cell-preservation exception for these unitless inputs.
   Matrix metadata and axes remain independent and intact where the concrete
   operation provides independent metadata.
 * Multiplication and true division compose units in operand order.  The
@@ -65,8 +69,9 @@ failed operation must not mutate an operand.
   meaningful.  Quantity-left and Unit-left forms must retain the matrix class;
   they must not collapse to a bare `Quantity`.
 * `power` accepts a dimensionless scalar exponent and raises each cell unit to
-  that exponent.  A dimensional exponent, or a non-scalar exponent applied to
-  a dimensional base, raises `UnitConversionError` in B0.  `sqrt` is a
+  that exponent.  A dimensional exponent or any non-scalar exponent raises
+  `UnitConversionError` before values or metadata are changed, including a
+  matrix-valued SpectrogramMatrix exponent.  `sqrt` is a
   documented target rule for B1, but direct `np.sqrt(matrix)` remains a B0
   rejection (see below).
 * Comparisons (`<`, `<=`, `==`, `!=`, `>`, `>=`) return the concrete matrix
@@ -76,7 +81,9 @@ failed operation must not mutate an operand.
 * The B0 predicate surface is deliberately conservative.  Direct
   `np.isfinite` and `np.isnan` calls are rejected along with other direct
   ufunc calls.  `np.isreal` is a `UnitConversionError` for the two 3-D series
-  families and returns a boolean SpectrogramMatrix in the observed B0 path.
+  families and returns a boolean SpectrogramMatrix with dimensionless cells,
+  preserved time/frequency axes, preserved name, and deep-independent
+  metadata/attrs.
 * In-place dunders compute and validate an out-of-place result first, then
   commit atomically.  Incompatible units, zero division, shape errors, and
   unsafe dtype changes leave values and metadata untouched.
@@ -142,21 +149,26 @@ these gates:
 
 * each operation median delta `<= max(baseline * 20%, 10 microseconds)`;
 * geometric-mean timing ratio `<= 1.10`;
-* RSS increase `<= max(baseline * 10%, 8 MiB)`.
+* absolute child-process peak RSS is retained as a diagnostic only and is
+  non-gating until a matched-process memory methodology is adopted.
 
-These comparisons use exact `>` rejection: equality is accepted and the next
-representable value above each boundary is rejected.  `adopt_candidate()`
+The timing comparisons use exact `>` rejection: equality is accepted and the
+next representable value above each timing boundary is rejected.
+`adopt_candidate()`
 applies the stability gate before numeric comparison, so any unstable baseline
 or candidate operation is non-adoptable.
 
 Candidate evidence also accepts a SHA-256 over an explicitly supplied,
 target-relative frozen runtime-file set.  The B0 capture summarized in
 `docs/plans/evidence/v0.2.0-b0/series_matrix_b0_summary.md` is fixed at
-`6a13900672900551ccaf1b18fe78b9ce6f062e29`, has raw-capture digest
-`5fcdab552f8c910812335e81dfb4e0f170543f69ba78f18a63784191a80bf3b5`,
-and records all six operations as stable with an adoptable stability gate.
-Its `decision: pending` and `issue_637: not evaluated in B0` fields do not
-adopt or evaluate a #637 candidate.  A separate B1 capture and comparison are
+`6a13900672900551ccaf1b18fe78b9ce6f062e29`, has a recorded raw-capture digest
+`5fcdab552f8c910812335e81dfb4e0f170543f69ba78f18a63784191a80bf3b5`, and
+records all six operations as stable with an adoptable stability gate.  The
+raw JSON was intentionally not retained, so that digest cannot independently
+verify the deleted artifact.  Any future adoption review must retain a raw
+artifact and make it available for designated reviewer inspection.  Its
+`decision: pending` and `issue_637: not evaluated in B0` fields do not adopt
+or evaluate a #637 candidate.  A separate B1 capture and comparison are
 required before any numeric adoption claim.
 
 ## D21 data-model approval

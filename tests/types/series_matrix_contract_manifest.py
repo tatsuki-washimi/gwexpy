@@ -393,7 +393,11 @@ def _structure_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
             axis_expectation=preserve_axis,
             value_expectation=ValueExpectation.ITERATION_ROWS_EXACT,
             name_expectation=NameExpectation.ROW_ELEMENT_EMPTY,
-            attrs_expectation=AttrsExpectation.EMPTY,
+            attrs_expectation=(
+                AttrsExpectation.EMPTY
+                if family is MatrixFamily.SPECTROGRAM
+                else AttrsExpectation.DEEP_COPY
+            ),
         ),
         _result(
             family,
@@ -423,17 +427,14 @@ def _structure_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
             expected_result=ResultExpectation.MATRIX,
             unit_expectation=UnitExpectation.PRESERVE_CELL_UNITS,
             metadata_expectation=(
-                MetadataExpectation.PRESERVE_SOURCE_CELLS_SHARED_ROWS_COLUMNS
+                MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS
                 if family is MatrixFamily.SPECTROGRAM
                 else MetadataExpectation.DEEP_COPY_CELLS_SHARED_ROWS_COLUMNS
             ),
-            axis_expectation=(
-                AxisExpectation.SPECTROGRAM_TIME_ONLY
-                if family is MatrixFamily.SPECTROGRAM
-                else preserve_axis
-            ),
+            axis_expectation=preserve_axis,
             value_expectation=ValueExpectation.REAL_EXACT,
             name_expectation=NameExpectation.REAL_SUFFIX,
+            attrs_expectation=AttrsExpectation.DEEP_COPY,
         ),
         _result(
             family,
@@ -443,17 +444,14 @@ def _structure_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
             expected_result=ResultExpectation.MATRIX,
             unit_expectation=UnitExpectation.PRESERVE_CELL_UNITS,
             metadata_expectation=(
-                MetadataExpectation.PRESERVE_SOURCE_CELLS_SHARED_ROWS_COLUMNS
+                MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS
                 if family is MatrixFamily.SPECTROGRAM
                 else MetadataExpectation.DEEP_COPY_CELLS_SHARED_ROWS_COLUMNS
             ),
-            axis_expectation=(
-                AxisExpectation.SPECTROGRAM_TIME_ONLY
-                if family is MatrixFamily.SPECTROGRAM
-                else preserve_axis
-            ),
+            axis_expectation=preserve_axis,
             value_expectation=ValueExpectation.IMAG_EXACT,
             name_expectation=NameExpectation.IMAG_SUFFIX,
+            attrs_expectation=AttrsExpectation.DEEP_COPY,
         ),
         _result(
             family,
@@ -529,10 +527,10 @@ def _structure_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
                 surface=Surface.STRUCTURE,
                 expected_result=ResultExpectation.MATRIX,
                 unit_expectation=UnitExpectation.PRESERVE_CELL_UNITS,
-                metadata_expectation=MetadataExpectation.PRESERVE_SOURCE_CELLS_DEEP_ROWS_COLUMNS,
+                metadata_expectation=MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS,
                 axis_expectation=AxisExpectation.SLICE_SAMPLE_AXIS,
                 value_expectation=ValueExpectation.SLICE_EXACT,
-                attrs_expectation=AttrsExpectation.SHARED,
+                attrs_expectation=AttrsExpectation.DEEP_COPY,
             ),
         )
         cells.append(
@@ -571,23 +569,7 @@ def _ndarray_add_sub_cell(
     scenario: InputScenario,
 ) -> ContractCell:
     surface = Surface.REFLECTED if side is Side.LEFT else Surface.ARITHMETIC
-    if (
-        family is MatrixFamily.SPECTROGRAM
-        and scenario is InputScenario.DIMENSIONAL_INCOMPATIBLE
-    ):
-        return _error(
-            family,
-            operation,
-            Operand.NDARRAY,
-            TypeError,
-            surface=surface,
-            side=side,
-            scenario=scenario,
-        )
-    if (
-        scenario is InputScenario.DIMENSIONAL_INCOMPATIBLE
-        and family is not MatrixFamily.SPECTROGRAM
-    ):
+    if scenario is InputScenario.DIMENSIONAL_INCOMPATIBLE:
         return _error(
             family,
             operation,
@@ -630,23 +612,7 @@ def _ndarray_add_sub_inplace_cell(
     *,
     scenario: InputScenario,
 ) -> ContractCell:
-    if (
-        family is MatrixFamily.SPECTROGRAM
-        and scenario is InputScenario.DIMENSIONAL_INCOMPATIBLE
-    ):
-        return _error(
-            family,
-            operation,
-            Operand.NDARRAY,
-            TypeError,
-            surface=Surface.INPLACE,
-            mutation=Mutation.INPLACE,
-            scenario=scenario,
-        )
-    if (
-        scenario is InputScenario.DIMENSIONAL_INCOMPATIBLE
-        and family is not MatrixFamily.SPECTROGRAM
-    ):
+    if scenario is InputScenario.DIMENSIONAL_INCOMPATIBLE:
         return _error(
             family,
             operation,
@@ -686,23 +652,48 @@ def _ndarray_add_sub_inplace_cell(
 
 
 def _non_scalar_power_cell(family: MatrixFamily, operand: Operand) -> ContractCell:
-    if family is MatrixFamily.SPECTROGRAM and operand is Operand.SAME_CLASS_MATRIX:
-        return _result(
-            family,
-            "power",
-            operand,
-            surface=Surface.ARITHMETIC,
-            expected_result=ResultExpectation.MATRIX,
-            unit_expectation=UnitExpectation.EXACT_V,
-            axis_expectation=AxisExpectation.PRESERVE_SPECTROGRAM_AXES,
-            value_expectation=ValueExpectation.POWER_EXACT,
-        )
     return _error(
         family,
         "power",
         operand,
         UnitConversionError,
         surface=Surface.ARITHMETIC,
+    )
+
+
+def _scalar_add_sub_cell(
+    family: MatrixFamily,
+    operation: str,
+    operand: Operand,
+    *,
+    side: Side = Side.NONE,
+    scenario: InputScenario,
+    mutation: Mutation = Mutation.PURE,
+) -> ContractCell:
+    surface = (
+        Surface.INPLACE
+        if mutation is Mutation.INPLACE
+        else (Surface.REFLECTED if side is Side.LEFT else Surface.ARITHMETIC)
+    )
+    if scenario is InputScenario.DIMENSIONAL_INCOMPATIBLE:
+        return _error(
+            family,
+            operation,
+            operand,
+            UnitConversionError,
+            surface=surface,
+            side=side,
+            mutation=mutation,
+            scenario=scenario,
+        )
+    return _binary_expectation(
+        family,
+        operation,
+        operand,
+        surface=surface,
+        side=side,
+        scenario=scenario,
+        mutation=mutation,
     )
 
 
@@ -748,9 +739,10 @@ def _predicate_cell(family: MatrixFamily, operation: str) -> ContractCell:
             side=Side.DIRECT,
             expected_result=ResultExpectation.BOOL_MATRIX,
             unit_expectation=UnitExpectation.EXACT_DIMENSIONLESS,
-            axis_expectation=AxisExpectation.SPECTROGRAM_TIME_ONLY,
+            metadata_expectation=MetadataExpectation.DEEP_COPY_CELLS_ROWS_COLUMNS,
+            axis_expectation=AxisExpectation.PRESERVE_SPECTROGRAM_AXES,
             value_expectation=ValueExpectation.COMPARISON_EXACT,
-            name_expectation=NameExpectation.IMAG_SUFFIX,
+            attrs_expectation=AttrsExpectation.DEEP_COPY,
         )
     return _error(
         family,
@@ -891,6 +883,25 @@ def _operator_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
                 ),
             )
         )
+        for operand in (Operand.PYTHON_SCALAR, Operand.NUMPY_SCALAR):
+            for scenario in (
+                InputScenario.DIMENSIONAL_INCOMPATIBLE,
+                InputScenario.DIMENSIONLESS_MATRIX,
+            ):
+                cells.extend(
+                    (
+                        _scalar_add_sub_cell(
+                            family, operation, operand, scenario=scenario
+                        ),
+                        _scalar_add_sub_cell(
+                            family,
+                            operation,
+                            operand,
+                            side=Side.LEFT,
+                            scenario=scenario,
+                        ),
+                    )
+                )
     for operation in ("mul", "truediv"):
         for operand in Operand:
             if operand is not Operand.NONE:
@@ -986,6 +997,20 @@ def _operator_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
                 ),
             )
         )
+        for operand in (Operand.PYTHON_SCALAR, Operand.NUMPY_SCALAR):
+            for scenario in (
+                InputScenario.DIMENSIONAL_INCOMPATIBLE,
+                InputScenario.DIMENSIONLESS_MATRIX,
+            ):
+                cells.append(
+                    _scalar_add_sub_cell(
+                        family,
+                        operation,
+                        operand,
+                        mutation=Mutation.INPLACE,
+                        scenario=scenario,
+                    )
+                )
     for operation in ("mul", "truediv"):
         for operand in (Operand.PYTHON_SCALAR, Operand.UNIT):
             cells.append(
@@ -1079,7 +1104,7 @@ def _build_manifest() -> tuple[ContractCell, ...]:
 
 
 B0_CONTRACT: Final[tuple[ContractCell, ...]] = _build_manifest()
-EXPECTED_B0_CELL_COUNT: Final[int] = 318
+EXPECTED_B0_CELL_COUNT: Final[int] = 390
 assert len(B0_CONTRACT) == EXPECTED_B0_CELL_COUNT
 
 

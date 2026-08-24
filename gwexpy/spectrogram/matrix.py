@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import Any, cast
 
 import numpy as np
 from astropy import units as u
 
-from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
+from gwexpy.types.metadata import MetaData, MetaDataDict, MetaDataMatrix
 from gwexpy.types.mixin import PhaseMethodsMixin
 from gwexpy.types.seriesmatrix import SeriesMatrix
 from gwexpy.types.seriesmatrix_base import _copy_metadata_dict, _scalar_power_exponent
@@ -250,6 +251,67 @@ class SpectrogramMatrix(  # type: ignore[misc]
         new.frequencies = self._resupplied_frequencies(self.frequencies)
         return new
 
+    def _component_result(
+        self,
+        values: np.ndarray,
+        *,
+        name: str | None,
+        dimensionless: bool = False,
+    ) -> SpectrogramMatrix:
+        """Rebuild a unary component/predicate result without aliasing state."""
+        if self.meta is None:
+            new_meta = None
+        else:
+            cells = np.empty(self.meta.shape, dtype=object)
+            for idx in np.ndindex(self.meta.shape):
+                source = cast(MetaData, self.meta[idx])
+                cells[idx] = MetaData(
+                    name=source.name,
+                    channel=source.channel,
+                    unit=(u.dimensionless_unscaled if dimensionless else source.unit),
+                )
+            new_meta = MetaDataMatrix(cells)
+        result = self.__class__(
+            values,
+            times=self._resupplied_frequencies(self.times),
+            frequencies=self._resupplied_frequencies(self.frequencies),
+            rows=_copy_metadata_dict(self.rows, "row") if self.rows else self.rows,
+            cols=_copy_metadata_dict(self.cols, "col") if self.cols else self.cols,
+            meta=new_meta,
+            name=name,
+            unit=(u.dimensionless_unscaled if dimensionless else self.unit),
+            epoch=getattr(self, "epoch", 0.0),
+        )
+        # SpectrogramMatrix has a specialised constructor, so it cannot pass
+        # ``attrs`` through SeriesMatrix.__new__.  Assign an explicit deep
+        # copy after construction instead of inheriting ndarray's shared dict.
+        result.attrs = deepcopy(getattr(self, "attrs", {}))
+        return result
+
+    @property
+    def real(self) -> SpectrogramMatrix:
+        """Return a fully independent real component with both axes intact."""
+        return self._component_result(
+            self.view(np.ndarray).real,
+            name=f"{self.name}.real" if self.name else "",
+        )
+
+    @real.setter
+    def real(self, value: Any) -> None:
+        self.value.real = value
+
+    @property
+    def imag(self) -> SpectrogramMatrix:
+        """Return a fully independent imaginary component with both axes intact."""
+        return self._component_result(
+            self.view(np.ndarray).imag,
+            name=f"{self.name}.imag" if self.name else "",
+        )
+
+    @imag.setter
+    def imag(self, value: Any) -> None:
+        self.value.imag = value
+
     def __array_finalize__(self, obj: Any) -> None:
         if obj is None:
             return
@@ -263,6 +325,19 @@ class SpectrogramMatrix(  # type: ignore[misc]
 
         if not hasattr(self, "_value"):
             self._value = self.view(np.ndarray)
+
+    def __array_function__(self, func: Any, types: Any, args, kwargs):
+        """Handle the one reviewed NumPy function without exposing B1 ufuncs."""
+        if func is np.isreal:
+            if kwargs or len(args) != 1 or not isinstance(args[0], SpectrogramMatrix):
+                return NotImplemented
+            matrix = args[0]
+            return matrix._component_result(
+                np.isreal(matrix.view(np.ndarray)),
+                name=matrix.name,
+                dimensionless=True,
+            )
+        return super().__array_function__(func, types, args, kwargs)
 
     def _cell_indices(self):
         """Yield ``(meta_index, data_index)`` pairs for every spectrogram cell.
@@ -375,8 +450,6 @@ class SpectrogramMatrix(  # type: ignore[misc]
         ufunc methods other than ``__call__`` are rejected rather than silently
         dropping metadata.
         """
-        from gwexpy.types.metadata import MetaData, MetaDataMatrix
-
         if method != "__call__":
             raise TypeError(
                 f"SpectrogramMatrix does not support ufunc method {method!r}; "
@@ -436,24 +509,47 @@ class SpectrogramMatrix(  # type: ignore[misc]
 
         main = sgm_inputs[0]
 
+        # A SeriesMatrix has one unit per logical series.  Exponents varying
+        # over samples or cells would require a unit per value, which this
+        # model cannot represent.  Refuse before numerical work so every
+        # failure, including ``**=``, is atomic.
+        if ufunc is np.power and len(inputs) == 2:
+            if _scalar_power_exponent(inputs[1]) is None:
+                raise u.UnitConversionError(
+                    "power with a non-scalar exponent is not supported for "
+                    "SpectrogramMatrix"
+                )
+
+        if ufunc is np.isreal:
+            if len(inputs) != 1 or inputs[0] is not main:
+                return NotImplemented
+            return main._component_result(
+                np.isreal(main.view(np.ndarray)),
+                name=main.name,
+                dimensionless=True,
+            )
+
         # A raw ndarray has no unit metadata.  Astropy-compatible add/sub
         # therefore refuses it for a dimensional spectrogram instead of
         # treating its values as if they were already expressed in each cell
         # unit.  The check happens before any result allocation so the same
         # refusal is atomic for `+=`/`-=` through the shared in-place path.
-        if (
-            ufunc in _ADD_SUB_UFUNCS
-            and any(
-                isinstance(inp, np.ndarray)
-                and not isinstance(inp, (SpectrogramMatrix, u.Quantity))
+        if ufunc in _ADD_SUB_UFUNCS and not main._matrix_is_strictly_dimensionless(
+            main
+        ):
+            has_unitless_operand = any(
+                isinstance(inp, (int, float, complex, np.number))
+                or (
+                    isinstance(inp, np.ndarray)
+                    and not isinstance(inp, (SpectrogramMatrix, u.Quantity))
+                )
                 for inp in inputs
             )
-            and not main._matrix_is_strictly_dimensionless(main)
-        ):
-            raise TypeError(
-                "SpectrogramMatrix add/sub with a raw ndarray requires "
-                "strictly dimensionless matrix cells"
-            )
+            if has_unitless_operand:
+                raise u.UnitConversionError(
+                    "SpectrogramMatrix add/sub with a unitless scalar or raw "
+                    "ndarray requires strictly dimensionless matrix cells"
+                )
 
         # 1b. Bring every other operand into `main`'s per-element units before
         #     the values are combined (issue #576).

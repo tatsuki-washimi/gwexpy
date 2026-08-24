@@ -588,18 +588,8 @@ class SeriesMatrix(  # type: ignore[misc]
         if exponent is not None:
             return [meta_matrices[0], exponent]
 
-        # A non-scalar exponent would give each sample its own unit, which the
-        # per-cell metadata model cannot express.  It is only well defined when
-        # the base is already dimensionless.
-        base_units = meta_matrices[0].units
-        if all(
-            unit is None or unit.is_equivalent(u.dimensionless_unscaled)
-            for unit in base_units.reshape(-1)
-        ):
-            return [_copy_meta_cells(meta_matrices[0], u.dimensionless_unscaled), 1]
         raise u.UnitConversionError(
-            "power with a non-scalar exponent requires dimensionless base units; "
-            f"got {base_units.reshape(-1)[0]}"
+            "power with a non-scalar exponent is not supported for SeriesMatrix"
         )
 
     def _ufunc_result_meta(
@@ -678,6 +668,17 @@ class SeriesMatrix(  # type: ignore[misc]
             if casted is NotImplemented:
                 return NotImplemented
             casted_inputs.append(casted)
+
+        # The per-cell metadata model has one unit per series, not one unit
+        # per sample.  A non-scalar exponent would require sample-dependent
+        # units even when the base happens to be dimensionless, so reject it
+        # before values or metadata are computed.  This is also the atomic
+        # preflight shared by ``**=``.
+        if ufunc is np.power and len(inputs) == 2:
+            if _scalar_power_exponent(inputs[1]) is None:
+                raise u.UnitConversionError(
+                    "power with a non-scalar exponent is not supported for SeriesMatrix"
+                )
 
         check_shape_xindex_compatibility(*casted_inputs)
 

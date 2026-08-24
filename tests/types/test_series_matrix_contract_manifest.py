@@ -817,9 +817,14 @@ def _assert_iteration_contract(
         assert cell.name_expectation is NameExpectation.ROW_ELEMENT_EMPTY
         assert row.name == ""
         assert row.epoch == matrix.epoch
-        assert cell.attrs_expectation is AttrsExpectation.EMPTY
-        assert row.attrs == {}
-        assert row.attrs is not matrix.attrs
+        if cell.attrs_expectation is AttrsExpectation.DEEP_COPY:
+            assert row.attrs == matrix.attrs
+            assert row.attrs is not matrix.attrs
+            assert row.attrs["contract"] is not matrix.attrs["contract"]
+        else:
+            assert cell.attrs_expectation is AttrsExpectation.EMPTY
+            assert row.attrs == {}
+            assert row.attrs is not matrix.attrs
         width = row.meta.size
         expected_units = before_units[index * width : (index + 1) * width]
         assert _units(row) == expected_units
@@ -909,7 +914,7 @@ def execute_contract_cell(cell: ContractCell) -> ContractObservation:
 
 def test_b0_manifest_has_a_literal_cell_count_and_unique_ids() -> None:
     assert len(B0_CONTRACT) == EXPECTED_B0_CELL_COUNT
-    assert EXPECTED_B0_CELL_COUNT == 318
+    assert EXPECTED_B0_CELL_COUNT == 390
     ids = [cell.id for cell in B0_CONTRACT]
     assert len(ids) == len(set(ids))
 
@@ -971,17 +976,10 @@ def test_ndarray_add_sub_cells_cover_out_of_place_and_in_place_dimensions() -> N
         for cell in cells
         if cell.scenario is InputScenario.DIMENSIONAL_INCOMPATIBLE
     ]
-    assert (
-        sum(cell.exception_class is UnitConversionError for cell in dimensional) == 12
-    )
-    spectrogram_dimensional = [
-        cell for cell in dimensional if cell.family is MatrixFamily.SPECTROGRAM
-    ]
-    assert len(spectrogram_dimensional) == 6
     assert all(
         cell.expected_result is ResultExpectation.EXCEPTION
-        and cell.exception_class is TypeError
-        for cell in spectrogram_dimensional
+        and cell.exception_class is UnitConversionError
+        for cell in dimensional
     )
 
 
@@ -996,7 +994,7 @@ def test_container_arithmetic_docs_match_spectrogram_ndarray_manifest() -> None:
     )
     assert "all six dimensional SpectrogramMatrix raw-ndarray add/sub cells" in document
     assert "pure, reflected, and in-place" in document
-    assert "exact atomic `TypeError` failures" in document
+    assert "exact atomic `UnitConversionError` failures" in document
     assert "dimensionless ndarray cases succeed" in document
     assert "preserves dimensional cells" not in document
 
@@ -1031,6 +1029,40 @@ def test_b0_manifest_covers_operand_and_operator_categories() -> None:
     assert {"lt", "le", "eq", "ne", "gt", "ge"} <= operations
     assert {"isfinite", "isnan", "isreal"} <= operations
     assert {"direct_ufunc", "unsupported_operator"} <= operations
+
+
+def test_add_sub_scalar_cross_product_is_complete() -> None:
+    for family in MatrixFamily:
+        for operation in ("add", "sub"):
+            for operand in (Operand.PYTHON_SCALAR, Operand.NUMPY_SCALAR):
+                for scenario in (
+                    InputScenario.DIMENSIONAL_INCOMPATIBLE,
+                    InputScenario.DIMENSIONLESS_MATRIX,
+                ):
+                    for surface, side, mutation in (
+                        (Surface.ARITHMETIC, Side.NONE, Mutation.PURE),
+                        (Surface.REFLECTED, Side.LEFT, Mutation.PURE),
+                        (Surface.INPLACE, Side.NONE, Mutation.INPLACE),
+                    ):
+                        matches = [
+                            cell
+                            for cell in B0_CONTRACT
+                            if (
+                                cell.family is family
+                                and cell.operation == operation
+                                and cell.operand is operand
+                                and cell.surface is surface
+                                and cell.side is side
+                                and cell.mutation is mutation
+                                and cell.scenario is scenario
+                            )
+                        ]
+                        assert len(matches) == 1
+                        cell = matches[0]
+                        if scenario is InputScenario.DIMENSIONAL_INCOMPATIBLE:
+                            assert cell.exception_class is UnitConversionError
+                        else:
+                            assert cell.expected_result is ResultExpectation.MATRIX
 
 
 def test_direct_ufunc_cells_honestly_pin_b0_rejection() -> None:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
@@ -210,10 +211,16 @@ class SeriesMatrixIndexingMixin:
 
         # 7. Update object attributes
         # __array_finalize__ will be called, but we need to re-assign sliced meta
-        result.meta = new_meta
-        result.rows = new_rows
-        result.cols = new_cols
+        # ndarray object slicing preserves object references.  A logical
+        # SeriesMatrix slice must not: mutating a sliced MetaData/label/attrs
+        # object must never mutate its source matrix (D21 data-model rule).
+        from .metadata import MetaDataMatrix
+
+        result.meta = MetaDataMatrix(deepcopy(np.asarray(new_meta, dtype=object)))
+        result.rows = deepcopy(new_rows)
+        result.cols = deepcopy(new_cols)
         result.xindex = new_xindex
+        result.attrs = deepcopy(getattr(self, "attrs", {}))
 
         return result
 

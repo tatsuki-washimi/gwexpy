@@ -121,7 +121,7 @@ def test_comparison_enforces_all_three_candidate_budgets() -> None:
     assert decision.geometric_mean_ratio == pytest.approx((1.19 * 1.01) ** 0.5)
 
 
-def test_comparison_rejects_timing_and_rss_budget_breaches() -> None:
+def test_comparison_rejects_timing_budget_breaches() -> None:
     baseline = {
         "op": BenchmarkSample(operation="op", timings=(0.100,), rss_bytes=100 * 1024**2)
     }
@@ -133,7 +133,7 @@ def test_comparison_rejects_timing_and_rss_budget_breaches() -> None:
     assert decision.failed_operations == ("op",)
 
 
-def test_rss_only_failure_exceeds_the_10_percent_budget() -> None:
+def test_rss_is_diagnostic_and_does_not_gate_adoption() -> None:
     baseline = {
         "op": BenchmarkSample(operation="op", timings=(0.100,), rss_bytes=100 * 1024**2)
     }
@@ -145,7 +145,9 @@ def test_rss_only_failure_exceeds_the_10_percent_budget() -> None:
     decision = compare_candidate(baseline, candidate)
     assert decision.geometric_mean_ratio == pytest.approx(1.0)
     assert decision.operation_deltas_us["op"] == pytest.approx(0.0)
-    assert decision.failed_operations == ("op",)
+    assert decision.rss_deltas_bytes == {"op": 10 * 1024**2 + 1}
+    assert decision.failed_operations == ()
+    assert decision.passed
 
 
 def test_geometric_mean_only_failure_is_independent_of_per_operation_budget() -> None:
@@ -194,7 +196,7 @@ def test_exact_timing_budget_boundary_is_accepted(
     assert decision.passed
 
 
-def test_exact_eight_mib_rss_boundary_is_accepted() -> None:
+def test_large_absolute_rss_difference_is_still_non_gating() -> None:
     baseline = {"op": BenchmarkSample(operation="op", timings=(1.0,), rss_bytes=1)}
     candidate = {
         "op": BenchmarkSample(operation="op", timings=(1.0,), rss_bytes=1 + 8 * 1024**2)
@@ -271,7 +273,7 @@ def test_geometric_mean_equality_is_accepted_but_nextafter_is_not() -> None:
     assert not compare_candidate(baseline, just_over).passed
 
 
-def test_rss_equality_is_accepted_but_nextafter_is_not() -> None:
+def test_rss_boundary_values_are_both_non_gating() -> None:
     baseline = {"op": BenchmarkSample(operation="op", timings=(1.0,), rss_bytes=1)}
     equal = {
         "op": BenchmarkSample(operation="op", timings=(1.0,), rss_bytes=1 + 8 * 1024**2)
@@ -282,10 +284,10 @@ def test_rss_equality_is_accepted_but_nextafter_is_not() -> None:
         )
     }
     assert compare_candidate(baseline, equal).passed
-    assert not compare_candidate(baseline, just_over).passed
+    assert compare_candidate(baseline, just_over).passed
 
 
-def test_rss_ten_percent_equality_is_accepted_but_nextafter_is_not() -> None:
+def test_rss_ten_percent_boundary_values_are_both_non_gating() -> None:
     baseline = {
         "op": BenchmarkSample(operation="op", timings=(1.0,), rss_bytes=100 * 1024**2)
     }
@@ -298,7 +300,7 @@ def test_rss_ten_percent_equality_is_accepted_but_nextafter_is_not() -> None:
         )
     }
     assert compare_candidate(baseline, equal).passed
-    assert not compare_candidate(baseline, just_over).passed
+    assert compare_candidate(baseline, just_over).passed
 
 
 def test_parent_payload_requires_protocol_duration_and_consistent_rate(
@@ -386,19 +388,21 @@ def test_module_provenance_rejects_duplicate_names_and_paths(tmp_path: Path) -> 
         )
 
 
-def test_tracked_b0_summary_is_compact_and_reproducible() -> None:
+def test_tracked_b0_summary_is_compact_and_records_protocol_reproduction() -> None:
     repository_root = Path(__file__).parents[2]
     evidence_root = repository_root / "docs" / "plans" / "evidence" / "v0.2.0-b0"
     summary = (evidence_root / "series_matrix_b0_summary.md").read_text(
         encoding="utf-8"
     )
 
-    assert "fixed SHA" in summary
+    assert "fixed SHA: `6a13900672900551ccaf1b18fe78b9ce6f062e29`" in summary
     assert "3 warm-ups" in summary
     assert "7 independent child processes" in summary
     assert "250 ms" in summary
     assert "SHA-256" in summary
-    assert "reproduction" in summary
+    assert "protocol reproduction" in summary
+    assert "cannot be independently verified" in summary
+    assert "retained and made available for designated reviewer inspection" in summary
     assert not (evidence_root / "series_matrix_b0.json").exists()
 
 
@@ -422,6 +426,24 @@ def test_fixed_sha_must_equal_the_declared_origin_ref(tmp_path: Path) -> None:
     ).stdout.strip()
     with pytest.raises(ValueError, match="fixed_sha|origin ref"):
         benchmark._validate_fixed_origin_ref(candidate_root, "origin/main", forged_sha)
+
+
+def test_immutable_commit_sha_is_an_accepted_protocol_reproduction_target(
+    tmp_path: Path,
+) -> None:
+    candidate_root = _candidate_root(tmp_path)
+    fixed_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=candidate_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+    assert (
+        benchmark._validate_fixed_origin_ref(candidate_root, fixed_sha, fixed_sha)
+        == fixed_sha
+    )
 
 
 def test_isolated_worktree_uses_system_temporary_parent(
@@ -544,6 +566,26 @@ def test_b1_requires_each_raw_sample_to_match_top_level_module_set(
     first_sample_modules.pop()
 
     with pytest.raises(ValueError, match="every raw-sample module|module set"):
+        benchmark._validate_evidence(
+            evidence, expected_phase="B1", target_root=candidate_root
+        )
+
+
+def test_evidence_requires_every_sample_environment_to_match_top_level(
+    tmp_path: Path,
+) -> None:
+    candidate_root = _candidate_root(tmp_path)
+    evidence = _evidence_with_stability(
+        "stable", phase="B1", candidate_root=candidate_root
+    )
+    results = cast(dict[str, object], evidence["results"])
+    copy_result = cast(dict[str, object], results["copy"])
+    attempt = cast(list[dict[str, object]], copy_result["attempts"])[0]
+    sample = cast(list[dict[str, object]], attempt["raw_samples"])[0]
+    environment = cast(dict[str, str], sample["environment"])
+    environment["numpy"] = "mismatched"
+
+    with pytest.raises(ValueError, match="environment does not match"):
         benchmark._validate_evidence(
             evidence, expected_phase="B1", target_root=candidate_root
         )

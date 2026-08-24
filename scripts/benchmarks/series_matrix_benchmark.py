@@ -156,7 +156,7 @@ def compare_candidate(
     baseline: dict[str, BenchmarkSample],
     candidate: dict[str, BenchmarkSample],
 ) -> ComparisonDecision:
-    """Apply the frozen timing, ratio, and RSS budgets to two result sets."""
+    """Apply frozen timing budgets; retain isolated-process RSS as diagnostics."""
     if set(baseline) != set(candidate):
         raise ValueError("baseline and candidate operation sets must match")
 
@@ -175,9 +175,8 @@ def compare_candidate(
         rss_deltas_bytes[operation] = rss_delta
         ratios.append(trial_median / base_median)
         timing_limit = max(base_median * 0.20, 10e-6)
-        rss_limit = max(int(base.rss_bytes * 0.10), 8 * 1024**2)
         timing_breach = delta_seconds > timing_limit
-        if timing_breach or rss_delta > rss_limit:
+        if timing_breach:
             failed.append(operation)
 
     ratio = geometric_mean_ratio(ratios)
@@ -370,6 +369,13 @@ def _git_output(target_root: Path, *arguments: str) -> list[str]:
 def _fixed_ref_candidates(fixed_origin_ref: str) -> tuple[str, ...]:
     if not fixed_origin_ref or fixed_origin_ref.startswith("-"):
         raise ValueError("fixed origin ref is invalid")
+    if len(fixed_origin_ref) == 40 and all(
+        character in "0123456789abcdef" for character in fixed_origin_ref
+    ):
+        # A full commit ID is an immutable protocol-reproduction target.  It
+        # is intentionally accepted alongside a named origin ref so evidence
+        # can name the exact reviewed base without depending on ref movement.
+        return (fixed_origin_ref,)
     if fixed_origin_ref.startswith("refs/"):
         return (fixed_origin_ref,)
     return tuple(
@@ -716,7 +722,6 @@ def _worker_main(operation: str, protocol: BenchmarkProtocol) -> dict[str, objec
         protocol.minimum_measurement_seconds,
     )
 
-    rss_before = _rss_bytes()
     while True:
         started = time.perf_counter()
         for _ in range(iterations):
@@ -727,7 +732,11 @@ def _worker_main(operation: str, protocol: BenchmarkProtocol) -> dict[str, objec
         iterations = next_iterations(
             iterations, elapsed, protocol.minimum_measurement_seconds
         )
-    rss_after = _rss_bytes()
+    # ``ru_maxrss`` is a process-lifetime peak and cannot yield a meaningful
+    # before/after delta.  Each child is already isolated, so record its
+    # absolute peak as diagnostic evidence; it is deliberately non-gating
+    # until a workload-matched memory methodology is adopted.
+    rss_peak = _rss_bytes()
     target_root = Path.cwd()
     source_modules = _loaded_gwexpy_source_modules(target_root)
     return {
@@ -735,7 +744,7 @@ def _worker_main(operation: str, protocol: BenchmarkProtocol) -> dict[str, objec
         "iterations": iterations,
         "elapsed_seconds": elapsed,
         "per_operation_seconds": elapsed / iterations,
-        "rss_bytes": max(0, rss_after - rss_before),
+        "rss_bytes": rss_peak,
         "source_modules": list(source_modules),
         "environment": {
             "python": platform.python_version(),
@@ -1045,6 +1054,7 @@ def _validate_evidence_sample(
     phase: str,
     fixed_sha: str,
     target_root: Path | None = None,
+    expected_environment: Mapping[str, str] | None = None,
 ) -> None:
     if not isinstance(sample, Mapping):
         raise TypeError("benchmark raw sample evidence must be an object")
@@ -1099,13 +1109,26 @@ def _validate_evidence_sample(
         target_root=target_root,
     )
     environment = sample["environment"]
-    expected_environment = {"python", "platform", "numpy", "astropy", "gwpy", "gwexpy"}
+    expected_environment_keys = {
+        "python",
+        "platform",
+        "numpy",
+        "astropy",
+        "gwpy",
+        "gwexpy",
+    }
     if (
         not isinstance(environment, Mapping)
-        or set(environment) != expected_environment
+        or set(environment) != expected_environment_keys
         or not all(isinstance(value, str) and value for value in environment.values())
     ):
         raise ValueError("benchmark evidence environment schema mismatch")
+    if expected_environment is not None and dict(environment) != dict(
+        expected_environment
+    ):
+        raise ValueError(
+            "benchmark raw-sample environment does not match top-level environment"
+        )
 
 
 def _validate_runtime_file_set(
@@ -1251,6 +1274,7 @@ def _validate_evidence(
                     phase=expected_phase,
                     fixed_sha=fixed_sha,
                     target_root=target_root,
+                    expected_environment=cast(Mapping[str, str], environment),
                 )
                 assert isinstance(sample, Mapping)
                 sample_module_keys = {
