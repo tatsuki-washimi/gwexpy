@@ -206,10 +206,145 @@ def _raw_legacy_effective_epoch(
     return t0 + index(raw.first_samp) / raw.info["sfreq"]
 
 
-def _set_legacy_effective_epoch(raw: Any, epoch: float) -> None:
-    """Set ``raw``'s official base time for an effective legacy epoch."""
-    base_epoch = epoch - index(raw.first_samp) / raw.info["sfreq"]
-    raw.set_meas_date(gps_to_datetime_utc(base_epoch))
+def _raw_exact_intervals(raw: Any, epochs: Mapping[str, int]) -> dict[str, int]:
+    """Validate and return exact per-channel sample intervals for ``raw``."""
+    mapping = getattr(raw, _GWEX_CHANNEL_DT_GPS_NS_ATTR, None)
+    if epochs:
+        if not isinstance(mapping, Mapping) or set(mapping) != set(epochs):
+            raise ValueError(
+                "exact GPS metadata must provide one sample interval per exact channel"
+            )
+        return {name: _strict_exact_ns(mapping[name]) for name in epochs}
+    if mapping is not None and (not isinstance(mapping, Mapping) or mapping):
+        raise ValueError("sample interval metadata requires exact GPS metadata")
+    return {}
+
+
+def _validate_exact_metadata_structure(raw: Any, epochs: Mapping[str, int]) -> None:
+    """Reject exact metadata which cannot describe this Raw's channels."""
+    unknown = set(epochs).difference(raw.ch_names)
+    if unknown:
+        raise ValueError("exact GPS metadata contains unknown channel names")
+
+
+def _preflight_add_channels(raw: Any, add_list: Any) -> dict[str, Any]:
+    """Validate and compute all metadata changes before MNE mutates ``raw``."""
+    current = _raw_exact_epochs(raw)
+    _validate_exact_metadata_structure(raw, current)
+    current_dt = _raw_exact_intervals(raw, current)
+    current_effective = {
+        name: current[name] + index(raw.first_samp) * current_dt[name]
+        for name in current
+    }
+    additions: dict[str, int] = {}
+    additions_dt: dict[str, int] = {}
+    additions_effective: dict[str, int] = {}
+    receiver_legacy_epoch = _raw_legacy_effective_epoch(raw, current)
+    legacy_effective_epochs: list[float] = []
+    if receiver_legacy_epoch is not None:
+        legacy_effective_epochs.append(receiver_legacy_epoch)
+
+    names = set(raw.ch_names)
+    for other in add_list:
+        other_names = list(other.ch_names)
+        if len(other_names) != len(set(other_names)) or names.intersection(other_names):
+            raise ValueError("cannot add channels with duplicate channel names")
+        names.update(other_names)
+
+        other_epochs = _raw_exact_epochs(other)
+        _validate_exact_metadata_structure(other, other_epochs)
+        other_dt = _raw_exact_intervals(other, other_epochs)
+        additions.update(other_epochs)
+        additions_dt.update(other_dt)
+        other_first_samp = index(other.first_samp)
+        additions_effective.update(
+            {
+                name: other_epochs[name] + other_first_samp * other_dt[name]
+                for name in other_epochs
+            }
+        )
+        legacy_epoch = _raw_legacy_effective_epoch(other, other_epochs)
+        if legacy_epoch is not None:
+            legacy_effective_epochs.append(legacy_epoch)
+
+    exact_values = set(current_effective.values()) | set(additions_effective.values())
+    if len(exact_values) > 1:
+        raise ValueError(
+            "cannot add channels with mismatched exact GPS epochs "
+            "(effective epoch mismatch)"
+        )
+    exact_intervals = set(current_dt.values()) | set(additions_dt.values())
+    if len(exact_intervals) > 1:
+        raise ValueError(
+            "cannot add channels with mismatched exact GPS sample intervals"
+        )
+    if legacy_effective_epochs and any(
+        abs(value - legacy_effective_epochs[0]) > _MEAS_DATE_TOLERANCE_S
+        for value in legacy_effective_epochs[1:]
+    ):
+        raise ValueError("cannot add channels with mismatched effective legacy epochs")
+
+    meas_date = None
+    if legacy_effective_epochs and receiver_legacy_epoch is None:
+        base_epoch = (
+            legacy_effective_epochs[0] - index(raw.first_samp) / raw.info["sfreq"]
+        )
+        # Convert and validate with MNE before mutation.  In particular, this
+        # may reject a UTC leap second, which Python's datetime cannot encode.
+        meas_date = gps_to_datetime_utc(base_epoch)
+        raw.info.copy().set_meas_date(meas_date)
+
+    merged: dict[str, int] | None = None
+    merged_dt: dict[str, int] | None = None
+    global_epoch: int | None = None
+    if current or additions:
+        receiver_first_samp = index(raw.first_samp)
+        normalized_additions = {
+            name: epoch - receiver_first_samp * additions_dt[name]
+            for name, epoch in additions_effective.items()
+        }
+        merged = {**current, **normalized_additions}
+        merged_dt = {**current_dt, **additions_dt}
+        # A mixed Raw deliberately has metadata only for its exact channels.
+        # Every such channel must have exactly one normalized base and interval.
+        if not set(merged).issubset(names) or set(merged_dt) != set(merged):
+            raise ValueError("invalid prospective exact GPS metadata")
+        if len(merged) == len(names) and len(set(merged.values())) == 1:
+            global_epoch = next(iter(merged.values()))
+
+    return {
+        "epochs": merged,
+        "intervals": merged_dt,
+        "global_epoch": global_epoch,
+        "meas_date": meas_date,
+    }
+
+
+def _install_prevalidated_add_channels_metadata(
+    raw: Any, plan: Mapping[str, Any]
+) -> None:
+    """Install only values fully validated by :func:`_preflight_add_channels`."""
+    meas_date = plan["meas_date"]
+    if meas_date is not None:
+        # ``Info.set_meas_date`` was run on a copy during preflight.  Avoid
+        # another validating conversion after MNE has changed ``raw``: the
+        # remaining update is assignment-only (and mirrors Raw.set_meas_date
+        # for a non-None datetime).
+        with raw.info._unlock():
+            raw.info["meas_date"] = meas_date
+        if hasattr(raw, "annotations"):
+            raw.annotations._orig_time = meas_date
+    epochs = plan["epochs"]
+    if epochs is None:
+        return
+    setattr(raw, _GWEX_CHANNEL_T0_GPS_NS_ATTR, dict(epochs))
+    setattr(raw, _GWEX_CHANNEL_DT_GPS_NS_ATTR, dict(plan["intervals"]))
+    global_epoch = plan["global_epoch"]
+    if global_epoch is None:
+        raw.__dict__.pop(_GWEX_T0_GPS_NS_ATTR, None)
+    else:
+        setattr(raw, _GWEX_T0_GPS_NS_ATTR, global_epoch)
+    setattr(raw, _GWEX_MEAS_DATE_ATTR, raw.info.get("meas_date"))
 
 
 def _install_add_channels_guard(raw: Any) -> None:
@@ -218,75 +353,13 @@ def _install_add_channels_guard(raw: Any) -> None:
         return
 
     def guarded(self: Any, add_list: Any, *args: Any, **kwargs: Any) -> Any:
-        current = _raw_exact_epochs(self)
-        current_dt = {name: _raw_exact_dt(self, name) for name in current}
-        current_effective: dict[str, int] = {}
-        for name in current:
-            epoch = _raw_channel_epoch(self, name)
-            assert epoch is not None
-            current_effective[name] = epoch
-        additions: dict[str, int] = {}
-        additions_dt: dict[str, int] = {}
-        additions_effective: dict[str, int] = {}
-        receiver_legacy_epoch = _raw_legacy_effective_epoch(self, current)
-        legacy_effective_epochs: list[float] = []
-        if receiver_legacy_epoch is not None:
-            legacy_effective_epochs.append(receiver_legacy_epoch)
-        for other in add_list:
-            other_epochs = _raw_exact_epochs(other)
-            additions.update(other_epochs)
-            additions_dt.update(
-                {name: _raw_exact_dt(other, name) for name in other_epochs}
-            )
-            for name in other_epochs:
-                epoch = _raw_channel_epoch(other, name)
-                assert epoch is not None
-                additions_effective[name] = epoch
-            legacy_epoch = _raw_legacy_effective_epoch(other, other_epochs)
-            if legacy_epoch is not None:
-                legacy_effective_epochs.append(legacy_epoch)
-        exact_values = set(current_effective.values()) | set(
-            additions_effective.values()
-        )
-        if len(exact_values) > 1:
-            raise ValueError(
-                "cannot add channels with mismatched exact GPS epochs "
-                "(effective epoch mismatch)"
-            )
-        exact_intervals = set(current_dt.values()) | set(additions_dt.values())
-        if len(exact_intervals) > 1:
-            raise ValueError(
-                "cannot add channels with mismatched exact GPS sample intervals"
-            )
-        if legacy_effective_epochs and any(
-            abs(value - legacy_effective_epochs[0]) > _MEAS_DATE_TOLERANCE_S
-            for value in legacy_effective_epochs[1:]
-        ):
-            raise ValueError(
-                "cannot add channels with mismatched effective legacy epochs"
-            )
+        plan = _preflight_add_channels(self, add_list)
 
         # Look up the class method at call time.  Copy/deepcopy can duplicate
         # this instance-bound guard, so closing over ``raw.add_channels`` would
         # instead mutate the original Raw object.
         result = type(self).add_channels(self, add_list, *args, **kwargs)
-        if legacy_effective_epochs and receiver_legacy_epoch is None:
-            _set_legacy_effective_epoch(self, legacy_effective_epochs[0])
-        if current or additions:
-            receiver_first_samp = index(self.first_samp)
-            normalized_additions = {
-                name: epoch - receiver_first_samp * additions_dt[name]
-                for name, epoch in additions_effective.items()
-            }
-            merged = {**current, **normalized_additions}
-            merged_dt = {**current_dt, **additions_dt}
-            setattr(self, _GWEX_CHANNEL_T0_GPS_NS_ATTR, merged)
-            setattr(self, _GWEX_CHANNEL_DT_GPS_NS_ATTR, merged_dt)
-            if len(merged) == len(self.ch_names) and len(set(merged.values())) == 1:
-                setattr(self, _GWEX_T0_GPS_NS_ATTR, next(iter(merged.values())))
-            else:
-                self.__dict__.pop(_GWEX_T0_GPS_NS_ATTR, None)
-            setattr(self, _GWEX_MEAS_DATE_ATTR, self.info.get("meas_date"))
+        _install_prevalidated_add_channels_metadata(self, plan)
         return result
 
     raw.add_channels = MethodType(guarded, raw)

@@ -391,6 +391,46 @@ class TestFromMneRaw:
         for series in restored.values():
             assert series.t0.value == pytest.approx(1_000_000_000.02, rel=0, abs=1e-7)
 
+    @pytest.mark.parametrize(
+        "clone_factory", [lambda raw: raw, lambda raw: raw.copy(), copy.deepcopy]
+    )
+    def test_add_channels_leap_second_legacy_rebase_is_atomic(self, clone_factory):
+        """A prospective unrepresentable legacy base must fail before mutation."""
+        leap_gps = 1_167_264_017
+        original = to_mne_rawarray(
+            TimeSeries(
+                np.ones(8),
+                t0_ns=1_234_567_890_123_456_789,
+                dt=1.0,
+                name="exact",
+            )
+        )
+        original.crop(tmin=1.0)
+        receiver = clone_factory(original)
+        incoming = to_mne_rawarray(
+            TimeSeries(np.full(7, 2.0), t0=leap_gps + 1, dt=1.0, name="legacy")
+        )
+        receiver_data = receiver.get_data().copy()
+        receiver_epochs = dict(receiver._gwex_channel_t0_gps_ns)
+        receiver_intervals = dict(receiver._gwex_channel_dt_gps_ns)
+        receiver_meas_date = receiver.info["meas_date"]
+        original_data = original.get_data().copy()
+        original_epochs = dict(original._gwex_channel_t0_gps_ns)
+
+        with pytest.raises(LeapSecondConversionError, match="leap second"):
+            receiver.add_channels([incoming])
+
+        for raw, data, epochs in (
+            (receiver, receiver_data, receiver_epochs),
+            (original, original_data, original_epochs),
+        ):
+            assert raw.ch_names == ["exact"]
+            np.testing.assert_array_equal(raw.get_data(), data)
+            assert raw._gwex_channel_t0_gps_ns == epochs
+            assert raw._gwex_channel_dt_gps_ns == receiver_intervals
+            assert raw.info["meas_date"] == receiver_meas_date
+            assert raw._gwex_exact_meas_date == receiver_meas_date
+
     @pytest.mark.parametrize("clone_factory", [lambda raw: raw.copy(), copy.deepcopy])
     def test_copied_cropped_receiver_rebases_exact_metadata(self, clone_factory):
         epoch_ns = 1_234_567_890_123_456_789
