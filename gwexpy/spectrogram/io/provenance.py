@@ -15,7 +15,7 @@ import tempfile
 import threading
 import uuid
 import weakref
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import TYPE_CHECKING, Any
 
 import h5py
@@ -48,17 +48,16 @@ _MAX_EXCEPTION_GROUP_NODES = 64
 _MAX_EXCEPTION_GROUP_DEPTH = 8
 _MAX_EXCEPTION_GROUP_CHILDREN = 16
 _EXCEPTION_TRUNCATION_MARKER = "<truncated>"
+_MAX_ROLLBACK_PHASE_ERRORS = 64
+_MAX_ROLLBACK_MESSAGE_CHARS = 2_048
 
 
 class _ProvenanceRollbackInvariantError(RuntimeError):
     """Record invalid internal rollback-error construction without losing state."""
 
 
-def _bounded_exception_text(
-    text: str,
-    limit: int = _MAX_EXCEPTION_DESCRIPTION_CHARS,
-) -> str:
-    """Bound untrusted exception text before storing it in an error message."""
+def _bounded_text(text: str, limit: int) -> str:
+    """Bound trusted, internally generated text before storing it."""
     if limit <= 0:
         return ""
     if len(text) <= limit:
@@ -66,14 +65,6 @@ def _bounded_exception_text(
     if limit <= len(_EXCEPTION_TRUNCATION_MARKER):
         return _EXCEPTION_TRUNCATION_MARKER[:limit]
     return f"{text[: limit - len(_EXCEPTION_TRUNCATION_MARKER)]}{_EXCEPTION_TRUNCATION_MARKER}"
-
-
-def _exception_type_name(error: BaseException) -> str:
-    """Return an exception type name without consulting its instance state."""
-    try:
-        return type(error).__name__
-    except BaseException:
-        return "BaseException"
 
 
 def _safe_exception_descriptor(
@@ -85,31 +76,37 @@ def _safe_exception_descriptor(
     visited: list[int] | None = None,
     max_chars: int = _MAX_EXCEPTION_DESCRIPTION_CHARS,
 ) -> str:
-    """Describe one exception with bounded group traversal and formatting."""
+    """Describe an exception without inspecting untrusted exception text.
+
+    Original exception objects remain available through ``errors``.  The
+    message deliberately uses fixed internal labels: exception classes,
+    arguments, ``str``/``repr``, and metaclass attributes can run hostile code.
+    """
     if max_chars <= 0:
         return ""
     key = id(error)
     if key in cache:
-        return _bounded_exception_text(cache[key], max_chars)
+        return _bounded_text(cache[key], max_chars)
     if visited is None:
         visited = [0]
     if visited[0] >= _MAX_EXCEPTION_GROUP_NODES:
-        return _bounded_exception_text(_EXCEPTION_TRUNCATION_MARKER, max_chars)
+        return _bounded_text(_EXCEPTION_TRUNCATION_MARKER, max_chars)
     visited[0] += 1
-    type_name = _exception_type_name(error)
     if key in active:
-        return _bounded_exception_text(
-            f"{type_name}: <recursive exception group>", max_chars
-        )
+        return _bounded_text("BaseExceptionGroup: <recursive>", max_chars)
     active.add(key)
     try:
         if isinstance(error, BaseExceptionGroup):
             if depth >= _MAX_EXCEPTION_GROUP_DEPTH:
-                descriptor = f"{type_name}: {_EXCEPTION_TRUNCATION_MARKER}"
+                descriptor = f"BaseExceptionGroup: {_EXCEPTION_TRUNCATION_MARKER}"
             else:
                 try:
-                    children = error.exceptions
-                    prefix = f"{type_name}: ["
+                    # Bypass user-defined ``__getattribute__``.  This is the
+                    # only group state we inspect and it is bounded below.
+                    children = object.__getattribute__(error, "exceptions")
+                    if not isinstance(children, tuple):
+                        raise TypeError
+                    prefix = "BaseExceptionGroup: ["
                     parts: list[str] = []
                     used = len(prefix) + 1  # Closing bracket.
                     truncated = False
@@ -139,84 +136,111 @@ def _safe_exception_descriptor(
                         separator = "; " if parts else ""
                         available = max_chars - used - len(separator)
                         if available > 0:
-                            marker = _bounded_exception_text(
+                            marker = _bounded_text(
                                 _EXCEPTION_TRUNCATION_MARKER, available
                             )
                             parts.append(marker)
                     descriptor = f"{prefix}{'; '.join(parts)}]"
                 except BaseException:
-                    descriptor = f"{type_name}: <unprintable exception group>"
+                    descriptor = "BaseExceptionGroup: <unavailable>"
         else:
-            if type(error).__str__ is not BaseException.__str__:
-                descriptor = f"{type_name}: <untrusted formatting omitted>"
-            else:
-                try:
-                    rendered = str(error)
-                except BaseException:
-                    descriptor = f"{type_name}: <unprintable>"
-                else:
-                    descriptor = f"{type_name}: {_bounded_exception_text(rendered)}"
+            descriptor = "BaseException"
     finally:
         active.discard(key)
-    descriptor = _bounded_exception_text(descriptor, max_chars)
+    descriptor = _bounded_text(descriptor, max_chars)
     cache[key] = descriptor
     return descriptor
 
 
-def _missing_causal_errors(
-    grouped_errors: tuple[BaseException, ...],
-    event_errors: tuple[BaseException, ...],
-) -> tuple[BaseException, ...]:
-    """Return grouped errors absent from an explicit causal event sequence."""
-    remaining = {id(error): 0 for error in grouped_errors}
-    for error in grouped_errors:
-        remaining[id(error)] += 1
-    for error in event_errors:
-        key = id(error)
-        if remaining.get(key, 0):
-            remaining[key] -= 1
-    missing: list[BaseException] = []
-    for error in grouped_errors:
-        key = id(error)
-        if remaining[key]:
-            missing.append(error)
-            remaining[key] -= 1
-    return tuple(missing)
+def _bounded_exception_tuple(value: object) -> tuple[BaseException, ...] | None:
+    """Accept only a small, concrete tuple of exception objects."""
+    if not isinstance(value, tuple) or len(value) > _MAX_ROLLBACK_PHASE_ERRORS:
+        return None
+    if not all(isinstance(error, BaseException) for error in value):
+        return None
+    return value
 
 
-def _causal_error_state(
-    grouped_errors: tuple[BaseException, ...],
-    event_errors: tuple[BaseException, ...] | None,
-) -> tuple[tuple[BaseException, ...], tuple[BaseException, ...]]:
-    """Keep all captured errors and synthesize an invariant when needed."""
-    invariant_errors: list[BaseException] = []
-    if event_errors is None:
-        causal_errors = grouped_errors
-    else:
-        causal_errors = tuple(
-            error for error in event_errors if isinstance(error, BaseException)
-        )
-        if len(causal_errors) != len(event_errors):
-            invariant_errors.append(
-                _ProvenanceRollbackInvariantError(
-                    "rollback event sequence contains a non-exception value"
-                )
-            )
-        missing = _missing_causal_errors(grouped_errors, causal_errors)
-        if missing:
-            causal_errors = (*causal_errors, *missing)
-            invariant_errors.append(
-                _ProvenanceRollbackInvariantError(
-                    "rollback event sequence omitted captured phase errors"
-                )
-            )
-    if not causal_errors and not invariant_errors:
-        invariant_errors.append(
-            _ProvenanceRollbackInvariantError(
-                "rollback construction has no causal error"
-            )
-        )
-    return (*causal_errors, *invariant_errors), tuple(invariant_errors)
+def _expected_rollback_events(
+    operation_error: BaseException | None,
+    restoration_errors: tuple[BaseException, ...],
+    preservation_errors: tuple[BaseException, ...],
+    cleanup_errors: tuple[BaseException, ...],
+    operation_committed: bool,
+) -> tuple[BaseException, ...] | None:
+    """Return the only causal sequence allowed for a transaction state.
+
+    A failed operation records the operation first, then either restoration
+    failures or rollback-cleanup failures, followed by preservation failures.
+    A committed operation has no operation/restoration failure and records
+    cleanup plus preservation failures.  Thus every valid state has an actual
+    rollback-phase error, and ``rollback_error`` can never be the operation.
+    """
+    if operation_committed:
+        if operation_error is not None or restoration_errors or not cleanup_errors:
+            return None
+        return (*cleanup_errors, *preservation_errors)
+    if operation_error is None:
+        return None
+    if restoration_errors:
+        if cleanup_errors:
+            return None
+        return (operation_error, *restoration_errors, *preservation_errors)
+    if cleanup_errors:
+        return (operation_error, *cleanup_errors, *preservation_errors)
+    return None
+
+
+def _valid_rollback_state(
+    operation_error: object,
+    restoration_errors: object,
+    preservation_errors: object,
+    cleanup_errors: object,
+    operation_committed: object,
+    event_errors: object,
+) -> (
+    tuple[
+        BaseException | None,
+        tuple[BaseException, ...],
+        tuple[BaseException, ...],
+        tuple[BaseException, ...],
+        bool,
+        tuple[BaseException, ...],
+    ]
+    | None
+):
+    """Validate bounded phase data and its exact identity-preserving order."""
+    if type(operation_committed) is not bool:
+        return None
+    if operation_error is not None and not isinstance(operation_error, BaseException):
+        return None
+    restoration = _bounded_exception_tuple(restoration_errors)
+    preservation = _bounded_exception_tuple(preservation_errors)
+    cleanup = _bounded_exception_tuple(cleanup_errors)
+    events = _bounded_exception_tuple(event_errors)
+    if restoration is None or preservation is None or cleanup is None or events is None:
+        return None
+    expected = _expected_rollback_events(
+        operation_error,
+        restoration,
+        preservation,
+        cleanup,
+        operation_committed,
+    )
+    if expected is None or len(expected) != len(events):
+        return None
+    if any(
+        actual is not expected_error for actual, expected_error in zip(events, expected)
+    ):
+        return None
+    return (
+        operation_error,
+        restoration,
+        preservation,
+        cleanup,
+        operation_committed,
+        events,
+    )
 
 
 class ProvenanceRollbackError(RuntimeError):
@@ -233,60 +257,74 @@ class ProvenanceRollbackError(RuntimeError):
         operation_committed: bool = False,
         event_errors: tuple[BaseException, ...] | None = None,
     ) -> None:
-        self.operation_error = operation_error
-        self.operation_committed = operation_committed
-        self.restoration_errors = restoration_errors
-        self.preservation_errors = preservation_errors
-        self.cleanup_errors = cleanup_errors
-        grouped_errors = (
-            *(() if operation_error is None else (operation_error,)),
-            *restoration_errors,
-            *preservation_errors,
-            *cleanup_errors,
-        )
-        self.errors, self.invariant_errors = _causal_error_state(
-            grouped_errors,
+        state = _valid_rollback_state(
+            operation_error,
+            restoration_errors,
+            preservation_errors,
+            cleanup_errors,
+            operation_committed,
             event_errors,
         )
+        if state is None:
+            invariant = _ProvenanceRollbackInvariantError(
+                "invalid bounded rollback transaction state"
+            )
+            self.operation_error: BaseException | None = None
+            self.operation_committed: bool = False
+            self.restoration_errors: tuple[BaseException, ...] = ()
+            self.preservation_errors: tuple[BaseException, ...] = ()
+            self.cleanup_errors: tuple[BaseException, ...] = ()
+            self.errors: tuple[BaseException, ...] = (invariant,)
+            self.invariant_errors: tuple[BaseException, ...] = self.errors
+            self.rollback_error: BaseException = invariant
+            self.recovery_path: str | None = None
+            self.recovery_available: bool = False
+            self.error_descriptions: tuple[str, ...] = ("error[0]: BaseException",)
+            super().__init__(
+                "HDF5 provenance rollback state invariant failed; recovery unavailable"
+            )
+            return
+
+        (
+            self.operation_error,
+            self.restoration_errors,
+            self.preservation_errors,
+            self.cleanup_errors,
+            self.operation_committed,
+            self.errors,
+        ) = state
+        self.invariant_errors = ()
         descriptions: dict[int, str] = {}
         self.error_descriptions = tuple(
-            _safe_exception_descriptor(error, descriptions, set())
-            for error in self.errors
+            f"error[{index}]: {_safe_exception_descriptor(error, descriptions, set())}"
+            for index, error in enumerate(self.errors)
         )
-        # Retain this attribute for callers that caught the first version of
-        # this internal exception before it reported every restoration error.
-        rollback_errors = self.errors
-        if operation_error is not None and rollback_errors[0] is operation_error:
-            rollback_errors = rollback_errors[1:]
-        self.rollback_error = rollback_errors[0] if rollback_errors else operation_error
+        # A valid sequence always has a rollback phase following a failed
+        # operation, or begins with cleanup after a committed operation.
+        self.rollback_error = self.errors[0 if self.operation_committed else 1]
         self.recovery_path = recovery_path
         self.recovery_available = recovery_path is not None
-        rollback_descriptions = (
-            self.error_descriptions[1:]
-            if operation_error is not None and self.errors[0] is operation_error
-            else self.error_descriptions
+        rollback_descriptions = self.error_descriptions[
+            0 if self.operation_committed else 1 :
+        ]
+        rollback_message = _bounded_text(
+            "; ".join(rollback_descriptions),
+            _MAX_ROLLBACK_MESSAGE_CHARS,
         )
-        rollback_message = "; ".join(rollback_descriptions)
-        if operation_committed:
+        if self.operation_committed:
             message = (
                 "HDF5 provenance write committed, but rollback cleanup failed "
                 f"({rollback_message})"
             )
         else:
-            operation_message = (
-                descriptions.get(id(operation_error), "<no operation error>")
-                if operation_error is not None
-                else "<no operation error>"
-            )
             message = (
-                "HDF5 provenance write failed "
-                f"({operation_message}); rollback handling failed "
+                "HDF5 provenance write failed; rollback handling failed "
                 f"({rollback_message})"
             )
-        if recovery_path is None:
+        if self.recovery_path is None:
             message += "; recovery unavailable"
         else:
-            message += f"; recovery artifact retained at {recovery_path!r}"
+            message += "; recovery artifact retained"
         super().__init__(message)
 
 
@@ -300,6 +338,32 @@ def _decode_sidecar(raw: Any) -> str:
     return raw
 
 
+def _canonical_hdf5_dataset_path(path: object) -> str:
+    """Validate one canonical absolute HDF5 dataset name.
+
+    Sidecar entries are keyed by ``h5py.Dataset.name``.  Accepting alternate
+    spellings would make a valid provenance entry undiscoverable, so the
+    serialized format permits only canonical absolute names below the root.
+    """
+    if not isinstance(path, str):
+        raise ProvenanceSidecarError("invalid HDF5 provenance sidecar path")
+    if (
+        not path.startswith("/")
+        or path == "/"
+        or "\x00" in path
+        or "//" in path
+        or path.endswith("/")
+    ):
+        raise ProvenanceSidecarError("invalid HDF5 provenance sidecar path")
+    pure_path = PurePosixPath(path)
+    if not pure_path.is_absolute() or pure_path.as_posix() != path:
+        raise ProvenanceSidecarError("invalid HDF5 provenance sidecar path")
+    components = path.split("/")[1:]
+    if not components or any(component in {"", ".", ".."} for component in components):
+        raise ProvenanceSidecarError("invalid HDF5 provenance sidecar path")
+    return path
+
+
 def _validated_sidecar(raw: Any) -> dict[str, dict[str, Any]]:
     """Validate one serialized sidecar without reading or mutating HDF5."""
     try:
@@ -311,13 +375,12 @@ def _validated_sidecar(raw: Any) -> dict[str, dict[str, Any]]:
         raise ProvenanceSidecarError("invalid HDF5 provenance sidecar: expected object")
     normalized: dict[str, dict[str, Any]] = {}
     for path, provenance in sidecar.items():
-        if not isinstance(path, str):
-            raise ProvenanceSidecarError("invalid HDF5 provenance sidecar path")
+        canonical_path = _canonical_hdf5_dataset_path(path)
         try:
-            normalized[path] = validated_provenance(provenance)
+            normalized[canonical_path] = validated_provenance(provenance)
         except (TypeError, ValueError) as exc:
             raise ProvenanceSidecarError(
-                f"invalid HDF5 provenance sidecar entry for {path!r}"
+                "invalid HDF5 provenance sidecar entry"
             ) from exc
     return normalized
 

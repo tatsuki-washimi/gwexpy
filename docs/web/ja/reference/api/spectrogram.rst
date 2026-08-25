@@ -25,6 +25,7 @@ HDF5 では GWexpy のファイルレベル sidecar に保存するため、GWpy
 sidecar は書き込み前に検証し、サイズを 1 MB に制限します。
 同一プロセス内では、同じ物理ファイルに対する provenance 対応の読み取りと更新はファイル単位のロックを共有します。
 そのため、読み取り側は置換後のデータと置換前の sidecar の組を観測しません。
+sidecar の key は ``Dataset.name`` と完全に一致する正規化済み絶対 HDF5 dataset 名（例: ``/group/disk``）です。
 通常の更新失敗時には、元のデータセットリンクと sidecar の状態を復元します。
 復元または rollback cleanup が失敗したときは、名前付きの recovery artifact を残そうとします。
 エラーには、操作時、復元時、保存時、cleanup 時のすべての失敗を含めます。
@@ -36,6 +37,8 @@ sidecar だけの artifact は、厳密な boolean の不在 marker、または�
 エラーメッセージには長さを制限した安全な説明を使い、元の exception object を保ったまま信頼できない exception formatting を呼び出しません。
 rollback error には常に少なくとも一つの因果 exception が残ります。
 無効な内部構成では空または誤解を招く rollback state の代わりに synthetic invariant error を記録します。
+有効な内部 rollback state は、操作、復元または cleanup、保存の順序と同一 object identity を厳密に保持します。
+commit 済みの書き込みでは cleanup と保存の失敗だけを記録します。
 artifact の作成にも失敗したときは、以前の sidecar snapshot を直接再適用してから recovery が利用できないことをエラーで報告します。
 データと sidecar の commit 後に rollback cleanup が失敗したとき、書き込み結果は commit 済みのままです。
 構造化エラーの ``operation_committed=True`` がこの状態を示します。

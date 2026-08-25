@@ -1422,6 +1422,7 @@ def test_provenance_rollback_error_formats_hostile_exception_groups_once() -> No
         operation_error,
         (grouped,),
         None,
+        event_errors=(operation_error, grouped),
     )
 
     assert error.operation_error is operation_error
@@ -1431,6 +1432,306 @@ def test_provenance_rollback_error_formats_hostile_exception_groups_once() -> No
     assert len(str(error)) < 4_096
     assert hostile_one.str_calls == 0
     assert hostile_two.str_calls == 0
+
+
+@pytest.mark.parametrize(
+    (
+        "operation_error,restoration_errors,preservation_errors,cleanup_errors,"
+        "operation_committed,event_order"
+    ),
+    [
+        pytest.param(
+            RuntimeError("operation"),
+            (RuntimeError("restoration"),),
+            (RuntimeError("preservation"),),
+            (),
+            False,
+            "failed-restoration",
+            id="failed-restoration",
+        ),
+        pytest.param(
+            RuntimeError("operation"),
+            (),
+            (RuntimeError("preservation"),),
+            (RuntimeError("cleanup"),),
+            False,
+            "failed-cleanup",
+            id="failed-cleanup",
+        ),
+        pytest.param(
+            None,
+            (),
+            (RuntimeError("preservation"),),
+            (RuntimeError("cleanup"),),
+            True,
+            "committed-cleanup",
+            id="committed-cleanup",
+        ),
+    ],
+)
+def test_provenance_rollback_error_accepts_exact_transaction_event_shapes(
+    operation_error,
+    restoration_errors,
+    preservation_errors,
+    cleanup_errors,
+    operation_committed,
+    event_order,
+) -> None:
+    if event_order == "failed-restoration":
+        event_errors = (
+            operation_error,
+            *restoration_errors,
+            *preservation_errors,
+        )
+    else:
+        event_errors = (
+            *(() if operation_error is None else (operation_error,)),
+            *cleanup_errors,
+            *preservation_errors,
+        )
+
+    error = provenance_hdf5.ProvenanceRollbackError(
+        operation_error,
+        restoration_errors,
+        None,
+        preservation_errors=preservation_errors,
+        cleanup_errors=cleanup_errors,
+        operation_committed=operation_committed,
+        event_errors=event_errors,
+    )
+
+    assert error.invariant_errors == ()
+    assert error.errors == event_errors
+    assert error.rollback_error is event_errors[0 if operation_error is None else 1]
+    assert error.operation_committed is operation_committed
+
+
+@pytest.mark.parametrize(
+    "operation_error,restoration_errors,preservation_errors,cleanup_errors,operation_committed,event_errors",
+    [
+        (
+            RuntimeError("operation"),
+            (RuntimeError("restoration"),),
+            (),
+            (),
+            False,
+            None,
+        ),
+        (
+            RuntimeError("operation"),
+            (RuntimeError("restoration"),),
+            (),
+            (),
+            False,
+            (RuntimeError("wrong"),),
+        ),
+        (
+            RuntimeError("operation"),
+            (RuntimeError("restoration"),),
+            (),
+            (),
+            False,
+            (),
+        ),
+        (
+            RuntimeError("operation"),
+            (),
+            (),
+            (RuntimeError("cleanup"),),
+            True,
+            (),
+        ),
+        (
+            None,
+            (),
+            (),
+            (RuntimeError("cleanup"),),
+            False,
+            (),
+        ),
+        (
+            RuntimeError("operation"),
+            (RuntimeError("restoration"),),
+            (),
+            (RuntimeError("cleanup"),),
+            False,
+            (),
+        ),
+        (
+            None,
+            (RuntimeError("restoration"),),
+            (),
+            (RuntimeError("cleanup"),),
+            True,
+            (),
+        ),
+    ],
+)
+def test_provenance_rollback_error_rejects_impossible_transaction_states(
+    operation_error,
+    restoration_errors,
+    preservation_errors,
+    cleanup_errors,
+    operation_committed,
+    event_errors,
+) -> None:
+    error = provenance_hdf5.ProvenanceRollbackError(
+        operation_error,
+        restoration_errors,
+        "/recovery",
+        preservation_errors=preservation_errors,
+        cleanup_errors=cleanup_errors,
+        operation_committed=operation_committed,
+        event_errors=event_errors,
+    )
+
+    assert len(error.errors) == 1
+    assert error.invariant_errors == error.errors
+    assert error.rollback_error is error.errors[0]
+    assert error.operation_error is None
+    assert error.restoration_errors == ()
+    assert error.preservation_errors == ()
+    assert error.cleanup_errors == ()
+    assert not error.operation_committed
+    assert error.recovery_path is None
+    assert not error.recovery_available
+
+
+@pytest.mark.parametrize(
+    "event_kind",
+    [
+        "duplicate-operation",
+        "surplus",
+        "missing-duplicate",
+        "reversed",
+        "non-exception",
+    ],
+)
+def test_provenance_rollback_error_rejects_noncanonical_event_identity_and_order(
+    event_kind,
+) -> None:
+    operation_error = RuntimeError("operation")
+    restoration_error = RuntimeError("restoration")
+    extra_error = RuntimeError("extra")
+    restoration_errors = (
+        (restoration_error, restoration_error)
+        if event_kind == "missing-duplicate"
+        else (restoration_error,)
+    )
+    if event_kind == "duplicate-operation":
+        event_errors = (operation_error, operation_error, *restoration_errors)
+    elif event_kind == "surplus":
+        event_errors = (operation_error, *restoration_errors, extra_error)
+    elif event_kind == "missing-duplicate":
+        event_errors = (operation_error, restoration_error)
+    elif event_kind == "reversed":
+        event_errors = (*restoration_errors, operation_error)
+    else:
+        event_errors = (operation_error, None, *restoration_errors)
+
+    error = provenance_hdf5.ProvenanceRollbackError(
+        operation_error,
+        restoration_errors,
+        None,
+        event_errors=event_errors,
+    )
+
+    assert len(error.errors) == 1
+    assert error.invariant_errors == error.errors
+    assert error.rollback_error is error.errors[0]
+
+
+def test_provenance_rollback_error_rejects_large_direct_constructor_state() -> None:
+    operation_error = RuntimeError("operation")
+    restoration_errors = tuple(RuntimeError("restoration") for _ in range(100_000))
+    event_errors = (operation_error, *restoration_errors)
+
+    error = provenance_hdf5.ProvenanceRollbackError(
+        operation_error,
+        restoration_errors,
+        None,
+        event_errors=event_errors,
+    )
+
+    assert len(error.errors) == 1
+    assert error.invariant_errors == error.errors
+    assert len(error.error_descriptions) == 1
+    assert len(str(error)) < 4_096
+
+
+class _HostileExceptionMeta(type):
+    def __getattribute__(cls, name):
+        if name not in {"__class__", "__mro__", "__instancecheck__"}:
+            raise RuntimeError("hostile exception metaclass")
+        return super().__getattribute__(name)
+
+
+class _MetaclassHostileRollbackError(Exception, metaclass=_HostileExceptionMeta):
+    def __str__(self) -> str:
+        raise RuntimeError("hostile str")
+
+    def __repr__(self) -> str:
+        raise RuntimeError("hostile repr")
+
+
+def test_provenance_rollback_error_uses_zero_untrusted_exception_formatting() -> None:
+    hostile = _MetaclassHostileRollbackError()
+    grouped = ExceptionGroup("group", [hostile, _HostileRollbackError("huge")])
+    operation_error = RuntimeError("operation")
+
+    error = provenance_hdf5.ProvenanceRollbackError(
+        operation_error,
+        (grouped,),
+        None,
+        event_errors=(operation_error, grouped),
+    )
+
+    assert error.errors == (operation_error, grouped)
+    assert error.rollback_error is grouped
+    assert len(str(error)) < 4_096
+    assert all(
+        "operation" not in description for description in error.error_descriptions
+    )
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "",
+        "disk",
+        "/",
+        "/group//disk",
+        "/group/disk/",
+        "/group/./disk",
+        "/group/../disk",
+        "/group/\x00disk",
+    ],
+)
+def test_hdf5_sidecar_rejects_noncanonical_dataset_paths(path) -> None:
+    with pytest.raises(ProvenanceSidecarError):
+        provenance_hdf5._validated_sidecar(json.dumps({path: _provenance()}))
+
+
+def test_hdf5_sidecar_uses_nested_canonical_dataset_paths_for_roundtrip(
+    tmp_path,
+) -> None:
+    path = tmp_path / "nested-canonical-sidecar.hdf5"
+    provenance = _provenance()
+    encoded = json.dumps({"/group/disk": provenance})
+
+    with h5py.File(path, "w") as h5file:
+        _spectrogram().write(h5file, format="hdf5", path="group/disk")
+        artifact = h5file.create_group("recovery")
+        artifact.attrs["sidecar_snapshot_present"] = True
+        artifact.attrs["sidecar_snapshot"] = encoded
+        errors: list[BaseException] = []
+
+        assert provenance_hdf5._artifact_has_recovery_content(
+            h5file, "/recovery", errors
+        )
+        assert errors == []
+        h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE] = encoded
+        assert provenance_hdf5._sidecar_provenance(h5file, "group/disk") == provenance
 
 
 @pytest.mark.parametrize("operation_committed", [False, True])
@@ -1447,7 +1748,7 @@ def test_provenance_rollback_error_synthesizes_empty_causal_invariant(
     )
 
     assert error.operation_error is None
-    assert error.operation_committed is operation_committed
+    assert error.operation_committed is False
     assert error.restoration_errors == ()
     assert error.preservation_errors == ()
     assert error.cleanup_errors == ()
@@ -1477,17 +1778,11 @@ def test_provenance_rollback_error_repairs_inconsistent_event_tuple(
         event_errors=(unrelated_event,),
     )
 
-    assert error.errors[:5] == (
-        unrelated_event,
-        operation_error,
-        restoration_error,
-        preservation_error,
-        cleanup_error,
-    )
-    assert error.invariant_errors
-    assert error.errors[-1] is error.invariant_errors[0]
-    assert error.rollback_error is unrelated_event
-    assert error.operation_committed is operation_committed
+    assert len(error.errors) == 1
+    assert error.invariant_errors == error.errors
+    assert error.rollback_error is error.errors[0]
+    assert error.operation_error is None
+    assert error.operation_committed is False
     assert unrelated_event.str_calls == 0
 
 
@@ -1502,6 +1797,7 @@ def test_provenance_rollback_error_bounds_wide_exception_groups() -> None:
         operation_error,
         (wide,),
         None,
+        event_errors=(operation_error, wide),
     )
 
     assert error.errors == (operation_error, wide)
@@ -1521,6 +1817,7 @@ def test_provenance_rollback_error_bounds_deep_hostile_groups() -> None:
         operation_error,
         (nested,),
         None,
+        event_errors=(operation_error, nested),
     )
 
     assert error.errors == (operation_error, nested)

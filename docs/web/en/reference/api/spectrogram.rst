@@ -27,8 +27,10 @@ remains readable by GWpy.
 The sidecar is validated before a write and limited to 1 MB.  Within a
 process, provenance-aware reads and updates of the same physical file share a
 per-file lock, so a reader does not observe replacement data with an older
-sidecar.  An ordinary failed update restores the original dataset link and
-sidecar state.  If restoration or rollback cleanup fails, GWexpy attempts to
+sidecar.  Its entries use canonical absolute HDF5 dataset names (for example
+``/group/disk``), matching ``Dataset.name`` exactly.  An ordinary failed
+update restores the original dataset link and sidecar state.  If restoration
+or rollback cleanup fails, GWexpy attempts to
 retain a named recovery artifact and reports the operation plus every
 restoration, preservation, and cleanup failure.  A reported artifact contains
 an actionable saved dataset or prior-sidecar snapshot; an empty or unusable
@@ -42,6 +44,9 @@ descriptions, retaining the original exception objects without invoking
 untrusted exception formatting.  Rollback errors always retain at least one
 causal exception; an invalid internal construction records a synthetic
 invariant error rather than exposing an empty or misleading rollback state.
+Valid internal rollback states use the exact identity-preserving event order:
+operation then restoration or cleanup then preservation; a committed write has
+cleanup/preservation failures only.
 If artifact creation also fails, the error
 reports that recovery is unavailable after retrying the prior sidecar snapshot
 directly.  If data and sidecar commit before rollback cleanup
