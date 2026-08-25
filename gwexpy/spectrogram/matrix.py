@@ -971,6 +971,12 @@ class SpectrogramMatrix(  # type: ignore[misc]
                     "SpectrogramMatrix scalar structural selection must produce "
                     "a two-dimensional Spectrogram"
                 )
+            source_attrs = getattr(self, "attrs", {})
+            if _SELECTED_CELL_METADATA_ATTR in source_attrs:
+                raise ValueError(
+                    "SpectrogramMatrix scalar selection cannot use reserved attrs "
+                    f"key {_SELECTED_CELL_METADATA_ATTR!r}"
+                )
             epoch = self.epoch
             epoch_seconds = _gps_seconds(epoch)
             first_time_seconds = _gps_seconds(self.times[0])
@@ -1008,7 +1014,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
             # so retain the constructed t0 and install an independent copy of
             # the explicit coordinates directly.
             result._xindex = self._resupplied_frequencies(self.times)
-            result_attrs = deepcopy(getattr(self, "attrs", {}))
+            result_attrs = deepcopy(source_attrs)
             if metadata is not None:
                 # A GWpy Spectrogram has no native MetaData container.  The
                 # GWexpy public attrs channel carries the complete selected

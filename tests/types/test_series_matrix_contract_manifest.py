@@ -166,6 +166,10 @@ def _matrix(cell: ContractCell):
 
     def decorate(matrix):
         matrix.attrs["contract"] = {"nested": ["value", {"calibration": [1, 2, 3]}]}
+        if cell.scenario is InputScenario.RESERVED_METADATA_ATTR_COLLISION:
+            matrix.attrs["gwexpy_selected_cell_metadata"] = {
+                "user": {"nested": ["retain", {"value": 1}]}
+            }
         shared_payload = {"nested": {"source": "shared"}}
         matrix.meta[0, 0]["shared_payload"] = shared_payload
         if matrix.meta.shape[1] > 1:
@@ -1343,7 +1347,7 @@ def execute_contract_cell(cell: ContractCell) -> ContractObservation:
 
 def test_b0_manifest_has_a_literal_cell_count_and_unique_ids() -> None:
     assert len(B0_CONTRACT) == EXPECTED_B0_CELL_COUNT
-    assert EXPECTED_B0_CELL_COUNT == 474
+    assert EXPECTED_B0_CELL_COUNT == 478
     ids = [cell.id for cell in B0_CONTRACT]
     assert len(ids) == len(set(ids))
 
@@ -1395,6 +1399,18 @@ def test_scalar_and_integer_sample_selector_cells_are_complete() -> None:
     } == {
         (Operand.SPECTROGRAM_BATCH_SCALAR_FIRST, ValueError),
         (Operand.SPECTROGRAM_CELL_SCALAR_POSITIVE, ValueError),
+    }
+    assert {
+        (cell.operand, cell.exception_class)
+        for cell in B0_CONTRACT
+        if cell.family is MatrixFamily.SPECTROGRAM
+        and cell.operation == "scalar_selection"
+        and cell.scenario is InputScenario.RESERVED_METADATA_ATTR_COLLISION
+    } == {
+        (Operand.SPECTROGRAM_BATCH_SCALAR_FIRST, ValueError),
+        (Operand.SPECTROGRAM_BATCH_SCALAR_LAST, ValueError),
+        (Operand.SPECTROGRAM_CELL_SCALAR_POSITIVE, ValueError),
+        (Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW_COLUMN, ValueError),
     }
     for family in (MatrixFamily.TIME_SERIES, MatrixFamily.FREQUENCY_SERIES):
         assert {

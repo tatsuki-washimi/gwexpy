@@ -54,6 +54,7 @@ class InputScenario(str, Enum):
     DIMENSIONLESS_MATRIX = "dimensionless_matrix"
     DIMENSIONAL_INCOMPATIBLE = "dimensional_incompatible"
     CONFLICTING_EPOCH_AND_TIME_AXIS = "conflicting_epoch_and_time_axis"
+    RESERVED_METADATA_ATTR_COLLISION = "reserved_metadata_attr_collision"
 
 
 class Operand(str, Enum):
@@ -679,6 +680,22 @@ def _structure_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
                 ValueError,
                 surface=Surface.STRUCTURE,
                 scenario=InputScenario.CONFLICTING_EPOCH_AND_TIME_AXIS,
+            ),
+            *(
+                _error(
+                    family,
+                    "scalar_selection",
+                    operand,
+                    ValueError,
+                    surface=Surface.STRUCTURE,
+                    scenario=InputScenario.RESERVED_METADATA_ATTR_COLLISION,
+                )
+                for operand in (
+                    Operand.SPECTROGRAM_BATCH_SCALAR_FIRST,
+                    Operand.SPECTROGRAM_BATCH_SCALAR_LAST,
+                    Operand.SPECTROGRAM_CELL_SCALAR_POSITIVE,
+                    Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW_COLUMN,
+                )
             ),
         ]
         cells.append(
@@ -1350,7 +1367,7 @@ def _build_manifest() -> tuple[ContractCell, ...]:
 
 
 B0_CONTRACT: Final[tuple[ContractCell, ...]] = _build_manifest()
-EXPECTED_B0_CELL_COUNT: Final[int] = 474
+EXPECTED_B0_CELL_COUNT: Final[int] = 478
 assert len(B0_CONTRACT) == EXPECTED_B0_CELL_COUNT
 
 

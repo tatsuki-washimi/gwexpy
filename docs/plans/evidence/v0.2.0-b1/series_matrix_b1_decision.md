@@ -2,7 +2,7 @@
 
 **D21 selects B0 for v0.2.0.**  B1 is deferred: `adopted: false`.
 
-The release retains the reviewed 474-cell B0 contract.  It supersedes the
+The release retains the reviewed 478-cell B0 contract.  It supersedes the
 prior 318-cell candidate (missing scalar add/sub coverage), the later 390-cell
 candidate (incomplete nested metadata/attrs and exponent-boundary coverage),
 and the subsequent 453-cell candidate (missing supported SpectrogramMatrix
@@ -11,7 +11,9 @@ slice and independent axes/epoch coverage), the later 454-cell candidate
 460-cell candidate (missing scalar Spectrogram epoch and negative integer
 sample-index coverage), and the 472-cell candidate (missing fail-closed
 conflicting epoch/time scalar extraction and complete selected-cell metadata
-preservation). Physics/data-model review rejected those candidates.
+preservation), and the 474-cell candidate (reserved selected-cell metadata
+carrier collision overwrote user attrs). Physics/data-model review rejected
+those candidates.
 B1 does not implement general direct NumPy ufunc composition, and no candidate runtime is adopted.
 Unsupported direct ufuncs therefore continue to fail explicitly rather than
 silently returning an ndarray or Quantity.

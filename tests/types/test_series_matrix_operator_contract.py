@@ -430,6 +430,32 @@ def test_spectrogram_scalar_selection_copies_arbitrary_selected_cell_metadata():
 
 
 @pytest.mark.parametrize(
+    ("three_dimensional", "selector"),
+    [
+        (True, 0),
+        (True, -1),
+        (False, (0, 1)),
+        (False, (-1, -1)),
+    ],
+    ids=["3d-positive", "3d-negative", "4d-positive", "4d-negative"],
+)
+def test_spectrogram_scalar_selection_rejects_reserved_metadata_attr_collision(
+    three_dimensional, selector
+):
+    """User attrs cannot be overwritten by the scalar metadata carrier."""
+    source = _slicing_spectrogram_matrix(three_dimensional=three_dimensional)
+    source.attrs["gwexpy_selected_cell_metadata"] = {
+        "user": {"nested": ["retain", {"value": 1}]}
+    }
+    snapshot = _observable_source_snapshot(source)
+
+    with pytest.raises(ValueError, match="reserved attrs key"):
+        source[selector]
+
+    _assert_source_unchanged(source, snapshot)
+
+
+@pytest.mark.parametrize(
     "series_factory", [make_timeseries_matrix, make_frequencyseries_matrix]
 )
 @pytest.mark.parametrize(
