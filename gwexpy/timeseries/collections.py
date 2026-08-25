@@ -47,8 +47,11 @@ from ._gwf_io import (
     _GWF_BACKENDS,
     _extract_gwf_read_args,
     _format_gwf_import_error,
+    _GWFParallelContractError,
+    _normalize_gwf_parallel_kwargs,
     _resolve_gwf_format,
     _source_for_gwf_channel_listing,
+    _validate_gwf_parallel_source,
     read_gwf_timeseriesdict,
 )
 from .spectral import coherence_matrix_from_collection, csd_matrix_from_collection
@@ -209,16 +212,21 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             reader_kwargs.pop("format", None)
             return _coerce_reader_result(cls, reader(source, *args, **reader_kwargs))
         if gwf_format is not None:
-            from gwpy.io.gwf.core import get_channel_names
-
             channels, start, end, gwf_kwargs = _extract_gwf_read_args(
                 args,
                 kwargs,
                 allow_multiple_channels=True,
             )
+            _validate_gwf_parallel_source(source, gwf_kwargs)
+            _, parallel_workers = _normalize_gwf_parallel_kwargs(
+                dict(gwf_kwargs),
+                number_of_spans=len(source) if isinstance(source, (list, tuple)) else 1,
+            )
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
             backend = gwf_kwargs.pop("backend", _GWF_BACKENDS[gwf_format])
             try:
+                from gwpy.io.gwf.core import get_channel_names
+
                 if channels is None:
                     channel_source = _source_for_gwf_channel_listing(source)
                     channels = get_channel_names(channel_source, backend=backend)
@@ -236,7 +244,11 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 )
             except ImportError as exc:
                 raise _format_gwf_import_error(gwf_format, exc)
+            except _GWFParallelContractError:
+                raise
             except TypeError as exc:
+                if parallel_workers > 1:
+                    raise
                 # Keep existing ValueError contract for malformed user inputs.
                 raise ValueError(f"Invalid input for GWF read: {exc}") from exc
         if p is not None and fmt is None and str(p).lower().endswith(".zarr"):

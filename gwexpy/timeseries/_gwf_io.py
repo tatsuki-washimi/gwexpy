@@ -1,6 +1,12 @@
 from __future__ import annotations
 
+import copy
+import multiprocessing
+import os
+import pickle
 import warnings
+from concurrent.futures import ProcessPoolExecutor, as_completed
+from numbers import Integral
 from pathlib import Path
 from typing import Any
 
@@ -230,35 +236,196 @@ def _normalize_gwf_gap_options(pad: Any, gap: Any) -> tuple[Any, Any]:
     return merge_gap, merge_pad
 
 
-def _consume_gwf_parallel_kwargs(gwf_kwargs: dict[str, Any]) -> int | None:
-    """Consume unsupported GWF parallel options without silently ignoring them."""
+_GWF_PARALLEL_WORKER_CAP = 8
+
+
+class _GWFParallelContractError(TypeError):
+    """Signal an invalid public GWF parallel-read request."""
+
+
+def _normalize_gwf_parallel_kwargs(
+    gwf_kwargs: dict[str, Any], *, number_of_spans: int = 1
+) -> tuple[bool, int]:
+    """Consume parallel aliases and return ``(requested, effective_workers)``."""
     has_parallel = "parallel" in gwf_kwargs
     has_nproc = "nproc" in gwf_kwargs
     if has_parallel and has_nproc:
-        raise TypeError("Specify either 'parallel' or 'nproc', not both.")
+        raise _GWFParallelContractError(
+            "Specify either 'parallel' or 'nproc', not both."
+        )
     if not has_parallel and not has_nproc:
-        return None
+        return False, 1
 
     option = "parallel" if has_parallel else "nproc"
     value = gwf_kwargs.pop(option)
     if value is None:
-        return None
+        return False, 1
 
-    if option == "parallel" and isinstance(value, (bool, np.bool_)):
-        if bool(value):
-            raise NotImplementedError("parallel GWF reads are not implemented")
-        return None
-    if option == "nproc" and isinstance(value, (bool, np.bool_)):
-        raise ValueError("nproc must be a positive integer or None")
-    if not isinstance(value, (int, np.integer)):
-        raise ValueError(f"{option} must be a positive integer, bool, or None")
+    if isinstance(value, (bool, np.bool_)):
+        if not bool(value):
+            return False, 1
+        return True, min(
+            os.cpu_count() or 1,
+            number_of_spans,
+            _GWF_PARALLEL_WORKER_CAP,
+        )
+    if not isinstance(value, Integral):
+        raise _GWFParallelContractError(f"{option} must be an integer, bool, or None")
 
     count = int(value)
     if count <= 0:
         raise ValueError(f"{option} must be a positive integer")
-    if count > 1:
-        raise NotImplementedError("parallel GWF reads are not implemented")
-    return None
+    if count > _GWF_PARALLEL_WORKER_CAP:
+        raise ValueError(f"{option} must be at most {_GWF_PARALLEL_WORKER_CAP}")
+    return count > 1, count
+
+
+def _consume_gwf_parallel_kwargs(
+    gwf_kwargs: dict[str, Any], *, number_of_spans: int = 1
+) -> int:
+    """Consume the public worker option and return its effective count."""
+    return _normalize_gwf_parallel_kwargs(gwf_kwargs, number_of_spans=number_of_spans)[
+        1
+    ]
+
+
+def _is_filesystem_path(source: Any) -> bool:
+    """Return whether ``source`` is a path suitable for a spawned GWF reader."""
+    return isinstance(source, (str, bytes, os.PathLike))
+
+
+def _gwf_time_to_ns(value: Any) -> int:
+    """Return a stable integer-nanosecond representation of a GWF time."""
+    ns = getattr(value, "ns", None)
+    if callable(ns):
+        return int(ns())
+    return int(round(float(value) * 1_000_000_000))
+
+
+def _resolve_gwf_path_span(
+    source: Any, channels: list[str], backend: str | None
+) -> tuple[Any, Any]:
+    """Resolve one frame path's span before it is submitted to a worker."""
+    from gwpy.io.cache import file_segment
+    from gwpy.io.gwf.core import data_segments
+
+    try:
+        filename_span = file_segment(source)
+    except (AttributeError, TypeError, ValueError):
+        filename_span = None
+    if filename_span is not None:
+        start, end = filename_span
+    else:
+        try:
+            segments = [
+                segment
+                for channel in channels
+                for segment in data_segments(
+                    [source], str(channel), warn=False, backend=backend
+                )
+            ]
+        except (AttributeError, OSError, TypeError) as exc:
+            raise ValueError(
+                f"Could not resolve GWF frame span for {source!r}"
+            ) from exc
+        if not segments:
+            raise ValueError(f"Could not resolve GWF frame span for {source!r}")
+        start = min(segment[0] for segment in segments)
+        end = max(segment[1] for segment in segments)
+    if _gwf_time_to_ns(start) >= _gwf_time_to_ns(end):
+        raise ValueError(f"Invalid GWF frame span for {source!r}")
+    return start, end
+
+
+def _gwf_span_sort_key(span: tuple[Any, Any], input_index: int) -> tuple[int, int, int]:
+    """Return the deterministic source ordering key for a resolved frame span."""
+    return (_gwf_time_to_ns(span[0]), _gwf_time_to_ns(span[1]), input_index)
+
+
+def _read_gwf_timeseriesdict_worker(
+    source: str,
+    channels: tuple[str, ...],
+    start: Any | None,
+    end: Any | None,
+    backend: str | None,
+    read_kwargs: dict[str, Any],
+) -> Any:
+    """Read one GWF path in a spawn child without GWexpy class state."""
+    from gwpy.timeseries.io.gwf.core import read_timeseriesdict
+
+    return read_timeseriesdict(
+        source,
+        list(channels),
+        start=start,
+        end=end,
+        backend=backend,
+        **read_kwargs,
+    )
+
+
+def _copy_gwf_custom_attributes(
+    source: Any, target: Any, *, only_missing: bool
+) -> None:
+    """Deep-copy public backend metadata without overwriting merge-leading values."""
+    for name, value in getattr(source, "__dict__", {}).items():
+        if name.startswith("_") or (only_missing and hasattr(target, name)):
+            continue
+        setattr(target, name, copy.deepcopy(value))
+
+
+def _coerce_gwf_series(series: Any, series_class: type[Any]) -> Any:
+    """Copy a backend series into the requested GWexpy series class."""
+    if isinstance(series, series_class):
+        result = series.copy()
+    else:
+        result = series_class(
+            np.array(series.value, copy=True),
+            unit=getattr(series, "unit", None),
+            t0=getattr(series, "t0", None),
+            dt=getattr(series, "dt", None),
+            name=getattr(series, "name", None),
+            channel=getattr(series, "channel", None),
+        )
+    provenance = getattr(series, "_gwexpy_io", None)
+    if isinstance(provenance, dict):
+        result._gwexpy_io = copy.deepcopy(provenance)
+    _copy_gwf_custom_attributes(series, result, only_missing=False)
+    return result
+
+
+def _coerce_gwf_timeseriesdict(
+    source: Any, dict_class: type[Any], series_class: type[Any]
+) -> Any:
+    """Rebuild backend or worker payloads with fresh GWexpy-owned objects."""
+    result = dict_class()
+    for key, series in source.items():
+        result[key] = _coerce_gwf_series(series, series_class)
+    provenance = getattr(source, "_gwexpy_io", None)
+    if isinstance(provenance, dict):
+        result._gwexpy_io = copy.deepcopy(provenance)
+    _copy_gwf_custom_attributes(source, result, only_missing=False)
+    return result
+
+
+def _validate_gwf_parallel_source(source: Any, gwf_kwargs: dict[str, Any]) -> None:
+    """Validate public parallel arguments before channel discovery or I/O."""
+    requested, workers = _normalize_gwf_parallel_kwargs(
+        dict(gwf_kwargs),
+        number_of_spans=len(source) if isinstance(source, (list, tuple)) else 1,
+    )
+    if isinstance(source, (list, tuple)) and not source:
+        raise ValueError("GWF source list/tuple must be non-empty")
+    if (
+        requested
+        and workers > 1
+        and (
+            not isinstance(source, (list, tuple))
+            or not all(_is_filesystem_path(item) for item in source)
+        )
+    ):
+        raise _GWFParallelContractError(
+            "Parallel GWF reads require a list or tuple of filesystem paths"
+        )
 
 
 def read_gwf_timeseriesdict(
@@ -273,21 +440,24 @@ def read_gwf_timeseriesdict(
     **gwf_kwargs: Any,
 ) -> Any:
     """Read GWF source(s) into a TimeSeriesDict-like class with GWpy merge semantics."""
+    read_kwargs = dict(gwf_kwargs)
+    number_of_spans = len(source) if isinstance(source, (list, tuple)) else 1
+    requested_parallel, workers = _normalize_gwf_parallel_kwargs(
+        read_kwargs, number_of_spans=number_of_spans
+    )
     if isinstance(source, (list, tuple)) and not source:
         raise ValueError("GWF source list/tuple must be non-empty")
 
     from gwpy.timeseries.io.gwf.core import read_timeseriesdict
 
-    read_kwargs = dict(gwf_kwargs)
     pad = read_kwargs.pop("pad", None)
     gap = read_kwargs.pop("gap", None)
-    _consume_gwf_parallel_kwargs(read_kwargs)
     start = _normalize_gwf_read_limit(start)
     end = _normalize_gwf_read_limit(end)
     merge_gap, merge_pad = _normalize_gwf_gap_options(pad, gap)
 
     def read_one(item: Any) -> Any:
-        return dict_class(
+        return _coerce_gwf_timeseriesdict(
             read_timeseriesdict(
                 item,
                 channels,
@@ -296,19 +466,109 @@ def read_gwf_timeseriesdict(
                 backend=backend,
                 series_class=series_class,
                 **read_kwargs,
-            )
+            ),
+            dict_class,
+            series_class,
+        )
+
+    if requested_parallel and workers > 1 and not isinstance(source, (list, tuple)):
+        raise _GWFParallelContractError(
+            "Parallel GWF reads require a list or tuple of filesystem paths"
         )
 
     if isinstance(source, (list, tuple)):
         sources = list(source)
-        parts = [read_one(item) for item in sources]
+        if requested_parallel and workers > 1:
+            if not all(_is_filesystem_path(item) for item in sources):
+                raise _GWFParallelContractError(
+                    "Parallel GWF reads require a list or tuple of filesystem paths"
+                )
+            spans = [
+                _resolve_gwf_path_span(item, channels, backend) for item in sources
+            ]
+            tasks = [
+                (
+                    os.fspath(item),
+                    tuple(channels),
+                    start,
+                    end,
+                    backend,
+                    read_kwargs,
+                )
+                for item in sources
+            ]
+            try:
+                for task in tasks:
+                    pickle.dumps(task)
+            except Exception as exc:
+                raise _GWFParallelContractError(
+                    "Parallel GWF read arguments must be picklable"
+                ) from exc
+
+            executor = ProcessPoolExecutor(
+                max_workers=workers,
+                mp_context=multiprocessing.get_context("spawn"),
+            )
+            futures = []
+            try:
+                for task in tasks:
+                    futures.append(
+                        executor.submit(_read_gwf_timeseriesdict_worker, *task)
+                    )
+                completed_parts = {}
+                for future in as_completed(futures):
+                    completed_parts[future] = future.result()
+            except BaseException:
+                for future in futures:
+                    future.cancel()
+                executor.shutdown(wait=True, cancel_futures=True)
+                raise
+            else:
+                executor.shutdown(wait=True)
+            parts = [
+                _coerce_gwf_timeseriesdict(
+                    completed_parts[future], dict_class, series_class
+                )
+                for future in futures
+            ]
+            for item, part in zip(sources, parts, strict=True):
+                if not part or any(
+                    channel not in part or len(part[channel]) == 0
+                    for channel in channels
+                ):
+                    raise ValueError(
+                        f"Parallel GWF read returned a partial or empty result: {item}"
+                    )
+            ordered_parts = [
+                part
+                for _, part in sorted(
+                    zip(
+                        (
+                            _gwf_span_sort_key(span, index)
+                            for index, span in enumerate(spans)
+                        ),
+                        parts,
+                        strict=True,
+                    ),
+                    key=lambda item: item[0],
+                )
+            ]
+        else:
+            parts = [read_one(item) for item in sources]
+            ordered_parts = sorted(
+                (part for part in parts if len(part) > 0), key=lambda item: item.span
+            )
         non_empty_parts = [part for part in parts if len(part) > 0]
         if not non_empty_parts:
             raise ValueError("No data found in any provided GWF source")
 
         out = dict_class()
         prev_ends: dict[str, float] = {}
-        for part in sorted(non_empty_parts, key=lambda item: item.span):
+        for part in ordered_parts:
+            if not hasattr(out, "_gwexpy_io"):
+                provenance = getattr(part, "_gwexpy_io", None)
+                if isinstance(provenance, dict):
+                    out._gwexpy_io = copy.deepcopy(provenance)
             if merge_gap == "pad":
                 for key, series in part.items():
                     prev_end = prev_ends.get(key)
@@ -324,9 +584,19 @@ def read_gwf_timeseriesdict(
             out.append(part, gap=merge_gap, pad=merge_pad)
             for key, series in part.items():
                 prev_ends[key] = series.span[1]
-        result = out
+                if getattr(out[key], "_gwexpy_io", None) is None:
+                    provenance = getattr(series, "_gwexpy_io", None)
+                    if isinstance(provenance, dict):
+                        out[key]._gwexpy_io = copy.deepcopy(provenance)
+                _copy_gwf_custom_attributes(series, out[key], only_missing=True)
+        if channels:
+            result = dict_class((key, out[key]) for key in channels if key in out)
+            if hasattr(out, "_gwexpy_io"):
+                result._gwexpy_io = copy.deepcopy(out._gwexpy_io)
     else:
         result = read_one(source)
+
+    result = _coerce_gwf_timeseriesdict(result, dict_class, series_class)
 
     if merge_gap in ("pad", "raise") and (start is not None or end is not None):
         for key in result:
@@ -344,7 +614,9 @@ def _normalize_gwf_channels(channels: Any) -> list[str] | None:
     """Normalize channel selector(s) for GWF readers to list form."""
     if channels is None:
         return None
-    if isinstance(channels, (list, tuple, set)):
+    if isinstance(channels, set):
+        return sorted(str(channel) for channel in channels)
+    if isinstance(channels, (list, tuple)):
         return [str(channel) for channel in channels]
     return [str(channels)]
 

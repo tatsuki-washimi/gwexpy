@@ -1,0 +1,61 @@
+issue: 588
+title: "Parallel GWF filesystem reads"
+date: 2026-08-25
+base: 6bca889a7
+scope:
+  included:
+    - "parallel= GWF read support with nproc= compatibility alias"
+    - "spawn-safe filesystem worker execution and parent-owned deterministic merge"
+    - "GWF reader public preflight, metadata preservation, and contract tests"
+  excluded:
+    - "release/version changes"
+    - "non-GWF I/O changes"
+    - "shared conda environment mutation"
+    - "push, pull request, and GitHub state changes"
+files:
+  - gwexpy/timeseries/_gwf_io.py
+  - gwexpy/timeseries/collections.py
+  - gwexpy/timeseries/timeseries.py
+  - tests/timeseries/test_gwf_parallel_contract.py
+  - docs/superpowers/plans/2026-08-25-gwf-parallel-io.md
+  - docs/developers/plans/manifests/audit-manifest-588-gwf-parallel.yaml
+skills:
+  - superpowers:brainstorming
+  - superpowers:writing-plans
+  - superpowers:test-driven-development
+  - superpowers:systematic-debugging
+  - lint-format-fixer
+  - superpowers:verification-before-completion
+actions:
+  - "Inspected local GWF reader, tests, ROADMAP, and #588 records with RTK-prefixed read-only commands."
+  - "Wrote and independently reviewed a bounded plan before production edits."
+  - "Recorded RED evidence for fail-closed parallel behavior, scalar parallel source handling, reviewer regressions, and keyed-but-empty worker results."
+  - "Used two read-only reviews; all reported findings were addressed."
+validation:
+  red:
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_gwf_parallel_contract.py -p no:cacheprovider"
+      result: "26 failed, 5 passed; current fail-closed implementation lacked worker normalization/execution/public preflight."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_gwf_parallel_contract.py -k scalar_source -p no:cacheprovider"
+      result: "1 failed; explicit multi-worker scalar source reached backend read."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_gwf_parallel_contract.py -k 'worker_type_error or custom_metadata or unusual_pickle' -p no:cacheprovider"
+      result: "3 failed; public TypeError translation, custom metadata loss, and AttributeError pickle escape reproduced."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_gwf_parallel_contract.py -k empty_requested_series -p no:cacheprovider"
+      result: "1 failed; keyed-but-empty series reached merge rather than parallel partial-read rejection."
+  final:
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_gwf_parallel_contract.py tests/timeseries/test_io_gwf_timeseriesdict.py tests/timeseries/test_io_matrix_gwf.py -p no:cacheprovider"
+      result: "104 passed, 1 skipped."
+    - command: "rtk env PYTHONPATH=$PWD conda run -n gwexpy mypy gwexpy/"
+      result: "Success: no issues found in 393 source files."
+    - command: "rtk env PYTHONPATH=$PWD conda run -n gwexpy ruff check gwexpy/timeseries/_gwf_io.py gwexpy/timeseries/collections.py gwexpy/timeseries/timeseries.py tests/timeseries/test_gwf_parallel_contract.py"
+      result: "All checks passed."
+    - command: "rtk env PYTHONPATH=$PWD conda run -n gwexpy ruff format --check gwexpy/timeseries/_gwf_io.py gwexpy/timeseries/collections.py gwexpy/timeseries/timeseries.py tests/timeseries/test_gwf_parallel_contract.py"
+      result: "4 files already formatted."
+    - command: "rtk git diff --check"
+      result: "Passed."
+review:
+  plan_review: "Read-only review completed after one revision."
+  code_review: "Read-only review completed; public TypeError, metadata-copy, serialization, and keyed-empty-series findings fixed."
+physics_review_required: false
+risk:
+  unresolved:
+    - "Optional real GWF backend coverage remains environment-dependent; the focused suite uses mocked payloads plus a real spawn probe and has one optional-backend skip."

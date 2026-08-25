@@ -34,8 +34,11 @@ from ._gwf_io import (
     _GWF_BACKENDS,
     _extract_gwf_read_args,
     _format_gwf_import_error,
+    _GWFParallelContractError,
+    _normalize_gwf_parallel_kwargs,
     _resolve_gwf_format,
     _source_for_gwf_channel_listing,
+    _validate_gwf_parallel_source,
 )
 from ._interop import TimeSeriesInteropMixin
 from ._resampling import TimeSeriesResamplingMixin
@@ -187,15 +190,20 @@ class TimeSeries(
 
         gwf_format = _resolve_gwf_format(source, kwargs.get("format"))
         if gwf_format is not None:
-            from gwpy.io.gwf.core import get_channel_names
-
             channels, start, end, gwf_kwargs = _extract_gwf_read_args(
                 args,
                 kwargs,
                 allow_multiple_channels=False,
             )
+            _validate_gwf_parallel_source(source, gwf_kwargs)
+            _, parallel_workers = _normalize_gwf_parallel_kwargs(
+                dict(gwf_kwargs),
+                number_of_spans=len(source) if isinstance(source, (list, tuple)) else 1,
+            )
             backend = gwf_kwargs.pop("backend", _GWF_BACKENDS[gwf_format])
             try:
+                from gwpy.io.gwf.core import get_channel_names
+
                 if channels is None:
                     channel_source = _source_for_gwf_channel_listing(source)
                     channels = get_channel_names(channel_source, backend=backend)
@@ -215,7 +223,11 @@ class TimeSeries(
                 )
             except ImportError as exc:
                 raise _format_gwf_import_error(gwf_format, exc)
+            except _GWFParallelContractError:
+                raise
             except TypeError as exc:
+                if parallel_workers > 1:
+                    raise
                 raise ValueError(f"Invalid input for GWF read: {exc}") from exc
             if not tsd:
                 raise ValueError(f"No data found in {gwf_format} source: {source}")
