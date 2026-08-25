@@ -10,6 +10,16 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 RELEASE_VERSION = "0.2.0"
 RELEASE_DATE = "2026-08-26"
 RELEASE_HISTORY_ENTRY = f"[{RELEASE_VERSION}] - {RELEASE_DATE}"
+RELEASE_SCOPE_HISTORY = """\
+### Update history
+
+```mermaid
+flowchart LR
+    baseline[\"v0.1.14 baseline\"] --> integration[\"v0.2 contract integration\"]
+    integration --> median_mean[\"#686 median-mean spectral dispatch\"]
+    median_mean --> source[\"v0.2.0 release-source metadata\"]
+```
+"""
 
 
 def test_current_release_facts_match_the_approved_values() -> None:
@@ -40,11 +50,13 @@ def test_current_release_facts_match_the_approved_values() -> None:
     assert release_message.id == RELEASE_HISTORY_ENTRY
     assert release_message.string == RELEASE_HISTORY_ENTRY
 
+    assert RELEASE_SCOPE_HISTORY in changelog
+
     release_note = REPO_ROOT / "release_notes" / f"v{RELEASE_VERSION}.md"
     assert release_note.is_file()
-    assert f"pip install gwexpy=={RELEASE_VERSION}" in release_note.read_text(
-        encoding="utf-8"
-    )
+    release_note_text = release_note.read_text(encoding="utf-8")
+    assert f"pip install gwexpy=={RELEASE_VERSION}" in release_note_text
+    assert RELEASE_SCOPE_HISTORY in release_note_text
 
 
 def test_redesign_changelog_includes_the_canonical_release_history() -> None:
@@ -94,13 +106,17 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
     assert messages
     assert all(message.string for message in messages)
     assert all("fuzzy" not in message.flags for message in messages)
-    assert catalogue.get("Changelog").string == "更新履歴"
+    changelog_message = catalogue.get("Changelog")
+    assert changelog_message is not None
+    assert changelog_message.string == "更新履歴"
     for release in re.findall(
         r"^## (\[[^\]]+\] - \d{4}-\d{2}-\d{2})$",
         (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8"),
         re.MULTILINE,
     ):
-        assert catalogue.get(release).string == release
+        release_message = catalogue.get(release)
+        assert release_message is not None
+        assert release_message.string == release
 
 
 def test_noise_tutorial_declares_the_packaged_gwinc_dependency() -> None:

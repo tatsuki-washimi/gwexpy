@@ -62,6 +62,15 @@ GWpy compatibility.
   imports without `python-framel` and reports the original dependency error
   only when a FrameL-backed symbol is requested.
 
+### Update history
+
+```mermaid
+flowchart LR
+    baseline["v0.1.14 baseline"] --> integration["v0.2 contract integration"]
+    integration --> median_mean["#686 median-mean spectral dispatch"]
+    median_mean --> source["v0.2.0 release-source metadata"]
+```
+
 ## [0.1.14] - 2026-08-15
 
 ### Removed (breaking)
