@@ -15,7 +15,6 @@ from __future__ import annotations
 
 from operator import index
 from pathlib import Path
-<<<<<<< HEAD
 from typing import TYPE_CHECKING, Any, Literal, SupportsIndex, cast
 
 import numpy as np
