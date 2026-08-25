@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 # Dynamic import from gwpy (PEP 562)
-from importlib import import_module
+from importlib import import_module as _import_module
 
 import gwpy.table
 
@@ -18,7 +18,7 @@ __all__ = sorted(set(_gwpy_all) | {"SegmentCell", "SegmentTable", "RowProxy"})
 
 def __getattr__(name: str):
     if name in _CURATED_PROXY_MODULES:
-        return import_module(f"{__name__}.{name}")
+        return _import_module(f"{__name__}.{name}")
     # Fall back to gwpy.table for names not defined here
     if name in _gwpy_all:
         return getattr(gwpy.table, name)
