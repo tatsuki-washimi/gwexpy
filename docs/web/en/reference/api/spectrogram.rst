@@ -29,8 +29,12 @@ process, provenance-aware reads and updates of the same physical file share a
 per-file lock, so a reader does not observe replacement data with an older
 sidecar.  An ordinary failed update restores the original dataset link and
 sidecar state.  If restoration itself fails, the original is retained under a
-named recovery artifact and the raised error reports both failures.  Path
+named recovery artifact and the raised error reports the operation and every
+restoration failure.  Path
 replacement writes a complete sibling temporary HDF5 file before ``os.replace``.
+For an existing regular file, its permission bits are applied to the temporary
+replacement.  Symbolic-link targets are rejected; ownership, ACLs, and
+extended attributes are not preserved by this operation.
 The per-file lock and rollback do not provide a cross-process HDF5 transaction;
 that guarantee is outside this v0.2.0 scope.  Pickles
 without provenance remain GWpy-portable; unpickling a provenance-bearing

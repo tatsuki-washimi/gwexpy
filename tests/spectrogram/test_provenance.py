@@ -6,6 +6,7 @@ import inspect
 import json
 import os
 import pickle
+import stat
 import threading
 from pathlib import Path
 
@@ -482,6 +483,116 @@ def test_hdf5_rollback_failure_retains_a_recovery_hard_link(
         assert "disk" not in h5file
 
 
+def test_hdf5_sidecar_restore_failure_retains_original_and_snapshot(
+    tmp_path, monkeypatch
+) -> None:
+    original = _spectrogram()
+    original.provenance = _provenance()
+    replacement = original + 100
+    replacement.provenance = _provenance()
+    path = tmp_path / "sidecar-restore-recovery.hdf5"
+    operation_error = RuntimeError("sidecar commit failed")
+    sidecar_error = OSError("sidecar restore failed")
+
+    with h5py.File(path, "w") as h5file:
+        original.write(h5file, format="hdf5", path="disk")
+        h5file["alias"] = h5file["disk"]
+        before_address = h5py.h5o.get_info(h5file["disk"].id).addr
+        before_sidecar = h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE]
+
+        def fail_commit(h5file, *args, **kwargs) -> None:
+            h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE] = "mutated-sidecar"
+            raise operation_error
+
+        monkeypatch.setattr(provenance_hdf5, "_commit_sidecar", fail_commit)
+        monkeypatch.setattr(
+            provenance_hdf5,
+            "_restore_sidecar_attr",
+            lambda *args, **kwargs: (_ for _ in ()).throw(sidecar_error),
+        )
+
+        with pytest.raises(provenance_hdf5.ProvenanceRollbackError) as caught:
+            replacement.write(
+                h5file,
+                format="hdf5",
+                path="disk",
+                overwrite=True,
+            )
+
+        error = caught.value
+        assert error.operation_error is operation_error
+        assert error.restoration_errors == (sidecar_error,)
+        recovery_groups = [
+            name for name in h5file if name.startswith("__gwexpy_provenance_recovery_")
+        ]
+        assert len(recovery_groups) == 1
+        recovery = h5file[recovery_groups[0]]
+        assert h5py.h5o.get_info(h5file["disk"].id).addr == before_address
+        assert h5py.h5o.get_info(h5file["alias"].id).addr == before_address
+        assert h5py.h5o.get_info(recovery["dataset"].id).addr == before_address
+        assert recovery.attrs["sidecar_snapshot_present"]
+        assert recovery.attrs["sidecar_snapshot"] == before_sidecar
+        assert h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE] == "mutated-sidecar"
+
+
+def test_hdf5_combined_restore_failures_retain_snapshot_and_all_errors(
+    tmp_path, monkeypatch
+) -> None:
+    original = _spectrogram()
+    original.provenance = _provenance()
+    replacement = original + 100
+    replacement.provenance = _provenance()
+    path = tmp_path / "combined-restore-recovery.hdf5"
+    operation_error = RuntimeError("sidecar commit failed")
+    dataset_error = OSError("dataset link restore failed")
+    sidecar_error = OSError("sidecar restore failed")
+
+    with h5py.File(path, "w") as h5file:
+        original.write(h5file, format="hdf5", path="disk")
+        h5file["alias"] = h5file["disk"]
+        before_address = h5py.h5o.get_info(h5file["disk"].id).addr
+        before_sidecar = h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE]
+
+        def fail_commit(h5file, *args, **kwargs) -> None:
+            h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE] = "mutated-sidecar"
+            raise operation_error
+
+        monkeypatch.setattr(provenance_hdf5, "_commit_sidecar", fail_commit)
+        monkeypatch.setattr(
+            provenance_hdf5,
+            "_move_rollback_dataset",
+            lambda *args, **kwargs: (_ for _ in ()).throw(dataset_error),
+        )
+        monkeypatch.setattr(
+            provenance_hdf5,
+            "_restore_sidecar_attr",
+            lambda *args, **kwargs: (_ for _ in ()).throw(sidecar_error),
+        )
+
+        with pytest.raises(provenance_hdf5.ProvenanceRollbackError) as caught:
+            replacement.write(
+                h5file,
+                format="hdf5",
+                path="disk",
+                overwrite=True,
+            )
+
+        error = caught.value
+        assert error.operation_error is operation_error
+        assert error.restoration_errors == (dataset_error, sidecar_error)
+        recovery_groups = [
+            name for name in h5file if name.startswith("__gwexpy_provenance_recovery_")
+        ]
+        assert len(recovery_groups) == 1
+        recovery = h5file[recovery_groups[0]]
+        assert "disk" not in h5file
+        assert h5py.h5o.get_info(h5file["alias"].id).addr == before_address
+        assert h5py.h5o.get_info(recovery["dataset"].id).addr == before_address
+        assert recovery.attrs["sidecar_snapshot_present"]
+        assert recovery.attrs["sidecar_snapshot"] == before_sidecar
+        assert h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE] == "mutated-sidecar"
+
+
 @pytest.mark.parametrize("link_kind", ["soft", "external"])
 def test_hdf5_overwrite_rejects_non_hard_links_without_mutation(
     tmp_path, link_kind
@@ -599,6 +710,93 @@ def test_hdf5_overwrite_replaces_an_existing_non_hdf5_path(tmp_path) -> None:
     spec.write(path, format="hdf5", overwrite=True)
 
     assert Spectrogram.read(path, format="hdf5").provenance == _provenance()
+
+
+@pytest.mark.parametrize("target_kind", ["non-hdf", "hdf5"])
+def test_hdf5_path_overwrite_preserves_existing_mode_like_gwpy(
+    tmp_path, target_kind
+) -> None:
+    mode = 0o640
+    gwex_path = tmp_path / f"gwex-{target_kind}.hdf5"
+    gwpy_path = tmp_path / f"gwpy-{target_kind}.hdf5"
+    gwex_original = _spectrogram()
+    gwex_original.provenance = _provenance()
+    gwex_replacement = gwex_original + 100
+    gwex_replacement.provenance = _provenance()
+    gwpy_original = GwpySpectrogram(
+        gwex_original.value,
+        times=gwex_original.times,
+        frequencies=gwex_original.frequencies,
+        name=gwex_original.name,
+    )
+    gwpy_replacement = gwpy_original + 100
+
+    for path, original in (
+        (gwex_path, gwex_original),
+        (gwpy_path, gwpy_original),
+    ):
+        if target_kind == "non-hdf":
+            path.write_bytes(b"not an HDF5 file")
+        else:
+            original.write(path, format="hdf5")
+        path.chmod(mode)
+
+    gwex_replacement.write(gwex_path, format="hdf5", overwrite=True)
+    gwpy_replacement.write(gwpy_path, format="hdf5", overwrite=True)
+
+    assert stat.S_IMODE(gwex_path.stat().st_mode) == mode
+    assert stat.S_IMODE(gwpy_path.stat().st_mode) == mode
+    assert stat.S_IMODE(gwex_path.stat().st_mode) == stat.S_IMODE(
+        gwpy_path.stat().st_mode
+    )
+
+
+def test_hdf5_path_overwrite_failure_keeps_mode_and_cleans_temp(tmp_path) -> None:
+    original = _spectrogram()
+    original.provenance = _provenance()
+    path = tmp_path / "mode-cleanup.hdf5"
+    original.write(path, format="hdf5")
+    path.chmod(0o640)
+    replacement = original + 100
+    replacement.provenance = _provenance()
+
+    with pytest.raises(ValueError):
+        replacement.write(
+            path,
+            format="hdf5",
+            overwrite=True,
+            compression="not-a-filter",
+        )
+
+    assert stat.S_IMODE(path.stat().st_mode) == 0o640
+    assert not list(tmp_path.glob(".mode-cleanup.hdf5.gwexpy-*.hdf5"))
+
+
+def test_hdf5_path_overwrite_rejects_a_symlink_without_replacing_it(
+    tmp_path, monkeypatch
+) -> None:
+    target = tmp_path / "symlink-target.hdf5"
+    link = tmp_path / "symlink-overwrite.hdf5"
+    target.write_bytes(b"not an HDF5 file")
+    try:
+        os.symlink(target, link)
+    except (NotImplementedError, OSError):
+        pytest.skip("symlinks are unavailable on this filesystem")
+    replacement = _spectrogram()
+    replacement.provenance = _provenance()
+    monkeypatch.setattr(
+        provenance_hdf5,
+        "_file_lock",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("symlink must be rejected before lock resolution")
+        ),
+    )
+
+    with pytest.raises(OSError, match="symbolic link"):
+        replacement.write(link, format="hdf5", overwrite=True)
+
+    assert link.is_symlink()
+    assert target.read_bytes() == b"not an HDF5 file"
 
 
 def test_hdf5_path_overwrite_preflights_an_existing_hdf5_sidecar(tmp_path) -> None:

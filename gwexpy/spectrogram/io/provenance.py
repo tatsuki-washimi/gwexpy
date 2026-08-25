@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import os
+import stat
 import tempfile
 import threading
 import uuid
@@ -44,21 +45,25 @@ _FILE_LOCKS_GUARD = threading.Lock()
 
 
 class ProvenanceRollbackError(RuntimeError):
-    """Report a failed rollback while retaining the original recovery link."""
+    """Report a failed rollback while retaining a recovery artifact."""
 
     def __init__(
         self,
         operation_error: BaseException,
-        rollback_error: BaseException,
+        restoration_errors: tuple[BaseException, ...],
         recovery_path: str,
     ) -> None:
         self.operation_error = operation_error
-        self.rollback_error = rollback_error
+        self.restoration_errors = restoration_errors
+        # Retain this attribute for callers that caught the first version of
+        # this internal exception before it reported every restoration error.
+        self.rollback_error = restoration_errors[0]
         self.recovery_path = recovery_path
+        restoration_message = "; ".join(str(error) for error in restoration_errors)
         super().__init__(
             "HDF5 provenance write failed "
             f"({operation_error!s}); rollback restoration failed "
-            f"({rollback_error!s}); recovery artifact retained at "
+            f"({restoration_message}); recovery artifact retained at "
             f"{recovery_path!r}"
         )
 
@@ -250,19 +255,63 @@ def _move_rollback_dataset(
     h5file.move(rollback["dataset"].name, prior_path)
 
 
-def _retain_recovery_artifact(h5file: h5py.File, rollback: h5py.Group) -> str:
-    """Keep the sole original object reachable if restoration itself fails."""
+def _record_sidecar_snapshot(
+    rollback: h5py.Group,
+    snapshot: tuple[bool, Any],
+) -> None:
+    """Persist the prior root-sidecar attribute for manual recovery."""
+    exists, raw = snapshot
+    rollback.attrs["sidecar_snapshot_present"] = exists
+    if exists:
+        rollback.attrs["sidecar_snapshot"] = raw
+
+
+def _ensure_recovery_hard_link(
+    h5file: h5py.File,
+    rollback: h5py.Group,
+    prior_path: str | None,
+) -> None:
+    """Give a recovered original a second, explicitly named hard link."""
+    if "dataset" in rollback:
+        return
+    if prior_path is None or prior_path not in h5file:
+        raise RuntimeError("original HDF5 dataset is unavailable for recovery")
+    original = h5file[prior_path]
+    if not isinstance(original, h5py.Dataset):
+        raise RuntimeError("original HDF5 recovery target is not a dataset")
+    rollback["dataset"] = original
+
+
+def _retain_recovery_artifact(
+    h5file: h5py.File,
+    rollback: h5py.Group | None,
+    prior_path: str | None,
+    sidecar_snapshot: tuple[bool, Any],
+) -> tuple[str, tuple[BaseException, ...]]:
+    """Keep data and sidecar recovery state reachable after rollback errors."""
+    if rollback is None:
+        rollback = _rollback_group(h5file)
+    preservation_errors: list[BaseException] = []
+    try:
+        _ensure_recovery_hard_link(h5file, rollback, prior_path)
+    except BaseException as error:
+        preservation_errors.append(error)
+    try:
+        _record_sidecar_snapshot(rollback, sidecar_snapshot)
+    except BaseException as error:
+        preservation_errors.append(error)
     original_path = rollback.name
     if original_path not in h5file:
-        return original_path
+        return original_path, tuple(preservation_errors)
     recovery_path = _recovery_path(h5file)
     try:
         h5file.move(original_path, recovery_path)
-    except BaseException:
+    except BaseException as error:
         # The rollback group still owns the only saved hard link.  Never try
         # to remove it merely because cosmetic recovery naming failed.
-        return original_path
-    return f"/{recovery_path}"
+        preservation_errors.append(error)
+        return original_path, tuple(preservation_errors)
+    return f"/{recovery_path}", tuple(preservation_errors)
 
 
 def _restore_dataset_link(
@@ -312,34 +361,46 @@ def _write_to_open_container(
         _commit_sidecar(h5file, dataset, array.provenance)
         return dataset
     except BaseException as operation_error:
+        restoration_errors: list[BaseException] = []
         try:
             _restore_dataset_link(
                 container, h5file, candidate_path, prior_path, rollback
             )
-        except BaseException as rollback_error:
+        except BaseException as error:
+            restoration_errors.append(error)
+        try:
+            _restore_sidecar_attr(h5file, sidecar_snapshot)
+        except BaseException as error:
+            restoration_errors.append(error)
+        if restoration_errors:
             # Preserve the original object even if the failed restoration has
-            # already removed the replacement at its public path.
+            # already removed the replacement at its public path, or if the
+            # original link was restored but its matching sidecar was not.
             discard_rollback = False
-            recovery_path = (
-                _retain_recovery_artifact(h5file, rollback)
-                if rollback is not None
-                else "<unavailable>"
+            recovery_path, preservation_errors = _retain_recovery_artifact(
+                h5file, rollback, prior_path, sidecar_snapshot
             )
-            try:
-                _restore_sidecar_attr(h5file, sidecar_snapshot)
-            except BaseException as sidecar_error:
-                rollback_error = RuntimeError(
-                    f"{rollback_error!s}; sidecar restoration also failed: "
-                    f"{sidecar_error!s}"
-                )
+            restoration_errors.extend(preservation_errors)
             raise ProvenanceRollbackError(
-                operation_error, rollback_error, recovery_path
-            ) from rollback_error
-        _restore_sidecar_attr(h5file, sidecar_snapshot)
+                operation_error, tuple(restoration_errors), recovery_path
+            ) from restoration_errors[0]
         raise
     finally:
         if discard_rollback and rollback is not None and rollback.name in h5file:
             del h5file[rollback.name]
+
+
+def _path_replacement_preflight(filepath: Path) -> tuple[bool, int | None]:
+    """Reject links and retain regular-file mode bits for ``os.replace``."""
+    try:
+        status = os.lstat(filepath)
+    except FileNotFoundError:
+        return False, None
+    if stat.S_ISLNK(status.st_mode):
+        raise OSError(f"refusing to overwrite symbolic link: {filepath}")
+    if stat.S_ISREG(status.st_mode):
+        return True, stat.S_IMODE(status.st_mode)
+    return True, None
 
 
 def _write_path_transaction(
@@ -351,7 +412,7 @@ def _write_path_transaction(
 ) -> h5py.Dataset:
     """Write replacement paths to a complete sibling temp file then replace."""
     filepath = Path(target)
-    existed = filepath.exists()
+    existed, target_mode = _path_replacement_preflight(filepath)
     append = bool(kwargs.get("append", False))
     overwrite = bool(kwargs.get("overwrite", False))
     if existed and not (append or overwrite):
@@ -372,6 +433,8 @@ def _write_path_transaction(
     try:
         with h5py.File(temporary_name, "w") as h5file:
             result = _write_to_open_container(array, h5file, path, writer, kwargs)
+        if target_mode is not None:
+            os.chmod(temporary_name, target_mode)
         os.replace(temporary_name, filepath)
         return result
     finally:
@@ -410,6 +473,7 @@ def register_hdf5_provenance_io(cls: type[Any]) -> None:
         array: Any, target: Any, path: str | None = None, **kwargs: Any
     ) -> h5py.Dataset:
         if isinstance(target, (str, Path)):
+            _path_replacement_preflight(Path(target))
             with _file_lock(target):
                 return _write_path_transaction(array, target, path, base_writer, kwargs)
         if isinstance(target, (h5py.File, h5py.Group)):
