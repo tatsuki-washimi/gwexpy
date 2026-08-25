@@ -26,3 +26,12 @@ verification:
   - "spawn reader/writer visibility, termination release, timeout, and nesting tests"
   - "focused provenance regression suite"
   - "spawned append writers preserve distinct datasets and sidecar entries"
+verification_actual:
+  - command: "rtk env PYTHONPATH=$PWD PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest -q tests/spectrogram/test_provenance.py::test_pathname_overwrite_replaces_the_file_but_append_preserves_entries tests/spectrogram/test_provenance.py::test_spawn_append_writers_preserve_distinct_dataset_entries tests/spectrogram/test_provenance.py::test_spawn_reader_waits_for_path_writer_transaction"
+    result: "3 passed"
+  - command: "rtk env PYTHONPATH=$PWD ruff check gwexpy/spectrogram/io/provenance.py tests/spectrogram/test_provenance.py"
+    result: "pass"
+  - command: "rtk env PYTHONPATH=$PWD mypy gwexpy/spectrogram/io/provenance.py"
+    result: "pass"
+  - command: "rtk git diff --check"
+    result: "pass"
