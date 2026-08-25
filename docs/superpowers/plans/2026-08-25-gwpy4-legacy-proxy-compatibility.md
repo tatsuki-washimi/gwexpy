@@ -530,7 +530,16 @@ real FrameL tests PASS when installed or SKIP under the default policy. The
 parent subprocess-contract test always PASSes by asserting the child status:
 child `0` when FrameL is installed, or intentional child `1` with the exact
 required-backend diagnostic when absent. Record both parent and child statuses
-in the audit manifest; never relabel the child `1` as a passing release gate.
+in the audit manifest under this exact schema; never relabel the child `1` as
+a passing release gate:
+
+```yaml
+framel_required_gate:
+  backend_available: true  # or false
+  parent_test_status: pass
+  child_exit_status: 0  # 1 only when backend_available is false
+  child_diagnostic: ""  # exact required-backend diagnostic when child is 1
+```
 
 - [ ] **Step 5: Commit the FrameL/GWF slice**
 
@@ -691,7 +700,18 @@ PY
 
 Extend `tests/docs/test_gwpy4_proxy_workflow.py` to normalize this step's
 whitespace and require both `version("gwpy")` and `version("lalsuite")`, in
-addition to the provisioning and focused-test assertions below.
+addition to the provisioning and focused-test assertions below. Require the
+step name exactly, and require its index to equal the provisioning step index
+plus one:
+
+```python
+version_step = by_name["Record compatibility versions"]
+provisioning_index = steps.index(by_name["Provision compatibility environment"])
+assert steps.index(version_step) == provisioning_index + 1
+normalized_version_command = " ".join(version_step["run"].split())
+assert 'version("gwpy")' in normalized_version_command
+assert 'version("lalsuite")' in normalized_version_command
+```
 
 - [ ] **Step 2: Add the exact focused command**
 
@@ -790,10 +810,26 @@ print("lalsuite=" + version("lalsuite"))
 PY'
 ```
 
-The manifest fields are `gwpy_version` and `lalsuite_version`. The frozen
-minimum lane must record `gwpy_version: 4.0.1`; the latest-4.x CI artifact
-records its actual resolved 4.x version and LALSuite version rather than
-claiming the whole 4.x range from a local run.
+Use this exact lane-specific manifest schema so the local frozen lane and CI
+latest-4.x lane cannot overwrite or masquerade as each other:
+
+```yaml
+compatibility_lanes:
+  frozen:
+    gwpy_version: 4.0.1
+    lalsuite_version: "<locally resolved version>"
+    evidence_source: local
+  latest_4x:
+    gwpy_version: "<CI-resolved 4.x version>"
+    lalsuite_version: "<CI-resolved version>"
+    evidence_source: test-compat-gwpy workflow log
+```
+
+If the latest-4.x workflow has not run for the implementation commit, keep its
+two version values `null`, set `evidence_source: not_run`, and record that lane
+as unverified rather than copying the frozen versions. The frozen minimum lane
+must record `gwpy_version: 4.0.1`; neither lane claims the whole 4.x range from
+a local run.
 
 - [ ] **Step 2: Run the required full module-doctest gate**
 
