@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable, Mapping
 from decimal import Decimal
 from fractions import Fraction
 from types import SimpleNamespace
@@ -917,6 +918,36 @@ _EMPTY_SCHEMA_PANDAS_DTYPES = {
     "limit_method": "object",
     "confidence_level": "Float64",
 }
+
+
+def test_schema_frame_consumes_generator_once_and_copies_row_mappings() -> None:
+    from gwexpy.coupling.segment import _schema_frame
+
+    columns = [*_table().columns, "estimate_kind"]
+    row = {
+        "start_gps_ns": 123,
+        "duration_ns": 10,
+        "source_channel": "source",
+        "response_channel": "response",
+        "frequency_hz": 10.0,
+        "coupling_factor": 0.25,
+        "coupling_factor_unit": "m / V",
+        "estimate_kind": "measurement",
+    }
+    yielded: list[int] = []
+
+    def rows() -> Iterable[Mapping[str, object]]:
+        yielded.append(1)
+        yield row
+
+    frame = _schema_frame(rows(), columns=columns)
+    row["source_channel"] = "changed"
+
+    assert yielded == [1]
+    assert frame["source_channel"].tolist() == ["source"]
+    assert {name: str(dtype) for name, dtype in frame.dtypes.items()} == {
+        name: _EMPTY_SCHEMA_PANDAS_DTYPES[name] for name in columns
+    }
 
 
 @pytest.mark.parametrize(

@@ -449,7 +449,8 @@ def _schema_frame(
     rows: Iterable[Mapping[str, Any]] = (), *, columns: Iterable[str]
 ) -> pd.DataFrame:
     """Build a pandas v1 frame with the explicit per-column dtype contract."""
-    return _coerce_schema_dtypes(pd.DataFrame(rows, columns=list(columns)))
+    copied_rows = [dict(row) for row in rows]
+    return _coerce_schema_dtypes(pd.DataFrame(copied_rows, columns=list(columns)))
 
 
 def _empty_frame(optional_columns: Iterable[str] = ()) -> pd.DataFrame:
