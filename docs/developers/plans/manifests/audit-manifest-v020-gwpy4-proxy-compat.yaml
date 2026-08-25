@@ -87,6 +87,12 @@ commands:
   - command: "combined verification/commit command"
     result: error
     evidence: "unmatched shell quote; no mutation; rerun separately"
+  - command: "post-Sol parent-proxy regression"
+    result: pass_with_skip
+    evidence: "87 passed, 1 optional FrameL skip; fresh interpreter resolves all five curated proxy modules"
+  - command: "post-review Ruff, MyPy, and diff check"
+    result: pass
+    evidence: "Ruff clean; MyPy no issues; git diff --check clean"
 framel_required_gate:
   backend_available: false
   parent_test_status: pass
@@ -113,6 +119,22 @@ prohibited_mutations:
   github_mutation_tools_invoked: false
   push_tag_release_version_publish: false
   shared_environment_install: false
+reviews:
+  luna_specification:
+    range: "a25c9970d127c86a59c312e751be6cbdfd346fec..3339c5125aa4c301d20264bbdb51ddf8083b00f0"
+    critical: 0
+    important: 0
+    minor: 1
+    disposition: "stale workflow scope comment corrected in 8f737e4"
+  sol_adversarial:
+    initial_range: "a25c9970d127c86a59c312e751be6cbdfd346fec..8f737e47661c8c9bdf657909c495ff69fca0efcd"
+    initial_critical: 0
+    initial_important: 1
+    remediation: "fresh-parent-import proxy routing in 9c03b87"
+    rereview_critical: 0
+    rereview_important: 0
+    rereview_minor: 1
+    minor_disposition: "private _import_module aliases in bcf0f7e"
 final:
   final_remote_v_sha256: f3b16934134e9e6cbdd373f6895880c7fd6e2eecdae339ab3088a302426cc965
   final_remote_config_sha256: 023ff54ad4cb982347d16d4553a2b318ec12b5e47b621b92b335359989c43a79
