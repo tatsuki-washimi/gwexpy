@@ -1,5 +1,6 @@
 title: "Wave 3 cross-process HDF5 provenance transaction"
 provenance_head: "1aadd9a2e300bbd959d61139bb27569290978bcc"
+implementation_head: "464c2775e7a26e9fe39478984782bd16d88e7cb4"
 scope:
   included:
     - "Spectrogram provenance HDF5 pathname transaction locking"
@@ -8,6 +9,9 @@ scope:
   preserved:
     - "GWpy-readable core payloads and canonical provenance sidecars"
     - "existing same-process rollback, recovery, permissions, and link checks"
+  pathname_semantics:
+    overwrite_without_append: "GWpy-compatible whole-file replacement; serialized last-writer-wins."
+    append_or_open_container: "In-file mutation; distinct dataset and sidecar entries are preserved."
   excluded:
     - "HDF5 payload or provenance-schema changes"
     - "distributed or network-filesystem guarantees"
@@ -21,3 +25,4 @@ human_review:
 verification:
   - "spawn reader/writer visibility, termination release, timeout, and nesting tests"
   - "focused provenance regression suite"
+  - "spawned append writers preserve distinct datasets and sidecar entries"

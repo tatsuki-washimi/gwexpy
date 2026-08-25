@@ -44,7 +44,15 @@ direct internal construction で任意の event sequence を省略した場合�
 artifact の作成にも失敗したときは、以前の sidecar snapshot を直接再適用してから recovery が利用できないことをエラーで報告します。
 データと sidecar の commit 後に rollback cleanup が失敗したとき、書き込み結果は commit 済みのままです。
 構造化エラーの ``operation_committed=True`` がこの状態を示します。
-パスを置き換える書き込みでは、完全な一時 HDF5 ファイルを同じディレクトリに書き、``os.replace`` で置き換えます。
+path name で ``overwrite=True`` かつ既定の ``append=False`` を指定した場合、GWpy と同じ
+file 全体の置換 semantics になります。GWexpy は要求された dataset と sidecar entry だけを
+完全な sibling temporary HDF5 file に書き、``os.replace`` で置き換えます。
+この操作では無関係な dataset と provenance entry も意図的に削除されます。
+対して ``append=True`` は transaction lock 下で既存 file を mutation します。
+異なる dataset path とその sidecar entry は保持され、同じ path は ``overwrite=True`` のときだけ置換されます。
+open された ``h5py.File`` または ``h5py.Group`` も、同じ file 内・dataset 単位の mutation semantics を使います。
+したがって、二つの pathname replacement writer は serialize されますが file scope では last-writer-wins です。
+異なる path を保持するには ``append=True`` または open container を使ってください。
 既存の通常ファイルでは、元のパーミッションビットを一時ファイルに適用します。
 シンボリックリンクを対象とした置き換えは拒否します。
 所有者、ACL、拡張属性はこの操作では保存しません。
@@ -52,7 +60,7 @@ provenance 対応のパス名 read/write は、耐久的な sibling lock file �
 POSIX advisory transaction lock も取得します。
 相対・絶対・symbolic-link のパス別名は同じ lock に解決されます。
 lock は data と sidecar の更新および recovery 全体を覆うため、別プロセスの
-GWexpy provenance 対応 reader/writer は更新前または commit 済みの組だけを観測します。
+GWexpy provenance 対応 reader/writer は選択された operation scope の更新前または commit 済みの組だけを観測します。
 取得できない場合は structured ``CrossProcessHDF5LockError`` で fail closed します。
 lock file は意図的に残し stale とみなしたり steal したりせず、プロセス終了時の解放は OS に委ねます。
 この保証には POSIX ``flock`` とそれを尊重する local filesystem が必要です。

@@ -54,7 +54,17 @@ reports that recovery is unavailable after retrying the prior sidecar snapshot
 directly.  If data and sidecar commit before rollback cleanup
 fails, the write remains committed and its structured error marks
 ``operation_committed=True``.  Path
-replacement writes a complete sibling temporary HDF5 file before ``os.replace``.
+For a pathname, ``overwrite=True`` with the default ``append=False`` has GWpy's
+whole-file replacement semantics: GWexpy writes only the requested dataset and
+its sidecar entry to a complete sibling temporary HDF5 file before ``os.replace``.
+It intentionally removes unrelated datasets and provenance entries.  In
+contrast, ``append=True`` mutates the existing file under the transaction lock:
+different dataset paths and their sidecar entries are retained, while an
+existing same path is replaced only when ``overwrite=True``.  Passing an open
+``h5py.File`` or ``h5py.Group`` uses that same in-file, per-dataset mutation
+behavior.  Thus two pathname replacement writers are serialized but
+last-writer-wins at file scope; preservation across distinct paths requires
+``append=True`` or an open container.
 For an existing regular file, its permission bits are applied to the temporary
 replacement.  Symbolic-link targets are rejected; ownership, ACLs, and
 extended attributes are not preserved by this operation.
@@ -63,7 +73,7 @@ POSIX advisory transaction lock on a durable sibling lock file.  Relative,
 absolute, and symbolic-link pathname aliases resolve to the same lock.  The
 lock covers the complete data-plus-sidecar update and recovery path, so another
 GWexpy provenance-aware pathname reader or writer observes either the prior or
-the committed pair.  Lock acquisition fails closed with a structured
+the committed pair for the selected operation scope.  Lock acquisition fails closed with a structured
 ``CrossProcessHDF5LockError``; lock files are deliberately retained and are
 never treated as stale or stolen, while the operating system releases a held
 lock when a process terminates.  This requires POSIX ``flock`` and a local

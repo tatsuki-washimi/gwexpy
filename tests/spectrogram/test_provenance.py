@@ -93,6 +93,31 @@ def _spawn_hold_process_lock(path: str, acquired) -> None:
         threading.Event().wait(30)
 
 
+def _spawn_dataset_writer(
+    filename: str, dataset: str, value: float, append: bool, finished, errors
+) -> None:
+    from gwexpy.spectrogram import Spectrogram as SpawnSpectrogram
+
+    try:
+        result = SpawnSpectrogram(
+            np.full((3, 4), value),
+            times=np.arange(3.0),
+            frequencies=np.arange(10.0, 14.0),
+            name=dataset,
+        )
+        result.provenance = {
+            **_provenance(),
+            "analysis": {"method": dataset, "parameters": {"value": value}},
+        }
+        result.write(
+            filename, format="hdf5", path=dataset, append=append, overwrite=True
+        )
+    except BaseException as error:  # pragma: no cover - parent asserts payload
+        errors.put((type(error).__name__, str(error)))
+    finally:
+        finished.set()
+
+
 def _spectrogram() -> Spectrogram:
     return Spectrogram(
         np.arange(12.0).reshape(3, 4),
@@ -407,6 +432,68 @@ def test_process_lock_times_out_fail_closed_and_supports_nesting(
                 ]
                 == 2
             )
+
+
+def test_pathname_overwrite_replaces_the_file_but_append_preserves_entries(
+    tmp_path,
+) -> None:
+    path = tmp_path / "pathname-semantics.hdf5"
+    first = _spectrogram()
+    first.provenance = _provenance()
+    first.write(path, format="hdf5", path="a")
+
+    second = _spectrogram() + 20
+    second.provenance = {
+        **_provenance(),
+        "analysis": {"method": "b", "parameters": {}},
+    }
+    second.write(path, format="hdf5", path="b", append=True, overwrite=True)
+    with h5py.File(path, "r") as h5file:
+        assert set(h5file) == {"a", "b"}
+        assert set(json.loads(h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE])) == {"/a", "/b"}
+
+    replacement = _spectrogram() + 40
+    replacement.provenance = {
+        **_provenance(),
+        "analysis": {"method": "c", "parameters": {}},
+    }
+    replacement.write(path, format="hdf5", path="c", overwrite=True)
+    with h5py.File(path, "r") as h5file:
+        assert set(h5file) == {"c"}
+        assert set(json.loads(h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE])) == {"/c"}
+
+
+def test_spawn_append_writers_preserve_distinct_dataset_entries(tmp_path) -> None:
+    path = tmp_path / "spawn-append-preservation.hdf5"
+    seed = _spectrogram()
+    seed.provenance = _provenance()
+    seed.write(path, format="hdf5", path="seed")
+    context = multiprocessing.get_context("spawn")
+    errors = context.Queue()
+    first_done, second_done = context.Event(), context.Event()
+    first = context.Process(
+        target=_spawn_dataset_writer,
+        args=(str(path), "a", 10.0, True, first_done, errors),
+    )
+    second = context.Process(
+        target=_spawn_dataset_writer,
+        args=(str(path), "b", 20.0, True, second_done, errors),
+    )
+    first.start()
+    second.start()
+    assert first_done.wait(timeout=10)
+    assert second_done.wait(timeout=10)
+    first.join(timeout=10)
+    second.join(timeout=10)
+    assert first.exitcode == second.exitcode == 0
+    assert errors.empty()
+    with h5py.File(path, "r") as h5file:
+        assert set(h5file) == {"seed", "a", "b"}
+        assert set(json.loads(h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE])) == {
+            "/seed",
+            "/a",
+            "/b",
+        }
 
 
 def test_provenance_survives_pickle_and_hdf5_roundtrips(tmp_path) -> None:
