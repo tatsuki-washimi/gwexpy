@@ -30,7 +30,10 @@ sidecar は書き込み前に検証し、サイズを 1 MB に制限します。
 エラーには、操作時、復元時、保存時、cleanup 時のすべての失敗を含めます。
 報告する artifact には、復元可能な保存済みデータセットまたは以前の sidecar snapshot が含まれます。
 空または利用不能な group は recovery が利用できないものとして報告します。
+sidecar だけの artifact は、厳密な boolean の不在 marker、またはサイズ上限・JSON・パス・provenance schema の検証を通る保存済み sidecar を持つ場合だけ利用可能です。
+この検査は artifact と公開状態のどちらも変更しません。
 エラー一覧は実際の発生順であり、復元、保存、cleanup のカテゴリ別一覧も個別に利用できます。
+エラーメッセージには長さを制限した安全な説明を使い、元の exception object を保ったまま信頼できない exception formatting を呼び出しません。
 artifact の作成にも失敗したときは、以前の sidecar snapshot を直接再適用してから recovery が利用できないことをエラーで報告します。
 データと sidecar の commit 後に rollback cleanup が失敗したとき、書き込み結果は commit 済みのままです。
 構造化エラーの ``operation_committed=True`` がこの状態を示します。

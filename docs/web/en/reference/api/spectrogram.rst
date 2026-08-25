@@ -32,9 +32,14 @@ sidecar state.  If restoration or rollback cleanup fails, GWexpy attempts to
 retain a named recovery artifact and reports the operation plus every
 restoration, preservation, and cleanup failure.  A reported artifact contains
 an actionable saved dataset or prior-sidecar snapshot; an empty or unusable
-group is reported as unavailable.  Recovery errors are listed in the order
-they occurred while their restoration, preservation, and cleanup categories
-remain available separately.  If artifact creation also fails, the error
+group is reported as unavailable.  A sidecar-only artifact is actionable only
+when its exact boolean absence marker, or its bounded serialized prior sidecar,
+passes the normal JSON, path, and provenance-schema validation; inspection does
+not mutate either artifact or public state.  Recovery errors are listed in the
+order they occurred while their restoration, preservation, and cleanup
+categories remain available separately.  Error messages use bounded safe
+descriptions, retaining the original exception objects without invoking
+untrusted exception formatting.  If artifact creation also fails, the error
 reports that recovery is unavailable after retrying the prior sidecar snapshot
 directly.  If data and sidecar commit before rollback cleanup
 fails, the write remains committed and its structured error marks

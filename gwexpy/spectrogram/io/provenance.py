@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import h5py
+import numpy as np
 from gwpy.io import hdf5 as gwpy_hdf5
 from gwpy.io.hdf5 import identify_hdf5
 from gwpy.io.registry import default_registry as io_registry
@@ -42,6 +43,62 @@ _FILE_LOCKS: weakref.WeakValueDictionary[str, threading.RLock] = (
     weakref.WeakValueDictionary()
 )
 _FILE_LOCKS_GUARD = threading.Lock()
+_MAX_EXCEPTION_DESCRIPTION_CHARS = 512
+
+
+def _bounded_exception_text(text: str) -> str:
+    """Bound untrusted exception text before storing it in an error message."""
+    if len(text) <= _MAX_EXCEPTION_DESCRIPTION_CHARS:
+        return text
+    return f"{text[:_MAX_EXCEPTION_DESCRIPTION_CHARS]}…"
+
+
+def _exception_type_name(error: BaseException) -> str:
+    """Return an exception type name without consulting its instance state."""
+    try:
+        return type(error).__name__
+    except BaseException:
+        return "BaseException"
+
+
+def _safe_exception_descriptor(
+    error: BaseException,
+    cache: dict[int, str],
+    active: set[int],
+) -> str:
+    """Describe one exception once, without trusting its formatting methods."""
+    key = id(error)
+    if key in cache:
+        return cache[key]
+    type_name = _exception_type_name(error)
+    if key in active:
+        return f"{type_name}: <recursive exception group>"
+    active.add(key)
+    try:
+        if isinstance(error, BaseExceptionGroup):
+            try:
+                children = "; ".join(
+                    _safe_exception_descriptor(child, cache, active)
+                    for child in error.exceptions
+                )
+                descriptor = f"{type_name}: [{children}]"
+            except BaseException:
+                descriptor = f"{type_name}: <unprintable exception group>"
+        else:
+            if type(error).__str__ is not BaseException.__str__:
+                descriptor = f"{type_name}: <untrusted formatting omitted>"
+            else:
+                try:
+                    rendered = str(error)
+                except BaseException:
+                    descriptor = f"{type_name}: <unprintable>"
+                else:
+                    descriptor = f"{type_name}: {_bounded_exception_text(rendered)}"
+    finally:
+        active.discard(key)
+    descriptor = _bounded_exception_text(descriptor)
+    cache[key] = descriptor
+    return descriptor
 
 
 class ProvenanceRollbackError(RuntimeError):
@@ -72,28 +129,40 @@ class ProvenanceRollbackError(RuntimeError):
         self.errors = tuple(
             error for error in (event_errors or grouped_errors) if error is not None
         )
+        descriptions: dict[int, str] = {}
+        self.error_descriptions = tuple(
+            _safe_exception_descriptor(error, descriptions, set())
+            for error in self.errors
+        )
         # Retain this attribute for callers that caught the first version of
         # this internal exception before it reported every restoration error.
         rollback_errors = self.errors
         if operation_error is not None and rollback_errors[0] is operation_error:
             rollback_errors = rollback_errors[1:]
-        self.rollback_error = rollback_errors[0]
+        self.rollback_error = rollback_errors[0] if rollback_errors else operation_error
         self.recovery_path = recovery_path
         self.recovery_available = recovery_path is not None
-        rollback_errors = (
-            self.errors[1:] if operation_error is not None else self.errors
+        rollback_descriptions = (
+            self.error_descriptions[1:]
+            if operation_error is not None and self.errors[0] is operation_error
+            else self.error_descriptions
         )
-        restoration_message = "; ".join(str(error) for error in rollback_errors)
+        rollback_message = "; ".join(rollback_descriptions)
         if operation_committed:
             message = (
                 "HDF5 provenance write committed, but rollback cleanup failed "
-                f"({restoration_message})"
+                f"({rollback_message})"
             )
         else:
+            operation_message = (
+                descriptions.get(id(operation_error), "<no operation error>")
+                if operation_error is not None
+                else "<no operation error>"
+            )
             message = (
                 "HDF5 provenance write failed "
-                f"({operation_error!s}); rollback handling failed "
-                f"({restoration_message})"
+                f"({operation_message}); rollback handling failed "
+                f"({rollback_message})"
             )
         if recovery_path is None:
             message += "; recovery unavailable"
@@ -112,11 +181,8 @@ def _decode_sidecar(raw: Any) -> str:
     return raw
 
 
-def _read_sidecar(h5file: h5py.File) -> dict[str, dict[str, Any]]:
-    """Read and validate the complete root sidecar before mutating data."""
-    raw = h5file.attrs.get(HDF5_PROVENANCE_ATTRIBUTE)
-    if raw is None:
-        return {}
+def _validated_sidecar(raw: Any) -> dict[str, dict[str, Any]]:
+    """Validate one serialized sidecar without reading or mutating HDF5."""
     try:
         decoded = _decode_sidecar(raw)
         sidecar = json.loads(decoded)
@@ -135,6 +201,14 @@ def _read_sidecar(h5file: h5py.File) -> dict[str, dict[str, Any]]:
                 f"invalid HDF5 provenance sidecar entry for {path!r}"
             ) from exc
     return normalized
+
+
+def _read_sidecar(h5file: h5py.File) -> dict[str, dict[str, Any]]:
+    """Read and validate the complete root sidecar before mutating data."""
+    raw = h5file.attrs.get(HDF5_PROVENANCE_ATTRIBUTE)
+    if raw is None:
+        return {}
+    return _validated_sidecar(raw)
 
 
 def _write_sidecar(h5file: h5py.File, sidecar: dict[str, dict[str, Any]]) -> None:
@@ -380,6 +454,56 @@ def _safe_rollback_path(
     return path if path.startswith("/") else f"/{path}"
 
 
+def _valid_recovery_sidecar_snapshot(
+    artifact: h5py.Group,
+    errors: list[BaseException],
+) -> bool:
+    """Validate an actionable prior-sidecar snapshot without mutating it."""
+    missing = object()
+    try:
+        marker = artifact.attrs.get("sidecar_snapshot_present", missing)
+        snapshot = artifact.attrs.get("sidecar_snapshot", missing)
+    except BaseException as error:
+        errors.append(error)
+        return False
+
+    if marker is missing:
+        if snapshot is not missing:
+            errors.append(
+                ProvenanceSidecarError(
+                    "HDF5 recovery sidecar snapshot is missing its boolean marker"
+                )
+            )
+        return False
+    if not isinstance(marker, (bool, np.bool_)):
+        errors.append(
+            ProvenanceSidecarError(
+                "HDF5 recovery sidecar marker must be an exact boolean"
+            )
+        )
+        return False
+    if not bool(marker):
+        if snapshot is not missing:
+            errors.append(
+                ProvenanceSidecarError(
+                    "HDF5 recovery sidecar absence marker has a snapshot"
+                )
+            )
+            return False
+        return True
+    if snapshot is missing:
+        errors.append(
+            ProvenanceSidecarError("HDF5 recovery sidecar snapshot is missing")
+        )
+        return False
+    try:
+        _validated_sidecar(snapshot)
+    except BaseException as error:
+        errors.append(error)
+        return False
+    return True
+
+
 def _artifact_has_recovery_content(
     h5file: h5py.File,
     path: str,
@@ -406,21 +530,8 @@ def _artifact_has_recovery_content(
     except BaseException as error:
         errors.append(error)
 
-    try:
-        if "sidecar_snapshot_present" in artifact.attrs:
-            if bool(artifact.attrs["sidecar_snapshot_present"]):
-                if "sidecar_snapshot" in artifact.attrs:
-                    actionable = True
-                else:
-                    errors.append(
-                        RuntimeError("HDF5 recovery sidecar snapshot is missing")
-                    )
-            else:
-                # An explicit absent snapshot is actionable: it restores a
-                # root without the sidecar attribute.
-                actionable = True
-    except BaseException as error:
-        errors.append(error)
+    if _valid_recovery_sidecar_snapshot(artifact, errors):
+        actionable = True
     return actionable
 
 
