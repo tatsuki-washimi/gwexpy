@@ -45,6 +45,7 @@ _OPTIONAL_COLUMNS = (
     "limit_method",
     "confidence_level",
 )
+_ROW_OPTIONAL_COLUMNS = ("limit_method", "confidence_level")
 _KNOWN_COLUMNS = set(_REQUIRED_COLUMNS) | set(_OPTIONAL_COLUMNS)
 _INT64_MAX = 2**63 - 1
 _FREQUENCY_GRID_ULPS = 32
@@ -112,8 +113,26 @@ def _is_absent_optional(value: Any) -> bool:
     return value is None or value is pd.NA or np.ma.is_masked(value)
 
 
-def _is_missing_optional(value: Any) -> bool:
-    return _is_absent_optional(value) or (isinstance(value, str) and value == "")
+def _is_missing_optional(value: Any, name: str, estimate_kind: str) -> bool:
+    """Return whether a row's optional value is an allowed absence.
+
+    Explicit nulls are accepted for either optional field on measurement rows.
+    The legacy empty string is also accepted only for the two row-optional
+    fields on measurement rows; upper limits must carry concrete metadata.
+    """
+    return _is_absent_optional(value) or (
+        name in _ROW_OPTIONAL_COLUMNS
+        and estimate_kind == "measurement"
+        and isinstance(value, str)
+        and value == ""
+    )
+
+
+def _canonical_optional_value(value: Any, name: str, estimate_kind: str) -> Any:
+    """Map an allowed optional absence to its canonical ``None`` form."""
+    if _is_missing_optional(value, name, estimate_kind):
+        return None
+    return value
 
 
 def _validate_int(value: Any, name: str, *, positive: bool) -> int:
@@ -282,17 +301,17 @@ def validate(table: Any) -> Any:
     if "limit_method" in names:
         limit_methods = columns["limit_method"]
         for kind, value in zip(estimate_kind, limit_methods):
-            missing_value = _is_missing_optional(value)
+            missing_value = _is_missing_optional(value, "limit_method", kind)
             if kind == "upper_limit":
                 if missing_value or not isinstance(value, str) or not value.strip():
                     raise ValueError("limit_method is required for upper_limit")
-            elif not _is_missing_optional(value):
+            elif not missing_value:
                 raise ValueError("limit_method is forbidden for measurement")
     elif "upper_limit" in estimate_kind:
         raise ValueError("limit_method is required for upper_limit")
     if "confidence_level" in names:
         for kind, value in zip(estimate_kind, columns["confidence_level"]):
-            missing_value = _is_missing_optional(value)
+            missing_value = _is_missing_optional(value, "confidence_level", kind)
             if kind == "upper_limit":
                 if missing_value:
                     raise ValueError("confidence_level is required for upper_limit")
@@ -301,7 +320,7 @@ def validate(table: Any) -> Any:
                 q = _normalize_binary64(value, "confidence_level")
                 if not np.isfinite(q) or not 0 < q < 1:
                     raise ValueError("confidence_level must satisfy 0 < q < 1")
-            elif not _is_missing_optional(value):
+            elif not missing_value:
                 raise ValueError("confidence_level is only valid for upper_limit")
     return table
 
@@ -504,13 +523,15 @@ def from_result(
 
     kinds = frame["estimate_kind"].tolist()
     if any(kind == "upper_limit" for kind in kinds):
-        frame["limit_method"] = [
-            limit_method if kind == "upper_limit" else "" for kind in kinds
-        ]
+        frame["limit_method"] = pd.Series(
+            [limit_method if kind == "upper_limit" else None for kind in kinds],
+            dtype=object,
+        )
         if confidence_level is not None:
-            frame["confidence_level"] = [
-                confidence_level if kind == "upper_limit" else "" for kind in kinds
-            ]
+            frame["confidence_level"] = pd.Series(
+                [confidence_level if kind == "upper_limit" else None for kind in kinds],
+                dtype=object,
+            )
 
     validate(frame)
     return frame
@@ -576,13 +597,22 @@ def _normalize_optional_columns(
     if not optional_columns:
         return frame
     normalized = frame.copy(deep=True)
-    measurement = normalized["estimate_kind"] == "measurement"
+    kinds = (
+        normalized["estimate_kind"].tolist()
+        if "estimate_kind" in normalized
+        else ["measurement"] * len(normalized)
+    )
     for name in optional_columns:
         if name not in normalized:
             normalized[name] = pd.Series([None] * len(normalized), dtype=object)
-        elif bool(measurement.any()):
-            normalized[name] = normalized[name].astype(object)
-            normalized.loc[measurement, name] = None
+        else:
+            normalized[name] = pd.Series(
+                [
+                    _canonical_optional_value(value, name, kind)
+                    for kind, value in zip(kinds, normalized[name])
+                ],
+                dtype=object,
+            )
     return normalized
 
 
@@ -652,19 +682,27 @@ def to_pandas(table: Any) -> pd.DataFrame:
     """Return a schema-aware pandas copy with explicit optional nulls.
 
     Unlike :meth:`astropy.table.Table.to_pandas`, this adapter maps Astropy
-    masked optional metadata to ``None`` rather than floating ``NaN`` and
-    records Astropy table/column metadata needed by :func:`to_astropy`.
+    masked optional metadata and a permitted legacy measurement empty string to
+    ``None`` rather than floating ``NaN``. It also records Astropy table/column
+    metadata needed by :func:`to_astropy`.
     """
     validate(table)
     columns = _column_names(table)
     values = {name: _column_values(table, name) for name in columns}
+    estimate_kind = values.get(
+        "estimate_kind", ["measurement"] * len(next(iter(values.values()), []))
+    )
     frame = pd.DataFrame(
         {
             name: [
-                None
-                if name in _OPTIONAL_COLUMNS and _is_absent_optional(value)
-                else value
-                for value in column_values
+                _canonical_optional_value(value, name, estimate_kind[index])
+                if name in _ROW_OPTIONAL_COLUMNS
+                else (
+                    None
+                    if name in _OPTIONAL_COLUMNS and _is_absent_optional(value)
+                    else value
+                )
+                for index, value in enumerate(column_values)
             ]
             for name, column_values in values.items()
         },
@@ -685,7 +723,7 @@ def to_astropy(table: Any) -> Table:
 
     The adapter attaches ``ns`` to the two time columns and ``Hz`` to the
     frequency column. It restores metadata captured by :func:`to_pandas` and
-    masks explicit optional nulls without changing the input object.
+    masks canonical optional nulls without changing the input object.
     """
     frame = to_pandas(table)
     columns = list(frame.columns)
@@ -730,9 +768,7 @@ def _json_scalar(value: Any, name: str) -> Any:
         return None
     if name in _JSON_INTEGER_COLUMNS:
         return int(value)
-    if name in _JSON_FLOAT_COLUMNS and not (
-        name in _OPTIONAL_COLUMNS and isinstance(value, str)
-    ):
+    if name in _JSON_FLOAT_COLUMNS:
         return _normalize_binary64(value, name)
     if name in _JSON_STRING_COLUMNS:
         return str(value)
@@ -746,8 +782,21 @@ def to_json_envelope(table: Any) -> dict[str, Any]:
     validate(table)
     columns = _column_names(table)
     values = {name: _column_values(table, name) for name in columns}
+    estimate_kind = values.get(
+        "estimate_kind", ["measurement"] * len(next(iter(values.values()), []))
+    )
     rows = [
-        [_json_scalar(values[name][index], name) for name in columns]
+        [
+            _json_scalar(
+                _canonical_optional_value(
+                    values[name][index], name, estimate_kind[index]
+                )
+                if name in _ROW_OPTIONAL_COLUMNS
+                else values[name][index],
+                name,
+            )
+            for name in columns
+        ]
         for index in range(len(values[_REQUIRED_COLUMNS[0]]))
     ]
     return {"schema": SCHEMA_NAME, "columns": columns, "rows": rows}
@@ -777,5 +826,8 @@ def from_json_envelope(envelope: Mapping[str, Any]) -> pd.DataFrame:
     # Object columns preserve JSON ``null`` as ``None`` instead of allowing
     # pandas to coerce mixed numeric optional metadata to floating ``NaN``.
     frame = pd.DataFrame(rows, columns=columns, dtype=object)
+    frame = _normalize_optional_columns(
+        frame, [name for name in _ROW_OPTIONAL_COLUMNS if name in frame]
+    )
     validate(frame)
     return frame

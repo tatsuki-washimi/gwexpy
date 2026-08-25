@@ -28,7 +28,11 @@ rejected rather than partly applied. Native ``Table.from_pandas`` is valid for
 unitless canonical columns but loses Astropy metadata and units. Native
 ``Table.to_pandas`` may convert masked optionals to floating ``NaN``; that
 ambiguous representation is deliberately rejected by :func:`validate` and is
-not a supported round-trip path.
+not a supported round-trip path. ``from_result`` and ``from_results`` emit
+``None`` for non-applicable measurement ``limit_method`` and
+``confidence_level`` cells. A legacy empty string is accepted only in those
+two measurement fields, then canonicalized to null by the public adapters and
+JSON envelope; it cannot become a string-valued upper-limit confidence column.
 
 JSON and frequency-grid normalization
 -------------------------------------

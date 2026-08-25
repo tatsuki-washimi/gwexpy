@@ -32,11 +32,14 @@ Unknown columns are rejected. Optional columns are `estimate_kind`,
 
 For a mixed measurement/upper-limit table, non-applicable `limit_method` and
 `confidence_level` cells may be either the legacy empty string or an explicit
-null (`None`, pandas `NA`, or an Astropy masked value). Null is the canonical
-form emitted by `from_results()` when it joins targets with heterogeneous
-optional-column shapes. Floating `NaN` is not null metadata and is rejected.
-This preserves absence semantics through pandas, Astropy, and the JSON
-envelope without assigning limit semantics to measurement rows.
+null (`None`, pandas `NA`, or an Astropy masked value). The empty string is
+accepted only in either of those two fields on a measurement row; it is never
+valid for required strings, numeric values, or upper-limit metadata.
+`from_result()` and `from_results()` emit `None` as the canonical absence form.
+`to_pandas()`, `to_astropy()`, and the JSON envelope normalize the permitted
+legacy form to null before conversion. Floating `NaN` is not null metadata and
+is rejected. This preserves absence semantics through pandas, Astropy, and the
+JSON envelope without assigning limit semantics to measurement rows.
 
 ## Units and table representations
 
@@ -66,11 +69,13 @@ an absent carrier is allowed, but a malformed or colliding carrier is rejected
 rather than partly applied. Carrier and restored metadata are deep-copied, so
 subsequent mutations of the source table, frame attributes, and restored table
 are independent. The adapters attach canonical units to the Astropy result and
-map masked optional values to explicit nulls. Native `Table.to_pandas()` may
-turn a mask into a floating `NaN`; that representation is ambiguous and remains
-invalid input to `validate()`. Native `Table.from_pandas()` is valid only as a
-unitless canonical-value import and does not preserve Astropy metadata or
-units. Result objects supplied to `from_result()` must explicitly provide a
+map masked optional values, and a validation-accepted legacy measurement empty
+string, to explicit nulls. This makes mixed `confidence_level` values numeric
+with a mask on the Astropy result instead of coercing upper-limit values to
+strings. Native `Table.to_pandas()` may turn a mask into a floating `NaN`; that
+representation is ambiguous and remains invalid input to `validate()`. Native
+`Table.from_pandas()` is valid only as a unitless canonical-value import and
+does not preserve Astropy metadata or units. Result objects supplied to `from_result()` must explicitly provide a
 coupling-factor unit, including an explicit dimensionless unit where that is
 the intended meaning; unitless duck objects are rejected.
 
