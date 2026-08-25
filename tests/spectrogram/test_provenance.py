@@ -94,7 +94,13 @@ def _spawn_hold_process_lock(path: str, acquired) -> None:
 
 
 def _spawn_dataset_writer(
-    filename: str, dataset: str, value: float, append: bool, finished, errors
+    filename: str,
+    dataset: str,
+    value: float,
+    append: bool,
+    attempting_write,
+    finished,
+    errors,
 ) -> None:
     from gwexpy.spectrogram import Spectrogram as SpawnSpectrogram
 
@@ -109,6 +115,7 @@ def _spawn_dataset_writer(
             **_provenance(),
             "analysis": {"method": dataset, "parameters": {"value": value}},
         }
+        attempting_write.set()
         result.write(
             filename, format="hdf5", path=dataset, append=append, overwrite=True
         )
@@ -156,9 +163,10 @@ def _spawn_paused_append_writer(
         finished.set()
 
 
-def _spawn_lock_probe(path: str, entered, release, finished) -> None:
+def _spawn_lock_probe(path: str, attempting, entered, release, finished) -> None:
     from gwexpy.spectrogram.io import provenance as spawn_provenance
 
+    attempting.set()
     with spawn_provenance._process_file_lock(path):
         entered.set()
         release.wait(timeout=10)
@@ -517,14 +525,16 @@ def test_spawn_append_writers_preserve_distinct_dataset_entries(tmp_path) -> Non
     seed.write(path, format="hdf5", path="seed")
     context = multiprocessing.get_context("spawn")
     errors = context.Queue()
-    first_done, second_done = context.Event(), context.Event()
+    first_attempting, first_done, second_attempting, second_done = (
+        context.Event() for _ in range(4)
+    )
     first = context.Process(
         target=_spawn_dataset_writer,
-        args=(str(path), "a", 10.0, True, first_done, errors),
+        args=(str(path), "a", 10.0, True, first_attempting, first_done, errors),
     )
     second = context.Process(
         target=_spawn_dataset_writer,
-        args=(str(path), "b", 20.0, True, second_done, errors),
+        args=(str(path), "b", 20.0, True, second_attempting, second_done, errors),
     )
     first.start()
     second.start()
@@ -551,7 +561,9 @@ def test_spawn_append_writer_blocks_after_sidecar_read_and_preserves_entries(
     seed.provenance = _provenance()
     seed.write(path, format="hdf5", path="seed")
     context = multiprocessing.get_context("spawn")
-    read_sidecar, release, first_done, second_done = (context.Event() for _ in range(4))
+    read_sidecar, release, first_done, attempting_write, second_done = (
+        context.Event() for _ in range(5)
+    )
     errors = context.Queue()
     first = context.Process(
         target=_spawn_paused_append_writer,
@@ -559,19 +571,26 @@ def test_spawn_append_writer_blocks_after_sidecar_read_and_preserves_entries(
     )
     second = context.Process(
         target=_spawn_dataset_writer,
-        args=(str(path), "b", 20.0, True, second_done, errors),
+        args=(str(path), "b", 20.0, True, attempting_write, second_done, errors),
     )
     first.start()
-    assert read_sidecar.wait(timeout=10)
-    second.start()
     try:
+        assert read_sidecar.wait(timeout=10)
+        second.start()
+        assert attempting_write.wait(timeout=10)
         assert not second_done.wait(timeout=0.25)
     finally:
         release.set()
+        first.join(timeout=10)
+        second.join(timeout=10)
+        if first.is_alive():
+            first.terminate()
+        if second.is_alive():
+            second.terminate()
+        first.join(timeout=10)
+        second.join(timeout=10)
     assert first_done.wait(timeout=10)
     assert second_done.wait(timeout=10)
-    first.join(timeout=10)
-    second.join(timeout=10)
     assert first.exitcode == second.exitcode == 0
     assert errors.empty()
     with h5py.File(path, "r") as h5file:
@@ -590,22 +609,37 @@ def test_spawn_lock_on_one_physical_file_does_not_block_another(tmp_path) -> Non
         spec.provenance = _provenance()
         spec.write(path, format="hdf5")
     context = multiprocessing.get_context("spawn")
-    acquired, writer_done = context.Event(), context.Event()
+    acquired, attempting_write, writer_done = (context.Event() for _ in range(3))
     errors = context.Queue()
     holder = context.Process(
         target=_spawn_hold_process_lock, args=(str(first_path), acquired)
     )
     writer = context.Process(
         target=_spawn_dataset_writer,
-        args=(str(second_path), "second", 20.0, True, writer_done, errors),
+        args=(
+            str(second_path),
+            "second",
+            20.0,
+            True,
+            attempting_write,
+            writer_done,
+            errors,
+        ),
     )
     holder.start()
-    assert acquired.wait(timeout=10)
-    writer.start()
-    assert writer_done.wait(timeout=10)
-    holder.terminate()
-    holder.join(timeout=10)
-    writer.join(timeout=10)
+    try:
+        assert acquired.wait(timeout=10)
+        writer.start()
+        assert attempting_write.wait(timeout=10)
+        assert writer_done.wait(timeout=10)
+    finally:
+        if holder.is_alive():
+            holder.terminate()
+        holder.join(timeout=10)
+        writer.join(timeout=10)
+        if writer.is_alive():
+            writer.terminate()
+        writer.join(timeout=10)
     assert writer.exitcode == 0
     assert errors.empty()
     assert Spectrogram.read(second_path, format="hdf5", path="second").provenance
@@ -631,25 +665,33 @@ def test_spawn_equivalent_path_spellings_block_until_release(
     else:
         alias = str(path)
     context = multiprocessing.get_context("spawn")
-    acquired, entered, release_probe, finished = (context.Event() for _ in range(4))
+    acquired, attempting, entered, release_probe, finished = (
+        context.Event() for _ in range(5)
+    )
     holder = context.Process(
         target=_spawn_hold_process_lock, args=(str(path), acquired)
     )
     probe = context.Process(
-        target=_spawn_lock_probe, args=(alias, entered, release_probe, finished)
+        target=_spawn_lock_probe,
+        args=(alias, attempting, entered, release_probe, finished),
     )
     holder.start()
-    assert acquired.wait(timeout=10)
-    probe.start()
     try:
+        assert acquired.wait(timeout=10)
+        probe.start()
+        assert attempting.wait(timeout=10)
         assert not entered.wait(timeout=0.25)
     finally:
-        holder.terminate()
+        if holder.is_alive():
+            holder.terminate()
         holder.join(timeout=10)
+        release_probe.set()
+        probe.join(timeout=10)
+        if probe.is_alive():
+            probe.terminate()
+        probe.join(timeout=10)
     assert entered.wait(timeout=10)
-    release_probe.set()
     assert finished.wait(timeout=10)
-    probe.join(timeout=10)
     assert probe.exitcode == 0
 
 
