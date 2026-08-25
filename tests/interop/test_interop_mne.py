@@ -2,6 +2,7 @@
 
 import copy
 import datetime
+import errno
 import threading
 from types import SimpleNamespace
 from typing import Any
@@ -751,7 +752,7 @@ class TestFromMneRaw:
         assert replacement is not None
         assert replacement._mmap.closed
 
-    def test_memmap_windows_duplicate_mapping_remaps_only_after_write_failure(
+    def test_memmap_windows_duplicate_mapping_remaps_after_sharing_violation(
         self, monkeypatch, tmp_path
     ):
         receiver = to_mne_rawarray(
@@ -782,7 +783,9 @@ class TestFromMneRaw:
             nonlocal calls
             calls += 1
             if calls == 1:
-                raise SystemError("simulated duplicate mapping blocks truncate")
+                error = PermissionError(errno.EACCES, "simulated sharing violation")
+                error.winerror = 32
+                raise error
             write(journal)
 
         monkeypatch.setattr(
@@ -790,9 +793,6 @@ class TestFromMneRaw:
         )
         monkeypatch.setattr(
             mne_interop, "_write_memmap_backing", duplicate_mapping_blocks_first_write
-        )
-        monkeypatch.setattr(
-            mne_interop, "_memmap_remap_required_after_write_error", lambda: True
         )
 
         with pytest.raises(RuntimeError, match="calibration concatenate"):
@@ -810,6 +810,117 @@ class TestFromMneRaw:
         assert receiver._data.flags.writeable
         assert backing.stat().st_size == original_size
         assert backing.read_bytes() == before
+
+    @pytest.mark.parametrize(
+        "mapping_error_factory",
+        [
+            lambda: OSError(errno.EBUSY, "simulated active mapping blocks truncate"),
+            lambda: SystemError("simulated mmap mapping cannot truncate"),
+        ],
+        ids=["busy-truncate", "mmap-system-error"],
+    )
+    def test_memmap_darwin_active_mapping_remaps_after_busy_truncate(
+        self, monkeypatch, tmp_path, mapping_error_factory
+    ):
+        receiver = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="a")
+        )
+        incoming = to_mne_rawarray(
+            TimeSeries(
+                np.full(8, 2.0), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="b"
+            )
+        )
+        backing = tmp_path / "raw.memmap"
+        data = np.memmap(backing, dtype=np.float64, mode="w+", shape=(1, 8))
+        data[:] = receiver._data
+        data.flush()
+        receiver._data = data
+        before = backing.read_bytes()
+        original_size = backing.stat().st_size
+        write = mne_interop._write_memmap_backing
+        calls = 0
+
+        def fail_calibration_concatenate(*args, **kwargs):
+            raise RuntimeError("injected calibration concatenate failure")
+
+        def active_mapping_blocks_first_truncate(journal):
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                raise mapping_error_factory()
+            write(journal)
+
+        monkeypatch.setattr(
+            mne_channels.np, "concatenate", fail_calibration_concatenate
+        )
+        monkeypatch.setattr(
+            mne_interop, "_write_memmap_backing", active_mapping_blocks_first_truncate
+        )
+
+        with pytest.raises(RuntimeError, match="calibration concatenate"):
+            receiver.add_channels([incoming])
+
+        assert calls == 2
+        assert receiver._data is not data
+        assert isinstance(receiver._data, np.memmap)
+        assert str(receiver._data.filename) == str(backing)
+        assert receiver._data.shape == (1, 8)
+        assert receiver._data.dtype == data.dtype
+        assert receiver._data.flags.writeable
+        np.testing.assert_array_equal(receiver.get_data(), np.ones((1, 8)))
+        assert backing.stat().st_size == original_size
+        assert backing.read_bytes() == before
+
+    @pytest.mark.parametrize(
+        "error_factory",
+        [
+            lambda: PermissionError(errno.EACCES, "simulated permission denial"),
+            lambda: OSError(errno.EIO, "simulated backing-file corruption"),
+            lambda: SystemError("simulated unrelated runtime failure"),
+        ],
+        ids=["permission", "corruption", "unrelated-system-error"],
+    )
+    def test_memmap_unrelated_restore_errors_are_composed_without_retry(
+        self, monkeypatch, tmp_path, error_factory
+    ):
+        receiver = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="a")
+        )
+        incoming = to_mne_rawarray(
+            TimeSeries(
+                np.full(8, 2.0), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="b"
+            )
+        )
+        backing = tmp_path / "raw.memmap"
+        data = np.memmap(backing, dtype=np.float64, mode="w+", shape=(1, 8))
+        data[:] = receiver._data
+        data.flush()
+        receiver._data = data
+        calls = 0
+
+        def fail_calibration_concatenate(*args, **kwargs):
+            raise RuntimeError("injected calibration concatenate failure")
+
+        def unrelated_restore_error(journal):
+            nonlocal calls
+            calls += 1
+            raise error_factory()
+
+        monkeypatch.setattr(
+            mne_channels.np, "concatenate", fail_calibration_concatenate
+        )
+        monkeypatch.setattr(
+            mne_interop, "_write_memmap_backing", unrelated_restore_error
+        )
+
+        with pytest.raises(BaseExceptionGroup) as exc_info:
+            receiver.add_channels([incoming])
+
+        assert calls == 1
+        assert isinstance(exc_info.value.exceptions[0], RuntimeError)
+        rollback_error = exc_info.value.exceptions[1]
+        assert isinstance(rollback_error, BaseExceptionGroup)
+        assert isinstance(rollback_error.exceptions[0], type(error_factory()))
 
     @pytest.mark.parametrize("failure", ["unlock", "annotations"])
     def test_add_channels_restores_state_when_meas_date_installation_fails(

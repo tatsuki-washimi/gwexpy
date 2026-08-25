@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+import errno
 import os
-import sys
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from operator import index
@@ -457,9 +457,31 @@ def _detach_memmap_mapping(data: np.memmap) -> None:
         mapping.close()
 
 
-def _memmap_remap_required_after_write_error() -> bool:
-    """Whether open mapping handles normally block truncate on this platform."""
-    return sys.platform.startswith("win")
+_MEMMAP_MAPPING_WINERRORS = frozenset({32, 33, 1224})
+
+
+def _mapping_blocks_memmap_restore(error: BaseException) -> bool:
+    """Whether ``error`` specifically means an active mapping blocked restore.
+
+    This is intentionally capability/error based rather than a platform-name
+    check.  ``EBUSY`` covers POSIX active-map truncate failures; the Windows
+    values are the documented sharing/lock violations.  NumPy can also expose
+    a failed mmap capability as ``BufferError`` or a mapping-specific
+    ``SystemError``.  Permission, I/O, and unrelated runtime errors must
+    propagate into the transaction's ``BaseExceptionGroup`` untouched.
+    """
+    if isinstance(error, BufferError):
+        return True
+    if isinstance(error, OSError):
+        return error.errno == errno.EBUSY or getattr(error, "winerror", None) in (
+            _MEMMAP_MAPPING_WINERRORS
+        )
+    if isinstance(error, SystemError):
+        detail = str(error).lower()
+        return "mmap" in detail and any(
+            marker in detail for marker in ("mapping", "resize", "truncate")
+        )
+    return False
 
 
 def _reopen_memmap_backing(journal: _MemmapAddChannelsJournal) -> np.memmap:
@@ -482,8 +504,9 @@ def _restore_memmap_add_channels_state(
 
     The replacement mapping is detached before any write/truncate.  Linux can
     generally truncate beneath the original mapping and retain aliases.  If a
-    Windows-style duplicate mapping blocks that operation, the original mapping
-    is closed and reopened only as a last resort.
+    any active mapping blocks that operation, the original mapping is closed
+    and reopened only as a last resort.  This follows MNE 1.12's private
+    memmap behavior by capability/error rather than assuming a host OS.
     """
     current_data = raw.__dict__.get("_data")
     replacement = (
@@ -497,8 +520,8 @@ def _restore_memmap_add_channels_state(
         return
     try:
         _write_memmap_backing(journal)
-    except (OSError, SystemError):
-        if not _memmap_remap_required_after_write_error():
+    except (OSError, SystemError, BufferError) as error:
+        if not _mapping_blocks_memmap_restore(error):
             raise
         _detach_memmap_mapping(journal.data)
         _write_memmap_backing(journal)
