@@ -34,6 +34,8 @@ sidecar だけの artifact は、厳密な boolean の不在 marker、または�
 この検査は artifact と公開状態のどちらも変更しません。
 エラー一覧は実際の発生順であり、復元、保存、cleanup のカテゴリ別一覧も個別に利用できます。
 エラーメッセージには長さを制限した安全な説明を使い、元の exception object を保ったまま信頼できない exception formatting を呼び出しません。
+rollback error には常に少なくとも一つの因果 exception が残ります。
+無効な内部構成では空または誤解を招く rollback state の代わりに synthetic invariant error を記録します。
 artifact の作成にも失敗したときは、以前の sidecar snapshot を直接再適用してから recovery が利用できないことをエラーで報告します。
 データと sidecar の commit 後に rollback cleanup が失敗したとき、書き込み結果は commit 済みのままです。
 構造化エラーの ``operation_committed=True`` がこの状態を示します。

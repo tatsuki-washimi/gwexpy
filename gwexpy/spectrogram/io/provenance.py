@@ -44,13 +44,28 @@ _FILE_LOCKS: weakref.WeakValueDictionary[str, threading.RLock] = (
 )
 _FILE_LOCKS_GUARD = threading.Lock()
 _MAX_EXCEPTION_DESCRIPTION_CHARS = 512
+_MAX_EXCEPTION_GROUP_NODES = 64
+_MAX_EXCEPTION_GROUP_DEPTH = 8
+_MAX_EXCEPTION_GROUP_CHILDREN = 16
+_EXCEPTION_TRUNCATION_MARKER = "<truncated>"
 
 
-def _bounded_exception_text(text: str) -> str:
+class _ProvenanceRollbackInvariantError(RuntimeError):
+    """Record invalid internal rollback-error construction without losing state."""
+
+
+def _bounded_exception_text(
+    text: str,
+    limit: int = _MAX_EXCEPTION_DESCRIPTION_CHARS,
+) -> str:
     """Bound untrusted exception text before storing it in an error message."""
-    if len(text) <= _MAX_EXCEPTION_DESCRIPTION_CHARS:
+    if limit <= 0:
+        return ""
+    if len(text) <= limit:
         return text
-    return f"{text[:_MAX_EXCEPTION_DESCRIPTION_CHARS]}…"
+    if limit <= len(_EXCEPTION_TRUNCATION_MARKER):
+        return _EXCEPTION_TRUNCATION_MARKER[:limit]
+    return f"{text[: limit - len(_EXCEPTION_TRUNCATION_MARKER)]}{_EXCEPTION_TRUNCATION_MARKER}"
 
 
 def _exception_type_name(error: BaseException) -> str:
@@ -65,25 +80,72 @@ def _safe_exception_descriptor(
     error: BaseException,
     cache: dict[int, str],
     active: set[int],
+    *,
+    depth: int = 0,
+    visited: list[int] | None = None,
+    max_chars: int = _MAX_EXCEPTION_DESCRIPTION_CHARS,
 ) -> str:
-    """Describe one exception once, without trusting its formatting methods."""
+    """Describe one exception with bounded group traversal and formatting."""
+    if max_chars <= 0:
+        return ""
     key = id(error)
     if key in cache:
-        return cache[key]
+        return _bounded_exception_text(cache[key], max_chars)
+    if visited is None:
+        visited = [0]
+    if visited[0] >= _MAX_EXCEPTION_GROUP_NODES:
+        return _bounded_exception_text(_EXCEPTION_TRUNCATION_MARKER, max_chars)
+    visited[0] += 1
     type_name = _exception_type_name(error)
     if key in active:
-        return f"{type_name}: <recursive exception group>"
+        return _bounded_exception_text(
+            f"{type_name}: <recursive exception group>", max_chars
+        )
     active.add(key)
     try:
         if isinstance(error, BaseExceptionGroup):
-            try:
-                children = "; ".join(
-                    _safe_exception_descriptor(child, cache, active)
-                    for child in error.exceptions
-                )
-                descriptor = f"{type_name}: [{children}]"
-            except BaseException:
-                descriptor = f"{type_name}: <unprintable exception group>"
+            if depth >= _MAX_EXCEPTION_GROUP_DEPTH:
+                descriptor = f"{type_name}: {_EXCEPTION_TRUNCATION_MARKER}"
+            else:
+                try:
+                    children = error.exceptions
+                    prefix = f"{type_name}: ["
+                    parts: list[str] = []
+                    used = len(prefix) + 1  # Closing bracket.
+                    truncated = False
+                    for index, child in enumerate(children):
+                        if (
+                            index >= _MAX_EXCEPTION_GROUP_CHILDREN
+                            or visited[0] >= _MAX_EXCEPTION_GROUP_NODES
+                        ):
+                            truncated = True
+                            break
+                        separator = "; " if parts else ""
+                        available = max_chars - used - len(separator)
+                        if available <= len(_EXCEPTION_TRUNCATION_MARKER):
+                            truncated = True
+                            break
+                        child_text = _safe_exception_descriptor(
+                            child,
+                            cache,
+                            active,
+                            depth=depth + 1,
+                            visited=visited,
+                            max_chars=available,
+                        )
+                        parts.append(child_text)
+                        used += len(separator) + len(child_text)
+                    if truncated:
+                        separator = "; " if parts else ""
+                        available = max_chars - used - len(separator)
+                        if available > 0:
+                            marker = _bounded_exception_text(
+                                _EXCEPTION_TRUNCATION_MARKER, available
+                            )
+                            parts.append(marker)
+                    descriptor = f"{prefix}{'; '.join(parts)}]"
+                except BaseException:
+                    descriptor = f"{type_name}: <unprintable exception group>"
         else:
             if type(error).__str__ is not BaseException.__str__:
                 descriptor = f"{type_name}: <untrusted formatting omitted>"
@@ -96,9 +158,65 @@ def _safe_exception_descriptor(
                     descriptor = f"{type_name}: {_bounded_exception_text(rendered)}"
     finally:
         active.discard(key)
-    descriptor = _bounded_exception_text(descriptor)
+    descriptor = _bounded_exception_text(descriptor, max_chars)
     cache[key] = descriptor
     return descriptor
+
+
+def _missing_causal_errors(
+    grouped_errors: tuple[BaseException, ...],
+    event_errors: tuple[BaseException, ...],
+) -> tuple[BaseException, ...]:
+    """Return grouped errors absent from an explicit causal event sequence."""
+    remaining = {id(error): 0 for error in grouped_errors}
+    for error in grouped_errors:
+        remaining[id(error)] += 1
+    for error in event_errors:
+        key = id(error)
+        if remaining.get(key, 0):
+            remaining[key] -= 1
+    missing: list[BaseException] = []
+    for error in grouped_errors:
+        key = id(error)
+        if remaining[key]:
+            missing.append(error)
+            remaining[key] -= 1
+    return tuple(missing)
+
+
+def _causal_error_state(
+    grouped_errors: tuple[BaseException, ...],
+    event_errors: tuple[BaseException, ...] | None,
+) -> tuple[tuple[BaseException, ...], tuple[BaseException, ...]]:
+    """Keep all captured errors and synthesize an invariant when needed."""
+    invariant_errors: list[BaseException] = []
+    if event_errors is None:
+        causal_errors = grouped_errors
+    else:
+        causal_errors = tuple(
+            error for error in event_errors if isinstance(error, BaseException)
+        )
+        if len(causal_errors) != len(event_errors):
+            invariant_errors.append(
+                _ProvenanceRollbackInvariantError(
+                    "rollback event sequence contains a non-exception value"
+                )
+            )
+        missing = _missing_causal_errors(grouped_errors, causal_errors)
+        if missing:
+            causal_errors = (*causal_errors, *missing)
+            invariant_errors.append(
+                _ProvenanceRollbackInvariantError(
+                    "rollback event sequence omitted captured phase errors"
+                )
+            )
+    if not causal_errors and not invariant_errors:
+        invariant_errors.append(
+            _ProvenanceRollbackInvariantError(
+                "rollback construction has no causal error"
+            )
+        )
+    return (*causal_errors, *invariant_errors), tuple(invariant_errors)
 
 
 class ProvenanceRollbackError(RuntimeError):
@@ -121,13 +239,14 @@ class ProvenanceRollbackError(RuntimeError):
         self.preservation_errors = preservation_errors
         self.cleanup_errors = cleanup_errors
         grouped_errors = (
-            operation_error,
+            *(() if operation_error is None else (operation_error,)),
             *restoration_errors,
             *preservation_errors,
             *cleanup_errors,
         )
-        self.errors = tuple(
-            error for error in (event_errors or grouped_errors) if error is not None
+        self.errors, self.invariant_errors = _causal_error_state(
+            grouped_errors,
+            event_errors,
         )
         descriptions: dict[int, str] = {}
         self.error_descriptions = tuple(

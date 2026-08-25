@@ -39,7 +39,10 @@ not mutate either artifact or public state.  Recovery errors are listed in the
 order they occurred while their restoration, preservation, and cleanup
 categories remain available separately.  Error messages use bounded safe
 descriptions, retaining the original exception objects without invoking
-untrusted exception formatting.  If artifact creation also fails, the error
+untrusted exception formatting.  Rollback errors always retain at least one
+causal exception; an invalid internal construction records a synthetic
+invariant error rather than exposing an empty or misleading rollback state.
+If artifact creation also fails, the error
 reports that recovery is unavailable after retrying the prior sidecar snapshot
 directly.  If data and sidecar commit before rollback cleanup
 fails, the write remains committed and its structured error marks
