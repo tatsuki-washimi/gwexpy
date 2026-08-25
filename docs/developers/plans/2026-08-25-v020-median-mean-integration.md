@@ -1,6 +1,6 @@
 # v0.2.0 median-mean integration plan
 
-Status: planned
+Status: in-progress
 
 ## Objective and scope
 
@@ -36,7 +36,7 @@ original dirty worktree.
 
 ### Phase 1 — preflight and series application
 
-Status: planned
+Status: completed (verified: RED `2 failed`; source-order cherry-picks and `git range-diff` show 3/3 exact patches)
 
 1. Record clean integration status, exact `HEAD`, and the original-worktree
    porcelain hash as read-only evidence.
@@ -53,7 +53,7 @@ Status: planned
 
 ### Phase 2 — contract completion
 
-Status: planned
+Status: completed (verified: `conda run -n gwexpy pytest -q tests/timeseries/test_numerical_contracts.py tests/signal/test_median_bias.py tests/signal/test_median_mean_dispatch.py`)
 
 1. Add a concise, backend-independent metadata preservation regression that
    covers `psd()` and `asd()` with `method="welch"` as well as
@@ -66,7 +66,7 @@ Status: planned
 
 ### Phase 3 — verification and review
 
-Status: planned
+Status: in-progress
 
 Run in the existing GWexpy conda environment with `PYTHONPATH=$PWD`:
 

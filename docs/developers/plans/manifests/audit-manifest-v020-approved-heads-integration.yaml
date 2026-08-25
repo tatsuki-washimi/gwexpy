@@ -20,6 +20,46 @@ cherry_picks:
   gwf_marker_repair: {command: "apply_patch; rtk git commit -m 'fix(integration): remove GWF conflict marker'", status: pass, result: "022568c; removed accidental unresolved marker only"}
   coupling: {command: "rtk git cherry-pick 78984326..73f4bbfc (explicit chronological list)", status: pass, result: "9 commits; no conflicts"}
   seriesmatrix_b0: {command: "rtk git cherry-pick 906b1b7a..c7890cbc (explicit chronological list)", status: pass, result: "13 commits; no conflicts; B1 not adopted"}
+  median_mean:
+    command: "rtk git cherry-pick 2cc96203b8c55e1e0402a3a4f69360373d2fb42f; rtk git cherry-pick a5aa3a91ad4b9ec6d17b87932ccf45a30eebe263; rtk git cherry-pick 86d1caa8107431691db755868bc24894ed00b740"
+    status: pass
+    result: "3 commits applied in reviewed source order without conflicts: 2cc96203b→7f4b42815, a5aa3a91a→611d48bd6, 86d1caa81→c37b74a79"
+median_mean_candidate:
+  scope: "PR #686 is included in v0.2.0 by explicit user decision; versioning, tagging, publishing, and remote/GitHub mutation remain out of scope."
+  pre_686_evidence_head: "4e098563e40158e83d7a1664d1a9c16a07c0f25d"
+  source_base: "6bca889a7b719f49be4f535f360b7dd63f613283"
+  source_head: "86d1caa8107431691db755868bc24894ed00b740"
+  local_content_head_before_audit: "18a17e511dedaec3a35fd7f287eb3493237b4f0c"
+  source_patch_equivalence:
+    command: "rtk git range-diff 6bca889a..86d1caa8 e23e2990..c37b74a7"
+    status: pass
+    result: "All reviewed source patches are exact in source order: 2cc96203b=7f4b42815, a5aa3a91a=611d48bd6, 86d1caa81=c37b74a79."
+  tdd_metadata_restoration:
+    command: "rtk conda run -n gwexpy pytest -q tests/timeseries/test_numerical_contracts.py"
+    status: pass
+    result: "RED before source application: 2 failed because backend-dropped name/channel/epoch were not restored; GREEN after source application: 5 passed, 2 xfailed in the file."
+  focused_spectral:
+    command: "rtk conda run -n gwexpy pytest -q tests/timeseries/test_numerical_contracts.py tests/signal/test_median_bias.py tests/signal/test_median_mean_dispatch.py"
+    status: pass
+    result: "46 passed, 12 skipped, 2 xfailed; covers median-mean dispatch, median_bias, public psd/asd metadata restoration, class, units, and frequency axis."
+  signal_suite:
+    command: "rtk conda run -n gwexpy pytest -q tests/signal -rs"
+    status: pass
+    result: "262 passed, 14 skipped, 1 existing RuntimeWarning. LAL direct oracle ran; the conditional PyCBC oracle skipped because pycbc.psd is not installed."
+  packaging:
+    command: "rtk run -c 'build_dir=$(mktemp -d ...); conda run -n gwexpy python -m build --outdir $build_dir; PYTHONPATH= conda run -n gwexpy python -P wheel-import-smoke; tar -tzf sdist'"
+    status: pass
+    result: "wheel and sdist built as 0.1.14 candidate artifacts; isolated wheel import smoke passed; both _median_bias.py and _median_mean.py are present in the sdist."
+  static:
+    ruff_check: {command: "rtk conda run -n gwexpy ruff check gwexpy tests", status: pass, result: "All checks passed."}
+    ruff_format: {command: "rtk conda run -n gwexpy ruff format --check gwexpy tests", status: baseline-fail, result: "Only unchanged tests/docs/test_root_roadmap_contract.py would be reformatted; 971 files formatted.", reason: "pre-existing repository discrepancy; not changed by #686 integration"}
+    mypy: {command: "rtk conda run -n gwexpy mypy gwexpy", status: pass, result: "Success: no issues found in 395 source files."}
+    diff_check: {command: "rtk git diff --check 4e098563..HEAD", status: pass, result: "no whitespace errors"}
+  exact_head_latest_gwpy_4x_ci:
+    command: "Run the mandatory latest-GWpy-4.x GitHub CI workflow against the final integration candidate SHA after this evidence-only commit."
+    status: pending
+    result: null
+    reason: "No push, pull request, or other GitHub mutation is authorized in this local integration phase. Earlier 4e098563 qualification is retained as pre-#686 evidence only."
 verification:
   gps_mne_pickle: {command: "rtk env PYTHONPATH=$PWD ... pytest -q tests/timeseries/test_exact_gps_epoch.py tests/interop/test_interop_mne.py::TestToMneRawArray tests/interop/test_interop_mne.py::TestFromMneRaw tests/interop/test_interop_mne.py::TestMeasDateContract tests/io/test_pickle_compat.py tests/io/test_pickle_direct_io.py", status: pass, result: "28 + 18 + 69 + 11 + 2 tests passed"}
   import_order_shard: {command: "rtk env PYTHONPATH=$PWD ... pytest -q tests/test_import_order.py::TestImportOrderIsolated::test_registry_populated_via_parent_import tests/test_import_order.py::TestRegistryBehavior", status: pass, result: "1 + 4 tests passed"}
