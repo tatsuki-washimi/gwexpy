@@ -11,6 +11,10 @@ _MANIFEST = (
     / "docs/developers/plans/manifests/audit-manifest-wave3-hdf5-transaction.yaml"
 )
 _REPOSITORY = _MANIFEST.parents[4]
+_EVIDENCE_COMMITS = (
+    "604de8f3b1efb1b910f7bbc484006ccf0570cbd0",
+    "035b3934af238fea119a1d67b8b2c176057cf387",
+)
 
 
 def _git(*arguments: str) -> str:
@@ -48,6 +52,28 @@ def _assert_ancestor(ancestor: str, descendant: str) -> None:
     )
 
 
+def _evidence_commits_are_available() -> bool:
+    """Whether this checkout retains the original reviewed-series objects.
+
+    Integration branches may cherry-pick the reviewed HDF5 series, so the
+    audit's source-series commit IDs are not necessarily reachable in a
+    standalone checkout.  When they are present, retain the stronger Git
+    ancestry assertion; otherwise validate the non-self-referential manifest
+    shape without treating absent historical objects as a product failure.
+    """
+
+    return all(
+        subprocess.run(
+            ["git", "cat-file", "-e", f"{revision}^{{commit}}"],
+            cwd=_REPOSITORY,
+            capture_output=True,
+            check=False,
+        ).returncode
+        == 0
+        for revision in _EVIDENCE_COMMITS
+    )
+
+
 def test_wave3_hdf5_manifest_has_non_self_referential_evidence_ancestry() -> None:
     manifest = yaml.safe_load(_MANIFEST.read_text(encoding="utf-8"))
 
@@ -65,7 +91,10 @@ def test_wave3_hdf5_manifest_has_non_self_referential_evidence_ancestry() -> Non
     assert len(repository_head) == 40 and all(
         character in "0123456789abcdef" for character in repository_head
     )
-    _assert_ancestor(manifest["remediation_base_head"], manifest["evidence_test_head"])
+    if _evidence_commits_are_available():
+        _assert_ancestor(
+            manifest["remediation_base_head"], manifest["evidence_test_head"]
+        )
     assert manifest["integration_revision_resolution"] == (
         "Integration may cherry-pick this reviewed series, so its original commit "
         "SHA is evidence of the reviewed range rather than an integration-HEAD ancestor."
@@ -73,6 +102,8 @@ def test_wave3_hdf5_manifest_has_non_self_referential_evidence_ancestry() -> Non
 
 
 def test_git_ancestry_helper_reports_a_non_ancestor_commit() -> None:
+    if not _evidence_commits_are_available():
+        pytest.skip("reviewed HDF5 source-series commits are absent after cherry-pick")
     with pytest.raises(AssertionError, match="not an ancestor"):
         _assert_ancestor(
             "035b3934af238fea119a1d67b8b2c176057cf387",

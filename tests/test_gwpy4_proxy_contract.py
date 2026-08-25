@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib
+import importlib.util
 import os
 import subprocess
 import sys
@@ -135,13 +136,29 @@ GWF_EXPORTS = (
     "iter_channel_names",
     "num_channels",
 )
+_HAS_LAL = importlib.util.find_spec("lal") is not None
+
+
+def _requires_lal() -> pytest.MarkDecorator:
+    return pytest.mark.skipif(
+        not _HAS_LAL,
+        reason="LAL proxy ownership is covered by the lalsuite-provisioned GWpy lane",
+    )
 
 
 def _import_name(module_name: str, name: str) -> None:
     exec(f"from {module_name} import {name}", {})
 
 
-@pytest.mark.parametrize("module_name, expected", EXPECTED_EXPORTS.items())
+@pytest.mark.parametrize(
+    ("module_name", "expected"),
+    [
+        pytest.param(module_name, expected, marks=_requires_lal())
+        if module_name == "gwexpy.utils.lal"
+        else pytest.param(module_name, expected)
+        for module_name, expected in EXPECTED_EXPORTS.items()
+    ],
+)
 def test_curated_proxy_exports_are_exact(
     module_name: str, expected: tuple[str, ...]
 ) -> None:
@@ -151,16 +168,33 @@ def test_curated_proxy_exports_are_exact(
 
 def test_parent_packages_resolve_curated_proxy_modules_in_fresh_interpreter() -> None:
     root = Path(__file__).resolve().parents[1]
+    imports = (
+        "from gwexpy.table import filter, table; "
+        "from gwexpy.timeseries import core; "
+        "from gwexpy.utils import misc; "
+    )
+    names = [
+        "filter.__name__",
+        "table.__name__",
+        "core.__name__",
+    ]
+    expected_modules = [
+        "gwexpy.table.filter",
+        "gwexpy.table.table",
+        "gwexpy.timeseries.core",
+    ]
+    if _HAS_LAL:
+        imports += "from gwexpy.utils import lal; "
+        names.append("lal.__name__")
+        expected_modules.append("gwexpy.utils.lal")
+    names.append("misc.__name__")
+    expected_modules.append("gwexpy.utils.misc")
     result = subprocess.run(
         [
             sys.executable,
             "-P",
             "-c",
-            "from gwexpy.table import filter, table; "
-            "from gwexpy.timeseries import core; "
-            "from gwexpy.utils import lal, misc; "
-            "print(filter.__name__); print(table.__name__); print(core.__name__); "
-            "print(lal.__name__); print(misc.__name__)",
+            imports + f"print('\\n'.join(({', '.join(names)})))",
         ],
         cwd=root,
         env=os.environ | {"PYTHONPATH": str(root)},
@@ -169,7 +203,7 @@ def test_parent_packages_resolve_curated_proxy_modules_in_fresh_interpreter() ->
         check=False,
     )
     assert result.returncode == 0, result.stderr
-    assert tuple(result.stdout.splitlines()) == tuple(EXPECTED_EXPORTS)
+    assert tuple(result.stdout.splitlines()) == tuple(expected_modules)
 
 
 @pytest.mark.parametrize(
@@ -255,6 +289,8 @@ def test_table_table_uses_maintained_owners() -> None:
 
 
 def test_lal_proxy_uses_maintained_owners() -> None:
+    if not _HAS_LAL:
+        pytest.skip("LAL proxy ownership requires lalsuite")
     from gwpy.detector import units as gwpy_units
     from gwpy.time import to_gps
     from gwpy.utils import lal as owner
