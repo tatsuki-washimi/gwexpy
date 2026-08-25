@@ -4,10 +4,10 @@ baseline:
   head: {command: "rtk git rev-parse HEAD", status: pass, result: "6bca889a7b719f49be4f535f360b7dd63f613283"}
   branch: {command: "rtk git branch --show-current", status: pass, result: "agent/v020-integration"}
   status: {command: "rtk git status --porcelain=v1", status: pass, result: "only docs/superpowers/plans/2026-08-25-v020-approved-heads-integration.md was untracked"}
-  original_worktree_before: {command: "rtk git -C /home/washimi/work/gwexpy status --porcelain=v1", status: pass, result: "captured 4 modified paths and 3 untracked paths"}
+  original_worktree_before: {command: "rtk git -C /home/washimi/work/gwexpy status --porcelain=v1 | rtk sha256sum", status: pass, result: "captured 4 modified paths and 3 untracked paths; sha256=ba596e14b056730df2ec95a41920b8a2845d52ee42e930e0cc73811fc2b98dfc"}
   import: {command: "rtk env PYTHONPATH=$PWD PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -c 'import gwexpy; gwexpy.register_all()'", status: pass, result: "bootstrap-import-ok"}
 approved_heads:
-  ancestry: {command: "rtk git merge-base --is-ancestor <base> <head>", status: pass, result: "all five listed bases are ancestors; all five approved heads are ancestors of final HEAD"}
+  ancestry: {command: "rtk git merge-base --is-ancestor <base> <head>; rtk git merge-base HEAD <approved-head>", status: pass, result: "all five listed bases are ancestors of approved heads; final integration contains the approved ranges by chronological cherry-pick, so original approved SHA heads are not ancestors (merge-bases: GPS/HDF5/GWF/Coupling=6bca889a; B0=6a139006)"}
   ranges: {command: "rtk git log --reverse --format='%H %s' <base>..<head>", status: pass, result: "GPS=11, HDF5=21, GWF=8, Coupling=9, B0=13 commits recorded before integration"}
 cherry_picks:
   plan: {command: "rtk git add docs/superpowers/plans/2026-08-25-v020-approved-heads-integration.md && rtk git commit -m 'docs(plan): record v0.2 approved-heads integration'", status: pass, result: "37c1678"}
@@ -34,14 +34,17 @@ verification:
   mypy: {command: "rtk env PYTHONPATH=$PWD mypy gwexpy/", status: pass, result: "Success: no issues found in 398 source files"}
   diff_check: {command: "rtk git diff --check", status: pass, result: "no whitespace errors"}
   broad_pytest: {command: "rtk env PYTHONPATH=$PWD PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 MPLCONFIGDIR=/tmp/gwexpy-v020-integration-mpl pytest -q", status: timeout, result: "progress reached 2%", reason: "execution harness stopped the command at 30 seconds before pytest completion"}
+  broad_pytest_shards: {command: "rtk env PYTHONPATH=$PWD ... pytest -q tests/timeseries/test_exact_gps_epoch.py; tests/coupling/test_segment.py tests/analysis/test_coupling.py tests/analysis/test_coupling_analysis.py; tests/timeseries/test_gwf_parallel_contract.py; tests/types/test_series_matrix_contract_manifest.py", status: pass, result: "28; 141; 37; 37 tests passed in individual file/node shards"}
   sphinx_en: {command: "rtk env PYTHONPATH=$PWD python -m sphinx -W --keep-going -b html -D language=en docs /tmp/gwexpy-v020-integration-docs-en", status: timeout, result: "source reading reached 39%", reason: "execution harness stopped the command at 30 seconds before completion"}
   sphinx_en_serial: {command: "rtk env PYTHONPATH=$PWD python -m sphinx -W --keep-going -j 1 -b html -D language=en docs /tmp/gwexpy-v020-integration-docs-en-serial", status: timeout, result: "source reading reached 39%", reason: "execution harness stopped the retry at 30 seconds before completion"}
   sphinx_ja: {command: "rtk env PYTHONPATH=$PWD python -m sphinx -W --keep-going -b html -D language=ja docs /tmp/gwexpy-v020-integration-docs-ja", status: timeout, result: "source reading reached 39%", reason: "execution harness stopped the command at 30 seconds before completion"}
   sphinx_ja_serial: {command: "rtk env PYTHONPATH=$PWD python -m sphinx -W --keep-going -j 1 -b html -D language=ja docs /tmp/gwexpy-v020-integration-docs-ja-serial", status: timeout, result: "source reading reached 42%", reason: "execution harness stopped the retry at 30 seconds before completion"}
   doctest: {command: "rtk env PYTHONPATH=$PWD PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 MPLCONFIGDIR=/tmp/gwexpy-v020-integration-mpl pytest -q --doctest-modules gwexpy", status: skipped, result: "not launched", reason: "preceding timed-out Sphinx command in chained invocation prevented execution; no remaining harness budget for a standalone bounded run"}
+  yaml_parse: {command: "rtk env PYTHONPATH=$PWD python -c 'from pathlib import Path; import yaml; yaml.safe_load(Path(\"docs/developers/plans/manifests/audit-manifest-v020-approved-heads-integration.yaml\").read_text())'", status: pass, result: "parsed successfully before initial audit commit"}
 human_gates:
   coupling_physics: {command: "record scope", status: skipped, result: "no new formula review claimed", reason: "human physics/data-model judgment remains outside integration authority"}
   seriesmatrix_d21: {command: "rtk rg -n 'adopted: false|480|478|D21|pending|proposed' ...", status: pass, result: "480 current; 478 superseded history; D21 pending; B1 adopted:false"}
 final:
-  original_worktree_after: {command: "rtk git -C /home/washimi/work/gwexpy status --porcelain=v1", status: pass, result: "byte-for-byte identical to baseline capture"}
+  original_worktree_after: {command: "rtk git -C /home/washimi/work/gwexpy status --porcelain=v1 | rtk sha256sum", status: pass, result: "sha256=ba596e14b056730df2ec95a41920b8a2845d52ee42e930e0cc73811fc2b98dfc; byte-for-byte identical to baseline capture"}
   pre_audit_commit_status: {command: "rtk git status --porcelain=v1", status: pass, result: "only ?? docs/developers/plans/manifests/audit-manifest-v020-approved-heads-integration.yaml"}
+  post_audit_commit_status: {command: "rtk git status --porcelain=v1", status: pass, result: "empty output after b8ab962 initial audit commit"}
