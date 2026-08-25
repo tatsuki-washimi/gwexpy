@@ -1,7 +1,7 @@
 """Registry HDF5 hooks for durable Spectrogram provenance sidecars.
 
-The sidecar update is serialized within this Python process.  It provides
-rollback for a single path or open HDF5 handle, but does not claim a
+Provenance-aware reads and sidecar updates are serialized within this Python
+process.  It provides rollback for a single path or open HDF5 handle, but does not claim a
 cross-process transaction; that broader HDF5 atomicity contract belongs to
 the later Wave3 work.
 """
@@ -41,6 +41,26 @@ _FILE_LOCKS: weakref.WeakValueDictionary[str, threading.RLock] = (
     weakref.WeakValueDictionary()
 )
 _FILE_LOCKS_GUARD = threading.Lock()
+
+
+class ProvenanceRollbackError(RuntimeError):
+    """Report a failed rollback while retaining the original recovery link."""
+
+    def __init__(
+        self,
+        operation_error: BaseException,
+        rollback_error: BaseException,
+        recovery_path: str,
+    ) -> None:
+        self.operation_error = operation_error
+        self.rollback_error = rollback_error
+        self.recovery_path = recovery_path
+        super().__init__(
+            "HDF5 provenance write failed "
+            f"({operation_error!s}); rollback restoration failed "
+            f"({rollback_error!s}); recovery artifact retained at "
+            f"{recovery_path!r}"
+        )
 
 
 def _decode_sidecar(raw: Any) -> str:
@@ -133,11 +153,38 @@ def _rollback_group(h5file: h5py.File) -> h5py.Group:
             return h5file.create_group(path)
 
 
+def _recovery_path(h5file: h5py.File) -> str:
+    while True:
+        path = f"__gwexpy_provenance_recovery_{uuid.uuid4().hex}"
+        if path not in h5file:
+            return path
+
+
+def _path_lock_key(path: str | Path) -> str:
+    """Return the filesystem identity, or a stable path before creation."""
+    try:
+        stat = os.stat(path)
+    except OSError:
+        return f"path:{Path(path).resolve(strict=False)}"
+    return f"file:{stat.st_dev}:{stat.st_ino}"
+
+
 def _file_lock_key(target: str | Path | h5py.HLObject) -> str:
+    """Canonicalize a path or handle to its underlying file identity."""
     if isinstance(target, (str, Path)):
-        return os.path.abspath(os.fspath(target))
+        return _path_lock_key(target)
+
     h5file = target.file
-    return h5file.filename or f"h5-object:{h5file.id.id}"
+    try:
+        descriptor = h5file.id.get_vfd_handle()
+        if isinstance(descriptor, int):
+            stat = os.fstat(descriptor)
+            return f"file:{stat.st_dev}:{stat.st_ino}"
+    except (AttributeError, OSError, RuntimeError, TypeError):
+        pass
+    if h5file.filename:
+        return _path_lock_key(h5file.filename)
+    return f"h5-object:{h5file.id.id}"
 
 
 def _file_lock(target: str | Path | h5py.HLObject) -> threading.RLock:
@@ -156,8 +203,23 @@ def _target_object(
     candidate_path: str | None,
 ) -> h5py.Dataset | None:
     """Preflight an existing target without ever treating a group as data."""
-    if candidate_path is None or candidate_path not in container:
+    if candidate_path is None:
         return None
+    link = container.get(candidate_path, getlink=True)
+    if link is None:
+        return None
+    if isinstance(link, h5py.SoftLink):
+        raise ValueError(
+            f"cannot overwrite HDF5 soft link {candidate_path!r}; "
+            "its link topology must be preserved"
+        )
+    if isinstance(link, h5py.ExternalLink):
+        raise ValueError(
+            f"cannot overwrite HDF5 external link {candidate_path!r}; "
+            "its link topology must be preserved"
+        )
+    if not isinstance(link, h5py.HardLink):  # pragma: no cover - h5py link API
+        raise ValueError(f"unsupported existing HDF5 link {candidate_path!r}")
     target = container[candidate_path]
     if isinstance(target, h5py.Group):
         raise ValueError(
@@ -179,6 +241,30 @@ def _create_rollback_hard_link(h5file: h5py.File, dataset: h5py.Dataset) -> h5py
     return rollback
 
 
+def _move_rollback_dataset(
+    h5file: h5py.File,
+    rollback: h5py.Group,
+    prior_path: str,
+) -> None:
+    """Move the preserved object back only after replacement deletion."""
+    h5file.move(rollback["dataset"].name, prior_path)
+
+
+def _retain_recovery_artifact(h5file: h5py.File, rollback: h5py.Group) -> str:
+    """Keep the sole original object reachable if restoration itself fails."""
+    original_path = rollback.name
+    if original_path not in h5file:
+        return original_path
+    recovery_path = _recovery_path(h5file)
+    try:
+        h5file.move(original_path, recovery_path)
+    except BaseException:
+        # The rollback group still owns the only saved hard link.  Never try
+        # to remove it merely because cosmetic recovery naming failed.
+        return original_path
+    return f"/{recovery_path}"
+
+
 def _restore_dataset_link(
     container: h5py.Group | h5py.File,
     h5file: h5py.File,
@@ -194,7 +280,7 @@ def _restore_dataset_link(
         return
     if rollback is None:  # pragma: no cover - internal rollback invariant
         raise RuntimeError("missing HDF5 provenance rollback snapshot")
-    h5file.move(rollback["dataset"].name, prior_path)
+    _move_rollback_dataset(h5file, rollback, prior_path)
 
 
 def _write_to_open_container(
@@ -216,6 +302,7 @@ def _write_to_open_container(
 
     prior_path: str | None = None
     rollback: h5py.Group | None = None
+    discard_rollback = True
     sidecar_snapshot = _sidecar_attr_snapshot(h5file)
     if existing is not None:
         prior_path = existing.name
@@ -224,12 +311,34 @@ def _write_to_open_container(
         dataset = writer(array, container, path=path, **kwargs)
         _commit_sidecar(h5file, dataset, array.provenance)
         return dataset
-    except BaseException:
-        _restore_dataset_link(container, h5file, candidate_path, prior_path, rollback)
+    except BaseException as operation_error:
+        try:
+            _restore_dataset_link(
+                container, h5file, candidate_path, prior_path, rollback
+            )
+        except BaseException as rollback_error:
+            # Preserve the original object even if the failed restoration has
+            # already removed the replacement at its public path.
+            discard_rollback = False
+            recovery_path = (
+                _retain_recovery_artifact(h5file, rollback)
+                if rollback is not None
+                else "<unavailable>"
+            )
+            try:
+                _restore_sidecar_attr(h5file, sidecar_snapshot)
+            except BaseException as sidecar_error:
+                rollback_error = RuntimeError(
+                    f"{rollback_error!s}; sidecar restoration also failed: "
+                    f"{sidecar_error!s}"
+                )
+            raise ProvenanceRollbackError(
+                operation_error, rollback_error, recovery_path
+            ) from rollback_error
         _restore_sidecar_attr(h5file, sidecar_snapshot)
         raise
     finally:
-        if rollback is not None and rollback.name in h5file:
+        if discard_rollback and rollback is not None and rollback.name in h5file:
             del h5file[rollback.name]
 
 
@@ -279,16 +388,19 @@ def register_hdf5_provenance_io(cls: type[Any]) -> None:
         source: Any, path: str | None = None, **kwargs: Any
     ) -> Any:
         if isinstance(source, (str, Path)):
-            with h5py.File(source, "r") as h5file:
-                provenance = _sidecar_provenance(h5file, path)
-                result = base_reader(h5file, path=path, **kwargs)
+            with _file_lock(source):
+                with h5py.File(source, "r") as h5file:
+                    provenance = _sidecar_provenance(h5file, path)
+                    result = base_reader(h5file, path=path, **kwargs)
         elif isinstance(source, h5py.HLObject):
-            provenance = _sidecar_provenance(source, path)
-            result = base_reader(source, path=path, **kwargs)
+            with _file_lock(source):
+                provenance = _sidecar_provenance(source, path)
+                result = base_reader(source, path=path, **kwargs)
         else:
             with h5py.File(source, "r") as h5file:
-                provenance = _sidecar_provenance(h5file, path)
-                result = base_reader(h5file, path=path, **kwargs)
+                with _file_lock(h5file):
+                    provenance = _sidecar_provenance(h5file, path)
+                    result = base_reader(h5file, path=path, **kwargs)
         result = result.view(cls)
         if provenance is not None:
             result.provenance = provenance

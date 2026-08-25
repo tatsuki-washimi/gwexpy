@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import inspect
 import json
+import os
 import pickle
+import threading
+from pathlib import Path
 
 import h5py
 import numpy as np
@@ -154,6 +157,41 @@ def test_unified_io_descriptors_remain_available() -> None:
     assert callable(Spectrogram.write.help)
     assert callable(Spectrogram.read.list_formats)
     assert callable(Spectrogram.write.list_formats)
+
+
+def test_file_lock_identity_matches_relative_absolute_and_open_handle(
+    tmp_path, monkeypatch
+) -> None:
+    path = tmp_path / "lock-identity.hdf5"
+    with h5py.File(path, "w"):
+        pass
+    monkeypatch.chdir(tmp_path)
+    relative = Path("lock-identity.hdf5")
+
+    with h5py.File(relative, "r+") as h5file:
+        relative_lock = provenance_hdf5._file_lock(relative)
+        absolute_lock = provenance_hdf5._file_lock(path.resolve())
+        handle_lock = provenance_hdf5._file_lock(h5file)
+
+    assert relative_lock is absolute_lock is handle_lock
+
+
+def test_file_lock_identity_matches_a_symlinked_path_when_supported(tmp_path) -> None:
+    path = tmp_path / "lock-target.hdf5"
+    link = tmp_path / "lock-link.hdf5"
+    with h5py.File(path, "w"):
+        pass
+    try:
+        os.symlink(path, link)
+    except (NotImplementedError, OSError):
+        pytest.skip("symlinks are unavailable on this filesystem")
+
+    with h5py.File(link, "r+") as h5file:
+        target_lock = provenance_hdf5._file_lock(path)
+        symlink_lock = provenance_hdf5._file_lock(link)
+        handle_lock = provenance_hdf5._file_lock(h5file)
+
+    assert target_lock is symlink_lock is handle_lock
 
 
 def test_provenance_survives_pickle_and_hdf5_roundtrips(tmp_path) -> None:
@@ -396,6 +434,160 @@ def test_hdf5_handle_rollback_preserves_hard_link_identity(
         assert h5py.h5o.get_info(h5file["alias"].id).addr == before_address
         np.testing.assert_equal(h5file["disk"][()], original.value)
         assert not any(key.startswith("__gwexpy_provenance_") for key in h5file)
+
+
+def test_hdf5_rollback_failure_retains_a_recovery_hard_link(
+    tmp_path, monkeypatch
+) -> None:
+    original = _spectrogram()
+    original.provenance = _provenance()
+    replacement = original + 100
+    replacement.provenance = _provenance()
+    path = tmp_path / "rollback-recovery.hdf5"
+
+    with h5py.File(path, "w") as h5file:
+        original.write(h5file, format="hdf5", path="disk")
+        before_address = h5py.h5o.get_info(h5file["disk"].id).addr
+
+        monkeypatch.setattr(
+            provenance_hdf5,
+            "_commit_sidecar",
+            lambda *args, **kwargs: (_ for _ in ()).throw(
+                RuntimeError("sidecar failed")
+            ),
+        )
+        monkeypatch.setattr(
+            provenance_hdf5,
+            "_move_rollback_dataset",
+            lambda *args, **kwargs: (_ for _ in ()).throw(
+                OSError("rollback move failed")
+            ),
+            raising=False,
+        )
+
+        with pytest.raises(RuntimeError, match="recovery artifact retained"):
+            replacement.write(
+                h5file,
+                format="hdf5",
+                path="disk",
+                overwrite=True,
+            )
+
+        recovery_groups = [
+            name for name in h5file if name.startswith("__gwexpy_provenance_recovery_")
+        ]
+        assert len(recovery_groups) == 1
+        recovered = h5file[f"{recovery_groups[0]}/dataset"]
+        assert h5py.h5o.get_info(recovered.id).addr == before_address
+        assert "disk" not in h5file
+
+
+@pytest.mark.parametrize("link_kind", ["soft", "external"])
+def test_hdf5_overwrite_rejects_non_hard_links_without_mutation(
+    tmp_path, link_kind
+) -> None:
+    original = _spectrogram()
+    original.provenance = _provenance()
+    replacement = original + 100
+    replacement.provenance = _provenance()
+    path = tmp_path / f"{link_kind}-link.hdf5"
+
+    with h5py.File(path, "w") as h5file:
+        original.write(h5file, format="hdf5", path="disk")
+        if link_kind == "soft":
+            h5file["linked"] = h5py.SoftLink("/disk")
+        else:
+            external_path = tmp_path / "external-target.hdf5"
+            with h5py.File(external_path, "w") as external:
+                original.write(external, format="hdf5", path="disk")
+            h5file["linked"] = h5py.ExternalLink(str(external_path), "/disk")
+
+        before_link = h5file.get("linked", getlink=True)
+        before_data = h5file["linked"][()].copy()
+        with pytest.raises(ValueError, match=f"{link_kind} link"):
+            replacement.write(
+                h5file,
+                format="hdf5",
+                path="linked",
+                overwrite=True,
+            )
+
+        after_link = h5file.get("linked", getlink=True)
+        assert type(after_link) is type(before_link)
+        if link_kind == "soft":
+            assert after_link.path == before_link.path
+        else:
+            assert after_link.filename == before_link.filename
+            assert after_link.path == before_link.path
+        np.testing.assert_equal(h5file["linked"][()], before_data)
+
+
+def test_hdf5_reader_waits_for_shared_handle_sidecar_commit(
+    tmp_path, monkeypatch
+) -> None:
+    original = _spectrogram()
+    original.provenance = _provenance()
+    replacement = original + 100
+    replacement.provenance = {
+        **_provenance(),
+        "analysis": {"method": "replacement", "parameters": {"seed": 8}},
+    }
+    path = tmp_path / "read-write-lock.hdf5"
+    commit_started = threading.Event()
+    release_commit = threading.Event()
+    reader_finished = threading.Event()
+    writer_errors: list[BaseException] = []
+    reader_errors: list[BaseException] = []
+    reads: list[Spectrogram] = []
+    original_commit = provenance_hdf5._commit_sidecar
+
+    def paused_commit(*args, **kwargs) -> None:
+        commit_started.set()
+        assert release_commit.wait(timeout=5)
+        original_commit(*args, **kwargs)
+
+    with h5py.File(path, "w") as h5file:
+        original.write(h5file, format="hdf5", path="disk")
+        monkeypatch.setattr(provenance_hdf5, "_commit_sidecar", paused_commit)
+
+        def write() -> None:
+            try:
+                replacement.write(
+                    h5file,
+                    format="hdf5",
+                    path="disk",
+                    overwrite=True,
+                )
+            except BaseException as error:  # pragma: no cover - asserted below
+                writer_errors.append(error)
+
+        def read() -> None:
+            try:
+                reads.append(Spectrogram.read(h5file, format="hdf5", path="disk"))
+            except BaseException as error:  # pragma: no cover - asserted below
+                reader_errors.append(error)
+            finally:
+                reader_finished.set()
+
+        writer = threading.Thread(target=write)
+        writer.start()
+        assert commit_started.wait(timeout=5)
+        reader = threading.Thread(target=read)
+        reader.start()
+        try:
+            assert not reader_finished.wait(timeout=0.2)
+        finally:
+            release_commit.set()
+        writer.join(timeout=5)
+        reader.join(timeout=5)
+
+    assert not writer.is_alive()
+    assert not reader.is_alive()
+    assert not writer_errors
+    assert not reader_errors
+    assert len(reads) == 1
+    np.testing.assert_equal(reads[0].value, replacement.value)
+    assert reads[0].provenance == replacement.provenance
 
 
 def test_hdf5_overwrite_replaces_an_existing_non_hdf5_path(tmp_path) -> None:

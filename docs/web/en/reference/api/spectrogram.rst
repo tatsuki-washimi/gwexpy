@@ -24,11 +24,15 @@ The HDF5 sidecar is also retained when GWpy infers HDF5 from a ``.h5`` or
 ``.hdf5`` filename.  A ``.hdf`` filename requires ``format="hdf5"``.
 HDF5 stores it as a GWexpy file-level sidecar, so the native GWpy dataset
 remains readable by GWpy.
-The sidecar is validated before a write and limited to 1 MB.  A failed
-same-process update restores the original dataset link and sidecar state;
-path replacement writes a complete sibling temporary HDF5 file before
-``os.replace``.  The per-file lock and rollback do not provide a cross-process
-HDF5 transaction; that guarantee is outside this v0.2.0 scope.  Pickles
+The sidecar is validated before a write and limited to 1 MB.  Within a
+process, provenance-aware reads and updates of the same physical file share a
+per-file lock, so a reader does not observe replacement data with an older
+sidecar.  An ordinary failed update restores the original dataset link and
+sidecar state.  If restoration itself fails, the original is retained under a
+named recovery artifact and the raised error reports both failures.  Path
+replacement writes a complete sibling temporary HDF5 file before ``os.replace``.
+The per-file lock and rollback do not provide a cross-process HDF5 transaction;
+that guarantee is outside this v0.2.0 scope.  Pickles
 without provenance remain GWpy-portable; unpickling a provenance-bearing
 Spectrogram requires GWexpy.
 
