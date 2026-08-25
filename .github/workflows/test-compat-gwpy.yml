@@ -5,8 +5,8 @@ on:
     branches: [main]
     # Limit PR runs to the TimeSeries dependency cone (verified via import grep):
     # interop/io/types are core deps; plot is reached via gwexpy/types' plot mixin.
-    # Unrelated PRs (astro/table/segments/gui/nds/docs) skip this gate; main push
-    # and manual dispatch keep full coverage.
+    # Unrelated PRs outside this dependency and proxy-contract cone skip this
+    # gate; main push and manual dispatch keep full coverage.
     paths:
       - "gwexpy/timeseries/**"
       - "gwexpy/frequencyseries/**"
