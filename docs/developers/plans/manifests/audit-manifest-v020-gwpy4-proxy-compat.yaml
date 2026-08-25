@@ -1,0 +1,125 @@
+schema_version: 1
+scope: GWpy 4 legacy proxy compatibility
+base_head: a25c9970d127c86a59c312e751be6cbdfd346fec
+baseline:
+  integration_status: clean
+  baseline_remote_v_sha256: f3b16934134e9e6cbdd373f6895880c7fd6e2eecdae339ab3088a302426cc965
+  baseline_remote_config_sha256: 023ff54ad4cb982347d16d4553a2b318ec12b5e47b621b92b335359989c43a79
+  planned_original_worktree_sha256: ba596e14b056730df2ec95a41920b8a2845d52ee42e930e0cc73811fc2b98dfc
+  actual_start_original_worktree_sha256: e1151dd2a84b1c62a23b343dbfe6630bdb12b6090d0bad209c1ccc8abf29b229
+  baseline_disposition: pre_start_external_drift
+commands:
+  - command: "initial proxy/workflow RED pytest"
+    result: fail
+    evidence: "13 failures: five stale proxies, four obsolete paths, generic GWF boundary, workflow gate"
+  - command: "initial inventory shell composition"
+    result: error
+    evidence: "shell quoting error; no mutation"
+  - command: "table/misc focused proxy tests"
+    result: pass
+    evidence: "22 passed, 16 deselected"
+  - command: "table behavior tests"
+    result: pass
+    evidence: "29 passed"
+  - command: "core/LAL focused proxy tests"
+    result: pass
+    evidence: "26 passed, 12 deselected"
+  - command: "LAL interop tests"
+    result: pass
+    evidence: "14 passed"
+  - command: "FrameL/GWF focused tests"
+    result: pass_with_skip
+    evidence: "4 passed, 1 skipped; 15 I/O contract/docs tests passed; 67 GWF tests passed, 2 skipped"
+  - command: "required FrameL subprocess parent contract"
+    result: pass
+    evidence: "1 passed; child exit 1 was asserted because backend is absent"
+  - command: "deletion/package-policy RED pytest"
+    result: fail
+    evidence: "5 expected failures before removal"
+  - command: "first non-recursive sphinx directory removal"
+    result: error
+    evidence: "ignored __pycache__ prevented rmdir and made a namespace package importable"
+  - command: "non-destructive cache move and rmdir"
+    result: pass
+    evidence: "moved gwexpy/utils/sphinx/__pycache__ to /tmp/gwexpy-v020-proxy-sphinx-pycache then rmdir succeeded"
+  - command: "source deletion and package policy tests"
+    result: pass
+    evidence: "5 passed; removed imports raise ModuleNotFoundError"
+  - command: "wheel/sdist build and artifact inspection"
+    result: pass
+    evidence: "build --no-isolation, release artifact checker, forbidden path inspection, and wheel import smoke passed"
+  - command: "workflow/docs RED pytest"
+    result: fail
+    evidence: "missing paths/provisioning/command and migration text"
+  - command: "workflow/docs/release contracts"
+    result: pass
+    evidence: "41 passed; I/O docs sync 10 passed"
+  - command: "focused frozen compatibility matrix"
+    result: pass_with_skip
+    evidence: "103 passed, 1 skipped; refreshed contract matrix 127 passed, 2 skipped"
+  - command: "pytest -q tests/timeseries"
+    result: timeout
+    timeout_seconds: 180
+    evidence: "terminated after 188 seconds; no final suite result"
+  - command: "pytest --doctest-modules gwexpy"
+    result: fail
+    evidence: "58 failed, 80 passed, 2 skipped; collection completed without the original proxy errors; failures are unrelated examples/representations"
+  - command: "ruff check gwexpy tests"
+    result: pass
+    evidence: "clean after lint alignment"
+  - command: "ruff format --check gwexpy tests"
+    result: baseline_failure
+    evidence: "only unchanged tests/docs/test_root_roadmap_contract.py would be reformatted; 968 other files formatted"
+  - command: "changed-file format check"
+    result: pass
+    evidence: "12 changed files already formatted"
+  - command: "mypy gwexpy"
+    result: pass
+    evidence: "No issues found"
+  - command: "git diff --check"
+    result: pass
+  - command: "Sphinx EN"
+    result: pass
+    evidence: "rerun recorded exit 0 within timeout 180"
+  - command: "Sphinx JA"
+    result: fail
+    evidence: "recorded exit 1 within timeout 180"
+  - command: "combined verification/commit command"
+    result: error
+    evidence: "unmatched shell quote; no mutation; rerun separately"
+framel_required_gate:
+  backend_available: false
+  parent_test_status: pass
+  child_exit_status: 1
+  child_diagnostic: "GWEXPY_REQUIRE_GWF_FRAMEL=1 requires the framel GWF backend"
+compatibility_lanes:
+  frozen:
+    gwpy_version: 4.0.1
+    lalsuite_version: '7.26'
+    evidence_source: local
+  latest_4x:
+    gwpy_version: null
+    lalsuite_version: null
+    evidence_source: not_run
+package_contents:
+  removed_paths_absent_from_source: true
+  removed_paths_absent_from_wheel: true
+  removed_paths_absent_from_sdist: true
+  pyproject_sphinx_exclusion_preserved: true
+  manifest_sphinx_prune_preserved: true
+prohibited_mutations:
+  remotes_modified: false
+  github_state_inspected: false
+  github_mutation_tools_invoked: false
+  push_tag_release_version_publish: false
+  shared_environment_install: false
+final:
+  final_remote_v_sha256: f3b16934134e9e6cbdd373f6895880c7fd6e2eecdae339ab3088a302426cc965
+  final_remote_config_sha256: 023ff54ad4cb982347d16d4553a2b318ec12b5e47b621b92b335359989c43a79
+  final_original_worktree_sha256: e1151dd2a84b1c62a23b343dbfe6630bdb12b6090d0bad209c1ccc8abf29b229
+  integration_worktree_clean: true
+  deterministic_timeseries_file_audit: not_run
+  residual_concerns:
+    - "Latest GWpy 4.x CI lane is required before merge and has no local run evidence."
+    - "Broad timeseries suite exceeded its 180-second bound."
+    - "Full module doctest and Japanese Sphinx gates failed outside this proxy scope."
