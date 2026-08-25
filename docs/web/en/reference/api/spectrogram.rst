@@ -58,8 +58,20 @@ replacement writes a complete sibling temporary HDF5 file before ``os.replace``.
 For an existing regular file, its permission bits are applied to the temporary
 replacement.  Symbolic-link targets are rejected; ownership, ACLs, and
 extended attributes are not preserved by this operation.
-The per-file lock and rollback do not provide a cross-process HDF5 transaction;
-that guarantee is outside this v0.2.0 scope.  Pickles
+Provenance-aware pathname reads and writes also acquire a bounded (10 second)
+POSIX advisory transaction lock on a durable sibling lock file.  Relative,
+absolute, and symbolic-link pathname aliases resolve to the same lock.  The
+lock covers the complete data-plus-sidecar update and recovery path, so another
+GWexpy provenance-aware pathname reader or writer observes either the prior or
+the committed pair.  Lock acquisition fails closed with a structured
+``CrossProcessHDF5LockError``; lock files are deliberately retained and are
+never treated as stale or stolen, while the operating system releases a held
+lock when a process terminates.  This requires POSIX ``flock`` and a local
+filesystem that honors it; unsupported platforms and anonymous file objects
+fail closed.  Caller-owned ``h5py`` handles participate only while passed to a
+GWexpy provenance-aware operation; independently opened or mutated handles
+remain outside the transaction.  No distributed or network-filesystem
+guarantee is claimed.  Pickles
 without provenance remain GWpy-portable; unpickling a provenance-bearing
 Spectrogram requires GWexpy.
 

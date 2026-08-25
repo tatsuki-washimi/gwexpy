@@ -48,8 +48,18 @@ artifact の作成にも失敗したときは、以前の sidecar snapshot を�
 既存の通常ファイルでは、元のパーミッションビットを一時ファイルに適用します。
 シンボリックリンクを対象とした置き換えは拒否します。
 所有者、ACL、拡張属性はこの操作では保存しません。
-ファイル単位のロックと復元はプロセス間 HDF5 トランザクションを保証しません。
-その保証は v0.2.0 の対象外です。
+provenance 対応のパス名 read/write は、耐久的な sibling lock file に対する、最大 10 秒の
+POSIX advisory transaction lock も取得します。
+相対・絶対・symbolic-link のパス別名は同じ lock に解決されます。
+lock は data と sidecar の更新および recovery 全体を覆うため、別プロセスの
+GWexpy provenance 対応 reader/writer は更新前または commit 済みの組だけを観測します。
+取得できない場合は structured ``CrossProcessHDF5LockError`` で fail closed します。
+lock file は意図的に残し stale とみなしたり steal したりせず、プロセス終了時の解放は OS に委ねます。
+この保証には POSIX ``flock`` とそれを尊重する local filesystem が必要です。
+未対応 platform と anonymous file object は fail closed します。
+呼び出し側が所有する ``h5py`` handle は、GWexpy の provenance 対応 operation に渡された間だけ参加します。
+独立して開かれた handle やその直接 mutation は transaction の対象外です。
+distributed filesystem / network filesystem への保証は主張しません。
 来歴なしの pickle は GWpy だけで読み込めますが、来歴付き Spectrogram の pickle を読み込むには GWexpy が必要です。
 
 .. note::

@@ -13,8 +13,10 @@ import os
 import stat
 import tempfile
 import threading
+import time
 import uuid
 import weakref
+from contextlib import contextmanager
 from pathlib import Path, PurePosixPath
 from typing import TYPE_CHECKING, Any
 
@@ -43,6 +45,10 @@ _FILE_LOCKS: weakref.WeakValueDictionary[str, threading.RLock] = (
     weakref.WeakValueDictionary()
 )
 _FILE_LOCKS_GUARD = threading.Lock()
+_PROCESS_LOCK_TIMEOUT_SECONDS = 10.0
+_PROCESS_LOCK_POLL_SECONDS = 0.01
+_PROCESS_LOCK_SUFFIX = ".gwexpy-provenance.lock"
+_PROCESS_LOCK_STATE = threading.local()
 _MAX_EXCEPTION_DESCRIPTION_CHARS = 512
 _MAX_EXCEPTION_GROUP_NODES = 64
 _MAX_EXCEPTION_GROUP_DEPTH = 8
@@ -54,6 +60,21 @@ _MAX_ROLLBACK_MESSAGE_CHARS = 2_048
 
 class _ProvenanceRollbackInvariantError(RuntimeError):
     """Record invalid internal rollback-error construction without losing state."""
+
+
+class CrossProcessHDF5LockError(OSError):
+    """A provenance HDF5 operation could not acquire its interprocess lock."""
+
+    def __init__(
+        self, path: Path, reason: str, *, timeout: float | None = None
+    ) -> None:
+        self.path = str(path)
+        self.reason = reason
+        self.timeout = timeout
+        detail = f"HDF5 provenance lock unavailable for {path}: {reason}"
+        if timeout is not None:
+            detail += f" after {timeout:.3f}s"
+        super().__init__(detail)
 
 
 def _bounded_text(text: str, limit: int) -> str:
@@ -520,6 +541,126 @@ def _file_lock(target: str | Path | h5py.HLObject) -> threading.RLock:
             lock = threading.RLock()
             _FILE_LOCKS[key] = lock
         return lock
+
+
+def _process_lock_path(target: str | Path | h5py.HLObject) -> Path:
+    """Return the durable lock pathname for one canonical filesystem target.
+
+    The lock is deliberately a sibling of the resolved target rather than an
+    inode-derived temporary path: a pathname replacement changes the target
+    inode, while all writers must still serialize across that replacement.
+    Relative, absolute, and symlink aliases resolve to the same sibling.
+    """
+    if isinstance(target, h5py.HLObject):
+        filename = target.file.filename
+        candidate = Path(filename) if filename else None
+        if candidate is None or not candidate.exists():
+            try:
+                descriptor = target.file.id.get_vfd_handle()
+                candidate = Path(f"/proc/self/fd/{descriptor}")
+                if not isinstance(descriptor, int) or not candidate.exists():
+                    candidate = None
+            except (AttributeError, OSError, RuntimeError, TypeError):
+                candidate = None
+        if candidate is None:
+            raise CrossProcessHDF5LockError(
+                Path("<anonymous-hdf5-handle>"), "handle has no filesystem pathname"
+            )
+        target = candidate
+    try:
+        canonical = Path(target).resolve(strict=False)
+    except (OSError, RuntimeError, TypeError) as error:
+        raise CrossProcessHDF5LockError(
+            Path("<unavailable-path>"), "cannot resolve path"
+        ) from error
+    return canonical.with_name(f".{canonical.name}{_PROCESS_LOCK_SUFFIX}")
+
+
+def _process_lock_depths() -> dict[Path, int]:
+    depths = getattr(_PROCESS_LOCK_STATE, "depths", None)
+    if depths is None:
+        depths = {}
+        _PROCESS_LOCK_STATE.depths = depths
+    return depths
+
+
+@contextmanager
+def _process_file_lock(target: str | Path | h5py.HLObject):
+    """Acquire a fail-closed advisory lock without ever stealing stale locks.
+
+    POSIX ``flock`` releases an acquired lock when a crashed process exits.
+    The lock *file* is intentionally retained, so no process needs to infer
+    liveness or unlink another process's coordination metadata.  Platforms
+    without ``fcntl.flock`` are rejected before the HDF5 operation starts.
+    """
+    lock_path = _process_lock_path(target)
+    depths = _process_lock_depths()
+    depth = depths.get(lock_path, 0)
+    if depth:
+        depths[lock_path] = depth + 1
+        try:
+            yield
+        finally:
+            remaining = depths[lock_path] - 1
+            if remaining:
+                depths[lock_path] = remaining
+            else:
+                del depths[lock_path]
+        return
+
+    if os.name == "nt":
+        raise CrossProcessHDF5LockError(lock_path, "POSIX flock is unavailable")
+    try:
+        import fcntl
+    except ImportError as error:  # pragma: no cover - guarded above on CPython
+        raise CrossProcessHDF5LockError(
+            lock_path, "POSIX flock is unavailable"
+        ) from error
+
+    flags = os.O_RDWR | os.O_CREAT
+    flags |= getattr(os, "O_CLOEXEC", 0)
+    flags |= getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(lock_path, flags, 0o600)
+    except OSError as error:
+        raise CrossProcessHDF5LockError(
+            lock_path, "cannot open safe lock file"
+        ) from error
+    try:
+        lock_status = os.fstat(descriptor)
+        if not stat.S_ISREG(lock_status.st_mode) or lock_status.st_uid != os.geteuid():
+            raise CrossProcessHDF5LockError(
+                lock_path, "lock path is not a safe regular file"
+            )
+        deadline = time.monotonic() + _PROCESS_LOCK_TIMEOUT_SECONDS
+        while True:
+            try:
+                fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except BlockingIOError as error:
+                if time.monotonic() >= deadline:
+                    raise CrossProcessHDF5LockError(
+                        lock_path,
+                        "acquisition timed out",
+                        timeout=_PROCESS_LOCK_TIMEOUT_SECONDS,
+                    ) from error
+                time.sleep(_PROCESS_LOCK_POLL_SECONDS)
+        depths[lock_path] = 1
+        try:
+            yield
+        finally:
+            del depths[lock_path]
+            fcntl.flock(descriptor, fcntl.LOCK_UN)
+    finally:
+        os.close(descriptor)
+
+
+@contextmanager
+def _file_transaction(target: str | Path | h5py.HLObject):
+    """Nest the existing local lock inside the interprocess transaction lock."""
+    with _file_lock(target):
+        with _process_file_lock(target):
+            yield
 
 
 def _target_object(
@@ -1022,17 +1163,23 @@ def register_hdf5_provenance_io(cls: type[Any]) -> None:
         source: Any, path: str | None = None, **kwargs: Any
     ) -> Any:
         if isinstance(source, (str, Path)):
-            with _file_lock(source):
+            with _file_transaction(source):
                 with h5py.File(source, "r") as h5file:
                     provenance = _sidecar_provenance(h5file, path)
                     result = base_reader(h5file, path=path, **kwargs)
         elif isinstance(source, h5py.HLObject):
-            with _file_lock(source):
+            with _file_transaction(source):
                 provenance = _sidecar_provenance(source, path)
                 result = base_reader(source, path=path, **kwargs)
         else:
-            with h5py.File(source, "r") as h5file:
-                with _file_lock(h5file):
+            source_name = getattr(source, "name", None)
+            if not isinstance(source_name, (str, Path)):
+                raise CrossProcessHDF5LockError(
+                    Path("<anonymous-hdf5-source>"),
+                    "source has no filesystem pathname",
+                )
+            with _file_transaction(source_name):
+                with h5py.File(source, "r") as h5file:
                     provenance = _sidecar_provenance(h5file, path)
                     result = base_reader(h5file, path=path, **kwargs)
         result = result.view(cls)
@@ -1045,10 +1192,10 @@ def register_hdf5_provenance_io(cls: type[Any]) -> None:
     ) -> h5py.Dataset:
         if isinstance(target, (str, Path)):
             _path_replacement_preflight(Path(target))
-            with _file_lock(target):
+            with _file_transaction(target):
                 return _write_path_transaction(array, target, path, base_writer, kwargs)
         if isinstance(target, (h5py.File, h5py.Group)):
-            with _file_lock(target):
+            with _file_transaction(target):
                 return _write_to_open_container(
                     array, target, path, base_writer, kwargs
                 )

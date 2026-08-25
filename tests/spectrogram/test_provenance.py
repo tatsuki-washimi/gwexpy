@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import inspect
 import json
+import multiprocessing
 import os
 import pickle
 import stat
@@ -28,6 +29,68 @@ from gwexpy.statistics.gauch import compute_gauch
 from gwexpy.statistics.rayleigh_test import rayleigh_pvalue
 from gwexpy.statistics.student_t_indicator import compute_student_t_nu
 from gwexpy.timeseries import TimeSeries
+
+
+def _spawn_paused_path_writer(
+    path: str, started, release, finished, locks, errors
+) -> None:
+    """Write in a fresh interpreter and pause while data/sidecar are paired."""
+    from gwexpy.spectrogram import Spectrogram as SpawnSpectrogram
+    from gwexpy.spectrogram.io import provenance as spawn_provenance
+
+    original_commit = spawn_provenance._commit_sidecar
+
+    def paused_commit(*args, **kwargs) -> None:
+        if not spawn_provenance._process_lock_depths():
+            raise AssertionError("writer did not enter the process transaction")
+        locks.put(str(spawn_provenance._process_lock_path(path)))
+        started.set()
+        if not release.wait(timeout=10):
+            raise TimeoutError("test writer was not released")
+        original_commit(*args, **kwargs)
+
+    spawn_provenance._commit_sidecar = paused_commit
+    try:
+        result = SpawnSpectrogram(
+            np.full((3, 4), 99.0),
+            times=np.arange(3.0),
+            frequencies=np.arange(10.0, 14.0),
+            name="provenance",
+        )
+        result.provenance = _provenance()
+        result.write(path, format="hdf5", overwrite=True)
+    except BaseException as error:  # pragma: no cover - parent asserts payload
+        errors.put((type(error).__name__, str(error)))
+    finally:
+        finished.set()
+
+
+def _spawn_path_reader(
+    path: str, attempted, proceed, finished, locks, results, errors
+) -> None:
+    from gwexpy.spectrogram import Spectrogram as SpawnSpectrogram
+    from gwexpy.spectrogram.io import provenance as _spawn_provenance  # noqa: F401
+
+    try:
+        attempted.set()
+        if not proceed.wait(timeout=10):
+            raise TimeoutError("test reader was not started")
+        locks.put(str(_spawn_provenance._process_lock_path(path)))
+        with _spawn_provenance._process_file_lock(path):
+            result = SpawnSpectrogram.read(path, format="hdf5")
+        results.put((float(result.value[0, 0]), result.provenance))
+    except BaseException as error:  # pragma: no cover - parent asserts payload
+        errors.put((type(error).__name__, str(error)))
+    finally:
+        finished.set()
+
+
+def _spawn_hold_process_lock(path: str, acquired) -> None:
+    from gwexpy.spectrogram.io import provenance as spawn_provenance
+
+    with spawn_provenance._process_file_lock(path):
+        acquired.set()
+        threading.Event().wait(30)
 
 
 def _spectrogram() -> Spectrogram:
@@ -217,6 +280,133 @@ def test_file_lock_identity_matches_a_symlinked_path_when_supported(tmp_path) ->
         handle_lock = provenance_hdf5._file_lock(h5file)
 
     assert target_lock is symlink_lock is handle_lock
+
+
+def test_process_lock_identity_matches_relative_absolute_and_symlink_aliases(
+    tmp_path, monkeypatch
+) -> None:
+    path = tmp_path / "process-lock-target.hdf5"
+    link = tmp_path / "process-lock-link.hdf5"
+    with h5py.File(path, "w"):
+        pass
+    try:
+        os.symlink(path, link)
+    except (NotImplementedError, OSError):
+        pytest.skip("symlinks are unavailable on this filesystem")
+
+    monkeypatch.chdir(tmp_path)
+    relative_lock = provenance_hdf5._process_lock_path(Path(path.name))
+    absolute_lock = provenance_hdf5._process_lock_path(path)
+    symlink_lock = provenance_hdf5._process_lock_path(link)
+
+    assert relative_lock == absolute_lock == symlink_lock
+
+
+def test_spawn_reader_waits_for_path_writer_transaction(tmp_path) -> None:
+    path = tmp_path / "spawn-reader-writer.hdf5"
+    original = _spectrogram()
+    original.provenance = _provenance()
+    original.write(path, format="hdf5")
+
+    context = multiprocessing.get_context("spawn")
+    started, release, writer_done, reader_attempted, reader_proceed, reader_done = (
+        context.Event() for _ in range(6)
+    )
+    errors, locks, results = context.Queue(), context.Queue(), context.Queue()
+    writer = context.Process(
+        target=_spawn_paused_path_writer,
+        args=(str(path), started, release, writer_done, locks, errors),
+    )
+    reader = context.Process(
+        target=_spawn_path_reader,
+        args=(
+            str(path),
+            reader_attempted,
+            reader_proceed,
+            reader_done,
+            locks,
+            results,
+            errors,
+        ),
+    )
+    writer.start()
+    assert started.wait(timeout=10)
+    writer_lock = locks.get(timeout=5)
+    reader.start()
+    assert reader_attempted.wait(timeout=10)
+    try:
+        reader_proceed.set()
+        reader_lock = locks.get(timeout=5)
+        assert reader_lock == writer_lock
+        assert errors.empty()
+        assert not reader_done.wait(timeout=0.25)
+    finally:
+        release.set()
+    assert writer_done.wait(timeout=10)
+    assert reader_done.wait(timeout=10)
+    writer.join(timeout=10)
+    reader.join(timeout=10)
+    assert writer.exitcode == 0
+    assert reader.exitcode == 0
+    assert errors.empty(), errors.get(timeout=1)
+    value, provenance = results.get(timeout=5)
+    assert value == 99.0
+    assert provenance == _provenance()
+
+
+def test_process_lock_is_released_after_terminated_writer_without_stealing(
+    tmp_path,
+) -> None:
+    path = tmp_path / "terminated-lock-holder.hdf5"
+    with h5py.File(path, "w"):
+        pass
+    context = multiprocessing.get_context("spawn")
+    acquired = context.Event()
+    holder = context.Process(
+        target=_spawn_hold_process_lock, args=(str(path), acquired)
+    )
+    holder.start()
+    assert acquired.wait(timeout=10)
+    holder.terminate()
+    holder.join(timeout=10)
+    assert holder.exitcode is not None
+    with provenance_hdf5._process_file_lock(path):
+        assert provenance_hdf5._process_lock_path(path).exists()
+
+
+def test_process_lock_times_out_fail_closed_and_supports_nesting(
+    tmp_path, monkeypatch
+) -> None:
+    path = tmp_path / "lock-timeout.hdf5"
+    with h5py.File(path, "w"):
+        pass
+    context = multiprocessing.get_context("spawn")
+    acquired = context.Event()
+    holder = context.Process(
+        target=_spawn_hold_process_lock, args=(str(path), acquired)
+    )
+    holder.start()
+    assert acquired.wait(timeout=10)
+    monkeypatch.setattr(provenance_hdf5, "_PROCESS_LOCK_TIMEOUT_SECONDS", 0.05)
+    try:
+        with pytest.raises(
+            provenance_hdf5.CrossProcessHDF5LockError, match="acquisition timed out"
+        ) as caught:
+            with provenance_hdf5._process_file_lock(path):
+                pass
+        assert caught.value.path == str(provenance_hdf5._process_lock_path(path))
+    finally:
+        holder.terminate()
+        holder.join(timeout=10)
+
+    with provenance_hdf5._process_file_lock(path):
+        with provenance_hdf5._process_file_lock(path):
+            assert (
+                provenance_hdf5._process_lock_depths()[
+                    provenance_hdf5._process_lock_path(path)
+                ]
+                == 2
+            )
 
 
 def test_provenance_survives_pickle_and_hdf5_roundtrips(tmp_path) -> None:

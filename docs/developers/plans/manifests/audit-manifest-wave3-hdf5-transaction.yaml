@@ -1,0 +1,23 @@
+title: "Wave 3 cross-process HDF5 provenance transaction"
+provenance_head: "1aadd9a2e300bbd959d61139bb27569290978bcc"
+scope:
+  included:
+    - "Spectrogram provenance HDF5 pathname transaction locking"
+    - "bounded fail-closed POSIX lock acquisition and process-exit release"
+    - "EN/JA boundary documentation"
+  preserved:
+    - "GWpy-readable core payloads and canonical provenance sidecars"
+    - "existing same-process rollback, recovery, permissions, and link checks"
+  excluded:
+    - "HDF5 payload or provenance-schema changes"
+    - "distributed or network-filesystem guarantees"
+    - "GitHub state changes, releases, and publication"
+filesystem_assumptions:
+  - "POSIX flock is available and honored by the local filesystem."
+  - "Windows and anonymous file sources fail closed."
+human_review:
+  required: true
+  rationale: "HDF5 persistence and transaction boundary behavior require data-model review."
+verification:
+  - "spawn reader/writer visibility, termination release, timeout, and nesting tests"
+  - "focused provenance regression suite"
