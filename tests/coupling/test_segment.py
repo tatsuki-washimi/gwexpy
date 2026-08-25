@@ -787,6 +787,105 @@ def test_from_result_rejects_segment_endpoint_overflow() -> None:
         from_result(_result(), start_gps_ns=2**63 - 1, duration_ns=1)
 
 
+@pytest.mark.parametrize(
+    ("limit_method", "confidence_level", "optional_columns"),
+    [
+        ("threshold", 0.95, ["limit_method", "confidence_level"]),
+        ("threshold", None, ["limit_method"]),
+        (None, None, []),
+    ],
+)
+def test_measurement_only_from_result_uses_the_requested_optional_shape(
+    limit_method: str | None,
+    confidence_level: float | None,
+    optional_columns: list[str],
+) -> None:
+    from gwexpy.coupling.segment import (
+        from_json_envelope,
+        from_result,
+        to_astropy,
+        to_json_envelope,
+        to_pandas,
+        validate,
+    )
+
+    result = _result()
+    result.cf_ul = None
+    cf_before = result.cf.copy()
+    mask_before = result.valid_mask.copy()
+    table = from_result(
+        result,
+        start_gps_ns=0,
+        duration_ns=1,
+        limit_method=limit_method,
+        confidence_level=confidence_level,
+    )
+
+    assert list(table.columns) == [
+        *_table().columns,
+        "estimate_kind",
+        *optional_columns,
+    ]
+    assert table["estimate_kind"].tolist() == ["measurement"]
+    for name in optional_columns:
+        assert table[name].tolist() == [None]
+
+    pandas_table = to_pandas(table)
+    astropy_table = to_astropy(pandas_table)
+    assert list(astropy_table.colnames) == list(table.columns)
+    for name in optional_columns:
+        assert astropy_table[name].mask.tolist() == [True]
+    restored = from_json_envelope(
+        json.loads(json.dumps(to_json_envelope(astropy_table)))
+    )
+    assert list(restored.columns) == list(table.columns)
+    for name in optional_columns:
+        assert restored[name].tolist() == [None]
+    assert validate(restored) is restored
+    np.testing.assert_array_equal(result.cf.value, cf_before.value)
+    np.testing.assert_array_equal(result.valid_mask, mask_before)
+
+
+@pytest.mark.parametrize(
+    ("limit_method", "confidence_level", "optional_columns"),
+    [
+        ("threshold", 0.95, ["limit_method", "confidence_level"]),
+        ("threshold", None, ["limit_method"]),
+        (None, None, []),
+    ],
+)
+def test_empty_from_results_uses_the_requested_optional_shape(
+    limit_method: str | None,
+    confidence_level: float | None,
+    optional_columns: list[str],
+) -> None:
+    from gwexpy.coupling.segment import (
+        from_json_envelope,
+        from_results,
+        to_astropy,
+        to_json_envelope,
+    )
+
+    table = from_results(
+        {},
+        start_gps_ns=0,
+        duration_ns=1,
+        limit_method=limit_method,
+        confidence_level=confidence_level,
+    )
+
+    assert table.empty
+    assert list(table.columns) == [
+        *_table().columns,
+        "estimate_kind",
+        *optional_columns,
+    ]
+    assert list(to_astropy(table).colnames) == list(table.columns)
+    restored = from_json_envelope(json.loads(json.dumps(to_json_envelope(table))))
+    assert restored.empty
+    assert list(restored.columns) == list(table.columns)
+
+
 def test_from_results_adapts_empty_and_multi_target_mappings() -> None:
     from gwexpy.coupling.segment import from_result, from_results, validate
 

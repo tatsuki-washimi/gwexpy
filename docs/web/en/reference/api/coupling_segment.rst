@@ -33,6 +33,11 @@ not a supported round-trip path. ``from_result`` and ``from_results`` emit
 ``confidence_level`` cells. A legacy empty string is accepted only in those
 two measurement fields, then canonicalized to null by the public adapters and
 JSON envelope; it cannot become a string-valued upper-limit confidence column.
+With neither optional factory argument, result factories retain the minimal
+required-plus-``estimate_kind`` shape. Supplying ``limit_method`` requests that
+column for every row, and supplying a valid ``confidence_level`` requests both;
+measurement cells are ``None`` and empty mappings use the same deterministic
+shape.
 
 JSON and frequency-grid normalization
 -------------------------------------

@@ -389,8 +389,22 @@ def _frequency_grids_match(reference: np.ndarray, candidate: np.ndarray) -> bool
     return bool(np.all(within))
 
 
-def _empty_frame() -> pd.DataFrame:
-    return pd.DataFrame(columns=[*_REQUIRED_COLUMNS, "estimate_kind"])
+def _requested_optional_columns(
+    limit_method: str | None, confidence_level: float | None
+) -> list[str]:
+    """Return the deterministic v1 optional shape requested by a factory call."""
+    columns: list[str] = []
+    if limit_method is not None:
+        columns.append("limit_method")
+    if confidence_level is not None:
+        columns.append("confidence_level")
+    return columns
+
+
+def _empty_frame(optional_columns: Iterable[str] = ()) -> pd.DataFrame:
+    return pd.DataFrame(
+        columns=[*_REQUIRED_COLUMNS, "estimate_kind", *optional_columns]
+    )
 
 
 def _validate_result_options(
@@ -431,8 +445,10 @@ def from_result(
     Valid finite nonnegative measurements are emitted first. A bin that is not
     a valid measurement is emitted as an upper limit only when ``limit_method``
     is supplied and ``result.cf_ul`` contains a finite nonnegative value.
-    Invalid bins are otherwise omitted. The returned frame contains no nulls;
-    non-applicable mixed-kind metadata uses an empty string.
+    Invalid bins are otherwise omitted. Supplying ``limit_method`` requests its
+    column for every emitted row, with ``None`` for measurements; supplying
+    ``confidence_level`` similarly requests that column. Without either
+    argument, the frame uses the established minimal v1 shape.
     """
     if isinstance(result, Mapping):
         raise TypeError("result mappings must be passed to from_results")
@@ -442,6 +458,7 @@ def from_result(
     start, duration = _validate_result_options(
         start_gps_ns, duration_ns, limit_method, confidence_level
     )
+    optional_columns = _requested_optional_columns(limit_method, confidence_level)
 
     cf = result.cf
     cf_values = _series_values(cf, "cf")
@@ -517,21 +534,20 @@ def from_result(
                 }
             )
 
-    frame = pd.DataFrame(rows, columns=[*_REQUIRED_COLUMNS, "estimate_kind"])
-    if frame.empty:
-        return frame
-
+    frame = pd.DataFrame(
+        rows, columns=[*_REQUIRED_COLUMNS, "estimate_kind", *optional_columns]
+    )
     kinds = frame["estimate_kind"].tolist()
-    if any(kind == "upper_limit" for kind in kinds):
+    if "limit_method" in optional_columns:
         frame["limit_method"] = pd.Series(
             [limit_method if kind == "upper_limit" else None for kind in kinds],
             dtype=object,
         )
-        if confidence_level is not None:
-            frame["confidence_level"] = pd.Series(
-                [confidence_level if kind == "upper_limit" else None for kind in kinds],
-                dtype=object,
-            )
+    if "confidence_level" in optional_columns:
+        frame["confidence_level"] = pd.Series(
+            [confidence_level if kind == "upper_limit" else None for kind in kinds],
+            dtype=object,
+        )
 
     validate(frame)
     return frame
@@ -550,11 +566,13 @@ def from_results(
     ``estimate_coupling`` returns one result directly for a single target and a
     mapping for zero or multiple targets.  Use :func:`from_result` for the
     former and this adapter for the latter.  Empty mappings produce an empty,
-    validated v1 frame with its declared columns preserved.
+    validated v1 frame with the same requested optional shape as a populated
+    factory call.
     """
     if not isinstance(results, Mapping):
         raise TypeError("results must be an estimate_coupling result mapping")
     _validate_result_options(start_gps_ns, duration_ns, limit_method, confidence_level)
+    optional_columns = _requested_optional_columns(limit_method, confidence_level)
     if not all(isinstance(key, str) for key in results):
         raise TypeError("results mapping keys must be strings")
     frames = [
@@ -568,13 +586,8 @@ def from_results(
         for _, result in sorted(results.items())
     ]
     if not frames:
-        frame = _empty_frame()
+        frame = _empty_frame(optional_columns)
     else:
-        optional_columns = [
-            name
-            for name in _OPTIONAL_COLUMNS[1:]
-            if any(name in item for item in frames)
-        ]
         normalized_frames = [
             _normalize_optional_columns(item, optional_columns) for item in frames
         ]
@@ -588,11 +601,10 @@ def _normalize_optional_columns(
 ) -> pd.DataFrame:
     """Copy a factory frame with explicit nulls for absent optional metadata.
 
-    ``from_result`` deliberately omits optional columns when a target has no
-    upper-limit rows.  Before heterogeneous factory frames are concatenated,
-    add only optional columns that another target actually emitted and use
-    ``None`` for non-applicable measurement cells.  Normalizing before concat
-    prevents pandas from manufacturing floating ``NaN`` values.
+    Factory arguments determine the canonical optional shape. Before
+    heterogeneous factory frames are concatenated, add each requested optional
+    column and use ``None`` for non-applicable measurement cells. Normalizing
+    before concat prevents pandas from manufacturing floating ``NaN`` values.
     """
     if not optional_columns:
         return frame

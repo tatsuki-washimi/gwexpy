@@ -41,6 +41,14 @@ legacy form to null before conversion. Floating `NaN` is not null metadata and
 is rejected. This preserves absence semantics through pandas, Astropy, and the
 JSON envelope without assigning limit semantics to measurement rows.
 
+The factories always emit `estimate_kind`. With neither `limit_method` nor
+`confidence_level` supplied, they retain the minimal shape of required columns
+plus `estimate_kind`. Supplying `limit_method` requests that optional column on
+every output row, using `None` for measurements. Supplying `confidence_level`
+(which requires `limit_method`) requests both optional columns. The same shape
+rule applies to measurement-only results, heterogeneous mappings, and empty
+`from_results()` mappings, so their JSON envelopes remain deterministic.
+
 ## Units and table representations
 
 `coupling_factor_unit` is the sole persisted authority for every row. A pandas
@@ -106,11 +114,12 @@ are rejected.
 `from_results()` is the typed adapter for zero- or multi-target mappings from
 `estimate_coupling()`. Its mapping keys must be strings and are processed in
 lexicographic key order, so a reversed input mapping produces the same row
-order. Empty mappings produce an empty DataFrame with all v1 columns. When
-only some targets emit upper limits, it adds the relevant optional columns to
-the measurement-only target frames before concatenation and writes explicit
-nulls for their non-applicable cells. Passing a mapping to `from_result()`
-raises a descriptive `TypeError`.
+order. Empty mappings preserve the requested factory shape: the minimal schema
+by default, `limit_method` when supplied, and both optional fields when a valid
+confidence is supplied. When only some targets emit upper limits, requested
+optional columns are present on every target frame before concatenation, with
+explicit nulls for their non-applicable measurement cells. Passing a mapping to
+`from_result()` raises a descriptive `TypeError`.
 
 ## JSON envelope
 
