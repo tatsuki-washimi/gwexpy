@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import os
 from collections.abc import Mapping, Sequence
-from copy import deepcopy
+from dataclasses import dataclass
 from operator import index
 from types import MethodType
 from typing import TYPE_CHECKING, Any, Protocol, cast
@@ -348,29 +349,126 @@ def _install_prevalidated_add_channels_metadata(
     setattr(raw, _GWEX_MEAS_DATE_ATTR, raw.info.get("meas_date"))
 
 
-def _snapshot_raw_add_channels_state(raw: Any) -> dict[str, Any]:
-    """Copy all receiver state needed to roll back MNE's in-place mutation.
+@dataclass
+class _MemmapAddChannelsJournal:
+    """The file state MNE resizes while adding channels to a memmap Raw."""
 
-    The instance-bound guard is intentionally excluded: deep-copying it would
-    retain a method bound to a copied receiver.  It is rebound after restore.
+    data: np.memmap
+    filename: str
+    contents: bytes
+
+
+@dataclass
+class _RawAddChannelsJournal:
+    """References and small mutable values written by MNE Raw.add_channels.
+
+    MNE replaces ``_data``, ``info``, ``_cals``, and ``_read_picks``.  It also
+    updates ``_orig_units`` in place.  Capturing only these fields preserves
+    aliases and leaves arbitrary user attributes alone.  A memmap is the one
+    exception: MNE resizes its backing file, so its contents are journaled.
     """
-    return deepcopy(
-        {name: value for name, value in raw.__dict__.items() if name != "add_channels"}
+
+    data: Any
+    info: Any
+    cals: Any
+    read_picks: Any
+    orig_units: Any
+    orig_units_contents: dict[Any, Any]
+    annotations: Any
+    annotation_orig_time: Any
+    exact_metadata: dict[str, tuple[bool, Any]]
+    memmap: _MemmapAddChannelsJournal | None
+
+
+_EXACT_RAW_METADATA_ATTRS = (
+    _GWEX_T0_GPS_NS_ATTR,
+    _GWEX_CHANNEL_T0_GPS_NS_ATTR,
+    _GWEX_CHANNEL_DT_GPS_NS_ATTR,
+    _GWEX_MEAS_DATE_ATTR,
+)
+
+
+def _snapshot_raw_add_channels_state(raw: Any) -> _RawAddChannelsJournal:
+    """Journal precisely the state MNE and the exact-metadata install mutate."""
+    data = raw._data
+    memmap = None
+    if isinstance(data, np.memmap):
+        data.flush()
+        if data.filename is None:
+            raise ValueError("cannot transactionally add channels to an unnamed memmap")
+        filename = os.fspath(data.filename)
+        with open(filename, "rb") as backing:
+            contents = backing.read()
+        memmap = _MemmapAddChannelsJournal(data, filename, contents)
+    annotations = raw._annotations
+    return _RawAddChannelsJournal(
+        data=data,
+        info=raw.info,
+        cals=raw._cals,
+        read_picks=raw._read_picks,
+        orig_units=raw._orig_units,
+        orig_units_contents=dict(raw._orig_units),
+        annotations=annotations,
+        annotation_orig_time=annotations._orig_time,
+        exact_metadata={
+            name: (name in raw.__dict__, raw.__dict__.get(name))
+            for name in _EXACT_RAW_METADATA_ATTRS
+        },
+        memmap=memmap,
     )
 
 
-def _restore_raw_add_channels_state(raw: Any, state: Mapping[str, Any]) -> None:
-    """Restore a Raw transaction without calling MNE metadata mutators.
+def _restore_memmap_add_channels_state(journal: _MemmapAddChannelsJournal) -> None:
+    """Return MNE's resized memmap file and mapping to their original state."""
+    cast(Any, journal.data.base).resize(len(journal.contents))
+    with open(journal.filename, "r+b") as backing:
+        backing.write(journal.contents)
+        backing.truncate(len(journal.contents))
 
-    This relies only on Raw's normal instance dictionary, rather than MNE's
-    unstable internal update helpers.  ``_install_add_channels_guard`` then
-    creates a method bound to ``raw`` itself, preserving its identity.
+
+def _restore_raw_add_channels_state(raw: Any, state: _RawAddChannelsJournal) -> None:
+    """Restore a Raw journal while continuing after individual restore failures.
+
+    Direct instance-dictionary updates intentionally bypass ``Info._unlock``
+    and ``Annotations.__setattr__``: either may be the operation that failed.
+    The narrow ``__dict__`` dependency is preferable to MNE's private mutable
+    update helpers and keeps the receiver object and its aliases intact.
     """
-    raw.__dict__.clear()
-    raw.__dict__.update(state)
-    raw.__dict__.pop("add_channels", None)
-    raw.__dict__.pop("_gwex_exact_add_channels_guard", None)
-    _install_add_channels_guard(raw)
+    errors: list[BaseException] = []
+
+    def restore(action: Any) -> None:
+        try:
+            action()
+        except BaseException as error:
+            errors.append(error)
+
+    if state.memmap is not None:
+        restore(lambda: _restore_memmap_add_channels_state(state.memmap))
+    restore(lambda: raw.__dict__.__setitem__("_data", state.data))
+    restore(lambda: raw.__dict__.__setitem__("info", state.info))
+    restore(lambda: raw.__dict__.__setitem__("_cals", state.cals))
+    restore(lambda: raw.__dict__.__setitem__("_read_picks", state.read_picks))
+    restore(lambda: raw.__dict__.__setitem__("_orig_units", state.orig_units))
+    restore(lambda: state.orig_units.clear())
+    restore(lambda: state.orig_units.update(state.orig_units_contents))
+    restore(lambda: raw.__dict__.__setitem__("_annotations", state.annotations))
+    restore(
+        lambda: state.annotations.__dict__.__setitem__(
+            "_orig_time", state.annotation_orig_time
+        )
+    )
+    for name, (present, value) in state.exact_metadata.items():
+        if present:
+            restore(
+                lambda name=name, value=value: raw.__dict__.__setitem__(name, value)
+            )
+        else:
+            restore(lambda name=name: raw.__dict__.pop(name, None))
+    restore(lambda: raw.__dict__.pop("add_channels", None))
+    restore(lambda: raw.__dict__.pop("_gwex_exact_add_channels_guard", None))
+    restore(lambda: _install_add_channels_guard(raw))
+    if errors:
+        raise BaseExceptionGroup("Raw.add_channels rollback failed", errors)
 
 
 def _install_add_channels_guard(raw: Any) -> None:

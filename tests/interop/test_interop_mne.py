@@ -2,6 +2,7 @@
 
 import copy
 import datetime
+import threading
 from types import SimpleNamespace
 from typing import Any
 
@@ -71,6 +72,24 @@ def _assert_raw_state_restored(raw: Any, state: dict[str, Any]) -> None:
     assert guard is not None
     assert guard.__self__ is raw
     _assert_semantically_equal(actual, state)
+
+
+def _raw_add_channels_aliases(raw: Any) -> dict[str, Any]:
+    """Capture objects whose identity must survive a failed transaction."""
+    return {
+        "info": raw.info,
+        "_annotations": raw._annotations,
+        "_data": raw._data,
+        "_cals": raw._cals,
+        "_read_picks": raw._read_picks,
+        "_orig_units": raw._orig_units,
+        "_gwex_test_external": raw._gwex_test_external,
+    }
+
+
+def _assert_raw_add_channels_aliases(raw: Any, aliases: dict[str, Any]) -> None:
+    for name, value in aliases.items():
+        assert getattr(raw, name) is value
 
 
 def _make_ts(n=100, name="test"):
@@ -481,6 +500,8 @@ class TestFromMneRaw:
                 np.full(8, 2.0), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="b"
             )
         )
+        receiver._gwex_test_external = {"shared": [1]}
+        aliases = _raw_add_channels_aliases(receiver)
         original_state = _snapshot_raw_state(original)
         receiver_state = _snapshot_raw_state(receiver)
 
@@ -495,6 +516,7 @@ class TestFromMneRaw:
             receiver.add_channels([incoming])
 
         _assert_raw_state_restored(receiver, receiver_state)
+        _assert_raw_add_channels_aliases(receiver, aliases)
         _assert_raw_state_restored(original, original_state)
 
         monkeypatch.undo()
@@ -522,6 +544,8 @@ class TestFromMneRaw:
                 np.full(8, 2.0), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="b"
             )
         )
+        receiver._gwex_test_external = {"shared": [1]}
+        aliases = _raw_add_channels_aliases(receiver)
         original_state = _snapshot_raw_state(original)
         receiver_state = _snapshot_raw_state(receiver)
         concatenate = mne_channels.np.concatenate
@@ -540,7 +564,118 @@ class TestFromMneRaw:
 
         assert calls == 2
         _assert_raw_state_restored(receiver, receiver_state)
+        _assert_raw_add_channels_aliases(receiver, aliases)
         _assert_raw_state_restored(original, original_state)
+
+    def test_add_channels_preserves_aliases_when_first_mne_concatenate_fails(
+        self, monkeypatch
+    ):
+        receiver = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="a")
+        )
+        incoming = to_mne_rawarray(
+            TimeSeries(
+                np.full(8, 2.0), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="b"
+            )
+        )
+        receiver._gwex_test_external = {"shared": [1]}
+        aliases = _raw_add_channels_aliases(receiver)
+        state = _snapshot_raw_state(receiver)
+        concatenate = mne_channels.np.concatenate
+
+        def fail_first_concatenate(*args, **kwargs):
+            raise RuntimeError("injected first concatenate failure")
+
+        monkeypatch.setattr(mne_channels.np, "concatenate", fail_first_concatenate)
+        with pytest.raises(RuntimeError, match="first concatenate"):
+            receiver.add_channels([incoming])
+
+        _assert_raw_state_restored(receiver, state)
+        _assert_raw_add_channels_aliases(receiver, aliases)
+        monkeypatch.undo()
+        assert concatenate is mne_channels.np.concatenate
+
+    def test_add_channels_preserves_aliases_when_preflight_fails(self, monkeypatch):
+        receiver = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="a")
+        )
+        incoming = to_mne_rawarray(
+            TimeSeries(
+                np.full(8, 2.0), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="b"
+            )
+        )
+        receiver._gwex_test_external = {"shared": [1]}
+        aliases = _raw_add_channels_aliases(receiver)
+        state = _snapshot_raw_state(receiver)
+
+        def fail_preflight(raw, add_list):
+            raise RuntimeError("injected preflight failure")
+
+        monkeypatch.setattr(mne_interop, "_preflight_add_channels", fail_preflight)
+        with pytest.raises(RuntimeError, match="preflight"):
+            receiver.add_channels([incoming])
+
+        _assert_raw_state_restored(receiver, state)
+        _assert_raw_add_channels_aliases(receiver, aliases)
+
+    def test_add_channels_ignores_non_deepcopyable_custom_attributes(self):
+        receiver = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="a")
+        )
+        incoming = to_mne_rawarray(
+            TimeSeries(
+                np.full(8, 2.0), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="b"
+            )
+        )
+        lock = threading.Lock()
+        receiver._gwex_test_external = lock
+
+        receiver.add_channels([incoming])
+
+        assert receiver._gwex_test_external is lock
+        assert receiver.ch_names == ["a", "b"]
+
+    def test_add_channels_restores_memmap_backing_file_after_calibration_failure(
+        self, monkeypatch, tmp_path
+    ):
+        receiver = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="a")
+        )
+        incoming = to_mne_rawarray(
+            TimeSeries(
+                np.full(8, 2.0), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="b"
+            )
+        )
+        backing = tmp_path / "raw.memmap"
+        data = np.memmap(backing, dtype=np.float64, mode="w+", shape=(1, 8))
+        data[:] = receiver._data
+        data.flush()
+        receiver._data = data
+        receiver._gwex_test_external = {"shared": [1]}
+        aliases = _raw_add_channels_aliases(receiver)
+        state = _snapshot_raw_state(receiver)
+        original_bytes = backing.read_bytes()
+        original_size = backing.stat().st_size
+        concatenate = mne_channels.np.concatenate
+
+        def fail_calibration_concatenate(*args, **kwargs):
+            assert receiver.ch_names == ["a", "b"]
+            assert receiver._data.shape == (2, 8)
+            raise RuntimeError("injected calibration concatenate failure")
+
+        monkeypatch.setattr(
+            mne_channels.np, "concatenate", fail_calibration_concatenate
+        )
+        with pytest.raises(RuntimeError, match="calibration concatenate"):
+            receiver.add_channels([incoming])
+
+        _assert_raw_state_restored(receiver, state)
+        _assert_raw_add_channels_aliases(receiver, aliases)
+        assert str(receiver._data.filename) == str(backing)
+        assert backing.stat().st_size == original_size
+        assert backing.read_bytes() == original_bytes
+        monkeypatch.undo()
+        assert concatenate is mne_channels.np.concatenate
 
     @pytest.mark.parametrize("failure", ["unlock", "annotations"])
     def test_add_channels_restores_state_when_meas_date_installation_fails(
@@ -554,6 +689,8 @@ class TestFromMneRaw:
         incoming = to_mne_rawarray(
             TimeSeries(np.full(8, 2.0), t0=1_000_000_000, dt=0.01, name="legacy")
         )
+        receiver._gwex_test_external = {"shared": [1]}
+        aliases = _raw_add_channels_aliases(receiver)
         state = _snapshot_raw_state(receiver)
 
         if failure == "unlock":
@@ -587,6 +724,7 @@ class TestFromMneRaw:
             receiver.add_channels([incoming])
 
         _assert_raw_state_restored(receiver, state)
+        _assert_raw_add_channels_aliases(receiver, aliases)
 
     @pytest.mark.parametrize("clone_factory", [lambda raw: raw.copy(), copy.deepcopy])
     def test_copied_cropped_receiver_rebases_exact_metadata(self, clone_factory):
