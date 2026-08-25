@@ -217,11 +217,41 @@ lanes:
    resolves the latest available GWpy 4.x and must run the focused proxy,
    table, LAL, and GWF boundary tests.
 
-The implementation may add the focused tests to that existing workflow but
-must not create a release workflow or mutate GitHub state. The audit records
-the exact resolved GWpy version for each lane. If the latest-4.x lane is not
-locally available, local evidence is marked unavailable rather than inferred;
-the CI lane remains required before merge.
+The implementation updates that existing workflow as follows; it must not
+create a release workflow or mutate remote GitHub state.
+
+- Add `gwexpy/table/**`, `tests/table/**`, `tests/interop/**`,
+  `tests/test_gwpy4_proxy_contract.py`, and
+  `docs/developers/contracts/public_io_contract.*` to the pull-request path
+  filters. Existing `gwexpy/timeseries/**`, `gwexpy/io/**`, `gwexpy/utils/**`,
+  `tests/timeseries/**`, dependency, and workflow-self triggers remain.
+- Install `lalsuite` in the compatibility environment after the base/latest
+  GWpy 4.x dependencies. LAL is an optional GWexpy `gw` dependency, but this
+  lane must exercise the retained `gwexpy.utils.lal` proxy rather than skip it.
+- Add this exact command to the focused compatibility step before the existing
+  full `tests/timeseries` invocation:
+
+  ```bash
+  pytest -q \
+    tests/test_gwpy4_proxy_contract.py \
+    tests/table/test_table.py \
+    tests/interop/test_interop_lal.py
+  ```
+
+  `tests/test_gwpy4_proxy_contract.py` contains the exact curated surfaces,
+  corrected symbol owners, deleted-module behavior, generic-GWF boundary, and
+  lazy FrameL absence/forwarding contracts. The existing full
+  `tests/timeseries` command remains mandatory and supplies the surrounding
+  GWF dispatch regression coverage.
+
+Add a workflow contract regression that parses
+`.github/workflows/test-compat-gwpy.yml` and requires the path filters,
+`lalsuite` provisioning, and all three focused test paths above. This prevents
+the declared latest-4.x lane from silently losing the new compatibility gate.
+
+The audit records the exact resolved GWpy and LALSuite versions for each lane.
+If the latest-4.x lane is not locally available, local evidence is marked
+unavailable rather than inferred; the CI lane remains required before merge.
 
 An unrelated failure must be recorded with a baseline reproduction. It must not be relabeled as pass or hidden by collection exclusions.
 
