@@ -1,0 +1,47 @@
+integration: v0.2.0-approved-heads
+branch: agent/v020-integration
+baseline:
+  head: {command: "rtk git rev-parse HEAD", status: pass, result: "6bca889a7b719f49be4f535f360b7dd63f613283"}
+  branch: {command: "rtk git branch --show-current", status: pass, result: "agent/v020-integration"}
+  status: {command: "rtk git status --porcelain=v1", status: pass, result: "only docs/superpowers/plans/2026-08-25-v020-approved-heads-integration.md was untracked"}
+  original_worktree_before: {command: "rtk git -C /home/washimi/work/gwexpy status --porcelain=v1", status: pass, result: "captured 4 modified paths and 3 untracked paths"}
+  import: {command: "rtk env PYTHONPATH=$PWD PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -c 'import gwexpy; gwexpy.register_all()'", status: pass, result: "bootstrap-import-ok"}
+approved_heads:
+  ancestry: {command: "rtk git merge-base --is-ancestor <base> <head>", status: pass, result: "all five listed bases are ancestors; all five approved heads are ancestors of final HEAD"}
+  ranges: {command: "rtk git log --reverse --format='%H %s' <base>..<head>", status: pass, result: "GPS=11, HDF5=21, GWF=8, Coupling=9, B0=13 commits recorded before integration"}
+cherry_picks:
+  plan: {command: "rtk git add docs/superpowers/plans/2026-08-25-v020-approved-heads-integration.md && rtk git commit -m 'docs(plan): record v0.2 approved-heads integration'", status: pass, result: "37c1678"}
+  gps: {command: "rtk git cherry-pick b232c53b..5f64fbd9 (explicit chronological list)", status: pass, result: "11 commits; no conflicts"}
+  hdf5: {command: "rtk git cherry-pick 5afc0655..e8bbab00 (explicit chronological list)", status: pass, result: "21 commits; one tests/io/test_pickle_compat.py conflict"}
+  hdf5_conflict: {command: "apply_patch tests/io/test_pickle_compat.py; rtk git cherry-pick --continue", status: pass, result: "preserved exact-GPS pickle epoch test and provenance-free GWpy-only Spectrogram pickle test"}
+  gwf: {command: "rtk git cherry-pick 565b3950..fdfadf6b (explicit chronological list)", status: pass, result: "8 commits; one gwexpy/timeseries/timeseries.py conflict"}
+  gwf_conflict: {command: "apply_patch gwexpy/timeseries/timeseries.py; rtk git cherry-pick --continue", status: pass, result: "preserved GPS Literal and GWF cast/signature imports"}
+  gwf_marker_repair: {command: "apply_patch; rtk git commit -m 'fix(integration): remove GWF conflict marker'", status: pass, result: "022568c; removed accidental unresolved marker only"}
+  coupling: {command: "rtk git cherry-pick 78984326..73f4bbfc (explicit chronological list)", status: pass, result: "9 commits; no conflicts"}
+  seriesmatrix_b0: {command: "rtk git cherry-pick 906b1b7a..c7890cbc (explicit chronological list)", status: pass, result: "13 commits; no conflicts; B1 not adopted"}
+verification:
+  gps_mne_pickle: {command: "rtk env PYTHONPATH=$PWD ... pytest -q tests/timeseries/test_exact_gps_epoch.py tests/interop/test_interop_mne.py::TestToMneRawArray tests/interop/test_interop_mne.py::TestFromMneRaw tests/interop/test_interop_mne.py::TestMeasDateContract tests/io/test_pickle_compat.py tests/io/test_pickle_direct_io.py", status: pass, result: "28 + 18 + 69 + 11 + 2 tests passed"}
+  import_order_shard: {command: "rtk env PYTHONPATH=$PWD ... pytest -q tests/test_import_order.py::TestImportOrderIsolated::test_registry_populated_via_parent_import tests/test_import_order.py::TestRegistryBehavior", status: pass, result: "1 + 4 tests passed"}
+  import_order_initial: {command: "rtk env PYTHONPATH=$PWD ... pytest -q tests/test_import_order.py", status: timeout, result: "partial progress only", reason: "execution harness stopped the command at 30 seconds before pytest completion; below plan's 180-second in-command bound"}
+  invalid_test_path: {command: "rtk env PYTHONPATH=$PWD ... pytest -q ... tests/test_bootstrap.py", status: fail, result: "file not found", reason: "initial focused test selection used a non-existent path; corrected with actual import-order nodes"}
+  coupling: {command: "rtk env PYTHONPATH=$PWD ... pytest -q tests/coupling/test_segment.py tests/analysis/test_coupling.py tests/analysis/test_coupling_analysis.py", status: pass, result: "141 passed"}
+  seriesmatrix_manifest: {command: "rtk env PYTHONPATH=$PWD ... pytest -q tests/types/test_series_matrix_contract_manifest.py", status: pass, result: "37 passed"}
+  seriesmatrix_combined: {command: "rtk env PYTHONPATH=$PWD ... pytest -q tests/types/test_series_matrix_contract_manifest.py tests/types/test_series_matrix_benchmark_contract.py tests/types/test_series_matrix_indexing.py tests/types/test_series_matrix_structure.py", status: timeout, result: "manifest shard passed; later shard incomplete", reason: "execution harness stopped the command at 30 seconds before pytest completion"}
+  gwf_contract_shard: {command: "rtk env PYTHONPATH=$PWD ... pytest -q tests/timeseries/test_gwf_parallel_contract.py", status: pass, result: "37 passed"}
+  hdf5_provenance: {command: "rtk env PYTHONPATH=$PWD ... pytest -q tests/spectrogram/test_provenance.py tests/docs/test_wave3_hdf5_transaction_manifest.py tests/docs/test_coupling_segment_docs.py", status: timeout, result: "partial progress only", reason: "execution harness stopped the command at 30 seconds before pytest completion"}
+  ruff_check: {command: "rtk env PYTHONPATH=$PWD ruff check gwexpy tests", status: pass, result: "All checks passed"}
+  ruff_format: {command: "rtk env PYTHONPATH=$PWD ruff format --check gwexpy tests", status: fail, result: "tests/docs/test_root_roadmap_contract.py would be reformatted", reason: "known unrelated baseline discrepancy; not changed"}
+  mypy: {command: "rtk env PYTHONPATH=$PWD mypy gwexpy/", status: pass, result: "Success: no issues found in 398 source files"}
+  diff_check: {command: "rtk git diff --check", status: pass, result: "no whitespace errors"}
+  broad_pytest: {command: "rtk env PYTHONPATH=$PWD PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 MPLCONFIGDIR=/tmp/gwexpy-v020-integration-mpl pytest -q", status: timeout, result: "progress reached 2%", reason: "execution harness stopped the command at 30 seconds before pytest completion"}
+  sphinx_en: {command: "rtk env PYTHONPATH=$PWD python -m sphinx -W --keep-going -b html -D language=en docs /tmp/gwexpy-v020-integration-docs-en", status: timeout, result: "source reading reached 39%", reason: "execution harness stopped the command at 30 seconds before completion"}
+  sphinx_en_serial: {command: "rtk env PYTHONPATH=$PWD python -m sphinx -W --keep-going -j 1 -b html -D language=en docs /tmp/gwexpy-v020-integration-docs-en-serial", status: timeout, result: "source reading reached 39%", reason: "execution harness stopped the retry at 30 seconds before completion"}
+  sphinx_ja: {command: "rtk env PYTHONPATH=$PWD python -m sphinx -W --keep-going -b html -D language=ja docs /tmp/gwexpy-v020-integration-docs-ja", status: timeout, result: "source reading reached 39%", reason: "execution harness stopped the command at 30 seconds before completion"}
+  sphinx_ja_serial: {command: "rtk env PYTHONPATH=$PWD python -m sphinx -W --keep-going -j 1 -b html -D language=ja docs /tmp/gwexpy-v020-integration-docs-ja-serial", status: timeout, result: "source reading reached 42%", reason: "execution harness stopped the retry at 30 seconds before completion"}
+  doctest: {command: "rtk env PYTHONPATH=$PWD PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 MPLCONFIGDIR=/tmp/gwexpy-v020-integration-mpl pytest -q --doctest-modules gwexpy", status: skipped, result: "not launched", reason: "preceding timed-out Sphinx command in chained invocation prevented execution; no remaining harness budget for a standalone bounded run"}
+human_gates:
+  coupling_physics: {command: "record scope", status: skipped, result: "no new formula review claimed", reason: "human physics/data-model judgment remains outside integration authority"}
+  seriesmatrix_d21: {command: "rtk rg -n 'adopted: false|480|478|D21|pending|proposed' ...", status: pass, result: "480 current; 478 superseded history; D21 pending; B1 adopted:false"}
+final:
+  original_worktree_after: {command: "rtk git -C /home/washimi/work/gwexpy status --porcelain=v1", status: pass, result: "byte-for-byte identical to baseline capture"}
+  pre_audit_commit_status: {command: "rtk git status --porcelain=v1", status: pass, result: "only ?? docs/developers/plans/manifests/audit-manifest-v020-approved-heads-integration.yaml"}
