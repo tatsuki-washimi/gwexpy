@@ -278,13 +278,12 @@ def _normalize_gwf_gap_options(pad: Any, gap: Any) -> tuple[Any, Any]:
 
 _GWF_PARALLEL_WORKER_CAP = 8
 _GWF_URI_SCHEME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
-_GWF_URI_ANYWHERE_RE = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://")
+_GWF_URI_TOKEN_RE = re.compile(r"(?:^|[\s+|;@])[A-Za-z][A-Za-z0-9+.-]*:")
 _GWF_WINDOWS_DRIVE_RE = re.compile(r"^[A-Za-z]:[\\/]")
 _GWF_COMPOSITE_COMPONENT_RE = re.compile(
     r"\.gwf(?:[+|;@]|\s+).*?\.gwf",
     flags=re.IGNORECASE,
 )
-_GWF_CACHE_NUMBER_RE = re.compile(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)")
 _GWF_PERCENT_ESCAPE_RE = re.compile(r"%[0-9A-Fa-f]{2}")
 _GWF_PARALLEL_PATH_MAX_LENGTH = 4096
 _GWF_PERCENT_DECODE_ROUNDS = 4
@@ -365,14 +364,18 @@ def _decode_gwf_path_for_validation(text: str) -> str | None:
 
 
 def _looks_like_ligo_cache_record(text: str) -> bool:
-    """Return whether *text* is one standard five-field LIGO cache record."""
+    """Return whether *text* is a cache-shaped three-to-five-token GWF record.
+
+    LAL permits optional segment fields and uses its own numeric parser, so
+    keeping a narrower local numeric grammar would let valid cache entries
+    through. Incomplete cache-shaped lines fail closed too. Existing regular
+    files are accepted before this conservative ambiguity check is applied.
+    """
     fields = text.split()
-    if len(fields) != 5:
-        return False
     return bool(
-        _GWF_CACHE_NUMBER_RE.fullmatch(fields[2])
-        and _GWF_CACHE_NUMBER_RE.fullmatch(fields[3])
-        and fields[4].lower().endswith(".gwf")
+        3 <= len(fields) <= 5
+        and fields[-1].lower().endswith(".gwf")
+        and all("/" not in field and "\\" not in field for field in fields[:2])
     )
 
 
@@ -381,21 +384,24 @@ def _is_local_gwf_frame_path_syntax(text: str) -> bool:
     decoded = _decode_gwf_path_for_validation(text)
     if decoded is None or any(character in decoded for character in "\x00\n\r?#*[]{},"):
         return False
-    if _GWF_URI_ANYWHERE_RE.search(decoded) or _looks_like_ligo_cache_record(decoded):
+    if not decoded.lower().endswith(".gwf"):
         return False
 
     is_windows_path = bool(_GWF_WINDOWS_DRIVE_RE.match(decoded)) or decoded.startswith(
         (r"\\", "//")
     )
-    if not is_windows_path and _GWF_URI_SCHEME_RE.match(decoded):
-        return False
-    if not decoded.lower().endswith(".gwf"):
-        return False
 
     # A real local regular file (including a symlink to one) is unambiguous.
     # Its original spelling is still passed to the resolver and worker.
     if os.path.isfile(decoded):
         return True
+
+    if _looks_like_ligo_cache_record(decoded):
+        return False
+    if not is_windows_path and (
+        _GWF_URI_SCHEME_RE.match(decoded) or _GWF_URI_TOKEN_RE.search(decoded)
+    ):
+        return False
 
     separators = r"[\\/]" if is_windows_path else "/"
     return not any(

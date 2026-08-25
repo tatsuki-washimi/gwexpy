@@ -705,9 +705,23 @@ def test_all_public_readers_reject_nonlocal_parallel_sources_before_backend(
         "H TEST 100 1 file:///tmp/H-X-100-1.gwf",
         "H TEST 100 1 https://frames.example.test/H-X-100-1.gwf",
         "H%20TEST%20100%201%20file:///tmp/H-X-100-1.gwf",
+        "H TEST 1e3 1e0 /tmp/x.gwf",
+        "H\tTEST\t+1.25e-3\t-2.5E+4\tfile:///tmp/x.gwf",
+        "H TEST - - /tmp/x.gwf",
+        "H TEST malformed duration /tmp/x.gwf",
+        "H TEST /tmp/x.gwf",
+        "H TEST 1 /tmp/x.gwf",
+        "H TEST 1 2 file:/tmp/x.gwf",
+        "H TEST 1 2 file:x.gwf",
+        "H TEST 1 2 http:/host/x.gwf",
         "H TEST 100 1 file:///tmp/H-X-100-1.gwf\n",
         "H TEST 100 1 /tmp/H-X-100-1.gwf\nH TEST 101 1 /tmp/H-X-101-1.gwf",
         "a.gwf+file:///tmp/H-X-100-1.gwf",
+        "prefix file:/tmp/x.gwf",
+        "prefix file:x.gwf",
+        "prefix http:/host/x.gwf",
+        "prefix%20file%3A%2Ftmp%2Fx.gwf",
+        "prefix%20file%3Ax.gwf",
         ["a.gwf", "b.gwf"],
         ("a.gwf", "b.gwf"),
         {"cache": ["a.gwf", "b.gwf"]},
@@ -745,6 +759,24 @@ def test_all_public_readers_reject_composite_parallel_sources_before_work(
 
 
 @pytest.mark.parametrize(
+    "record",
+    [
+        "H TEST 1e3 1e0 /tmp/x.gwf",
+        "H TEST - - /tmp/x.gwf",
+        "H TEST +1.25e-3 -2.5E+4 file:///tmp/x.gwf",
+        "H TEST 1 2 file:/tmp/x.gwf",
+        "H TEST 1 2 file:x.gwf",
+    ],
+)
+def test_lal_cache_oracle_records_are_rejected_when_available(record) -> None:
+    """Use LAL only as an optional oracle, never as the implementation parser."""
+    cache_entry = pytest.importorskip("lal.utils").CacheEntry
+
+    assert cache_entry(record).url
+    assert not gwf_io._is_filesystem_path(record)
+
+
+@pytest.mark.parametrize(
     "source",
     [
         "relative/K1-test-0-1.gwf",
@@ -777,6 +809,28 @@ def test_parallel_source_preflight_accepts_regular_file_and_symlink(tmp_path) ->
     assert gwf_io._is_filesystem_path(link)
     assert gwf_io._is_filesystem_path(os.fsencode(nested))
     assert gwf_io._is_filesystem_path(_StringPath(str(nested)))
+
+
+def test_parallel_source_preflight_prefers_existing_local_paths_to_cache_grammar(
+    tmp_path,
+) -> None:
+    """Existing local paths with cache/URI-looking tokens remain usable."""
+    cache_named = tmp_path / "H TEST 1e3 1e0 local.gwf"
+    cache_named.touch()
+    uri_named = tmp_path / "prefix file:x.gwf"
+    uri_named.touch()
+    scientific = tmp_path / "1e3 directory" / "frame name.gwf"
+    scientific.parent.mkdir()
+    scientific.touch()
+
+    for source in (
+        cache_named,
+        uri_named,
+        scientific,
+        os.fsencode(scientific),
+        _StringPath(str(scientific)),
+    ):
+        assert gwf_io._is_filesystem_path(source)
 
 
 @pytest.mark.parametrize(

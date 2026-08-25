@@ -243,3 +243,28 @@ the worker path and filename spans remain scheduling-only.
 - [x] **Step 4: Update EN/JA docs and audit evidence; run focused/native/broad
   tests, Ruff/import-order/format, MyPy, YAML, diff checks, and one local
   Conventional Commit.**
+
+### Task 13: Sol LAL cache grammar and token-URI remediation
+
+**Goal:** Reject every valid (and cache-shaped malformed) LAL cache source and
+URI scheme token before multi-worker GWF scheduling, without rejecting an
+existing local regular path whose filename contains spaces or colon text.
+
+**Architecture:** Keep decoding bounded. After basic local-path checks and
+suffix validation, accept a real local regular file or symlink using its
+original source spelling. For unresolved spellings, fail closed on any
+five-field cache-shaped GWF line (so LAL optional/exponent segment forms and
+malformed variants are covered without a runtime LAL dependency) and on URI
+schemes at start/whitespace/list-delimiter boundaries, including `file:` forms
+without `//`. Retain Windows-drive and UNC structural exemptions.
+
+- [x] **Step 1: Add four-reader RED sentinel tests** for both aliases covering
+  LAL scientific, signed, absent, and malformed segment fields; file/HTTP URI
+  tokens with and without `//`; percent encodings; and valid local counters.
+- [x] **Step 2: Add an optional direct `lal.utils.CacheEntry` oracle test** to
+  prove the valid cache examples are accepted by LAL when it is installed.
+- [x] **Step 3: Implement existing-file-first, cache-shape, and token-boundary
+  URI preflight checks; rerun the focused tests GREEN.**
+- [x] **Step 4: Update EN/JA docs and audit evidence, then run focused, native,
+  broad, Ruff/import-order/format, MyPy, YAML, and diff checks before one local
+  Conventional Commit.**
