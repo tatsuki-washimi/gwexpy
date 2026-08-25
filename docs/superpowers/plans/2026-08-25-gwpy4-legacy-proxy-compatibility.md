@@ -85,12 +85,16 @@ Run:
 ```bash
 rtk git status --short
 rtk git rev-parse HEAD
-rtk git remote -v
-rtk git config --get-regexp '^remote\.'
+rtk run -c 'git remote -v > /tmp/gwexpy-v020-proxy-remote-v.baseline && sha256sum /tmp/gwexpy-v020-proxy-remote-v.baseline'
+rtk run -c 'git config --get-regexp "^remote\." > /tmp/gwexpy-v020-proxy-remote-config.baseline && sha256sum /tmp/gwexpy-v020-proxy-remote-config.baseline'
 rtk run -c 'git -C /home/washimi/work/gwexpy status --porcelain=v1 | sha256sum'
 ```
 
 Expected: integration status is empty; HEAD contains this committed plan; original dirty-worktree hash remains `ba596e14b056730df2ec95a41920b8a2845d52ee42e930e0cc73811fc2b98dfc`.
+Record the two baseline files' SHA-256 values under the manifest fields
+`baseline_remote_v_sha256` and `baseline_remote_config_sha256`. Preserve the
+files until the final comparison; if either command has no output, preserve
+and hash the resulting empty file rather than substituting prose.
 
 - [ ] **Step 2: Write exact proxy-surface and owner tests**
 
@@ -270,13 +274,16 @@ def test_latest_gwpy_proxy_gate_is_wired() -> None:
         assert test_path in old_focused
 
     proxy_step = by_name["Run GWpy 4 proxy compatibility tests"]
-    expected_proxy_paths = (
-        "tests/test_gwpy4_proxy_contract.py",
-        "tests/table/test_table.py",
-        "tests/interop/test_interop_lal.py",
+    expected_proxy_command = " ".join(
+        (
+            "pytest -q",
+            "tests/test_gwpy4_proxy_contract.py",
+            "tests/table/test_table.py",
+            "tests/interop/test_interop_lal.py",
+        )
     )
-    assert proxy_step["run"].count("pytest -q") == 1
-    assert all(path in proxy_step["run"] for path in expected_proxy_paths)
+    normalized_proxy_command = " ".join(proxy_step["run"].split())
+    assert normalized_proxy_command == expected_proxy_command
 
     full_index = next(
         index for index, step in enumerate(steps)
@@ -495,8 +502,19 @@ that checks `has_gwf_backend("framel")`. When unavailable it calls
 `os.environ.get("GWEXPY_REQUIRE_GWF_FRAMEL") == "1"`. Use that helper in the
 real explicit `format="gwf.framel"` read test. Add unit tests proving all three
 branches: default missing backend skips, required missing backend fails, and
-available backend continues. No production environment-variable branch is
-added.
+available backend continues. The required-missing unit test must wrap the
+helper with `pytest.raises(pytest.fail.Exception)`; it is a passing unit test,
+not an intentionally failing test in the default lane. No production
+environment-variable branch is added.
+
+Also add a parent-process contract in `tests/test_gwpy4_proxy_contract.py`
+that launches exactly
+`tests/timeseries/test_io_gwf_timeseriesdict.py::test_read_gwf_timeseries_with_single_channel_by_format_gwf`
+in a subprocess with `GWEXPY_REQUIRE_GWF_FRAMEL=1`. If
+`has_gwf_backend("framel")` is true, require subprocess exit status `0`; if
+false, require exit status `1` and the helper's required-backend diagnostic in
+combined stdout/stderr. This proves the CLI gate without making the
+parent/default pytest invocation fail.
 
 - [ ] **Step 4: Run focused and adjacent GWF tests**
 
@@ -504,14 +522,15 @@ added.
 rtk run -c 'PYTHONPATH=$PWD pytest -q tests/test_gwpy4_proxy_contract.py -k "framel or generic_gwf"'
 rtk run -c 'PYTHONPATH=$PWD pytest -q tests/io/test_io_contract.py tests/io/test_io_docs_contract_sync.py'
 rtk run -c 'PYTHONPATH=$PWD pytest -q tests/timeseries/test_io_gwf_timeseriesdict.py tests/timeseries/test_io_gwf_framel.py'
-rtk run -c 'PYTHONPATH=$PWD GWEXPY_REQUIRE_GWF_FRAMEL=1 pytest -q tests/timeseries/test_io_gwf_timeseriesdict.py -k framel'
+rtk run -c 'PYTHONPATH=$PWD pytest -q tests/test_gwpy4_proxy_contract.py -k required_framel_subprocess_contract'
 ```
 
 Expected: lazy import/boundary, helper-unit, and contract tests PASS. Explicit
 real FrameL tests PASS when installed or SKIP under the default policy. The
-required-gate command PASSes when FrameL is installed; when absent, it returns
-the intentional required-gate failure and that nonzero result is recorded as
-contract evidence, not relabeled as a passing release gate.
+parent subprocess-contract test always PASSes by asserting the child status:
+child `0` when FrameL is installed, or intentional child `1` with the exact
+required-backend diagnostic when absent. Record both parent and child statuses
+in the audit manifest; never relabel the child `1` as a passing release gate.
 
 - [ ] **Step 5: Commit the FrameL/GWF slice**
 
@@ -657,6 +676,22 @@ rtk git commit -m "refactor(utils): remove obsolete GWpy developer proxies"
 - [ ] **Step 1: Add exact workflow triggers and LAL provisioning**
 
 Add these PR paths: `gwexpy/table/**`, `tests/table/**`, `tests/interop/**`, `tests/test_gwpy4_proxy_contract.py`, and `docs/developers/contracts/public_io_contract.*`. Add `python -m pip install lalsuite` after latest-GWpy provisioning.
+Add a named `Record compatibility versions` step immediately after
+provisioning with this exact read-only command so the latest-4.x job log is
+auditable:
+
+```bash
+python - <<'PY'
+from importlib.metadata import version
+
+print("gwpy=" + version("gwpy"))
+print("lalsuite=" + version("lalsuite"))
+PY
+```
+
+Extend `tests/docs/test_gwpy4_proxy_workflow.py` to normalize this step's
+whitespace and require both `version("gwpy")` and `version("lalsuite")`, in
+addition to the provisioning and focused-test assertions below.
 
 - [ ] **Step 2: Add the exact focused command**
 
@@ -697,6 +732,12 @@ FrameL behavior. Assert the canonical pages remain explicitly linked from
 both locale roots and reference indexes:
 
 ```python
+ROOT = Path(__file__).resolve().parents[2]
+EN_INDEX = ROOT / "docs/web/en/index.rst"
+EN_REFERENCE = ROOT / "docs/web/en/reference/index.rst"
+JA_INDEX = ROOT / "docs/web/ja/index.rst"
+JA_REFERENCE = ROOT / "docs/web/ja/reference/index.rst"
+
 assert "user_guide/gwexpy_for_gwpy_users_en" in EN_INDEX.read_text()
 assert "../user_guide/gwexpy_for_gwpy_users_en" in EN_REFERENCE.read_text()
 assert "user_guide/gwexpy_for_gwpy_users_ja" in JA_INDEX.read_text()
@@ -735,8 +776,24 @@ rtk run -c 'PYTHONPATH=$PWD pytest -q tests/timeseries'
 ```
 
 Expected: the default lane PASSes with only documented optional-backend skips.
-The separate `GWEXPY_REQUIRE_GWF_FRAMEL=1` command has the conditional result
+The isolated parent subprocess-contract test has the conditional child result
 defined in Task 4 and is recorded separately from this default passing lane.
+
+Record the exact dependency versions with this read-only probe:
+
+```bash
+rtk run -c 'python - <<"PY"
+from importlib.metadata import version
+
+print("gwpy=" + version("gwpy"))
+print("lalsuite=" + version("lalsuite"))
+PY'
+```
+
+The manifest fields are `gwpy_version` and `lalsuite_version`. The frozen
+minimum lane must record `gwpy_version: 4.0.1`; the latest-4.x CI artifact
+records its actual resolved 4.x version and LALSuite version rather than
+claiming the whole 4.x range from a local run.
 
 - [ ] **Step 2: Run the required full module-doctest gate**
 
@@ -792,8 +849,8 @@ rtk git commit -m "docs(audit): record GWpy 4 proxy compatibility"
 ```bash
 rtk git status --short
 rtk git log -1 --oneline
-rtk git remote -v
-rtk git config --get-regexp '^remote\.'
+rtk run -c 'git remote -v > /tmp/gwexpy-v020-proxy-remote-v.final && cmp /tmp/gwexpy-v020-proxy-remote-v.baseline /tmp/gwexpy-v020-proxy-remote-v.final && sha256sum /tmp/gwexpy-v020-proxy-remote-v.final'
+rtk run -c 'git config --get-regexp "^remote\." > /tmp/gwexpy-v020-proxy-remote-config.final && cmp /tmp/gwexpy-v020-proxy-remote-config.baseline /tmp/gwexpy-v020-proxy-remote-config.final && sha256sum /tmp/gwexpy-v020-proxy-remote-config.final'
 rtk run -c 'git -C /home/washimi/work/gwexpy status --porcelain=v1 | sha256sum'
 ```
 
@@ -802,7 +859,9 @@ remote listings byte-for-byte match the baseline evidence; no push, tag,
 release, version, remote, shared-environment package installation, or GitHub
 mutation. The manifest explicitly records GitHub state as **not inspected** and
 states that no `gh`, web-write, or GitHub mutation tool was invoked; it must not
-claim external-state equality without inspection.
+claim external-state equality without inspection. Record the final hashes as
+`final_remote_v_sha256` and `final_remote_config_sha256`, and require them to
+equal their two baseline fields in addition to the successful `cmp` results.
 
 ---
 
