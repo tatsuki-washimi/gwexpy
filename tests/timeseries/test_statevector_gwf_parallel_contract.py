@@ -696,6 +696,18 @@ def test_all_public_readers_reject_nonlocal_parallel_sources_before_backend(
         "a.gwf%3Bb.gwf",
         "a.gwf%40b.gwf",
         "a.gwf%20b.gwf",
+        "a.gwf%252Bb.gwf",
+        "a.gwf%25252Bb.gwf",
+        "a.gwf%252525252Bb.gwf",
+        "a" * 4096 + ".gwf",
+        "H TEST 100 1 /tmp/H-X-100-1.gwf",
+        "H\tTEST\t100\t1\t/tmp/H-X-100-1.gwf",
+        "H TEST 100 1 file:///tmp/H-X-100-1.gwf",
+        "H TEST 100 1 https://frames.example.test/H-X-100-1.gwf",
+        "H%20TEST%20100%201%20file:///tmp/H-X-100-1.gwf",
+        "H TEST 100 1 file:///tmp/H-X-100-1.gwf\n",
+        "H TEST 100 1 /tmp/H-X-100-1.gwf\nH TEST 101 1 /tmp/H-X-101-1.gwf",
+        "a.gwf+file:///tmp/H-X-100-1.gwf",
         ["a.gwf", "b.gwf"],
         ("a.gwf", "b.gwf"),
         {"cache": ["a.gwf", "b.gwf"]},
@@ -740,12 +752,31 @@ def test_all_public_readers_reject_composite_parallel_sources_before_work(
         Path("relative/K1-test-0-1.gwf"),
         "relative/frame name.gwf",
         "relative/frame+tag.gwf",
+        "nested/dir.gwf+tag/frame.gwf",
+        "nested/dir.gwf tag/frame.gwf",
+        "nested/dir;@tag/frame + @; name.gwf",
+        b"nested/dir.gwf+tag/frame.gwf",
+        _StringPath("nested/dir.gwf tag/frame.gwf"),
         PureWindowsPath(r"C:\frames\K1-test-0-1.gwf"),
         PureWindowsPath(r"\\server\frames\K1-test-0-1.gwf"),
     ],
 )
 def test_parallel_source_preflight_accepts_structural_local_frame_paths(source) -> None:
     assert gwf_io._is_filesystem_path(source)
+
+
+def test_parallel_source_preflight_accepts_regular_file_and_symlink(tmp_path) -> None:
+    """Regular local files disambiguate otherwise separator-bearing paths."""
+    nested = tmp_path / "dir.gwf+tag" / "frame name.gwf"
+    nested.parent.mkdir()
+    nested.touch()
+    link = tmp_path / "frame-link.gwf"
+    link.symlink_to(nested)
+
+    assert gwf_io._is_filesystem_path(nested)
+    assert gwf_io._is_filesystem_path(link)
+    assert gwf_io._is_filesystem_path(os.fsencode(nested))
+    assert gwf_io._is_filesystem_path(_StringPath(str(nested)))
 
 
 @pytest.mark.parametrize(
@@ -763,6 +794,11 @@ def test_parallel_source_preflight_accepts_structural_local_frame_paths(source) 
         "relative/K1-test-0-1.gwf",
         b"relative/K1-test-0-1.gwf",
         Path("relative/K1-test-0-1.gwf"),
+        "nested/dir.gwf+tag/frame.gwf",
+        "nested/dir.gwf tag/frame.gwf",
+        "nested/dir;@tag/frame + @; name.gwf",
+        b"nested/dir.gwf+tag/frame.gwf",
+        _StringPath("nested/dir.gwf tag/frame.gwf"),
         PureWindowsPath(r"C:\frames\K1-test-0-1.gwf"),
         PureWindowsPath(r"\\server\frames\K1-test-0-1.gwf"),
     ],

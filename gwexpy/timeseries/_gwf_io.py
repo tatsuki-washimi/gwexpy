@@ -278,11 +278,16 @@ def _normalize_gwf_gap_options(pad: Any, gap: Any) -> tuple[Any, Any]:
 
 _GWF_PARALLEL_WORKER_CAP = 8
 _GWF_URI_SCHEME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
+_GWF_URI_ANYWHERE_RE = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://")
 _GWF_WINDOWS_DRIVE_RE = re.compile(r"^[A-Za-z]:[\\/]")
-_GWF_COMPOSITE_PATH_RE = re.compile(
+_GWF_COMPOSITE_COMPONENT_RE = re.compile(
     r"\.gwf(?:[+|;@]|\s+).*?\.gwf",
     flags=re.IGNORECASE,
 )
+_GWF_CACHE_NUMBER_RE = re.compile(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)")
+_GWF_PERCENT_ESCAPE_RE = re.compile(r"%[0-9A-Fa-f]{2}")
+_GWF_PARALLEL_PATH_MAX_LENGTH = 4096
+_GWF_PERCENT_DECODE_ROUNDS = 4
 _GWF_PARALLEL_PATH_ERROR = (
     "Parallel GWF reads require a list or tuple of local GWF frame paths"
 )
@@ -338,12 +343,45 @@ def _consume_gwf_parallel_kwargs(
     ]
 
 
-def _is_local_gwf_frame_path_syntax(text: str) -> bool:
-    """Return whether a decoded path spelling is safe for one spawned frame."""
-    decoded = unquote(text)
-    if not decoded or any(character in decoded for character in "\x00\n\r?#*[]{},"):
+def _decode_gwf_path_for_validation(text: str) -> str | None:
+    """Decode a bounded number of URI-escape rounds for source validation."""
+    if not text or len(text) > _GWF_PARALLEL_PATH_MAX_LENGTH:
+        return None
+
+    decoded = text
+    for _ in range(_GWF_PERCENT_DECODE_ROUNDS):
+        next_decoded = unquote(decoded)
+        if len(next_decoded) > _GWF_PARALLEL_PATH_MAX_LENGTH:
+            return None
+        if next_decoded == decoded:
+            return decoded
+        decoded = next_decoded
+
+    # A remaining escape could become a URI or frame-list delimiter after a
+    # decoder outside this validation path gets another chance to interpret it.
+    if _GWF_PERCENT_ESCAPE_RE.search(decoded):
+        return None
+    return decoded
+
+
+def _looks_like_ligo_cache_record(text: str) -> bool:
+    """Return whether *text* is one standard five-field LIGO cache record."""
+    fields = text.split()
+    if len(fields) != 5:
         return False
-    if _GWF_COMPOSITE_PATH_RE.search(decoded):
+    return bool(
+        _GWF_CACHE_NUMBER_RE.fullmatch(fields[2])
+        and _GWF_CACHE_NUMBER_RE.fullmatch(fields[3])
+        and fields[4].lower().endswith(".gwf")
+    )
+
+
+def _is_local_gwf_frame_path_syntax(text: str) -> bool:
+    """Return whether one source spelling is safe for a spawned frame reader."""
+    decoded = _decode_gwf_path_for_validation(text)
+    if decoded is None or any(character in decoded for character in "\x00\n\r?#*[]{},"):
+        return False
+    if _GWF_URI_ANYWHERE_RE.search(decoded) or _looks_like_ligo_cache_record(decoded):
         return False
 
     is_windows_path = bool(_GWF_WINDOWS_DRIVE_RE.match(decoded)) or decoded.startswith(
@@ -351,16 +389,28 @@ def _is_local_gwf_frame_path_syntax(text: str) -> bool:
     )
     if not is_windows_path and _GWF_URI_SCHEME_RE.match(decoded):
         return False
-    return decoded.lower().endswith(".gwf")
+    if not decoded.lower().endswith(".gwf"):
+        return False
+
+    # A real local regular file (including a symlink to one) is unambiguous.
+    # Its original spelling is still passed to the resolver and worker.
+    if os.path.isfile(decoded):
+        return True
+
+    separators = r"[\\/]" if is_windows_path else "/"
+    return not any(
+        _GWF_COMPOSITE_COMPONENT_RE.search(component)
+        for component in re.split(separators, decoded)
+    )
 
 
 def _is_filesystem_path(source: Any) -> bool:
     """Return whether ``source`` is one local frame path for spawned reads.
 
-    This deliberately validates only spelling, without touching the filesystem:
-    multi-worker GWF reads cannot safely delegate URI, cache, glob, or file-like
-    source handling to a child process.  Windows drive and UNC spellings remain
-    valid even when the parent happens to run on a different platform.
+    Multi-worker GWF reads cannot safely delegate URI, cache, glob, or file-like
+    source handling to a child process. A safe regular-file check disambiguates
+    local POSIX paths (and symlinks); Windows drive and UNC spellings remain
+    structurally valid even when the parent runs on a different platform.
     """
     if not isinstance(source, (str, bytes, os.PathLike)):
         return False

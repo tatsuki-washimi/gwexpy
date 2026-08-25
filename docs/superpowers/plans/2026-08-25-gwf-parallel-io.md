@@ -218,3 +218,28 @@ composite filename spellings.
 - [x] **Step 4: Update EN/JA docs and audit evidence, run focused/native/broad
   tests plus Ruff, MyPy, YAML, diff checks, then make one local Conventional
   Commit.**
+
+### Task 12: Sol cache-record and recursive-decoding preflight remediation
+
+**Goal:** Reject multi-worker LIGO cache records and recursively encoded frame
+composites before span, backend, or executor work, while retaining genuine
+single local regular files and component-safe structural paths.
+
+**Architecture:** Decode only a bounded number of percent-escape rounds and
+fail closed when another round remains possible. Validate path components, not
+the whole spelling, so separator-bearing directory components cannot form a
+false composite across `/` or Windows `\\` boundaries. Recognize the five-field
+LIGO cache-record grammar before scheduling. A safe regular-file check may
+disambiguate an existing local file or symlink; the original spelling remains
+the worker path and filename spans remain scheduling-only.
+
+- [x] **Step 1: Add four-reader RED tests** for `parallel`/`nproc` cache
+  records, literal through recursive percent composites, long escape input,
+  nested separator-bearing paths, and regular-file/symlink acceptance.
+- [x] **Step 2: Record RED evidence** that double encoding reaches the span
+  resolver under the one-round implementation.
+- [x] **Step 3: Implement bounded iterative decoding, cache-record grammar,
+  component-aware composite detection, and regular-file disambiguation.**
+- [x] **Step 4: Update EN/JA docs and audit evidence; run focused/native/broad
+  tests, Ruff/import-order/format, MyPy, YAML, diff checks, and one local
+  Conventional Commit.**
