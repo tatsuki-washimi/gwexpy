@@ -245,6 +245,10 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                     **gwf_kwargs,
                 )
             except ImportError as exc:
+                if parallel_workers > 1:
+                    # Preserve the original worker/backend ImportError.  The
+                    # formatted dependency hint is a serial compatibility path.
+                    raise
                 raise _format_gwf_import_error(gwf_format, exc)
             except _GWFParallelContractError:
                 raise

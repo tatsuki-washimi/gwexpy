@@ -7,7 +7,8 @@ import warnings
 from concurrent.futures import Future
 from contextlib import nullcontext
 from inspect import signature
-from pathlib import Path
+from io import BytesIO
+from pathlib import Path, PureWindowsPath
 
 import pytest
 from gwpy.timeseries import StateVector, StateVectorDict
@@ -19,6 +20,8 @@ from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
 CHANNEL_A = "K1:STATE-A"
 CHANNEL_B = "K1:STATE-B"
+FRAMEL_FIXTURE = Path(__file__).parent.parent / "fixtures" / "data" / "test.gwf"
+FRAMEL_CHANNEL = "K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ"
 
 
 class _ImmediateExecutor:
@@ -614,3 +617,295 @@ def test_statevector_parallel_requires_explicit_selector_before_backend(
             format="gwf",
             parallel=2,
         )
+
+
+@pytest.mark.parametrize(
+    ("reader", "selector"),
+    [
+        (TimeSeries.read, CHANNEL_A),
+        (TimeSeriesDict.read, [CHANNEL_A]),
+        (StateVector.read, CHANNEL_A),
+        (StateVectorDict.read, [CHANNEL_A]),
+    ],
+)
+@pytest.mark.parametrize(
+    "invalid_source",
+    [
+        "https://frames.example.test/K1-test-0-1.gwf",
+        "file:///frames/K1-test-0-1.gwf",
+        "K1-test-0-1.gwf?cache=frames.cache",
+        "frames.cache",
+        BytesIO(b"not a frame path"),
+    ],
+)
+def test_all_public_readers_reject_nonlocal_parallel_sources_before_backend(
+    monkeypatch, reader, selector, invalid_source
+) -> None:
+    calls = []
+
+    def unexpected(*args, **kwargs):
+        calls.append((args, kwargs))
+        raise AssertionError("backend or source-segment I/O ran")
+
+    monkeypatch.setattr(gwf_io, "_resolve_gwf_path_span", unexpected)
+    monkeypatch.setattr("gwpy.io.gwf.core.get_channel_names", unexpected)
+    monkeypatch.setattr("gwpy.timeseries.io.gwf.core.read_timeseriesdict", unexpected)
+    monkeypatch.setattr("gwpy.timeseries.io.gwf.core.read_statevectordict", unexpected)
+    monkeypatch.setattr(StateVector.read.registry, "read", unexpected)
+
+    with pytest.raises(TypeError, match="local GWF frame paths"):
+        reader(
+            [invalid_source, Path("K1-test-1-1.gwf")],
+            selector,
+            format="gwf",
+            parallel=2,
+        )
+    assert calls == []
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "relative/K1-test-0-1.gwf",
+        b"relative/K1-test-0-1.gwf",
+        Path("relative/K1-test-0-1.gwf"),
+        PureWindowsPath(r"C:\frames\K1-test-0-1.gwf"),
+        PureWindowsPath(r"\\server\frames\K1-test-0-1.gwf"),
+    ],
+)
+def test_parallel_source_preflight_accepts_structural_local_frame_paths(source) -> None:
+    assert gwf_io._is_filesystem_path(source)
+
+
+@pytest.mark.parametrize(
+    ("reader", "selector", "worker_name"),
+    [
+        (TimeSeries.read, CHANNEL_A, "_read_gwf_timeseriesdict_worker"),
+        (TimeSeriesDict.read, [CHANNEL_A], "_read_gwf_timeseriesdict_worker"),
+        (StateVector.read, CHANNEL_A, "_read_gwf_statevectordict_worker"),
+        (StateVectorDict.read, [CHANNEL_A], "_read_gwf_statevectordict_worker"),
+    ],
+)
+@pytest.mark.parametrize(
+    "source",
+    [
+        "relative/K1-test-0-1.gwf",
+        b"relative/K1-test-0-1.gwf",
+        Path("relative/K1-test-0-1.gwf"),
+        PureWindowsPath(r"C:\frames\K1-test-0-1.gwf"),
+        PureWindowsPath(r"\\server\frames\K1-test-0-1.gwf"),
+    ],
+)
+def test_all_public_readers_accept_structural_local_parallel_paths(
+    monkeypatch, reader, selector, worker_name, source
+) -> None:
+    _ImmediateExecutor.instances.clear()
+
+    def timeseries_worker(source, channels, start, end, backend, read_kwargs):
+        del source, start, end, backend, read_kwargs
+        return GwpyTimeSeriesDict(
+            {
+                channel: GwpyTimeSeries(
+                    [1.0], sample_rate=1, t0=1, unit="V", channel=channel
+                )
+                for channel in channels
+            }
+        )
+
+    def statevector_worker(source, channels, start, end, backend, read_kwargs):
+        del source, start, end, backend, read_kwargs
+        return StateVectorDict(
+            {
+                channel: StateVector(
+                    [1], bits=["ready"], sample_rate=1, t0=1, channel=channel
+                )
+                for channel in channels
+            }
+        )
+
+    monkeypatch.setattr(gwf_io, "ProcessPoolExecutor", _ImmediateExecutor)
+    monkeypatch.setattr(gwf_io, "_resolve_gwf_path_span", lambda *args: (1, 2))
+    monkeypatch.setattr(
+        gwf_io,
+        worker_name,
+        statevector_worker
+        if worker_name == "_read_gwf_statevectordict_worker"
+        else timeseries_worker,
+    )
+    result = reader([source, source], selector, format="gwf", gap="ignore", parallel=2)
+    assert len(result) > 0
+    assert _ImmediateExecutor.instances[0].submit_calls
+
+
+@pytest.mark.parametrize(
+    ("reader", "selector", "worker_name"),
+    [
+        (TimeSeries.read, CHANNEL_A, "_read_gwf_timeseriesdict_worker"),
+        (TimeSeriesDict.read, [CHANNEL_A], "_read_gwf_timeseriesdict_worker"),
+        (StateVector.read, CHANNEL_A, "_read_gwf_statevectordict_worker"),
+        (StateVectorDict.read, [CHANNEL_A], "_read_gwf_statevectordict_worker"),
+    ],
+)
+def test_all_public_parallel_readers_preserve_worker_import_error_provenance(
+    monkeypatch, reader, selector, worker_name
+) -> None:
+    _ImmediateExecutor.instances.clear()
+    error = ImportError("worker backend import failure", "frame-extra")
+
+    def failing_worker(*args):
+        raise error
+
+    monkeypatch.setattr(gwf_io, "ProcessPoolExecutor", _ImmediateExecutor)
+    monkeypatch.setattr(gwf_io, "_resolve_gwf_path_span", _fake_span)
+    monkeypatch.setattr(gwf_io, worker_name, failing_worker)
+
+    with pytest.raises(ImportError) as raised:
+        reader(
+            [Path("early.gwf"), Path("late.gwf")],
+            selector,
+            format="gwf",
+            parallel=2,
+        )
+    assert raised.value is error
+    assert raised.value.args == ("worker backend import failure", "frame-extra")
+    assert raised.value.__cause__ is None
+    assert raised.value.__context__ is None
+
+
+@pytest.mark.parametrize("reader", [TimeSeries.read, TimeSeriesDict.read])
+def test_timeseries_serial_import_error_keeps_existing_normalized_public_error(
+    monkeypatch, reader
+) -> None:
+    error = ImportError("serial backend import failure")
+    monkeypatch.setattr(
+        "gwpy.timeseries.io.gwf.core.read_timeseriesdict",
+        lambda *args, **kwargs: (_ for _ in ()).throw(error),
+    )
+
+    with pytest.raises(ImportError, match="Missing optional dependency") as raised:
+        reader(Path("serial.gwf"), CHANNEL_A, format="gwf", parallel=1)
+    assert raised.value is not error
+
+
+@pytest.mark.parametrize("reader", [StateVector.read, StateVectorDict.read])
+def test_statevector_serial_import_error_keeps_gwpy_connector_behavior(
+    monkeypatch, reader
+) -> None:
+    error = ImportError("serial connector import failure")
+    _patch_connector_open(monkeypatch)
+    monkeypatch.setattr(
+        StateVector.read.registry,
+        "read",
+        lambda *args, **kwargs: (_ for _ in ()).throw(error),
+    )
+
+    with pytest.raises(ImportError) as raised:
+        reader(Path("serial.gwf"), CHANNEL_A, format="gwf", parallel=1)
+    assert raised.value is error
+
+
+@pytest.mark.skipif(not FRAMEL_FIXTURE.exists(), reason="test.gwf fixture not found")
+def test_segmentless_framel_filename_has_serial_parallel_parity_for_all_readers() -> (
+    None
+):
+    pytest.importorskip("framel")
+    readers = (
+        (TimeSeries.read, FRAMEL_CHANNEL, False),
+        (TimeSeriesDict.read, [FRAMEL_CHANNEL], False),
+        (StateVector.read, FRAMEL_CHANNEL, True),
+        (StateVectorDict.read, [FRAMEL_CHANNEL], True),
+    )
+    sources = [FRAMEL_FIXTURE, FRAMEL_FIXTURE]
+    for reader, selector, is_statevector in readers:
+        kwargs = {
+            "format": "gwf",
+            "backend": "framel",
+            "gap": "ignore",
+        }
+        if is_statevector:
+            kwargs["bits"] = ["quality"]
+        serial = reader(
+            sources,
+            selector,
+            parallel=1,
+            **kwargs,
+        )
+        parallel = reader(
+            sources,
+            selector,
+            parallel=2,
+            **kwargs,
+        )
+        serial_series = (
+            serial[FRAMEL_CHANNEL]
+            if isinstance(serial, (TimeSeriesDict, StateVectorDict))
+            else serial
+        )
+        parallel_series = (
+            parallel[FRAMEL_CHANNEL]
+            if isinstance(parallel, (TimeSeriesDict, StateVectorDict))
+            else parallel
+        )
+        assert parallel_series.value.tolist() == serial_series.value.tolist()
+        assert float(parallel_series.t0.value) == float(serial_series.t0.value)
+        assert float(parallel_series.dt.value) == float(serial_series.dt.value)
+        assert parallel_series.name == serial_series.name
+        assert getattr(parallel_series.channel, "name", None) == getattr(
+            serial_series.channel, "name", None
+        )
+        if is_statevector:
+            assert list(parallel_series.bits) == list(serial_series.bits)
+
+
+def test_scalar_timeseries_gwf_read_preserves_nested_public_metadata(
+    monkeypatch,
+) -> None:
+    _ImmediateExecutor.instances.clear()
+    source_payloads = []
+
+    def metadata_read(source, channels, **kwargs):
+        del kwargs
+        start = _source_start(source)
+        result = GwpyTimeSeriesDict()
+        for channel in channels:
+            result[channel] = GwpyTimeSeries(
+                [start],
+                sample_rate=1,
+                t0=start,
+                unit="V",
+                channel=channel,
+                name=f"{channel}-name",
+            )
+        result[CHANNEL_A].public_metadata = {
+            "source": Path(source).name,
+            "nested": {"labels": ["calibrated"]},
+        }
+        source_payloads.append(result)
+        return result
+
+    monkeypatch.setattr(gwf_io, "ProcessPoolExecutor", _ImmediateExecutor)
+    monkeypatch.setattr(gwf_io, "_resolve_gwf_path_span", _fake_span)
+    monkeypatch.setattr(
+        "gwpy.timeseries.io.gwf.core.read_timeseriesdict", metadata_read
+    )
+    sources = [Path("late.gwf"), Path("early.gwf")]
+    serial = TimeSeries.read(sources, CHANNEL_A, format="gwf", gap="ignore", parallel=1)
+    parallel = TimeSeries.read(
+        sources, CHANNEL_A, format="gwf", gap="ignore", parallel=2
+    )
+
+    for result in (serial, parallel):
+        assert result.public_metadata == {
+            "source": "early.gwf",
+            "nested": {"labels": ["calibrated"]},
+        }
+        assert str(result.unit) == "V"
+        assert float(result.t0.value) == 1.0
+        assert float(result.dt.value) == 1.0
+        assert result.name == f"{CHANNEL_A}-name"
+        assert result.channel.name == CHANNEL_A
+    parallel.public_metadata["nested"]["labels"].append("mutated")
+    assert serial.public_metadata["nested"]["labels"] == ["calibrated"]
+    assert source_payloads[0][CHANNEL_A].public_metadata["nested"]["labels"] == [
+        "calibrated"
+    ]

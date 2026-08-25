@@ -4,6 +4,7 @@ import copy
 import multiprocessing
 import os
 import pickle
+import re
 import warnings
 from collections.abc import Callable
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -61,10 +62,11 @@ _GWF_PARALLEL_HELP = """
     ``parallel=`` accepts ``None``/``False``/``1`` for serial reads, ``True``
     for automatic workers, or an integer from 2 through 8.  ``nproc=`` is the
     compatibility alias.  Supplying both raises ``TypeError`` before file or
-    backend I/O.  Multi-worker reads require a list or tuple of local frame
-    paths, use spawn-safe workers, and propagate worker exceptions unchanged.
-    Daemon processes cannot start these workers and are rejected during
-    preflight.
+    backend I/O.  Multi-worker reads require a list or tuple of individual
+    local ``.gwf`` frame paths (not URIs, caches, queries, globs, or file-like
+    objects), use spawn-safe workers, and propagate worker exceptions,
+    including ``ImportError``, unchanged. Daemon processes cannot start these
+    workers and are rejected during preflight.
 """
 
 
@@ -274,6 +276,11 @@ def _normalize_gwf_gap_options(pad: Any, gap: Any) -> tuple[Any, Any]:
 
 
 _GWF_PARALLEL_WORKER_CAP = 8
+_GWF_URI_SCHEME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
+_GWF_WINDOWS_DRIVE_RE = re.compile(r"^[A-Za-z]:[\\/]")
+_GWF_PARALLEL_PATH_ERROR = (
+    "Parallel GWF reads require a list or tuple of local GWF frame paths"
+)
 
 
 class _GWFParallelContractError(TypeError):
@@ -327,8 +334,36 @@ def _consume_gwf_parallel_kwargs(
 
 
 def _is_filesystem_path(source: Any) -> bool:
-    """Return whether ``source`` is a path suitable for a spawned GWF reader."""
-    return isinstance(source, (str, bytes, os.PathLike))
+    """Return whether ``source`` is one local frame path for spawned reads.
+
+    This deliberately validates only spelling, without touching the filesystem:
+    multi-worker GWF reads cannot safely delegate URI, cache, glob, or file-like
+    source handling to a child process.  Windows drive and UNC spellings remain
+    valid even when the parent happens to run on a different platform.
+    """
+    if not isinstance(source, (str, bytes, os.PathLike)):
+        return False
+    try:
+        path = os.fspath(source)
+    except TypeError:
+        return False
+    if not isinstance(path, (str, bytes)):
+        return False
+    try:
+        text = os.fsdecode(path)
+    except (TypeError, UnicodeError):
+        return False
+    if not text or any(character in text for character in "\x00\n\r?#*[]{},"):
+        return False
+
+    is_windows_path = bool(_GWF_WINDOWS_DRIVE_RE.match(text)) or text.startswith(
+        (r"\\", "//")
+    )
+    if not is_windows_path and _GWF_URI_SCHEME_RE.match(text):
+        return False
+    if not text.lower().endswith(".gwf"):
+        return False
+    return True
 
 
 def _gwf_time_to_ns(value: Any) -> int:
@@ -344,7 +379,6 @@ def _resolve_gwf_path_span(
 ) -> tuple[Any, Any]:
     """Resolve one frame path's span before it is submitted to a worker."""
     from gwpy.io.cache import file_segment
-    from gwpy.io.gwf.core import data_segments
 
     try:
         filename_span = file_segment(source)
@@ -353,6 +387,10 @@ def _resolve_gwf_path_span(
     if filename_span is not None:
         start, end = filename_span
     else:
+        if backend == "framel":
+            return _resolve_framel_path_span(source)
+        from gwpy.io.gwf.core import data_segments
+
         try:
             segments = [
                 segment
@@ -369,6 +407,29 @@ def _resolve_gwf_path_span(
             raise ValueError(f"Could not resolve GWF frame span for {source!r}")
         start = min(segment[0] for segment in segments)
         end = max(segment[1] for segment in segments)
+    if _gwf_time_to_ns(start) >= _gwf_time_to_ns(end):
+        raise ValueError(f"Invalid GWF frame span for {source!r}")
+    return start, end
+
+
+def _resolve_framel_path_span(source: Any) -> tuple[Any, Any]:
+    """Read a FrameL file span through its installed binding.
+
+    GWpy's generic segment helper expects a gwpy.io.gwf.framel backend module,
+    but FrameL is implemented under gwpy.timeseries.io.gwf. Use the binding's
+    file-time API instead of that nonexistent import path.
+    """
+    import framel
+
+    path = os.fsdecode(os.fspath(source))
+    frame_file = framel.FrFileINew(path)
+    if not frame_file:
+        raise OSError(f"Could not open GWF frame: {source!r}")
+    try:
+        start = framel.FrFileITStart(frame_file)
+        end = framel.FrFileITEnd(frame_file)
+    finally:
+        framel.FrFileIEnd(frame_file)
     if _gwf_time_to_ns(start) >= _gwf_time_to_ns(end):
         raise ValueError(f"Invalid GWF frame span for {source!r}")
     return start, end
@@ -540,9 +601,7 @@ def _validate_gwf_parallel_source(source: Any, gwf_kwargs: dict[str, Any]) -> No
             or not all(_is_filesystem_path(item) for item in source)
         )
     ):
-        raise _GWFParallelContractError(
-            "Parallel GWF reads require a list or tuple of filesystem paths"
-        )
+        raise _GWFParallelContractError(_GWF_PARALLEL_PATH_ERROR)
 
 
 def _read_gwf_dict(
@@ -593,17 +652,13 @@ def _read_gwf_dict(
         )
 
     if requested_parallel and workers > 1 and not isinstance(source, (list, tuple)):
-        raise _GWFParallelContractError(
-            "Parallel GWF reads require a list or tuple of filesystem paths"
-        )
+        raise _GWFParallelContractError(_GWF_PARALLEL_PATH_ERROR)
 
     if isinstance(source, (list, tuple)):
         sources = list(source)
         if requested_parallel and workers > 1:
             if not all(_is_filesystem_path(item) for item in sources):
-                raise _GWFParallelContractError(
-                    "Parallel GWF reads require a list or tuple of filesystem paths"
-                )
+                raise _GWFParallelContractError(_GWF_PARALLEL_PATH_ERROR)
             for item in sources:
                 _resolve_gwf_path_span(item, channels, backend)
             tasks = [

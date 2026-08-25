@@ -137,3 +137,60 @@ point and imports no optional GWF backend.
   work, and document path-only worker sources, alias/default/cap semantics,
   conflict timing, and worker exception propagation in reader help/signatures
   and the public GWF guide.
+
+### Task 9: Luna local-source and ImportError-provenance remediation
+
+**Goal:** Make effective multi-worker reads fail closed to actual local GWF
+frame paths and preserve the original `ImportError` object from a worker or
+backend read on every public reader surface.
+
+**Architecture:** Replace the type-only path predicate with a structural,
+I/O-free normalizer for `str`, `bytes`, and `os.PathLike` values. It accepts
+ordinary POSIX paths plus Windows drive and UNC spellings, but rejects URI
+schemes, query/fragment/cache/composite spellings, file-like objects, globs,
+and non-`.gwf` frame-source forms before span/backend work. Keep serial input
+semantics unchanged. The TimeSeries public wrappers distinguish a serial
+optional-import normalization from a multi-worker `ImportError`, re-raising
+the latter untouched (type, message, args, and exception provenance).
+
+- [x] **Step 1: Write failing four-reader tests** for remote URI, cache/query,
+  and file-like multi-worker source rejection before any connector/backend
+  call; separately assert local `str`, `bytes`, `PathLike`, Windows drive,
+  and UNC structural acceptance.
+- [x] **Step 2: Write failing four-reader worker `ImportError` tests** that
+  assert identity, args, and cause/context preservation; add serial
+  compatibility assertions for the established reader-specific error route.
+- [x] **Step 3: Run the focused regressions and record RED evidence.**
+- [x] **Step 4: Implement the smallest shared structural path preflight and
+  provenance-aware reader error handling; rerun the focused tests GREEN.**
+- [x] **Step 5: Update EN/JA docs and the #588 audit manifest, then run
+  focused, adjacent, broad time-series, Ruff/import-order/format, MyPy,
+  YAML, and diff checks before one local Conventional Commit.**
+
+### Task 10: Sol backend span and scalar metadata remediation
+
+**Goal:** Let valid segmentless local frame filenames preflight through each
+installed backend, and retain arbitrary public metadata when TimeSeries.read
+extracts its scalar result from a merged dictionary.
+
+**Architecture:** Keep filename spans as an optimization only. When a frame
+name lacks an encoded segment, resolve its span through the actual selected
+backend: use the public GWpy segment helper for backends that implement it,
+and the installed FrameL binding's file-time API for framel rather than
+asking GWpy to import its nonexistent gwpy.io.gwf.framel module. Preserve
+real optional-backend absence as an ImportError; do not mask code-path module
+errors. After scalar extraction, deep-copy public metadata from the merged
+series to the new TimeSeries instance.
+
+- [x] **Step 1: Add a capability-gated four-reader framel test** using the
+  valid test.gwf fixture (no encoded filename segment) and assert serial /
+  spawned parallel values, epoch, metadata, and bits agree.
+- [x] **Step 2: Add a failing scalar TimeSeries.read nested-metadata test**
+  for serial and parallel dictionary extraction, including mutation
+  independence, while retaining standard metadata assertions.
+- [x] **Step 3: Run the new focused regressions RED.**
+- [x] **Step 4: Implement backend-correct preflight span resolution and
+  scalar metadata copying, then rerun GREEN plus native framel/lalframe
+  capability tests.**
+- [x] **Step 5: Update docs, plan, and audit evidence; rerun the full
+  validation matrix and create the one local Conventional Commit.**

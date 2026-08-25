@@ -34,6 +34,7 @@ from ._epoch import _integer_gps_ns, _integral_dt_gps_ns
 from ._gwf_io import (
     _GWF_BACKENDS,
     _GWF_PARALLEL_HELP,
+    _copy_gwf_custom_attributes,
     _extract_gwf_read_args,
     _format_gwf_import_error,
     _gwf_parallel_read_signature,
@@ -228,6 +229,12 @@ class TimeSeries(
                     **gwf_kwargs,
                 )
             except ImportError as exc:
+                if parallel_workers > 1:
+                    # A multi-worker backend exception has already crossed the
+                    # parent-owned executor boundary.  Keep its public type,
+                    # args, and provenance intact rather than treating it as a
+                    # serial optional-dependency discovery failure.
+                    raise
                 raise _format_gwf_import_error(gwf_format, exc)
             except _GWFParallelContractError:
                 raise
@@ -237,7 +244,10 @@ class TimeSeries(
                 raise ValueError(f"Invalid input for GWF read: {exc}") from exc
             if not tsd:
                 raise ValueError(f"No data found in {gwf_format} source: {source}")
-            return cls(next(iter(tsd.values())))
+            series = next(iter(tsd.values()))
+            result = cls(series)
+            _copy_gwf_custom_attributes(series, result, only_missing=False)
+            return result
 
         return super().read(source, *args, **kwargs)
 

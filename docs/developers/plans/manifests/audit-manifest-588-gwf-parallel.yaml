@@ -2,6 +2,7 @@ issue: 588
 title: "Parallel GWF filesystem reads"
 date: 2026-08-25
 base: 565b39502
+follow_up_base: 2a8424a8a85360ed4aba22539c9408cebefea69e
 scope:
   included:
     - "parallel= GWF read support with nproc= compatibility alias"
@@ -10,6 +11,8 @@ scope:
     - "descriptor-preserving StateVector connector dispatch and StateVector Bits preservation"
     - "decoded-payload-span deterministic merge order, daemon preflight, and public help/docs"
     - "GWF reader public preflight, metadata preservation, and contract tests"
+    - "Luna remediation: fail-closed local .gwf worker sources and worker ImportError provenance"
+    - "Sol remediation: selected-backend segmentless filename spans and scalar TimeSeries public metadata"
   excluded:
     - "release/version changes"
     - "non-GWF I/O changes"
@@ -39,6 +42,9 @@ actions:
   - "Used two read-only reviews; all reported findings were addressed."
   - "Added StateVector and StateVectorDict parity through an idempotent GWpy connector-class hook without eager optional GWF imports."
   - "Incorporated Sol review: decoded payload spans, not filename spans, now determine merges; daemon process requests fail during preflight."
+  - "Recorded Luna RED evidence: type-only source acceptance reached span/backend work, while TimeSeries reader layers wrapped parallel worker ImportError."
+  - "Restricted effective multi-worker sources to structural local .gwf paths and preserved parallel worker/backend ImportError identity and provenance on all four readers."
+  - "Incorporated Sol review: FrameL segmentless filename preflight now uses the installed framel file-time API, and scalar TimeSeries extraction deep-copies public metadata."
   - "Created one local Conventional Commit after final focused, adjacent, broad-sharded, lint, type, and diff verification; no push or GitHub mutation."
 validation:
   red:
@@ -52,6 +58,10 @@ validation:
       result: "1 failed; keyed-but-empty series reached merge rather than parallel partial-read rejection."
     - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_statevector_gwf_parallel_contract.py -p no:cacheprovider"
       result: "9 failed; StateVector and StateVectorDict bypassed alias conflict preflight, spawn dispatch, empty/invalid validation, and state worker handling."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_statevector_gwf_parallel_contract.py -k 'nonlocal_parallel_sources or worker_import_error_provenance or serial_import_error' -p no:cacheprovider"
+      result: "24 failed, 4 passed; URI/cache/query sources reached span/backend work and TimeSeries/TimeSeriesDict wrapped parallel worker ImportError. Two StateVector serial tests initially lacked connector-open isolation and were corrected before GREEN."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_statevector_gwf_parallel_contract.py -k 'segmentless_framel or scalar_timeseries_gwf_read_preserves_nested' -p no:cacheprovider"
+      result: "2 failed: explicit framel preflight imported nonexistent gwpy.io.gwf.framel for test.gwf, and the initial scalar test fixture referenced a helper outside its module; the fixture was repaired before evaluating the production scalar assertion."
   final:
     - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_gwf_parallel_contract.py tests/timeseries/test_io_gwf_timeseriesdict.py tests/timeseries/test_io_matrix_gwf.py -p no:cacheprovider"
       result: "104 passed, 1 skipped."
@@ -69,6 +79,18 @@ validation:
       result: "104 passed, 1 skipped."
     - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries -p no:cacheprovider"
       result: "Complete post-Sol rerun, sharded for the 30-second harness window: 475 passed/8 skipped; 320/5/3 xfailed; 223/2; all 281 test_timeseries.py nodes 235/46; focused StateVector contract 21; remaining files 99/2 and 37/1."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_gwf_parallel_contract.py tests/timeseries/test_statevector_gwf_parallel_contract.py -p no:cacheprovider"
+      result: "111 passed."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_io_gwf_timeseriesdict.py tests/timeseries/test_io_matrix_gwf.py -p no:cacheprovider"
+      result: "67 passed, 1 skipped."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries (bounded file/node shards)"
+      result: "All files rerun in bounded shards: 211/1 warning; 264 passed/8 skipped; 320 passed/5 skipped/3 xfailed; 297 passed/2 skipped; 136 passed/3 skipped. All 281 test_timeseries.py node IDs were exercised in overlapping bounded selector batches; optional/network/spectral skips were expected."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_statevector_gwf_parallel_contract.py (19 standard + 2 spawn + 53 Luna + 2 Sol bounded groups)"
+      result: "76 passed."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_gwf_parallel_contract.py tests/timeseries/test_io_gwf_timeseriesdict.py tests/timeseries/test_io_matrix_gwf.py tests/timeseries/test_io_gwf_framel.py tests/timeseries/test_io_gwf_lalframe.py -p no:cacheprovider"
+      result: "106 passed, 1 skipped; native framel and lalframe coverage passed."
+    - command: "rtk env PYTHONPATH=$PWD conda run -n gwexpy ruff check ...; ruff format --check ...; mypy gwexpy/; YAML parse; rtk git diff --check"
+      result: "All changed-file Ruff/import-order and format checks passed; MyPy passed for 393 source files; YAML and diff checks passed."
 review:
   plan_review: "Read-only review completed after one revision."
   code_review: "Read-only review completed; public TypeError, metadata-copy, serialization, keyed-empty-series, and StateVector audit findings addressed."
