@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import sys
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from operator import index
@@ -351,11 +352,21 @@ def _install_prevalidated_add_channels_metadata(
 
 @dataclass
 class _MemmapAddChannelsJournal:
-    """The file state MNE resizes while adding channels to a memmap Raw."""
+    """The file state MNE 1.12's Raw.add_channels may resize in place.
+
+    MNE's memmap implementation is private and platform-specific: it avoids
+    resize on Darwin, resizes in place elsewhere, and can collide with duplicate
+    mappings on Windows.  The journal therefore records enough to reopen only
+    when file truncation cannot retain the original mapping identity.
+    """
 
     data: np.memmap
     filename: str
     contents: bytes
+    shape: tuple[int, ...]
+    dtype: np.dtype[Any]
+    offset: int
+    writable: bool
 
 
 @dataclass
@@ -399,7 +410,15 @@ def _snapshot_raw_add_channels_state(raw: Any) -> _RawAddChannelsJournal:
         filename = os.fspath(data.filename)
         with open(filename, "rb") as backing:
             contents = backing.read()
-        memmap = _MemmapAddChannelsJournal(data, filename, contents)
+        memmap = _MemmapAddChannelsJournal(
+            data=data,
+            filename=filename,
+            contents=contents,
+            shape=tuple(data.shape),
+            dtype=data.dtype,
+            offset=data.offset,
+            writable=bool(data.flags.writeable),
+        )
     annotations = raw._annotations
     return _RawAddChannelsJournal(
         data=data,
@@ -418,12 +437,72 @@ def _snapshot_raw_add_channels_state(raw: Any) -> _RawAddChannelsJournal:
     )
 
 
-def _restore_memmap_add_channels_state(journal: _MemmapAddChannelsJournal) -> None:
-    """Return MNE's resized memmap file and mapping to their original state."""
-    cast(Any, journal.data.base).resize(len(journal.contents))
+def _read_memmap_backing(journal: _MemmapAddChannelsJournal) -> bytes:
+    with open(journal.filename, "rb") as backing:
+        return backing.read()
+
+
+def _write_memmap_backing(journal: _MemmapAddChannelsJournal) -> None:
     with open(journal.filename, "r+b") as backing:
         backing.write(journal.contents)
         backing.truncate(len(journal.contents))
+
+
+def _detach_memmap_mapping(data: np.memmap) -> None:
+    """Close an MNE-created replacement mapping before truncating its file."""
+    # ``_mmap`` is a NumPy runtime implementation detail not described by its
+    # stubs; keep the type escape confined to this platform-bound helper.
+    mapping = cast(Any, data)._mmap
+    if mapping is not None and not mapping.closed:
+        mapping.close()
+
+
+def _memmap_remap_required_after_write_error() -> bool:
+    """Whether open mapping handles normally block truncate on this platform."""
+    return sys.platform.startswith("win")
+
+
+def _reopen_memmap_backing(journal: _MemmapAddChannelsJournal) -> np.memmap:
+    mode = "r+" if journal.writable else "r"
+    # NumPy's overloads omit the dtype/offset/shape combination accepted by
+    # the runtime constructor used for reopening an existing mapping.
+    return cast(Any, np.memmap)(
+        journal.filename,
+        dtype=journal.dtype,
+        mode=mode,
+        offset=journal.offset,
+        shape=journal.shape,
+    )
+
+
+def _restore_memmap_add_channels_state(
+    raw: Any, journal: _MemmapAddChannelsJournal
+) -> None:
+    """Restore a changed memmap without relying on ``mmap.resize``.
+
+    The replacement mapping is detached before any write/truncate.  Linux can
+    generally truncate beneath the original mapping and retain aliases.  If a
+    Windows-style duplicate mapping blocks that operation, the original mapping
+    is closed and reopened only as a last resort.
+    """
+    current_data = raw.__dict__.get("_data")
+    replacement = (
+        current_data
+        if isinstance(current_data, np.memmap) and current_data is not journal.data
+        else None
+    )
+    if replacement is not None:
+        _detach_memmap_mapping(replacement)
+    if _read_memmap_backing(journal) == journal.contents:
+        return
+    try:
+        _write_memmap_backing(journal)
+    except (OSError, SystemError):
+        if not _memmap_remap_required_after_write_error():
+            raise
+        _detach_memmap_mapping(journal.data)
+        _write_memmap_backing(journal)
+        journal.data = _reopen_memmap_backing(journal)
 
 
 def _restore_raw_add_channels_state(raw: Any, state: _RawAddChannelsJournal) -> None:
@@ -443,8 +522,13 @@ def _restore_raw_add_channels_state(raw: Any, state: _RawAddChannelsJournal) -> 
             errors.append(error)
 
     if state.memmap is not None:
-        restore(lambda: _restore_memmap_add_channels_state(state.memmap))
-    restore(lambda: raw.__dict__.__setitem__("_data", state.data))
+        restore(lambda: _restore_memmap_add_channels_state(raw, state.memmap))
+    # A Windows-style duplicate mapping can force the memmap helper to close
+    # the original mapping and reopen it.  Keep the original object whenever
+    # possible, but install that only safe replacement when the platform made
+    # preserving its identity impossible.
+    restored_data = state.memmap.data if state.memmap is not None else state.data
+    restore(lambda: raw.__dict__.__setitem__("_data", restored_data))
     restore(lambda: raw.__dict__.__setitem__("info", state.info))
     restore(lambda: raw.__dict__.__setitem__("_cals", state.cals))
     restore(lambda: raw.__dict__.__setitem__("_read_picks", state.read_picks))

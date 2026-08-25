@@ -677,6 +677,140 @@ class TestFromMneRaw:
         monkeypatch.undo()
         assert concatenate is mne_channels.np.concatenate
 
+    def test_memmap_pre_mutation_failure_does_not_resize_with_memoryview(
+        self, monkeypatch, tmp_path
+    ):
+        receiver = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="a")
+        )
+        incoming = to_mne_rawarray(
+            TimeSeries(
+                np.full(8, 2.0), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="b"
+            )
+        )
+        backing = tmp_path / "raw.memmap"
+        data = np.memmap(backing, dtype=np.float64, mode="w+", shape=(1, 8))
+        data[:] = receiver._data
+        data.flush()
+        receiver._data = data
+        before = backing.read_bytes()
+        view = memoryview(data)
+
+        def fail_merge_info(*args, **kwargs):
+            raise RuntimeError("injected pre-mutation merge failure")
+
+        def unexpected_memmap_restore(*args, **kwargs):
+            raise SystemError("memmap restore must not run before mutation")
+
+        monkeypatch.setattr(mne_channels, "_merge_info", fail_merge_info)
+        monkeypatch.setattr(
+            mne_interop, "_write_memmap_backing", unexpected_memmap_restore
+        )
+        monkeypatch.setattr(
+            mne_interop, "_detach_memmap_mapping", unexpected_memmap_restore
+        )
+        try:
+            with pytest.raises(RuntimeError, match="pre-mutation merge"):
+                receiver.add_channels([incoming])
+        finally:
+            view.release()
+
+        assert receiver._data is data
+        assert backing.read_bytes() == before
+
+    def test_memmap_post_mutation_rollback_detaches_replacement_mapping(
+        self, monkeypatch, tmp_path
+    ):
+        receiver = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="a")
+        )
+        incoming = to_mne_rawarray(
+            TimeSeries(
+                np.full(8, 2.0), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="b"
+            )
+        )
+        backing = tmp_path / "raw.memmap"
+        data = np.memmap(backing, dtype=np.float64, mode="w+", shape=(1, 8))
+        data[:] = receiver._data
+        data.flush()
+        receiver._data = data
+        replacement = None
+
+        def fail_calibration_concatenate(*args, **kwargs):
+            nonlocal replacement
+            replacement = receiver._data
+            assert replacement is not data
+            raise RuntimeError("injected post-mutation calibration failure")
+
+        monkeypatch.setattr(
+            mne_channels.np, "concatenate", fail_calibration_concatenate
+        )
+        with pytest.raises(RuntimeError, match="post-mutation calibration"):
+            receiver.add_channels([incoming])
+
+        assert replacement is not None
+        assert replacement._mmap.closed
+
+    def test_memmap_windows_duplicate_mapping_remaps_only_after_write_failure(
+        self, monkeypatch, tmp_path
+    ):
+        receiver = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="a")
+        )
+        incoming = to_mne_rawarray(
+            TimeSeries(
+                np.full(8, 2.0), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="b"
+            )
+        )
+        backing = tmp_path / "raw.memmap"
+        data = np.memmap(backing, dtype=np.float64, mode="w+", shape=(1, 8))
+        data[:] = receiver._data
+        data.flush()
+        receiver._data = data
+        before = backing.read_bytes()
+        original_size = backing.stat().st_size
+        replacement = None
+        write = mne_interop._write_memmap_backing
+        calls = 0
+
+        def fail_calibration_concatenate(*args, **kwargs):
+            nonlocal replacement
+            replacement = receiver._data
+            raise RuntimeError("injected calibration concatenate failure")
+
+        def duplicate_mapping_blocks_first_write(journal):
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                raise SystemError("simulated duplicate mapping blocks truncate")
+            write(journal)
+
+        monkeypatch.setattr(
+            mne_channels.np, "concatenate", fail_calibration_concatenate
+        )
+        monkeypatch.setattr(
+            mne_interop, "_write_memmap_backing", duplicate_mapping_blocks_first_write
+        )
+        monkeypatch.setattr(
+            mne_interop, "_memmap_remap_required_after_write_error", lambda: True
+        )
+
+        with pytest.raises(RuntimeError, match="calibration concatenate"):
+            receiver.add_channels([incoming])
+
+        assert calls == 2
+        assert replacement is not None
+        assert replacement._mmap.closed
+        assert data._mmap.closed
+        assert receiver._data is not data
+        assert isinstance(receiver._data, np.memmap)
+        assert str(receiver._data.filename) == str(backing)
+        assert receiver._data.shape == (1, 8)
+        assert receiver._data.dtype == data.dtype
+        assert receiver._data.flags.writeable
+        assert backing.stat().st_size == original_size
+        assert backing.read_bytes() == before
+
     @pytest.mark.parametrize("failure", ["unlock", "annotations"])
     def test_add_channels_restores_state_when_meas_date_installation_fails(
         self, monkeypatch, failure
