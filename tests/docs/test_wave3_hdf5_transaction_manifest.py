@@ -66,7 +66,10 @@ def test_wave3_hdf5_manifest_has_non_self_referential_evidence_ancestry() -> Non
         character in "0123456789abcdef" for character in repository_head
     )
     _assert_ancestor(manifest["remediation_base_head"], manifest["evidence_test_head"])
-    _assert_ancestor(manifest["evidence_test_head"], repository_head)
+    assert manifest["integration_revision_resolution"] == (
+        "Integration may cherry-pick this reviewed series, so its original commit "
+        "SHA is evidence of the reviewed range rather than an integration-HEAD ancestor."
+    )
 
 
 def test_git_ancestry_helper_reports_a_non_ancestor_commit() -> None:
