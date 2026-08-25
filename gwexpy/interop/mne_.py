@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from copy import deepcopy
 from operator import index
 from types import MethodType
 from typing import TYPE_CHECKING, Any, Protocol, cast
@@ -347,6 +348,31 @@ def _install_prevalidated_add_channels_metadata(
     setattr(raw, _GWEX_MEAS_DATE_ATTR, raw.info.get("meas_date"))
 
 
+def _snapshot_raw_add_channels_state(raw: Any) -> dict[str, Any]:
+    """Copy all receiver state needed to roll back MNE's in-place mutation.
+
+    The instance-bound guard is intentionally excluded: deep-copying it would
+    retain a method bound to a copied receiver.  It is rebound after restore.
+    """
+    return deepcopy(
+        {name: value for name, value in raw.__dict__.items() if name != "add_channels"}
+    )
+
+
+def _restore_raw_add_channels_state(raw: Any, state: Mapping[str, Any]) -> None:
+    """Restore a Raw transaction without calling MNE metadata mutators.
+
+    This relies only on Raw's normal instance dictionary, rather than MNE's
+    unstable internal update helpers.  ``_install_add_channels_guard`` then
+    creates a method bound to ``raw`` itself, preserving its identity.
+    """
+    raw.__dict__.clear()
+    raw.__dict__.update(state)
+    raw.__dict__.pop("add_channels", None)
+    raw.__dict__.pop("_gwex_exact_add_channels_guard", None)
+    _install_add_channels_guard(raw)
+
+
 def _install_add_channels_guard(raw: Any) -> None:
     """Reject conflicting exact epochs before MNE mutates an in-memory Raw."""
     if getattr(raw, "_gwex_exact_add_channels_guard", False):
@@ -354,12 +380,23 @@ def _install_add_channels_guard(raw: Any) -> None:
 
     def guarded(self: Any, add_list: Any, *args: Any, **kwargs: Any) -> Any:
         plan = _preflight_add_channels(self, add_list)
+        state = _snapshot_raw_add_channels_state(self)
 
         # Look up the class method at call time.  Copy/deepcopy can duplicate
         # this instance-bound guard, so closing over ``raw.add_channels`` would
         # instead mutate the original Raw object.
-        result = type(self).add_channels(self, add_list, *args, **kwargs)
-        _install_prevalidated_add_channels_metadata(self, plan)
+        try:
+            result = type(self).add_channels(self, add_list, *args, **kwargs)
+            _install_prevalidated_add_channels_metadata(self, plan)
+        except BaseException as operation_error:
+            try:
+                _restore_raw_add_channels_state(self, state)
+            except BaseException as restore_error:
+                raise BaseExceptionGroup(
+                    "Raw.add_channels failed and transaction rollback failed",
+                    [operation_error, restore_error],
+                ) from restore_error
+            raise
         return result
 
     raw.add_channels = MethodType(guarded, raw)

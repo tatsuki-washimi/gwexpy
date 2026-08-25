@@ -3,13 +3,16 @@
 import copy
 import datetime
 from types import SimpleNamespace
+from typing import Any
 
 import numpy as np
 import pytest
 
 mne = pytest.importorskip("mne")
+mne_channels = pytest.importorskip("mne.channels.channels")
 
 from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
+from gwexpy.interop import mne_ as mne_interop
 from gwexpy.interop._time import LeapSecondConversionError, datetime_utc_to_gps
 from gwexpy.interop.mne_ import (
     _default_ch_name,
@@ -36,6 +39,38 @@ except ImportError:
     _ASTROPY = False
 
 requires_astropy = pytest.mark.skipif(not _ASTROPY, reason="astropy not installed")
+
+
+def _snapshot_raw_state(raw: Any) -> dict[str, Any]:
+    """Deep-copy every Raw attribute except the instance-bound guard."""
+    return copy.deepcopy(
+        {name: value for name, value in raw.__dict__.items() if name != "add_channels"}
+    )
+
+
+def _assert_semantically_equal(actual: Any, expected: Any) -> None:
+    if isinstance(expected, np.ndarray):
+        np.testing.assert_array_equal(actual, expected)
+    elif isinstance(expected, dict):
+        assert set(actual) == set(expected)
+        for key in expected:
+            _assert_semantically_equal(actual[key], expected[key])
+    elif isinstance(expected, (list, tuple)):
+        assert type(actual) is type(expected)
+        assert len(actual) == len(expected)
+        for actual_item, expected_item in zip(actual, expected, strict=True):
+            _assert_semantically_equal(actual_item, expected_item)
+    else:
+        assert actual == expected
+
+
+def _assert_raw_state_restored(raw: Any, state: dict[str, Any]) -> None:
+    """Verify that a failed add_channels transaction left no observable state."""
+    actual = dict(raw.__dict__)
+    guard = actual.pop("add_channels", None)
+    assert guard is not None
+    assert guard.__self__ is raw
+    _assert_semantically_equal(actual, state)
 
 
 def _make_ts(n=100, name="test"):
@@ -430,6 +465,128 @@ class TestFromMneRaw:
             assert raw._gwex_channel_dt_gps_ns == receiver_intervals
             assert raw.info["meas_date"] == receiver_meas_date
             assert raw._gwex_exact_meas_date == receiver_meas_date
+
+    @pytest.mark.parametrize(
+        "clone_factory", [lambda raw: raw, lambda raw: raw.copy(), copy.deepcopy]
+    )
+    def test_add_channels_restores_state_when_metadata_installation_fails(
+        self, monkeypatch, clone_factory
+    ):
+        original = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="a")
+        )
+        receiver = clone_factory(original)
+        incoming = to_mne_rawarray(
+            TimeSeries(
+                np.full(8, 2.0), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="b"
+            )
+        )
+        original_state = _snapshot_raw_state(original)
+        receiver_state = _snapshot_raw_state(receiver)
+
+        def fail_install(raw, plan):
+            assert raw.ch_names == ["a", "b"]
+            raise RuntimeError("injected metadata installation failure")
+
+        monkeypatch.setattr(
+            mne_interop, "_install_prevalidated_add_channels_metadata", fail_install
+        )
+        with pytest.raises(RuntimeError, match="injected metadata"):
+            receiver.add_channels([incoming])
+
+        _assert_raw_state_restored(receiver, receiver_state)
+        _assert_raw_state_restored(original, original_state)
+
+        monkeypatch.undo()
+        receiver.add_channels([incoming])
+        assert receiver.ch_names == ["a", "b"]
+        assert receiver._gwex_channel_t0_gps_ns == {
+            "a": 1_234_567_890_123_456_789,
+            "b": 1_234_567_890_123_456_789,
+        }
+        if receiver is not original:
+            _assert_raw_state_restored(original, original_state)
+
+    @pytest.mark.parametrize(
+        "clone_factory", [lambda raw: raw, lambda raw: raw.copy(), copy.deepcopy]
+    )
+    def test_add_channels_restores_state_after_second_mne_concatenate_fails(
+        self, monkeypatch, clone_factory
+    ):
+        original = to_mne_rawarray(
+            TimeSeries(np.ones(8), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="a")
+        )
+        receiver = clone_factory(original)
+        incoming = to_mne_rawarray(
+            TimeSeries(
+                np.full(8, 2.0), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="b"
+            )
+        )
+        original_state = _snapshot_raw_state(original)
+        receiver_state = _snapshot_raw_state(receiver)
+        concatenate = mne_channels.np.concatenate
+        calls = 0
+
+        def fail_second_concatenate(*args, **kwargs):
+            nonlocal calls
+            calls += 1
+            if calls == 2:
+                raise RuntimeError("injected second concatenate failure")
+            return concatenate(*args, **kwargs)
+
+        monkeypatch.setattr(mne_channels.np, "concatenate", fail_second_concatenate)
+        with pytest.raises(RuntimeError, match="second concatenate"):
+            receiver.add_channels([incoming])
+
+        assert calls == 2
+        _assert_raw_state_restored(receiver, receiver_state)
+        _assert_raw_state_restored(original, original_state)
+
+    @pytest.mark.parametrize("failure", ["unlock", "annotations"])
+    def test_add_channels_restores_state_when_meas_date_installation_fails(
+        self, monkeypatch, failure
+    ):
+        receiver = to_mne_rawarray(
+            TimeSeries(
+                np.ones(8), t0_ns=1_234_567_890_123_456_789, dt=0.01, name="exact"
+            )
+        )
+        incoming = to_mne_rawarray(
+            TimeSeries(np.full(8, 2.0), t0=1_000_000_000, dt=0.01, name="legacy")
+        )
+        state = _snapshot_raw_state(receiver)
+
+        if failure == "unlock":
+            info_type = type(receiver.info)
+            unlock = info_type._unlock
+
+            def fail_unlock(info):
+                if receiver.ch_names == ["exact", "legacy"]:
+                    raise RuntimeError("injected Info unlock failure")
+                return unlock(info)
+
+            monkeypatch.setattr(info_type, "_unlock", fail_unlock)
+            expected = "Info unlock"
+        else:
+            annotations_type = type(receiver.annotations)
+            set_attribute = annotations_type.__setattr__
+
+            def fail_orig_time(annotation, name, value):
+                if (
+                    annotation is receiver.annotations
+                    and name == "_orig_time"
+                    and receiver.ch_names == ["exact", "legacy"]
+                ):
+                    raise RuntimeError("injected annotations failure")
+                return set_attribute(annotation, name, value)
+
+            monkeypatch.setattr(annotations_type, "__setattr__", fail_orig_time)
+            expected = "annotations"
+
+        with pytest.raises(RuntimeError, match=expected):
+            receiver.add_channels([incoming])
+
+        _assert_raw_state_restored(receiver, state)
 
     @pytest.mark.parametrize("clone_factory", [lambda raw: raw.copy(), copy.deepcopy])
     def test_copied_cropped_receiver_rebases_exact_metadata(self, clone_factory):
