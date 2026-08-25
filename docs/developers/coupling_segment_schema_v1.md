@@ -30,10 +30,13 @@ Unknown columns are rejected. Optional columns are `estimate_kind`,
 `confidence_level` is valid only for upper limits and must satisfy `0 < q < 1`.
 `confidence_level` is rejected when `limit_method` is absent.
 
-When one DataFrame contains both measurements and upper limits,
-non-applicable `limit_method` and `confidence_level` cells are represented by
-an empty string rather than null. This keeps interchange rows free of NaN/null
-values while preserving the row-level rules above.
+For a mixed measurement/upper-limit table, non-applicable `limit_method` and
+`confidence_level` cells may be either the legacy empty string or an explicit
+null (`None`, pandas `NA`, or an Astropy masked value). Null is the canonical
+form emitted by `from_results()` when it joins targets with heterogeneous
+optional-column shapes. Floating `NaN` is not null metadata and is rejected.
+This preserves absence semantics through pandas, Astropy, and the JSON
+envelope without assigning limit semantics to measurement rows.
 
 ## Units and table representations
 
@@ -69,8 +72,13 @@ explicitly converted to `cf`'s unit before rows are emitted. Incompatible units
 are rejected.
 
 `from_results()` is the typed adapter for zero- or multi-target mappings from
-`estimate_coupling()`. Empty mappings produce an empty DataFrame with all v1
-columns. Passing a mapping to `from_result()` raises a descriptive `TypeError`.
+`estimate_coupling()`. Its mapping keys must be strings and are processed in
+lexicographic key order, so a reversed input mapping produces the same row
+order. Empty mappings produce an empty DataFrame with all v1 columns. When
+only some targets emit upper limits, it adds the relevant optional columns to
+the measurement-only target frames before concatenation and writes explicit
+nulls for their non-applicable cells. Passing a mapping to `from_result()`
+raises a descriptive `TypeError`.
 
 ## JSON envelope
 

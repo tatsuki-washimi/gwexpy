@@ -83,8 +83,13 @@ def _is_null(value: Any) -> bool:
     return isinstance(result, (bool, np.bool_)) and bool(result)
 
 
+def _is_absent_optional(value: Any) -> bool:
+    """Return whether optional metadata is explicitly absent, never NaN."""
+    return value is None or value is pd.NA or np.ma.is_masked(value)
+
+
 def _is_missing_optional(value: Any) -> bool:
-    return _is_null(value) or value == ""
+    return _is_absent_optional(value) or (isinstance(value, str) and value == "")
 
 
 def _validate_int(value: Any, name: str, *, positive: bool) -> int:
@@ -233,7 +238,7 @@ def validate(table: Any) -> Any:
             if kind == "upper_limit":
                 if missing_value or not isinstance(value, str) or not value.strip():
                     raise ValueError("limit_method is required for upper_limit")
-            elif not isinstance(value, str) or value != "":
+            elif not _is_missing_optional(value):
                 raise ValueError("limit_method is forbidden for measurement")
     elif "upper_limit" in estimate_kind:
         raise ValueError("limit_method is required for upper_limit")
@@ -248,7 +253,7 @@ def validate(table: Any) -> Any:
                 q = float(value)
                 if not np.isfinite(q) or not 0 < q < 1:
                     raise ValueError("confidence_level must satisfy 0 < q < 1")
-            elif not isinstance(value, str) or value != "":
+            elif not _is_missing_optional(value):
                 raise ValueError("confidence_level is only valid for upper_limit")
     return table
 
@@ -484,7 +489,7 @@ def from_result(
 
 
 def from_results(
-    results: Mapping[object, Any],
+    results: Mapping[str, Any],
     *,
     start_gps_ns: int,
     duration_ns: int,
@@ -501,6 +506,8 @@ def from_results(
     if not isinstance(results, Mapping):
         raise TypeError("results must be an estimate_coupling result mapping")
     _validate_result_options(start_gps_ns, duration_ns, limit_method, confidence_level)
+    if not all(isinstance(key, str) for key in results):
+        raise TypeError("results mapping keys must be strings")
     frames = [
         from_result(
             result,
@@ -509,17 +516,51 @@ def from_results(
             limit_method=limit_method,
             confidence_level=confidence_level,
         )
-        for result in results.values()
+        for _, result in sorted(results.items())
     ]
     if not frames:
         frame = _empty_frame()
     else:
-        frame = pd.concat(frames, ignore_index=True)
+        optional_columns = [
+            name
+            for name in _OPTIONAL_COLUMNS[1:]
+            if any(name in item for item in frames)
+        ]
+        normalized_frames = [
+            _normalize_optional_columns(item, optional_columns) for item in frames
+        ]
+        frame = pd.concat(normalized_frames, ignore_index=True)
     validate(frame)
     return frame
 
 
+def _normalize_optional_columns(
+    frame: pd.DataFrame, optional_columns: list[str]
+) -> pd.DataFrame:
+    """Copy a factory frame with explicit nulls for absent optional metadata.
+
+    ``from_result`` deliberately omits optional columns when a target has no
+    upper-limit rows.  Before heterogeneous factory frames are concatenated,
+    add only optional columns that another target actually emitted and use
+    ``None`` for non-applicable measurement cells.  Normalizing before concat
+    prevents pandas from manufacturing floating ``NaN`` values.
+    """
+    if not optional_columns:
+        return frame
+    normalized = frame.copy(deep=True)
+    measurement = normalized["estimate_kind"] == "measurement"
+    for name in optional_columns:
+        if name not in normalized:
+            normalized[name] = pd.Series([None] * len(normalized), dtype=object)
+        elif bool(measurement.any()):
+            normalized[name] = normalized[name].astype(object)
+            normalized.loc[measurement, name] = None
+    return normalized
+
+
 def _json_scalar(value: Any) -> Any:
+    if _is_absent_optional(value):
+        return None
     if isinstance(value, np.generic):
         return value.item()
     return value
@@ -558,6 +599,8 @@ def from_json_envelope(envelope: Mapping[str, Any]) -> pd.DataFrame:
         not isinstance(row, list) or len(row) != len(columns) for row in rows
     ):
         raise TypeError("envelope rows must be lists matching envelope columns")
-    frame = pd.DataFrame(rows, columns=columns)
+    # Object columns preserve JSON ``null`` as ``None`` instead of allowing
+    # pandas to coerce mixed numeric optional metadata to floating ``NaN``.
+    frame = pd.DataFrame(rows, columns=columns, dtype=object)
     validate(frame)
     return frame

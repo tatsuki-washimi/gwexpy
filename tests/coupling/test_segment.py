@@ -352,6 +352,112 @@ def test_from_results_adapts_empty_and_multi_target_mappings() -> None:
         from_results({}, start_gps_ns=2**63 - 1, duration_ns=1)
 
 
+def test_from_results_normalizes_heterogeneous_optional_columns_deterministically() -> (
+    None
+):
+    from gwexpy.coupling.segment import from_results, validate
+
+    measurement_only = _result()
+    measurement_only.target_name = "measurement"
+    measurement_only.cf_ul = None
+    upper_limits = _result()
+    upper_limits.target_name = "upper"
+    measurement_before = measurement_only.cf.copy()
+    upper_before = upper_limits.cf.copy()
+    upper_limit_before = upper_limits.cf_ul.copy()
+
+    combined = from_results(
+        {"upper": upper_limits, "measurement": measurement_only},
+        start_gps_ns=0,
+        duration_ns=1,
+        limit_method="threshold",
+        confidence_level=0.95,
+    )
+    reversed_combined = from_results(
+        {"measurement": measurement_only, "upper": upper_limits},
+        start_gps_ns=0,
+        duration_ns=1,
+        limit_method="threshold",
+        confidence_level=0.95,
+    )
+
+    assert combined["response_channel"].tolist() == ["measurement", "upper", "upper"]
+    assert combined["estimate_kind"].tolist() == [
+        "measurement",
+        "measurement",
+        "upper_limit",
+    ]
+    assert combined["limit_method"].tolist() == [None, None, "threshold"]
+    assert combined["confidence_level"].tolist() == [None, None, 0.95]
+    assert not any(
+        isinstance(value, float) and np.isnan(value)
+        for name in ("limit_method", "confidence_level")
+        for value in combined[name]
+    )
+    assert validate(combined) is combined
+    pd.testing.assert_frame_equal(combined, reversed_combined)
+    np.testing.assert_array_equal(measurement_only.cf.value, measurement_before.value)
+    np.testing.assert_array_equal(upper_limits.cf.value, upper_before.value)
+    np.testing.assert_array_equal(upper_limits.cf_ul.value, upper_limit_before.value)
+
+
+@pytest.mark.parametrize("absence", [None, pd.NA])
+def test_validate_and_json_round_trip_preserve_null_measurement_optionals(
+    absence: object,
+) -> None:
+    from gwexpy.coupling.segment import (
+        from_json_envelope,
+        to_json_envelope,
+        validate,
+    )
+
+    pandas_table = pd.concat(
+        [
+            _table(
+                estimate_kind="measurement",
+                limit_method=absence,
+                confidence_level=absence,
+            ),
+            _table(
+                estimate_kind="upper_limit",
+                limit_method="threshold",
+                confidence_level=0.95,
+            ),
+        ],
+        ignore_index=True,
+    )
+    pandas_table.attrs["origin"] = {"run": "mixed"}
+    assert validate(pandas_table) is pandas_table
+    assert pandas_table.attrs == {"origin": {"run": "mixed"}}
+
+    astropy_table = Table(
+        {name: values for name, values in pandas_table.items()}, masked=True
+    )
+    astropy_table.meta["origin"] = {"run": "mixed"}
+    astropy_table["frequency_hz"].unit = u.Hz
+    assert validate(astropy_table) is astropy_table
+    assert astropy_table.meta == {"origin": {"run": "mixed"}}
+
+    restored = from_json_envelope(
+        json.loads(json.dumps(to_json_envelope(astropy_table)))
+    )
+    assert restored["limit_method"].tolist() == [None, "threshold"]
+    assert restored["confidence_level"].tolist() == [None, 0.95]
+    assert validate(restored) is restored
+
+
+@pytest.mark.parametrize("column", ["limit_method", "confidence_level"])
+@pytest.mark.parametrize("invalid", [np.nan, np.inf, -np.inf])
+def test_validate_fails_closed_for_non_null_optional_measurement_values(
+    column: str,
+    invalid: float,
+) -> None:
+    from gwexpy.coupling.segment import validate
+
+    with pytest.raises((TypeError, ValueError), match=column):
+        validate(_table(estimate_kind="measurement", **{column: invalid}))
+
+
 def test_json_envelope_preserves_the_v1_empty_table_schema() -> None:
     from gwexpy.coupling.segment import (
         SCHEMA_NAME,
