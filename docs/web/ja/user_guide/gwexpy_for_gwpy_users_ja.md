@@ -1,5 +1,29 @@
 # GWpy ユーザー向け移行ガイド
 
+## GWpy 4 の legacy proxy 移行
+
+GWexpy v0.2.0 では、開発用だった `gwexpy.utils.shell`、
+`gwexpy.utils.sphinx`、`gwexpy.utils.sphinx.ex2rst`、
+`gwexpy.utils.sphinx.zenodo` を削除しました。
+
+```python
+# Before
+from gwexpy.utils.shell import which
+
+# After
+from shutil import which
+import subprocess
+```
+
+削除した `gwexpy.utils.sphinx*` の代わりには保守されている文書ツールを直接使い、
+Zenodo 処理には保守されている Zenodo client またはプロジェクトの release tooling を
+使ってください。table、TimeSeries、LAL、misc の runtime proxy は、GWpy 4 と互換の
+小さく明示的な公開 surface を維持します。
+
+optional な FrameL proxy は遅延 import です。`python-framel` がなくても
+`gwexpy.timeseries.io.gwf.framel` の import は成功し、`read` など FrameL backend を
+使う object にアクセスした時点で元の dependency error が発生します。
+
 このページは、**GWpy から GWexpy へ移るときの入口**です。  
 全 API を網羅するページではありません。まずは「何がそのまま動くか」と「どこから差分を使うと効果が大きいか」を短時間で掴むことを目的にしています。
 

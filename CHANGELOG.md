@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+### Removed (breaking)
+
+- The obsolete developer proxy imports `gwexpy.utils.shell`,
+  `gwexpy.utils.sphinx`, `gwexpy.utils.sphinx.ex2rst`, and
+  `gwexpy.utils.sphinx.zenodo` have been removed. Use `subprocess` and
+  `shutil.which` for shell helpers, maintained documentation tooling directly,
+  and a maintained Zenodo client or project release tooling as appropriate.
+
+### Compatibility fixes
+
+- GWpy 4 runtime proxies now expose curated public table, TimeSeries, LAL, and
+  misc utility surfaces. The optional FrameL compatibility proxy is lazy: it
+  imports without `python-framel` and reports the original dependency error
+  only when a FrameL-backed symbol is requested.
+
 ## [0.1.14] - 2026-08-15
 
 ### Removed (breaking)

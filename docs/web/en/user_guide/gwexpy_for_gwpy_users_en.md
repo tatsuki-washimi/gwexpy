@@ -1,5 +1,30 @@
 # Migration Guide for GWpy Users
 
+## GWpy 4 legacy-proxy migration
+
+GWexpy v0.2.0 removes four obsolete developer-only import paths:
+`gwexpy.utils.shell`, `gwexpy.utils.sphinx`,
+`gwexpy.utils.sphinx.ex2rst`, and `gwexpy.utils.sphinx.zenodo`.
+
+```python
+# Before
+from gwexpy.utils.shell import which
+
+# After
+from shutil import which
+import subprocess
+```
+
+Use maintained documentation tooling directly instead of the three removed
+`gwexpy.utils.sphinx*` paths, and use a maintained Zenodo client or project
+release tooling for Zenodo tasks. Runtime table, TimeSeries, LAL, and misc
+proxies retain a deliberately small GWpy 4-compatible public surface.
+
+The optional FrameL proxy is lazy: importing
+`gwexpy.timeseries.io.gwf.framel` works without `python-framel`; accessing a
+FrameL-backed object such as `read` then raises the original dependency error
+until that backend is installed.
+
 This page is the **entry point for moving from GWpy to GWexpy**.  
 It is not intended to be a full API catalog. The goal is to understand, quickly, what still works as-is and where the high-value differences start.
 
