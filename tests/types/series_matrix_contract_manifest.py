@@ -53,6 +53,7 @@ class InputScenario(str, Enum):
     DEFAULT = "default"
     DIMENSIONLESS_MATRIX = "dimensionless_matrix"
     DIMENSIONAL_INCOMPATIBLE = "dimensional_incompatible"
+    CONFLICTING_EPOCH_AND_TIME_AXIS = "conflicting_epoch_and_time_axis"
 
 
 class Operand(str, Enum):
@@ -128,7 +129,9 @@ class MetadataExpectation(str, Enum):
     DEEP_COPY_CELLS_ROWS_COLUMNS = (
         "deep-independent cells, rows, columns, names, and channels"
     )
-    SCALAR_SERIES_CELL = "preserve selected scalar cell metadata and attrs"
+    SCALAR_SERIES_CELL = (
+        "preserve selected scalar cell metadata in attrs and copy matrix attrs"
+    )
     INPLACE_PRESERVE = "preserve in-place metadata"
     ITERATION_ROWS = "preserve row element metadata and labels"
 
@@ -660,6 +663,22 @@ def _structure_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
                     Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_COLUMN,
                     Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW_COLUMN,
                 )
+            ),
+            _error(
+                family,
+                "scalar_selection",
+                Operand.SPECTROGRAM_BATCH_SCALAR_FIRST,
+                ValueError,
+                surface=Surface.STRUCTURE,
+                scenario=InputScenario.CONFLICTING_EPOCH_AND_TIME_AXIS,
+            ),
+            _error(
+                family,
+                "scalar_selection",
+                Operand.SPECTROGRAM_CELL_SCALAR_POSITIVE,
+                ValueError,
+                surface=Surface.STRUCTURE,
+                scenario=InputScenario.CONFLICTING_EPOCH_AND_TIME_AXIS,
             ),
         ]
         cells.append(
@@ -1331,7 +1350,7 @@ def _build_manifest() -> tuple[ContractCell, ...]:
 
 
 B0_CONTRACT: Final[tuple[ContractCell, ...]] = _build_manifest()
-EXPECTED_B0_CELL_COUNT: Final[int] = 472
+EXPECTED_B0_CELL_COUNT: Final[int] = 474
 assert len(B0_CONTRACT) == EXPECTED_B0_CELL_COUNT
 
 

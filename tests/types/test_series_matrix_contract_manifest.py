@@ -207,10 +207,15 @@ def _matrix(cell: ContractCell):
         Operand.SPECTROGRAM_BATCH_SCALAR_LAST,
     }:
         metadata = _meta(unit)
+        times = (
+            np.array([10.0, 11.0]) * u.s
+            if cell.scenario is InputScenario.CONFLICTING_EPOCH_AND_TIME_AXIS
+            else np.array([1234567890.25, 1234567891.25]) * u.s
+        )
         return decorate(
             SpectrogramMatrix(
                 np.arange(8, dtype=float).reshape(2, 2, 2) + 1,
-                times=np.array([1234567890.25, 1234567891.25]) * u.s,
+                times=times,
                 frequencies=np.arange(2) * u.Hz,
                 meta=MetaDataMatrix(
                     np.array([[metadata[0, 0]], [metadata[1, 0]]], dtype=object),
@@ -224,15 +229,19 @@ def _matrix(cell: ContractCell):
             )
         )
     times = (
-        np.array([1234567890.25, 1234567891.25]) * u.s
-        if cell.operand
-        in {
-            Operand.SPECTROGRAM_CELL_SCALAR_POSITIVE,
-            Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW,
-            Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_COLUMN,
-            Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW_COLUMN,
-        }
-        else np.arange(2) * u.s
+        np.array([10.0, 11.0]) * u.s
+        if cell.scenario is InputScenario.CONFLICTING_EPOCH_AND_TIME_AXIS
+        else (
+            np.array([1234567890.25, 1234567891.25]) * u.s
+            if cell.operand
+            in {
+                Operand.SPECTROGRAM_CELL_SCALAR_POSITIVE,
+                Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW,
+                Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_COLUMN,
+                Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW_COLUMN,
+            }
+            else np.arange(2) * u.s
+        )
     )
     return decorate(
         SpectrogramMatrix(
@@ -975,9 +984,20 @@ def _assert_metadata(cell: ContractCell, matrix, result) -> None:
         assert result.name == metadata.name
         assert result.channel == metadata.channel
         assert result.attrs is not matrix.attrs
-        _assert_deep_equal(result.attrs, matrix.attrs)
+        assert set(result.attrs) == {
+            *matrix.attrs,
+            "gwexpy_selected_cell_metadata",
+        }
+        for key in matrix.attrs:
+            _assert_deep_equal(result.attrs[key], matrix.attrs[key])
+        selected = result.attrs["gwexpy_selected_cell_metadata"]
+        assert isinstance(selected, MetaData)
+        _assert_deep_equal(selected, metadata)
+        assert selected is not metadata
         result.attrs["contract"]["nested"][1]["calibration"].append("scalar-only")
         assert "scalar-only" not in matrix.attrs["contract"]["nested"][1]["calibration"]
+        selected["calibration"]["nested"][1]["gain"] = "scalar-only"
+        assert metadata["calibration"]["nested"][1]["gain"] != "scalar-only"
         return
     if expectation is MetadataExpectation.ITERATION_ROWS:
         for index, row in enumerate(result):
@@ -1323,7 +1343,7 @@ def execute_contract_cell(cell: ContractCell) -> ContractObservation:
 
 def test_b0_manifest_has_a_literal_cell_count_and_unique_ids() -> None:
     assert len(B0_CONTRACT) == EXPECTED_B0_CELL_COUNT
-    assert EXPECTED_B0_CELL_COUNT == 472
+    assert EXPECTED_B0_CELL_COUNT == 474
     ids = [cell.id for cell in B0_CONTRACT]
     assert len(ids) == len(set(ids))
 
@@ -1365,6 +1385,16 @@ def test_scalar_and_integer_sample_selector_cells_are_complete() -> None:
         Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW,
         Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_COLUMN,
         Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW_COLUMN,
+    }
+    assert {
+        (cell.operand, cell.exception_class)
+        for cell in B0_CONTRACT
+        if cell.family is MatrixFamily.SPECTROGRAM
+        and cell.operation == "scalar_selection"
+        and cell.scenario is InputScenario.CONFLICTING_EPOCH_AND_TIME_AXIS
+    } == {
+        (Operand.SPECTROGRAM_BATCH_SCALAR_FIRST, ValueError),
+        (Operand.SPECTROGRAM_CELL_SCALAR_POSITIVE, ValueError),
     }
     for family in (MatrixFamily.TIME_SERIES, MatrixFamily.FREQUENCY_SERIES):
         assert {

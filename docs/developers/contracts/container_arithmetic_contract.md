@@ -5,7 +5,7 @@ contract before issue #637.  It does not adopt or implement the #637
 composition redesign.
 
 The executable canonical ledger is the typed `B0_CONTRACT` in
-`tests/types/series_matrix_contract_manifest.py`.  It contains exactly 472
+`tests/types/series_matrix_contract_manifest.py`.  It contains exactly 474
 cells across `TimeSeriesMatrix`, `FrequencySeriesMatrix`, and
 `SpectrogramMatrix`.  The typed adapter in
 `tests/types/test_series_matrix_contract_manifest.py` executes every cell once
@@ -27,7 +27,11 @@ coverage and SeriesMatrix negative integer sample-index coverage.  The
 472-cell ledger covers the scalar add/sub and ndarray dimensionality cases,
 reviewed metadata/attrs/exponent categories, every supported
 SpectrogramMatrix structural slice selector, scalar extraction, and integer
-sample selection.  `tests/types/test_series_matrix_operator_contract.py`
+sample selection.  The 472-cell ledger was superseded after review required
+scalar extraction to reject conflicting matrix-epoch and explicit-time
+authorities and to retain the complete selected-cell `MetaData` payload.  The
+474-cell ledger freezes those two explicit conflict refusals, along with the
+supported coherent scalar selectors.  `tests/types/test_series_matrix_operator_contract.py`
 retains direct behavioral regressions.  A B1 implementation must update and
 compare this same ledger rather than introducing a second matrix.
 
@@ -40,6 +44,7 @@ The approved structure surface is:
 | `shape`, `dtype`, values | Preserve NumPy shape, dtype, and values according to the concrete matrix class. |
 | Slicing, assignment, iteration | Preserve the concrete matrix family where the current implementation supports the operation; the equivalent `SpectrogramMatrix[:1, :]`/`[:1, :, :, :]`, `[:, :1]`/`[:, :1, :, :]`, `[0, :]`/`[0, :, :, :]`, `[:, 0]`/`[:, 0, :, :]`, and 3-D `[:1]`/`[:1, :, :]` selectors preserve name, epoch, time/frequency axes, explicit metadata keys, and deep-independent metadata/attrs. Time/frequency subsampling raises explicitly. Assignment is value-based and does not change the matrix identity. |
 | `copy`, `astype` | Return an independent concrete matrix with copied metadata and axes. `astype` changes only the requested dtype. |
+| Scalar `SpectrogramMatrix` structural selection | A coherent matrix epoch and `times[0]` are both required. The result uses the matrix epoch as its `t0` authority and preserves independent explicit time/frequency coordinates. Its public `attrs` deep-copies matrix attrs and carries a deep-copied complete selected-cell `MetaData` at `gwexpy_selected_cell_metadata`. Conflicting epoch/time authorities raise `ValueError`; B0 does not infer an epoch from the copied time axis. |
 | `real`, `imag`, `conj` | Return the concrete matrix class and preserve per-cell units. SpectrogramMatrix `real`/`imag` results have deep-independent metadata/attrs and preserve both time and frequency axes. |
 | `transpose`, `reshape` | Preserve the concrete class for the 3-D series families. B0 currently raises `ValueError` for these operations on `SpectrogramMatrix`; that observed exception is frozen honestly in the manifest. |
 | `np.asarray(matrix)` | Return a plain `numpy.ndarray` containing the values. |

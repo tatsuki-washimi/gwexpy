@@ -11,9 +11,12 @@ later 454-cell candidate was superseded after review found incomplete
 equivalent-selector and 3-D batch-slice coverage.  The current executable B0
 ledger's later 460-cell candidate was superseded after review found missing
 scalar Spectrogram epoch and negative integer sample-index coverage.  The
-current executable B0 ledger contains exactly 472 cells; this historical
-benchmark capture does not validate the semantics of any rejected candidate
-or measure the later contract fixes.
+472-cell candidate was superseded after review required scalar extraction to
+reject conflicting matrix-epoch and explicit-time authorities and to preserve
+the complete selected-cell `MetaData` payload. The current executable B0
+ledger contains exactly 474 cells; this historical benchmark capture does not
+validate the semantics of any rejected candidate or measure the later contract
+fixes.
 
 - fixed SHA: `6a13900672900551ccaf1b18fe78b9ce6f062e29`
 - recorded raw capture SHA-256: `5fcdab552f8c910812335e81dfb4e0f170543f69ba78f18a63784191a80bf3b5`

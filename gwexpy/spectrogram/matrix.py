@@ -21,6 +21,18 @@ from .matrix_analysis import SpectrogramMatrixAnalysisMixin
 from .matrix_core import SpectrogramMatrixCoreMixin
 from .spectrogram import Spectrogram
 
+_SELECTED_CELL_METADATA_ATTR = "gwexpy_selected_cell_metadata"
+
+
+def _gps_seconds(value: Any) -> float | None:
+    """Return a matrix epoch or explicit time coordinate as GPS seconds."""
+    if value is None:
+        return None
+    gps_value = getattr(value, "gps", value)
+    if hasattr(gps_value, "to_value"):
+        gps_value = gps_value.to_value(u.s)
+    return float(gps_value)
+
 
 def _selected_metadata_keys(keys: list[str], selector: Any) -> list[str]:
     """Return an independent list of explicit keys selected by *selector*."""
@@ -959,20 +971,50 @@ class SpectrogramMatrix(  # type: ignore[misc]
                     "SpectrogramMatrix scalar structural selection must produce "
                     "a two-dimensional Spectrogram"
                 )
+            epoch = self.epoch
+            epoch_seconds = _gps_seconds(epoch)
+            first_time_seconds = _gps_seconds(self.times[0])
+            if (
+                epoch_seconds is not None
+                and first_time_seconds is not None
+                and not np.isclose(
+                    epoch_seconds, first_time_seconds, rtol=0.0, atol=1e-9
+                )
+            ):
+                raise ValueError(
+                    "SpectrogramMatrix scalar selection requires matrix epoch "
+                    "and explicit times[0] to agree"
+                )
+            if epoch is None:
+                t0 = None
+            elif hasattr(epoch, "gps"):
+                t0 = cast(Any, epoch).gps * u.s
+            else:
+                # Older GWpy constructors expose a numeric GPS epoch; it is
+                # already a valid ``t0`` authority.
+                t0 = epoch
             result = self.series_class(
                 raw_data,
-                times=self._resupplied_frequencies(self.times),
+                t0=t0,
+                dt=self.dt,
                 frequencies=self._resupplied_frequencies(self.frequencies),
                 unit=metadata.unit if metadata else self.unit,
                 name=metadata.name if metadata and metadata.name else self.name,
                 channel=metadata.channel if metadata else None,
             )
-            # With explicit times, GWpy derives epoch from the time axis;
-            # passing ``epoch``/``t0`` separately is ignored and can make the
-            # two public time authorities disagree.  The copied axis is the
-            # authority, so a physically coherent matrix keeps its epoch
-            # without shifting either axis.
-            result.attrs = deepcopy(getattr(self, "attrs", {}))
+            # ``SpectrogramMatrix.epoch`` is independent from its explicit
+            # time coordinates.  ``t0`` is GWpy's recognized epoch authority;
+            # assigning xindex through its public setter would overwrite t0,
+            # so retain the constructed t0 and install an independent copy of
+            # the explicit coordinates directly.
+            result._xindex = self._resupplied_frequencies(self.times)
+            result_attrs = deepcopy(getattr(self, "attrs", {}))
+            if metadata is not None:
+                # A GWpy Spectrogram has no native MetaData container.  The
+                # GWexpy public attrs channel carries the complete selected
+                # cell payload without dropping arbitrary user metadata.
+                result_attrs[_SELECTED_CELL_METADATA_ATTR] = deepcopy(metadata)
+            result.attrs = result_attrs
             return result
 
         def copied_metadata(cells, row_keys, col_keys):

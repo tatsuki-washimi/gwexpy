@@ -21,6 +21,7 @@ from copy import deepcopy
 import numpy as np
 import pytest
 from astropy import units as u
+from astropy.time import Time
 from astropy.units import UnitConversionError
 
 from gwexpy.frequencyseries import FrequencySeriesMatrix
@@ -95,7 +96,9 @@ def make_spectrogram_matrix(unit=u.V, values=None):
     )
 
 
-def _slicing_spectrogram_matrix(*, three_dimensional=False):
+def _slicing_spectrogram_matrix(
+    *, three_dimensional=False, epoch=Time(1234567890.25, format="gps")
+):
     """Build a non-default, nested-metadata fixture for slice contracts."""
     if three_dimensional:
         metadata = MetaDataMatrix(
@@ -120,13 +123,13 @@ def _slicing_spectrogram_matrix(*, three_dimensional=False):
             },
             cols={"single-col": MetaData(column={"nested": [0]})},
             name="three-dimensional-slice",
-            epoch=1234567890.25,
+            epoch=epoch,
         )
     else:
         matrix = make_spectrogram_matrix()
         matrix.times = np.array([1234567890.25, 1234567891.25]) * u.s
         matrix.frequencies = np.array([20.0, 21.0]) * u.Hz
-        matrix.epoch = 1234567890.25
+        matrix.epoch = epoch
         matrix.name = "four-dimensional-slice"
         matrix.meta.row_keys = ["meta-row-0", "meta-row-1"]
         matrix.meta.col_keys = ["meta-col-0", "meta-col-1"]
@@ -351,17 +354,28 @@ def test_series_sample_slice_breaks_shared_metadata_payload_aliases(series_facto
         "4d-negative-row-column",
     ],
 )
+@pytest.mark.parametrize(
+    "epoch",
+    [Time(1234567890.25, format="gps"), 1234567890.25],
+    ids=["time-epoch", "numeric-gps-epoch"],
+)
 def test_spectrogram_scalar_structural_selection_preserves_epoch_and_axes(
-    three_dimensional, selector, source_index
+    three_dimensional, selector, source_index, epoch
 ):
     """Scalar structural selection keeps epoch despite explicit time samples."""
-    source = _slicing_spectrogram_matrix(three_dimensional=three_dimensional)
-    result = source[selector]
+    source = _slicing_spectrogram_matrix(
+        three_dimensional=three_dimensional, epoch=epoch
+    )
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        result = source[selector]
 
     assert type(result) is Spectrogram
-    result_epoch = result.epoch.gps if hasattr(result.epoch, "gps") else result.epoch
     source_epoch = source.epoch.gps if hasattr(source.epoch, "gps") else source.epoch
+    result_epoch = result.epoch.gps if hasattr(result.epoch, "gps") else result.epoch
+    assert source_epoch == 1234567890.25
     assert result_epoch == source_epoch
+    assert not any("xindex was given" in str(warning.message) for warning in caught)
     assert result.unit == source.meta[source_index].unit
     assert result.name == source.meta[source_index].name
     assert result.channel == source.meta[source_index].channel
@@ -378,7 +392,41 @@ def test_spectrogram_scalar_structural_selection_preserves_epoch_and_axes(
     np.testing.assert_array_equal(source.times, source_times)
     np.testing.assert_array_equal(source.frequencies, source_frequencies)
     assert result.attrs is not source.attrs
-    assert result.attrs == source.attrs
+    assert result.attrs["calibration"] == source.attrs["calibration"]
+
+
+@pytest.mark.parametrize(
+    ("three_dimensional", "selector"),
+    [(True, 0), (False, (0, 1))],
+    ids=["3d", "4d"],
+)
+def test_spectrogram_scalar_selection_rejects_conflicting_epoch_and_time_axis(
+    three_dimensional, selector
+):
+    """A scalar result never resolves conflicting matrix time authorities."""
+    source = _slicing_spectrogram_matrix(three_dimensional=three_dimensional)
+    source.times = np.array([10.0, 11.0]) * u.s
+    snapshot = _observable_source_snapshot(source)
+
+    with pytest.raises(ValueError, match="epoch and explicit times"):
+        source[selector]
+
+    _assert_source_unchanged(source, snapshot)
+
+
+def test_spectrogram_scalar_selection_copies_arbitrary_selected_cell_metadata():
+    """The scalar Spectrogram exposes an independent complete cell payload."""
+    source = _slicing_spectrogram_matrix()
+    result = source[0, 1]
+    selected = source.meta[0, 1]
+
+    assert isinstance(result.attrs["gwexpy_selected_cell_metadata"], MetaData)
+    assert result.attrs["gwexpy_selected_cell_metadata"] == selected
+    assert result.attrs["gwexpy_selected_cell_metadata"] is not selected
+    result.attrs["gwexpy_selected_cell_metadata"]["cell"]["nested"][1]["owner"] = (
+        "result"
+    )
+    assert selected["cell"]["nested"][1]["owner"] == "source"
 
 
 @pytest.mark.parametrize(
