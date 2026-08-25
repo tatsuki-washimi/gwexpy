@@ -458,6 +458,7 @@ def _detach_memmap_mapping(data: np.memmap) -> None:
 
 
 _MEMMAP_MAPPING_WINERRORS = frozenset({32, 33, 1224})
+_CPYTHON_DARWIN_MMAP_NO_MREMAP = "mmap: resizing not available--no mremap()"
 
 
 def _mapping_blocks_memmap_restore(error: BaseException) -> bool:
@@ -466,9 +467,11 @@ def _mapping_blocks_memmap_restore(error: BaseException) -> bool:
     This is intentionally capability/error based rather than a platform-name
     check.  ``EBUSY`` covers POSIX active-map truncate failures; the Windows
     values are the documented sharing/lock violations.  NumPy can also expose
-    a failed mmap capability as ``BufferError`` or a mapping-specific
-    ``SystemError``.  Permission, I/O, and unrelated runtime errors must
-    propagate into the transaction's ``BaseExceptionGroup`` untouched.
+    a failed mmap capability as ``BufferError``.  The only ``SystemError``
+    accepted is CPython's exact Darwin no-``mremap`` diagnostic; accepting
+    token matches would close an alias for unrelated failures.  Permission,
+    I/O, and unrelated runtime errors must propagate into the transaction's
+    ``BaseExceptionGroup`` untouched.
     """
     if isinstance(error, BufferError):
         return True
@@ -476,11 +479,8 @@ def _mapping_blocks_memmap_restore(error: BaseException) -> bool:
         return error.errno == errno.EBUSY or getattr(error, "winerror", None) in (
             _MEMMAP_MAPPING_WINERRORS
         )
-    if isinstance(error, SystemError):
-        detail = str(error).lower()
-        return "mmap" in detail and any(
-            marker in detail for marker in ("mapping", "resize", "truncate")
-        )
+    if type(error) is SystemError:
+        return str(error) == _CPYTHON_DARWIN_MMAP_NO_MREMAP
     return False
 
 
@@ -503,8 +503,8 @@ def _restore_memmap_add_channels_state(
     """Restore a changed memmap without relying on ``mmap.resize``.
 
     The replacement mapping is detached before any write/truncate.  Linux can
-    generally truncate beneath the original mapping and retain aliases.  If a
-    any active mapping blocks that operation, the original mapping is closed
+    generally truncate beneath the original mapping and retain aliases.  If an
+    active mapping blocks that operation, the original mapping is closed
     and reopened only as a last resort.  This follows MNE 1.12's private
     memmap behavior by capability/error rather than assuming a host OS.
     """

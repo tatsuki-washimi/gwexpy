@@ -815,9 +815,9 @@ class TestFromMneRaw:
         "mapping_error_factory",
         [
             lambda: OSError(errno.EBUSY, "simulated active mapping blocks truncate"),
-            lambda: SystemError("simulated mmap mapping cannot truncate"),
+            lambda: SystemError("mmap: resizing not available--no mremap()"),
         ],
-        ids=["busy-truncate", "mmap-system-error"],
+        ids=["busy-truncate", "darwin-no-mremap"],
     )
     def test_memmap_darwin_active_mapping_remaps_after_busy_truncate(
         self, monkeypatch, tmp_path, mapping_error_factory
@@ -877,8 +877,16 @@ class TestFromMneRaw:
             lambda: PermissionError(errno.EACCES, "simulated permission denial"),
             lambda: OSError(errno.EIO, "simulated backing-file corruption"),
             lambda: SystemError("simulated unrelated runtime failure"),
+            lambda: SystemError("mmap parser mapping metadata corrupt"),
+            lambda: SystemError("mmap audit failed while logging truncate request"),
         ],
-        ids=["permission", "corruption", "unrelated-system-error"],
+        ids=[
+            "permission",
+            "corruption",
+            "unrelated-system-error",
+            "mmap-metadata",
+            "mmap-audit",
+        ],
     )
     def test_memmap_unrelated_restore_errors_are_composed_without_retry(
         self, monkeypatch, tmp_path, error_factory
@@ -921,6 +929,8 @@ class TestFromMneRaw:
         rollback_error = exc_info.value.exceptions[1]
         assert isinstance(rollback_error, BaseExceptionGroup)
         assert isinstance(rollback_error.exceptions[0], type(error_factory()))
+        assert receiver._data is data
+        assert not data._mmap.closed
 
     @pytest.mark.parametrize("failure", ["unlock", "annotations"])
     def test_add_channels_restores_state_when_meas_date_installation_fails(
