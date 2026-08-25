@@ -39,13 +39,17 @@
 - Modify `CHANGELOG.md`: `[Unreleased]` breaking-removal and compatibility entry.
 - Modify `.github/workflows/test-compat-gwpy.yml`: latest-4.x triggers, LAL provisioning, and focused proxy gate.
 - Preserve `pyproject.toml`: keep `gwexpy.utils.sphinx*` excluded and verify it remains so.
+- Preserve `MANIFEST.in`: keep `prune gwexpy/utils/sphinx` and verify the sdist policy remains effective.
 - Create `docs/developers/plans/manifests/audit-manifest-v020-gwpy4-proxy-compat.yaml`: command/result evidence and final boundaries.
 
 ### Tests
 
 - Create `tests/test_gwpy4_proxy_contract.py`: exact exports, identities, removed names/modules, lazy FrameL, and generic GWF boundary.
 - Create `tests/docs/test_gwpy4_proxy_workflow.py`: workflow path/provisioning/command contract.
+- Create `tests/docs/test_gwpy4_proxy_docs.py`: changelog and EN/JA navigation/migration contract.
+- Modify `tests/io/test_io_contract.py`: alias-specific GWF availability assertions.
 - Modify `tests/io/test_io_docs_contract_sync.py`: canonical GWF versus explicit FrameL documentation contract.
+- Modify `tests/timeseries/test_io_gwf_timeseriesdict.py`: default-skip and `GWEXPY_REQUIRE_GWF_FRAMEL=1` required-gate behavior.
 - Reuse `tests/table/test_table.py`, `tests/interop/test_interop_lal.py`, `tests/timeseries/test_io_gwf_timeseriesdict.py`, and the broader timeseries suite for behavioral regression coverage.
 
 ## Models, skills, and effort
@@ -57,6 +61,14 @@
 - **Estimated quota:** High, driven by two independent reviews, full doctest/timeseries/static gates, package builds, and potentially bounded Sphinx retries.
 - **Breakdown:** baseline and RED tests 15–25 min; proxy implementation 20–35 min; FrameL/GWF contracts 15–25 min; removals/docs/CI 15–25 min; validation/audit/reviews 25–40 min.
 - **Main uncertainty:** the full module-doctest and EN/JA Sphinx gates may reveal pre-existing failures or exceed the 180-second harness bound. Record these truthfully; do not hide or relabel them as passes.
+
+### Command policy
+
+Every shell invocation is prefixed by RTK. Use `rtk <command>` for a single
+command and `rtk run -c '<shell composition>'` when environment assignments,
+pipes, variables, timeouts, or heredocs must share one shell. These forms were
+checked against the installed RTK interface; the plan does not depend on an
+RTK-specific `env`, `python`, `mktemp`, `timeout`, or `sha256sum` subcommand.
 
 ---
 
@@ -73,7 +85,9 @@ Run:
 ```bash
 rtk git status --short
 rtk git rev-parse HEAD
-rtk git -C /home/washimi/work/gwexpy status --porcelain=v1 | rtk sha256sum
+rtk git remote -v
+rtk git config --get-regexp '^remote\.'
+rtk run -c 'git -C /home/washimi/work/gwexpy status --porcelain=v1 | sha256sum'
 ```
 
 Expected: integration status is empty; HEAD contains this committed plan; original dirty-worktree hash remains `ba596e14b056730df2ec95a41920b8a2845d52ee42e930e0cc73811fc2b98dfc`.
@@ -212,7 +226,10 @@ def test_generic_gwf_boundary_is_frozen() -> None:
 
 - [ ] **Step 4: Write the failing workflow contract**
 
-Create `tests/docs/test_gwpy4_proxy_workflow.py` using `yaml.safe_load`. Require the exact path filters from the specification, `lalsuite` in the provisioning command, all three focused test paths in one run step, and the unchanged `pytest -q tests/timeseries` step.
+Create `tests/docs/test_gwpy4_proxy_workflow.py` using `yaml.safe_load`. Require
+all pre-existing and new path filters, `lalsuite` in the provisioning command,
+all three focused test paths in one dedicated run step, that step's ordering
+before the full timeseries step, and the unchanged pre-existing focused tests.
 
 ```python
 from pathlib import Path
@@ -224,22 +241,50 @@ WORKFLOW = ROOT / ".github/workflows/test-compat-gwpy.yml"
 def test_latest_gwpy_proxy_gate_is_wired() -> None:
     workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
     paths = set(workflow[True]["pull_request"]["paths"])
-    assert {
+    required_existing = {
+        "gwexpy/timeseries/**", "gwexpy/frequencyseries/**",
+        "gwexpy/spectrogram/**", "gwexpy/signal/**", "gwexpy/types/**",
+        "gwexpy/interop/**", "gwexpy/io/**", "gwexpy/fitting/**",
+        "gwexpy/plot/**", "gwexpy/utils/**", "tests/timeseries/**",
+        "pyproject.toml", "requirements*.txt", "environment.yml",
+        ".github/workflows/test-compat-gwpy.yml",
+    }
+    required_new = {
         "gwexpy/table/**", "tests/table/**", "tests/interop/**",
         "tests/test_gwpy4_proxy_contract.py",
         "docs/developers/contracts/public_io_contract.*",
-    } <= paths
-    runs = "\n".join(
-        step.get("run", "") for step in workflow["jobs"]["gwpy-compat"]["steps"]
-    )
-    assert "python -m pip install lalsuite" in runs
+    }
+    assert required_existing | required_new <= paths
+
+    steps = workflow["jobs"]["gwpy-compat"]["steps"]
+    by_name = {step["name"]: step for step in steps if "name" in step}
+    provisioning = by_name["Provision compatibility environment"]["run"]
+    assert "python -m pip install lalsuite" in provisioning
+
+    old_focused = by_name["Run focused compatibility tests"]["run"]
     for test_path in (
+        "tests/timeseries/test_transfer_function_compat.py",
+        "tests/timeseries/test_collections_spectral_compat.py",
+        "tests/timeseries/test_fft_param_compat.py",
+    ):
+        assert test_path in old_focused
+
+    proxy_step = by_name["Run GWpy 4 proxy compatibility tests"]
+    expected_proxy_paths = (
         "tests/test_gwpy4_proxy_contract.py",
         "tests/table/test_table.py",
         "tests/interop/test_interop_lal.py",
-    ):
-        assert test_path in runs
-    assert "pytest -q tests/timeseries" in runs
+    )
+    assert proxy_step["run"].count("pytest -q") == 1
+    assert all(path in proxy_step["run"] for path in expected_proxy_paths)
+
+    full_index = next(
+        index for index, step in enumerate(steps)
+        if step.get("name") == "Run full timeseries suite"
+    )
+    proxy_index = steps.index(proxy_step)
+    assert proxy_index < full_index
+    assert steps[full_index]["run"].strip() == "pytest -q tests/timeseries"
 ```
 
 - [ ] **Step 5: Run RED tests**
@@ -247,7 +292,7 @@ def test_latest_gwpy_proxy_gate_is_wired() -> None:
 Run:
 
 ```bash
-rtk env PYTHONPATH=$PWD pytest -q tests/test_gwpy4_proxy_contract.py tests/docs/test_gwpy4_proxy_workflow.py
+rtk run -c 'PYTHONPATH=$PWD pytest -q tests/test_gwpy4_proxy_contract.py tests/docs/test_gwpy4_proxy_workflow.py'
 ```
 
 Expected: FAIL because the five stale proxies do not import, the four deleted modules still exist, FrameL loads eagerly, and the workflow lacks the new gate.
@@ -289,8 +334,8 @@ Import only `if_not_none`, `property_alias`, `round_to_power`, and `unique` from
 Run:
 
 ```bash
-rtk env PYTHONPATH=$PWD pytest -q tests/test_gwpy4_proxy_contract.py -k "table or misc"
-rtk env PYTHONPATH=$PWD pytest -q tests/table/test_table.py
+rtk run -c 'PYTHONPATH=$PWD pytest -q tests/test_gwpy4_proxy_contract.py -k "table or misc"'
+rtk run -c 'PYTHONPATH=$PWD pytest -q tests/table/test_table.py'
 ```
 
 Expected: table/misc proxy tests and behavioral table tests PASS; unrelated still-unfixed proxy rows may be deselected.
@@ -333,7 +378,13 @@ Set `__all__` to the exact twelve-name tuple from Task 1. Do not preserve `as_se
 Import `gwpy_units` with `from gwpy.detector import units as gwpy_units`,
 `to_gps` from `gwpy.time`, and the approved maps/regex/converters from
 `gwpy.utils.lal`. Omit `LAL_UNIT_INDEX` entirely and set the exact fifteen-name
-`__all__` from Task 1.
+`__all__` from Task 1. The owner map is decision-complete:
+
+| Owner | Symbols |
+|---|---|
+| `gwpy.utils.lal` | `LAL_DETECTORS`, `LAL_NUMPY_FROM_TYPE_STR`, `LAL_TYPE_FROM_NUMPY`, `LAL_TYPE_FROM_STR`, `LAL_TYPE_REGEX`, `LAL_TYPE_STR`, `LAL_TYPE_STR_FROM_NUMPY`, `find_typed_function`, `from_lal_type`, `from_lal_unit`, `to_lal_ligotimegps`, `to_lal_type_str`, `to_lal_unit` |
+| `gwpy.time` | `to_gps` |
+| `gwpy.detector.units` module | `gwpy_units` |
 
 - [ ] **Step 3: Add real LAL owner and behavior assertions**
 
@@ -342,8 +393,8 @@ Extend the contract test to assert every retained LAL object is identical to its
 - [ ] **Step 4: Run focused tests**
 
 ```bash
-rtk env PYTHONPATH=$PWD pytest -q tests/test_gwpy4_proxy_contract.py -k "timeseries_core or lal or removed_proxy_leaks"
-rtk env PYTHONPATH=$PWD pytest -q tests/interop/test_interop_lal.py
+rtk run -c 'PYTHONPATH=$PWD pytest -q tests/test_gwpy4_proxy_contract.py -k "timeseries_core or lal or removed_proxy_leaks"'
+rtk run -c 'PYTHONPATH=$PWD pytest -q tests/interop/test_interop_lal.py'
 ```
 
 Expected: all selected tests PASS with LALSuite present.
@@ -398,34 +449,74 @@ def __getattr__(name: str) -> Any:
     globals()[name] = value
     return value
 
+_DIRECTORY = tuple(sorted(__all__))
+
 def __dir__() -> list[str]:
-    return sorted(set(globals()) | set(__all__))
+    return list(_DIRECTORY)
 ```
 
 Do not catch or rewrite `ModuleNotFoundError`; missing `framel` must retain its original type, name, message, cause, and context.
 
 - [ ] **Step 2: Make lazy tests independent of the host backend**
 
-The missing-backend test must monkeypatch the proxy's `import_module` call and clear the proxy module cache. The available-backend identity test uses `pytest.importorskip("framel")`, reloads the proxy, and compares requested objects to `gwpy.timeseries.io.gwf.framel`.
+The missing-backend test must monkeypatch the proxy's `import_module` call and
+clear the proxy module cache. Assert `dir(proxy) == sorted(FRAME_EXPORTS)` before
+and after accessing a symbol, so caching cannot grow the directory surface or
+expose `_load`, `_module`, `import_module`, `ModuleType`, or `Any`. The
+available-backend identity test uses `pytest.importorskip("framel")`, reloads
+the proxy, compares requested objects to `gwpy.timeseries.io.gwf.framel`, and
+reasserts the identical fixed `dir()` result after access.
 
 - [ ] **Step 3: Update the GWF contract notes and executable sync test**
 
-Keep `optional_dependencies: []` and `available_in_base_install` for canonical `gwf`. Add notes stating `framel`/`gwf.framel` require optional `python-framel`, default tests skip unavailable explicit-backend rows, and `GWEXPY_REQUIRE_GWF_FRAMEL=1` makes absence a required-gate failure. Mirror this in the Markdown contract and assert the strings in `tests/io/test_io_docs_contract_sync.py`.
+Keep `optional_dependencies: []` and `available_in_base_install` for canonical
+`gwf`. Add notes stating `framel`/`gwf.framel` require optional
+`python-framel`, default tests skip unavailable explicit-backend rows, and
+`GWEXPY_REQUIRE_GWF_FRAMEL=1` makes absence a required-gate failure. Mirror this
+in the Markdown contract and assert the strings in
+`tests/io/test_io_docs_contract_sync.py`.
+
+In `tests/io/test_io_contract.py`, add a contract test that selects the
+canonical `gwf` entry and requires:
+
+```python
+assert entry["optional_dependencies"] == []
+assert entry["unavailable_behavior"] == {
+    "read": "available_in_base_install",
+    "write": "available_in_base_install",
+}
+assert {"framel", "gwf.framel"} <= set(entry["aliases"])
+assert any("explicit FrameL" in note and "python-framel" in note for note in entry["notes"])
+```
+
+In `tests/timeseries/test_io_gwf_timeseriesdict.py`, add a test-only helper
+that checks `has_gwf_backend("framel")`. When unavailable it calls
+`pytest.skip` by default and `pytest.fail` when
+`os.environ.get("GWEXPY_REQUIRE_GWF_FRAMEL") == "1"`. Use that helper in the
+real explicit `format="gwf.framel"` read test. Add unit tests proving all three
+branches: default missing backend skips, required missing backend fails, and
+available backend continues. No production environment-variable branch is
+added.
 
 - [ ] **Step 4: Run focused and adjacent GWF tests**
 
 ```bash
-rtk env PYTHONPATH=$PWD pytest -q tests/test_gwpy4_proxy_contract.py -k "framel or generic_gwf"
-rtk env PYTHONPATH=$PWD pytest -q tests/io/test_io_contract.py tests/io/test_io_docs_contract_sync.py
-rtk env PYTHONPATH=$PWD pytest -q tests/timeseries/test_io_gwf_timeseriesdict.py tests/timeseries/test_io_gwf_framel.py
+rtk run -c 'PYTHONPATH=$PWD pytest -q tests/test_gwpy4_proxy_contract.py -k "framel or generic_gwf"'
+rtk run -c 'PYTHONPATH=$PWD pytest -q tests/io/test_io_contract.py tests/io/test_io_docs_contract_sync.py'
+rtk run -c 'PYTHONPATH=$PWD pytest -q tests/timeseries/test_io_gwf_timeseriesdict.py tests/timeseries/test_io_gwf_framel.py'
+rtk run -c 'PYTHONPATH=$PWD GWEXPY_REQUIRE_GWF_FRAMEL=1 pytest -q tests/timeseries/test_io_gwf_timeseriesdict.py -k framel'
 ```
 
-Expected: lazy import/boundary and contract tests PASS; explicit real FrameL tests PASS when installed or SKIP under the existing default optional-backend policy.
+Expected: lazy import/boundary, helper-unit, and contract tests PASS. Explicit
+real FrameL tests PASS when installed or SKIP under the default policy. The
+required-gate command PASSes when FrameL is installed; when absent, it returns
+the intentional required-gate failure and that nonzero result is recorded as
+contract evidence, not relabeled as a passing release gate.
 
 - [ ] **Step 5: Commit the FrameL/GWF slice**
 
 ```bash
-rtk git add gwexpy/timeseries/io/gwf/framel.py docs/developers/contracts/public_io_contract.json docs/developers/contracts/public_io_contract.md tests/test_gwpy4_proxy_contract.py tests/io/test_io_docs_contract_sync.py
+rtk git add gwexpy/timeseries/io/gwf/framel.py docs/developers/contracts/public_io_contract.json docs/developers/contracts/public_io_contract.md tests/test_gwpy4_proxy_contract.py tests/io/test_io_contract.py tests/io/test_io_docs_contract_sync.py tests/timeseries/test_io_gwf_timeseriesdict.py
 rtk git commit -m "fix(io): load the FrameL proxy lazily"
 ```
 
@@ -439,47 +530,116 @@ rtk git commit -m "fix(io): load the FrameL proxy lazily"
 - Delete: `gwexpy/utils/sphinx/ex2rst.py`
 - Delete: `gwexpy/utils/sphinx/zenodo.py`
 - Preserve: `pyproject.toml`
+- Preserve: `MANIFEST.in`
 - Test: `tests/test_gwpy4_proxy_contract.py`
 - Test: `tests/test_check_release_artifacts_script.py`
 
 - [ ] **Step 1: Delete the four approved files without stubs**
 
-Delete only the four paths above. Do not delete `gwexpy/utils/__init__.py`, and do not add deprecated modules that merely raise custom errors.
+Delete only the four paths above. Do not delete `gwexpy/utils/__init__.py`, and
+do not add deprecated modules that merely raise custom errors. After deletion,
+verify `gwexpy/utils/sphinx` contains no files. If an ignored `__pycache__`
+exists, move it to a task-specific directory under `/tmp` and then remove the
+now-empty `gwexpy/utils/sphinx` directory with `rmdir`; never use recursive
+deletion.
 
 - [ ] **Step 2: Add package-policy regression coverage**
 
-In `tests/test_gwpy4_proxy_contract.py`, parse `pyproject.toml` with `tomllib` and require `gwexpy.utils.sphinx*` in `tool.setuptools.packages.find.exclude`. Extend the existing release-artifact tests only if needed to assert both wheel and sdist reject `gwexpy/utils/sphinx/**`; do not change general release policy.
+In `tests/test_gwpy4_proxy_contract.py`, parse `pyproject.toml` with `tomllib`
+and require `gwexpy.utils.sphinx*` in
+`tool.setuptools.packages.find.exclude`. Read `MANIFEST.in` and require
+`prune gwexpy/utils/sphinx`. Require the source directory itself to be absent,
+not only its `.py` files. Extend the existing release-artifact tests only if
+needed to assert both wheel and sdist reject `gwexpy/utils/sphinx/**`; do not
+change general release policy.
 
 - [ ] **Step 3: Run deletion and artifact-policy tests**
 
 ```bash
-rtk env PYTHONPATH=$PWD pytest -q tests/test_gwpy4_proxy_contract.py -k "deleted or package"
-rtk env PYTHONPATH=$PWD pytest -q tests/test_check_release_artifacts_script.py
+rtk run -c 'PYTHONPATH=$PWD pytest -q tests/test_gwpy4_proxy_contract.py -k "deleted or package"'
+rtk run -c 'PYTHONPATH=$PWD pytest -q tests/test_check_release_artifacts_script.py'
+rtk run -c '
+PYTHONPATH=$PWD python -P - <<'"'"'PY'"'"'
+import importlib
+
+for name in (
+    "gwexpy.utils.shell",
+    "gwexpy.utils.sphinx",
+    "gwexpy.utils.sphinx.ex2rst",
+    "gwexpy.utils.sphinx.zenodo",
+):
+    try:
+        importlib.import_module(name)
+    except ModuleNotFoundError:
+        continue
+    raise AssertionError(f"removed source module imported: {name}")
+PY
+'
 ```
 
-Expected: deleted imports raise normal `ModuleNotFoundError`; package-policy tests PASS.
+Expected: deleted imports raise normal `ModuleNotFoundError` from the isolated
+source checkout; source/package-policy tests PASS.
 
 - [ ] **Step 4: Build wheel/sdist outside the worktree and inspect contents**
 
-Run in a fresh task-specific temporary directory:
+Run the build, archive inspection, and isolated wheel import in one supervised
+shell so the generated path is unambiguous:
 
 ```bash
-GWEXPY_PROXY_DIST="$(rtk mktemp -d --tmpdir gwexpy-v020-proxy-dist.XXXXXXXX)"
-rtk python -m build --sdist --wheel --no-isolation --outdir "$GWEXPY_PROXY_DIST"
-rtk python scripts/check_release_artifacts.py "$GWEXPY_PROXY_DIST"
+rtk run -c '
+set -eu
+GWEXPY_PROXY_DIST="$(mktemp -d --tmpdir gwexpy-v020-proxy-dist.XXXXXXXX)"
+python -m build --sdist --wheel --no-isolation --outdir "$GWEXPY_PROXY_DIST"
+python scripts/check_release_artifacts.py "$GWEXPY_PROXY_DIST"
+python -P - "$GWEXPY_PROXY_DIST" <<'"'"'PY'"'"'
+from __future__ import annotations
+import importlib
+import sys
+import tarfile
+import zipfile
+from pathlib import Path
+
+dist = Path(sys.argv[1])
+wheel, = dist.glob("*.whl")
+sdist, = dist.glob("*.tar.gz")
+forbidden = (
+    "gwexpy/utils/shell.py",
+    "gwexpy/utils/sphinx/__init__.py",
+    "gwexpy/utils/sphinx/ex2rst.py",
+    "gwexpy/utils/sphinx/zenodo.py",
+)
+with zipfile.ZipFile(wheel) as archive:
+    wheel_names = set(archive.namelist())
+with tarfile.open(sdist, "r:*") as archive:
+    sdist_names = {"/".join(Path(name).parts[1:]) for name in archive.getnames()}
+assert not (set(forbidden) & wheel_names)
+assert not (set(forbidden) & sdist_names)
+
+sys.path.insert(0, str(wheel))
+for name in (
+    "gwexpy.utils.shell",
+    "gwexpy.utils.sphinx",
+    "gwexpy.utils.sphinx.ex2rst",
+    "gwexpy.utils.sphinx.zenodo",
+):
+    try:
+        importlib.import_module(name)
+    except ModuleNotFoundError:
+        continue
+    raise AssertionError(f"removed module imported from wheel: {name}")
+PY
+'
 ```
 
-Then inspect both archives with a read-only Python test and assert none of the
-four removed relative paths is present. Run a `python -P` smoke with the wheel
-prepended to `sys.path` so the source checkout cannot shadow it, and assert all
-four removed imports raise `ModuleNotFoundError`. Expected: one wheel and one
-sdist, artifact hygiene PASS, zero removed proxy paths, and four normal import
-failures without custom stubs.
+Expected: one wheel and one sdist, artifact hygiene PASS, zero removed proxy
+paths, and four normal import failures without custom stubs. The `-P` isolated
+process prepends the wheel itself, so the source checkout and any editable
+installation cannot satisfy the removed imports.
 
 - [ ] **Step 5: Commit the removals**
 
 ```bash
-rtk git add gwexpy/utils/shell.py gwexpy/utils/sphinx tests/test_gwpy4_proxy_contract.py tests/test_check_release_artifacts_script.py
+rtk git add -A -- gwexpy/utils/shell.py gwexpy/utils/sphinx tests/test_gwpy4_proxy_contract.py tests/test_check_release_artifacts_script.py
 rtk git commit -m "refactor(utils): remove obsolete GWpy developer proxies"
 ```
 
@@ -500,7 +660,8 @@ Add these PR paths: `gwexpy/table/**`, `tests/table/**`, `tests/interop/**`, `te
 
 - [ ] **Step 2: Add the exact focused command**
 
-Before the existing full timeseries step, run:
+Add a dedicated step named `Run GWpy 4 proxy compatibility tests` before the
+existing full timeseries step, with exactly one pytest invocation:
 
 ```bash
 pytest -q \
@@ -516,20 +677,37 @@ collection-spectral, and FFT-parameter compatibility tests.
 - [ ] **Step 3: Make the workflow contract GREEN**
 
 ```bash
-rtk env PYTHONPATH=$PWD pytest -q tests/docs/test_gwpy4_proxy_workflow.py
+rtk run -c 'PYTHONPATH=$PWD pytest -q tests/docs/test_gwpy4_proxy_workflow.py'
 ```
 
 Expected: PASS and YAML parse succeeds.
 
 - [ ] **Step 4: Add paired migration notes and Unreleased changelog entry**
 
-Under `CHANGELOG.md` `[Unreleased]`, add a `Removed (breaking)` entry listing the four deleted imports and replacements, followed by a compatibility fix entry for the five curated surfaces and lazy FrameL behavior. Add the same facts and before/after import examples to the existing EN/JA GWpy migration guides. Do not create `release_notes/v0.2.0.md`, bump a version, or alter release metadata.
+Under `CHANGELOG.md` `[Unreleased]`, add a `Removed (breaking)` entry listing
+the four deleted imports and replacements, followed by a compatibility fix
+entry for the five curated surfaces and lazy FrameL behavior. Add the same
+facts and before/after import examples to the existing EN/JA GWpy migration
+guides. Do not create `release_notes/v0.2.0.md`, bump a version, or alter
+release metadata.
+
+Create `tests/docs/test_gwpy4_proxy_docs.py` to assert the changelog names all
+four removed paths and both migration guides describe the removals and lazy
+FrameL behavior. Assert the canonical pages remain explicitly linked from
+both locale roots and reference indexes:
+
+```python
+assert "user_guide/gwexpy_for_gwpy_users_en" in EN_INDEX.read_text()
+assert "../user_guide/gwexpy_for_gwpy_users_en" in EN_REFERENCE.read_text()
+assert "user_guide/gwexpy_for_gwpy_users_ja" in JA_INDEX.read_text()
+assert "../user_guide/gwexpy_for_gwpy_users_ja" in JA_REFERENCE.read_text()
+```
 
 - [ ] **Step 5: Verify docs navigation and release contracts**
 
 ```bash
-rtk env PYTHONPATH=$PWD pytest -q tests/docs/test_docs_conf_runtime.py tests/test_gen_release_notes.py tests/test_release_contracts.py
-rtk env PYTHONPATH=$PWD pytest -q tests/io/test_io_docs_contract_sync.py
+rtk run -c 'PYTHONPATH=$PWD pytest -q tests/docs/test_gwpy4_proxy_docs.py tests/docs/test_docs_conf_runtime.py tests/test_gen_release_notes.py tests/test_release_contracts.py'
+rtk run -c 'PYTHONPATH=$PWD pytest -q tests/io/test_io_docs_contract_sync.py'
 ```
 
 Expected: PASS; existing EN/JA migration pages remain linked and `Unreleased` remains the source of truth.
@@ -537,7 +715,7 @@ Expected: PASS; existing EN/JA migration pages remain linked and `Unreleased` re
 - [ ] **Step 6: Commit CI and migration docs**
 
 ```bash
-rtk git add .github/workflows/test-compat-gwpy.yml tests/docs/test_gwpy4_proxy_workflow.py CHANGELOG.md docs/web/en/user_guide/gwexpy_for_gwpy_users_en.md docs/web/ja/user_guide/gwexpy_for_gwpy_users_ja.md
+rtk git add .github/workflows/test-compat-gwpy.yml tests/docs/test_gwpy4_proxy_workflow.py tests/docs/test_gwpy4_proxy_docs.py CHANGELOG.md docs/web/en/user_guide/gwexpy_for_gwpy_users_en.md docs/web/ja/user_guide/gwexpy_for_gwpy_users_ja.md
 rtk git commit -m "docs(compat): publish GWpy 4 proxy migration"
 ```
 
@@ -552,16 +730,18 @@ rtk git commit -m "docs(compat): publish GWpy 4 proxy migration"
 - [ ] **Step 1: Run the complete focused compatibility matrix in GWpy 4.0.1**
 
 ```bash
-rtk env PYTHONPATH=$PWD pytest -q tests/test_gwpy4_proxy_contract.py tests/table/test_table.py tests/interop/test_interop_lal.py tests/docs/test_gwpy4_proxy_workflow.py tests/io/test_io_contract.py tests/io/test_io_docs_contract_sync.py
-rtk env PYTHONPATH=$PWD pytest -q tests/timeseries
+rtk run -c 'PYTHONPATH=$PWD pytest -q tests/test_gwpy4_proxy_contract.py tests/table/test_table.py tests/interop/test_interop_lal.py tests/docs/test_gwpy4_proxy_workflow.py tests/docs/test_gwpy4_proxy_docs.py tests/io/test_io_contract.py tests/io/test_io_docs_contract_sync.py'
+rtk run -c 'PYTHONPATH=$PWD pytest -q tests/timeseries'
 ```
 
-Expected: PASS, with only documented optional-backend skips.
+Expected: the default lane PASSes with only documented optional-backend skips.
+The separate `GWEXPY_REQUIRE_GWF_FRAMEL=1` command has the conditional result
+defined in Task 4 and is recorded separately from this default passing lane.
 
 - [ ] **Step 2: Run the required full module-doctest gate**
 
 ```bash
-rtk env PYTHONPATH=$PWD PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 MPLCONFIGDIR=/tmp/gwexpy-v020-proxy-doctest-mpl timeout 180 pytest -q --doctest-modules gwexpy
+rtk run -c 'PYTHONPATH=$PWD PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 MPLCONFIGDIR=/tmp/gwexpy-v020-proxy-doctest-mpl timeout 180 pytest -q --doctest-modules gwexpy'
 ```
 
 Expected: collection succeeds with none of the original ten proxy errors. Any later failure is classified, reproduced at the integration parent if applicable, and recorded rather than hidden.
@@ -580,8 +760,8 @@ Expected: Ruff and MyPy PASS. If the unchanged `tests/docs/test_root_roadmap_con
 - [ ] **Step 4: Run bounded EN/JA Sphinx gates**
 
 ```bash
-rtk env PYTHONPATH=$PWD timeout 180 python -m sphinx -W --keep-going -b html -D language=en docs /tmp/gwexpy-v020-proxy-docs-en
-rtk env PYTHONPATH=$PWD timeout 180 python -m sphinx -W --keep-going -b html -D language=ja docs /tmp/gwexpy-v020-proxy-docs-ja
+rtk run -c 'PYTHONPATH=$PWD timeout 180 python -m sphinx -W --keep-going -b html -D language=en docs /tmp/gwexpy-v020-proxy-docs-en'
+rtk run -c 'PYTHONPATH=$PWD timeout 180 python -m sphinx -W --keep-going -b html -D language=ja docs /tmp/gwexpy-v020-proxy-docs-ja'
 ```
 
 If either times out, retry once with `-j 1` and a distinct `/tmp` output directory. Record pass/fail/timeout and the exact reason; do not claim an uncompleted build.
@@ -595,7 +775,7 @@ Run the workflow-equivalent environment only if already available without instal
 Record baseline hash, RED/GREEN results, versions, optional dependency conditions, package contents, every test/static/docs gate, latest-4.x disposition, prohibited mutations, and pre-audit status. Parse it:
 
 ```bash
-rtk env PYTHONPATH=$PWD python -c "import pathlib,yaml; yaml.safe_load(pathlib.Path('docs/developers/plans/manifests/audit-manifest-v020-gwpy4-proxy-compat.yaml').read_text())"
+rtk run -c 'PYTHONPATH=$PWD python -c "import pathlib,yaml; yaml.safe_load(pathlib.Path('"'"'docs/developers/plans/manifests/audit-manifest-v020-gwpy4-proxy-compat.yaml'"'"').read_text())"'
 ```
 
 Expected: exit 0.
@@ -612,10 +792,17 @@ rtk git commit -m "docs(audit): record GWpy 4 proxy compatibility"
 ```bash
 rtk git status --short
 rtk git log -1 --oneline
-rtk git -C /home/washimi/work/gwexpy status --porcelain=v1 | rtk sha256sum
+rtk git remote -v
+rtk git config --get-regexp '^remote\.'
+rtk run -c 'git -C /home/washimi/work/gwexpy status --porcelain=v1 | sha256sum'
 ```
 
-Expected: integration worktree clean; original dirty-worktree hash unchanged; no push, tag, release, version, remote, package-installation, or GitHub mutation.
+Expected: integration worktree clean; original dirty-worktree hash unchanged;
+remote listings byte-for-byte match the baseline evidence; no push, tag,
+release, version, remote, shared-environment package installation, or GitHub
+mutation. The manifest explicitly records GitHub state as **not inspected** and
+states that no `gh`, web-write, or GitHub mutation tool was invoked; it must not
+claim external-state equality without inspection.
 
 ---
 
