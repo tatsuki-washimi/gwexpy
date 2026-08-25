@@ -6,6 +6,7 @@ import importlib
 import os
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -89,6 +90,16 @@ def test_deleted_proxy_source_paths_are_absent(module_name: str) -> None:
     relative = Path(*module_name.split("."))
     assert not relative.with_suffix(".py").exists()
     assert not (relative / "__init__.py").exists()
+
+
+def test_deleted_developer_proxy_package_policy_is_preserved() -> None:
+    root = Path(__file__).resolve().parents[1]
+    pyproject = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))
+    excludes = pyproject["tool"]["setuptools"]["packages"]["find"]["exclude"]
+
+    assert "gwexpy.utils.sphinx*" in excludes
+    assert "prune gwexpy/utils/sphinx" in (root / "MANIFEST.in").read_text(encoding="utf-8")
+    assert not (root / "gwexpy/utils/sphinx").exists()
 
 
 def test_timeseries_core_uses_maintained_owners() -> None:
