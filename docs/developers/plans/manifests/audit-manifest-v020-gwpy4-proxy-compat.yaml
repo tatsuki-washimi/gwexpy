@@ -172,6 +172,9 @@ remediation:
     - timestamp: "2026-08-25T19:13:22+09:00"
       sha256: e1151dd2a84b1c62a23b343dbfe6630bdb12b6090d0bad209c1ccc8abf29b229
       source: remediation_final_pre_commit_porcelain_hash
+    - timestamp: "2026-08-25T19:14:01+09:00"
+      sha256: e1151dd2a84b1c62a23b343dbfe6630bdb12b6090d0bad209c1ccc8abf29b229
+      source: remediation_final_post_audit_commit_porcelain_hash
   original_worktree_preservation_statement: >-
     This implementation did not target the original worktree and only read its
     porcelain stream for hashes. Concurrent external mutation was observed by
@@ -241,3 +244,4 @@ remediation:
     yaml_parse: pass
     remote_comparison: pass
     original_worktree_remediation_start_equals_pre_commit_final: true
+    original_worktree_remediation_start_equals_post_audit_commit_final: true
