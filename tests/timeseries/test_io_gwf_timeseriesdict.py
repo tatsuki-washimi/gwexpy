@@ -1,3 +1,5 @@
+import os
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -23,6 +25,34 @@ def has_gwf_backend(backend: str | None = None) -> bool:
         return bool(get_channel_names(FIXTURE_DATA, **kwargs))
     except (ImportError, ModuleNotFoundError, OSError, RuntimeError, ValueError):
         return False
+
+
+def require_framel_backend() -> None:
+    """Skip optional FrameL coverage unless the required-gate flag is set."""
+    if has_gwf_backend("framel"):
+        return
+    diagnostic = "GWEXPY_REQUIRE_GWF_FRAMEL=1 requires the framel GWF backend"
+    if os.environ.get("GWEXPY_REQUIRE_GWF_FRAMEL") == "1":
+        pytest.fail(diagnostic)
+    pytest.skip("framel gwf backend not available")
+
+
+def test_require_framel_backend_skips_when_optional(monkeypatch):
+    monkeypatch.setattr(sys.modules[__name__], "has_gwf_backend", lambda backend: False)
+    with pytest.raises(pytest.skip.Exception):
+        require_framel_backend()
+
+
+def test_require_framel_backend_fails_when_required(monkeypatch):
+    monkeypatch.setattr(sys.modules[__name__], "has_gwf_backend", lambda backend: False)
+    monkeypatch.setenv("GWEXPY_REQUIRE_GWF_FRAMEL", "1")
+    with pytest.raises(pytest.fail.Exception, match="requires the framel GWF backend"):
+        require_framel_backend()
+
+
+def test_require_framel_backend_continues_when_available(monkeypatch):
+    monkeypatch.setattr(sys.modules[__name__], "has_gwf_backend", lambda backend: True)
+    require_framel_backend()
 
 
 def write_gwf_parts(
@@ -784,8 +814,7 @@ def test_extract_gwf_read_args_rejects_positional_keyword_overlap():
 def test_read_gwf_timeseries_with_single_channel_by_format_gwf():
     from gwpy.io.gwf.core import get_channel_names
 
-    if not has_gwf_backend("framel"):
-        pytest.skip("framel gwf backend not available")
+    require_framel_backend()
 
     try:
         expected = get_channel_names(FIXTURE_DATA, backend="frameCPP")

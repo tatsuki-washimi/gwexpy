@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import importlib
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -155,6 +158,85 @@ def test_misc_proxy_uses_maintained_owner() -> None:
 
 
 def test_generic_gwf_boundary_is_frozen() -> None:
-    from gwexpy.io import gwf
+    gwf = importlib.import_module("gwexpy.io.gwf")
 
     assert tuple(gwf.__all__) == GWF_EXPORTS
+
+
+def test_generic_gwf_boundary_imports_the_gwexpy_wrapper() -> None:
+    gwf = importlib.import_module("gwexpy.io.gwf")
+
+    assert gwf.__name__ == "gwexpy.io.gwf"
+    assert tuple(gwf.__all__) == GWF_EXPORTS
+
+
+def test_framel_proxy_does_not_load_backend_for_static_surface(monkeypatch) -> None:
+    sys.modules.pop("gwexpy.timeseries.io.gwf.framel", None)
+    original_import = importlib.import_module
+
+    def guarded_import(name: str, package: str | None = None):
+        if name == "gwpy.timeseries.io.gwf.framel":
+            raise AssertionError("FrameL backend loaded eagerly")
+        return original_import(name, package)
+
+    monkeypatch.setattr(importlib, "import_module", guarded_import)
+    proxy = importlib.import_module("gwexpy.timeseries.io.gwf.framel")
+    assert tuple(proxy.__all__) == FRAME_EXPORTS
+    assert dir(proxy) == sorted(FRAME_EXPORTS)
+
+
+def test_framel_proxy_preserves_missing_backend_error(monkeypatch) -> None:
+    proxy = importlib.import_module("gwexpy.timeseries.io.gwf.framel")
+    monkeypatch.setattr(proxy, "_module", None)
+
+    def missing_backend(name: str):
+        raise ModuleNotFoundError("No module named 'framel'", name="framel")
+
+    monkeypatch.setattr(proxy, "import_module", missing_backend)
+    with pytest.raises(ModuleNotFoundError, match="No module named 'framel'"):
+        proxy.read
+    assert dir(proxy) == sorted(FRAME_EXPORTS)
+
+
+def test_framel_proxy_forwards_backend_objects_when_available() -> None:
+    pytest.importorskip("framel")
+    proxy = importlib.reload(importlib.import_module("gwexpy.timeseries.io.gwf.framel"))
+    owner = importlib.import_module("gwpy.timeseries.io.gwf.framel")
+    assert proxy.read is owner.read
+    assert proxy.TimeSeries is owner.TimeSeries
+    assert dir(proxy) == sorted(FRAME_EXPORTS)
+
+
+def test_required_framel_subprocess_contract() -> None:
+    root = Path(__file__).resolve().parents[1]
+    child_env = os.environ | {
+        "GWEXPY_REQUIRE_GWF_FRAMEL": "1",
+        "PYTHONPATH": str(root),
+    }
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "tests/timeseries/test_io_gwf_timeseriesdict.py::test_read_gwf_timeseries_with_single_channel_by_format_gwf",
+        ],
+        cwd=root,
+        env=child_env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    output = result.stdout + result.stderr
+    try:
+        from gwpy.io.gwf.core import get_channel_names
+
+        backend_available = bool(get_channel_names(root / "tests/fixtures/data/test.gwf", backend="framel"))
+    except (ImportError, ModuleNotFoundError, OSError, RuntimeError, ValueError):
+        backend_available = False
+
+    if backend_available:
+        assert result.returncode == 0, output
+    else:
+        assert result.returncode == 1, output
+        assert "GWEXPY_REQUIRE_GWF_FRAMEL=1 requires the framel GWF backend" in output

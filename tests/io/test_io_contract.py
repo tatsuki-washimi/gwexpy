@@ -176,6 +176,21 @@ def test_public_contract_schema_is_well_formed():
                 assert unavailable_behavior == "not_public"
 
 
+def test_gwf_contract_distinguishes_canonical_and_framel_availability():
+    entry = {entry["canonical"]: entry for entry in _load_contracts()["formats"]}["gwf"]
+
+    assert entry["optional_dependencies"] == []
+    assert entry["unavailable_behavior"] == {
+        "read": "available_in_base_install",
+        "write": "available_in_base_install",
+    }
+    assert {"framel", "gwf.framel"} <= set(entry["aliases"])
+    assert any(
+        "explicit FrameL" in note and "python-framel" in note
+        for note in entry["notes"]
+    )
+
+
 def test_registry_contract_is_registered_in_registry():
     data = _load_contracts()
 

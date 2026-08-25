@@ -211,6 +211,24 @@ def test_optional_dependency_matrix_matches_contract():
     assert "`audio` または `all` extra で追加してください" in ja
 
 
+def test_gwf_contract_describes_canonical_and_explicit_framel_routes() -> None:
+    gwf = _load_contract()["gwf"]
+    contract_md = _read(CONTRACT_MD)
+
+    assert gwf["optional_dependencies"] == []
+    assert gwf["unavailable_behavior"] == {
+        "read": "available_in_base_install",
+        "write": "available_in_base_install",
+    }
+    for phrase in (
+        "explicit FrameL",
+        "python-framel",
+        "GWEXPY_REQUIRE_GWF_FRAMEL=1",
+    ):
+        assert any(phrase in note for note in gwf["notes"])
+        assert phrase in contract_md
+
+
 def test_docs_describe_machine_readable_time_contract() -> None:
     contract = _load_contract()
     contract_md = _read(CONTRACT_MD)

@@ -78,6 +78,16 @@ Rules:
 
 These decisions are fixed before expanding P1/P2/P3 coverage:
 
+### GWF and the optional FrameL backend
+
+The canonical `gwf` format remains available in the base installation and has
+no optional dependency declaration.  The explicit FrameL aliases `framel` and
+`gwf.framel` require the optional `python-framel` backend.  Default tests skip
+explicit FrameL rows when that backend is unavailable;
+`GWEXPY_REQUIRE_GWF_FRAMEL=1` converts its absence into a required-gate
+failure.  This does not make canonical `gwf` optional and does not prevent
+importing the lazy FrameL compatibility proxy.
+
 ### Time semantics and timezone routing
 
 `timezone` never reinterprets an absolute or fixed-zone timestamp. For an

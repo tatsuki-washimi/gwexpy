@@ -80,6 +80,8 @@
             "trusted_only": false,
             "metadata_requirements": [],
             "notes": [
+                "Canonical gwf remains available in the base install; explicit FrameL aliases framel and gwf.framel require the optional python-framel backend.",
+                "Default tests skip unavailable explicit FrameL rows; GWEXPY_REQUIRE_GWF_FRAMEL=1 makes their absence a required-gate failure.",
                 "Backend aliases resolve through gwpy GWF readers.",
                 "Public direct I/O includes TimeSeries and TimeSeriesDict reads.",
                 "TimeSeries and TimeSeriesDict reads accept ordered list/tuple sources of .gwf paths.",
