@@ -1,9 +1,10 @@
 """Registry HDF5 hooks for durable Spectrogram provenance sidecars.
 
-Provenance-aware reads and sidecar updates are serialized within this Python
-process.  It provides rollback for a single path or open HDF5 handle, but does not claim a
-cross-process transaction; that broader HDF5 atomicity contract belongs to
-the later Wave3 work.
+Provenance-aware filesystem-backed operations use in-process locks and bounded
+POSIX ``flock`` coordination, with data-plus-sidecar rollback and recovery for
+the selected operation scope. Unsupported platforms and anonymous sources fail
+closed. No distributed or network-filesystem guarantee is made, and
+independently mutated raw ``h5py`` handles are outside this contract.
 """
 
 from __future__ import annotations
