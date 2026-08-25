@@ -1,11 +1,5 @@
 from __future__ import annotations
 
-from gwpy.utils.misc import (
-    OrderedDict,
-    nullcontext,
-)
+from gwpy.utils.misc import if_not_none, property_alias, round_to_power, unique
 
-__all__ = [
-    "OrderedDict",
-    "nullcontext",
-]
+__all__ = ("if_not_none", "property_alias", "round_to_power", "unique")
