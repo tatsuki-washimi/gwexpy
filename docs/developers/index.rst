@@ -10,6 +10,7 @@ Architecture & Design
    contracts/numerical
    contracts/public_interop_contract
    contracts/public_io_contract
+   coupling_segment_schema_v1
    design/design_data/index
    design/gui/implementation_map
    design/gui/reference_analysis

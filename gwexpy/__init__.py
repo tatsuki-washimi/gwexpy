@@ -76,6 +76,7 @@ warnings.filterwarnings(
 # Subpackages are available via namespace
 from . import (
     astro,
+    coupling,
     detector,
     frequencyseries,
     histogram,
@@ -189,6 +190,7 @@ __all__ = [
     "spectrogram",
     "spectral",
     "astro",
+    "coupling",
     "detector",
     "plot",
     "segments",

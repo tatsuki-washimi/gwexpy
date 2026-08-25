@@ -191,6 +191,19 @@ class TestImportOrderIsolated:
         """)
         assert result.returncode == 0, result.stderr
 
+    def test_top_level_coupling_export_is_bootstrap_neutral(self):
+        """The public coupling namespace imports without registry side effects."""
+        result = _run_isolated("""\
+            import gwexpy
+            from gwexpy.interop._registry import ConverterRegistry
+
+            before = dict(ConverterRegistry._constructors)
+            assert "coupling" in gwexpy.__all__
+            assert callable(gwexpy.coupling.validate)
+            assert dict(ConverterRegistry._constructors) == before
+        """)
+        assert result.returncode == 0, result.stderr
+
 
 # -- In-process tests ---------------------------------------------------------
 

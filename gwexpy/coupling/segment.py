@@ -8,7 +8,7 @@ primary surface; Astropy Tables work through the same ``columns`` and
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from numbers import Integral, Real
 from typing import Any
 
@@ -18,7 +18,14 @@ from astropy import units as u
 
 SCHEMA_NAME = "gwexpy.coupling.segment.v1"
 
-__all__ = ["SCHEMA_NAME", "from_result", "validate"]
+__all__ = [
+    "SCHEMA_NAME",
+    "from_json_envelope",
+    "from_result",
+    "from_results",
+    "to_json_envelope",
+    "validate",
+]
 
 _REQUIRED_COLUMNS = (
     "start_gps_ns",
@@ -33,10 +40,11 @@ _OPTIONAL_COLUMNS = (
     "estimate_kind",
     "limit_method",
     "confidence_level",
-    "significance",
 )
 _KNOWN_COLUMNS = set(_REQUIRED_COLUMNS) | set(_OPTIONAL_COLUMNS)
 _INT64_MAX = 2**63 - 1
+_FREQUENCY_GRID_ULPS = 32
+_FREQUENCY_GRID_RESOLUTION_FRACTION = 1e-9
 
 
 def _column_names(table: Any) -> list[str]:
@@ -89,6 +97,15 @@ def _validate_int(value: Any, name: str, *, positive: bool) -> int:
     return integer
 
 
+def _validate_interval(start_gps_ns: Any, duration_ns: Any) -> tuple[int, int]:
+    """Validate a nanosecond interval and reject an unrepresentable endpoint."""
+    start = _validate_int(start_gps_ns, "start_gps_ns", positive=False)
+    duration = _validate_int(duration_ns, "duration_ns", positive=True)
+    if duration > _INT64_MAX - start:
+        raise ValueError("start_gps_ns + duration_ns endpoint must fit signed int64")
+    return start, duration
+
+
 def _validate_nonnegative_float(value: Any, name: str) -> float:
     if isinstance(value, (bool, np.bool_)) or not isinstance(value, Real):
         raise TypeError(f"{name} must be a real number")
@@ -134,31 +151,25 @@ def _validate_frequency_column(table: Any, values: list[Any]) -> None:
         _validate_nonnegative_float(value, "frequency_hz")
 
 
-def _validate_significance_column(table: Any, values: list[Any]) -> None:
-    column = table["significance"]
-    column_unit = getattr(column, "unit", None)
-    if column_unit is not None:
-        try:
-            if not u.Unit(column_unit).is_equivalent(u.dimensionless_unscaled):
-                raise ValueError("significance must be dimensionless")
-        except (TypeError, ValueError) as exc:
-            if (
-                isinstance(exc, ValueError)
-                and str(exc) == "significance must be dimensionless"
-            ):
-                raise
-            raise ValueError("significance must be dimensionless") from exc
-    for value in values:
-        if _is_null(value):
-            raise ValueError("significance must be finite and dimensionless")
-        if isinstance(value, u.Quantity):
-            if not value.unit.is_equivalent(u.dimensionless_unscaled):
-                raise ValueError("significance must be dimensionless")
-            value = value.to_value(u.dimensionless_unscaled)
-        if isinstance(value, (bool, np.bool_)) or not isinstance(value, Real):
-            raise TypeError("significance must be a real number")
-        if not np.isfinite(float(value)):
-            raise ValueError("significance must be finite and dimensionless")
+def _validate_coupling_factor_units(table: Any, unit_strings: list[str]) -> None:
+    """Require Astropy's optional column unit to agree with row unit strings.
+
+    ``coupling_factor_unit`` is the v1 interchange authority.  A pandas frame
+    has no separate column-unit channel.  Astropy's column unit is therefore
+    accepted only as matching metadata; it is never used to relabel values.
+    """
+    column_unit = getattr(table["coupling_factor"], "unit", None)
+    if column_unit is None:
+        return
+    try:
+        declared_unit = u.Unit(column_unit)
+    except (TypeError, ValueError, u.UnitsError) as exc:
+        raise ValueError(
+            "coupling_factor_unit conflicts with coupling_factor unit"
+        ) from exc
+    for unit_string in unit_strings:
+        if declared_unit != u.Unit(unit_string):
+            raise ValueError("coupling_factor_unit conflicts with coupling_factor unit")
 
 
 def validate(table: Any) -> Any:
@@ -193,10 +204,8 @@ def validate(table: Any) -> Any:
         if any(_is_null(value) for value in columns[name]):
             raise ValueError(f"required column {name!r} must not contain nulls")
 
-    for value in columns["start_gps_ns"]:
-        _validate_int(value, "start_gps_ns", positive=False)
-    for value in columns["duration_ns"]:
-        _validate_int(value, "duration_ns", positive=True)
+    for start, duration in zip(columns["start_gps_ns"], columns["duration_ns"]):
+        _validate_interval(start, duration)
     for name in ("source_channel", "response_channel"):
         for value in columns[name]:
             if not isinstance(value, str):
@@ -207,8 +216,8 @@ def validate(table: Any) -> Any:
     for value in columns["coupling_factor"]:
         _validate_nonnegative_float(value, "coupling_factor")
 
-    for value in columns["coupling_factor_unit"]:
-        _canonical_unit(value)
+    unit_strings = [_canonical_unit(value) for value in columns["coupling_factor_unit"]]
+    _validate_coupling_factor_units(table, unit_strings)
     estimate_kind = ["measurement"] * row_count
     if "estimate_kind" in names:
         estimate_kind = []
@@ -241,9 +250,6 @@ def validate(table: Any) -> Any:
                     raise ValueError("confidence_level must satisfy 0 < q < 1")
             elif not isinstance(value, str) or value != "":
                 raise ValueError("confidence_level is only valid for upper_limit")
-    if "significance" in names:
-        _validate_significance_column(table, columns["significance"])
-
     return table
 
 
@@ -270,12 +276,10 @@ def _frequency_values(series: Any, name: str) -> np.ndarray:
         ) from exc
 
 
-def _series_unit(series: Any, name: str, *, required: bool = False) -> u.UnitBase:
+def _series_unit(series: Any, name: str) -> u.UnitBase:
     value = getattr(series, "unit", None)
     if value is None:
-        if required:
-            raise TypeError(f"{name} must provide a coupling-factor unit")
-        return u.dimensionless_unscaled
+        raise TypeError(f"{name} must provide a coupling-factor unit")
     try:
         return u.Unit(value)
     except (TypeError, ValueError, u.UnitsError) as exc:
@@ -297,6 +301,71 @@ def _boolean_mask(value: Any, shape: tuple[int, ...]) -> np.ndarray:
     raise TypeError("result.valid_mask must contain only boolean values")
 
 
+def _frequency_grid_tolerance(frequencies: np.ndarray) -> np.ndarray:
+    """Return per-bin Hz tolerances tied to precision and bin resolution.
+
+    The tolerance is the larger of 32 binary64 ULPs at a bin's magnitude and
+    one billionth of its nearest positive neighbour spacing.  This admits unit
+    conversion roundoff without merging physically distinct analysis bins.
+    """
+    scale = np.maximum(np.abs(frequencies), 1.0)
+    ulp_tolerance = _FREQUENCY_GRID_ULPS * np.finfo(float).eps * scale
+    if frequencies.size < 2:
+        return ulp_tolerance
+
+    differences = np.abs(np.diff(frequencies))
+    resolutions = np.full(frequencies.shape, np.inf, dtype=float)
+    positive = differences[differences > 0]
+    if positive.size == 0:
+        return ulp_tolerance
+    resolutions[0] = differences[0] if differences[0] > 0 else positive.min()
+    resolutions[-1] = differences[-1] if differences[-1] > 0 else positive.min()
+    if frequencies.size > 2:
+        left = np.where(differences[:-1] > 0, differences[:-1], positive.min())
+        right = np.where(differences[1:] > 0, differences[1:], positive.min())
+        resolutions[1:-1] = np.minimum(left, right)
+    return np.maximum(ulp_tolerance, _FREQUENCY_GRID_RESOLUTION_FRACTION * resolutions)
+
+
+def _frequency_grids_match(reference: np.ndarray, candidate: np.ndarray) -> bool:
+    if reference.shape != candidate.shape:
+        return False
+    if not np.all(np.isfinite(reference)) or not np.all(np.isfinite(candidate)):
+        return False
+    return bool(
+        np.all(np.abs(candidate - reference) <= _frequency_grid_tolerance(reference))
+    )
+
+
+def _empty_frame() -> pd.DataFrame:
+    return pd.DataFrame(columns=[*_REQUIRED_COLUMNS, "estimate_kind"])
+
+
+def _validate_result_options(
+    start_gps_ns: int,
+    duration_ns: int,
+    limit_method: str | None,
+    confidence_level: float | None,
+) -> tuple[int, int]:
+    """Validate arguments shared by single- and mapping-result factories."""
+    start, duration = _validate_interval(start_gps_ns, duration_ns)
+    if limit_method is not None and (
+        not isinstance(limit_method, str) or not limit_method.strip()
+    ):
+        raise TypeError("limit_method must be a nonempty string")
+    if confidence_level is not None:
+        if limit_method is None:
+            raise ValueError("confidence_level requires limit_method")
+        if isinstance(confidence_level, (bool, np.bool_)) or not isinstance(
+            confidence_level, Real
+        ):
+            raise TypeError("confidence_level must be a real number")
+        q = float(confidence_level)
+        if not np.isfinite(q) or not 0 < q < 1:
+            raise ValueError("confidence_level must satisfy 0 < q < 1")
+    return start, duration
+
+
 def from_result(
     result: Any,
     *,
@@ -313,20 +382,14 @@ def from_result(
     Invalid bins are otherwise omitted. The returned frame contains no nulls;
     non-applicable mixed-kind metadata uses an empty string.
     """
-    start = _validate_int(start_gps_ns, "start_gps_ns", positive=False)
-    duration = _validate_int(duration_ns, "duration_ns", positive=True)
-    if limit_method is not None and (
-        not isinstance(limit_method, str) or not limit_method.strip()
-    ):
-        raise TypeError("limit_method must be a nonempty string")
-    if confidence_level is not None:
-        if isinstance(confidence_level, (bool, np.bool_)) or not isinstance(
-            confidence_level, Real
-        ):
-            raise TypeError("confidence_level must be a real number")
-        q = float(confidence_level)
-        if not np.isfinite(q) or not 0 < q < 1:
-            raise ValueError("confidence_level must satisfy 0 < q < 1")
+    if isinstance(result, Mapping):
+        raise TypeError("result mappings must be passed to from_results")
+    if not hasattr(result, "cf"):
+        raise TypeError("result must provide cf; use from_results for mappings")
+
+    start, duration = _validate_result_options(
+        start_gps_ns, duration_ns, limit_method, confidence_level
+    )
 
     cf = result.cf
     cf_values = _series_values(cf, "cf")
@@ -345,9 +408,9 @@ def from_result(
         ul_values = _series_values(cf_ul, "cf_ul")
         if ul_values.shape != cf_values.shape:
             raise ValueError("result.cf_ul must align with result.cf")
-        if not np.array_equal(ul_frequencies, frequencies):
+        if not _frequency_grids_match(frequencies, ul_frequencies):
             raise ValueError("result.cf_ul frequency grid must match result.cf")
-        ul_unit = _series_unit(cf_ul, "result.cf_ul", required=True)
+        ul_unit = _series_unit(cf_ul, "result.cf_ul")
         try:
             ul_values = ul_values * ul_unit.to(cf_unit)
         except (TypeError, ValueError, u.UnitsError) as exc:
@@ -364,7 +427,6 @@ def from_result(
         raise ValueError("result.target_name must be a nonempty string")
 
     rows: list[dict[str, Any]] = []
-    emitted_indices: list[int] = []
     for index, frequency in enumerate(frequencies):
         common = {
             "start_gps_ns": start,
@@ -388,7 +450,6 @@ def from_result(
                     "estimate_kind": "measurement",
                 }
             )
-            emitted_indices.append(index)
         elif (
             limit_method is not None
             and np.isfinite(frequency)
@@ -403,7 +464,6 @@ def from_result(
                     "estimate_kind": "upper_limit",
                 }
             )
-            emitted_indices.append(index)
 
     frame = pd.DataFrame(rows, columns=[*_REQUIRED_COLUMNS, "estimate_kind"])
     if frame.empty:
@@ -419,16 +479,85 @@ def from_result(
                 confidence_level if kind == "upper_limit" else "" for kind in kinds
             ]
 
-    significance = getattr(result, "_significance_array", None)
-    if callable(significance):
-        try:
-            significance_values = np.asarray(significance(), dtype=float)
-        except (TypeError, ValueError):
-            significance_values = np.array([])
-        if significance_values.shape == frequencies.shape:
-            selected = significance_values[emitted_indices]
-            if selected.size and np.all(np.isfinite(selected)):
-                frame["significance"] = selected
+    validate(frame)
+    return frame
 
+
+def from_results(
+    results: Mapping[object, Any],
+    *,
+    start_gps_ns: int,
+    duration_ns: int,
+    limit_method: str | None = None,
+    confidence_level: float | None = None,
+) -> pd.DataFrame:
+    """Convert an ``estimate_coupling`` result mapping into a v1 DataFrame.
+
+    ``estimate_coupling`` returns one result directly for a single target and a
+    mapping for zero or multiple targets.  Use :func:`from_result` for the
+    former and this adapter for the latter.  Empty mappings produce an empty,
+    validated v1 frame with its declared columns preserved.
+    """
+    if not isinstance(results, Mapping):
+        raise TypeError("results must be an estimate_coupling result mapping")
+    _validate_result_options(start_gps_ns, duration_ns, limit_method, confidence_level)
+    frames = [
+        from_result(
+            result,
+            start_gps_ns=start_gps_ns,
+            duration_ns=duration_ns,
+            limit_method=limit_method,
+            confidence_level=confidence_level,
+        )
+        for result in results.values()
+    ]
+    if not frames:
+        frame = _empty_frame()
+    else:
+        frame = pd.concat(frames, ignore_index=True)
+    validate(frame)
+    return frame
+
+
+def _json_scalar(value: Any) -> Any:
+    if isinstance(value, np.generic):
+        return value.item()
+    return value
+
+
+def to_json_envelope(table: Any) -> dict[str, Any]:
+    """Return a JSON-safe, schema-versioned envelope for a validated v1 table."""
+    validate(table)
+    columns = _column_names(table)
+    values = {name: _column_values(table, name) for name in columns}
+    rows = [
+        [_json_scalar(values[name][index]) for name in columns]
+        for index in range(len(values[_REQUIRED_COLUMNS[0]]))
+    ]
+    return {"schema": SCHEMA_NAME, "columns": columns, "rows": rows}
+
+
+def from_json_envelope(envelope: Mapping[str, Any]) -> pd.DataFrame:
+    """Restore a v1 pandas DataFrame from a strict JSON-safe envelope."""
+    if not isinstance(envelope, Mapping):
+        raise TypeError("envelope must be a mapping")
+    expected_fields = {"schema", "columns", "rows"}
+    if set(envelope) != expected_fields:
+        raise ValueError("envelope must contain only schema, columns, and rows")
+    if envelope["schema"] != SCHEMA_NAME:
+        raise ValueError(f"unsupported coupling segment schema {envelope['schema']!r}")
+    columns = envelope["columns"]
+    rows = envelope["rows"]
+    if (
+        not isinstance(columns, list)
+        or not all(isinstance(name, str) for name in columns)
+        or len(set(columns)) != len(columns)
+    ):
+        raise TypeError("envelope columns must be unique strings")
+    if not isinstance(rows, list) or any(
+        not isinstance(row, list) or len(row) != len(columns) for row in rows
+    ):
+        raise TypeError("envelope rows must be lists matching envelope columns")
+    frame = pd.DataFrame(rows, columns=columns)
     validate(frame)
     return frame

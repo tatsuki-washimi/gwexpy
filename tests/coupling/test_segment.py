@@ -92,6 +92,7 @@ def test_validate_preserves_astropy_metadata_units_and_column_settings() -> None
         (_table(start_gps_ns=True), "start_gps_ns"),
         (_table(duration_ns=0), "duration_ns"),
         (_table(start_gps_ns=2**63), "start_gps_ns"),
+        (_table(start_gps_ns=2**63 - 1, duration_ns=1), "endpoint"),
         (_table(source_channel=""), "source_channel"),
         (_table(frequency_hz=np.nan), "frequency_hz"),
         (_table(coupling_factor=-0.1), "coupling_factor"),
@@ -99,7 +100,7 @@ def test_validate_preserves_astropy_metadata_units_and_column_settings() -> None
         (_table(coupling_factor_unit=u.m / u.V), "coupling_factor_unit"),
         (_table(estimate_kind="upper_limit"), "limit_method"),
         (_table(limit_method="threshold"), "limit_method"),
-        (_table(significance=np.inf), "significance"),
+        (_table(significance=2.0), "unknown"),
     ],
 )
 def test_validate_fails_closed_for_invalid_rows(
@@ -136,7 +137,6 @@ def test_validate_upper_limit_optional_values_are_non_null_and_bounded() -> None
         estimate_kind="upper_limit",
         limit_method="threshold",
         confidence_level=0.95,
-        significance=2.0,
     )
     assert validate(valid) is valid
 
@@ -167,7 +167,7 @@ def test_from_result_constructs_json_safe_valid_measurements_and_limits() -> Non
     assert table["estimate_kind"].tolist() == ["measurement", "upper_limit"]
     assert table["limit_method"].tolist() == ["", "threshold"]
     assert table["confidence_level"].tolist() == ["", 0.95]
-    assert table["significance"].tolist() == [2.0, 3.0]
+    assert "significance" not in table
     assert not table.isna().any().any()
     json.dumps(table.to_dict(orient="records"))
     assert validate(table) is table
@@ -253,3 +253,134 @@ def test_from_result_empty_schema_round_trip_is_independent() -> None:
     assert table is not clone
     assert list(table["source_channel"]) == []
     assert validate(table) is table
+
+
+def test_validate_uses_row_unit_string_as_the_single_unit_authority() -> None:
+    from gwexpy.coupling.segment import validate
+
+    table = Table({name: values for name, values in _table().items()})
+    table["frequency_hz"].unit = u.Hz
+    table["coupling_factor"].unit = u.m / u.V
+    assert validate(table) is table
+
+    round_tripped = table.to_pandas()
+    assert validate(round_tripped) is round_tripped
+
+    table["coupling_factor"].unit = u.Hz
+    with pytest.raises(ValueError, match="coupling_factor_unit"):
+        validate(table)
+
+
+def test_from_result_rejects_a_duck_result_without_a_coupling_unit() -> None:
+    from gwexpy.coupling.segment import from_result
+
+    result = SimpleNamespace(
+        cf=SimpleNamespace(value=np.array([1.0]), xindex=np.array([1.0]) * u.Hz),
+        valid_mask=np.array([True]),
+        witness_name="source",
+        target_name="response",
+    )
+
+    with pytest.raises(TypeError, match="coupling-factor unit"):
+        from_result(result, start_gps_ns=0, duration_ns=1)
+
+
+def test_from_result_accepts_resolution_aware_frequency_roundoff() -> None:
+    from gwexpy.coupling.segment import from_result
+
+    result = _result()
+    result.cf_ul = FrequencySeries(
+        [0.2, 0.3, np.nan, np.inf],
+        frequencies=np.array([0.010000000000000002, 0.02, 0.03, 0.04]) * u.kHz,
+        unit=u.m / u.V,
+    )
+
+    table = from_result(result, start_gps_ns=0, duration_ns=1, limit_method="x")
+
+    assert table["frequency_hz"].tolist() == [10.0, 20.0]
+
+
+def test_from_result_rejects_a_real_upper_limit_bin_mismatch() -> None:
+    from gwexpy.coupling.segment import from_result
+
+    result = _result()
+    result.cf_ul = FrequencySeries(
+        [0.2, 0.3, np.nan, np.inf],
+        frequencies=np.array([0.0101, 0.02, 0.03, 0.04]) * u.kHz,
+        unit=u.m / u.V,
+    )
+
+    with pytest.raises(ValueError, match="frequency grid"):
+        from_result(result, start_gps_ns=0, duration_ns=1, limit_method="x")
+
+
+def test_from_result_rejects_confidence_without_an_upper_limit_method() -> None:
+    from gwexpy.coupling.segment import from_result
+
+    with pytest.raises(ValueError, match="limit_method"):
+        from_result(_result(), start_gps_ns=0, duration_ns=1, confidence_level=0.95)
+
+
+def test_from_result_rejects_segment_endpoint_overflow() -> None:
+    from gwexpy.coupling.segment import from_result
+
+    with pytest.raises(ValueError, match="endpoint"):
+        from_result(_result(), start_gps_ns=2**63 - 1, duration_ns=1)
+
+
+def test_from_results_adapts_empty_and_multi_target_mappings() -> None:
+    from gwexpy.coupling.segment import from_result, from_results, validate
+
+    empty = from_results({}, start_gps_ns=0, duration_ns=1)
+    assert empty.empty
+    assert set(REQUIRED_COLUMNS).issubset(empty.columns)
+    assert validate(empty) is empty
+
+    combined = from_results(
+        {"first": _result(), "second": _result()}, start_gps_ns=0, duration_ns=1
+    )
+    assert len(combined) == 2
+    assert set(combined["response_channel"]) == {"response"}
+
+    with pytest.raises(TypeError, match="mapping"):
+        from_result({}, start_gps_ns=0, duration_ns=1)
+
+    with pytest.raises(ValueError, match="limit_method"):
+        from_results({}, start_gps_ns=0, duration_ns=1, confidence_level=0.95)
+
+    with pytest.raises(ValueError, match="endpoint"):
+        from_results({}, start_gps_ns=2**63 - 1, duration_ns=1)
+
+
+def test_json_envelope_preserves_the_v1_empty_table_schema() -> None:
+    from gwexpy.coupling.segment import (
+        SCHEMA_NAME,
+        from_json_envelope,
+        from_result,
+        to_json_envelope,
+    )
+
+    result = _result()
+    result.cf = FrequencySeries(
+        [np.nan], frequencies=np.array([1.0]) * u.Hz, unit=u.m / u.V
+    )
+    result.cf_ul = None
+    result.valid_mask = np.array([False])
+    empty = from_result(result, start_gps_ns=0, duration_ns=1)
+
+    envelope = to_json_envelope(empty)
+    assert envelope["schema"] == SCHEMA_NAME
+    assert envelope["rows"] == []
+    restored = from_json_envelope(json.loads(json.dumps(envelope)))
+    assert restored.empty
+    assert list(restored.columns) == list(empty.columns)
+
+
+def test_json_envelope_rejects_unknown_envelope_fields() -> None:
+    from gwexpy.coupling.segment import from_json_envelope, to_json_envelope
+
+    envelope = to_json_envelope(_table())
+    envelope["unexpected"] = True
+
+    with pytest.raises(ValueError, match="only schema, columns, and rows"):
+        from_json_envelope(envelope)

@@ -15,25 +15,36 @@ Each row contains:
 | Column | Meaning |
 | --- | --- |
 | `start_gps_ns` | Nonnegative signed-64-bit GPS start time in nanoseconds |
-| `duration_ns` | Positive signed-64-bit duration in nanoseconds |
+| `duration_ns` | Positive signed-64-bit duration in nanoseconds; `start_gps_ns + duration_ns` must also fit signed int64 |
 | `source_channel` | Nonempty source channel name |
 | `response_channel` | Nonempty response channel name |
 | `frequency_hz` | Finite nonnegative frequency in Hz |
 | `coupling_factor` | Finite nonnegative coupling factor |
-| `coupling_factor_unit` | Nonempty Astropy unit string, parsed with `Unit.to_string()` during validation; input tables are not mutated |
+| `coupling_factor_unit` | Nonempty Astropy unit string; the sole persisted unit authority, parsed with `Unit.to_string()` during validation without mutating input tables |
 
 Unknown columns are rejected. Optional columns are `estimate_kind`,
-`limit_method`, `confidence_level`, and `significance`.
+`limit_method`, and `confidence_level`.
 
 `estimate_kind` defaults to `measurement` and may also be `upper_limit`.
 `limit_method` is required for an upper limit and forbidden for a measurement.
 `confidence_level` is valid only for upper limits and must satisfy `0 < q < 1`.
-`significance` is finite and dimensionless.
+`confidence_level` is rejected when `limit_method` is absent.
 
 When one DataFrame contains both measurements and upper limits,
 non-applicable `limit_method` and `confidence_level` cells are represented by
 an empty string rather than null. This keeps interchange rows free of NaN/null
 values while preserving the row-level rules above.
+
+## Units and table representations
+
+`coupling_factor_unit` is the sole persisted authority for every row. A pandas
+DataFrame has no second unit channel. When an Astropy `coupling_factor` column
+declares a unit, it must exactly match every row's parsed unit string; a
+conflict is rejected rather than converted or relabeled. Thus an Astropy table
+can round-trip through pandas without changing the schema authority. Result
+objects supplied to `from_result()` must explicitly provide a coupling-factor
+unit, including an explicit dimensionless unit where that is the intended
+meaning; unitless duck objects are rejected.
 
 ## Result conversion
 
@@ -49,12 +60,26 @@ convention and accepts pandas DataFrames as well as Astropy Tables when
 Astropy is installed.
 
 When `cf_ul` is supplied, `from_result()` requires its frequency axis to be
-present, convertible to Hz, and exactly equal to `cf`'s converted Hz grid; UL
-values are never relabeled onto `cf` frequencies. Its coupling-factor unit must
-be equivalent to `cf`'s unit, and values are explicitly converted to `cf`'s
-unit before rows are emitted. Incompatible units are rejected.
+present and convertible to Hz. Its converted grid must agree with `cf` within
+the larger of 32 binary64 ULPs and one billionth of the nearest positive bin
+spacing. This accepts Hz/kHz representation roundoff while rejecting a real
+bin mismatch. UL values are never relabeled onto `cf` frequencies. Its
+coupling-factor unit must be equivalent to `cf`'s unit, and values are
+explicitly converted to `cf`'s unit before rows are emitted. Incompatible units
+are rejected.
 
-The independent-ordinate median correction used by related spectral workflows
-is documented against FINDCHIRP Appendix B Eq. B12 and Section VI Eq. 6.3b:
-<https://arxiv.org/abs/gr-qc/0509116>. That correction is not part of this
-table schema and must not be applied to correlated overlapped periodograms.
+`from_results()` is the typed adapter for zero- or multi-target mappings from
+`estimate_coupling()`. Empty mappings produce an empty DataFrame with all v1
+columns. Passing a mapping to `from_result()` raises a descriptive `TypeError`.
+
+## JSON envelope
+
+`to_json_envelope(table)` produces the strict JSON-safe envelope
+`{"schema": "gwexpy.coupling.segment.v1", "columns": [...], "rows": [...]}`.
+`from_json_envelope()` accepts only that exact field set and schema version.
+The explicit ordered `columns` array preserves the schema for zero-row tables;
+plain record-oriented JSON cannot do so.
+
+`significance` is intentionally not a v1 field. Its witness source, statistical
+normalization, formula, and applicability to upper limits lack approved physics
+authority. It is omitted rather than inferred or serialized.
