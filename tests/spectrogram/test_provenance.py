@@ -1507,13 +1507,142 @@ def test_provenance_rollback_error_accepts_exact_transaction_event_shapes(
 
 
 @pytest.mark.parametrize(
+    "restoration_errors,preservation_errors,cleanup_errors,operation_committed",
+    [
+        pytest.param(
+            (RuntimeError("restoration"),),
+            (RuntimeError("preservation"),),
+            (),
+            False,
+            id="failed-restoration",
+        ),
+        pytest.param(
+            (),
+            (RuntimeError("preservation"),),
+            (RuntimeError("cleanup"),),
+            False,
+            id="failed-cleanup",
+        ),
+        pytest.param(
+            (RuntimeError("same"), RuntimeError("same")),
+            (),
+            (),
+            False,
+            id="failed-duplicate-restoration-occurrences",
+        ),
+        pytest.param(
+            (),
+            (RuntimeError("preservation"),),
+            (RuntimeError("cleanup"),),
+            True,
+            id="committed-cleanup",
+        ),
+    ],
+)
+def test_provenance_rollback_error_infers_omitted_causal_events(
+    restoration_errors,
+    preservation_errors,
+    cleanup_errors,
+    operation_committed,
+) -> None:
+    operation_error = None if operation_committed else RuntimeError("operation")
+    error = provenance_hdf5.ProvenanceRollbackError(
+        operation_error,
+        restoration_errors,
+        None,
+        preservation_errors=preservation_errors,
+        cleanup_errors=cleanup_errors,
+        operation_committed=operation_committed,
+    )
+
+    expected = (
+        (*cleanup_errors, *preservation_errors)
+        if operation_committed
+        else (
+            operation_error,
+            *(restoration_errors or cleanup_errors),
+            *preservation_errors,
+        )
+    )
+    assert error.invariant_errors == ()
+    assert error.errors == expected
+    assert error.restoration_errors is restoration_errors
+    assert error.preservation_errors is preservation_errors
+    assert error.cleanup_errors is cleanup_errors
+    assert error.rollback_error is expected[0 if operation_committed else 1]
+
+
+def test_provenance_rollback_error_distinguishes_omitted_from_empty_events() -> None:
+    operation_error = RuntimeError("operation")
+    restoration_error = RuntimeError("restoration")
+
+    inferred = provenance_hdf5.ProvenanceRollbackError(
+        operation_error,
+        (restoration_error,),
+        None,
+    )
+    explicit_empty = provenance_hdf5.ProvenanceRollbackError(
+        operation_error,
+        (restoration_error,),
+        None,
+        event_errors=(),
+    )
+
+    assert inferred.errors == (operation_error, restoration_error)
+    assert inferred.rollback_error is restoration_error
+    assert inferred.invariant_errors == ()
+    assert explicit_empty.invariant_errors == explicit_empty.errors
+
+
+def test_provenance_rollback_error_infers_duplicate_phase_occurrences() -> None:
+    operation_error = RuntimeError("operation")
+    restoration_error = RuntimeError("restoration")
+
+    error = provenance_hdf5.ProvenanceRollbackError(
+        operation_error,
+        (restoration_error, restoration_error),
+        None,
+    )
+
+    assert error.errors == (operation_error, restoration_error, restoration_error)
+    assert error.errors[1] is error.errors[2] is restoration_error
+    assert error.rollback_error is restoration_error
+    assert error.invariant_errors == ()
+
+
+def test_provenance_rollback_error_infers_bounded_hostile_group_event() -> None:
+    hostile = _HostileRollbackError("huge")
+    wide = ExceptionGroup("wide", [hostile] * 2_000)
+    operation_error = RuntimeError("operation")
+
+    error = provenance_hdf5.ProvenanceRollbackError(
+        operation_error,
+        (wide,),
+        None,
+    )
+
+    assert error.errors == (operation_error, wide)
+    assert error.rollback_error is wide
+    assert len(str(error)) < 4_096
+    assert hostile.str_calls == 0
+
+
+@pytest.mark.parametrize(
     "operation_error,restoration_errors,preservation_errors,cleanup_errors,operation_committed,event_errors",
     [
         (
             RuntimeError("operation"),
+            (),
+            (RuntimeError("preservation"),),
+            (),
+            False,
+            None,
+        ),
+        (
+            RuntimeError("operation"),
             (RuntimeError("restoration"),),
             (),
-            (),
+            (RuntimeError("cleanup"),),
             False,
             None,
         ),

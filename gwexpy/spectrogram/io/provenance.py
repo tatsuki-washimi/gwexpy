@@ -217,8 +217,7 @@ def _valid_rollback_state(
     restoration = _bounded_exception_tuple(restoration_errors)
     preservation = _bounded_exception_tuple(preservation_errors)
     cleanup = _bounded_exception_tuple(cleanup_errors)
-    events = _bounded_exception_tuple(event_errors)
-    if restoration is None or preservation is None or cleanup is None or events is None:
+    if restoration is None or preservation is None or cleanup is None:
         return None
     expected = _expected_rollback_events(
         operation_error,
@@ -227,7 +226,16 @@ def _valid_rollback_state(
         cleanup,
         operation_committed,
     )
-    if expected is None or len(expected) != len(events):
+    if expected is None:
+        return None
+    # ``event_errors`` predates the structured phase fields and remains
+    # optional for direct callers.  Its absence deterministically means the
+    # exact phase order above; an explicitly supplied tuple remains a strict
+    # identity- and multiplicity-preserving assertion of that order.
+    events = (
+        expected if event_errors is None else _bounded_exception_tuple(event_errors)
+    )
+    if events is None or len(expected) != len(events):
         return None
     if any(
         actual is not expected_error for actual, expected_error in zip(events, expected)

@@ -39,6 +39,8 @@ rollback error には常に少なくとも一つの因果 exception が残りま
 無効な内部構成では空または誤解を招く rollback state の代わりに synthetic invariant error を記録します。
 有効な内部 rollback state は、操作、復元または cleanup、保存の順序と同一 object identity を厳密に保持します。
 commit 済みの書き込みでは cleanup と保存の失敗だけを記録します。
+direct internal construction で任意の event sequence を省略した場合は、検証済みの phase fields からこの順序を導出します。
+明示した sequence は厳密に検証されます。
 artifact の作成にも失敗したときは、以前の sidecar snapshot を直接再適用してから recovery が利用できないことをエラーで報告します。
 データと sidecar の commit 後に rollback cleanup が失敗したとき、書き込み結果は commit 済みのままです。
 構造化エラーの ``operation_committed=True`` がこの状態を示します。

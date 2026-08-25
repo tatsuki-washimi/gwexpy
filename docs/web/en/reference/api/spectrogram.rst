@@ -46,7 +46,9 @@ causal exception; an invalid internal construction records a synthetic
 invariant error rather than exposing an empty or misleading rollback state.
 Valid internal rollback states use the exact identity-preserving event order:
 operation then restoration or cleanup then preservation; a committed write has
-cleanup/preservation failures only.
+cleanup/preservation failures only.  Direct internal construction may omit its
+optional event sequence, in which case GWexpy derives that exact order from the
+validated phase fields; an explicitly supplied sequence is checked strictly.
 If artifact creation also fails, the error
 reports that recovery is unavailable after retrying the prior sidecar snapshot
 directly.  If data and sidecar commit before rollback cleanup
