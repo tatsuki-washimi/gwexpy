@@ -343,9 +343,9 @@ def test_schema_aware_pandas_astropy_adapters_preserve_absence_units_and_metadat
     pandas_table = to_pandas(source)
     assert pandas_table["limit_method"].tolist() == [None, "threshold"]
     assert pandas_table["confidence_level"].tolist() == [None, 0.95]
-    assert pandas_table.attrs["_gwexpy_coupling_segment_v1"]["astropy_meta"] == {
-        "origin": {"run": "adapter"}
-    }
+    assert pandas_table.attrs["gwexpy.coupling.segment.v1.astropy_metadata"][
+        "table_meta"
+    ] == {"origin": {"run": "adapter"}}
     assert validate(pandas_table) is pandas_table
     assert source.meta == source_before.meta
     assert source["frequency_hz"].unit == source_before["frequency_hz"].unit
@@ -399,9 +399,9 @@ def test_json_envelope_normalizes_supported_numeric_scalars_or_rejects_them() ->
         validate(_table(coupling_factor=Decimal("0.25")))
 
 
-def _advance_binary64(value: float, steps: int) -> float:
+def _advance_binary64(value: float, steps: int, direction: float = np.inf) -> float:
     for _ in range(steps):
-        value = float(np.nextafter(value, np.inf))
+        value = float(np.nextafter(value, direction))
     return value
 
 
@@ -419,6 +419,143 @@ def test_frequency_grid_uses_true_32_ulp_tolerance_near_zero(
     assert _frequency_grids_match(reference, candidate) is matches
 
 
+@pytest.mark.parametrize("reference", [0.0, 1.0, 32.0])
+@pytest.mark.parametrize("direction", [np.inf, -np.inf])
+@pytest.mark.parametrize(("steps", "matches"), [(32, True), (33, False)])
+def test_frequency_grid_limits_nextafter_steps_in_each_direction(
+    reference: float, direction: float, steps: int, matches: bool
+) -> None:
+    from gwexpy.coupling.segment import _frequency_grids_match
+
+    candidate = _advance_binary64(reference, steps, direction)
+
+    assert (
+        _frequency_grids_match(np.array([reference]), np.array([candidate])) is matches
+    )
+
+
+def test_schema_adapters_preserve_nested_column_metadata_independently() -> None:
+    from gwexpy.coupling.segment import to_astropy, to_pandas
+
+    source = Table({name: values for name, values in _table().items()}, masked=True)
+    for name, unit in (
+        ("start_gps_ns", u.ns),
+        ("duration_ns", u.ns),
+        ("frequency_hz", u.Hz),
+        ("coupling_factor", u.m / u.V),
+    ):
+        source[name].unit = unit
+    for name in source.colnames:
+        source[name].meta["calibration"] = {
+            "revision": 3,
+            "coefficients": [1.0, {"offset": 0.25}],
+        }
+        source[name].meta["provenance"] = {"steps": ["inject", "estimate"]}
+        source[name].description = f"{name} calibration data"
+        source[name].format = (
+            ".6g"
+            if name
+            in {"start_gps_ns", "duration_ns", "frequency_hz", "coupling_factor"}
+            else "{:s}"
+        )
+    source.meta["provenance"] = {"run": {"id": "nested", "stages": [1, 2]}}
+
+    pandas_table = to_pandas(source)
+    restored = to_astropy(pandas_table)
+
+    for name in source.colnames:
+        assert restored[name].meta == source[name].meta
+        assert restored[name].description == source[name].description
+        assert restored[name].format == source[name].format
+    assert restored.meta == source.meta
+
+    carrier = pandas_table.attrs["gwexpy.coupling.segment.v1.astropy_metadata"]
+    carrier["columns"]["frequency_hz"]["meta"]["calibration"]["coefficients"][1][
+        "offset"
+    ] = 99.0
+    restored["duration_ns"].meta["provenance"]["steps"].append("restored")
+
+    assert (
+        source["frequency_hz"].meta["calibration"]["coefficients"][1]["offset"] == 0.25
+    )
+    assert (
+        restored["frequency_hz"].meta["calibration"]["coefficients"][1]["offset"]
+        == 0.25
+    )
+    assert source["duration_ns"].meta["provenance"]["steps"] == [
+        "inject",
+        "estimate",
+    ]
+    assert carrier["columns"]["duration_ns"]["meta"]["provenance"]["steps"] == [
+        "inject",
+        "estimate",
+    ]
+
+
+def test_schema_adapters_fail_closed_for_malformed_metadata_carriers() -> None:
+    from gwexpy.coupling.segment import to_astropy, to_pandas
+
+    table = _table()
+    table.attrs["gwexpy.coupling.segment.v1.astropy_metadata"] = {
+        "schema": "gwexpy.coupling.segment.v1",
+        "table_meta": {},
+        "columns": {},
+    }
+
+    for adapter in (to_pandas, to_astropy):
+        with pytest.raises(ValueError, match="adapter metadata"):
+            adapter(table)
+
+
+def test_schema_adapters_reject_malformed_nested_metadata_carriers() -> None:
+    from gwexpy.coupling.segment import to_astropy, to_pandas
+
+    source = Table({name: values for name, values in _table().items()})
+    pandas_table = to_pandas(source)
+    carrier = pandas_table.attrs["gwexpy.coupling.segment.v1.astropy_metadata"]
+    carrier["columns"]["frequency_hz"]["meta"] = []
+
+    for adapter in (to_pandas, to_astropy):
+        with pytest.raises(ValueError, match="adapter metadata"):
+            adapter(pandas_table)
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        np.nextafter(np.longdouble(0), np.longdouble(1)),
+        -np.nextafter(np.longdouble(0), np.longdouble(1)),
+        Fraction(1, 10**400),
+        Fraction(10**400, 1),
+        np.longdouble("1e4900"),
+    ],
+)
+def test_validate_rejects_nonrepresentable_binary64_physical_values(
+    value: object,
+) -> None:
+    from gwexpy.coupling.segment import validate
+
+    values = {name: list(column) for name, column in _table().items()}
+    values["coupling_factor"] = [value]
+    table = Table(values)
+    with pytest.raises((TypeError, ValueError), match="coupling_factor"):
+        validate(table)
+
+
+def test_validate_and_json_preserve_representable_binary64_subnormal_values() -> None:
+    from gwexpy.coupling.segment import to_json_envelope, validate
+
+    smallest = float(np.nextafter(0.0, np.inf))
+    table = _table(frequency_hz=smallest, coupling_factor=smallest)
+
+    assert validate(table) is table
+    envelope = to_json_envelope(table)
+    row = dict(zip(envelope["columns"], envelope["rows"][0], strict=True))
+    assert row["frequency_hz"] == smallest
+    assert row["coupling_factor"] == smallest
+    assert json.dumps(envelope)
+
+
 def test_from_result_rejects_a_duck_result_without_a_coupling_unit() -> None:
     from gwexpy.coupling.segment import from_result
 
@@ -433,7 +570,7 @@ def test_from_result_rejects_a_duck_result_without_a_coupling_unit() -> None:
         from_result(result, start_gps_ns=0, duration_ns=1)
 
 
-def test_from_result_accepts_resolution_aware_frequency_roundoff() -> None:
+def test_from_result_accepts_hz_khz_frequency_roundoff() -> None:
     from gwexpy.coupling.segment import from_result
 
     result = _result()

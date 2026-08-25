@@ -57,9 +57,17 @@ days can never be silently interpreted as nanoseconds.
 
 Use `to_pandas()` and `to_astropy()` for the supported pandas/Astropy
 round-trip. The adapters return independent copies, preserve Astropy table and
-column metadata, attach the canonical units to the Astropy result, and map
-masked optional values to explicit nulls. Native `Table.to_pandas()` may turn a
-mask into a floating `NaN`; that representation is ambiguous and remains
+column metadata (including arbitrary nested `Column.meta` mappings), column
+descriptions and formats, units, and masks. The pandas frame carries the
+Astropy metadata in its `DataFrame.attrs` under the reserved fully qualified
+key `gwexpy.coupling.segment.v1.astropy_metadata`. Its exact schema name,
+outer fields, per-column fields, and column set are checked on both adapters;
+an absent carrier is allowed, but a malformed or colliding carrier is rejected
+rather than partly applied. Carrier and restored metadata are deep-copied, so
+subsequent mutations of the source table, frame attributes, and restored table
+are independent. The adapters attach canonical units to the Astropy result and
+map masked optional values to explicit nulls. Native `Table.to_pandas()` may
+turn a mask into a floating `NaN`; that representation is ambiguous and remains
 invalid input to `validate()`. Native `Table.from_pandas()` is valid only as a
 unitless canonical-value import and does not preserve Astropy metadata or
 units. Result objects supplied to `from_result()` must explicitly provide a
@@ -80,11 +88,12 @@ convention and accepts pandas DataFrames as well as Astropy Tables when
 Astropy is installed.
 
 When `cf_ul` is supplied, `from_result()` requires its frequency axis to be
-present and convertible to Hz. Its converted grid must agree with `cf` within
-the larger of exactly 32 binary64 ULPs (from the adjacent `nextafter` values,
-including near zero) and one billionth of the nearest positive bin spacing.
-This accepts Hz/kHz representation roundoff while rejecting a real bin
-mismatch. UL values are never relabeled onto `cf` frequencies. Its
+present and convertible to Hz. Its converted grid must lie within exactly 32
+IEEE-754 binary64 `nextafter` steps of `cf` in the candidate's direction, per
+bin. The upward and downward limits are independent, including at powers of
+two and near zero: the 33rd step is rejected in either direction. This accepts
+benign Hz/kHz representation roundoff while rejecting a real bin mismatch. UL
+values are never relabeled onto `cf` frequencies. Its
 coupling-factor unit must be equivalent to `cf`'s unit, and values are
 explicitly converted to `cf`'s unit before rows are emitted. Incompatible units
 are rejected.
@@ -109,8 +118,13 @@ can be passed to `json.dumps(to_json_envelope(table))`: signed-int64 schema
 times normalize to Python `int`, while finite real frequency, coupling-factor,
 and confidence values normalize to binary64 Python `float`. A finite
 `Fraction` or representable NumPy extended float therefore serializes through
-that binary64 normalization; non-`Real` values such as `Decimal`, and values
-outside finite binary64 range, are rejected.
+the same binary64 normalization used by `validate()`. Non-`Real` values such
+as `Decimal`, values outside finite binary64 range, and finite nonzero values
+that underflow to binary64 zero are rejected. Accepted conversion preserves
+the source sign and zero/nonzero status; it does not claim exact preservation
+of every non-binary fraction. Conversion failures, including oversized
+`Fraction` values, are normalized to schema `TypeError` or `ValueError` rather
+than exposing `OverflowError`.
 
 `significance` is intentionally not a v1 field. Its witness source, statistical
 normalization, formula, and applicability to upper limits lack approved physics

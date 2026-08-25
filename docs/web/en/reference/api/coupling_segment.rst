@@ -19,12 +19,16 @@ particular, raw values declared as seconds or days are rejected rather than
 being relabelled as nanoseconds.
 
 Use :func:`to_pandas` and :func:`to_astropy` for a full pandas/Astropy
-round-trip. They preserve Astropy table metadata, attach canonical units on the
-Astropy result, and encode non-applicable optional values as explicit nulls.
-Native ``Table.from_pandas`` is valid for unitless canonical columns but loses
-Astropy metadata and units. Native ``Table.to_pandas`` may convert masked
-optionals to floating ``NaN``; that ambiguous representation is deliberately
-rejected by :func:`validate` and is not a supported round-trip path.
+round-trip. They preserve table metadata, arbitrary nested Astropy
+``Column.meta`` mappings, descriptions, formats, canonical units, and optional
+masks/nulls with mutation-independent copies. A strict, versioned carrier is
+stored under the reserved ``DataFrame.attrs`` key
+``gwexpy.coupling.segment.v1.astropy_metadata``; a malformed carrier is
+rejected rather than partly applied. Native ``Table.from_pandas`` is valid for
+unitless canonical columns but loses Astropy metadata and units. Native
+``Table.to_pandas`` may convert masked optionals to floating ``NaN``; that
+ambiguous representation is deliberately rejected by :func:`validate` and is
+not a supported round-trip path.
 
 JSON and frequency-grid normalization
 -------------------------------------
@@ -32,13 +36,15 @@ JSON and frequency-grid normalization
 :func:`to_json_envelope` first validates its input and then emits only JSON
 native values. Schema integer columns normalize to signed int64 Python ints;
 finite real-valued frequency, factor, and confidence values normalize to
-binary64 Python floats. Values that cannot meet those constraints are rejected.
-Consequently, every validated table can be passed directly to ``json.dumps``.
+binary64 Python floats. Values outside finite binary64 range and finite nonzero
+values that would underflow to zero are rejected; accepted conversions preserve
+sign and zero/nonzero status. Consequently, every validated table can be
+passed directly to ``json.dumps``.
 
-Upper-limit grids accept the larger of exactly 32 IEEE-754 binary64 ULPs (using
-adjacent representable values, including near zero) and one billionth of the
-nearest positive bin spacing. This permits benign Hz/kHz conversion roundoff
-without accepting a material bin mismatch.
+Upper-limit grids accept at most exactly 32 IEEE-754 binary64 ``nextafter``
+steps per direction, independently upward and downward, including at powers of
+two and near zero. Step 33 is rejected in either direction. This permits benign
+Hz/kHz conversion roundoff without accepting a material bin mismatch.
 
 ``significance`` is intentionally absent from v1 pending approved physics
 authority for its formula, witness source, normalization, and upper-limit

@@ -48,7 +48,6 @@ _OPTIONAL_COLUMNS = (
 _KNOWN_COLUMNS = set(_REQUIRED_COLUMNS) | set(_OPTIONAL_COLUMNS)
 _INT64_MAX = 2**63 - 1
 _FREQUENCY_GRID_ULPS = 32
-_FREQUENCY_GRID_RESOLUTION_FRACTION = 1e-9
 _CANONICAL_COLUMN_UNITS = {
     "start_gps_ns": u.ns,
     "duration_ns": u.ns,
@@ -63,7 +62,9 @@ _JSON_STRING_COLUMNS = {
     "estimate_kind",
     "limit_method",
 }
-_ADAPTER_METADATA_KEY = "_gwexpy_coupling_segment_v1"
+_ADAPTER_METADATA_KEY = "gwexpy.coupling.segment.v1.astropy_metadata"
+_ADAPTER_CARRIER_FIELDS = {"schema", "table_meta", "columns"}
+_ADAPTER_COLUMN_FIELDS = {"meta", "description", "format"}
 
 
 def _column_names(table: Any) -> list[str]:
@@ -86,10 +87,14 @@ def _column_names(table: Any) -> list[str]:
 
 def _column_values(table: Any, name: str) -> list[Any]:
     column = table[name]
+    try:
+        return list(column)
+    except TypeError:
+        pass
     if hasattr(column, "tolist"):
         values = column.tolist()
         return list(values) if isinstance(values, Iterable) else [values]
-    return list(column)
+    raise TypeError(f"column {name!r} must be iterable")
 
 
 def _is_null(value: Any) -> bool:
@@ -130,10 +135,27 @@ def _validate_interval(start_gps_ns: Any, duration_ns: Any) -> tuple[int, int]:
     return start, duration
 
 
-def _validate_nonnegative_float(value: Any, name: str) -> float:
+def _normalize_binary64(value: Any, name: str) -> float:
+    """Return a finite binary64 value without losing nonzero semantics."""
     if isinstance(value, (bool, np.bool_)) or not isinstance(value, Real):
         raise TypeError(f"{name} must be a real number")
-    converted = float(value)
+    try:
+        converted = float(value)
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise ValueError(f"{name} must fit finite binary64") from exc
+    if not np.isfinite(converted):
+        raise ValueError(f"{name} must fit finite binary64")
+    try:
+        source_is_nonzero = bool(value != 0)
+    except (TypeError, ValueError) as exc:
+        raise TypeError(f"{name} must be a real number") from exc
+    if source_is_nonzero and converted == 0.0:
+        raise ValueError(f"{name} must not underflow binary64 to zero")
+    return converted
+
+
+def _validate_nonnegative_float(value: Any, name: str) -> float:
+    converted = _normalize_binary64(value, name)
     if not np.isfinite(converted) or converted < 0:
         raise ValueError(f"{name} must be finite and nonnegative")
     return converted
@@ -276,7 +298,7 @@ def validate(table: Any) -> Any:
                     raise ValueError("confidence_level is required for upper_limit")
                 if isinstance(value, (bool, np.bool_)) or not isinstance(value, Real):
                     raise TypeError("confidence_level must be a real number")
-                q = float(value)
+                q = _normalize_binary64(value, "confidence_level")
                 if not np.isfinite(q) or not 0 < q < 1:
                     raise ValueError("confidence_level must satisfy 0 < q < 1")
             elif not _is_missing_optional(value):
@@ -332,43 +354,20 @@ def _boolean_mask(value: Any, shape: tuple[int, ...]) -> np.ndarray:
     raise TypeError("result.valid_mask must contain only boolean values")
 
 
-def _frequency_grid_tolerance(frequencies: np.ndarray) -> np.ndarray:
-    """Return per-bin Hz tolerances tied to precision and bin resolution.
-
-    The tolerance is the larger of 32 binary64 ULPs at a bin's magnitude and
-    one billionth of its nearest positive neighbour spacing.  This admits unit
-    conversion roundoff without merging physically distinct analysis bins.
-    """
-    next_up = np.nextafter(frequencies, np.inf)
-    next_down = np.nextafter(frequencies, -np.inf)
-    ulp_tolerance = _FREQUENCY_GRID_ULPS * np.maximum(
-        np.abs(next_up - frequencies), np.abs(frequencies - next_down)
-    )
-    if frequencies.size < 2:
-        return ulp_tolerance
-
-    differences = np.abs(np.diff(frequencies))
-    resolutions = np.full(frequencies.shape, np.inf, dtype=float)
-    positive = differences[differences > 0]
-    if positive.size == 0:
-        return ulp_tolerance
-    resolutions[0] = differences[0] if differences[0] > 0 else positive.min()
-    resolutions[-1] = differences[-1] if differences[-1] > 0 else positive.min()
-    if frequencies.size > 2:
-        left = np.where(differences[:-1] > 0, differences[:-1], positive.min())
-        right = np.where(differences[1:] > 0, differences[1:], positive.min())
-        resolutions[1:-1] = np.minimum(left, right)
-    return np.maximum(ulp_tolerance, _FREQUENCY_GRID_RESOLUTION_FRACTION * resolutions)
-
-
 def _frequency_grids_match(reference: np.ndarray, candidate: np.ndarray) -> bool:
+    """Compare grids using at most 32 binary64 nextafter steps per direction."""
     if reference.shape != candidate.shape:
         return False
     if not np.all(np.isfinite(reference)) or not np.all(np.isfinite(candidate)):
         return False
-    return bool(
-        np.all(np.abs(candidate - reference) <= _frequency_grid_tolerance(reference))
+    direction = np.where(candidate >= reference, np.inf, -np.inf)
+    boundary = reference.copy()
+    for _ in range(_FREQUENCY_GRID_ULPS):
+        boundary = np.nextafter(boundary, direction)
+    within = np.where(
+        candidate >= reference, candidate <= boundary, candidate >= boundary
     )
+    return bool(np.all(within))
 
 
 def _empty_frame() -> pd.DataFrame:
@@ -394,7 +393,7 @@ def _validate_result_options(
             confidence_level, Real
         ):
             raise TypeError("confidence_level must be a real number")
-        q = float(confidence_level)
+        q = _normalize_binary64(confidence_level, "confidence_level")
         if not np.isfinite(q) or not 0 < q < 1:
             raise ValueError("confidence_level must satisfy 0 < q < 1")
     return start, duration
@@ -587,6 +586,68 @@ def _normalize_optional_columns(
     return normalized
 
 
+def _copy_adapter_metadata(value: Any) -> Any:
+    try:
+        return deepcopy(value)
+    except Exception as exc:
+        raise ValueError("adapter metadata must be deep-copyable") from exc
+
+
+def _build_adapter_carrier(table: Table, columns: list[str]) -> dict[str, Any]:
+    return {
+        "schema": SCHEMA_NAME,
+        "table_meta": _copy_adapter_metadata(dict(table.meta)),
+        "columns": {
+            name: {
+                "meta": _copy_adapter_metadata(dict(table[name].meta)),
+                "description": table[name].description,
+                "format": table[name].format,
+            }
+            for name in columns
+        },
+    }
+
+
+def _adapter_carrier(
+    attrs: Mapping[Any, Any], columns: list[str]
+) -> dict[str, Any] | None:
+    if _ADAPTER_METADATA_KEY not in attrs:
+        return None
+    carrier = attrs[_ADAPTER_METADATA_KEY]
+    if not isinstance(carrier, Mapping) or set(carrier) != _ADAPTER_CARRIER_FIELDS:
+        raise ValueError("invalid coupling segment adapter metadata")
+    if carrier["schema"] != SCHEMA_NAME:
+        raise ValueError("invalid coupling segment adapter metadata schema")
+    if not isinstance(carrier["table_meta"], Mapping):
+        raise ValueError("invalid coupling segment adapter metadata table_meta")
+    column_metadata = carrier["columns"]
+    if not isinstance(column_metadata, Mapping) or set(column_metadata) != set(columns):
+        raise ValueError("invalid coupling segment adapter metadata columns")
+    validated_columns: dict[str, dict[str, Any]] = {}
+    for name in columns:
+        metadata = column_metadata[name]
+        if not isinstance(metadata, Mapping) or set(metadata) != _ADAPTER_COLUMN_FIELDS:
+            raise ValueError("invalid coupling segment adapter metadata column")
+        if not isinstance(metadata["meta"], Mapping):
+            raise ValueError("invalid coupling segment adapter metadata column meta")
+        if metadata["description"] is not None and not isinstance(
+            metadata["description"], str
+        ):
+            raise ValueError("invalid coupling segment adapter metadata description")
+        if metadata["format"] is not None and not isinstance(metadata["format"], str):
+            raise ValueError("invalid coupling segment adapter metadata format")
+        validated_columns[name] = {
+            "meta": _copy_adapter_metadata(dict(metadata["meta"])),
+            "description": metadata["description"],
+            "format": metadata["format"],
+        }
+    return {
+        "schema": SCHEMA_NAME,
+        "table_meta": _copy_adapter_metadata(dict(carrier["table_meta"])),
+        "columns": validated_columns,
+    }
+
+
 def to_pandas(table: Any) -> pd.DataFrame:
     """Return a schema-aware pandas copy with explicit optional nulls.
 
@@ -611,19 +672,11 @@ def to_pandas(table: Any) -> pd.DataFrame:
     )
     if isinstance(table, pd.DataFrame):
         frame.attrs = deepcopy(table.attrs)
+        _adapter_carrier(frame.attrs, columns)
         return frame
     if not isinstance(table, Table):
         raise TypeError("table must be a pandas DataFrame or Astropy Table")
-    frame.attrs[_ADAPTER_METADATA_KEY] = {
-        "astropy_meta": deepcopy(table.meta),
-        "column_metadata": {
-            name: {
-                "description": table[name].description,
-                "format": table[name].format,
-            }
-            for name in columns
-        },
-    }
+    frame.attrs[_ADAPTER_METADATA_KEY] = _build_adapter_carrier(table, columns)
     return frame
 
 
@@ -661,17 +714,13 @@ def to_astropy(table: Any) -> Table:
     if unit_strings and all(value == unit_strings[0] for value in unit_strings):
         result["coupling_factor"].unit = u.Unit(unit_strings[0])
 
-    adapter_metadata = frame.attrs.get(_ADAPTER_METADATA_KEY, {})
-    if isinstance(adapter_metadata, Mapping):
-        astropy_meta = adapter_metadata.get("astropy_meta", {})
-        if isinstance(astropy_meta, Mapping):
-            result.meta.update(deepcopy(astropy_meta))
-        column_metadata = adapter_metadata.get("column_metadata", {})
-        if isinstance(column_metadata, Mapping):
-            for name, metadata in column_metadata.items():
-                if name in result.colnames and isinstance(metadata, Mapping):
-                    result[name].description = metadata.get("description")
-                    result[name].format = metadata.get("format")
+    adapter_metadata = _adapter_carrier(frame.attrs, columns)
+    if adapter_metadata is not None:
+        result.meta.update(adapter_metadata["table_meta"])
+        for name, metadata in adapter_metadata["columns"].items():
+            result[name].meta.update(metadata["meta"])
+            result[name].description = metadata["description"]
+            result[name].format = metadata["format"]
     validate(result)
     return result
 
@@ -684,10 +733,7 @@ def _json_scalar(value: Any, name: str) -> Any:
     if name in _JSON_FLOAT_COLUMNS and not (
         name in _OPTIONAL_COLUMNS and isinstance(value, str)
     ):
-        normalized = float(value)
-        if not np.isfinite(normalized):
-            raise ValueError(f"{name} must normalize to a finite binary64 value")
-        return normalized
+        return _normalize_binary64(value, name)
     if name in _JSON_STRING_COLUMNS:
         return str(value)
     if isinstance(value, np.generic):
