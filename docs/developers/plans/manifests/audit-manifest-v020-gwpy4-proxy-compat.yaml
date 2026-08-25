@@ -63,13 +63,13 @@ commands:
     evidence: "terminated after 188 seconds; no final suite result"
   - command: "pytest --doctest-modules gwexpy"
     result: fail
-    evidence: "58 failed, 80 passed, 2 skipped; collection completed without the original proxy errors; failures are unrelated examples/representations"
+    evidence: "58 failed, 80 passed, 2 skipped; collection completed without the original ten proxy collection errors. Baseline classification is recorded in remediation.doctest_baseline below."
   - command: "ruff check gwexpy tests"
     result: pass
     evidence: "clean after lint alignment"
   - command: "ruff format --check gwexpy tests"
     result: baseline_failure
-    evidence: "only unchanged tests/docs/test_root_roadmap_contract.py would be reformatted; 968 other files formatted"
+    evidence: "only unchanged tests/docs/test_root_roadmap_contract.py would be reformatted; remediation check including audit scripts found 979 other files formatted"
   - command: "changed-file format check"
     result: pass
     evidence: "12 changed files already formatted"
@@ -139,9 +139,105 @@ final:
   final_remote_v_sha256: f3b16934134e9e6cbdd373f6895880c7fd6e2eecdae339ab3088a302426cc965
   final_remote_config_sha256: 023ff54ad4cb982347d16d4553a2b318ec12b5e47b621b92b335359989c43a79
   final_original_worktree_sha256: e1151dd2a84b1c62a23b343dbfe6630bdb12b6090d0bad209c1ccc8abf29b229
-  integration_worktree_clean: true
-  deterministic_timeseries_file_audit: not_run
+  integration_worktree_clean: false_before_remediation_audit_commit
+  deterministic_timeseries_file_audit: completed_in_remediation
   residual_concerns:
     - "Latest GWpy 4.x CI lane is required before merge and has no local run evidence."
-    - "Broad timeseries suite exceeded its 180-second bound."
-    - "Full module doctest and Japanese Sphinx gates failed outside this proxy scope."
+    - "Broad timeseries suite exceeded its 180-second bound in both the base snapshot and current checkout."
+    - "The first deterministic current per-file audit timed out on test_timeseries.py, while a controlled current rerun passed; this timing variance is recorded rather than classified as unrelated."
+    - "Full module doctest and Japanese Sphinx gates remain failing; their direct baseline evidence is recorded below."
+
+remediation:
+  trigger: "Luna Important findings: preservation evidence stability; missing baseline reproduction for broad timeseries, doctest, and Japanese Sphinx; missing deterministic timeseries fallback."
+  base_snapshot:
+    source_commit: a25c9970d127c86a59c312e751be6cbdfd346fec
+    method: "git archive extracted into a task-specific /tmp directory; no Git worktree, remote, or original worktree mutation"
+    path: /tmp/gwexpy-v020-proxy-base.XLMjHVTb
+  original_worktree_observations:
+    - timestamp: authorized_implementation_start
+      sha256: e1151dd2a84b1c62a23b343dbfe6630bdb12b6090d0bad209c1ccc8abf29b229
+      source: user_authorized_baseline
+    - timestamp: implementation_final
+      sha256: e1151dd2a84b1c62a23b343dbfe6630bdb12b6090d0bad209c1ccc8abf29b229
+      source: implementation_porcelain_hash
+    - timestamp: luna_independent_review
+      sha256: ba596e14b056730df2ec95a41920b8a2845d52ee42e930e0cc73811fc2b98dfc
+      source: user_reported_independent_observation
+    - timestamp: controller_immediately_after_luna
+      sha256: e1151dd2a84b1c62a23b343dbfe6630bdb12b6090d0bad209c1ccc8abf29b229
+      source: user_reported_independent_observation
+    - timestamp: "2026-08-25T18:41:33+09:00"
+      sha256: e1151dd2a84b1c62a23b343dbfe6630bdb12b6090d0bad209c1ccc8abf29b229
+      source: remediation_start_porcelain_hash
+    - timestamp: "2026-08-25T19:13:22+09:00"
+      sha256: e1151dd2a84b1c62a23b343dbfe6630bdb12b6090d0bad209c1ccc8abf29b229
+      source: remediation_final_pre_commit_porcelain_hash
+  original_worktree_preservation_statement: >-
+    This implementation did not target the original worktree and only read its
+    porcelain stream for hashes. Concurrent external mutation was observed by
+    independent actors, so global byte-for-byte stability cannot be claimed.
+    The remediation-final observation is recorded separately and compared only
+    to the remediation-start observation.
+  timeseries:
+    broad_base:
+      command: "PYTHONPATH=$PWD timeout 180 pytest -q tests/timeseries"
+      result: timeout
+      exit_status: 124
+      timeout_seconds: 180
+    broad_current:
+      command: "PYTHONPATH=$PWD timeout 180 pytest -q tests/timeseries"
+      result: timeout
+      exit_status: 124
+      timeout_seconds: 180
+    deterministic_current:
+      command: "python scripts/validation/audit_timeseries_files.py --root $PWD --output docs/developers/plans/manifests/audit-timeseries-current.jsonl --logs /tmp/gwexpy-v020-proxy-timeseries-current-logs --timeout 180"
+      evidence_jsonl: docs/developers/plans/manifests/audit-timeseries-current.jsonl
+      evidence_summary: docs/developers/plans/manifests/audit-timeseries-current-summary.json
+      file_count: 77
+      status_counts: {pass: 76, timeout: 1}
+      pytest_totals: {passed: 1775, skipped: 10, xfailed: 3}
+      timeout_file: tests/timeseries/test_timeseries.py
+    current_timeout_file_base_comparison:
+      command: "PYTHONPATH=$PWD timeout 180 pytest -q tests/timeseries/test_timeseries.py"
+      base_result: pass
+      base_exit_status: 0
+      base_summary: "252 passed, 29 skipped, 1 warning in 154.77s"
+      current_first_result: timeout
+      current_first_duration_seconds: 180.067
+      current_controlled_rerun_result: pass
+      current_controlled_rerun_exit_status: 0
+      current_controlled_rerun_summary: "252 passed, 29 skipped, 1 warning in 36.52s"
+      classification: "timing variance; not classified as unrelated or as a confirmed changed-scope defect"
+  doctest_baseline:
+    current_command: "PYTHONPATH=$PWD PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 MPLCONFIGDIR=/tmp/gwexpy-v020-proxy-remediation-doctest-current-mpl timeout 180 pytest -q --doctest-modules gwexpy"
+    current_result: fail
+    current_exit_status: 1
+    current_summary: "58 failed, 80 passed, 2 skipped, 10 warnings in 15.12s"
+    base_full_command: "PYTHONPATH=$PWD PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 MPLCONFIGDIR=/tmp/gwexpy-v020-proxy-remediation-doctest-base-mpl timeout 180 pytest -q --doctest-modules gwexpy"
+    base_full_result: collection_error
+    base_full_exit_status: 2
+    base_full_summary: "10 original legacy proxy collection errors in 6.04s"
+    direct_node_comparison:
+      command: "python scripts/validation/audit_pytest_nodes.py --root <base-snapshot> --nodes /tmp/gwexpy-v020-proxy-remediation-doctest-nodes.txt --output docs/developers/plans/manifests/audit-doctest-base-nodes.jsonl --logs /tmp/gwexpy-v020-proxy-remediation-doctest-base-node-logs --timeout 180 --doctest-modules"
+      evidence_jsonl: docs/developers/plans/manifests/audit-doctest-base-nodes.jsonl
+      evidence_summary: docs/developers/plans/manifests/audit-doctest-base-nodes-summary.json
+      node_count: 58
+      status_counts: {fail: 58}
+      conclusion: "Every current failing doctest node also failed when run directly against the exact base snapshot."
+  sphinx_ja_baseline:
+    command: "PYTHONPATH=$PWD timeout 180 python -m sphinx -W --keep-going -b html -D language=ja docs <output-dir>"
+    base_result: fail
+    base_exit_status: 1
+    current_result: fail
+    current_exit_status: 1
+    base_and_current_reason: "74 docutils inline-interpreted-text warnings, treated as errors; neither run timed out."
+    comparison: "The warning count and warning type match; path and build-progress differences remain in the raw logs."
+  remediation_final:
+    focused_proxy_matrix: "104 passed, 1 skipped in 21.91s"
+    ruff_check: pass
+    ruff_format: "baseline failure only: tests/docs/test_root_roadmap_contract.py; all changed audit files formatted"
+    mypy: pass
+    git_diff_check: pass
+    yaml_parse: pass
+    remote_comparison: pass
+    original_worktree_remediation_start_equals_pre_commit_final: true
