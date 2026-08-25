@@ -1,3 +1,7 @@
+"""Lazy compatibility proxy for the optional GWpy FrameL backend."""
+
+# ruff: noqa: F822
+
 from __future__ import annotations
 
 from importlib import import_module
@@ -15,7 +19,7 @@ __all__ = (
     "read",
     "warnings",
     "write",
-)
+)  # noqa: F822
 _module: ModuleType | None = None
 _DIRECTORY = tuple(sorted(__all__))
 

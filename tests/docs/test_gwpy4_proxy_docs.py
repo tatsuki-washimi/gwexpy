@@ -2,14 +2,17 @@
 
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[2]
 
 
 def test_proxy_migration_guidance_and_navigation_are_published() -> None:
     changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    en_guide = (ROOT / "docs/web/en/user_guide/gwexpy_for_gwpy_users_en.md").read_text(encoding="utf-8")
-    ja_guide = (ROOT / "docs/web/ja/user_guide/gwexpy_for_gwpy_users_ja.md").read_text(encoding="utf-8")
+    en_guide = (ROOT / "docs/web/en/user_guide/gwexpy_for_gwpy_users_en.md").read_text(
+        encoding="utf-8"
+    )
+    ja_guide = (ROOT / "docs/web/ja/user_guide/gwexpy_for_gwpy_users_ja.md").read_text(
+        encoding="utf-8"
+    )
 
     for path in (
         "gwexpy.utils.shell",

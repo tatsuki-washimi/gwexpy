@@ -4,7 +4,6 @@ from pathlib import Path
 
 import yaml
 
-
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github/workflows/test-compat-gwpy.yml"
 
@@ -13,15 +12,26 @@ def test_latest_gwpy_proxy_gate_is_wired() -> None:
     workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
     paths = set(workflow[True]["pull_request"]["paths"])
     required_existing = {
-        "gwexpy/timeseries/**", "gwexpy/frequencyseries/**",
-        "gwexpy/spectrogram/**", "gwexpy/signal/**", "gwexpy/types/**",
-        "gwexpy/interop/**", "gwexpy/io/**", "gwexpy/fitting/**",
-        "gwexpy/plot/**", "gwexpy/utils/**", "tests/timeseries/**",
-        "pyproject.toml", "requirements*.txt", "environment.yml",
+        "gwexpy/timeseries/**",
+        "gwexpy/frequencyseries/**",
+        "gwexpy/spectrogram/**",
+        "gwexpy/signal/**",
+        "gwexpy/types/**",
+        "gwexpy/interop/**",
+        "gwexpy/io/**",
+        "gwexpy/fitting/**",
+        "gwexpy/plot/**",
+        "gwexpy/utils/**",
+        "tests/timeseries/**",
+        "pyproject.toml",
+        "requirements*.txt",
+        "environment.yml",
         ".github/workflows/test-compat-gwpy.yml",
     }
     required_new = {
-        "gwexpy/table/**", "tests/table/**", "tests/interop/**",
+        "gwexpy/table/**",
+        "tests/table/**",
+        "tests/interop/**",
         "tests/test_gwpy4_proxy_contract.py",
         "docs/developers/contracts/public_io_contract.*",
     }
@@ -48,11 +58,19 @@ def test_latest_gwpy_proxy_gate_is_wired() -> None:
         assert test_path in old_focused
 
     proxy_step = by_name["Run GWpy 4 proxy compatibility tests"]
-    expected_proxy_command = " ".join((
-        "pytest -q", "tests/test_gwpy4_proxy_contract.py",
-        "tests/table/test_table.py", "tests/interop/test_interop_lal.py",
-    ))
+    expected_proxy_command = " ".join(
+        (
+            "pytest -q",
+            "tests/test_gwpy4_proxy_contract.py",
+            "tests/table/test_table.py",
+            "tests/interop/test_interop_lal.py",
+        )
+    )
     assert " ".join(proxy_step["run"].split()) == expected_proxy_command
-    full_index = next(index for index, step in enumerate(steps) if step.get("name") == "Run full timeseries suite")
+    full_index = next(
+        index
+        for index, step in enumerate(steps)
+        if step.get("name") == "Run full timeseries suite"
+    )
     assert steps.index(proxy_step) < full_index
     assert steps[full_index]["run"].strip() == "pytest -q tests/timeseries"

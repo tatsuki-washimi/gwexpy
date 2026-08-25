@@ -186,8 +186,7 @@ def test_gwf_contract_distinguishes_canonical_and_framel_availability():
     }
     assert {"framel", "gwf.framel"} <= set(entry["aliases"])
     assert any(
-        "explicit FrameL" in note and "python-framel" in note
-        for note in entry["notes"]
+        "explicit FrameL" in note and "python-framel" in note for note in entry["notes"]
     )
 
 
