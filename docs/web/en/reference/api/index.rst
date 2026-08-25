@@ -113,6 +113,7 @@ This index groups the main modules by topic. If you're unsure where to start, be
    Fields <fields>
    Spectral <spectral>
    Analysis <analysis>
+   Coupling segment schema <coupling_segment>
    Noise <noise>
    Preprocessing <preprocessing>
    Fitting <fitting>

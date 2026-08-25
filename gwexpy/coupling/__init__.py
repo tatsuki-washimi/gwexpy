@@ -7,7 +7,9 @@ from .segment import (
     from_json_envelope,
     from_result,
     from_results,
+    to_astropy,
     to_json_envelope,
+    to_pandas,
     validate,
 )
 
@@ -16,6 +18,8 @@ __all__ = [
     "from_json_envelope",
     "from_result",
     "from_results",
+    "to_astropy",
     "to_json_envelope",
+    "to_pandas",
     "validate",
 ]

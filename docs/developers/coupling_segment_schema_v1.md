@@ -44,10 +44,27 @@ envelope without assigning limit semantics to measurement rows.
 DataFrame has no second unit channel. When an Astropy `coupling_factor` column
 declares a unit, it must exactly match every row's parsed unit string; a
 conflict is rejected rather than converted or relabeled. Thus an Astropy table
-can round-trip through pandas without changing the schema authority. Result
-objects supplied to `from_result()` must explicitly provide a coupling-factor
-unit, including an explicit dimensionless unit where that is the intended
-meaning; unitless duck objects are rejected.
+can round-trip through pandas without changing the schema authority.
+
+The `_ns` and `_hz` names are the authority for the three canonical coordinate
+columns. Unitless pandas columns, and unitless Astropy columns such as those
+created by `Table.from_pandas()`, carry raw canonical values: nanoseconds for
+`start_gps_ns` and `duration_ns`, and Hz for `frequency_hz`. An explicit
+Astropy unit is accepted only when it is exactly `ns` for either time column or
+exactly `Hz` for frequency. Seconds, days, kHz, and dimensionally incompatible
+units are rejected without converting or mutating the input, so raw seconds or
+days can never be silently interpreted as nanoseconds.
+
+Use `to_pandas()` and `to_astropy()` for the supported pandas/Astropy
+round-trip. The adapters return independent copies, preserve Astropy table and
+column metadata, attach the canonical units to the Astropy result, and map
+masked optional values to explicit nulls. Native `Table.to_pandas()` may turn a
+mask into a floating `NaN`; that representation is ambiguous and remains
+invalid input to `validate()`. Native `Table.from_pandas()` is valid only as a
+unitless canonical-value import and does not preserve Astropy metadata or
+units. Result objects supplied to `from_result()` must explicitly provide a
+coupling-factor unit, including an explicit dimensionless unit where that is
+the intended meaning; unitless duck objects are rejected.
 
 ## Result conversion
 
@@ -64,9 +81,10 @@ Astropy is installed.
 
 When `cf_ul` is supplied, `from_result()` requires its frequency axis to be
 present and convertible to Hz. Its converted grid must agree with `cf` within
-the larger of 32 binary64 ULPs and one billionth of the nearest positive bin
-spacing. This accepts Hz/kHz representation roundoff while rejecting a real
-bin mismatch. UL values are never relabeled onto `cf` frequencies. Its
+the larger of exactly 32 binary64 ULPs (from the adjacent `nextafter` values,
+including near zero) and one billionth of the nearest positive bin spacing.
+This accepts Hz/kHz representation roundoff while rejecting a real bin
+mismatch. UL values are never relabeled onto `cf` frequencies. Its
 coupling-factor unit must be equivalent to `cf`'s unit, and values are
 explicitly converted to `cf`'s unit before rows are emitted. Incompatible units
 are rejected.
@@ -86,7 +104,13 @@ raises a descriptive `TypeError`.
 `{"schema": "gwexpy.coupling.segment.v1", "columns": [...], "rows": [...]}`.
 `from_json_envelope()` accepts only that exact field set and schema version.
 The explicit ordered `columns` array preserves the schema for zero-row tables;
-plain record-oriented JSON cannot do so.
+plain record-oriented JSON cannot do so. Every table accepted by `validate()`
+can be passed to `json.dumps(to_json_envelope(table))`: signed-int64 schema
+times normalize to Python `int`, while finite real frequency, coupling-factor,
+and confidence values normalize to binary64 Python `float`. A finite
+`Fraction` or representable NumPy extended float therefore serializes through
+that binary64 normalization; non-`Real` values such as `Decimal`, and values
+outside finite binary64 range, are rejected.
 
 `significance` is intentionally not a v1 field. Its witness source, statistical
 normalization, formula, and applicability to upper limits lack approved physics

@@ -9,12 +9,14 @@ primary surface; Astropy Tables work through the same ``columns`` and
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
+from copy import deepcopy
 from numbers import Integral, Real
 from typing import Any
 
 import numpy as np
 import pandas as pd
 from astropy import units as u
+from astropy.table import Table
 
 SCHEMA_NAME = "gwexpy.coupling.segment.v1"
 
@@ -23,7 +25,9 @@ __all__ = [
     "from_json_envelope",
     "from_result",
     "from_results",
+    "to_astropy",
     "to_json_envelope",
+    "to_pandas",
     "validate",
 ]
 
@@ -45,6 +49,21 @@ _KNOWN_COLUMNS = set(_REQUIRED_COLUMNS) | set(_OPTIONAL_COLUMNS)
 _INT64_MAX = 2**63 - 1
 _FREQUENCY_GRID_ULPS = 32
 _FREQUENCY_GRID_RESOLUTION_FRACTION = 1e-9
+_CANONICAL_COLUMN_UNITS = {
+    "start_gps_ns": u.ns,
+    "duration_ns": u.ns,
+    "frequency_hz": u.Hz,
+}
+_JSON_INTEGER_COLUMNS = {"start_gps_ns", "duration_ns"}
+_JSON_FLOAT_COLUMNS = {"frequency_hz", "coupling_factor", "confidence_level"}
+_JSON_STRING_COLUMNS = {
+    "source_channel",
+    "response_channel",
+    "coupling_factor_unit",
+    "estimate_kind",
+    "limit_method",
+}
+_ADAPTER_METADATA_KEY = "_gwexpy_coupling_segment_v1"
 
 
 def _column_names(table: Any) -> list[str]:
@@ -137,21 +156,25 @@ def _canonical_unit(value: Any) -> str:
     return canonical
 
 
-def _validate_frequency_column(table: Any, values: list[Any]) -> None:
-    """Validate the declared frequency unit without changing the table."""
-    column = table["frequency_hz"]
+def _validate_canonical_column_unit(table: Any, name: str, unit: u.UnitBase) -> None:
+    """Accept unitless schema columns or an explicitly canonical Astropy unit."""
+    column = table[name]
     missing_unit = object()
     column_unit = getattr(column, "unit", missing_unit)
-    if column_unit is not missing_unit:
-        if column_unit is None:
-            raise ValueError("frequency_hz must use the canonical Hz unit")
-        try:
-            if u.Unit(column_unit) != u.Hz:
-                raise ValueError("frequency_hz must use the canonical Hz unit")
-        except (TypeError, ValueError, u.UnitsError) as exc:
-            if isinstance(exc, ValueError) and str(exc).startswith("frequency_hz"):
-                raise
-            raise ValueError("frequency_hz must use the canonical Hz unit") from exc
+    if column_unit is missing_unit or column_unit is None:
+        return
+    try:
+        if u.Unit(column_unit) != unit:
+            raise ValueError
+    except (TypeError, ValueError, u.UnitsError) as exc:
+        raise ValueError(
+            f"{name} must use the canonical {unit.to_string()} unit"
+        ) from exc
+
+
+def _validate_frequency_column(table: Any, values: list[Any]) -> None:
+    """Validate the declared frequency unit without changing the table."""
+    _validate_canonical_column_unit(table, "frequency_hz", u.Hz)
     for value in values:
         _validate_nonnegative_float(value, "frequency_hz")
 
@@ -209,6 +232,9 @@ def validate(table: Any) -> Any:
         if any(_is_null(value) for value in columns[name]):
             raise ValueError(f"required column {name!r} must not contain nulls")
 
+    for name, unit in _CANONICAL_COLUMN_UNITS.items():
+        if name != "frequency_hz":
+            _validate_canonical_column_unit(table, name, unit)
     for start, duration in zip(columns["start_gps_ns"], columns["duration_ns"]):
         _validate_interval(start, duration)
     for name in ("source_channel", "response_channel"):
@@ -313,8 +339,11 @@ def _frequency_grid_tolerance(frequencies: np.ndarray) -> np.ndarray:
     one billionth of its nearest positive neighbour spacing.  This admits unit
     conversion roundoff without merging physically distinct analysis bins.
     """
-    scale = np.maximum(np.abs(frequencies), 1.0)
-    ulp_tolerance = _FREQUENCY_GRID_ULPS * np.finfo(float).eps * scale
+    next_up = np.nextafter(frequencies, np.inf)
+    next_down = np.nextafter(frequencies, -np.inf)
+    ulp_tolerance = _FREQUENCY_GRID_ULPS * np.maximum(
+        np.abs(next_up - frequencies), np.abs(frequencies - next_down)
+    )
     if frequencies.size < 2:
         return ulp_tolerance
 
@@ -558,9 +587,109 @@ def _normalize_optional_columns(
     return normalized
 
 
-def _json_scalar(value: Any) -> Any:
+def to_pandas(table: Any) -> pd.DataFrame:
+    """Return a schema-aware pandas copy with explicit optional nulls.
+
+    Unlike :meth:`astropy.table.Table.to_pandas`, this adapter maps Astropy
+    masked optional metadata to ``None`` rather than floating ``NaN`` and
+    records Astropy table/column metadata needed by :func:`to_astropy`.
+    """
+    validate(table)
+    columns = _column_names(table)
+    values = {name: _column_values(table, name) for name in columns}
+    frame = pd.DataFrame(
+        {
+            name: [
+                None
+                if name in _OPTIONAL_COLUMNS and _is_absent_optional(value)
+                else value
+                for value in column_values
+            ]
+            for name, column_values in values.items()
+        },
+        dtype=object,
+    )
+    if isinstance(table, pd.DataFrame):
+        frame.attrs = deepcopy(table.attrs)
+        return frame
+    if not isinstance(table, Table):
+        raise TypeError("table must be a pandas DataFrame or Astropy Table")
+    frame.attrs[_ADAPTER_METADATA_KEY] = {
+        "astropy_meta": deepcopy(table.meta),
+        "column_metadata": {
+            name: {
+                "description": table[name].description,
+                "format": table[name].format,
+            }
+            for name in columns
+        },
+    }
+    return frame
+
+
+def to_astropy(table: Any) -> Table:
+    """Return a schema-aware Astropy copy with canonical schema units.
+
+    The adapter attaches ``ns`` to the two time columns and ``Hz`` to the
+    frequency column. It restores metadata captured by :func:`to_pandas` and
+    masks explicit optional nulls without changing the input object.
+    """
+    frame = to_pandas(table)
+    columns = list(frame.columns)
+    data: dict[str, list[Any]] = {}
+    masks: dict[str, list[bool]] = {}
+    for name in columns:
+        values = frame[name].tolist()
+        mask = [
+            name in _OPTIONAL_COLUMNS and _is_absent_optional(value) for value in values
+        ]
+        if any(mask):
+            placeholder = "" if name == "limit_method" else 0.0
+            values = [
+                placeholder if is_missing else value
+                for value, is_missing in zip(values, mask)
+            ]
+            masks[name] = mask
+        data[name] = values
+
+    result = Table(data, masked=True)
+    for name, mask in masks.items():
+        result[name].mask = mask
+    for name, unit in _CANONICAL_COLUMN_UNITS.items():
+        result[name].unit = unit
+    unit_strings = [_canonical_unit(value) for value in frame["coupling_factor_unit"]]
+    if unit_strings and all(value == unit_strings[0] for value in unit_strings):
+        result["coupling_factor"].unit = u.Unit(unit_strings[0])
+
+    adapter_metadata = frame.attrs.get(_ADAPTER_METADATA_KEY, {})
+    if isinstance(adapter_metadata, Mapping):
+        astropy_meta = adapter_metadata.get("astropy_meta", {})
+        if isinstance(astropy_meta, Mapping):
+            result.meta.update(deepcopy(astropy_meta))
+        column_metadata = adapter_metadata.get("column_metadata", {})
+        if isinstance(column_metadata, Mapping):
+            for name, metadata in column_metadata.items():
+                if name in result.colnames and isinstance(metadata, Mapping):
+                    result[name].description = metadata.get("description")
+                    result[name].format = metadata.get("format")
+    validate(result)
+    return result
+
+
+def _json_scalar(value: Any, name: str) -> Any:
     if _is_absent_optional(value):
         return None
+    if name in _JSON_INTEGER_COLUMNS:
+        return int(value)
+    if name in _JSON_FLOAT_COLUMNS and not (
+        name in _OPTIONAL_COLUMNS and isinstance(value, str)
+    ):
+        normalized = float(value)
+        if not np.isfinite(normalized):
+            raise ValueError(f"{name} must normalize to a finite binary64 value")
+        return normalized
+    if name in _JSON_STRING_COLUMNS:
+        return str(value)
     if isinstance(value, np.generic):
         return value.item()
     return value
@@ -572,7 +701,7 @@ def to_json_envelope(table: Any) -> dict[str, Any]:
     columns = _column_names(table)
     values = {name: _column_values(table, name) for name in columns}
     rows = [
-        [_json_scalar(values[name][index]) for name in columns]
+        [_json_scalar(values[name][index], name) for name in columns]
         for index in range(len(values[_REQUIRED_COLUMNS[0]]))
     ]
     return {"schema": SCHEMA_NAME, "columns": columns, "rows": rows}

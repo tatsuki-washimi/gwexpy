@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+from decimal import Decimal
+from fractions import Fraction
 from types import SimpleNamespace
 
 import numpy as np
@@ -269,6 +271,152 @@ def test_validate_uses_row_unit_string_as_the_single_unit_authority() -> None:
     table["coupling_factor"].unit = u.Hz
     with pytest.raises(ValueError, match="coupling_factor_unit"):
         validate(table)
+
+
+def test_validate_requires_canonical_or_unitless_astropy_time_units() -> None:
+    from gwexpy.coupling.segment import validate
+
+    table = Table({name: values for name, values in _table().items()})
+    table.meta["origin"] = "time-units"
+    before = table.copy(copy_data=True)
+
+    assert validate(table) is table
+    assert table.meta == before.meta
+
+    table["start_gps_ns"].unit = u.ns
+    table["duration_ns"].unit = u.ns
+    assert validate(table) is table
+
+    for name, unit, expected_unit in (
+        ("start_gps_ns", u.s, "ns"),
+        ("duration_ns", u.day, "ns"),
+        ("start_gps_ns", u.Hz, "ns"),
+        ("duration_ns", u.m, "ns"),
+        ("frequency_hz", u.m, "Hz"),
+    ):
+        invalid = table.copy(copy_data=True)
+        invalid[name].unit = unit
+        invalid_before = invalid.copy(copy_data=True)
+
+        with pytest.raises(ValueError, match=rf"{name}.*{expected_unit}"):
+            validate(invalid)
+
+        assert invalid.meta == invalid_before.meta
+        assert invalid[name].unit == invalid_before[name].unit
+        np.testing.assert_array_equal(invalid[name], invalid_before[name])
+
+
+def test_schema_aware_pandas_astropy_adapters_preserve_absence_units_and_metadata() -> (
+    None
+):
+    from gwexpy.coupling.segment import to_astropy, to_pandas, validate
+
+    source = Table(
+        {
+            "start_gps_ns": [123, 123],
+            "duration_ns": [10, 10],
+            "source_channel": ["source", "source"],
+            "response_channel": ["response", "response"],
+            "frequency_hz": [10.0, 20.0],
+            "coupling_factor": [0.25, 0.5],
+            "coupling_factor_unit": ["m / V", "m / V"],
+            "estimate_kind": ["measurement", "upper_limit"],
+            "limit_method": ["", "threshold"],
+            "confidence_level": [0.0, 0.95],
+        },
+        masked=True,
+    )
+    for name, unit in (
+        ("start_gps_ns", u.ns),
+        ("duration_ns", u.ns),
+        ("frequency_hz", u.Hz),
+        ("coupling_factor", u.m / u.V),
+    ):
+        source[name].unit = unit
+    source["limit_method"].mask = [True, False]
+    source["confidence_level"].mask = [True, False]
+    source["frequency_hz"].description = "bin frequency"
+    source["frequency_hz"].format = ".2f"
+    source.meta["origin"] = {"run": "adapter"}
+    source_before = source.copy(copy_data=True)
+
+    pandas_table = to_pandas(source)
+    assert pandas_table["limit_method"].tolist() == [None, "threshold"]
+    assert pandas_table["confidence_level"].tolist() == [None, 0.95]
+    assert pandas_table.attrs["_gwexpy_coupling_segment_v1"]["astropy_meta"] == {
+        "origin": {"run": "adapter"}
+    }
+    assert validate(pandas_table) is pandas_table
+    assert source.meta == source_before.meta
+    assert source["frequency_hz"].unit == source_before["frequency_hz"].unit
+    np.testing.assert_array_equal(
+        source["limit_method"].mask, source_before["limit_method"].mask
+    )
+
+    restored = to_astropy(pandas_table)
+    assert restored.meta == source.meta
+    assert restored["start_gps_ns"].unit == u.ns
+    assert restored["duration_ns"].unit == u.ns
+    assert restored["frequency_hz"].unit == u.Hz
+    assert restored["coupling_factor"].unit == u.m / u.V
+    assert restored["frequency_hz"].description == "bin frequency"
+    assert restored["frequency_hz"].format == ".2f"
+    assert restored["limit_method"].mask.tolist() == [True, False]
+    assert restored["confidence_level"].mask.tolist() == [True, False]
+    assert validate(restored) is restored
+
+    native_pandas = source.to_pandas()
+    with pytest.raises(ValueError, match="limit_method"):
+        validate(native_pandas)
+
+    native_astropy = Table.from_pandas(_table())
+    assert native_astropy["frequency_hz"].unit is None
+    assert validate(native_astropy) is native_astropy
+
+
+def test_json_envelope_normalizes_supported_numeric_scalars_or_rejects_them() -> None:
+    from gwexpy.coupling.segment import to_json_envelope, validate
+
+    table = _table(
+        start_gps_ns=np.int64(123),
+        frequency_hz=np.longdouble("10.5"),
+        coupling_factor=Fraction(1, 3),
+        estimate_kind="upper_limit",
+        limit_method="threshold",
+        confidence_level=Fraction(19, 20),
+    )
+
+    assert validate(table) is table
+    envelope = to_json_envelope(table)
+    assert json.dumps(envelope)
+    row = dict(zip(envelope["columns"], envelope["rows"][0], strict=True))
+    assert isinstance(row["start_gps_ns"], int)
+    assert isinstance(row["frequency_hz"], float)
+    assert isinstance(row["coupling_factor"], float)
+    assert isinstance(row["confidence_level"], float)
+
+    with pytest.raises(TypeError, match="coupling_factor"):
+        validate(_table(coupling_factor=Decimal("0.25")))
+
+
+def _advance_binary64(value: float, steps: int) -> float:
+    for _ in range(steps):
+        value = float(np.nextafter(value, np.inf))
+    return value
+
+
+@pytest.mark.parametrize(("steps", "matches"), [(32, True), (33, False), (40, False)])
+def test_frequency_grid_uses_true_32_ulp_tolerance_near_zero(
+    steps: int, matches: bool
+) -> None:
+    from gwexpy.coupling.segment import _frequency_grids_match
+
+    minimum = float(np.nextafter(0.0, np.inf))
+    reference = np.array([0.0, minimum])
+    candidate = reference.copy()
+    candidate[0] = _advance_binary64(reference[0], steps)
+
+    assert _frequency_grids_match(reference, candidate) is matches
 
 
 def test_from_result_rejects_a_duck_result_without_a_coupling_unit() -> None:
