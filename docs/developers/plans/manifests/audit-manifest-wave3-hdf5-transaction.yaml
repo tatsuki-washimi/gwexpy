@@ -1,6 +1,7 @@
 title: "Wave 3 cross-process HDF5 provenance transaction"
 provenance_head: "1aadd9a2e300bbd959d61139bb27569290978bcc"
 implementation_head: "464c2775e7a26e9fe39478984782bd16d88e7cb4"
+reviewed_head: "f8a62f2c13bb34cbdd0c6fe1a79e77b7d5149322"
 scope:
   included:
     - "Spectrogram provenance HDF5 pathname transaction locking"
@@ -35,3 +36,11 @@ verification_actual:
     result: "pass"
   - command: "rtk git diff --check"
     result: "pass"
+  - command: "rtk env PYTHONPATH=$PWD PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest -q tests/spectrogram/test_provenance.py::test_spawn_append_writer_blocks_after_sidecar_read_and_preserves_entries"
+    result: "1 passed"
+  - command: "rtk env PYTHONPATH=$PWD PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest -q tests/spectrogram/test_provenance.py::test_process_lock_is_released_after_terminated_writer_without_stealing tests/spectrogram/test_provenance.py::test_process_lock_times_out_fail_closed_and_supports_nesting"
+    result: "2 passed"
+  - command: "rtk env PYTHONPATH=$PWD PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest -q tests/spectrogram/test_provenance.py::test_spawn_lock_on_one_physical_file_does_not_block_another"
+    result: "1 passed"
+  - command: "rtk env PYTHONPATH=$PWD PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest -q tests/spectrogram/test_provenance.py::test_spawn_equivalent_path_spellings_block_until_release[relative|absolute|symlink]"
+    result: "each case passed individually; combined invocation exceeded the 30-second harness window before a final summary"

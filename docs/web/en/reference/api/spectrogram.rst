@@ -53,8 +53,7 @@ If artifact creation also fails, the error
 reports that recovery is unavailable after retrying the prior sidecar snapshot
 directly.  If data and sidecar commit before rollback cleanup
 fails, the write remains committed and its structured error marks
-``operation_committed=True``.  Path
-For a pathname, ``overwrite=True`` with the default ``append=False`` has GWpy's
+``operation_committed=True``.  For a pathname, ``overwrite=True`` with the default ``append=False`` has GWpy's
 whole-file replacement semantics: GWexpy writes only the requested dataset and
 its sidecar entry to a complete sibling temporary HDF5 file before ``os.replace``.
 It intentionally removes unrelated datasets and provenance entries.  In

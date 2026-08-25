@@ -118,6 +118,53 @@ def _spawn_dataset_writer(
         finished.set()
 
 
+def _spawn_paused_append_writer(
+    filename: str, dataset: str, read_sidecar, release, finished, errors
+) -> None:
+    from gwexpy.spectrogram import Spectrogram as SpawnSpectrogram
+    from gwexpy.spectrogram.io import provenance as spawn_provenance
+
+    original_read = spawn_provenance._read_sidecar
+    paused = False
+
+    def paused_read(*args, **kwargs):
+        nonlocal paused
+        sidecar = original_read(*args, **kwargs)
+        if not paused:
+            paused = True
+            read_sidecar.set()
+            if not release.wait(timeout=10):
+                raise TimeoutError("test append writer was not released")
+        return sidecar
+
+    spawn_provenance._read_sidecar = paused_read
+    try:
+        result = SpawnSpectrogram(
+            np.full((3, 4), 10.0),
+            times=np.arange(3.0),
+            frequencies=np.arange(10.0, 14.0),
+            name=dataset,
+        )
+        result.provenance = {
+            **_provenance(),
+            "analysis": {"method": dataset, "parameters": {}},
+        }
+        result.write(filename, format="hdf5", path=dataset, append=True, overwrite=True)
+    except BaseException as error:  # pragma: no cover - parent asserts payload
+        errors.put((type(error).__name__, str(error)))
+    finally:
+        finished.set()
+
+
+def _spawn_lock_probe(path: str, entered, release, finished) -> None:
+    from gwexpy.spectrogram.io import provenance as spawn_provenance
+
+    with spawn_provenance._process_file_lock(path):
+        entered.set()
+        release.wait(timeout=10)
+    finished.set()
+
+
 def _spectrogram() -> Spectrogram:
     return Spectrogram(
         np.arange(12.0).reshape(3, 4),
@@ -494,6 +541,116 @@ def test_spawn_append_writers_preserve_distinct_dataset_entries(tmp_path) -> Non
             "/a",
             "/b",
         }
+
+
+def test_spawn_append_writer_blocks_after_sidecar_read_and_preserves_entries(
+    tmp_path,
+) -> None:
+    path = tmp_path / "spawn-controlled-append.hdf5"
+    seed = _spectrogram()
+    seed.provenance = _provenance()
+    seed.write(path, format="hdf5", path="seed")
+    context = multiprocessing.get_context("spawn")
+    read_sidecar, release, first_done, second_done = (context.Event() for _ in range(4))
+    errors = context.Queue()
+    first = context.Process(
+        target=_spawn_paused_append_writer,
+        args=(str(path), "a", read_sidecar, release, first_done, errors),
+    )
+    second = context.Process(
+        target=_spawn_dataset_writer,
+        args=(str(path), "b", 20.0, True, second_done, errors),
+    )
+    first.start()
+    assert read_sidecar.wait(timeout=10)
+    second.start()
+    try:
+        assert not second_done.wait(timeout=0.25)
+    finally:
+        release.set()
+    assert first_done.wait(timeout=10)
+    assert second_done.wait(timeout=10)
+    first.join(timeout=10)
+    second.join(timeout=10)
+    assert first.exitcode == second.exitcode == 0
+    assert errors.empty()
+    with h5py.File(path, "r") as h5file:
+        assert set(h5file) == {"seed", "a", "b"}
+        assert set(json.loads(h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE])) == {
+            "/seed",
+            "/a",
+            "/b",
+        }
+
+
+def test_spawn_lock_on_one_physical_file_does_not_block_another(tmp_path) -> None:
+    first_path, second_path = tmp_path / "first.hdf5", tmp_path / "second.hdf5"
+    for path in (first_path, second_path):
+        spec = _spectrogram()
+        spec.provenance = _provenance()
+        spec.write(path, format="hdf5")
+    context = multiprocessing.get_context("spawn")
+    acquired, writer_done = context.Event(), context.Event()
+    errors = context.Queue()
+    holder = context.Process(
+        target=_spawn_hold_process_lock, args=(str(first_path), acquired)
+    )
+    writer = context.Process(
+        target=_spawn_dataset_writer,
+        args=(str(second_path), "second", 20.0, True, writer_done, errors),
+    )
+    holder.start()
+    assert acquired.wait(timeout=10)
+    writer.start()
+    assert writer_done.wait(timeout=10)
+    holder.terminate()
+    holder.join(timeout=10)
+    writer.join(timeout=10)
+    assert writer.exitcode == 0
+    assert errors.empty()
+    assert Spectrogram.read(second_path, format="hdf5", path="second").provenance
+
+
+@pytest.mark.parametrize("alias_kind", ["relative", "absolute", "symlink"])
+def test_spawn_equivalent_path_spellings_block_until_release(
+    tmp_path, monkeypatch, alias_kind
+) -> None:
+    path = tmp_path / "alias-blocking.hdf5"
+    with h5py.File(path, "w"):
+        pass
+    link = tmp_path / "alias-blocking-link.hdf5"
+    if alias_kind == "symlink":
+        try:
+            os.symlink(path, link)
+        except (NotImplementedError, OSError):
+            pytest.skip("symlinks are unavailable on this filesystem")
+        alias = str(link)
+    elif alias_kind == "relative":
+        monkeypatch.chdir(tmp_path)
+        alias = path.name
+    else:
+        alias = str(path)
+    context = multiprocessing.get_context("spawn")
+    acquired, entered, release_probe, finished = (context.Event() for _ in range(4))
+    holder = context.Process(
+        target=_spawn_hold_process_lock, args=(str(path), acquired)
+    )
+    probe = context.Process(
+        target=_spawn_lock_probe, args=(alias, entered, release_probe, finished)
+    )
+    holder.start()
+    assert acquired.wait(timeout=10)
+    probe.start()
+    try:
+        assert not entered.wait(timeout=0.25)
+    finally:
+        holder.terminate()
+        holder.join(timeout=10)
+    assert entered.wait(timeout=10)
+    release_probe.set()
+    assert finished.wait(timeout=10)
+    probe.join(timeout=10)
+    assert probe.exitcode == 0
 
 
 def test_provenance_survives_pickle_and_hdf5_roundtrips(tmp_path) -> None:
