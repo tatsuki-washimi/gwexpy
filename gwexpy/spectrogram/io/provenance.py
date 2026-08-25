@@ -49,39 +49,54 @@ class ProvenanceRollbackError(RuntimeError):
 
     def __init__(
         self,
-        operation_error: BaseException,
+        operation_error: BaseException | None,
         restoration_errors: tuple[BaseException, ...],
         recovery_path: str | None,
         *,
         preservation_errors: tuple[BaseException, ...] = (),
         cleanup_errors: tuple[BaseException, ...] = (),
+        operation_committed: bool = False,
     ) -> None:
         self.operation_error = operation_error
+        self.operation_committed = operation_committed
         self.restoration_errors = restoration_errors
         self.preservation_errors = preservation_errors
         self.cleanup_errors = cleanup_errors
-        self.errors = (
-            operation_error,
-            *restoration_errors,
-            *preservation_errors,
-            *cleanup_errors,
+        self.errors = tuple(
+            error
+            for error in (
+                operation_error,
+                *restoration_errors,
+                *preservation_errors,
+                *cleanup_errors,
+            )
+            if error is not None
         )
         # Retain this attribute for callers that caught the first version of
         # this internal exception before it reported every restoration error.
-        self.rollback_error = self.errors[1]
+        self.rollback_error = self.errors[0 if operation_error is None else 1]
         self.recovery_path = recovery_path
         self.recovery_available = recovery_path is not None
-        rollback_errors = self.errors[1:]
+        rollback_errors = (
+            self.errors[1:] if operation_error is not None else self.errors
+        )
         restoration_message = "; ".join(str(error) for error in rollback_errors)
-        recovery_message = (
-            repr(recovery_path) if recovery_path is not None else "unavailable"
-        )
-        super().__init__(
-            "HDF5 provenance write failed "
-            f"({operation_error!s}); rollback restoration failed "
-            f"({restoration_message}); recovery artifact retained at "
-            f"{recovery_message}"
-        )
+        if operation_committed:
+            message = (
+                "HDF5 provenance write committed, but rollback cleanup failed "
+                f"({restoration_message})"
+            )
+        else:
+            message = (
+                "HDF5 provenance write failed "
+                f"({operation_error!s}); rollback handling failed "
+                f"({restoration_message})"
+            )
+        if recovery_path is None:
+            message += "; recovery unavailable"
+        else:
+            message += f"; recovery artifact retained at {recovery_path!r}"
+        super().__init__(message)
 
 
 def _decode_sidecar(raw: Any) -> str:
@@ -328,19 +343,52 @@ def _rename_recovery_artifact(
     h5file.move(original_path, recovery_path)
 
 
-def _retain_recovery_artifact(
+def _safe_artifact_path(
+    h5file: h5py.File,
+    path: str | None,
+    errors: list[BaseException],
+) -> str | None:
+    """Return a reachable root path without leaking HDF5 handle failures."""
+    if not isinstance(path, str):
+        errors.append(RuntimeError("HDF5 recovery artifact path is unavailable"))
+        return None
+    try:
+        if path in h5file:
+            return path if path.startswith("/") else f"/{path}"
+    except BaseException as error:
+        errors.append(error)
+        return None
+    errors.append(RuntimeError("HDF5 recovery artifact is no longer reachable"))
+    return None
+
+
+def _safe_rollback_path(
+    h5file: h5py.File,
+    rollback: h5py.Group,
+    errors: list[BaseException],
+) -> str | None:
+    """Inspect a rollback handle without allowing an invalid ID to escape."""
+    try:
+        path = rollback.name
+    except BaseException as error:
+        errors.append(error)
+        return None
+    return _safe_artifact_path(h5file, path, errors)
+
+
+def _capture_recovery_state(
     h5file: h5py.File,
     rollback: h5py.Group | None,
     prior_path: str | None,
     sidecar_snapshot: tuple[bool, Any],
 ) -> tuple[str | None, tuple[BaseException, ...]]:
-    """Keep data and sidecar recovery state reachable after rollback errors."""
+    """Capture recovery state without masking any artifact-operation error."""
+    preservation_errors: list[BaseException] = []
     if rollback is None:
         try:
             rollback = _rollback_group(h5file)
         except BaseException as error:
             return None, (error,)
-    preservation_errors: list[BaseException] = []
     try:
         _ensure_recovery_hard_link(h5file, rollback, prior_path)
     except BaseException as error:
@@ -349,21 +397,26 @@ def _retain_recovery_artifact(
         _record_sidecar_snapshot(rollback, sidecar_snapshot)
     except BaseException as error:
         preservation_errors.append(error)
-    original_path = rollback.name
-    if original_path not in h5file:
-        preservation_errors.append(
-            RuntimeError("HDF5 recovery artifact is no longer reachable")
-        )
+    original_path = _safe_rollback_path(h5file, rollback, preservation_errors)
+    if original_path is None:
         return None, tuple(preservation_errors)
-    recovery_path = _recovery_path(h5file)
+    try:
+        recovery_path = _recovery_path(h5file)
+    except BaseException as error:
+        preservation_errors.append(error)
+        return original_path, tuple(preservation_errors)
     try:
         _rename_recovery_artifact(h5file, original_path, recovery_path)
     except BaseException as error:
         # The rollback group still owns the only saved hard link.  Never try
         # to remove it merely because cosmetic recovery naming failed.
         preservation_errors.append(error)
-        return original_path, tuple(preservation_errors)
-    return f"/{recovery_path}", tuple(preservation_errors)
+        return _safe_artifact_path(h5file, original_path, preservation_errors), tuple(
+            preservation_errors
+        )
+    return _safe_artifact_path(h5file, recovery_path, preservation_errors), tuple(
+        preservation_errors
+    )
 
 
 def _cleanup_rollback_group(
@@ -373,6 +426,23 @@ def _cleanup_rollback_group(
     """Remove a no-longer-needed rollback group after a complete outcome."""
     if rollback is not None and rollback.name in h5file:
         del h5file[rollback.name]
+
+
+def _capture_cleanup_state(
+    h5file: h5py.File,
+    rollback: h5py.Group | None,
+    prior_path: str | None,
+    sidecar_snapshot: tuple[bool, Any],
+) -> tuple[tuple[BaseException, ...], str | None, tuple[BaseException, ...]]:
+    """Run cleanup and capture its recoverability without allowing raw errors."""
+    try:
+        _cleanup_rollback_group(h5file, rollback)
+    except BaseException as cleanup_error:
+        recovery_path, preservation_errors = _capture_recovery_state(
+            h5file, rollback, prior_path, sidecar_snapshot
+        )
+        return (cleanup_error,), recovery_path, preservation_errors
+    return (), None, ()
 
 
 def _restore_dataset_link(
@@ -434,7 +504,7 @@ def _write_to_open_container(
             # Preserve the original object even if the failed restoration has
             # already removed the replacement at its public path, or if the
             # original link was restored but its matching sidecar was not.
-            recovery_path, preservation_errors = _retain_recovery_artifact(
+            recovery_path, preservation_errors = _capture_recovery_state(
                 h5file, rollback, prior_path, sidecar_snapshot
             )
             raise ProvenanceRollbackError(
@@ -443,21 +513,30 @@ def _write_to_open_container(
                 recovery_path,
                 preservation_errors=preservation_errors,
             ) from restoration_errors[0]
-        try:
-            _cleanup_rollback_group(h5file, rollback)
-        except BaseException as cleanup_error:
-            recovery_path, preservation_errors = _retain_recovery_artifact(
-                h5file, rollback, prior_path, sidecar_snapshot
-            )
+        cleanup_errors, recovery_path, preservation_errors = _capture_cleanup_state(
+            h5file, rollback, prior_path, sidecar_snapshot
+        )
+        if cleanup_errors:
             raise ProvenanceRollbackError(
                 operation_error,
                 (),
                 recovery_path,
                 preservation_errors=preservation_errors,
-                cleanup_errors=(cleanup_error,),
-            ) from cleanup_error
+                cleanup_errors=cleanup_errors,
+            ) from cleanup_errors[0]
         raise
-    _cleanup_rollback_group(h5file, rollback)
+    cleanup_errors, recovery_path, preservation_errors = _capture_cleanup_state(
+        h5file, rollback, prior_path, sidecar_snapshot
+    )
+    if cleanup_errors:
+        raise ProvenanceRollbackError(
+            None,
+            (),
+            recovery_path,
+            preservation_errors=preservation_errors,
+            cleanup_errors=cleanup_errors,
+            operation_committed=True,
+        ) from cleanup_errors[0]
     return dataset
 
 

@@ -32,7 +32,9 @@ sidecar state.  If restoration or rollback cleanup fails, GWexpy attempts to
 retain a named recovery artifact and reports the operation plus every
 restoration, preservation, and cleanup failure.  If artifact creation also
 fails, the error reports that recovery is unavailable after retrying the prior
-sidecar snapshot directly.  Path
+sidecar snapshot directly.  If data and sidecar commit before rollback cleanup
+fails, the write remains committed and its structured error marks
+``operation_committed=True``.  Path
 replacement writes a complete sibling temporary HDF5 file before ``os.replace``.
 For an existing regular file, its permission bits are applied to the temporary
 replacement.  Symbolic-link targets are rejected; ownership, ACLs, and

@@ -29,6 +29,8 @@ sidecar は書き込み前に検証し、サイズを 1 MB に制限します。
 復元または rollback cleanup が失敗したときは、名前付きの recovery artifact を残そうとします。
 エラーには、操作時、復元時、保存時、cleanup 時のすべての失敗を含めます。
 artifact の作成にも失敗したときは、以前の sidecar snapshot を直接再適用してから recovery が利用できないことをエラーで報告します。
+データと sidecar の commit 後に rollback cleanup が失敗したとき、書き込み結果は commit 済みのままです。
+構造化エラーの ``operation_committed=True`` がこの状態を示します。
 パスを置き換える書き込みでは、完全な一時 HDF5 ファイルを同じディレクトリに書き、``os.replace`` で置き換えます。
 既存の通常ファイルでは、元のパーミッションビットを一時ファイルに適用します。
 シンボリックリンクを対象とした置き換えは拒否します。
