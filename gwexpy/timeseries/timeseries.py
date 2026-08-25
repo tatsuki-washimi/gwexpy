@@ -40,7 +40,7 @@ from ._gwf_io import (
     _gwf_parallel_read_signature,
     _GWFParallelContractError,
     _normalize_gwf_parallel_kwargs,
-    _resolve_gwf_format,
+    _prepare_gwf_parallel_source,
     _source_for_gwf_channel_listing,
     _validate_gwf_parallel_source,
 )
@@ -195,14 +195,16 @@ class TimeSeries(
 
             return read_timeseries_csv(source, **kwargs)
 
-        gwf_format = _resolve_gwf_format(source, kwargs.get("format"))
+        source, gwf_format = _prepare_gwf_parallel_source(
+            source, kwargs.get("format"), kwargs
+        )
         if gwf_format is not None:
             channels, start, end, gwf_kwargs = _extract_gwf_read_args(
                 args,
                 kwargs,
                 allow_multiple_channels=False,
             )
-            _validate_gwf_parallel_source(source, gwf_kwargs)
+            source = _validate_gwf_parallel_source(source, gwf_kwargs)
             _, parallel_workers = _normalize_gwf_parallel_kwargs(
                 dict(gwf_kwargs),
                 number_of_spans=len(source) if isinstance(source, (list, tuple)) else 1,

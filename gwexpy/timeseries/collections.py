@@ -51,7 +51,7 @@ from ._gwf_io import (
     _gwf_parallel_read_signature,
     _GWFParallelContractError,
     _normalize_gwf_parallel_kwargs,
-    _resolve_gwf_format,
+    _prepare_gwf_parallel_source,
     _source_for_gwf_channel_listing,
     _validate_gwf_parallel_source,
     read_gwf_timeseriesdict,
@@ -165,7 +165,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 "format 'ats.mth5' supports TimeSeries.read only; "
                 "TimeSeriesDict.read is not supported"
             )
-        gwf_format = _resolve_gwf_format(source, fmt)
+        source, gwf_format = _prepare_gwf_parallel_source(source, fmt, kwargs)
         try:
             p = Path(source)
         except TypeError:
@@ -219,7 +219,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 kwargs,
                 allow_multiple_channels=True,
             )
-            _validate_gwf_parallel_source(source, gwf_kwargs)
+            source = _validate_gwf_parallel_source(source, gwf_kwargs)
             _, parallel_workers = _normalize_gwf_parallel_kwargs(
                 dict(gwf_kwargs),
                 number_of_spans=len(source) if isinstance(source, (list, tuple)) else 1,

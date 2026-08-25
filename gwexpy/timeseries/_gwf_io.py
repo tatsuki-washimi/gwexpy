@@ -245,6 +245,8 @@ def _resolve_gwf_format(source: Any, fmt: Any) -> str | None:
 
 
 def _normalize_path_suffix(source: Any) -> Path:
+    if isinstance(source, bytes):
+        return Path(os.fsdecode(source))
     try:
         return Path(source)
     except TypeError:
@@ -294,6 +296,10 @@ _GWF_PARALLEL_PATH_ERROR = (
 
 class _GWFParallelContractError(TypeError):
     """Signal an invalid public GWF parallel-read request."""
+
+
+class _NormalizedGWFParallelSources(tuple):
+    """Immutable exact ``os.fspath`` snapshots for one multi-worker request."""
 
 
 def _normalize_gwf_parallel_kwargs(
@@ -425,6 +431,20 @@ def _is_local_gwf_frame_path_syntax(text: str) -> bool:
     return True
 
 
+def _is_normalized_filesystem_path(path: str | bytes) -> bool:
+    """Return whether one already-normalized snapshot is a local frame path."""
+    try:
+        if os.path.isfile(path):
+            return True
+    except OSError:
+        return False
+    try:
+        text = os.fsdecode(path)
+    except (TypeError, UnicodeError):
+        return False
+    return _is_local_gwf_frame_path_syntax(text)
+
+
 def _is_filesystem_path(source: Any) -> bool:
     """Return whether ``source`` is one local frame path for spawned reads.
 
@@ -442,16 +462,7 @@ def _is_filesystem_path(source: Any) -> bool:
         return False
     if not isinstance(path, (str, bytes)):
         return False
-    try:
-        if os.path.isfile(path):
-            return True
-    except OSError:
-        return False
-    try:
-        text = os.fsdecode(path)
-    except (TypeError, UnicodeError):
-        return False
-    return _is_local_gwf_frame_path_syntax(text)
+    return _is_normalized_filesystem_path(path)
 
 
 def _gwf_time_to_ns(value: Any) -> int:
@@ -669,8 +680,67 @@ def _coerce_gwf_timeseriesdict(
     return result
 
 
-def _validate_gwf_parallel_source(source: Any, gwf_kwargs: dict[str, Any]) -> None:
-    """Validate public parallel arguments before channel discovery or I/O."""
+def _normalize_gwf_parallel_sources(source: Any) -> _NormalizedGWFParallelSources:
+    """Freeze multi-worker source items into exact ``os.fspath`` snapshots.
+
+    This is deliberately the sole public-boundary conversion of path-like
+    input.  The resulting tuple is passed through nested reader dispatch,
+    resolver scheduling, and spawn tasks without consulting an arbitrary
+    ``PathLike`` object again.
+    """
+    if isinstance(source, _NormalizedGWFParallelSources):
+        return source
+    if not isinstance(source, (list, tuple)):
+        raise _GWFParallelContractError(_GWF_PARALLEL_PATH_ERROR)
+
+    snapshots: list[str | bytes] = []
+    for item in source:
+        if not isinstance(item, (str, bytes, os.PathLike)):
+            raise _GWFParallelContractError(_GWF_PARALLEL_PATH_ERROR)
+        # Let an fspath failure, including its exact exception identity, reach
+        # the caller before resolver, backend, or executor work begins.
+        snapshot = os.fspath(item)
+        if not isinstance(snapshot, (str, bytes)):
+            raise TypeError(
+                "GWF parallel source PathLike values must return str or bytes"
+            )
+        if not _is_normalized_filesystem_path(snapshot):
+            raise _GWFParallelContractError(_GWF_PARALLEL_PATH_ERROR)
+        snapshots.append(snapshot)
+    return _NormalizedGWFParallelSources(snapshots)
+
+
+def _prepare_gwf_parallel_source(
+    source: Any, fmt: Any, gwf_kwargs: dict[str, Any]
+) -> tuple[Any, str | None]:
+    """Resolve GWF format without accessing a multi-worker PathLike twice.
+
+    Extension-based GWF selection normally inspects path-like input. For an
+    effective multi-worker request, snapshot first so that inspection and all
+    later work observe the same value. Explicit non-GWF formats retain their
+    existing dispatch without GWF preflight.
+    """
+    if fmt is not None:
+        gwf_format = _normalize_gwf_format(fmt) if isinstance(fmt, str) else None
+        if gwf_format is None:
+            return source, None
+        return _validate_gwf_parallel_source(source, gwf_kwargs), gwf_format
+
+    requested, workers = _normalize_gwf_parallel_kwargs(
+        dict(gwf_kwargs),
+        number_of_spans=len(source) if isinstance(source, (list, tuple)) else 1,
+    )
+    if requested and workers > 1:
+        source = _validate_gwf_parallel_source(source, gwf_kwargs)
+    return source, _resolve_gwf_format(source, fmt)
+
+
+def _validate_gwf_parallel_source(source: Any, gwf_kwargs: dict[str, Any]) -> Any:
+    """Validate public parallel arguments before channel discovery or I/O.
+
+    Return an immutable normalized source tuple for an effective multi-worker
+    call, otherwise return the caller's source unchanged for serial parity.
+    """
     requested, workers = _normalize_gwf_parallel_kwargs(
         dict(gwf_kwargs),
         number_of_spans=len(source) if isinstance(source, (list, tuple)) else 1,
@@ -681,15 +751,9 @@ def _validate_gwf_parallel_source(source: Any, gwf_kwargs: dict[str, Any]) -> No
         raise _GWFParallelContractError(
             "Parallel GWF reads are not supported from a daemon process"
         )
-    if (
-        requested
-        and workers > 1
-        and (
-            not isinstance(source, (list, tuple))
-            or not all(_is_filesystem_path(item) for item in source)
-        )
-    ):
-        raise _GWFParallelContractError(_GWF_PARALLEL_PATH_ERROR)
+    if requested and workers > 1:
+        return _normalize_gwf_parallel_sources(source)
+    return source
 
 
 def _read_gwf_dict(
@@ -739,19 +803,17 @@ def _read_gwf_dict(
             series_class,
         )
 
-    if requested_parallel and workers > 1 and not isinstance(source, (list, tuple)):
-        raise _GWFParallelContractError(_GWF_PARALLEL_PATH_ERROR)
+    if requested_parallel and workers > 1:
+        source = _normalize_gwf_parallel_sources(source)
 
     if isinstance(source, (list, tuple)):
         sources = list(source)
         if requested_parallel and workers > 1:
-            if not all(_is_filesystem_path(item) for item in sources):
-                raise _GWFParallelContractError(_GWF_PARALLEL_PATH_ERROR)
             for item in sources:
                 _resolve_gwf_path_span(item, channels, backend)
             tasks = [
                 (
-                    os.fspath(item),
+                    item,
                     tuple(channels),
                     start,
                     end,
@@ -952,13 +1014,17 @@ def _gwexpy_statevector_read_call(
     ``__call__`` method while preserving the descriptors themselves.
     """
     original = _GWF_STATEVECTOR_ORIGINAL_CALLS[type(reader)]
-    gwf_format = _resolve_gwf_format(source, kwargs.get("format"))
     requested_alias = "parallel" in kwargs or "nproc" in kwargs
+    normalized_kwargs = dict(kwargs)
+    if requested_alias:
+        source, gwf_format = _prepare_gwf_parallel_source(
+            source, kwargs.get("format"), normalized_kwargs
+        )
+    else:
+        gwf_format = _resolve_gwf_format(source, kwargs.get("format"))
     if gwf_format is None or not requested_alias:
         return original(reader, source, name, start, end, pad=pad, gap=gap, **kwargs)
 
-    normalized_kwargs = dict(kwargs)
-    _validate_gwf_parallel_source(source, normalized_kwargs)
     _, workers = _normalize_gwf_parallel_kwargs(
         normalized_kwargs,
         number_of_spans=len(source) if isinstance(source, (list, tuple)) else 1,

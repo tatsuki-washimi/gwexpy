@@ -295,3 +295,27 @@ supported for mocked-platform preflight tests.
 - [x] **Step 4: Update EN/JA docs and audit evidence; rerun focused, native,
   broad, Ruff/import-order/format, MyPy, YAML, and diff checks before one local
   Conventional Commit.**
+
+### Task 15: Sol PathLike TOCTOU source-snapshot remediation
+
+**Goal:** Normalize each effective multi-worker source exactly once and use the
+same immutable `str` or `bytes` snapshot for validation, resolver scheduling,
+merge association, worker construction, and diagnostics.
+
+**Architecture:** At the public parallel preflight boundary, convert each list
+or tuple item once with `os.fspath` into an immutable tuple snapshot. Propagate
+an `os.fspath` exception unchanged; reject non-`str`/`bytes` results before any
+I/O. Mark the tuple as normalized so nested TimeSeries/Dict and StateVector
+routes do not repeat conversion. Internal validation accepts only snapshots;
+resolver and spawned worker tasks use the stored value directly.
+
+- [x] **Step 1: Add RED adversarial PathLike tests** for mutation, alternating
+  local/URI/composite values, bytes, raising and invalid fspath behavior, and
+  all-reader/both-alias source identity and decoded-order preservation.
+- [x] **Step 2: Record RED evidence** that a second PathLike access observes a
+  later forbidden value during the former validation/read/task pipeline.
+- [x] **Step 3: Implement immutable snapshot normalization and remove hidden
+  internal re-normalization; rerun focused contracts GREEN.**
+- [x] **Step 4: Update EN/JA docs and audit evidence; run focused, native,
+  broad, Ruff/import-order/format, MyPy, YAML, and diff checks before one local
+  Conventional Commit.**

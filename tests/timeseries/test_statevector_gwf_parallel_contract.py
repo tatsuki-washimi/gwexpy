@@ -9,6 +9,7 @@ from contextlib import nullcontext
 from inspect import signature
 from io import BytesIO
 from pathlib import Path, PureWindowsPath
+from threading import Event, Thread
 
 import pytest
 from gwpy.timeseries import StateVector, StateVectorDict
@@ -52,6 +53,51 @@ class _StringPath(os.PathLike[str]):
 
     def __fspath__(self) -> str:
         return self.value
+
+
+class _ConcurrentSnapshotPath(os.PathLike[str | bytes]):
+    """Return one local snapshot, then a forbidden later spelling."""
+
+    def __init__(self, initial: str | bytes, later: str | bytes | Exception) -> None:
+        self.initial = initial
+        self.later = later
+        self.calls = 0
+        self.entered = Event()
+        self.release = Event()
+
+    def __fspath__(self) -> str | bytes:
+        self.calls += 1
+        if self.calls > 1:
+            if isinstance(self.later, Exception):
+                raise self.later
+            return self.later
+        snapshot = self.initial
+        self.entered.set()
+        assert self.release.wait(timeout=5)
+        return snapshot
+
+
+class _RaisingPath(os.PathLike[str]):
+    """Raise the exact configured exception from the first fspath access."""
+
+    def __init__(self, error: Exception) -> None:
+        self.error = error
+        self.calls = 0
+
+    def __fspath__(self) -> str:
+        self.calls += 1
+        raise self.error
+
+
+class _InvalidPath(os.PathLike[str]):
+    """Violate the os.PathLike return contract for preflight coverage."""
+
+    def __init__(self) -> None:
+        self.calls = 0
+
+    def __fspath__(self):
+        self.calls += 1
+        return object()
 
 
 def _source_start(source: str | Path) -> float:
@@ -927,6 +973,183 @@ def test_parallel_readers_pass_the_exact_existing_source_spelling(
     assert len(result) > 0
     assert resolver_sources == [expected, expected]
     assert worker_sources == [expected, expected]
+
+
+@pytest.mark.parametrize(
+    ("reader", "selector", "worker_name"),
+    [
+        (TimeSeries.read, CHANNEL_A, "_read_gwf_timeseriesdict_worker"),
+        (TimeSeriesDict.read, [CHANNEL_A], "_read_gwf_timeseriesdict_worker"),
+        (StateVector.read, CHANNEL_A, "_read_gwf_statevectordict_worker"),
+        (StateVectorDict.read, [CHANNEL_A], "_read_gwf_statevectordict_worker"),
+    ],
+)
+@pytest.mark.parametrize("option", ["parallel", "nproc"])
+@pytest.mark.parametrize("later_kind", ["uri_composite", "alternate", "raises"])
+@pytest.mark.parametrize("format_value", ["gwf", None])
+def test_parallel_readers_snapshot_mutating_pathlike_sources_once(
+    monkeypatch,
+    tmp_path,
+    reader,
+    selector,
+    worker_name,
+    option,
+    later_kind,
+    format_value,
+) -> None:
+    """Each worker source is one frozen fspath value despite later mutation."""
+    early = tmp_path / "early.gwf"
+    late = tmp_path / "late.gwf"
+    early.touch()
+    late.touch()
+    late_source = _ConcurrentSnapshotPath(str(late), "https://invalid/late.gwf")
+    early_source = _ConcurrentSnapshotPath(os.fsencode(early), b"early.gwf+bad.gwf")
+    resolver_sources = []
+    worker_sources = []
+    result_box = {}
+
+    def source_start(source) -> float:
+        return 1.0 if os.fsdecode(source).endswith("early.gwf") else 2.0
+
+    def resolver(source, *args):
+        resolver_sources.append(source)
+        start = source_start(source)
+        return start, start + 1
+
+    def timeseries_worker(source, channels, start, end, backend, read_kwargs):
+        del start, end, backend, read_kwargs
+        worker_sources.append(source)
+        source_t0 = source_start(source)
+        return GwpyTimeSeriesDict(
+            {
+                channel: GwpyTimeSeries(
+                    [source_t0],
+                    sample_rate=1,
+                    t0=source_t0,
+                    unit="V",
+                    channel=channel,
+                )
+                for channel in channels
+            }
+        )
+
+    def statevector_worker(source, channels, start, end, backend, read_kwargs):
+        del start, end, backend, read_kwargs
+        worker_sources.append(source)
+        source_t0 = source_start(source)
+        return StateVectorDict(
+            {
+                channel: StateVector(
+                    [int(source_t0)],
+                    bits=["ready"],
+                    sample_rate=1,
+                    t0=source_t0,
+                    channel=channel,
+                )
+                for channel in channels
+            }
+        )
+
+    _ImmediateExecutor.instances.clear()
+    monkeypatch.setattr(gwf_io, "ProcessPoolExecutor", _ImmediateExecutor)
+    monkeypatch.setattr(gwf_io, "_resolve_gwf_path_span", resolver)
+    monkeypatch.setattr(
+        gwf_io,
+        worker_name,
+        statevector_worker
+        if worker_name == "_read_gwf_statevectordict_worker"
+        else timeseries_worker,
+    )
+
+    def read() -> None:
+        try:
+            result_box["value"] = reader(
+                [late_source, early_source],
+                selector,
+                format=format_value,
+                gap="ignore",
+                **{option: 2},
+            )
+        except Exception as error:  # pragma: no cover - raised below if present
+            result_box["error"] = error
+
+    thread = Thread(target=read)
+    thread.start()
+    assert late_source.entered.wait(timeout=5)
+    if later_kind == "uri_composite":
+        late_source.later = "https://invalid/mutated-late.gwf"
+        early_source.later = b"mutated-early.gwf+bad.gwf"
+    elif later_kind == "alternate":
+        late_source.later = str(early)
+        early_source.later = os.fsencode(late)
+    else:
+        late_source.later = RuntimeError("second fspath access is forbidden")
+        early_source.later = RuntimeError("second fspath access is forbidden")
+    late_source.release.set()
+    early_source.release.set()
+    thread.join(timeout=5)
+    assert not thread.is_alive()
+    assert "error" not in result_box
+
+    result = result_box["value"]
+    series = (
+        result if isinstance(result, (TimeSeries, StateVector)) else result[CHANNEL_A]
+    )
+    assert list(series.value) == [1, 2]
+    assert late_source.calls == early_source.calls == 1
+    assert resolver_sources == [str(late), os.fsencode(early)]
+    assert worker_sources == resolver_sources
+    assert all(
+        os.fsdecode(source) in {str(early), str(late)} for source in resolver_sources
+    )
+
+
+@pytest.mark.parametrize(
+    ("reader", "selector"),
+    [
+        (TimeSeries.read, CHANNEL_A),
+        (TimeSeriesDict.read, [CHANNEL_A]),
+        (StateVector.read, CHANNEL_A),
+        (StateVectorDict.read, [CHANNEL_A]),
+    ],
+)
+@pytest.mark.parametrize("option", ["parallel", "nproc"])
+@pytest.mark.parametrize("invalid_kind", ["raises", "invalid"])
+def test_parallel_readers_reject_bad_pathlike_before_io(
+    monkeypatch, reader, selector, option, invalid_kind
+) -> None:
+    """fspath errors and invalid return types escape before resolver/executor work."""
+    error = RuntimeError("PathLike source access failed")
+    source = _RaisingPath(error) if invalid_kind == "raises" else _InvalidPath()
+
+    def unexpected(*args, **kwargs):
+        raise AssertionError("resolver, backend, or executor work ran")
+
+    monkeypatch.setattr(gwf_io, "ProcessPoolExecutor", unexpected)
+    monkeypatch.setattr(gwf_io, "_resolve_gwf_path_span", unexpected)
+    monkeypatch.setattr("gwpy.io.gwf.core.get_channel_names", unexpected)
+    monkeypatch.setattr("gwpy.timeseries.io.gwf.core.read_timeseriesdict", unexpected)
+    monkeypatch.setattr("gwpy.timeseries.io.gwf.core.read_statevectordict", unexpected)
+    monkeypatch.setattr(StateVector.read.registry, "read", unexpected)
+
+    if invalid_kind == "raises":
+        with pytest.raises(RuntimeError) as raised:
+            reader(
+                [source, Path("K1-test-1-1.gwf")],
+                selector,
+                format="gwf",
+                **{option: 2},
+            )
+        assert raised.value is error
+    else:
+        with pytest.raises(TypeError, match="str or bytes"):
+            reader(
+                [source, Path("K1-test-1-1.gwf")],
+                selector,
+                format="gwf",
+                **{option: 2},
+            )
+    assert source.calls == 1
 
 
 @pytest.mark.parametrize(
