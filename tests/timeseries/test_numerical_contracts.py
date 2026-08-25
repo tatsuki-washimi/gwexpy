@@ -3,7 +3,10 @@ from __future__ import annotations
 import numpy as np
 import pytest
 from astropy import units as u
+from gwpy.frequencyseries import FrequencySeries as GWpyFrequencySeries
+from gwpy.timeseries import TimeSeries as GWpyTimeSeries
 
+from gwexpy.frequencyseries import FrequencySeries
 from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
 
 
@@ -53,6 +56,62 @@ def test_spectral_wrappers_preserve_density_spectrum_units_and_frequency_axes():
 
     assert psd_density.name == ts.name
     assert str(psd_density.channel) == str(ts.channel)
+
+
+@pytest.mark.parametrize(
+    ("operation", "expected_unit"),
+    [
+        ("psd", u.m**2 / u.Hz),
+        ("asd", u.m / u.Hz**0.5),
+    ],
+)
+def test_welch_public_spectral_wrappers_restore_dropped_metadata(
+    monkeypatch, operation, expected_unit
+):
+    """Restore semantic metadata even when the backend result omits it."""
+    ts = _deterministic_timeseries()
+
+    def metadata_dropping_backend(_timeseries, *args, **kwargs):
+        assert kwargs["method"] == "welch"
+        return GWpyFrequencySeries(
+            [1.0, 4.0, 9.0],
+            f0=0,
+            df=4,
+            unit=expected_unit,
+        )
+
+    monkeypatch.setattr(GWpyTimeSeries, operation, metadata_dropping_backend)
+
+    result = getattr(ts, operation)(method="welch", fftlength=0.25, overlap=0.0)
+
+    assert result.name == ts.name
+    assert result.channel == ts.channel
+    assert result.epoch == ts.epoch
+    assert result.unit == expected_unit
+    np.testing.assert_allclose(result.frequencies.to_value(u.Hz), [0.0, 4.0, 8.0])
+
+
+def test_welch_public_spectral_wrappers_preserve_metadata_contract():
+    """Keep semantic metadata with the real standard spectral backend."""
+    ts = _deterministic_timeseries()
+    kwargs = {"method": "welch", "fftlength": 0.25, "overlap": 0.0}
+
+    psd = ts.psd(**kwargs)
+    asd = ts.asd(**kwargs)
+
+    assert isinstance(psd, FrequencySeries)
+    assert isinstance(asd, FrequencySeries)
+    assert psd.unit.is_equivalent(u.m**2 / u.Hz)
+    assert asd.unit.is_equivalent(u.m / u.Hz**0.5)
+    np.testing.assert_allclose(
+        psd.frequencies.to_value(u.Hz), asd.frequencies.to_value(u.Hz)
+    )
+    assert psd.f0 == asd.f0
+    assert psd.df == asd.df
+    for result in (psd, asd):
+        assert result.name == ts.name
+        assert result.channel == ts.channel
+        assert result.epoch == ts.epoch
 
 
 @pytest.mark.xfail(
