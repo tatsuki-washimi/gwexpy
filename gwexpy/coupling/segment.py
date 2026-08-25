@@ -63,6 +63,30 @@ _JSON_STRING_COLUMNS = {
     "estimate_kind",
     "limit_method",
 }
+_PANDAS_SCHEMA_DTYPES: dict[str, Any] = {
+    "start_gps_ns": np.dtype(np.int64),
+    "duration_ns": np.dtype(np.int64),
+    "source_channel": object,
+    "response_channel": object,
+    "frequency_hz": np.dtype(np.float64),
+    "coupling_factor": np.dtype(np.float64),
+    "coupling_factor_unit": object,
+    "estimate_kind": object,
+    "limit_method": object,
+    "confidence_level": pd.Float64Dtype(),
+}
+_ASTROPY_SCHEMA_DTYPES: dict[str, np.dtype[Any]] = {
+    "start_gps_ns": np.dtype(np.int64),
+    "duration_ns": np.dtype(np.int64),
+    "source_channel": np.dtype(object),
+    "response_channel": np.dtype(object),
+    "frequency_hz": np.dtype(np.float64),
+    "coupling_factor": np.dtype(np.float64),
+    "coupling_factor_unit": np.dtype(object),
+    "estimate_kind": np.dtype(object),
+    "limit_method": np.dtype(object),
+    "confidence_level": np.dtype(np.float64),
+}
 _ADAPTER_METADATA_KEY = "gwexpy.coupling.segment.v1.astropy_metadata"
 _ADAPTER_CARRIER_FIELDS = {"schema", "table_meta", "columns"}
 _ADAPTER_COLUMN_FIELDS = {"meta", "description", "format"}
@@ -401,8 +425,35 @@ def _requested_optional_columns(
     return columns
 
 
+def _coerce_schema_dtypes(frame: pd.DataFrame) -> pd.DataFrame:
+    """Copy a frame using the stable pandas dtypes for known v1 columns.
+
+    This is deliberately an adapter/factory operation, rather than part of
+    :func:`validate`: validation never changes caller-owned tables.  Callers
+    must validate source values before coercing externally supplied data so a
+    string such as ``"10"`` cannot become a valid numeric schema value.
+    """
+    normalized = frame.copy(deep=True)
+    for name in normalized.columns:
+        dtype = _PANDAS_SCHEMA_DTYPES.get(name)
+        if dtype is None:
+            continue
+        try:
+            normalized[name] = normalized[name].astype(dtype)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError(f"{name} cannot use the v1 schema dtype") from exc
+    return normalized
+
+
+def _schema_frame(
+    rows: Iterable[Mapping[str, Any]] = (), *, columns: Iterable[str]
+) -> pd.DataFrame:
+    """Build a pandas v1 frame with the explicit per-column dtype contract."""
+    return _coerce_schema_dtypes(pd.DataFrame(rows, columns=list(columns)))
+
+
 def _empty_frame(optional_columns: Iterable[str] = ()) -> pd.DataFrame:
-    return pd.DataFrame(
+    return _schema_frame(
         columns=[*_REQUIRED_COLUMNS, "estimate_kind", *optional_columns]
     )
 
@@ -448,7 +499,9 @@ def from_result(
     Invalid bins are otherwise omitted. Supplying ``limit_method`` requests its
     column for every emitted row, with ``None`` for measurements; supplying
     ``confidence_level`` similarly requests that column. Without either
-    argument, the frame uses the established minimal v1 shape.
+    argument, the frame uses the established minimal v1 shape. Textual
+    absence is ``None``; the nullable-binary64 pandas confidence column uses
+    ``pd.NA`` for its absent measurement cells.
     """
     if isinstance(result, Mapping):
         raise TypeError("result mappings must be passed to from_results")
@@ -534,21 +587,22 @@ def from_result(
                 }
             )
 
-    frame = pd.DataFrame(
+    frame = _schema_frame(
         rows, columns=[*_REQUIRED_COLUMNS, "estimate_kind", *optional_columns]
     )
     kinds = frame["estimate_kind"].tolist()
     if "limit_method" in optional_columns:
         frame["limit_method"] = pd.Series(
             [limit_method if kind == "upper_limit" else None for kind in kinds],
-            dtype=object,
+            dtype=_PANDAS_SCHEMA_DTYPES["limit_method"],
         )
     if "confidence_level" in optional_columns:
         frame["confidence_level"] = pd.Series(
             [confidence_level if kind == "upper_limit" else None for kind in kinds],
-            dtype=object,
+            dtype=_PANDAS_SCHEMA_DTYPES["confidence_level"],
         )
 
+    frame = _coerce_schema_dtypes(frame)
     validate(frame)
     return frame
 
@@ -591,23 +645,22 @@ def from_results(
         normalized_frames = [
             _normalize_optional_columns(item, optional_columns) for item in frames
         ]
-        frame = pd.concat(normalized_frames, ignore_index=True)
+        frame = _coerce_schema_dtypes(pd.concat(normalized_frames, ignore_index=True))
     validate(frame)
     return frame
 
 
 def _normalize_optional_columns(
-    frame: pd.DataFrame, optional_columns: list[str]
+    frame: pd.DataFrame, optional_columns: list[str], *, coerce: bool = True
 ) -> pd.DataFrame:
     """Copy a factory frame with explicit nulls for absent optional metadata.
 
     Factory arguments determine the canonical optional shape. Before
     heterogeneous factory frames are concatenated, add each requested optional
-    column and use ``None`` for non-applicable measurement cells. Normalizing
-    before concat prevents pandas from manufacturing floating ``NaN`` values.
+    column and use an explicit schema null for non-applicable measurement
+    cells. Normalizing before concat prevents pandas from manufacturing
+    floating ``NaN`` values.
     """
-    if not optional_columns:
-        return frame
     normalized = frame.copy(deep=True)
     kinds = (
         normalized["estimate_kind"].tolist()
@@ -615,17 +668,21 @@ def _normalize_optional_columns(
         else ["measurement"] * len(normalized)
     )
     for name in optional_columns:
+        dtype = object if not coerce else _PANDAS_SCHEMA_DTYPES[name]
         if name not in normalized:
-            normalized[name] = pd.Series([None] * len(normalized), dtype=object)
+            normalized[name] = pd.Series(
+                [None] * len(normalized),
+                dtype=dtype,
+            )
         else:
             normalized[name] = pd.Series(
                 [
                     _canonical_optional_value(value, name, kind)
                     for kind, value in zip(kinds, normalized[name])
                 ],
-                dtype=object,
+                dtype=dtype,
             )
-    return normalized
+    return _coerce_schema_dtypes(normalized) if coerce else normalized
 
 
 def _copy_adapter_metadata(value: Any) -> Any:
@@ -695,8 +752,9 @@ def to_pandas(table: Any) -> pd.DataFrame:
 
     Unlike :meth:`astropy.table.Table.to_pandas`, this adapter maps Astropy
     masked optional metadata and a permitted legacy measurement empty string to
-    ``None`` rather than floating ``NaN``. It also records Astropy table/column
-    metadata needed by :func:`to_astropy`.
+    schema nulls rather than floating ``NaN``: ``None`` for textual metadata
+    and ``pd.NA`` for nullable-binary64 confidence. It also records Astropy
+    table/column metadata needed by :func:`to_astropy`.
     """
     validate(table)
     columns = _column_names(table)
@@ -704,22 +762,25 @@ def to_pandas(table: Any) -> pd.DataFrame:
     estimate_kind = values.get(
         "estimate_kind", ["measurement"] * len(next(iter(values.values()), []))
     )
-    frame = pd.DataFrame(
-        {
-            name: [
-                _canonical_optional_value(value, name, estimate_kind[index])
-                if name in _ROW_OPTIONAL_COLUMNS
-                else (
-                    None
-                    if name in _OPTIONAL_COLUMNS and _is_absent_optional(value)
-                    else value
-                )
-                for index, value in enumerate(column_values)
-            ]
-            for name, column_values in values.items()
-        },
-        dtype=object,
-    )
+    # Assign typed Series one by one.  A dict-of-lists DataFrame constructor
+    # can infer ``float64`` for a nullable optional column before its schema
+    # dtype is applied, turning a deliberate ``None`` into ambiguous ``NaN``.
+    frame = pd.DataFrame(index=range(len(next(iter(values.values()), []))))
+    for name, column_values in values.items():
+        normalized_values = [
+            _canonical_optional_value(value, name, estimate_kind[index])
+            if name in _ROW_OPTIONAL_COLUMNS
+            else (
+                None
+                if name in _OPTIONAL_COLUMNS and _is_absent_optional(value)
+                else value
+            )
+            for index, value in enumerate(column_values)
+        ]
+        frame[name] = pd.Series(
+            normalized_values, dtype=_PANDAS_SCHEMA_DTYPES.get(name, object)
+        )
+    frame = _coerce_schema_dtypes(frame)
     if isinstance(table, pd.DataFrame):
         frame.attrs = deepcopy(table.attrs)
         _adapter_carrier(frame.attrs, columns)
@@ -739,7 +800,7 @@ def to_astropy(table: Any) -> Table:
     """
     frame = to_pandas(table)
     columns = list(frame.columns)
-    data: dict[str, list[Any]] = {}
+    data: dict[str, np.ndarray[Any, Any]] = {}
     masks: dict[str, list[bool]] = {}
     for name in columns:
         values = frame[name].tolist()
@@ -753,7 +814,10 @@ def to_astropy(table: Any) -> Table:
                 for value, is_missing in zip(values, mask)
             ]
             masks[name] = mask
-        data[name] = values
+        try:
+            data[name] = np.asarray(values, dtype=_ASTROPY_SCHEMA_DTYPES[name])
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError(f"{name} cannot use the v1 schema dtype") from exc
 
     result = Table(data, masked=True)
     for name, mask in masks.items():
@@ -835,11 +899,14 @@ def from_json_envelope(envelope: Mapping[str, Any]) -> pd.DataFrame:
         not isinstance(row, list) or len(row) != len(columns) for row in rows
     ):
         raise TypeError("envelope rows must be lists matching envelope columns")
-    # Object columns preserve JSON ``null`` as ``None`` instead of allowing
-    # pandas to coerce mixed numeric optional metadata to floating ``NaN``.
+    # Preserve raw JSON scalars through validation: coercing first could turn
+    # a forbidden string numeric into a valid value.  Apply the schema dtype
+    # contract only after validation succeeds.
     frame = pd.DataFrame(rows, columns=columns, dtype=object)
     frame = _normalize_optional_columns(
-        frame, [name for name in _ROW_OPTIONAL_COLUMNS if name in frame]
+        frame,
+        [name for name in _ROW_OPTIONAL_COLUMNS if name in frame],
+        coerce=False,
     )
     validate(frame)
-    return frame
+    return _coerce_schema_dtypes(frame)

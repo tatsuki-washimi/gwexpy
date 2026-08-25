@@ -35,19 +35,23 @@ For a mixed measurement/upper-limit table, non-applicable `limit_method` and
 null (`None`, pandas `NA`, or an Astropy masked value). The empty string is
 accepted only in either of those two fields on a measurement row; it is never
 valid for required strings, numeric values, or upper-limit metadata.
-`from_result()` and `from_results()` emit `None` as the canonical absence form.
-`to_pandas()`, `to_astropy()`, and the JSON envelope normalize the permitted
-legacy form to null before conversion. Floating `NaN` is not null metadata and
-is rejected. This preserves absence semantics through pandas, Astropy, and the
-JSON envelope without assigning limit semantics to measurement rows.
+`from_result()` and `from_results()` emit explicit nulls as the canonical
+absence form: textual `limit_method` uses `None`, and nullable-binary64 pandas
+`confidence_level` uses `pd.NA`. `to_pandas()`, `to_astropy()`, and the JSON
+envelope normalize the permitted legacy form to those null semantics before
+conversion (`pd.NA` is an Astropy mask and JSON `null`). Floating `NaN` is not
+null metadata and is rejected. This preserves absence semantics through
+pandas, Astropy, and the JSON envelope without assigning limit semantics to
+measurement rows.
 
 The factories always emit `estimate_kind`. With neither `limit_method` nor
 `confidence_level` supplied, they retain the minimal shape of required columns
 plus `estimate_kind`. Supplying `limit_method` requests that optional column on
 every output row, using `None` for measurements. Supplying `confidence_level`
-(which requires `limit_method`) requests both optional columns. The same shape
-rule applies to measurement-only results, heterogeneous mappings, and empty
-`from_results()` mappings, so their JSON envelopes remain deterministic.
+(which requires `limit_method`) requests both optional columns; its absent
+measurement cells use `pd.NA`. The same shape rule applies to measurement-only
+results, heterogeneous mappings, and empty `from_results()` mappings, so their
+JSON envelopes remain deterministic.
 
 ## Units and table representations
 
@@ -120,6 +124,19 @@ confidence is supplied. When only some targets emit upper limits, requested
 optional columns are present on every target frame before concatenation, with
 explicit nulls for their non-applicable measurement cells. Passing a mapping to
 `from_result()` raises a descriptive `TypeError`.
+
+## Dtype contract
+
+All public factories and adapters use one v1 dtype contract, including
+zero-row tables. In pandas, `start_gps_ns` and `duration_ns` are native signed
+`int64`; `frequency_hz` and `coupling_factor` are `float64`; and a present
+`confidence_level` is nullable pandas `Float64`, so only its absent cells use
+`pd.NA`. In Astropy, those same integer and numeric columns are `int64` and
+`float64` respectively; absent optional cells are masks. Textual columns use
+object-capable pandas and Astropy columns, rather than inferred or fixed-width
+string arrays, so adding later valid channel, method, or unit strings cannot
+truncate them. This contract is restored from the ordered JSON envelope even
+when `rows` is empty; JSON need not carry separate dtype metadata.
 
 ## JSON envelope
 

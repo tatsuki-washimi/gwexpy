@@ -29,15 +29,24 @@ unitless canonical columns but loses Astropy metadata and units. Native
 ``Table.to_pandas`` may convert masked optionals to floating ``NaN``; that
 ambiguous representation is deliberately rejected by :func:`validate` and is
 not a supported round-trip path. ``from_result`` and ``from_results`` emit
-``None`` for non-applicable measurement ``limit_method`` and
-``confidence_level`` cells. A legacy empty string is accepted only in those
-two measurement fields, then canonicalized to null by the public adapters and
-JSON envelope; it cannot become a string-valued upper-limit confidence column.
+``None`` for non-applicable textual measurement ``limit_method`` cells, while
+the nullable-binary64 pandas ``confidence_level`` column uses ``pd.NA``.
+Astropy represents either absence as a mask and the JSON envelope as ``null``.
+A legacy empty string is accepted only in those two measurement fields, then
+canonicalized by the public adapters and JSON envelope; it cannot become a
+string-valued upper-limit confidence column.
 With neither optional factory argument, result factories retain the minimal
 required-plus-``estimate_kind`` shape. Supplying ``limit_method`` requests that
 column for every row, and supplying a valid ``confidence_level`` requests both;
-measurement cells are ``None`` and empty mappings use the same deterministic
-shape.
+measurement cells use the above explicit nulls and empty mappings use the same
+deterministic shape.
+
+The same per-column dtype contract applies to empty and populated tables:
+times are signed ``int64``; frequency, coupling factor, and present confidence
+are binary64; and textual columns are object-capable rather than fixed-width.
+Thus an empty table can be safely populated or stacked later without string
+truncation or dtype inference. The ordered JSON envelope recreates this
+contract for zero-row tables.
 
 JSON and frequency-grid normalization
 -------------------------------------

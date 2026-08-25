@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from astropy import units as u
-from astropy.table import Table
+from astropy.table import Table, vstack
 
 from gwexpy.frequencyseries import FrequencySeries
 
@@ -52,6 +52,19 @@ def _result() -> SimpleNamespace:
         target_name="response",
         _significance_array=lambda: np.array([2.0, 3.0, np.nan, 5.0]),
     )
+
+
+def _assert_nullable_confidence(
+    series: pd.Series, expected: list[float | None]
+) -> None:
+    """Assert v1's nullable-binary64 pandas representation semantically."""
+    assert str(series.dtype) == "Float64"
+    assert len(series) == len(expected)
+    for actual, wanted in zip(series.tolist(), expected, strict=True):
+        if wanted is None:
+            assert actual is pd.NA
+        else:
+            assert actual == wanted
 
 
 def test_validate_accepts_v1_pandas_table_without_mutation() -> None:
@@ -168,7 +181,7 @@ def test_from_result_constructs_json_safe_valid_measurements_and_limits() -> Non
     assert table["frequency_hz"].tolist() == [10.0, 20.0]
     assert table["estimate_kind"].tolist() == ["measurement", "upper_limit"]
     assert table["limit_method"].tolist() == [None, "threshold"]
-    assert table["confidence_level"].tolist() == [None, 0.95]
+    _assert_nullable_confidence(table["confidence_level"], [None, 0.95])
     assert "significance" not in table
     assert not any(
         isinstance(value, float) and np.isnan(value)
@@ -346,7 +359,7 @@ def test_schema_aware_pandas_astropy_adapters_preserve_absence_units_and_metadat
 
     pandas_table = to_pandas(source)
     assert pandas_table["limit_method"].tolist() == [None, "threshold"]
-    assert pandas_table["confidence_level"].tolist() == [None, 0.95]
+    _assert_nullable_confidence(pandas_table["confidence_level"], [None, 0.95])
     assert pandas_table.attrs["gwexpy.coupling.segment.v1.astropy_metadata"][
         "table_meta"
     ] == {"origin": {"run": "adapter"}}
@@ -406,7 +419,7 @@ def test_from_result_mixed_optionals_round_trip_through_public_adapters_and_json
     if confidence_level is None:
         assert "confidence_level" not in table
     else:
-        assert table["confidence_level"].tolist() == [None, 0.95]
+        _assert_nullable_confidence(table["confidence_level"], [None, 0.95])
 
     pandas_table = to_pandas(table)
     astropy_table = to_astropy(pandas_table)
@@ -419,7 +432,7 @@ def test_from_result_mixed_optionals_round_trip_through_public_adapters_and_json
     restored = from_json_envelope(json.loads(json.dumps(to_json_envelope(table))))
     assert restored["limit_method"].tolist() == [None, "threshold"]
     if confidence_level is not None:
-        assert restored["confidence_level"].tolist() == [None, 0.95]
+        _assert_nullable_confidence(restored["confidence_level"], [None, 0.95])
     assert validate(to_astropy(restored))
     np.testing.assert_array_equal(result.cf.value, cf_before.value)
     np.testing.assert_array_equal(result.cf_ul.value, ul_before.value)
@@ -456,7 +469,7 @@ def test_public_adapters_canonicalize_allowed_measurement_optional_absence(
 
     pandas_table = to_pandas(table)
     assert pandas_table["limit_method"].tolist() == [None, "threshold"]
-    assert pandas_table["confidence_level"].tolist() == [None, 0.95]
+    _assert_nullable_confidence(pandas_table["confidence_level"], [None, 0.95])
     astropy_table = to_astropy(table)
     assert astropy_table["limit_method"].mask.tolist() == [True, False]
     assert astropy_table["confidence_level"].mask.tolist() == [True, False]
@@ -513,7 +526,7 @@ def test_json_round_trip_canonicalizes_legacy_measurement_optionals_without_esti
     ]
     restored = from_json_envelope(envelope)
     assert restored["limit_method"].tolist() == [None]
-    assert restored["confidence_level"].tolist() == [None]
+    _assert_nullable_confidence(restored["confidence_level"], [None])
     assert validate(restored) is restored
 
 
@@ -828,7 +841,10 @@ def test_measurement_only_from_result_uses_the_requested_optional_shape(
     ]
     assert table["estimate_kind"].tolist() == ["measurement"]
     for name in optional_columns:
-        assert table[name].tolist() == [None]
+        if name == "confidence_level":
+            _assert_nullable_confidence(table[name], [None])
+        else:
+            assert table[name].tolist() == [None]
 
     pandas_table = to_pandas(table)
     astropy_table = to_astropy(pandas_table)
@@ -840,7 +856,10 @@ def test_measurement_only_from_result_uses_the_requested_optional_shape(
     )
     assert list(restored.columns) == list(table.columns)
     for name in optional_columns:
-        assert restored[name].tolist() == [None]
+        if name == "confidence_level":
+            _assert_nullable_confidence(restored[name], [None])
+        else:
+            assert restored[name].tolist() == [None]
     assert validate(restored) is restored
     np.testing.assert_array_equal(result.cf.value, cf_before.value)
     np.testing.assert_array_equal(result.valid_mask, mask_before)
@@ -884,6 +903,213 @@ def test_empty_from_results_uses_the_requested_optional_shape(
     restored = from_json_envelope(json.loads(json.dumps(to_json_envelope(table))))
     assert restored.empty
     assert list(restored.columns) == list(table.columns)
+
+
+_EMPTY_SCHEMA_PANDAS_DTYPES = {
+    "start_gps_ns": "int64",
+    "duration_ns": "int64",
+    "source_channel": "object",
+    "response_channel": "object",
+    "frequency_hz": "float64",
+    "coupling_factor": "float64",
+    "coupling_factor_unit": "object",
+    "estimate_kind": "object",
+    "limit_method": "object",
+    "confidence_level": "Float64",
+}
+
+
+@pytest.mark.parametrize(
+    ("limit_method", "confidence_level", "optional_columns"),
+    [
+        (None, None, []),
+        ("method-with-an-arbitrarily-long-name", None, ["limit_method"]),
+        (
+            "method-with-an-arbitrarily-long-name",
+            0.95,
+            ["limit_method", "confidence_level"],
+        ),
+    ],
+)
+def test_empty_factory_schema_dtypes_survive_all_public_adapters(
+    limit_method: str | None,
+    confidence_level: float | None,
+    optional_columns: list[str],
+) -> None:
+    from gwexpy.coupling.segment import (
+        from_json_envelope,
+        from_result,
+        from_results,
+        to_astropy,
+        to_json_envelope,
+        to_pandas,
+        validate,
+    )
+
+    columns = [*_table().columns, "estimate_kind", *optional_columns]
+    empty = from_results(
+        {},
+        start_gps_ns=0,
+        duration_ns=1,
+        limit_method=limit_method,
+        confidence_level=confidence_level,
+    )
+
+    assert empty.empty
+    assert list(empty.columns) == columns
+    assert {name: str(dtype) for name, dtype in empty.dtypes.items()} == {
+        name: _EMPTY_SCHEMA_PANDAS_DTYPES[name] for name in columns
+    }
+
+    astropy_empty = to_astropy(empty)
+    assert list(astropy_empty.colnames) == columns
+    for name in columns:
+        expected = (
+            np.dtype(np.int64)
+            if name in {"start_gps_ns", "duration_ns"}
+            else np.dtype(np.float64)
+            if name in {"frequency_hz", "coupling_factor", "confidence_level"}
+            else np.dtype(object)
+        )
+        assert astropy_empty[name].dtype == expected
+
+    long_channel = "source-" + "x" * 300
+    long_response = "response-" + "y" * 300
+    long_unit = "m / V" + " " * 300
+    row = {
+        "start_gps_ns": 0,
+        "duration_ns": 1,
+        "source_channel": long_channel,
+        "response_channel": long_response,
+        "frequency_hz": 10.0,
+        "coupling_factor": 0.25,
+        "coupling_factor_unit": long_unit,
+        "estimate_kind": "measurement" if not optional_columns else "upper_limit",
+    }
+    if "limit_method" in optional_columns:
+        row["limit_method"] = limit_method
+    if "confidence_level" in optional_columns:
+        row["confidence_level"] = confidence_level
+    astropy_empty.add_row(row)
+
+    assert astropy_empty["source_channel"][0] == long_channel
+    assert astropy_empty["response_channel"][0] == long_response
+    assert astropy_empty["coupling_factor_unit"][0] == long_unit
+    assert validate(astropy_empty) is astropy_empty
+
+    pandas_round_trip = to_pandas(astropy_empty)
+    assert {name: str(dtype) for name, dtype in pandas_round_trip.dtypes.items()} == {
+        name: _EMPTY_SCHEMA_PANDAS_DTYPES[name] for name in columns
+    }
+    json_round_trip = from_json_envelope(
+        json.loads(json.dumps(to_json_envelope(empty)))
+    )
+    assert list(json_round_trip.columns) == columns
+    assert json_round_trip.empty
+    assert {name: str(dtype) for name, dtype in json_round_trip.dtypes.items()} == {
+        name: _EMPTY_SCHEMA_PANDAS_DTYPES[name] for name in columns
+    }
+
+    populated_result = _result()
+    if not optional_columns:
+        populated_result.cf_ul = None
+    populated = from_result(
+        populated_result,
+        start_gps_ns=0,
+        duration_ns=1,
+        limit_method=limit_method,
+        confidence_level=confidence_level,
+    )
+    concatenated = pd.concat([empty, populated], ignore_index=True)
+    assert {name: str(dtype) for name, dtype in concatenated.dtypes.items()} == {
+        name: _EMPTY_SCHEMA_PANDAS_DTYPES[name] for name in columns
+    }
+    stacked = vstack([to_astropy(empty), to_astropy(populated)])
+    assert validate(stacked) is stacked
+    for name in columns:
+        assert stacked[name].dtype == to_astropy(empty)[name].dtype
+
+
+def test_empty_adapter_dtype_contract_preserves_masks_and_metadata_carrier() -> None:
+    from gwexpy.coupling.segment import from_results, to_astropy, to_pandas
+
+    empty = from_results(
+        {},
+        start_gps_ns=0,
+        duration_ns=1,
+        limit_method="threshold",
+        confidence_level=0.95,
+    )
+    astropy_empty = to_astropy(empty)
+    astropy_empty.meta["provenance"] = {"calibration": ["empty"]}
+    astropy_empty["limit_method"].meta["calibration"] = {"revision": 3}
+    astropy_empty["confidence_level"].meta["calibration"] = {"revision": 4}
+
+    pandas_empty = to_pandas(astropy_empty)
+    restored = to_astropy(pandas_empty)
+
+    assert restored.meta == astropy_empty.meta
+    assert restored["limit_method"].meta == astropy_empty["limit_method"].meta
+    assert restored["confidence_level"].meta == astropy_empty["confidence_level"].meta
+    assert restored["limit_method"].mask.dtype == np.dtype(bool)
+    assert restored["confidence_level"].mask.dtype == np.dtype(bool)
+
+
+@pytest.mark.parametrize(
+    ("column", "value", "match"),
+    [
+        ("start_gps_ns", 2**63, "start_gps_ns"),
+        ("duration_ns", 1.0, "duration_ns"),
+        ("frequency_hz", "10", "frequency_hz"),
+        ("confidence_level", "0.95", "confidence_level"),
+    ],
+)
+def test_empty_schema_adapter_fails_closed_for_incompatible_later_values(
+    column: str, value: object, match: str
+) -> None:
+    from gwexpy.coupling.segment import from_results, to_astropy, validate
+
+    table = from_results(
+        {},
+        start_gps_ns=0,
+        duration_ns=1,
+        limit_method="threshold",
+        confidence_level=0.95,
+    )
+    row = {
+        "start_gps_ns": 0,
+        "duration_ns": 1,
+        "source_channel": "source",
+        "response_channel": "response",
+        "frequency_hz": 10.0,
+        "coupling_factor": 0.25,
+        "coupling_factor_unit": "m / V",
+        "estimate_kind": "upper_limit",
+        "limit_method": "threshold",
+        "confidence_level": 0.95,
+    }
+    row[column] = value
+    with pytest.raises((TypeError, ValueError), match=match):
+        to_astropy(pd.DataFrame([row], columns=table.columns))
+    with pytest.raises((TypeError, ValueError), match=match):
+        validate(pd.DataFrame([row], columns=table.columns))
+
+
+def test_json_restoration_validates_before_schema_dtype_normalization() -> None:
+    from gwexpy.coupling.segment import from_json_envelope, to_json_envelope
+
+    envelope = to_json_envelope(
+        _table(
+            estimate_kind="upper_limit",
+            limit_method="threshold",
+            confidence_level=0.95,
+        )
+    )
+    confidence_index = envelope["columns"].index("confidence_level")
+    envelope["rows"][0][confidence_index] = "0.95"
+
+    with pytest.raises(TypeError, match="confidence_level"):
+        from_json_envelope(envelope)
 
 
 def test_from_results_adapts_empty_and_multi_target_mappings() -> None:
@@ -953,7 +1179,7 @@ def test_from_results_normalizes_heterogeneous_optional_columns_deterministicall
         "upper_limit",
     ]
     assert combined["limit_method"].tolist() == [None, None, "threshold"]
-    assert combined["confidence_level"].tolist() == [None, None, 0.95]
+    _assert_nullable_confidence(combined["confidence_level"], [None, None, 0.95])
     assert not any(
         isinstance(value, float) and np.isnan(value)
         for name in ("limit_method", "confidence_level")
@@ -1016,7 +1242,7 @@ def test_validate_and_json_round_trip_preserve_null_measurement_optionals(
         json.loads(json.dumps(to_json_envelope(astropy_table)))
     )
     assert restored["limit_method"].tolist() == [None, "threshold"]
-    assert restored["confidence_level"].tolist() == [None, 0.95]
+    _assert_nullable_confidence(restored["confidence_level"], [None, 0.95])
     assert validate(restored) is restored
 
 
