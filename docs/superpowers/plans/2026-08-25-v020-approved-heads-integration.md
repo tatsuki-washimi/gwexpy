@@ -135,7 +135,7 @@ independent series are not globally reordered by wall-clock commit timestamps.
 - Test the complete integration tree
 - Create: `docs/developers/plans/manifests/audit-manifest-v020-approved-heads-integration.yaml`
 
-- [ ] Confirm all approved heads are ancestors of integration HEAD.
+- [ ] Confirm each listed base is an ancestor of its approved head, then record deterministic content-preservation evidence for each cherry-picked approved range. Original approved head SHAs are not required to be integration-HEAD ancestors.
 - [ ] Run a focused cross-feature suite covering GPS, pickle, provenance/HDF5, GWF, Coupling, SeriesMatrix, bootstrap/import order, and docs contracts.
 - [ ] Run the exact full MyPy, Ruff check, and non-mutating Ruff format-check commands from the command policy.
 - [ ] Run the broad pytest suite in bounded shards if one invocation exceeds the harness limit; report every shard and timeout honestly.
