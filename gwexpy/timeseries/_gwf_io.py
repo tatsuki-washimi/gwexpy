@@ -342,81 +342,97 @@ def _consume_gwf_parallel_kwargs(
     ]
 
 
-def _decode_gwf_path_for_validation(text: str) -> str | None:
-    """Decode a bounded number of URI-escape rounds for source validation."""
+def _decoded_gwf_validation_stages(text: str) -> tuple[str, ...] | None:
+    """Return bounded percent-decoding stages for hazard validation only."""
     if not text or len(text) > _GWF_PARALLEL_PATH_MAX_LENGTH:
         return None
 
     decoded = text
+    stages = [decoded]
     for _ in range(_GWF_PERCENT_DECODE_ROUNDS):
         next_decoded = unquote(decoded)
         if len(next_decoded) > _GWF_PARALLEL_PATH_MAX_LENGTH:
             return None
         if next_decoded == decoded:
-            return decoded
+            return tuple(stages)
         decoded = next_decoded
+        stages.append(decoded)
 
     # A remaining escape could become a URI or frame-list delimiter after a
     # decoder outside this validation path gets another chance to interpret it.
     if _GWF_PERCENT_ESCAPE_RE.search(decoded):
         return None
-    return decoded
+    return tuple(stages)
 
 
 def _looks_like_ligo_cache_record(text: str) -> bool:
     """Return whether *text* is a cache-shaped three-to-five-token GWF record.
 
-    LAL permits optional segment fields and uses its own numeric parser, so
-    keeping a narrower local numeric grammar would let valid cache entries
-    through. Incomplete cache-shaped lines fail closed too. Existing regular
-    files are accepted before this conservative ambiguity check is applied.
+    LAL permits arbitrary non-whitespace observatory and description text plus
+    optional segment fields. Incomplete cache-shaped lines fail closed too.
+    Existing regular files are accepted before this conservative ambiguity
+    check is applied.
     """
     fields = text.split()
     return bool(
         3 <= len(fields) <= 5
-        and fields[-1].lower().endswith(".gwf")
-        and all("/" not in field and "\\" not in field for field in fields[:2])
+        and (
+            fields[-1].lower().endswith(".gwf")
+            or "/" in fields[-1]
+            or "\\" in fields[-1]
+            or _GWF_URI_SCHEME_RE.match(fields[-1])
+        )
+    )
+
+
+def _has_gwf_source_hazard(text: str) -> bool:
+    """Return whether one raw or decoded spelling is cache/URI/composite-like."""
+    if _looks_like_ligo_cache_record(text):
+        return True
+
+    is_windows_path = bool(_GWF_WINDOWS_DRIVE_RE.match(text)) or text.startswith(
+        (r"\\", "//")
+    )
+    if not is_windows_path and (
+        _GWF_URI_SCHEME_RE.match(text) or _GWF_URI_TOKEN_RE.search(text)
+    ):
+        return True
+
+    separators = r"[\\/]" if is_windows_path else "/"
+    return any(
+        _GWF_COMPOSITE_COMPONENT_RE.search(component)
+        for component in re.split(separators, text)
     )
 
 
 def _is_local_gwf_frame_path_syntax(text: str) -> bool:
-    """Return whether one source spelling is safe for a spawned frame reader."""
-    decoded = _decode_gwf_path_for_validation(text)
-    if decoded is None or any(character in decoded for character in "\x00\n\r?#*[]{},"):
-        return False
-    if not decoded.lower().endswith(".gwf"):
+    """Return whether one unresolved spelling is safe for a spawned reader."""
+    if not text.lower().endswith(".gwf") or _looks_like_ligo_cache_record(text):
         return False
 
-    is_windows_path = bool(_GWF_WINDOWS_DRIVE_RE.match(decoded)) or decoded.startswith(
-        (r"\\", "//")
-    )
-
-    # A real local regular file (including a symlink to one) is unambiguous.
-    # Its original spelling is still passed to the resolver and worker.
-    if os.path.isfile(decoded):
-        return True
-
-    if _looks_like_ligo_cache_record(decoded):
+    stages = _decoded_gwf_validation_stages(text)
+    if stages is None:
         return False
-    if not is_windows_path and (
-        _GWF_URI_SCHEME_RE.match(decoded) or _GWF_URI_TOKEN_RE.search(decoded)
-    ):
-        return False
-
-    separators = r"[\\/]" if is_windows_path else "/"
-    return not any(
-        _GWF_COMPOSITE_COMPONENT_RE.search(component)
-        for component in re.split(separators, decoded)
-    )
+    for stage in stages:
+        if any(character in stage for character in "\x00\n\r?#*[]{},"):
+            return False
+        # The original spelling did not exist, so a later decoded existing path
+        # must not be treated as an alternate source for resolver or worker.
+        if stage != text and os.path.isfile(stage):
+            return False
+        if _has_gwf_source_hazard(stage):
+            return False
+    return True
 
 
 def _is_filesystem_path(source: Any) -> bool:
     """Return whether ``source`` is one local frame path for spawned reads.
 
-    Multi-worker GWF reads cannot safely delegate URI, cache, glob, or file-like
-    source handling to a child process. A safe regular-file check disambiguates
-    local POSIX paths (and symlinks); Windows drive and UNC spellings remain
-    structurally valid even when the parent runs on a different platform.
+    A current-platform regular file (including a symlink) is accepted only from
+    the exact ``os.fspath`` spelling passed by the caller. Other multi-worker
+    sources cannot safely delegate URI, cache, glob, or file-like handling to a
+    child process. Windows drive and UNC spellings remain structurally valid
+    even when the parent runs on a different platform.
     """
     if not isinstance(source, (str, bytes, os.PathLike)):
         return False
@@ -425,6 +441,11 @@ def _is_filesystem_path(source: Any) -> bool:
     except TypeError:
         return False
     if not isinstance(path, (str, bytes)):
+        return False
+    try:
+        if os.path.isfile(path):
+            return True
+    except OSError:
         return False
     try:
         text = os.fsdecode(path)

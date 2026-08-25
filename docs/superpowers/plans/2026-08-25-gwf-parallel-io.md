@@ -253,8 +253,8 @@ existing local regular path whose filename contains spaces or colon text.
 **Architecture:** Keep decoding bounded. After basic local-path checks and
 suffix validation, accept a real local regular file or symlink using its
 original source spelling. For unresolved spellings, fail closed on any
-five-field cache-shaped GWF line (so LAL optional/exponent segment forms and
-malformed variants are covered without a runtime LAL dependency) and on URI
+three-to-five-token cache-shaped GWF line (so LAL optional/exponent segment
+forms and malformed variants are covered without a runtime LAL dependency) and on URI
 schemes at start/whitespace/list-delimiter boundaries, including `file:` forms
 without `//`. Retain Windows-drive and UNC structural exemptions.
 
@@ -266,5 +266,32 @@ without `//`. Retain Windows-drive and UNC structural exemptions.
 - [x] **Step 3: Implement existing-file-first, cache-shape, and token-boundary
   URI preflight checks; rerun the focused tests GREEN.**
 - [x] **Step 4: Update EN/JA docs and audit evidence, then run focused, native,
+  broad, Ruff/import-order/format, MyPy, YAML, and diff checks before one local
+  Conventional Commit.**
+
+### Task 14: Sol exact-spelling preflight-order remediation
+
+**Goal:** Ensure multi-worker GWF preflight never accepts a percent-decoded
+alternate of the source passed to the resolver/worker, and recognizes cache
+syntax with arbitrary LAL header tokens.
+
+**Architecture:** First accept only an exact `os.fspath` string or bytes value
+that is a current-platform regular file (following a symlink), retaining that
+same spelling for all later work. For unresolved sources, parse raw whitespace
+tokens before decoding: conservatively reject three-to-five-token cache-shaped
+records whose final token is GWF/path/URI-like, without restricting LAL header
+text. Then decode at most four rounds solely to discover cache, URI, and
+composite hazards at every stage; never use a decoded spelling for existence
+acceptance. Nonexistent single-token POSIX/Windows/UNC structural paths remain
+supported for mocked-platform preflight tests.
+
+- [x] **Step 1: Add RED tests** for slash/backslash/drive/UNC cache headers,
+  raw percent-encoded cache final fields, exact-existing literal paths, decoded
+  counterparts, and all-reader original-spelling forwarding under both aliases.
+- [x] **Step 2: Record RED evidence** that an arbitrary slash-bearing LAL
+  header reaches the resolver under the former cache heuristic.
+- [x] **Step 3: Implement the exact-existence-first and raw-then-decoded
+  validation order, then rerun focused contracts GREEN.**
+- [x] **Step 4: Update EN/JA docs and audit evidence; rerun focused, native,
   broad, Ruff/import-order/format, MyPy, YAML, and diff checks before one local
   Conventional Commit.**

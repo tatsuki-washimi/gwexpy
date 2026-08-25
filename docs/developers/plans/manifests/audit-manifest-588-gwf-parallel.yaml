@@ -6,6 +6,7 @@ follow_up_base: 2a8424a8a85360ed4aba22539c9408cebefea69e
 composite_follow_up_base: b751b8d125c75db9df72b3a0df0e980f600cea63
 cache_follow_up_base: a45bb39007da35541033881f9cb88bca0e3e98c0
 lal_cache_follow_up_base: 0f7357a1cb1efaf7d9ee638d13e13c9163a85da6
+exact_spelling_follow_up_base: bd4df8fbde5ad5879a3673f22171f2b7565aeb73
 scope:
   included:
     - "parallel= GWF read support with nproc= compatibility alias"
@@ -19,6 +20,7 @@ scope:
     - "Luna remediation: decoded composite GWF source spelling preflight"
     - "Sol remediation: cache-record and recursively encoded composite source preflight"
     - "Sol remediation: LAL cache grammar and token-boundary URI source preflight"
+    - "Sol remediation: exact-spelling existence, raw cache grammar, and staged decoded hazards"
   excluded:
     - "release/version changes"
     - "non-GWF I/O changes"
@@ -54,6 +56,7 @@ actions:
   - "Added a shared percent-decoded composite source syntax validator before span/backend/executor work across all four readers and both public worker aliases."
   - "Bound source decoding, reject LIGO cache-record spellings and embedded URI schemes, and make composite detection component-aware while accepting local regular files and symlinks."
   - "Expanded cache rejection to LAL optional/scientific and malformed cache-shaped records, with existing local paths accepted first and file:/http: token forms rejected without a runtime LAL dependency."
+  - "Made existence acceptance exact-os.fspath-only, parse raw cache tokens before decoding, and validate cache/URI/composite hazards at every bounded decoding stage."
   - "Created one local Conventional Commit after final focused, adjacent, broad-sharded, lint, type, and diff verification; no push or GitHub mutation."
 validation:
   red:
@@ -77,6 +80,8 @@ validation:
       result: "1 failed after 80 passes: a.gwf%252Bb.gwf reached the span resolver, proving one-round decoding was insufficient."
     - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run --no-capture-output -n gwexpy python -m pytest -q tests/timeseries/test_statevector_gwf_parallel_contract.py -k 'composite_parallel_sources or lal_cache_oracle or prefers_existing_local_paths' -x -p no:cacheprovider"
       result: "1 failed after 152 passes: H TEST 1e3 1e0 /tmp/x.gwf reached the resolver because the cache grammar only allowed decimal segments."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run --no-capture-output -n gwexpy python -m pytest -q tests/timeseries/test_statevector_gwf_parallel_contract.py -k 'composite_parallel_sources or decoded_existing_counterpart or exact_existing_source_spelling' -x -p no:cacheprovider"
+      result: "1 failed after 224 passes: /site/name TEST 1 2 /tmp/x.gwf reached the resolver because the cache heuristic excluded slash-bearing LAL header fields."
   final:
     - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_gwf_parallel_contract.py tests/timeseries/test_io_gwf_timeseriesdict.py tests/timeseries/test_io_matrix_gwf.py -p no:cacheprovider"
       result: "104 passed, 1 skipped."
@@ -120,6 +125,16 @@ validation:
       result: "310 passed, 2 deselected; then real spawn 1 passed and segmentless FrameL parity 1 passed (312 state-vector contract nodes total)."
     - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run --no-capture-output -n gwexpy python -m pytest -q tests/timeseries/test_gwf_parallel_contract.py tests/timeseries/test_io_gwf_timeseriesdict.py tests/timeseries/test_io_matrix_gwf.py tests/timeseries/test_io_gwf_framel.py tests/timeseries/test_io_gwf_lalframe.py -p no:cacheprovider"
       result: "106 passed, 1 skipped; adjacent/native FrameL and LALFrame coverage passed."
+    - command: "rtk env PYTHONPATH=$PWD conda run -n gwexpy ruff check gwexpy/timeseries/_gwf_io.py tests/timeseries/test_statevector_gwf_parallel_contract.py; ruff format --check ...; mypy gwexpy/; YAML parse; rtk git diff --check"
+      result: "Changed-file Ruff/import-order and format, MyPy (393 source files), YAML, and diff checks passed."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run --no-capture-output -n gwexpy python -m pytest -q tests/timeseries/test_statevector_gwf_parallel_contract.py -k 'composite_parallel_sources or decoded_existing_counterpart or exact_existing_source_spelling or lal_cache_oracle or prefers_existing_local_paths or structural_local_frame_paths or structural_local_parallel_paths' -p no:cacheprovider"
+      result: "466 passed, 52 deselected; all four readers and both aliases reject raw/cache/decoded hazards before I/O, while exact existing str, bytes, and PathLike spellings are forwarded unchanged."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run --no-capture-output -n gwexpy python -m pytest -q tests/timeseries/test_statevector_gwf_parallel_contract.py -k 'not (real_spawn_uses_decoded_payload_spans_for_all_public_gwf_readers or segmentless_framel_filename_has_serial_parallel_parity_for_all_readers)' -p no:cacheprovider; individual real-spawn and segmentless FrameL nodes"
+      result: "516 passed, 2 deselected; then real spawn 1 passed and segmentless FrameL parity 1 passed (518 state-vector contract nodes total)."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run --no-capture-output -n gwexpy python -m pytest -q tests/timeseries/test_gwf_parallel_contract.py tests/timeseries/test_io_gwf_timeseriesdict.py tests/timeseries/test_io_matrix_gwf.py tests/timeseries/test_io_gwf_framel.py tests/timeseries/test_io_gwf_lalframe.py -p no:cacheprovider"
+      result: "106 passed, 1 skipped; adjacent/native FrameL and LALFrame coverage passed."
+    - command: "rtk setsid env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run --no-capture-output -n gwexpy python -m pytest -q tests/timeseries/test_timeseries.py -p no:cacheprovider"
+      result: "235 passed, 46 skipped in 26.84s; detached only to accommodate the 30-second foreground harness window."
     - command: "rtk env PYTHONPATH=$PWD conda run -n gwexpy ruff check gwexpy/timeseries/_gwf_io.py tests/timeseries/test_statevector_gwf_parallel_contract.py; ruff format --check ...; mypy gwexpy/; YAML parse; rtk git diff --check"
       result: "Changed-file Ruff/import-order and format, MyPy (393 source files), YAML, and diff checks passed."
     - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run --no-capture-output -n gwexpy python -m pytest -q tests/timeseries/test_statevector_gwf_parallel_contract.py -k 'composite_parallel_sources or lal_cache_oracle or prefers_existing_local_paths or structural_local_frame_paths or structural_local_parallel_paths' -p no:cacheprovider"

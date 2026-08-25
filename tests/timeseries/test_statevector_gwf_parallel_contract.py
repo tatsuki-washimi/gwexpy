@@ -714,6 +714,12 @@ def test_all_public_readers_reject_nonlocal_parallel_sources_before_backend(
         "H TEST 1 2 file:/tmp/x.gwf",
         "H TEST 1 2 file:x.gwf",
         "H TEST 1 2 http:/host/x.gwf",
+        "/site/name TEST 1 2 /tmp/x.gwf",
+        r"\site\name TEST 1 2 /tmp/x.gwf",
+        r"C:\H TEST 1 2 /tmp/x.gwf",
+        r"\\server\H TEST 1 2 /tmp/x.gwf",
+        "H TEST 1 2 file:///tmp/x%20y.gwf",
+        "H TEST 1 2 file:///tmp/x%2520y.gwf",
         "H TEST 100 1 file:///tmp/H-X-100-1.gwf\n",
         "H TEST 100 1 /tmp/H-X-100-1.gwf\nH TEST 101 1 /tmp/H-X-101-1.gwf",
         "a.gwf+file:///tmp/H-X-100-1.gwf",
@@ -722,6 +728,8 @@ def test_all_public_readers_reject_nonlocal_parallel_sources_before_backend(
         "prefix http:/host/x.gwf",
         "prefix%20file%3A%2Ftmp%2Fx.gwf",
         "prefix%20file%3Ax.gwf",
+        "prefix%2520file%253Ax.gwf",
+        "nested/dir;@tag/frame + @; name.gwf",
         ["a.gwf", "b.gwf"],
         ("a.gwf", "b.gwf"),
         {"cache": ["a.gwf", "b.gwf"]},
@@ -766,6 +774,10 @@ def test_all_public_readers_reject_composite_parallel_sources_before_work(
         "H TEST +1.25e-3 -2.5E+4 file:///tmp/x.gwf",
         "H TEST 1 2 file:/tmp/x.gwf",
         "H TEST 1 2 file:x.gwf",
+        "/site/name TEST 1 2 /tmp/x.gwf",
+        r"\site\name TEST 1 2 /tmp/x.gwf",
+        r"C:\H TEST 1 2 /tmp/x.gwf",
+        r"\\server\H TEST 1 2 /tmp/x.gwf",
     ],
 )
 def test_lal_cache_oracle_records_are_rejected_when_available(record) -> None:
@@ -786,7 +798,6 @@ def test_lal_cache_oracle_records_are_rejected_when_available(record) -> None:
         "relative/frame+tag.gwf",
         "nested/dir.gwf+tag/frame.gwf",
         "nested/dir.gwf tag/frame.gwf",
-        "nested/dir;@tag/frame + @; name.gwf",
         b"nested/dir.gwf+tag/frame.gwf",
         _StringPath("nested/dir.gwf tag/frame.gwf"),
         PureWindowsPath(r"C:\frames\K1-test-0-1.gwf"),
@@ -809,6 +820,18 @@ def test_parallel_source_preflight_accepts_regular_file_and_symlink(tmp_path) ->
     assert gwf_io._is_filesystem_path(link)
     assert gwf_io._is_filesystem_path(os.fsencode(nested))
     assert gwf_io._is_filesystem_path(_StringPath(str(nested)))
+
+
+def test_parallel_source_preflight_rejects_decoded_existing_counterpart(
+    tmp_path,
+) -> None:
+    """Only the original spelling, never a decoded alternative, may exist."""
+    target = tmp_path / "frame name.gwf"
+    target.touch()
+    encoded = str(target).replace(" ", "%20")
+
+    assert not gwf_io._is_filesystem_path(encoded)
+    assert not gwf_io._is_filesystem_path(encoded.replace("%", "%25"))
 
 
 def test_parallel_source_preflight_prefers_existing_local_paths_to_cache_grammar(
@@ -842,6 +865,79 @@ def test_parallel_source_preflight_prefers_existing_local_paths_to_cache_grammar
         (StateVectorDict.read, [CHANNEL_A], "_read_gwf_statevectordict_worker"),
     ],
 )
+@pytest.mark.parametrize("option", ["parallel", "nproc"])
+@pytest.mark.parametrize("source_kind", ["str", "bytes", "pathlike"])
+def test_parallel_readers_pass_the_exact_existing_source_spelling(
+    monkeypatch, tmp_path, reader, selector, worker_name, option, source_kind
+) -> None:
+    """Preflight and workers use the exact original os.fspath spelling."""
+    path = tmp_path / "H TEST 1e3 1e0 prefix file:x.gwf"
+    path.touch()
+    source = {
+        "str": str(path),
+        "bytes": os.fsencode(path),
+        "pathlike": _StringPath(str(path)),
+    }[source_kind]
+    expected = os.fspath(source)
+    resolver_sources = []
+    worker_sources = []
+
+    def resolver(item, *args):
+        resolver_sources.append(os.fspath(item))
+        return 1, 2
+
+    def timeseries_worker(source, channels, start, end, backend, read_kwargs):
+        del start, end, backend, read_kwargs
+        worker_sources.append(source)
+        return GwpyTimeSeriesDict(
+            {
+                channel: GwpyTimeSeries(
+                    [1.0], sample_rate=1, t0=1, unit="V", channel=channel
+                )
+                for channel in channels
+            }
+        )
+
+    def statevector_worker(source, channels, start, end, backend, read_kwargs):
+        del start, end, backend, read_kwargs
+        worker_sources.append(source)
+        return StateVectorDict(
+            {
+                channel: StateVector(
+                    [1], bits=["ready"], sample_rate=1, t0=1, channel=channel
+                )
+                for channel in channels
+            }
+        )
+
+    _ImmediateExecutor.instances.clear()
+    monkeypatch.setattr(gwf_io, "ProcessPoolExecutor", _ImmediateExecutor)
+    monkeypatch.setattr(gwf_io, "_resolve_gwf_path_span", resolver)
+    monkeypatch.setattr(
+        gwf_io,
+        worker_name,
+        statevector_worker
+        if worker_name == "_read_gwf_statevectordict_worker"
+        else timeseries_worker,
+    )
+
+    result = reader(
+        [source, source], selector, format="gwf", gap="ignore", **{option: 2}
+    )
+    assert len(result) > 0
+    assert resolver_sources == [expected, expected]
+    assert worker_sources == [expected, expected]
+
+
+@pytest.mark.parametrize(
+    ("reader", "selector", "worker_name"),
+    [
+        (TimeSeries.read, CHANNEL_A, "_read_gwf_timeseriesdict_worker"),
+        (TimeSeriesDict.read, [CHANNEL_A], "_read_gwf_timeseriesdict_worker"),
+        (StateVector.read, CHANNEL_A, "_read_gwf_statevectordict_worker"),
+        (StateVectorDict.read, [CHANNEL_A], "_read_gwf_statevectordict_worker"),
+    ],
+)
 @pytest.mark.parametrize(
     "source",
     [
@@ -850,7 +946,6 @@ def test_parallel_source_preflight_prefers_existing_local_paths_to_cache_grammar
         Path("relative/K1-test-0-1.gwf"),
         "nested/dir.gwf+tag/frame.gwf",
         "nested/dir.gwf tag/frame.gwf",
-        "nested/dir;@tag/frame + @; name.gwf",
         b"nested/dir.gwf+tag/frame.gwf",
         _StringPath("nested/dir.gwf tag/frame.gwf"),
         PureWindowsPath(r"C:\frames\K1-test-0-1.gwf"),
