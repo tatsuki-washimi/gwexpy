@@ -30,9 +30,13 @@ per-file lock, so a reader does not observe replacement data with an older
 sidecar.  An ordinary failed update restores the original dataset link and
 sidecar state.  If restoration or rollback cleanup fails, GWexpy attempts to
 retain a named recovery artifact and reports the operation plus every
-restoration, preservation, and cleanup failure.  If artifact creation also
-fails, the error reports that recovery is unavailable after retrying the prior
-sidecar snapshot directly.  If data and sidecar commit before rollback cleanup
+restoration, preservation, and cleanup failure.  A reported artifact contains
+an actionable saved dataset or prior-sidecar snapshot; an empty or unusable
+group is reported as unavailable.  Recovery errors are listed in the order
+they occurred while their restoration, preservation, and cleanup categories
+remain available separately.  If artifact creation also fails, the error
+reports that recovery is unavailable after retrying the prior sidecar snapshot
+directly.  If data and sidecar commit before rollback cleanup
 fails, the write remains committed and its structured error marks
 ``operation_committed=True``.  Path
 replacement writes a complete sibling temporary HDF5 file before ``os.replace``.

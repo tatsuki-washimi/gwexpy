@@ -28,6 +28,9 @@ sidecar は書き込み前に検証し、サイズを 1 MB に制限します。
 通常の更新失敗時には、元のデータセットリンクと sidecar の状態を復元します。
 復元または rollback cleanup が失敗したときは、名前付きの recovery artifact を残そうとします。
 エラーには、操作時、復元時、保存時、cleanup 時のすべての失敗を含めます。
+報告する artifact には、復元可能な保存済みデータセットまたは以前の sidecar snapshot が含まれます。
+空または利用不能な group は recovery が利用できないものとして報告します。
+エラー一覧は実際の発生順であり、復元、保存、cleanup のカテゴリ別一覧も個別に利用できます。
 artifact の作成にも失敗したときは、以前の sidecar snapshot を直接再適用してから recovery が利用できないことをエラーで報告します。
 データと sidecar の commit 後に rollback cleanup が失敗したとき、書き込み結果は commit 済みのままです。
 構造化エラーの ``operation_committed=True`` がこの状態を示します。

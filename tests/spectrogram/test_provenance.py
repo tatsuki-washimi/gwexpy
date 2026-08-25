@@ -900,6 +900,311 @@ def test_hdf5_invalid_rollback_handle_keeps_all_preservation_errors(
         assert h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE] == before_sidecar
 
 
+def test_hdf5_rename_success_then_raise_reports_destination_artifact(
+    tmp_path, monkeypatch
+) -> None:
+    original = _spectrogram()
+    original.provenance = _provenance()
+    replacement = original + 100
+    replacement.provenance = _provenance()
+    path = tmp_path / "rename-success-then-raise.hdf5"
+    operation_error = RuntimeError("sidecar commit failed")
+    sidecar_error = OSError("sidecar restore failed")
+    rename_error = OSError("rename reported failure after moving")
+    original_rename = provenance_hdf5._rename_recovery_artifact
+
+    with h5py.File(path, "w") as h5file:
+        original.write(h5file, format="hdf5", path="disk")
+        before_address = h5py.h5o.get_info(h5file["disk"].id).addr
+
+        def fail_commit(h5file, *args, **kwargs) -> None:
+            h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE] = "mutated-sidecar"
+            raise operation_error
+
+        def move_then_fail(h5file, source, destination) -> None:
+            original_rename(h5file, source, destination)
+            raise rename_error
+
+        monkeypatch.setattr(provenance_hdf5, "_commit_sidecar", fail_commit)
+        monkeypatch.setattr(
+            provenance_hdf5,
+            "_restore_sidecar_attr",
+            lambda *args, **kwargs: (_ for _ in ()).throw(sidecar_error),
+        )
+        monkeypatch.setattr(
+            provenance_hdf5,
+            "_recovery_path",
+            lambda *args, **kwargs: "__gwexpy_provenance_recovery_after_move",
+        )
+        monkeypatch.setattr(
+            provenance_hdf5,
+            "_rename_recovery_artifact",
+            move_then_fail,
+        )
+
+        with pytest.raises(provenance_hdf5.ProvenanceRollbackError) as caught:
+            replacement.write(h5file, format="hdf5", path="disk", overwrite=True)
+
+        error = caught.value
+        assert error.operation_error is operation_error
+        assert error.restoration_errors == (sidecar_error,)
+        assert error.preservation_errors == (rename_error,)
+        assert error.recovery_available
+        assert error.recovery_path == "/__gwexpy_provenance_recovery_after_move"
+        assert (
+            h5py.h5o.get_info(h5file[f"{error.recovery_path}/dataset"].id).addr
+            == before_address
+        )
+
+
+def test_hdf5_rename_probe_failure_falls_back_to_source_artifact(
+    tmp_path, monkeypatch
+) -> None:
+    original = _spectrogram()
+    original.provenance = _provenance()
+    replacement = original + 100
+    replacement.provenance = _provenance()
+    path = tmp_path / "rename-source-fallback.hdf5"
+    operation_error = RuntimeError("sidecar commit failed")
+    sidecar_error = OSError("sidecar restore failed")
+    rename_error = OSError("rename failed")
+    destination_probe_error = OSError("destination probe failed")
+    original_probe = provenance_hdf5._safe_artifact_path
+    probes: list[str | None] = []
+
+    with h5py.File(path, "w") as h5file:
+        original.write(h5file, format="hdf5", path="disk")
+
+        def fail_commit(h5file, *args, **kwargs) -> None:
+            h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE] = "mutated-sidecar"
+            raise operation_error
+
+        def fail_rename(*args, **kwargs) -> None:
+            raise rename_error
+
+        def probe(h5file, candidate, errors):
+            probes.append(candidate)
+            if candidate == "__gwexpy_provenance_recovery_probe":
+                raise destination_probe_error
+            return original_probe(h5file, candidate, errors)
+
+        monkeypatch.setattr(provenance_hdf5, "_commit_sidecar", fail_commit)
+        monkeypatch.setattr(
+            provenance_hdf5,
+            "_restore_sidecar_attr",
+            lambda *args, **kwargs: (_ for _ in ()).throw(sidecar_error),
+        )
+        monkeypatch.setattr(
+            provenance_hdf5,
+            "_recovery_path",
+            lambda *args, **kwargs: "__gwexpy_provenance_recovery_probe",
+        )
+        monkeypatch.setattr(provenance_hdf5, "_rename_recovery_artifact", fail_rename)
+        monkeypatch.setattr(provenance_hdf5, "_safe_artifact_path", probe)
+
+        with pytest.raises(provenance_hdf5.ProvenanceRollbackError) as caught:
+            replacement.write(h5file, format="hdf5", path="disk", overwrite=True)
+
+        error = caught.value
+        assert error.recovery_available
+        assert error.recovery_path is not None
+        assert error.recovery_path.startswith("/__gwexpy_provenance_rollback_")
+        assert error.preservation_errors == (rename_error, destination_probe_error)
+        assert "__gwexpy_provenance_recovery_probe" in probes
+        assert error.recovery_path in probes
+
+
+def test_hdf5_rename_both_probe_failures_remain_structured(
+    tmp_path, monkeypatch
+) -> None:
+    original = _spectrogram()
+    original.provenance = _provenance()
+    replacement = original + 100
+    replacement.provenance = _provenance()
+    path = tmp_path / "rename-both-probe-failures.hdf5"
+    operation_error = RuntimeError("sidecar commit failed")
+    sidecar_error = OSError("sidecar restore failed")
+    rename_error = OSError("rename failed")
+    destination_probe_error = OSError("destination probe failed")
+    source_probe_error = OSError("source probe failed")
+
+    with h5py.File(path, "w") as h5file:
+        original.write(h5file, format="hdf5", path="disk")
+
+        def fail_commit(h5file, *args, **kwargs) -> None:
+            h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE] = "mutated-sidecar"
+            raise operation_error
+
+        def fail_rename(*args, **kwargs) -> None:
+            raise rename_error
+
+        def fail_probe(h5file, candidate, errors):
+            if candidate == "__gwexpy_provenance_recovery_both":
+                raise destination_probe_error
+            raise source_probe_error
+
+        monkeypatch.setattr(provenance_hdf5, "_commit_sidecar", fail_commit)
+        monkeypatch.setattr(
+            provenance_hdf5,
+            "_restore_sidecar_attr",
+            lambda *args, **kwargs: (_ for _ in ()).throw(sidecar_error),
+        )
+        monkeypatch.setattr(
+            provenance_hdf5,
+            "_recovery_path",
+            lambda *args, **kwargs: "__gwexpy_provenance_recovery_both",
+        )
+        monkeypatch.setattr(provenance_hdf5, "_rename_recovery_artifact", fail_rename)
+        monkeypatch.setattr(provenance_hdf5, "_safe_artifact_path", fail_probe)
+
+        with pytest.raises(provenance_hdf5.ProvenanceRollbackError) as caught:
+            replacement.write(h5file, format="hdf5", path="disk", overwrite=True)
+
+        error = caught.value
+        assert not error.recovery_available
+        assert error.recovery_path is None
+        assert error.operation_error is operation_error
+        assert error.restoration_errors == (sidecar_error,)
+        assert error.preservation_errors == (
+            rename_error,
+            destination_probe_error,
+            source_probe_error,
+        )
+
+
+def test_hdf5_empty_cleanup_artifact_is_not_reported_as_recoverable(
+    tmp_path, monkeypatch
+) -> None:
+    original = _spectrogram()
+    original.provenance = _provenance()
+    replacement = original + 100
+    replacement.provenance = {
+        **_provenance(),
+        "analysis": {"method": "replacement", "parameters": {"seed": 8}},
+    }
+    path = tmp_path / "empty-cleanup-artifact.hdf5"
+    cleanup_error = OSError("cleanup failed after losing original")
+    snapshot_error = OSError("snapshot preservation failed")
+
+    with h5py.File(path, "w") as h5file:
+        original.write(h5file, format="hdf5", path="disk")
+
+        def empty_then_fail(h5file, rollback) -> None:
+            del rollback["dataset"]
+            raise cleanup_error
+
+        monkeypatch.setattr(
+            provenance_hdf5,
+            "_cleanup_rollback_group",
+            empty_then_fail,
+        )
+        monkeypatch.setattr(
+            provenance_hdf5,
+            "_record_sidecar_snapshot",
+            lambda *args, **kwargs: (_ for _ in ()).throw(snapshot_error),
+        )
+
+        with pytest.raises(provenance_hdf5.ProvenanceRollbackError) as caught:
+            replacement.write(h5file, format="hdf5", path="disk", overwrite=True)
+
+        error = caught.value
+        assert error.operation_committed
+        assert error.cleanup_errors == (cleanup_error,)
+        assert error.preservation_errors[0] is snapshot_error
+        assert error.errors[:2] == (cleanup_error, snapshot_error)
+        assert error.rollback_error is cleanup_error
+        assert not error.recovery_available
+        assert error.recovery_path is None
+        assert "recovery unavailable" in str(error)
+        recovery_groups = [
+            name for name in h5file if name.startswith("__gwexpy_provenance_recovery_")
+        ]
+        assert len(recovery_groups) == 1
+        assert not list(h5file[recovery_groups[0]])
+        np.testing.assert_equal(h5file["disk"][()], replacement.value)
+        assert json.loads(h5file.attrs[HDF5_PROVENANCE_ATTRIBUTE]) == {
+            "/disk": replacement.provenance
+        }
+
+
+@pytest.mark.parametrize("artifact_kind", ["dataset", "sidecar"])
+def test_hdf5_partial_recovery_artifacts_are_actionable(
+    tmp_path, monkeypatch, artifact_kind
+) -> None:
+    path = tmp_path / f"partial-{artifact_kind}-artifact.hdf5"
+    snapshot_error = OSError("skip sidecar snapshot")
+
+    with h5py.File(path, "w") as h5file:
+        _spectrogram().write(h5file, format="hdf5", path="disk")
+        rollback = provenance_hdf5._rollback_group(h5file)
+        if artifact_kind == "dataset":
+            rollback["dataset"] = h5file["disk"]
+            monkeypatch.setattr(
+                provenance_hdf5,
+                "_record_sidecar_snapshot",
+                lambda *args, **kwargs: (_ for _ in ()).throw(snapshot_error),
+            )
+        else:
+            del h5file["disk"]
+
+        recovery_path, preservation_errors = provenance_hdf5._capture_recovery_state(
+            h5file,
+            rollback,
+            None,
+            (False, None),
+        )
+
+        assert recovery_path is not None
+        artifact = h5file[recovery_path]
+        if artifact_kind == "dataset":
+            assert preservation_errors == (snapshot_error,)
+            assert isinstance(artifact["dataset"], h5py.Dataset)
+            assert "sidecar_snapshot_present" not in artifact.attrs
+        else:
+            assert isinstance(artifact, h5py.Group)
+            assert "dataset" not in artifact
+            assert not artifact.attrs["sidecar_snapshot_present"]
+
+
+def test_hdf5_rollback_errors_follow_causal_event_order(tmp_path, monkeypatch) -> None:
+    original = _spectrogram()
+    original.provenance = _provenance()
+    replacement = original + 100
+    replacement.provenance = _provenance()
+    path = tmp_path / "causal-error-order.hdf5"
+    operation_error = RuntimeError("sidecar commit failed")
+    cleanup_error = OSError("cleanup failed")
+    snapshot_error = OSError("snapshot preservation failed")
+
+    with h5py.File(path, "w") as h5file:
+        original.write(h5file, format="hdf5", path="disk")
+        monkeypatch.setattr(
+            provenance_hdf5,
+            "_commit_sidecar",
+            lambda *args, **kwargs: (_ for _ in ()).throw(operation_error),
+        )
+        monkeypatch.setattr(
+            provenance_hdf5,
+            "_cleanup_rollback_group",
+            lambda *args, **kwargs: (_ for _ in ()).throw(cleanup_error),
+        )
+        monkeypatch.setattr(
+            provenance_hdf5,
+            "_record_sidecar_snapshot",
+            lambda *args, **kwargs: (_ for _ in ()).throw(snapshot_error),
+        )
+
+        with pytest.raises(provenance_hdf5.ProvenanceRollbackError) as caught:
+            replacement.write(h5file, format="hdf5", path="disk", overwrite=True)
+
+        error = caught.value
+        assert error.restoration_errors == ()
+        assert error.cleanup_errors == (cleanup_error,)
+        assert error.preservation_errors == (snapshot_error,)
+        assert error.errors == (operation_error, cleanup_error, snapshot_error)
+        assert error.rollback_error is cleanup_error
+
+
 def test_hdf5_multiple_recovery_preservation_failures_are_retained(
     tmp_path, monkeypatch
 ) -> None:
