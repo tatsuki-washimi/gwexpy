@@ -45,8 +45,10 @@ from gwexpy.types.mixin._plot_mixin import PlotMixin
 
 from ._gwf_io import (
     _GWF_BACKENDS,
+    _GWF_PARALLEL_HELP,
     _extract_gwf_read_args,
     _format_gwf_import_error,
+    _gwf_parallel_read_signature,
     _GWFParallelContractError,
     _normalize_gwf_parallel_kwargs,
     _resolve_gwf_format,
@@ -2121,3 +2123,7 @@ def _patch_gwpy_collections() -> None:
 
 
 _patch_gwpy_collections()
+
+_timeseriesdict_read = cast(Any, TimeSeriesDict.read).__func__
+_timeseriesdict_read.__signature__ = _gwf_parallel_read_signature(_timeseriesdict_read)
+_timeseriesdict_read.__doc__ = f"{_timeseriesdict_read.__doc__}{_GWF_PARALLEL_HELP}"

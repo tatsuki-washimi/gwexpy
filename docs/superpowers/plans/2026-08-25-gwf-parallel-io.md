@@ -46,3 +46,94 @@
 - [x] **Step 2: Run changed-file Ruff check/format, MyPy, and `git diff --check`.**
 - [x] **Step 3: Write the audit manifest with executed commands and results.**
 - [x] **Step 4: Commit the scoped implementation with a Conventional Commit message; do not push.**
+
+---
+
+## Follow-up: StateVector GWF reader parity
+
+**Goal:** Extend the #588 GWF `parallel=`/`nproc=` contract from GWexpy's
+`TimeSeries` and `TimeSeriesDict` to the GWpy-proxied `StateVector` and
+`StateVectorDict` public readers without changing their public descriptors or
+non-GWF behavior.
+
+**Architecture:** Keep GWpy's `UnifiedReadWriteMethod` descriptors unchanged:
+they instantiate `StateVectorRead`/`StateVectorDictRead` on every access.  An
+idempotent class-level `__call__` wrapper (saved original plus sentinel)
+therefore hooks those two connector-reader classes before they consume
+`parallel`/`nproc`; this necessarily affects the shared GWpy classes that
+GWexpy re-exports.  The wrapper recognises only explicit GWF aliases or an
+all-`.gwf` path sequence, validates aliases before connector/file/backend work,
+then delegates unknown/auto-identified/non-GWF sources unchanged.  Effective
+one-worker GWF requests remove the alias and call the original connector,
+preserving GWpy serial behavior; effective multi-worker requests use the
+existing parent-owned spawn path.  A state-vector worker calls GWpy's
+`read_statevectordict`; the parent reconstructs `StateVector` payloads with
+a rebuilt/deep-copied `Bits` object, unit, channel, epoch, provenance, and
+custom metadata intact.  It supports shared-list and per-channel-dict
+`bits=` semantics.  Installation occurs from the existing I/O registration
+point and imports no optional GWF backend.
+
+### Task 5: Lock StateVector public entrypoints with RED tests
+
+- [x] **Step 1: Add failing mocked tests** for both `StateVector.read` and
+  `StateVectorDict.read`: simultaneous aliases fail before backend I/O,
+  `parallel`/`nproc` serial and process dispatch, invalid worker counts,
+  empty and single input, ordering, spawn context, metadata/state bits, and
+  worker/partial-read failures.  Assert descriptor/registry identity,
+  non-GWF delegation, explicit GWF aliases plus `.gwf` extension detection,
+  no GWpy deprecation warning for `nproc`, exact worker exception
+  type/message, and non-picklable parallel-only arguments.
+- [x] **Step 2: Run the StateVector-focused tests** and record RED evidence
+  against commit `565b39502`.
+
+### Task 6: Implement descriptor-safe StateVector GWF dispatch
+
+- [x] **Step 1: Generalize the parent-owned GWF worker/merge helper** for
+  explicitly selected GWpy dictionary/series classes while retaining the
+  existing TimeSeries path and its serial behavior.
+- [x] **Step 2: Add a module-level StateVectorDict worker and parent coercion**
+  that passes `bits`, `scaled`, `type`, backend, and start/end to
+  `read_statevectordict`, and whose parent coercion rebuilds `Bits` with the
+  correct channel/epoch while preserving values, unit, provenance, and custom
+  metadata.  Its result must be exact `StateVector`/`StateVectorDict` types,
+  with no closures or non-picklable child state.
+- [x] **Step 3: Install an idempotent class-level GWF-only `__call__` hook on
+  the existing GWpy StateVector connector-reader classes**.  It must preserve
+  descriptors, signatures, registry/help/list-format behavior, positional
+  `name`/start/end semantics, and GWpy's serial empty/error behavior where
+  unconstrained; apply the #588 empty/invalid contract only for explicitly
+  requested GWF parallel aliases.  It must preflight aliases before
+  channel/file/backend work, normalise `format`/`backend`, defer optional GWF
+  imports to execution, and delegate unknown, auto-identified, and non-GWF
+  calls unchanged.
+- [x] **Step 4: Run focused tests**, fix only failures introduced by the new
+  coverage, and retain atomic cancellation/error propagation, parallel-only
+  partial rejection, `gap='ignore'` overlap behavior, and deterministic
+  source-time-input merge order.  Ensure repeated package imports/reloads do
+  not stack the global class wrapper.
+
+### Task 7: Verify all four public GWF reader surfaces
+
+- [x] **Step 1: Run focused StateVector and existing GWF contract tests**, then
+  the adjacent reader tests and the broad relevant time-series suite under
+  `PYTHONPATH=$PWD` in the `gwexpy` conda environment.
+- [x] **Step 2: Run changed-file Ruff check, Ruff format check, import-order
+  checks covered by Ruff, MyPy, and `git diff --check`.**
+- [x] **Step 3: Update the #588 audit manifest with the follow-up base,
+  four-reader scope, actual RED/GREEN commands/results, and residual risks.**
+- [x] **Step 4: Obtain a final read-only quality review, incorporate compatible
+  findings when available, and create one local Conventional Commit on top of
+  `565b39502`; do not push or create a PR.**
+
+### Task 8: Incorporate Sol merge-order and process-context review
+
+- [x] **Step 1: Make decoded `part.span`, not filename/preflight span, the
+  authoritative merge key** for serial and parallel reads; retain input index
+  only as the equal-span tie-breaker. Add a real-spawn regression with
+  parseable filename spans deliberately opposite decoded payload spans for all
+  four public readers, under default and `gap="ignore"` behavior.
+- [x] **Step 2: Reject effective multi-worker requests from daemon processes
+  during public preflight** with a stable `TypeError` subclass before backend
+  work, and document path-only worker sources, alias/default/cap semantics,
+  conflict timing, and worker exception propagation in reader help/signatures
+  and the public GWF guide.

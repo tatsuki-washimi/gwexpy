@@ -1,11 +1,14 @@
 issue: 588
 title: "Parallel GWF filesystem reads"
 date: 2026-08-25
-base: 6bca889a7
+base: 565b39502
 scope:
   included:
     - "parallel= GWF read support with nproc= compatibility alias"
     - "spawn-safe filesystem worker execution and parent-owned deterministic merge"
+    - "four public GWF readers: TimeSeries, TimeSeriesDict, StateVector, and StateVectorDict"
+    - "descriptor-preserving StateVector connector dispatch and StateVector Bits preservation"
+    - "decoded-payload-span deterministic merge order, daemon preflight, and public help/docs"
     - "GWF reader public preflight, metadata preservation, and contract tests"
   excluded:
     - "release/version changes"
@@ -17,8 +20,11 @@ files:
   - gwexpy/timeseries/collections.py
   - gwexpy/timeseries/timeseries.py
   - tests/timeseries/test_gwf_parallel_contract.py
+  - tests/timeseries/test_statevector_gwf_parallel_contract.py
   - docs/superpowers/plans/2026-08-25-gwf-parallel-io.md
   - docs/developers/plans/manifests/audit-manifest-588-gwf-parallel.yaml
+  - docs/web/en/user_guide/io_formats.md
+  - docs/web/ja/user_guide/io_formats.md
 skills:
   - superpowers:brainstorming
   - superpowers:writing-plans
@@ -31,6 +37,9 @@ actions:
   - "Wrote and independently reviewed a bounded plan before production edits."
   - "Recorded RED evidence for fail-closed parallel behavior, scalar parallel source handling, reviewer regressions, and keyed-but-empty worker results."
   - "Used two read-only reviews; all reported findings were addressed."
+  - "Added StateVector and StateVectorDict parity through an idempotent GWpy connector-class hook without eager optional GWF imports."
+  - "Incorporated Sol review: decoded payload spans, not filename spans, now determine merges; daemon process requests fail during preflight."
+  - "Created one local Conventional Commit after final focused, adjacent, broad-sharded, lint, type, and diff verification; no push or GitHub mutation."
 validation:
   red:
     - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_gwf_parallel_contract.py -p no:cacheprovider"
@@ -41,6 +50,8 @@ validation:
       result: "3 failed; public TypeError translation, custom metadata loss, and AttributeError pickle escape reproduced."
     - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_gwf_parallel_contract.py -k empty_requested_series -p no:cacheprovider"
       result: "1 failed; keyed-but-empty series reached merge rather than parallel partial-read rejection."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_statevector_gwf_parallel_contract.py -p no:cacheprovider"
+      result: "9 failed; StateVector and StateVectorDict bypassed alias conflict preflight, spawn dispatch, empty/invalid validation, and state worker handling."
   final:
     - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_gwf_parallel_contract.py tests/timeseries/test_io_gwf_timeseriesdict.py tests/timeseries/test_io_matrix_gwf.py -p no:cacheprovider"
       result: "104 passed, 1 skipped."
@@ -52,10 +63,18 @@ validation:
       result: "4 files already formatted."
     - command: "rtk git diff --check"
       result: "Passed."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_statevector_gwf_parallel_contract.py -p no:cacheprovider"
+      result: "21 passed; includes real spawn decoded-span disagreement parity under default and gap='ignore', all public readers, daemon preflight, and the StateVector explicit-selector contract."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_gwf_parallel_contract.py tests/timeseries/test_io_gwf_timeseriesdict.py tests/timeseries/test_io_matrix_gwf.py -p no:cacheprovider"
+      result: "104 passed, 1 skipped."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries -p no:cacheprovider"
+      result: "Complete post-Sol rerun, sharded for the 30-second harness window: 475 passed/8 skipped; 320/5/3 xfailed; 223/2; all 281 test_timeseries.py nodes 235/46; focused StateVector contract 21; remaining files 99/2 and 37/1."
 review:
   plan_review: "Read-only review completed after one revision."
-  code_review: "Read-only review completed; public TypeError, metadata-copy, serialization, and keyed-empty-series findings fixed."
+  code_review: "Read-only review completed; public TypeError, metadata-copy, serialization, keyed-empty-series, and StateVector audit findings addressed."
+  sol_review: "Decoded-span merge ordering, daemon preflight, and public discoverability findings incorporated."
 physics_review_required: false
 risk:
   unresolved:
-    - "Optional real GWF backend coverage remains environment-dependent; the focused suite uses mocked payloads plus a real spawn probe and has one optional-backend skip."
+    - "Optional real GWF backend coverage remains environment-dependent; regression coverage uses mocked payloads plus real spawn execution and has one optional-backend skip."
+    - "StateVector is a GWpy proxy, so the descriptor-class hook intentionally affects the shared GWpy StateVector reader classes after GWexpy import; it is idempotent and GWF-only."

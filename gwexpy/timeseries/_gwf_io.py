@@ -5,7 +5,9 @@ import multiprocessing
 import os
 import pickle
 import warnings
+from collections.abc import Callable
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from inspect import Parameter, Signature, signature
 from numbers import Integral
 from pathlib import Path
 from typing import Any
@@ -50,6 +52,40 @@ _GWF_ALIAS_TO_CANONICAL = {
     "lalframe": "gwf.lalframe",
 }
 _GWF_REGISTRY_SYNCED = False
+_GWF_STATEVECTOR_HOOK_INSTALLED = False
+_GWF_STATEVECTOR_ORIGINAL_CALLS: dict[type[Any], Callable[..., Any]] = {}
+_GWF_PARALLEL_HELP = """
+
+    GWexpy GWF parallel reads
+    -------------------------
+    ``parallel=`` accepts ``None``/``False``/``1`` for serial reads, ``True``
+    for automatic workers, or an integer from 2 through 8.  ``nproc=`` is the
+    compatibility alias.  Supplying both raises ``TypeError`` before file or
+    backend I/O.  Multi-worker reads require a list or tuple of local frame
+    paths, use spawn-safe workers, and propagate worker exceptions unchanged.
+    Daemon processes cannot start these workers and are rejected during
+    preflight.
+"""
+
+
+def _gwf_parallel_read_signature(function: Callable[..., Any]) -> Signature:
+    """Expose the compatible GWF aliases in a ``read`` help signature."""
+    current = signature(function)
+    if "parallel" in current.parameters or "nproc" in current.parameters:
+        return current
+    parameters = list(current.parameters.values())
+    kwargs_index = next(
+        index
+        for index, parameter in enumerate(parameters)
+        if parameter.kind is Parameter.VAR_KEYWORD
+    )
+    aliases = (
+        Parameter("parallel", Parameter.KEYWORD_ONLY, default=None),
+        Parameter("nproc", Parameter.KEYWORD_ONLY, default=None),
+    )
+    return current.replace(
+        parameters=[*parameters[:kwargs_index], *aliases, *parameters[kwargs_index:]]
+    )
 
 
 def _safe_get_reader(format_name: str, cls: type[Any]) -> Any | None:
@@ -143,6 +179,7 @@ def _sync_gwf_registry_aliases() -> None:
                 alias, TimeSeriesMatrix, canonical_matrix_writer, force=True
             )
 
+    _install_gwf_statevector_read_hook()
     _GWF_REGISTRY_SYNCED = True
 
 
@@ -363,6 +400,73 @@ def _read_gwf_timeseriesdict_worker(
     )
 
 
+def _read_gwf_statevectordict_worker(
+    source: str,
+    channels: tuple[str, ...],
+    start: Any | None,
+    end: Any | None,
+    backend: str | None,
+    read_kwargs: dict[str, Any],
+) -> Any:
+    """Read one StateVector GWF path in a spawn child without GWexpy state."""
+    from gwpy.timeseries.io.gwf.core import read_statevectordict
+
+    return read_statevectordict(
+        source,
+        list(channels),
+        start=start,
+        end=end,
+        backend=backend,
+        **read_kwargs,
+    )
+
+
+def _read_gwf_timeseriesdict_serial(
+    source: Any,
+    channels: list[str],
+    start: Any | None,
+    end: Any | None,
+    backend: str | None,
+    read_kwargs: dict[str, Any],
+    series_class: type[Any],
+) -> Any:
+    """Read one TimeSeriesDict payload in the established serial path."""
+    from gwpy.timeseries.io.gwf.core import read_timeseriesdict
+
+    return read_timeseriesdict(
+        source,
+        channels,
+        start=start,
+        end=end,
+        backend=backend,
+        series_class=series_class,
+        **read_kwargs,
+    )
+
+
+def _read_gwf_statevectordict_serial(
+    source: Any,
+    channels: list[str],
+    start: Any | None,
+    end: Any | None,
+    backend: str | None,
+    read_kwargs: dict[str, Any],
+    series_class: type[Any],
+) -> Any:
+    """Read one StateVectorDict payload in the established serial path."""
+    from gwpy.timeseries.io.gwf.core import read_statevectordict
+
+    return read_statevectordict(
+        source,
+        channels,
+        start=start,
+        end=end,
+        backend=backend,
+        series_class=series_class,
+        **read_kwargs,
+    )
+
+
 def _copy_gwf_custom_attributes(
     source: Any, target: Any, *, only_missing: bool
 ) -> None:
@@ -378,14 +482,23 @@ def _coerce_gwf_series(series: Any, series_class: type[Any]) -> Any:
     if isinstance(series, series_class):
         result = series.copy()
     else:
+        series_kwargs = {
+            "unit": getattr(series, "unit", None),
+            "t0": getattr(series, "t0", None),
+            "dt": getattr(series, "dt", None),
+            "name": getattr(series, "name", None),
+            "channel": getattr(series, "channel", None),
+        }
+        bits = getattr(series, "bits", None)
+        if bits is not None:
+            series_kwargs["bits"] = copy.deepcopy(bits)
         result = series_class(
             np.array(series.value, copy=True),
-            unit=getattr(series, "unit", None),
-            t0=getattr(series, "t0", None),
-            dt=getattr(series, "dt", None),
-            name=getattr(series, "name", None),
-            channel=getattr(series, "channel", None),
+            **series_kwargs,
         )
+    bits = getattr(series, "bits", None)
+    if bits is not None and hasattr(result, "bits"):
+        result.bits = copy.deepcopy(bits)
     provenance = getattr(series, "_gwexpy_io", None)
     if isinstance(provenance, dict):
         result._gwexpy_io = copy.deepcopy(provenance)
@@ -415,6 +528,10 @@ def _validate_gwf_parallel_source(source: Any, gwf_kwargs: dict[str, Any]) -> No
     )
     if isinstance(source, (list, tuple)) and not source:
         raise ValueError("GWF source list/tuple must be non-empty")
+    if requested and workers > 1 and multiprocessing.current_process().daemon:
+        raise _GWFParallelContractError(
+            "Parallel GWF reads are not supported from a daemon process"
+        )
     if (
         requested
         and workers > 1
@@ -428,7 +545,7 @@ def _validate_gwf_parallel_source(source: Any, gwf_kwargs: dict[str, Any]) -> No
         )
 
 
-def read_gwf_timeseriesdict(
+def _read_gwf_dict(
     source: Any,
     channels: list[str],
     *,
@@ -437,9 +554,11 @@ def read_gwf_timeseriesdict(
     backend: str | None = None,
     dict_class: type[Any],
     series_class: type[Any],
+    serial_reader: Callable[..., Any],
+    worker: Callable[..., Any],
     **gwf_kwargs: Any,
 ) -> Any:
-    """Read GWF source(s) into a TimeSeriesDict-like class with GWpy merge semantics."""
+    """Read GWF sources through a parent-owned dict-like merge implementation."""
     read_kwargs = dict(gwf_kwargs)
     number_of_spans = len(source) if isinstance(source, (list, tuple)) else 1
     requested_parallel, workers = _normalize_gwf_parallel_kwargs(
@@ -447,8 +566,10 @@ def read_gwf_timeseriesdict(
     )
     if isinstance(source, (list, tuple)) and not source:
         raise ValueError("GWF source list/tuple must be non-empty")
-
-    from gwpy.timeseries.io.gwf.core import read_timeseriesdict
+    if requested_parallel and workers > 1 and multiprocessing.current_process().daemon:
+        raise _GWFParallelContractError(
+            "Parallel GWF reads are not supported from a daemon process"
+        )
 
     pad = read_kwargs.pop("pad", None)
     gap = read_kwargs.pop("gap", None)
@@ -458,14 +579,14 @@ def read_gwf_timeseriesdict(
 
     def read_one(item: Any) -> Any:
         return _coerce_gwf_timeseriesdict(
-            read_timeseriesdict(
+            serial_reader(
                 item,
                 channels,
                 start=start,
                 end=end,
                 backend=backend,
+                read_kwargs=read_kwargs,
                 series_class=series_class,
-                **read_kwargs,
             ),
             dict_class,
             series_class,
@@ -483,9 +604,8 @@ def read_gwf_timeseriesdict(
                 raise _GWFParallelContractError(
                     "Parallel GWF reads require a list or tuple of filesystem paths"
                 )
-            spans = [
-                _resolve_gwf_path_span(item, channels, backend) for item in sources
-            ]
+            for item in sources:
+                _resolve_gwf_path_span(item, channels, backend)
             tasks = [
                 (
                     os.fspath(item),
@@ -512,9 +632,7 @@ def read_gwf_timeseriesdict(
             futures = []
             try:
                 for task in tasks:
-                    futures.append(
-                        executor.submit(_read_gwf_timeseriesdict_worker, *task)
-                    )
+                    futures.append(executor.submit(worker, *task))
                 completed_parts = {}
                 for future in as_completed(futures):
                     completed_parts[future] = future.result()
@@ -542,33 +660,37 @@ def read_gwf_timeseriesdict(
             ordered_parts = [
                 part
                 for _, part in sorted(
-                    zip(
-                        (
-                            _gwf_span_sort_key(span, index)
-                            for index, span in enumerate(spans)
-                        ),
-                        parts,
-                        strict=True,
-                    ),
-                    key=lambda item: item[0],
+                    enumerate(parts),
+                    key=lambda item: _gwf_span_sort_key(item[1].span, item[0]),
                 )
             ]
         else:
             parts = [read_one(item) for item in sources]
-            ordered_parts = sorted(
-                (part for part in parts if len(part) > 0), key=lambda item: item.span
-            )
+            ordered_parts = [
+                part
+                for _, part in sorted(
+                    (
+                        (index, part)
+                        for index, part in enumerate(parts)
+                        if len(part) > 0
+                    ),
+                    key=lambda item: _gwf_span_sort_key(item[1].span, item[0]),
+                )
+            ]
         non_empty_parts = [part for part in parts if len(part) > 0]
         if not non_empty_parts:
             raise ValueError("No data found in any provided GWF source")
 
         out = dict_class()
         prev_ends: dict[str, float] = {}
+        leading_series: dict[str, Any] = {}
+        leading_part = ordered_parts[0]
         for part in ordered_parts:
             if not hasattr(out, "_gwexpy_io"):
                 provenance = getattr(part, "_gwexpy_io", None)
                 if isinstance(provenance, dict):
                     out._gwexpy_io = copy.deepcopy(provenance)
+            _copy_gwf_custom_attributes(part, out, only_missing=True)
             if merge_gap == "pad":
                 for key, series in part.items():
                     prev_end = prev_ends.get(key)
@@ -583,6 +705,7 @@ def read_gwf_timeseriesdict(
                         check_pad_dtype_compatible(series.dtype, merge_pad)
             out.append(part, gap=merge_gap, pad=merge_pad)
             for key, series in part.items():
+                leading_series.setdefault(key, series)
                 prev_ends[key] = series.span[1]
                 if getattr(out[key], "_gwexpy_io", None) is None:
                     provenance = getattr(series, "_gwexpy_io", None)
@@ -593,10 +716,16 @@ def read_gwf_timeseriesdict(
             result = dict_class((key, out[key]) for key in channels if key in out)
             if hasattr(out, "_gwexpy_io"):
                 result._gwexpy_io = copy.deepcopy(out._gwexpy_io)
+            _copy_gwf_custom_attributes(out, result, only_missing=False)
     else:
         result = read_one(source)
 
     result = _coerce_gwf_timeseriesdict(result, dict_class, series_class)
+    if isinstance(source, (list, tuple)):
+        _copy_gwf_custom_attributes(leading_part, result, only_missing=False)
+        for key, series in leading_series.items():
+            if key in result:
+                _copy_gwf_custom_attributes(series, result[key], only_missing=False)
 
     if merge_gap in ("pad", "raise") and (start is not None or end is not None):
         for key in result:
@@ -608,6 +737,147 @@ def read_gwf_timeseriesdict(
                 error=(merge_gap == "raise"),
             )
     return result
+
+
+def read_gwf_timeseriesdict(
+    source: Any,
+    channels: list[str],
+    *,
+    start: Any | None = None,
+    end: Any | None = None,
+    backend: str | None = None,
+    dict_class: type[Any],
+    series_class: type[Any],
+    **gwf_kwargs: Any,
+) -> Any:
+    """Read GWF source(s) into a TimeSeriesDict-like class with GWpy semantics."""
+    return _read_gwf_dict(
+        source,
+        channels,
+        start=start,
+        end=end,
+        backend=backend,
+        dict_class=dict_class,
+        series_class=series_class,
+        serial_reader=_read_gwf_timeseriesdict_serial,
+        worker=_read_gwf_timeseriesdict_worker,
+        **gwf_kwargs,
+    )
+
+
+def read_gwf_statevectordict(
+    source: Any,
+    channels: list[str],
+    *,
+    start: Any | None = None,
+    end: Any | None = None,
+    backend: str | None = None,
+    dict_class: type[Any],
+    series_class: type[Any],
+    **gwf_kwargs: Any,
+) -> Any:
+    """Read GWF source(s) into a StateVectorDict-like class with GWpy semantics."""
+    return _read_gwf_dict(
+        source,
+        channels,
+        start=start,
+        end=end,
+        backend=backend,
+        dict_class=dict_class,
+        series_class=series_class,
+        serial_reader=_read_gwf_statevectordict_serial,
+        worker=_read_gwf_statevectordict_worker,
+        **gwf_kwargs,
+    )
+
+
+def _gwexpy_statevector_read_call(
+    reader: Any,
+    source: Any,
+    name: Any | None = None,
+    start: Any | None = None,
+    end: Any | None = None,
+    *,
+    pad: Any | None = None,
+    gap: Any | None = None,
+    **kwargs: Any,
+) -> Any:
+    """Route requested multi-worker GWF StateVector reads through this module.
+
+    ``StateVector.read`` and ``StateVectorDict.read`` are GWpy connector
+    descriptors.  This function is installed as their reader classes'
+    ``__call__`` method while preserving the descriptors themselves.
+    """
+    original = _GWF_STATEVECTOR_ORIGINAL_CALLS[type(reader)]
+    gwf_format = _resolve_gwf_format(source, kwargs.get("format"))
+    requested_alias = "parallel" in kwargs or "nproc" in kwargs
+    if gwf_format is None or not requested_alias:
+        return original(reader, source, name, start, end, pad=pad, gap=gap, **kwargs)
+
+    normalized_kwargs = dict(kwargs)
+    _validate_gwf_parallel_source(source, normalized_kwargs)
+    _, workers = _normalize_gwf_parallel_kwargs(
+        normalized_kwargs,
+        number_of_spans=len(source) if isinstance(source, (list, tuple)) else 1,
+    )
+    if workers <= 1:
+        # Preserve GWpy's single-worker connector behavior after consuming the
+        # compatibility alias (and avoid GWpy's nproc deprecation warning).
+        return original(
+            reader, source, name, start, end, pad=pad, gap=gap, **normalized_kwargs
+        )
+
+    normalized_kwargs.pop("format", None)
+    normalized_kwargs.pop("cache", None)
+    normalized_kwargs.pop("verbose", None)
+    backend = normalized_kwargs.pop("backend", _GWF_BACKENDS[gwf_format])
+    normalized_kwargs["parallel"] = workers
+    channels = _normalize_gwf_channels(name)
+    if channels is None:
+        raise TypeError("GWF StateVector reads require a channel selector")
+    if reader._cls.__name__ == "StateVector" and len(channels) != 1:
+        raise ValueError("StateVector GWF read accepts exactly one channel")
+
+    from gwpy.timeseries import StateVector, StateVectorDict
+
+    result = read_gwf_statevectordict(
+        source,
+        channels,
+        start=start,
+        end=end,
+        backend=backend,
+        dict_class=StateVectorDict,
+        series_class=StateVector,
+        pad=pad,
+        gap=gap,
+        **normalized_kwargs,
+    )
+    if reader._cls is StateVector:
+        return result[channels[0]]
+    return result
+
+
+def _install_gwf_statevector_read_hook() -> None:
+    """Install the idempotent descriptor-preserving StateVector GWF hook."""
+    global _GWF_STATEVECTOR_HOOK_INSTALLED
+    if _GWF_STATEVECTOR_HOOK_INSTALLED:
+        return
+
+    from gwpy.timeseries.connect import StateVectorDictRead, StateVectorRead
+
+    for reader_class in (StateVectorRead, StateVectorDictRead):
+        original = getattr(reader_class, "_gwexpy_gwf_original_call", None)
+        if original is None:
+            original = reader_class.__call__
+            reader_class._gwexpy_gwf_original_call = original
+            reader_class.__call__ = _gwexpy_statevector_read_call
+        _GWF_STATEVECTOR_ORIGINAL_CALLS[reader_class] = original
+        reader_class.__call__.__signature__ = _gwf_parallel_read_signature(
+            reader_class.__call__
+        )
+        if _GWF_PARALLEL_HELP not in (reader_class.__doc__ or ""):
+            reader_class.__doc__ = f"{reader_class.__doc__}{_GWF_PARALLEL_HELP}"
+    _GWF_STATEVECTOR_HOOK_INSTALLED = True
 
 
 def _normalize_gwf_channels(channels: Any) -> list[str] | None:
@@ -706,4 +976,5 @@ __all__ = [
     "_GWF_FORMATS",
     "_format_gwf_import_error",
     "read_gwf_timeseriesdict",
+    "read_gwf_statevectordict",
 ]

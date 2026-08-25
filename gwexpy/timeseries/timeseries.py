@@ -15,7 +15,8 @@ from __future__ import annotations
 
 from operator import index
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, SupportsIndex
+<<<<<<< HEAD
+from typing import TYPE_CHECKING, Any, Literal, SupportsIndex, cast
 
 import numpy as np
 from astropy import units as u
@@ -32,8 +33,10 @@ from ._core import TimeSeriesCore
 from ._epoch import _integer_gps_ns, _integral_dt_gps_ns
 from ._gwf_io import (
     _GWF_BACKENDS,
+    _GWF_PARALLEL_HELP,
     _extract_gwf_read_args,
     _format_gwf_import_error,
+    _gwf_parallel_read_signature,
     _GWFParallelContractError,
     _normalize_gwf_parallel_kwargs,
     _resolve_gwf_format,
@@ -158,6 +161,9 @@ class TimeSeries(
 
         This override adds explicit CSV and `.gwf` handling for deterministic
         behavior when `.read()` is called through the public API.
+
+        GWF accepts the compatible ``parallel=`` and ``nproc=`` keywords; see
+        the generated signature and the GWF I/O guide for their constraints.
         """
         fmt = kwargs.get("format")
         source_path = Path(source) if isinstance(source, (str, Path)) else None
@@ -645,5 +651,9 @@ class TimeSeries(
         """
         return self.arima(order=(p, 0, q), **kwargs)
 
+
+_timeseries_read = cast(Any, TimeSeries.read).__func__
+_timeseries_read.__signature__ = _gwf_parallel_read_signature(_timeseries_read)
+_timeseries_read.__doc__ = f"{_timeseries_read.__doc__}{_GWF_PARALLEL_HELP}"
 
 __all__ = ["TimeSeries"]
