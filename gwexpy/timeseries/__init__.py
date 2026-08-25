@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from importlib import import_module
+
 from .collections import TimeSeriesDict, TimeSeriesList
 from .matrix import TimeSeriesMatrix
 from .pipeline import (
@@ -46,6 +48,8 @@ from . import io as _io  # noqa: F401
 
 
 def __getattr__(name):
+    if name == "core":
+        return import_module(f"{__name__}.core")
     try:
         return getattr(_gwpy_timeseries, name)
     except AttributeError:

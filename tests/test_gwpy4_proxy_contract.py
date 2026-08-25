@@ -149,6 +149,29 @@ def test_curated_proxy_exports_are_exact(
     assert tuple(module.__all__) == expected
 
 
+def test_parent_packages_resolve_curated_proxy_modules_in_fresh_interpreter() -> None:
+    root = Path(__file__).resolve().parents[1]
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-P",
+            "-c",
+            "from gwexpy.table import filter, table; "
+            "from gwexpy.timeseries import core; "
+            "from gwexpy.utils import lal, misc; "
+            "print(filter.__name__); print(table.__name__); print(core.__name__); "
+            "print(lal.__name__); print(misc.__name__)",
+        ],
+        cwd=root,
+        env=os.environ | {"PYTHONPATH": str(root)},
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert tuple(result.stdout.splitlines()) == tuple(EXPECTED_EXPORTS)
+
+
 @pytest.mark.parametrize(
     ("module_name", "name"),
     [(module, name) for module, names in REMOVED_NAMES.items() for name in names],
