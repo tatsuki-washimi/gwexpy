@@ -194,3 +194,27 @@ series to the new TimeSeries instance.
   capability tests.**
 - [x] **Step 5: Update docs, plan, and audit evidence; rerun the full
   validation matrix and create the one local Conventional Commit.**
+
+### Task 11: Luna composite-source syntax remediation
+
+**Goal:** Reject encoded and literal composite source expressions before all
+multi-worker span, backend, and executor activity without rejecting ordinary
+local filesystem paths.
+
+**Architecture:** Centralize local GWF path spelling validation after
+os.fspath/os.fsdecode. Decode percent escapes for validation and reject only
+expressions that join two .gwf filenames with +, |, ;, @, or whitespace.
+Nested cache/list objects remain invalid by type. Retain POSIX and structural
+Windows drive/UNC acceptance, then document the intentionally unsupported
+composite filename spellings.
+
+- [x] **Step 1: Add four-reader RED tests** covering parallel and nproc,
+  literal/encoded composite joins, nested list/cache forms, and PathLike
+  composite strings; assert no span resolver, backend, or executor call.
+- [x] **Step 2: Add valid POSIX and Windows/UNC counterexamples** so a plus
+  or whitespace within one filename remains legal.
+- [x] **Step 3: Implement the smallest central decoded syntax validator and
+  rerun the focused contracts GREEN.**
+- [x] **Step 4: Update EN/JA docs and audit evidence, run focused/native/broad
+  tests plus Ruff, MyPy, YAML, diff checks, then make one local Conventional
+  Commit.**

@@ -12,6 +12,7 @@ from inspect import Parameter, Signature, signature
 from numbers import Integral
 from pathlib import Path
 from typing import Any
+from urllib.parse import unquote
 
 import numpy as np
 from astropy.io.registry import IORegistryError
@@ -278,6 +279,10 @@ def _normalize_gwf_gap_options(pad: Any, gap: Any) -> tuple[Any, Any]:
 _GWF_PARALLEL_WORKER_CAP = 8
 _GWF_URI_SCHEME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 _GWF_WINDOWS_DRIVE_RE = re.compile(r"^[A-Za-z]:[\\/]")
+_GWF_COMPOSITE_PATH_RE = re.compile(
+    r"\.gwf(?:[+|;@]|\s+).*?\.gwf",
+    flags=re.IGNORECASE,
+)
 _GWF_PARALLEL_PATH_ERROR = (
     "Parallel GWF reads require a list or tuple of local GWF frame paths"
 )
@@ -333,6 +338,22 @@ def _consume_gwf_parallel_kwargs(
     ]
 
 
+def _is_local_gwf_frame_path_syntax(text: str) -> bool:
+    """Return whether a decoded path spelling is safe for one spawned frame."""
+    decoded = unquote(text)
+    if not decoded or any(character in decoded for character in "\x00\n\r?#*[]{},"):
+        return False
+    if _GWF_COMPOSITE_PATH_RE.search(decoded):
+        return False
+
+    is_windows_path = bool(_GWF_WINDOWS_DRIVE_RE.match(decoded)) or decoded.startswith(
+        (r"\\", "//")
+    )
+    if not is_windows_path and _GWF_URI_SCHEME_RE.match(decoded):
+        return False
+    return decoded.lower().endswith(".gwf")
+
+
 def _is_filesystem_path(source: Any) -> bool:
     """Return whether ``source`` is one local frame path for spawned reads.
 
@@ -353,17 +374,7 @@ def _is_filesystem_path(source: Any) -> bool:
         text = os.fsdecode(path)
     except (TypeError, UnicodeError):
         return False
-    if not text or any(character in text for character in "\x00\n\r?#*[]{},"):
-        return False
-
-    is_windows_path = bool(_GWF_WINDOWS_DRIVE_RE.match(text)) or text.startswith(
-        (r"\\", "//")
-    )
-    if not is_windows_path and _GWF_URI_SCHEME_RE.match(text):
-        return False
-    if not text.lower().endswith(".gwf"):
-        return False
-    return True
+    return _is_local_gwf_frame_path_syntax(text)
 
 
 def _gwf_time_to_ns(value: Any) -> int:

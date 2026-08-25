@@ -44,6 +44,16 @@ class _ImmediateExecutor:
         self.shutdown_calls.append(kwargs)
 
 
+class _StringPath(os.PathLike[str]):
+    """PathLike test double for structural parallel-source validation."""
+
+    def __init__(self, value: str) -> None:
+        self.value = value
+
+    def __fspath__(self) -> str:
+        return self.value
+
+
 def _source_start(source: str | Path) -> float:
     return {"early.gwf": 1.0, "late.gwf": 2.0}[Path(source).name]
 
@@ -664,11 +674,72 @@ def test_all_public_readers_reject_nonlocal_parallel_sources_before_backend(
 
 
 @pytest.mark.parametrize(
+    ("reader", "selector"),
+    [
+        (TimeSeries.read, CHANNEL_A),
+        (TimeSeriesDict.read, [CHANNEL_A]),
+        (StateVector.read, CHANNEL_A),
+        (StateVectorDict.read, [CHANNEL_A]),
+    ],
+)
+@pytest.mark.parametrize("option", ["parallel", "nproc"])
+@pytest.mark.parametrize(
+    "invalid_source",
+    [
+        "a.gwf+b.gwf",
+        "a.gwf|b.gwf",
+        "a.gwf;b.gwf",
+        "a.gwf@b.gwf",
+        "a.gwf b.gwf",
+        "a.gwf%2Bb.gwf",
+        "a.gwf%7Cb.gwf",
+        "a.gwf%3Bb.gwf",
+        "a.gwf%40b.gwf",
+        "a.gwf%20b.gwf",
+        ["a.gwf", "b.gwf"],
+        ("a.gwf", "b.gwf"),
+        {"cache": ["a.gwf", "b.gwf"]},
+        _StringPath("a.gwf+b.gwf"),
+    ],
+)
+def test_all_public_readers_reject_composite_parallel_sources_before_work(
+    monkeypatch, reader, selector, option, invalid_source
+) -> None:
+    calls = []
+
+    class ExplodingExecutor:
+        def __init__(self, **kwargs):
+            raise AssertionError("executor was created before source preflight")
+
+    def unexpected(*args, **kwargs):
+        calls.append((args, kwargs))
+        raise AssertionError("span resolver or backend I/O ran")
+
+    monkeypatch.setattr(gwf_io, "ProcessPoolExecutor", ExplodingExecutor)
+    monkeypatch.setattr(gwf_io, "_resolve_gwf_path_span", unexpected)
+    monkeypatch.setattr("gwpy.io.gwf.core.get_channel_names", unexpected)
+    monkeypatch.setattr("gwpy.timeseries.io.gwf.core.read_timeseriesdict", unexpected)
+    monkeypatch.setattr("gwpy.timeseries.io.gwf.core.read_statevectordict", unexpected)
+    monkeypatch.setattr(StateVector.read.registry, "read", unexpected)
+
+    with pytest.raises(TypeError, match="local GWF frame paths"):
+        reader(
+            [invalid_source, Path("K1-test-1-1.gwf")],
+            selector,
+            format="gwf",
+            **{option: 2},
+        )
+    assert calls == []
+
+
+@pytest.mark.parametrize(
     "source",
     [
         "relative/K1-test-0-1.gwf",
         b"relative/K1-test-0-1.gwf",
         Path("relative/K1-test-0-1.gwf"),
+        "relative/frame name.gwf",
+        "relative/frame+tag.gwf",
         PureWindowsPath(r"C:\frames\K1-test-0-1.gwf"),
         PureWindowsPath(r"\\server\frames\K1-test-0-1.gwf"),
     ],

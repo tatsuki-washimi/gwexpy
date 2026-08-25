@@ -3,6 +3,7 @@ title: "Parallel GWF filesystem reads"
 date: 2026-08-25
 base: 565b39502
 follow_up_base: 2a8424a8a85360ed4aba22539c9408cebefea69e
+composite_follow_up_base: b751b8d125c75db9df72b3a0df0e980f600cea63
 scope:
   included:
     - "parallel= GWF read support with nproc= compatibility alias"
@@ -13,6 +14,7 @@ scope:
     - "GWF reader public preflight, metadata preservation, and contract tests"
     - "Luna remediation: fail-closed local .gwf worker sources and worker ImportError provenance"
     - "Sol remediation: selected-backend segmentless filename spans and scalar TimeSeries public metadata"
+    - "Luna remediation: decoded composite GWF source spelling preflight"
   excluded:
     - "release/version changes"
     - "non-GWF I/O changes"
@@ -45,6 +47,7 @@ actions:
   - "Recorded Luna RED evidence: type-only source acceptance reached span/backend work, while TimeSeries reader layers wrapped parallel worker ImportError."
   - "Restricted effective multi-worker sources to structural local .gwf paths and preserved parallel worker/backend ImportError identity and provenance on all four readers."
   - "Incorporated Sol review: FrameL segmentless filename preflight now uses the installed framel file-time API, and scalar TimeSeries extraction deep-copies public metadata."
+  - "Added a shared percent-decoded composite source syntax validator before span/backend/executor work across all four readers and both public worker aliases."
   - "Created one local Conventional Commit after final focused, adjacent, broad-sharded, lint, type, and diff verification; no push or GitHub mutation."
 validation:
   red:
@@ -62,6 +65,8 @@ validation:
       result: "24 failed, 4 passed; URI/cache/query sources reached span/backend work and TimeSeries/TimeSeriesDict wrapped parallel worker ImportError. Two StateVector serial tests initially lacked connector-open isolation and were corrected before GREEN."
     - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_statevector_gwf_parallel_contract.py -k 'segmentless_framel or scalar_timeseries_gwf_read_preserves_nested' -p no:cacheprovider"
       result: "2 failed: explicit framel preflight imported nonexistent gwpy.io.gwf.framel for test.gwf, and the initial scalar test fixture referenced a helper outside its module; the fixture was repaired before evaluating the production scalar assertion."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_statevector_gwf_parallel_contract.py -k composite_parallel_sources -x -p no:cacheprovider"
+      result: "1 failed: a.gwf+b.gwf reached the span resolver through TimeSeries.read before preflight rejected it."
   final:
     - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_gwf_parallel_contract.py tests/timeseries/test_io_gwf_timeseriesdict.py tests/timeseries/test_io_matrix_gwf.py -p no:cacheprovider"
       result: "104 passed, 1 skipped."
@@ -91,6 +96,14 @@ validation:
       result: "106 passed, 1 skipped; native framel and lalframe coverage passed."
     - command: "rtk env PYTHONPATH=$PWD conda run -n gwexpy ruff check ...; ruff format --check ...; mypy gwexpy/; YAML parse; rtk git diff --check"
       result: "All changed-file Ruff/import-order and format checks passed; MyPy passed for 393 source files; YAML and diff checks passed."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_statevector_gwf_parallel_contract.py -k composite_parallel_sources -p no:cacheprovider"
+      result: "112 passed; four readers, parallel/nproc aliases, literal/percent-encoded separators, nested source objects, and PathLike composites all reject before resolver/backend/executor work."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_statevector_gwf_parallel_contract.py -k 'composite_parallel_sources or structural_local_frame_paths or structural_local_parallel_paths or nonlocal_parallel_sources or worker_import_error_provenance or segmentless_framel or scalar_timeseries_gwf_read_preserves_nested' -p no:cacheprovider"
+      result: "165 passed, 25 deselected."
+    - command: "rtk env PYTHONPATH=$PWD MPLCONFIGDIR=/tmp/gwexpy-mpl conda run -n gwexpy python -m pytest -q tests/timeseries/test_gwf_parallel_contract.py tests/timeseries/test_io_gwf_timeseriesdict.py tests/timeseries/test_io_matrix_gwf.py tests/timeseries/test_io_gwf_framel.py tests/timeseries/test_io_gwf_lalframe.py -p no:cacheprovider"
+      result: "106 passed, 1 skipped."
+    - command: "rtk env PYTHONPATH=$PWD conda run -n gwexpy ruff check ...; ruff format --check ...; mypy gwexpy/; YAML parse; rtk git diff --check"
+      result: "Changed-file lint/import order and formatting passed after scoped formatter output; MyPy passed for 393 source files; YAML and diff checks passed."
 review:
   plan_review: "Read-only review completed after one revision."
   code_review: "Read-only review completed; public TypeError, metadata-copy, serialization, keyed-empty-series, and StateVector audit findings addressed."
