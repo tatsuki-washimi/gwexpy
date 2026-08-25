@@ -694,6 +694,8 @@ def _structure_cells(family: MatrixFamily) -> tuple[ContractCell, ...]:
                     Operand.SPECTROGRAM_BATCH_SCALAR_FIRST,
                     Operand.SPECTROGRAM_BATCH_SCALAR_LAST,
                     Operand.SPECTROGRAM_CELL_SCALAR_POSITIVE,
+                    Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW,
+                    Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_COLUMN,
                     Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW_COLUMN,
                 )
             ),
@@ -1367,7 +1369,7 @@ def _build_manifest() -> tuple[ContractCell, ...]:
 
 
 B0_CONTRACT: Final[tuple[ContractCell, ...]] = _build_manifest()
-EXPECTED_B0_CELL_COUNT: Final[int] = 478
+EXPECTED_B0_CELL_COUNT: Final[int] = 480
 assert len(B0_CONTRACT) == EXPECTED_B0_CELL_COUNT
 
 

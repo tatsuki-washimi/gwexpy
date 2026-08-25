@@ -16,8 +16,11 @@ reject conflicting matrix-epoch and explicit-time authorities and to preserve
 the complete selected-cell `MetaData` payload. The 474-cell candidate was
 superseded after review found that scalar extraction overwrote a user value at
 the reserved metadata carrier. The current executable B0 ledger contains
-exactly 478 cells; this historical benchmark capture does not validate the
-semantics of any rejected candidate or measure the later contract fixes.
+exactly 478 cells. The 478-cell candidate was superseded after review found
+that its reserved-carrier collision refusals omitted two supported 4-D negative
+row/column selectors. The current executable B0 ledger contains exactly 480
+cells; this historical benchmark capture does not validate the semantics of
+any rejected candidate or measure the later contract fixes.
 
 - fixed SHA: `6a13900672900551ccaf1b18fe78b9ce6f062e29`
 - recorded raw capture SHA-256: `5fcdab552f8c910812335e81dfb4e0f170543f69ba78f18a63784191a80bf3b5`

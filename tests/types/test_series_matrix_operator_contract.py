@@ -435,9 +435,18 @@ def test_spectrogram_scalar_selection_copies_arbitrary_selected_cell_metadata():
         (True, 0),
         (True, -1),
         (False, (0, 1)),
+        (False, (-1, 1)),
+        (False, (0, -1)),
         (False, (-1, -1)),
     ],
-    ids=["3d-positive", "3d-negative", "4d-positive", "4d-negative"],
+    ids=[
+        "3d-positive",
+        "3d-negative",
+        "4d-positive",
+        "4d-negative-row",
+        "4d-negative-column",
+        "4d-negative-row-column",
+    ],
 )
 def test_spectrogram_scalar_selection_rejects_reserved_metadata_attr_collision(
     three_dimensional, selector

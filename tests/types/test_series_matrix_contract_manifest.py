@@ -1347,7 +1347,7 @@ def execute_contract_cell(cell: ContractCell) -> ContractObservation:
 
 def test_b0_manifest_has_a_literal_cell_count_and_unique_ids() -> None:
     assert len(B0_CONTRACT) == EXPECTED_B0_CELL_COUNT
-    assert EXPECTED_B0_CELL_COUNT == 478
+    assert EXPECTED_B0_CELL_COUNT == 480
     ids = [cell.id for cell in B0_CONTRACT]
     assert len(ids) == len(set(ids))
 
@@ -1410,6 +1410,8 @@ def test_scalar_and_integer_sample_selector_cells_are_complete() -> None:
         (Operand.SPECTROGRAM_BATCH_SCALAR_FIRST, ValueError),
         (Operand.SPECTROGRAM_BATCH_SCALAR_LAST, ValueError),
         (Operand.SPECTROGRAM_CELL_SCALAR_POSITIVE, ValueError),
+        (Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW, ValueError),
+        (Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_COLUMN, ValueError),
         (Operand.SPECTROGRAM_CELL_SCALAR_NEGATIVE_ROW_COLUMN, ValueError),
     }
     for family in (MatrixFamily.TIME_SERIES, MatrixFamily.FREQUENCY_SERIES):
@@ -1502,6 +1504,20 @@ def test_container_arithmetic_docs_match_spectrogram_ndarray_manifest() -> None:
     assert "exact atomic `UnitConversionError` failures" in document
     assert "dimensionless ndarray cases succeed" in document
     assert "preserves dimensional cells" not in document
+
+
+def test_b1_decision_keeps_d21_sign_off_pending() -> None:
+    """B1 evidence must not represent the required human gate as complete."""
+    decision = (
+        Path(__file__).parents[2]
+        / "docs/plans/evidence/v0.2.0-b1/series_matrix_b1_decision.md"
+    ).read_text(encoding="utf-8")
+    assert "**Proposed D21 decision: B0 for v0.2.0.**" in decision
+    assert (
+        "explicit human d21/data-model sign-off before merge or release"
+        in " ".join(decision.split()).lower()
+    )
+    assert "**D21 selects B0 for v0.2.0.**" not in decision
 
 
 def test_b0_manifest_covers_approved_surface_for_every_family() -> None:

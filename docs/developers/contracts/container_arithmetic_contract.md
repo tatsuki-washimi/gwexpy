@@ -5,7 +5,7 @@ contract before issue #637.  It does not adopt or implement the #637
 composition redesign.
 
 The executable canonical ledger is the typed `B0_CONTRACT` in
-`tests/types/series_matrix_contract_manifest.py`.  It contains exactly 478
+`tests/types/series_matrix_contract_manifest.py`.  It contains exactly 480
 cells across `TimeSeriesMatrix`, `FrequencySeriesMatrix`, and
 `SpectrogramMatrix`.  The typed adapter in
 `tests/types/test_series_matrix_contract_manifest.py` executes every cell once
@@ -34,7 +34,10 @@ authorities and to retain the complete selected-cell `MetaData` payload.  The
 supported coherent scalar selectors. The 474-cell ledger was superseded after
 review found that scalar extraction overwrote a user value at the reserved
 selected-cell metadata carrier. The 478-cell ledger freezes the atomic
-reserved-carrier collision refusal. `tests/types/test_series_matrix_operator_contract.py`
+reserved-carrier collision refusal. The 478-cell ledger was superseded after
+review found that the collision refusals omitted two supported 4-D negative
+row/column selector forms. The 480-cell ledger freezes all six scalar selector
+collision refusals. `tests/types/test_series_matrix_operator_contract.py`
 retains direct behavioral regressions.  A B1 implementation must update and
 compare this same ledger rather than introducing a second matrix.
 

@@ -1395,7 +1395,8 @@ def test_b1_decision_defers_composition_without_a_target_version() -> None:
         / "series_matrix_b1_decision.md"
     ).read_text(encoding="utf-8")
 
-    assert "D21 selects B0 for v0.2.0" in decision
+    assert "Proposed D21 decision: B0 for v0.2.0" in decision
     assert "adopted: false" in decision
+    assert "sign-off before merge or release remains pending" in decision
     assert "No target version" in decision
     assert "does not implement general direct NumPy ufunc composition" in decision
