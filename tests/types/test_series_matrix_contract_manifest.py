@@ -1520,6 +1520,20 @@ def test_b1_decision_keeps_d21_sign_off_pending() -> None:
     assert "**D21 selects B0 for v0.2.0.**" not in decision
 
 
+def test_b0_summary_marks_478_only_as_a_superseded_candidate() -> None:
+    """The B0 evidence must identify 480, not 478, as the current ledger."""
+    summary = (
+        Path(__file__).parents[2]
+        / "docs/plans/evidence/v0.2.0-b0/series_matrix_b0_summary.md"
+    ).read_text(encoding="utf-8")
+    normalized = " ".join(summary.split())
+    assert "The 478-cell candidate was superseded" in normalized
+    assert "The current executable B0 ledger contains exactly 480 cells" in normalized
+    assert (
+        "The current executable B0 ledger contains exactly 478 cells" not in normalized
+    )
+
+
 def test_b0_manifest_covers_approved_surface_for_every_family() -> None:
     required = {
         "shape",

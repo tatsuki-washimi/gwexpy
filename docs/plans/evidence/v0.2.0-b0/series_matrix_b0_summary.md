@@ -15,8 +15,7 @@ scalar Spectrogram epoch and negative integer sample-index coverage.  The
 reject conflicting matrix-epoch and explicit-time authorities and to preserve
 the complete selected-cell `MetaData` payload. The 474-cell candidate was
 superseded after review found that scalar extraction overwrote a user value at
-the reserved metadata carrier. The current executable B0 ledger contains
-exactly 478 cells. The 478-cell candidate was superseded after review found
+the reserved metadata carrier. The 478-cell candidate was superseded after review found
 that its reserved-carrier collision refusals omitted two supported 4-D negative
 row/column selectors. The current executable B0 ledger contains exactly 480
 cells; this historical benchmark capture does not validate the semantics of
