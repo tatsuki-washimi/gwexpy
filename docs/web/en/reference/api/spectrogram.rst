@@ -28,9 +28,11 @@ The sidecar is validated before a write and limited to 1 MB.  Within a
 process, provenance-aware reads and updates of the same physical file share a
 per-file lock, so a reader does not observe replacement data with an older
 sidecar.  An ordinary failed update restores the original dataset link and
-sidecar state.  If restoration itself fails, the original is retained under a
-named recovery artifact and the raised error reports the operation and every
-restoration failure.  Path
+sidecar state.  If restoration or rollback cleanup fails, GWexpy attempts to
+retain a named recovery artifact and reports the operation plus every
+restoration, preservation, and cleanup failure.  If artifact creation also
+fails, the error reports that recovery is unavailable after retrying the prior
+sidecar snapshot directly.  Path
 replacement writes a complete sibling temporary HDF5 file before ``os.replace``.
 For an existing regular file, its permission bits are applied to the temporary
 replacement.  Symbolic-link targets are rejected; ownership, ACLs, and
