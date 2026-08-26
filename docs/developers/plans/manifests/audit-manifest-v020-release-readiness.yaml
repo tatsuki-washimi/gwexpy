@@ -1,0 +1,27 @@
+review_evidence_json: |
+  {
+    "schema": "gwexpy-v020-review-evidence-v1",
+    "entries": [
+      {
+        "lane": "release-security",
+        "role": "reviewer",
+        "model": "gpt-5",
+        "effort": "high",
+        "reviewed_commit": "69861ae2c98b93ec174a05c7296431a549d12ae6",
+        "scope_paths": [
+          ".github/workflows",
+          "RELEASING.md",
+          "scripts/ci",
+          "scripts/validate_release.py",
+          "tests/test_publish_release_workflow.py",
+          "tests/test_release_contracts.py",
+          "tests/test_validate_release_script.py"
+        ],
+        "scope_digest": "3bc9adddd989b7ba33bc78fce73bd1d52293f592cfdc8d392026fbb725742032",
+        "verdict": "APPROVED",
+        "timestamp_utc": "2026-08-26T00:00:33Z",
+        "raw_report_sha256": "d5ad56a2c94400f0bf028bdea4a75fb1fbf1aa2a46e8b38463a2a32b82c4de4b",
+        "finding_ids": []
+      }
+    ]
+  }
