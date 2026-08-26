@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -37,12 +37,12 @@
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=2d0c2261" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=3d2082ce"></script>
+    <script src="../../_static/documentation_options.js?v=fd38ff47"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -669,7 +669,7 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <td><p>Returns the indices that would sort this array.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">astype</span></code>(dtype[, order, casting, subok, copy])</p></td>
-<td><p>Cast matrix data to a specified type.</p></td>
+<td><p>Cast values while retaining independent public metadata.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">byteswap</span></code>([inplace])</p></td>
 <td><p>Swap the bytes of the array elements</p></td>
@@ -690,13 +690,13 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <td><p>Return selected slices of this array along given axis.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">conj</span></code>()</p></td>
-<td><p>Alias for <code class="xref py py-meth docutils literal notranslate"><span class="pre">conjugate()</span></code>.</p></td>
+<td><p>Return the conjugate with fully independent public metadata.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">conjugate</span></code>()</p></td>
 <td><p>Return the elementwise complex conjugate, preserving per-cell units.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code>([order])</p></td>
-<td><p>Create a deep copy of this matrix.</p></td>
+<td><p>Copy values and every public metadata field independently.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">crop</span></code>([start, end, copy])</p></td>
 <td><p>Crop the matrix to a specified range along the sample axis.</p></td>
@@ -816,7 +816,7 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <td><p>Repeat elements of an array.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reshape</span></code>(*shape[, order, copy])</p></td>
-<td><p>Reshape the matrix dimensions.</p></td>
+<td><p>Reshape without sharing B0 public state with the source.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">resize</span></code>()</p></td>
 <td><p>Change shape and size of array in-place.</p></td>
@@ -933,7 +933,7 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <td><p>Compute the trace of the matrix (sum of diagonal elements).</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpose</span></code>(*axes)</p></td>
-<td><p>Transpose rows and columns, preserving sample axis as 2.</p></td>
+<td><p>Transpose rows/columns with independent, correctly keyed metadata.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code>(other[, inplace, pad, gap])</p></td>
 <td><p>Update matrix by appending without resizing (rolling buffer style).</p></td>
@@ -963,7 +963,7 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <td><p>Number of samples along the x-axis.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code></p></td>
-<td><p>Transpose of the matrix (rows and columns swapped).</p></td>
+<td><p>Return the B0 row/column transpose.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">base</span></code></p></td>
 <td><p>Base object if memory is from some other object.</p></td>
@@ -1014,7 +1014,7 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <td><p>Frequency array (xindex).</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">imag</span></code></p></td>
-<td><p>Imaginary part of the matrix.</p></td>
+<td><p>Return the imaginary component without aliasing public metadata.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_regular</span></code></p></td>
 <td><p>Return True if this series has a regular grid (constant spacing).</p></td>
@@ -1038,7 +1038,7 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <td><p>Number of array dimensions.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">real</span></code></p></td>
-<td><p>Real part of the matrix.</p></td>
+<td><p>Return the real component without aliasing public metadata.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.frequencyseries.FrequencySeriesMatrix.series_type" title="gwexpy.frequencyseries.FrequencySeriesMatrix.series_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">series_type</span></code></a></p></td>
 <td><p></p></td>
@@ -1240,8 +1240,8 @@ or multi-channel Power Spectral Densities (PSDs).</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1275,7 +1275,7 @@ or multi-channel Power Spectral Densities (PSDs).</p>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0 で構築されています。
+  <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0 で構築されています。
 </p></div>
       
     </div>

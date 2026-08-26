@@ -289,6 +289,7 @@
       ~TimeSeries.span
       ~TimeSeries.strides
       ~TimeSeries.t0
+      ~TimeSeries.t0_gps_ns
       ~TimeSeries.times
       ~TimeSeries.unit
       ~TimeSeries.value

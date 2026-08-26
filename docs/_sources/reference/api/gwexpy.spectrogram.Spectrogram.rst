@@ -164,6 +164,7 @@
       ~Spectrogram.name
       ~Spectrogram.nbytes
       ~Spectrogram.ndim
+      ~Spectrogram.provenance
       ~Spectrogram.read
       ~Spectrogram.real
       ~Spectrogram.shape
