@@ -104,8 +104,12 @@ BrUCo noise budgets, ARIMA modelling, and fitting / MCMC pipelines in one place.
 
 ## Install and try it
 
+GWexpy v0.2.0 is available from both PyPI and conda-forge.
+
 ```bash
 pip install gwexpy
+# or
+conda install -c conda-forge gwexpy
 ```
 
 ```python

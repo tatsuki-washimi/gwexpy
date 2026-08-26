@@ -460,13 +460,10 @@
 <h1>Installation Guide<a class="headerlink" href="#installation-guide" title="Link to this heading">#</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>GWexpy is published on <a class="reference external" href="https://pypi.org/project/gwexpy/">PyPI</a>. Check PyPI or
-the <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/releases">release page</a> for
-available versions. A conda-forge feedstock is also available, though the
-conda-forge package may lag the PyPI release. Install from PyPI for the version
-you need, or use
-<code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">gwexpy</span></code> once the desired version is available on
-the conda-forge channel.</p>
+<p>GWexpy v0.2.0 is available from both <a class="reference external" href="https://pypi.org/project/gwexpy/">PyPI</a>
+and <a class="reference external" href="https://anaconda.org/conda-forge/gwexpy">conda-forge</a>. Check PyPI, conda-forge,
+or the <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/releases">release page</a> for
+available versions.</p>
 </div>
 <p>GWexpy supports <strong>Python 3.11 or later</strong>. You can choose from several installation options (extras) depending on your analysis goals.</p>
 <section id="install-commands">
@@ -517,9 +514,9 @@ the conda-forge channel.</p>
 <section id="conda-environment-recommended-gw-analysis">
 <span id="id1"></span><h3>Conda Environment (Recommended / GW Analysis)<a class="headerlink" href="#conda-environment-recommended-gw-analysis" title="Link to this heading">#</a></h3>
 <p>For gravitational-wave analysis (requiring NDS2 or FrameLIB), we strongly recommend using Conda (e.g., Miniforge) to resolve binary dependencies first.</p>
-<p>This workflow uses Conda for the environment and binary dependencies, then uses
-PyPI for GWexpy itself. A conda-forge feedstock for <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> is also available,
-but may lag the latest PyPI release.</p>
+<p>This workflow uses Conda for the environment and binary dependencies. Install
+GWexpy from conda-forge with <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">gwexpy</span></code>, or use PyPI
+extras after Conda has resolved the binary dependencies you need.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>If you use Conda, avoid running <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code> directly in <code class="docutils literal notranslate"><span class="pre">base</span></code> or in a shared environment for unrelated work. Create a <strong>dedicated environment for GWexpy</strong> first, then install both the Conda-managed binary dependencies and the <code class="docutils literal notranslate"><span class="pre">pip</span></code> packages there. This keeps binary dependency resolution isolated and reduces the risk of breaking the environment.</p>

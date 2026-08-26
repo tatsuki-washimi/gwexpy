@@ -461,7 +461,7 @@
 <h1>インストールガイド (Installation)<a class="headerlink" href="#installation-guide" title="Link to this heading">#</a></h1>
 <div class="admonition note">
 <p class="admonition-title">注釈</p>
-<p>GWexpy は <a class="reference external" href="https://pypi.org/project/gwexpy/">PyPI</a> に公開されています。利用可能なバージョンは PyPI または <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/releases">リリースページ</a> で確認してください。conda-forge フィードストックも利用可能ですが、conda-forge パッケージは PyPI のリリースより遅れる場合があります。必要なバージョンは PyPI からインストールし、希望のバージョンが conda-forge チャンネルで利用可能になり次第、<code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">gwexpy</span></code> でもインストールできます。</p>
+<p>GWexpy v0.2.0 は <a class="reference external" href="https://pypi.org/project/gwexpy/">PyPI</a> と <a class="reference external" href="https://anaconda.org/conda-forge/gwexpy">conda-forge</a> の両方から利用できます。利用可能なバージョンは PyPI、conda-forge、または <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/releases">リリースページ</a> で確認してください。</p>
 </div>
 <p>GWexpy は <strong>Python 3.11 以上</strong>をサポートしています。解析の目的に合わせて、いくつかのインストールオプション（extras）を選択できます。</p>
 <section id="install-commands">
@@ -512,7 +512,7 @@
 <section id="conda-environment-recommended-gw-analysis">
 <span id="id1"></span><h3>コンダ環境 (Recommended / GW Analysis)<a class="headerlink" href="#conda-environment-recommended-gw-analysis" title="Link to this heading">#</a></h3>
 <p>重力波解析（NDS2 や FrameLIB 等）を行う場合は、Conda (Miniforge 等) を使用してバイナリ依存関係を先に解決することを強く推奨します。</p>
-<p>この手順は、環境とバイナリ依存関係を Conda で管理し、GWexpy 本体は PyPI から入れる方法です。<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の conda-forge フィードストックも利用可能ですが、 最新の PyPI リリースより遅れる場合があります。</p>
+<p>この手順は、環境とバイナリ依存関係を Conda で管理する方法です。GWexpy は <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">gwexpy</span></code> で導入できます。Conda が必要なバイナリ依存関係を解決した後に PyPI extras を導入することもできます。</p>
 <div class="admonition warning">
 <p class="admonition-title">警告</p>
 <p>Conda 環境を使う場合は、<code class="docutils literal notranslate"><span class="pre">base</span></code> や別用途の既存環境に直接 <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code> せず、<strong>GWexpy 専用の新しい環境</strong> を作成してから導入してください。Conda が管理するバイナリ依存関係と <code class="docutils literal notranslate"><span class="pre">pip</span></code> で追加する Python パッケージを同じ専用環境に閉じ込めることで、環境破損のリスクを下げられます。</p>
