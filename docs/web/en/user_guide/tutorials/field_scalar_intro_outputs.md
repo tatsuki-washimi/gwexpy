@@ -16,7 +16,7 @@ Run locally if you want to regenerate outputs or modify parameters:
 1. **Download the notebook** from the documentation page
 2. **Set up your environment**:
    ```bash
-   pip install git+https://github.com/tatsuki-washimi/gwexpy.git matplotlib numpy astropy
+   pip install gwexpy matplotlib numpy astropy
    ```
 3. **Run the notebook** in Jupyter:
    ```bash
@@ -148,4 +148,4 @@ jupyter nbconvert --to notebook --execute \
 
 **Last Updated**: 2026-02-14
 **Status**: Main outputs are embedded; three visualization methods remain marked as coming soon
-**Priority**: High (before PyPI release recommended, not required)
+**Priority**: High

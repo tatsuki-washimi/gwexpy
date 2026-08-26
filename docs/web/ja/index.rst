@@ -45,7 +45,7 @@ v\ |release| · Python ≥ 3.11 · 最終更新: |today|
          </div>
          <div>
            <dt>Install</dt>
-           <dd>PyPI 公開まではソース導入</dd>
+           <dd>PyPI または conda-forge から導入</dd>
          </div>
        </dl>
      </div>

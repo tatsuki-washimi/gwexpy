@@ -27,14 +27,10 @@ myst:
 - [次に読む](#next-to-read)
 
 :::{note}
-GWexpy は [PyPI](https://pypi.org/project/gwexpy/) に公開されています。
-利用可能なバージョンは PyPI または
+GWexpy v0.2.0 は [PyPI](https://pypi.org/project/gwexpy/) と
+[conda-forge](https://anaconda.org/conda-forge/gwexpy) の両方から利用できます。
+利用可能なバージョンは PyPI、conda-forge、または
 [リリースページ](https://github.com/tatsuki-washimi/gwexpy/releases) で確認してください。
-conda-forge フィードストックも利用可能ですが、conda-forge パッケージは
-PyPI のリリースより遅れる場合があります。必要なバージョンは PyPI から
-インストールしてください。
-希望のバージョンが conda-forge チャンネルで利用可能になり次第、
-`conda install -c conda-forge gwexpy` でもインストールできます。
 :::
 
 GWexpy は **Python 3.11 以上** をサポートしています。解析の目的に合わせて、いくつかのインストールオプション（extras）を選択できます。
@@ -69,9 +65,9 @@ pip install gwexpy
 
 重力波解析（NDS2 や FrameLIB 等）を行う場合は、Conda (Miniforge 等) を使用してバイナリ依存関係を先に解決することを強く推奨します。
 
-この手順は、環境とバイナリ依存関係を Conda で管理し、GWexpy 本体は PyPI
-から入れる方法です。`gwexpy` の conda-forge フィードストックも利用可能ですが、
-最新の PyPI リリースより遅れる場合があります。
+この手順は、環境とバイナリ依存関係を Conda で管理する方法です。
+GWexpy は `conda install -c conda-forge gwexpy` で導入できます。
+Conda が必要なバイナリ依存関係を解決した後に PyPI extras を導入することもできます。
 
 :::{warning}
 Conda 環境を使う場合は、`base` や別用途の既存環境に直接 `pip install` せず、**GWexpy 専用の新しい環境** を作成してから導入してください。Conda が管理するバイナリ依存関係と `pip` で追加する Python パッケージを同じ専用環境に閉じ込めることで、環境破損のリスクを下げられます。

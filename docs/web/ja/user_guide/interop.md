@@ -87,7 +87,7 @@ import 中心の adapter の一部は、外部 package が生成した object �
 
 | 方針 | 依存関係 | インストール案内 |
 | --- | --- | --- |
-| GWexpy extras で宣言済み | `zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `control`, `pydub` | PyPI 公開までは [インストールガイド](installation.md) のソース導入形式を使います。例: `pip install "gwexpy[control] @ git+https://github.com/tatsuki-washimi/gwexpy.git"` |
+| GWexpy extras で宣言済み | `zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `control`, `pydub` | 必要な extra を PyPI から導入します。例: `pip install "gwexpy[control]"` |
 | 個別 package install | `ROOT`, `polars`, `dask`, `torch`, `tensorflow`, `jax`, `cupy`, `pycbc`, `finesse`, `simpeg`, `mne`, `neo`, `quantities`, `pyroomacoustics`, `specutils`, `pyspeckit`, `PySpice`, `skrf`, `pyOMA`, `multitaper`, `mtspec`, `pyuff`, `sdynpy`, `metpy`, `wrf-python`, `harmonica`, `emg3d`, `meshio` | bridge が直接 import する場合、または受け渡す source object を作る必要がある場合に、該当 backend を個別に導入してください。 |
 
 `gwexpy[all]` は GWexpy が宣言している extra をまとめて導入するための
@@ -175,7 +175,7 @@ xarray 系の interop bridge は、GWexpy が独立した `xarray` extra を公�
 | [PyCBC](https://pycbc.org/) | `to_pycbc_timeseries()`, `from_pycbc_timeseries()`, `to_pycbc_frequencyseries()`, `from_pycbc_frequencyseries()` | 公開済み | GW 時系列 / 周波数系列 | [API](../reference/api/gwexpy.interop.pycbc_.rst) |
 | [GWINC](https://git.ligo.org/gwinc/pygwinc) | `from_gwinc_budget()` | 公開済み | budget import | [API](../reference/api/gwexpy.interop.gwinc_.rst) |
 | [Finesse](https://finesse.ifosim.org/) | `from_finesse_frequency_response()`, `from_finesse_noise()` | 公開済み | optics / response | [API](../reference/api/gwexpy.interop.finesse_.rst) |
-| [python-control](https://python-control.readthedocs.io/en/latest/) | `to_control_frd()`, `from_control_frd()`, `from_control_response()` | 公開済み | FRD / response。`control` extra が必要です。PyPI 公開までは `pip install "gwexpy[control] @ git+https://github.com/tatsuki-washimi/gwexpy.git"` を使用してください。FRD 変換は `FrequencySeries` / `FrequencySeriesDict` から利用でき、時間応答の取り込みは `TimeSeries.from_control()` / `TimeSeriesDict.from_control()` で行えます。 | [API](../reference/api/gwexpy.interop.control_.rst) |
+| [python-control](https://python-control.readthedocs.io/en/latest/) | `to_control_frd()`, `from_control_frd()`, `from_control_response()` | 公開済み | FRD / response。`control` extra が必要です。例: `pip install "gwexpy[control]"`。FRD 変換は `FrequencySeries` / `FrequencySeriesDict` から利用でき、時間応答の取り込みは `TimeSeries.from_control()` / `TimeSeriesDict.from_control()` で行えます。 | [API](../reference/api/gwexpy.interop.control_.rst) |
 | [SimPEG](https://simpeg.xyz/) | `to_simpeg()`, `from_simpeg()` | 公開済み | geophysics | [API](../reference/api/gwexpy.interop.simpeg_.rst) |
 | [MTH5](https://mth5.readthedocs.io/en/latest/) | `to_mth5()`, `from_mth5()` | 公開済み | magnetotellurics | [API](../reference/api/gwexpy.interop.mt_.rst) |
 | MTpy | 専用 `to_*()` / `from_*()` API は対応中 | 対応中 | MTH5 周辺との整理が未完 | — |

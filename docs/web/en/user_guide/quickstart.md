@@ -29,15 +29,18 @@ Get your first analysis plot with GWexpy as quickly as possible.
 (en-quickstart-install-command)=
 ## Quick Install
 
-GWexpy is currently in development and is **not yet published on PyPI or Conda**, so install it directly from the GitHub source repository for now:
+GWexpy v0.2.0 is available from PyPI and conda-forge. Install the released package with `pip` for this quickstart:
 
-- Purpose: install the current development build as quickly as possible
+- Purpose: install the released package as quickly as possible
 - Input: Python 3.11+ with `pip`
 - Output: a local GWexpy installation ready for the first example
 
 ```bash
-pip install git+https://github.com/tatsuki-washimi/gwexpy.git
+pip install gwexpy
 ```
+
+To try unreleased development changes, install from the GitHub source repository instead:
+`pip install git+https://github.com/tatsuki-washimi/gwexpy.git`.
 
 If you need a Conda-managed environment, GW binary dependencies such as NDS2 / FrameLIB, or optional tools such as `pygmt`, start with the [Installation Guide](installation.md) instead of adding those packages ad hoc after this quick install.
 
@@ -45,6 +48,8 @@ If you need a Conda-managed environment, GW binary dependencies such as NDS2 / F
 ## 3-line Quickstart
 
 GWexpy's `TimeSeries` can be created directly from NumPy arrays and features built-in plotting capabilities.
+This example explicitly registers the full supported surface for plotting; supported
+public I/O entry points register their required handlers on demand.
 
 - Purpose: display a first plot from a random time series
 - Input: a 4096-sample NumPy array, sample rate 4096 Hz, and `t0=0`
@@ -52,8 +57,10 @@ GWexpy's `TimeSeries` can be created directly from NumPy arrays and features bui
 
 ```python
 import numpy as np
+import gwexpy
 from gwexpy.timeseries import TimeSeries
 
+gwexpy.register_all()
 ts = TimeSeries(np.random.randn(4096), sample_rate=4096.0, t0=0)
 ts.plot().show()
 ```
@@ -89,8 +96,10 @@ Minimal example for calculating cross-spectral density (CSD) between two channel
 
 ```python
 import numpy as np
+import gwexpy
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
+gwexpy.register_all()
 # Create data
 tsd = TimeSeriesDict({
     "H1:STRAIN": TimeSeries(np.random.randn(4096 * 4), sample_rate=4096, t0=0),

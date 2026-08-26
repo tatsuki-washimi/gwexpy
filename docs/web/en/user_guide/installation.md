@@ -27,13 +27,10 @@ myst:
 - [Next to Read](#next-to-read)
 
 :::{note}
-GWexpy is published on [PyPI](https://pypi.org/project/gwexpy/). Check PyPI or
-the [release page](https://github.com/tatsuki-washimi/gwexpy/releases) for
-available versions. A conda-forge feedstock is also available, though the
-conda-forge package may lag the PyPI release. Install from PyPI for the version
-you need, or use
-`conda install -c conda-forge gwexpy` once the desired version is available on
-the conda-forge channel.
+GWexpy v0.2.0 is available from both [PyPI](https://pypi.org/project/gwexpy/)
+and [conda-forge](https://anaconda.org/conda-forge/gwexpy). Check PyPI, conda-forge,
+or the [release page](https://github.com/tatsuki-washimi/gwexpy/releases) for
+available versions.
 :::
 
 GWexpy supports **Python 3.11 or later**. You can choose from several installation options (extras) depending on your analysis goals.
@@ -68,9 +65,9 @@ pip install gwexpy
 
 For gravitational-wave analysis (requiring NDS2 or FrameLIB), we strongly recommend using Conda (e.g., Miniforge) to resolve binary dependencies first.
 
-This workflow uses Conda for the environment and binary dependencies, then uses
-PyPI for GWexpy itself. A conda-forge feedstock for `gwexpy` is also available,
-but may lag the latest PyPI release.
+This workflow uses Conda for the environment and binary dependencies. Install
+GWexpy from conda-forge with `conda install -c conda-forge gwexpy`, or use PyPI
+extras after Conda has resolved the binary dependencies you need.
 
 :::{warning}
 If you use Conda, avoid running `pip install` directly in `base` or in a shared environment for unrelated work. Create a **dedicated environment for GWexpy** first, then install both the Conda-managed binary dependencies and the `pip` packages there. This keeps binary dependency resolution isolated and reduces the risk of breaking the environment.

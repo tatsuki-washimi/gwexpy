@@ -331,13 +331,16 @@ Definition of done:
     assert RELEASE_HEADING_RE.findall(document) == ["v0.2.0"]
 
 
-def test_v020_section_exposes_workstreams_and_definition_of_done() -> None:
-    """The committed release must expose its scope and completion contract."""
+def test_v020_section_records_the_released_outcome_and_ledger() -> None:
+    """The released section retains its date, immutable source, and closeout record."""
     section = _level_two_section(ROADMAP, "v0.2.0")
 
     assert section, "ROADMAP.md must contain a v0.2.0 release section"
-    assert _contains_label(section, "Workstreams")
-    assert _contains_label(section, "Definition of done")
+    assert "released 2026-08-26" in section
+    assert "5c91cf2d1087616c9815d0cbcc082c5f21bb36e9" in section
+    assert "v0.2.0 closeout ledger" in section
+    assert _contains_label(section, "Release outcomes")
+    assert not STATUS_RE.findall(section)
 
 
 def test_release_scope_authority_is_not_duplicated_in_design() -> None:
@@ -349,16 +352,16 @@ def test_release_scope_authority_is_not_duplicated_in_design() -> None:
     assert "`ROADMAP.md` と issue #413 はここからの転記とする" not in DESIGN
 
 
-def test_v020_planning_gate_trackers_are_structurally_in_scope() -> None:
-    """The release-specific gate owners are in scope; shared tooling is not."""
+def test_v020_release_outcome_keeps_b0_shipped_and_b1_deferred() -> None:
+    """The roadmap freezes the selected B0 outcome without assigning B1 a release."""
     section = _level_two_section(ROADMAP, "v0.2.0")
     assert section, "ROADMAP.md must contain a v0.2.0 release section"
 
-    assert "#675" in section
-    assert "#676" in section
-    assert "calendar date remains TBD" in section
-    assert "not a v0.2.0 milestone member" in section
-    assert "#581" in section
+    assert "B0 / Phase A shipped" in section
+    assert "480-cell" in section
+    assert "B1 deferred" in section
+    assert "#637" in section
+    assert "no assigned version or date" in section
 
 
 def test_shared_infrastructure_exception_has_a_release_evidence_owner() -> None:
@@ -403,16 +406,14 @@ def test_backlog_status_is_immediately_below_its_heading() -> None:
     assert len(STATUS_RE.findall(backlog)) == 1
 
 
-def test_v020_definition_of_done_has_issue_backed_items() -> None:
-    """The release must retain at least four independently traceable gates."""
+def test_v020_release_outcome_keeps_residual_work_outside_the_milestone() -> None:
+    """Deferred v0.2.0 follow-up remains visible without reopening the release scope."""
     section = _level_two_section(ROADMAP, "v0.2.0")
     assert section, "ROADMAP.md must contain a v0.2.0 release section"
 
-    items = _numbered_items_after_label(section, "Definition of done")
-
-    assert len(items) >= 4, "v0.2.0 must define at least four completion gates"
-    missing_issue = [item for item in items if ISSUE_RE.search(item) is None]
-    assert not missing_issue, f"DoD items without issue references: {missing_issue}"
+    assert "Residual work:" in section
+    assert {"#513", "#588", "#590"} <= set(ISSUE_RE.findall(section))
+    assert "outside the closed milestone" in section
 
 
 def test_future_theme_headings_do_not_assign_specific_versions() -> None:
@@ -434,14 +435,11 @@ def test_release_headings_do_not_preassign_future_minors() -> None:
     assert actual <= allowed, f"Unexpected release headings: {sorted(actual - allowed)}"
 
 
-def test_committed_and_future_theme_blocks_have_one_status_each() -> None:
-    """Every status-governed theme block must state exactly one status."""
-    v020 = _level_two_section(ROADMAP, "v0.2.0")
+def test_future_theme_blocks_have_one_status_each() -> None:
+    """Released sections are exempt; every future theme has exactly one status."""
     future = _level_two_section(ROADMAP, "Future themes")
-    assert v020, "ROADMAP.md must contain a v0.2.0 release section"
     assert future, "ROADMAP.md must contain a Future themes section"
 
-    assert len(STATUS_RE.findall(v020)) == 1, "v0.2.0 must have exactly one Status line"
     themes = _theme_blocks(future)
     assert themes, "Future themes must contain at least one theme block"
     bad_counts = {
@@ -452,13 +450,13 @@ def test_committed_and_future_theme_blocks_have_one_status_each() -> None:
     assert not bad_counts, f"Future theme Status counts are not one: {bad_counts}"
 
 
-def test_exactly_one_theme_is_committed() -> None:
-    """The roadmap may expose only one active release theme at a time."""
+def test_zero_or_one_theme_may_be_committed() -> None:
+    """A release boundary may intentionally have no selected next-minor theme."""
     committed = [
         status for status in STATUS_RE.findall(ROADMAP) if status.casefold() == "committed"
     ]
 
-    assert len(committed) == 1, f"Expected one Committed theme, found {len(committed)}"
+    assert len(committed) <= 1, f"Expected at most one Committed theme, found {len(committed)}"
 
 
 def test_all_docs_markdown_links_resolve_from_repository_root() -> None:

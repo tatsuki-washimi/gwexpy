@@ -42,7 +42,7 @@ v\ |release| · Python ≥ 3.11 · Last updated: |today|
          </div>
          <div>
            <dt>Install</dt>
-           <dd>Source install until PyPI release</dd>
+           <dd>Install from PyPI or conda-forge</dd>
          </div>
        </dl>
      </div>

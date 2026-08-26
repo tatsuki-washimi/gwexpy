@@ -12,8 +12,8 @@ below and the
 for the full per-domain goals, the domain-by-theme matrix, and the issue triage rules.
 
 The v0.1.x series established security, CI, release tooling, metadata integrity,
-and I/O correctness through v0.1.14. The project is now moving to the first
-semantically complete feature release, v0.2.0.
+and I/O correctness through v0.1.14. The first semantically complete feature
+release, v0.2.0, shipped on 2026-08-26. No next-minor theme is committed yet.
 
 ## Release policy
 
@@ -189,95 +189,46 @@ Releases and future themes are classified as follows. Status labels appear as `S
 
 | Status | Definition | When |
 |---|---|---|
-| **Committed** | Theme is represented by an active release milestone and work is underway. | v0.2.0 only; exactly one `Committed` theme exists at any time. |
+| **Committed** | Theme is represented by an active release milestone and work is underway. | Zero or one selected theme may be `Committed`; there is none between minor-release selections. |
 | **Directional** | Candidate theme for a future minor release; no version, date, or scope is committed. Scope may be re-assigned or dropped. | All themes in "Future themes" section. |
 | **Backlog** | Capability recognized but not yet part of the acceptance scope of any Committed or Directional theme. | "Ecosystem & Interoperability" section. |
 
-**Status vocabulary does not apply to:** released (v0.1.x) sections, Release policy, v1.0 criteria, or Engineering hygiene sections. The absence of a status label in those sections is not ambiguity — they are simply not classified by this scheme.
+**Status vocabulary does not apply to:** released sections, Release policy, v1.0 criteria, or Engineering hygiene sections. The absence of a status label in those sections is not ambiguity — they are simply not classified by this scheme.
 
-## v0.2.0 — Container Semantic Contract
-
-**Status: Committed**
+## v0.2.0 — Container Semantic Contract (released 2026-08-26)
 
 > Every supported operation on a GWexpy container preserves class, unit, axes,
 > labels, and metadata, or raises explicitly — never a silent downgrade.
 
-Milestone: [v0.2.0](https://github.com/tatsuki-washimi/gwexpy/milestone/3). This
-release is deliberately narrower than earlier drafts of this document: it freezes the
-arithmetic contract that every other container feature will depend on, before any of
-those features are built on top of it. Field I/O and the eager SegmentTable workflow
-move to the next theme (below) so that they are built against an already-frozen
-contract rather than against a data model that is changing underneath them at the
-same time. Individual issues live in the milestone.
+Released from `5c91cf2d1087616c9815d0cbcc082c5f21bb36e9` as annotated tag
+[`v0.2.0`](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.0), on
+[PyPI](https://pypi.org/project/gwexpy/0.2.0/) and
+[conda-forge](https://anaconda.org/conda-forge/gwexpy), and archived at
+[10.5281/zenodo.22106588](https://doi.org/10.5281/zenodo.22106588). Milestone
+[v0.2.0](https://github.com/tatsuki-washimi/gwexpy/milestone/3) closed with no
+open issues. The canonical publication and post-release record is the
+[v0.2.0 closeout ledger](https://github.com/tatsuki-washimi/gwexpy/pull/687#issuecomment-5429503803).
 
-Workstreams:
+Release outcomes:
 
-- **Container arithmetic contract**
-  ([#612](https://github.com/tatsuki-washimi/gwexpy/issues/612) umbrella): a
-  declarative, human-reviewed regression matrix — class x operand x operator x side
-  (left/right) x in-place — that is green against the *current* implementation first,
-  with every currently-unsupported combination registered as an explicit `raises`
-  entry (not a silent gap). The suite asserts its own collected-case count so it
-  cannot regress to zero collected tests silently (the failure mode fixed by #511 in
-  v0.1.13).
-- **SeriesMatrix composition redesign**
-  ([#637](https://github.com/tatsuki-washimi/gwexpy/issues/637)): moving the
-  `ndarray`-subclass data model to composition so that `np.sqrt(matrix)` and
-  `(2 * u.s) * matrix` both return the correct class, values, units, and metadata.
-  The decision-date **method** is fixed, while the calendar date remains TBD:
-  [#675](https://github.com/tatsuki-washimi/gwexpy/issues/675) sets the date at the
-  v0.2.0 milestone mid-point and records it on #637. If the composition prototype is
-  not green against the full test suite by that date, v0.2.0 ships with the current
-  `__array_ufunc__ = None` limitation documented, and the redesign moves to the next
-  theme rather than blocking this release indefinitely.
-- **Pre-refactor performance baseline and regression budget**: representative
-  container operations are benchmarked *before* the #637 redesign lands, and the
-  redesign is required to stay within a documented regression budget. The shared
-  benchmark infrastructure ([#581](https://github.com/tatsuki-washimi/gwexpy/issues/581))
-  is a prerequisite used by multiple themes, not a v0.2.0 milestone member;
-  [#676](https://github.com/tatsuki-washimi/gwexpy/issues/676) owns the v0.2.0-specific
-  baseline and numeric budget used by this release gate.
-- **GWpy-native HDF5 readability** ([#402]): golden tests that write with GWexpy and
-  read back with a GWpy-only process (no `import gwexpy`), for the containers already
-  covered by HDF5 I/O.
-- **API stability labelling** ([#400](https://github.com/tatsuki-washimi/gwexpy/issues/400)):
-  define the stable/provisional/experimental labels used from this release onward,
-  since the contract above needs somewhere to record its own status.
-- **Carried-over reproducibility work**: Monte-Carlo provenance across copy, slice,
-  and serialization ([#508]); the `_t0_ns` precision follow-up ([#513]).
+- **SeriesMatrix B0 / Phase A shipped:** the 480-cell container contract freezes
+  metadata-preserving supported operations and explicit failures for unsupported
+  operations. Direct NumPy ufunc compatibility remains a documented limitation.
+- **SeriesMatrix B1 deferred:** the composition runtime was not adopted. It remains
+  future design work on [#637](https://github.com/tatsuki-washimi/gwexpy/issues/637),
+  with no assigned version or date.
+- **Completed bounded work:** exact GPS-nanosecond state, GWpy-readable HDF5 sidecars
+  and provenance, GWF `parallel=` with `nproc=` as a compatibility alias, coupling v1,
+  and `median-mean` / `median_bias` shipped under the v0.2.0 contract.
+- **Residual work:** #513, #588, and #590 remain open outside the closed milestone.
 
-Definition of done:
-1. The class x operand x operator x side x in-place contract matrix (#612) is green,
-   with unsupported combinations as explicit `raises` entries and an asserted
-   collected-case count.
-2. `np.sqrt(matrix)` and `(2 * u.s) * matrix` both succeed with correct class, values,
-   units, and metadata (#637), or the release ships with a documented
-   `__array_ufunc__ = None` limitation per the fallback above.
-3. HDF5 written by GWexpy for GWpy-derived containers is readable by a GWpy-only
-   process (#402).
-4. The #637 redesign, if it lands, stays within the documented performance
-   regression budget from the pre-refactor baseline.
-
-Non-goals for v0.2.0: Field I/O and the eager SegmentTable workflow (the
-"Experiment data workflow" theme below), Histogram arithmetic (bin-compatibility and
-uncertainty-propagation rules are undesigned; only the current fail-closed behaviour
-is registered in the #612 contract matrix as explicit `raises` entries), coordinate
+Field I/O, the eager SegmentTable workflow, Histogram arithmetic, coordinate
 transforms and reprojection, layered visualization, lazy or aggregating segment
-workflows, mesh-aware field models, and Fisher analysis.
-
-Bounded additions — included only if completed within the release window, otherwise
-deferred with no replacement release and no milestone assignment: median-mean PSD
-averaging ([#409](https://github.com/tatsuki-washimi/gwexpy/issues/409),
-[#410](https://github.com/tatsuki-washimi/gwexpy/issues/410)), the coupling segment
-schema ([#411](https://github.com/tatsuki-washimi/gwexpy/issues/411),
-[#412](https://github.com/tatsuki-washimi/gwexpy/issues/412)), and the I/O
-fail-closed-to-implemented follow-ups for GWF `parallel` ([#588]) and the ndscope
-HDF5 writer ([#590]).
-
-GUI removal ([#645](https://github.com/tatsuki-washimi/gwexpy/issues/645), PR [#488])
-and documentation-tree consolidation
-([#606](https://github.com/tatsuki-washimi/gwexpy/issues/606)) proceed as independent
-repository-level work, not as part of this milestone (see Release policy above).
+workflows, mesh-aware field models, and Fisher analysis were not v0.2.0 scope.
+GUI removal ([#645](https://github.com/tatsuki-washimi/gwexpy/issues/645), PR
+[#488]) and documentation-tree consolidation
+([#606](https://github.com/tatsuki-washimi/gwexpy/issues/606)) remain independent
+repository-level work.
 
 ## Future themes (not scheduled)
 

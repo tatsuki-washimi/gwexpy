@@ -29,15 +29,18 @@ GWexpy を使って、最初の解析図を最短で作成しましょう。
 (ja-quickstart-install-command)=
 ## クイックインストール (Quick Install)
 
-GWexpy は現在開発版で、**PyPI / Conda にはまだ公開されていない**ため、まずは GitHub のソースリポジトリから直接インストールしてください：
+GWexpy v0.2.0 は PyPI と conda-forge で公開されています。このクイックスタートでは `pip` でリリース版をインストールします：
 
-- 目的: 開発版を最短でインストールする
+- 目的: リリース版を最短でインストールする
 - 入力: Python 3.11 以上と `pip`
 - 出力: 最初のサンプルを実行できる GWexpy 環境
 
 ```bash
-pip install git+https://github.com/tatsuki-washimi/gwexpy.git
+pip install gwexpy
 ```
+
+未リリースの開発中の変更を試す場合だけ、GitHub のソースリポジトリから
+`pip install git+https://github.com/tatsuki-washimi/gwexpy.git` を実行してください。
 
 Conda 管理の環境で始めたい場合、NDS2 / FrameLIB などの GW 系バイナリ依存が必要な場合、`pygmt` などの追加ツールを使いたい場合は、後から場当たり的に足さず [インストールガイド](installation.md) の Conda 前提手順から始めてください。
 
@@ -45,6 +48,8 @@ Conda 管理の環境で始めたい場合、NDS2 / FrameLIB などの GW 系バ
 ## 3行で最初の図を出す (3-line Quickstart)
 
 GWexpy の `TimeSeries` は NumPy 配列から直接作成でき、標準的なプロット機能を備えています。
+ここでは描画のためにサポート対象の surface 全体を明示的に登録します。サポート対象の
+public I/O entry point は必要な handler をオンデマンドで登録します。
 
 - 目的: ランダムな時系列から最初のプロットを 1 枚表示する
 - 入力: 4096 サンプルの NumPy 配列、サンプルレート 4096 Hz、開始時刻 `t0=0`
@@ -52,8 +57,10 @@ GWexpy の `TimeSeries` は NumPy 配列から直接作成でき、標準的な�
 
 ```python
 import numpy as np
+import gwexpy
 from gwexpy.timeseries import TimeSeries
 
+gwexpy.register_all()
 ts = TimeSeries(np.random.randn(4096), sample_rate=4096.0, t0=0)
 ts.plot().show()
 ```
@@ -89,8 +96,10 @@ GWexpy を使いこなすための 2 つの重要な柱です。
 
 ```python
 import numpy as np
+import gwexpy
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
+gwexpy.register_all()
 # データの作成
 tsd = TimeSeriesDict({
     "H1:STRAIN": TimeSeries(np.random.randn(4096 * 4), sample_rate=4096, t0=0),
