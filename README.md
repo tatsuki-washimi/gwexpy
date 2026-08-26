@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/">
+  <a href="https://tatsuki-washimi.github.io/gwexpy/docs/">
     <img src="docs/_static/branding/logo.svg" alt="gwexpy logo" width="280">
   </a>
 </p>
@@ -18,16 +18,11 @@ GWexpy is an independent package built on top of GWpy. It is not an official com
 
 ## Install
 
-```bash
-python -m pip install gwexpy
-```
-
-GWexpy is published on PyPI. A conda-forge feedstock is also available, though
-the conda-forge package may lag the latest PyPI release.
+GWexpy v0.2.0 is available from both PyPI and conda-forge.
 
 ```bash
 python -m pip install gwexpy
-# or, once the desired version is available on conda-forge:
+# or
 conda install -c conda-forge gwexpy
 ```
 
@@ -35,20 +30,19 @@ The experimental GUI app is not part of the supported package surface.
 
 For optional extras, external dependencies, and environment-specific setup, use the official installation guides:
 
-- English: <https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/installation.html>
-- 日本語: <https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/installation.html>
+- English: <https://tatsuki-washimi.github.io/gwexpy/docs/tutorials/installation.html>
+- 日本語: <https://tatsuki-washimi.github.io/gwexpy/docs/ja/tutorials/installation.html>
 
 ## Documentation
 
 The full documentation is maintained in the docs site and is the source of truth for usage details.
 
-- Documentation hub: <https://tatsuki-washimi.github.io/gwexpy/docs/web/en/>
-- ドキュメントハブ: <https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/>
-- Quick Start: <https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/quickstart.html>
-- Tutorials and case studies: <https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/tutorials/>
-- File formats and I/O: <https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/io_formats.html>
-- API reference: <https://tatsuki-washimi.github.io/gwexpy/docs/web/en/reference/>
-- Examples gallery: <https://tatsuki-washimi.github.io/gwexpy/docs/web/en/examples/>
+- Documentation hub: <https://tatsuki-washimi.github.io/gwexpy/docs/>
+- ドキュメントハブ: <https://tatsuki-washimi.github.io/gwexpy/docs/ja/>
+- Installation: <https://tatsuki-washimi.github.io/gwexpy/docs/tutorials/installation.html>
+- Tutorials: <https://tatsuki-washimi.github.io/gwexpy/docs/tutorials/>
+- How-to guides: <https://tatsuki-washimi.github.io/gwexpy/docs/how-to/>
+- API reference: <https://tatsuki-washimi.github.io/gwexpy/docs/reference/>
 
 ## Why gwexpy?
 
@@ -90,12 +84,15 @@ asd = matrix.asd(fftlength=2.0)
 print(matrix.shape)
 ```
 
+This example explicitly registers the full supported surface. Supported public I/O
+entry points can register their required handlers on demand.
+
 For fitting, I/O, interoperability, and notebook-based workflows, start from the docs hub or the tutorial index above.
 
 ## More Resources
 
-- Migration notes for GWpy users: <https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/gwexpy_for_gwpy_users_en.html>
-- Citation: <https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/citation.html>
+- Migration notes for GWpy users: <https://tatsuki-washimi.github.io/gwexpy/docs/how-to/migration.html>
+- Citation: <https://tatsuki-washimi.github.io/gwexpy/docs/about/citation.html>
 - Reproducibility notes: [docs/repro/README.md](docs/repro/README.md)
 - Supported I/O matrix: [SUPPORTED_IO_MATRIX.md](SUPPORTED_IO_MATRIX.md)
 

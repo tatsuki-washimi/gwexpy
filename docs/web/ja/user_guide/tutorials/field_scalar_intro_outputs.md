@@ -16,7 +16,7 @@ ScalarField チュートリアルノートブックは、実装済みセクシ�
 1. **ノートブックをダウンロード** - ドキュメントページから
 2. **環境をセットアップ**:
    ```bash
-   pip install git+https://github.com/tatsuki-washimi/gwexpy.git matplotlib numpy astropy
+   pip install gwexpy matplotlib numpy astropy
    ```
 3. **Jupyter でノートブックを実行**:
    ```bash
@@ -148,4 +148,4 @@ jupyter nbconvert --to notebook --execute \
 
 **最終更新**: 2026-02-14
 **状態**: 主要出力は埋め込み済み、3つの可視化メソッドは近日公開
-**優先度**: 高（PyPI リリース前の推奨、必須ではない）
+**優先度**: 高
