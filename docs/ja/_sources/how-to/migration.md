@@ -1,6 +1,37 @@
 # Migrating Between GWexpy Versions
 
-This guide summarizes breaking changes between GWexpy releases and provides migration paths for existing code. It currently covers the changes introduced in `v0.1.1`.
+This guide summarizes breaking changes between GWexpy releases and provides migration paths for existing code.
+
+## v0.2.0
+
+### Lazy registration
+
+A plain `import gwexpy` no longer eagerly registers constructors or I/O
+handlers. Supported public I/O entry points register the handlers they need on
+demand. Call `gwexpy.register_all()` only when an application deliberately
+needs the complete constructor and I/O surface registered up front.
+
+### Removed developer proxy imports
+
+The developer-only imports `gwexpy.utils.shell`, `gwexpy.utils.sphinx`,
+`gwexpy.utils.sphinx.ex2rst`, and `gwexpy.utils.sphinx.zenodo` have been
+removed. Replace shell helpers with `subprocess` or `shutil.which`, and use
+maintained documentation or Zenodo tooling directly.
+
+### SDB format name
+
+The undocumented `sqlite` and `sqlite3` format aliases, including their GUI
+fallback extensions, have been removed. Rename archives to `.sdb` and use
+`format="sdb"` for direct I/O.
+
+### SeriesMatrix arithmetic
+
+The v0.2.0 B0 contract rejects dimensional raw-`ndarray` addition and
+subtraction with `SpectrogramMatrix` atomically with `TypeError`. Do not rely
+on implicit metadata-dropping arithmetic; convert inputs to an explicitly
+supported representation first.
+
+## v0.1.1
 
 ## 1. Lorentzian Peak Parameters
 

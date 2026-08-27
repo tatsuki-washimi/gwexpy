@@ -3,26 +3,35 @@
 This page provides the public roadmap entry point for GWexpy documentation and feature planning.
 It is intended as a lightweight overview rather than a release contract.
 
-*Last updated: 2026-08-15.*
+*Last updated: 2026-08-26.*
 
 ## How to Read This Page
 
-- **Near-term**: areas we expect to improve in upcoming iterations
+- **Released baseline**: the shipped v0.2.0 semantic contract
+- **Directional themes**: areas we may improve in upcoming iterations
 - **Mid-term**: work we want to expose more broadly after the current docs and API cleanup
 - **Long-term**: exploratory directions that are useful but not yet scheduled
 
 The roadmap is public, but priorities can change based on research needs, maintenance cost, and upstream dependencies.
 
-## Near-Term Focus
+## Current Release Baseline
 
-- An explicit behavioural contract for container arithmetic: predictable units,
+- v0.2.0 establishes the container-arithmetic baseline: predictable units,
   metadata propagation, and explicit failures instead of silent type downgrades
+- Exact timing, interoperable persistence, deterministic provenance, and public
+  GWpy compatibility are released in v0.2.0
+
+## Directional Themes
+
+No next minor theme is committed. The following are directional themes, not a
+release promise or a reserved version number.
+
 - Documentation quality improvements across navigation, accessibility, and search
 - Clearer migration guidance for GWpy users
 - Better notebook and tutorial reliability in CI
 - More explicit references between tutorials, guides, and API pages
 
-## Mid-Term Focus
+## Longer-Term Directions
 
 - Direct file reading and writing for field containers (regular-grid scalar, vector,
   and tensor fields), including terrain/elevation and GeoTIFF sources, with units,
@@ -41,8 +50,6 @@ The roadmap is public, but priorities can change based on research needs, mainte
 
 For how these bridges relate to the surrounding ecosystem, and which projects are deliberately
 left out of scope, see [Where GWexpy Sits in the GW Python Ecosystem](ecosystem).
-
-## Long-Term Directions
 
 - Spatial geometry for field data: coordinate frames, detector-aligned rotations, and
   layered map visualization combining terrain, physical fields, and site markers

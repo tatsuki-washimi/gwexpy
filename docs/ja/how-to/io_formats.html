@@ -604,7 +604,7 @@
 <tr class="row-odd"><td><p><strong>D. 計測機器・ロガー</strong></p></td>
 <td><p>ロガーや機材固有の時系列を読む</p></td>
 <td><p><strong>GBD</strong> または <strong>TDMS</strong></p></td>
-<td><p>GBD, TDMS, SDB / SQLite / SQLite3, WAV, MP3, FLAC, OGG, M4A</p></td>
+<td><p>GBD、TDMS、SDB、WAV、MP3、FLAC、OGG、M4A</p></td>
 </tr>
 </tbody>
 </table>
@@ -655,7 +655,7 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / SDB / SQLite / SQLite3 / WAV / Audio</strong></p></td>
+<tr class="row-even"><td><p><strong>GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / SDB / WAV / Audio</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code></p></td>
 <td><p>end-user 向け direct I/O の基本形</p></td>
@@ -993,7 +993,9 @@
 </div>
 <ul class="simple">
 <li><p><strong>CSV</strong> は素朴ですが、共有や確認には依然として有用です。単純な CSV ファイルは metadata-light と考えてください。<code class="docutils literal notranslate"><span class="pre">name</span></code>、<code class="docutils literal notranslate"><span class="pre">channel</span></code>、<code class="docutils literal notranslate"><span class="pre">unit</span></code> まで保持したい場合は HDF5、GWF、Zarr、NetCDF、または manifest 付き collection directory を使います。</p></li>
+<li><p>CSV component column は naive civil time であり、設定した <code class="docutils literal notranslate"><span class="pre">timezone</span></code> を使います。daylight-saving の曖昧な fold と存在しない gap は行番号付きの <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> になり、reader が暗黙に offset を選ぶことはありません。numeric timestamp は absolute、生成された sample-index route は relative であり、どちらも top-level read ごとに 1 回の warning を出して <code class="docutils literal notranslate"><span class="pre">timezone</span></code> を無視します。</p></li>
 <li><p>CSV は数値時刻と設定済み component 列の cadence を resampling 前に検証し、UTC component には連続 GPS instant を使います。不正または不規則な入力と、丸め誤差または spacing が cadence の半分未満ではない絶対 float64 軸を拒否します。<code class="docutils literal notranslate"><span class="pre">resample=</span></code> は要求された channel だけに適用され、10,000,000個の上限は top-level の単一または multi-file read 全体で allocation 前に全 resampled value を数えます。</p></li>
+<li><p>不正な source row には物理行番号が含まれます。有限かつ正の <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> は source cadence を宣言し、single-row input に使われます。指定がなければ従来の 1 秒 fallback が残ります。表現可能な <code class="docutils literal notranslate"><span class="pre">second=60</span></code> row なしで leap second をまたぐ component stream は、missing sample として fail closed します。</p></li>
 <li><p>CSV の数値時刻は従来どおり GPS 秒として解釈します。v0.1.14 では <code class="docutils literal notranslate"><span class="pre">time_scale=</span></code> と <code class="docutils literal notranslate"><span class="pre">time_unit=</span></code> を追加しないため、他の time scale は読み込み前に変換してください。</p></li>
 <li><p><strong>TXT</strong> の direct I/O はより限定的で、単一 series は <code class="docutils literal notranslate"><span class="pre">format=&quot;txt&quot;</span></code> 明示、複数チャネルは collection directory 前提です。</p></li>
 <li><p><strong>Pickle</strong> の可搬性メモは各クラスの reference に残していますが、このページでは Pickle を public direct <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> 形式としては扱いません。</p></li>
@@ -1028,11 +1030,11 @@
 <td><p>National Instruments</p></td>
 <td><p>読み込み専用。<code class="docutils literal notranslate"><span class="pre">nptdms</span></code> が必要</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>SDB / SQLite / SQLite3</strong> (<code class="docutils literal notranslate"><span class="pre">.sdb</span></code>, <code class="docutils literal notranslate"><span class="pre">.sqlite</span></code>, <code class="docutils literal notranslate"><span class="pre">.sqlite3</span></code>)</p></td>
+<tr class="row-even"><td><p><strong>SDB</strong> (<code class="docutils literal notranslate"><span class="pre">.sdb</span></code>)</p></td>
 <td class="text-center"><p>○ / ×</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;sdb&quot;</span> <span class="pre">/</span> <span class="pre">&quot;sqlite&quot;</span> <span class="pre">/</span> <span class="pre">&quot;sqlite3&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;sdb&quot;</span> <span class="pre">/</span> <span class="pre">&quot;sqlite&quot;</span> <span class="pre">/</span> <span class="pre">&quot;sqlite3&quot;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;sdb&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;sdb&quot;)</span></code></p></td>
 <td><p>WeeWX 等の蓄積データ</p></td>
-<td><p>同系統 reader。public direct I/O は読み込み専用</p></td>
+<td><p>読み込み専用。存在する場合、すべての <code class="docutils literal notranslate"><span class="pre">usUnits</span></code> 値は整数の <code class="docutils literal notranslate"><span class="pre">1</span></code> でなければなりません</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>WAV</strong> (<code class="docutils literal notranslate"><span class="pre">.wav</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
@@ -1051,13 +1053,13 @@
 </div>
 <ul class="simple">
 <li><p>目的: ロガー系・音声系 format で注意すべき条件をまとめる</p></li>
-<li><p>入力: ロガーデータ、SQLite 系アーカイブ、音声ファイル</p></li>
+<li><p>入力: logger data、SDB archive、または audio file</p></li>
 <li><p>出力: <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>, または <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code></p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.gbd&quot;</span><span class="p">,</span> <span class="n">timezone</span><span class="o">=</span><span class="s2">&quot;Asia/Tokyo&quot;</span><span class="p">)</span>
-<span class="n">weather</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;archive.sqlite3&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;sqlite3&quot;</span><span class="p">)</span>
+<span class="n">weather</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;archive.sdb&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;sdb&quot;</span><span class="p">)</span>
 <span class="n">audio</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;sound.flac&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;flac&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1065,7 +1067,7 @@
 <li><p><strong>GBD</strong> は <code class="docutils literal notranslate"><span class="pre">timezone</span></code> を省略できません。</p></li>
 <li><p><strong>TDMS</strong> は optional dependency の <code class="docutils literal notranslate"><span class="pre">nptdms</span></code> が必要です。</p></li>
 <li><p><strong>MP3 / FLAC / OGG / M4A</strong> は optional dependency の <code class="docutils literal notranslate"><span class="pre">pydub</span></code> が必要で、MP3/M4A は <code class="docutils literal notranslate"><span class="pre">ffmpeg</span></code> も必要になることが多いです。</p></li>
-<li><p><strong>SDB / SQLite / SQLite3</strong> は同系統の reader です。公開ページでは 3 つとも明示して混乱を避けます。</p></li>
+<li><p><strong>SDB</strong> には canonical な <code class="docutils literal notranslate"><span class="pre">.sdb</span></code> extension と <code class="docutils literal notranslate"><span class="pre">format=&quot;sdb&quot;</span></code> 名を使います。</p></li>
 <li><p><strong>WAV / 圧縮音声形式</strong> は絶対時刻を持たないため、読み込み時は便宜上 <code class="docutils literal notranslate"><span class="pre">t0=0.0</span></code> として扱います。「絶対時刻がある」という意味ではありません。</p></li>
 </ul>
 <p><a id="io-formats-ja-dev"></a></p>
@@ -1101,7 +1103,7 @@
 </section>
 <section id="planned-format-tokens">
 <h3>実装予定のフォーマットトークン<a class="headerlink" href="#planned-format-tokens" title="Link to this heading">#</a></h3>
-<p>以下のフォーマットトークンは寄稿者向けの進捗管理のために列挙されているものであり、公開の読み書きフォーマットとしては文書化されていません。これらを指定して <code class="docutils literal notranslate"><span class="pre">.read()</span></code> を呼び出すと、実装が入るまではエラーになります。</p>
+<p>以下の項目は FrequencySeries 固有の contributor tracking だけを対象にします。上に示した、別途対応する WIN、WIN32、SDB の TimeSeries と TimeSeriesDict route を説明するものではありません。</p>
 <section id="timeseries-stubs">
 <h4>時系列 stub<a class="headerlink" href="#timeseries-stubs" title="Link to this heading">#</a></h4>
 <div class="pst-scrollable-table-container"><table class="table">

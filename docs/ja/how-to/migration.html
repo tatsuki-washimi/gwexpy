@@ -540,7 +540,29 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="migrating-between-gwexpy-versions">
 <h1>GWexpy バージョン間の移行<a class="headerlink" href="#migrating-between-gwexpy-versions" title="Link to this heading">#</a></h1>
-<p>このガイドは GWexpy のリリース間の破壊的変更をまとめ、既存コードの移行手順を示します。現在は <code class="docutils literal notranslate"><span class="pre">v0.1.1</span></code> で導入された変更を扱っています。</p>
+<p>このガイドは、GWexpy のリリース間にある破壊的変更と既存コードの移行方法をまとめます。</p>
+<section id="v0-2-0">
+<h2>v0.2.0<a class="headerlink" href="#v0-2-0" title="Link to this heading">#</a></h2>
+<section id="lazy-registration">
+<h3>遅延登録<a class="headerlink" href="#lazy-registration" title="Link to this heading">#</a></h3>
+<p>通常の <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">gwexpy</span></code> は、constructor と I/O handler を即時登録しなくなりました。対応する公開 I/O entry point は、必要な handler をオンデマンドで登録します。application が constructor と I/O の完全な surface を最初から明示的に登録する必要がある場合だけ、<code class="docutils literal notranslate"><span class="pre">gwexpy.register_all()</span></code> を呼んでください。</p>
+</section>
+<section id="removed-developer-proxy-imports">
+<h3>削除された開発用 proxy import<a class="headerlink" href="#removed-developer-proxy-imports" title="Link to this heading">#</a></h3>
+<p>開発専用の <code class="docutils literal notranslate"><span class="pre">gwexpy.utils.shell</span></code>、<code class="docutils literal notranslate"><span class="pre">gwexpy.utils.sphinx</span></code>、<code class="docutils literal notranslate"><span class="pre">gwexpy.utils.sphinx.ex2rst</span></code>、<code class="docutils literal notranslate"><span class="pre">gwexpy.utils.sphinx.zenodo</span></code> は削除されました。shell helper は <code class="docutils literal notranslate"><span class="pre">subprocess</span></code> または <code class="docutils literal notranslate"><span class="pre">shutil.which</span></code> に置き換え、保守されている documentation または Zenodo tooling を直接使ってください。</p>
+</section>
+<section id="sdb-format-name">
+<h3>SDB の format 名<a class="headerlink" href="#sdb-format-name" title="Link to this heading">#</a></h3>
+<p>文書化されていなかった <code class="docutils literal notranslate"><span class="pre">sqlite</span></code> と <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code> の format alias は、GUI fallback extension を含めて削除されました。archive は <code class="docutils literal notranslate"><span class="pre">.sdb</span></code> に改名し、direct I/O では <code class="docutils literal notranslate"><span class="pre">format=&quot;sdb&quot;</span></code> を使ってください。</p>
+</section>
+<section id="seriesmatrix-arithmetic">
+<h3>SeriesMatrix の算術演算<a class="headerlink" href="#seriesmatrix-arithmetic" title="Link to this heading">#</a></h3>
+<p>v0.2.0 の B0 contract では、次元を持つ raw-<code class="docutils literal notranslate"><span class="pre">ndarray</span></code> と <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> の加算および減算を、原子的に <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> として拒否します。暗黙に metadata を落とす算術演算に依存せず、入力を明示的に対応する表現へ先に変換してください。</p>
+</section>
+</section>
+<section id="v0-1-1">
+<h2>v0.1.1<a class="headerlink" href="#v0-1-1" title="Link to this heading">#</a></h2>
+</section>
 <section id="lorentzian-peak-parameters">
 <h2>1. Lorentzian Peak Parameters<a class="headerlink" href="#lorentzian-peak-parameters" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy.noise.peaks.lorentzian_line()</span></code> の <code class="docutils literal notranslate"><span class="pre">fwhm</span></code>（半値全幅, Full Width at Half Maximum）パラメータは、内部の数学的実装や一般的なスペクトルモデリングの慣習に合わせて <code class="docutils literal notranslate"><span class="pre">gamma</span></code>（半値半幅, Half Width at Half Maximum）に改名されました。</p>
@@ -648,6 +670,14 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v0-2-0">v0.2.0</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lazy-registration">遅延登録</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removed-developer-proxy-imports">削除された開発用 proxy import</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sdb-format-name">SDB の format 名</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seriesmatrix-arithmetic">SeriesMatrix の算術演算</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v0-1-1">v0.1.1</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lorentzian-peak-parameters">1. Lorentzian Peak Parameters</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-migrate">移行方法</a></li>
 </ul>

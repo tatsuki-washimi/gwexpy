@@ -539,7 +539,40 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="migrating-between-gwexpy-versions">
 <h1>Migrating Between GWexpy Versions<a class="headerlink" href="#migrating-between-gwexpy-versions" title="Link to this heading">#</a></h1>
-<p>This guide summarizes breaking changes between GWexpy releases and provides migration paths for existing code. It currently covers the changes introduced in <code class="docutils literal notranslate"><span class="pre">v0.1.1</span></code>.</p>
+<p>This guide summarizes breaking changes between GWexpy releases and provides migration paths for existing code.</p>
+<section id="v0-2-0">
+<h2>v0.2.0<a class="headerlink" href="#v0-2-0" title="Link to this heading">#</a></h2>
+<section id="lazy-registration">
+<h3>Lazy registration<a class="headerlink" href="#lazy-registration" title="Link to this heading">#</a></h3>
+<p>A plain <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">gwexpy</span></code> no longer eagerly registers constructors or I/O
+handlers. Supported public I/O entry points register the handlers they need on
+demand. Call <code class="docutils literal notranslate"><span class="pre">gwexpy.register_all()</span></code> only when an application deliberately
+needs the complete constructor and I/O surface registered up front.</p>
+</section>
+<section id="removed-developer-proxy-imports">
+<h3>Removed developer proxy imports<a class="headerlink" href="#removed-developer-proxy-imports" title="Link to this heading">#</a></h3>
+<p>The developer-only imports <code class="docutils literal notranslate"><span class="pre">gwexpy.utils.shell</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy.utils.sphinx</span></code>,
+<code class="docutils literal notranslate"><span class="pre">gwexpy.utils.sphinx.ex2rst</span></code>, and <code class="docutils literal notranslate"><span class="pre">gwexpy.utils.sphinx.zenodo</span></code> have been
+removed. Replace shell helpers with <code class="docutils literal notranslate"><span class="pre">subprocess</span></code> or <code class="docutils literal notranslate"><span class="pre">shutil.which</span></code>, and use
+maintained documentation or Zenodo tooling directly.</p>
+</section>
+<section id="sdb-format-name">
+<h3>SDB format name<a class="headerlink" href="#sdb-format-name" title="Link to this heading">#</a></h3>
+<p>The undocumented <code class="docutils literal notranslate"><span class="pre">sqlite</span></code> and <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code> format aliases, including their GUI
+fallback extensions, have been removed. Rename archives to <code class="docutils literal notranslate"><span class="pre">.sdb</span></code> and use
+<code class="docutils literal notranslate"><span class="pre">format=&quot;sdb&quot;</span></code> for direct I/O.</p>
+</section>
+<section id="seriesmatrix-arithmetic">
+<h3>SeriesMatrix arithmetic<a class="headerlink" href="#seriesmatrix-arithmetic" title="Link to this heading">#</a></h3>
+<p>The v0.2.0 B0 contract rejects dimensional raw-<code class="docutils literal notranslate"><span class="pre">ndarray</span></code> addition and
+subtraction with <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> atomically with <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>. Do not rely
+on implicit metadata-dropping arithmetic; convert inputs to an explicitly
+supported representation first.</p>
+</section>
+</section>
+<section id="v0-1-1">
+<h2>v0.1.1<a class="headerlink" href="#v0-1-1" title="Link to this heading">#</a></h2>
+</section>
 <section id="lorentzian-peak-parameters">
 <h2>1. Lorentzian Peak Parameters<a class="headerlink" href="#lorentzian-peak-parameters" title="Link to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">fwhm</span></code> (Full Width at Half Maximum) parameter in <code class="docutils literal notranslate"><span class="pre">gwexpy.noise.peaks.lorentzian_line()</span></code> has been renamed to <code class="docutils literal notranslate"><span class="pre">gamma</span></code> (Half Width at Half Maximum) to better align with the underlying mathematical implementation and typical spectral modeling conventions.</p>
@@ -647,6 +680,14 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v0-2-0">v0.2.0</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lazy-registration">Lazy registration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removed-developer-proxy-imports">Removed developer proxy imports</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sdb-format-name">SDB format name</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seriesmatrix-arithmetic">SeriesMatrix arithmetic</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v0-1-1">v0.1.1</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lorentzian-peak-parameters">1. Lorentzian Peak Parameters</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-migrate">How to Migrate</a></li>
 </ul>

@@ -458,28 +458,36 @@
   <section class="tex2jax_ignore mathjax_ignore" id="roadmap">
 <h1>ロードマップ<a class="headerlink" href="#roadmap" title="Link to this heading">#</a></h1>
 <p>このページは、GWexpy のドキュメント整備と機能計画の<strong>公開ロードマップ入口</strong>です。 厳密なリリース契約ではなく、どの方向へ改善を進めているかを共有するための概要として扱ってください。</p>
-<p><em>最終更新: 2026-08-15。</em></p>
+<p><em>最終更新: 2026-08-26。</em></p>
 <section id="how-to-read-this-page">
 <h2>このページの読み方<a class="headerlink" href="#how-to-read-this-page" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><strong>直近</strong>: 近いイテレーションで改善優先度が高い領域</p></li>
+<li><p><strong>リリース済みの基準</strong>：提供済みの v0.2.0 semantic contract</p></li>
+<li><p><strong>方向性のあるテーマ</strong>：今後の iteration で改善する可能性がある領域</p></li>
 <li><p><strong>中期</strong>: 現在の docs / API 整理の後で広げていきたい領域</p></li>
 <li><p><strong>長期</strong>: 有用だが、まだ具体的な時期を固定していない方向性</p></li>
 </ul>
 <p>ロードマップは公開していますが、研究上の要請や保守コスト、上流依存の変化によって優先度は変わりえます。</p>
 </section>
-<section id="near-term-focus">
-<h2>直近の重点項目<a class="headerlink" href="#near-term-focus" title="Link to this heading">#</a></h2>
+<section id="current-release-baseline">
+<h2>現在のリリース基準<a class="headerlink" href="#current-release-baseline" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p>コンテナ演算の明示的な動作契約：予測可能な単位とメタデータ伝播を保証し、暗黙に型を降格せず明示的に失敗する</p></li>
+<li><p>v0.2.0 は、予測可能な unit、metadata の伝播、暗黙の型 downgrade ではなく明示的な failure から成る container arithmetic の基準を確立します。</p></li>
+<li><p>exact timing、相互運用可能な persistence、決定論的な provenance、公開 GWpy compatibility は v0.2.0 で提供済みです。</p></li>
+</ul>
+</section>
+<section id="directional-themes">
+<h2>方向性のあるテーマ<a class="headerlink" href="#directional-themes" title="Link to this heading">#</a></h2>
+<p>次の minor に committed なテーマはありません。以下は方向性のあるテーマであり、リリースの約束や予約済みの version 番号ではありません。</p>
+<ul class="simple">
 <li><p>ナビゲーション、アクセシビリティ、検索性を含むドキュメント品質改善</p></li>
 <li><p>GWpy ユーザー向け移行ガイドの明確化</p></li>
 <li><p>notebook / tutorial の CI 上での安定性向上</p></li>
 <li><p>チュートリアル、ガイド、API リファレンス間の参照強化</p></li>
 </ul>
 </section>
-<section id="mid-term-focus">
-<h2>中期の重点項目<a class="headerlink" href="#mid-term-focus" title="Link to this heading">#</a></h2>
+<section id="longer-term-directions">
+<h2>より長期の方向性<a class="headerlink" href="#longer-term-directions" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>フィールドコンテナ(正規格子のスカラー・ベクトル・テンソル場)のファイル直接読み書き。地形(標高)データや GeoTIFF を含め、単位・軸・メタデータを一貫して保持</p></li>
 <li><p>セグメント単位の解析ワークフローの完結: セグメントの読み込み、選択、エラー・欠損の明示的な処理、保存、再開</p></li>
@@ -491,9 +499,6 @@
 <li><p>数値アルゴリズムや物理前提に関する公開検証ノートの充実</p></li>
 </ul>
 <p>これらの連携が周辺エコシステムとどう関係し、どのプロジェクトを意図的に対象外としているかは<a class="reference internal" href="ecosystem.html"><span class="doc std std-doc">GW Python エコシステムにおける GWexpy の位置付け</span></a>を参照してください。</p>
-</section>
-<section id="long-term-directions">
-<h2>長期的な方向性<a class="headerlink" href="#long-term-directions" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>フィールドデータの空間幾何: 座標フレーム、検出器に整合した回転、地形・物理場・サイトマーカーを重ねる地図可視化</p></li>
 <li><p>メッシュ構造を保持するフィールドモデルと、数値ソルバー出力との相互運用</p></li>
@@ -570,9 +575,9 @@
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-read-this-page">このページの読み方</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#near-term-focus">直近の重点項目</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mid-term-focus">中期の重点項目</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#long-term-directions">長期的な方向性</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#current-release-baseline">現在のリリース基準</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#directional-themes">方向性のあるテーマ</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#longer-term-directions">より長期の方向性</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#public-tracking-sources">公開トラッキング先</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scope-note">補足</a></li>
 </ul>
