@@ -23,11 +23,10 @@ msgstr ""
 #: 8d4094705a80469198fdec7a2fab3afd
 msgid ""
 "Understand what GWexpy validates publicly for notebooks, direct I/O formats, "
-"algorithm audit notes, and repository coverage signals, and where each evidence "
-"source lives."
+"algorithm audit notes, and current CI and documentation-build signals."
 msgstr ""
-"GWexpy が公開で検証している範囲（ノートブック、direct I/O 形式、アルゴリズム監査ノート、リポジトリの coverage "
-"シグナル）と、各根拠の所在を整理します。"
+"GWexpy が公開で検証している範囲（ノートブック、direct I/O 形式、アルゴリズム監査ノート、現在の CI とドキュメント"
+"ビルドのシグナル）と、各根拠の所在を整理します。"
 
 #: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:7
 #: 734ad164bddb453e95e7b04ab0e3edf1
@@ -46,10 +45,10 @@ msgstr "このページでは、`gwexpy` が現在どの種類の検証シグナ
 msgid ""
 "It is not a single \"all features are verified\" claim. Instead, it points you to the"
 " current evidence sources for notebooks, direct I/O formats, algorithm audits, and "
-"repository-level coverage reporting."
+"documentation builds."
 msgstr ""
-"ここで示すのは「すべての機能が一様に検証済み」という主張ではありません。Notebook、direct I/O、アルゴリズム監査、リポジトリ全体の coverage "
-"について、それぞれ別の根拠に辿れるようにするための案内ページです。"
+"ここで示すのは「すべての機能が一様に検証済み」という主張ではありません。Notebook、direct I/O、アルゴリズム監査、"
+"ドキュメントビルドについて、それぞれ別の根拠に辿れるようにするための案内ページです。"
 
 #: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:14
 #: 55d6d2c01c17414e85ec8128493d2e6d
@@ -172,27 +171,6 @@ msgid ""
 "Numerical tolerances, assumptions, and links to audit evidence for selected high-"
 "value algorithms"
 msgstr "数値許容誤差、前提条件、監査証跡へのリンク"
-
-#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
-#: 06e0a15d949d486aab2442248b0b5f8b
-msgid "Repository coverage signal"
-msgstr "リポジトリ全体の coverage"
-
-#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
-#: 35ea5cfdd15e4137a269f0cea7f69db7
-msgid ""
-"[README codecov badge](https://github.com/tatsuki-washimi/gwexpy) and the linked "
-"[Codecov dashboard](https://codecov.io/gh/tatsuki-washimi/gwexpy)"
-msgstr ""
-"[README の codecov バッジ](https://github.com/tatsuki-washimi/gwexpy) と、そのリンク先である "
-"[Codecov ダッシュボード](https://codecov.io/gh/tatsuki-washimi/gwexpy)"
-
-#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
-#: 3d2d494e7d0a4abaac30b6fb5ff0bdd1
-msgid ""
-"Where repository-level line coverage is surfaced publicly, useful as a broad signal "
-"rather than a per-feature proof"
-msgstr "リポジトリ全体の line coverage がどこで公開されているかを示す入口。feature 単位の証明ではなく、全体傾向のシグナルとして使います"
 
 #: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:29
 #: 5826fcbfb0c6443086f9e110a5e36836
@@ -428,32 +406,19 @@ msgid ""
 "failures."
 msgstr "備考が optional dependency や skip 条件を補います。"
 
-#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:79
-#: a7d82c44842f4256a4d5e97a33d29394
-msgid "Coverage Signals and Their Limits"
-msgstr "coverage 表示の読み方と限界"
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:75
+msgid "Interpreting Automated Test Evidence"
+msgstr "自動テストの根拠を読む"
 
-#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:81
-#: 176288af95154ab8a5aee11479313f6a
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:77
 msgid ""
-"`gwexpy` publishes a repository-level coverage signal through "
-"[Codecov](https://codecov.io/gh/tatsuki-washimi/gwexpy), and the repository "
-"[README.md](https://github.com/tatsuki-washimi/gwexpy) surfaces that badge and link "
-"publicly."
-msgstr ""
-"`gwexpy` は [Codecov](https://codecov.io/gh/tatsuki-washimi/gwexpy) によって、リポジトリ全体の "
-"coverage シグナルを公開しています。リポジトリの [README.md](https://github.com/tatsuki-washimi/gwexpy) "
-"にも codecov の状態バッジとリンクがあり、公開された確認入口として辿れます。"
+"The public sources above are the current entry points for automated test and "
+"documentation-build evidence. Read them conservatively:"
+msgstr "上記の公開資料は、自動テストとドキュメントビルドの根拠を確認するための現在の入口です。慎重に読み取ってください。"
 
-#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:83
-#: f24ffbad1cd5425d92ba6070f68e6078
-msgid "Read that signal conservatively:"
-msgstr "ただし、この値は慎重に読む必要があります。"
-
-#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:85
-#: 10a3e7c798ad4f8abc45537d64ab9f4c
-msgid "it is useful for understanding overall automated test health,"
-msgstr "自動テスト全体の健康度をざっくり把握するには有用です。"
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:80
+msgid "they help identify which workflow or test suite covers a specific public claim,"
+msgstr "特定の公開上の主張を、どの workflow またはテストスイートが扱うかを確認できます。"
 
 #: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:86
 #: b77ab4c5fb054dc4b31c31fa86ce025f
@@ -503,9 +468,9 @@ msgstr "[検証済みアルゴリズム](validated_algorithms.md) に書かれ�
 #: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:95
 #: 9b96985aa0fa4e5bb9543ccfb04f8606
 msgid ""
-"It does **not** turn repository-wide line coverage into a substitute for per-feature "
+"It does **not** turn any aggregate test outcome into a substitute for per-feature "
 "scientific validation."
-msgstr "repository-wide の line coverage を、そのまま feature 単位の科学的妥当性の証明に読み替えるべきだとは主張しません。"
+msgstr "集計されたテスト結果を、そのまま feature 単位の科学的妥当性の証明に読み替えるべきだとは主張しません。"
 
 #: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:97
 #: 296f6183e3434c5ca8ad89e477c84406
@@ -594,4 +559,3 @@ msgstr "[トラブルシューティング](../how-to/troubleshooting.md) で、
 
 #~ msgid "Nightly CI gates"
 #~ msgstr "Nightly CI ゲート"
-

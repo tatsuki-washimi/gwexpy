@@ -1,0 +1,19 @@
+schema_version: 1
+task: "README status badge cleanup"
+date: "2026-08-27"
+skills:
+  - manage_docs
+scope:
+  - "Replace the README docs status badge with the deployed Docs Pages workflow."
+  - "Remove the stale Codecov public-coverage claim from canonical documentation."
+  - "No runtime, public API, or physics/data-model behavior changes."
+verification:
+  - command: "msgfmt --check -o /dev/null docs_redesign/locales/ja/LC_MESSAGES/explanation/verification_and_quality.po"
+    expected: "Passes; only the catalog's pre-existing default-header warnings are emitted."
+  - command: "git diff --check"
+    expected: "No whitespace errors."
+  - command: "curl and gh run checks for README targets and Docs Pages"
+    expected: "Canonical documentation URLs return HTTP 200 and Docs Pages reports passing."
+physics_review:
+  required: false
+  rationale: "Documentation-only status and link maintenance."

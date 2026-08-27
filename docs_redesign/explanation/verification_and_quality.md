@@ -1,14 +1,14 @@
 ---
 myst:
   html_meta:
-    description: "Understand what GWexpy validates publicly for notebooks, direct I/O formats, algorithm audit notes, and repository coverage signals, and where each evidence source lives."
+    description: "Understand what GWexpy validates publicly for notebooks, direct I/O formats, algorithm audit notes, and current CI and documentation-build signals."
 ---
 
 # Verification and Quality Signals
 
 This page explains what kinds of public verification signals `gwexpy` exposes today, where those signals come from, and how to interpret their limits.
 
-It is not a single "all features are verified" claim. Instead, it points you to the current evidence sources for notebooks, direct I/O formats, algorithm audits, and repository-level coverage reporting.
+It is not a single "all features are verified" claim. Instead, it points you to the current evidence sources for notebooks, direct I/O formats, algorithm audits, and documentation builds.
 
 :::{important}
 **Read this page as a transparency map, not as a blanket guarantee**
@@ -24,7 +24,6 @@ Different parts of the project are verified in different ways. The extended veri
 | Extended verification gates | [Extended verification workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml) | Which checks the on-demand extended verification workflow covers: import smoke tests on Linux/macOS/Windows plus the `io-network-backend`, `docs-notebook`, and `io-zarr` gates driven by `scripts/ci/run_gate.py` |
 | Direct I/O formats | [SUPPORTED_IO_MATRIX](https://github.com/tatsuki-washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md) | Which public format families are tied to which tests and which backends are optional |
 | Algorithm audit trail | [Validated Algorithms](validated_algorithms.md) | Numerical tolerances, assumptions, and links to audit evidence for selected high-value algorithms |
-| Repository coverage signal | [README codecov badge](https://github.com/tatsuki-washimi/gwexpy) and the linked [Codecov dashboard](https://codecov.io/gh/tatsuki-washimi/gwexpy) | Where repository-level line coverage is surfaced publicly, useful as a broad signal rather than a per-feature proof |
 
 ## Notebook Validation Policy
 
@@ -76,15 +75,14 @@ The matrix is especially useful together with the [File I/O Supported Formats Gu
 - the matrix shows which tests are intended to back that path,
 - and the notes clarify when optional dependencies can cause skips instead of hard failures.
 
-## Coverage Signals and Their Limits
+## Interpreting Automated Test Evidence
 
-`gwexpy` publishes a repository-level coverage signal through [Codecov](https://codecov.io/gh/tatsuki-washimi/gwexpy), and the repository [README.md](https://github.com/tatsuki-washimi/gwexpy) surfaces that badge and link publicly.
+The public sources above are the current entry points for automated test and
+documentation-build evidence. Read them conservatively:
 
-Read that signal conservatively:
-
-- it is useful for understanding overall automated test health,
-- it does **not** prove that every algorithm branch, notebook, or optional-backend path is equally exercised,
-- and it should be read alongside page-specific evidence such as the notebook policy, I/O matrix, and audit notes.
+- they help identify which workflow or test suite covers a specific public claim,
+- they do **not** prove that every algorithm branch, notebook, or optional-backend path is equally exercised,
+- and they should be read alongside page-specific evidence such as the notebook policy, I/O matrix, and audit notes.
 
 ## What This Page Does Not Claim
 
@@ -92,7 +90,7 @@ Read that signal conservatively:
 - It does **not** claim that every docstring example or sample code block is executed in every PR, nightly, and release workflow.
 - It does **not** claim that every optional dependency is present in every test environment.
 - It does **not** replace the algorithm-specific assumptions and tolerances documented on [Validated Algorithms](validated_algorithms.md).
-- It does **not** turn repository-wide line coverage into a substitute for per-feature scientific validation.
+- It does **not** turn any aggregate test outcome into a substitute for per-feature scientific validation.
 
 ## Related Pages
 
