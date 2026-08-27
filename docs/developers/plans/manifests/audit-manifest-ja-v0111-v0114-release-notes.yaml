@@ -1,0 +1,21 @@
+schema_version: 1
+task: "Japanese v0.1.11–v0.1.14 release-note synchronization"
+date: "2026-08-27"
+skills:
+  - manage_docs
+  - docs-ja
+scope:
+  - "Translate the v0.1.11 through v0.1.14 changelog prose and table cells in the canonical Japanese documentation."
+  - "Keep the English CHANGELOG.md, v0.2.0 release note, legacy documentation, and runtime behavior unchanged."
+verification:
+  - command: "msgfmt --check -o /dev/null docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"
+    expected: "Japanese gettext catalog is syntactically valid."
+  - command: "conda run -n gwexpy pytest tests/docs/test_docs_redesign_release_facts.py -q"
+    expected: "All changelog release-facts tests pass."
+  - command: "sphinx-build -j 4 -b html -D nb_execution_mode=off -D language=ja docs_redesign /tmp/gwexpy-ja-v0111-v0114-html-ja"
+    expected: "Canonical Japanese HTML build succeeds."
+  - command: "git diff --check"
+    expected: "No whitespace errors."
+physics_review:
+  required: false
+  rationale: "Documentation localization only; no runtime, API, or data-model change."
