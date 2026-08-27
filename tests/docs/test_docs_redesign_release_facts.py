@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -10,6 +11,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 RELEASE_VERSION = "0.2.0"
 RELEASE_DATE = "2026-08-26"
 RELEASE_HISTORY_ENTRY = f"[{RELEASE_VERSION}] - {RELEASE_DATE}"
+RELEASE_SHA = "5c91cf2d1087616c9815d0cbcc082c5f21bb36e9"
+ACTIVITY_CSV_SHA256 = "8411c5acff7beea282d5f24a105ef0573012a923241d83dd4208a0af2fbf63b0"
 RELEASE_SCOPE_HISTORY = """\
 ### Update history
 
@@ -20,6 +23,51 @@ flowchart LR
     median_mean --> source[\"v0.2.0 release-source metadata\"]
 ```
 """
+
+
+def test_released_changelog_publishes_the_v020_activity_snapshot() -> None:
+    """Keep the public changelog tied to the immutable v0.2.0 release."""
+    changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    source = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
+        encoding="utf-8"
+    )
+    activity_svg = (
+        REPO_ROOT / "docs_redesign/_static/images/development-activity-v0.2.0.svg"
+    )
+    activity_csv = (
+        REPO_ROOT
+        / "docs_redesign/_static/downloads/development-activity-v0.2.0-weekly.csv"
+    )
+
+    assert not re.search(r"^## \[Unreleased\]\s*$", changelog, re.MULTILINE)
+    assert "[Unreleased]:" not in changelog
+    assert activity_svg.is_file()
+    assert activity_csv.is_file()
+    assert hashlib.sha256(activity_csv.read_bytes()).hexdigest() == ACTIVITY_CSV_SHA256
+
+    svg_text = activity_svg.read_text(encoding="utf-8")
+    assert f"Target ref: v{RELEASE_VERSION}; resolved SHA: {RELEASE_SHA}" in svg_text
+    assert f"canonical CSV SHA-256: {ACTIVITY_CSV_SHA256}" in svg_text
+    assert "/_static/images/development-activity-v0.2.0.svg" in source
+    assert "/_static/downloads/development-activity-v0.2.0-weekly.csv" in source
+
+
+def test_v020_activity_snapshot_has_japanese_public_copy() -> None:
+    """Keep the changelog figure readable on the Japanese docs site."""
+    catalogue_path = (
+        REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"
+    )
+    with catalogue_path.open(encoding="utf-8") as stream:
+        catalogue = pofile.read_po(stream, locale="ja")
+
+    expected_translations = {
+        "Weekly development activity": "週次開発活動",
+        "[Download the weekly CSV data](/_static/downloads/development-activity-v0.2.0-weekly.csv)": "[週次 CSV データをダウンロード](/_static/downloads/development-activity-v0.2.0-weekly.csv)",
+    }
+    for source, translation in expected_translations.items():
+        message = catalogue.get(source)
+        assert message is not None
+        assert message.string == translation
 
 
 def test_current_release_facts_match_the_approved_values() -> None:

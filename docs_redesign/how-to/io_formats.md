@@ -50,7 +50,7 @@ For data sharing and long-term storage, prefer structured formats such as **HDF5
 | **A. GW Standards** | You want standard GW storage, exchange, or acquisition paths | **HDF5** | GWF, HDF5, hdf.ndscope, xml.diaggui, NDS2, GWOSC |
 | **B. Seismic and Geophysical Observation** | You need to read existing seismic or EM observation data | **mseed** | mseed, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5 (MTH5 standalone is status-only here) |
 | **C. General Analysis and Exchange** | You need general-purpose storage or external analysis exchange | **CSV / TXT** or **Zarr** | CSV / TXT, NetCDF4, Zarr, ROOT |
-| **D. Loggers and Instrument Formats** | You are working with device- or logger-specific time series | **GBD** or **TDMS** | GBD, TDMS, SDB / SQLite / SQLite3, WAV, MP3, FLAC, OGG, M4A |
+| **D. Loggers and Instrument Formats** | You are working with device- or logger-specific time series | **GBD** or **TDMS** | GBD, TDMS, SDB, WAV, MP3, FLAC, OGG, M4A |
 
 > **Note**: `NDS2` and `GWOSC` are not file formats. They are included in **A. GW Standards** because they are common GW data entry points. In the tables below, they are labeled as `network path`.
 
@@ -90,7 +90,7 @@ If the main question is whether a format is for a single channel or multiple cha
 
 | Format / Family | Single | Multi | Other classes |
 |---|---|---|---|
-| **GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / SDB / SQLite / SQLite3 / WAV / Audio** | `TimeSeries` | `TimeSeriesDict` | Baseline end-user direct I/O pattern |
+| **GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / SDB / WAV / Audio** | `TimeSeries` | `TimeSeriesDict` | Baseline end-user direct I/O pattern |
 | **CSV** | `TimeSeries` | `TimeSeriesDict` | `TimeSeriesDict` also supports manifest-backed collection directories |
 | **TXT** | `TimeSeries` | `TimeSeriesDict` | Multi-channel direct I/O uses collection directories |
 | **nc / Zarr / GBD / TDMS** | `TimeSeries` | `TimeSeriesDict`, `TimeSeriesMatrix` | Includes matrix-style direct I/O |
@@ -223,15 +223,22 @@ events = EventTable.read("events.root")
 ```
 
 - **CSV** remains useful for lightweight exchange and inspection. Treat simple CSV files as metadata-light: use HDF5, GWF, Zarr, NetCDF, or a manifest-backed collection directory when name, channel, and unit metadata must be preserved.
-- CSV validates numeric and configured component-column cadence before
-  resampling, using continuous GPS instants for UTC components. It rejects
-  malformed or irregular input and any absolute float64 axis whose rounding
-  error or spacing is not strictly below half the cadence. `resample=` applies
-  only to requested channels; the 10,000,000-value cap covers all resampled
-  values across a top-level single- or multi-file read before allocation.
-- Numeric CSV timestamps retain the legacy GPS-second interpretation. v0.1.14
-  does not add `time_scale=` or `time_unit=`; convert other scales before
-  reading.
+- CSV component columns are naive civil time and use the configured
+  `timezone`. Ambiguous daylight-saving folds and nonexistent gaps raise a
+  line-numbered `ValueError`; the reader never chooses an offset silently.
+  Numeric timestamps are absolute and the generated sample-index route remains
+  relative; both ignore `timezone` with one warning per top-level read.
+- CSV validates numeric and configured component-column source cadence before
+  any requested resampling. Duplicate, backward, missing, or overlarge gaps
+  raise `ValueError`, and malformed source rows include their physical line
+  number. Component instants are compared on the continuous GPS timeline, so a
+  one-second UTC component stream that crosses a leap second without a
+  representable `second=60` row fails closed as a missing sample. A finite,
+  positive `sample_rate` declares source cadence and is used for single-row
+  input; without it, the legacy one-second fallback remains. `resample=` must
+  also be finite and positive and declares only the target cadence. The
+  10,000,000-value cap counts requested-channel resampled output across the
+  complete top-level single- or multi-file read before allocation.
 - **TXT** direct I/O is more limited: single-series paths are explicit `format="txt"`, and multi-channel paths use collection directories.
 - **Pickle** portability notes still exist in class references, but Pickle is not a published direct `.read()` / `.write()` format on this page.
 - **NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**. Field/xarray bridges belong to interop. For NetCDF, `netcdf4` is a legacy format token alias for `nc`; `.netcdf4` is not a documented auto-identified extension alias.
@@ -249,26 +256,26 @@ Time handling, units, and audio `t0` semantics are the main points to watch.
 |---|:---:|---|---|---|
 | **GBD** (`.gbd`) | ○ / × | `TimeSeries.read(..., format="gbd", timezone=...)`, `TimeSeriesDict.read(..., format="gbd", timezone=...)`, `TimeSeriesMatrix.read(..., format="gbd", timezone=...)` | GRAPHTEC loggers | `timezone` is required for published reads |
 | **TDMS** (`.tdms`) | ○ / × | `TimeSeries.read(..., format="tdms")`, `TimeSeriesDict.read(..., format="tdms")`, `TimeSeriesMatrix.read(..., format="tdms")` | National Instruments data | Read-only; requires `nptdms` |
-| **SDB / SQLite / SQLite3** (`.sdb`, `.sqlite`, `.sqlite3`) | ○ / × | `TimeSeries.read(..., format="sdb" / "sqlite" / "sqlite3")`, `TimeSeriesDict.read(..., format="sdb" / "sqlite" / "sqlite3")` | WeeWX and similar archives | Same reader family; public direct I/O is read-only |
+| **SDB** (`.sdb`) | ○ / × | `TimeSeries.read(..., format="sdb")`, `TimeSeriesDict.read(..., format="sdb")` | WeeWX and similar archives | Read-only; if present, every `usUnits` value must be integer `1` |
 | **WAV** (`.wav`) | ○ / ○ | `TimeSeries.read(..., format="wav")`, `TimeSeriesDict.read(..., format="wav")`, `TimeSeries.write(..., format="wav")` | Uncompressed audio | Public write is single-series only; does not preserve absolute time |
 | **MP3 / FLAC / OGG / M4A** | ○ / ○ | `TimeSeries.read(..., format="mp3" / "flac" / "ogg" / "m4a")`, `TimeSeriesDict.read(..., format=...)`, `.write(...)` | Compressed audio | Uses `pydub`; some formats also need `ffmpeg` |
 
 - Purpose: highlight logger-specific and audio-specific direct-I/O requirements
-- Input: logger data, SQLite-family archives, or audio files
+- Input: logger data, SDB archives, or audio files
 - Output: `TimeSeries`, `TimeSeriesDict`, or `TimeSeriesMatrix`
 
 ```python
 from gwexpy.timeseries.collections import TimeSeriesDict
 
 logger = TimeSeriesDict.read("data.gbd", timezone="Asia/Tokyo")
-weather = TimeSeriesDict.read("archive.sqlite3", format="sqlite3")
+weather = TimeSeriesDict.read("archive.sdb", format="sdb")
 audio = TimeSeriesDict.read("sound.flac", format="flac")
 ```
 
 - **GBD** requires `timezone`.
 - **TDMS** requires the optional `nptdms` dependency.
 - **MP3 / FLAC / OGG / M4A** require the optional `pydub` dependency. MP3/M4A commonly also need `ffmpeg`.
-- **SDB / SQLite / SQLite3** should all be named explicitly in the public page so users do not need to infer aliases.
+- **SDB** uses the canonical `.sdb` extension and `format="sdb"` name.
 - **WAV / compressed-audio formats** do not preserve absolute timestamps. Reading with `t0=0.0` is a convenience convention, not a claim that the source had an absolute epoch.
 
 <a id="io-formats-en-dev"></a>
@@ -288,7 +295,9 @@ It tracks implementation status for contributors: formats that work but are not 
 
 ### Planned Format Tokens
 
-The format tokens below are listed for contributor tracking and are not documented as public read/write formats. Calling `.read()` with one of them raises an error until an implementation lands.
+The entries below are FrequencySeries-specific contributor tracking only. They
+do not describe the separately supported TimeSeries and TimeSeriesDict routes
+for WIN, WIN32, or SDB shown above.
 
 #### TimeSeries stubs
 

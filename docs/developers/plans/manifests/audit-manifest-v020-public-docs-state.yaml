@@ -1,0 +1,45 @@
+title: "Synchronize public documentation with the v0.2.0 release state"
+branch: docs/v020-public-state
+date: 2026-08-27
+agent: Codex
+target_release: "post-release v0.2.0 documentation"
+skills:
+  - manage_docs
+  - docs-ja
+  - gwexpy_conda_jobs
+  - superpowers:test-driven-development
+  - superpowers:using-git-worktrees
+scope:
+  included:
+    - "Removed the empty current Unreleased section from the canonical changelog."
+    - "Published a static weekly development-activity SVG and CSV generated from the immutable v0.2.0 tag."
+    - "Updated canonical I/O, migration, roadmap, and Japanese gettext documentation for v0.2.0."
+  excluded:
+    - "Legacy docs/web content remains unchanged because it is not deployed by the current Docs Pages workflow."
+    - "No runtime API, release tag, package artifact, or release metadata changes."
+validation:
+  red:
+    - cmd: "rtk conda run -n gwexpy pytest tests/docs/test_docs_redesign_release_facts.py -q"
+      result: "1 failed because CHANGELOG.md still contained the empty Unreleased heading."
+  completed:
+    - cmd: "rtk conda run -n gwexpy pytest tests/docs/test_docs_redesign_release_facts.py tests/test_generate_development_activity.py -q"
+      result: "40 passed."
+    - cmd: "rtk conda run -n gwexpy ruff check scripts/generate_development_activity.py tests/test_generate_development_activity.py tests/docs/test_docs_redesign_release_facts.py"
+      result: "Passed."
+    - cmd: "rtk conda run -n gwexpy ruff format --check scripts/generate_development_activity.py tests/test_generate_development_activity.py tests/docs/test_docs_redesign_release_facts.py"
+      result: "Passed."
+    - cmd: "rtk conda run -n gwexpy mypy scripts/generate_development_activity.py"
+      result: "Passed."
+    - cmd: "rtk sphinx-build canonical EN/JA HTML with notebook execution disabled"
+      result: "Passed; rendered changelog contains the SVG, CSV link, and Japanese copy."
+    - cmd: "rtk sphinx-build legacy HTML with -W --keep-going and notebook execution disabled"
+      result: "Passed."
+review:
+  human_review_required: false
+  physics_review_required: false
+  rationale: "Documentation and deterministic history-reporting changes only."
+publication:
+  target_ref: v0.2.0
+  target_sha: 5c91cf2d1087616c9815d0cbcc082c5f21bb36e9
+  non_merge_commit_count: 1656
+  weekly_csv_sha256: 8411c5acff7beea282d5f24a105ef0573012a923241d83dd4208a0af2fbf63b0

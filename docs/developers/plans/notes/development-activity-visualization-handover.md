@@ -48,22 +48,20 @@ vertical.  The long contextual label `v0.1.3 · GWADW 2026` is horizontal and
 positioned directly above the vertical labels; the legend sits above it to
 avoid a large empty gap.
 
-## Deferred publication work
+## Published v0.2.0 record
 
-Do not put the preview into public documentation yet.  After all of the
-following are public for `v0.1.14`—the Git tag, GitHub Release, and PyPI
-package—regenerate against the latest public stable tag and then:
+The public changelog now contains a static SVG and weekly CSV generated against
+the latest public stable tag, `v0.2.0`
+(`5c91cf2d1087616c9815d0cbcc082c5f21bb36e9`). It contains 1,656 non-merge
+commits and the weekly CSV SHA-256 is
+`8411c5acff7beea282d5f24a105ef0573012a923241d83dd4208a0af2fbf63b0`.
 
-1. Track the generated English SVG and weekly CSV as static documentation
-   assets.
-2. Add the figure, CSV download link, caption, and translated alt text before
-   the changelog body in `docs_redesign/about/changelog.md`.
-3. Update the Japanese gettext catalogue and build the English and Japanese
-   documentation with warnings treated as errors.
-
-Do not dynamically aggregate Git history during a Sphinx build.  The commit
-SHA, target tag, time range, and weekly CSV SHA-256 are embedded in the SVG so
-the checked-in visualisation remains auditable.
+The SVG and CSV are tracked under `docs_redesign/_static/`; the figure,
+download link, caption, and Japanese gettext copy are in
+`docs_redesign/about/changelog.md` and its catalog. Do not dynamically
+aggregate Git history during a Sphinx build. The commit SHA, target tag, time
+range, and weekly CSV SHA-256 are embedded in the SVG so the checked-in
+visualisation remains auditable.
 
 ## Verified local checks
 

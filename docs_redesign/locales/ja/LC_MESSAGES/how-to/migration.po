@@ -19,6 +19,46 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
+#: docs_redesign/how-to/migration.md
+msgid "This guide summarizes breaking changes between GWexpy releases and provides migration paths for existing code."
+msgstr "このガイドは、GWexpy のリリース間にある破壊的変更と既存コードの移行方法をまとめます。"
+
+#: docs_redesign/how-to/migration.md
+msgid "v0.2.0"
+msgstr "v0.2.0"
+
+#: docs_redesign/how-to/migration.md
+msgid "Lazy registration"
+msgstr "遅延登録"
+
+#: docs_redesign/how-to/migration.md
+msgid "A plain `import gwexpy` no longer eagerly registers constructors or I/O handlers. Supported public I/O entry points register the handlers they need on demand. Call `gwexpy.register_all()` only when an application deliberately needs the complete constructor and I/O surface registered up front."
+msgstr "通常の `import gwexpy` は、constructor と I/O handler を即時登録しなくなりました。対応する公開 I/O entry point は、必要な handler をオンデマンドで登録します。application が constructor と I/O の完全な surface を最初から明示的に登録する必要がある場合だけ、`gwexpy.register_all()` を呼んでください。"
+
+#: docs_redesign/how-to/migration.md
+msgid "Removed developer proxy imports"
+msgstr "削除された開発用 proxy import"
+
+#: docs_redesign/how-to/migration.md
+msgid "The developer-only imports `gwexpy.utils.shell`, `gwexpy.utils.sphinx`, `gwexpy.utils.sphinx.ex2rst`, and `gwexpy.utils.sphinx.zenodo` have been removed. Replace shell helpers with `subprocess` or `shutil.which`, and use maintained documentation or Zenodo tooling directly."
+msgstr "開発専用の `gwexpy.utils.shell`、`gwexpy.utils.sphinx`、`gwexpy.utils.sphinx.ex2rst`、`gwexpy.utils.sphinx.zenodo` は削除されました。shell helper は `subprocess` または `shutil.which` に置き換え、保守されている documentation または Zenodo tooling を直接使ってください。"
+
+#: docs_redesign/how-to/migration.md
+msgid "SDB format name"
+msgstr "SDB の format 名"
+
+#: docs_redesign/how-to/migration.md
+msgid "The undocumented `sqlite` and `sqlite3` format aliases, including their GUI fallback extensions, have been removed. Rename archives to `.sdb` and use `format=\"sdb\"` for direct I/O."
+msgstr "文書化されていなかった `sqlite` と `sqlite3` の format alias は、GUI fallback extension を含めて削除されました。archive は `.sdb` に改名し、direct I/O では `format=\"sdb\"` を使ってください。"
+
+#: docs_redesign/how-to/migration.md
+msgid "SeriesMatrix arithmetic"
+msgstr "SeriesMatrix の算術演算"
+
+#: docs_redesign/how-to/migration.md
+msgid "The v0.2.0 B0 contract rejects dimensional raw-`ndarray` addition and subtraction with `SpectrogramMatrix` atomically with `TypeError`. Do not rely on implicit metadata-dropping arithmetic; convert inputs to an explicitly supported representation first."
+msgstr "v0.2.0 の B0 contract では、次元を持つ raw-`ndarray` と `SpectrogramMatrix` の加算および減算を、原子的に `TypeError` として拒否します。暗黙に metadata を落とす算術演算に依存せず、入力を明示的に対応する表現へ先に変換してください。"
+
 #: ../../how-to/migration.md:1 03f95a69f3a348b9aac98de10477685d
 msgid "Migrating Between GWexpy Versions"
 msgstr "GWexpy バージョン間の移行"
