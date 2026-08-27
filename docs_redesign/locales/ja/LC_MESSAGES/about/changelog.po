@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-18 16:15+0900\n"
-"PO-Revision-Date: 2026-07-18 00:00+0000\n"
+"POT-Creation-Date: 2026-08-27 00:00+0000\n"
+"PO-Revision-Date: 2026-08-27 00:00+0000\n"
 "Last-Translator: GWexpy Developers\n"
 "Language: ja\n"
 "Language-Team: Japanese\n"
@@ -41,6 +41,58 @@ msgstr "未リリース"
 #: CHANGELOG.md
 msgid "[0.2.0] - 2026-08-26"
 msgstr "[0.2.0] - 2026-08-26"
+
+#: CHANGELOG.md:17
+msgid "This minor release establishes the v0.2.0 semantic-contract baseline for exact timing, interoperable persistence, deterministic provenance, and public GWpy compatibility."
+msgstr "このマイナーリリースでは、正確な時刻、相互運用可能な永続化、決定論的な来歴、および公開 GWpy 互換性のための v0.2.0 セマンティック契約ベースラインを確立しました。"
+
+#: CHANGELOG.md:23
+msgid "**time (exact GPS state)**: `TimeSeries` and related supported paths retain keyword-only GPS-nanosecond origins through copies, slices, pickles, MNE, and HDF5 sidecars.  Exact state is kept separately from binary64 time coordinates where required."
+msgstr "**time（正確な GPS 状態）**：`TimeSeries` と関連するサポート対象操作は、キーワード専用引数として指定された GPS ナノ秒の起点を、コピー、スライス、pickle、MNE、および HDF5 サイドカーを通じて保持します。必要な場合、正確な状態は binary64 の時刻座標とは別に保持されます。"
+
+#: CHANGELOG.md:27
+msgid "**HDF5 and provenance**: native HDF5 sidecars preserve exact epoch state, metadata, and structured provenance without changing the GWpy-readable core payload.  Provenance-aware pathname transactions now coordinate local POSIX processes with bounded advisory locking; append and caller-owned open containers preserve distinct datasets, while pathname replacement remains serialized last-writer-wins."
+msgstr "**HDF5 と来歴**：ネイティブ HDF5 サイドカーは、GWpy で読めるコアペイロードを変更せずに、正確な epoch 状態、メタデータ、および構造化された来歴を保存します。来歴対応のパス名トランザクションは、上限付き助言ロックによりローカル POSIX プロセスを調整します。append 操作と呼び出し元が開いたコンテナは別個の dataset を保持し、パス名の置換は直列化され、最後に書き込んだ側を採用します。"
+
+#: CHANGELOG.md:33
+msgid "**GWF reads**: `TimeSeries`, `TimeSeriesDict`, `StateVector`, and `StateVectorDict` support spawn-safe `parallel=` reads.  `nproc=` remains a compatibility alias.  Multi-worker reads accept only single local frame paths and fail before I/O for caches, URI/composite spellings, or unsupported nested execution."
+msgstr "**GWF 読み取り**：`TimeSeries`、`TimeSeriesDict`、`StateVector`、および `StateVectorDict` は、spawn 安全な `parallel=` 読み取りをサポートします。`nproc=` は互換性エイリアスとして残ります。複数 worker の読み取りは単一のローカル frame path だけを受け付け、キャッシュ、URI/composite 表記、または未サポートの入れ子実行では I/O 前に失敗します。"
+
+#: CHANGELOG.md:38
+msgid "**coupling**: the public v1 coupling-segment schema, pandas/Astropy adapters, JSON envelopes, canonical coordinate units, and exact finite-precision grid checks are available.  `significance` remains outside the v1 schema."
+msgstr "**coupling**：公開 v1 の coupling-segment schema、pandas/Astropy adapter、JSON エンベロープ、正準座標単位、および有限精度の格子に対する正確な検査を利用できます。`significance` は v1 schema の対象外です。"
+
+#: CHANGELOG.md:42
+msgid "**spectral estimation**: `TimeSeries.psd()` and `TimeSeries.asd()` accept `method=\"median-mean\"`; public `median_bias(n)` exposes the FINDCHIRP-compatible finite-sample correction.  PSD/ASD now guarantee GWexpy preservation of `name`, `channel`, and `epoch` across supported backends, while the backend remains authoritative for numerical values, units, and the frequency axis."
+msgstr "**スペクトル推定**：`TimeSeries.psd()` と `TimeSeries.asd()` は `method=\"median-mean\"` を受け付けます。公開 `median_bias(n)` は FINDCHIRP 互換の有限標本補正を提供します。PSD/ASD はサポート対象 backend 全体で `name`、`channel`、および `epoch` を GWexpy が保持することを保証します。一方、数値、unit、および周波数軸については backend が引き続き決定権を持ちます。"
+
+#: CHANGELOG.md:51
+msgid "**bootstrap and I/O**: a plain `import gwexpy` no longer eagerly registers constructors or I/O.  Call `gwexpy.register_all(include_io=False)` for constructors or `gwexpy.register_all()` for constructors plus I/O; supported public I/O entry points register handlers on demand."
+msgstr "**bootstrap と I/O**：単純な `import gwexpy` では、コンストラクタや I/O が即時には登録されなくなりました。コンストラクタの登録には `gwexpy.register_all(include_io=False)` を、コンストラクタと I/O の両方の登録には `gwexpy.register_all()` を呼び出します。サポート対象の公開 I/O entry point はハンドラをオンデマンドで登録します。"
+
+#: CHANGELOG.md:55
+msgid "**SeriesMatrix B0**: the 480-cell Phase A container contract is frozen. Dimensional raw-`ndarray` addition and subtraction with `SpectrogramMatrix` fail atomically with `TypeError`; the broader B1 composition runtime remains deferred (`adopted: false`) pending explicit human D21/data-model sign-off."
+msgstr "**SeriesMatrix B0**：480 セル Phase A のコンテナ契約を固定しました。`SpectrogramMatrix` と次元を持つ生の `ndarray` の加算および減算は、`TypeError` によりアトミックに失敗します。より広範な B1 合成ランタイムは、明示的な人間による D21/data-model sign-off を待って保留のままです（`adopted: false`）。"
+
+#: CHANGELOG.md:60
+msgid "Removed (breaking)"
+msgstr "削除（破壊的変更）"
+
+#: CHANGELOG.md:62
+msgid "The obsolete developer proxy imports `gwexpy.utils.shell`, `gwexpy.utils.sphinx`, `gwexpy.utils.sphinx.ex2rst`, and `gwexpy.utils.sphinx.zenodo` have been removed. Use `subprocess` and `shutil.which` for shell helpers, maintained documentation tooling directly, and a maintained Zenodo client or project release tooling as appropriate."
+msgstr "廃止された開発者向けプロキシ import である `gwexpy.utils.shell`、`gwexpy.utils.sphinx`、`gwexpy.utils.sphinx.ex2rst`、および `gwexpy.utils.sphinx.zenodo` を削除しました。シェルヘルパーには `subprocess` と `shutil.which` を使用し、保守されているドキュメントツールは直接使用してください。Zenodo には保守されている client またはプロジェクトの release tooling を用途に応じて使用します。"
+
+#: CHANGELOG.md:68
+msgid "Compatibility fixes"
+msgstr "互換性の修正"
+
+#: CHANGELOG.md:70
+msgid "GWpy 4 runtime proxies now expose curated public table, TimeSeries, LAL, and misc utility surfaces. The optional FrameL compatibility proxy is lazy: it imports without `python-framel` and reports the original dependency error only when a FrameL-backed symbol is requested."
+msgstr "GWpy 4 の実行時プロキシは、選別した公開 table、TimeSeries、LAL、およびその他の utility API を公開するようになりました。オプションの FrameL 互換性プロキシは遅延読み込みです。`python-framel` なしでも import でき、FrameL が提供する symbol が要求されたときだけ元の dependency error を報告します。"
+
+#: CHANGELOG.md:75
+msgid "Update history"
+msgstr "更新履歴"
 
 #: CHANGELOG.md
 msgid "[0.1.14] - 2026-08-15"

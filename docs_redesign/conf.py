@@ -89,6 +89,17 @@ locale_dirs = ["locales/"]
 gettext_compact = False  # one .pot per source doc (enables selective seeding)
 gettext_uuid = True
 
+# Reader-facing labels in the v0.2.0 changelog's Mermaid code fence are
+# literal source and therefore outside gettext. Keep the English release
+# record immutable, while substituting just these rendered labels in the
+# Japanese changelog page.
+_CHANGELOG_MERMAID_JA_LABELS = {
+    'baseline["v0.1.14 baseline"]': 'baseline["v0.1.14 ベースライン"]',
+    'integration["v0.2 contract integration"]': 'integration["v0.2 契約統合"]',
+    'median_mean["#686 median-mean spectral dispatch"]': 'median_mean["#686 median-mean スペクトル振り分け"]',
+    'source["v0.2.0 release-source metadata"]': 'source["v0.2.0 リリースソースのメタデータ"]',
+}
+
 # -- autodoc / autosummary ---------------------------------------------------
 # Document the real, installed ``gwexpy`` package.
 autosummary_generate = True
@@ -281,5 +292,23 @@ def setup(app):
             }
 
     app.connect("config-inited", _localize_theme_option_strings)
+
+    def _localize_changelog_mermaid(app, doctree, docname):
+        if app.config.language != "ja" or docname != "about/changelog":
+            return
+        from docutils import nodes
+
+        for block in doctree.findall(nodes.literal_block):
+            if block.get("language") != "mermaid":
+                continue
+            text = block.astext()
+            if 'baseline["v0.1.14 baseline"]' not in text:
+                continue
+            for english, japanese in _CHANGELOG_MERMAID_JA_LABELS.items():
+                text = text.replace(english, japanese)
+            block.rawsource = text
+            block.children[:] = [nodes.Text(text)]
+
+    app.connect("doctree-resolved", _localize_changelog_mermaid)
 
     return {"parallel_read_safe": True, "parallel_write_safe": True}
