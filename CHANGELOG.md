@@ -1,7 +1,5 @@
 # Changelog
 
-## [Unreleased]
-
 ## [0.2.0] - 2026-08-26
 
 This minor release establishes the v0.2.0 semantic-contract baseline for
@@ -1355,7 +1353,6 @@ Early stable GWexpy release focused on API stability, GWpy compatibility, and re
 - Fixed unit propagation in complex matrix operations.
 - Corrected IFFT amplitude scaling for one-sided spectra.
 
-[Unreleased]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.14...HEAD
 [0.1.14]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.13...v0.1.14
 [0.1.13]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.12...v0.1.13
 [0.1.12]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.11...v0.1.12

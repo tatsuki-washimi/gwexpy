@@ -171,7 +171,7 @@ html_sourcelink_suffix = ""
 html_theme_options = {
     # Top navbar layout (Diataxis sections live in the center). The logo alone
     # keeps the header compact; the version switcher/warning banner are omitted
-    # while the project is pre-release to avoid an oversized top band.
+    # while the project keeps the navigation band intentionally compact.
     "navbar_start": ["navbar-logo"],
     "navbar_center": ["navbar-nav"],
     "navbar_end": ["theme-switcher", "navbar-icon-links", "language-switcher.html"],
