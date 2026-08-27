@@ -504,21 +504,19 @@
 <section id="id3">
 <h3>削除（破壊的変更）<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
 <ul>
-<li><p><strong>io (SDB)</strong>: the undocumented <code class="docutils literal notranslate"><span class="pre">sqlite</span></code> and <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code> format aliases and
-<code class="docutils literal notranslate"><span class="pre">.sqlite</span></code>/<code class="docutils literal notranslate"><span class="pre">.sqlite3</span></code> GUI fallbacks have been removed. Use the canonical
-<code class="docutils literal notranslate"><span class="pre">format=&quot;sdb&quot;</span></code> name and <code class="docutils literal notranslate"><span class="pre">.sdb</span></code> extension instead (#635).</p>
+<li><p><strong>io (SDB)</strong>: 文書化されていない <code class="docutils literal notranslate"><span class="pre">sqlite</span></code> および <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code> 形式のエイリアスと <code class="docutils literal notranslate"><span class="pre">.sqlite</span></code>/<code class="docutils literal notranslate"><span class="pre">.sqlite3</span></code> GUI フォールバックが削除されました。代わりに、正規の <code class="docutils literal notranslate"><span class="pre">format=&quot;sdb&quot;</span></code> 名と <code class="docutils literal notranslate"><span class="pre">.sdb</span></code> 拡張子を使用してください (#635)。</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
-<tr class="row-odd"><th class="head"><p>Before</p></th>
-<th class="head"><p>After</p></th>
+<tr class="row-odd"><th class="head"><p>前に</p></th>
+<th class="head"><p>後</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">format=&quot;sqlite&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">format=&quot;sqlite3&quot;</span></code> selected the SDB reader.</p></td>
-<td><p>Use <code class="docutils literal notranslate"><span class="pre">format=&quot;sdb&quot;</span></code>; the removed aliases raise <code class="docutils literal notranslate"><span class="pre">IORegistryError</span></code>.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">format=&quot;sqlite&quot;</span></code> または <code class="docutils literal notranslate"><span class="pre">format=&quot;sqlite3&quot;</span></code> は SDB リーダーを選択しました。</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">format=&quot;sdb&quot;</span></code> を使用します。削除されたエイリアスにより <code class="docutils literal notranslate"><span class="pre">IORegistryError</span></code> が発生します。</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.sqlite</span></code>/<code class="docutils literal notranslate"><span class="pre">.sqlite3</span></code> paths were routed to SDB by the GUI fallback.</p></td>
-<td><p>Rename archives to <code class="docutils literal notranslate"><span class="pre">.sdb</span></code> or select <code class="docutils literal notranslate"><span class="pre">format=&quot;sdb&quot;</span></code> in direct I/O; unsupported GUI paths raise <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>.</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.sqlite</span></code>/<code class="docutils literal notranslate"><span class="pre">.sqlite3</span></code> パスは、GUI フォールバックによって SDB にルーティングされました。</p></td>
+<td><p>アーカイブの名前を <code class="docutils literal notranslate"><span class="pre">.sdb</span></code> に変更するか、ダイレクト I/O で <code class="docutils literal notranslate"><span class="pre">format=&quot;sdb&quot;</span></code> を選択します。サポートされていない GUI パスでは <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> が発生します。</p></td>
 </tr>
 </tbody>
 </table>
@@ -527,788 +525,286 @@
 </ul>
 </section>
 <section id="behaviour-visible-bug-fixes">
-<h3>動作に影響するバグ修正<a class="headerlink" href="#behaviour-visible-bug-fixes" title="Link to this heading">#</a></h3>
+<h3>動作が見えるバグ修正<a class="headerlink" href="#behaviour-visible-bug-fixes" title="Link to this heading">#</a></h3>
 <ul>
-<li><p><strong>io (ATS.MTH5)</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;ats.mth5&quot;)</span></code> now uses the
-supported <code class="docutils literal notranslate"><span class="pre">mth5.read_file(...,</span> <span class="pre">file_type=&quot;metronix&quot;)</span></code> API from <code class="docutils literal notranslate"><span class="pre">mth5&gt;=0.6.8</span></code>.
-The reader preserves raw ATSS sample values, maps Ex/Ey to mV/km and
-Hx/Hy/Hz to nT, and fails closed when data, start time, sample rate,
-component, or unit metadata is missing or inconsistent. The published path
-remains single-series only; <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;ats.mth5&quot;)</span></code>
-now raises an explicit <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> before importing the optional dependency
-instead of entering an incompatible dict route. Source timing and units are
-authoritative, so <code class="docutils literal notranslate"><span class="pre">epoch=</span></code>, <code class="docutils literal notranslate"><span class="pre">timezone=</span></code>, <code class="docutils literal notranslate"><span class="pre">unit=</span></code>, and unknown reader
-overrides now fail explicitly instead of being ignored (#619).</p>
+<li><p><strong>io (ATS.MTH5)</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;ats.mth5&quot;)</span></code> は、<code class="docutils literal notranslate"><span class="pre">mth5&gt;=0.6.8</span></code> からサポートされている <code class="docutils literal notranslate"><span class="pre">mth5.read_file(...,</span> <span class="pre">file_type=&quot;metronix&quot;)</span></code> API を使用するようになりました。リーダーは生の ATSS サンプル値を保存し、Ex/Ey を mV/km に、Hx/Hy/Hz を nT にマッピングし、データ、開始時間、サンプル レート、コンポーネント、またはユニットのメタデータが欠落しているか矛盾している場合にフェールクローズします。公開されたパスは単一シリーズのみのままです。 <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;ats.mth5&quot;)</span></code> は、オプションの互換性のない辞書ルートを入力する代わりに、依存関係を変更します。ソースのタイミングと単位には権限があるため、<code class="docutils literal notranslate"><span class="pre">epoch=</span></code>、<code class="docutils literal notranslate"><span class="pre">timezone=</span></code>、<code class="docutils literal notranslate"><span class="pre">unit=</span></code>、および不明なリーダーのオーバーライドは無視されるのではなく、明示的に失敗するようになりました (#619)。</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
-<tr class="row-odd"><th class="head"><p>Before</p></th>
-<th class="head"><p>After</p></th>
+<tr class="row-odd"><th class="head"><p>前に</p></th>
+<th class="head"><p>後</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>The reader called an obsolete nested <code class="docutils literal notranslate"><span class="pre">mth5.io.metronix...read_atss</span></code> API and could fail before returning a series.</p></td>
-<td><p>The reader calls the supported top-level API and validates the returned channel contract.</p></td>
+<tr class="row-even"><td><p>リーダーが時代遅れのネストされた <code class="docutils literal notranslate"><span class="pre">mth5.io.metronix...read_atss</span></code> API を呼び出し、シリーズを返す前に失敗する可能性がありました。</p></td>
+<td><p>リーダーは、サポートされているトップレベル API を呼び出し、返されたチャネル コントラクトを検証します。</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;ats.mth5&quot;)</span></code> could dispatch into a single-channel implementation.</p></td>
-<td><p>The unsupported collection route fails immediately and directs callers to <code class="docutils literal notranslate"><span class="pre">TimeSeries.read</span></code>.</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;ats.mth5&quot;)</span></code> は単一チャネル実装にディスパッチできます。</p></td>
+<td><p>サポートされていない収集ルートはすぐに失敗し、呼び出し元を <code class="docutils literal notranslate"><span class="pre">TimeSeries.read</span></code> に誘導します。</p></td>
 </tr>
-<tr class="row-even"><td><p>Reader overrides could be accepted but ignored, leaving source timing and units unchanged without notice.</p></td>
-<td><p>Unsupported timing, unit, and unknown overrides raise before dependency lookup.</p></td>
+<tr class="row-even"><td><p>リーダーのオーバーライドは受け入れられますが、無視されるため、ソースのタイミングと単位は予告なしに変更されません。</p></td>
+<td><p>サポートされていないタイミング、単位、および不明なオーバーライドは、依存関係の検索の前に発生します。</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </li>
-<li><p><strong>io (CSV/SDB cadence)</strong>: numeric and configured component-column CSV
-timestamps are validated before float conversion or resampling, and SDB
-validates integer Unix-second timestamps in database storage order before
-constructing its time axis. Malformed CSV rows report their physical line;
-duplicate, backward, missing, or overlarge timestamp gaps now raise
-<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> instead of being silently accepted or repaired. A finite,
-positive CSV <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> declares source cadence and is honoured for a
-single row; without it, the legacy one-second fallback remains. <code class="docutils literal notranslate"><span class="pre">resample=</span></code>
-remains a separate finite, positive target cadence, and interpolated values
-now stay aligned with the returned target-rate time axis. UTC component
-cadence uses continuous GPS instants so leap-second gaps fail closed.
-Absolute float64 axes must have rounding error and spacing strictly below
-half a cadence. Resampling is capped at 10,000,000 requested-channel output
-values across the complete top-level single- or multi-file read before
-allocation (#648, #649).</p></li>
-<li><p><strong>io (WIN)</strong>: WIN reads now require a consecutive one-second global packet
-cadence while preserving legitimate channel late starts, early ends, and
-channel-local <code class="docutils literal notranslate"><span class="pre">t0</span></code>. They fail closed on internal channel gaps and
-reappearance, duplicate channel blocks, sample-rate changes, duplicate or
-backward packet times, global gaps, and malformed, truncated, or overlong
-payloads. Bounded length and sample-count checks prevent oversized reads,
-cumulative deltas avoid integer wraparound, BCD year <code class="docutils literal notranslate"><span class="pre">99</span></code> to <code class="docutils literal notranslate"><span class="pre">00</span></code> advances
-the century, and UTC interpretation still warns once per top-level read
-(#647).</p></li>
-<li><p><strong>io (SDB)</strong>: archives that provide a <code class="docutils literal notranslate"><span class="pre">usUnits</span></code> column now validate every
-row as the supported US customary unit-system code <code class="docutils literal notranslate"><span class="pre">1</span></code> and fail closed on
-NULL, text, non-integral, or other values. Archives without that column
-retain the legacy US customary unit assumption; <code class="docutils literal notranslate"><span class="pre">usUnits</span></code> is metadata and
-is not returned as a data channel.</p></li>
-<li><p><strong>io (timezones)</strong>: readers now distinguish source-defined absolute times,
-naive civil times, and relative sample indices. A caller-supplied
-<code class="docutils literal notranslate"><span class="pre">timezone=</span></code> can localize only a naive explicit <code class="docutils literal notranslate"><span class="pre">epoch=</span></code> or configured CSV
-component columns; it can no longer reinterpret an absolute source time.
-Absolute/numeric/aware epoch overrides preserve their instant and warn that
-<code class="docutils literal notranslate"><span class="pre">timezone=</span></code> is ignored, while formats that do not accept timezone input fail
-closed. Malformed offsets, non-finite offsets, and boolean timezone/epoch
-values are rejected instead of being coerced. Local civil times that fall in
-a daylight-saving fold or gap now raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> instead of silently
-selecting or normalizing an instant (#633, #651).</p>
+<li><p><strong>io (CSV/SDB cadence)</strong>: 数値および構成されたコンポーネント列の CSV タイムスタンプは浮動小数点変換またはリサンプリングの前に検証され、SDB は時間軸を構築する前に整数の Unix 秒タイムスタンプをデータベースの格納順序で検証します。不正な形式の CSV 行は物理的な行を報告します。タイムスタンプの重複、逆方向、欠落、または大きすぎるタイムスタンプのギャップは、黙って受け入れられたり修復されたりするのではなく、<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を生成するようになりました。有限の、正の CSV <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> はソース ケイデンスを宣言し、単一行に対して受け入れられます。これがないと、従来の 1 秒フォールバックが残ります。 <code class="docutils literal notranslate"><span class="pre">resample=</span></code> は、別個の有限の正のターゲット ケイデンスのままであり、補間された値は、返されたターゲット レートの時間軸と一致したままになります。 UTC コンポーネントのケイデンスは連続的な GPS インスタントを使用するため、うるう秒のギャップは完全に埋められません。絶対 float64 軸には丸め誤差と間隔が必要です厳密にケイデンスの半分以下です。リサンプリングは、割り当て前の完全なトップレベルの単一または複数ファイル読み取り全体で、要求されたチャネル出力値 10,000,000 に制限されます (#648、#649)。</p></li>
+<li><p><strong>io (WIN)</strong>: WIN 読み取りでは、正当なチャネルの遅​​延開始、早期終了、チャネルローカル <code class="docutils literal notranslate"><span class="pre">t0</span></code> を維持しながら、連続 1 秒のグローバル パケット ケイデンスが必要になりました。これらは、内部チャネル ギャップと再出現、チャネル ブロックの重複、サンプル レートの変更、パケット時間の重複または逆方向、グローバル ギャップ、および不正な形式、切り詰められた、または長すぎるペイロードでフェール クローズされます。制限された長さとサンプル数のチェックにより、オーバーサイズの読み取り、累積デルタにより整数のラップアラウンドが回避され、BCD 年 <code class="docutils literal notranslate"><span class="pre">99</span></code> から <code class="docutils literal notranslate"><span class="pre">00</span></code> まで世紀が進み、UTC 解釈では依然としてトップレベルの読み取りごとに 1 回警告が出されます (#647)。</p></li>
+<li><p><strong>io (SDB)</strong>: <code class="docutils literal notranslate"><span class="pre">usUnits</span></code> 列を提供するアーカイブは、すべての行をサポートされている米国の慣用単位系コード <code class="docutils literal notranslate"><span class="pre">1</span></code> として検証し、NULL、テキスト、非整数、またはその他の値でフェールクローズされるようになりました。この列のないアーカイブでは、従来の米国慣習単位の仮定が維持されます。 <code class="docutils literal notranslate"><span class="pre">usUnits</span></code> はメタデータであり、データ チャネルとして返されません。</p></li>
+<li><p><strong>io (タイムゾーン)</strong>: 読者は、ソース定義の絶対時刻、単純常用時刻、および相対サンプル インデックスを区別できるようになりました。呼び出し元が提供する <code class="docutils literal notranslate"><span class="pre">timezone=</span></code> は、単純な明示的な <code class="docutils literal notranslate"><span class="pre">epoch=</span></code> または構成された CSV コンポーネント列のみをローカライズできます。絶対ソース時間を再解釈することはできなくなりました。絶対/数値/対応エポック オーバーライドはインスタントを保持し、<code class="docutils literal notranslate"><span class="pre">timezone=</span></code> が無視されることを警告しますが、これらの形式は受け入れられませんタイムゾーン入力が失敗して閉じられました。不正な形式のオフセット、非有限オフセット、およびブール値のタイムゾーン/エポック値は、強制されるのではなく拒否されます。夏時間のフォールドまたはギャップに該当する地方公時は、インスタントを黙って選択または正規化する代わりに、<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を発生させるようになりました (#633、#651)。</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
-<tr class="row-odd"><th class="head"><p>Before</p></th>
-<th class="head"><p>After</p></th>
+<tr class="row-odd"><th class="head"><p>前に</p></th>
+<th class="head"><p>後</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>A seismic source at <code class="docutils literal notranslate"><span class="pre">2024-01-01</span> <span class="pre">12:00:00</span> <span class="pre">UTC</span></code> could be reinterpreted as Tokyo civil time, changing GPS <code class="docutils literal notranslate"><span class="pre">1388145618</span></code> to <code class="docutils literal notranslate"><span class="pre">1388113218</span></code> (−9 hours).</p></td>
-<td><p>Source timestamps remain absolute at GPS <code class="docutils literal notranslate"><span class="pre">1388145618</span></code>; only a naive explicit <code class="docutils literal notranslate"><span class="pre">epoch=</span></code> may be localized.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">2024-01-01</span> <span class="pre">12:00:00</span> <span class="pre">UTC</span></code> の震源は東京標準時間として再解釈され、GPS <code class="docutils literal notranslate"><span class="pre">1388145618</span></code> から <code class="docutils literal notranslate"><span class="pre">1388113218</span></code> (-9 時間) に変更される可能性があります。</p></td>
+<td><p>ソースのタイムスタンプは GPS <code class="docutils literal notranslate"><span class="pre">1388145618</span></code> で絶対値のままです。単純な明示的な <code class="docutils literal notranslate"><span class="pre">epoch=</span></code> のみをローカライズできます。</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">timezone=</span></code> could be silently dropped by SDB, ATS, TDMS, DTT XML, audio, WAV, NDScope HDF5, and direct HDF5/TXT collection routes.</p></td>
-<td><p>Unsupported timezone input raises a contextual <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> before optional backends or source traversal.</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">timezone=</span></code> は、SDB、ATS、TDMS、DTT XML、オーディオ、WAV、NDScope HDF5、および直接 HDF5/TXT 収集ルートによってサイレントにドロップされる可能性があります。</p></td>
+<td><p>サポートされていないタイムゾーン入力では、オプションのバックエンドまたはソース トラバーサルの前に、コンテキストに応じた <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> が発生します。</p></td>
 </tr>
-<tr class="row-even"><td><p>An ambiguous <code class="docutils literal notranslate"><span class="pre">2024-11-03</span> <span class="pre">01:30</span></code> or nonexistent <code class="docutils literal notranslate"><span class="pre">2024-03-10</span> <span class="pre">02:30</span></code> in <code class="docutils literal notranslate"><span class="pre">America/New_York</span></code> was assigned an offset by <code class="docutils literal notranslate"><span class="pre">replace(tzinfo=...)</span></code>.</p></td>
-<td><p>Naive local times are checked by UTC round-trip; DST folds and gaps fail closed.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">America/New_York</span></code> 内のあいまいな <code class="docutils literal notranslate"><span class="pre">2024-11-03</span> <span class="pre">01:30</span></code> または存在しない <code class="docutils literal notranslate"><span class="pre">2024-03-10</span> <span class="pre">02:30</span></code> に、<code class="docutils literal notranslate"><span class="pre">replace(tzinfo=...)</span></code> によってオフセットが割り当てられました。</p></td>
+<td><p>単純な現地時間は UTC の往復によってチェックされます。 DST が折り畳まれ、ギャップが閉じられなくなります。</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </li>
-<li><p><strong>time (GPS/UTC conversion)</strong>: NumPy <code class="docutils literal notranslate"><span class="pre">datetime64[s/ms/us/ns]</span></code> scalars and
-vectors now convert through a time-aware Astropy representation, retaining
-the instant represented by the input dtype through integer nanoseconds.
-Default datetime64 vectors therefore return object arrays of exact
-<code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> elements; <code class="docutils literal notranslate"><span class="pre">dtype=float</span></code> remains the explicit binary64 output
-mode. Scalar <code class="docutils literal notranslate"><span class="pre">tconvert(datetime64)</span></code> uses the same exact route. <code class="docutils literal notranslate"><span class="pre">from_gps()</span></code>
-now returns timezone-aware UTC <code class="docutils literal notranslate"><span class="pre">datetime</span></code> values with one rounding rule for
-scalar, vector, and Astropy <code class="docutils literal notranslate"><span class="pre">Time</span></code> inputs. A GPS instant inside a UTC leap
-second raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> atomically for vector input because Python
-<code class="docutils literal notranslate"><span class="pre">datetime</span></code> cannot represent <code class="docutils literal notranslate"><span class="pre">23:59:60</span></code> (#646, #650).</p>
+<li><p><strong>時間 (GPS/UTC 変換)</strong>: NumPy <code class="docutils literal notranslate"><span class="pre">datetime64[s/ms/us/ns]</span></code> のスカラーとベクトルは、入力 dtype によって表される瞬間を整数ナノ秒まで保持しながら、時間対応の Astropy 表現を通じて変換されるようになりました。したがって、デフォルトの datetime64 ベクトルは、正確な <code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> 要素のオブジェクト配列を返します。 <code class="docutils literal notranslate"><span class="pre">dtype=float</span></code> は明示的な binary64 出力モードのままです。スカラー <code class="docutils literal notranslate"><span class="pre">tconvert(datetime64)</span></code> はまったく同じルートを使用します。今は<code class="docutils literal notranslate"><span class="pre">from_gps()</span></code>スカラー、ベクトル、および Astropy <code class="docutils literal notranslate"><span class="pre">Time</span></code> 入力に対して 1 つの丸め規則を使用して、タイムゾーン対応の UTC <code class="docutils literal notranslate"><span class="pre">datetime</span></code> 値を返します。 Python <code class="docutils literal notranslate"><span class="pre">datetime</span></code> は <code class="docutils literal notranslate"><span class="pre">23:59:60</span></code> を表すことができないため、UTC うるう秒内の GPS インスタントはベクトル入力に対してアトミックに <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を生成します (#646、#650)。</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
-<tr class="row-odd"><th class="head"><p>Before</p></th>
-<th class="head"><p>After</p></th>
+<tr class="row-odd"><th class="head"><p>前に</p></th>
+<th class="head"><p>後</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>A <code class="docutils literal notranslate"><span class="pre">datetime64[ns]</span></code> scalar could become a Unix-nanosecond integer through <code class="docutils literal notranslate"><span class="pre">.item()</span></code>, while a vector was immediately rounded to binary64 GPS seconds.</p></td>
-<td><p>All supported datetime64 resolutions preserve datetime semantics; scalar and default vector outputs retain exact integer nanoseconds in <code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code>.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">datetime64[ns]</span></code> スカラーは、<code class="docutils literal notranslate"><span class="pre">.item()</span></code> を通じて Unix ナノ秒の整数になる可能性がありますが、ベクトルはすぐにバイナリの 64 GPS 秒に丸められます。</p></td>
+<td><p>サポートされているすべての datetime64 解決では、日時セマンティクスが保持されます。スカラー出力とデフォルトのベクトル出力は、<code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> に正確な整数ナノ秒を保持します。</p></td>
 </tr>
-<tr class="row-odd"><td><p>Vector and Astropy routes could return timezone-naive datetimes with semantics different from the scalar GWpy route.</p></td>
-<td><p>Every <code class="docutils literal notranslate"><span class="pre">from_gps()</span></code> route returns the same UTC-aware instant and is independent of the host timezone.</p></td>
+<tr class="row-odd"><td><p>Vector ルートと Astropy ルートは、スカラー GWpy ルートとは異なるセマンティクスでタイムゾーン ナイーブな日時を返す可能性があります。</p></td>
+<td><p>すべての <code class="docutils literal notranslate"><span class="pre">from_gps()</span></code> ルートは同じ UTC 対応インスタントを返し、ホストのタイムゾーンには依存しません。</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </li>
-<li><p><strong>io (WIN/CSV warnings)</strong>: WIN header times are explicitly interpreted as
-UTC and emit one top-level warning even for multi-file reads (#632 partial).
-CSV numeric-time and sample-index routes likewise emit one warning when
-<code class="docutils literal notranslate"><span class="pre">timezone=</span></code> is ignored, while component columns continue to localize the
-configured civil time (#634 partial).</p></li>
+<li><p><strong>io (WIN/CSV 警告)</strong>: WIN ヘッダー時間は明示的に UTC として解釈され、複数ファイルの読み取りでもトップレベルの警告が 1 つ発行されます (#632 部分的)。 CSV 数値時間ルートとサンプルインデックス ルートも同様に、<code class="docutils literal notranslate"><span class="pre">timezone=</span></code> が無視されると 1 つの警告を生成しますが、コンポーネント列は設定された常用時間をローカライズし続けます (#634 部分)。</p></li>
 </ul>
 </section>
 <section id="known-limitations">
 <h3>既知の制限事項<a class="headerlink" href="#known-limitations" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p><strong>io (CSV time scale)</strong>: numeric CSV timestamps retain the legacy GPS-second
-interpretation. v0.1.14 does not add <code class="docutils literal notranslate"><span class="pre">time_scale=</span></code> or <code class="docutils literal notranslate"><span class="pre">time_unit=</span></code>; convert
-non-GPS timestamps before reading. The broader time-scale ambiguity remains
-tracked by #634 for v0.2.0.</p></li>
+<li><p><strong>io (CSV タイム スケール)</strong>: 数値 CSV タイムスタンプは従来の GPS 秒解釈を保持します。 v0.1.14 では <code class="docutils literal notranslate"><span class="pre">time_scale=</span></code> または <code class="docutils literal notranslate"><span class="pre">time_unit=</span></code> は追加されません。読み取る前に非 GPS タイムスタンプを変換します。より広範な時間スケールのあいまいさは、v0.2.0 の #634 によって追跡されたままです。</p></li>
 </ul>
 </section>
 <section id="development-and-ci">
-<h3>Development and CI<a class="headerlink" href="#development-and-ci" title="Link to this heading">#</a></h3>
+<h3>開発とCI<a class="headerlink" href="#development-and-ci" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p><strong>CI</strong>: I/O conformance generator smoke checks now enforce a 60-second
-production timeout and terminate the complete process group with bounded
-SIGTERM/SIGKILL cleanup, reaping, and diagnostic output tails. The PR-fast
-gate no longer repeats the dedicated I/O conformance suite, and workflow
-checkouts fetch full history only where merge-base or ancestry checks need
-it (#629, #630).</p></li>
+<li><p><strong>CI</strong>: I/O 適合ジェネレーターのスモーク チェックでは、60 秒の実稼働タイムアウトが強制され、制限された SIGTERM/SIGKILL のクリーンアップ、リープ、および診断出力テールを使用してプロセス グループ全体が終了するようになりました。 PR 高速ゲートは専用の I/O 適合性スイートを繰り返すことはなくなり、ワークフロー チェックアウトはマージベースまたは祖先チェックで必要な場合にのみ完全な履歴をフェッチします (#629、#630)。</p></li>
 </ul>
 </section>
 </section>
 <section id="id4">
 <h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.12...v0.1.13">0.1.13</a> - 2026-08-08<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
 <section id="id5">
-<h3>動作に影響するバグ修正<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<h3>動作が見えるバグ修正<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p><strong>timeseries</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries.rms(stride=1,</span> <span class="pre">*,</span> <span class="pre">ignore_nan=True)</span></code> again accepts
-a positional numeric stride in seconds and returns a dimensionless trend
-series. Quantity strides and generic reduction keywords are rejected, so the
-public GWpy-compatible API has one unambiguous meaning (#451).</p></li>
-<li><p><strong>types</strong>: arithmetic between an <code class="docutils literal notranslate"><span class="pre">astropy</span></code> <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> and a <code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code>
-(<code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>, <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code>, <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code>) now
-preserves the matrix type, its per-cell units and all axis metadata when the
-<code class="docutils literal notranslate"><span class="pre">Quantity</span></code> is on the left. Previously <code class="docutils literal notranslate"><span class="pre">(2</span> <span class="pre">*</span> <span class="pre">u.s)</span> <span class="pre">*</span> <span class="pre">matrix</span></code> returned a bare
-<code class="docutils literal notranslate"><span class="pre">Quantity</span></code> whose value was the raw matrix data with every per-cell unit, row
-and column key, and time/frequency axis silently discarded: for a matrix of
-cells in <code class="docutils literal notranslate"><span class="pre">m</span></code>, <code class="docutils literal notranslate"><span class="pre">(2</span> <span class="pre">*</span> <span class="pre">u.s)</span> <span class="pre">*</span> <span class="pre">matrix</span></code> returned a <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> in <code class="docutils literal notranslate"><span class="pre">s</span></code> rather than
-<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">s</span></code>, so every cell was off by the matrix's own unit with no error or
-warning. The same expression with the matrix on the left
-(<code class="docutils literal notranslate"><span class="pre">matrix</span> <span class="pre">*</span> <span class="pre">(2</span> <span class="pre">*</span> <span class="pre">u.s)</span></code>) was already correct, so the two orderings disagreed
-(#575).</p></li>
-<li><p><strong>types</strong>: comparison operators on <code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> are elementwise and return
-a boolean matrix container that preserves shape, rows, columns and axes,
-with dimensionless cell units. Operands are unit-converted before
-comparison, so <code class="docutils literal notranslate"><span class="pre">matrix_m</span> <span class="pre">&lt;</span> <span class="pre">quantity_cm</span></code> compares physical values rather than
-raw numbers, and comparing incompatible units raises <code class="docutils literal notranslate"><span class="pre">UnitConversionError</span></code>
-instead of returning a silently wrong answer (#576).</p></li>
-<li><p><strong>types</strong>: the guard defect on the fast arithmetic path reported in #577 has
-been removed, and in-place operators are now atomic — a failure part-way
-through leaves the operand unmodified instead of half-updated.</p></li>
-<li><p><strong>types</strong>: <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.clip()</span></code> / <code class="docutils literal notranslate"><span class="pre">.round()</span></code> (and <code class="docutils literal notranslate"><span class="pre">.copy()</span></code>, which
-they build on) previously discarded the frequency axis (<code class="docutils literal notranslate"><span class="pre">frequencies</span></code>,
-<code class="docutils literal notranslate"><span class="pre">f0</span></code>, <code class="docutils literal notranslate"><span class="pre">df</span></code>) silently whenever the operation changed dtype. They now
-preserve it, along with the time axis, row/column labels and cell metadata
-(#623).</p></li>
-<li><p><strong>types</strong>: <code class="docutils literal notranslate"><span class="pre">SeriesMatrix.clip(min,</span> <span class="pre">max)</span></code> unit handling was inverted — a
-plain number or dimensionless bound against a unit-bearing matrix was
-silently accepted, while an equivalent-but-differently-scaled <code class="docutils literal notranslate"><span class="pre">Quantity</span></code>
-bound was mishandled. <code class="docutils literal notranslate"><span class="pre">clip()</span></code> now accepts a <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> bound equivalent to
-the matrix's unit (converting it, e.g. <code class="docutils literal notranslate"><span class="pre">clip(1*u.cm,</span> <span class="pre">2*u.cm)</span></code> against a
-metre matrix), and raises <code class="docutils literal notranslate"><span class="pre">UnitConversionError</span></code> for a bare number,
-dimensionless bound, or dimensionally incompatible bound against a
-unit-bearing matrix. <code class="docutils literal notranslate"><span class="pre">clip()</span></code> further requires every cell in the matrix to
-share the <em>identical</em> unit (not merely a dimensionally equivalent one, e.g.
-<code class="docutils literal notranslate"><span class="pre">m</span></code> and <code class="docutils literal notranslate"><span class="pre">cm</span></code> mixed in one matrix) before applying a unit-bearing bound, and
-raises <code class="docutils literal notranslate"><span class="pre">UnitConversionError</span></code> otherwise — clip <code class="docutils literal notranslate"><span class="pre">matrix.value</span></code> directly for a
-heterogeneous-unit matrix. This also closes a related hazard where
-<code class="docutils literal notranslate"><span class="pre">np.clip(matrix,</span> <span class="pre">...)</span></code> (as opposed to <code class="docutils literal notranslate"><span class="pre">matrix.clip(...)</span></code>) silently fell
-back to a wrong, aliased-metadata result under NumPy's <code class="docutils literal notranslate"><span class="pre">_wrapfunc</span></code>, because
-a plain <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> from <code class="docutils literal notranslate"><span class="pre">.clip()</span></code>/<code class="docutils literal notranslate"><span class="pre">.round()</span></code> — including from their <code class="docutils literal notranslate"><span class="pre">out=</span></code>
-guard — is swallowed by that fallback path; both now raise
-<code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code>, which is not swallowed (#623).</p></li>
-<li><p><strong>types</strong>: <code class="docutils literal notranslate"><span class="pre">matrix</span> <span class="pre">**</span> <span class="pre">True</span></code> / <code class="docutils literal notranslate"><span class="pre">matrix</span> <span class="pre">**</span> <span class="pre">False</span></code> now match Python/NumPy
-integer semantics (<code class="docutils literal notranslate"><span class="pre">True</span> <span class="pre">==</span> <span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span> <span class="pre">==</span> <span class="pre">0</span></code>): <code class="docutils literal notranslate"><span class="pre">matrix</span> <span class="pre">**</span> <span class="pre">True</span></code> preserves
-the original value and unit, <code class="docutils literal notranslate"><span class="pre">matrix</span> <span class="pre">**</span> <span class="pre">False</span></code> gives value <code class="docutils literal notranslate"><span class="pre">1</span></code> with a
-dimensionless result (#623).</p></li>
-<li><p><strong>types</strong>: <code class="docutils literal notranslate"><span class="pre">SeriesMatrix.astype()</span></code> (used internally by <code class="docutils literal notranslate"><span class="pre">clip()</span></code>/<code class="docutils literal notranslate"><span class="pre">round()</span></code>
-whenever an operation changes dtype, e.g. clipping an integer matrix
-against float/<code class="docutils literal notranslate"><span class="pre">Quantity</span></code> bounds) passed <code class="docutils literal notranslate"><span class="pre">xindex</span></code>, <code class="docutils literal notranslate"><span class="pre">meta</span></code>, <code class="docutils literal notranslate"><span class="pre">rows</span></code> and <code class="docutils literal notranslate"><span class="pre">cols</span></code>
-through unchanged instead of copying them, unlike <code class="docutils literal notranslate"><span class="pre">copy()</span></code>. A clipped
-<code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code>'s <code class="docutils literal notranslate"><span class="pre">times</span></code> axis could alias the source's, so mutating
-one silently corrupted the other. <code class="docutils literal notranslate"><span class="pre">astype()</span></code> now mirrors <code class="docutils literal notranslate"><span class="pre">copy()</span></code>'s
-independence guarantees for all four (#623).</p></li>
-<li><p><strong>types</strong>: a bare NumPy integer scalar operand (e.g. <code class="docutils literal notranslate"><span class="pre">np.int64(2)</span></code>, as
-opposed to a Python <code class="docutils literal notranslate"><span class="pre">int</span></code> or <code class="docutils literal notranslate"><span class="pre">np.float64</span></code>, which happens to subclass
-Python <code class="docutils literal notranslate"><span class="pre">float</span></code>) is now accepted everywhere a plain number is. Previously
-<code class="docutils literal notranslate"><span class="pre">spectrogram_matrix</span> <span class="pre">*</span> <span class="pre">np.int64(2)</span></code> and <code class="docutils literal notranslate"><span class="pre">spectrogram_matrix</span> <span class="pre">**</span> <span class="pre">np.int64(2)</span></code>
-raised <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">operand</span> <span class="pre">'SpectrogramMatrix'</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">support</span> <span class="pre">ufuncs</span></code>,
-because <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code>'s own operand-acceptance check listed <code class="docutils literal notranslate"><span class="pre">int</span></code>/
-<code class="docutils literal notranslate"><span class="pre">float</span></code>/<code class="docutils literal notranslate"><span class="pre">complex</span></code> but not <code class="docutils literal notranslate"><span class="pre">np.number</span></code>. Separately, <code class="docutils literal notranslate"><span class="pre">matrix</span> <span class="pre">**</span> <span class="pre">np.int64(n)</span></code>
-on <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>/<code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> always computed the correct
-result but took a guaranteed exception-and-fallback path on every call —
-logging a full traceback and raising a <code class="docutils literal notranslate"><span class="pre">PerformanceWarning</span></code> — because the
-new (#577e) scalar-exponent normalization passed a bare <code class="docutils literal notranslate"><span class="pre">np.number</span></code>
-through to <code class="docutils literal notranslate"><span class="pre">MetaDataMatrix</span></code>'s per-cell unit computation, which only
-accepts <code class="docutils literal notranslate"><span class="pre">int</span></code>/<code class="docutils literal notranslate"><span class="pre">float</span></code>/<code class="docutils literal notranslate"><span class="pre">complex</span></code>. Both are now normalized before use (#623).</p></li>
-<li><p><strong>io (WIN)</strong>: the WIN reader decoded the per-channel sampling rate from
-byte 3 alone, but the rate is a 12-bit field whose top 4 bits live in the
-low nibble of byte 2. Every rate at or above 256 Hz was therefore truncated
-modulo 256 — 1000 Hz was read as 232 Hz. Because the reader also derives
-the packet payload length from that rate
-(<code class="docutils literal notranslate"><span class="pre">xlen</span> <span class="pre">=</span> <span class="pre">(srate</span> <span class="pre">-</span> <span class="pre">1)</span> <span class="pre">*</span> <span class="pre">datawide</span></code>), the byte stream was misaligned and the
-decoded <em>samples themselves</em> were garbage, not merely the time axis. No
-exception was raised: the reader returned a plausible-looking
-<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>. The full 12-bit rate is now decoded, matching ObsPy's
-reader (<code class="docutils literal notranslate"><span class="pre">obspy/io/win/core.py</span></code>, upstream obspy#3641). Rates at or below
-255 Hz are unaffected. An encoded rate of zero, which cannot describe a
-channel block carrying a leading absolute sample, now raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
-instead of mis-slicing the packet; no spec consulted here documents zero as
-a sentinel for 4096 Hz (#610).</p></li>
-<li><p><strong>io (zarr)</strong>: reading a store returned a channel chosen by dictionary
-iteration order rather than by any stated rule, so two reads of the same
-unchanged multi-channel store could return different data with no exception
-and no warning. Channel selection is now resolved before any payload is
-read: the available array names are sorted, and a <code class="docutils literal notranslate"><span class="pre">channels=</span></code> selector that
-names a missing array or repeats a name raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> instead of being
-silently skipped. The single-series reader now requires the selection to
-resolve to exactly one channel and raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> otherwise, rather
-than picking one on your behalf (#614).</p></li>
-<li><p><strong>io (zarr)</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries.read(source,</span> <span class="pre">format=&quot;zarr&quot;)</span></code> raised
-<code class="docutils literal notranslate"><span class="pre">IsADirectoryError</span></code> before it ever reached the zarr reader, because the
-explicit format never intercepted the generic registry path and a zarr
-directory store was then opened as a file. The documented entry point had
-therefore never worked. <code class="docutils literal notranslate"><span class="pre">TimeSeries.read</span></code> and <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read</span></code> now
-dispatch <code class="docutils literal notranslate"><span class="pre">format=&quot;zarr&quot;</span></code> (and <code class="docutils literal notranslate"><span class="pre">format=&quot;nc&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;netcdf4&quot;</span></code>) directly to their
-readers, mirroring the interception that <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read</span></code> already
-performed for a <code class="docutils literal notranslate"><span class="pre">.zarr</span></code> suffix (#620).</p></li>
-<li><p><strong>io (NetCDF4)</strong>: a write→read round trip did not return the time axis it
-was given. <code class="docutils literal notranslate"><span class="pre">t0</span></code> was carried through a datetime-mediated conversion and <code class="docutils literal notranslate"><span class="pre">dt</span></code>
-through integer-nanosecond quantization, so at a realistic GPS epoch — where
-<code class="docutils literal notranslate"><span class="pre">t0</span></code> is around 1e9 s and binary64 has no spare precision — both the epoch
-and the sample spacing came back perturbed, silently shifting every
-timestamp in the file. Files are now written with a versioned timing schema
-that stores <code class="docutils literal notranslate"><span class="pre">t0</span></code> as an exact binary64 hex literal plus integer GPS
-seconds/nanoseconds, and <code class="docutils literal notranslate"><span class="pre">dt</span></code> as an exact integer ratio, so the axis
-round-trips bit-for-bit. Files written by earlier versions carry no schema
-marker; they are still readable, and reading one now emits a
-<code class="docutils literal notranslate"><span class="pre">RuntimeWarning</span></code> stating that their timing precision is limited instead of
-presenting the degraded axis as exact (#615).</p></li>
-<li><p><strong>timeseries</strong>: <code class="docutils literal notranslate"><span class="pre">crop()</span></code> selected samples through a materialized timestamp
-index, so at large GPS epochs floating-point cancellation could move the
-boundary by one sample and perturb <code class="docutils literal notranslate"><span class="pre">dt</span></code> by a few ulp. A perturbed <code class="docutils literal notranslate"><span class="pre">dt</span></code>
-changes <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code>, and the truncating <code class="docutils literal notranslate"><span class="pre">nfft</span></code> derivation amplifies that
-into an O(1/nfft) frequency-axis error, so a spectrum computed after a crop
-could be shifted without anything raising. Crop on a regular axis is now a
-positional slice computed from <code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">dt</span></code>, and a cancellation-aware
-tolerance, and the source <code class="docutils literal notranslate"><span class="pre">dt</span></code> is retained rather than re-derived from the
-cropped coordinates. Irregular axes keep GWpy's existing behaviour. The same
-correction applies to <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.crop</span></code> (#617).</p></li>
-<li><p><strong>timeseries</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read</span></code> discarded the <code class="docutils literal notranslate"><span class="pre">_gwexpy_io</span></code> read
-provenance that its readers attach, because re-wrapping the reader's result
-in the collection class did not carry the attribute across. Provenance now
-survives the re-wrap, so the record of how a dictionary was read is
-available on the object you get back (#618).</p></li>
-<li><p><strong>interop (ROOT)</strong>: <code class="docutils literal notranslate"><span class="pre">from_root</span></code> read 2-D histogram contents by reinterpreting
-the raw bin buffer as <code class="docutils literal notranslate"><span class="pre">float64</span></code>. A <code class="docutils literal notranslate"><span class="pre">TH2F</span></code> stores <code class="docutils literal notranslate"><span class="pre">float32</span></code> contents, so the
-buffer was decoded at the wrong width and returned plausible-looking but
-meaningless values with no exception. Contents are now read through the ROOT
-accessor at the class's native scalar dtype (<code class="docutils literal notranslate"><span class="pre">TH1C</span></code>/<code class="docutils literal notranslate"><span class="pre">S</span></code>/<code class="docutils literal notranslate"><span class="pre">I</span></code>/<code class="docutils literal notranslate"><span class="pre">L</span></code> as the
-corresponding integer width, <code class="docutils literal notranslate"><span class="pre">TH1F</span></code>/<code class="docutils literal notranslate"><span class="pre">TH2F</span></code> as <code class="docutils literal notranslate"><span class="pre">float32</span></code>, <code class="docutils literal notranslate"><span class="pre">TH1D</span></code>/<code class="docutils literal notranslate"><span class="pre">TH2D</span></code> as
-<code class="docutils literal notranslate"><span class="pre">float64</span></code>), and <code class="docutils literal notranslate"><span class="pre">Histogram</span></code> no longer promotes an integer input array to
-<code class="docutils literal notranslate"><span class="pre">float64</span></code>, so an integer-typed ROOT histogram keeps its integer contents.
-Bin errors are likewise read through <code class="docutils literal notranslate"><span class="pre">GetBinError</span></code> rather than reconstructed
-from a <code class="docutils literal notranslate"><span class="pre">Sumw2</span></code> buffer (#593).</p></li>
-<li><p><strong>fields</strong>: arithmetic between a <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> (or a bare scalar, or a <code class="docutils literal notranslate"><span class="pre">Unit</span></code>)
-and a field collection — <code class="docutils literal notranslate"><span class="pre">FieldList</span></code>, <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code>, and therefore
-<code class="docutils literal notranslate"><span class="pre">VectorField</span></code> and <code class="docutils literal notranslate"><span class="pre">TensorField</span></code> — lost the per-component physical units and
-axis metadata, because the collection had no operator contract of its own and
-Astropy's <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> dispatch consumed it. The collections now implement the
-binary, reflected, and in-place operators explicitly: each component is
-operated on individually and its axis indices, axis names, domains, offsets,
-name, epoch, and channel are copied onto the result rather than shared with
-the source. Dimensional errors are raised before any component is replaced,
-so a failed in-place operation leaves the collection untouched (#578).</p></li>
-<li><p><strong>plot</strong>: <code class="docutils literal notranslate"><span class="pre">VectorField.plot(stride=...)</span></code> raised
-<code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">got</span> <span class="pre">an</span> <span class="pre">unexpected</span> <span class="pre">keyword</span> <span class="pre">argument</span> <span class="pre">'stride'</span></code> because <code class="docutils literal notranslate"><span class="pre">stride</span></code>
-was forwarded to the magnitude <code class="docutils literal notranslate"><span class="pre">pcolormesh</span></code> as well as to the quiver layer.
-It is now consumed before the scalar layer is drawn and applied only to the
-quiver decimation it was always meant for (#559).</p></li>
-<li><p><strong>docs (segments)</strong>: the <code class="docutils literal notranslate"><span class="pre">SegmentTable</span></code> reference documented methods that do
-not exist in the implementation. The reference now matches the shipped API
-(#605).</p></li>
-<li><p><strong>docs (interop)</strong>: the <code class="docutils literal notranslate"><span class="pre">gwinc_</span></code> docstring pointed at a classmethod that does
-not exist, and the module's stated test coverage did not match the tests that
-actually run. Both now describe the implementation (#608).</p></li>
-<li><p><strong>ci</strong>: the interop gates aggregated JUnit output without checking that any
-test had been collected, so a run that collected zero tests reported success.
-A gate with no collected tests now fails (#511).</p></li>
+<li><p><strong>timeseries</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries.rms(stride=1,</span> <span class="pre">*,</span> <span class="pre">ignore_nan=True)</span></code> は再び秒単位の位置数値ストライドを受け入れ、無次元のトレンド系列を返します。数量ストライドと一般的な削減キーワードは拒否されるため、パブリック GWpy 互換 API には 1 つの明確な意味があります (#451)。</p></li>
+<li><p><strong>タイプ</strong>: <code class="docutils literal notranslate"><span class="pre">astropy</span></code> <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> と <code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> (<code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>、<code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code>、<code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code>) の間の算術では、<code class="docutils literal notranslate"><span class="pre">Quantity</span></code> が左側にある場合、行列の型、そのセルごとの単位、およびすべての軸のメタデータが保持されるようになりました。以前の <code class="docutils literal notranslate"><span class="pre">(2</span> <span class="pre">*</span> <span class="pre">u.s)</span> <span class="pre">*</span> <span class="pre">matrix</span></code> は、すべてのセル単位、行と列のキー、および時間/周波数軸を含む生の行列データを値とする裸の <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> を返していました。破棄: <code class="docutils literal notranslate"><span class="pre">m</span></code> のセルの行列の場合、<code class="docutils literal notranslate"><span class="pre">(2</span> <span class="pre">*</span> <span class="pre">u.s)</span> <span class="pre">*</span> <span class="pre">matrix</span></code> は <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">s</span></code> ではなく <code class="docutils literal notranslate"><span class="pre">s</span></code> の <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> を返したので、すべてのセルが行列自体の単位でオフになり、エラーや警告は発生しませんでした。左側の行列 (<code class="docutils literal notranslate"><span class="pre">matrix</span> <span class="pre">*</span> <span class="pre">(2</span> <span class="pre">*</span> <span class="pre">u.s)</span></code>) の同じ式はすでに正しいため、2 つの順序は一致しませんでした (#575)。</p></li>
+<li><p><strong>タイプ</strong>: <code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> の比較演算子は要素ごとに行われ、形状、行、列、軸を無次元のセル単位で保持するブール行列コンテナーを返します。オペランドは比較前に単位変換されるため、<code class="docutils literal notranslate"><span class="pre">matrix_m</span> <span class="pre">&lt;</span> <span class="pre">quantity_cm</span></code> は生の数値ではなく物理値を比較し、互換性のない単位を比較すると、黙って間違った答えを返す代わりに <code class="docutils literal notranslate"><span class="pre">UnitConversionError</span></code> が発生します (#576)。</p></li>
+<li><p><strong>タイプ</strong>: #577 で報告された高速算術パスのガード欠陥は削除され、インプレース演算子はアトミックになりました。途中で障害が発生すると、オペランドは半分更新されるのではなく、変更されないままになります。</p></li>
+<li><p><strong>タイプ</strong>: <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.clip()</span></code> / <code class="docutils literal notranslate"><span class="pre">.round()</span></code> (およびその上に構築される <code class="docutils literal notranslate"><span class="pre">.copy()</span></code>) は、以前は操作で dtype が変更されるたびに周波数軸 (<code class="docutils literal notranslate"><span class="pre">frequencies</span></code>、<code class="docutils literal notranslate"><span class="pre">f0</span></code>、<code class="docutils literal notranslate"><span class="pre">df</span></code>) をサイレントに破棄していました。時間軸、行/列のラベル、セルのメタデータとともに保存されるようになりました (#623)。</p></li>
+<li><p><strong>タイプ</strong>: <code class="docutils literal notranslate"><span class="pre">SeriesMatrix.clip(min,</span> <span class="pre">max)</span></code> 単位の処理が逆転しました。単位を持つ行列に対する単純な数値または無次元の境界は黙って受け入れられましたが、同等ではあるがスケールが異なる <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> 境界は誤って処理されました。 <code class="docutils literal notranslate"><span class="pre">clip()</span></code> は、行列の単位と同等の <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> バウンドを受け入れ (変換、たとえばメートル行列に対する <code class="docutils literal notranslate"><span class="pre">clip(1*u.cm,</span> <span class="pre">2*u.cm)</span></code>)、無次元の裸の数値に対して <code class="docutils literal notranslate"><span class="pre">UnitConversionError</span></code> を生成するようになりました。結合、または単位を含む行列に対して次元的に互換性のない結合。 <code class="docutils literal notranslate"><span class="pre">clip()</span></code> はさらに、単位保持限界を適用する前に、行列内のすべてのセルが <em>同一</em> 単位 (単に次元的に等しいものではなく、たとえば <code class="docutils literal notranslate"><span class="pre">m</span></code> と <code class="docutils literal notranslate"><span class="pre">cm</span></code> が 1 つの行列に混在している) を共有することを要求します。そうでない場合は、<code class="docutils literal notranslate"><span class="pre">UnitConversionError</span></code> を発生させます。異種単位行列の場合は、<code class="docutils literal notranslate"><span class="pre">matrix.value</span></code> を直接クリップします。これにより、これに関連するハザードでは、<code class="docutils literal notranslate"><span class="pre">np.clip(matrix,</span> <span class="pre">...)</span></code> (<code class="docutils literal notranslate"><span class="pre">matrix.clip(...)</span></code> とは対照的に) が、NumPy の <code class="docutils literal notranslate"><span class="pre">_wrapfunc</span></code> の下で、誤ったエイリアス化されたメタデータ結果に暗黙的にフォールバックします。 <code class="docutils literal notranslate"><span class="pre">out=</span></code> ガード — そのフォールバック パスに飲み込まれます。両方とも <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> を発生させますが、これは飲み込まれません (#623)。</p></li>
+<li><p><strong>タイプ</strong>: <code class="docutils literal notranslate"><span class="pre">matrix</span> <span class="pre">**</span> <span class="pre">True</span></code> / <code class="docutils literal notranslate"><span class="pre">matrix</span> <span class="pre">**</span> <span class="pre">False</span></code> は Python/NumPy 整数セマンティクス (<code class="docutils literal notranslate"><span class="pre">True</span> <span class="pre">==</span> <span class="pre">1</span></code>、<code class="docutils literal notranslate"><span class="pre">False</span> <span class="pre">==</span> <span class="pre">0</span></code>) と一致するようになりました: <code class="docutils literal notranslate"><span class="pre">matrix</span> <span class="pre">**</span> <span class="pre">True</span></code> は元の値と単位を保持し、<code class="docutils literal notranslate"><span class="pre">matrix</span> <span class="pre">**</span> <span class="pre">False</span></code> は値 <code class="docutils literal notranslate"><span class="pre">1</span></code> を無次元の結果で返します (#623)。</p></li>
+<li><p><strong>タイプ</strong>: <code class="docutils literal notranslate"><span class="pre">SeriesMatrix.astype()</span></code> (操作によって dtype が変更されるたびに、<code class="docutils literal notranslate"><span class="pre">clip()</span></code>/<code class="docutils literal notranslate"><span class="pre">round()</span></code> によって内部的に使用されます (例: float/<code class="docutils literal notranslate"><span class="pre">Quantity</span></code> の範囲に対して整数行列をクリップする)) <code class="docutils literal notranslate"><span class="pre">xindex</span></code>、<code class="docutils literal notranslate"><span class="pre">meta</span></code>、<code class="docutils literal notranslate"><span class="pre">rows</span></code> および<code class="docutils literal notranslate"><span class="pre">copy()</span></code> とは異なり、<code class="docutils literal notranslate"><span class="pre">cols</span></code> はコピーされずに変更されません。クリップされた <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> の <code class="docutils literal notranslate"><span class="pre">times</span></code> 軸はソースのエイリアスになる可能性があるため、1 つを変更します静かに他のものを破壊しました。 <code class="docutils literal notranslate"><span class="pre">astype()</span></code> は、4 つすべてに対する <code class="docutils literal notranslate"><span class="pre">copy()</span></code> の独立性保証を反映するようになりました (#623)。</p></li>
+<li><p><strong>タイプ</strong>: 裸の NumPy 整数スカラー オペランド (Python <code class="docutils literal notranslate"><span class="pre">float</span></code> のサブクラスに発生する Python <code class="docutils literal notranslate"><span class="pre">int</span></code> または <code class="docutils literal notranslate"><span class="pre">np.float64</span></code> とは対照的な <code class="docutils literal notranslate"><span class="pre">np.int64(2)</span></code> など) は、プレーンな数値が含まれるどこでも受け入れられるようになりました。以前は、<code class="docutils literal notranslate"><span class="pre">spectrogram_matrix</span> <span class="pre">*</span> <span class="pre">np.int64(2)</span></code> および <code class="docutils literal notranslate"><span class="pre">spectrogram_matrix</span> <span class="pre">**</span> <span class="pre">np.int64(2)</span></code> は <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">operand</span> <span class="pre">'SpectrogramMatrix'</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">support</span> <span class="pre">ufuncs</span></code> を生成していました。これは、<code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> 独自のオペランド受け入れチェックでは <code class="docutils literal notranslate"><span class="pre">int</span></code>/ <code class="docutils literal notranslate"><span class="pre">float</span></code>/<code class="docutils literal notranslate"><span class="pre">complex</span></code> がリストされていたためですが、リストされていなかったためです。<code class="docutils literal notranslate"><span class="pre">np.number</span></code>。これとは別に、<code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>/<code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> 上の <code class="docutils literal notranslate"><span class="pre">matrix</span> <span class="pre">**</span> <span class="pre">np.int64(n)</span></code> は常に正しい結果を計算しましたが、新しい (#577e) スカラー指数正規化が裸の <code class="docutils literal notranslate"><span class="pre">np.number</span></code> を渡したため、すべての呼び出しで例外とフォールバックの保証されたパスが取られ、完全なトレースバックがログに記録され、<code class="docutils literal notranslate"><span class="pre">PerformanceWarning</span></code> が生成されました。 <code class="docutils literal notranslate"><span class="pre">MetaDataMatrix</span></code> のセル単位の計算。<code class="docutils literal notranslate"><span class="pre">int</span></code>/<code class="docutils literal notranslate"><span class="pre">float</span></code>/<code class="docutils literal notranslate"><span class="pre">complex</span></code>。どちらも使用前に正規化されるようになりました (#623)。</p></li>
+<li><p><strong>io (WIN)</strong>: WIN リーダーはチャネルごとのサンプリング レートをバイト 3 のみからデコードしましたが、レートは 12 ビット フィールドで、その上位 4 ビットはバイト 2 の下位ニブルにあります。 したがって、256 Hz 以上のすべてのレートは 256 を法として切り捨てられ、1000 Hz は 232 Hz として読み取られました。リーダーはそのレート (<code class="docutils literal notranslate"><span class="pre">xlen</span> <span class="pre">=</span> <span class="pre">(srate</span> <span class="pre">-</span> <span class="pre">1)</span> <span class="pre">*</span> <span class="pre">datawide</span></code>) からパケットのペイロード長も導出するため、バイト ストリームの位置がずれており、デコードされた <em>サンプル自体</em> はガベージでした。時間軸だけではありません。例外は発生しませんでした。リーダーは、もっともらしい <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> を返しました。完全な 12 ビット レートがデコードされ、ObsPy のリーダー (<code class="docutils literal notranslate"><span class="pre">obspy/io/win/core.py</span></code>、アップストリーム obspy#3641) と一致します。 255 Hz 以下のレートは影響を受けません。先頭の絶対サンプルを伝送するチャネル ブロックを記述することができないゼロのエンコード レートでは、パケットのスライスを誤るのではなく、<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> が発生するようになりました。ここでは仕様を参照していません4096 Hz のセンチネルとしてゼロを文書化しています (#610)。</p></li>
+<li><p><strong>io (zarr)</strong>: ストアを読み取ると、指定されたルールではなくディクショナリの反復順序によって選択されたチャネルが返されるため、同じ変更されていないマルチチャネル ストアを 2 回読み取ると、例外も警告も発生せずに異なるデータが返される可能性があります。ペイロードが読み取られる前にチャネル選択が解決されるようになりました。使用可能な配列名が並べ替えられ、欠落している配列に名前を付けるか、名前を繰り返す <code class="docutils literal notranslate"><span class="pre">channels=</span></code> セレクターによって <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> が発生します。黙ってスキップされるのではなく。シングルシリーズ リーダーは、選択が正確に 1 つのチャネルに解決されることを要求し、それ以外の場合は、ユーザーに代わって 1 つを選択するのではなく、<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を発生させます (#614)。</p></li>
+<li><p><strong>io (zarr)</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries.read(source,</span> <span class="pre">format=&quot;zarr&quot;)</span></code> は、zarr リーダーに到達する前に <code class="docutils literal notranslate"><span class="pre">IsADirectoryError</span></code> を生成しました。これは、明示的な形式が汎用レジストリ パスをインターセプトすることがなく、zarr ディレクトリ ストアがファイルとして開かれたためです。したがって、文書化されたエントリ ポイントは機能しませんでした。 <code class="docutils literal notranslate"><span class="pre">TimeSeries.read</span></code> と <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read</span></code> は、傍受を反映して、<code class="docutils literal notranslate"><span class="pre">format=&quot;zarr&quot;</span></code> (および <code class="docutils literal notranslate"><span class="pre">format=&quot;nc&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;netcdf4&quot;</span></code>) をリーダーに直接ディスパッチするようになりました。<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read</span></code> は <code class="docutils literal notranslate"><span class="pre">.zarr</span></code> サフィックス (#620) に対してすでに実行されています。</p></li>
+<li><p><strong>io (NetCDF4)</strong>: 書き込み→読み取りのラウンドトリップで、指定された時間軸が返されませんでした。 <code class="docutils literal notranslate"><span class="pre">t0</span></code> は日時を介した変換を通じて、<code class="docutils literal notranslate"><span class="pre">dt</span></code> は整数ナノ秒の量子化を通じて伝達されたため、現実的な GPS エポック (<code class="docutils literal notranslate"><span class="pre">t0</span></code> が約 1e9 秒で、binary64 には余裕の精度がない) では、エポックとサンプル間隔の両方が乱れて戻り、ファイル内のすべてのタイムスタンプが静かにシフトしました。ファイルは<code class="docutils literal notranslate"><span class="pre">t0</span></code> を正確な binary64 16 進数リテラルと整数の GPS 秒/ナノ秒を加えたものとして保存し、<code class="docutils literal notranslate"><span class="pre">dt</span></code> を正確な整数比として保存する、バージョン管理されたタイミング スキーマで記述されるようになりました。そのため、軸はビットごとにラウンドトリップします。以前のバージョンで書き込まれたファイルにはスキーマ マーカーがありません。それらはまだ読み取り可能であり、これを読み取ると、劣化したものを提示するのではなく、タイミング精度が制限されていることを示す <code class="docutils literal notranslate"><span class="pre">RuntimeWarning</span></code> が発行されます。軸を正確に設定します (#615)。</p></li>
+<li><p><strong>timeseries</strong>: <code class="docutils literal notranslate"><span class="pre">crop()</span></code> は実体化されたタイムスタンプ インデックスを通じてサンプルを選択したため、大規模な GPS エポックの浮動小数点キャンセルによって境界が 1 サンプル分移動し、<code class="docutils literal notranslate"><span class="pre">dt</span></code> が数 ulp だけ混乱する可能性があります。乱れた <code class="docutils literal notranslate"><span class="pre">dt</span></code> によって <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> が変化し、切り捨てられた <code class="docutils literal notranslate"><span class="pre">nfft</span></code> の導出によってそれが O(1/nfft) の周波数軸誤差に増幅されるため、クロップ後に計算されたスペクトルは、何もせずにシフトされる可能性があります。育てるものなら何でも。通常の軸上の切り抜きは、<code class="docutils literal notranslate"><span class="pre">t0</span></code>、<code class="docutils literal notranslate"><span class="pre">dt</span></code>、およびキャンセル対応許容値から計算された位置スライスになり、ソース <code class="docutils literal notranslate"><span class="pre">dt</span></code> は切り取られた座標から再導出されるのではなく保持されます。不規則な軸は GWpy の既存の動作を維持します。同じ修正が <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.crop</span></code> (#617) にも適用されます。</p></li>
+<li><p><strong>timeseries</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read</span></code> は、リーダーが添付した <code class="docutils literal notranslate"><span class="pre">_gwexpy_io</span></code> 読み取り来歴を破棄しました。これは、リーダーの結果をコレクション クラスで再ラップしても属性が渡されなかったためです。来歴は再ラップ後も存続するため、辞書がどのように読まれたかの記録は、返されたオブジェクトで利用できます (#618)。</p></li>
+<li><p><strong>相互運用 (ROOT)</strong>: <code class="docutils literal notranslate"><span class="pre">from_root</span></code> は、生のビン バッファーを <code class="docutils literal notranslate"><span class="pre">float64</span></code> として再解釈することにより、2 次元ヒストグラムの内容を読み取ります。 <code class="docutils literal notranslate"><span class="pre">TH2F</span></code> には <code class="docutils literal notranslate"><span class="pre">float32</span></code> の内容が格納されるため、バッファーが間違った幅でデコードされ、一見もっともらしいが意味のない値が例外なく返されました。コンテンツは、クラスのネイティブ スカラー dtype で ROOT アクセサーを通じて読み取られるようになりました。(対応する整数幅として <code class="docutils literal notranslate"><span class="pre">TH1C</span></code>/<code class="docutils literal notranslate"><span class="pre">S</span></code>/<code class="docutils literal notranslate"><span class="pre">I</span></code>/<code class="docutils literal notranslate"><span class="pre">L</span></code>、<code class="docutils literal notranslate"><span class="pre">float32</span></code> として <code class="docutils literal notranslate"><span class="pre">TH1F</span></code>/<code class="docutils literal notranslate"><span class="pre">TH2F</span></code>、<code class="docutils literal notranslate"><span class="pre">float64</span></code> として <code class="docutils literal notranslate"><span class="pre">TH1D</span></code>/<code class="docutils literal notranslate"><span class="pre">TH2D</span></code>)、また、<code class="docutils literal notranslate"><span class="pre">Histogram</span></code> は整数入力配列を <code class="docutils literal notranslate"><span class="pre">float64</span></code> にプロモートしなくなり、整数型の ROOT ヒストグラムは整数の内容を保持します。ビン エラーも同様に、代わりに <code class="docutils literal notranslate"><span class="pre">GetBinError</span></code> を通じて読み取られます。<code class="docutils literal notranslate"><span class="pre">Sumw2</span></code> バッファー (#593) から再構築されます。</p></li>
+<li><p><strong>フィールド</strong>: <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> (またはベア スカラー、または <code class="docutils literal notranslate"><span class="pre">Unit</span></code>) とフィールド コレクション (<code class="docutils literal notranslate"><span class="pre">FieldList</span></code>、<code class="docutils literal notranslate"><span class="pre">FieldDict</span></code>、したがって <code class="docutils literal notranslate"><span class="pre">VectorField</span></code> および <code class="docutils literal notranslate"><span class="pre">TensorField</span></code>) 間の算術演算で、コレクションには演算子コントラクトがなかったため、コンポーネントごとの物理単位と軸のメタデータが失われました。独自のおよび Astropy の <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> ディスパッチによってそれが消費されました。コレクションはバイナリ、リフレクト、および明示的なインプレース演算子: 各コンポーネントは個別に操作され、その軸インデックス、軸名、ドメイン、オフセット、名前、エポック、およびチャネルは、ソースと共有されるのではなく、結果にコピーされます。コンポーネントが置き換えられる前に寸法エラーが発生するため、インプレース操作が失敗するとコレクションはそのまま残ります (#578)。</p></li>
+<li><p><strong>プロット</strong>: <code class="docutils literal notranslate"><span class="pre">stride</span></code> が振幅 <code class="docutils literal notranslate"><span class="pre">pcolormesh</span></code> および quiver 層に転送されたため、<code class="docutils literal notranslate"><span class="pre">VectorField.plot(stride=...)</span></code> は <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">got</span> <span class="pre">an</span> <span class="pre">unexpected</span> <span class="pre">keyword</span> <span class="pre">argument</span> <span class="pre">'stride'</span></code> を発生させました。これは、スカラー レイヤーが描画される前に消費され、常に意図されていた矢筒デシメーションにのみ適用されるようになりました (#559)。</p></li>
+<li><p><strong>ドキュメント (セグメント)</strong>: <code class="docutils literal notranslate"><span class="pre">SegmentTable</span></code> は、実装に存在しないメソッドを文書化した参照です。このリファレンスは出荷された API (#605) と一致するようになりました。</p></li>
+<li><p><strong>docs (interop)</strong>: <code class="docutils literal notranslate"><span class="pre">gwinc_</span></code> docstring が存在しないクラスメソッドを指していました。また、モジュールに記載されているテスト カバレッジが実際に実行されるテストと一致しませんでした。両方とも実装について説明します (#608)。</p></li>
+<li><p><strong>ci</strong>: 相互運用ゲートは、テストが収集されたことを確認せずに JUnit 出力を集約したため、テストが収集されなかった実行は成功を報告しました。収集されたテストのないゲートは失敗するようになりました (#511)。</p></li>
 </ul>
 </section>
 <section id="compatibility">
-<h3>Compatibility<a class="headerlink" href="#compatibility" title="Link to this heading">#</a></h3>
+<h3>互換性<a class="headerlink" href="#compatibility" title="Link to this heading">#</a></h3>
 <ul>
-<li><p><strong>types (API narrowing, patch release)</strong>: applying a NumPy ufunc directly to
-a <code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> — <code class="docutils literal notranslate"><span class="pre">np.sqrt(matrix)</span></code>, <code class="docutils literal notranslate"><span class="pre">np.negative(matrix)</span></code>,
-<code class="docutils literal notranslate"><span class="pre">np.add(a,</span> <span class="pre">b)</span></code>, <code class="docutils literal notranslate"><span class="pre">np.add(a,</span> <span class="pre">b,</span> <span class="pre">out=target)</span></code>, <code class="docutils literal notranslate"><span class="pre">np.add.reduce(matrix)</span></code>,
-<code class="docutils literal notranslate"><span class="pre">np.add.accumulate(matrix)</span></code>, <code class="docutils literal notranslate"><span class="pre">np.multiply.outer(a,</span> <span class="pre">b)</span></code> — now raises</p>
+<li><p><strong>タイプ (API 絞り込み、パッチ リリース)</strong>: NumPy ufunc を <code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> (<code class="docutils literal notranslate"><span class="pre">np.sqrt(matrix)</span></code>、<code class="docutils literal notranslate"><span class="pre">np.negative(matrix)</span></code>、<code class="docutils literal notranslate"><span class="pre">np.add(a,</span> <span class="pre">b)</span></code>、<code class="docutils literal notranslate"><span class="pre">np.add(a,</span> <span class="pre">b,</span> <span class="pre">out=target)</span></code>、<code class="docutils literal notranslate"><span class="pre">np.add.reduce(matrix)</span></code>、<code class="docutils literal notranslate"><span class="pre">np.add.accumulate(matrix)</span></code>、<code class="docutils literal notranslate"><span class="pre">np.multiply.outer(a,</span> <span class="pre">b)</span></code>) に直接適用すると、次のエラーが発生します。</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TypeError: operand &#39;TimeSeriesMatrix&#39; does not support ufuncs (__array_ufunc__=None)
 </pre></div>
 </div>
-<p>Previously these calls either executed silently with undefined results or
-discarded metadata without warning. This narrows the public surface in a
-patch release, which the project's release policy permits when it corrects
-a contract violation: the same mechanism that stops a left-hand <code class="docutils literal notranslate"><span class="pre">Quantity</span></code>
-from swallowing per-cell units (<code class="docutils literal notranslate"><span class="pre">__array_ufunc__</span> <span class="pre">=</span> <span class="pre">None</span></code>, which routes
-<code class="docutils literal notranslate"><span class="pre">quantity</span> <span class="pre">*</span> <span class="pre">matrix</span></code> back through the reflected operator) also makes NumPy
-refuse direct ufunc dispatch. Silently returning a wrong-unit result is
-treated as worse than an explicit failure.</p>
-<p>Every operation remains available through the explicit operator suite —
-<code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">-</span> <span class="pre">*</span> <span class="pre">/</span> <span class="pre">//</span> <span class="pre">%</span> <span class="pre">divmod</span> <span class="pre">**</span> <span class="pre">&#64;</span></code>, their reflected and in-place forms, the six
-comparisons and unary <code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">-</span> <span class="pre">abs()</span></code> — which preserve type, per-cell units and
-metadata. For a raw NumPy result, operate on <code class="docutils literal notranslate"><span class="pre">matrix.value</span></code>; note that this
-drops units and metadata by design.</p>
-<p>Full NumPy/GWpy ufunc compatibility is <strong>deferred to v0.2.0</strong> (#637), where
-it is a release blocker for the <code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> semantic-contract redesign.
-Restoring it under the current <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>-subclass data model was measured to
-require changing either <code class="docutils literal notranslate"><span class="pre">.unit</span></code> or <code class="docutils literal notranslate"><span class="pre">.value</span></code> public semantics, which is out
-of scope for a patch release (#575, #576, #577, #623).</p>
+<p>以前は、これらの呼び出しはサイレントに実行され、未定義の結果が返されるか、警告なしにメタデータが破棄されました。これにより、パッチ リリースでの公開範囲が狭まり、プロジェクトのリリース ポリシーでは、契約違反を修正する場合に許可されています。左側の <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> がセル単位のユニットを飲み込むのを阻止するのと同じメカニズム (<code class="docutils literal notranslate"><span class="pre">__array_ufunc__</span> <span class="pre">=</span> <span class="pre">None</span></code>、リフレクトされた演算子を介して <code class="docutils literal notranslate"><span class="pre">quantity</span> <span class="pre">*</span> <span class="pre">matrix</span></code> を戻す) も、NumPy を作成します。直接の ufunc ディスパッチを拒否します。間違った単位の結果をサイレントに返すことは、明示的な失敗よりも悪いものとして扱われます。</p>
+<p>すべての操作は、型、セルごとの単位、およびメタデータを保持する明示的な演算子スイート (<code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">-</span> <span class="pre">*</span> <span class="pre">/</span> <span class="pre">//</span> <span class="pre">%</span> <span class="pre">divmod</span> <span class="pre">**</span> <span class="pre">&#64;</span></code>、そのリフレクトおよびインプレース形式、6 つの比較、および単項 <code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">-</span> <span class="pre">abs()</span></code>) を通じて引き続き利用できます。生の NumPy 結果の場合は、<code class="docutils literal notranslate"><span class="pre">matrix.value</span></code> を操作します。これにより、設計によりユニットとメタデータが削除されることに注意してください。</p>
+<p>NumPy/GWpy ufunc の完全な互換性は <strong>v0.2.0</strong> (#637) に延期されており、<code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> セマンティック コントラクトの再設計のリリース ブロッカーとなっています。現在の <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> サブクラス データ モデルでこれを復元するには、<code class="docutils literal notranslate"><span class="pre">.unit</span></code> または <code class="docutils literal notranslate"><span class="pre">.value</span></code> パブリック セマンティクスの変更が必要であることが測定されており、これはパッチ リリースの範囲外です (#575、#576、#577、#623)。</p>
 </li>
-<li><p><strong>types</strong>: <code class="docutils literal notranslate"><span class="pre">matrix_m</span> <span class="pre">+</span> <span class="pre">matrix_cm</span></code> now converts the right operand to the left
-operand's per-cell units and succeeds, where it previously raised
-<code class="docutils literal notranslate"><span class="pre">UnitConversionError</span></code>. Results that used to fail now return a value;
-results that used to succeed are unchanged (#575).</p></li>
-<li><p><strong>types (API narrowing, patch release)</strong>: <code class="docutils literal notranslate"><span class="pre">divmod(matrix,</span> <span class="pre">operand)</span></code> is
-explicitly unsupported and raises <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>. An earlier draft of this fix
-had added a working <code class="docutils literal notranslate"><span class="pre">__divmod__</span></code>/<code class="docutils literal notranslate"><span class="pre">__rdivmod__</span></code> that silently ignored units
-on non-zero divisors; rather than ship a unit-aware <code class="docutils literal notranslate"><span class="pre">divmod</span></code>, this keeps the
-explicit failure <code class="docutils literal notranslate"><span class="pre">divmod</span></code> already had on <code class="docutils literal notranslate"><span class="pre">main</span></code> before this change — not a
-functional regression (#623).</p></li>
-<li><p><strong>types (API narrowing, patch release)</strong>: <code class="docutils literal notranslate"><span class="pre">%</span></code> and <code class="docutils literal notranslate"><span class="pre">//</span></code> between a
-unit-bearing <code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> and any non-dimensionless operand now raise
-<code class="docutils literal notranslate"><span class="pre">TypeError</span></code> explicitly, instead of silently copying the left operand's unit
-onto a value computed without unit conversion (the same defect class as the
-#576 fix above, found separately in <code class="docutils literal notranslate"><span class="pre">%</span></code>/<code class="docutils literal notranslate"><span class="pre">//</span></code>). The dimensionless check
-requires an exact — not merely dimensionally equivalent — unit on every
-cell, so a matrix mixing <code class="docutils literal notranslate"><span class="pre">u.dimensionless_unscaled</span></code> and <code class="docutils literal notranslate"><span class="pre">u.percent</span></code> cells is
-rejected regardless of which cell comes first (previously the check
-compared only against the first cell, so <code class="docutils literal notranslate"><span class="pre">500%</span></code> could be silently treated
-as <code class="docutils literal notranslate"><span class="pre">500</span></code> depending on cell order). Dimensionless <code class="docutils literal notranslate"><span class="pre">%</span></code> and <code class="docutils literal notranslate"><span class="pre">//</span></code> are
-unaffected. Addition, subtraction, and comparison are unit-safe. Modulo,
-floor division, and <code class="docutils literal notranslate"><span class="pre">divmod</span></code> are not supported for unit-bearing
-<code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> objects in v0.1.x — they raise explicitly rather than
-performing value-only arithmetic. A correct unit-aware
-floor-division/remainder implementation is deferred to the v0.2.0 semantic
-redesign (#637) (#623).</p></li>
-<li><p><strong>types</strong>: for finiteness checks on a matrix, use
-<code class="docutils literal notranslate"><span class="pre">mask</span> <span class="pre">=</span> <span class="pre">np.isfinite(matrix.value)</span></code>; this is the documented v0.1.13
-alternative now that direct ufunc application (including <code class="docutils literal notranslate"><span class="pre">np.isfinite</span></code>)
-raises <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> (see the ufunc-narrowing entry above). No new API is
-added in this patch release (#623).</p></li>
-<li><p><strong>io (API narrowing, patch release)</strong>: readers that have no windowed read
-path accepted <code class="docutils literal notranslate"><span class="pre">start=</span></code> and <code class="docutils literal notranslate"><span class="pre">end=</span></code> and then dropped them, returning the whole
-file as if it were the requested span. The arguments are now rejected
-instead. This affects the <code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code> and <code class="docutils literal notranslate"><span class="pre">xml.diaggui</span></code>/<code class="docutils literal notranslate"><span class="pre">dttxml</span></code> readers.</p>
+<li><p><strong>タイプ</strong>: <code class="docutils literal notranslate"><span class="pre">matrix_m</span> <span class="pre">+</span> <span class="pre">matrix_cm</span></code> は、以前は <code class="docutils literal notranslate"><span class="pre">UnitConversionError</span></code> を発行していましたが、右側のオペランドを左側のオペランドのセルごとの単位に変換して成功するようになりました。以前は失敗していた結果が値を返すようになりました。以前は成功していた結果は変更されません (#575)。</p></li>
+<li><p><strong>タイプ (API の絞り込み、パッチ リリース)</strong>: <code class="docutils literal notranslate"><span class="pre">divmod(matrix,</span> <span class="pre">operand)</span></code> は明示的にサポートされていないため、<code class="docutils literal notranslate"><span class="pre">TypeError</span></code> が発生します。この修正の以前のドラフトでは、ゼロ以外の約数の単位を黙って無視する機能する <code class="docutils literal notranslate"><span class="pre">__divmod__</span></code>/<code class="docutils literal notranslate"><span class="pre">__rdivmod__</span></code> が追加されていました。これにより、ユニット認識の <code class="docutils literal notranslate"><span class="pre">divmod</span></code> を出荷するのではなく、この変更の前に <code class="docutils literal notranslate"><span class="pre">main</span></code> で <code class="docutils literal notranslate"><span class="pre">divmod</span></code> がすでに抱えていた明示的な障害が維持されます (機能の回帰ではありません (#623))。</p></li>
+<li><p><strong>タイプ (API の絞り込み、パッチ リリース)</strong>: 単位を含む <code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> と無次元オペランドの間の <code class="docutils literal notranslate"><span class="pre">%</span></code> および <code class="docutils literal notranslate"><span class="pre">//</span></code> は、左側のオペランドの単位を単位変換なしで計算された値にサイレントにコピーするのではなく、明示的に <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> を生成するようになりました (上記の #576 修正と同じ欠陥クラス。 <code class="docutils literal notranslate"><span class="pre">%</span></code>/<code class="docutils literal notranslate"><span class="pre">//</span></code>)。無次元チェックには正確な —単に次元が等しいだけでなく、すべてのセル上の単位であるため、<code class="docutils literal notranslate"><span class="pre">u.dimensionless_unscaled</span></code> セルと <code class="docutils literal notranslate"><span class="pre">u.percent</span></code> セルを混合する行列は、どちらのセルが最初に来るかに関係なく拒否されます (以前はチェックが最初のセルに対してのみ比較されていたため、<code class="docutils literal notranslate"><span class="pre">500%</span></code> はセルの順序に応じて黙って <code class="docutils literal notranslate"><span class="pre">500</span></code> として扱われる可能性がありました)。無次元の <code class="docutils literal notranslate"><span class="pre">%</span></code> および <code class="docutils literal notranslate"><span class="pre">//</span></code> は影響を受けません。足し算、引き算、比較は、ユニットセーフ。 v0.1.x では、モジュロ、フロア除算、および <code class="docutils literal notranslate"><span class="pre">divmod</span></code> は、単位を持つ <code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> オブジェクトではサポートされていません。値のみの算術演算を実行するのではなく、明示的に計算されます。正しいユニット認識のフロア分割/剰余の実装は、v0.2.0 セマンティック再設計 (#637) (#623) に延期されます。</p></li>
+<li><p><strong>タイプ</strong>: 行列の有限性チェックには、<code class="docutils literal notranslate"><span class="pre">mask</span> <span class="pre">=</span> <span class="pre">np.isfinite(matrix.value)</span></code> を使用します。これは、直接の ufunc アプリケーション (<code class="docutils literal notranslate"><span class="pre">np.isfinite</span></code> を含む) が <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> を生成するようになった、文書化された v0.1.13 の代替案です (上記の ufunc 絞り込みエントリを参照)。このパッチ リリース (#623) では新しい API は追加されません。</p></li>
+<li><p><strong>io (API の絞り込み、パッチ リリース)</strong>: ウィンドウ化された読み取りパスを持たないリーダーは、<code class="docutils literal notranslate"><span class="pre">start=</span></code> および <code class="docutils literal notranslate"><span class="pre">end=</span></code> を受け入れてドロップし、要求されたスパンであるかのようにファイル全体を返しました。引数は代わりに拒否されるようになりました。これは、<code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code> および <code class="docutils literal notranslate"><span class="pre">xml.diaggui</span></code>/<code class="docutils literal notranslate"><span class="pre">dttxml</span></code> リーダーに影響します。</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
-<tr class="row-odd"><th class="head"><p>Call</p></th>
-<th class="head"><p>Before</p></th>
-<th class="head"><p>After</p></th>
+<tr class="row-odd"><th class="head"><p>電話</p></th>
+<th class="head"><p>前に</p></th>
+<th class="head"><p>後</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(src,</span> <span class="pre">format=&quot;ats.mth5&quot;,</span> <span class="pre">start=t0,</span> <span class="pre">end=t1)</span></code></p></td>
-<td><p>returns the full file, silently ignoring the span</p></td>
-<td><p>raises <code class="docutils literal notranslate"><span class="pre">IoNotImplementedError</span></code> (a <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> subclass)</p></td>
+<td><p>スパンを無視して完全なファイルを返します</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IoNotImplementedError</span></code> (<code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> サブクラス) を発生させます</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(src,</span> <span class="pre">format=&quot;dttxml&quot;,</span> <span class="pre">start=t0,</span> <span class="pre">end=t1)</span></code></p></td>
-<td><p>as above</p></td>
-<td><p>as above</p></td>
+<td><p>上記のように</p></td>
+<td><p>上記のように</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>The remedy is in the exception message: read the source in full and crop the
-result, <code class="docutils literal notranslate"><span class="pre">TimeSeries.read(source,</span> <span class="pre">format=...).crop(start,</span> <span class="pre">end)</span></code>. Calls that
-pass neither selector are unaffected (#611).</p>
+<p>解決策は例外メッセージにあります。ソースを完全に読み取り、結果 (<code class="docutils literal notranslate"><span class="pre">TimeSeries.read(source,</span> <span class="pre">format=...).crop(start,</span> <span class="pre">end)</span></code>) を切り取ります。どちらのセレクターも通過しない呼び出しは影響を受けません (#611)。</p>
 </li>
-<li><p><strong>io (GWF) (API narrowing, patch release)</strong>: <code class="docutils literal notranslate"><span class="pre">parallel=</span></code> and <code class="docutils literal notranslate"><span class="pre">nproc=</span></code> were
-accepted by the GWF read path and then discarded, so a caller asking for
-parallel reads got a serial read and no indication of it. Parallel GWF reads
-are still not implemented; the arguments now say so.</p>
+<li><p><strong>io (GWF) (API 絞り込み、パッチ リリース)</strong>: <code class="docutils literal notranslate"><span class="pre">parallel=</span></code> および <code class="docutils literal notranslate"><span class="pre">nproc=</span></code> は GWF 読み取りパスによって受け入れられ、その後破棄されたため、並列読み取りを要求する呼び出し元はシリアル読み取りを取得しましたが、それを示すものはありませんでした。並列 GWF 読み取りはまだ実装されていません。議論は今そう言っています。</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
-<tr class="row-odd"><th class="head"><p>Call</p></th>
-<th class="head"><p>Before</p></th>
-<th class="head"><p>After</p></th>
+<tr class="row-odd"><th class="head"><p>電話</p></th>
+<th class="head"><p>前に</p></th>
+<th class="head"><p>後</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">read(...,</span> <span class="pre">parallel=4)</span></code> / <code class="docutils literal notranslate"><span class="pre">read(...,</span> <span class="pre">nproc=4)</span></code></p></td>
-<td><p>serial read, request silently dropped</p></td>
-<td><p>raises <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code></p></td>
+<td><p>シリアル読み取り、リクエストはサイレントにドロップされました</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> を発生させます</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">read(...,</span> <span class="pre">parallel=True)</span></code></p></td>
-<td><p>serial read</p></td>
-<td><p>raises <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code></p></td>
+<td><p>シリアル読み取り</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> を発生させます</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">read(...,</span> <span class="pre">parallel=1)</span></code> / <code class="docutils literal notranslate"><span class="pre">nproc=1</span></code> / either set to <code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-<td><p>serial read</p></td>
-<td><p>unchanged — serial read</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">read(...,</span> <span class="pre">parallel=1)</span></code> / <code class="docutils literal notranslate"><span class="pre">nproc=1</span></code> / いずれかを <code class="docutils literal notranslate"><span class="pre">None</span></code> に設定</p></td>
+<td><p>シリアル読み取り</p></td>
+<td><p>変更なし — シリアル読み取り</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">read(...,</span> <span class="pre">nproc=0)</span></code> or a non-integer</p></td>
-<td><p>silently dropped</p></td>
-<td><p>raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">read(...,</span> <span class="pre">nproc=0)</span></code> または非整数</p></td>
+<td><p>静かに落とした</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を発生させます</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">read(...,</span> <span class="pre">parallel=2,</span> <span class="pre">nproc=2)</span></code></p></td>
-<td><p>one of the two silently won</p></td>
-<td><p>raises <code class="docutils literal notranslate"><span class="pre">TypeError</span></code></p></td>
+<td><p>二人のうちの一人が黙って勝った</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TypeError</span></code> を発生させます</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>Implementing parallel GWF reads is deferred to v0.2.0 (#588).</p>
+<p>並列 GWF 読み取りの実装は v0.2.0 (#588) まで延期されます。</p>
 </li>
-<li><p><strong>io (ndscope HDF5) (API narrowing, patch release)</strong>: the ndscope HDF5
-writer accepted arbitrary keyword arguments — including dataset creation
-options such as compression — and ignored them, so a file requested with
-compression was written without it and nothing said so. Unknown writer
-keywords now raise <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> before the target is opened, so no partial
-file is produced. No dataset creation option is supported in v0.1.13; the
-supported set is defined in v0.2.0 (#590).</p></li>
-<li><p><strong>io (zarr, GBD, NetCDF4) (API narrowing, patch release)</strong>: the
-single-series readers for these formats returned the first channel of a
-multi-channel source, and a <code class="docutils literal notranslate"><span class="pre">channels=</span></code> selector naming an array that was
-not present was silently skipped rather than reported. Both now fail
-explicitly.</p>
+<li><p><strong>io (ndscope HDF5) (API の絞り込み、パッチ リリース)</strong>: ndscope HDF5 ライターは、圧縮などのデータセット作成オプションを含む任意のキーワード引数を受け入れ、無視したため、圧縮を要求されたファイルは圧縮なしで書き込まれ、何も通知されませんでした。不明なライター キーワードでは、ターゲットが開かれる前に <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> が発生するため、部分ファイルは生成されません。 v0.1.13 ではデータセット作成オプションはサポートされていません。サポートされるセットは v0.2.0 (#590) で定義されています。</p></li>
+<li><p><strong>io (zarr、GBD、NetCDF4) (API 絞り込み、パッチ リリース)</strong>: これらの形式の単一シリーズ リーダーはマルチチャネル ソースの最初のチャネルを返し、存在しない配列を指定する <code class="docutils literal notranslate"><span class="pre">channels=</span></code> セレクターは報告されずに黙ってスキップされました。どちらも明示的に失敗するようになりました。</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
-<tr class="row-odd"><th class="head"><p>Call</p></th>
-<th class="head"><p>Before</p></th>
-<th class="head"><p>After</p></th>
+<tr class="row-odd"><th class="head"><p>電話</p></th>
+<th class="head"><p>前に</p></th>
+<th class="head"><p>後</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>single-series read of a multi-channel source</p></td>
-<td><p>returns an arbitrary channel</p></td>
-<td><p>raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>; pass <code class="docutils literal notranslate"><span class="pre">channels=</span></code> to select one</p></td>
+<tr class="row-even"><td><p>マルチチャンネルソースの単一シリーズ読み取り</p></td>
+<td><p>任意のチャネルを返します</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を発生させます。 <code class="docutils literal notranslate"><span class="pre">channels=</span></code> を渡して 1 つ選択します</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">channels=[&quot;missing&quot;]</span></code></p></td>
-<td><p>silently returns fewer channels, or none</p></td>
-<td><p>raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> naming the missing channels</p></td>
+<td><p>サイレントに少数のチャンネルを返すか、何も返しません</p></td>
+<td><p>欠落しているチャネルに名前を付ける <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を発生させます</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">channels=[&quot;a&quot;,</span> <span class="pre">&quot;a&quot;]</span></code></p></td>
-<td><p>duplicate silently collapsed</p></td>
-<td><p>raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code></p></td>
+<td><p>複製がサイレントに折りたたまれました</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を発生させます</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>Selectors are validated against the source's channel list before any payload
-is read, so an invalid selection costs nothing (#614, #615).</p>
+<p>セレクターはペイロードが読み取られる前にソースのチャンネル リストに対して検証されるため、無効な選択にはコストはかかりません (#614、#615)。</p>
 </li>
-<li><p><strong>histogram (API narrowing, patch release)</strong>: <code class="docutils literal notranslate"><span class="pre">Histogram</span></code> had no arithmetic
-contract, and whether an expression such as <code class="docutils literal notranslate"><span class="pre">quantity</span> <span class="pre">*</span> <span class="pre">histogram</span></code> failed or
-silently produced a value depended on the incidental interaction between the
-histogram's <code class="docutils literal notranslate"><span class="pre">unit</span></code>/<code class="docutils literal notranslate"><span class="pre">value</span></code> attributes and Astropy's <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> dispatch.
-Uncertainty propagation for histogram arithmetic is not defined, so rather
-than leave that balance to chance, <code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">-</span> <span class="pre">*</span> <span class="pre">/</span></code> and their reflected and in-place
-forms now raise <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> on <code class="docutils literal notranslate"><span class="pre">Histogram</span></code>, and <code class="docutils literal notranslate"><span class="pre">__array_ufunc__</span> <span class="pre">=</span> <span class="pre">None</span></code>
-makes NumPy dispatch fail the same way instead of routing around the
-operators. Transform the values explicitly (for example via <code class="docutils literal notranslate"><span class="pre">.value</span></code>) until
-the propagation rules are defined (#579).</p></li>
-<li><p><strong>interop (ROOT) (API narrowing, patch release)</strong>: <code class="docutils literal notranslate"><span class="pre">from_root</span></code> accepted
-<code class="docutils literal notranslate"><span class="pre">TProfile</span></code>, <code class="docutils literal notranslate"><span class="pre">TProfile2D</span></code>, and <code class="docutils literal notranslate"><span class="pre">TH2Poly</span></code> objects and decoded them as if their
-bins had <code class="docutils literal notranslate"><span class="pre">TH1</span></code>/<code class="docutils literal notranslate"><span class="pre">TH2</span></code> semantics, which they do not. These classes now raise
-<code class="docutils literal notranslate"><span class="pre">TypeError</span></code> naming the class rather than returning a misinterpreted result
-(#593).</p></li>
+<li><p><strong>ヒストグラム (API 絞り込み、パッチ リリース)</strong>: <code class="docutils literal notranslate"><span class="pre">Histogram</span></code> には算術規約がありません。<code class="docutils literal notranslate"><span class="pre">quantity</span> <span class="pre">*</span> <span class="pre">histogram</span></code> などの式が失敗するか、サイレントに値を生成するかは、ヒストグラムの <code class="docutils literal notranslate"><span class="pre">unit</span></code>/<code class="docutils literal notranslate"><span class="pre">value</span></code> 属性と Astropy の <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> ディスパッチの間の偶発的な相互作用によって決まりました。ヒストグラム演算の不確実性の伝播は定義されていないため、バランスを偶然に任せるのではなく、<code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">-</span> <span class="pre">*</span> <span class="pre">/</span></code> とその反映フォームおよびインプレース フォームは、<code class="docutils literal notranslate"><span class="pre">Histogram</span></code> で <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> を発生させるようになり、<code class="docutils literal notranslate"><span class="pre">__array_ufunc__</span> <span class="pre">=</span> <span class="pre">None</span></code> は、演算子を迂回するルーティングではなく、同じ方法で NumPy ディスパッチを失敗させます。伝播ルールが定義されるまで (たとえば、<code class="docutils literal notranslate"><span class="pre">.value</span></code> を介して) 値を明示的に変換します (#579)。</p></li>
+<li><p><strong>相互運用 (ROOT) (API 絞り込み、パッチ リリース)</strong>: <code class="docutils literal notranslate"><span class="pre">from_root</span></code> は、<code class="docutils literal notranslate"><span class="pre">TProfile</span></code>、<code class="docutils literal notranslate"><span class="pre">TProfile2D</span></code>、および <code class="docutils literal notranslate"><span class="pre">TH2Poly</span></code> オブジェクトを受け入れ、それらのビンに <code class="docutils literal notranslate"><span class="pre">TH1</span></code>/<code class="docutils literal notranslate"><span class="pre">TH2</span></code> セマンティクスがあるかのようにデコードしましたが、それらはありません。これらのクラスは、誤って解釈された結果を返すのではなく、クラス名を指定する <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> を発生させるようになりました (#593)。</p></li>
 </ul>
 </section>
 <section id="id6">
 <h3>既知の制限事項<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">#577c</span></code> (in-place <code class="docutils literal notranslate"><span class="pre">out=</span></code> update) is not achievable under this approach and
-remains an explicit <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> rather than a working in-place update.</p></li>
-<li><p>The originally reported symptoms of <code class="docutils literal notranslate"><span class="pre">#577a</span></code>/<code class="docutils literal notranslate"><span class="pre">#577b</span></code> did not reproduce
-against this change's base (dead code path); this release does <strong>not</strong>
-claim to have fixed them as originally described.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Quantity</span> <span class="pre">==</span> <span class="pre">SeriesMatrix</span></code> returns a scalar <code class="docutils literal notranslate"><span class="pre">False</span></code> while
-<code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span> <span class="pre">==</span> <span class="pre">Quantity</span></code> returns a boolean matrix. This asymmetry
-originates in <code class="docutils literal notranslate"><span class="pre">astropy</span></code> and is not corrected here.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">#577c</span></code> (インプレース <code class="docutils literal notranslate"><span class="pre">out=</span></code> 更新) は、このアプローチでは実現できず、機能するインプレース更新ではなく、明示的な <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> のままです。</p></li>
+<li><p>最初に報告された <code class="docutils literal notranslate"><span class="pre">#577a</span></code>/<code class="docutils literal notranslate"><span class="pre">#577b</span></code> の症状は、この変更のベース (デッド コード パス) に対して再現されませんでした。このリリースでは、当初の説明どおりにそれらが修正されたとは<strong>主張していません</strong>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Quantity</span> <span class="pre">==</span> <span class="pre">SeriesMatrix</span></code> はスカラー <code class="docutils literal notranslate"><span class="pre">False</span></code> を返し、<code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span> <span class="pre">==</span> <span class="pre">Quantity</span></code> はブール行列を返します。この非対称性は <code class="docutils literal notranslate"><span class="pre">astropy</span></code> に由来しており、ここでは修正されません。</p></li>
 </ul>
 </section>
 </section>
 <section id="id7">
 <h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.11...v0.1.12">0.1.12</a> - 2026-07-31<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
-<p>This is a metadata-integrity, statistics-correctness, and release-tooling
-patch release. It closes a silent NDScope HDF5 channel-drop bug (#541),
-corrects the Rayleigh-statistic null model and several related edge cases
-(#506), and hardens the release-publication workflow with fail-closed
-validation, exact-SHA pinning, and a documented trust boundary (#536).</p>
+<p>これは、メタデータの整合性、統計の正確性、およびリリース ツールのパッチ リリースです。 NDScope HDF5 のサイレント チャネル ドロップ バグ (#541) を解決し、レイリー統計ヌル モデルと関連するいくつかのエッジ ケース (#506) を修正し、フェールクローズ検証、正確な SHA ピンニング、および文書化された信頼境界 (#536) でリリース公開ワークフローを強化します。</p>
 <section id="id8">
-<h3>動作に影響するバグ修正<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<h3>動作が見えるバグ修正<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p><strong>io</strong>: reading an ndscope HDF5 file now raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> naming the
-offending group when a data-bearing group carries neither a <code class="docutils literal notranslate"><span class="pre">rate_hz</span></code> nor
-a <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> attribute, instead of skipping that group. Previously such
-a group was silently dropped, so a multi-channel file with one
-metadata-incomplete channel returned a <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> missing that
-channel with no error, warning, or other indication that data had been
-lost. A group is data-bearing when it carries <code class="docutils literal notranslate"><span class="pre">gps_start</span></code> and at least one
-of the <code class="docutils literal notranslate"><span class="pre">raw</span></code>/<code class="docutils literal notranslate"><span class="pre">mean</span></code>/<code class="docutils literal notranslate"><span class="pre">min</span></code>/<code class="docutils literal notranslate"><span class="pre">max</span></code> datasets; groups without <code class="docutils literal notranslate"><span class="pre">gps_start</span></code> and
-groups holding no ndscope dataset are not data-bearing and continue to be
-skipped, as before. Channels excluded by an explicit <code class="docutils literal notranslate"><span class="pre">channels=</span></code> argument
-are never read and so are unaffected. Format auto-detection no longer
-requires a sampling-rate attribute either, so this error is raised through
-<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read()</span></code>/<code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read()</span></code> without an explicit
-<code class="docutils literal notranslate"><span class="pre">format=</span></code>; previously a file whose groups all lacked the attribute failed
-identification and fell through to another reader, hiding the loss behind
-an unrelated error. This completes the external-metadata compatibility work
-in #534/#535 (#541).</p></li>
+<li><p><strong>io</strong>: ndscope HDF5 ファイルを読み取ると、データを保持するグループが <code class="docutils literal notranslate"><span class="pre">rate_hz</span></code> 属性も <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> 属性も持たない場合、そのグループをスキップするのではなく、問題のあるグループを指定する <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> が発生するようになりました。以前は、このようなグループはサイレントに削除されていたため、メタデータが不完全なチャネルが 1 つ含まれるマルチチャネル ファイルは、そのチャネルが欠落している <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> を返し、エラー、警告、またはデータが削除されたことを示すその他の兆候はありませんでした。失った。グループは、<code class="docutils literal notranslate"><span class="pre">gps_start</span></code> と <code class="docutils literal notranslate"><span class="pre">raw</span></code>/<code class="docutils literal notranslate"><span class="pre">mean</span></code>/<code class="docutils literal notranslate"><span class="pre">min</span></code>/<code class="docutils literal notranslate"><span class="pre">max</span></code> データセットの少なくとも 1 つを保持する場合、データを保持します。 <code class="docutils literal notranslate"><span class="pre">gps_start</span></code> のないグループ、および ndscope データセットを保持しないグループはデータを保持せず、以前と同様にスキップされ続けます。明示的な <code class="docutils literal notranslate"><span class="pre">channels=</span></code> 引数によって除外されたチャネルは決して読み取られないため、影響を受けません。フォーマットの自動検出には、サンプリング レート属性のいずれかであるため、このエラーは明示的な <code class="docutils literal notranslate"><span class="pre">format=</span></code> なしで <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read()</span></code>/<code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read()</span></code> を通じて発生します。以前は、すべてのグループに属性が欠如しているファイルは識別に失敗し、別のリーダーに渡され、無関係なエラーの背後に損失が隠蔽されていました。これで、#534/#535 (#541) での外部メタデータの互換性作業が完了しました。</p></li>
 </ul>
 </section>
 <section id="release-tooling">
-<h3>Release tooling<a class="headerlink" href="#release-tooling" title="Link to this heading">#</a></h3>
+<h3>リリースツール<a class="headerlink" href="#release-tooling" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p><strong>ci</strong>: the release publication workflow is now a single fail-closed
-<code class="docutils literal notranslate"><span class="pre">publish-release.yml</span></code>, replacing <code class="docutils literal notranslate"><span class="pre">release.yml</span></code>. It resolves the release
-ref to an exact 40-character SHA before <code class="docutils literal notranslate"><span class="pre">build</span></code>, <code class="docutils literal notranslate"><span class="pre">smoke</span></code>, or <code class="docutils literal notranslate"><span class="pre">publish</span></code>
-consume it, checks the validator code out separately from the revision it
-validates, pins every action to a full commit SHA, gates PyPI publication
-behind a tag push and the <code class="docutils literal notranslate"><span class="pre">pypi</span></code> environment, and restricts OIDC
-<code class="docutils literal notranslate"><span class="pre">id-token:</span> <span class="pre">write</span></code> to the publish job alone. Manual dispatches are dry-runs
-and must be launched with <code class="docutils literal notranslate"><span class="pre">--ref</span> <span class="pre">main</span></code>. <code class="docutils literal notranslate"><span class="pre">scripts/validate_release.py</span></code> and
-<code class="docutils literal notranslate"><span class="pre">RELEASING.md</span></code> are added alongside it. The validator rejects duplicate
-release metadata -- two <code class="docutils literal notranslate"><span class="pre">##</span> <span class="pre">[version]</span></code> CHANGELOG headings, or a repeated
-top-level <code class="docutils literal notranslate"><span class="pre">version</span></code>/<code class="docutils literal notranslate"><span class="pre">date-released</span></code> in <code class="docutils literal notranslate"><span class="pre">CITATION.cff</span></code> -- rather than
-reading the first occurrence, matching the release-note generator's
-fail-closed behaviour. <code class="docutils literal notranslate"><span class="pre">RELEASING.md</span></code> documents where the trust boundary
-actually is, separating the controls enforced by repository and PyPI
-configuration from the operational rules that are not mechanically
-enforced, records the readback fields an auditor must check before a tag
-push (<code class="docutils literal notranslate"><span class="pre">enforcement</span></code>, <code class="docutils literal notranslate"><span class="pre">target</span></code>, <code class="docutils literal notranslate"><span class="pre">conditions</span></code>, <code class="docutils literal notranslate"><span class="pre">rules[].type</span></code>,
-<code class="docutils literal notranslate"><span class="pre">bypass_actors</span></code>, and the Trusted Publisher binding, which has no GitHub
-API readback), and states explicitly that the workflow's dual checkout is
-<em>not</em> itself protection against a modified tag revision. The required
-<code class="docutils literal notranslate"><span class="pre">bypass_actors</span></code> state is given per ruleset rather than once for both,
-because a <code class="docutils literal notranslate"><span class="pre">creation</span></code>/<code class="docutils literal notranslate"><span class="pre">update</span></code>/<code class="docutils literal notranslate"><span class="pre">deletion</span></code> rule restricts its operation to
-the listed actors instead of forbidding it: the tag-creation ruleset must
-enumerate the permitted creators, while the tag-integrity ruleset must
-list none (#536).</p></li>
-<li><p><strong>ci</strong>: the <code class="docutils literal notranslate"><span class="pre">pypa/gh-action-pypi-publish</span></code> pin in <code class="docutils literal notranslate"><span class="pre">publish-release.yml</span></code> used
-the annotated tag object SHA for <code class="docutils literal notranslate"><span class="pre">v1.14.2</span></code> instead of the commit SHA it
-points to, so the pinned ref did not resolve to any container image and the
-<code class="docutils literal notranslate"><span class="pre">publish</span></code> job failed before uploading anything. Repinned to the peeled
-commit SHA (<code class="docutils literal notranslate"><span class="pre">dc37677b2e1c63e2034f94d8a5b11f265b73ba33</span></code>). No package was
-published to PyPI by the failed run.</p></li>
+<li><p><strong>ci</strong>: リリース パブリケーション ワークフローは、<code class="docutils literal notranslate"><span class="pre">release.yml</span></code> に代わって、単一のフェールクローズされた <code class="docutils literal notranslate"><span class="pre">publish-release.yml</span></code> になりました。 <code class="docutils literal notranslate"><span class="pre">build</span></code>、<code class="docutils literal notranslate"><span class="pre">smoke</span></code>、または <code class="docutils literal notranslate"><span class="pre">publish</span></code> が使用する前に、リリース参照を正確な 40 文字の SHA に解決し、検証するリビジョンとは別にバリデーター コードをチェックアウトし、すべてのアクションを完全なコミット SHA に固定し、タグ プッシュと <code class="docutils literal notranslate"><span class="pre">pypi</span></code> 環境の背後で PyPI パブリケーションをゲートします。また、OIDC <code class="docutils literal notranslate"><span class="pre">id-token:</span> <span class="pre">write</span></code> をパブリッシュ ジョブのみに制限します。手動ディスパッチは予行演習であり、<code class="docutils literal notranslate"><span class="pre">--ref</span> <span class="pre">main</span></code> を使用して起動する必要があります。 <code class="docutils literal notranslate"><span class="pre">scripts/validate_release.py</span></code> と <code class="docutils literal notranslate"><span class="pre">RELEASING.md</span></code> が一緒に追加されます。バリデーターは、最初に出現したものを読み取るのではなく、重複するリリース メタデータ (2 つの <code class="docutils literal notranslate"><span class="pre">##</span> <span class="pre">[version]</span></code> CHANGELOG 見出し、または <code class="docutils literal notranslate"><span class="pre">CITATION.cff</span></code> 内の反復されたトップレベル <code class="docutils literal notranslate"><span class="pre">version</span></code>/<code class="docutils literal notranslate"><span class="pre">date-released</span></code>) を拒否し、リリースノート ジェネレーターのフェールクローズ動作。 <code class="docutils literal notranslate"><span class="pre">RELEASING.md</span></code> は、信頼境界が実際にどこにあるかを文書化し、リポジトリおよび PyPI 構成によって強制される制御を、機械的に強制されない操作ルールから分離し、タグのプッシュ前に監査人がチェックする必要があるリードバック フィールドを記録します (<code class="docutils literal notranslate"><span class="pre">enforcement</span></code>、<code class="docutils literal notranslate"><span class="pre">target</span></code>、<code class="docutils literal notranslate"><span class="pre">conditions</span></code>、<code class="docutils literal notranslate"><span class="pre">rules[].type</span></code>、 <code class="docutils literal notranslate"><span class="pre">bypass_actors</span></code> と信頼できる発行元バインディングには GitHub API リードバックがありません)、ワークフローのデュアル チェックアウト自体が変更されたタグ リビジョンから保護されることは「ない」と明示的に述べています。 <code class="docutils literal notranslate"><span class="pre">creation</span></code>/<code class="docutils literal notranslate"><span class="pre">update</span></code>/<code class="docutils literal notranslate"><span class="pre">deletion</span></code> ルールはその操作を禁止するのではなくリストされたアクターに制限するため、必要な <code class="docutils literal notranslate"><span class="pre">bypass_actors</span></code> 状態は両方に一度ではなくルールセットごとに与えられます。タグ作成ルールセットは許可されたアクターを列挙する必要があります。一方、タグ整合性ルールセットには何もリストする必要はありません (#536)。</p></li>
+<li><p><strong>ci</strong>: <code class="docutils literal notranslate"><span class="pre">publish-release.yml</span></code> の <code class="docutils literal notranslate"><span class="pre">pypa/gh-action-pypi-publish</span></code> ピンは、それが指すコミット SHA ではなく、<code class="docutils literal notranslate"><span class="pre">v1.14.2</span></code> の注釈付きタグ オブジェクト SHA を使用したため、ピン付けされた参照はコンテナ イメージに解決されず、<code class="docutils literal notranslate"><span class="pre">publish</span></code> ジョブは何かをアップロードする前に失敗しました。剥がされたコミット SHA (<code class="docutils literal notranslate"><span class="pre">dc37677b2e1c63e2034f94d8a5b11f265b73ba33</span></code>) に再固定されました。失敗した実行によってパッケージは PyPI に公開されませんでした。</p></li>
 </ul>
-<p><em>Reproducibility note</em>: the <code class="docutils literal notranslate"><span class="pre">rayleigh_test</span></code> entries below change numeric
-output. The affected statistical model was introduced in <code class="docutils literal notranslate"><span class="pre">70bc11f55</span></code>
-(2026-03-28) and shipped unchanged in <strong>every release from v0.1.1 through
-v0.1.11</strong> -- eleven releases, all still on PyPI. p-values produced by those
-versions are not comparable with these and should not be pooled. There is no
-flag to restore the old output; analyses that need to reproduce earlier
-numbers must pin to the version that produced them.</p>
+<p><em>再現性に関する注意</em>: 以下の <code class="docutils literal notranslate"><span class="pre">rayleigh_test</span></code> エントリは数値出力を変更します。影響を受ける統計モデルは <code class="docutils literal notranslate"><span class="pre">70bc11f55</span></code> (2026-03-28) で導入され、<strong>v0.1.1 から v0.1.11 までのすべてのリリース</strong> (11 のリリースで、すべて PyPI 上にあります) で変更されずに出荷されました。これらのバージョンで生成された p 値はこれらと比較できないため、プールしないでください。古い出力を復元するためのフラグはありません。再現する必要がある分析以前の番号は、それを作成したバージョンに固定する必要があります。</p>
 <ul class="simple">
-<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_test()</span></code> now
-simulate the null distribution from exponentially-distributed <em>power</em>
-samples, matching the power-based statistic that GWpy's
-<code class="docutils literal notranslate"><span class="pre">rayleigh_spectrogram()</span></code> actually reports. Previously the null was drawn
-from Rayleigh-distributed <em>amplitude</em> samples and rescaled by the Rayleigh
-distribution's coefficient of variation; matching the mean did not make
-the distribution shapes agree, so the reported p-values were
-systematically miscalibrated by an amount that depended on the
-<code class="docutils literal notranslate"><span class="pre">stride</span></code>/<code class="docutils literal notranslate"><span class="pre">fftlength</span></code> ratio. The corrected null is verified against the
-exact moment <code class="docutils literal notranslate"><span class="pre">E[R^2]</span> <span class="pre">=</span> <span class="pre">(n-1)/(n+1)</span></code>, which follows from the sample
-coefficient of variation of exponential samples reducing to Greenwood's
-statistic (#506).</p></li>
-<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_test()</span></code> now derives <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> from
-<code class="docutils literal notranslate"><span class="pre">fftlength</span></code>, <code class="docutils literal notranslate"><span class="pre">stride</span></code> and <code class="docutils literal notranslate"><span class="pre">overlap</span></code> instead of defaulting to the constant
-<code class="docutils literal notranslate"><span class="pre">39</span></code>, which bore no relation to the data. The count is the number of
-periodogram segments GWpy averages per column, which is <em>not</em> <code class="docutils literal notranslate"><span class="pre">dt</span> <span class="pre">*</span> <span class="pre">df</span></code>
-whenever the segments overlap: GWpy chunks the series into
-<code class="docutils literal notranslate"><span class="pre">nstride</span> <span class="pre">+</span> <span class="pre">noverlap</span></code> samples, so <code class="docutils literal notranslate"><span class="pre">rayleigh_test()</span></code>'s default path -- which
-resolves <code class="docutils literal notranslate"><span class="pre">overlap=None</span></code> to the recommended 50% for the default hann window
--- produces twice <code class="docutils literal notranslate"><span class="pre">dt</span> <span class="pre">*</span> <span class="pre">df</span></code>. Fixing only the null distribution above would have left
-the default path <em>worse</em> calibrated than before, because the stale <code class="docutils literal notranslate"><span class="pre">39</span></code>
-happened to compensate for the wrong distribution shape at some
-configurations. <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> may still be passed explicitly for backward
-compatibility; a value that disagrees with the derived one now emits a
-<code class="docutils literal notranslate"><span class="pre">UserWarning</span></code>. Note that the default value changed, so
-<code class="docutils literal notranslate"><span class="pre">inspect.signature()</span></code> reports a different default (#506).</p></li>
-<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_test()</span></code> now raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> when
-<code class="docutils literal notranslate"><span class="pre">overlap</span></code> resolves to anything other than <code class="docutils literal notranslate"><span class="pre">0</span></code> or GWpy's recommended
-overlap for the window (50% for the default hann), allowing one sample of
-slack for the truncating seconds-to-samples conversion. At 75% overlap
-GWpy previously returned without error or warning while using about 36% of
-the data, <em>and</em> the per-segment powers stop being even approximately
-i.i.d. exponential there, so no segment-count correction can make the null
-distribution apply (#506).</p></li>
-<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> now reports the DC bin and, when the
-FFT length in samples is even, the Nyquist bin as <code class="docutils literal notranslate"><span class="pre">NaN</span></code>, and accepts an
-<code class="docutils literal notranslate"><span class="pre">nfft=</span></code> keyword so the Nyquist bin can be identified. A real-valued
-input's DC and Nyquist FFT coefficients are purely real, so their power
-follows chi2_1 rather than an exponential; scoring them against the
-exponential null fired on pure Gaussian noise about 77% of the time at
-nominal <code class="docutils literal notranslate"><span class="pre">alpha=0.05</span></code>, which alone pinned <code class="docutils literal notranslate"><span class="pre">to_segments()</span></code> near a 100% veto
-rate. An odd FFT length has no exact Nyquist bin and its last one-sided
-bin is left scored. This mirrors the DC/Nyquist handling added to
-<code class="docutils literal notranslate"><span class="pre">compute_student_t_nu()</span></code> in v0.1.11 (#465). Recovering detection power at
-these bins with a chi2_1 null is left for a future release (#506).</p></li>
-<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_spectrogram()</span></code> now derives its own
-per-segment averaging instead of delegating to GWpy's <code class="docutils literal notranslate"><span class="pre">rayleigh()</span></code>, which
-advances segment starts by <code class="docutils literal notranslate"><span class="pre">fftlength</span> <span class="pre">-</span> <span class="pre">overlap</span></code> but counts segments using
-<code class="docutils literal notranslate"><span class="pre">overlap</span></code>. Those agree only at exactly 50% overlap, so for an odd FFT
-length -- where the recommended Hann overlap is not <code class="docutils literal notranslate"><span class="pre">nfft</span> <span class="pre">//</span> <span class="pre">2</span></code> -- or for
-any other explicit overlap, GWpy omits valid segments or requests short
-ones. The count and the slice starts now come from the same hop. <strong>This
-changes the reported statistic values themselves</strong>, not just the p-values
-derived from them, relative to both <code class="docutils literal notranslate"><span class="pre">gwpy</span></code> and GWexpy <code class="docutils literal notranslate"><span class="pre">&lt;=v0.1.11</span></code>, in
-exactly those configurations. The <code class="docutils literal notranslate"><span class="pre">rayleigh_test()</span></code> recommended-overlap
-path is unchanged; direct <code class="docutils literal notranslate"><span class="pre">rayleigh_spectrogram()</span></code> calls continue to
-default to <code class="docutils literal notranslate"><span class="pre">overlap=0</span></code>, which is also unchanged. <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_test()</span></code>
-rejects the divergent overlaps outright, so this affects direct
-<code class="docutils literal notranslate"><span class="pre">rayleigh_spectrogram()</span></code> callers passing an explicit overlap only (#506).</p></li>
-<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code>, <code class="docutils literal notranslate"><span class="pre">_get_rayleigh_stat_null_distribution()</span></code>,
-and <code class="docutils literal notranslate"><span class="pre">_simulate_rayleigh_null()</span></code> now raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> when <code class="docutils literal notranslate"><span class="pre">n_samples</span> <span class="pre">&lt;</span> <span class="pre">2</span></code>.
-The statistic is a sample coefficient of variation over <code class="docutils literal notranslate"><span class="pre">n</span></code> segments, so
-<code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">==</span> <span class="pre">1</span></code> produced an all-zero null against which every observed value
-scored <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">==</span> <span class="pre">0</span></code>, and <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">&lt;=</span> <span class="pre">0</span></code> produced an all-NaN null with the same
-effect -- both silently. The <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">&lt;=</span> <span class="pre">0</span></code> case previously raised only at the
-distribution layer; the bound is now <code class="docutils literal notranslate"><span class="pre">&gt;=</span> <span class="pre">2</span></code> and is enforced at all three
-entry points, since the distribution layer memoises into a shared cache
-(#506).</p></li>
+<li><p><strong>統計</strong>: <code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_test()</span></code> は、指数分布した <em>power</em> サンプルからのヌル分布をシミュレートし、GWpy の <code class="docutils literal notranslate"><span class="pre">rayleigh_spectrogram()</span></code> が実際に報告するパワーベースの統計と一致します。以前は、ヌルはレイリー分布の <em>振幅</em> サンプルから抽出され、レイリー分布の変動係数によって再スケーリングされていました。平均値と一致しても分布形状は一致しません。報告された p 値は、<code class="docutils literal notranslate"><span class="pre">stride</span></code>/<code class="docutils literal notranslate"><span class="pre">fftlength</span></code> 比に依存する量だけ系統的に誤って校正されていました。修正されたヌルは、正確な瞬間 <code class="docutils literal notranslate"><span class="pre">E[R^2]</span> <span class="pre">=</span> <span class="pre">(n-1)/(n+1)</span></code> に対して検証されます。これは、グリーンウッドの統計量に換算される指数サンプルのサンプル変動係数から得られます (#506)。</p></li>
+<li><p><strong>統計</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_test()</span></code> は、データに関係のない定数 <code class="docutils literal notranslate"><span class="pre">39</span></code> をデフォルトとするのではなく、<code class="docutils literal notranslate"><span class="pre">fftlength</span></code>、<code class="docutils literal notranslate"><span class="pre">stride</span></code>、<code class="docutils literal notranslate"><span class="pre">overlap</span></code> から <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> を導出するようになりました。カウントは、GWpy が列ごとに平均するピリオドグラム セグメントの数であり、セグメントが重複する場合は常に <code class="docutils literal notranslate"><span class="pre">dt</span> <span class="pre">*</span> <span class="pre">df</span></code> ではありません。GWpy はシリーズを <code class="docutils literal notranslate"><span class="pre">nstride</span> <span class="pre">+</span> <span class="pre">noverlap</span></code> サンプルに分割するため、<code class="docutils literal notranslate"><span class="pre">rayleigh_test()</span></code> のデフォルトはパス -- <code class="docutils literal notranslate"><span class="pre">overlap=None</span></code> をデフォルトのハン ウィンドウに推奨される 50% に解決します -- は <code class="docutils literal notranslate"><span class="pre">dt</span> <span class="pre">*</span> <span class="pre">df</span></code> を 2 回生成します。上記のヌル分布のみを修正すると、デフォルト パスが以前より <em>悪い</em> キャリブレーションのままになります。これは、一部の構成で古い <code class="docutils literal notranslate"><span class="pre">39</span></code> が偶然間違った分布形状を補正したためです。 <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> は、下位互換性のために明示的に渡すことができます。という値派生したものと一致しない場合は、<code class="docutils literal notranslate"><span class="pre">UserWarning</span></code> が発行されます。デフォルト値が変更されたため、<code class="docutils literal notranslate"><span class="pre">inspect.signature()</span></code> は異なるデフォルト (#506) を報告することに注意してください。</p></li>
+<li><p><strong>統計</strong>: <code class="docutils literal notranslate"><span class="pre">overlap</span></code> が <code class="docutils literal notranslate"><span class="pre">0</span></code> または GWpy が推奨するウィンドウのオーバーラップ (デフォルトのハンの 50%) 以外に解決された場合、<code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_test()</span></code> は <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を生成するようになり、切り捨てられる秒からサンプルへの変換に 1 サンプルのスラックが許可されます。 75% のオーバーラップでは、GWpy はデータの約 36% を使用しながらエラーや警告なしで返され、<em>および</em> セグメントごとのパワーは均等でなくなりました。約内径指数関数的であるため、セグメント数の補正を行わないとヌル分布を適用できません (#506)。</p></li>
+<li><p><strong>統計</strong>: <code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> は DC ビンを報告し、サンプルの FFT 長が偶数の場合はナイキスト ビンを <code class="docutils literal notranslate"><span class="pre">NaN</span></code> として報告し、ナイキスト ビンを識別できるように <code class="docutils literal notranslate"><span class="pre">nfft=</span></code> キーワードを受け入れるようになりました。実数値入力の DC 係数とナイキスト FFT 係数は純粋に実数であるため、そのパワーは指数関数ではなく chi2_1 に従います。約 77% の確率で純粋なガウス ノイズに対して発生した指数ヌルに対してスコアを付けます。名目上の <code class="docutils literal notranslate"><span class="pre">alpha=0.05</span></code> で、これだけでも <code class="docutils literal notranslate"><span class="pre">to_segments()</span></code> の拒否権率が 100% 近くに固定されています。奇数の FFT 長には正確なナイキスト ビンがなく、最後の片側ビンがスコアリングされたままになります。これは、v0.1.11 (#465) で <code class="docutils literal notranslate"><span class="pre">compute_student_t_nu()</span></code> に追加された DC/ナイキスト処理を反映しています。 chi2_1 null を使用してこれらのビンでの検出パワーを回復することは、将来のリリースに残されています (#506)。</p></li>
+<li><p><strong>統計</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_spectrogram()</span></code> は、GWpy の <code class="docutils literal notranslate"><span class="pre">rayleigh()</span></code> に委任するのではなく、独自のセグメントごとの平均を取得するようになりました。これにより、セグメントの開始が <code class="docutils literal notranslate"><span class="pre">fftlength</span> <span class="pre">-</span> <span class="pre">overlap</span></code> によって進みますが、<code class="docutils literal notranslate"><span class="pre">overlap</span></code> を使用してセグメントがカウントされます。これらは正確に 50% のオーバーラップでのみ一致するため、奇数の FFT 長の場合 (推奨されるハン オーバーラップが <code class="docutils literal notranslate"><span class="pre">nfft</span> <span class="pre">//</span> <span class="pre">2</span></code> ではない場合)、またはその他の明示的なオーバーラップの場合、GWpy は有効なセグメントを省略するか、短いセグメントを要求します。のcount とスライスの開始は同じホップから行われるようになりました。 <strong>これにより、正確にこれらの構成で、<code class="docutils literal notranslate"><span class="pre">gwpy</span></code> と GWexpy <code class="docutils literal notranslate"><span class="pre">&lt;=v0.1.11</span></code> の両方に関連して、統計値から導出された p 値だけでなく、報告される統計値自体が変更されます</strong>。 <code class="docutils literal notranslate"><span class="pre">rayleigh_test()</span></code> の推奨オーバーラップ パスは変更されていません。直接の <code class="docutils literal notranslate"><span class="pre">rayleigh_spectrogram()</span></code> 呼び出しは引き続きデフォルトの <code class="docutils literal notranslate"><span class="pre">overlap=0</span></code> になり、これも変更されません。 <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_test()</span></code> は拒否します発散的なオーバーラップは完全に重複するため、これは明示的なオーバーラップのみを渡す直接の <code class="docutils literal notranslate"><span class="pre">rayleigh_spectrogram()</span></code> 呼び出し元に影響します (#506)。</p></li>
+<li><p><strong>統計</strong>: <code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code>、<code class="docutils literal notranslate"><span class="pre">_get_rayleigh_stat_null_distribution()</span></code>、および <code class="docutils literal notranslate"><span class="pre">_simulate_rayleigh_null()</span></code> は、<code class="docutils literal notranslate"><span class="pre">n_samples</span> <span class="pre">&lt;</span> <span class="pre">2</span></code> のときに <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を発生させるようになりました。この統計は <code class="docutils literal notranslate"><span class="pre">n</span></code> セグメントにわたるサンプルの変動係数であるため、<code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">==</span> <span class="pre">1</span></code> はすべてゼロの null を生成し、それに対してすべての観測値のスコアは <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">==</span> <span class="pre">0</span></code> となり、<code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">&lt;=</span> <span class="pre">0</span></code> は同じ効果を持つすべて NaN null を生成しました (どちらもサイレント)。以前の <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">&lt;=</span> <span class="pre">0</span></code> ケースディストリビューション層でのみ発生します。ディストリビューション層が共有キャッシュに記録されるため (#506)、境界は <code class="docutils literal notranslate"><span class="pre">&gt;=</span> <span class="pre">2</span></code> になり、3 つのエントリ ポイントすべてに適用されます。</p></li>
 </ul>
 </section>
 <section id="id9">
-<h3>Known Limitations<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<h3>既知の制限事項<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">to_segments()</span></code> still applies no multiple-comparison
-correction -- it flags a time when <em>any</em> frequency bin has <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">&lt;</span> <span class="pre">alpha</span></code>.
-With correctly calibrated p-values and 63 scored bins this vetoes about
-96% of times at the default <code class="docutils literal notranslate"><span class="pre">alpha=0.05</span></code>, so the above is a fix to
-per-bin calibration and <strong>not</strong> a fix to spurious vetoes. Choose <code class="docutils literal notranslate"><span class="pre">alpha</span></code>
-accordingly, or restrict the frequency range.</p></li>
-<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> can still return exactly <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">==</span> <span class="pre">0</span></code>,
-whereas <code class="docutils literal notranslate"><span class="pre">compute_gauch()</span></code> floors its p-values at <code class="docutils literal notranslate"><span class="pre">1/n_monte_carlo</span></code>. This
-asymmetry is unchanged here and tracked in #507.</p></li>
-<li><p><strong>docs</strong>: the Japanese translation catalogue for the Rayleigh/GauCh
-tutorial does not yet contain the new v0.1.12 note; the notebook carries
-an explicit Japanese cell in the meantime.</p></li>
+<li><p><strong>統計</strong>: <code class="docutils literal notranslate"><span class="pre">to_segments()</span></code> は依然として多重比較補正を適用しません。<em>任意の</em> 周波数ビンに <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">&lt;</span> <span class="pre">alpha</span></code> があるときにフラグを立てます。正しくキャリブレーションされた p 値と 63 のスコア付きビンでは、デフォルトの <code class="docutils literal notranslate"><span class="pre">alpha=0.05</span></code> で約 96% の確率で拒否されるため、上記はビンごとのキャリブレーションに対する修正であり、偽の拒否に対する修正ではありません**。それに応じて <code class="docutils literal notranslate"><span class="pre">alpha</span></code> を選択するか、周波数範囲を制限します。</p></li>
+<li><p><strong>統計</strong>: <code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> は依然として <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">==</span> <span class="pre">0</span></code> を正確に返すことができますが、<code class="docutils literal notranslate"><span class="pre">compute_gauch()</span></code> は p 値を <code class="docutils literal notranslate"><span class="pre">1/n_monte_carlo</span></code> で下限とします。この非対称性はここでは変更されておらず、#507 で追跡されています。</p></li>
+<li><p><strong>ドキュメント</strong>: Rayleigh/GauCh チュートリアルの日本語翻訳カタログには、新しい v0.1.12 ノートがまだ含まれていません。その間、ノートブックには明示的な日本語セルが含まれています。</p></li>
 </ul>
 </section>
 </section>
 <section id="id10">
 <h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.10...v0.1.11">0.1.11</a> - 2026-07-25<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
-<p>This is a time/metadata-integrity and statistics-robustness patch release.
-It fixes <code class="docutils literal notranslate"><span class="pre">MNE</span></code> interop epoch/metadata handling (#493), restores a
-GPS-absolute time axis and DC/Nyquist fit correctness for the Student-t
-non-Gaussianity indicator (#465), and adds Monte Carlo <code class="docutils literal notranslate"><span class="pre">rng=</span></code>/<code class="docutils literal notranslate"><span class="pre">seed=</span></code>
-reproducibility for the Rayleigh and GauCh statistical tests (#464).</p>
+<p>これは、時間/メタデータの整合性と統計の堅牢性を実現するパッチ リリースです。 <code class="docutils literal notranslate"><span class="pre">MNE</span></code> 相互運用エポック/メタデータ処理 (#493) を修正し、GPS 絶対時間軸と Student-t 非ガウス指標の DC/ナイキスト フィットの正確さを復元し (#465)、レイリーおよび GauCh 統計検定のモンテカルロ <code class="docutils literal notranslate"><span class="pre">rng=</span></code>/<code class="docutils literal notranslate"><span class="pre">seed=</span></code> 再現性を追加します。 (#464)。</p>
 <section id="id11">
-<h3>動作に影響するバグ修正<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
-<p><em>Reproducibility note</em>: the two <code class="docutils literal notranslate"><span class="pre">statistics</span></code> entries below (GPS time axis
-and DC/Nyquist <code class="docutils literal notranslate"><span class="pre">nu</span></code> fit) change numeric output relative to <code class="docutils literal notranslate"><span class="pre">&lt;=v0.1.10</span></code>.
-Both are correctness fixes for previously wrong values, not new opt-in
-behavior -- there is no flag to restore the pre-v0.1.11 output. Analyses
-that depend on exact reproduction of results computed with
-<code class="docutils literal notranslate"><span class="pre">gwexpy&lt;=0.1.10</span></code> should pin to that version range.</p>
+<h3>動作が見えるバグ修正<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
+<p><em>再現性に関する注意</em>: 以下の 2 つの <code class="docutils literal notranslate"><span class="pre">statistics</span></code> エントリ (GPS 時間軸と DC/ナイキスト <code class="docutils literal notranslate"><span class="pre">nu</span></code> フィット) は、<code class="docutils literal notranslate"><span class="pre">&lt;=v0.1.10</span></code> を基準にして数値出力を変更します。どちらも、以前に間違っていた値の正確性を修正するものであり、新しいオプトイン動作ではありません。v0.1.11 より前の出力を復元するフラグはありません。 <code class="docutils literal notranslate"><span class="pre">gwexpy&lt;=0.1.10</span></code> で計算された結果の正確な再現に依存する分析は、そのバージョン範囲に固定される必要があります。</p>
 <ul>
-<li><p><strong>interop</strong>: <code class="docutils literal notranslate"><span class="pre">to_mne_rawarray()</span></code> now sets <code class="docutils literal notranslate"><span class="pre">info[&quot;meas_date&quot;]</span></code> from the
-input epoch (<code class="docutils literal notranslate"><span class="pre">t0</span></code>) when not already present, and validates it against an
-existing <code class="docutils literal notranslate"><span class="pre">info[&quot;meas_date&quot;]</span></code> (within ~1us) rather than silently ignoring
-it; a mismatch now raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> instead of producing an <code class="docutils literal notranslate"><span class="pre">mne.io.Raw</span></code>
-with an incorrect or missing epoch. Multi-channel conversion now requires
-all stacked channels to share an <em>exactly</em> matching epoch (previously
-unchecked), raising <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> on mismatch rather than silently
-interleaving samples from different acquisition times. <code class="docutils literal notranslate"><span class="pre">t0</span></code> values that
-fall on a leap second continue to raise <code class="docutils literal notranslate"><span class="pre">LeapSecondConversionError</span></code>.
-<code class="docutils literal notranslate"><span class="pre">from_mne_raw()</span></code> now accounts for <code class="docutils literal notranslate"><span class="pre">raw.first_samp</span></code> when reconstructing the
-GPS epoch (previously ignored, undercounting the epoch for cropped/resumed
-<code class="docutils literal notranslate"><span class="pre">Raw</span></code> objects) and applies <code class="docutils literal notranslate"><span class="pre">unit_map</span></code> to set channel units, including
-fixing an <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> when <code class="docutils literal notranslate"><span class="pre">unit_map</span></code> was omitted (#493).</p></li>
-<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">compute_student_t_nu()</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeries.student_t_spectrogram()</span></code>
-now return a GPS time axis (the input <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>'s <code class="docutils literal notranslate"><span class="pre">t0</span></code> plus the STFT
-relative time) instead of relative-to-start seconds. <code class="docutils literal notranslate"><span class="pre">fftlength</span></code>, <code class="docutils literal notranslate"><span class="pre">stride</span></code>
-(and <code class="docutils literal notranslate"><span class="pre">overlap</span></code>), <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code>, <code class="docutils literal notranslate"><span class="pre">window</span></code>, and <code class="docutils literal notranslate"><span class="pre">frange</span></code> are now validated:
-non-finite/non-positive values raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> instead of an opaque
-downstream failure, and <code class="docutils literal notranslate"><span class="pre">stride</span> <span class="pre">&gt;</span> <span class="pre">fftlength</span></code> now raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
-explicitly rather than silently running a gapped analysis that skips
-samples between segments (<code class="docutils literal notranslate"><span class="pre">scipy.signal.stft</span></code> accepts a negative
-<code class="docutils literal notranslate"><span class="pre">noverlap</span></code> without erroring). The underlying <code class="docutils literal notranslate"><span class="pre">scipy.signal.stft</span></code> call now
-passes <code class="docutils literal notranslate"><span class="pre">window=&quot;hann&quot;,</span> <span class="pre">detrend=False,</span> <span class="pre">boundary=&quot;zeros&quot;,</span> <span class="pre">padded=True</span></code>
-explicitly instead of relying on scipy's defaults. Partially addresses
-#465 (the DC/Nyquist bin bias half of #465 is fixed by the following
-entry).</p>
-<p><strong>Migration note</strong> (#465, #502): callers that previously added <code class="docutils literal notranslate"><span class="pre">ts.t0</span></code> (or an
-equivalent GPS offset) to the returned <code class="docutils literal notranslate"><span class="pre">times</span></code> themselves should remove
-that step, since the returned times are now already GPS-absolute and
-double-adding the epoch would shift results by <code class="docutils literal notranslate"><span class="pre">t0</span></code> seconds. Code that
-indexes or slices these times assuming a relative-seconds axis starting
-at <code class="docutils literal notranslate"><span class="pre">0</span></code> should be updated for the new GPS-absolute axis.</p>
+<li><p><strong>相互運用</strong>: <code class="docutils literal notranslate"><span class="pre">to_mne_rawarray()</span></code> は、入力エポック (<code class="docutils literal notranslate"><span class="pre">t0</span></code>) が存在しない場合に <code class="docutils literal notranslate"><span class="pre">info[&quot;meas_date&quot;]</span></code> を設定し、黙って無視するのではなく、既存の <code class="docutils literal notranslate"><span class="pre">info[&quot;meas_date&quot;]</span></code> (~1us 以内) に対して検証するようになりました。不一致がある場合、エポックが正しくない、またはエポックが欠落している <code class="docutils literal notranslate"><span class="pre">mne.io.Raw</span></code> が生成されるのではなく、<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> が生成されるようになりました。マルチチャネル変換では、スタックされたすべてのチャネルが「正確に」一致するエポックを共有する必要があります。(以前はチェックされていませんでした)、異なる取得時間からのサンプルをサイレントにインターリーブするのではなく、不一致時に <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を発生させます。うるう秒に該当する <code class="docutils literal notranslate"><span class="pre">t0</span></code> 値は、引き続き <code class="docutils literal notranslate"><span class="pre">LeapSecondConversionError</span></code> を引き上げます。 <code class="docutils literal notranslate"><span class="pre">from_mne_raw()</span></code> は、GPS エポックを再構築するときに <code class="docutils literal notranslate"><span class="pre">raw.first_samp</span></code> を考慮するようになり (以前は無視され、トリミング/再開された <code class="docutils literal notranslate"><span class="pre">Raw</span></code> オブジェクトのエポックは過小評価されていました)、<code class="docutils literal notranslate"><span class="pre">unit_map</span></code> を適用して設定されます。<code class="docutils literal notranslate"><span class="pre">unit_map</span></code> が省略された場合の <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> の修正を含む、チャネル単位の修正 (#493)。</p></li>
+<li><p><strong>統計</strong>: <code class="docutils literal notranslate"><span class="pre">compute_student_t_nu()</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeries.student_t_spectrogram()</span></code> は、開始からの相対秒数ではなく、GPS 時間軸 (入力 <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> の <code class="docutils literal notranslate"><span class="pre">t0</span></code> と STFT 相対時間) を返すようになりました。 <code class="docutils literal notranslate"><span class="pre">fftlength</span></code>、<code class="docutils literal notranslate"><span class="pre">stride</span></code> (および <code class="docutils literal notranslate"><span class="pre">overlap</span></code>)、<code class="docutils literal notranslate"><span class="pre">sample_rate</span></code>、<code class="docutils literal notranslate"><span class="pre">window</span></code>、および <code class="docutils literal notranslate"><span class="pre">frange</span></code> が検証されるようになりました。非有限/非正の値により、不透明なダウンストリーム障害の代わりに <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> が発生します。<code class="docutils literal notranslate"><span class="pre">stride</span> <span class="pre">&gt;</span> <span class="pre">fftlength</span></code> は、セグメント間のサンプルをスキップするギャップ分析をサイレントに実行するのではなく、明示的に <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を生成するようになりました (<code class="docutils literal notranslate"><span class="pre">scipy.signal.stft</span></code> は、エラーなしで負の <code class="docutils literal notranslate"><span class="pre">noverlap</span></code> を受け入れます)。基礎となる <code class="docutils literal notranslate"><span class="pre">scipy.signal.stft</span></code> 呼び出しは、scipy のデフォルトに依存するのではなく、明示的に <code class="docutils literal notranslate"><span class="pre">window=&quot;hann&quot;,</span> <span class="pre">detrend=False,</span> <span class="pre">boundary=&quot;zeros&quot;,</span> <span class="pre">padded=True</span></code> を渡すようになりました。 #465 を部分的にアドレス指定します (#465 の DC/ナイキスト ビン バイアスの半分は次のエントリによって修正されます)。</p>
+<p><strong>移行メモ</strong> (#465、#502): 以前に返された <code class="docutils literal notranslate"><span class="pre">times</span></code> に <code class="docutils literal notranslate"><span class="pre">ts.t0</span></code> (または同等の GPS オフセット) を追加した呼び出し元は、そのステップを削除する必要があります。返された時刻はすでに GPS 絶対値であり、エポックを 2 回追加すると結果が <code class="docutils literal notranslate"><span class="pre">t0</span></code> 秒シフトするためです。 <code class="docutils literal notranslate"><span class="pre">0</span></code> で始まる相対秒軸を想定してこれらの時間をインデックスまたはスライスするコードは、新しい GPS 絶対軸。</p>
 </li>
-<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">compute_student_t_nu()</span></code> now fits the DC (index 0) and,
-when the segment length is even, Nyquist (the last one-sided bin)
-frequency bins using only their real FFT coefficient, instead of
-concatenating real and imaginary parts as if they were independent for
-those bins too. A real-valued signal's DC/Nyquist FFT coefficients are
-purely real, so the previous re+im concatenation fed a constant-zero
-imaginary half into the fit, collapsing the estimated Student-t <code class="docutils literal notranslate"><span class="pre">nu</span></code>
-toward 0 and producing a systematic false non-Gaussianity detection at
-DC regardless of the actual input. This is a GWexpy-specific
-correctness fix, not a GWpy compatibility change (GWpy has no
-equivalent Student-t fit API); DC/Nyquist are identified structurally
-(index 0 / the last one-sided bin), not via a floating-point frequency
-comparison, computed from the <em>effective</em> segment length (<code class="docutils literal notranslate"><span class="pre">scipy.signal.stft</span></code>
-silently shrinks <code class="docutils literal notranslate"><span class="pre">nperseg</span></code> to <code class="docutils literal notranslate"><span class="pre">len(ts)</span></code> when the requested value exceeds
-it, which can flip its parity relative to the requested <code class="docutils literal notranslate"><span class="pre">fftlength</span> <span class="pre">*</span> <span class="pre">sample_rate</span></code>). <code class="docutils literal notranslate"><span class="pre">compute_student_t_nu()</span></code> now also rejects complex-valued
-input with <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> (previously silent, and <code class="docutils literal notranslate"><span class="pre">scipy.signal.stft</span></code>
-ignores <code class="docutils literal notranslate"><span class="pre">return_onesided=True</span></code> for complex input, which would have
-broken this bin classification). Completes #465.</p></li>
-<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">compute_gauch()</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeries.gauch()</span></code> and
-<code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_test()</span></code> now accept <code class="docutils literal notranslate"><span class="pre">rng=</span></code>
-(a <code class="docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code>) or <code class="docutils literal notranslate"><span class="pre">seed=</span></code> for a reproducible Monte Carlo
-null distribution. The default (no <code class="docutils literal notranslate"><span class="pre">rng</span></code>/<code class="docutils literal notranslate"><span class="pre">seed</span></code>) path is unchanged: it
-still draws from the legacy global <code class="docutils literal notranslate"><span class="pre">numpy.random</span></code> state, so an existing
-<code class="docutils literal notranslate"><span class="pre">numpy.random.seed(...)</span></code> call continues to control it exactly as before.
-Passing <code class="docutils literal notranslate"><span class="pre">rng=</span></code>/<code class="docutils literal notranslate"><span class="pre">seed=</span></code> uses a dedicated <code class="docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code> instead
-and bypasses the shared, process-global null-distribution cache
-(previously keyed only by <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">n_trials)</span></code>, with no way to request a
-specific draw). The default path's cache population is now serialized
-with a lock, fixing a pre-existing race where concurrent callers on the
-same <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">n_trials)</span></code> key could each redundantly recompute and overwrite
-the cached distribution. <code class="docutils literal notranslate"><span class="pre">compute_gauch()</span></code>'s result now records
-<code class="docutils literal notranslate"><span class="pre">n_monte_carlo</span></code> and, when given, <code class="docutils literal notranslate"><span class="pre">seed</span></code> (or <code class="docutils literal notranslate"><span class="pre">rng_provided</span></code>/
-<code class="docutils literal notranslate"><span class="pre">seed_unused</span></code>) in its <code class="docutils literal notranslate"><span class="pre">.metadata</span></code>; the <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> returned by
-<code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> records the same as instance attributes that do not
-survive <code class="docutils literal notranslate"><span class="pre">.copy()</span></code>/slicing/serialization. Passing both <code class="docutils literal notranslate"><span class="pre">rng</span></code> and <code class="docutils literal notranslate"><span class="pre">seed</span></code>
-now emits a <code class="docutils literal notranslate"><span class="pre">UserWarning</span></code> noting that <code class="docutils literal notranslate"><span class="pre">seed</span></code> is ignored (#464).</p></li>
+<li><p><strong>統計</strong>: <code class="docutils literal notranslate"><span class="pre">compute_student_t_nu()</span></code> は DC (インデックス 0) に適合するようになり、セグメント長が偶数の場合、ナイキスト (最後の片側ビン) 周波数ビンは、それらのビンに対しても独立しているかのように実数部と虚数部を連結するのではなく、実数の FFT 係数のみを使用して実行されます。実数値信号の DC/ナイキスト FFT 係数は純粋に実数であるため、前の re+im 連結は定数ゼロの虚数半分をフィットに供給しました。推定された Student-t <code class="docutils literal notranslate"><span class="pre">nu</span></code> を 0 に向けて崩壊させ、実際の入力に関係なく、DC で系統的な誤った非ガウス検出を生成します。これは GWexpy 固有の正確性の修正であり、GWpy の互換性変更ではありません (GWpy には同等の Student-t Fit API がありません)。 DC/ナイキストは浮動小数点周波数比較ではなく、<em>有効</em>セグメントから計算された構造的に識別されます (インデックス 0 / 最後の片側ビン)。長さ (要求された値がそれを超えると、<code class="docutils literal notranslate"><span class="pre">scipy.signal.stft</span></code> は <code class="docutils literal notranslate"><span class="pre">nperseg</span></code> を <code class="docutils literal notranslate"><span class="pre">len(ts)</span></code> にサイレントに縮小します。これにより、要求された <code class="docutils literal notranslate"><span class="pre">fftlength</span> <span class="pre">*</span> <span class="pre">sample_rate</span></code> に対するパリティが反転する可能性があります)。 <code class="docutils literal notranslate"><span class="pre">compute_student_t_nu()</span></code> は、<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> による複素数値入力も拒否するようになりました (以前はサイレントであり、<code class="docutils literal notranslate"><span class="pre">scipy.signal.stft</span></code> は複素入力の <code class="docutils literal notranslate"><span class="pre">return_onesided=True</span></code> を無視します。これにより、この bin 分類が壊れます)。 #465を完了します。</p></li>
+<li><p><strong>統計</strong>: <code class="docutils literal notranslate"><span class="pre">compute_gauch()</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeries.gauch()</span></code> および <code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_test()</span></code> は、再現可能なモンテカルロヌル分布のために <code class="docutils literal notranslate"><span class="pre">rng=</span></code> (<code class="docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code>) または <code class="docutils literal notranslate"><span class="pre">seed=</span></code> を受け入れるようになりました。デフォルト (<code class="docutils literal notranslate"><span class="pre">rng</span></code>/<code class="docutils literal notranslate"><span class="pre">seed</span></code> なし) パスは変更されていません。従来のグローバル <code class="docutils literal notranslate"><span class="pre">numpy.random</span></code> 状態から引き継がれるため、既存の <code class="docutils literal notranslate"><span class="pre">numpy.random.seed(...)</span></code> 呼び出しは以前とまったく同じように制御し続けます。通過<code class="docutils literal notranslate"><span class="pre">rng=</span></code>/<code class="docutils literal notranslate"><span class="pre">seed=</span></code> は、代わりに専用の <code class="docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code> を使用し、共有のプロセス グローバル null 分散キャッシュをバイパスします (以前は <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">n_trials)</span></code> によってのみキー設定されており、特定の描画をリクエストする方法はありませんでした)。デフォルト パスのキャッシュ設定はロックを使用してシリアル化されるようになり、同じ <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">n_trials)</span></code> キーに対する同時呼び出し元がそれぞれ冗長に再計算して上書きする可能性があるという既存の競合が修正されました。キャッシュされた配布。 <code class="docutils literal notranslate"><span class="pre">compute_gauch()</span></code> の結果は、<code class="docutils literal notranslate"><span class="pre">n_monte_carlo</span></code> を記録し、指定された場合は <code class="docutils literal notranslate"><span class="pre">seed</span></code> (または <code class="docutils literal notranslate"><span class="pre">rng_provided</span></code>/ <code class="docutils literal notranslate"><span class="pre">seed_unused</span></code>) を <code class="docutils literal notranslate"><span class="pre">.metadata</span></code> に記録するようになりました。 <code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> によって返される <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> は、<code class="docutils literal notranslate"><span class="pre">.copy()</span></code>/スライス/シリアル化後に存続しないインスタンス属性と同じレコードを記録します。 <code class="docutils literal notranslate"><span class="pre">rng</span></code> と <code class="docutils literal notranslate"><span class="pre">seed</span></code> の両方を渡すと、次のことを示す <code class="docutils literal notranslate"><span class="pre">UserWarning</span></code> が発行されるようになりました。<code class="docutils literal notranslate"><span class="pre">seed</span></code> は無視されます (#464)。</p></li>
 </ul>
 </section>
 <section id="dependencies">
 <h3>依存関係<a class="headerlink" href="#dependencies" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">inspiral-range</span></code> to the <code class="docutils literal notranslate"><span class="pre">gw</span></code> and <code class="docutils literal notranslate"><span class="pre">all</span></code> optional-dependency extras
-(no change to core/required dependencies) (#487).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inspiral-range</span></code> を <code class="docutils literal notranslate"><span class="pre">gw</span></code> および <code class="docutils literal notranslate"><span class="pre">all</span></code> のオプションの依存関係エクストラに追加しました (コア/必須の依存関係は変更ありません) (#487)。</p></li>
 </ul>
 </section>
 <section id="id12">
-<h3>Known Limitations<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
-<p><em>Added 2026-07-26, after the original release. The Zenodo record published
-on 2026-07-25 is an immutable snapshot and does not contain this section
-(see #506).</em></p>
+<h3>既知の制限事項<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<p>*オリジナルのリリース後に 2026 年 7 月 26 日に追加されました。 2026 年 7 月 25 日に公開された Zenodo レコードは不変のスナップショットであり、このセクションは含まれていません (#506 を参照)。</p>
 <ul class="simple">
-<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_test()</span></code>
-simulates its null distribution from amplitude (Rayleigh-distributed)
-samples, but the statistic it is compared against
-(<code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_spectrogram()</span></code>, from GWpy) is computed from power
-(exponentially-distributed) PSD segments. The two distributions have
-different shape even after matching their mean, which makes the reported
-p-values systematically miscalibrated. The effect depends on the
-stride/fftlength ratio: false-positive rates can be close to nominal for
-some configurations (e.g. ~5% when stride/fftlength ~= 2) and elevated
-for others (e.g. ~11% when stride/fftlength ~= 20), causing inconsistent
-over- or under-detection of non-Gaussianity/spectral lines. This
-is a pre-existing issue, not introduced by the <code class="docutils literal notranslate"><span class="pre">rng=</span></code>/<code class="docutils literal notranslate"><span class="pre">seed=</span></code>
-reproducibility work in this release; a fix is expected in v0.1.12 and
-will change <code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code>'s numeric output (see #506).</p></li>
+<li><p><strong>統計</strong>: <code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_test()</span></code> は、振幅 (レイリー分布) サンプルからヌル分布をシミュレートしますが、比較される統計 (GWpy からの <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_spectrogram()</span></code>) はパワー (指数分布) PSD セグメントから計算されます。 2 つの分布は、平均を一致させた後でも形状が異なるため、報告される p 値が体系的に誤って校正されます。効果は、stride/fftlength 比: 偽陽性率は、一部の構成では公称値に近い場合 (例: stride/fftlength ~= 2 の場合 ~5%)、他の構成では高くなる可能性があります (例: stride/fftlength ~= 20 の場合 ~11%)。これにより、非ガウス性/スペクトル ラインの一貫性のない過大または過小検出が発生します。これは既存の問題であり、このリリースの <code class="docutils literal notranslate"><span class="pre">rng=</span></code>/<code class="docutils literal notranslate"><span class="pre">seed=</span></code> の再現作業によっては導入されません。修正は v0.1.12 で行われる予定です。<code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> の数値出力を変更します (#506 を参照)。</p></li>
 </ul>
 </section>
 </section>
@@ -1316,7 +812,7 @@ will change <code class="docutils literal notranslate"><span class="pre">rayleig
 <h2>[0.1.10] - 2026-07-18<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
 <p>数値正則化、軸の規則性、ヒストグラムの重み、TimeSeries のリサンプリングにおける dtype と境界の契約を対象としたバグ修正リリースです。</p>
 <section id="id14">
-<h3>動作に影響するバグ修正<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
+<h3>動作が見えるバグ修正<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>numerics</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.partial_correlation_matrix()</span></code> のデフォルトが <code class="docutils literal notranslate"><span class="pre">1e-8</span></code> から <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> に変更され、<code class="docutils literal notranslate"><span class="pre">WhitenTransform</span></code> のデフォルトも <code class="docutils literal notranslate"><span class="pre">1e-12</span></code> から <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> に変更されました。<code class="docutils literal notranslate"><span class="pre">LaplaceGram.normalize_per_sigma()</span></code> のデフォルトも <code class="docutils literal notranslate"><span class="pre">1e-30</span></code> から <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> に変更されました。これらのデフォルトでは入力に応じて正則化の大きさが調整されるため、strain スケールの偏相関とホワイトニングがゼロ近傍に潰れなくなります。以前の動作を維持するには、従来の値を明示的に渡してください。互換性のため、<code class="docutils literal notranslate"><span class="pre">partial_correlation_matrix(eps=None)</span></code> は追加のリッジを無効にする動作を引き続き維持します。3 つの API はすべて、非有限入力と無効な epsilon 値を <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> として拒否するようになりました (#482)。</p></li>
 <li><p><strong>types</strong>: <code class="docutils literal notranslate"><span class="pre">AxisDescriptor.regular</span></code> は、表現された隣接区間を狭く制限された区間スケール許容誤差で比較するようになりました。通常の浮動小数点の規則格子は受け入れつつ、誤った <code class="docutils literal notranslate"><span class="pre">delta</span></code> を生じる可能性がある、大きなオフセットを持ち実質的に等しくない float32 区間は拒否します (#492)。</p></li>
@@ -1330,7 +826,7 @@ will change <code class="docutils literal notranslate"><span class="pre">rayleig
 <h2>[0.1.9] - 2026-07-11<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
 <p>バグ修正リリースです。0.1.8 から延期されていた GWF 読み取りパスの NaN パディング統一を完了し (#481)、#461 のフォローアップ監査で明らかになった 2 つのフィッティングバグを修正しました。具体的には、<code class="docutils literal notranslate"><span class="pre">x_range</span></code> の境界が正確に一致する場合の <code class="docutils literal notranslate"><span class="pre">fit_series</span></code> における <code class="docutils literal notranslate"><span class="pre">sigma</span></code> の切り出しの off-by-one と、検証されていない <code class="docutils literal notranslate"><span class="pre">run_mcmc(n_walkers=...)</span></code> によって emcee 内部のエラーがそのまま表面化する問題です (#466)。</p>
 <section id="id16">
-<h3>動作に影響するバグ修正<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<h3>動作が見えるバグ修正<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>GWF 固有の読み取り（<code class="docutils literal notranslate"><span class="pre">format=&quot;gwf&quot;</span></code> を指定した <code class="docutils literal notranslate"><span class="pre">TimeSeries.read</span></code>/<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read</span></code>/<code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read</span></code>）では、<code class="docutils literal notranslate"><span class="pre">gap=&quot;pad&quot;</span></code> のデフォルトが <code class="docutils literal notranslate"><span class="pre">0.0</span></code> ではなく <code class="docutils literal notranslate"><span class="pre">NaN</span></code> パディングになり、0.1.8 で導入された <code class="docutils literal notranslate"><span class="pre">SeriesMatrix.append</span></code> の NaN デフォルトとの統一が完了しました。GWF のギャップがゼロで埋まることに依存していたコードでは、明示的な <code class="docutils literal notranslate"><span class="pre">pad=</span></code> 値を渡してください。欠損領域（ファイル間のギャップ、または利用可能なデータを超えて延長された要求区間）を、浮動小数点でない GWF チャネル dtype に対して <code class="docutils literal notranslate"><span class="pre">NaN</span></code> でパディングすると、範囲外の整数 fill 値によるデータの暗黙の破損や、NumPy の不透明な <code class="docutils literal notranslate"><span class="pre">cannot</span> <span class="pre">convert</span> <span class="pre">float</span> <span class="pre">NaN</span> <span class="pre">to</span> <span class="pre">integer</span></code> エラーの漏出ではなく、明確な <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> が送出されるようになりました (#481)。</p></li>
 </ul>
@@ -1353,7 +849,7 @@ will change <code class="docutils literal notranslate"><span class="pre">rayleig
 <h2>[0.1.8] - 2026-07-04<a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
 <p>バグ修正および I/O 堅牢化リリースです。<code class="docutils literal notranslate"><span class="pre">obspy.Stream</span></code> 入力時の <code class="docutils literal notranslate"><span class="pre">from_obspy</span></code> のクラッシュを修正し (#452)、SeriesMatrix / I/O 層を堅牢化しました。#443 のフォローアップ監査で明らかになったギャップ処理、メタデータのエイリアシング、キーのラウンドトリップ、リーダーの失敗モードを、明示的な契約と回帰テストによって修正しています (#450)。</p>
 <section id="id18">
-<h3>動作に影響するバグ修正<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
+<h3>動作が見えるバグ修正<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">SeriesMatrix.append(gap=&quot;pad&quot;)</span></code>（およびこれを基盤とする行列のマルチソース統合パス）は、デフォルトでギャップを <code class="docutils literal notranslate"><span class="pre">0.0</span></code> ではなく <code class="docutils literal notranslate"><span class="pre">NaN</span></code> でパディングするようになり、マルチソース・リーダーですでに使用されている欠損データの規約に一致しました。ギャップがゼロで埋まることに依存していたコードでは、明示的な <code class="docutils literal notranslate"><span class="pre">pad=</span></code> 値を渡すか、削減・FFT・フィルタリングの前に NaN を処理してください。浮動小数点でない行列 dtype のギャップを <code class="docutils literal notranslate"><span class="pre">NaN</span></code> でパディングすると、無効な fill 値を暗黙に挿入する代わりに <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> が送出されます。</p></li>
 <li><p><strong>io/netcdf4</strong>: チャネルごとの Series 構築に失敗しても、単純な dict に劣化しなくなりました（これまでは下流で不透明な <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> が遅れて発生していました）。リーダーは発生源で明確な <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を送出します。</p></li>
@@ -1933,41 +1429,41 @@ strides). Re-pointed <code class="docutils literal notranslate"><span class="pre
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">0.1.14 - 2026-08-15</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">削除（破壊的変更）</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#behaviour-visible-bug-fixes">動作に影響するバグ修正</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#behaviour-visible-bug-fixes">動作が見えるバグ修正</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#known-limitations">既知の制限事項</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#development-and-ci">Development and CI</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#development-and-ci">開発とCI</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">0.1.13 - 2026-08-08</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">動作に影響するバグ修正</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compatibility">Compatibility</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">動作が見えるバグ修正</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compatibility">互換性</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">既知の制限事項</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">0.1.12 - 2026-07-31</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">動作に影響するバグ修正</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#release-tooling">Release tooling</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Known Limitations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">動作が見えるバグ修正</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#release-tooling">リリースツール</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">既知の制限事項</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">0.1.11 - 2026-07-25</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">動作に影響するバグ修正</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">動作が見えるバグ修正</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencies">依存関係</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Known Limitations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">既知の制限事項</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">[0.1.10] - 2026-07-18</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">動作に影響するバグ修正</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">動作が見えるバグ修正</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">[0.1.9] - 2026-07-11</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">動作に影響するバグ修正</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">動作が見えるバグ修正</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bug-fixes">バグ修正</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#development">開発</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">[0.1.8] - 2026-07-04</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">動作に影響するバグ修正</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">動作が見えるバグ修正</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">バグ修正</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#behaviour-changes">動作の変更</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">依存関係</a></li>
