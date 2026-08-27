@@ -32,8 +32,16 @@ msgid "CSV component columns are naive civil time and use the configured `timezo
 msgstr "CSV component column は naive civil time であり、設定した `timezone` を使います。daylight-saving の曖昧な fold と存在しない gap は行番号付きの `ValueError` になり、reader が暗黙に offset を選ぶことはありません。numeric timestamp は absolute、生成された sample-index route は relative であり、どちらも top-level read ごとに 1 回の warning を出して `timezone` を無視します。"
 
 #: docs_redesign/how-to/io_formats.md
-msgid "CSV validates numeric and configured component-column source cadence before any requested resampling. Duplicate, backward, missing, or overlarge gaps raise `ValueError`, and malformed source rows include their physical line number. Component instants are compared on the continuous GPS timeline, so a one-second UTC component stream that crosses a leap second without a representable `second=60` row fails closed as a missing sample. A finite, positive `sample_rate` declares source cadence and is used for single-row input; without it, the legacy one-second fallback remains. `resample=` must also be finite and positive and declares only the target cadence. The 10,000,000-value cap counts requested-channel resampled output across the complete top-level single- or multi-file read before allocation. Absolute float64 axes are accepted only when rounding error and spacing are each strictly below half the cadence."
-msgstr "CSV は、要求された resampling より前に numeric と設定済み component-column の source cadence を検証します。重複、逆順、欠落、過大な gap は `ValueError` になり、不正な source row には物理行番号が含まれます。component instant は連続した GPS timeline 上で比較されるため、表現可能な `second=60` row なしで leap second をまたぐ 1 秒 UTC component stream は、missing sample として fail closed します。有限かつ正の `sample_rate` は source cadence を宣言し、single-row input に使われます。指定がなければ従来の 1 秒 fallback が残ります。`resample=` も有限かつ正でなければならず、target cadence だけを宣言します。10,000,000-value cap は allocation 前に top-level single-file または multi-file read 全体の requested-channel resampled output を数えます。絶対 float64 軸は、丸め誤差と spacing がそれぞれ cadence の半分未満の場合だけ受理します。"
+msgid "CSV validates numeric and configured component-column cadence before resampling, using continuous GPS instants for UTC components. It rejects malformed or irregular input and any absolute float64 axis whose rounding error or spacing is not strictly below half the cadence. `resample=` applies only to requested channels; the 10,000,000-value cap covers all resampled values across a top-level single- or multi-file read before allocation."
+msgstr "CSV は数値時刻と設定済み component 列の cadence を resampling 前に検証し、UTC component には連続 GPS instant を使います。不正または不規則な入力と、丸め誤差または spacing が cadence の半分未満ではない絶対 float64 軸を拒否します。`resample=` は要求された channel だけに適用され、10,000,000個の上限は top-level の単一または multi-file read 全体で allocation 前に全 resampled value を数えます。"
+
+#: docs_redesign/how-to/io_formats.md
+msgid "Malformed source rows include their physical line number. A finite, positive `sample_rate` declares source cadence and is used for single-row input; without it, the legacy one-second fallback remains. Component streams that cross a leap second without a representable `second=60` row fail closed as a missing sample."
+msgstr "不正な source row には物理行番号が含まれます。有限かつ正の `sample_rate` は source cadence を宣言し、single-row input に使われます。指定がなければ従来の 1 秒 fallback が残ります。表現可能な `second=60` row なしで leap second をまたぐ component stream は、missing sample として fail closed します。"
+
+#: docs_redesign/how-to/io_formats.md
+msgid "Numeric CSV timestamps retain the legacy GPS-second interpretation. v0.1.14 does not add `time_scale=` or `time_unit=`; convert other scales before reading."
+msgstr "CSV の数値時刻は従来どおり GPS 秒として解釈します。v0.1.14 では `time_scale=` と `time_unit=` を追加しないため、他の time scale は読み込み前に変換してください。"
 
 #: docs_redesign/how-to/io_formats.md
 msgid "**SDB** (`.sdb`)"
@@ -1619,32 +1627,6 @@ msgstr "`win32`"
 #: ../../how-to/io_formats.md:16 0663e23007cb4812b644c834d4ed2f22
 msgid "`sdb`"
 msgstr "`sdb`"
-
-#: ../../how-to/io_formats.md:226
-msgid ""
-"CSV validates numeric and configured component-column cadence before "
-"resampling, using continuous GPS instants for UTC components. It rejects "
-"malformed or irregular input and any absolute float64 axis whose rounding "
-"error or spacing is not strictly below half the cadence. `resample=` applies "
-"only to requested channels; the 10,000,000-value cap covers all resampled "
-"values across a top-level single- or multi-file read before allocation."
-msgstr ""
-"CSV は数値時刻と設定済み component 列の cadence を resampling 前に検証し、"
-"UTC component には連続 GPS instant を使います。不正または不規則な入力と、"
-"丸め誤差または spacing が cadence の半分未満ではない絶対 float64 軸を拒否します。"
-"`resample=` は要求された channel だけに適用され、10,000,000個の上限は "
-"top-level の単一または multi-file read 全体で allocation 前に全 resampled value "
-"を数えます。"
-
-#: ../../how-to/io_formats.md:232
-msgid ""
-"Numeric CSV timestamps retain the legacy GPS-second interpretation. "
-"v0.1.14 does not add `time_scale=` or `time_unit=`; convert other scales "
-"before reading."
-msgstr ""
-"CSV の数値時刻は従来どおり GPS 秒として解釈します。v0.1.14 では "
-"`time_scale=` と `time_unit=` を追加しないため、他の time scale は"
-"読み込み前に変換してください。"
 
 #: ../../how-to/io_formats.md:311 770c50350ad74bdfbefd93c08452752c
 msgid "Related Pages"

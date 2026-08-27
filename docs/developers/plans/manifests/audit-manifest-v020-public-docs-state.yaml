@@ -42,6 +42,11 @@ validation:
       result: "10 passed."
     - cmd: "rtk conda run -n gwexpy python scripts/ci/run_gate.py io-contract"
       result: "1321 passed, 24 skipped, 1 deselected; gate passed."
+    - check: "PR #691 PR Fast"
+      initial_result: "Failed because the canonical I/O guide no longer contained the exact public cadence summary required by its translation regression test."
+      correction: "Restored the concise, translated cadence summary and retained the added physical-line, single-row cadence, and leap-second details as a companion paragraph."
+    - cmd: "rtk conda run -n gwexpy pytest tests/docs/test_docs_redesign_public_content.py tests/io/test_io_docs_contract_sync.py -q"
+      result: "20 passed."
 review:
   human_review_required: false
   physics_review_required: false

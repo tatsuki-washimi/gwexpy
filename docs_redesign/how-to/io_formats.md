@@ -228,19 +228,17 @@ events = EventTable.read("events.root")
   line-numbered `ValueError`; the reader never chooses an offset silently.
   Numeric timestamps are absolute and the generated sample-index route remains
   relative; both ignore `timezone` with one warning per top-level read.
-- CSV validates numeric and configured component-column source cadence before
-  any requested resampling. Duplicate, backward, missing, or overlarge gaps
-  raise `ValueError`, and malformed source rows include their physical line
-  number. Component instants are compared on the continuous GPS timeline, so a
-  one-second UTC component stream that crosses a leap second without a
-  representable `second=60` row fails closed as a missing sample. A finite,
-  positive `sample_rate` declares source cadence and is used for single-row
-  input; without it, the legacy one-second fallback remains. `resample=` must
-  also be finite and positive and declares only the target cadence. The
-  10,000,000-value cap counts requested-channel resampled output across the
-  complete top-level single- or multi-file read before allocation. Absolute
-  float64 axes are accepted only when rounding error and spacing are each
-  strictly below half the cadence.
+- CSV validates numeric and configured component-column cadence before
+  resampling, using continuous GPS instants for UTC components. It rejects
+  malformed or irregular input and any absolute float64 axis whose rounding
+  error or spacing is not strictly below half the cadence. `resample=` applies
+  only to requested channels; the 10,000,000-value cap covers all resampled
+  values across a top-level single- or multi-file read before allocation.
+- Malformed source rows include their physical line number. A finite, positive
+  `sample_rate` declares source cadence and is used for single-row input;
+  without it, the legacy one-second fallback remains. Component streams that
+  cross a leap second without a representable `second=60` row fail closed as a
+  missing sample.
 - Numeric CSV timestamps retain the legacy GPS-second interpretation.
   v0.1.14 does not add `time_scale=` or `time_unit=`; convert other scales
   before reading.
