@@ -1,0 +1,24 @@
+schema_version: 1
+task: "Japanese v0.2.0 release-note synchronization"
+date: "2026-08-27"
+skills:
+  - manage_docs
+  - docs-ja
+scope:
+  - "Translate the v0.2.0 changelog prose and its reader-facing Mermaid labels in the canonical Japanese documentation."
+  - "Keep the English CHANGELOG.md and all pre-v0.2.0 release history unchanged."
+  - "No runtime, public API, physics, or data-model behavior changes."
+verification:
+  - command: "ruff check docs_redesign/conf.py"
+    expected: "Only the pre-existing D103 on conf.py:setup is reported; origin/main has the same finding."
+  - command: "msgfmt --check -o /dev/null docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"
+    expected: "Japanese catalog is syntactically valid."
+  - command: "sphinx-build -b html -D nb_execution_mode=off docs_redesign /tmp/gwexpy-ja-v020-html"
+    expected: "Canonical English HTML build completes."
+  - command: "sphinx-build -b html -D nb_execution_mode=off -D language=ja docs_redesign /tmp/gwexpy-ja-v020-html/ja"
+    expected: "Canonical Japanese HTML build renders all v0.2.0 release-note text and the localized Mermaid labels."
+  - command: "git diff --check"
+    expected: "No whitespace errors."
+physics_review:
+  required: false
+  rationale: "Documentation localization only; release semantics are translated without alteration."
