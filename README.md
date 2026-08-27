@@ -7,8 +7,7 @@
 # gwexpy: GWpy Expansions for Experiments
 
 [![CI Status](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/pr-fast.yml/badge.svg)](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/pr-fast.yml)
-[![codecov](https://codecov.io/gh/tatsuki-washimi/gwexpy/branch/main/graph/badge.svg)](https://codecov.io/gh/tatsuki-washimi/gwexpy)
-[![Documentation](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/docs-pr.yml/badge.svg)](https://tatsuki-washimi.github.io/gwexpy/)
+[![Docs Pages](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/docs-pages.yml/badge.svg?branch=main)](https://tatsuki-washimi.github.io/gwexpy/docs/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
