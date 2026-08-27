@@ -92,6 +92,7 @@ For fitting, I/O, interoperability, and notebook-based workflows, start from the
 ## More Resources
 
 - Migration notes for GWpy users: <https://tatsuki-washimi.github.io/gwexpy/docs/how-to/migration.html>
+- Known limitations: <https://tatsuki-washimi.github.io/gwexpy/docs/about/known_limitations.html>
 - Citation: <https://tatsuki-washimi.github.io/gwexpy/docs/about/citation.html>
 - Reproducibility notes: [docs/repro/README.md](docs/repro/README.md)
 - Supported I/O matrix: [SUPPORTED_IO_MATRIX.md](SUPPORTED_IO_MATRIX.md)
