@@ -34,6 +34,14 @@ validation:
       result: "Passed; rendered changelog contains the SVG, CSV link, and Japanese copy."
     - cmd: "rtk sphinx-build legacy HTML with -W --keep-going and notebook execution disabled"
       result: "Passed."
+  ci_followup:
+    - check: "PR #691 Core I/O contract gate"
+      initial_result: "Failed because the canonical I/O guide omitted two contract-required CSV explanations."
+      correction: "Restored the cadence precision rule and legacy numeric-timestamp limitation without changing the v0.2.0 public contract."
+    - cmd: "rtk conda run -n gwexpy pytest tests/io/test_io_docs_contract_sync.py -q"
+      result: "10 passed."
+    - cmd: "rtk conda run -n gwexpy python scripts/ci/run_gate.py io-contract"
+      result: "1321 passed, 24 skipped, 1 deselected; gate passed."
 review:
   human_review_required: false
   physics_review_required: false

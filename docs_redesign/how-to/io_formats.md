@@ -238,7 +238,12 @@ events = EventTable.read("events.root")
   input; without it, the legacy one-second fallback remains. `resample=` must
   also be finite and positive and declares only the target cadence. The
   10,000,000-value cap counts requested-channel resampled output across the
-  complete top-level single- or multi-file read before allocation.
+  complete top-level single- or multi-file read before allocation. Absolute
+  float64 axes are accepted only when rounding error and spacing are each
+  strictly below half the cadence.
+- Numeric CSV timestamps retain the legacy GPS-second interpretation.
+  v0.1.14 does not add `time_scale=` or `time_unit=`; convert other scales
+  before reading.
 - **TXT** direct I/O is more limited: single-series paths are explicit `format="txt"`, and multi-channel paths use collection directories.
 - **Pickle** portability notes still exist in class references, but Pickle is not a published direct `.read()` / `.write()` format on this page.
 - **NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**. Field/xarray bridges belong to interop. For NetCDF, `netcdf4` is a legacy format token alias for `nc`; `.netcdf4` is not a documented auto-identified extension alias.
