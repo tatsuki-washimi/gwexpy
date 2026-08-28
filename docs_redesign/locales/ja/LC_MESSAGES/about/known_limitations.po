@@ -1,0 +1,108 @@
+# Japanese translations for GWexpy known limitations.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-08-27 00:00+0900\n"
+"Language: ja\n"
+"Language-Team: ja\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Known Limitations"
+msgstr "既知の制約"
+
+msgid "This page records the high-impact user-visible limitations of the current stable GWexpy v0.2.0 release. It is a curated compatibility guide, not a complete issue backlog and not a promise that a limitation will be removed in the next release."
+msgstr "このページでは、現在の安定版 GWexpy v0.2.0 における、ユーザーから見える影響の大きい制約をまとめます。完全な issue バックログではなく、互換性と挙動を確認するための要約です。また、ここに記載した制約が次のリリースで解消されることを約束するものではありません。"
+
+msgid "When GWexpy cannot define a safe physical or metadata-preserving result, the supported contract is to fail explicitly rather than silently downgrade to a bare `numpy.ndarray`, `astropy.units.Quantity`, or ambiguous timestamp. An explicit `TypeError` or `ValueError` below is therefore often an intentional safety boundary."
+msgstr "物理的に安全でメタデータを保持する結果を定義できない場合、GWexpy の契約は、裸の `numpy.ndarray` や `astropy.units.Quantity`、意味の曖昧な時刻へ黙って退行するのではなく、明示的に失敗することです。そのため、以下に示す `TypeError` や `ValueError` は、意図した安全境界である場合があります。"
+
+msgid "For format-specific and adapter-specific coverage that is not listed here, see [I/O formats](../how-to/io_formats.md) and [interoperability](../how-to/interop.md)."
+msgstr "ここに列挙していないフォーマット別・アダプター別の対応範囲は、[I/O formats](../how-to/io_formats.md) と [interoperability](../how-to/interop.md) を参照してください。"
+
+msgid "Exact time-axis precision"
+msgstr "時刻軸の厳密精度"
+
+msgid "GWexpy v0.2.0 preserves exact integer GPS-nanosecond origins on the supported constructor, copy/slice, persistence, and interoperability paths covered by the release contract. It does not yet define a complete exact rational time-axis authority for every cadence and operation. Cadences such as 1024 Hz or 4096 Hz have fractional-nanosecond sample steps, while GWpy-compatible `t0`, `dt`, `times`, and `xindex` remain binary64 projections."
+msgstr "GWexpy v0.2.0 は、リリース契約で対象とした constructor、copy/slice、永続化、相互運用の対応経路において、整数 GPS ナノ秒の原点を厳密に保持します。一方、すべての cadence と演算について完全な有理数時刻軸を権威的表現として定義しているわけではありません。1024 Hz や 4096 Hz ではサンプル間隔がナノ秒の整数にならず、GWpy 互換の `t0`、`dt`、`times`、`xindex` は引き続き binary64 の射影です。"
+
+msgid "If one-nanosecond distinctions or exact rational sample boundaries are scientifically significant, do not use the floating-point time axis as the sole authority across unsupported transformations or persistence boundaries. Track [#688](https://github.com/tatsuki-washimi/gwexpy/issues/688)."
+msgstr "1 ナノ秒の差や厳密な有理数サンプル境界が科学的に重要な場合、未対応の変換や永続化境界をまたいで浮動小数点時刻軸だけを権威的情報として使用しないでください。[#688](https://github.com/tatsuki-washimi/gwexpy/issues/688) で追跡しています。"
+
+msgid "SeriesMatrix direct NumPy ufuncs"
+msgstr "SeriesMatrix の直接 NumPy ufunc"
+
+msgid "The v0.2.0 B0 / Phase-A contract deliberately keeps `SeriesMatrix.__array_ufunc__ = None`. Direct NumPy ufuncs such as `np.sqrt(matrix)`, `np.log(matrix)`, `np.exp(matrix)`, `np.isfinite(matrix)`, and `np.isnan(matrix)` therefore raise `TypeError` instead of risking a metadata- or unit-dropping downgrade."
+msgstr "v0.2.0 の B0 / Phase-A 契約では、意図的に `SeriesMatrix.__array_ufunc__ = None` を維持しています。そのため `np.sqrt(matrix)`、`np.log(matrix)`、`np.exp(matrix)`、`np.isfinite(matrix)`、`np.isnan(matrix)` のような直接 NumPy ufunc は、メタデータや単位を失う退行を起こす代わりに `TypeError` を送出します。"
+
+msgid "For square root, use `matrix ** 0.5`; this is contract-tested for the three SeriesMatrix families and preserves the B0 surface. No metadata-preserving B0 alternative is currently defined for `log`, `exp`, `isfinite`, or `isnan`. Explicit supported operators, including Quantity-left and Quantity-right multiplication, remain part of B0. See [#637](https://github.com/tatsuki-washimi/gwexpy/issues/637) and [#681](https://github.com/tatsuki-washimi/gwexpy/issues/681). The B1 composition redesign has no assigned version or date."
+msgstr "平方根には `matrix ** 0.5` を使用してください。これは 3 種類の SeriesMatrix family で契約テストされ、B0 の情報を保持します。`log`、`exp`、`isfinite`、`isnan` については、メタデータを保持する B0 の代替経路は現在定義されていません。Quantity-left / Quantity-right の乗算を含む明示的な対応 operator は B0 の一部です。[#637](https://github.com/tatsuki-washimi/gwexpy/issues/637) と [#681](https://github.com/tatsuki-washimi/gwexpy/issues/681) を参照してください。B1 composition redesign に割り当て済みのバージョンや日付はありません。"
+
+msgid "Histogram arithmetic"
+msgstr "Histogram の算術演算"
+
+msgid "`Histogram` numeric arithmetic (`+`, `-`, `*`, `/`, `**`, reflected and in-place variants) and direct NumPy ufunc routing are intentionally fail-closed with `TypeError`. This protects bin geometry and histogram metadata until bin compatibility, count/weighted/density semantics, and uncertainty propagation are defined."
+msgstr "`Histogram` の数値算術 (`+`, `-`, `*`, `/`, `**`、reflected / in-place 版) と直接 NumPy ufunc routing は、意図的に `TypeError` で fail-closed します。bin compatibility、count / weighted / density の意味論、uncertainty propagation が定義されるまで、bin geometry と histogram metadata を保護するためです。"
+
+msgid "This is a current safety contract, not a silent-corruption bug in v0.2.0. Use the existing histogram-specific operations; convert to raw values only when discarding bin and uncertainty metadata is intentional. The safety hardening was recorded in [#579](https://github.com/tatsuki-washimi/gwexpy/issues/579)."
+msgstr "これは現在の安全契約であり、v0.2.0 の silent-corruption bug ではありません。既存の histogram 専用操作を使用し、bin や uncertainty metadata を意図的に捨てる場合にだけ raw value へ変換してください。安全化は [#579](https://github.com/tatsuki-washimi/gwexpy/issues/579) に記録されています。"
+
+msgid "Time interpretation in experimental I/O"
+msgstr "実験 I/O における時刻解釈"
+
+msgid "WIN/WIN32"
+msgstr "WIN/WIN32"
+
+msgid "WIN/WIN32 calendar fields are timezone-naive at the file-format level. The current reader interprets them as UTC with an explicit warning; there is no public `timezone=` contract yet. Data recorded in another civil timezone therefore requires external knowledge and care. Track [#632](https://github.com/tatsuki-washimi/gwexpy/issues/632)."
+msgstr "WIN/WIN32 の calendar field はファイルフォーマット上 timezone-naive です。現在の reader は明示的な warning を出したうえで UTC として解釈しますが、public `timezone=` 契約はまだありません。そのため、別の civil timezone で記録されたデータを扱うには外部情報と注意が必要です。[#632](https://github.com/tatsuki-washimi/gwexpy/issues/632) で追跡しています。"
+
+msgid "Numeric CSV timestamps"
+msgstr "数値 CSV timestamp"
+
+msgid "Numeric CSV timestamps retain the legacy GPS-seconds interpretation. The proposed explicit `time_scale=` / `time_unit=` contract for GPS, Unix, and relative timestamps is not implemented. Do not infer a different epoch or unit from numeric magnitude. Track [#634](https://github.com/tatsuki-washimi/gwexpy/issues/634)."
+msgstr "数値 CSV timestamp は従来どおり GPS 秒として解釈されます。GPS、Unix、relative timestamp を明示する `time_scale=` / `time_unit=` 契約はまだ実装されていません。数値の大きさだけから別の epoch や unit を推定しないでください。[#634](https://github.com/tatsuki-washimi/gwexpy/issues/634) で追跡しています。"
+
+msgid "Broadcast Wave timestamps"
+msgstr "Broadcast Wave timestamp"
+
+msgid "Ordinary WAV input has no absolute file timestamp unless the caller supplies `epoch=`. GWexpy does not yet promote BWF `OriginationDate`, `OriginationTime`, and `TimeReference` into an absolute epoch because those fields do not identify a timezone. Track [#636](https://github.com/tatsuki-washimi/gwexpy/issues/636)."
+msgstr "通常の WAV 入力には、呼び出し側が `epoch=` を与えない限り絶対ファイル時刻はありません。BWF の `OriginationDate`、`OriginationTime`、`TimeReference` は timezone を特定できないため、GWexpy はまだこれらを絶対 epoch へ昇格させません。[#636](https://github.com/tatsuki-washimi/gwexpy/issues/636) で追跡しています。"
+
+msgid "GWF parallel-read scope"
+msgstr "GWF parallel read の対応範囲"
+
+msgid "v0.2.0 provides spawn-safe `parallel=` reads for a single local frame path. Multi-worker reads reject caches, URI/composite source spellings, and unsupported nested execution rather than guessing at semantics. Multi-file streaming merge and the remaining peak-memory/scalability work are still open. Track [#588](https://github.com/tatsuki-washimi/gwexpy/issues/588)."
+msgstr "v0.2.0 は単一の local frame path に対して spawn-safe な `parallel=` read を提供します。multi-worker read は、意味論を推測する代わりに cache、URI/composite source 表現、未対応の nested execution を拒否します。multi-file streaming merge と残る peak-memory / scalability 対応は未完了です。[#588](https://github.com/tatsuki-washimi/gwexpy/issues/588) で追跡しています。"
+
+msgid "For very large multi-file reads, do not assume `parallel>1` implies bounded-memory streaming. `nproc=` remains a compatibility alias for `parallel=`."
+msgstr "非常に大きな multi-file read では、`parallel>1` が bounded-memory streaming を意味すると仮定しないでください。`nproc=` は引き続き `parallel=` の compatibility alias です。"
+
+msgid "NDScope HDF5 dataset creation options"
+msgstr "NDScope HDF5 dataset creation option"
+
+msgid "The NDScope HDF5 writer validates unsupported dataset-option paths fail-closed, but v0.2.0 does not provide general configurable HDF5 chunking, compression, shuffle, checksum, or arbitrary dataset-creation options through this writer. Do not assume arbitrary writer kwargs are forwarded to `h5py.create_dataset()`. Track [#590](https://github.com/tatsuki-washimi/gwexpy/issues/590)."
+msgstr "NDScope HDF5 writer は未対応の dataset-option 経路を fail-closed で検証しますが、v0.2.0 ではこの writer を通じた一般的な HDF5 chunking、compression、shuffle、checksum、任意の dataset-creation option の指定は提供していません。任意の writer kwargs が `h5py.create_dataset()` に転送されるとは仮定しないでください。[#590](https://github.com/tatsuki-washimi/gwexpy/issues/590) で追跡しています。"
+
+msgid "Intentional v0.2.0 boundaries"
+msgstr "v0.2.0 の意図的な境界"
+
+msgid "The coupling v1 schema does not include `significance`."
+msgstr "coupling v1 schema には `significance` を含みません。"
+
+msgid "`import gwexpy` uses lazy bootstrap. This is not a missing feature: `gwexpy.register_all()` explicitly registers the full supported surface, while supported public I/O entry points can register required handlers on demand."
+msgstr "`import gwexpy` は lazy bootstrap を使用します。これは機能欠落ではありません。`gwexpy.register_all()` は full supported surface を明示的に登録し、対応する public I/O entry point は必要な handler を on demand で登録できます。"
+
+msgid "Future Field I/O, eager/advanced SegmentTable workflows, spatial geometry, mesh support, and Fisher/modeling work are roadmap items, not regressions in v0.2.0."
+msgstr "将来の Field I/O、eager/advanced SegmentTable workflow、spatial geometry、mesh support、Fisher/modeling は roadmap 項目であり、v0.2.0 の regression ではありません。"
+
+msgid "Reporting a regression"
+msgstr "regression の報告"
+
+msgid "If behavior documented as supported by v0.2.0 produces wrong values, wrong units, lost metadata/provenance, or a silent downgrade, report it as a bug. Patch releases in the v0.2.x line are reserved for regressions and correctness defects; new public APIs remain minor-release work."
+msgstr "v0.2.0 で対応済みと文書化された挙動が、誤った値や単位、metadata/provenance の欠落、silent downgrade を生じる場合は bug として報告してください。v0.2.x の patch release は regression と correctness defect のために予約されており、新しい public API は minor release の作業です。"
