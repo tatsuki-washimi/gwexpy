@@ -5,8 +5,10 @@ from __future__ import annotations
 import importlib.util
 import json
 import subprocess
+import sys
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Any
 
 import pytest
 
@@ -29,6 +31,23 @@ def _claims(tmp_path: Path) -> Path:
     path = tmp_path / "claims.json"
     path.write_text(json.dumps(data), encoding="utf-8")
     return path
+
+
+def _preflight_fixture(qualifier, monkeypatch, tmp_path: Path, *, conda: bool = False):
+    import gwexpy
+    prefix=tmp_path/"prefix"; site=prefix/"site-packages"; package=site/"gwexpy"; package.mkdir(parents=True); init=package/"__init__.py"; init.write_text("")
+    info=site/"gwexpy-0.2.0.dist-info"; info.mkdir(); direct=info/"direct_url.json"; artifact: Path | None=tmp_path/"gwexpy-0.2.0-py3-none-any.whl"; assert artifact is not None; artifact.write_bytes(b"wheel")
+    direct.write_text(json.dumps({"url":artifact.as_uri(),"archive_info":{"hash":f"sha256={qualifier._digest(artifact)}"}}))
+    class Distribution:
+        files: Any=(Path("gwexpy-0.2.0.dist-info/direct_url.json"),)
+        def locate_file(self,item): return site if str(item)=="." else site/item
+    monkeypatch.setattr(gwexpy,"__file__",str(init)); monkeypatch.setattr(gwexpy,"__version__","0.2.0")
+    monkeypatch.setattr(qualifier.importlib.metadata,"distribution",lambda _:Distribution()); monkeypatch.setattr(qualifier.importlib.metadata,"version",lambda name:"4.0.1" if name=="gwpy" else "0.2.0")
+    monkeypatch.setattr(qualifier.importlib.util,"find_spec",lambda _:SimpleNamespace(origin=str(init))); monkeypatch.setattr(qualifier.sys,"prefix",str(prefix)); monkeypatch.setattr(qualifier.sys,"platform","linux")
+    claims=qualifier.load_claims(CLAIMS); cell=claims.required_cells["gwpy-4.0.1-wheel"]; repo=tmp_path/"repo"; repo.mkdir()
+    if conda:
+        cell=claims.required_cells["conda-3.11"]; direct.unlink(); Distribution.files=(); (prefix/"conda-meta").mkdir(); (prefix/"conda-meta"/"gwexpy-0.2.0-0.json").write_text(json.dumps({"name":"gwexpy","version":"0.2.0","channel":"conda-forge","subdir":"linux-64"})); monkeypatch.setenv("CONDA_PREFIX",str(prefix)); artifact=None
+    return claims,cell,repo,artifact,direct,init,site,prefix
 
 
 def test_claims_are_strict_and_have_the_complete_first_run_ledger(qualifier) -> None:
@@ -380,29 +399,27 @@ def test_run_cell_failure_branches_write_evidence(qualifier, monkeypatch, tmp_pa
 
 
 def test_preflight_accepts_exact_pep610_and_rejects_missing_or_editable(qualifier, tmp_path: Path) -> None:
-    artifact = tmp_path / "gwexpy-0.2.0-py3-none-any.whl"; artifact.write_bytes(b"wheel")
-    url = artifact.as_uri()
-    assert qualifier._local_file_uri(url).resolve() == artifact.resolve()
-    with pytest.raises(qualifier.QualificationError): qualifier._local_file_uri(None)
-    with pytest.raises(qualifier.QualificationError): qualifier._local_file_uri(url + "?edited")
+    monkeypatch=pytest.MonkeyPatch(); claims,cell,repo,artifact,direct,*_= _preflight_fixture(qualifier,monkeypatch,tmp_path)
+    qualifier._preflight(claims,cell,repo,artifact); direct.unlink()
+    with pytest.raises(qualifier.QualificationError,match="direct_url"): qualifier._preflight(claims,cell,repo,artifact)
+    direct.write_text(json.dumps({"url":artifact.as_uri(),"dir_info":{"editable":True}}))
+    with pytest.raises(qualifier.QualificationError,match="editable"): qualifier._preflight(claims,cell,repo,artifact)
+    monkeypatch.undo()
 
 
 def test_preflight_rejects_origin_root_interpreter_and_gwpy_mismatches(qualifier, tmp_path: Path) -> None:
-    prefix = tmp_path / "prefix"; repo = tmp_path / "repo"; prefix.mkdir(); repo.mkdir(); origin = prefix / "gwexpy.py"; origin.write_text("")
-    assert qualifier._inside(origin, prefix)
-    assert not qualifier._inside(origin, repo)
-    assert not qualifier._inside(repo / "source.py", prefix)
-    with pytest.raises(qualifier.QualificationError): qualifier._local_file_uri("https://example.invalid/x")
+    monkeypatch=pytest.MonkeyPatch(); claims,cell,repo,artifact,_,init,site,prefix=_preflight_fixture(qualifier,monkeypatch,tmp_path); qualifier._preflight(claims,cell,repo,artifact)
+    monkeypatch.setattr(qualifier.importlib.util,"find_spec",lambda _:SimpleNamespace(origin=str(repo/"x.py")))
+    with pytest.raises(qualifier.QualificationError): qualifier._preflight(claims,cell,repo,artifact)
+    monkeypatch.setattr(qualifier.importlib.util,"find_spec",lambda _:SimpleNamespace(origin=str(init))); monkeypatch.setattr(qualifier.sys,"platform","win32")
+    with pytest.raises(qualifier.QualificationError): qualifier._preflight(claims,cell,repo,artifact)
+    monkeypatch.undo()
 
 
 def test_preflight_conda_binds_active_prefix_and_record(qualifier, tmp_path: Path, monkeypatch) -> None:
-    prefix = tmp_path / "prefix"; metadata = prefix / "conda-meta"; metadata.mkdir(parents=True)
-    record = {"name": "gwexpy", "version": "0.2.0", "channel": "https://conda.anaconda.org/conda-forge/linux-64", "subdir": "linux-64"}
-    assert qualifier._conda_channel(record) == "conda-forge"
-    monkeypatch.setenv("CONDA_PREFIX", str(prefix)); monkeypatch.setattr(qualifier.sys, "prefix", str(prefix))
-    assert Path(qualifier.sys.prefix).resolve() == Path(__import__("os").environ["CONDA_PREFIX"]).resolve()
-    record["channel"] = "https://evil.invalid/conda-forge/linux-64"
-    assert qualifier._conda_channel(record) is None
+    claims,cell,repo,artifact,_,*_,prefix=_preflight_fixture(qualifier,monkeypatch,tmp_path,conda=True); qualifier._preflight(claims,cell,repo,artifact)
+    monkeypatch.setenv("CONDA_PREFIX",str(tmp_path/"other"))
+    with pytest.raises(qualifier.QualificationError,match="CONDA_PREFIX"): qualifier._preflight(claims,cell,repo,artifact)
 
 
 def test_run_cell_records_second_preflight_failure(qualifier, monkeypatch, tmp_path: Path) -> None:
