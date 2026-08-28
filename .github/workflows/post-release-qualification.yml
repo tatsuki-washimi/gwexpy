@@ -1,0 +1,1169 @@
+name: Post-release qualification
+
+# This is deliberately expensive and manual-only. It qualifies already-published
+# bytes; it never publishes, pushes, tags, or dispatches another workflow.
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Published release tag to qualify"
+        type: string
+        required: true
+        default: "v0.2.0"
+      expected_source_sha:
+        description: "Exact source commit peeled from the published tag"
+        type: string
+        required: true
+        default: "5c91cf2d1087616c9815d0cbcc082c5f21bb36e9"
+      release_run_id:
+        description: "Successful publish-release workflow run ID"
+        type: string
+        required: true
+        default: "32935405476"
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+concurrency:
+  group: post-release-qualification-${{ inputs.release_tag }}
+  cancel-in-progress: false
+
+jobs:
+  identity:
+    name: Verify published release identity
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Validate protected-main dispatch inputs
+        id: inputs
+        env:
+          DISPATCH_REF: ${{ github.ref }}
+          INPUT_RELEASE_TAG: ${{ inputs.release_tag }}
+          INPUT_EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+          INPUT_RELEASE_RUN_ID: ${{ inputs.release_run_id }}
+        run: |
+          python - <<'PY'
+          import os
+          import re
+
+          github_ref = os.environ["DISPATCH_REF"]
+          if github_ref != "refs/heads/main":
+              raise SystemExit("workflow_dispatch must run with --ref main")
+
+          values = {
+              "release_tag": os.environ["INPUT_RELEASE_TAG"],
+              "expected_source_sha": os.environ["INPUT_EXPECTED_SOURCE_SHA"],
+              "release_run_id": os.environ["INPUT_RELEASE_RUN_ID"],
+          }
+          patterns = {
+              "release_tag": r"v(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)",
+              "expected_source_sha": r"[0-9a-f]{40}",
+              "release_run_id": r"[1-9][0-9]{0,19}",
+          }
+          for name, value in values.items():
+              if re.fullmatch(patterns[name], value, flags=re.ASCII) is None:
+                  raise SystemExit(f"invalid ASCII {name}")
+
+          fixed = {
+              "release_tag": "v0.2.0",
+              "expected_source_sha": "5c91cf2d1087616c9815d0cbcc082c5f21bb36e9",
+              "release_run_id": "32935405476",
+          }
+          if values != fixed:
+              raise SystemExit("dispatch inputs do not match the approved release")
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as stream:
+              for name, value in values.items():
+                  stream.write(f"{name}={value}\n")
+          PY
+
+      - name: Check out protected-main control revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          path: control
+
+      - name: Set up identity Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+
+      - name: Verify fixed claims and exact peeled tag SHA
+        working-directory: control
+        env:
+          RELEASE_TAG: ${{ steps.inputs.outputs.release_tag }}
+          EXPECTED_SOURCE_SHA: ${{ steps.inputs.outputs.expected_source_sha }}
+          RELEASE_RUN_ID: ${{ steps.inputs.outputs.release_run_id }}
+        run: |
+          python - "$RELEASE_TAG" "$EXPECTED_SOURCE_SHA" "$RELEASE_RUN_ID" <<'PY'
+          import sys
+          from pathlib import Path
+
+          sys.path.insert(0, str(Path("scripts/ci").resolve()))
+          from qualify_published_release import load_claims
+
+          claims = load_claims(Path("tests/qualification/v0.2.0-claims.json"))
+          observed = (claims.tag, claims.source_sha, claims.release_run_id)
+          if observed != tuple(sys.argv[1:]):
+              raise SystemExit("claims do not match the validated dispatch identity")
+          PY
+
+          remote_refs="$(git ls-remote --exit-code origin \
+            "refs/tags/$RELEASE_TAG" "refs/tags/$RELEASE_TAG^{}")"
+          REMOTE_REFS="$remote_refs" python - <<'PY'
+          import os
+
+          tag = os.environ["RELEASE_TAG"]
+          expected = os.environ["EXPECTED_SOURCE_SHA"]
+          rows = {}
+          for line in os.environ["REMOTE_REFS"].splitlines():
+              sha, ref = line.split("\t", 1)
+              if ref in rows:
+                  raise SystemExit("duplicate remote tag ref")
+              rows[ref] = sha
+          tag_ref = f"refs/tags/{tag}"
+          allowed = {tag_ref, f"{tag_ref}^{{}}"}
+          if not rows or set(rows) - allowed or tag_ref not in rows:
+              raise SystemExit("remote tag lookup returned an ambiguous identity")
+          peeled = rows.get(f"{tag_ref}^{{}}", rows[tag_ref])
+          if peeled != expected:
+              raise SystemExit("remote peeled tag SHA does not match")
+          PY
+
+          git fetch --force --no-tags origin \
+            "refs/tags/$RELEASE_TAG:refs/qualification/tags/$RELEASE_TAG"
+          peeled="$(git rev-parse "refs/qualification/tags/$RELEASE_TAG^{commit}")"
+          [[ "$peeled" == "$EXPECTED_SOURCE_SHA" ]]
+
+      - name: Prepare isolated identity directories
+        env:
+          PRIOR_PAYLOAD: ${{ runner.temp }}/prior-payload
+          PRIOR_SIDECARS: ${{ runner.temp }}/prior-sidecars
+          PUBLIC_PAYLOAD: ${{ runner.temp }}/public-payload
+          EVIDENCE_DIR: ${{ runner.temp }}/identity-evidence
+        run: |
+          mkdir -p "$PRIOR_PAYLOAD" "$PRIOR_SIDECARS" "$PUBLIC_PAYLOAD"
+          mkdir -p "$EVIDENCE_DIR/attestations" "$EVIDENCE_DIR/readbacks"
+
+      - name: Verify successful publish workflow run
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.inputs.outputs.release_tag }}
+          EXPECTED_SOURCE_SHA: ${{ steps.inputs.outputs.expected_source_sha }}
+          RELEASE_RUN_ID: ${{ steps.inputs.outputs.release_run_id }}
+          EVIDENCE_DIR: ${{ runner.temp }}/identity-evidence
+        run: |
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            --header "Cache-Control: no-cache" --header "Pragma: no-cache" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/actions/runs/$RELEASE_RUN_ID" \
+            --output "$EVIDENCE_DIR/readbacks/actions-run.json"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path(os.environ["EVIDENCE_DIR"]) / "readbacks/actions-run.json"
+          run = json.loads(path.read_text(encoding="utf-8"))
+          release_tag = os.environ["RELEASE_TAG"]
+          source_sha = os.environ["EXPECTED_SOURCE_SHA"]
+          run_id = int(os.environ["RELEASE_RUN_ID"])
+          repository = run.get("repository")
+          if not isinstance(repository, dict):
+              raise SystemExit("workflow run has no repository identity")
+          if (
+              run.get("id") != run_id
+              or run["path"] != ".github/workflows/publish-release.yml"
+              or run["event"] != "push"
+              or run["head_sha"] != source_sha
+              or run["head_branch"] != release_tag
+              or run["status"] != "completed"
+              or run["conclusion"] != "success"
+              or repository.get("full_name") != "tatsuki-washimi/gwexpy"
+          ):
+              raise SystemExit("release workflow run identity is not an exact success")
+          PY
+
+      - name: Download prior release payload
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: release-payload-${{ steps.inputs.outputs.expected_source_sha }}
+          path: ${{ runner.temp }}/prior-payload
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.inputs.outputs.release_run_id }}
+          github-token: ${{ github.token }}
+
+      - name: Download prior release sidecars
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: release-sidecars-${{ steps.inputs.outputs.expected_source_sha }}
+          path: ${{ runner.temp }}/prior-sidecars
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.inputs.outputs.release_run_id }}
+          github-token: ${{ github.token }}
+
+      - name: Fetch and validate exact PyPI payload
+        env:
+          VERSION: "0.2.0"
+          CONTROL_ROOT: ${{ github.workspace }}/control
+          PRIOR_PAYLOAD: ${{ runner.temp }}/prior-payload
+          PRIOR_SIDECARS: ${{ runner.temp }}/prior-sidecars
+          PUBLIC_PAYLOAD: ${{ runner.temp }}/public-payload
+          EVIDENCE_DIR: ${{ runner.temp }}/identity-evidence
+        run: |
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            --header "Cache-Control: no-cache" --header "Pragma: no-cache" \
+            "https://pypi.org/pypi/gwexpy/$VERSION/json" \
+            --output "$EVIDENCE_DIR/pypi.json"
+
+          python - <<'PY'
+          import os
+          import sys
+          import urllib.parse
+          from pathlib import Path
+
+          control = Path(os.environ["CONTROL_ROOT"])
+          sys.path.insert(0, str(control / "scripts/ci"))
+          from qualify_published_release import _json_file, load_claims, validate_pypi_json
+
+          evidence = Path(os.environ["EVIDENCE_DIR"])
+          claims = load_claims(control / "tests/qualification/v0.2.0-claims.json")
+          pypi = _json_file(evidence / "pypi.json", "PyPI JSON")
+          validate_pypi_json(claims, pypi)
+          expected = {artifact.name for artifact in claims.artifacts.values()}
+          rows = []
+          for item in pypi["urls"]:
+              if item["yanked"]:
+                  continue
+              filename, url = item["filename"], item["url"]
+              parsed = urllib.parse.urlsplit(url)
+              if (
+                  filename not in expected
+                  or not url.isascii()
+                  or any(ord(char) < 32 for char in url)
+                  or parsed.scheme != "https"
+                  or parsed.hostname != "files.pythonhosted.org"
+                  or parsed.port not in (None, 443)
+                  or parsed.username is not None
+                  or parsed.password is not None
+                  or parsed.query
+                  or parsed.fragment
+                  or not parsed.path.startswith("/packages/")
+              ):
+                  raise SystemExit("PyPI file URL is not an exact official HTTPS URL")
+              rows.append(f"{filename}\t{url}\n")
+          if len(rows) != 2:
+              raise SystemExit("PyPI did not expose exactly two public files")
+          (evidence / "pypi-urls.tsv").write_text("".join(sorted(rows)), encoding="ascii")
+          PY
+
+          while IFS=$'\t' read -r filename url; do
+            curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+              --header "Cache-Control: no-cache" --header "Pragma: no-cache" \
+              "$url" --output "$PUBLIC_PAYLOAD/$filename"
+          done < "$EVIDENCE_DIR/pypi-urls.tsv"
+
+          python - <<'PY'
+          import filecmp
+          import os
+          import sys
+          from pathlib import Path
+
+          control = Path(os.environ["CONTROL_ROOT"])
+          sys.path.insert(0, str(control / "scripts/ci"))
+          from qualify_published_release import (
+              _json_file,
+              load_claims,
+              validate_payload_sidecar,
+              validate_pypi_json,
+              verify_artifact_directory,
+          )
+
+          claims = load_claims(control / "tests/qualification/v0.2.0-claims.json")
+          evidence = Path(os.environ["EVIDENCE_DIR"])
+          prior = Path(os.environ["PRIOR_PAYLOAD"])
+          public = Path(os.environ["PUBLIC_PAYLOAD"])
+          sidecar_path = Path(os.environ["PRIOR_SIDECARS"]) / "distribution-sha256.json"
+          validate_pypi_json(claims, _json_file(evidence / "pypi.json", "PyPI JSON"))
+          validate_payload_sidecar(claims, _json_file(sidecar_path, "payload sidecar"))
+          prior_files = verify_artifact_directory(claims, prior)
+          public_files = verify_artifact_directory(claims, public)
+          for artifact in claims.artifacts.values():
+              if not filecmp.cmp(
+                  prior_files[artifact.name], public_files[artifact.name], shallow=False
+              ):
+                  raise SystemExit(f"published bytes differ from release run: {artifact.name}")
+          (evidence / "distribution-sha256.json").write_bytes(sidecar_path.read_bytes())
+          PY
+
+      - name: Verify PyPI attestations with pinned official tool
+        env:
+          EVIDENCE_DIR: ${{ runner.temp }}/identity-evidence
+        run: |
+          python -m pip install --disable-pip-version-check --no-cache-dir \
+            "pypi-attestations==0.0.30"
+          pypi-attestations --version | tee \
+            "$EVIDENCE_DIR/attestations/tool-version.txt"
+          while IFS=$'\t' read -r filename url; do
+            pypi-attestations verify pypi --repository https://github.com/tatsuki-washimi/gwexpy \
+              "$url" | tee "$EVIDENCE_DIR/attestations/$filename.stdout.txt"
+          done < "$EVIDENCE_DIR/pypi-urls.tsv"
+
+      - name: Record and validate public readbacks
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.inputs.outputs.release_tag }}
+          EXPECTED_SOURCE_SHA: ${{ steps.inputs.outputs.expected_source_sha }}
+          VERSION: "0.2.0"
+          EVIDENCE_DIR: ${{ runner.temp }}/identity-evidence
+        run: |
+          readbacks="$EVIDENCE_DIR/readbacks"
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            --header "Cache-Control: no-cache" --header "Pragma: no-cache" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" \
+            --output "$readbacks/github-release.json"
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            --header "Cache-Control: no-cache" --header "Pragma: no-cache" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG" \
+            --output "$readbacks/tag-ref.json"
+
+          tag_object_sha="$(python - <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          path = Path(os.environ["EVIDENCE_DIR"]) / "readbacks/tag-ref.json"
+          tag_ref = json.loads(path.read_text(encoding="utf-8"))
+          obj = tag_ref.get("object")
+          if (
+              tag_ref.get("ref") != f"refs/tags/{os.environ['RELEASE_TAG']}"
+              or not isinstance(obj, dict)
+              or obj.get("type") != "tag"
+              or re.fullmatch(r"[0-9a-f]{40}", str(obj.get("sha")), flags=re.ASCII) is None
+          ):
+              raise SystemExit("GitHub tag ref identity is invalid")
+          print(obj["sha"])
+          PY
+          )"
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            --header "Cache-Control: no-cache" --header "Pragma: no-cache" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/git/tags/$tag_object_sha" \
+            --output "$readbacks/tag-object.json"
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            --header "Cache-Control: no-cache" --header "Pragma: no-cache" \
+            "https://api.anaconda.org/release/conda-forge/gwexpy/$VERSION" \
+            --output "$readbacks/conda-forge.json"
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            --header "Cache-Control: no-cache" --header "Pragma: no-cache" \
+            "https://zenodo.org/api/records/22106588" \
+            --output "$readbacks/zenodo.json"
+
+          python - <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          root = Path(os.environ["EVIDENCE_DIR"]) / "readbacks"
+          load = lambda name: json.loads((root / name).read_text(encoding="utf-8"))
+          release = load("github-release.json")
+          tag_ref = load("tag-ref.json")
+          tag_object = load("tag-object.json")
+          conda = load("conda-forge.json")
+          zenodo = load("zenodo.json")
+          release_tag = os.environ["RELEASE_TAG"]
+          source_sha = os.environ["EXPECTED_SOURCE_SHA"]
+          version = os.environ["VERSION"]
+
+          if (
+              not isinstance(release.get("id"), int)
+              or release["id"] <= 0
+              or release.get("tag_name") != release_tag
+              or release.get("draft") is not False
+              or release.get("prerelease") is not False
+              or release.get("html_url")
+              != f"https://github.com/tatsuki-washimi/gwexpy/releases/tag/{release_tag}"
+          ):
+              raise SystemExit("GitHub Release readback identity is invalid")
+          ref_object = tag_ref.get("object")
+          verification = tag_object.get("verification")
+          if (
+              tag_ref.get("ref") != f"refs/tags/{release_tag}"
+              or not isinstance(ref_object, dict)
+              or tag_object.get("sha") != ref_object.get("sha")
+              or tag_object.get("tag") != release_tag
+              or tag_object.get("object", {}).get("type") != "commit"
+              or tag_object.get("object", {}).get("sha") != source_sha
+              or not isinstance(verification, dict)
+              or type(verification.get("verified")) is not bool
+              or not isinstance(verification.get("reason"), str)
+              or not verification["reason"]
+          ):
+              raise SystemExit("GitHub tag object readback identity is invalid")
+
+          distributions = conda.get("distributions")
+          if not isinstance(distributions, list) or not distributions:
+              raise SystemExit("conda-forge release endpoint has no distributions")
+          for item in distributions:
+              expected_prefix = f"conda-forge/gwexpy/{version}/"
+              if (
+                  not isinstance(item, dict)
+                  or item.get("version") != version
+                  or not str(item.get("full_name", "")).startswith(expected_prefix)
+                  or item.get("owner") != "conda-forge"
+                  or re.fullmatch(r"[0-9a-f]{64}", str(item.get("sha256")), flags=re.ASCII)
+                  is None
+              ):
+                  raise SystemExit("conda-forge release identity is invalid")
+          metadata = zenodo.get("metadata")
+          if (
+              zenodo["id"] != 22106588
+              or zenodo.get("doi") != "10.5281/zenodo.22106588"
+              or not isinstance(metadata, dict)
+              or metadata.get("version") != version
+              or "GWexpy" not in str(metadata.get("title", ""))
+          ):
+              raise SystemExit("Zenodo record identity is invalid")
+
+          # An unsigned tag is evidence, not a standalone qualification failure.
+          fact = {
+              "schema": "gwexpy-post-release-readbacks-v1",
+              "release_tag": release_tag,
+              "source_sha": source_sha,
+              "github_release_id": release["id"],
+              "tag_signature": {
+                  "verified": verification["verified"],
+                  "reason": verification["reason"],
+                  "unsigned": not verification["verified"],
+              },
+              "conda_distributions": len(distributions),
+              "zenodo_record_id": zenodo["id"],
+          }
+          (root / "readbacks.json").write_text(
+              json.dumps(fact, sort_keys=True, separators=(",", ":")) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload exact public payload
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: post-release-public-payload-${{ steps.inputs.outputs.expected_source_sha }}
+          path: ${{ runner.temp }}/public-payload
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload identity evidence separately
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: post-release-identity-evidence-${{ steps.inputs.outputs.expected_source_sha }}
+          path: ${{ runner.temp }}/identity-evidence
+          if-no-files-found: error
+          retention-days: 30
+
+  install_matrix:
+    name: Install ${{ matrix.cell }}
+    needs: identity
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python: "3.11"
+            artifact: wheel
+            filename: gwexpy-0.2.0-py3-none-any.whl
+            cell: install-ubuntu-3.11-wheel
+          - os: ubuntu-latest
+            python: "3.11"
+            artifact: sdist
+            filename: gwexpy-0.2.0.tar.gz
+            cell: install-ubuntu-3.11-sdist
+          - os: ubuntu-latest
+            python: "3.12"
+            artifact: wheel
+            filename: gwexpy-0.2.0-py3-none-any.whl
+            cell: install-ubuntu-3.12-wheel
+          - os: ubuntu-latest
+            python: "3.12"
+            artifact: sdist
+            filename: gwexpy-0.2.0.tar.gz
+            cell: install-ubuntu-3.12-sdist
+          - os: ubuntu-latest
+            python: "3.13"
+            artifact: wheel
+            filename: gwexpy-0.2.0-py3-none-any.whl
+            cell: install-ubuntu-3.13-wheel
+          - os: ubuntu-latest
+            python: "3.13"
+            artifact: sdist
+            filename: gwexpy-0.2.0.tar.gz
+            cell: install-ubuntu-3.13-sdist
+          - os: ubuntu-latest
+            python: "3.14"
+            artifact: wheel
+            filename: gwexpy-0.2.0-py3-none-any.whl
+            cell: install-ubuntu-3.14-wheel
+          - os: ubuntu-latest
+            python: "3.14"
+            artifact: sdist
+            filename: gwexpy-0.2.0.tar.gz
+            cell: install-ubuntu-3.14-sdist
+          - os: macos-latest
+            python: "3.11"
+            artifact: wheel
+            filename: gwexpy-0.2.0-py3-none-any.whl
+            cell: install-macos-3.11-wheel
+          - os: macos-latest
+            python: "3.14"
+            artifact: wheel
+            filename: gwexpy-0.2.0-py3-none-any.whl
+            cell: install-macos-3.14-wheel
+          - os: windows-latest
+            python: "3.11"
+            artifact: wheel
+            filename: gwexpy-0.2.0-py3-none-any.whl
+            cell: install-windows-3.11-wheel
+          - os: windows-latest
+            python: "3.14"
+            artifact: wheel
+            filename: gwexpy-0.2.0-py3-none-any.whl
+            cell: install-windows-3.14-wheel
+    env:
+      CONTROL_ROOT: ${{ github.workspace }}/control
+      PAYLOAD_DIR: ${{ runner.temp }}/public-payload
+      REPORT_DIR: ${{ runner.temp }}/qualification-report
+      CELL_ID: ${{ matrix.cell }}
+      ARTIFACT_PATH: ${{ runner.temp }}/public-payload/${{ matrix.filename }}
+    steps:
+      - name: Check out protected-main control revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          path: control
+
+      - name: Set up exact Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Download exact public payload
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: post-release-public-payload-5c91cf2d1087616c9815d0cbcc082c5f21bb36e9
+          path: ${{ runner.temp }}/public-payload
+
+      - name: Prepare empty execution directory
+        if: always()
+        shell: bash
+        env:
+          EMPTY_CWD: ${{ runner.temp }}/qualification-empty
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          Path(os.environ["EMPTY_CWD"]).mkdir(parents=True, exist_ok=True)
+          Path(os.environ["REPORT_DIR"]).mkdir(parents=True, exist_ok=True)
+          PY
+
+      - name: Install exact local artifact
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check --no-cache-dir \
+            "$ARTIFACT_PATH" pytest
+
+      - name: Check installed dependency consistency
+        shell: bash
+        run: python -m pip check
+
+      - name: Run strict qualification cell
+        if: always()
+        shell: bash
+        working-directory: ${{ runner.temp }}/qualification-empty
+        run: |
+          python "$CONTROL_ROOT/scripts/ci/qualify_published_release.py" run-cell \
+            --claims "$CONTROL_ROOT/tests/qualification/v0.2.0-claims.json" \
+            --cell "$CELL_ID" \
+            --repo-root "$CONTROL_ROOT" \
+            --artifact "$ARTIFACT_PATH" \
+            --json-out "$REPORT_DIR/$CELL_ID.json" \
+            --junit-out "$REPORT_DIR/$CELL_ID.xml"
+
+      - name: Upload qualification cell report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: post-release-report-${{ matrix.cell }}
+          path: |
+            ${{ runner.temp }}/qualification-report/${{ matrix.cell }}.json
+            ${{ runner.temp }}/qualification-report/${{ matrix.cell }}.xml
+          if-no-files-found: error
+          retention-days: 30
+
+  gwpy_matrix:
+    name: GWpy compatibility ${{ matrix.gwpy }}
+    needs: identity
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: "3.11"
+            gwpy: "4.0.1"
+            cell: gwpy-4.0.1-wheel
+          - python: "3.11"
+            gwpy: "4.0.2"
+            cell: gwpy-4.0.2-wheel
+    env:
+      CONTROL_ROOT: ${{ github.workspace }}/control
+      REPORT_DIR: ${{ runner.temp }}/qualification-report
+      CELL_ID: ${{ matrix.cell }}
+      ARTIFACT_PATH: ${{ runner.temp }}/public-payload/gwexpy-0.2.0-py3-none-any.whl
+    steps:
+      - name: Check out protected-main control revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          path: control
+
+      - name: Set up exact Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Download exact public payload
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: post-release-public-payload-5c91cf2d1087616c9815d0cbcc082c5f21bb36e9
+          path: ${{ runner.temp }}/public-payload
+
+      - name: Prepare empty execution directory
+        if: always()
+        env:
+          EMPTY_CWD: ${{ runner.temp }}/qualification-empty
+        run: |
+          mkdir -p "$EMPTY_CWD" "$REPORT_DIR"
+
+      - name: Install exact wheel and GWpy compatibility stack
+        env:
+          GWPY_VERSION: ${{ matrix.gwpy }}
+        run: |
+          python -m pip install --disable-pip-version-check --no-cache-dir \
+            "$ARTIFACT_PATH" "gwpy==$GWPY_VERSION" mne lalsuite pytest
+
+      - name: Check installed dependency consistency
+        run: python -m pip check
+
+      - name: Run strict qualification cell
+        if: always()
+        working-directory: ${{ runner.temp }}/qualification-empty
+        run: |
+          python "$CONTROL_ROOT/scripts/ci/qualify_published_release.py" run-cell \
+            --claims "$CONTROL_ROOT/tests/qualification/v0.2.0-claims.json" \
+            --cell "$CELL_ID" \
+            --repo-root "$CONTROL_ROOT" \
+            --artifact "$ARTIFACT_PATH" \
+            --json-out "$REPORT_DIR/$CELL_ID.json" \
+            --junit-out "$REPORT_DIR/$CELL_ID.xml"
+
+      - name: Upload qualification cell report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: post-release-report-${{ matrix.cell }}
+          path: |
+            ${{ runner.temp }}/qualification-report/${{ matrix.cell }}.json
+            ${{ runner.temp }}/qualification-report/${{ matrix.cell }}.xml
+          if-no-files-found: error
+          retention-days: 30
+
+  sdist_contract:
+    name: Source distribution claims
+    needs: identity
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CONTROL_ROOT: ${{ github.workspace }}/control
+      REPORT_DIR: ${{ runner.temp }}/qualification-report
+      CELL_ID: sdist-3.12-claims
+      ARTIFACT_PATH: ${{ runner.temp }}/public-payload/gwexpy-0.2.0.tar.gz
+    steps:
+      - name: Check out protected-main control revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          path: control
+
+      - name: Set up exact Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+
+      - name: Download exact public payload
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: post-release-public-payload-5c91cf2d1087616c9815d0cbcc082c5f21bb36e9
+          path: ${{ runner.temp }}/public-payload
+
+      - name: Prepare empty execution directory
+        if: always()
+        env:
+          EMPTY_CWD: ${{ runner.temp }}/qualification-empty
+        run: |
+          mkdir -p "$EMPTY_CWD" "$REPORT_DIR"
+
+      - name: Install exact source distribution contract stack
+        run: |
+          python -m pip install --disable-pip-version-check --no-cache-dir \
+            "$ARTIFACT_PATH" "gwpy==4.0.2" mne lalsuite pytest
+
+      - name: Check installed dependency consistency
+        run: python -m pip check
+
+      - name: Run strict qualification cell
+        if: always()
+        working-directory: ${{ runner.temp }}/qualification-empty
+        run: |
+          python "$CONTROL_ROOT/scripts/ci/qualify_published_release.py" run-cell \
+            --claims "$CONTROL_ROOT/tests/qualification/v0.2.0-claims.json" \
+            --cell "$CELL_ID" \
+            --repo-root "$CONTROL_ROOT" \
+            --artifact "$ARTIFACT_PATH" \
+            --json-out "$REPORT_DIR/$CELL_ID.json" \
+            --junit-out "$REPORT_DIR/$CELL_ID.xml"
+
+      - name: Upload qualification cell report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: post-release-report-sdist-3.12-claims
+          path: |
+            ${{ runner.temp }}/qualification-report/sdist-3.12-claims.json
+            ${{ runner.temp }}/qualification-report/sdist-3.12-claims.xml
+          if-no-files-found: error
+          retention-days: 30
+
+  conda_matrix:
+    name: Conda-forge ${{ matrix.cell }}
+    needs: identity
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: "3.11"
+            cell: conda-3.11
+            packages: pytest mne lalsuite
+          - python: "3.14"
+            cell: conda-3.14
+            packages: pytest
+    env:
+      CONTROL_ROOT: ${{ github.workspace }}/control
+      REPORT_DIR: ${{ runner.temp }}/qualification-report
+      CELL_ID: ${{ matrix.cell }}
+    steps:
+      - name: Check out protected-main control revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          path: control
+
+      - name: Install exact conda-forge package
+        uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39
+        with:
+          environment-name: qualification
+          condarc: |
+            channels:
+              - conda-forge
+            channel_priority: strict
+          init-shell: bash
+          generate-run-shell: false
+          cache-environment: false
+          cache-downloads: false
+          create-args: >-
+            python=${{ matrix.python }}
+            pip
+            gwexpy=0.2.0
+            ${{ matrix.packages }}
+
+      - name: Prepare empty execution directory
+        if: always()
+        env:
+          EMPTY_CWD: ${{ runner.temp }}/qualification-empty
+        run: |
+          mkdir -p "$EMPTY_CWD" "$REPORT_DIR"
+
+      - name: Check installed dependency consistency
+        run: micromamba run -n qualification python -m pip check
+
+      - name: Run strict qualification cell
+        if: always()
+        working-directory: ${{ runner.temp }}/qualification-empty
+        run: |
+          micromamba run -n qualification \
+            python "$CONTROL_ROOT/scripts/ci/qualify_published_release.py" run-cell \
+            --claims "$CONTROL_ROOT/tests/qualification/v0.2.0-claims.json" \
+            --cell "$CELL_ID" \
+            --repo-root "$CONTROL_ROOT" \
+            --json-out "$REPORT_DIR/$CELL_ID.json" \
+            --junit-out "$REPORT_DIR/$CELL_ID.xml"
+
+      - name: Upload qualification cell report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: post-release-report-${{ matrix.cell }}
+          path: |
+            ${{ runner.temp }}/qualification-report/${{ matrix.cell }}.json
+            ${{ runner.temp }}/qualification-report/${{ matrix.cell }}.xml
+          if-no-files-found: error
+          retention-days: 30
+
+  scientific_extras:
+    name: Scientific extras
+    needs: identity
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CONTROL_ROOT: ${{ github.workspace }}/control
+      REPORT_DIR: ${{ runner.temp }}/qualification-report
+      CELL_ID: scientific-3.11-wheel
+      ARTIFACT_PATH: ${{ runner.temp }}/public-payload/gwexpy-0.2.0-py3-none-any.whl
+      MPLBACKEND: Agg
+    steps:
+      - name: Check out protected-main control revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          path: control
+
+      - name: Set up exact Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+
+      - name: Download exact public payload
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: post-release-public-payload-5c91cf2d1087616c9815d0cbcc082c5f21bb36e9
+          path: ${{ runner.temp }}/public-payload
+
+      - name: Prepare empty execution directory
+        if: always()
+        env:
+          EMPTY_CWD: ${{ runner.temp }}/qualification-empty
+        run: |
+          mkdir -p "$EMPTY_CWD" "$REPORT_DIR"
+
+      - name: Install exact wheel and required scientific extras
+        run: |
+          python -m pip install --disable-pip-version-check --no-cache-dir \
+            "$ARTIFACT_PATH" mne lalsuite pytest
+
+      - name: Check installed dependency consistency
+        run: python -m pip check
+
+      - name: Precheck required scientific imports
+        run: |
+          python - <<'PY'
+          import gwexpy
+          import lal
+          import mne
+          import scipy
+          from gwpy.io.gwf import lalframe
+
+          assert gwexpy.__version__ == "0.2.0"
+          assert scipy.__version__
+          assert mne.__version__
+          assert lal.__name__ == "lal"
+          assert lalframe.__name__ == "gwpy.io.gwf.lalframe"
+          PY
+
+      - name: Run strict qualification cell
+        if: always()
+        working-directory: ${{ runner.temp }}/qualification-empty
+        run: |
+          python "$CONTROL_ROOT/scripts/ci/qualify_published_release.py" run-cell \
+            --claims "$CONTROL_ROOT/tests/qualification/v0.2.0-claims.json" \
+            --cell "$CELL_ID" \
+            --repo-root "$CONTROL_ROOT" \
+            --artifact "$ARTIFACT_PATH" \
+            --json-out "$REPORT_DIR/$CELL_ID.json" \
+            --junit-out "$REPORT_DIR/$CELL_ID.xml"
+
+      - name: Upload qualification cell report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: post-release-report-scientific-3.11-wheel
+          path: |
+            ${{ runner.temp }}/qualification-report/scientific-3.11-wheel.json
+            ${{ runner.temp }}/qualification-report/scientific-3.11-wheel.xml
+          if-no-files-found: error
+          retention-days: 30
+
+  docs_en_ja:
+    name: English and Japanese documentation
+    needs: identity
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      CONTROL_ROOT: ${{ github.workspace }}/control
+      REPORT_DIR: ${{ runner.temp }}/qualification-report
+      CELL_ID: docs-en-ja-3.11-wheel
+      ARTIFACT_PATH: ${{ runner.temp }}/public-payload/gwexpy-0.2.0-py3-none-any.whl
+      MPLBACKEND: Agg
+      MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
+    steps:
+      - name: Check out protected-main control revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          path: control
+
+      - name: Set up exact Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+
+      - name: Download exact public payload
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: post-release-public-payload-5c91cf2d1087616c9815d0cbcc082c5f21bb36e9
+          path: ${{ runner.temp }}/public-payload
+
+      - name: Prepare empty execution directory
+        if: always()
+        env:
+          EMPTY_CWD: ${{ runner.temp }}/qualification-empty
+        run: |
+          mkdir -p "$EMPTY_CWD" "$REPORT_DIR" "$MPLCONFIGDIR"
+
+      - name: Install exact wheel and documentation plotting dependencies
+        run: |
+          python -m pip install --disable-pip-version-check --no-cache-dir \
+            "${{ runner.temp }}/public-payload/gwexpy-0.2.0-py3-none-any.whl" \
+            pytest matplotlib
+
+      - name: Check installed dependency consistency
+        run: python -m pip check
+
+      - name: Run strict qualification cell
+        if: always()
+        working-directory: ${{ runner.temp }}/qualification-empty
+        run: |
+          python "$CONTROL_ROOT/scripts/ci/qualify_published_release.py" run-cell \
+            --claims "$CONTROL_ROOT/tests/qualification/v0.2.0-claims.json" \
+            --cell "$CELL_ID" \
+            --repo-root "$CONTROL_ROOT" \
+            --artifact "$ARTIFACT_PATH" \
+            --json-out "$REPORT_DIR/$CELL_ID.json" \
+            --junit-out "$REPORT_DIR/$CELL_ID.xml"
+
+      - name: Upload qualification cell report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: post-release-report-docs-en-ja-3.11-wheel
+          path: |
+            ${{ runner.temp }}/qualification-report/docs-en-ja-3.11-wheel.json
+            ${{ runner.temp }}/qualification-report/docs-en-ja-3.11-wheel.xml
+          if-no-files-found: error
+          retention-days: 30
+
+  aggregate:
+    name: Aggregate qualification evidence
+    if: always()
+    needs:
+      - identity
+      - install_matrix
+      - gwpy_matrix
+      - sdist_contract
+      - conda_matrix
+      - scientific_extras
+      - docs_en_ja
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      all_passed: ${{ steps.final.outputs.all_passed }}
+    env:
+      CONTROL_ROOT: ${{ github.workspace }}/control
+      PAYLOAD_DIR: ${{ runner.temp }}/public-payload
+      IDENTITY_DIR: ${{ runner.temp }}/identity-evidence
+      REPORTS_DIR: ${{ runner.temp }}/qualification-reports
+      AGGREGATE_DIR: ${{ runner.temp }}/qualification-aggregate
+    steps:
+      - name: Check out protected-main control revision
+        if: always()
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          path: control
+
+      - name: Set up aggregate Python
+        if: always()
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+
+      - name: Prepare aggregate directories
+        if: always()
+        run: |
+          mkdir -p "$PAYLOAD_DIR" "$IDENTITY_DIR" "$REPORTS_DIR" "$AGGREGATE_DIR"
+
+      - name: Download exact public payload
+        if: always()
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: post-release-public-payload-5c91cf2d1087616c9815d0cbcc082c5f21bb36e9
+          path: ${{ runner.temp }}/public-payload
+
+      - name: Download identity evidence
+        if: always()
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: post-release-identity-evidence-5c91cf2d1087616c9815d0cbcc082c5f21bb36e9
+          path: ${{ runner.temp }}/identity-evidence
+
+      - name: Download all qualification reports
+        if: always()
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: post-release-report-*
+          path: ${{ runner.temp }}/qualification-reports
+          merge-multiple: true
+
+      - name: Aggregate exact nineteen-cell ledger
+        if: always()
+        run: |
+          set +e
+          python "$CONTROL_ROOT/scripts/ci/qualify_published_release.py" aggregate \
+            --claims "$CONTROL_ROOT/tests/qualification/v0.2.0-claims.json" \
+            --artifact-dir "$PAYLOAD_DIR" \
+            --reports-dir "$REPORTS_DIR" \
+            --pypi-json "$IDENTITY_DIR/pypi.json" \
+            --payload-sidecar "$IDENTITY_DIR/distribution-sha256.json" \
+            --json-out "$AGGREGATE_DIR/aggregate.json" \
+            --junit-out "$AGGREGATE_DIR/aggregate.xml"
+          aggregate_status=$?
+          set -e
+          printf '%s\n' "$aggregate_status" > \
+            "$AGGREGATE_DIR/aggregate-exit-code.txt"
+
+      - name: Upload aggregate qualification evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: post-release-qualification-aggregate
+          path: |
+            ${{ runner.temp }}/qualification-aggregate/aggregate.json
+            ${{ runner.temp }}/qualification-aggregate/aggregate.xml
+            ${{ runner.temp }}/qualification-aggregate/aggregate-exit-code.txt
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Assert complete qualification ledger
+        id: final
+        if: always()
+        env:
+          IDENTITY_RESULT: ${{ needs.identity.result }}
+          INSTALL_MATRIX_RESULT: ${{ needs.install_matrix.result }}
+          GWPY_MATRIX_RESULT: ${{ needs.gwpy_matrix.result }}
+          SDIST_CONTRACT_RESULT: ${{ needs.sdist_contract.result }}
+          CONDA_MATRIX_RESULT: ${{ needs.conda_matrix.result }}
+          SCIENTIFIC_EXTRAS_RESULT: ${{ needs.scientific_extras.result }}
+          DOCS_EN_JA_RESULT: ${{ needs.docs_en_ja.result }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          aggregate_dir = Path(os.environ["AGGREGATE_DIR"])
+          try:
+              exit_code = int(
+                  (aggregate_dir / "aggregate-exit-code.txt")
+                  .read_text(encoding="ascii")
+                  .strip()
+              )
+              aggregate = json.loads(
+                  (aggregate_dir / "aggregate.json").read_text(encoding="utf-8")
+              )
+              passed = (
+                  aggregate["passed"] is True
+                  and len(aggregate["required_cells"]) == 19
+                  and len(set(aggregate["required_cells"])) == 19
+              )
+          except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError):
+              exit_code = -1
+              passed = False
+
+          results = {
+              "identity": os.environ["IDENTITY_RESULT"],
+              "install_matrix": os.environ["INSTALL_MATRIX_RESULT"],
+              "gwpy_matrix": os.environ["GWPY_MATRIX_RESULT"],
+              "sdist_contract": os.environ["SDIST_CONTRACT_RESULT"],
+              "conda_matrix": os.environ["CONDA_MATRIX_RESULT"],
+              "scientific_extras": os.environ["SCIENTIFIC_EXTRAS_RESULT"],
+              "docs_en_ja": os.environ["DOCS_EN_JA_RESULT"],
+          }
+          needs_passed = all(value == "success" for value in results.values())
+          all_passed = exit_code == 0 and passed and needs_passed
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as stream:
+              stream.write(f"all_passed={'true' if all_passed else 'false'}\n")
+          if not all_passed:
+              raise SystemExit(
+                  f"qualification failed: exit={exit_code}, passed={passed}, needs={results}"
+              )
+          PY
+
+  qualification_gate:
+    name: Qualification gate
+    if: always()
+    needs: aggregate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      AGGREGATE_RESULT: ${{ needs.aggregate.result }}
+      ALL_PASSED: ${{ needs.aggregate.outputs.all_passed }}
+    steps:
+      - name: Require successful literal qualification result
+        run: |
+          [[ "$AGGREGATE_RESULT" == "success" ]]
+          [[ "$ALL_PASSED" == "true" ]]
