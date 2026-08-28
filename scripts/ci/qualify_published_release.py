@@ -125,7 +125,12 @@ def _conda_channel(record: dict[str, Any]) -> str | None:
     if source == "conda-forge":
         return source
     parsed = urllib.parse.urlparse(source)
-    return "conda-forge" if parsed.scheme == "https" and parsed.netloc == "conda.anaconda.org" and parsed.path.split("/")[1:2] == ["conda-forge"] else None
+    subdir = record.get("subdir")
+    known = {"linux-64", "linux-aarch64", "osx-64", "osx-arm64", "win-64", "noarch"}
+    if not isinstance(subdir, str) or subdir not in known:
+        return None
+    expected = f"/conda-forge/{subdir}"
+    return "conda-forge" if parsed.scheme == "https" and parsed.hostname == "conda.anaconda.org" and parsed.port in {None, 443} and not parsed.username and not parsed.password and not parsed.query and not parsed.fragment and parsed.path == expected else None
 
 
 def _digest(path: Path) -> str:
@@ -182,12 +187,16 @@ def load_claims(path: Path | str) -> SimpleNamespace:
     for cell_id, cell in cells.items():
         if not CELL.fullmatch(cell_id) or len(cell_id) > 80:
             raise QualificationError("invalid cell ID")
-        allowed = ({"python", "platform", "channel", "artifact", "suite", "required"}, {"python", "platform", "gwpy", "channel", "artifact", "suite", "required"}, {"python", "platform", "channel", "conda_channel", "artifact", "suite", "required"})
-        if not isinstance(cell, dict) or set(cell) not in allowed:
+        if not isinstance(cell, dict):
+            raise QualificationError("cell has missing or unknown keys")
+        base = {"python", "platform", "channel", "artifact", "suite", "required"}
+        channel = cell.get("channel")
+        allowed = base | ({"gwpy"} if channel == "pypi" and "gwpy" in cell else set()) | ({"conda_channel"} if channel == "conda" else set())
+        if set(cell) != allowed:
             raise QualificationError("cell has missing or unknown keys")
         if not isinstance(cell["python"], str) or not re.fullmatch(r"3\.(1[1-4])", cell["python"]) or cell["platform"] not in {"linux", "macos", "windows"} or cell["channel"] not in {"pypi", "conda", "docs"} or cell["artifact"] not in {"wheel", "sdist", "none"} or cell["suite"] not in parsed_suites or cell["required"] is not True or ("gwpy" in cell and (not isinstance(cell["gwpy"], str) or re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", cell["gwpy"]) is None)):
             raise QualificationError("invalid cell")
-        if (cell["channel"] == "pypi") != (cell["artifact"] in parsed_artifacts) or (cell["channel"] != "pypi" and cell["artifact"] != "none"):
+        if (cell["channel"] == "pypi" and cell["artifact"] not in parsed_artifacts) or (cell["channel"] != "pypi" and cell["artifact"] != "none"):
             raise QualificationError("invalid cell artifact selection")
         if cell["channel"] == "conda" and (not isinstance(cell.get("conda_channel"), str) or not cell["conda_channel"]):
             raise QualificationError("conda cell requires exact channel")

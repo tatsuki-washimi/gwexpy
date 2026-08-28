@@ -14,11 +14,12 @@ def _first_python_block(document: str) -> str:
     return match.group(1).replace(".show()", "")
 
 
-def test_en_ja_quickstarts_are_present_and_first_example_executes() -> None:
+def test_en_ja_quickstarts_are_present_and_examples_execute() -> None:
     english = (ROOT / "docs/web/en/user_guide/quickstart.md").read_text(encoding="utf-8")
     japanese = (ROOT / "docs/web/ja/user_guide/quickstart.md").read_text(encoding="utf-8")
     assert "# Quickstart" in english and "3-line Quickstart" in english
     assert "# クイックスタート" in japanese and "3行で最初の図" in japanese
-    namespace: dict[str, object] = {}
-    exec(_first_python_block(english), namespace)
-    assert namespace["ts"].__class__.__name__ == "TimeSeries"
+    for source in (english, japanese):
+        namespace: dict[str, object] = {}
+        exec(_first_python_block(source), namespace)
+        assert namespace["ts"].__class__.__name__ == "TimeSeries"

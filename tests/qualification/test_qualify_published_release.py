@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import subprocess
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -98,6 +99,32 @@ def test_file_uri_rejects_authorities_queries_and_fragments(qualifier, tmp_path:
     for value in ("file://server/share/wheel.whl", "file:///tmp/wheel.whl?x=1", "file:///tmp/wheel.whl#part"):
         with pytest.raises(qualifier.QualificationError):
             qualifier._local_file_uri(value)
+
+
+@pytest.mark.parametrize(
+    ("record", "expected"),
+    [
+        ({"channel": "conda-forge", "subdir": "linux-64"}, "conda-forge"),
+        ({"channel": "https://conda.anaconda.org/conda-forge/linux-64", "subdir": "linux-64"}, "conda-forge"),
+        ({"channel": "https://evil/conda-forge/linux-64", "subdir": "linux-64"}, None),
+        ({"channel": "https://conda.anaconda.org/conda-forge/linux-64?x=1", "subdir": "linux-64"}, None),
+    ],
+)
+def test_conda_channel_is_canonical_and_rejects_malicious_urls(qualifier, record, expected) -> None:
+    assert qualifier._conda_channel(record) == expected
+
+
+@pytest.mark.parametrize("channel, extra", [("pypi", "conda_channel"), ("docs", "gwpy"), ("conda", "gwpy")])
+def test_cell_schema_rejects_cross_channel_fields(qualifier, tmp_path: Path, channel: str, extra: str) -> None:
+    path = _claims(tmp_path)
+    data = json.loads(path.read_text())
+    cell = data["required_cells"]["install-ubuntu-3.11-wheel"]
+    cell["channel"] = channel
+    cell["artifact"] = "none" if channel != "pypi" else "wheel"
+    cell[extra] = "conda-forge" if extra == "conda_channel" else "4.0.1"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    with pytest.raises(qualifier.QualificationError):
+        qualifier.load_claims(path)
 
 
 def test_artifact_directory_rejects_symlinks_extras_and_wrong_hash(qualifier, tmp_path: Path) -> None:
@@ -283,3 +310,26 @@ def test_non_pypi_cell_rejects_artifact_and_traversal_selector(qualifier, monkey
     claims.suites["release-claims"] = SimpleNamespace(selectors=("../escape.py",), support_paths=(), timeout=30)
     monkeypatch.setattr(qualifier, "_preflight", lambda *_: None)
     assert not qualifier.run_cell(claims, "conda-3.11", ROOT, None, tmp_path / "b.json", tmp_path / "b.xml")
+
+
+@pytest.mark.parametrize("outcome", ("timeout", "missing-junit", "bad-junit", "skipped-junit", "nonzero"))
+def test_run_cell_failure_branches_write_evidence(qualifier, monkeypatch, tmp_path: Path, outcome: str) -> None:
+    claims = qualifier.load_claims(CLAIMS)
+    repo = tmp_path / "repo"
+    source = repo / "tests" / "test_one.py"
+    source.parent.mkdir(parents=True)
+    source.write_text("def test_one(): assert True\n", encoding="utf-8")
+    claims.suites["core"] = SimpleNamespace(selectors=("tests/test_one.py",), support_paths=(), timeout=1)
+    claims.required_cells["conda-3.11"].suite = "core"
+    monkeypatch.setattr(qualifier, "_preflight", lambda *_: None)
+    def fake_run(command, **kwargs):
+        junit = Path(next(item.split("=", 1)[1] for item in command if item.startswith("--junitxml=")))
+        if outcome == "timeout": raise subprocess.TimeoutExpired(command, 1)
+        if outcome == "bad-junit": junit.write_text("<bad>", encoding="utf-8")
+        elif outcome == "skipped-junit": junit.write_text("<testsuite tests='1' skipped='1'><testcase><skipped/></testcase></testsuite>", encoding="utf-8")
+        elif outcome != "missing-junit": return SimpleNamespace(returncode=1, stdout="fail", stderr="")
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+    monkeypatch.setattr(qualifier.subprocess, "run", fake_run)
+    json_out, junit_out = tmp_path / f"{outcome}.json", tmp_path / f"{outcome}.xml"
+    assert not qualifier.run_cell(claims, "conda-3.11", repo, None, json_out, junit_out)
+    assert json.loads(json_out.read_text())["passed"] is False and junit_out.exists()
