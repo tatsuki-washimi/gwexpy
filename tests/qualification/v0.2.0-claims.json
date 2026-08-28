@@ -1,40 +1,210 @@
 {
-  "schema": "gwexpy-published-release-claims-v1",
-  "project": "gwexpy",
-  "version": "0.2.0",
-  "tag": "v0.2.0",
-  "source_sha": "5c91cf2d1087616c9815d0cbcc082c5f21bb36e9",
-  "release_run_id": "32935405476",
-  "repository": "tatsuki-washimi/gwexpy",
-  "payload_sidecar_schema": "gwexpy-v020-release-payload-v1",
-  "artifacts": {
-    "wheel": {"filename": "gwexpy-0.2.0-py3-none-any.whl", "packagetype": "bdist_wheel", "sha256": "d63484b9ba73e9db51c2a8a2fb303844b32f71ea444e6f6973150fcb44bce68c"},
-    "sdist": {"filename": "gwexpy-0.2.0.tar.gz", "packagetype": "sdist", "sha256": "8af6b260646bc80e2ce6a45ca0bfbdfca1ff4585b8086ff4af9caa3696d85f17"}
-  },
-  "suites": {
-    "core": {"selectors": ["tests/qualification/test_v020_release_claims.py"], "support_paths": [], "timeout": 180},
-    "release-claims": {"selectors": ["tests/qualification/test_v020_release_claims.py"], "support_paths": [], "timeout": 180},
-    "docs": {"selectors": ["tests/qualification/test_v020_release_claims.py"], "support_paths": [], "timeout": 300}
-  },
-  "required_cells": {
-    "install-ubuntu-3.11-wheel": {"python": "3.11", "channel": "pypi", "artifact_kind": "wheel", "suite": "core", "required": true},
-    "install-ubuntu-3.11-sdist": {"python": "3.11", "channel": "pypi", "artifact_kind": "sdist", "suite": "core", "required": true},
-    "install-ubuntu-3.12-wheel": {"python": "3.12", "channel": "pypi", "artifact_kind": "wheel", "suite": "core", "required": true},
-    "install-ubuntu-3.12-sdist": {"python": "3.12", "channel": "pypi", "artifact_kind": "sdist", "suite": "core", "required": true},
-    "install-ubuntu-3.13-wheel": {"python": "3.13", "channel": "pypi", "artifact_kind": "wheel", "suite": "core", "required": true},
-    "install-ubuntu-3.13-sdist": {"python": "3.13", "channel": "pypi", "artifact_kind": "sdist", "suite": "core", "required": true},
-    "install-ubuntu-3.14-wheel": {"python": "3.14", "channel": "pypi", "artifact_kind": "wheel", "suite": "core", "required": true},
-    "install-ubuntu-3.14-sdist": {"python": "3.14", "channel": "pypi", "artifact_kind": "sdist", "suite": "core", "required": true},
-    "install-macos-3.11-wheel": {"python": "3.11", "channel": "pypi", "artifact_kind": "wheel", "suite": "core", "required": true},
-    "install-macos-3.14-wheel": {"python": "3.14", "channel": "pypi", "artifact_kind": "wheel", "suite": "core", "required": true},
-    "install-windows-3.11-wheel": {"python": "3.11", "channel": "pypi", "artifact_kind": "wheel", "suite": "core", "required": true},
-    "install-windows-3.14-wheel": {"python": "3.14", "channel": "pypi", "artifact_kind": "wheel", "suite": "core", "required": true},
-    "gwpy-4.0.1-wheel": {"python": "3.11", "channel": "pypi", "artifact_kind": "wheel", "suite": "release-claims", "required": true},
-    "gwpy-4.0.2-wheel": {"python": "3.11", "channel": "pypi", "artifact_kind": "wheel", "suite": "release-claims", "required": true},
-    "sdist-3.12-claims": {"python": "3.12", "channel": "pypi", "artifact_kind": "sdist", "suite": "release-claims", "required": true},
-    "conda-3.11": {"python": "3.11", "channel": "conda", "artifact_kind": "none", "suite": "release-claims", "required": true},
-    "conda-3.14": {"python": "3.14", "channel": "conda", "artifact_kind": "none", "suite": "release-claims", "required": true},
-    "scientific-3.11-wheel": {"python": "3.11", "channel": "pypi", "artifact_kind": "wheel", "suite": "release-claims", "required": true},
-    "docs-en-ja-3.11-wheel": {"python": "3.11", "channel": "pypi", "artifact_kind": "wheel", "suite": "docs", "required": true}
-  }
+    "schema": "gwexpy-published-release-claims-v1",
+    "project": "gwexpy",
+    "version": "0.2.0",
+    "tag": "v0.2.0",
+    "source_sha": "5c91cf2d1087616c9815d0cbcc082c5f21bb36e9",
+    "release_run_id": "32935405476",
+    "repository": "tatsuki-washimi/gwexpy",
+    "payload_sidecar_schema": "gwexpy-v020-release-payload-v1",
+    "artifacts": {
+        "wheel": {
+            "filename": "gwexpy-0.2.0-py3-none-any.whl",
+            "packagetype": "bdist_wheel",
+            "sha256": "d63484b9ba73e9db51c2a8a2fb303844b32f71ea444e6f6973150fcb44bce68c"
+        },
+        "sdist": {
+            "filename": "gwexpy-0.2.0.tar.gz",
+            "packagetype": "sdist",
+            "sha256": "8af6b260646bc80e2ce6a45ca0bfbdfca1ff4585b8086ff4af9caa3696d85f17"
+        }
+    },
+    "suites": {
+        "core": {
+            "selectors": [
+                "tests/qualification/test_public_type_smoke.py"
+            ],
+            "support_paths": [],
+            "timeout": 180
+        },
+        "release-claims": {
+            "selectors": [
+                "tests/qualification/test_v020_release_claims.py"
+            ],
+            "support_paths": [],
+            "timeout": 180
+        },
+        "scientific": {
+            "selectors": [
+                "tests/qualification/test_scientific_smoke.py"
+            ],
+            "support_paths": [],
+            "timeout": 300
+        },
+        "docs": {
+            "selectors": [
+                "tests/qualification/test_docs_smoke.py"
+            ],
+            "support_paths": [],
+            "timeout": 300
+        }
+    },
+    "required_cells": {
+        "install-ubuntu-3.11-wheel": {
+            "python": "3.11",
+            "platform": "linux",
+            "channel": "pypi",
+            "artifact": "wheel",
+            "suite": "core",
+            "required": true
+        },
+        "install-ubuntu-3.11-sdist": {
+            "python": "3.11",
+            "platform": "linux",
+            "channel": "pypi",
+            "artifact": "sdist",
+            "suite": "core",
+            "required": true
+        },
+        "install-ubuntu-3.12-wheel": {
+            "python": "3.12",
+            "platform": "linux",
+            "channel": "pypi",
+            "artifact": "wheel",
+            "suite": "core",
+            "required": true
+        },
+        "install-ubuntu-3.12-sdist": {
+            "python": "3.12",
+            "platform": "linux",
+            "channel": "pypi",
+            "artifact": "sdist",
+            "suite": "core",
+            "required": true
+        },
+        "install-ubuntu-3.13-wheel": {
+            "python": "3.13",
+            "platform": "linux",
+            "channel": "pypi",
+            "artifact": "wheel",
+            "suite": "core",
+            "required": true
+        },
+        "install-ubuntu-3.13-sdist": {
+            "python": "3.13",
+            "platform": "linux",
+            "channel": "pypi",
+            "artifact": "sdist",
+            "suite": "core",
+            "required": true
+        },
+        "install-ubuntu-3.14-wheel": {
+            "python": "3.14",
+            "platform": "linux",
+            "channel": "pypi",
+            "artifact": "wheel",
+            "suite": "core",
+            "required": true
+        },
+        "install-ubuntu-3.14-sdist": {
+            "python": "3.14",
+            "platform": "linux",
+            "channel": "pypi",
+            "artifact": "sdist",
+            "suite": "core",
+            "required": true
+        },
+        "install-macos-3.11-wheel": {
+            "python": "3.11",
+            "platform": "macos",
+            "channel": "pypi",
+            "artifact": "wheel",
+            "suite": "core",
+            "required": true
+        },
+        "install-macos-3.14-wheel": {
+            "python": "3.14",
+            "platform": "macos",
+            "channel": "pypi",
+            "artifact": "wheel",
+            "suite": "core",
+            "required": true
+        },
+        "install-windows-3.11-wheel": {
+            "python": "3.11",
+            "platform": "windows",
+            "channel": "pypi",
+            "artifact": "wheel",
+            "suite": "core",
+            "required": true
+        },
+        "install-windows-3.14-wheel": {
+            "python": "3.14",
+            "platform": "windows",
+            "channel": "pypi",
+            "artifact": "wheel",
+            "suite": "core",
+            "required": true
+        },
+        "gwpy-4.0.1-wheel": {
+            "python": "3.11",
+            "platform": "linux",
+            "gwpy": "4.0.1",
+            "channel": "pypi",
+            "artifact": "wheel",
+            "suite": "release-claims",
+            "required": true
+        },
+        "gwpy-4.0.2-wheel": {
+            "python": "3.11",
+            "platform": "linux",
+            "gwpy": "4.0.2",
+            "channel": "pypi",
+            "artifact": "wheel",
+            "suite": "release-claims",
+            "required": true
+        },
+        "sdist-3.12-claims": {
+            "python": "3.12",
+            "platform": "linux",
+            "channel": "pypi",
+            "artifact": "sdist",
+            "suite": "release-claims",
+            "required": true
+        },
+    "conda-3.11": {
+      "python": "3.11",
+      "platform": "linux",
+      "channel": "conda",
+      "conda_channel": "conda-forge",
+      "artifact": "none",
+            "suite": "release-claims",
+            "required": true
+        },
+    "conda-3.14": {
+      "python": "3.14",
+      "platform": "linux",
+      "channel": "conda",
+      "conda_channel": "conda-forge",
+      "artifact": "none",
+            "suite": "release-claims",
+            "required": true
+        },
+        "scientific-3.11-wheel": {
+            "python": "3.11",
+            "platform": "linux",
+            "channel": "pypi",
+            "artifact": "wheel",
+            "suite": "scientific",
+            "required": true
+        },
+        "docs-en-ja-3.11-wheel": {
+            "python": "3.11",
+            "platform": "linux",
+            "channel": "pypi",
+            "artifact": "wheel",
+            "suite": "docs",
+            "required": true
+        }
+    }
 }

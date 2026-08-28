@@ -18,8 +18,19 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def test_timeseries_t0_ns_is_exact_through_copy_slice_pickle_and_hdf5(tmp_path: Path) -> None:
-    """A published distribution must retain nanosecond epoch precision."""
+def test_timeseries_t0_ns_is_exact_through_constructor_copy_slice_and_pickle() -> None:
+    """Exact epoch is a passing public lifecycle contract."""
+    from gwexpy.timeseries import TimeSeries
+
+    t0_ns = 1234567890123456789
+    series = TimeSeries(np.arange(8), t0_ns=t0_ns, sample_rate=1)
+    expected = (t0_ns, t0_ns, t0_ns + 1_000_000_000, t0_ns)
+    values = (series, series.copy(), series[1:], pickle.loads(pickle.dumps(series)))
+    assert tuple(value.t0_gps_ns for value in values) == expected
+
+
+def test_timeseries_hdf5_roundtrip_retains_exact_t0_gps_ns(tmp_path: Path) -> None:
+    """Published HDF5 must restore the integer epoch, not a float approximation."""
     from gwexpy.timeseries import TimeSeries
 
     t0_ns = 1234567890123456789
@@ -27,33 +38,45 @@ def test_timeseries_t0_ns_is_exact_through_copy_slice_pickle_and_hdf5(tmp_path: 
     filename = tmp_path / "epoch.hdf5"
     series.write(filename, format="hdf5", path="series")
     recovered = TimeSeries.read(filename, format="hdf5", path="series")
-    for value in (series, series.copy(), series[1:], pickle.loads(pickle.dumps(series)), recovered):
-        assert value.t0.value * 1_000_000_000 == t0_ns
+    assert recovered.t0_gps_ns == t0_ns
 
 
-def test_bootstrap_is_lazy_promotable_and_idempotent() -> None:
-    """Top-level import must not pre-register I/O; explicit bootstrap promotes it."""
-    code = '''
+def _clean_python(code: str) -> None:
+    completed = subprocess.run(
+        [sys.executable, "-P", "-c", code], check=False, capture_output=True, text=True
+    )
+    assert completed.returncode == 0, completed.stderr
+
+
+def test_plain_import_is_lazy() -> None:
+    _clean_python('''
 import importlib
 import sys
 import gwexpy
+assert importlib.import_module("gwexpy._bootstrap")._bootstrapped is False
 assert "gwexpy.timeseries.io" not in sys.modules
-bootstrap = importlib.import_module("gwexpy._bootstrap")
-assert bootstrap._bootstrapped is False
+''')
+
+
+def test_constructors_only_bootstrap_does_not_register_io() -> None:
+    _clean_python('''
+import sys
+import gwexpy
 gwexpy.register_all(include_io=False)
-assert bootstrap._bootstrapped is False
+from gwexpy.interop._registry import ConverterRegistry
+assert ConverterRegistry.has_constructor("TimeSeries")
 assert "gwexpy.timeseries.io" not in sys.modules
+''')
+
+
+def test_full_bootstrap_promotes_io_and_is_idempotent() -> None:
+    _clean_python('''
+import sys
+import gwexpy
 gwexpy.register_all()
-assert bootstrap._bootstrapped is True
 assert "gwexpy.timeseries.io" in sys.modules
+assert "gwexpy.frequencyseries.io" in sys.modules
 before = tuple(sorted(sys.modules))
 gwexpy.register_all()
 assert before == tuple(sorted(sys.modules))
-'''
-    completed = subprocess.run(
-        [sys.executable, "-P", "-c", code],
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    assert completed.returncode == 0, completed.stderr
+''')

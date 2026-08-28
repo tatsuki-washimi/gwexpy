@@ -8,6 +8,7 @@ import hashlib
 import importlib.metadata
 import importlib.util
 import json
+import math
 import os
 import re
 import shutil
@@ -16,6 +17,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.parse
 import xml.etree.ElementTree as etree
 from pathlib import Path
 from types import SimpleNamespace
@@ -23,6 +25,9 @@ from typing import Any
 
 MAX_INPUT = 4 * 1024 * 1024
 MAX_OUTPUT = 1024 * 1024
+MAX_ARTIFACT = 128 * 1024 * 1024
+MAX_STAGE_FILE = 2 * 1024 * 1024
+MAX_STAGE_TOTAL = 8 * 1024 * 1024
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 SHA1 = re.compile(r"^[0-9a-f]{40}$")
 SEMVER = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
@@ -47,7 +52,11 @@ def _duplicates(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
 
 
 def _regular(path: Path, label: str, limit: int = MAX_INPUT) -> Path:
-    if path.is_symlink() or not path.exists() or not stat.S_ISREG(path.stat(follow_symlinks=False).st_mode):
+    try:
+        mode = path.lstat().st_mode
+    except OSError as exc:
+        raise QualificationError(f"{label} must be a regular non-symlink file") from exc
+    if stat.S_ISLNK(mode) or not stat.S_ISREG(mode):
         raise QualificationError(f"{label} must be a regular non-symlink file")
     if path.stat().st_size > limit:
         raise QualificationError(f"{label} is too large")
@@ -72,20 +81,25 @@ def _keys(value: object, expected: set[str], label: str) -> dict[str, Any]:
 
 
 def _safe_relative(value: object, label: str) -> str:
-    if not isinstance(value, str) or not value or "\x00" in value or "\\" in value or value.startswith("-"):
+    if not isinstance(value, str) or not value or len(value) > 240 or "\x00" in value or "\\" in value or any(ord(char) < 32 for char in value):
         raise QualificationError(f"unsafe {label}")
     path = Path(value)
-    if path.is_absolute() or ".." in path.parts:
+    if path.is_absolute() or ".." in path.parts or any(part in {"", "."} or part.startswith("-") for part in path.parts):
         raise QualificationError(f"unsafe {label}")
     return value
 
 
 def _inside(child: Path, parent: Path) -> bool:
-    try:
-        child.resolve().is_relative_to(parent.resolve())
-    except ValueError:
-        return False
-    return True
+    return child.resolve().is_relative_to(parent.resolve())
+
+
+def _has_symlink_component(path: Path, root: Path) -> bool:
+    current = root
+    for part in path.relative_to(root).parts:
+        current /= part
+        if current.is_symlink():
+            return True
+    return False
 
 
 def _digest(path: Path) -> str:
@@ -115,7 +129,7 @@ def load_claims(path: Path | str) -> SimpleNamespace:
         raise QualificationError("invalid release identity")
     if data["tag"] != f"v{data['version']}" or not isinstance(data["source_sha"], str) or not SHA1.fullmatch(data["source_sha"]):
         raise QualificationError("invalid release tag or source SHA")
-    if not isinstance(data["release_run_id"], str) or not data["release_run_id"].isdecimal() or not data["release_run_id"]:
+    if not isinstance(data["release_run_id"], str) or re.fullmatch(r"[1-9][0-9]{0,19}", data["release_run_id"]) is None:
         raise QualificationError("invalid release run ID")
     if data["repository"] != "tatsuki-washimi/gwexpy" or not isinstance(data["payload_sidecar_schema"], str) or not data["payload_sidecar_schema"]:
         raise QualificationError("invalid repository or payload schema")
@@ -126,11 +140,11 @@ def load_claims(path: Path | str) -> SimpleNamespace:
         raise QualificationError("invalid suites")
     parsed_suites: dict[str, SimpleNamespace] = {}
     for name, suite in suites.items():
-        if not CELL.fullmatch(name):
+        if not CELL.fullmatch(name) or len(name) > 80:
             raise QualificationError("invalid suite name")
         suite = _keys(suite, {"selectors", "support_paths", "timeout"}, "suite")
         selectors, support = suite["selectors"], suite["support_paths"]
-        if not isinstance(selectors, list) or not selectors or not isinstance(support, list) or not isinstance(suite["timeout"], int) or not 0 < suite["timeout"] <= 3600:
+        if not isinstance(selectors, list) or not selectors or not isinstance(support, list) or isinstance(suite["timeout"], bool) or not isinstance(suite["timeout"], int) or not 0 < suite["timeout"] <= 3600:
             raise QualificationError("invalid suite")
         if any(_safe_relative(item, "selector") != item for item in selectors) or any(_safe_relative(item, "support path") != item for item in support) or len(set(selectors + support)) != len(selectors + support):
             raise QualificationError("invalid suite paths")
@@ -140,13 +154,17 @@ def load_claims(path: Path | str) -> SimpleNamespace:
         raise QualificationError("invalid required cells")
     parsed_cells: dict[str, SimpleNamespace] = {}
     for cell_id, cell in cells.items():
-        if not CELL.fullmatch(cell_id):
+        if not CELL.fullmatch(cell_id) or len(cell_id) > 80:
             raise QualificationError("invalid cell ID")
-        cell = _keys(cell, {"python", "channel", "artifact_kind", "suite", "required"}, "cell")
-        if not isinstance(cell["python"], str) or not re.fullmatch(r"3\.(1[1-4])", cell["python"]) or cell["channel"] not in {"pypi", "conda"} or cell["artifact_kind"] not in {"wheel", "sdist", "none"} or cell["suite"] not in parsed_suites or cell["required"] is not True:
+        allowed = ({"python", "platform", "channel", "artifact", "suite", "required"}, {"python", "platform", "gwpy", "channel", "artifact", "suite", "required"}, {"python", "platform", "channel", "conda_channel", "artifact", "suite", "required"})
+        if not isinstance(cell, dict) or set(cell) not in allowed:
+            raise QualificationError("cell has missing or unknown keys")
+        if not isinstance(cell["python"], str) or not re.fullmatch(r"3\.(1[1-4])", cell["python"]) or cell["platform"] not in {"linux", "macos", "windows"} or cell["channel"] not in {"pypi", "conda"} or cell["artifact"] not in {"wheel", "sdist", "none"} or cell["suite"] not in parsed_suites or cell["required"] is not True or ("gwpy" in cell and (not isinstance(cell["gwpy"], str) or re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", cell["gwpy"]) is None)):
             raise QualificationError("invalid cell")
-        if (cell["channel"] == "pypi") != (cell["artifact_kind"] in parsed_artifacts):
+        if (cell["channel"] == "pypi") != (cell["artifact"] in parsed_artifacts):
             raise QualificationError("invalid cell artifact selection")
+        if cell["channel"] == "conda" and (not isinstance(cell.get("conda_channel"), str) or not cell["conda_channel"]):
+            raise QualificationError("conda cell requires exact channel")
         parsed_cells[cell_id] = SimpleNamespace(**cell)
     result = dict(data)
     result.update(artifacts=parsed_artifacts, suites=parsed_suites, required_cells=parsed_cells, digest=_digest(Path(path)))
@@ -161,6 +179,8 @@ def verify_artifact_directory(claims: SimpleNamespace, directory: Path | str) ->
     for item in root.iterdir():
         if item.is_symlink() or not stat.S_ISREG(item.stat(follow_symlinks=False).st_mode):
             raise QualificationError("artifact directory contains non-regular entry")
+        if item.stat().st_size > MAX_ARTIFACT:
+            raise QualificationError("artifact exceeds size limit")
         entries[item.name] = item.resolve()
     expected = {artifact.name for artifact in claims.artifacts.values()}
     if set(entries) != expected:
@@ -172,9 +192,14 @@ def verify_artifact_directory(claims: SimpleNamespace, directory: Path | str) ->
 
 
 def validate_pypi_json(claims: SimpleNamespace, data: object) -> None:
-    if not isinstance(data, dict) or set(data) != {"info", "urls"} or not isinstance(data["info"], dict) or data["info"].get("name") != claims.project or data["info"].get("version") != claims.version or not isinstance(data["urls"], list):
+    if not isinstance(data, dict) or not {"info", "urls"}.issubset(data) or not isinstance(data["info"], dict) or data["info"].get("name") != claims.project or data["info"].get("version") != claims.version or not isinstance(data["urls"], list):
         raise QualificationError("invalid PyPI JSON")
-    files = [item for item in data["urls"] if isinstance(item, dict) and not item.get("yanked", False)]
+    if any(not isinstance(item, dict) for item in data["urls"]):
+        raise QualificationError("invalid PyPI file entry")
+    expected_names = {artifact.name for artifact in claims.artifacts.values()}
+    if any(item.get("yanked", False) and item.get("filename") in expected_names for item in data["urls"]):
+        raise QualificationError("PyPI expected artifact is yanked")
+    files = [item for item in data["urls"] if item.get("filename") in expected_names]
     if len(files) != 2:
         raise QualificationError("PyPI JSON must contain exactly two non-yanked files")
     expected = {(artifact.name, artifact.packagetype, artifact.sha256) for artifact in claims.artifacts.values()}
@@ -185,7 +210,7 @@ def validate_pypi_json(claims: SimpleNamespace, data: object) -> None:
         if not isinstance(url, str) or not re.fullmatch(r"https://files\.pythonhosted\.org/.+", url):
             raise QualificationError("PyPI URL is not files.pythonhosted.org HTTPS")
         actual.add((item.get("filename"), item.get("packagetype"), digest))
-    if actual != expected:
+    if actual != expected or len(actual) != len(files):
         raise QualificationError("PyPI artifacts do not match claims")
 
 
@@ -201,10 +226,18 @@ def validate_payload_sidecar(claims: SimpleNamespace, data: object) -> None:
 
 
 def _atomic(path: Path, content: str) -> None:
-    if path.exists() and path.is_symlink():
+    if path.name.startswith("-") or path == path.parent:
+        raise QualificationError("unsafe output path")
+    parent = path.parent
+    chain = [parent, *parent.parents]
+    if any(item.exists() and item.is_symlink() for item in chain):
+        raise QualificationError("output parent cannot contain symlink")
+    if path.exists() and (path.is_symlink() or not path.is_file()):
         raise QualificationError("output path cannot be a symlink")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as stream:
+    parent.mkdir(parents=True, exist_ok=True)
+    if not parent.is_dir() or parent.is_symlink():
+        raise QualificationError("output parent must be a real directory")
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=parent, delete=False) as stream:
         stream.write(content)
         temporary = Path(stream.name)
     temporary.replace(path)
@@ -222,7 +255,12 @@ def _write_junit(
     _atomic(path, etree.tostring(suite, encoding="unicode") + "\n")
 
 
-def parse_junit(path: Path | str) -> dict[str, int]:
+def _distinct_outputs(json_out: Path, junit_out: Path) -> None:
+    if json_out.resolve() == junit_out.resolve():
+        raise QualificationError("JSON and JUnit outputs must be distinct")
+
+
+def _junit_counts(path: Path | str, clean: bool = True) -> tuple[dict[str, int], bytes]:
     source = _regular(Path(path), "JUnit", MAX_OUTPUT)
     raw = source.read_bytes()
     if b"<!DOCTYPE" in raw.upper() or b"<!ENTITY" in raw.upper():
@@ -232,23 +270,46 @@ def parse_junit(path: Path | str) -> dict[str, int]:
     except etree.ParseError as exc:
         raise QualificationError("malformed JUnit") from exc
     nodes = [root] if root.tag == "testsuite" else list(root.findall(".//testsuite"))
+    nodes = [node for node in nodes if not list(node.findall("testsuite"))]
     if not nodes:
         raise QualificationError("JUnit has no testsuite")
     totals = {key: 0 for key in ("tests", "failures", "errors", "skipped")}
     for node in nodes:
+        cases = list(node.findall("testcase"))
+        actual = {"tests": len(cases), "failures": 0, "errors": 0, "skipped": 0}
+        for case in cases:
+            actual["failures"] += len(case.findall("failure"))
+            actual["errors"] += len(case.findall("error"))
+            actual["skipped"] += len(case.findall("skipped"))
         for key in totals:
             value = node.attrib.get(key, "0")
             if not value.isdecimal():
                 raise QualificationError("invalid JUnit counter")
-            totals[key] += int(value)
-    if totals["tests"] <= 0 or any(totals[key] for key in ("failures", "errors", "skipped")):
+            if int(value) != actual[key]:
+                raise QualificationError("JUnit declared counters do not match testcases")
+            totals[key] += actual[key]
+    if clean and (totals["tests"] <= 0 or any(totals[key] for key in ("failures", "errors", "skipped"))):
         raise QualificationError("JUnit is not a clean non-empty pass")
-    return totals
+    return totals, raw
 
 
-def _preflight(claims: SimpleNamespace, repo: Path, artifact: Path | None) -> None:
-    import gwexpy
+def parse_junit(path: Path | str) -> dict[str, int]:
+    return _junit_counts(path)[0]
+
+
+def _dist_info_file(distribution: importlib.metadata.Distribution, name: str) -> Path | None:
+    for item in distribution.files or ():
+        if item.name == name and ".dist-info" in str(item):
+            return Path(str(distribution.locate_file(item)))
+    return None
+
+
+def _preflight(
+    claims: SimpleNamespace, cell: SimpleNamespace, repo: Path, artifact: Path | None
+) -> None:
     try:
+        import gwexpy
+
         distribution = importlib.metadata.distribution("gwexpy")
         if importlib.metadata.version("gwexpy") != claims.version or gwexpy.__version__ != claims.version:
             raise QualificationError("installed version does not match claims")
@@ -258,18 +319,44 @@ def _preflight(claims: SimpleNamespace, repo: Path, artifact: Path | None) -> No
         origin = Path(specification.origin).resolve()
         package_file = Path(gwexpy.__file__ or "").resolve()
         root = Path(str(distribution.locate_file(""))).resolve()
-    except (importlib.metadata.PackageNotFoundError, AttributeError) as exc:
+    except (ImportError, ModuleNotFoundError, importlib.metadata.PackageNotFoundError, AttributeError, OSError) as exc:
         raise QualificationError("gwexpy distribution preflight failed") from exc
     prefix = Path(sys.prefix).resolve()
-    if origin != package_file or not _inside(origin, prefix) or not _inside(root, prefix) or _inside(origin, repo):
+    if origin != package_file or not _inside(origin, prefix) or not _inside(root, prefix) or _inside(origin, repo) or _inside(root, repo):
         raise QualificationError("source-shadowed or editable installation")
+    expected_platform = {"linux": "linux", "macos": "darwin", "windows": "win32"}[cell.platform]
+    if not sys.platform.startswith(expected_platform) or f"{sys.version_info.major}.{sys.version_info.minor}" != cell.python:
+        raise QualificationError("interpreter platform or Python version does not match cell")
+    if getattr(cell, "gwpy", None) is not None and importlib.metadata.version("gwpy") != cell.gwpy:
+        raise QualificationError("installed GWpy version does not match cell")
+    direct = _dist_info_file(distribution, "direct_url.json")
+    if direct is not None:
+        data = _json_file(direct, "direct_url metadata")
+        if isinstance(data.get("dir_info"), dict) and data["dir_info"].get("editable") is True:
+            raise QualificationError("editable installation")
     if artifact is not None:
-        direct = root / "gwexpy-0.2.0.dist-info" / "direct_url.json"
+        if direct is None:
+            raise QualificationError("direct_url metadata is required for artifact cell")
         data = _json_file(direct, "direct_url metadata")
         url = data.get("url")
         archive = data.get("archive_info")
-        if not isinstance(url, str) or Path(url.removeprefix("file://")).resolve() != artifact.resolve() or not isinstance(archive, dict) or archive.get("hash") != f"sha256={_digest(artifact)}":
+        digest = _digest(artifact)
+        decoded = urllib.parse.urlparse(url) if isinstance(url, str) else None
+        local = Path(urllib.parse.unquote(decoded.path)) if decoded and decoded.scheme == "file" else None
+        hashes = archive.get("hashes") if isinstance(archive, dict) else None
+        declared = archive.get("hash") if isinstance(archive, dict) else None
+        if local is None or local.resolve() != artifact.resolve() or not isinstance(archive, dict) or (declared != f"sha256={digest}" and (not isinstance(hashes, dict) or hashes.get("sha256") != digest)):
             raise QualificationError("direct_url metadata does not attest selected artifact")
+    if cell.channel == "conda":
+        prefix_value = os.environ.get("CONDA_PREFIX")
+        metadata = Path(prefix_value) / "conda-meta" if prefix_value else None
+        matches = list(metadata.glob("gwexpy-*.json")) if metadata and metadata.is_dir() else []
+        if len(matches) != 1:
+            raise QualificationError("conda cell has no exact gwexpy conda record")
+        record = _json_file(matches[0], "conda package record")
+        channel = record.get("channel")
+        if record.get("name") != "gwexpy" or record.get("version") != claims.version or channel != cell.conda_channel:
+            raise QualificationError("conda package record does not match claims")
 
 
 def _result(path: Path, payload: dict[str, Any]) -> None:
@@ -283,32 +370,56 @@ def run_cell(claims: SimpleNamespace, cell_id: str, repo_root: Path, artifact: P
     cell: SimpleNamespace | None = None
     counters: dict[str, int] = {"tests": 0, "failures": 1, "errors": 0, "skipped": 0}
     try:
+        _distinct_outputs(json_out, junit_out)
+    except QualificationError:
+        return False
+    try:
         cell = claims.required_cells[cell_id]
-        repo = Path(repo_root).resolve()
-        if not repo.is_dir() or repo.is_symlink():
+        repo_input = Path(repo_root)
+        if repo_input.is_symlink() or not repo_input.is_dir():
             raise QualificationError("repo root must be a real directory")
+        repo = repo_input.resolve()
         selected: Path | None = None
         if cell.channel == "pypi":
             if artifact is None:
                 raise QualificationError("PyPI cell requires an artifact")
             selected = _regular(Path(artifact), "artifact")
-            expected = claims.artifacts[cell.artifact_kind]
+            expected = claims.artifacts[cell.artifact]
             if selected.name != expected.name or _digest(selected) != expected.sha256:
                 raise QualificationError("selected artifact does not match claims")
         elif artifact is not None:
             selected = _regular(Path(artifact), "artifact")
-        _preflight(claims, repo, selected if cell.channel == "pypi" else None)
+        _preflight(claims, cell, repo, selected if cell.channel == "pypi" else None)
         suite = claims.suites[cell.suite]
         with tempfile.TemporaryDirectory(prefix="gwexpy-qualification-") as temporary:
             stage = Path(temporary) / "stage"
             stage.mkdir()
+            staged_bytes = 0
+            mapped_selectors: list[str] = []
             for relative in (*suite.selectors, *suite.support_paths):
-                source = (repo / relative).resolve()
-                if not _inside(source, repo) or source.is_symlink() or not source.is_file():
+                file_part, marker, node = relative.partition("::")
+                _safe_relative(file_part, "selector path")
+                if marker and (not node or ".." in node or "\x00" in node or len(node) > 200):
+                    raise QualificationError("unsafe selector node")
+                unresolved = repo / file_part
+                try:
+                    source_mode = unresolved.lstat().st_mode
+                except OSError as exc:
+                    raise QualificationError("selected test/support path is missing") from exc
+                if stat.S_ISLNK(source_mode) or not stat.S_ISREG(source_mode) or _has_symlink_component(unresolved, repo):
                     raise QualificationError("selected test/support path is unsafe")
-                destination = stage / relative
+                source = unresolved.resolve()
+                if not _inside(source, repo):
+                    raise QualificationError("selected test/support path escapes repo")
+                size = source.stat().st_size
+                staged_bytes += size
+                if size > MAX_STAGE_FILE or staged_bytes > MAX_STAGE_TOTAL:
+                    raise QualificationError("staged qualification files exceed size limit")
+                destination = stage / file_part
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(source, destination)
+                if relative in suite.selectors:
+                    mapped_selectors.append(str(destination) + (f"::{node}" if marker else ""))
             if (stage / "gwexpy").exists():
                 raise QualificationError("staged tree contains source package")
             cwd = Path(temporary) / "cwd"
@@ -320,26 +431,38 @@ def run_cell(claims: SimpleNamespace, cell_id: str, repo_root: Path, artifact: P
             for key in ("PYTHONPATH", "PYTHONHOME", "PYTEST_ADDOPTS", "PYTEST_PLUGINS"):
                 environment.pop(key, None)
             environment.update({"PYTHONSAFEPATH": "1", "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1", "GWEXPY_POST_RELEASE_QUALIFICATION": "1"})
-            command = [sys.executable, "-P", "-m", "pytest", "-c", str(config), "--import-mode=importlib", f"--junitxml={pytest_junit}", *(str(stage / selector) for selector in suite.selectors)]
+            command = [sys.executable, "-P", "-m", "pytest", "-c", str(config), "--import-mode=importlib", f"--junitxml={pytest_junit}", *mapped_selectors]
             process = subprocess.run(command, cwd=cwd, env=environment, capture_output=True, text=True, timeout=suite.timeout, check=False)
             if process.returncode != 0:
                 raise QualificationError(f"pytest exit {process.returncode}: {(process.stderr or process.stdout)[:4096]}")
-            counters = parse_junit(pytest_junit)
-        _preflight(claims, repo, selected if cell.channel == "pypi" else None)
-    except (KeyError, QualificationError, subprocess.TimeoutExpired, OSError) as exc:
+            counters, raw_junit = _junit_counts(pytest_junit)
+            _atomic(junit_out, raw_junit.decode("utf-8"))
+        _preflight(claims, cell, repo, selected if cell.channel == "pypi" else None)
+    except Exception as exc:
         error = str(exc)[:4096]
     passed = error is None
-    payload = {"schema": "gwexpy-published-release-cell-report-v1", "cell": cell_id, "claims_sha256": claims.digest, "version": claims.version, "python": sys.version.split()[0], "artifact": artifact.name if cell is not None and cell.channel == "pypi" and artifact else None, "passed": passed, "counters": counters, "error": error, "duration_seconds": round(time.monotonic() - started, 3)}
-    _result(json_out, payload)
-    _write_junit(junit_out, [(cell_id, error)], counters["tests"] if passed else None)
+    payload = {"schema": "gwexpy-published-release-cell-report-v1", "cell": cell_id, "claims_sha256": claims.digest, "version": claims.version, "python": sys.version.split()[0], "platform": cell.platform if cell else None, "gwpy": getattr(cell, "gwpy", None) if cell else None, "channel": cell.channel if cell else None, "artifact": artifact.name if cell is not None and cell.channel == "pypi" and artifact else None, "passed": passed, "counters": counters, "error": error, "duration_seconds": round(time.monotonic() - started, 3)}
+    try:
+        _result(json_out, payload)
+        if not passed:
+            _write_junit(junit_out, [(cell_id, error)])
+    except Exception:
+        return False
     return passed
 
 
 def aggregate(claims: SimpleNamespace, artifact_dir: Path, reports_dir: Path, pypi_json: Path | None, payload_sidecar: Path | None, json_out: Path, junit_out: Path) -> bool:
     """Cross-check a complete cell ledger and write aggregate evidence on failure."""
-    errors: list[str] = []
+    errors: dict[str, str] = {}
+    try:
+        _distinct_outputs(json_out, junit_out)
+    except Exception:
+        return False
     try:
         verify_artifact_directory(claims, artifact_dir)
+    except Exception as exc:
+        errors["aggregate"] = str(exc)[:4096]
+    try:
         if pypi_json is not None:
             validate_pypi_json(claims, _json_file(pypi_json, "PyPI JSON"))
         if payload_sidecar is not None:
@@ -349,19 +472,34 @@ def aggregate(claims: SimpleNamespace, artifact_dir: Path, reports_dir: Path, py
         entries = {item.name: item for item in reports_dir.iterdir()}
         expected = {f"{cell}.json" for cell in claims.required_cells} | {f"{cell}.xml" for cell in claims.required_cells}
         if set(entries) != expected:
-            raise QualificationError("missing or extra qualification reports")
+            missing = sorted(expected - set(entries))
+            extra = sorted(set(entries) - expected)
+            for cell in claims.required_cells:
+                if f"{cell}.json" in missing or f"{cell}.xml" in missing:
+                    errors[cell] = "missing qualification report"
+            if extra:
+                errors["aggregate"] = "extra or unsafe qualification reports"
         for cell in claims.required_cells:
-            report = _json_file(entries[f"{cell}.json"], "cell JSON")
-            counters = parse_junit(entries[f"{cell}.xml"])
+            if cell in errors:
+                continue
+            try:
+                report = _json_file(entries[f"{cell}.json"], "cell JSON")
+                counters = parse_junit(entries[f"{cell}.xml"])
+            except QualificationError as exc:
+                errors[cell] = str(exc)
+                continue
             selected = claims.required_cells[cell]
-            expected_artifact = claims.artifacts[selected.artifact_kind].name if selected.channel == "pypi" else None
-            if set(report) != {"schema", "cell", "claims_sha256", "version", "python", "artifact", "passed", "counters", "error", "duration_seconds"} or report["cell"] != cell or report["claims_sha256"] != claims.digest or report["version"] != claims.version or not isinstance(report["python"], str) or not report["python"].startswith(f"{selected.python}.") or report["artifact"] != expected_artifact or report["passed"] is not True or report["counters"] != counters:
-                raise QualificationError(f"mismatched evidence for {cell}")
-    except QualificationError as exc:
-        errors.append(str(exc)[:4096])
+            expected_artifact = claims.artifacts[selected.artifact].name if selected.channel == "pypi" else None
+            fields = {"schema", "cell", "claims_sha256", "version", "python", "platform", "gwpy", "channel", "artifact", "passed", "counters", "error", "duration_seconds"}
+            if set(report) != fields or report["schema"] != "gwexpy-published-release-cell-report-v1" or report["cell"] != cell or report["claims_sha256"] != claims.digest or report["version"] != claims.version or not isinstance(report["python"], str) or re.fullmatch(r"3\.[0-9]+\.[0-9]+", report["python"]) is None or not report["python"].startswith(f"{selected.python}.") or report["platform"] != selected.platform or report["gwpy"] != getattr(selected, "gwpy", None) or report["channel"] != selected.channel or report["artifact"] != expected_artifact or report["passed"] is not True or report["error"] is not None or report["counters"] != counters or isinstance(report["duration_seconds"], bool) or not isinstance(report["duration_seconds"], (int, float)) or not math.isfinite(report["duration_seconds"]) or not 0 <= report["duration_seconds"] <= 3600:
+                errors[cell] = "mismatched evidence"
+    except Exception as exc:
+        errors["aggregate"] = str(exc)[:4096]
     passed = not errors
-    _result(json_out, {"schema": "gwexpy-published-release-aggregate-v1", "claims_sha256": claims.digest, "passed": passed, "required_cells": sorted(claims.required_cells), "error": errors[0] if errors else None})
-    _write_junit(junit_out, [(cell, errors[0] if errors else None) for cell in sorted(claims.required_cells)])
+    _result(json_out, {"schema": "gwexpy-published-release-aggregate-v1", "claims_sha256": claims.digest, "passed": passed, "required_cells": sorted(claims.required_cells), "errors": errors})
+    cases = [(cell, errors.get(cell)) for cell in sorted(claims.required_cells)]
+    cases.append(("aggregate", errors.get("aggregate")))
+    _write_junit(junit_out, cases)
     return passed
 
 
@@ -376,9 +514,10 @@ def main(argv: list[str] | None = None) -> int:
     try:
         claims = load_claims(args.claims)
         passed = run_cell(claims, args.cell, args.repo_root, args.artifact, args.json_out, args.junit_out) if args.command == "run-cell" else aggregate(claims, args.artifact_dir, args.reports_dir, args.pypi_json, args.payload_sidecar, args.json_out, args.junit_out)
-    except (QualificationError, OSError) as exc:
+    except Exception as exc:
         message = str(exc)[:4096]
         try:
+            _distinct_outputs(args.json_out, args.junit_out)
             _result(args.json_out, {"schema": "gwexpy-published-release-error-v1", "passed": False, "error": message})
             _write_junit(args.junit_out, [(args.command, message)])
         except (QualificationError, OSError):

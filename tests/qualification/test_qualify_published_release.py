@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib.util
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -39,6 +40,20 @@ def test_claims_are_strict_and_have_the_complete_first_run_ledger(qualifier) -> 
         "gwpy-4.0.1-wheel", "gwpy-4.0.2-wheel", "sdist-3.12-claims",
         "conda-3.11", "conda-3.14", "scientific-3.11-wheel", "docs-en-ja-3.11-wheel",
     }
+    assert claims.required_cells["gwpy-4.0.1-wheel"].gwpy == "4.0.1"
+    assert claims.required_cells["install-ubuntu-3.11-wheel"].platform == "linux"
+    assert claims.required_cells["install-ubuntu-3.11-wheel"].artifact == "wheel"
+
+
+def test_inside_resolves_both_sides_without_string_prefixes(qualifier, tmp_path: Path) -> None:
+    root = tmp_path / "root"
+    root.mkdir()
+    child = root / "child"
+    child.mkdir()
+    sibling = tmp_path / "root-escape"
+    sibling.mkdir()
+    assert qualifier._inside(child, root)
+    assert not qualifier._inside(sibling, root)
 
 
 @pytest.mark.parametrize("case", ("unknown", "version", "unsafe-cell"))
@@ -109,7 +124,7 @@ def test_pypi_rejects_yanked_or_wrong_distribution_facts(qualifier) -> None:
                      "digests": {"sha256": artifact.sha256}, "yanked": True,
                      "url": f"https://files.pythonhosted.org/packages/{artifact.name}"})
     data = {"info": {"name": "gwexpy", "version": claims.version}, "urls": urls}
-    with pytest.raises(qualifier.QualificationError, match="non-yanked"):
+    with pytest.raises(qualifier.QualificationError, match="yanked"):
         qualifier.validate_pypi_json(claims, data)
     for entry in urls:
         entry["yanked"] = False
@@ -131,7 +146,7 @@ def test_aggregate_writes_evidence_on_missing_extra_and_counter_mismatch(qualifi
     assert json_out.is_file() and junit_out.is_file()
     report = json.loads(json_out.read_text())
     assert report["passed"] is False
-    assert "missing" in report["error"].lower()
+    assert "missing" in " ".join(report["errors"].values()).lower()
 
 
 def test_aggregate_rejects_counter_mismatch(qualifier, monkeypatch, tmp_path: Path) -> None:
@@ -149,7 +164,10 @@ def test_aggregate_rejects_counter_mismatch(qualifier, monkeypatch, tmp_path: Pa
             "claims_sha256": claims.digest,
             "version": claims.version,
             "python": f"{specification.python}.0",
-            "artifact": claims.artifacts[specification.artifact_kind].name
+            "platform": specification.platform,
+            "gwpy": getattr(specification, "gwpy", None),
+            "channel": specification.channel,
+            "artifact": claims.artifacts[specification.artifact].name
             if specification.channel == "pypi"
             else None,
             "passed": True,
@@ -197,3 +215,27 @@ def test_run_cell_rejects_source_shadowed_origin_and_records_it(qualifier, tmp_p
     junit_out = tmp_path / "cell.xml"
     assert not qualifier.run_cell(claims, "conda-3.11", ROOT, None, json_out, junit_out)
     assert "source-shadowed" in json.loads(json_out.read_text())["error"]
+
+
+def test_run_cell_stages_and_executes_a_real_selector(qualifier, monkeypatch, tmp_path: Path) -> None:
+    claims = qualifier.load_claims(CLAIMS)
+    repository = tmp_path / "repo"
+    test_file = repository / "tests" / "test_trivial.py"
+    test_file.parent.mkdir(parents=True)
+    test_file.write_text("def test_staged():\n    assert True\n", encoding="utf-8")
+    claims.suites["core"] = SimpleNamespace(
+        selectors=("tests/test_trivial.py::test_staged",), support_paths=(), timeout=30
+    )
+    claims.required_cells["conda-3.11"].suite = "core"
+    monkeypatch.setattr(qualifier, "_preflight", lambda *_: None)
+    json_out, junit_out = tmp_path / "result.json", tmp_path / "result.xml"
+    assert qualifier.run_cell(claims, "conda-3.11", repository, None, json_out, junit_out)
+    assert json.loads(json_out.read_text())["counters"]["tests"] == 1
+    assert qualifier.parse_junit(junit_out)["tests"] == 1
+
+
+def test_run_cell_rejects_equivalent_output_paths(qualifier, tmp_path: Path) -> None:
+    claims = qualifier.load_claims(CLAIMS)
+    output = tmp_path / "same.json"
+    assert not qualifier.run_cell(claims, "conda-3.11", ROOT, None, output, output)
+    assert not output.exists()
