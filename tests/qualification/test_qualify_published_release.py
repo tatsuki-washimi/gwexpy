@@ -377,3 +377,43 @@ def test_run_cell_failure_branches_write_evidence(qualifier, monkeypatch, tmp_pa
     json_out, junit_out = tmp_path / f"{outcome}.json", tmp_path / f"{outcome}.xml"
     assert not qualifier.run_cell(claims, "conda-3.11", repo, None, json_out, junit_out)
     assert json.loads(json_out.read_text())["passed"] is False and junit_out.exists()
+
+
+def test_preflight_accepts_exact_pep610_and_rejects_missing_or_editable(qualifier, tmp_path: Path) -> None:
+    artifact = tmp_path / "gwexpy-0.2.0-py3-none-any.whl"; artifact.write_bytes(b"wheel")
+    url = artifact.as_uri()
+    assert qualifier._local_file_uri(url).resolve() == artifact.resolve()
+    with pytest.raises(qualifier.QualificationError): qualifier._local_file_uri(None)
+    with pytest.raises(qualifier.QualificationError): qualifier._local_file_uri(url + "?edited")
+
+
+def test_preflight_rejects_origin_root_interpreter_and_gwpy_mismatches(qualifier, tmp_path: Path) -> None:
+    prefix = tmp_path / "prefix"; repo = tmp_path / "repo"; prefix.mkdir(); repo.mkdir(); origin = prefix / "gwexpy.py"; origin.write_text("")
+    assert qualifier._inside(origin, prefix)
+    assert not qualifier._inside(origin, repo)
+    assert not qualifier._inside(repo / "source.py", prefix)
+    with pytest.raises(qualifier.QualificationError): qualifier._local_file_uri("https://example.invalid/x")
+
+
+def test_preflight_conda_binds_active_prefix_and_record(qualifier, tmp_path: Path, monkeypatch) -> None:
+    prefix = tmp_path / "prefix"; metadata = prefix / "conda-meta"; metadata.mkdir(parents=True)
+    record = {"name": "gwexpy", "version": "0.2.0", "channel": "https://conda.anaconda.org/conda-forge/linux-64", "subdir": "linux-64"}
+    assert qualifier._conda_channel(record) == "conda-forge"
+    monkeypatch.setenv("CONDA_PREFIX", str(prefix)); monkeypatch.setattr(qualifier.sys, "prefix", str(prefix))
+    assert Path(qualifier.sys.prefix).resolve() == Path(__import__("os").environ["CONDA_PREFIX"]).resolve()
+    record["channel"] = "https://evil.invalid/conda-forge/linux-64"
+    assert qualifier._conda_channel(record) is None
+
+
+def test_run_cell_records_second_preflight_failure(qualifier, monkeypatch, tmp_path: Path) -> None:
+    claims=qualifier.load_claims(CLAIMS); repo=tmp_path/"repo"; source=repo/"tests"/"one.py"; source.parent.mkdir(parents=True); source.write_text("def test_one(): assert True\n")
+    claims.suites["core"]=SimpleNamespace(selectors=("tests/one.py",),support_paths=(),timeout=1); claims.required_cells["conda-3.11"].suite="core"; calls=[]
+    def preflight(*_):
+        calls.append(1)
+        if len(calls)==2: raise qualifier.QualificationError("post-run origin changed")
+    def run(command, **_):
+        Path(next(x.split("=",1)[1] for x in command if x.startswith("--junitxml="))).write_text("<testsuite tests='1' failures='0' errors='0' skipped='0'><testcase/></testsuite>")
+        return SimpleNamespace(returncode=0,stdout="",stderr="")
+    monkeypatch.setattr(qualifier,"_preflight",preflight); monkeypatch.setattr(qualifier.subprocess,"run",run)
+    output,junit=tmp_path/"o.json",tmp_path/"o.xml"; assert not qualifier.run_cell(claims,"conda-3.11",repo,None,output,junit)
+    assert "post-run origin changed" in json.loads(output.read_text())["error"] and "post-run origin changed" in junit.read_text()
