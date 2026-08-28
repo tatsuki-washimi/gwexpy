@@ -500,9 +500,13 @@ def aggregate(claims: SimpleNamespace, artifact_dir: Path, reports_dir: Path, py
     except Exception as exc:
         errors["aggregate"] = str(exc)[:4096]
     try:
-        if pypi_json is not None:
+        if pypi_json is None:
+            errors["identity-pypi"] = "missing required PyPI identity evidence"
+        else:
             validate_pypi_json(claims, _json_file(pypi_json, "PyPI JSON"))
-        if payload_sidecar is not None:
+        if payload_sidecar is None:
+            errors["identity-sidecar"] = "missing required payload identity evidence"
+        else:
             validate_payload_sidecar(claims, _json_file(payload_sidecar, "payload sidecar"))
         if reports_dir.is_symlink() or not reports_dir.is_dir():
             raise QualificationError("reports directory must be real")
@@ -546,7 +550,7 @@ def main(argv: list[str] | None = None) -> int:
     run = commands.add_parser("run-cell")
     run.add_argument("--claims", type=Path, required=True); run.add_argument("--cell", required=True); run.add_argument("--repo-root", type=Path, required=True); run.add_argument("--artifact", type=Path); run.add_argument("--json-out", type=Path, required=True); run.add_argument("--junit-out", type=Path, required=True)
     summary = commands.add_parser("aggregate")
-    summary.add_argument("--claims", type=Path, required=True); summary.add_argument("--artifact-dir", type=Path, required=True); summary.add_argument("--reports-dir", type=Path, required=True); summary.add_argument("--pypi-json", type=Path); summary.add_argument("--payload-sidecar", type=Path); summary.add_argument("--json-out", type=Path, required=True); summary.add_argument("--junit-out", type=Path, required=True)
+    summary.add_argument("--claims", type=Path, required=True); summary.add_argument("--artifact-dir", type=Path, required=True); summary.add_argument("--reports-dir", type=Path, required=True); summary.add_argument("--pypi-json", type=Path, required=True); summary.add_argument("--payload-sidecar", type=Path, required=True); summary.add_argument("--json-out", type=Path, required=True); summary.add_argument("--junit-out", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
         claims = load_claims(args.claims)

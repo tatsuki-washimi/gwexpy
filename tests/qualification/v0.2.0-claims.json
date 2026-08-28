@@ -170,6 +170,7 @@
         "sdist-3.12-claims": {
             "python": "3.12",
             "platform": "linux",
+            "gwpy": "4.0.2",
             "channel": "pypi",
             "artifact": "sdist",
             "suite": "release-claims",
@@ -201,11 +202,11 @@
             "suite": "scientific",
             "required": true
         },
-        "docs-en-ja-3.11": {
+        "docs-en-ja-3.11-wheel": {
             "python": "3.11",
             "platform": "linux",
-            "channel": "docs",
-            "artifact": "none",
+            "channel": "pypi",
+            "artifact": "wheel",
             "suite": "docs",
             "required": true
         }

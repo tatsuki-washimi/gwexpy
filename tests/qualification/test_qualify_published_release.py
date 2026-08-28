@@ -58,13 +58,13 @@ def test_claims_are_strict_and_have_the_complete_first_run_ledger(qualifier) -> 
         "install-macos-3.11-wheel", "install-macos-3.14-wheel",
         "install-windows-3.11-wheel", "install-windows-3.14-wheel",
         "gwpy-4.0.1-wheel", "gwpy-4.0.2-wheel", "sdist-3.12-claims",
-        "conda-3.11", "conda-3.14", "scientific-3.11-wheel", "docs-en-ja-3.11",
+        "conda-3.11", "conda-3.14", "scientific-3.11-wheel", "docs-en-ja-3.11-wheel",
     }
     assert claims.required_cells["gwpy-4.0.1-wheel"].gwpy == "4.0.1"
     assert claims.required_cells["install-ubuntu-3.11-wheel"].platform == "linux"
     assert claims.required_cells["install-ubuntu-3.11-wheel"].artifact == "wheel"
-    assert claims.required_cells["docs-en-ja-3.11"].channel == "docs"
-    assert claims.required_cells["docs-en-ja-3.11"].artifact == "none"
+    assert claims.required_cells["docs-en-ja-3.11-wheel"].channel == "pypi"
+    assert claims.required_cells["docs-en-ja-3.11-wheel"].artifact == "wheel"
 
 
 def test_inside_resolves_both_sides_without_string_prefixes(qualifier, tmp_path: Path) -> None:
@@ -235,6 +235,14 @@ def test_aggregate_writes_evidence_on_missing_extra_and_counter_mismatch(qualifi
     report = json.loads(json_out.read_text())
     assert report["passed"] is False
     assert "missing" in " ".join(report["errors"].values()).lower()
+
+
+def test_aggregate_requires_pypi_and_payload_identity_evidence(qualifier, tmp_path: Path) -> None:
+    claims = qualifier.load_claims(CLAIMS)
+    reports = tmp_path / "reports"
+    reports.mkdir()
+    assert not qualifier.aggregate(claims, tmp_path, reports, None, None, tmp_path / "out.json", tmp_path / "out.xml")
+    assert "identity" in " ".join(json.loads((tmp_path / "out.json").read_text())["errors"].values())
 
 
 def test_aggregate_rejects_counter_mismatch(qualifier, monkeypatch, tmp_path: Path) -> None:
