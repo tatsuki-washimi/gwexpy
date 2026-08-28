@@ -38,11 +38,13 @@ def test_claims_are_strict_and_have_the_complete_first_run_ledger(qualifier) -> 
         "install-macos-3.11-wheel", "install-macos-3.14-wheel",
         "install-windows-3.11-wheel", "install-windows-3.14-wheel",
         "gwpy-4.0.1-wheel", "gwpy-4.0.2-wheel", "sdist-3.12-claims",
-        "conda-3.11", "conda-3.14", "scientific-3.11-wheel", "docs-en-ja-3.11-wheel",
+        "conda-3.11", "conda-3.14", "scientific-3.11-wheel", "docs-en-ja-3.11",
     }
     assert claims.required_cells["gwpy-4.0.1-wheel"].gwpy == "4.0.1"
     assert claims.required_cells["install-ubuntu-3.11-wheel"].platform == "linux"
     assert claims.required_cells["install-ubuntu-3.11-wheel"].artifact == "wheel"
+    assert claims.required_cells["docs-en-ja-3.11"].channel == "docs"
+    assert claims.required_cells["docs-en-ja-3.11"].artifact == "none"
 
 
 def test_inside_resolves_both_sides_without_string_prefixes(qualifier, tmp_path: Path) -> None:
@@ -78,6 +80,24 @@ def test_claims_reject_duplicate_json_keys(qualifier, tmp_path: Path) -> None:
     path.write_text('{"schema":"a","schema":"b"}', encoding="utf-8")
     with pytest.raises(qualifier.QualificationError):
         qualifier.load_claims(path)
+
+
+@pytest.mark.parametrize("constant", ("NaN", "Infinity", "-Infinity"))
+def test_json_rejects_nonfinite_constants(qualifier, tmp_path: Path, constant: str) -> None:
+    path = tmp_path / "bad.json"
+    path.write_text(f'{{"value": {constant}}}', encoding="utf-8")
+    with pytest.raises(qualifier.QualificationError):
+        qualifier._json_file(path, "test")
+
+
+def test_file_uri_rejects_authorities_queries_and_fragments(qualifier, tmp_path: Path) -> None:
+    artifact = tmp_path / "wheel.whl"
+    artifact.write_bytes(b"x")
+    assert qualifier._local_file_uri(artifact.as_uri()) == artifact
+    assert qualifier._local_file_uri("file:///C:/wheel.whl", lambda value: f"WIN:{value}") == Path("WIN:/C:/wheel.whl")
+    for value in ("file://server/share/wheel.whl", "file:///tmp/wheel.whl?x=1", "file:///tmp/wheel.whl#part"):
+        with pytest.raises(qualifier.QualificationError):
+            qualifier._local_file_uri(value)
 
 
 def test_artifact_directory_rejects_symlinks_extras_and_wrong_hash(qualifier, tmp_path: Path) -> None:
@@ -126,6 +146,20 @@ def test_pypi_rejects_yanked_or_wrong_distribution_facts(qualifier) -> None:
     data = {"info": {"name": "gwexpy", "version": claims.version}, "urls": urls}
     with pytest.raises(qualifier.QualificationError, match="yanked"):
         qualifier.validate_pypi_json(claims, data)
+
+
+def test_pypi_rejects_missing_yanked_flag_and_extra_non_yanked_file(qualifier) -> None:
+    claims = qualifier.load_claims(CLAIMS)
+    urls = [{"filename": item.name, "packagetype": item.packagetype, "digests": {"sha256": item.sha256}, "yanked": False, "url": f"https://files.pythonhosted.org/a/{item.name}"} for item in claims.artifacts.values()]
+    data = {"info": {"name": "gwexpy", "version": claims.version}, "urls": urls}
+    del urls[0]["yanked"]
+    with pytest.raises(qualifier.QualificationError):
+        qualifier.validate_pypi_json(claims, data)
+    urls[0]["yanked"] = False
+    urls.append({"filename": "other.whl", "packagetype": "bdist_wheel", "digests": {"sha256": "0" * 64}, "yanked": False, "url": "https://files.pythonhosted.org/a/other.whl"})
+    with pytest.raises(qualifier.QualificationError):
+        qualifier.validate_pypi_json(claims, data)
+    urls.pop()
     for entry in urls:
         entry["yanked"] = False
     urls[0]["digests"] = {"sha256": "0" * 64}
@@ -239,3 +273,13 @@ def test_run_cell_rejects_equivalent_output_paths(qualifier, tmp_path: Path) -> 
     output = tmp_path / "same.json"
     assert not qualifier.run_cell(claims, "conda-3.11", ROOT, None, output, output)
     assert not output.exists()
+
+
+def test_non_pypi_cell_rejects_artifact_and_traversal_selector(qualifier, monkeypatch, tmp_path: Path) -> None:
+    claims = qualifier.load_claims(CLAIMS)
+    artifact = tmp_path / "artifact"
+    artifact.write_bytes(b"x")
+    assert not qualifier.run_cell(claims, "conda-3.11", ROOT, artifact, tmp_path / "a.json", tmp_path / "a.xml")
+    claims.suites["release-claims"] = SimpleNamespace(selectors=("../escape.py",), support_paths=(), timeout=30)
+    monkeypatch.setattr(qualifier, "_preflight", lambda *_: None)
+    assert not qualifier.run_cell(claims, "conda-3.11", ROOT, None, tmp_path / "b.json", tmp_path / "b.xml")

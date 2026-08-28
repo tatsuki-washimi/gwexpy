@@ -18,6 +18,7 @@ import sys
 import tempfile
 import time
 import urllib.parse
+import urllib.request
 import xml.etree.ElementTree as etree
 from pathlib import Path
 from types import SimpleNamespace
@@ -51,6 +52,10 @@ def _duplicates(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return answer
 
 
+def _no_json_constant(value: str) -> None:
+    raise QualificationError(f"non-finite JSON constant: {value}")
+
+
 def _regular(path: Path, label: str, limit: int = MAX_INPUT) -> Path:
     try:
         mode = path.lstat().st_mode
@@ -66,8 +71,8 @@ def _regular(path: Path, label: str, limit: int = MAX_INPUT) -> Path:
 def _json_file(path: Path, label: str) -> dict[str, Any]:
     path = _regular(path, label)
     try:
-        data = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=_duplicates)
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError, _DuplicateKey) as exc:
+        data = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=_duplicates, parse_constant=_no_json_constant)
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, _DuplicateKey, QualificationError) as exc:
         raise QualificationError(f"invalid {label}") from exc
     if not isinstance(data, dict):
         raise QualificationError(f"{label} must be an object")
@@ -100,6 +105,27 @@ def _has_symlink_component(path: Path, root: Path) -> bool:
         if current.is_symlink():
             return True
     return False
+
+
+def _local_file_uri(
+    url: object, converter: Any = urllib.request.url2pathname
+) -> Path:
+    if not isinstance(url, str):
+        raise QualificationError("direct_url is not a file URI")
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme != "file" or parsed.netloc not in {"", "localhost"} or parsed.query or parsed.fragment:
+        raise QualificationError("direct_url must be a local file URI")
+    return Path(converter(urllib.parse.unquote(parsed.path)))
+
+
+def _conda_channel(record: dict[str, Any]) -> str | None:
+    source = record.get("schannel", record.get("channel"))
+    if not isinstance(source, str):
+        return None
+    if source == "conda-forge":
+        return source
+    parsed = urllib.parse.urlparse(source)
+    return "conda-forge" if parsed.scheme == "https" and parsed.netloc == "conda.anaconda.org" and parsed.path.split("/")[1:2] == ["conda-forge"] else None
 
 
 def _digest(path: Path) -> str:
@@ -159,9 +185,9 @@ def load_claims(path: Path | str) -> SimpleNamespace:
         allowed = ({"python", "platform", "channel", "artifact", "suite", "required"}, {"python", "platform", "gwpy", "channel", "artifact", "suite", "required"}, {"python", "platform", "channel", "conda_channel", "artifact", "suite", "required"})
         if not isinstance(cell, dict) or set(cell) not in allowed:
             raise QualificationError("cell has missing or unknown keys")
-        if not isinstance(cell["python"], str) or not re.fullmatch(r"3\.(1[1-4])", cell["python"]) or cell["platform"] not in {"linux", "macos", "windows"} or cell["channel"] not in {"pypi", "conda"} or cell["artifact"] not in {"wheel", "sdist", "none"} or cell["suite"] not in parsed_suites or cell["required"] is not True or ("gwpy" in cell and (not isinstance(cell["gwpy"], str) or re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", cell["gwpy"]) is None)):
+        if not isinstance(cell["python"], str) or not re.fullmatch(r"3\.(1[1-4])", cell["python"]) or cell["platform"] not in {"linux", "macos", "windows"} or cell["channel"] not in {"pypi", "conda", "docs"} or cell["artifact"] not in {"wheel", "sdist", "none"} or cell["suite"] not in parsed_suites or cell["required"] is not True or ("gwpy" in cell and (not isinstance(cell["gwpy"], str) or re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", cell["gwpy"]) is None)):
             raise QualificationError("invalid cell")
-        if (cell["channel"] == "pypi") != (cell["artifact"] in parsed_artifacts):
+        if (cell["channel"] == "pypi") != (cell["artifact"] in parsed_artifacts) or (cell["channel"] != "pypi" and cell["artifact"] != "none"):
             raise QualificationError("invalid cell artifact selection")
         if cell["channel"] == "conda" and (not isinstance(cell.get("conda_channel"), str) or not cell["conda_channel"]):
             raise QualificationError("conda cell requires exact channel")
@@ -194,12 +220,12 @@ def verify_artifact_directory(claims: SimpleNamespace, directory: Path | str) ->
 def validate_pypi_json(claims: SimpleNamespace, data: object) -> None:
     if not isinstance(data, dict) or not {"info", "urls"}.issubset(data) or not isinstance(data["info"], dict) or data["info"].get("name") != claims.project or data["info"].get("version") != claims.version or not isinstance(data["urls"], list):
         raise QualificationError("invalid PyPI JSON")
-    if any(not isinstance(item, dict) for item in data["urls"]):
+    if any(not isinstance(item, dict) or type(item.get("yanked")) is not bool for item in data["urls"]):
         raise QualificationError("invalid PyPI file entry")
     expected_names = {artifact.name for artifact in claims.artifacts.values()}
     if any(item.get("yanked", False) and item.get("filename") in expected_names for item in data["urls"]):
         raise QualificationError("PyPI expected artifact is yanked")
-    files = [item for item in data["urls"] if item.get("filename") in expected_names]
+    files = [item for item in data["urls"] if not item["yanked"]]
     if len(files) != 2:
         raise QualificationError("PyPI JSON must contain exactly two non-yanked files")
     expected = {(artifact.name, artifact.packagetype, artifact.sha256) for artifact in claims.artifacts.values()}
@@ -297,6 +323,10 @@ def parse_junit(path: Path | str) -> dict[str, int]:
     return _junit_counts(path)[0]
 
 
+def _valid_counters(value: object) -> bool:
+    return isinstance(value, dict) and set(value) == {"tests", "failures", "errors", "skipped"} and all(type(item) is int and 0 <= item <= 1_000_000 for item in value.values())
+
+
 def _dist_info_file(distribution: importlib.metadata.Distribution, name: str) -> Path | None:
     for item in distribution.files or ():
         if item.name == name and ".dist-info" in str(item):
@@ -341,21 +371,21 @@ def _preflight(
         url = data.get("url")
         archive = data.get("archive_info")
         digest = _digest(artifact)
-        decoded = urllib.parse.urlparse(url) if isinstance(url, str) else None
-        local = Path(urllib.parse.unquote(decoded.path)) if decoded and decoded.scheme == "file" else None
+        local = _local_file_uri(url)
         hashes = archive.get("hashes") if isinstance(archive, dict) else None
         declared = archive.get("hash") if isinstance(archive, dict) else None
-        if local is None or local.resolve() != artifact.resolve() or not isinstance(archive, dict) or (declared != f"sha256={digest}" and (not isinstance(hashes, dict) or hashes.get("sha256") != digest)):
+        if local.resolve() != artifact.resolve() or not isinstance(archive, dict) or (declared != f"sha256={digest}" and (not isinstance(hashes, dict) or hashes.get("sha256") != digest)):
             raise QualificationError("direct_url metadata does not attest selected artifact")
     if cell.channel == "conda":
         prefix_value = os.environ.get("CONDA_PREFIX")
         metadata = Path(prefix_value) / "conda-meta" if prefix_value else None
+        if prefix_value is None or Path(prefix_value).resolve() != Path(sys.prefix).resolve():
+            raise QualificationError("CONDA_PREFIX does not match interpreter prefix")
         matches = list(metadata.glob("gwexpy-*.json")) if metadata and metadata.is_dir() else []
         if len(matches) != 1:
             raise QualificationError("conda cell has no exact gwexpy conda record")
         record = _json_file(matches[0], "conda package record")
-        channel = record.get("channel")
-        if record.get("name") != "gwexpy" or record.get("version") != claims.version or channel != cell.conda_channel:
+        if record.get("name") != "gwexpy" or record.get("version") != claims.version or _conda_channel(record) != cell.conda_channel:
             raise QualificationError("conda package record does not match claims")
 
 
@@ -388,7 +418,7 @@ def run_cell(claims: SimpleNamespace, cell_id: str, repo_root: Path, artifact: P
             if selected.name != expected.name or _digest(selected) != expected.sha256:
                 raise QualificationError("selected artifact does not match claims")
         elif artifact is not None:
-            selected = _regular(Path(artifact), "artifact")
+            raise QualificationError("non-PyPI cells must not accept an artifact")
         _preflight(claims, cell, repo, selected if cell.channel == "pypi" else None)
         suite = claims.suites[cell.suite]
         with tempfile.TemporaryDirectory(prefix="gwexpy-qualification-") as temporary:
@@ -427,10 +457,8 @@ def run_cell(claims: SimpleNamespace, cell_id: str, repo_root: Path, artifact: P
             pytest_junit = Path(temporary) / "pytest.xml"
             config = Path(temporary) / "pytest.ini"
             config.write_text("[pytest]\n", encoding="utf-8")
-            environment = os.environ.copy()
-            for key in ("PYTHONPATH", "PYTHONHOME", "PYTEST_ADDOPTS", "PYTEST_PLUGINS"):
-                environment.pop(key, None)
-            environment.update({"PYTHONSAFEPATH": "1", "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1", "GWEXPY_POST_RELEASE_QUALIFICATION": "1"})
+            environment = {key: os.environ[key] for key in ("PATH", "SYSTEMROOT", "WINDIR", "TEMP", "TMP", "TMPDIR", "LANG", "LC_ALL") if key in os.environ}
+            environment.update({"PYTHONSAFEPATH": "1", "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1", "GWEXPY_POST_RELEASE_QUALIFICATION": "1", "MPLBACKEND": "Agg"})
             command = [sys.executable, "-P", "-m", "pytest", "-c", str(config), "--import-mode=importlib", f"--junitxml={pytest_junit}", *mapped_selectors]
             process = subprocess.run(command, cwd=cwd, env=environment, capture_output=True, text=True, timeout=suite.timeout, check=False)
             if process.returncode != 0:
@@ -491,7 +519,7 @@ def aggregate(claims: SimpleNamespace, artifact_dir: Path, reports_dir: Path, py
             selected = claims.required_cells[cell]
             expected_artifact = claims.artifacts[selected.artifact].name if selected.channel == "pypi" else None
             fields = {"schema", "cell", "claims_sha256", "version", "python", "platform", "gwpy", "channel", "artifact", "passed", "counters", "error", "duration_seconds"}
-            if set(report) != fields or report["schema"] != "gwexpy-published-release-cell-report-v1" or report["cell"] != cell or report["claims_sha256"] != claims.digest or report["version"] != claims.version or not isinstance(report["python"], str) or re.fullmatch(r"3\.[0-9]+\.[0-9]+", report["python"]) is None or not report["python"].startswith(f"{selected.python}.") or report["platform"] != selected.platform or report["gwpy"] != getattr(selected, "gwpy", None) or report["channel"] != selected.channel or report["artifact"] != expected_artifact or report["passed"] is not True or report["error"] is not None or report["counters"] != counters or isinstance(report["duration_seconds"], bool) or not isinstance(report["duration_seconds"], (int, float)) or not math.isfinite(report["duration_seconds"]) or not 0 <= report["duration_seconds"] <= 3600:
+            if set(report) != fields or report["schema"] != "gwexpy-published-release-cell-report-v1" or report["cell"] != cell or report["claims_sha256"] != claims.digest or report["version"] != claims.version or not isinstance(report["python"], str) or re.fullmatch(r"3\.[0-9]+\.[0-9]+", report["python"]) is None or not report["python"].startswith(f"{selected.python}.") or report["platform"] != selected.platform or report["gwpy"] != getattr(selected, "gwpy", None) or report["channel"] != selected.channel or report["artifact"] != expected_artifact or report["passed"] is not True or report["error"] is not None or not _valid_counters(report["counters"]) or report["counters"] != counters or isinstance(report["duration_seconds"], bool) or not isinstance(report["duration_seconds"], (int, float)) or not math.isfinite(report["duration_seconds"]) or not 0 <= report["duration_seconds"] <= 3600:
                 errors[cell] = "mismatched evidence"
     except Exception as exc:
         errors["aggregate"] = str(exc)[:4096]

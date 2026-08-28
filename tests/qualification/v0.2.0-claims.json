@@ -45,7 +45,10 @@
             "selectors": [
                 "tests/qualification/test_docs_smoke.py"
             ],
-            "support_paths": [],
+            "support_paths": [
+                "docs/web/en/user_guide/quickstart.md",
+                "docs/web/ja/user_guide/quickstart.md"
+            ],
             "timeout": 300
         }
     },
@@ -198,11 +201,11 @@
             "suite": "scientific",
             "required": true
         },
-        "docs-en-ja-3.11-wheel": {
+        "docs-en-ja-3.11": {
             "python": "3.11",
             "platform": "linux",
-            "channel": "pypi",
-            "artifact": "wheel",
+            "channel": "docs",
+            "artifact": "none",
             "suite": "docs",
             "required": true
         }
