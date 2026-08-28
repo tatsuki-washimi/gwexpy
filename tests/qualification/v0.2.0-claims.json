@@ -27,16 +27,78 @@
             "support_paths": [],
             "timeout": 180
         },
-        "release-claims": {
+        "release-contracts-compat": {
             "selectors": [
-                "tests/qualification/test_v020_release_claims.py"
+                "tests/qualification/test_v020_release_claims.py::test_timeseries_t0_ns_is_exact_through_constructor_copy_slice_and_pickle",
+                "tests/qualification/test_v020_release_claims.py::test_timeseries_hdf5_roundtrip_retains_exact_t0_gps_ns",
+                "tests/qualification/test_v020_release_claims.py::test_plain_import_is_lazy",
+                "tests/qualification/test_v020_release_claims.py::test_constructors_only_bootstrap_does_not_register_io",
+                "tests/qualification/test_v020_release_claims.py::test_full_bootstrap_registers_constructors_and_io",
+                "tests/qualification/test_v020_release_claims.py::test_public_io_entry_points_register_handlers_on_demand",
+                "tests/qualification/test_v020_release_claims.py::test_public_bootstrap_is_idempotent",
+                "tests/qualification/test_spectrogram_hdf5_contract.py",
+                "tests/spectrogram/test_provenance.py::test_provenance_survives_pickle_and_hdf5_roundtrips",
+                "tests/spectrogram/test_provenance.py::test_provenance_is_written_when_hdf5_format_is_inferred",
+                "tests/spectrogram/test_provenance.py::test_pathname_overwrite_replaces_the_file_but_append_preserves_entries",
+                "tests/signal/test_median_mean_dispatch.py::test_median_mean_is_owned_and_registered_through_gwpy_surface",
+                "tests/signal/test_median_mean_dispatch.py::test_median_mean_public_dispatch_contract_without_lal",
+                "tests/signal/test_median_bias.py::test_median_bias_matches_allen_findchirp_oracle",
+                "tests/coupling/test_segment.py::test_validate_accepts_v1_pandas_table_without_mutation",
+                "tests/coupling/test_segment.py::test_validate_preserves_astropy_metadata_units_and_column_settings",
+                "tests/coupling/test_segment.py::test_schema_aware_pandas_astropy_adapters_preserve_absence_units_and_metadata",
+                "tests/coupling/test_segment.py::test_from_result_mixed_optionals_round_trip_through_public_adapters_and_json",
+                "tests/coupling/test_segment.py::test_from_result_preserves_inputs_and_converts_equivalent_units",
+                "tests/coupling/test_segment.py::test_from_result_rejects_incompatible_upper_limit_grid_or_unit",
+                "tests/coupling/test_segment.py::test_from_result_accepts_hz_khz_frequency_roundoff",
+                "tests/coupling/test_segment.py::test_from_result_rejects_a_real_upper_limit_bin_mismatch",
+                "tests/coupling/test_segment.py::test_validate_fails_closed_for_invalid_rows[table7-frequency_hz]",
+                "tests/test_import_order.py::TestImportOrderIsolated::test_public_register_all_is_idempotent_in_clean_process"
             ],
             "support_paths": [],
-            "timeout": 180
+            "timeout": 600
+        },
+        "release-contracts-full": {
+            "selectors": [
+                "tests/qualification/test_v020_release_claims.py::test_timeseries_t0_ns_is_exact_through_constructor_copy_slice_and_pickle",
+                "tests/qualification/test_v020_release_claims.py::test_timeseries_hdf5_roundtrip_retains_exact_t0_gps_ns",
+                "tests/qualification/test_v020_release_claims.py::test_plain_import_is_lazy",
+                "tests/qualification/test_v020_release_claims.py::test_constructors_only_bootstrap_does_not_register_io",
+                "tests/qualification/test_v020_release_claims.py::test_full_bootstrap_registers_constructors_and_io",
+                "tests/qualification/test_v020_release_claims.py::test_public_io_entry_points_register_handlers_on_demand",
+                "tests/qualification/test_v020_release_claims.py::test_public_bootstrap_is_idempotent",
+                "tests/qualification/test_spectrogram_hdf5_contract.py",
+                "tests/spectrogram/test_provenance.py::test_provenance_survives_pickle_and_hdf5_roundtrips",
+                "tests/spectrogram/test_provenance.py::test_provenance_is_written_when_hdf5_format_is_inferred",
+                "tests/spectrogram/test_provenance.py::test_pathname_overwrite_replaces_the_file_but_append_preserves_entries",
+                "tests/signal/test_median_mean_dispatch.py::test_median_mean_is_owned_and_registered_through_gwpy_surface",
+                "tests/signal/test_median_mean_dispatch.py::test_median_mean_public_dispatch_contract_without_lal",
+                "tests/signal/test_median_bias.py::test_median_bias_matches_allen_findchirp_oracle",
+                "tests/coupling/test_segment.py::test_validate_accepts_v1_pandas_table_without_mutation",
+                "tests/coupling/test_segment.py::test_validate_preserves_astropy_metadata_units_and_column_settings",
+                "tests/coupling/test_segment.py::test_schema_aware_pandas_astropy_adapters_preserve_absence_units_and_metadata",
+                "tests/coupling/test_segment.py::test_from_result_mixed_optionals_round_trip_through_public_adapters_and_json",
+                "tests/coupling/test_segment.py::test_from_result_preserves_inputs_and_converts_equivalent_units",
+                "tests/coupling/test_segment.py::test_from_result_rejects_incompatible_upper_limit_grid_or_unit",
+                "tests/coupling/test_segment.py::test_from_result_accepts_hz_khz_frequency_roundoff",
+                "tests/coupling/test_segment.py::test_from_result_rejects_a_real_upper_limit_bin_mismatch",
+                "tests/coupling/test_segment.py::test_validate_fails_closed_for_invalid_rows[table7-frequency_hz]",
+                "tests/test_import_order.py::TestImportOrderIsolated::test_public_register_all_is_idempotent_in_clean_process",
+                "tests/types/test_series_matrix_contract_manifest.py::test_b0_manifest_has_a_literal_cell_count_and_unique_ids",
+                "tests/types/test_series_matrix_contract_manifest.py::test_every_b0_cell_executes_once_through_the_typed_adapter"
+            ],
+            "support_paths": [
+                "tests/types/series_matrix_contract_manifest.py"
+            ],
+            "timeout": 1800
         },
         "scientific": {
             "selectors": [
-                "tests/qualification/test_scientific_smoke.py"
+                "tests/qualification/test_scientific_smoke.py",
+                "tests/qualification/test_gwf_parallel_contract.py",
+                "tests/qualification/test_v020_release_claims.py::test_timeseries_mne_roundtrip_retains_exact_t0_gps_ns",
+                "tests/signal/test_median_mean_dispatch.py::test_median_mean_public_psd_matches_direct_lal_oracle",
+                "tests/signal/test_median_mean_dispatch.py::test_median_mean_psd_and_asd_preserve_contract",
+                "tests/signal/test_median_bias.py::test_median_bias_matches_lal_oracle_when_available"
             ],
             "support_paths": [],
             "timeout": 300
@@ -155,7 +217,7 @@
             "gwpy": "4.0.1",
             "channel": "pypi",
             "artifact": "wheel",
-            "suite": "release-claims",
+            "suite": "release-contracts-compat",
             "required": true
         },
         "gwpy-4.0.2-wheel": {
@@ -164,7 +226,7 @@
             "gwpy": "4.0.2",
             "channel": "pypi",
             "artifact": "wheel",
-            "suite": "release-claims",
+            "suite": "release-contracts-full",
             "required": true
         },
         "sdist-3.12-claims": {
@@ -173,7 +235,7 @@
             "gwpy": "4.0.2",
             "channel": "pypi",
             "artifact": "sdist",
-            "suite": "release-claims",
+            "suite": "release-contracts-compat",
             "required": true
         },
     "conda-3.11": {
@@ -182,7 +244,7 @@
       "channel": "conda",
       "conda_channel": "conda-forge",
       "artifact": "none",
-            "suite": "release-claims",
+            "suite": "release-contracts-compat",
             "required": true
         },
     "conda-3.14": {
@@ -191,7 +253,7 @@
       "channel": "conda",
       "conda_channel": "conda-forge",
       "artifact": "none",
-            "suite": "release-claims",
+            "suite": "core",
             "required": true
         },
         "scientific-3.11-wheel": {

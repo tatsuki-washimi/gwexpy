@@ -327,6 +327,41 @@ def test_claims_are_strict_and_have_the_complete_first_run_ledger(qualifier) -> 
     assert claims.required_cells["docs-en-ja-3.11-wheel"].artifact == "wheel"
 
 
+def test_b0_contract_suite_runs_in_exactly_one_required_cell(qualifier) -> None:
+    claims = qualifier.load_claims(CLAIMS)
+    b0_selector = (
+        "tests/types/test_series_matrix_contract_manifest.py::"
+        "test_every_b0_cell_executes_once_through_the_typed_adapter"
+    )
+    selected = [
+        cell_id
+        for cell_id, cell in claims.required_cells.items()
+        if b0_selector in claims.suites[cell.suite].selectors
+    ]
+    assert selected == ["gwpy-4.0.2-wheel"]
+    assert claims.required_cells["gwpy-4.0.1-wheel"].suite == (
+        "release-contracts-compat"
+    )
+    assert claims.required_cells["gwpy-4.0.2-wheel"].suite == ("release-contracts-full")
+    assert claims.required_cells["sdist-3.12-claims"].suite == (
+        "release-contracts-compat"
+    )
+    assert claims.required_cells["conda-3.11"].suite == ("release-contracts-compat")
+    assert claims.required_cells["conda-3.14"].suite == "core"
+
+    compat = set(claims.suites["release-contracts-compat"].selectors)
+    full = set(claims.suites["release-contracts-full"].selectors)
+    assert full - compat == {
+        "tests/types/test_series_matrix_contract_manifest.py::"
+        "test_b0_manifest_has_a_literal_cell_count_and_unique_ids",
+        b0_selector,
+    }
+    assert compat < full
+    assert claims.suites["release-contracts-full"].support_paths == (
+        "tests/types/series_matrix_contract_manifest.py",
+    )
+
+
 def test_inside_resolves_both_sides_without_string_prefixes(
     qualifier, tmp_path: Path
 ) -> None:
@@ -1414,6 +1449,36 @@ def test_run_cell_stages_and_executes_a_real_selector(
         claims, "conda-3.11", repository, None, json_out, junit_out
     )
     assert json.loads(json_out.read_text())["counters"]["tests"] == 1
+    assert qualifier.parse_junit(junit_out)["tests"] == 1
+
+
+def test_run_cell_stages_support_for_a_relative_test_import(
+    qualifier, monkeypatch, tmp_path: Path
+) -> None:
+    claims = qualifier.load_claims(CLAIMS)
+    repository = tmp_path / "repo"
+    tests = repository / "tests" / "types"
+    tests.mkdir(parents=True)
+    (tests / "test_relative.py").write_text(
+        "from .support import VALUE\n\ndef test_relative(): assert VALUE == 480\n",
+        encoding="utf-8",
+    )
+    (tests / "support.py").write_text("VALUE = 480\n", encoding="utf-8")
+    claims.suites["core"] = SimpleNamespace(
+        selectors=("tests/types/test_relative.py::test_relative",),
+        support_paths=("tests/types/support.py",),
+        timeout=30,
+    )
+    claims.required_cells["conda-3.11"].suite = "core"
+    monkeypatch.setattr(qualifier, "_preflight", lambda *_: _runtime_provenance())
+    monkeypatch.setattr(
+        qualifier, "_pip_evidence", lambda *_args, **_kwargs: _pip_facts()
+    )
+    json_out, junit_out = tmp_path / "result.json", tmp_path / "result.xml"
+
+    assert qualifier.run_cell(
+        claims, "conda-3.11", repository, None, json_out, junit_out
+    )
     assert qualifier.parse_junit(junit_out)["tests"] == 1
 
 

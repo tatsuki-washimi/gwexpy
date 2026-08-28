@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import importlib
 import os
 import pickle
 import subprocess
@@ -39,7 +38,37 @@ def test_timeseries_hdf5_roundtrip_retains_exact_t0_gps_ns(tmp_path: Path) -> No
     filename = tmp_path / "epoch.hdf5"
     series.write(filename, format="hdf5", path="series")
     recovered = TimeSeries.read(filename, format="hdf5", path="series")
+    assert (
+        recovered.t0_gps_ns,
+        getattr(recovered, "_gwex_t0_gps_ns", None),
+    ) == (t0_ns, t0_ns)
+
+
+def test_timeseries_mne_roundtrip_retains_exact_t0_gps_ns() -> None:
+    """The latest provisioned MNE must preserve the public integer epoch."""
+    import mne
+
+    from gwexpy.timeseries import TimeSeries
+
+    assert mne.__version__
+    t0_ns = 1_234_567_890_123_456_789
+    original = TimeSeries(
+        np.arange(8, dtype=float),
+        t0_ns=t0_ns,
+        sample_rate=4,
+        unit="V",
+        name="X1:QUALIFICATION",
+        channel="X1:QUALIFICATION",
+    )
+
+    raw = original.to_mne()
+    recovered = TimeSeries.from_mne(raw, "X1:QUALIFICATION", unit=original.unit)
+
     assert recovered.t0_gps_ns == t0_ns
+    assert getattr(recovered, "_gwex_t0_gps_ns", None) == t0_ns
+    np.testing.assert_array_equal(recovered.value, original.value)
+    assert recovered.dt == original.dt
+    assert recovered.unit == original.unit
 
 
 def _clean_python(code: str) -> None:
@@ -81,18 +110,29 @@ def _clean_python(code: str) -> None:
             check=False,
             cwd=temporary,
             env=environment,
+            capture_output=True,
+            text=True,
             timeout=30,
         )
-    assert completed.returncode == 0
+    assert completed.returncode == 0, completed.stderr or completed.stdout
 
 
 def test_plain_import_is_lazy() -> None:
     _clean_python("""
-import importlib
 import sys
 import gwexpy
-assert importlib.import_module("gwexpy._bootstrap")._bootstrapped is False
-assert "gwexpy.timeseries.io" not in sys.modules
+from gwexpy import _bootstrap
+from gwexpy.interop._registry import ConverterRegistry
+observed = (
+    _bootstrap._bootstrapped,
+    len(ConverterRegistry._constructors),
+    "gwexpy.timeseries.io" in sys.modules,
+    "gwexpy.frequencyseries.io" in sys.modules,
+)
+assert observed == (False, 0, False, False), (
+    "plain import eagerly changed (bootstrapped, constructors, timeseries_io, "
+    f"frequencyseries_io): {observed}"
+)
 """)
 
 
@@ -103,18 +143,58 @@ import gwexpy
 gwexpy.register_all(include_io=False)
 from gwexpy.interop._registry import ConverterRegistry
 assert ConverterRegistry.has_constructor("TimeSeries")
-assert "gwexpy.timeseries.io" not in sys.modules
+assert ConverterRegistry.has_constructor("Spectrogram")
+assert "gwexpy.timeseries.io" not in sys.modules, (
+    "constructor-only bootstrap loaded TimeSeries I/O"
+)
+assert "gwexpy.frequencyseries.io" not in sys.modules, (
+    "constructor-only bootstrap loaded FrequencySeries I/O"
+)
 """)
 
 
-def test_full_bootstrap_promotes_io_and_is_idempotent() -> None:
+def test_full_bootstrap_registers_constructors_and_io() -> None:
     _clean_python("""
 import sys
 import gwexpy
 gwexpy.register_all()
+from gwexpy.interop._registry import ConverterRegistry
+assert ConverterRegistry.has_constructor("TimeSeries")
+assert ConverterRegistry.has_constructor("Spectrogram")
 assert "gwexpy.timeseries.io" in sys.modules
 assert "gwexpy.frequencyseries.io" in sys.modules
-before = tuple(sorted(sys.modules))
+""")
+
+
+def test_public_io_entry_points_register_handlers_on_demand() -> None:
+    _clean_python("""
+import pathlib
+import sys
+import tempfile
+import numpy as np
+import gwexpy
+from gwexpy import _bootstrap
+assert _bootstrap._bootstrapped is False, "plain import marked bootstrap complete"
+assert "gwexpy.timeseries.io" not in sys.modules, "plain import loaded TimeSeries I/O"
+with tempfile.TemporaryDirectory() as directory:
+    path = pathlib.Path(directory) / "series.hdf5"
+    original = gwexpy.TimeSeries(np.arange(4), sample_rate=1)
+    original.write(path, format="hdf5", path="series")
+    restored = gwexpy.TimeSeries.read(path, format="hdf5", path="series")
+    assert restored.shape == original.shape
+assert _bootstrap._bootstrapped is False
+assert "gwexpy.timeseries.io" in sys.modules
+""")
+
+
+def test_public_bootstrap_is_idempotent() -> None:
+    _clean_python("""
+import gwexpy
+from gwexpy.interop._registry import ConverterRegistry
 gwexpy.register_all()
-assert before == tuple(sorted(sys.modules))
+before = dict(ConverterRegistry._constructors)
+gwexpy.register_all()
+after = dict(ConverterRegistry._constructors)
+assert before.keys() == after.keys()
+assert all(before[name] is after[name] for name in before)
 """)
