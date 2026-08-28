@@ -119,6 +119,17 @@ def test_all_jobs_have_timeouts_and_actions_are_exact_sha_pins() -> None:
     }
 
 
+def test_job_level_environment_uses_only_permitted_contexts() -> None:
+    jobs = load_workflow()["jobs"]
+    offenders = [
+        f"{job_name}.{variable}"
+        for job_name, job in jobs.items()
+        for variable, value in job.get("env", {}).items()
+        if "${{ runner." in value
+    ]
+    assert offenders == []
+
+
 def test_identity_proves_tag_run_and_prior_artifacts() -> None:
     identity = load_workflow()["jobs"]["identity"]
     text = run_text(identity)

@@ -550,10 +550,7 @@ jobs:
             cell: install-windows-3.14-wheel
     env:
       CONTROL_ROOT: ${{ github.workspace }}/control
-      PAYLOAD_DIR: ${{ runner.temp }}/public-payload
-      REPORT_DIR: ${{ runner.temp }}/qualification-report
       CELL_ID: ${{ matrix.cell }}
-      ARTIFACT_PATH: ${{ runner.temp }}/public-payload/${{ matrix.filename }}
     steps:
       - name: Check out protected-main control revision
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -579,6 +576,7 @@ jobs:
         shell: bash
         env:
           EMPTY_CWD: ${{ runner.temp }}/qualification-empty
+          REPORT_DIR: ${{ runner.temp }}/qualification-report
         run: |
           python - <<'PY'
           import os
@@ -590,6 +588,8 @@ jobs:
 
       - name: Install exact local artifact
         shell: bash
+        env:
+          ARTIFACT_PATH: ${{ runner.temp }}/public-payload/${{ matrix.filename }}
         run: |
           python -m pip install --disable-pip-version-check --no-cache-dir \
             "$ARTIFACT_PATH" pytest
@@ -602,6 +602,9 @@ jobs:
         if: always()
         shell: bash
         working-directory: ${{ runner.temp }}/qualification-empty
+        env:
+          ARTIFACT_PATH: ${{ runner.temp }}/public-payload/${{ matrix.filename }}
+          REPORT_DIR: ${{ runner.temp }}/qualification-report
         run: |
           python "$CONTROL_ROOT/scripts/ci/qualify_published_release.py" run-cell \
             --claims "$CONTROL_ROOT/tests/qualification/v0.2.0-claims.json" \
@@ -639,9 +642,7 @@ jobs:
             cell: gwpy-4.0.2-wheel
     env:
       CONTROL_ROOT: ${{ github.workspace }}/control
-      REPORT_DIR: ${{ runner.temp }}/qualification-report
       CELL_ID: ${{ matrix.cell }}
-      ARTIFACT_PATH: ${{ runner.temp }}/public-payload/gwexpy-0.2.0-py3-none-any.whl
     steps:
       - name: Check out protected-main control revision
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -666,11 +667,13 @@ jobs:
         if: always()
         env:
           EMPTY_CWD: ${{ runner.temp }}/qualification-empty
+          REPORT_DIR: ${{ runner.temp }}/qualification-report
         run: |
           mkdir -p "$EMPTY_CWD" "$REPORT_DIR"
 
       - name: Install exact wheel and GWpy compatibility stack
         env:
+          ARTIFACT_PATH: ${{ runner.temp }}/public-payload/gwexpy-0.2.0-py3-none-any.whl
           GWPY_VERSION: ${{ matrix.gwpy }}
         run: |
           python -m pip install --disable-pip-version-check --no-cache-dir \
@@ -682,6 +685,9 @@ jobs:
       - name: Run strict qualification cell
         if: always()
         working-directory: ${{ runner.temp }}/qualification-empty
+        env:
+          ARTIFACT_PATH: ${{ runner.temp }}/public-payload/gwexpy-0.2.0-py3-none-any.whl
+          REPORT_DIR: ${{ runner.temp }}/qualification-report
         run: |
           python "$CONTROL_ROOT/scripts/ci/qualify_published_release.py" run-cell \
             --claims "$CONTROL_ROOT/tests/qualification/v0.2.0-claims.json" \
@@ -709,9 +715,7 @@ jobs:
     timeout-minutes: 60
     env:
       CONTROL_ROOT: ${{ github.workspace }}/control
-      REPORT_DIR: ${{ runner.temp }}/qualification-report
       CELL_ID: sdist-3.12-claims
-      ARTIFACT_PATH: ${{ runner.temp }}/public-payload/gwexpy-0.2.0.tar.gz
     steps:
       - name: Check out protected-main control revision
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -736,10 +740,13 @@ jobs:
         if: always()
         env:
           EMPTY_CWD: ${{ runner.temp }}/qualification-empty
+          REPORT_DIR: ${{ runner.temp }}/qualification-report
         run: |
           mkdir -p "$EMPTY_CWD" "$REPORT_DIR"
 
       - name: Install exact source distribution contract stack
+        env:
+          ARTIFACT_PATH: ${{ runner.temp }}/public-payload/gwexpy-0.2.0.tar.gz
         run: |
           python -m pip install --disable-pip-version-check --no-cache-dir \
             "$ARTIFACT_PATH" "gwpy==4.0.2" mne lalsuite pytest
@@ -750,6 +757,9 @@ jobs:
       - name: Run strict qualification cell
         if: always()
         working-directory: ${{ runner.temp }}/qualification-empty
+        env:
+          ARTIFACT_PATH: ${{ runner.temp }}/public-payload/gwexpy-0.2.0.tar.gz
+          REPORT_DIR: ${{ runner.temp }}/qualification-report
         run: |
           python "$CONTROL_ROOT/scripts/ci/qualify_published_release.py" run-cell \
             --claims "$CONTROL_ROOT/tests/qualification/v0.2.0-claims.json" \
@@ -787,7 +797,6 @@ jobs:
             packages: pytest
     env:
       CONTROL_ROOT: ${{ github.workspace }}/control
-      REPORT_DIR: ${{ runner.temp }}/qualification-report
       CELL_ID: ${{ matrix.cell }}
     steps:
       - name: Check out protected-main control revision
@@ -820,6 +829,7 @@ jobs:
         if: always()
         env:
           EMPTY_CWD: ${{ runner.temp }}/qualification-empty
+          REPORT_DIR: ${{ runner.temp }}/qualification-report
         run: |
           mkdir -p "$EMPTY_CWD" "$REPORT_DIR"
 
@@ -829,6 +839,8 @@ jobs:
       - name: Run strict qualification cell
         if: always()
         working-directory: ${{ runner.temp }}/qualification-empty
+        env:
+          REPORT_DIR: ${{ runner.temp }}/qualification-report
         run: |
           micromamba run -n qualification \
             python "$CONTROL_ROOT/scripts/ci/qualify_published_release.py" run-cell \
@@ -856,9 +868,7 @@ jobs:
     timeout-minutes: 60
     env:
       CONTROL_ROOT: ${{ github.workspace }}/control
-      REPORT_DIR: ${{ runner.temp }}/qualification-report
       CELL_ID: scientific-3.11-wheel
-      ARTIFACT_PATH: ${{ runner.temp }}/public-payload/gwexpy-0.2.0-py3-none-any.whl
       MPLBACKEND: Agg
     steps:
       - name: Check out protected-main control revision
@@ -884,10 +894,13 @@ jobs:
         if: always()
         env:
           EMPTY_CWD: ${{ runner.temp }}/qualification-empty
+          REPORT_DIR: ${{ runner.temp }}/qualification-report
         run: |
           mkdir -p "$EMPTY_CWD" "$REPORT_DIR"
 
       - name: Install exact wheel and required scientific extras
+        env:
+          ARTIFACT_PATH: ${{ runner.temp }}/public-payload/gwexpy-0.2.0-py3-none-any.whl
         run: |
           python -m pip install --disable-pip-version-check --no-cache-dir \
             "$ARTIFACT_PATH" mne lalsuite pytest
@@ -914,6 +927,9 @@ jobs:
       - name: Run strict qualification cell
         if: always()
         working-directory: ${{ runner.temp }}/qualification-empty
+        env:
+          ARTIFACT_PATH: ${{ runner.temp }}/public-payload/gwexpy-0.2.0-py3-none-any.whl
+          REPORT_DIR: ${{ runner.temp }}/qualification-report
         run: |
           python "$CONTROL_ROOT/scripts/ci/qualify_published_release.py" run-cell \
             --claims "$CONTROL_ROOT/tests/qualification/v0.2.0-claims.json" \
@@ -941,11 +957,8 @@ jobs:
     timeout-minutes: 35
     env:
       CONTROL_ROOT: ${{ github.workspace }}/control
-      REPORT_DIR: ${{ runner.temp }}/qualification-report
       CELL_ID: docs-en-ja-3.11-wheel
-      ARTIFACT_PATH: ${{ runner.temp }}/public-payload/gwexpy-0.2.0-py3-none-any.whl
       MPLBACKEND: Agg
-      MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
     steps:
       - name: Check out protected-main control revision
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -970,6 +983,8 @@ jobs:
         if: always()
         env:
           EMPTY_CWD: ${{ runner.temp }}/qualification-empty
+          MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
+          REPORT_DIR: ${{ runner.temp }}/qualification-report
         run: |
           mkdir -p "$EMPTY_CWD" "$REPORT_DIR" "$MPLCONFIGDIR"
 
@@ -985,6 +1000,10 @@ jobs:
       - name: Run strict qualification cell
         if: always()
         working-directory: ${{ runner.temp }}/qualification-empty
+        env:
+          ARTIFACT_PATH: ${{ runner.temp }}/public-payload/gwexpy-0.2.0-py3-none-any.whl
+          MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
+          REPORT_DIR: ${{ runner.temp }}/qualification-report
         run: |
           python "$CONTROL_ROOT/scripts/ci/qualify_published_release.py" run-cell \
             --claims "$CONTROL_ROOT/tests/qualification/v0.2.0-claims.json" \
@@ -1022,10 +1041,6 @@ jobs:
       all_passed: ${{ steps.final.outputs.all_passed }}
     env:
       CONTROL_ROOT: ${{ github.workspace }}/control
-      PAYLOAD_DIR: ${{ runner.temp }}/public-payload
-      IDENTITY_DIR: ${{ runner.temp }}/identity-evidence
-      REPORTS_DIR: ${{ runner.temp }}/qualification-reports
-      AGGREGATE_DIR: ${{ runner.temp }}/qualification-aggregate
     steps:
       - name: Check out protected-main control revision
         if: always()
@@ -1044,6 +1059,11 @@ jobs:
 
       - name: Prepare aggregate directories
         if: always()
+        env:
+          AGGREGATE_DIR: ${{ runner.temp }}/qualification-aggregate
+          IDENTITY_DIR: ${{ runner.temp }}/identity-evidence
+          PAYLOAD_DIR: ${{ runner.temp }}/public-payload
+          REPORTS_DIR: ${{ runner.temp }}/qualification-reports
         run: |
           mkdir -p "$PAYLOAD_DIR" "$IDENTITY_DIR" "$REPORTS_DIR" "$AGGREGATE_DIR"
 
@@ -1071,6 +1091,11 @@ jobs:
 
       - name: Aggregate exact nineteen-cell ledger
         if: always()
+        env:
+          AGGREGATE_DIR: ${{ runner.temp }}/qualification-aggregate
+          IDENTITY_DIR: ${{ runner.temp }}/identity-evidence
+          PAYLOAD_DIR: ${{ runner.temp }}/public-payload
+          REPORTS_DIR: ${{ runner.temp }}/qualification-reports
         run: |
           set +e
           python "$CONTROL_ROOT/scripts/ci/qualify_published_release.py" aggregate \
@@ -1102,6 +1127,7 @@ jobs:
         id: final
         if: always()
         env:
+          AGGREGATE_DIR: ${{ runner.temp }}/qualification-aggregate
           IDENTITY_RESULT: ${{ needs.identity.result }}
           INSTALL_MATRIX_RESULT: ${{ needs.install_matrix.result }}
           GWPY_MATRIX_RESULT: ${{ needs.gwpy_matrix.result }}
