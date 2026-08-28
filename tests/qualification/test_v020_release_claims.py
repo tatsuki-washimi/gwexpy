@@ -7,6 +7,7 @@ import os
 import pickle
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -42,35 +43,72 @@ def test_timeseries_hdf5_roundtrip_retains_exact_t0_gps_ns(tmp_path: Path) -> No
 
 
 def _clean_python(code: str) -> None:
-    completed = subprocess.run(
-        [sys.executable, "-P", "-c", code], check=False, capture_output=True, text=True
+    environment = {
+        key: os.environ[key]
+        for key in (
+            "PATH",
+            "SYSTEMROOT",
+            "WINDIR",
+            "COMSPEC",
+            "PATHEXT",
+            "LANG",
+            "LC_ALL",
+        )
+        if key in os.environ
+    }
+    environment.update(
+        {
+            "PYTHONNOUSERSITE": "1",
+            "PYTHONSAFEPATH": "1",
+            "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+        }
     )
-    assert completed.returncode == 0, completed.stderr
+    with tempfile.TemporaryDirectory(prefix="gwexpy-clean-python-") as temporary:
+        runtime = Path(temporary)
+        environment.update(
+            {
+                "HOME": str(runtime),
+                "USERPROFILE": str(runtime),
+                "TEMP": str(runtime),
+                "TMP": str(runtime),
+                "TMPDIR": str(runtime),
+                "XDG_CACHE_HOME": str(runtime / "cache"),
+                "XDG_CONFIG_HOME": str(runtime / "config"),
+            }
+        )
+        completed = subprocess.run(
+            [sys.executable, "-I", "-c", code],
+            check=False,
+            cwd=temporary,
+            env=environment,
+            timeout=30,
+        )
+    assert completed.returncode == 0
 
 
 def test_plain_import_is_lazy() -> None:
-    _clean_python('''
+    _clean_python("""
 import importlib
 import sys
 import gwexpy
 assert importlib.import_module("gwexpy._bootstrap")._bootstrapped is False
 assert "gwexpy.timeseries.io" not in sys.modules
-''')
+""")
 
 
 def test_constructors_only_bootstrap_does_not_register_io() -> None:
-    _clean_python('''
+    _clean_python("""
 import sys
 import gwexpy
 gwexpy.register_all(include_io=False)
 from gwexpy.interop._registry import ConverterRegistry
 assert ConverterRegistry.has_constructor("TimeSeries")
 assert "gwexpy.timeseries.io" not in sys.modules
-''')
+""")
 
 
 def test_full_bootstrap_promotes_io_and_is_idempotent() -> None:
-    _clean_python('''
+    _clean_python("""
 import sys
 import gwexpy
 gwexpy.register_all()
@@ -79,4 +117,4 @@ assert "gwexpy.frequencyseries.io" in sys.modules
 before = tuple(sorted(sys.modules))
 gwexpy.register_all()
 assert before == tuple(sorted(sys.modules))
-''')
+""")

@@ -15,8 +15,12 @@ def _first_python_block(document: str) -> str:
 
 
 def test_en_ja_quickstarts_are_present_and_examples_execute() -> None:
-    english = (ROOT / "docs/web/en/user_guide/quickstart.md").read_text(encoding="utf-8")
-    japanese = (ROOT / "docs/web/ja/user_guide/quickstart.md").read_text(encoding="utf-8")
+    english = (ROOT / "docs/web/en/user_guide/quickstart.md").read_text(
+        encoding="utf-8"
+    )
+    japanese = (ROOT / "docs/web/ja/user_guide/quickstart.md").read_text(
+        encoding="utf-8"
+    )
     assert "# Quickstart" in english and "3-line Quickstart" in english
     assert "# クイックスタート" in japanese and "3行で最初の図" in japanese
     for source in (english, japanese):
