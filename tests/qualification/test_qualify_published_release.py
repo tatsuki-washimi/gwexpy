@@ -152,6 +152,14 @@ def test_artifact_directory_rejects_a_symlink(qualifier, tmp_path: Path) -> None
         qualifier.verify_artifact_directory(claims, directory)
 
 
+def test_artifact_oversize(qualifier, monkeypatch, tmp_path: Path) -> None:
+    claims = qualifier.load_claims(CLAIMS); directory = tmp_path / "artifacts"; directory.mkdir()
+    monkeypatch.setattr(qualifier, "MAX_ARTIFACT", 1)
+    for item in claims.artifacts.values(): (directory / item.name).write_bytes(b"xx")
+    with pytest.raises(qualifier.QualificationError, match="size"):
+        qualifier.verify_artifact_directory(claims, directory)
+
+
 def test_pypi_and_sidecar_corroboration_fail_closed(qualifier, tmp_path: Path) -> None:
     claims = qualifier.load_claims(CLAIMS)
     pypi = {"info": {"name": "gwexpy", "version": "0.2.0"}, "urls": []}
@@ -245,6 +253,23 @@ def test_aggregate_rejects_counter_mismatch(qualifier, monkeypatch, tmp_path: Pa
     assert not qualifier.aggregate(claims, artifacts, reports, None, None, tmp_path / "out.json", tmp_path / "out.xml")
 
 
+def test_aggregate_extra_report(qualifier, monkeypatch, tmp_path: Path) -> None:
+    claims = qualifier.load_claims(CLAIMS); reports = tmp_path / "reports"; reports.mkdir(); (reports / "extra.txt").write_text("x")
+    monkeypatch.setattr(qualifier, "verify_artifact_directory", lambda *_: {})
+    output = tmp_path / "out.json"
+    assert not qualifier.aggregate(claims, tmp_path, reports, None, None, output, tmp_path / "out.xml")
+    assert "extra" in " ".join(json.loads(output.read_text())["errors"].values())
+
+
+def test_aggregate_boolean_counters(qualifier, monkeypatch, tmp_path: Path) -> None:
+    claims = qualifier.load_claims(CLAIMS); reports = tmp_path / "reports"; reports.mkdir(); monkeypatch.setattr(qualifier, "verify_artifact_directory", lambda *_: {})
+    for cell, spec in claims.required_cells.items():
+        report = {"schema":"gwexpy-published-release-cell-report-v1","cell":cell,"claims_sha256":claims.digest,"version":claims.version,"python":f"{spec.python}.0","platform":spec.platform,"gwpy":getattr(spec,"gwpy",None),"channel":spec.channel,"artifact":claims.artifacts[spec.artifact].name if spec.channel=="pypi" else None,"passed":True,"counters":{"tests":1,"failures":0,"errors":0,"skipped":0},"error":None,"duration_seconds":0}
+        (reports/f"{cell}.json").write_text(json.dumps(report)); qualifier._write_junit(reports/f"{cell}.xml",[(cell,None)])
+    changed=reports/"conda-3.11.json"; data=json.loads(changed.read_text()); data["counters"]={"tests":True,"failures":False,"errors":False,"skipped":False}; changed.write_text(json.dumps(data))
+    assert not qualifier.aggregate(claims,tmp_path,reports,None,None,tmp_path/"o.json",tmp_path/"o.xml")
+
+
 def test_parse_junit_rejects_dtd_zero_skips_and_failures(qualifier, tmp_path: Path) -> None:
     for name, payload in {
         "dtd.xml": "<!DOCTYPE x [<!ENTITY y 'z'>]><testsuite tests='1'/>",
@@ -257,6 +282,13 @@ def test_parse_junit_rejects_dtd_zero_skips_and_failures(qualifier, tmp_path: Pa
         path.write_text(payload, encoding="utf-8")
         with pytest.raises(qualifier.QualificationError):
             qualifier.parse_junit(path)
+
+
+def test_report_oversize(qualifier, monkeypatch, tmp_path: Path) -> None:
+    path = tmp_path / "report.xml"; path.write_text("x" * 20)
+    monkeypatch.setattr(qualifier, "MAX_OUTPUT", 10)
+    with pytest.raises(qualifier.QualificationError, match="too large"):
+        qualifier.parse_junit(path)
 
 
 def test_run_cell_records_preflight_failure_and_writes_both_outputs(qualifier, tmp_path: Path) -> None:
@@ -310,6 +342,18 @@ def test_non_pypi_cell_rejects_artifact_and_traversal_selector(qualifier, monkey
     claims.suites["release-claims"] = SimpleNamespace(selectors=("../escape.py",), support_paths=(), timeout=30)
     monkeypatch.setattr(qualifier, "_preflight", lambda *_: None)
     assert not qualifier.run_cell(claims, "conda-3.11", ROOT, None, tmp_path / "b.json", tmp_path / "b.xml")
+
+
+@pytest.mark.parametrize("kind", ("selected_symlink", "parent_symlink", "file_oversize", "total_oversize"))
+def test_staged_path_bounds_and_symlinks(qualifier, monkeypatch, tmp_path: Path, kind: str) -> None:
+    claims=qualifier.load_claims(CLAIMS); repo=tmp_path/"repo"; tests=repo/"tests"; tests.mkdir(parents=True); target=tmp_path/"target.py"; target.write_text("def test_x(): assert True\n")
+    source=tests/"one.py"; source.write_text("def test_x(): assert True\n")
+    if kind=="selected_symlink": source.unlink(); source.symlink_to(target)
+    if kind=="parent_symlink": source.unlink(); tests.rmdir(); tests.symlink_to(tmp_path)
+    if kind=="file_oversize": monkeypatch.setattr(qualifier,"MAX_STAGE_FILE",1)
+    if kind=="total_oversize": monkeypatch.setattr(qualifier,"MAX_STAGE_TOTAL",1)
+    claims.suites["core"]=SimpleNamespace(selectors=("tests/one.py",),support_paths=(),timeout=1); claims.required_cells["conda-3.11"].suite="core"; monkeypatch.setattr(qualifier,"_preflight",lambda *_:None)
+    assert not qualifier.run_cell(claims,"conda-3.11",repo,None,tmp_path/"x.json",tmp_path/"x.xml")
 
 
 @pytest.mark.parametrize("outcome", ("timeout", "missing-junit", "bad-junit", "skipped-junit", "nonzero"))

@@ -129,7 +129,7 @@ def _conda_channel(record: dict[str, Any]) -> str | None:
     known = {"linux-64", "linux-aarch64", "osx-64", "osx-arm64", "win-64", "noarch"}
     if not isinstance(subdir, str) or subdir not in known:
         return None
-    expected = f"/conda-forge/{subdir}"
+    expected = f"/conda-forge/{subdir}" if source.rstrip("/") != "https://conda.anaconda.org/conda-forge" else "/conda-forge"
     return "conda-forge" if parsed.scheme == "https" and parsed.hostname == "conda.anaconda.org" and parsed.port in {None, 443} and not parsed.username and not parsed.password and not parsed.query and not parsed.fragment and parsed.path == expected else None
 
 
