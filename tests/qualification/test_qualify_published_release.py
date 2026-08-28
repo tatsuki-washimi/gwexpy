@@ -43,7 +43,7 @@ def _preflight_fixture(qualifier, monkeypatch, tmp_path: Path, *, conda: bool = 
         def locate_file(self,item): return site if str(item)=="." else site/item
     monkeypatch.setattr(gwexpy,"__file__",str(init)); monkeypatch.setattr(gwexpy,"__version__","0.2.0")
     monkeypatch.setattr(qualifier.importlib.metadata,"distribution",lambda _:Distribution()); monkeypatch.setattr(qualifier.importlib.metadata,"version",lambda name:"4.0.1" if name=="gwpy" else "0.2.0")
-    monkeypatch.setattr(qualifier.importlib.util,"find_spec",lambda _:SimpleNamespace(origin=str(init))); monkeypatch.setattr(qualifier.sys,"prefix",str(prefix)); monkeypatch.setattr(qualifier.sys,"platform","linux")
+    monkeypatch.setattr(qualifier.importlib.util,"find_spec",lambda _:SimpleNamespace(origin=str(init))); monkeypatch.setattr(qualifier.sys,"prefix",str(prefix)); monkeypatch.setattr(qualifier.sys,"platform","linux"); monkeypatch.setattr(qualifier.sys,"version_info",SimpleNamespace(major=3,minor=11))
     claims=qualifier.load_claims(CLAIMS); cell=claims.required_cells["gwpy-4.0.1-wheel"]; repo=tmp_path/"repo"; repo.mkdir()
     if conda:
         cell=claims.required_cells["conda-3.11"]; direct.unlink(); Distribution.files=(); (prefix/"conda-meta").mkdir(); (prefix/"conda-meta"/"gwexpy-0.2.0-0.json").write_text(json.dumps({"name":"gwexpy","version":"0.2.0","channel":"conda-forge","subdir":"linux-64"})); monkeypatch.setenv("CONDA_PREFIX",str(prefix)); artifact=None
@@ -416,8 +416,14 @@ def test_preflight_rejects_origin_root_interpreter_and_gwpy_mismatches(qualifier
     with pytest.raises(qualifier.QualificationError): qualifier._preflight(claims,cell,repo,artifact)
     monkeypatch.setattr(qualifier.sys,"platform","linux"); monkeypatch.setattr(qualifier.sys,"version_info",SimpleNamespace(major=3,minor=12))
     with pytest.raises(qualifier.QualificationError): qualifier._preflight(claims,cell,repo,artifact)
-    monkeypatch.setattr(qualifier.sys,"version_info",sys.version_info); monkeypatch.setattr(qualifier.importlib.metadata,"version",lambda name:"4.0.2" if name=="gwpy" else "0.2.0")
+    monkeypatch.setattr(qualifier.sys,"version_info",SimpleNamespace(major=3,minor=11)); monkeypatch.setattr(qualifier.importlib.metadata,"version",lambda name:"4.0.2" if name=="gwpy" else "0.2.0")
     with pytest.raises(qualifier.QualificationError): qualifier._preflight(claims,cell,repo,artifact)
+    monkeypatch.setattr(qualifier.importlib.metadata,"version",lambda name:"4.0.1" if name=="gwpy" else "0.2.0")
+    class OutsideDistribution:
+        files=(Path("gwexpy-0.2.0.dist-info/direct_url.json"),)
+        def locate_file(self,item): return site/Path(item) if str(item) else tmp_path/"outside-site"
+    monkeypatch.setattr(qualifier.importlib.metadata,"distribution",lambda _:OutsideDistribution())
+    with pytest.raises(qualifier.QualificationError,match="source-shadowed"): qualifier._preflight(claims,cell,repo,artifact)
     monkeypatch.undo()
 
 
