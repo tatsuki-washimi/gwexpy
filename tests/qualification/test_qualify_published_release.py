@@ -368,11 +368,12 @@ def test_staged_path_bounds_and_symlinks(qualifier, monkeypatch, tmp_path: Path,
     claims=qualifier.load_claims(CLAIMS); repo=tmp_path/"repo"; tests=repo/"tests"; tests.mkdir(parents=True); target=tmp_path/"target.py"; target.write_text("def test_x(): assert True\n")
     source=tests/"one.py"; source.write_text("def test_x(): assert True\n")
     if kind=="selected_symlink": source.unlink(); source.symlink_to(target)
-    if kind=="parent_symlink": source.unlink(); tests.rmdir(); tests.symlink_to(tmp_path)
+    if kind=="parent_symlink": source.unlink(); tests.rmdir(); tests.symlink_to(tmp_path); (tmp_path/"one.py").write_text("def test_x(): assert True\n")
     if kind=="file_oversize": monkeypatch.setattr(qualifier,"MAX_STAGE_FILE",1)
     if kind=="total_oversize": monkeypatch.setattr(qualifier,"MAX_STAGE_TOTAL",1)
     claims.suites["core"]=SimpleNamespace(selectors=("tests/one.py",),support_paths=(),timeout=1); claims.required_cells["conda-3.11"].suite="core"; monkeypatch.setattr(qualifier,"_preflight",lambda *_:None)
-    assert not qualifier.run_cell(claims,"conda-3.11",repo,None,tmp_path/"x.json",tmp_path/"x.xml")
+    output=tmp_path/"x.json"; assert not qualifier.run_cell(claims,"conda-3.11",repo,None,output,tmp_path/"x.xml")
+    assert ("unsafe" in json.loads(output.read_text())["error"] if "symlink" in kind else "size limit" in json.loads(output.read_text())["error"])
 
 
 @pytest.mark.parametrize("outcome", ("timeout", "missing-junit", "bad-junit", "skipped-junit", "nonzero"))
@@ -412,6 +413,10 @@ def test_preflight_rejects_origin_root_interpreter_and_gwpy_mismatches(qualifier
     monkeypatch.setattr(qualifier.importlib.util,"find_spec",lambda _:SimpleNamespace(origin=str(repo/"x.py")))
     with pytest.raises(qualifier.QualificationError): qualifier._preflight(claims,cell,repo,artifact)
     monkeypatch.setattr(qualifier.importlib.util,"find_spec",lambda _:SimpleNamespace(origin=str(init))); monkeypatch.setattr(qualifier.sys,"platform","win32")
+    with pytest.raises(qualifier.QualificationError): qualifier._preflight(claims,cell,repo,artifact)
+    monkeypatch.setattr(qualifier.sys,"platform","linux"); monkeypatch.setattr(qualifier.sys,"version_info",SimpleNamespace(major=3,minor=12))
+    with pytest.raises(qualifier.QualificationError): qualifier._preflight(claims,cell,repo,artifact)
+    monkeypatch.setattr(qualifier.sys,"version_info",sys.version_info); monkeypatch.setattr(qualifier.importlib.metadata,"version",lambda name:"4.0.2" if name=="gwpy" else "0.2.0")
     with pytest.raises(qualifier.QualificationError): qualifier._preflight(claims,cell,repo,artifact)
     monkeypatch.undo()
 
