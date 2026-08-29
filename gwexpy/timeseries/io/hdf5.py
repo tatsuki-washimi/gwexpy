@@ -247,6 +247,10 @@ def _native_path_components(
             raise ValueError("external HDF5 dataset path must use UTF-8") from exc
     if not isinstance(candidate, str) or not candidate:
         raise ValueError("external HDF5 dataset path must be a non-empty string")
+    try:
+        candidate.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise ValueError("HDF5 dataset path must use UTF-8") from exc
     if "\x00" in candidate:
         raise ValueError("external HDF5 dataset path contains NUL")
     absolute = candidate.startswith("/")

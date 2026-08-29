@@ -83,6 +83,19 @@ def _write_external(
     )
 
 
+def _write_with_storage(
+    series: TimeSeries,
+    target: object,
+    raw_path: Path,
+    storage_kind: str,
+    **kwargs: object,
+) -> None:
+    if storage_kind == "external":
+        _write_external(series, target, raw_path, **kwargs)
+    else:
+        series.write(target, format="hdf5", **kwargs)
+
+
 @pytest.mark.parametrize(
     "t0_ns",
     [1_234_567_890_123_456_789, 1_234_567_890_123_456_790],
@@ -681,6 +694,119 @@ def test_hdf5_legacy_external_invalid_raw_path_fails_before_mutation(
     assert raw_path.read_bytes() == before_raw
 
 
+@pytest.mark.parametrize("target_exists", [False, True], ids=["new", "existing"])
+@pytest.mark.parametrize("storage_kind", ["inline", "external"])
+def test_hdf5_non_utf8_pathname_fails_before_mutation(
+    tmp_path: Path,
+    target_exists: bool,
+    storage_kind: str,
+) -> None:
+    path = tmp_path / f"surrogate-{storage_kind}-{target_exists}.hdf5"
+    raw_path = tmp_path / f"surrogate-{storage_kind}-{target_exists}.raw"
+    raw_path.write_bytes(b"r" * 32)
+    if target_exists:
+        _exact_series(123).write(path, format="hdf5", path="keep")
+    before_path = path.read_bytes() if target_exists else None
+    before_raw = raw_path.read_bytes()
+
+    with pytest.raises(ValueError, match="UTF-8"):
+        _write_with_storage(
+            _legacy_series(offset=10),
+            path,
+            raw_path,
+            storage_kind,
+            path=chr(0xD800),
+            overwrite=True,
+        )
+
+    if before_path is None:
+        assert not path.exists()
+    else:
+        assert path.read_bytes() == before_path
+    assert raw_path.read_bytes() == before_raw
+
+
+@pytest.mark.parametrize("container_kind", ["file", "group"])
+@pytest.mark.parametrize("storage_kind", ["inline", "external"])
+def test_hdf5_non_utf8_handle_path_fails_before_mutation(
+    tmp_path: Path,
+    container_kind: str,
+    storage_kind: str,
+) -> None:
+    path = tmp_path / f"surrogate-{container_kind}-{storage_kind}.hdf5"
+    raw_path = tmp_path / f"surrogate-{container_kind}-{storage_kind}.raw"
+    raw_path.write_bytes(b"r" * 32)
+    original = _exact_series(123)
+
+    with h5py.File(path, "w") as h5file:
+        container = (
+            h5file if container_kind == "file" else h5file.create_group("container")
+        )
+        original.write(container, format="hdf5", path="keep")
+        before_address = h5py.h5o.get_info(container["keep"].id).addr
+        before_sidecar = h5file.attrs[_SIDECAR_ATTRIBUTE]
+        before_raw = raw_path.read_bytes()
+
+        with pytest.raises(ValueError, match="UTF-8"):
+            _write_with_storage(
+                _legacy_series(offset=10),
+                container,
+                raw_path,
+                storage_kind,
+                path=chr(0xD800),
+                overwrite=True,
+            )
+
+        assert h5file.id.valid
+        assert set(container) == {"keep"}
+        assert h5py.h5o.get_info(container["keep"].id).addr == before_address
+        np.testing.assert_array_equal(container["keep"][()], original.value)
+        assert h5file.attrs[_SIDECAR_ATTRIBUTE] == before_sidecar
+        assert raw_path.read_bytes() == before_raw
+
+
+@pytest.mark.parametrize("target_kind", ["bytesio", "fileobj"])
+@pytest.mark.parametrize("storage_kind", ["inline", "external"])
+@pytest.mark.parametrize("target_exists", [False, True], ids=["new", "existing"])
+def test_hdf5_non_utf8_filelike_path_fails_before_mutation(
+    tmp_path: Path,
+    target_kind: str,
+    storage_kind: str,
+    target_exists: bool,
+) -> None:
+    stem = f"surrogate-{target_kind}-{storage_kind}-{target_exists}"
+    carrier_path = tmp_path / f"{stem}.bin"
+    raw_path = tmp_path / f"{stem}.raw"
+    raw_path.write_bytes(b"r" * 32)
+    target = io.BytesIO() if target_kind == "bytesio" else carrier_path.open("w+b")
+    try:
+        if target_exists:
+            _exact_series(123).write(target, format="hdf5", path="keep")
+        target.seek(7)
+        before_buffer = target.getvalue() if target_kind == "bytesio" else None
+        if before_buffer is None:
+            before_buffer, _ = exact_hdf5._filelike_snapshot(target)
+        before_raw = raw_path.read_bytes()
+
+        with pytest.raises(ValueError, match="UTF-8"):
+            _write_with_storage(
+                _legacy_series(offset=10),
+                target,
+                raw_path,
+                storage_kind,
+                path=chr(0xD800),
+                overwrite=True,
+            )
+
+        after_buffer, position = exact_hdf5._filelike_snapshot(target)
+        assert after_buffer == before_buffer
+        assert position == 7
+        assert not target.closed
+        assert raw_path.read_bytes() == before_raw
+    finally:
+        target.close()
+
+
 @pytest.mark.parametrize("invalid", [True, "123"])
 def test_hdf5_invalid_authoritative_epoch_fails_before_path_mutation(
     tmp_path: Path,
@@ -1032,13 +1158,22 @@ def test_hdf5_internal_soft_link_parent_preserves_native_write_behavior(
 
 
 @pytest.mark.parametrize(
-    "dataset_path",
-    ["/data", b"data", b"/data"],
-    ids=["absolute", "utf8-bytes", "utf8-bytes-absolute"],
+    ("dataset_path", "stored_path"),
+    [
+        ("/data", "data"),
+        (b"data", "data"),
+        (b"/data", "data"),
+        (
+            "caf\N{LATIN SMALL LETTER E WITH ACUTE}/data",
+            "caf\N{LATIN SMALL LETTER E WITH ACUTE}/data",
+        ),
+    ],
+    ids=["absolute", "utf8-bytes", "utf8-bytes-absolute", "utf8-str"],
 )
 def test_hdf5_legacy_external_write_preserves_safe_native_path_behavior(
     tmp_path: Path,
     dataset_path: str | bytes,
+    stored_path: str,
 ) -> None:
     path = tmp_path / f"external-legacy-{type(dataset_path).__name__}.hdf5"
     raw_path = tmp_path / f"external-legacy-{type(dataset_path).__name__}.raw"
@@ -1052,9 +1187,9 @@ def test_hdf5_legacy_external_write_preserves_safe_native_path_behavior(
     )
 
     with h5py.File(path, "r") as h5file:
-        np.testing.assert_array_equal(h5file["data"][()], original.value)
+        np.testing.assert_array_equal(h5file[stored_path][()], original.value)
         assert _SIDECAR_ATTRIBUTE not in h5file.attrs
-        assert h5file["data"].external == _external_storage(raw_path)
+        assert h5file[stored_path].external == _external_storage(raw_path)
 
 
 def test_hdf5_path_native_failure_is_atomic(tmp_path: Path) -> None:
