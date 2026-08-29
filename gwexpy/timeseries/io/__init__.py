@@ -16,6 +16,7 @@ from . import (
     csv_enhanced,  # noqa: F401
     dttxml,  # noqa: F401
     gbd,  # noqa: F401
+    hdf5,  # noqa: F401
     ndscope_hdf5,  # noqa: F401
     netcdf4_,  # noqa: F401
     sdb,  # noqa: F401
