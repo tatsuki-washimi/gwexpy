@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import functools
+import io
 import json
 import os
+import posixpath
 import shutil
 import stat
-import tempfile
 import uuid
 from collections.abc import Callable
 from pathlib import Path, PurePosixPath
@@ -223,6 +224,57 @@ def _exact_epoch(array: Any) -> int | None:
     if type(value) is not int:
         raise ValueError("authoritative TimeSeries epoch must be an integer")
     return value
+
+
+def _external_storage_requested(kwargs: dict[str, Any]) -> bool:
+    external = kwargs.get("external")
+    if external is None:
+        return False
+    try:
+        return len(external) != 0
+    except TypeError:
+        return True
+
+
+def _native_object_path(
+    array: Any,
+    container: h5py.Group | h5py.File,
+    path: Any,
+) -> str | None:
+    candidate = path if path is not None else getattr(array, "name", None)
+    if isinstance(candidate, bytes):
+        candidate = candidate.split(b"\x00", 1)[0]
+        try:
+            candidate = candidate.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise ValueError("external HDF5 dataset path must use UTF-8") from exc
+    elif isinstance(candidate, str):
+        candidate = candidate.split("\x00", 1)[0]
+    else:
+        return None
+    if not candidate:
+        return None
+    if candidate.startswith("/"):
+        absolute = candidate
+    else:
+        absolute = f"{container.name.rstrip('/')}/{candidate}"
+    normalized = posixpath.normpath(absolute)
+    if normalized == "/" or not normalized.startswith("/"):
+        return None
+    return normalized.lstrip("/")
+
+
+def _reject_stale_external_sidecar(
+    array: Any,
+    container: h5py.Group | h5py.File,
+    path: str | None,
+) -> None:
+    document = _read_sidecar(container.file)
+    object_path = _native_object_path(array, container, path)
+    if object_path is not None and object_path in document["objects"]:
+        raise ValueError(
+            "external HDF5 storage cannot replace a sidecar-managed dataset"
+        )
 
 
 def _commit_sidecar(
@@ -457,7 +509,86 @@ def _filesystem_path(value: Any) -> Path:
     try:
         return Path(os.fsdecode(os.fspath(value)))
     except TypeError as exc:
-        raise TypeError("HDF5 target must be a path or h5py File/Group") from exc
+        raise TypeError(
+            "HDF5 target must be a path, file-like object, or h5py File/Group"
+        ) from exc
+
+
+def _is_seekable_filelike(value: Any) -> bool:
+    return all(
+        callable(getattr(value, method, None))
+        for method in ("read", "write", "seek", "tell", "truncate")
+    )
+
+
+def _filelike_snapshot(target: Any) -> tuple[bytes, Any]:
+    position = target.tell()
+    try:
+        target.seek(0)
+        payload = target.read()
+    finally:
+        target.seek(position)
+    if not isinstance(payload, (bytes, bytearray, memoryview)):
+        raise TypeError("HDF5 file-like target must use binary I/O")
+    return bytes(payload), position
+
+
+def _replace_filelike_bytes(target: Any, payload: bytes) -> None:
+    target.seek(0)
+    written = target.write(payload)
+    if written is not None and written != len(payload):
+        raise OSError("short write while committing HDF5 file-like target")
+    target.truncate()
+    flush = getattr(target, "flush", None)
+    if callable(flush):
+        flush()
+
+
+def _preflight_native_external_write(
+    array: Any,
+    target: Any,
+    path: str | None,
+    kwargs: dict[str, Any],
+) -> None:
+    if isinstance(target, (h5py.File, h5py.Group)):
+        _reject_stale_external_sidecar(array, target, path)
+        return
+
+    if _is_seekable_filelike(target):
+        position = target.tell()
+        try:
+            try:
+                with h5py.File(target, "r") as h5file:
+                    _reject_stale_external_sidecar(array, h5file, path)
+            except OSError:
+                pass
+        finally:
+            target.seek(position)
+        return
+
+    filepath = _filesystem_path(target)
+    append = bool(kwargs.get("append", False))
+    write_existing = append or bool(kwargs.get("overwrite", False))
+    if write_existing and filepath.exists() and h5py.is_hdf5(filepath):
+        with h5py.File(filepath, "r") as h5file:
+            if append:
+                _reject_stale_external_sidecar(array, h5file, path)
+            else:
+                _read_sidecar(h5file)
+
+
+def _create_sibling_transaction_file(filepath: Path) -> Path:
+    flags = os.O_CREAT | os.O_EXCL | os.O_RDWR | getattr(os, "O_BINARY", 0)
+    while True:
+        temporary_path = filepath.with_name(
+            f".{filepath.name}.gwexpy-{uuid.uuid4().hex}.hdf5"
+        )
+        try:
+            descriptor = os.open(temporary_path, flags, 0o666)
+        except FileExistsError:  # pragma: no cover - UUID collision
+            continue
+        os.close(descriptor)
+        return temporary_path
 
 
 def _write_path_transaction(
@@ -477,19 +608,14 @@ def _write_path_transaction(
         with h5py.File(filepath, "r") as existing_file:
             _read_sidecar(existing_file)
 
-    descriptor, temporary_name = tempfile.mkstemp(
-        dir=filepath.parent,
-        prefix=f".{filepath.name}.gwexpy-",
-        suffix=".hdf5",
-    )
-    os.close(descriptor)
+    temporary_path = _create_sibling_transaction_file(filepath)
     try:
         if existed and append:
-            shutil.copy2(filepath, temporary_name)
+            shutil.copy2(filepath, temporary_path)
             mode = "r+"
         else:
             mode = "w"
-        with h5py.File(temporary_name, mode) as temporary_file:
+        with h5py.File(temporary_path, mode) as temporary_file:
             result = _write_open_container(
                 array,
                 temporary_file,
@@ -498,12 +624,47 @@ def _write_path_transaction(
                 kwargs,
             )
         if target_mode is not None:
-            os.chmod(temporary_name, target_mode)
-        os.replace(temporary_name, filepath)
+            os.chmod(temporary_path, target_mode)
+        os.replace(temporary_path, filepath)
         return result
     finally:
-        if os.path.exists(temporary_name):
-            os.unlink(temporary_name)
+        if temporary_path.exists():
+            temporary_path.unlink()
+
+
+def _write_filelike_transaction(
+    array: Any,
+    target: Any,
+    path: str | None,
+    exact_epoch: int | None,
+    kwargs: dict[str, Any],
+) -> h5py.Dataset:
+    snapshot, original_position = _filelike_snapshot(target)
+    working = io.BytesIO(snapshot)
+    mode = "a" if kwargs.get("append", False) else "w"
+    with h5py.File(working, mode) as working_file:
+        result = _write_open_container(
+            array,
+            working_file,
+            path,
+            exact_epoch,
+            kwargs,
+        )
+    payload = working.getvalue()
+    try:
+        _replace_filelike_bytes(target, payload)
+    except BaseException as operation_error:
+        try:
+            _replace_filelike_bytes(target, snapshot)
+            target.seek(original_position)
+        except BaseException as rollback_error:  # pragma: no cover - broken file object
+            raise _RollbackError(
+                operation_error,
+                (rollback_error,),
+                None,
+            ) from rollback_error
+        raise
+    return result
 
 
 def _read_core(
@@ -593,6 +754,20 @@ def register_hdf5_exact_t0_io() -> None:
         **kwargs: Any,
     ) -> h5py.Dataset:
         exact_epoch = _exact_epoch(array)
+        write_kwargs = dict(kwargs)
+        if _external_storage_requested(write_kwargs):
+            if exact_epoch is not None:
+                raise ValueError(
+                    "external HDF5 storage is incompatible with exact TimeSeries "
+                    "epoch transactions"
+                )
+            _preflight_native_external_write(
+                array,
+                target,
+                path,
+                write_kwargs,
+            )
+            return _native_writer()(array, target, path=path, **write_kwargs)
         if path is not None:
             _relative_path(path)
         if isinstance(target, (h5py.File, h5py.Group)):
@@ -601,14 +776,22 @@ def register_hdf5_exact_t0_io() -> None:
                 target,
                 path,
                 exact_epoch,
-                dict(kwargs),
+                write_kwargs,
+            )
+        if _is_seekable_filelike(target):
+            return _write_filelike_transaction(
+                array,
+                target,
+                path,
+                exact_epoch,
+                write_kwargs,
             )
         return _write_path_transaction(
             array,
             target,
             path,
             exact_epoch,
-            dict(kwargs),
+            write_kwargs,
         )
 
     setattr(read_exact, _WRAPPER_MARKER, True)
