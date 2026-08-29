@@ -5,9 +5,10 @@
 The direction approved on 2026-08-29 binds exact epoch authority to a
 dataset-local, GWpy-compatible canonical marker and a versioned root sidecar.
 Independent review found that the first unit-relative Decimal encoding was
-not viable and required the digits-only payload specified below. This revised
-encoding and the clarified transaction limits await user approval before
-implementation. The sidecar path is diagnostic only.
+not viable and required the digits-only payload specified below. The user
+explicitly approved this revised encoding and the clarified transaction
+limits on 2026-08-29. The sidecar path is diagnostic only. Implementation
+still requires an approved TDD plan and the gates below.
 
 This design resolves the five release-blocking P0 findings recorded in
 'docs/developers/reports/report_Phase1QualificationHandover_20260829_171704.md'.
