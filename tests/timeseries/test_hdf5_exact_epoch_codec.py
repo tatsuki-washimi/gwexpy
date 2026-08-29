@@ -433,6 +433,28 @@ def test_v2_marker_truncated_after_seven_magic_triplets_raises() -> None:
         decode_epoch_marker(corrupted, raw_x0=2.5, xunit="s")
 
 
+def test_v2_marker_truncated_at_22_magic_digits_raises() -> None:
+    marker = encode_epoch_marker(
+        epoch_ns=42, raw_x0=2.5, xunit="s", token=bytes(range(16))
+    )
+    magic_offset = marker.text.index(_TRIPLET_MAGIC)
+    corrupted = marker.text[: magic_offset + 22]
+
+    with pytest.raises(ValueError, match="recognizable|envelope"):
+        decode_epoch_marker(corrupted, raw_x0=2.5, xunit="s")
+
+
+def test_v2_marker_truncated_at_23_magic_digits_raises() -> None:
+    marker = encode_epoch_marker(
+        epoch_ns=42, raw_x0=2.5, xunit="s", token=bytes(range(16))
+    )
+    magic_offset = marker.text.index(_TRIPLET_MAGIC)
+    corrupted = marker.text[: magic_offset + 23]
+
+    with pytest.raises(ValueError, match="recognizable|envelope"):
+        decode_epoch_marker(corrupted, raw_x0=2.5, xunit="s")
+
+
 def test_v2_marker_nonfinite_numeric_projection_with_guarded_magic_raises() -> None:
     marker_like = "+1" + "0" * 400 + ".5" + "0" * 400 + _TRIPLET_MAGIC
     assert math.isinf(float(marker_like))

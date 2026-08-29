@@ -154,7 +154,11 @@ def _has_guarded_magic(text: str, *, minimum_guard: int = _GUARD_DIGITS) -> bool
     for offset, character in enumerate(text):
         if zero_run >= minimum_guard:
             suffix = text[offset:]
-            if _looks_like_encoded_magic(suffix) or suffix == _ENCODED_MAGIC[:-3]:
+            truncated_magic = (
+                21 <= len(suffix) <= 23
+                and suffix.startswith(_ENCODED_MAGIC[:-3])
+            )
+            if _looks_like_encoded_magic(suffix) or truncated_magic:
                 return True
         zero_run = zero_run + 1 if character == "0" else 0
     return False
