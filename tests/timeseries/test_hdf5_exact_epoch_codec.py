@@ -21,6 +21,8 @@ from gwexpy.timeseries.io._hdf5_exact_epoch import (
     reconstruct_epoch_marker,
 )
 
+_TRIPLET_MAGIC = "071087069088072053084048"
+
 
 def _bits(value: float) -> str:
     return struct.pack(">d", value).hex()
@@ -196,6 +198,9 @@ def test_v2_marker_rejects_bad_digest_and_trailing_bytes() -> None:
     [
         ("triplet_over_255", "exceeds 255"),
         ("non_multiple_of_three", "multiple of three"),
+        ("malformed_magic", "marker magic"),
+        ("bad_version", "version"),
+        ("invalid_utf8_unit", "UTF-8"),
         ("invalid_field_length", "xunit field length"),
         ("invalid_sign", "epoch sign"),
         ("nonminimal_magnitude", "minimally encoded"),
@@ -215,6 +220,18 @@ def test_v2_marker_rejects_noncanonical_payload_encoding(
         corrupted = marker.text[:boundary] + "999" + marker.text[boundary + 3 :]
     elif kind == "non_multiple_of_three":
         corrupted = marker.text + "0"
+    elif kind == "malformed_magic":
+        mutated = bytearray(payload[:-32])
+        mutated[0] ^= 1
+        corrupted = _with_payload(marker, _redigest(bytes(mutated)))
+    elif kind == "bad_version":
+        mutated = bytearray(payload[:-32])
+        mutated[8] = 3
+        corrupted = _with_payload(marker, _redigest(bytes(mutated)))
+    elif kind == "invalid_utf8_unit":
+        mutated = bytearray(payload[:-32])
+        mutated[35] = 0xFF
+        corrupted = _with_payload(marker, _redigest(bytes(mutated)))
     elif kind == "invalid_field_length":
         mutated = payload[:33] + b"\x01\x00" + payload[35:]
         corrupted = _with_payload(marker, mutated)
@@ -236,6 +253,87 @@ def test_v2_marker_rejects_noncanonical_payload_encoding(
 
     with pytest.raises(ValueError, match=match):
         decode_epoch_marker(corrupted, raw_x0=2.5, xunit="s")
+
+
+@pytest.mark.parametrize(
+    ("cut", "match"),
+    [
+        (8, "version"),
+        (20, "lineage token"),
+        (29, "x0_bits"),
+        (34, "xunit length"),
+        (40, "xunit_to_ns_bits"),
+        (54, "epoch magnitude length"),
+        (55, "epoch magnitude"),
+        (87, "digest"),
+    ],
+)
+def test_v2_marker_rejects_truncated_payload_fields(cut: int, match: str) -> None:
+    marker = encode_epoch_marker(
+        epoch_ns=1, raw_x0=2.5, xunit="s", token=bytes(range(16))
+    )
+
+    with pytest.raises(ValueError, match=match):
+        decode_epoch_marker(
+            _with_payload(marker, _payload(marker)[:cut]), raw_x0=2.5, xunit="s"
+        )
+
+
+def test_v2_marker_rejects_nonbytes_token_argument() -> None:
+    with pytest.raises(TypeError, match="token must be bytes"):
+        encode_epoch_marker(epoch_ns=0, raw_x0=0.0, xunit="s", token="not-bytes")  # type: ignore[arg-type]
+
+
+def test_v2_marker_rejects_wrong_length_token_argument() -> None:
+    with pytest.raises(ValueError, match="16 bytes"):
+        encode_epoch_marker(epoch_ns=0, raw_x0=0.0, xunit="s", token=bytes(15))
+
+
+def test_reconstruct_epoch_marker_rejects_invalid_lineage_hex() -> None:
+    marker = encode_epoch_marker(
+        epoch_ns=0, raw_x0=0.0, xunit="s", token=bytes(16)
+    )
+
+    with pytest.raises(ValueError, match="lineage_token"):
+        reconstruct_epoch_marker(
+            lineage_token="0" * 31,
+            epoch_ns=marker.epoch_ns,
+            x0_bits=marker.x0_bits,
+            axis=marker.axis,
+        )
+
+
+def test_reconstruct_epoch_marker_rejects_invalid_x0_hex() -> None:
+    marker = encode_epoch_marker(
+        epoch_ns=0, raw_x0=0.0, xunit="s", token=bytes(16)
+    )
+
+    with pytest.raises(ValueError, match="x0_bits"):
+        reconstruct_epoch_marker(
+            lineage_token=marker.lineage_token,
+            epoch_ns=marker.epoch_ns,
+            x0_bits="gg" * 8,
+            axis=marker.axis,
+        )
+
+
+def test_reconstruct_epoch_marker_rejects_invalid_axis_factor() -> None:
+    marker = encode_epoch_marker(
+        epoch_ns=0, raw_x0=0.0, xunit="s", token=bytes(16)
+    )
+    invalid_axis = AxisBinding(
+        xunit=marker.axis.xunit,
+        xunit_to_ns_bits="0" * 16,
+        ns_to_xunit_bits=marker.axis.ns_to_xunit_bits,
+    )
+
+    with pytest.raises(ValueError, match="axis binding"):
+        reconstruct_epoch_marker(
+            lineage_token=marker.lineage_token,
+            epoch_ns=marker.epoch_ns,
+            x0_bits=marker.x0_bits,
+            axis=invalid_axis,
+        )
 
 
 @pytest.mark.parametrize("field", ["unit", "xunit_to_ns", "ns_to_xunit"])
@@ -274,6 +372,101 @@ def test_v2_marker_recognizable_corruption_raises() -> None:
         decode_epoch_marker(
             _with_payload(marker, _redigest(bytes(payload))), raw_x0=2.5, xunit="s"
         )
+
+
+def test_v2_marker_nonascii_corruption_after_magic_raises() -> None:
+    marker = encode_epoch_marker(
+        epoch_ns=42, raw_x0=2.5, xunit="s", token=bytes(range(16))
+    )
+
+    with pytest.raises(ValueError, match="recognizable"):
+        decode_epoch_marker(marker.text + "é", raw_x0=2.5, xunit="s")
+
+
+def test_v2_marker_nondecimal_corruption_after_magic_raises() -> None:
+    marker = encode_epoch_marker(
+        epoch_ns=42, raw_x0=2.5, xunit="s", token=bytes(range(16))
+    )
+
+    with pytest.raises(ValueError, match="recognizable"):
+        decode_epoch_marker(marker.text + "x", raw_x0=2.5, xunit="s")
+
+
+def test_v2_marker_missing_explicit_sign_raises() -> None:
+    marker = encode_epoch_marker(
+        epoch_ns=42, raw_x0=2.5, xunit="s", token=bytes(range(16))
+    )
+
+    with pytest.raises(ValueError, match="envelope"):
+        decode_epoch_marker(marker.text[1:], raw_x0=2.5, xunit="s")
+
+
+def test_v2_marker_truncated_guard_boundary_raises() -> None:
+    marker = encode_epoch_marker(
+        epoch_ns=42, raw_x0=2.5, xunit="s", token=bytes(range(16))
+    )
+    prefix_length = len("+2.5")
+    corrupted = marker.text[: prefix_length + 399] + marker.text[prefix_length + 400 :]
+
+    with pytest.raises(ValueError, match="envelope"):
+        decode_epoch_marker(corrupted, raw_x0=2.5, xunit="s")
+
+
+def test_v2_marker_shifted_guard_boundary_raises() -> None:
+    marker = encode_epoch_marker(
+        epoch_ns=42, raw_x0=2.5, xunit="s", token=bytes(range(16))
+    )
+    prefix_length = len("+2.5")
+    corrupted = marker.text[:prefix_length] + "0" + marker.text[prefix_length:]
+
+    with pytest.raises(ValueError, match="envelope"):
+        decode_epoch_marker(corrupted, raw_x0=2.5, xunit="s")
+
+
+def test_v2_marker_envelope_has_explicit_sign_including_negative_zero() -> None:
+    positive = encode_epoch_marker(
+        epoch_ns=0, raw_x0=2.5, xunit="s", token=bytes(16)
+    )
+    negative_zero = encode_epoch_marker(
+        epoch_ns=0, raw_x0=-0.0, xunit="s", token=bytes(16)
+    )
+
+    assert positive.text.startswith("+2.5")
+    assert negative_zero.text.startswith("-0.0")
+    assert _bits(float(negative_zero.text)) == "8000000000000000"
+
+
+def test_v2_marker_envelope_uses_fixed_point_without_exponent() -> None:
+    marker = encode_epoch_marker(
+        epoch_ns=0, raw_x0=1e100, xunit="s", token=bytes(16)
+    )
+    prefix, separator, _ = marker.text.partition("0" * 400 + _TRIPLET_MAGIC)
+
+    assert separator
+    assert "e" not in prefix.lower()
+
+
+def test_v2_marker_envelope_has_decimal_point_and_fractional_digit() -> None:
+    marker = encode_epoch_marker(
+        epoch_ns=0, raw_x0=2.0, xunit="s", token=bytes(16)
+    )
+    magic_offset = marker.text.index(_TRIPLET_MAGIC)
+    prefix = marker.text[: magic_offset - 400]
+
+    integer, dot, fractional = prefix.partition(".")
+    assert integer == "+2"
+    assert dot == "."
+    assert fractional == "0"
+
+
+def test_v2_marker_envelope_has_exactly_400_guard_zeros_before_magic() -> None:
+    marker = encode_epoch_marker(
+        epoch_ns=0, raw_x0=2.5, xunit="s", token=bytes(16)
+    )
+    magic_offset = marker.text.index(_TRIPLET_MAGIC)
+
+    assert marker.text[magic_offset - 400 : magic_offset] == "0" * 400
+    assert marker.text[magic_offset - 401] == "5"
 
 
 @pytest.mark.parametrize(

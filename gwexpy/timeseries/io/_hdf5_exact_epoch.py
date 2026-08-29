@@ -148,6 +148,21 @@ def _looks_like_encoded_magic(text: str) -> bool:
     return matches >= len(_MAGIC) - 1
 
 
+def _has_guarded_magic(text: str, *, minimum_guard: int = _GUARD_DIGITS) -> bool:
+    """Classify a failed boundary as recognizable without parsing that boundary."""
+    search_from = 0
+    while True:
+        magic_offset = text.find(_ENCODED_MAGIC, search_from)
+        if magic_offset < 0:
+            return False
+        guard_offset = magic_offset
+        while guard_offset and text[guard_offset - 1] == "0":
+            guard_offset -= 1
+        if magic_offset - guard_offset >= minimum_guard:
+            return True
+        search_from = magic_offset + 1
+
+
 def _build_payload(
     *, token: bytes, epoch_ns: int, x0_packed: bytes, axis: AxisBinding
 ) -> bytes:
@@ -256,6 +271,8 @@ def encode_epoch_marker(
     lineage = secrets.token_bytes(16) if token is None else token
     if not isinstance(lineage, bytes):
         raise TypeError("token must be bytes")
+    if len(lineage) != 16:
+        raise ValueError("token must contain exactly 16 bytes")
     return reconstruct_epoch_marker(
         lineage_token=lineage.hex(),
         epoch_ns=epoch_ns,
@@ -271,10 +288,16 @@ def decode_epoch_marker(
     if not isinstance(value, str):
         return None
     if not value.isascii():
+        if _has_guarded_magic(value):
+            raise ValueError("recognizable v2 marker contains non-ASCII corruption")
         return None
     try:
         embedded_x0 = float(value)
     except ValueError:
+        if _has_guarded_magic(value):
+            raise ValueError(
+                "recognizable v2 marker contains non-decimal corruption"
+            ) from None
         return None
     if not math.isfinite(embedded_x0):
         return None
@@ -283,6 +306,8 @@ def decode_epoch_marker(
     candidate = value[boundary:] if len(value) >= boundary else ""
     recognizable = _looks_like_encoded_magic(candidate)
     if not recognizable:
+        if _has_guarded_magic(value, minimum_guard=_GUARD_DIGITS - 1):
+            raise ValueError("recognizable v2 marker has a noncanonical envelope")
         return None
     if len(value) > _MAX_MARKER_CHARS:
         raise ValueError("exact-epoch marker exceeds 4096 ASCII characters")
