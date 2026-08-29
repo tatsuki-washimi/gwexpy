@@ -4,17 +4,16 @@ import hashlib
 import math
 import random
 import struct
+from decimal import Decimal
 
 import pytest
 from astropy import units
 
+from gwexpy.timeseries.io import _hdf5_exact_epoch as exact_epoch_codec
 from gwexpy.timeseries.io._hdf5_exact_epoch import (
     _DOMAIN_SEPARATOR,
     AxisBinding,
     EpochMarker,
-    _canonical_x0_prefix,
-    _decimal_triplets,
-    _parse_decimal_triplets,
     decode_epoch_marker,
     encode_epoch_marker,
     marker_sha256,
@@ -28,14 +27,32 @@ def _bits(value: float) -> str:
     return struct.pack(">d", value).hex()
 
 
+def _published_x0_prefix(value: float) -> str:
+    fixed = format(Decimal.from_float(value), "f")
+    if "." not in fixed:
+        fixed += ".0"
+    return fixed if fixed.startswith("-") else "+" + fixed
+
+
+def _encode_decimal_triplets(payload: bytes) -> str:
+    return "".join(f"{byte:03d}" for byte in payload)
+
+
+def _decode_decimal_triplets(text: str) -> bytes:
+    assert len(text) % 3 == 0
+    values = [int(text[offset : offset + 3]) for offset in range(0, len(text), 3)]
+    assert all(value <= 255 for value in values)
+    return bytes(values)
+
+
 def _payload(marker: EpochMarker) -> bytes:
-    boundary = len(_canonical_x0_prefix(float(marker.text))) + 400
-    return _parse_decimal_triplets(marker.text[boundary:])
+    boundary = len(_published_x0_prefix(float(marker.text))) + 400
+    return _decode_decimal_triplets(marker.text[boundary:])
 
 
 def _with_payload(marker: EpochMarker, payload: bytes) -> str:
-    boundary = len(_canonical_x0_prefix(float(marker.text))) + 400
-    return marker.text[:boundary] + _decimal_triplets(payload)
+    boundary = len(_published_x0_prefix(float(marker.text))) + 400
+    return marker.text[:boundary] + _encode_decimal_triplets(payload)
 
 
 def _redigest(payload_without_digest: bytes) -> bytes:
@@ -215,7 +232,7 @@ def test_v2_marker_rejects_noncanonical_payload_encoding(
         epoch_ns=epoch_ns, raw_x0=2.5, xunit="s", token=bytes(range(16))
     )
     payload = _payload(marker)
-    boundary = len(_canonical_x0_prefix(float(marker.text))) + 400
+    boundary = len(_published_x0_prefix(float(marker.text))) + 400
     if kind == "triplet_over_255":
         corrupted = marker.text[:boundary] + "999" + marker.text[boundary + 3 :]
     elif kind == "non_multiple_of_three":
@@ -358,7 +375,7 @@ def test_v2_marker_recognizable_corruption_raises() -> None:
     marker = encode_epoch_marker(
         epoch_ns=42, raw_x0=2.5, xunit="s", token=bytes(range(16))
     )
-    boundary = len(_canonical_x0_prefix(float(marker.text))) + 400
+    boundary = len(_published_x0_prefix(float(marker.text))) + 400
     corrupted = marker.text[: boundary - 1] + "1" + marker.text[boundary:]
 
     with pytest.raises(ValueError, match="envelope"):
@@ -599,3 +616,32 @@ def test_v2_marker_enforces_4096_character_cap() -> None:
             xunit="s",
             token=bytes(range(16)),
         )
+
+
+def test_v2_marker_oversized_recognition_is_cap_bounded(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    observed_window_lengths: list[int] = []
+    original = exact_epoch_codec._looks_like_encoded_magic
+
+    def spy(window: str) -> bool:
+        observed_window_lengths.append(len(window))
+        return original(window)
+
+    monkeypatch.setattr(exact_epoch_codec, "_looks_like_encoded_magic", spy)
+
+    assert decode_epoch_marker("0" * 8_192, raw_x0=0.0, xunit="s") is None
+    assert observed_window_lengths
+    assert max(observed_window_lengths) <= len(_TRIPLET_MAGIC)
+    assert len(observed_window_lengths) <= 4_096
+
+    observed_window_lengths.clear()
+    marker = encode_epoch_marker(
+        epoch_ns=0, raw_x0=2.5, xunit="s", token=bytes(range(16))
+    )
+    oversized_marker = marker.text + "0" * (8_192 - len(marker.text))
+    with pytest.raises(ValueError, match="4096"):
+        decode_epoch_marker(oversized_marker, raw_x0=2.5, xunit="s")
+    assert observed_window_lengths
+    assert max(observed_window_lengths) <= len(_TRIPLET_MAGIC)
+    assert len(observed_window_lengths) <= 4_096

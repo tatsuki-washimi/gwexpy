@@ -153,12 +153,13 @@ def _has_guarded_magic(text: str, *, minimum_guard: int = _GUARD_DIGITS) -> bool
     zero_run = 0
     for offset, character in enumerate(text):
         if zero_run >= minimum_guard:
-            suffix = text[offset:]
+            remaining = len(text) - offset
             truncated_magic = (
-                21 <= len(suffix) <= 23
-                and suffix.startswith(_ENCODED_MAGIC[:-3])
+                21 <= remaining <= 23
+                and text.startswith(_ENCODED_MAGIC[:-3], offset)
             )
-            if _looks_like_encoded_magic(suffix) or truncated_magic:
+            window = text[offset : offset + len(_ENCODED_MAGIC)]
+            if _looks_like_encoded_magic(window) or truncated_magic:
                 return True
         zero_run = zero_run + 1 if character == "0" else 0
     return False
@@ -288,6 +289,13 @@ def decode_epoch_marker(
     """Decode a recognizable v2 marker, or decline ordinary metadata."""
     if not isinstance(value, str):
         return None
+    if len(value) > _MAX_MARKER_CHARS:
+        bounded_probe = value[:_MAX_MARKER_CHARS]
+        if _has_guarded_magic(
+            bounded_probe, minimum_guard=_GUARD_DIGITS - 1
+        ):
+            raise ValueError("exact-epoch marker exceeds 4096 ASCII characters")
+        return None
     if not value.isascii():
         if _has_guarded_magic(value):
             raise ValueError("recognizable v2 marker contains non-ASCII corruption")
@@ -309,13 +317,11 @@ def decode_epoch_marker(
     prefix = _canonical_x0_prefix(embedded_x0)
     boundary = len(prefix) + _GUARD_DIGITS
     candidate = value[boundary:] if len(value) >= boundary else ""
-    recognizable = _looks_like_encoded_magic(candidate)
+    recognizable = _looks_like_encoded_magic(candidate[: len(_ENCODED_MAGIC)])
     if not recognizable:
         if _has_guarded_magic(value, minimum_guard=_GUARD_DIGITS - 1):
             raise ValueError("recognizable v2 marker has a noncanonical envelope")
         return None
-    if len(value) > _MAX_MARKER_CHARS:
-        raise ValueError("exact-epoch marker exceeds 4096 ASCII characters")
     if not value.startswith(prefix + "0" * _GUARD_DIGITS):
         raise ValueError("recognizable v2 marker has a noncanonical envelope")
     payload = _parse_decimal_triplets(candidate)
