@@ -4,7 +4,6 @@ import functools
 import io
 import json
 import os
-import posixpath
 import shutil
 import stat
 import uuid
@@ -236,32 +235,38 @@ def _external_storage_requested(kwargs: dict[str, Any]) -> bool:
         return True
 
 
-def _native_object_path(
+def _native_path_components(
     array: Any,
-    container: h5py.Group | h5py.File,
     path: Any,
-) -> str | None:
+) -> tuple[bool, tuple[str, ...]]:
     candidate = path if path is not None else getattr(array, "name", None)
     if isinstance(candidate, bytes):
-        candidate = candidate.split(b"\x00", 1)[0]
         try:
             candidate = candidate.decode("utf-8")
         except UnicodeDecodeError as exc:
             raise ValueError("external HDF5 dataset path must use UTF-8") from exc
-    elif isinstance(candidate, str):
-        candidate = candidate.split("\x00", 1)[0]
-    else:
-        return None
-    if not candidate:
-        return None
-    if candidate.startswith("/"):
-        absolute = candidate
-    else:
-        absolute = f"{container.name.rstrip('/')}/{candidate}"
-    normalized = posixpath.normpath(absolute)
-    if normalized == "/" or not normalized.startswith("/"):
-        return None
-    return normalized.lstrip("/")
+    if not isinstance(candidate, str) or not candidate:
+        raise ValueError("external HDF5 dataset path must be a non-empty string")
+    if "\x00" in candidate:
+        raise ValueError("external HDF5 dataset path contains NUL")
+    absolute = candidate.startswith("/")
+    raw_components = candidate.split("/")[1:] if absolute else candidate.split("/")
+    if any(component in {"", ".", ".."} for component in raw_components):
+        raise ValueError("external HDF5 dataset path has an invalid path component")
+    return absolute, tuple(raw_components)
+
+
+def _native_object_path(
+    array: Any,
+    container: h5py.Group | h5py.File,
+    path: Any,
+) -> str:
+    absolute, components = _native_path_components(array, path)
+    relative = "/".join(components)
+    if absolute:
+        return relative
+    prefix = _group_prefix(container)
+    return relative if not prefix else f"{prefix}/{relative}"
 
 
 def _sidecar_alias_paths(
@@ -296,8 +301,6 @@ def _reject_external_link_traversal(
     path: Any,
 ) -> None:
     object_path = _native_object_path(array, container, path)
-    if object_path is None:
-        return
     h5file = container.file
     current: h5py.File | h5py.Group = h5file
     for component in object_path.split("/")[:-1]:
@@ -321,8 +324,6 @@ def _reject_stale_external_sidecar(
     document = _read_sidecar(container.file)
     object_path = _native_object_path(array, container, path)
     objects = document["objects"]
-    if object_path is None:
-        return
     if _sidecar_alias_paths(container.file, object_path, objects):
         raise ValueError(
             "external HDF5 storage cannot replace a sidecar-managed dataset"
@@ -606,6 +607,7 @@ def _preflight_native_external_write(
     path: str | None,
     kwargs: dict[str, Any],
 ) -> None:
+    _native_path_components(array, path)
     if isinstance(target, (h5py.File, h5py.Group)):
         _reject_stale_external_sidecar(array, target, path)
         return

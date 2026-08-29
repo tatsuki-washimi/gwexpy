@@ -631,6 +631,56 @@ def test_hdf5_invalid_object_paths_fail_before_creating_a_file(
     assert not path.exists()
 
 
+@pytest.mark.parametrize(
+    "bad_path",
+    [
+        "",
+        "a//data",
+        "a/./data",
+        "a/../data",
+        "a/data/",
+        "data\x00alias",
+        b"",
+        b"a/../data",
+        b"a/data/",
+        b"data\x00alias",
+        b"\xffdata",
+    ],
+    ids=[
+        "empty",
+        "empty-component",
+        "dot",
+        "dotdot",
+        "trailing-empty",
+        "nul",
+        "bytes-empty",
+        "bytes-dotdot",
+        "bytes-trailing-empty",
+        "bytes-nul",
+        "bytes-invalid-utf8",
+    ],
+)
+def test_hdf5_legacy_external_invalid_raw_path_fails_before_mutation(
+    tmp_path: Path,
+    bad_path: str | bytes,
+) -> None:
+    path = tmp_path / "invalid-external-path.hdf5"
+    raw_path = tmp_path / "invalid-external-path.raw"
+    raw_path.write_bytes(b"r" * 32)
+    before_raw = raw_path.read_bytes()
+
+    with pytest.raises(ValueError, match="path|UTF-8"):
+        _write_external(
+            _legacy_series(),
+            path,
+            raw_path,
+            path=bad_path,
+        )
+
+    assert not path.exists()
+    assert raw_path.read_bytes() == before_raw
+
+
 @pytest.mark.parametrize("invalid", [True, "123"])
 def test_hdf5_invalid_authoritative_epoch_fails_before_path_mutation(
     tmp_path: Path,
@@ -863,6 +913,89 @@ def test_hdf5_external_link_parent_write_fails_before_mutating_files(
     assert raw_path.read_bytes() == before_raw
 
 
+@pytest.mark.parametrize("container_kind", ["file", "group"])
+@pytest.mark.parametrize("storage_kind", ["inline", "external"])
+def test_hdf5_dotdot_external_link_write_fails_before_mutating_files(
+    tmp_path: Path,
+    container_kind: str,
+    storage_kind: str,
+) -> None:
+    stem = f"{container_kind}-{storage_kind}"
+    external_path = tmp_path / f"dotdot-linked-{stem}.hdf5"
+    main_path = tmp_path / f"dotdot-main-{stem}.hdf5"
+    raw_path = tmp_path / f"dotdot-raw-{stem}.bin"
+    raw_path.write_bytes(b"r" * 32)
+    original = _exact_series(123)
+    replacement = _legacy_series(offset=10)
+    original.write(external_path, format="hdf5", path="g/data")
+    with h5py.File(main_path, "w") as h5file:
+        container = (
+            h5file
+            if container_kind == "file"
+            else h5file.create_group("container")
+        )
+        group = container.create_group("a")
+        group[".."] = h5py.ExternalLink(str(external_path), "/g")
+
+    before_external = external_path.read_bytes()
+    before_raw = raw_path.read_bytes()
+    with h5py.File(main_path, "r+") as h5file:
+        container = h5file if container_kind == "file" else h5file["container"]
+
+        with pytest.raises(ValueError, match="path|external link"):
+            if storage_kind == "external":
+                _write_external(
+                    replacement,
+                    container,
+                    raw_path,
+                    path="a/../data",
+                    overwrite=True,
+                )
+            else:
+                replacement.write(
+                    container,
+                    format="hdf5",
+                    path="a/../data",
+                    overwrite=True,
+                )
+
+        assert isinstance(container["a"].get("..", getlink=True), h5py.ExternalLink)
+        np.testing.assert_array_equal(container["a/../data"][()], original.value)
+
+    assert external_path.read_bytes() == before_external
+    assert raw_path.read_bytes() == before_raw
+
+
+def test_hdf5_dotdot_internal_hard_link_write_preserves_exact_sidecar(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "dotdot-internal-hard-link.hdf5"
+    raw_path = tmp_path / "dotdot-internal-hard-link.raw"
+    raw_path.write_bytes(b"r" * 32)
+    original = _exact_series(123)
+
+    with h5py.File(path, "w") as h5file:
+        group = h5file.create_group("g")
+        original.write(group, format="hdf5", path="data")
+        parent = h5file.create_group("a")
+        parent[".."] = group
+        before_sidecar = h5file.attrs[_SIDECAR_ATTRIBUTE]
+        before_raw = raw_path.read_bytes()
+
+        with pytest.raises(ValueError, match="path"):
+            _write_external(
+                _legacy_series(offset=10),
+                h5file,
+                raw_path,
+                path="a/../data",
+                overwrite=True,
+            )
+
+        np.testing.assert_array_equal(group["data"][()], original.value)
+        assert h5file.attrs[_SIDECAR_ATTRIBUTE] == before_sidecar
+        assert raw_path.read_bytes() == before_raw
+
+
 @pytest.mark.parametrize("storage_kind", ["inline", "external"])
 def test_hdf5_internal_soft_link_parent_preserves_native_write_behavior(
     tmp_path: Path,
@@ -898,18 +1031,24 @@ def test_hdf5_internal_soft_link_parent_preserves_native_write_behavior(
         assert _SIDECAR_ATTRIBUTE not in h5file.attrs
 
 
-def test_hdf5_legacy_external_write_preserves_native_absolute_path_behavior(
+@pytest.mark.parametrize(
+    "dataset_path",
+    ["/data", b"data", b"/data"],
+    ids=["absolute", "utf8-bytes", "utf8-bytes-absolute"],
+)
+def test_hdf5_legacy_external_write_preserves_safe_native_path_behavior(
     tmp_path: Path,
+    dataset_path: str | bytes,
 ) -> None:
-    path = tmp_path / "external-legacy.hdf5"
-    raw_path = tmp_path / "external-legacy.raw"
+    path = tmp_path / f"external-legacy-{type(dataset_path).__name__}.hdf5"
+    raw_path = tmp_path / f"external-legacy-{type(dataset_path).__name__}.raw"
     original = _legacy_series()
 
     _write_external(
         original,
         path,
         raw_path,
-        path="/data",
+        path=dataset_path,
     )
 
     with h5py.File(path, "r") as h5file:
