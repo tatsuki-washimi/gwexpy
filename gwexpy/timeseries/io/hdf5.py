@@ -264,6 +264,32 @@ def _native_object_path(
     return normalized.lstrip("/")
 
 
+def _sidecar_alias_paths(
+    h5file: h5py.File,
+    object_path: str,
+    objects: dict[str, Any],
+) -> set[str]:
+    aliases = {object_path} if object_path in objects else set()
+    candidate_parent_path, _, candidate_name = object_path.rpartition("/")
+    candidate_parent = (
+        h5file if not candidate_parent_path else h5file.get(candidate_parent_path)
+    )
+    if not isinstance(candidate_parent, (h5py.File, h5py.Group)):
+        return aliases
+    for managed_path in objects:
+        managed_parent_path, _, managed_name = managed_path.rpartition("/")
+        if candidate_name != managed_name:
+            continue
+        managed_parent = (
+            h5file if not managed_parent_path else h5file.get(managed_parent_path)
+        )
+        if isinstance(managed_parent, (h5py.File, h5py.Group)) and (
+            candidate_parent.id == managed_parent.id
+        ):
+            aliases.add(managed_path)
+    return aliases
+
+
 def _reject_stale_external_sidecar(
     array: Any,
     container: h5py.Group | h5py.File,
@@ -274,33 +300,10 @@ def _reject_stale_external_sidecar(
     objects = document["objects"]
     if object_path is None:
         return
-    if object_path in objects:
+    if _sidecar_alias_paths(container.file, object_path, objects):
         raise ValueError(
             "external HDF5 storage cannot replace a sidecar-managed dataset"
         )
-    candidate_parent_path, _, candidate_name = object_path.rpartition("/")
-    candidate_parent = (
-        container.file
-        if not candidate_parent_path
-        else container.file.get(candidate_parent_path)
-    )
-    if not isinstance(candidate_parent, (h5py.File, h5py.Group)):
-        return
-    for managed_path in objects:
-        managed_parent_path, _, managed_name = managed_path.rpartition("/")
-        if candidate_name != managed_name:
-            continue
-        managed_parent = (
-            container.file
-            if not managed_parent_path
-            else container.file.get(managed_parent_path)
-        )
-        if isinstance(managed_parent, (h5py.File, h5py.Group)) and (
-            candidate_parent.id == managed_parent.id
-        ):
-            raise ValueError(
-                "external HDF5 storage cannot replace a sidecar-managed dataset"
-            )
 
 
 def _commit_sidecar(
@@ -311,10 +314,11 @@ def _commit_sidecar(
 ) -> None:
     objects = dict(document["objects"])
     object_path = _dataset_path(dataset)
-    if exact_epoch is None:
-        objects.pop(object_path, None)
-    else:
-        objects[object_path] = {
+    alias_paths = _sidecar_alias_paths(h5file, object_path, objects)
+    for alias_path in alias_paths:
+        objects.pop(alias_path)
+    if exact_epoch is not None:
+        entry = {
             "metadata": {
                 TIME_STATE_KEY: {
                     TIME_STATE_NS_KEY: exact_epoch,
@@ -323,6 +327,8 @@ def _commit_sidecar(
             },
             "provenance": {},
         }
+        for alias_path in alias_paths | {object_path}:
+            objects[alias_path] = entry
     if objects:
         _write_sidecar(
             h5file,

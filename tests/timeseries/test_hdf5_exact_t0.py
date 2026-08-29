@@ -306,6 +306,102 @@ def test_hdf5_same_path_replacement_clears_stale_exact_state(
         assert _SIDECAR_ATTRIBUTE not in h5file.attrs
 
 
+@pytest.mark.parametrize("leaf_exists", [True, False], ids=["existing", "missing"])
+def test_hdf5_legacy_group_alias_replacement_clears_stale_exact_state(
+    tmp_path: Path,
+    leaf_exists: bool,
+) -> None:
+    path = tmp_path / f"clear-group-alias-stale-{leaf_exists}.hdf5"
+    original = _exact_series(123)
+    replacement = _legacy_series(offset=10)
+
+    with h5py.File(path, "w") as h5file:
+        group = h5file.create_group("g")
+        h5file["h"] = group
+        original.write(group, format="hdf5", path="data")
+        if not leaf_exists:
+            del group["data"]
+
+        replacement.write(
+            h5file["h"],
+            format="hdf5",
+            path="data",
+            overwrite=True,
+        )
+
+        np.testing.assert_array_equal(group["data"][()], replacement.value)
+        assert _SIDECAR_ATTRIBUTE not in h5file.attrs
+        recovered = TimeSeries.read(group, format="hdf5", path="data")
+        assert not hasattr(recovered, "_gwex_t0_gps_ns")
+
+
+@pytest.mark.parametrize(
+    "t0_ns",
+    [1_234_567_890_123_456_789, 1_234_567_890_123_456_790],
+)
+@pytest.mark.parametrize("leaf_exists", [True, False], ids=["existing", "missing"])
+def test_hdf5_exact_group_alias_replacement_updates_all_managed_paths(
+    tmp_path: Path,
+    t0_ns: int,
+    leaf_exists: bool,
+) -> None:
+    path = tmp_path / f"update-group-alias-{leaf_exists}-{t0_ns}.hdf5"
+    replacement = _exact_series(t0_ns, offset=10)
+
+    with h5py.File(path, "w") as h5file:
+        group = h5file.create_group("g")
+        h5file["h"] = group
+        _exact_series(123).write(group, format="hdf5", path="data")
+        if not leaf_exists:
+            del group["data"]
+
+        replacement.write(
+            h5file["h"],
+            format="hdf5",
+            path="data",
+            overwrite=True,
+        )
+
+        document = _sidecar(h5file)
+        objects = document["objects"]
+        assert isinstance(objects, dict)
+        assert set(objects) == {"g/data", "h/data"}
+        for group_path in ("g", "h"):
+            assert _stored_t0_ns(document, f"{group_path}/data") == t0_ns
+            recovered = TimeSeries.read(
+                h5file[group_path],
+                format="hdf5",
+                path="data",
+            )
+            assert recovered.t0_gps_ns == t0_ns
+            np.testing.assert_array_equal(recovered.value, replacement.value)
+
+
+def test_hdf5_legacy_dataset_alias_replacement_preserves_managed_exact_state(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "preserve-dataset-alias-state.hdf5"
+    original = _exact_series(123)
+    replacement = _legacy_series(offset=10)
+
+    with h5py.File(path, "w") as h5file:
+        original.write(h5file, format="hdf5", path="managed")
+        h5file["alias"] = h5file["managed"]
+        before_address = h5py.h5o.get_info(h5file["managed"].id).addr
+
+        replacement.write(
+            h5file,
+            format="hdf5",
+            path="alias",
+            overwrite=True,
+        )
+
+        assert h5py.h5o.get_info(h5file["managed"].id).addr == before_address
+        np.testing.assert_array_equal(h5file["managed"][()], original.value)
+        np.testing.assert_array_equal(h5file["alias"][()], replacement.value)
+        assert _stored_t0_ns(_sidecar(h5file), "managed") == 123
+
+
 def test_hdf5_bounded_read_applies_crop_after_restoring_exact_t0(
     tmp_path: Path,
 ) -> None:
