@@ -392,6 +392,70 @@ def test_v2_marker_nondecimal_corruption_after_magic_raises() -> None:
         decode_epoch_marker(marker.text + "x", raw_x0=2.5, xunit="s")
 
 
+def test_v2_marker_ascii_character_corruption_inside_magic_raises() -> None:
+    marker = encode_epoch_marker(
+        epoch_ns=42, raw_x0=2.5, xunit="s", token=bytes(range(16))
+    )
+    magic_offset = marker.text.index(_TRIPLET_MAGIC)
+    corrupted = (
+        marker.text[: magic_offset + 6]
+        + "x"
+        + marker.text[magic_offset + 7 :]
+    )
+
+    with pytest.raises(ValueError, match="recognizable"):
+        decode_epoch_marker(corrupted, raw_x0=2.5, xunit="s")
+
+
+def test_v2_marker_nonascii_character_corruption_inside_magic_raises() -> None:
+    marker = encode_epoch_marker(
+        epoch_ns=42, raw_x0=2.5, xunit="s", token=bytes(range(16))
+    )
+    magic_offset = marker.text.index(_TRIPLET_MAGIC)
+    corrupted = (
+        marker.text[: magic_offset + 6]
+        + "é"
+        + marker.text[magic_offset + 7 :]
+    )
+
+    with pytest.raises(ValueError, match="recognizable"):
+        decode_epoch_marker(corrupted, raw_x0=2.5, xunit="s")
+
+
+def test_v2_marker_truncated_after_seven_magic_triplets_raises() -> None:
+    marker = encode_epoch_marker(
+        epoch_ns=42, raw_x0=2.5, xunit="s", token=bytes(range(16))
+    )
+    magic_offset = marker.text.index(_TRIPLET_MAGIC)
+    corrupted = marker.text[: magic_offset + 21]
+
+    with pytest.raises(ValueError, match="recognizable|envelope"):
+        decode_epoch_marker(corrupted, raw_x0=2.5, xunit="s")
+
+
+def test_v2_marker_nonfinite_numeric_projection_with_guarded_magic_raises() -> None:
+    marker_like = "+1" + "0" * 400 + ".5" + "0" * 400 + _TRIPLET_MAGIC
+    assert math.isinf(float(marker_like))
+
+    with pytest.raises(ValueError, match="recognizable|non-finite"):
+        decode_epoch_marker(marker_like, raw_x0=2.5, xunit="s")
+
+
+def test_v2_marker_nonfinite_projection_with_guarded_near_magic_raises() -> None:
+    near_magic = _TRIPLET_MAGIC[:21] + "999"
+    marker_like = "+1" + "0" * 400 + ".5" + "0" * 400 + near_magic
+    assert math.isinf(float(marker_like))
+
+    with pytest.raises(ValueError, match="recognizable|non-finite"):
+        decode_epoch_marker(marker_like, raw_x0=2.5, xunit="s")
+
+
+def test_ordinary_guarded_numeric_with_only_six_magic_triplets_is_not_claimed() -> None:
+    ordinary = "+2.5" + "0" * 400 + _TRIPLET_MAGIC[:18] + "999999"
+
+    assert decode_epoch_marker(ordinary, raw_x0=2.5, xunit="s") is None
+
+
 def test_v2_marker_missing_explicit_sign_raises() -> None:
     marker = encode_epoch_marker(
         epoch_ns=42, raw_x0=2.5, xunit="s", token=bytes(range(16))

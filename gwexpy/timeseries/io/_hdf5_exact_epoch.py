@@ -150,17 +150,14 @@ def _looks_like_encoded_magic(text: str) -> bool:
 
 def _has_guarded_magic(text: str, *, minimum_guard: int = _GUARD_DIGITS) -> bool:
     """Classify a failed boundary as recognizable without parsing that boundary."""
-    search_from = 0
-    while True:
-        magic_offset = text.find(_ENCODED_MAGIC, search_from)
-        if magic_offset < 0:
-            return False
-        guard_offset = magic_offset
-        while guard_offset and text[guard_offset - 1] == "0":
-            guard_offset -= 1
-        if magic_offset - guard_offset >= minimum_guard:
-            return True
-        search_from = magic_offset + 1
+    zero_run = 0
+    for offset, character in enumerate(text):
+        if zero_run >= minimum_guard:
+            suffix = text[offset:]
+            if _looks_like_encoded_magic(suffix) or suffix == _ENCODED_MAGIC[:-3]:
+                return True
+        zero_run = zero_run + 1 if character == "0" else 0
+    return False
 
 
 def _build_payload(
@@ -300,6 +297,10 @@ def decode_epoch_marker(
             ) from None
         return None
     if not math.isfinite(embedded_x0):
+        if _has_guarded_magic(value, minimum_guard=_GUARD_DIGITS - 1):
+            raise ValueError(
+                "recognizable v2 marker has a non-finite numeric projection"
+            )
         return None
     prefix = _canonical_x0_prefix(embedded_x0)
     boundary = len(prefix) + _GUARD_DIGITS
