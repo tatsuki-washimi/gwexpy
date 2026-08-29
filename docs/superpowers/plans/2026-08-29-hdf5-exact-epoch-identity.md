@@ -19,8 +19,9 @@ identity-preserving recovery hard link.
 **Tech Stack:** Python 3.11, GWpy 4.x, Astropy units, h5py/HDF5, NumPy, pytest,
 Ruff, MyPy, conda environment `gwexpy`.
 
-**Status:** Proposed; the design specification is approved and committed at
-`6fb989c`, but implementation awaits human approval of this plan.
+**Status:** Approved for local Task 1–5 implementation on 2026-08-29. Tasks 6–8
+remain conditionally approved and require the explicit Checkpoint A scope decision
+after Task 5.
 
 **Specification:**
 `docs/superpowers/specs/2026-08-29-hdf5-exact-epoch-identity-design.md`
@@ -115,6 +116,10 @@ these checkboxes before moving to the next node:
   parameterized case count.
 - [ ] Run the already-green nodes for the same task before committing.
 
+Every failure-injection test also asserts that its intended injection seam was
+called exactly once. A different exception cannot satisfy `pytest.raises` by
+accident.
+
 The task-level commands below are aggregation gates after those micro-cycles.
 For a parameterized test, use its collected node ID while developing one row and
 the unqualified function node for the task gate.
@@ -170,6 +175,11 @@ def test_v2_marker_envelope_preserves_binary64_boundaries(bits: int) -> None:
 Also add `test_v2_marker_envelope_preserves_seeded_random_binary64_values`,
 `test_v2_marker_binds_supported_axis_units`, and
 `test_v2_marker_rejects_nonfinite_x0`.
+
+The seeded property-style node uses a fixed published seed and at least 40,000
+finite patterns stratified across exponent classes and signs. Add targeted cases
+around powers of ten and decimal-representation transition boundaries. The fixed
+seed and sample count remain reproducible release-gate inputs.
 
 - [ ] **Step 2: Run the envelope tests and verify RED**
 
@@ -443,11 +453,14 @@ Execute one micro-cycle per node:
 - `test_hdf5_compaction_does_not_follow_soft_or_external_links`;
 - `test_hdf5_compaction_rejects_unrelated_malformed_local_marker`;
 - `test_hdf5_compaction_rejects_conflicting_same_token_objects`;
-- `test_hdf5_compaction_refreshes_paths_without_using_them_for_authority`.
+- `test_hdf5_compaction_refreshes_paths_without_using_them_for_authority`;
+- `test_hdf5_sidecar_size_tracks_live_markers_not_operation_count`.
 
 Use synthetic observations for 10,001-record and 8 MiB pure bounds; do not create
 10,001 HDF5 datasets. Give the cycle node a short timeout so infinite traversal is
-a deterministic failure.
+a deterministic failure. The size-stability node performs hundreds of
+write/overwrite/copy/rename/delete cycles and asserts that serialized sidecar size
+tracks live markers rather than operation count.
 
 - [ ] **Step 5: Write mutation-seam RED tests for every current target**
 
@@ -661,6 +674,48 @@ Expected: all commands pass.
 rtk git add gwexpy/timeseries/io/hdf5.py tests/timeseries/test_hdf5_exact_t0.py
 rtk git commit -m "fix: preserve native HDF5 paths across reloads"
 ```
+
+---
+
+### Checkpoint A: Reassess the v0.2.1 transaction scope
+
+**Files:**
+
+- Read-only qualification; do not modify production code during the decision.
+
+- [ ] **Step 1: Run the official exact-time claim and focused contract**
+
+```bash
+rtk conda run -n gwexpy pytest tests/qualification/test_v020_release_claims.py::test_timeseries_hdf5_roundtrip_retains_exact_t0_gps_ns tests/timeseries/test_hdf5_exact_epoch_codec.py tests/timeseries/test_hdf5_exact_t0.py -q
+```
+
+Expected: the historical +165/+166 ns reproduction is now a 0 ns exact
+round-trip; marker/sidecar authority and GWpy-only reads pass for every supported
+target form covered by Tasks 1–5.
+
+- [ ] **Step 2: Report the direct P0 evidence and stop for scope approval**
+
+Report exact pass/fail/skip counts and evidence for:
+
+- official v0.2.0 qualification claim;
+- exact marker and v2 sidecar authority;
+- marker-only recovery and stale-sidecar rejection;
+- GWpy-only compatibility;
+- aliases, move/copy, path forms, and reload idempotence.
+
+Do not begin Task 6 in the same execution batch. Ask whether the observed native
+writer duplication, pathname atomicity gap, file-like full-buffer duplication,
+and open-handle rollback risks remain v0.2.1 blockers.
+
+- [ ] **Step 3: Apply the scope decision**
+
+- If the transaction wrapper is still required to close P0 safely, proceed with
+  Tasks 6–8.
+- If Tasks 1–5 close the corrective-patch contract without those risks, defer
+  Tasks 6–8 to a separately approved maintenance/hardening series and proceed to
+  adapted Tasks 9–10.
+- Keep bootstrap/on-demand registration P1 out of this HDF5 series in either
+  branch of the decision.
 
 ---
 
