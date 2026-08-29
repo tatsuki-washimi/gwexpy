@@ -423,17 +423,36 @@ def test_v2_sidecar_serializer_stops_at_first_oversized_chunk(
         nonlocal calls, yielded_chunks
         calls += 1
         yielded_chunks += 1
-        yield "x" * (8 * 1024 * 1024)
+        yield "x" * (8 * 1024 * 1024 - 100)
         yielded_chunks += 1
-        yield "x"
+        yield "x" * 100
         raise AssertionError("encoder chunks after the limit were consumed")
 
     monkeypatch.setattr(json.JSONEncoder, "iterencode", oversized_chunks)
 
     with pytest.raises(ValueError, match="8 MiB"):
-        exact_epoch_codec.serialize_v2_sidecar([])
+        exact_epoch_codec.serialize_v2_sidecar([_sidecar_record(0)])
     assert calls == 1
     assert yielded_chunks == 2
+
+
+def test_v2_sidecar_serializer_stops_consuming_oversized_record_stream() -> None:
+    paths = tuple(
+        f"p{path_index:02x}/" + "x" * (4_096 - 4)
+        for path_index in range(16)
+    )
+    yielded = 0
+
+    def record_stream() -> object:
+        nonlocal yielded
+        for index in range(200):
+            yielded += 1
+            yield _sidecar_record(index, paths)
+        raise RuntimeError("records after the size limit were consumed")
+
+    with pytest.raises(ValueError, match="8 MiB"):
+        exact_epoch_codec.serialize_v2_sidecar(record_stream())  # type: ignore[arg-type]
+    assert yielded == 128
 
 
 def test_v2_sidecar_accepts_record_limit_and_rejects_plus_one() -> None:
@@ -502,24 +521,20 @@ def test_v2_sidecar_path_cap_stops_consumption_at_limit() -> None:
     marker = _fixed_sidecar_marker()
     yielded = 0
 
-    class KnownOversizedPaths:
-        def __len__(self) -> int:
-            return 17
+    duplicate_record = exact_epoch_codec.record_from_marker(
+        marker, ["group/same"] * 17
+    )
 
-        def __iter__(self) -> object:
-            raise AssertionError("known oversized paths were iterated")
-
-    def unknown_paths() -> object:
+    def unique_paths() -> object:
         nonlocal yielded
         for index in range(17):
             yielded += 1
             yield f"group/p{index:02d}"
         raise AssertionError("paths after the 17th item were consumed")
 
+    assert duplicate_record.paths == ("group/same",)
     with pytest.raises(ValueError, match="16"):
-        exact_epoch_codec.record_from_marker(marker, KnownOversizedPaths())  # type: ignore[arg-type]
-    with pytest.raises(ValueError, match="16"):
-        exact_epoch_codec.record_from_marker(marker, unknown_paths())  # type: ignore[arg-type]
+        exact_epoch_codec.record_from_marker(marker, unique_paths())  # type: ignore[arg-type]
     assert yielded == 17
 
 

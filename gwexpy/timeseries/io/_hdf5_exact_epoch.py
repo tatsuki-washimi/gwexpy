@@ -8,7 +8,7 @@ import math
 import operator
 import secrets
 import struct
-from collections.abc import Iterable, Mapping, Sized
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, replace
 from decimal import Decimal
 from types import MappingProxyType
@@ -25,6 +25,10 @@ _MAX_XUNIT_BYTES = 255
 _MAX_MAGNITUDE_BYTES = 512
 _ENCODED_MAGIC = "".join(f"{byte:03d}" for byte in _MAGIC)
 _SIDECAR_SCHEMA = "gwexpy.hdf5.sidecar"
+_SIDECAR_JSON_PREFIX = (
+    '{"schema":"gwexpy.hdf5.sidecar","version":2,"records":{'
+)
+_SIDECAR_JSON_SUFFIX = "}}"
 _MAX_SIDECAR_BYTES = 8 * 1024 * 1024
 _MAX_SIDECAR_RECORDS = 10_000
 _MAX_PATHS_PER_RECORD = 16
@@ -88,12 +92,8 @@ class SidecarDocument:
 
 def _canonical_paths(paths: Iterable[str]) -> tuple[str, ...]:
     """Return unique diagnostic paths in deterministic order."""
-    if isinstance(paths, Sized) and len(paths) > _MAX_PATHS_PER_RECORD:
-        raise ValueError("sidecar record exceeds 16 diagnostic paths")
-    validated: list[str] = []
-    for index, path in enumerate(paths):
-        if index >= _MAX_PATHS_PER_RECORD:
-            raise ValueError("sidecar record exceeds 16 diagnostic paths")
+    validated: set[str] = set()
+    for path in paths:
         if not isinstance(path, str):
             raise ValueError("sidecar path must be a string")
         try:
@@ -110,11 +110,12 @@ def _canonical_paths(paths: Iterable[str]) -> tuple[str, ...]:
             or any(component in ("", ".", "..") for component in components)
         ):
             raise ValueError("sidecar path must be a canonical relative POSIX path")
-        validated.append(path)
-    canonical = tuple(sorted(set(validated)))
-    if len(canonical) > _MAX_PATHS_PER_RECORD:
-        raise ValueError("sidecar record exceeds 16 diagnostic paths")
-    return canonical
+        if path in validated:
+            continue
+        if len(validated) >= _MAX_PATHS_PER_RECORD:
+            raise ValueError("sidecar record exceeds 16 diagnostic paths")
+        validated.add(path)
+    return tuple(sorted(validated))
 
 
 def _is_lower_hex(value: object, width: int) -> bool:
@@ -213,41 +214,51 @@ def _utf8_size_within(value: str, limit: int) -> int | None:
     return total
 
 
-def serialize_v2_sidecar(records: Iterable[SidecarRecord]) -> str:
-    """Serialize records as deterministic compact sidecar v2 JSON."""
-    by_token: dict[str, SidecarRecord] = {}
-    for source_record in records:
-        token = source_record.lineage_token
-        if not _is_lower_hex(token, 32):
-            raise ValueError("sidecar token must be 32 lowercase hexadecimal digits")
-        if token in by_token:
-            raise ValueError("duplicate sidecar lineage token")
-        if len(by_token) >= _MAX_SIDECAR_RECORDS:
-            raise ValueError("sidecar exceeds 10000 records")
-        canonical_record = replace(
-            source_record, paths=_canonical_paths(source_record.paths)
-        )
-        _reconstruct_record_marker(canonical_record)
-        by_token[canonical_record.lineage_token] = canonical_record
-    payload = {
-        "schema": _SIDECAR_SCHEMA,
-        "version": 2,
-        "records": {
-            token: _record_json(by_token[token]) for token in sorted(by_token)
-        },
-    }
+def _encode_json_within(value: object, limit: int) -> tuple[str, int]:
+    """Encode compact JSON without retaining any chunk that exceeds limit."""
     encoder = json.JSONEncoder(
         ensure_ascii=False, allow_nan=False, separators=(",", ":")
     )
     chunks: list[str] = []
-    remaining = _MAX_SIDECAR_BYTES
-    for chunk in encoder.iterencode(payload):
+    remaining = limit
+    for chunk in encoder.iterencode(value):
         chunk_size = _utf8_size_within(chunk, remaining)
         if chunk_size is None:
             raise ValueError("sidecar JSON exceeds 8 MiB")
         chunks.append(chunk)
         remaining -= chunk_size
-    return "".join(chunks)
+    return "".join(chunks), limit - remaining
+
+
+def serialize_v2_sidecar(records: Iterable[SidecarRecord]) -> str:
+    """Serialize records as deterministic compact sidecar v2 JSON."""
+    fragments: dict[str, str] = {}
+    used = len(_SIDECAR_JSON_PREFIX) + len(_SIDECAR_JSON_SUFFIX)
+    for source_record in records:
+        token = source_record.lineage_token
+        if not _is_lower_hex(token, 32):
+            raise ValueError("sidecar token must be 32 lowercase hexadecimal digits")
+        if token in fragments:
+            raise ValueError("duplicate sidecar lineage token")
+        if len(fragments) >= _MAX_SIDECAR_RECORDS:
+            raise ValueError("sidecar exceeds 10000 records")
+        canonical_record = replace(
+            source_record, paths=_canonical_paths(source_record.paths)
+        )
+        _reconstruct_record_marker(canonical_record)
+        separator_size = int(bool(fragments))
+        entry_limit = _MAX_SIDECAR_BYTES - used - separator_size + 2
+        if entry_limit < 2:
+            raise ValueError("sidecar JSON exceeds 8 MiB")
+        encoded_entry, encoded_size = _encode_json_within(
+            {token: _record_json(canonical_record)}, entry_limit
+        )
+        fragment = encoded_entry[1:-1]
+        fragment_size = encoded_size - 2
+        used += separator_size + fragment_size
+        fragments[token] = fragment
+    entries = ",".join(fragments[token] for token in sorted(fragments))
+    return _SIDECAR_JSON_PREFIX + entries + _SIDECAR_JSON_SUFFIX
 
 
 def parse_v2_sidecar(raw: object) -> SidecarDocument:
