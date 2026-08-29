@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import math
 import random
 import struct
+from dataclasses import replace
 from decimal import Decimal
 
 import pytest
@@ -59,6 +61,357 @@ def _redigest(payload_without_digest: bytes) -> bytes:
     return payload_without_digest + hashlib.sha256(
         _DOMAIN_SEPARATOR + payload_without_digest
     ).digest()
+
+
+def _fixed_sidecar_marker() -> EpochMarker:
+    return encode_epoch_marker(
+        epoch_ns=1_234_567_890_123_456_789,
+        raw_x0=-123.25,
+        xunit="ms",
+        token=bytes(range(16)),
+    )
+
+
+def test_v2_sidecar_roundtrip_is_deterministic() -> None:
+    marker = _fixed_sidecar_marker()
+    record = exact_epoch_codec.record_from_marker(
+        marker, ["z/data", "a/data", "z/data"]
+    )
+
+    serialized = exact_epoch_codec.serialize_v2_sidecar([record])
+    document = exact_epoch_codec.parse_v2_sidecar(serialized)
+
+    assert serialized == exact_epoch_codec.serialize_v2_sidecar(
+        document.records.values()
+    )
+    assert document.records[marker.lineage_token] == record
+    assert record.paths == ("a/data", "z/data")
+    assert json.loads(serialized) == {
+        "schema": "gwexpy.hdf5.sidecar",
+        "version": 2,
+        "records": {
+            marker.lineage_token: {
+                "binding": {
+                    "marker_sha256": marker.marker_sha256,
+                    "x0_bits": marker.x0_bits,
+                    "xunit": marker.axis.xunit,
+                    "xunit_to_ns_bits": marker.axis.xunit_to_ns_bits,
+                    "ns_to_xunit_bits": marker.axis.ns_to_xunit_bits,
+                },
+                "metadata": {
+                    "_gwexpy_t0_gps_state": {
+                        "_gwex_t0_gps_ns": marker.epoch_ns,
+                        "precision": "exact",
+                    }
+                },
+                "provenance": {},
+                "paths": ["a/data", "z/data"],
+            }
+        },
+    }
+
+
+def _sidecar_json_obj() -> tuple[EpochMarker, dict[str, object]]:
+    marker = _fixed_sidecar_marker()
+    record = exact_epoch_codec.record_from_marker(marker, ["group/data"])
+    return marker, json.loads(exact_epoch_codec.serialize_v2_sidecar([record]))
+
+
+def test_v2_sidecar_rejects_duplicate_or_noncanonical_json() -> None:
+    marker, payload = _sidecar_json_obj()
+    canonical = json.dumps(payload, separators=(",", ":"))
+    duplicate = canonical.replace(
+        '"schema":"gwexpy.hdf5.sidecar",',
+        '"schema":"wrong","schema":"gwexpy.hdf5.sidecar",',
+        1,
+    )
+    nonfinite = canonical.replace(str(marker.epoch_ns), "NaN", 1)
+    infinity = canonical.replace(str(marker.epoch_ns), "Infinity", 1)
+    replacement = canonical.replace("group/data", "group/\ufffddata", 1)
+
+    for invalid in (duplicate, nonfinite, infinity, replacement):
+        with pytest.raises(ValueError):
+            exact_epoch_codec.parse_v2_sidecar(invalid)
+
+
+def test_v2_sidecar_rejects_bad_key_sets_and_bool_epoch() -> None:
+    marker, canonical = _sidecar_json_obj()
+
+    def clone() -> dict[str, object]:
+        return json.loads(json.dumps(canonical))
+
+    invalid_payloads: list[dict[str, object]] = []
+    for path, operation in (
+        ((), "extra"),
+        (("record",), "extra"),
+        (("binding",), "missing"),
+        (("metadata",), "extra"),
+        (("state",), "missing"),
+    ):
+        payload = clone()
+        record = payload["records"][marker.lineage_token]  # type: ignore[index]
+        target = {
+            (): payload,
+            ("record",): record,
+            ("binding",): record["binding"],
+            ("metadata",): record["metadata"],
+            ("state",): record["metadata"]["_gwexpy_t0_gps_state"],
+        }[path]
+        if operation == "extra":
+            target["extra"] = None
+        else:
+            target.pop(next(iter(target)))
+        invalid_payloads.append(payload)
+
+    boolean_epoch = clone()
+    boolean_epoch["records"][marker.lineage_token]["metadata"][  # type: ignore[index]
+        "_gwexpy_t0_gps_state"
+    ]["_gwex_t0_gps_ns"] = True
+    invalid_payloads.append(boolean_epoch)
+
+    for payload in invalid_payloads:
+        with pytest.raises(ValueError):
+            exact_epoch_codec.parse_v2_sidecar(json.dumps(payload))
+
+
+def test_v2_sidecar_rejects_invalid_utf8() -> None:
+    _, payload = _sidecar_json_obj()
+    canonical = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+
+    with pytest.raises(ValueError, match="UTF-8"):
+        exact_epoch_codec.parse_v2_sidecar(canonical[:-1] + b"\xff")
+    with pytest.raises(ValueError, match="UTF-8"):
+        exact_epoch_codec.parse_v2_sidecar(canonical.decode()[:-1] + "\ud800")
+
+
+def test_v2_sidecar_rejects_cross_field_mismatch() -> None:
+    marker, canonical = _sidecar_json_obj()
+
+    for field in (
+        "token",
+        "marker_sha256",
+        "x0_bits",
+        "xunit",
+        "xunit_to_ns_bits",
+        "ns_to_xunit_bits",
+        "epoch_ns",
+    ):
+        payload = json.loads(json.dumps(canonical))
+        record = payload["records"].pop(marker.lineage_token)
+        token = marker.lineage_token
+        if field == "token":
+            token = "f" * 32
+        elif field == "epoch_ns":
+            record["metadata"]["_gwexpy_t0_gps_state"][
+                "_gwex_t0_gps_ns"
+            ] += 1
+        elif field == "xunit":
+            record["binding"][field] = "millisecond"
+        else:
+            record["binding"][field] = (
+                "0" * (64 if field == "marker_sha256" else 16)
+            )
+        payload["records"][token] = record
+        with pytest.raises(ValueError):
+            exact_epoch_codec.parse_v2_sidecar(json.dumps(payload))
+
+    forged = replace(
+        exact_epoch_codec.record_from_marker(marker, ["group/data"]),
+        epoch_ns=marker.epoch_ns + 1,
+    )
+    with pytest.raises(ValueError):
+        exact_epoch_codec.serialize_v2_sidecar([forged])
+
+
+def test_v2_sidecar_rejects_nonempty_provenance() -> None:
+    marker, payload = _sidecar_json_obj()
+    payload["records"][marker.lineage_token]["provenance"] = {  # type: ignore[index]
+        "source": "untrusted"
+    }
+
+    with pytest.raises(ValueError, match="provenance"):
+        exact_epoch_codec.parse_v2_sidecar(json.dumps(payload))
+
+
+def test_v2_sidecar_rejects_schema_limits() -> None:
+    marker, canonical = _sidecar_json_obj()
+    invalid_documents: list[str | bytes] = [b" " * (8 * 1024 * 1024 + 1)]
+    invalid_documents.append(
+        json.dumps(
+            {
+                "schema": "gwexpy.hdf5.sidecar",
+                "version": 2,
+                "records": {f"{index:032x}": {} for index in range(10_001)},
+            }
+        )
+    )
+
+    def mutated() -> dict[str, object]:
+        return json.loads(json.dumps(canonical))
+
+    for field, value in (
+        ("paths", [f"group/p{index:02d}" for index in range(17)]),
+        ("paths", ["a" * 4097]),
+        ("xunit", "u" * 256),
+        ("token", marker.lineage_token.upper()),
+        ("marker_sha256", "A" * 64),
+        ("marker_sha256", "0" * 63),
+        ("x0_bits", "A" * 16),
+        ("xunit_to_ns_bits", "0" * 15),
+        ("ns_to_xunit_bits", "G" * 16),
+    ):
+        payload = mutated()
+        record = payload["records"].pop(marker.lineage_token)  # type: ignore[index]
+        token = marker.lineage_token
+        if field == "token":
+            token = value  # type: ignore[assignment]
+        elif field == "paths":
+            record[field] = value
+        else:
+            record["binding"][field] = value
+        payload["records"][token] = record  # type: ignore[index]
+        invalid_documents.append(json.dumps(payload))
+
+    for raw in invalid_documents:
+        with pytest.raises(ValueError):
+            exact_epoch_codec.parse_v2_sidecar(raw)
+
+
+def test_v2_sidecar_rejects_one_invalid_unselected_record() -> None:
+    selected = _fixed_sidecar_marker()
+    unselected = encode_epoch_marker(
+        epoch_ns=-42,
+        raw_x0=2.5,
+        xunit="s",
+        token=bytes(reversed(range(16))),
+    )
+    raw = exact_epoch_codec.serialize_v2_sidecar(
+        [
+            exact_epoch_codec.record_from_marker(selected, ["selected"]),
+            exact_epoch_codec.record_from_marker(unselected, ["unselected"]),
+        ]
+    )
+    payload = json.loads(raw)
+    payload["records"][unselected.lineage_token]["metadata"][
+        "_gwexpy_t0_gps_state"
+    ]["_gwex_t0_gps_ns"] += 1
+
+    with pytest.raises(ValueError):
+        exact_epoch_codec.parse_v2_sidecar(json.dumps(payload))
+
+
+def test_v2_sidecar_reconstructs_complete_ascii_marker(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _, payload = _sidecar_json_obj()
+    calls = 0
+    original = exact_epoch_codec.reconstruct_epoch_marker
+
+    def spy(**kwargs: object) -> EpochMarker:
+        nonlocal calls
+        calls += 1
+        marker = original(**kwargs)  # type: ignore[arg-type]
+        assert marker.text.isascii()
+        return marker
+
+    monkeypatch.setattr(exact_epoch_codec, "reconstruct_epoch_marker", spy)
+
+    exact_epoch_codec.parse_v2_sidecar(json.dumps(payload))
+
+    assert calls == 1
+
+
+def test_v2_sidecar_marker_sha256_covers_complete_marker() -> None:
+    marker, payload = _sidecar_json_obj()
+    token_only_digest = hashlib.sha256(marker.lineage_token.encode("ascii")).hexdigest()
+    assert token_only_digest != hashlib.sha256(marker.text.encode("ascii")).hexdigest()
+    payload["records"][marker.lineage_token]["binding"][  # type: ignore[index]
+        "marker_sha256"
+    ] = token_only_digest
+
+    with pytest.raises(ValueError, match="SHA|digest"):
+        exact_epoch_codec.parse_v2_sidecar(json.dumps(payload))
+
+
+def test_v2_sidecar_paths_are_diagnostic_only() -> None:
+    marker = _fixed_sidecar_marker()
+    record = exact_epoch_codec.record_from_marker(marker, ["other/object"])
+    document = exact_epoch_codec.parse_v2_sidecar(
+        exact_epoch_codec.serialize_v2_sidecar([record])
+    )
+
+    validated = exact_epoch_codec.validate_marker_record(marker, document)
+
+    assert validated == record
+    assert validated is not None
+    assert validated.epoch_ns == marker.epoch_ns
+    assert validated.paths == ("other/object",)
+
+
+def test_v2_sidecar_validator_absent_empty_missing_and_conflicting() -> None:
+    marker = _fixed_sidecar_marker()
+    empty = exact_epoch_codec.parse_v2_sidecar(
+        '{"schema":"gwexpy.hdf5.sidecar","version":2,"records":{}}'
+    )
+    other = encode_epoch_marker(
+        epoch_ns=1,
+        raw_x0=0.0,
+        xunit="s",
+        token=b"other-lineage!!!",
+    )
+    missing = exact_epoch_codec.parse_v2_sidecar(
+        exact_epoch_codec.serialize_v2_sidecar(
+            [exact_epoch_codec.record_from_marker(other, ["other"])]
+        )
+    )
+
+    assert exact_epoch_codec.validate_marker_record(marker, None) is None
+    assert exact_epoch_codec.validate_marker_record(marker, empty) is None
+    assert exact_epoch_codec.validate_marker_record(marker, missing) is None
+
+    conflict = replace(
+        exact_epoch_codec.record_from_marker(marker, ["same-token"]),
+        epoch_ns=marker.epoch_ns + 1,
+    )
+    conflict_document = exact_epoch_codec.SidecarDocument(
+        {marker.lineage_token: conflict}
+    )
+    with pytest.raises(ValueError):
+        exact_epoch_codec.validate_marker_record(marker, conflict_document)
+
+
+def test_v2_sidecar_rejects_noncanonical_or_invalid_paths() -> None:
+    marker, canonical = _sidecar_json_obj()
+    for paths in (
+        ["b", "a"],
+        ["a", "a"],
+        [""],
+        ["/absolute"],
+        ["a//b"],
+        ["a/./b"],
+        ["a/../b"],
+        ["a/"],
+        ["a\x00b"],
+    ):
+        payload = json.loads(json.dumps(canonical))
+        payload["records"][marker.lineage_token]["paths"] = paths
+        with pytest.raises(ValueError):
+            exact_epoch_codec.parse_v2_sidecar(json.dumps(payload))
+
+    for path in ("", "/absolute", "a//b", "a/./b", "a/../b", "a/", "a\x00b"):
+        with pytest.raises(ValueError):
+            exact_epoch_codec.record_from_marker(marker, [path])
+
+
+def test_v1_sidecar_parser_never_returns_exact_authority() -> None:
+    marker, payload = _sidecar_json_obj()
+    payload["version"] = 1
+    payload["records"][marker.lineage_token]["metadata"] = {  # type: ignore[index]
+        "_gwex_t0_gps_ns": marker.epoch_ns
+    }
+
+    with pytest.raises(ValueError, match="version|schema"):
+        exact_epoch_codec.parse_v2_sidecar(json.dumps(payload))
 
 
 @pytest.mark.parametrize(

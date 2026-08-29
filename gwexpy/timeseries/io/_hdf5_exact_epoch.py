@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import math
 import operator
 import secrets
 import struct
-from dataclasses import dataclass
+from collections.abc import Iterable, Mapping
+from dataclasses import dataclass, replace
 from decimal import Decimal
+from types import MappingProxyType
 from typing import Any, cast
 
 from astropy import units
@@ -21,6 +24,22 @@ _MAX_MARKER_CHARS = 4096
 _MAX_XUNIT_BYTES = 255
 _MAX_MAGNITUDE_BYTES = 512
 _ENCODED_MAGIC = "".join(f"{byte:03d}" for byte in _MAGIC)
+_SIDECAR_SCHEMA = "gwexpy.hdf5.sidecar"
+_MAX_SIDECAR_BYTES = 8 * 1024 * 1024
+_MAX_SIDECAR_RECORDS = 10_000
+_MAX_PATHS_PER_RECORD = 16
+_MAX_PATH_BYTES = 4096
+_ROOT_KEYS = {"schema", "version", "records"}
+_RECORD_KEYS = {"binding", "metadata", "provenance", "paths"}
+_BINDING_KEYS = {
+    "marker_sha256",
+    "x0_bits",
+    "xunit",
+    "xunit_to_ns_bits",
+    "ns_to_xunit_bits",
+}
+_METADATA_KEYS = {"_gwexpy_t0_gps_state"}
+_STATE_KEYS = {"_gwex_t0_gps_ns", "precision"}
 
 
 @dataclass(frozen=True)
@@ -42,6 +61,284 @@ class EpochMarker:
     x0_bits: str
     axis: AxisBinding
     marker_sha256: str
+
+
+@dataclass(frozen=True)
+class SidecarRecord:
+    """One immutable exact-epoch sidecar record."""
+
+    lineage_token: str
+    marker_sha256: str
+    epoch_ns: int
+    x0_bits: str
+    axis: AxisBinding
+    paths: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class SidecarDocument:
+    """An immutable exact-epoch sidecar v2 document."""
+
+    records: Mapping[str, SidecarRecord]
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "records", MappingProxyType(dict(self.records)))
+
+
+def _canonical_paths(paths: Iterable[str]) -> tuple[str, ...]:
+    """Return unique diagnostic paths in deterministic order."""
+    validated: list[str] = []
+    for path in paths:
+        if not isinstance(path, str):
+            raise ValueError("sidecar path must be a string")
+        try:
+            encoded = path.encode("utf-8")
+        except UnicodeEncodeError as exc:
+            raise ValueError("sidecar path is not valid UTF-8") from exc
+        if len(encoded) > _MAX_PATH_BYTES:
+            raise ValueError("sidecar path exceeds 4096 UTF-8 bytes")
+        if "\ufffd" in path:
+            raise ValueError("sidecar path contains a replacement character")
+        components = path.split("/")
+        if (
+            not path
+            or path.startswith("/")
+            or "\x00" in path
+            or any(component in ("", ".", "..") for component in components)
+        ):
+            raise ValueError("sidecar path must be a canonical relative POSIX path")
+        validated.append(path)
+    canonical = tuple(sorted(set(validated)))
+    if len(canonical) > _MAX_PATHS_PER_RECORD:
+        raise ValueError("sidecar record exceeds 16 diagnostic paths")
+    return canonical
+
+
+def _is_lower_hex(value: object, width: int) -> bool:
+    """Return whether value has one exact lowercase hexadecimal spelling."""
+    return (
+        isinstance(value, str)
+        and len(value) == width
+        and all(character in "0123456789abcdef" for character in value)
+    )
+
+
+def _reconstruct_record_marker(record: SidecarRecord) -> EpochMarker:
+    """Validate a record and reconstruct its complete canonical marker."""
+    if not _is_lower_hex(record.lineage_token, 32):
+        raise ValueError("sidecar token must be 32 lowercase hexadecimal digits")
+    if not _is_lower_hex(record.marker_sha256, 64):
+        raise ValueError("sidecar marker SHA must be 64 lowercase hexadecimal digits")
+    if not _is_lower_hex(record.x0_bits, 16):
+        raise ValueError("sidecar x0 bits must be 16 lowercase hexadecimal digits")
+    if not _is_lower_hex(record.axis.xunit_to_ns_bits, 16):
+        raise ValueError(
+            "sidecar xunit-to-ns bits must be 16 lowercase hexadecimal digits"
+        )
+    if not _is_lower_hex(record.axis.ns_to_xunit_bits, 16):
+        raise ValueError(
+            "sidecar ns-to-xunit bits must be 16 lowercase hexadecimal digits"
+        )
+    if type(record.epoch_ns) is not int:
+        raise ValueError("sidecar exact epoch must be an integer")
+    if not isinstance(record.axis.xunit, str):
+        raise ValueError("sidecar xunit must be a string")
+    try:
+        encoded_unit = record.axis.xunit.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise ValueError("sidecar xunit is not valid UTF-8") from exc
+    if len(encoded_unit) > _MAX_XUNIT_BYTES:
+        raise ValueError("sidecar xunit exceeds 255 UTF-8 bytes")
+    if "\ufffd" in record.axis.xunit:
+        raise ValueError("sidecar xunit contains a replacement character")
+    canonical_paths = _canonical_paths(record.paths)
+    if record.paths != canonical_paths:
+        raise ValueError("sidecar paths must be sorted and unique")
+    marker = reconstruct_epoch_marker(
+        lineage_token=record.lineage_token,
+        epoch_ns=record.epoch_ns,
+        x0_bits=record.x0_bits,
+        axis=record.axis,
+    )
+    if marker.marker_sha256 != record.marker_sha256:
+        raise ValueError("sidecar marker SHA does not match the complete marker")
+    return marker
+
+
+def record_from_marker(marker: EpochMarker, paths: Iterable[str]) -> SidecarRecord:
+    """Create a sidecar record only from an already validated marker."""
+    record = SidecarRecord(
+        lineage_token=marker.lineage_token,
+        marker_sha256=marker.marker_sha256,
+        epoch_ns=marker.epoch_ns,
+        x0_bits=marker.x0_bits,
+        axis=marker.axis,
+        paths=_canonical_paths(paths),
+    )
+    if _reconstruct_record_marker(record) != marker:
+        raise ValueError("marker is not complete and canonical")
+    return record
+
+
+def _record_json(record: SidecarRecord) -> dict[str, object]:
+    """Render one record as its owned JSON object."""
+    return {
+        "binding": {
+            "marker_sha256": record.marker_sha256,
+            "x0_bits": record.x0_bits,
+            "xunit": record.axis.xunit,
+            "xunit_to_ns_bits": record.axis.xunit_to_ns_bits,
+            "ns_to_xunit_bits": record.axis.ns_to_xunit_bits,
+        },
+        "metadata": {
+            "_gwexpy_t0_gps_state": {
+                "_gwex_t0_gps_ns": record.epoch_ns,
+                "precision": "exact",
+            }
+        },
+        "provenance": {},
+        "paths": list(record.paths),
+    }
+
+
+def serialize_v2_sidecar(records: Iterable[SidecarRecord]) -> str:
+    """Serialize records as deterministic compact sidecar v2 JSON."""
+    by_token: dict[str, SidecarRecord] = {}
+    for source_record in records:
+        canonical_record = replace(
+            source_record, paths=_canonical_paths(source_record.paths)
+        )
+        _reconstruct_record_marker(canonical_record)
+        if canonical_record.lineage_token in by_token:
+            raise ValueError("duplicate sidecar lineage token")
+        by_token[canonical_record.lineage_token] = canonical_record
+    if len(by_token) > _MAX_SIDECAR_RECORDS:
+        raise ValueError("sidecar exceeds 10000 records")
+    payload = {
+        "schema": _SIDECAR_SCHEMA,
+        "version": 2,
+        "records": {
+            token: _record_json(by_token[token]) for token in sorted(by_token)
+        },
+    }
+    serialized = json.dumps(
+        payload, ensure_ascii=False, allow_nan=False, separators=(",", ":")
+    )
+    if len(serialized.encode("utf-8")) > _MAX_SIDECAR_BYTES:
+        raise ValueError("sidecar JSON exceeds 8 MiB")
+    return serialized
+
+
+def parse_v2_sidecar(raw: object) -> SidecarDocument:
+    """Parse a sidecar v2 JSON document."""
+    def reject_duplicate_members(
+        pairs: list[tuple[str, object]],
+    ) -> dict[str, object]:
+        member: dict[str, object] = {}
+        for key, value in pairs:
+            if key in member:
+                raise ValueError(f"duplicate JSON member: {key}")
+            member[key] = value
+        return member
+
+    def reject_constant(value: str) -> None:
+        raise ValueError(f"non-finite JSON number: {value}")
+
+    if isinstance(raw, str):
+        if len(raw) > _MAX_SIDECAR_BYTES:
+            raise ValueError("sidecar JSON exceeds 8 MiB")
+        try:
+            encoded_raw = raw.encode("utf-8")
+        except UnicodeEncodeError as exc:
+            raise ValueError("sidecar JSON is not valid UTF-8") from exc
+        if len(encoded_raw) > _MAX_SIDECAR_BYTES:
+            raise ValueError("sidecar JSON exceeds 8 MiB")
+        text = raw
+    elif isinstance(raw, (bytes, bytearray)):
+        if len(raw) > _MAX_SIDECAR_BYTES:
+            raise ValueError("sidecar JSON exceeds 8 MiB")
+        try:
+            text = bytes(raw).decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise ValueError("sidecar JSON is not valid UTF-8") from exc
+    else:
+        raise ValueError("sidecar JSON must be str or bytes")
+    if "\ufffd" in text:
+        raise ValueError("replacement character is not accepted in sidecar JSON")
+    payload = json.loads(
+        text,
+        object_pairs_hook=reject_duplicate_members,
+        parse_constant=reject_constant,
+    )
+    if not isinstance(payload, dict) or set(payload) != _ROOT_KEYS:
+        raise ValueError("sidecar root has an invalid key set")
+    if (
+        payload["schema"] != _SIDECAR_SCHEMA
+        or type(payload["version"]) is not int
+        or payload["version"] != 2
+    ):
+        raise ValueError("unsupported sidecar schema or version")
+    raw_records = payload["records"]
+    if not isinstance(raw_records, dict):
+        raise ValueError("sidecar records must be an object")
+    if len(raw_records) > _MAX_SIDECAR_RECORDS:
+        raise ValueError("sidecar exceeds 10000 records")
+    records: dict[str, SidecarRecord] = {}
+    for token, value in raw_records.items():
+        if not isinstance(value, dict) or set(value) != _RECORD_KEYS:
+            raise ValueError("sidecar record has an invalid key set")
+        binding = value["binding"]
+        metadata = value["metadata"]
+        if not isinstance(binding, dict) or set(binding) != _BINDING_KEYS:
+            raise ValueError("sidecar binding has an invalid key set")
+        if not isinstance(metadata, dict) or set(metadata) != _METADATA_KEYS:
+            raise ValueError("sidecar metadata has an invalid key set")
+        state = metadata["_gwexpy_t0_gps_state"]
+        if not isinstance(state, dict) or set(state) != _STATE_KEYS:
+            raise ValueError("sidecar epoch state has an invalid key set")
+        epoch_ns = state["_gwex_t0_gps_ns"]
+        if type(epoch_ns) is not int:
+            raise ValueError("sidecar exact epoch must be an integer")
+        if state["precision"] != "exact":
+            raise ValueError("sidecar epoch precision must be exact")
+        if value["provenance"] != {}:
+            raise ValueError("sidecar provenance must be empty")
+        raw_paths = value["paths"]
+        if not isinstance(raw_paths, list):
+            raise ValueError("sidecar paths must be an array")
+        paths = tuple(raw_paths)
+        if paths != _canonical_paths(paths):
+            raise ValueError("sidecar paths must be sorted and unique")
+        record = SidecarRecord(
+            lineage_token=token,
+            marker_sha256=binding["marker_sha256"],
+            epoch_ns=epoch_ns,
+            x0_bits=binding["x0_bits"],
+            axis=AxisBinding(
+                xunit=binding["xunit"],
+                xunit_to_ns_bits=binding["xunit_to_ns_bits"],
+                ns_to_xunit_bits=binding["ns_to_xunit_bits"],
+            ),
+            paths=paths,
+        )
+        _reconstruct_record_marker(record)
+        records[token] = record
+    return SidecarDocument(records)
+
+
+def validate_marker_record(
+    marker: EpochMarker, document: SidecarDocument | None
+) -> SidecarRecord | None:
+    """Return a matching diagnostic record without replacing marker authority."""
+    if document is None:
+        return None
+    record = document.records.get(marker.lineage_token)
+    if record is None:
+        return None
+    reconstructed = _reconstruct_record_marker(record)
+    if reconstructed != marker:
+        raise ValueError("sidecar record conflicts with the exact marker")
+    return record
 
 
 def _binary64_bits(value: object) -> tuple[float, bytes, str]:
