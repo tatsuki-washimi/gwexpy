@@ -13,6 +13,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 import h5py
+import numpy as np
 from gwpy.io import hdf5 as _gwpy_io_hdf5
 from gwpy.io import registry as _io_registry
 from gwpy.timeseries.io.hdf5 import (
@@ -150,6 +151,22 @@ def _array_axis_metadata(array: Any) -> tuple[Any, Any]:
     return raw_x0, getattr(array, "xunit", None)
 
 
+def _caller_binary64_scalar(value: Any, *, label: str) -> float:
+    if isinstance(value, (bool, np.bool_)) or np.ndim(value) != 0:
+        raise ValueError(f"{label} must be a finite binary64 scalar")
+    if isinstance(value, np.ndarray):
+        value = value.item()
+        if isinstance(value, (bool, np.bool_)):
+            raise ValueError(f"{label} must be a finite binary64 scalar")
+    try:
+        projected = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError(f"{label} must be a finite binary64 scalar") from exc
+    if not math.isfinite(projected):
+        raise ValueError(f"{label} must be a finite binary64 scalar")
+    return projected
+
+
 def _validate_caller_write_metadata(
     array: Any,
     exact_epoch: int | None,
@@ -190,10 +207,10 @@ def _validate_caller_write_metadata(
     if not attrs:
         return output_marker
     if "x0" in attrs:
-        try:
-            supplied = struct.pack(">d", float(attrs["x0"]))
-        except (TypeError, ValueError, OverflowError, struct.error) as exc:
-            raise ValueError("caller HDF5 x0 must be finite binary64") from exc
+        supplied = struct.pack(
+            ">d",
+            _caller_binary64_scalar(attrs["x0"], label="caller HDF5 x0"),
+        )
         if supplied.hex() != expected_marker.x0_bits:
             raise ValueError("caller HDF5 x0 does not match the TimeSeries axis")
     if "xunit" in attrs:
@@ -224,14 +241,10 @@ def _validate_caller_write_metadata(
                 )
             output_marker = supplied_marker
         else:
-            try:
-                projected = float(supplied_epoch)
-            except (TypeError, ValueError, OverflowError) as exc:
-                raise ValueError("caller HDF5 epoch must be numeric") from exc
-            if (
-                not math.isfinite(projected)
-                or struct.pack(">d", projected).hex() != expected_marker.x0_bits
-            ):
+            projected = _caller_binary64_scalar(
+                supplied_epoch, label="caller HDF5 epoch"
+            )
+            if struct.pack(">d", projected).hex() != expected_marker.x0_bits:
                 raise ValueError(
                     "caller HDF5 epoch does not match the TimeSeries x0 bits"
                 )

@@ -429,20 +429,75 @@ def test_hdf5_malformed_marker_fails_before_native_reader(
     assert calls == 0
 
 
+_SCALAR_ONE_METADATA_CASES = {
+    "exact-x0-nonscalar",
+    "exact-x0-bool-matching",
+    "exact-ordinary-epoch-nonscalar",
+    "exact-ordinary-epoch-bool-matching",
+    "exact-x0-zero-d-scalar",
+    "exact-ordinary-epoch-zero-d-scalar",
+}
+
+
 def _nonpathname_metadata_case(
     tmp_path: Path,
     target_kind: str,
     metadata_case: str,
 ) -> None:
-    replacement = (
-        _legacy_series(offset=10)
-        if metadata_case.startswith("nonexact-")
-        else _exact_series(456, offset=10)
-    )
+    if metadata_case in _SCALAR_ONE_METADATA_CASES:
+        replacement = _exact_series(1_000_000_000, offset=10)
+        assert replacement.x0.value == 1.0
+    else:
+        replacement = (
+            _legacy_series(offset=10)
+            if metadata_case.startswith("nonexact-")
+            else _exact_series(456, offset=10)
+        )
     attrs: dict[str, object]
     match: str | None
     expectation: str | None = None
-    if metadata_case == "exact-x0-mismatch":
+    if metadata_case == "exact-x0-nonscalar":
+        attrs = {
+            "x0": np.array([replacement.x0.value]),
+            "xunit": replacement.xunit.to_string(),
+        }
+        match = "scalar"
+    elif metadata_case == "exact-x0-bool-matching":
+        attrs = {
+            "x0": (np.bool_(True) if target_kind in {"file", "group"} else True),
+            "xunit": replacement.xunit.to_string(),
+        }
+        match = "scalar"
+    elif metadata_case == "exact-ordinary-epoch-nonscalar":
+        attrs = {
+            "x0": replacement.x0.value,
+            "xunit": replacement.xunit.to_string(),
+            "epoch": np.array([replacement.x0.value]),
+        }
+        match = "scalar"
+    elif metadata_case == "exact-ordinary-epoch-bool-matching":
+        attrs = {
+            "x0": replacement.x0.value,
+            "xunit": replacement.xunit.to_string(),
+            "epoch": (True if target_kind in {"file", "group"} else np.bool_(True)),
+        }
+        match = "scalar"
+    elif metadata_case == "exact-x0-zero-d-scalar":
+        attrs = {
+            "x0": np.array(replacement.x0.value),
+            "xunit": replacement.xunit.to_string(),
+        }
+        match = None
+        expectation = metadata_case
+    elif metadata_case == "exact-ordinary-epoch-zero-d-scalar":
+        attrs = {
+            "x0": replacement.x0.value,
+            "xunit": replacement.xunit.to_string(),
+            "epoch": np.array(replacement.x0.value),
+        }
+        match = None
+        expectation = metadata_case
+    elif metadata_case == "exact-x0-mismatch":
         attrs = {"x0": 99.0, "xunit": replacement.xunit.to_string()}
         match = "x0"
     elif metadata_case == "exact-xunit-noncanonical":
@@ -587,6 +642,11 @@ def _nonpathname_metadata_case(
                 assert _marker(dataset).lineage_token == "11" * 16
             elif expectation == "exact-ordinary-epoch-matching":
                 assert _marker(dataset).epoch_ns == 456
+            elif expectation in {
+                "exact-x0-zero-d-scalar",
+                "exact-ordinary-epoch-zero-d-scalar",
+            }:
+                assert _marker(dataset).epoch_ns == 1_000_000_000
             else:
                 assert expectation == "nonexact-ordinary-epoch"
                 assert dataset.attrs["epoch"] == repr(replacement.x0.value)
@@ -596,6 +656,17 @@ def _nonpathname_metadata_case(
 @pytest.mark.parametrize(
     ("target_kind", "metadata_case"),
     [
+        *[
+            pytest.param("pathname", case, id=f"pathname-{case}")
+            for case in (
+                "exact-x0-nonscalar",
+                "exact-x0-bool-matching",
+                "exact-ordinary-epoch-nonscalar",
+                "exact-ordinary-epoch-bool-matching",
+                "exact-x0-zero-d-scalar",
+                "exact-ordinary-epoch-zero-d-scalar",
+            )
+        ],
         pytest.param(
             "pathname",
             "exact-x0-mismatch",
@@ -679,6 +750,12 @@ def _nonpathname_metadata_case(
         *[
             pytest.param("filelike", case, id=f"filelike-{case}")
             for case in (
+                "exact-x0-nonscalar",
+                "exact-x0-bool-matching",
+                "exact-ordinary-epoch-nonscalar",
+                "exact-ordinary-epoch-bool-matching",
+                "exact-x0-zero-d-scalar",
+                "exact-ordinary-epoch-zero-d-scalar",
                 "exact-xunit-noncanonical",
                 "exact-ordinary-epoch-mismatch",
                 "exact-ordinary-epoch-matching",
@@ -699,6 +776,12 @@ def _nonpathname_metadata_case(
             pytest.param(target_kind, case, id=f"{target_kind}-{case}")
             for target_kind in ("file", "group")
             for case in (
+                "exact-x0-nonscalar",
+                "exact-x0-bool-matching",
+                "exact-ordinary-epoch-nonscalar",
+                "exact-ordinary-epoch-bool-matching",
+                "exact-x0-zero-d-scalar",
+                "exact-ordinary-epoch-zero-d-scalar",
                 "exact-x0-mismatch",
                 "exact-xunit-noncanonical",
                 "exact-ordinary-epoch-mismatch",
@@ -730,11 +813,15 @@ def test_hdf5_write_metadata_policy_fails_before_mutation(
     path = tmp_path / "metadata-policy.hdf5"
     _exact_series(123).write(path, format="hdf5", path="data")
     before = path.read_bytes()
-    replacement = (
-        _legacy_series(offset=10)
-        if metadata_case.startswith("nonexact-")
-        else _exact_series(456, offset=10)
-    )
+    if metadata_case in _SCALAR_ONE_METADATA_CASES:
+        replacement = _exact_series(1_000_000_000, offset=10)
+        assert replacement.x0.value == 1.0
+    else:
+        replacement = (
+            _legacy_series(offset=10)
+            if metadata_case.startswith("nonexact-")
+            else _exact_series(456, offset=10)
+        )
     attrs: dict[str, object]
     if "external" in metadata_case:
         raw_path = tmp_path / "metadata-policy.raw"
@@ -804,6 +891,43 @@ def test_hdf5_write_metadata_policy_fails_before_mutation(
             "_gwex_t0_gps_ns",
         )
         return
+    if metadata_case == "exact-x0-zero-d-scalar":
+        attrs = {
+            "x0": np.array(replacement.x0.value),
+            "xunit": replacement.xunit.to_string(),
+        }
+        attrs_before = copy.deepcopy(attrs)
+        replacement.write(
+            path,
+            format="hdf5",
+            path="data",
+            append=True,
+            overwrite=True,
+            attrs=attrs,
+        )
+        assert attrs == attrs_before
+        with h5py.File(path, "r") as h5file:
+            assert _marker(h5file["data"]).epoch_ns == 1_000_000_000
+        return
+    if metadata_case == "exact-ordinary-epoch-zero-d-scalar":
+        attrs = {
+            "x0": replacement.x0.value,
+            "xunit": replacement.xunit.to_string(),
+            "epoch": np.array(replacement.x0.value),
+        }
+        attrs_before = copy.deepcopy(attrs)
+        replacement.write(
+            path,
+            format="hdf5",
+            path="data",
+            append=True,
+            overwrite=True,
+            attrs=attrs,
+        )
+        assert attrs == attrs_before
+        with h5py.File(path, "r") as h5file:
+            assert _marker(h5file["data"]).epoch_ns == 1_000_000_000
+        return
     if metadata_case == "nonexact-canonical-v2-epoch":
         supplied_marker = encode_epoch_marker(
             epoch_ns=10_000_000_000,
@@ -833,6 +957,32 @@ def test_hdf5_write_metadata_policy_fails_before_mutation(
             "epoch": valid[:-1] + ("0" if valid[-1] != "0" else "1"),
         }
         match = "marker|digest|canonical"
+    elif metadata_case == "exact-x0-nonscalar":
+        attrs = {
+            "x0": np.array([replacement.x0.value]),
+            "xunit": replacement.xunit.to_string(),
+        }
+        match = "scalar"
+    elif metadata_case == "exact-x0-bool-matching":
+        attrs = {
+            "x0": True,
+            "xunit": replacement.xunit.to_string(),
+        }
+        match = "scalar"
+    elif metadata_case == "exact-ordinary-epoch-nonscalar":
+        attrs = {
+            "x0": replacement.x0.value,
+            "xunit": replacement.xunit.to_string(),
+            "epoch": np.array([replacement.x0.value]),
+        }
+        match = "scalar"
+    elif metadata_case == "exact-ordinary-epoch-bool-matching":
+        attrs = {
+            "x0": replacement.x0.value,
+            "xunit": replacement.xunit.to_string(),
+            "epoch": np.bool_(True),
+        }
+        match = "scalar"
     elif metadata_case == "exact-x0-mismatch":
         attrs = {
             "x0": 99.0,
