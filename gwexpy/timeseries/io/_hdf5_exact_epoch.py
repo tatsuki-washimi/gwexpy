@@ -265,11 +265,14 @@ def parse_v2_sidecar(raw: object) -> SidecarDocument:
         raise ValueError("sidecar JSON must be str or bytes")
     if "\ufffd" in text:
         raise ValueError("replacement character is not accepted in sidecar JSON")
-    payload = json.loads(
-        text,
-        object_pairs_hook=reject_duplicate_members,
-        parse_constant=reject_constant,
-    )
+    try:
+        payload = json.loads(
+            text,
+            object_pairs_hook=reject_duplicate_members,
+            parse_constant=reject_constant,
+        )
+    except RecursionError as exc:
+        raise ValueError("sidecar JSON exceeds the supported nesting depth") from exc
     if not isinstance(payload, dict) or set(payload) != _ROOT_KEYS:
         raise ValueError("sidecar root has an invalid key set")
     if (

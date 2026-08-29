@@ -5,6 +5,7 @@ import json
 import math
 import random
 import struct
+import sys
 from dataclasses import replace
 from decimal import Decimal
 
@@ -117,6 +118,72 @@ def _sidecar_json_obj() -> tuple[EpochMarker, dict[str, object]]:
     return marker, json.loads(exact_epoch_codec.serialize_v2_sidecar([record]))
 
 
+def _sidecar_record(
+    index: int, paths: tuple[str, ...] = ()
+) -> exact_epoch_codec.SidecarRecord:
+    marker = encode_epoch_marker(
+        epoch_ns=17,
+        raw_x0=2.5,
+        xunit="s",
+        token=index.to_bytes(16, "big"),
+    )
+    return exact_epoch_codec.record_from_marker(marker, paths)
+
+
+def _append_canonical_record(document: str, record: str) -> str:
+    records_prefix = '"records":{'
+    record_fragment = record.split(records_prefix, 1)[1][:-2]
+    assert document.endswith("}}")
+    assert record_fragment
+    return document[:-2] + "," + record_fragment + "}}"
+
+
+def _exact_size_sidecar(size: int) -> tuple[str, str]:
+    full_paths = tuple(
+        f"p{path_index:02x}/" + "x" * (4_096 - 4)
+        for path_index in range(16)
+    )
+    empty_size = len(exact_epoch_codec.serialize_v2_sidecar([]).encode("utf-8"))
+    one_full_size = len(
+        exact_epoch_codec.serialize_v2_sidecar(
+            [_sidecar_record(0, full_paths)]
+        ).encode("utf-8")
+    )
+    entry_size = one_full_size - empty_size
+    record_count = math.ceil((size - empty_size + 1) / (entry_size + 1))
+    full_size = empty_size - 1 + record_count * (entry_size + 1)
+    bytes_to_trim = full_size - size
+
+    paths_by_record = [list(full_paths) for _ in range(record_count)]
+    for record_index in reversed(range(record_count)):
+        for path_index in reversed(range(16)):
+            if bytes_to_trim == 0:
+                break
+            prefix = f"p{path_index:02x}"
+            reduction = min(bytes_to_trim, 4_096 - len(prefix))
+            new_length = 4_096 - reduction
+            paths_by_record[record_index][path_index] = (
+                prefix
+                if new_length == len(prefix)
+                else prefix + "/" + "x" * (new_length - len(prefix) - 1)
+            )
+            bytes_to_trim -= reduction
+        if bytes_to_trim == 0:
+            break
+    assert bytes_to_trim == 0
+
+    records = [
+        _sidecar_record(index, tuple(paths))
+        for index, paths in enumerate(paths_by_record)
+    ]
+    serialized = exact_epoch_codec.serialize_v2_sidecar(records)
+    assert len(serialized.encode("utf-8")) == size
+    extendable_path = next(
+        path for paths in paths_by_record for path in paths if len(path) < 4_096
+    )
+    return serialized, extendable_path
+
+
 def test_v2_sidecar_rejects_duplicate_or_noncanonical_json() -> None:
     marker, payload = _sidecar_json_obj()
     canonical = json.dumps(payload, separators=(",", ":"))
@@ -184,6 +251,25 @@ def test_v2_sidecar_rejects_invalid_utf8() -> None:
         exact_epoch_codec.parse_v2_sidecar(canonical.decode()[:-1] + "\ud800")
 
 
+def test_v2_sidecar_normalizes_bounded_json_recursion_error() -> None:
+    nested = "[" * 1_100 + "]" * 1_100
+    raw = (
+        '{"schema":"gwexpy.hdf5.sidecar","version":2,"records":'
+        '{"00000000000000000000000000000000":'
+        + nested
+        + "}}"
+    )
+    assert len(raw.encode("utf-8")) < 3_000
+
+    original_limit = sys.getrecursionlimit()
+    try:
+        sys.setrecursionlimit(1_000)
+        with pytest.raises(ValueError, match="nesting"):
+            exact_epoch_codec.parse_v2_sidecar(raw)
+    finally:
+        sys.setrecursionlimit(original_limit)
+
+
 def test_v2_sidecar_rejects_cross_field_mismatch() -> None:
     marker, canonical = _sidecar_json_obj()
 
@@ -235,16 +321,7 @@ def test_v2_sidecar_rejects_nonempty_provenance() -> None:
 
 def test_v2_sidecar_rejects_schema_limits() -> None:
     marker, canonical = _sidecar_json_obj()
-    invalid_documents: list[str | bytes] = [b" " * (8 * 1024 * 1024 + 1)]
-    invalid_documents.append(
-        json.dumps(
-            {
-                "schema": "gwexpy.hdf5.sidecar",
-                "version": 2,
-                "records": {f"{index:032x}": {} for index in range(10_001)},
-            }
-        )
-    )
+    invalid_documents: list[str] = []
 
     def mutated() -> dict[str, object]:
         return json.loads(json.dumps(canonical))
@@ -275,6 +352,60 @@ def test_v2_sidecar_rejects_schema_limits() -> None:
     for raw in invalid_documents:
         with pytest.raises(ValueError):
             exact_epoch_codec.parse_v2_sidecar(raw)
+
+
+def test_v2_sidecar_accepts_exact_byte_limit_and_rejects_plus_one() -> None:
+    limit = 8 * 1024 * 1024
+    at_limit, extendable_path = _exact_size_sidecar(limit)
+
+    document = exact_epoch_codec.parse_v2_sidecar(at_limit.encode("utf-8"))
+
+    assert document.records
+    oversized = at_limit.replace(
+        f'"{extendable_path}"', f'"{extendable_path}x"', 1
+    )
+    assert len(oversized.encode("utf-8")) == limit + 1
+    with pytest.raises(ValueError, match="8 MiB"):
+        exact_epoch_codec.parse_v2_sidecar(oversized)
+
+
+def test_v2_sidecar_accepts_record_limit_and_rejects_plus_one() -> None:
+    records = [_sidecar_record(index) for index in range(10_001)]
+    at_limit = exact_epoch_codec.serialize_v2_sidecar(records[:10_000])
+
+    document = exact_epoch_codec.parse_v2_sidecar(at_limit)
+
+    assert len(document.records) == 10_000
+    oversized = _append_canonical_record(
+        at_limit, exact_epoch_codec.serialize_v2_sidecar(records[10_000:])
+    )
+    assert len(oversized.encode("utf-8")) < 8 * 1024 * 1024
+    oversized_payload = json.loads(oversized)
+    assert set(oversized_payload) == {"schema", "version", "records"}
+    assert len(oversized_payload["records"]) == 10_001
+    assert oversized_payload["records"][records[10_000].lineage_token] == json.loads(
+        exact_epoch_codec.serialize_v2_sidecar(records[10_000:])
+    )["records"][records[10_000].lineage_token]
+    with pytest.raises(ValueError, match="10000"):
+        exact_epoch_codec.parse_v2_sidecar(oversized)
+
+
+def test_v2_sidecar_accepts_path_limits_and_rejects_plus_one() -> None:
+    marker = _fixed_sidecar_marker()
+    longest_path = "観/" + "x" * (4_096 - len("観/".encode("utf-8")))
+    paths = (longest_path,) + tuple(f"group/p{index:02d}" for index in range(15))
+
+    record = exact_epoch_codec.record_from_marker(marker, paths)
+    document = exact_epoch_codec.parse_v2_sidecar(
+        exact_epoch_codec.serialize_v2_sidecar([record])
+    )
+
+    assert len(document.records[marker.lineage_token].paths) == 16
+    assert len(longest_path.encode("utf-8")) == 4_096
+    with pytest.raises(ValueError, match="16"):
+        exact_epoch_codec.record_from_marker(marker, paths + ("one/too/many",))
+    with pytest.raises(ValueError, match="4096"):
+        exact_epoch_codec.record_from_marker(marker, (longest_path + "x",))
 
 
 def test_v2_sidecar_rejects_one_invalid_unselected_record() -> None:
