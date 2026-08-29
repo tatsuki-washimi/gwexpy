@@ -271,10 +271,36 @@ def _reject_stale_external_sidecar(
 ) -> None:
     document = _read_sidecar(container.file)
     object_path = _native_object_path(array, container, path)
-    if object_path is not None and object_path in document["objects"]:
+    objects = document["objects"]
+    if object_path is None:
+        return
+    if object_path in objects:
         raise ValueError(
             "external HDF5 storage cannot replace a sidecar-managed dataset"
         )
+    candidate_parent_path, _, candidate_name = object_path.rpartition("/")
+    candidate_parent = (
+        container.file
+        if not candidate_parent_path
+        else container.file.get(candidate_parent_path)
+    )
+    if not isinstance(candidate_parent, (h5py.File, h5py.Group)):
+        return
+    for managed_path in objects:
+        managed_parent_path, _, managed_name = managed_path.rpartition("/")
+        if candidate_name != managed_name:
+            continue
+        managed_parent = (
+            container.file
+            if not managed_parent_path
+            else container.file.get(managed_parent_path)
+        )
+        if isinstance(managed_parent, (h5py.File, h5py.Group)) and (
+            candidate_parent.id == managed_parent.id
+        ):
+            raise ValueError(
+                "external HDF5 storage cannot replace a sidecar-managed dataset"
+            )
 
 
 def _commit_sidecar(

@@ -641,6 +641,72 @@ def test_hdf5_unsafe_external_handle_write_preserves_links_sidecar_and_raw(
         assert raw_path.read_bytes() == before_raw
 
 
+@pytest.mark.parametrize("leaf_exists", [True, False], ids=["existing", "missing"])
+def test_hdf5_legacy_external_group_alias_rejects_stale_exact_sidecar(
+    tmp_path: Path,
+    leaf_exists: bool,
+) -> None:
+    path = tmp_path / f"external-group-alias-{leaf_exists}.hdf5"
+    raw_path = tmp_path / f"external-group-alias-{leaf_exists}.raw"
+    raw_path.write_bytes(b"r" * 32)
+    original = _exact_series(123)
+
+    with h5py.File(path, "w") as h5file:
+        group = h5file.create_group("g")
+        h5file["h"] = group
+        original.write(group, format="hdf5", path="data")
+        before_address = h5py.h5o.get_info(h5file["g/data"].id).addr
+        if not leaf_exists:
+            del group["data"]
+        before_sidecar = h5file.attrs[_SIDECAR_ATTRIBUTE]
+        before_raw = raw_path.read_bytes()
+
+        with pytest.raises(ValueError, match="external"):
+            _write_external(
+                _legacy_series(offset=10),
+                h5file["h"],
+                raw_path,
+                overwrite=True,
+            )
+
+        if leaf_exists:
+            assert h5py.h5o.get_info(h5file["g/data"].id).addr == before_address
+            assert h5py.h5o.get_info(h5file["h/data"].id).addr == before_address
+            np.testing.assert_array_equal(h5file["g/data"][()], original.value)
+        else:
+            assert "data" not in group
+        assert h5file.attrs[_SIDECAR_ATTRIBUTE] == before_sidecar
+        assert raw_path.read_bytes() == before_raw
+
+
+def test_hdf5_legacy_external_direct_dataset_alias_preserves_managed_link(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "external-dataset-alias.hdf5"
+    raw_path = tmp_path / "external-dataset-alias.raw"
+    original = _exact_series(123)
+    replacement = _legacy_series(offset=10)
+
+    with h5py.File(path, "w") as h5file:
+        original.write(h5file, format="hdf5", path="managed")
+        h5file["alias"] = h5file["managed"]
+        before_address = h5py.h5o.get_info(h5file["managed"].id).addr
+        before_sidecar = h5file.attrs[_SIDECAR_ATTRIBUTE]
+
+        _write_external(
+            replacement,
+            h5file,
+            raw_path,
+            path="alias",
+            overwrite=True,
+        )
+
+        assert h5py.h5o.get_info(h5file["managed"].id).addr == before_address
+        np.testing.assert_array_equal(h5file["managed"][()], original.value)
+        np.testing.assert_array_equal(h5file["alias"][()], replacement.value)
+        assert h5file.attrs[_SIDECAR_ATTRIBUTE] == before_sidecar
+
+
 def test_hdf5_legacy_external_write_preserves_native_absolute_path_behavior(
     tmp_path: Path,
 ) -> None:
