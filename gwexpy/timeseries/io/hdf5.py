@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import functools
 import io
-import json
+import math
 import os
 import shutil
 import stat
+import struct
 import uuid
-from collections.abc import Callable
+from collections.abc import Callable, Iterable, Iterator
 from pathlib import Path, PurePosixPath
 from typing import Any
 
@@ -36,18 +37,30 @@ from gwpy.timeseries.io.hdf5 import (
     write_hdf5_series,
 )
 
-SIDECAR_ATTRIBUTE = "_gwexpy_sidecar_json_v1"
-SIDECAR_SCHEMA = "gwexpy.hdf5.sidecar"
-SIDECAR_VERSION = 1
-TIME_STATE_KEY = "_gwexpy_t0_gps_state"
+from ._hdf5_exact_epoch import (
+    EpochMarker,
+    SidecarDocument,
+    decode_epoch_marker,
+    encode_epoch_marker,
+    parse_v2_sidecar,
+    record_from_marker,
+    serialize_v2_sidecar,
+    validate_marker_record,
+)
+
+SIDECAR_ATTRIBUTE_V1 = "_gwexpy_sidecar_json_v1"
+SIDECAR_ATTRIBUTE_V2 = "_gwexpy_sidecar_json_v2"
 TIME_STATE_NS_KEY = "_gwex_t0_gps_ns"
-TIME_STATE_PRECISION_KEY = "precision"
 
 _MISSING = object()
 _WRAPPER_MARKER = "_gwexpy_exact_t0_hdf5"
 _ROLLBACK_PREFIX = "__gwexpy_t0_rollback_"
+_MAX_V2_RECORDS = 10_000
+_MAX_V2_BYTES = 8 * 1024 * 1024
 _BASE_READER: Callable[..., Any] | None = None
 _BASE_WRITER: Callable[..., h5py.Dataset] | None = None
+
+_SidecarSnapshot = tuple[tuple[str, bool, Any], ...]
 
 
 class _RollbackError(RuntimeError):
@@ -112,110 +125,6 @@ def _dataset_path(dataset: h5py.Dataset) -> str:
     return _relative_path(name.lstrip("/"), label="HDF5 dataset path")
 
 
-def _unique_json_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
-    result: dict[str, Any] = {}
-    for key, value in pairs:
-        if key in result:
-            raise ValueError(f"duplicate JSON member {key!r}")
-        result[key] = value
-    return result
-
-
-def _reject_json_constant(value: str) -> None:
-    raise ValueError(f"invalid JSON constant {value!r}")
-
-
-def _validate_time_state(value: Any) -> dict[str, Any]:
-    if not isinstance(value, dict) or set(value) != {
-        TIME_STATE_NS_KEY,
-        TIME_STATE_PRECISION_KEY,
-    }:
-        raise ValueError("invalid TimeSeries exact epoch state in sidecar")
-    epoch = value[TIME_STATE_NS_KEY]
-    if type(epoch) is not int:
-        raise ValueError("TimeSeries sidecar epoch must be an integer")
-    precision = value[TIME_STATE_PRECISION_KEY]
-    if precision not in {"exact", "quantized"}:
-        raise ValueError("TimeSeries sidecar epoch precision is invalid")
-    return {
-        TIME_STATE_NS_KEY: epoch,
-        TIME_STATE_PRECISION_KEY: precision,
-    }
-
-
-def _validate_document(value: Any) -> dict[str, Any]:
-    if not isinstance(value, dict) or set(value) != {"schema", "version", "objects"}:
-        raise ValueError("invalid GWexpy HDF5 sidecar schema")
-    if value["schema"] != SIDECAR_SCHEMA or type(value["schema"]) is not str:
-        raise ValueError("unknown GWexpy HDF5 sidecar schema")
-    if type(value["version"]) is not int or value["version"] != SIDECAR_VERSION:
-        raise ValueError("unknown GWexpy HDF5 sidecar version")
-    objects = value["objects"]
-    if not isinstance(objects, dict):
-        raise ValueError("GWexpy HDF5 sidecar objects must be a mapping")
-
-    validated_objects: dict[str, Any] = {}
-    for object_path, entry in objects.items():
-        normalized = _relative_path(object_path, label="sidecar object path")
-        if normalized in validated_objects:
-            raise ValueError("duplicate normalized sidecar object path")
-        if not isinstance(entry, dict) or set(entry) != {"metadata", "provenance"}:
-            raise ValueError("GWexpy HDF5 sidecar entry has invalid keys")
-        metadata = entry["metadata"]
-        provenance = entry["provenance"]
-        if not isinstance(metadata, dict) or not isinstance(provenance, dict):
-            raise ValueError("GWexpy HDF5 sidecar state must use mappings")
-        if TIME_STATE_KEY in metadata:
-            metadata = dict(metadata)
-            metadata[TIME_STATE_KEY] = _validate_time_state(metadata[TIME_STATE_KEY])
-        validated_objects[normalized] = {
-            "metadata": metadata,
-            "provenance": provenance,
-        }
-    return {
-        "schema": SIDECAR_SCHEMA,
-        "version": SIDECAR_VERSION,
-        "objects": validated_objects,
-    }
-
-
-def _empty_document() -> dict[str, Any]:
-    return {"schema": SIDECAR_SCHEMA, "version": SIDECAR_VERSION, "objects": {}}
-
-
-def _read_sidecar(h5file: h5py.File) -> dict[str, Any]:
-    if SIDECAR_ATTRIBUTE not in h5file.attrs:
-        return _empty_document()
-    raw = h5file.attrs[SIDECAR_ATTRIBUTE]
-    if isinstance(raw, bytes):
-        try:
-            raw = raw.decode("utf-8")
-        except UnicodeDecodeError as exc:
-            raise ValueError("invalid GWexpy HDF5 sidecar UTF-8") from exc
-    if not isinstance(raw, str):
-        raise ValueError("GWexpy HDF5 sidecar must be a UTF-8 JSON string")
-    try:
-        value = json.loads(
-            raw,
-            object_pairs_hook=_unique_json_object,
-            parse_constant=_reject_json_constant,
-        )
-        return _validate_document(value)
-    except (TypeError, ValueError, json.JSONDecodeError) as exc:
-        raise ValueError("invalid GWexpy HDF5 sidecar document") from exc
-
-
-def _write_sidecar(h5file: h5py.File, document: dict[str, Any]) -> None:
-    payload = json.dumps(
-        document,
-        allow_nan=False,
-        ensure_ascii=False,
-        separators=(",", ":"),
-        sort_keys=True,
-    )
-    h5file.attrs[SIDECAR_ATTRIBUTE] = payload
-
-
 def _exact_epoch(array: Any) -> int | None:
     value = getattr(array, TIME_STATE_NS_KEY, None)
     if value is None:
@@ -233,6 +142,100 @@ def _external_storage_requested(kwargs: dict[str, Any]) -> bool:
         return len(external) != 0
     except TypeError:
         return True
+
+
+def _array_axis_metadata(array: Any) -> tuple[Any, Any]:
+    x0 = getattr(array, "x0", None)
+    raw_x0 = getattr(x0, "value", x0)
+    return raw_x0, getattr(array, "xunit", None)
+
+
+def _validate_caller_write_metadata(
+    array: Any,
+    exact_epoch: int | None,
+    kwargs: dict[str, Any],
+) -> EpochMarker | None:
+    attrs = kwargs.get("attrs")
+    if exact_epoch is None:
+        if attrs and "epoch" in attrs:
+            raw_x0, xunit = _array_axis_metadata(array)
+            supplied_epoch = attrs["epoch"]
+            if isinstance(supplied_epoch, bytes):
+                try:
+                    supplied_epoch = supplied_epoch.decode("utf-8")
+                except UnicodeDecodeError as exc:
+                    raise ValueError("caller HDF5 epoch must use UTF-8") from exc
+            supplied_marker = decode_epoch_marker(
+                supplied_epoch,
+                raw_x0=raw_x0,
+                xunit=xunit,
+            )
+            if supplied_marker is not None:
+                raise ValueError(
+                    "caller HDF5 epoch claims exact authority for a non-exact array"
+                )
+        return None
+    raw_x0, xunit = _array_axis_metadata(array)
+    expected_marker = encode_epoch_marker(
+        epoch_ns=exact_epoch,
+        raw_x0=raw_x0,
+        xunit=xunit,
+        token=b"\x00" * 16,
+    )
+    output_marker = encode_epoch_marker(
+        epoch_ns=exact_epoch,
+        raw_x0=raw_x0,
+        xunit=xunit,
+    )
+    if not attrs:
+        return output_marker
+    if "x0" in attrs:
+        try:
+            supplied = struct.pack(">d", float(attrs["x0"]))
+        except (TypeError, ValueError, OverflowError, struct.error) as exc:
+            raise ValueError("caller HDF5 x0 must be finite binary64") from exc
+        if supplied.hex() != expected_marker.x0_bits:
+            raise ValueError("caller HDF5 x0 does not match the TimeSeries axis")
+    if "xunit" in attrs:
+        supplied_axis = encode_epoch_marker(
+            epoch_ns=exact_epoch,
+            raw_x0=raw_x0,
+            xunit=attrs["xunit"],
+            token=b"\x00" * 16,
+        ).axis
+        if supplied_axis != expected_marker.axis:
+            raise ValueError("caller HDF5 xunit does not match the TimeSeries axis")
+    if "epoch" in attrs:
+        supplied_epoch = attrs["epoch"]
+        if isinstance(supplied_epoch, bytes):
+            try:
+                supplied_epoch = supplied_epoch.decode("utf-8")
+            except UnicodeDecodeError as exc:
+                raise ValueError("caller HDF5 epoch must use UTF-8") from exc
+        supplied_marker = decode_epoch_marker(
+            supplied_epoch,
+            raw_x0=raw_x0,
+            xunit=xunit,
+        )
+        if supplied_marker is not None:
+            if supplied_marker.epoch_ns != exact_epoch:
+                raise ValueError(
+                    "caller HDF5 epoch conflicts with the exact TimeSeries epoch"
+                )
+            output_marker = supplied_marker
+        else:
+            try:
+                projected = float(supplied_epoch)
+            except (TypeError, ValueError, OverflowError) as exc:
+                raise ValueError("caller HDF5 epoch must be numeric") from exc
+            if (
+                not math.isfinite(projected)
+                or struct.pack(">d", projected).hex() != expected_marker.x0_bits
+            ):
+                raise ValueError(
+                    "caller HDF5 epoch does not match the TimeSeries x0 bits"
+                )
+    return output_marker
 
 
 def _native_path_components(
@@ -273,32 +276,6 @@ def _native_object_path(
     return relative if not prefix else f"{prefix}/{relative}"
 
 
-def _sidecar_alias_paths(
-    h5file: h5py.File,
-    object_path: str,
-    objects: dict[str, Any],
-) -> set[str]:
-    aliases = {object_path} if object_path in objects else set()
-    candidate_parent_path, _, candidate_name = object_path.rpartition("/")
-    candidate_parent = (
-        h5file if not candidate_parent_path else h5file.get(candidate_parent_path)
-    )
-    if not isinstance(candidate_parent, (h5py.File, h5py.Group)):
-        return aliases
-    for managed_path in objects:
-        managed_parent_path, _, managed_name = managed_path.rpartition("/")
-        if candidate_name != managed_name:
-            continue
-        managed_parent = (
-            h5file if not managed_parent_path else h5file.get(managed_parent_path)
-        )
-        if isinstance(managed_parent, (h5py.File, h5py.Group)) and (
-            candidate_parent.id == managed_parent.id
-        ):
-            aliases.add(managed_path)
-    return aliases
-
-
 def _reject_external_link_traversal(
     array: Any,
     container: h5py.Group | h5py.File,
@@ -325,63 +302,176 @@ def _reject_stale_external_sidecar(
     path: str | None,
 ) -> None:
     _reject_external_link_traversal(array, container, path)
-    document = _read_sidecar(container.file)
     object_path = _native_object_path(array, container, path)
-    objects = document["objects"]
-    if _sidecar_alias_paths(container.file, object_path, objects):
+    document = _read_v2_sidecar(container.file)
+    target = container.file.get(object_path)
+    if isinstance(target, h5py.Dataset):
+        raw_epoch = _text_attribute(target.attrs.get("epoch"), label="epoch")
+        raw_xunit = _text_attribute(target.attrs.get("xunit"), label="xunit")
+        marker = decode_epoch_marker(
+            raw_epoch,
+            raw_x0=target.attrs.get("x0"),
+            xunit=raw_xunit,
+        )
+        if marker is not None:
+            validate_marker_record(marker, document)
+            raise ValueError(
+                "external HDF5 storage cannot replace a canonically marked dataset"
+            )
+    if document is not None and any(
+        object_path in record.paths for record in document.records.values()
+    ):
         raise ValueError(
             "external HDF5 storage cannot replace a sidecar-managed dataset"
         )
 
 
+def _local_object_identity(value: h5py.Group | h5py.Dataset) -> int:
+    return int(h5py.h5o.get_info(value.id).addr)
+
+
+def _serialize_marker_observations(
+    observations: Iterable[tuple[str, EpochMarker]],
+) -> str | None:
+    """Merge local marker observations into one canonical v2 document."""
+    markers: dict[str, EpochMarker] = {}
+    paths: dict[str, list[str]] = {}
+    empty_size = len(serialize_v2_sidecar([]).encode("utf-8"))
+    payload_size = empty_size
+    entry_sizes: dict[str, int] = {}
+    for object_path, marker in observations:
+        previous = markers.get(marker.lineage_token)
+        if previous is None and len(markers) >= _MAX_V2_RECORDS:
+            raise ValueError("sidecar exceeds 10000 records")
+        if previous is not None and previous != marker:
+            raise ValueError("conflicting local HDF5 markers share one lineage token")
+        markers[marker.lineage_token] = marker
+        representatives = paths.setdefault(marker.lineage_token, [])
+        path_added = object_path not in representatives and len(representatives) < 16
+        if path_added:
+            representatives.append(object_path)
+        if previous is None or path_added:
+            record = record_from_marker(marker, representatives)
+            single_size = len(serialize_v2_sidecar([record]).encode("utf-8"))
+            new_entry_size = single_size - empty_size
+            old_entry_size = entry_sizes.get(marker.lineage_token)
+            proposed_size = payload_size + new_entry_size
+            if old_entry_size is None:
+                proposed_size += int(bool(entry_sizes))
+            else:
+                proposed_size -= old_entry_size
+            if proposed_size > _MAX_V2_BYTES:
+                raise ValueError("sidecar JSON exceeds 8 MiB")
+            entry_sizes[marker.lineage_token] = new_entry_size
+            payload_size = proposed_size
+    if not markers:
+        return None
+    records = [
+        record_from_marker(markers[token], paths[token]) for token in sorted(markers)
+    ]
+    return serialize_v2_sidecar(records)
+
+
+def _build_v2_sidecar(h5file: h5py.File) -> str | None:
+    """Rebuild v2 records from cycle-safe local hard-link observations."""
+    visited_groups: set[int] = set()
+    visited_datasets: set[int] = set()
+
+    def visit(
+        group: h5py.File | h5py.Group,
+        prefix: tuple[str, ...],
+    ) -> Iterator[tuple[str, EpochMarker]]:
+        group_identity = _local_object_identity(group)
+        if group_identity in visited_groups:
+            return
+        visited_groups.add(group_identity)
+        for name in sorted(group.keys()):
+            if not prefix and name.startswith(_ROLLBACK_PREFIX):
+                continue
+            link = group.get(name, getlink=True)
+            if not isinstance(link, h5py.HardLink):
+                continue
+            child = group.get(name)
+            if isinstance(child, h5py.Group):
+                yield from visit(child, (*prefix, name))
+                continue
+            if not isinstance(child, h5py.Dataset):
+                continue
+            dataset_identity = _local_object_identity(child)
+            if dataset_identity in visited_datasets:
+                continue
+            visited_datasets.add(dataset_identity)
+            raw_epoch = _text_attribute(child.attrs.get("epoch"), label="epoch")
+            raw_xunit = _text_attribute(child.attrs.get("xunit"), label="xunit")
+            marker = decode_epoch_marker(
+                raw_epoch,
+                raw_x0=child.attrs.get("x0"),
+                xunit=raw_xunit,
+            )
+            if marker is None:
+                continue
+            object_path = "/".join((*prefix, name))
+            yield object_path, marker
+
+    return _serialize_marker_observations(visit(h5file, ()))
+
+
+def _apply_sidecar_payload(h5file: h5py.File, payload: str | None) -> None:
+    """Apply one compacted v2 payload and remove unpublished v1 state."""
+    if payload is None:
+        if SIDECAR_ATTRIBUTE_V2 in h5file.attrs:
+            del h5file.attrs[SIDECAR_ATTRIBUTE_V2]
+    else:
+        h5file.attrs[SIDECAR_ATTRIBUTE_V2] = payload
+    if SIDECAR_ATTRIBUTE_V1 in h5file.attrs:
+        del h5file.attrs[SIDECAR_ATTRIBUTE_V1]
+
+
+def _write_epoch_marker(dataset: h5py.Dataset, marker: EpochMarker) -> None:
+    dataset.attrs["epoch"] = marker.text
+
+
+def _reset_dataset_axis(dataset: h5py.Dataset, marker: EpochMarker) -> None:
+    dataset.attrs["x0"] = float(marker.text)
+    dataset.attrs["xunit"] = marker.axis.xunit
+
+
 def _commit_sidecar(
     h5file: h5py.File,
-    document: dict[str, Any],
     dataset: h5py.Dataset,
-    exact_epoch: int | None,
+    marker: EpochMarker | None,
 ) -> None:
-    objects = dict(document["objects"])
-    object_path = _dataset_path(dataset)
-    alias_paths = _sidecar_alias_paths(h5file, object_path, objects)
-    for alias_path in alias_paths:
-        objects.pop(alias_path)
-    if exact_epoch is not None:
-        entry = {
-            "metadata": {
-                TIME_STATE_KEY: {
-                    TIME_STATE_NS_KEY: exact_epoch,
-                    TIME_STATE_PRECISION_KEY: "exact",
-                }
-            },
-            "provenance": {},
-        }
-        for alias_path in alias_paths | {object_path}:
-            objects[alias_path] = entry
-    if objects:
-        _write_sidecar(
-            h5file,
-            {
-                "schema": SIDECAR_SCHEMA,
-                "version": SIDECAR_VERSION,
-                "objects": objects,
-            },
+    if marker is not None:
+        _reset_dataset_axis(dataset, marker)
+        validated_marker = decode_epoch_marker(
+            marker.text,
+            raw_x0=dataset.attrs["x0"],
+            xunit=dataset.attrs["xunit"],
         )
-    elif SIDECAR_ATTRIBUTE in h5file.attrs:
-        del h5file.attrs[SIDECAR_ATTRIBUTE]
+        if validated_marker != marker:  # pragma: no cover - codec invariant
+            raise RuntimeError("prepared exact-epoch marker changed before commit")
+        _write_epoch_marker(dataset, marker)
+    payload = _build_v2_sidecar(h5file)
+    _apply_sidecar_payload(h5file, payload)
 
 
-def _sidecar_snapshot(h5file: h5py.File) -> tuple[bool, Any]:
-    if SIDECAR_ATTRIBUTE in h5file.attrs:
-        return True, h5file.attrs[SIDECAR_ATTRIBUTE]
-    return False, _MISSING
+def _sidecar_snapshot(h5file: h5py.File) -> _SidecarSnapshot:
+    return tuple(
+        (
+            name,
+            name in h5file.attrs,
+            h5file.attrs[name] if name in h5file.attrs else _MISSING,
+        )
+        for name in (SIDECAR_ATTRIBUTE_V1, SIDECAR_ATTRIBUTE_V2)
+    )
 
 
-def _restore_sidecar(h5file: h5py.File, snapshot: tuple[bool, Any]) -> None:
-    exists, raw = snapshot
-    if exists:
-        h5file.attrs[SIDECAR_ATTRIBUTE] = raw
-    elif SIDECAR_ATTRIBUTE in h5file.attrs:
-        del h5file.attrs[SIDECAR_ATTRIBUTE]
+def _restore_sidecar(h5file: h5py.File, snapshot: _SidecarSnapshot) -> None:
+    for name, exists, raw in snapshot:
+        if exists:
+            h5file.attrs[name] = raw
+        elif name in h5file.attrs:
+            del h5file.attrs[name]
 
 
 def _native_reader() -> Callable[..., Any]:
@@ -443,7 +533,7 @@ def _existing_dataset(
 def _rollback_link(
     h5file: h5py.File,
     dataset: h5py.Dataset,
-    sidecar_snapshot: tuple[bool, Any],
+    sidecar_snapshot: _SidecarSnapshot,
 ) -> h5py.Group:
     while True:
         name = f"{_ROLLBACK_PREFIX}{uuid.uuid4().hex}"
@@ -452,10 +542,12 @@ def _rollback_link(
     rollback = h5file.create_group(name)
     try:
         rollback["dataset"] = dataset
-        exists, raw = sidecar_snapshot
-        rollback.attrs["sidecar_snapshot_present"] = exists
-        if exists:
-            rollback.attrs["sidecar_snapshot"] = raw
+        for version, (_, exists, raw) in zip(
+            ("v1", "v2"), sidecar_snapshot, strict=True
+        ):
+            rollback.attrs[f"sidecar_{version}_snapshot_present"] = exists
+            if exists:
+                rollback.attrs[f"sidecar_{version}_snapshot"] = raw
     except BaseException:
         del h5file[name]
         raise
@@ -496,12 +588,12 @@ def _write_open_container(
     array: Any,
     container: h5py.Group | h5py.File,
     path: str | None,
-    exact_epoch: int | None,
+    marker: EpochMarker | None,
     kwargs: dict[str, Any],
 ) -> h5py.Dataset:
     h5file = container.file
     _reject_external_link_traversal(array, container, path)
-    document = _read_sidecar(h5file)
+    _read_v2_sidecar(h5file)
     object_path = _write_path(array, container, path)
     relative_path = _relative_path(
         path if path is not None else getattr(array, "name", None)
@@ -520,7 +612,7 @@ def _write_open_container(
         dataset = _write_core(array, container, path, kwargs)
         if _dataset_path(dataset) != object_path:  # pragma: no cover - native invariant
             raise RuntimeError("native HDF5 writer returned an unexpected dataset path")
-        _commit_sidecar(h5file, document, dataset, exact_epoch)
+        _commit_sidecar(h5file, dataset, marker)
     except BaseException as operation_error:
         rollback_errors: list[BaseException] = []
         try:
@@ -636,7 +728,7 @@ def _preflight_native_external_write(
             if append:
                 _reject_stale_external_sidecar(array, h5file, path)
             else:
-                _read_sidecar(h5file)
+                _read_v2_sidecar(h5file)
 
 
 def _create_sibling_transaction_file(filepath: Path) -> Path:
@@ -657,7 +749,7 @@ def _write_path_transaction(
     array: Any,
     target: Any,
     path: str | None,
-    exact_epoch: int | None,
+    marker: EpochMarker | None,
     kwargs: dict[str, Any],
 ) -> h5py.Dataset:
     filepath = _filesystem_path(target)
@@ -668,7 +760,7 @@ def _write_path_transaction(
         raise OSError(f"File exists: {filepath}")
     if existed and h5py.is_hdf5(filepath):
         with h5py.File(filepath, "r") as existing_file:
-            _read_sidecar(existing_file)
+            _read_v2_sidecar(existing_file)
 
     temporary_path = _create_sibling_transaction_file(filepath)
     try:
@@ -682,7 +774,7 @@ def _write_path_transaction(
                 array,
                 temporary_file,
                 path,
-                exact_epoch,
+                marker,
                 kwargs,
             )
         if target_mode is not None:
@@ -698,7 +790,7 @@ def _write_filelike_transaction(
     array: Any,
     target: Any,
     path: str | None,
-    exact_epoch: int | None,
+    marker: EpochMarker | None,
     kwargs: dict[str, Any],
 ) -> h5py.Dataset:
     snapshot, original_position = _filelike_snapshot(target)
@@ -709,7 +801,7 @@ def _write_filelike_transaction(
             array,
             working_file,
             path,
-            exact_epoch,
+            marker,
             kwargs,
         )
     payload = working.getvalue()
@@ -731,12 +823,29 @@ def _write_filelike_transaction(
 
 def _read_core(
     dataset: h5py.Dataset,
-    target_class: type[Any],
     kwargs: dict[str, Any],
 ) -> Any:
     kwargs = dict(kwargs)
-    kwargs["array_type"] = target_class
+    kwargs["array_type"] = TimeSeries
     return _native_reader()(dataset, path=None, **kwargs)
+
+
+def _read_v2_sidecar(h5file: h5py.File) -> SidecarDocument | None:
+    if SIDECAR_ATTRIBUTE_V2 not in h5file.attrs:
+        return None
+    try:
+        return parse_v2_sidecar(h5file.attrs[SIDECAR_ATTRIBUTE_V2])
+    except ValueError as exc:
+        raise ValueError("invalid exact-epoch sidecar v2") from exc
+
+
+def _text_attribute(value: Any, *, label: str) -> Any:
+    if isinstance(value, bytes):
+        try:
+            return value.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise ValueError(f"invalid UTF-8 in HDF5 {label} attribute") from exc
+    return value
 
 
 def _read_open_container(
@@ -745,22 +854,24 @@ def _read_open_container(
     target_class: type[Any],
     kwargs: dict[str, Any],
 ) -> Any:
-    document = _read_sidecar(source.file)
     if path is not None:
         _relative_path(path)
     dataset = _gwpy_io_hdf5.find_dataset(source, path=path)
-    object_path = _dataset_path(dataset)
+    document = _read_v2_sidecar(dataset.file)
+    raw_x0 = dataset.attrs.get("x0")
+    raw_xunit = _text_attribute(dataset.attrs.get("xunit"), label="xunit")
+    raw_epoch = _text_attribute(dataset.attrs.get("epoch"), label="epoch")
+    marker = decode_epoch_marker(raw_epoch, raw_x0=raw_x0, xunit=raw_xunit)
+    if marker is not None:
+        validate_marker_record(marker, document)
     start = kwargs.pop("start", None)
     end = kwargs.pop("end", None)
-    result = _read_core(dataset, target_class, kwargs)
+    result = _read_core(dataset, kwargs)
     if not isinstance(result, target_class):  # pragma: no cover - reader invariant
         result = result.view(target_class)
 
-    entry = document["objects"].get(object_path)
-    if entry is not None:
-        state = entry["metadata"].get(TIME_STATE_KEY)
-        if state is not None and state[TIME_STATE_PRECISION_KEY] == "exact":
-            result._gwex_t0_gps_ns = state[TIME_STATE_NS_KEY]
+    if marker is not None:
+        result._gwex_t0_gps_ns = marker.epoch_ns
 
     if start is not None:
         start = max(start, result.span[0])
@@ -817,6 +928,7 @@ def register_hdf5_exact_t0_io() -> None:
     ) -> h5py.Dataset:
         exact_epoch = _exact_epoch(array)
         write_kwargs = dict(kwargs)
+        marker = _validate_caller_write_metadata(array, exact_epoch, write_kwargs)
         if _external_storage_requested(write_kwargs):
             if exact_epoch is not None:
                 raise ValueError(
@@ -837,7 +949,7 @@ def register_hdf5_exact_t0_io() -> None:
                 array,
                 target,
                 path,
-                exact_epoch,
+                marker,
                 write_kwargs,
             )
         if _is_seekable_filelike(target):
@@ -845,14 +957,14 @@ def register_hdf5_exact_t0_io() -> None:
                 array,
                 target,
                 path,
-                exact_epoch,
+                marker,
                 write_kwargs,
             )
         return _write_path_transaction(
             array,
             target,
             path,
-            exact_epoch,
+            marker,
             write_kwargs,
         )
 
