@@ -803,6 +803,101 @@ def test_hdf5_legacy_external_direct_dataset_alias_preserves_managed_link(
         assert h5file.attrs[_SIDECAR_ATTRIBUTE] == before_sidecar
 
 
+@pytest.mark.parametrize("container_kind", ["file", "group"])
+@pytest.mark.parametrize("storage_kind", ["inline", "external"])
+@pytest.mark.parametrize("link_kind", ["direct", "soft"])
+def test_hdf5_external_link_parent_write_fails_before_mutating_files(
+    tmp_path: Path,
+    container_kind: str,
+    storage_kind: str,
+    link_kind: str,
+) -> None:
+    stem = f"{container_kind}-{storage_kind}-{link_kind}"
+    external_path = tmp_path / f"linked-{stem}.hdf5"
+    main_path = tmp_path / f"main-{stem}.hdf5"
+    raw_path = tmp_path / f"raw-{stem}.bin"
+    raw_path.write_bytes(b"r" * 32)
+    original = _exact_series(123)
+    replacement = _legacy_series(offset=10)
+    original.write(external_path, format="hdf5", path="g/data")
+    with h5py.File(main_path, "w") as h5file:
+        container = (
+            h5file
+            if container_kind == "file"
+            else h5file.create_group("container")
+        )
+        container["x"] = h5py.ExternalLink(str(external_path), "/g")
+        if link_kind == "soft":
+            container["s"] = h5py.SoftLink(f"{container.name.rstrip('/')}/x")
+
+    before_external = external_path.read_bytes()
+    before_raw = raw_path.read_bytes()
+    with h5py.File(main_path, "r+") as h5file:
+        container = h5file if container_kind == "file" else h5file["container"]
+        write_path = f"{'s' if link_kind == 'soft' else 'x'}/data"
+
+        with pytest.raises(ValueError, match="external link"):
+            if storage_kind == "external":
+                _write_external(
+                    replacement,
+                    container,
+                    raw_path,
+                    path=write_path,
+                    overwrite=True,
+                )
+            else:
+                replacement.write(
+                    container,
+                    format="hdf5",
+                    path=write_path,
+                    overwrite=True,
+                )
+
+        assert h5file.id.valid
+        assert isinstance(container.get("x", getlink=True), h5py.ExternalLink)
+        if link_kind == "soft":
+            assert isinstance(container.get("s", getlink=True), h5py.SoftLink)
+        np.testing.assert_array_equal(container["x/data"][()], original.value)
+
+    assert external_path.read_bytes() == before_external
+    assert raw_path.read_bytes() == before_raw
+
+
+@pytest.mark.parametrize("storage_kind", ["inline", "external"])
+def test_hdf5_internal_soft_link_parent_preserves_native_write_behavior(
+    tmp_path: Path,
+    storage_kind: str,
+) -> None:
+    path = tmp_path / f"internal-soft-link-{storage_kind}.hdf5"
+    raw_path = tmp_path / f"internal-soft-link-{storage_kind}.raw"
+    replacement = _legacy_series(offset=10)
+
+    with h5py.File(path, "w") as h5file:
+        group = h5file.create_group("g")
+        _legacy_series().write(group, format="hdf5", path="data")
+        h5file["s"] = h5py.SoftLink("/g")
+
+        if storage_kind == "external":
+            _write_external(
+                replacement,
+                h5file,
+                raw_path,
+                path="s/data",
+                overwrite=True,
+            )
+        else:
+            replacement.write(
+                h5file,
+                format="hdf5",
+                path="s/data",
+                overwrite=True,
+            )
+
+        assert isinstance(h5file.get("s", getlink=True), h5py.SoftLink)
+        np.testing.assert_array_equal(group["data"][()], replacement.value)
+        assert _SIDECAR_ATTRIBUTE not in h5file.attrs
+
+
 def test_hdf5_legacy_external_write_preserves_native_absolute_path_behavior(
     tmp_path: Path,
 ) -> None:

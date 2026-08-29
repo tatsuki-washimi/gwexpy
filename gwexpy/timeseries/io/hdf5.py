@@ -290,11 +290,34 @@ def _sidecar_alias_paths(
     return aliases
 
 
+def _reject_external_link_traversal(
+    array: Any,
+    container: h5py.Group | h5py.File,
+    path: Any,
+) -> None:
+    object_path = _native_object_path(array, container, path)
+    if object_path is None:
+        return
+    h5file = container.file
+    current: h5py.File | h5py.Group = h5file
+    for component in object_path.split("/")[:-1]:
+        link = current.get(component, getlink=True)
+        if isinstance(link, h5py.ExternalLink):
+            raise ValueError("cannot write through an HDF5 external link")
+        child = current.get(component)
+        if not isinstance(child, (h5py.File, h5py.Group)):
+            return
+        if child.file.id != h5file.id:
+            raise ValueError("cannot write through an HDF5 external link")
+        current = child
+
+
 def _reject_stale_external_sidecar(
     array: Any,
     container: h5py.Group | h5py.File,
     path: str | None,
 ) -> None:
+    _reject_external_link_traversal(array, container, path)
     document = _read_sidecar(container.file)
     object_path = _native_object_path(array, container, path)
     objects = document["objects"]
@@ -472,6 +495,7 @@ def _write_open_container(
     kwargs: dict[str, Any],
 ) -> h5py.Dataset:
     h5file = container.file
+    _reject_external_link_traversal(array, container, path)
     document = _read_sidecar(h5file)
     object_path = _write_path(array, container, path)
     relative_path = _relative_path(
