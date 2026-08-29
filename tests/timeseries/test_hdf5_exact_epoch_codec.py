@@ -6,7 +6,7 @@ import math
 import random
 import struct
 import sys
-from dataclasses import replace
+from dataclasses import FrozenInstanceError, replace
 from decimal import Decimal
 
 import pytest
@@ -112,6 +112,34 @@ def test_v2_sidecar_roundtrip_is_deterministic() -> None:
     }
 
 
+def test_v2_sidecar_serialization_sorts_record_keys() -> None:
+    records = [_sidecar_record(1), _sidecar_record(0)]
+
+    reversed_input = exact_epoch_codec.serialize_v2_sidecar(records)
+    forward_input = exact_epoch_codec.serialize_v2_sidecar(reversed(records))
+
+    assert reversed_input == forward_input
+    assert list(json.loads(reversed_input)["records"]) == sorted(
+        record.lineage_token for record in records
+    )
+
+
+def test_v2_sidecar_document_is_defensively_immutable() -> None:
+    record = _sidecar_record(0)
+    source = {record.lineage_token: record}
+    document = exact_epoch_codec.SidecarDocument(source)
+
+    source.clear()
+
+    assert document.records == {record.lineage_token: record}
+    with pytest.raises(TypeError):
+        document.records[record.lineage_token] = record  # type: ignore[index]
+    with pytest.raises(FrozenInstanceError):
+        document.records = {}  # type: ignore[misc]
+    with pytest.raises(FrozenInstanceError):
+        record.paths = ("mutated",)  # type: ignore[misc]
+
+
 def _sidecar_json_obj() -> tuple[EpochMarker, dict[str, object]]:
     marker = _fixed_sidecar_marker()
     record = exact_epoch_codec.record_from_marker(marker, ["group/data"])
@@ -194,9 +222,8 @@ def test_v2_sidecar_rejects_duplicate_or_noncanonical_json() -> None:
     )
     nonfinite = canonical.replace(str(marker.epoch_ns), "NaN", 1)
     infinity = canonical.replace(str(marker.epoch_ns), "Infinity", 1)
-    replacement = canonical.replace("group/data", "group/\ufffddata", 1)
 
-    for invalid in (duplicate, nonfinite, infinity, replacement):
+    for invalid in (duplicate, nonfinite, infinity):
         with pytest.raises(ValueError):
             exact_epoch_codec.parse_v2_sidecar(invalid)
 
@@ -249,6 +276,18 @@ def test_v2_sidecar_rejects_invalid_utf8() -> None:
         exact_epoch_codec.parse_v2_sidecar(canonical[:-1] + b"\xff")
     with pytest.raises(ValueError, match="UTF-8"):
         exact_epoch_codec.parse_v2_sidecar(canonical.decode()[:-1] + "\ud800")
+
+
+def test_v2_sidecar_roundtrips_literal_replacement_character_path() -> None:
+    marker = _fixed_sidecar_marker()
+    path = "group/\ufffd/data"
+
+    record = exact_epoch_codec.record_from_marker(marker, [path])
+    serialized = exact_epoch_codec.serialize_v2_sidecar([record])
+    document = exact_epoch_codec.parse_v2_sidecar(serialized)
+
+    assert document.records[marker.lineage_token].paths == (path,)
+    assert "\ufffd" in serialized
 
 
 def test_v2_sidecar_normalizes_bounded_json_recursion_error() -> None:
@@ -369,6 +408,34 @@ def test_v2_sidecar_accepts_exact_byte_limit_and_rejects_plus_one() -> None:
         exact_epoch_codec.parse_v2_sidecar(oversized)
 
 
+def test_v2_sidecar_serializer_stops_at_first_oversized_chunk(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls = 0
+    yielded_chunks = 0
+
+    def oversized_chunks(
+        self: json.JSONEncoder,
+        payload: object,
+        _one_shot: bool = False,
+    ) -> object:
+        del self, payload, _one_shot
+        nonlocal calls, yielded_chunks
+        calls += 1
+        yielded_chunks += 1
+        yield "x" * (8 * 1024 * 1024)
+        yielded_chunks += 1
+        yield "x"
+        raise AssertionError("encoder chunks after the limit were consumed")
+
+    monkeypatch.setattr(json.JSONEncoder, "iterencode", oversized_chunks)
+
+    with pytest.raises(ValueError, match="8 MiB"):
+        exact_epoch_codec.serialize_v2_sidecar([])
+    assert calls == 1
+    assert yielded_chunks == 2
+
+
 def test_v2_sidecar_accepts_record_limit_and_rejects_plus_one() -> None:
     records = [_sidecar_record(index) for index in range(10_001)]
     at_limit = exact_epoch_codec.serialize_v2_sidecar(records[:10_000])
@@ -390,6 +457,29 @@ def test_v2_sidecar_accepts_record_limit_and_rejects_plus_one() -> None:
         exact_epoch_codec.parse_v2_sidecar(oversized)
 
 
+def test_v2_sidecar_record_cap_stops_consumption_at_limit() -> None:
+    records = [_sidecar_record(index) for index in range(10_001)]
+    yielded = 0
+
+    def record_stream() -> object:
+        nonlocal yielded
+        for record in records:
+            yielded += 1
+            yield record
+        raise AssertionError("records after the 10001st item were consumed")
+
+    with pytest.raises(ValueError, match="10000"):
+        exact_epoch_codec.serialize_v2_sidecar(record_stream())  # type: ignore[arg-type]
+    assert yielded == 10_001
+
+
+def test_v2_sidecar_serializer_normalizes_nonstring_token() -> None:
+    invalid = replace(_sidecar_record(0), lineage_token=[])  # type: ignore[arg-type]
+
+    with pytest.raises(ValueError, match="token"):
+        exact_epoch_codec.serialize_v2_sidecar([invalid])
+
+
 def test_v2_sidecar_accepts_path_limits_and_rejects_plus_one() -> None:
     marker = _fixed_sidecar_marker()
     longest_path = "観/" + "x" * (4_096 - len("観/".encode("utf-8")))
@@ -406,6 +496,41 @@ def test_v2_sidecar_accepts_path_limits_and_rejects_plus_one() -> None:
         exact_epoch_codec.record_from_marker(marker, paths + ("one/too/many",))
     with pytest.raises(ValueError, match="4096"):
         exact_epoch_codec.record_from_marker(marker, (longest_path + "x",))
+
+
+def test_v2_sidecar_path_cap_stops_consumption_at_limit() -> None:
+    marker = _fixed_sidecar_marker()
+    yielded = 0
+
+    class KnownOversizedPaths:
+        def __len__(self) -> int:
+            return 17
+
+        def __iter__(self) -> object:
+            raise AssertionError("known oversized paths were iterated")
+
+    def unknown_paths() -> object:
+        nonlocal yielded
+        for index in range(17):
+            yielded += 1
+            yield f"group/p{index:02d}"
+        raise AssertionError("paths after the 17th item were consumed")
+
+    with pytest.raises(ValueError, match="16"):
+        exact_epoch_codec.record_from_marker(marker, KnownOversizedPaths())  # type: ignore[arg-type]
+    with pytest.raises(ValueError, match="16"):
+        exact_epoch_codec.record_from_marker(marker, unknown_paths())  # type: ignore[arg-type]
+    assert yielded == 17
+
+
+def test_v2_sidecar_parser_rejects_raw_path_count_before_copy() -> None:
+    marker, payload = _sidecar_json_obj()
+    payload["records"][marker.lineage_token]["paths"] = [  # type: ignore[index]
+        f"group/p{index:02d}" for index in range(17)
+    ]
+
+    with pytest.raises(ValueError, match="raw path array exceeds 16"):
+        exact_epoch_codec.parse_v2_sidecar(json.dumps(payload))
 
 
 def test_v2_sidecar_rejects_one_invalid_unselected_record() -> None:

@@ -8,7 +8,7 @@ import math
 import operator
 import secrets
 import struct
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Sized
 from dataclasses import dataclass, replace
 from decimal import Decimal
 from types import MappingProxyType
@@ -29,6 +29,7 @@ _MAX_SIDECAR_BYTES = 8 * 1024 * 1024
 _MAX_SIDECAR_RECORDS = 10_000
 _MAX_PATHS_PER_RECORD = 16
 _MAX_PATH_BYTES = 4096
+_UTF8_COUNT_CHARS = 4096
 _ROOT_KEYS = {"schema", "version", "records"}
 _RECORD_KEYS = {"binding", "metadata", "provenance", "paths"}
 _BINDING_KEYS = {
@@ -87,8 +88,12 @@ class SidecarDocument:
 
 def _canonical_paths(paths: Iterable[str]) -> tuple[str, ...]:
     """Return unique diagnostic paths in deterministic order."""
+    if isinstance(paths, Sized) and len(paths) > _MAX_PATHS_PER_RECORD:
+        raise ValueError("sidecar record exceeds 16 diagnostic paths")
     validated: list[str] = []
-    for path in paths:
+    for index, path in enumerate(paths):
+        if index >= _MAX_PATHS_PER_RECORD:
+            raise ValueError("sidecar record exceeds 16 diagnostic paths")
         if not isinstance(path, str):
             raise ValueError("sidecar path must be a string")
         try:
@@ -97,8 +102,6 @@ def _canonical_paths(paths: Iterable[str]) -> tuple[str, ...]:
             raise ValueError("sidecar path is not valid UTF-8") from exc
         if len(encoded) > _MAX_PATH_BYTES:
             raise ValueError("sidecar path exceeds 4096 UTF-8 bytes")
-        if "\ufffd" in path:
-            raise ValueError("sidecar path contains a replacement character")
         components = path.split("/")
         if (
             not path
@@ -149,8 +152,6 @@ def _reconstruct_record_marker(record: SidecarRecord) -> EpochMarker:
         raise ValueError("sidecar xunit is not valid UTF-8") from exc
     if len(encoded_unit) > _MAX_XUNIT_BYTES:
         raise ValueError("sidecar xunit exceeds 255 UTF-8 bytes")
-    if "\ufffd" in record.axis.xunit:
-        raise ValueError("sidecar xunit contains a replacement character")
     canonical_paths = _canonical_paths(record.paths)
     if record.paths != canonical_paths:
         raise ValueError("sidecar paths must be sorted and unique")
@@ -201,19 +202,33 @@ def _record_json(record: SidecarRecord) -> dict[str, object]:
     }
 
 
+def _utf8_size_within(value: str, limit: int) -> int | None:
+    """Count UTF-8 bytes in bounded slices, or stop once limit is exceeded."""
+    total = 0
+    for offset in range(0, len(value), _UTF8_COUNT_CHARS):
+        encoded = value[offset : offset + _UTF8_COUNT_CHARS].encode("utf-8")
+        total += len(encoded)
+        if total > limit:
+            return None
+    return total
+
+
 def serialize_v2_sidecar(records: Iterable[SidecarRecord]) -> str:
     """Serialize records as deterministic compact sidecar v2 JSON."""
     by_token: dict[str, SidecarRecord] = {}
     for source_record in records:
+        token = source_record.lineage_token
+        if not _is_lower_hex(token, 32):
+            raise ValueError("sidecar token must be 32 lowercase hexadecimal digits")
+        if token in by_token:
+            raise ValueError("duplicate sidecar lineage token")
+        if len(by_token) >= _MAX_SIDECAR_RECORDS:
+            raise ValueError("sidecar exceeds 10000 records")
         canonical_record = replace(
             source_record, paths=_canonical_paths(source_record.paths)
         )
         _reconstruct_record_marker(canonical_record)
-        if canonical_record.lineage_token in by_token:
-            raise ValueError("duplicate sidecar lineage token")
         by_token[canonical_record.lineage_token] = canonical_record
-    if len(by_token) > _MAX_SIDECAR_RECORDS:
-        raise ValueError("sidecar exceeds 10000 records")
     payload = {
         "schema": _SIDECAR_SCHEMA,
         "version": 2,
@@ -221,12 +236,18 @@ def serialize_v2_sidecar(records: Iterable[SidecarRecord]) -> str:
             token: _record_json(by_token[token]) for token in sorted(by_token)
         },
     }
-    serialized = json.dumps(
-        payload, ensure_ascii=False, allow_nan=False, separators=(",", ":")
+    encoder = json.JSONEncoder(
+        ensure_ascii=False, allow_nan=False, separators=(",", ":")
     )
-    if len(serialized.encode("utf-8")) > _MAX_SIDECAR_BYTES:
-        raise ValueError("sidecar JSON exceeds 8 MiB")
-    return serialized
+    chunks: list[str] = []
+    remaining = _MAX_SIDECAR_BYTES
+    for chunk in encoder.iterencode(payload):
+        chunk_size = _utf8_size_within(chunk, remaining)
+        if chunk_size is None:
+            raise ValueError("sidecar JSON exceeds 8 MiB")
+        chunks.append(chunk)
+        remaining -= chunk_size
+    return "".join(chunks)
 
 
 def parse_v2_sidecar(raw: object) -> SidecarDocument:
@@ -263,8 +284,6 @@ def parse_v2_sidecar(raw: object) -> SidecarDocument:
             raise ValueError("sidecar JSON is not valid UTF-8") from exc
     else:
         raise ValueError("sidecar JSON must be str or bytes")
-    if "\ufffd" in text:
-        raise ValueError("replacement character is not accepted in sidecar JSON")
     try:
         payload = json.loads(
             text,
@@ -309,6 +328,8 @@ def parse_v2_sidecar(raw: object) -> SidecarDocument:
         raw_paths = value["paths"]
         if not isinstance(raw_paths, list):
             raise ValueError("sidecar paths must be an array")
+        if len(raw_paths) > _MAX_PATHS_PER_RECORD:
+            raise ValueError("sidecar raw path array exceeds 16 paths")
         paths = tuple(raw_paths)
         if paths != _canonical_paths(paths):
             raise ValueError("sidecar paths must be sorted and unique")
