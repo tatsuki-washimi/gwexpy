@@ -138,7 +138,7 @@ that point onward, only semantic assertion failures count as RED.
 - Create: `gwexpy/timeseries/io/_hdf5_exact_epoch.py`
 - Create: `tests/timeseries/test_hdf5_exact_epoch_codec.py`
 
-- [ ] **Step 1: Write the numerical-envelope RED tests**
+- [x] **Step 1: Write the numerical-envelope RED tests**
 
 Add deterministic tests for explicit `+`/`-`, negative zero, minimum subnormal,
 minimum normal, maximum finite, and seeded random finite binary64 values. Test
@@ -181,7 +181,7 @@ finite patterns stratified across exponent classes and signs. Add targeted cases
 around powers of ten and decimal-representation transition boundaries. The fixed
 seed and sample count remain reproducible release-gate inputs.
 
-- [ ] **Step 2: Run the envelope tests and verify RED**
+- [x] **Step 2: Run the envelope tests and verify RED**
 
 Run:
 
@@ -192,13 +192,13 @@ rtk conda run -n gwexpy pytest tests/timeseries/test_hdf5_exact_epoch_codec.py -
 Expected under the one-time bootstrap exception: collection fails because
 `_hdf5_exact_epoch` is absent.
 
-- [ ] **Step 3: Create the importable scaffold, then obtain semantic RED**
+- [x] **Step 3: Create the importable scaffold, then obtain semantic RED**
 
 Create the module, immutable value types, and public test-facing function
 signatures. The codec entry points initially raise `NotImplementedError`. Rerun
 the same node and require RED at that exception rather than collection.
 
-- [ ] **Step 4: Define the primitive encoders**
+- [x] **Step 4: Define the primitive encoders**
 
 Implement focused immutable values and helpers. Keep the module private and do
 not import h5py or the GWpy registry.
@@ -226,7 +226,7 @@ Add `_float_bits`, `_canonical_axis_binding`, `_canonical_x0_prefix`,
 `_decode_triplets`. Enforce finite binary64, canonical UTF-8 unit length 255,
 minimal magnitude length 512, and the unique zero representation.
 
-- [ ] **Step 5: Write payload canonicality and corruption RED tests**
+- [x] **Step 5: Write payload canonicality and corruption RED tests**
 
 Add these nodes before implementing the payload:
 
@@ -247,7 +247,7 @@ non-minimal magnitude, and negative-zero epoch payload.
 Run the named nodes and verify that they fail for missing behavior, not for a
 fixture or import error introduced by the scaffold.
 
-- [ ] **Step 6: Implement the complete payload and one-boundary decoder**
+- [x] **Step 6: Implement the complete payload and one-boundary decoder**
 
 Implement `encode_epoch_marker`, `decode_epoch_marker`, and
 `reconstruct_epoch_marker` with the exact field order in the specification.
@@ -277,7 +277,7 @@ An ordinary numeric epoch returns `None`; recognizable malformed v2 input raises
 `ValueError`. The SHA-256 payload digest uses the fixed domain separator, while
 `marker_sha256` hashes the complete ASCII marker without that separator.
 
-- [ ] **Step 7: Run codec tests GREEN and commit**
+- [x] **Step 7: Run codec tests GREEN and commit**
 
 Run:
 
