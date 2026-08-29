@@ -306,7 +306,7 @@ rtk git commit -m "feat: add canonical HDF5 epoch marker codec"
 - Modify: `gwexpy/timeseries/io/_hdf5_exact_epoch.py`
 - Modify: `tests/timeseries/test_hdf5_exact_epoch_codec.py`
 
-- [ ] **Step 1: Add whole-document and bound RED tests**
+- [x] **Step 1: Add whole-document and bound RED tests**
 
 Create canonical test records from a fixed `EpochMarker`; do not handwave a
 partially valid JSON fixture. Cover duplicate JSON keys, extra/missing fields,
@@ -338,7 +338,7 @@ Add `test_v2_sidecar_reconstructs_complete_ascii_marker`,
 `test_v2_sidecar_paths_are_diagnostic_only`, and
 `test_v1_sidecar_parser_never_returns_exact_authority`.
 
-- [ ] **Step 2: Run the sidecar nodes and verify RED**
+- [x] **Step 2: Run the sidecar nodes and verify RED**
 
 Run each node through the required micro-cycle, then aggregate with:
 
@@ -349,7 +349,7 @@ rtk conda run -n gwexpy pytest tests/timeseries/test_hdf5_exact_epoch_codec.py -
 Expected before Step 3: failures identify missing v2 parse, reconstruction, or
 limit behavior. Expected after Step 3: every selected node passes.
 
-- [ ] **Step 3: Implement strict parse, reconstruction, and serialization**
+- [x] **Step 3: Implement strict parse, reconstruction, and serialization**
 
 Add immutable `SidecarRecord` and `SidecarDocument` values plus:
 
@@ -368,7 +368,7 @@ returning the document, reconstruct its complete marker byte-for-byte, and compa
 `marker_sha256`. Sort record keys and unique diagnostic paths at serialization.
 An absent document is distinct from an empty valid document.
 
-- [ ] **Step 4: Run codec and document tests GREEN and commit**
+- [x] **Step 4: Run codec and document tests GREEN and commit**
 
 Run:
 
