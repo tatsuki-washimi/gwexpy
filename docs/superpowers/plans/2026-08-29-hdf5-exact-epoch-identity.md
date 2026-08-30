@@ -21,8 +21,8 @@ Ruff, MyPy, conda environment `gwexpy`.
 
 **Status:** in-progress
 
-Tasks 1–7 and Checkpoint A are completed. Tasks 6–8 were approved for the
-local v0.2.1 P0 scope on 2026-08-30. Tasks 8–10 remain planned; P0 approval
+Tasks 1–8 and Checkpoint A are completed. Tasks 6–8 were approved for the
+local v0.2.1 P0 scope on 2026-08-30. Tasks 9–10 remain planned; P0 approval
 still requires their verification and the independent reviews below.
 
 **Specification:**
@@ -950,7 +950,7 @@ rtk git commit -m "fix: bound HDF5 file-like transaction memory"
 
 ### Task 8: Harden caller-owned handle rollback and recovery
 
-**Status:** planned
+**Status:** completed (verified: `rtk conda run -n gwexpy pytest tests/timeseries/test_hdf5_exact_t0_transactions.py -q`; 64 passed, `rtk conda run -n gwexpy pytest tests/timeseries/test_hdf5_exact_t0.py -q`; 590 passed, the 20-row mutation rollback node passed, and the Task 8 Ruff, format, and MyPy gates passed)
 
 **Files:**
 

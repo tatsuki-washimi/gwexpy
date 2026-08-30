@@ -10,6 +10,7 @@ import tempfile
 import uuid
 import warnings
 from collections.abc import Callable, Iterable, Iterator
+from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Any, BinaryIO, cast
 
@@ -65,6 +66,17 @@ _BASE_READER: Callable[..., Any] | None = None
 _BASE_WRITER: Callable[..., h5py.Dataset] | None = None
 
 _SidecarSnapshot = tuple[tuple[str, bool, Any], ...]
+
+
+@dataclass
+class _HandleRecovery:
+    """Verified recovery state for one caller-owned HDF5 dataset."""
+
+    h5file: h5py.File
+    group: h5py.Group
+    path: str
+    dataset: h5py.Dataset
+    sidecar_snapshot: _SidecarSnapshot
 
 
 class _RollbackError(RuntimeError):
@@ -674,12 +686,28 @@ def _sidecar_snapshot(h5file: h5py.File) -> _SidecarSnapshot:
     )
 
 
-def _restore_sidecar(h5file: h5py.File, snapshot: _SidecarSnapshot) -> None:
-    for name, exists, raw in snapshot:
-        if exists:
-            h5file.attrs[name] = raw
-        elif name in h5file.attrs:
-            del h5file.attrs[name]
+def _restore_sidecar_attribute(
+    h5file: h5py.File,
+    snapshot: tuple[str, bool, Any],
+) -> None:
+    name, exists, raw = snapshot
+    if exists:
+        h5file.attrs[name] = raw
+    elif name in h5file.attrs:
+        del h5file.attrs[name]
+
+
+def _restore_root_sidecars(
+    h5file: h5py.File,
+    snapshot: _SidecarSnapshot,
+) -> tuple[BaseException, ...]:
+    errors: list[BaseException] = []
+    for attribute_snapshot in snapshot:
+        try:
+            _restore_sidecar_attribute(h5file, attribute_snapshot)
+        except BaseException as exc:  # pragma: no cover - catastrophic HDF5 failure
+            errors.append(exc)
+    return tuple(errors)
 
 
 def _native_reader() -> Callable[..., Any]:
@@ -755,45 +783,174 @@ def _existing_dataset(
     return target
 
 
-def _rollback_link(
-    h5file: h5py.File,
-    dataset: h5py.Dataset,
-    sidecar_snapshot: _SidecarSnapshot,
-) -> h5py.Group:
+def _create_handle_recovery_group(h5file: h5py.File) -> h5py.Group:
     while True:
         name = f"{_ROLLBACK_PREFIX}{uuid.uuid4().hex}"
         if name not in h5file:
-            break
-    rollback = h5file.create_group(name)
+            return h5file.create_group(name)
+
+
+def _link_handle_recovery_dataset(
+    rollback: h5py.Group,
+    dataset: h5py.Dataset,
+) -> None:
+    rollback["dataset"] = dataset
+
+
+def _store_handle_sidecar_snapshot(
+    rollback: h5py.Group,
+    version: str,
+    snapshot: tuple[str, bool, Any],
+) -> None:
+    _, exists, raw = snapshot
+    rollback.attrs[f"sidecar_{version}_snapshot_present"] = exists
+    if exists:
+        rollback.attrs[f"sidecar_{version}_snapshot"] = raw
+
+
+def _sidecar_values_equal(left: Any, right: Any) -> bool:
     try:
-        rollback["dataset"] = dataset
-        for version, (_, exists, raw) in zip(
-            ("v1", "v2"), sidecar_snapshot, strict=True
-        ):
-            rollback.attrs[f"sidecar_{version}_snapshot_present"] = exists
-            if exists:
-                rollback.attrs[f"sidecar_{version}_snapshot"] = raw
-    except BaseException:
-        del h5file[name]
+        return bool(np.array_equal(left, right))
+    except (TypeError, ValueError):
+        return False
+
+
+def _verify_handle_recovery(recovery: _HandleRecovery) -> None:
+    recovery.h5file.flush()
+    if recovery.path not in recovery.h5file:
+        raise RuntimeError("HDF5 recovery group is not durably linked")
+    linked = recovery.group.get("dataset")
+    if not isinstance(linked, h5py.Dataset):
+        raise RuntimeError("HDF5 recovery dataset link is missing")
+    if h5py.h5o.get_info(linked.id).addr != h5py.h5o.get_info(recovery.dataset.id).addr:
+        raise RuntimeError("HDF5 recovery dataset link changed object identity")
+    for version, (_, exists, raw) in zip(
+        ("v1", "v2"), recovery.sidecar_snapshot, strict=True
+    ):
+        present_name = f"sidecar_{version}_snapshot_present"
+        if present_name not in recovery.group.attrs:
+            raise RuntimeError(f"HDF5 recovery {version} presence flag is missing")
+        if bool(recovery.group.attrs[present_name]) != exists:
+            raise RuntimeError(f"HDF5 recovery {version} presence flag changed")
+        snapshot_name = f"sidecar_{version}_snapshot"
+        if exists:
+            if snapshot_name not in recovery.group.attrs or not _sidecar_values_equal(
+                recovery.group.attrs[snapshot_name], raw
+            ):
+                raise RuntimeError(f"HDF5 recovery {version} snapshot changed")
+        elif snapshot_name in recovery.group.attrs:
+            raise RuntimeError(
+                f"HDF5 recovery {version} snapshot is unexpectedly present"
+            )
+
+
+def _linked_handle_recovery_path(recovery: _HandleRecovery) -> str | None:
+    return recovery.path if recovery.path in recovery.h5file else None
+
+
+def _unlink_handle_recovery(recovery: _HandleRecovery) -> None:
+    if recovery.path in recovery.h5file:
+        del recovery.h5file[recovery.path]
+    if recovery.group.id.valid:
+        recovery.group.id.close()
+
+
+def _close_unlinked_handle_recovery(
+    recovery: _HandleRecovery,
+) -> tuple[BaseException, ...]:
+    if (
+        _linked_handle_recovery_path(recovery) is not None
+        or not recovery.group.id.valid
+    ):
+        return ()
+    try:
+        recovery.group.id.close()
+    except BaseException as exc:  # pragma: no cover - catastrophic HDF5 failure
+        return (exc,)
+    return ()
+
+
+def _prepare_handle_recovery(
+    h5file: h5py.File,
+    dataset: h5py.Dataset,
+    sidecar_snapshot: _SidecarSnapshot,
+) -> _HandleRecovery:
+    rollback = _create_handle_recovery_group(h5file)
+    recovery = _HandleRecovery(
+        h5file=h5file,
+        group=rollback,
+        path=cast(str, rollback.name),
+        dataset=dataset,
+        sidecar_snapshot=sidecar_snapshot,
+    )
+    try:
+        _link_handle_recovery_dataset(rollback, dataset)
+        for version, snapshot in zip(("v1", "v2"), sidecar_snapshot, strict=True):
+            _store_handle_sidecar_snapshot(
+                rollback,
+                version,
+                snapshot,
+            )
+        _verify_handle_recovery(recovery)
+    except BaseException as operation_error:
+        try:
+            _unlink_handle_recovery(recovery)
+        except BaseException as cleanup_error:
+            cleanup_errors = [cleanup_error]
+            cleanup_errors.extend(_close_unlinked_handle_recovery(recovery))
+            raise _RollbackError(
+                operation_error,
+                tuple(cleanup_errors),
+                _linked_handle_recovery_path(recovery),
+                state="old",
+            ) from cleanup_error
         raise
-    return rollback
+    return recovery
 
 
-def _delete_rollback(h5file: h5py.File, rollback: h5py.Group | None) -> None:
-    if rollback is not None and rollback.name in h5file:
-        del h5file[rollback.name]
+def _remove_or_recreate_recovery(
+    recovery: _HandleRecovery,
+) -> tuple[
+    _HandleRecovery | None,
+    tuple[BaseException, ...],
+    str | None,
+]:
+    linked_path = _linked_handle_recovery_path(recovery)
+    if linked_path is not None:
+        return recovery, (), linked_path
+
+    errors = list(_close_unlinked_handle_recovery(recovery))
+    try:
+        recreated = _prepare_handle_recovery(
+            recovery.h5file,
+            recovery.dataset,
+            recovery.sidecar_snapshot,
+        )
+    except BaseException as exc:  # pragma: no cover - catastrophic HDF5 failure
+        errors.append(exc)
+        retained_path = exc.recovery_path if isinstance(exc, _RollbackError) else None
+        return None, tuple(errors), retained_path
+    return recreated, tuple(errors), recreated.path
 
 
 def _restore_dataset(
     container: h5py.Group | h5py.File,
     candidate_path: str,
-    rollback: h5py.Group | None,
+    original_dataset: h5py.Dataset | None,
     created_parent_paths: tuple[str, ...],
 ) -> None:
-    if candidate_path in container:
-        del container[candidate_path]
-    if rollback is not None:
-        container[candidate_path] = rollback["dataset"]
+    current = container.get(candidate_path)
+    current_is_original = (
+        isinstance(current, h5py.Dataset)
+        and original_dataset is not None
+        and h5py.h5o.get_info(current.id).addr
+        == h5py.h5o.get_info(original_dataset.id).addr
+    )
+    if not current_is_original:
+        if container.get(candidate_path, getlink=True) is not None:
+            del container[candidate_path]
+        if original_dataset is not None:
+            container[candidate_path] = original_dataset
     for parent_path in reversed(created_parent_paths):
         parent = container.get(parent_path)
         if isinstance(parent, h5py.Group) and len(parent) == 0:
@@ -807,6 +964,72 @@ def _missing_parent_paths(
     components = candidate_path.split("/")[:-1]
     prefixes = ["/".join(components[: index + 1]) for index in range(len(components))]
     return tuple(path for path in prefixes if container.get(path, getlink=True) is None)
+
+
+def _public_dataset_is_restored(
+    container: h5py.Group | h5py.File,
+    candidate_path: str,
+    original_dataset: h5py.Dataset | None,
+    created_parent_paths: tuple[str, ...],
+) -> bool:
+    if original_dataset is None:
+        if container.get(candidate_path, getlink=True) is not None:
+            return False
+    else:
+        candidate = container.get(candidate_path)
+        if not isinstance(candidate, h5py.Dataset):
+            return False
+        if (
+            h5py.h5o.get_info(candidate.id).addr
+            != h5py.h5o.get_info(original_dataset.id).addr
+        ):
+            return False
+    return all(
+        container.get(path, getlink=True) is None for path in created_parent_paths
+    )
+
+
+def _root_sidecars_are_restored(
+    h5file: h5py.File,
+    snapshot: _SidecarSnapshot,
+) -> bool:
+    for name, exists, raw in snapshot:
+        if (name in h5file.attrs) != exists:
+            return False
+        if exists and not _sidecar_values_equal(h5file.attrs[name], raw):
+            return False
+    return True
+
+
+def _restore_public_dataset(
+    container: h5py.Group | h5py.File,
+    candidate_path: str,
+    original_dataset: h5py.Dataset | None,
+    created_parent_paths: tuple[str, ...],
+) -> tuple[tuple[BaseException, ...], bool]:
+    errors: list[BaseException] = []
+    try:
+        _restore_dataset(
+            container,
+            candidate_path,
+            original_dataset,
+            created_parent_paths,
+        )
+    except BaseException as exc:  # pragma: no cover - catastrophic HDF5 failure
+        errors.append(exc)
+    try:
+        restored = _public_dataset_is_restored(
+            container,
+            candidate_path,
+            original_dataset,
+            created_parent_paths,
+        )
+    except BaseException as exc:  # pragma: no cover - catastrophic HDF5 failure
+        errors.append(exc)
+        restored = False
+    if not restored:
+        errors.append(RuntimeError("HDF5 public dataset rollback postcondition failed"))
+    return tuple(errors), restored
 
 
 def _write_open_container(
@@ -827,42 +1050,61 @@ def _write_open_container(
 
     snapshot = _sidecar_snapshot(h5file)
     created_parent_paths = _missing_parent_paths(coordinate, relative_path)
-    rollback = (
-        _rollback_link(h5file, existing, snapshot) if existing is not None else None
+    recovery = (
+        _prepare_handle_recovery(h5file, existing, snapshot)
+        if existing is not None
+        else None
     )
     try:
         dataset = _write_dataset_once(array, container, path, marker, kwargs)
+        if recovery is not None:
+            _unlink_handle_recovery(recovery)
     except BaseException as operation_error:
         rollback_errors: list[BaseException] = []
-        try:
-            _restore_dataset(
-                coordinate,
-                relative_path,
-                rollback,
-                created_parent_paths,
+        recovery_path: str | None = None
+        if recovery is not None:
+            recovery, recovery_errors, recovery_path = _remove_or_recreate_recovery(
+                recovery
             )
-        except BaseException as exc:  # pragma: no cover - catastrophic HDF5 failure
-            rollback_errors.append(exc)
+            rollback_errors.extend(recovery_errors)
+        public_restore_errors, public_restored = _restore_public_dataset(
+            coordinate,
+            relative_path,
+            existing,
+            created_parent_paths,
+        )
+        sidecar_restore_errors = list(_restore_root_sidecars(h5file, snapshot))
         try:
-            _restore_sidecar(h5file, snapshot)
+            sidecars_restored = _root_sidecars_are_restored(h5file, snapshot)
         except BaseException as exc:  # pragma: no cover - catastrophic HDF5 failure
-            rollback_errors.append(exc)
-        if not rollback_errors:
+            sidecar_restore_errors.append(exc)
+            sidecars_restored = False
+        if not sidecars_restored:
+            sidecar_restore_errors.append(
+                RuntimeError("HDF5 root sidecar rollback postcondition failed")
+            )
+        rollback_errors.extend(public_restore_errors)
+        rollback_errors.extend(sidecar_restore_errors)
+        state = "old" if public_restored and sidecars_restored else "indeterminate"
+        if state == "old" and recovery is not None:
             try:
-                _delete_rollback(h5file, rollback)
+                _unlink_handle_recovery(recovery)
             except BaseException as exc:  # pragma: no cover - catastrophic HDF5 failure
                 rollback_errors.append(exc)
+                recovery_path = _linked_handle_recovery_path(recovery)
+                rollback_errors.extend(_close_unlinked_handle_recovery(recovery))
+            else:
+                recovery_path = None
         if rollback_errors:
-            recovery_path = None
-            if rollback is not None and rollback.name in h5file:
-                recovery_path = rollback.name
+            if recovery is not None and recovery_path is None:
+                recovery_path = _linked_handle_recovery_path(recovery)
             raise _RollbackError(
                 operation_error,
                 tuple(rollback_errors),
                 recovery_path,
+                state=state,
             ) from rollback_errors[0]
         raise
-    _delete_rollback(h5file, rollback)
     return dataset
 
 

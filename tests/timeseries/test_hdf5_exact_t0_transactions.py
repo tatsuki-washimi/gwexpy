@@ -55,6 +55,29 @@ def _count_native_writer(monkeypatch: pytest.MonkeyPatch) -> Callable[[], int]:
     return lambda: calls
 
 
+def _public_handle_state(container: h5py.File | h5py.Group) -> tuple[object, ...]:
+    dataset = container["data"]
+    root = container.file
+    public_paths = tuple(
+        sorted(
+            name for name in root if not name.startswith(exact_hdf5._ROLLBACK_PREFIX)
+        )
+    )
+    return (
+        public_paths,
+        h5py.h5o.get_info(dataset.id).addr,
+        dataset[()].tobytes(),
+        tuple(sorted((name, repr(value)) for name, value in dataset.attrs.items())),
+        tuple(
+            (name, name in root.attrs, repr(root.attrs.get(name)))
+            for name in (
+                exact_hdf5.SIDECAR_ATTRIBUTE_V1,
+                exact_hdf5.SIDECAR_ATTRIBUTE_V2,
+            )
+        ),
+    )
+
+
 @contextmanager
 def _transaction_target(tmp_path: Path, target_kind: str) -> Iterator[object]:
     original = _exact_series(123)
@@ -80,6 +103,609 @@ def _transaction_target(tmp_path: Path, target_kind: str) -> Iterator[object]:
             container = h5file.create_group("container")
         original.write(container, format="hdf5", path="data")
         yield container
+
+
+@pytest.mark.parametrize(
+    "failure_point",
+    [
+        "group-create",
+        "dataset-link",
+        "v1-snapshot",
+        "v2-snapshot",
+        "verify",
+        "partial-cleanup",
+    ],
+)
+def test_hdf5_open_recovery_setup_failure_preserves_public_state(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    failure_point: str,
+) -> None:
+    target = tmp_path / f"recovery-setup-{failure_point}.hdf5"
+    with h5py.File(target, "w") as h5file:
+        original = _exact_series(123)
+        original.write(h5file, format="hdf5", path="data")
+        h5file["alias"] = h5file["data"]
+        h5file.attrs[exact_hdf5.SIDECAR_ATTRIBUTE_V1] = np.bytes_(b"legacy-v1")
+        before = _public_handle_state(h5file)
+        native_calls = _count_native_writer(monkeypatch)
+
+        def fail_setup(*args: object, **kwargs: object) -> None:
+            raise RuntimeError(f"injected {failure_point} failure")
+
+        if failure_point == "group-create":
+            monkeypatch.setattr(
+                exact_hdf5,
+                "_create_handle_recovery_group",
+                fail_setup,
+                raising=False,
+            )
+        elif failure_point == "dataset-link":
+            monkeypatch.setattr(
+                exact_hdf5,
+                "_link_handle_recovery_dataset",
+                fail_setup,
+                raising=False,
+            )
+        elif failure_point in {"v1-snapshot", "v2-snapshot"}:
+            store_snapshot = getattr(
+                exact_hdf5,
+                "_store_handle_sidecar_snapshot",
+                lambda *args, **kwargs: None,
+            )
+            failed_version = failure_point.split("-", 1)[0]
+
+            def fail_selected_snapshot(
+                rollback: object,
+                version: str,
+                snapshot: object,
+            ) -> None:
+                if version == failed_version:
+                    fail_setup()
+                store_snapshot(rollback, version, snapshot)
+
+            monkeypatch.setattr(
+                exact_hdf5,
+                "_store_handle_sidecar_snapshot",
+                fail_selected_snapshot,
+                raising=False,
+            )
+        elif failure_point == "verify":
+            monkeypatch.setattr(
+                exact_hdf5,
+                "_verify_handle_recovery",
+                fail_setup,
+                raising=False,
+            )
+        else:
+            monkeypatch.setattr(
+                exact_hdf5,
+                "_verify_handle_recovery",
+                fail_setup,
+                raising=False,
+            )
+            monkeypatch.setattr(
+                exact_hdf5,
+                "_unlink_handle_recovery",
+                lambda *args, **kwargs: (_ for _ in ()).throw(
+                    OSError("injected partial cleanup failure")
+                ),
+                raising=False,
+            )
+
+        if failure_point == "partial-cleanup":
+            with pytest.raises(exact_hdf5._RollbackError) as raised:
+                _exact_series(456, offset=10).write(
+                    h5file,
+                    format="hdf5",
+                    path="data",
+                    overwrite=True,
+                )
+            assert raised.value.state == "old"
+            assert raised.value.recovery_path is not None
+            assert raised.value.recovery_path in h5file
+            assert any(
+                "partial cleanup" in str(error)
+                for error in raised.value.rollback_errors
+            )
+        else:
+            with pytest.raises(RuntimeError, match=failure_point):
+                _exact_series(456, offset=10).write(
+                    h5file,
+                    format="hdf5",
+                    path="data",
+                    overwrite=True,
+                )
+            assert not any(
+                name.startswith(exact_hdf5._ROLLBACK_PREFIX) for name in h5file
+            )
+
+        assert native_calls() == 0
+        assert _public_handle_state(h5file) == before
+
+
+def test_hdf5_handle_delete_before_raise_rolls_back(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = tmp_path / "recovery-delete-before-raise.hdf5"
+    with h5py.File(target, "w") as h5file:
+        _exact_series(123).write(h5file, format="hdf5", path="data")
+        before = _public_handle_state(h5file)
+        unlink_recovery = exact_hdf5._unlink_handle_recovery
+        unlink_calls = 0
+
+        def fail_once_before_unlink(recovery: object) -> None:
+            nonlocal unlink_calls
+            unlink_calls += 1
+            if unlink_calls == 1:
+                raise OSError("injected delete-before-raise failure")
+            unlink_recovery(recovery)
+
+        monkeypatch.setattr(
+            exact_hdf5,
+            "_unlink_handle_recovery",
+            fail_once_before_unlink,
+        )
+        with pytest.raises(OSError, match="delete-before-raise"):
+            _exact_series(456, offset=10).write(
+                h5file,
+                format="hdf5",
+                path="data",
+                overwrite=True,
+            )
+
+        assert unlink_calls == 2
+        assert _public_handle_state(h5file) == before
+        assert not any(name.startswith(exact_hdf5._ROLLBACK_PREFIX) for name in h5file)
+
+
+def test_hdf5_handle_delete_after_raise_closes_id_then_recreates_recovery(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = tmp_path / "recovery-delete-after-raise.hdf5"
+    with h5py.File(target, "w") as h5file:
+        _exact_series(123).write(h5file, format="hdf5", path="data")
+        before = _public_handle_state(h5file)
+        create_group = exact_hdf5._create_handle_recovery_group
+        unlink_recovery = exact_hdf5._unlink_handle_recovery
+        created_groups: list[h5py.Group] = []
+        unlink_calls = 0
+
+        def capture_group(owner: h5py.File) -> h5py.Group:
+            group = create_group(owner)
+            created_groups.append(group)
+            return group
+
+        def fail_once_after_unlink(recovery: object) -> None:
+            nonlocal unlink_calls
+            unlink_calls += 1
+            if unlink_calls == 1:
+                del recovery.h5file[recovery.path]
+                assert recovery.group.id.valid
+                raise OSError("injected delete-after-raise failure")
+            unlink_recovery(recovery)
+
+        monkeypatch.setattr(
+            exact_hdf5,
+            "_create_handle_recovery_group",
+            capture_group,
+        )
+        monkeypatch.setattr(
+            exact_hdf5,
+            "_unlink_handle_recovery",
+            fail_once_after_unlink,
+        )
+        with pytest.raises(OSError, match="delete-after-raise"):
+            _exact_series(456, offset=10).write(
+                h5file,
+                format="hdf5",
+                path="data",
+                overwrite=True,
+            )
+
+        assert len(created_groups) == 2
+        assert not created_groups[0].id.valid
+        assert unlink_calls == 2
+        assert _public_handle_state(h5file) == before
+        assert not any(name.startswith(exact_hdf5._ROLLBACK_PREFIX) for name in h5file)
+
+
+def test_hdf5_handle_delete_after_raise_and_relink_failure_survives_reopen(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = tmp_path / "recovery-delete-relink-failure.hdf5"
+    recovery_path: str | None = None
+    original_address = -1
+    original_v1 = np.bytes_(b"legacy-v1")
+    original_sidecar: object = None
+    with h5py.File(target, "w") as h5file:
+        original = _exact_series(123)
+        original.write(h5file, format="hdf5", path="data")
+        h5file.attrs[exact_hdf5.SIDECAR_ATTRIBUTE_V1] = original_v1
+        original_address = h5py.h5o.get_info(h5file["data"].id).addr
+        original_sidecar = h5file.attrs[exact_hdf5.SIDECAR_ATTRIBUTE_V2]
+        unlink_calls = 0
+        unlink_recovery = exact_hdf5._unlink_handle_recovery
+
+        def fail_once_after_unlink(recovery: object) -> None:
+            nonlocal unlink_calls
+            unlink_calls += 1
+            if unlink_calls == 1:
+                del recovery.h5file[recovery.path]
+                raise OSError("injected delete-after-raise failure")
+            unlink_recovery(recovery)
+
+        def fail_public_relink(
+            container: h5py.File | h5py.Group,
+            candidate_path: str,
+            *args: object,
+            **kwargs: object,
+        ) -> None:
+            if candidate_path in container:
+                del container[candidate_path]
+            raise OSError("injected public relink failure")
+
+        monkeypatch.setattr(
+            exact_hdf5,
+            "_unlink_handle_recovery",
+            fail_once_after_unlink,
+        )
+        monkeypatch.setattr(exact_hdf5, "_restore_dataset", fail_public_relink)
+        with pytest.raises(exact_hdf5._RollbackError) as raised:
+            _exact_series(456, offset=10).write(
+                h5file,
+                format="hdf5",
+                path="data",
+                overwrite=True,
+            )
+
+        recovery_path = raised.value.recovery_path
+        assert raised.value.state == "indeterminate"
+        assert recovery_path is not None
+        assert recovery_path in h5file
+        assert "data" not in h5file
+        assert sum(name.startswith(exact_hdf5._ROLLBACK_PREFIX) for name in h5file) == 1
+        h5file.flush()
+
+    assert recovery_path is not None
+    with h5py.File(target, "r") as reopened:
+        assert recovery_path in reopened
+        recovery = reopened[recovery_path]
+        recovered = recovery["dataset"]
+        assert h5py.h5o.get_info(recovered.id).addr == original_address
+        np.testing.assert_array_equal(recovered[()], _exact_series(123).value)
+        assert bool(recovery.attrs["sidecar_v1_snapshot_present"])
+        assert recovery.attrs["sidecar_v1_snapshot"] == original_v1
+        assert bool(recovery.attrs["sidecar_v2_snapshot_present"])
+        assert recovery.attrs["sidecar_v2_snapshot"] == original_sidecar
+        assert reopened.attrs[exact_hdf5.SIDECAR_ATTRIBUTE_V1] == original_v1
+        assert reopened.attrs[exact_hdf5.SIDECAR_ATTRIBUTE_V2] == original_sidecar
+
+
+def test_hdf5_handle_recovery_recreation_failure_with_complete_restore_reports_old(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = tmp_path / "recovery-recreation-failure-old.hdf5"
+    with h5py.File(target, "w") as h5file:
+        _exact_series(123).write(h5file, format="hdf5", path="data")
+        before = _public_handle_state(h5file)
+        create_group = exact_hdf5._create_handle_recovery_group
+        create_calls = 0
+
+        def fail_second_group_create(owner: h5py.File) -> h5py.Group:
+            nonlocal create_calls
+            create_calls += 1
+            if create_calls == 2:
+                raise OSError("injected recovery recreation failure")
+            return create_group(owner)
+
+        def delete_then_raise(recovery: object) -> None:
+            del recovery.h5file[recovery.path]
+            raise OSError("injected delete-after-raise failure")
+
+        monkeypatch.setattr(
+            exact_hdf5,
+            "_create_handle_recovery_group",
+            fail_second_group_create,
+        )
+        monkeypatch.setattr(
+            exact_hdf5,
+            "_unlink_handle_recovery",
+            delete_then_raise,
+        )
+        with pytest.raises(exact_hdf5._RollbackError) as raised:
+            _exact_series(456, offset=10).write(
+                h5file,
+                format="hdf5",
+                path="data",
+                overwrite=True,
+            )
+
+        assert create_calls == 2
+        assert raised.value.state == "old"
+        assert raised.value.recovery_path is None
+        assert any(
+            "recovery recreation" in str(error)
+            for error in raised.value.rollback_errors
+        )
+        assert _public_handle_state(h5file) == before
+        assert not any(name.startswith(exact_hdf5._ROLLBACK_PREFIX) for name in h5file)
+
+
+def test_hdf5_handle_recreation_and_public_restore_failure_reports_indeterminate(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = tmp_path / "recovery-recreation-public-failure.hdf5"
+    with h5py.File(target, "w") as h5file:
+        _exact_series(123).write(h5file, format="hdf5", path="data")
+        original_sidecar = h5file.attrs[exact_hdf5.SIDECAR_ATTRIBUTE_V2]
+        create_group = exact_hdf5._create_handle_recovery_group
+        create_calls = 0
+
+        def fail_second_group_create(owner: h5py.File) -> h5py.Group:
+            nonlocal create_calls
+            create_calls += 1
+            if create_calls == 2:
+                raise OSError("injected recovery recreation failure")
+            return create_group(owner)
+
+        def delete_then_raise(recovery: object) -> None:
+            del recovery.h5file[recovery.path]
+            raise OSError("injected delete-after-raise failure")
+
+        def fail_public_restore(
+            container: h5py.File | h5py.Group,
+            candidate_path: str,
+            *args: object,
+            **kwargs: object,
+        ) -> None:
+            if candidate_path in container:
+                del container[candidate_path]
+            raise OSError("injected public restore failure")
+
+        monkeypatch.setattr(
+            exact_hdf5,
+            "_create_handle_recovery_group",
+            fail_second_group_create,
+        )
+        monkeypatch.setattr(
+            exact_hdf5,
+            "_unlink_handle_recovery",
+            delete_then_raise,
+        )
+        monkeypatch.setattr(exact_hdf5, "_restore_dataset", fail_public_restore)
+        with pytest.raises(exact_hdf5._RollbackError) as raised:
+            _exact_series(456, offset=10).write(
+                h5file,
+                format="hdf5",
+                path="data",
+                overwrite=True,
+            )
+
+        assert create_calls == 2
+        assert raised.value.state == "indeterminate"
+        assert raised.value.recovery_path is None
+        assert "data" not in h5file
+        assert h5file.attrs[exact_hdf5.SIDECAR_ATTRIBUTE_V2] == original_sidecar
+        assert any(
+            "recovery recreation" in str(error)
+            for error in raised.value.rollback_errors
+        )
+        assert any(
+            "public restore" in str(error) for error in raised.value.rollback_errors
+        )
+
+
+def test_hdf5_handle_restore_sidecars_reports_all_failures(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = tmp_path / "recovery-sidecar-restore-failures.hdf5"
+    with h5py.File(target, "w") as h5file:
+        _exact_series(123).write(h5file, format="hdf5", path="data")
+        h5file.attrs[exact_hdf5.SIDECAR_ATTRIBUTE_V1] = np.bytes_(b"legacy-v1")
+        original_address = h5py.h5o.get_info(h5file["data"].id).addr
+        write_once = exact_hdf5._write_dataset_once
+
+        def fail_after_mutating_both_sidecars(
+            *args: object,
+            **kwargs: object,
+        ) -> object:
+            write_once(*args, **kwargs)
+            owner = args[1].file
+            owner.attrs[exact_hdf5.SIDECAR_ATTRIBUTE_V1] = np.bytes_(b"mutated-v1")
+            owner.attrs[exact_hdf5.SIDECAR_ATTRIBUTE_V2] = np.bytes_(b"mutated-v2")
+            raise RuntimeError("injected post-sidecar operation failure")
+
+        def fail_sidecar_restore(
+            owner: h5py.File,
+            snapshot: tuple[str, bool, object],
+        ) -> None:
+            del owner
+            raise OSError(f"injected {snapshot[0]} restore failure")
+
+        monkeypatch.setattr(
+            exact_hdf5,
+            "_write_dataset_once",
+            fail_after_mutating_both_sidecars,
+        )
+        monkeypatch.setattr(
+            exact_hdf5,
+            "_restore_sidecar_attribute",
+            fail_sidecar_restore,
+            raising=False,
+        )
+        with pytest.raises(exact_hdf5._RollbackError) as raised:
+            _exact_series(456, offset=10).write(
+                h5file,
+                format="hdf5",
+                path="data",
+                overwrite=True,
+            )
+
+        assert raised.value.state == "indeterminate"
+        assert raised.value.recovery_path is not None
+        assert raised.value.recovery_path in h5file
+        assert h5py.h5o.get_info(h5file["data"].id).addr == original_address
+        for name in (
+            exact_hdf5.SIDECAR_ATTRIBUTE_V1,
+            exact_hdf5.SIDECAR_ATTRIBUTE_V2,
+        ):
+            assert any(
+                f"{name} restore failure" in str(error)
+                for error in raised.value.rollback_errors
+            )
+        assert h5file.attrs[exact_hdf5.SIDECAR_ATTRIBUTE_V1] == np.bytes_(b"mutated-v1")
+        assert h5file.attrs[exact_hdf5.SIDECAR_ATTRIBUTE_V2] == np.bytes_(b"mutated-v2")
+
+
+@pytest.mark.parametrize("container_kind", ["file", "group"])
+def test_hdf5_handle_success_leaves_no_private_recovery_link(
+    tmp_path: Path,
+    container_kind: str,
+) -> None:
+    target = tmp_path / f"recovery-success-{container_kind}.hdf5"
+    with h5py.File(target, "w") as h5file:
+        container: h5py.File | h5py.Group = h5file
+        if container_kind == "group":
+            container = h5file.create_group("container")
+        _exact_series(123).write(container, format="hdf5", path="data")
+
+        _exact_series(456, offset=10).write(
+            container,
+            format="hdf5",
+            path="data",
+            overwrite=True,
+        )
+
+        recovered = TimeSeries.read(container, format="hdf5", path="data")
+        assert recovered.t0_gps_ns == 456
+        assert not any(name.startswith(exact_hdf5._ROLLBACK_PREFIX) for name in h5file)
+
+
+def test_hdf5_handle_rollback_preserves_address_alias_refs_and_scales(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = tmp_path / "recovery-object-identity.hdf5"
+    with h5py.File(target, "w") as h5file:
+        original = _exact_series(123)
+        original.write(h5file, format="hdf5", path="data")
+        old_dataset = h5file["data"]
+        old_dataset.make_scale("original-timeseries")
+        h5file["alias"] = old_dataset
+        object_refs = h5file.create_dataset("object_refs", (1,), dtype=h5py.ref_dtype)
+        object_refs[0] = old_dataset.ref
+        region_refs = h5file.create_dataset(
+            "region_refs",
+            (1,),
+            dtype=h5py.regionref_dtype,
+        )
+        region_refs[0] = old_dataset.regionref[2:5]
+        consumer = h5file.create_dataset("consumer", data=np.arange(8))
+        consumer.dims[0].attach_scale(old_dataset)
+        original_address = h5py.h5o.get_info(old_dataset.id).addr
+        write_once = exact_hdf5._write_dataset_once
+
+        def fail_after_write(*args: object, **kwargs: object) -> object:
+            write_once(*args, **kwargs)
+            raise RuntimeError("injected post-write identity failure")
+
+        monkeypatch.setattr(exact_hdf5, "_write_dataset_once", fail_after_write)
+        with pytest.raises(RuntimeError, match="identity failure"):
+            _exact_series(456, offset=10).write(
+                h5file,
+                format="hdf5",
+                path="data",
+                overwrite=True,
+            )
+
+        restored = h5file["data"]
+        assert h5py.h5o.get_info(restored.id).addr == original_address
+        assert h5py.h5o.get_info(h5file["alias"].id).addr == original_address
+        assert h5py.h5o.get_info(h5file[object_refs[0]].id).addr == original_address
+        region_ref = region_refs[0]
+        referenced = h5file[region_ref]
+        assert h5py.h5o.get_info(referenced.id).addr == original_address
+        np.testing.assert_array_equal(referenced[region_ref], original.value[2:5])
+        attached_scale = consumer.dims[0][0]
+        assert h5py.h5o.get_info(attached_scale.id).addr == original_address
+        np.testing.assert_array_equal(restored[()], original.value)
+        assert not any(name.startswith(exact_hdf5._ROLLBACK_PREFIX) for name in h5file)
+
+
+def test_hdf5_handle_repeated_success_has_no_private_recovery_object(
+    tmp_path: Path,
+) -> None:
+    target = tmp_path / "recovery-repeated-success.hdf5"
+    with h5py.File(target, "w") as h5file:
+        _exact_series(100).write(h5file, format="hdf5", path="data")
+
+        for index in range(20):
+            _exact_series(101 + index, offset=float(index + 1)).write(
+                h5file,
+                format="hdf5",
+                path="data",
+                overwrite=True,
+            )
+            assert not any(
+                name.startswith(exact_hdf5._ROLLBACK_PREFIX) for name in h5file
+            )
+
+        assert (
+            TimeSeries.read(
+                h5file,
+                format="hdf5",
+                path="data",
+            ).t0_gps_ns
+            == 120
+        )
+
+
+def test_hdf5_handle_incomplete_rollback_keeps_at_most_one_recovery_object(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = tmp_path / "recovery-incomplete-bound.hdf5"
+    with h5py.File(target, "w") as h5file:
+        _exact_series(123).write(h5file, format="hdf5", path="data")
+        write_once = exact_hdf5._write_dataset_once
+
+        def fail_after_write(*args: object, **kwargs: object) -> object:
+            write_once(*args, **kwargs)
+            raise RuntimeError("injected operation failure")
+
+        def fail_public_restore(
+            container: h5py.File | h5py.Group,
+            candidate_path: str,
+            *args: object,
+            **kwargs: object,
+        ) -> None:
+            if candidate_path in container:
+                del container[candidate_path]
+            raise OSError("injected public restore failure")
+
+        monkeypatch.setattr(exact_hdf5, "_write_dataset_once", fail_after_write)
+        monkeypatch.setattr(exact_hdf5, "_restore_dataset", fail_public_restore)
+        with pytest.raises(exact_hdf5._RollbackError) as raised:
+            _exact_series(456, offset=10).write(
+                h5file,
+                format="hdf5",
+                path="data",
+                overwrite=True,
+            )
+
+        recovery_names = [
+            name for name in h5file if name.startswith(exact_hdf5._ROLLBACK_PREFIX)
+        ]
+        assert raised.value.recovery_path is not None
+        assert len(recovery_names) == 1
+        assert f"/{recovery_names[0]}" == raised.value.recovery_path
 
 
 @pytest.mark.parametrize("target_kind", ["pathname", "filelike", "file", "group"])
@@ -127,7 +753,11 @@ def test_hdf5_disposable_stage_never_creates_recovery_group(
         def reject_recovery_group(*args: object, **kwargs: object) -> None:
             raise AssertionError("disposable stage created a recovery group")
 
-        monkeypatch.setattr(exact_hdf5, "_rollback_link", reject_recovery_group)
+        monkeypatch.setattr(
+            exact_hdf5,
+            "_prepare_handle_recovery",
+            reject_recovery_group,
+        )
         _exact_series(456, offset=10).write(
             target,
             format="hdf5",
