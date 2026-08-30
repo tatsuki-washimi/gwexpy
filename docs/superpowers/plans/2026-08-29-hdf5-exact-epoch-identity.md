@@ -25,9 +25,11 @@ Tasks 1–9 and Checkpoint A are completed. Tasks 6–8 were approved for the
 local v0.2.1 P0 scope on 2026-08-30. Task 10 local gates are completed. Three
 fresh specification-review rounds ended with two unresolved Important findings;
 on 2026-08-30, a human approved one exceptional fourth remediation and fresh
-specification-review cycle limited to those two findings. A fifth specification
-cycle is not authorized. Code-quality review has not started, and P0 remains
-unapproved.
+specification-review cycle limited to those two findings. The fourth review found
+one remaining Important pathname cleanup-classification issue. On 2026-08-30, a
+human approved one exceptional fifth remediation and fresh review cycle limited
+to that issue. A sixth specification cycle is not authorized. Code-quality review
+has not started, and P0 remains unapproved.
 
 **Specification:**
 `docs/superpowers/specs/2026-08-29-hdf5-exact-epoch-identity-design.md`
@@ -1119,7 +1121,7 @@ rtk git commit -m "test: qualify HDF5 exact epoch transactions"
 
 ### Task 10: Run static gates and independent reviews
 
-**Status:** fourth specification-remediation cycle approved; code-quality review not started
+**Status:** fifth specification-remediation cycle approved; code-quality review not started
 
 **Files:**
 
@@ -1174,6 +1176,15 @@ round-3 findings above. Do not broaden the production change beyond temporary
 setup ownership and cleanup classification. If the fourth review still reports a
 Critical or Important finding, do not begin a fifth specification cycle; return
 the remaining decision to the human.
+
+Round 4 at `a60f85c71` found one Important finding: pathname replacement
+failure followed by stage unlink delete-after-raise reports a recovery path that
+no longer exists. On 2026-08-30, a human authorized one exceptional fifth
+remediation and fresh review cycle limited to this pathname cleanup
+classification. Do not broaden the production change beyond retained-stage
+inspection and error ordering in this cleanup path. If the fifth review still
+reports a Critical or Important finding, do not begin a sixth specification
+cycle; return the remaining decision to the human.
 
 - [ ] **Step 4: Dispatch independent code-quality review**
 
