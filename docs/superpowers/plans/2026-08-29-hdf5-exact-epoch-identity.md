@@ -22,8 +22,10 @@ Ruff, MyPy, conda environment `gwexpy`.
 **Status:** in-progress
 
 Tasks 1–9 and Checkpoint A are completed. Tasks 6–8 were approved for the
-local v0.2.1 P0 scope on 2026-08-30. Task 10 local gates are completed;
-P0 approval still requires the independent reviews below.
+local v0.2.1 P0 scope on 2026-08-30. Task 10 local gates are completed. Three
+fresh specification-review rounds ended with two unresolved Important findings;
+the approved review limit now requires a human scope decision before further
+remediation. Code-quality review has not started, and P0 remains unapproved.
 
 **Specification:**
 `docs/superpowers/specs/2026-08-29-hdf5-exact-epoch-identity-design.md`
@@ -1115,7 +1117,7 @@ rtk git commit -m "test: qualify HDF5 exact epoch transactions"
 
 ### Task 10: Run static gates and independent reviews
 
-**Status:** local gates completed; independent specification and code-quality reviews pending
+**Status:** human scope decision required after three specification-review rounds; code-quality review not started
 
 **Files:**
 
@@ -1153,6 +1155,19 @@ Give a fresh reviewer only the approved spec, this plan, the implementation diff
 and focused test logs. Require an explicit Critical/Important/Minor classification.
 Fix every in-scope Critical or Important finding using RED-first tests, rerun the
 review, and commit each reviewed fix.
+
+Review record on 2026-08-30:
+
+- Round 1 at `98028bcc0` found three Important findings. They were fixed in
+  `75787539d`, `799d79821`, and `c6fc46d9a`.
+- Round 2 at `c6fc46d9a` found two Important findings. They were fixed in
+  `0a8dbf494` and `f72ee74a9`.
+- Final round 3 at `f72ee74a9` found two remaining Important findings: compound
+  file-like backup setup cleanup failure, and pathname stage descriptor-close
+  failure before the stage path is returned.
+
+The approved three-round limit is exhausted. Do not begin a fourth remediation
+and re-review cycle without a human decision on scope.
 
 - [ ] **Step 4: Dispatch independent code-quality review**
 
