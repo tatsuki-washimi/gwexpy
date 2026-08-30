@@ -36,6 +36,10 @@ _SIDECAR_ATTRIBUTE_V1 = "_gwexpy_sidecar_json_v1"
 _SIDECAR_ATTRIBUTE_V2 = "_gwexpy_sidecar_json_v2"
 _SIDECAR_SCHEMA = "gwexpy.hdf5.sidecar"
 _TIME_STATE_KEY = "_gwexpy_t0_gps_state"
+_CUSTOM_SCALED_TIME_UNIT = u.def_unit(
+    "gwex_test_tick",
+    represents=37 * u.ms,
+)
 
 
 def _exact_series(t0_ns: int, *, offset: float = 0) -> TimeSeries:
@@ -49,7 +53,7 @@ def _exact_series(t0_ns: int, *, offset: float = 0) -> TimeSeries:
     )
 
 
-def _exact_axis_series(t0_ns: int, xunit: str) -> TimeSeries:
+def _exact_axis_series(t0_ns: int, xunit: str | u.UnitBase) -> TimeSeries:
     unit = u.Unit(xunit)
     raw_x0 = float((t0_ns * u.ns).to_value(unit))
     series = TimeSeries(
@@ -391,24 +395,30 @@ def test_hdf5_exact_t0_writes_v2_marker_and_token_record(
         assert _SIDECAR_ATTRIBUTE_V2 not in dataset.attrs
 
 
-@pytest.mark.parametrize("xunit", ["s", "ms", "us", "ns", "min", "ks", "day"])
+@pytest.mark.parametrize(
+    "xunit",
+    ["s", "ms", "us", "ns", "min", "ks", "day", _CUSTOM_SCALED_TIME_UNIT],
+)
 def test_hdf5_exact_t0_roundtrips_standard_axis_units(
     tmp_path: Path,
-    xunit: str,
+    xunit: str | u.UnitBase,
 ) -> None:
     t0_ns = 1_234_567_890_123_456_789
-    original = _exact_axis_series(t0_ns, xunit)
-    path = tmp_path / f"axis-{xunit}.hdf5"
+    with u.add_enabled_units([_CUSTOM_SCALED_TIME_UNIT]):
+        original = _exact_axis_series(t0_ns, xunit)
+        path = tmp_path / f"axis-{xunit}.hdf5"
 
-    original.write(path, format="hdf5", path="series")
-    recovered = TimeSeries.read(path, format="hdf5", path="series")
+        original.write(path, format="hdf5", path="series")
+        recovered = TimeSeries.read(path, format="hdf5", path="series")
 
-    assert recovered.t0_gps_ns == t0_ns
-    assert recovered.xunit == original.xunit
-    assert struct.pack(">d", recovered.x0.value) == struct.pack(">d", original.x0.value)
-    with h5py.File(path, "r") as h5file:
-        marker = _marker(h5file["series"])
-        assert marker.epoch_ns == t0_ns
+        assert recovered.t0_gps_ns == t0_ns
+        assert recovered.xunit == original.xunit
+        assert struct.pack(">d", recovered.x0.value) == struct.pack(
+            ">d", original.x0.value
+        )
+        with h5py.File(path, "r") as h5file:
+            marker = _marker(h5file["series"])
+            assert marker.epoch_ns == t0_ns
 
 
 @pytest.mark.parametrize("xunit", ["s", "ms", "min", "day"])
@@ -468,6 +478,346 @@ def test_hdf5_marker_only_read_recovers_exact_t0(tmp_path: Path) -> None:
 
     assert recovered.t0_gps_ns == t0_ns
     assert getattr(recovered, "_gwex_t0_gps_ns", None) == t0_ns
+
+
+@pytest.mark.parametrize(
+    ("case", "expected"),
+    [
+        ("absent-marker", "native"),
+        ("marker-only", "exact"),
+        ("matching-record", "exact"),
+        ("missing-record", "exact"),
+        ("stale-after-gwpy-overwrite", "native"),
+        ("record-conflict", "error"),
+        ("malformed-unselected-record", "error"),
+        ("duplicate-lineage-record", "error"),
+        ("ordinary-numeric-epoch", "native"),
+        ("v1-only", "native"),
+        ("malformed-v1-only", "native"),
+        ("valid-v2-plus-malformed-v1", "exact"),
+        ("invalid-v2-plus-valid-v1", "error"),
+    ],
+)
+def test_hdf5_v2_authority_truth_table(
+    tmp_path: Path,
+    case: str,
+    expected: str,
+) -> None:
+    t0_ns = 1_234_567_890_123_456_789
+    path = tmp_path / f"authority-{case}.hdf5"
+    _exact_series(t0_ns).write(path, format="hdf5", path="series")
+
+    if case == "stale-after-gwpy-overwrite":
+        GwpyTimeSeries(
+            np.arange(8, dtype=np.float32),
+            t0=20.25,
+            sample_rate=4,
+        ).write(
+            path,
+            format="hdf5",
+            path="series",
+            append=True,
+            overwrite=True,
+        )
+    else:
+        with h5py.File(path, "r+") as h5file:
+            dataset = h5file["series"]
+            marker = _marker(dataset)
+            if case == "absent-marker":
+                del dataset.attrs["epoch"]
+            elif case == "marker-only":
+                del h5file.attrs[_SIDECAR_ATTRIBUTE_V2]
+            elif case == "matching-record":
+                pass
+            elif case == "missing-record":
+                h5file.attrs[_SIDECAR_ATTRIBUTE_V2] = serialize_v2_sidecar([])
+            elif case == "record-conflict":
+                conflict = encode_epoch_marker(
+                    epoch_ns=t0_ns + 1,
+                    raw_x0=dataset.attrs["x0"],
+                    xunit=marker.axis.xunit,
+                    token=bytes.fromhex(marker.lineage_token),
+                )
+                h5file.attrs[_SIDECAR_ATTRIBUTE_V2] = serialize_v2_sidecar(
+                    [record_from_marker(conflict, ["series"])]
+                )
+            elif case == "malformed-unselected-record":
+                other = encode_epoch_marker(
+                    epoch_ns=20_000_000_000,
+                    raw_x0=20.0,
+                    xunit="s",
+                    token=b"\xbb" * 16,
+                )
+                payload = json.loads(
+                    serialize_v2_sidecar(
+                        [
+                            record_from_marker(marker, ["series"]),
+                            record_from_marker(other, ["other"]),
+                        ]
+                    )
+                )
+                payload["records"][other.lineage_token]["binding"]["marker_sha256"] = (
+                    "0" * 64
+                )
+                h5file.attrs[_SIDECAR_ATTRIBUTE_V2] = json.dumps(
+                    payload,
+                    separators=(",", ":"),
+                )
+            elif case == "duplicate-lineage-record":
+                payload = json.loads(
+                    serialize_v2_sidecar([record_from_marker(marker, ["series"])])
+                )
+                record_json = json.dumps(
+                    payload["records"][marker.lineage_token],
+                    separators=(",", ":"),
+                )
+                h5file.attrs[_SIDECAR_ATTRIBUTE_V2] = (
+                    '{"schema":"gwexpy.hdf5.sidecar","version":2,"records":{'
+                    f'"{marker.lineage_token}":{record_json},'
+                    f'"{marker.lineage_token}":{record_json}'
+                    "}}"
+                )
+            elif case == "ordinary-numeric-epoch":
+                dataset.attrs["epoch"] = dataset.attrs["x0"]
+            elif case == "v1-only":
+                del dataset.attrs["epoch"]
+                del h5file.attrs[_SIDECAR_ATTRIBUTE_V2]
+                _write_v1_fixture(h5file, "series", t0_ns)
+            elif case == "malformed-v1-only":
+                del dataset.attrs["epoch"]
+                del h5file.attrs[_SIDECAR_ATTRIBUTE_V2]
+                h5file.attrs[_SIDECAR_ATTRIBUTE_V1] = "{"
+            elif case == "valid-v2-plus-malformed-v1":
+                h5file.attrs[_SIDECAR_ATTRIBUTE_V1] = "{"
+            elif case == "invalid-v2-plus-valid-v1":
+                h5file.attrs[_SIDECAR_ATTRIBUTE_V2] = "{}"
+                _write_v1_fixture(h5file, "series", t0_ns)
+            else:  # pragma: no cover - exhaustive parameter table
+                raise AssertionError(case)
+
+    if expected == "error":
+        with pytest.raises(ValueError):
+            TimeSeries.read(path, format="hdf5", path="series")
+        return
+
+    recovered = TimeSeries.read(path, format="hdf5", path="series")
+    if expected == "exact":
+        assert recovered.t0_gps_ns == t0_ns
+        assert getattr(recovered, "_gwex_t0_gps_ns", None) == t0_ns
+    else:
+        assert not hasattr(recovered, "_gwex_t0_gps_ns")
+
+
+def test_hdf5_v2_marker_survives_hard_and_soft_alias_reads(
+    tmp_path: Path,
+) -> None:
+    t0_ns = 1_234_567_890_123_456_789
+    path = tmp_path / "marker-aliases.hdf5"
+    _exact_series(t0_ns).write(path, format="hdf5", path="series")
+    with h5py.File(path, "r+") as h5file:
+        h5file["hard-alias"] = h5file["series"]
+        h5file["soft-alias"] = h5py.SoftLink("/series")
+
+    for dataset_path in ("series", "hard-alias", "soft-alias"):
+        recovered = TimeSeries.read(path, format="hdf5", path=dataset_path)
+        assert recovered.t0_gps_ns == t0_ns
+        assert getattr(recovered, "_gwex_t0_gps_ns", None) == t0_ns
+
+
+def test_hdf5_v2_marker_survives_move_and_rename(tmp_path: Path) -> None:
+    t0_ns = 1_234_567_890_123_456_789
+    path = tmp_path / "marker-move.hdf5"
+    _exact_series(t0_ns).write(path, format="hdf5", path="nested/series")
+    with h5py.File(path, "r+") as h5file:
+        h5file.move("nested/series", "renamed")
+        assert _v2_sidecar(h5file).records[
+            _marker(h5file["renamed"]).lineage_token
+        ].paths == ("nested/series",)
+
+    recovered = TimeSeries.read(path, format="hdf5", path="renamed")
+
+    assert recovered.t0_gps_ns == t0_ns
+    assert getattr(recovered, "_gwex_t0_gps_ns", None) == t0_ns
+
+
+def test_hdf5_v2_marker_survives_same_file_h5ocopy(tmp_path: Path) -> None:
+    t0_ns = 1_234_567_890_123_456_789
+    path = tmp_path / "marker-same-file-copy.hdf5"
+    _exact_series(t0_ns).write(path, format="hdf5", path="source")
+    with h5py.File(path, "r+") as h5file:
+        h5file.copy("source", "copied")
+        assert _marker(h5file["copied"]) == _marker(h5file["source"])
+
+    recovered = TimeSeries.read(path, format="hdf5", path="copied")
+
+    assert recovered.t0_gps_ns == t0_ns
+    assert getattr(recovered, "_gwex_t0_gps_ns", None) == t0_ns
+
+
+def test_hdf5_v2_marker_survives_cross_file_h5ocopy_without_sidecar(
+    tmp_path: Path,
+) -> None:
+    t0_ns = 1_234_567_890_123_456_789
+    source_path = tmp_path / "marker-copy-source.hdf5"
+    copied_path = tmp_path / "marker-copy-destination.hdf5"
+    _exact_series(t0_ns).write(source_path, format="hdf5", path="source")
+    with (
+        h5py.File(source_path, "r") as source,
+        h5py.File(copied_path, "w") as destination,
+    ):
+        source.copy("source", destination, name="copied")
+        assert _SIDECAR_ATTRIBUTE_V2 not in destination.attrs
+        assert _marker(destination["copied"]) == _marker(source["source"])
+
+    recovered = TimeSeries.read(copied_path, format="hdf5", path="copied")
+
+    assert recovered.t0_gps_ns == t0_ns
+    assert getattr(recovered, "_gwex_t0_gps_ns", None) == t0_ns
+
+
+def test_hdf5_copy_without_attributes_loses_exact_authority(
+    tmp_path: Path,
+) -> None:
+    source_path = tmp_path / "attribute-copy-source.hdf5"
+    copied_path = tmp_path / "attribute-copy-destination.hdf5"
+    _exact_series(1_234_567_890_123_456_789).write(
+        source_path,
+        format="hdf5",
+        path="source",
+    )
+    with (
+        h5py.File(source_path, "r") as source,
+        h5py.File(copied_path, "w") as destination,
+    ):
+        source.copy("source", destination, name="copied", without_attrs=True)
+        assert "epoch" not in destination["copied"].attrs
+        assert _SIDECAR_ATTRIBUTE_V2 not in destination.attrs
+
+    recovered = TimeSeries.read(copied_path, format="hdf5", path="copied")
+
+    assert not hasattr(recovered, "_gwex_t0_gps_ns")
+
+
+def test_hdf5_gwpy_overwrite_without_marker_ignores_stale_v2_record(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "gwpy-overwrite.hdf5"
+    _exact_series(1_234_567_890_123_456_789).write(
+        path,
+        format="hdf5",
+        path="series",
+    )
+    with h5py.File(path, "r") as h5file:
+        stale_sidecar = h5file.attrs[_SIDECAR_ATTRIBUTE_V2]
+
+    native = GwpyTimeSeries(
+        np.arange(8, dtype=np.float32),
+        t0=20.25,
+        sample_rate=4,
+    )
+    native.write(
+        path,
+        format="hdf5",
+        path="series",
+        append=True,
+        overwrite=True,
+    )
+
+    with h5py.File(path, "r") as h5file:
+        assert h5file.attrs[_SIDECAR_ATTRIBUTE_V2] == stale_sidecar
+        assert exact_hdf5._decode_dataset_marker(h5file["series"]) is None
+    recovered = TimeSeries.read(path, format="hdf5", path="series")
+    assert not hasattr(recovered, "_gwex_t0_gps_ns")
+    assert recovered.t0 == native.t0
+
+
+def test_hdf5_recreated_object_cannot_inherit_stale_exact_authority(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "recreated-object.hdf5"
+    _exact_series(1_234_567_890_123_456_789).write(
+        path,
+        format="hdf5",
+        path="series",
+    )
+    with h5py.File(path, "r+") as h5file:
+        stale_token = _marker(h5file["series"]).lineage_token
+        del h5file["series"]
+
+    native = GwpyTimeSeries(
+        np.arange(8, dtype=np.float32),
+        t0=30.5,
+        sample_rate=4,
+    )
+    native.write(
+        path,
+        format="hdf5",
+        path="series",
+        append=True,
+    )
+
+    with h5py.File(path, "r") as h5file:
+        assert stale_token in _v2_sidecar(h5file).records
+        assert exact_hdf5._decode_dataset_marker(h5file["series"]) is None
+    recovered = TimeSeries.read(path, format="hdf5", path="series")
+    assert not hasattr(recovered, "_gwex_t0_gps_ns")
+    assert recovered.t0 == native.t0
+
+
+def test_hdf5_exact_slice_with_one_ulp_public_x0_difference_roundtrips(
+    tmp_path: Path,
+) -> None:
+    t0_ns = 1_234_567_890_123_456_789
+    sliced = TimeSeries(
+        np.arange(4, dtype=np.float32),
+        t0_ns=t0_ns,
+        dt=1 * u.ms,
+    )[1:]
+    expected_t0_ns = t0_ns + 1_000_000
+    independently_projected_x0 = float((expected_t0_ns * u.ns).to_value(sliced.xunit))
+    assert sliced.t0_gps_ns == expected_t0_ns
+    assert struct.pack(">d", sliced.x0.value) != struct.pack(
+        ">d",
+        independently_projected_x0,
+    )
+    path = tmp_path / "exact-slice.hdf5"
+
+    sliced.write(path, format="hdf5", path="series")
+    recovered = TimeSeries.read(path, format="hdf5", path="series")
+
+    assert recovered.t0_gps_ns == expected_t0_ns
+    assert struct.pack(">d", recovered.x0.value) == struct.pack(
+        ">d",
+        sliced.x0.value,
+    )
+
+
+def test_hdf5_independent_equal_epochs_receive_distinct_lineage_tokens(
+    tmp_path: Path,
+) -> None:
+    t0_ns = 1_234_567_890_123_456_789
+    path = tmp_path / "independent-lineages.hdf5"
+    _exact_series(t0_ns).write(path, format="hdf5", path="first")
+    _exact_series(t0_ns, offset=10).write(
+        path,
+        format="hdf5",
+        path="second",
+        append=True,
+    )
+
+    with h5py.File(path, "r") as h5file:
+        first = _marker(h5file["first"])
+        second = _marker(h5file["second"])
+        document = _v2_sidecar(h5file)
+        assert first.lineage_token != second.lineage_token
+        assert set(document.records) == {
+            first.lineage_token,
+            second.lineage_token,
+        }
+
+    for dataset_path in ("first", "second"):
+        recovered = TimeSeries.read(path, format="hdf5", path=dataset_path)
+        assert recovered.t0_gps_ns == t0_ns
 
 
 def test_hdf5_v1_sidecar_never_authorizes_exact_t0(tmp_path: Path) -> None:
