@@ -958,6 +958,156 @@ def test_hdf5_path_rejects_multiply_linked_regular_target(
     assert target.stat().st_ino == before_inode == alias.stat().st_ino
 
 
+@pytest.mark.parametrize("cleanup_outcome", ["success", "fail-before-delete"])
+def test_hdf5_path_stage_setup_failure_cleans_or_reports_retained_stage(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    cleanup_outcome: str,
+) -> None:
+    target = tmp_path / "stage-setup-failure.hdf5"
+    _exact_series(123).write(target, format="hdf5", path="data")
+    before = target.read_bytes()
+    close_error = OSError("injected stage descriptor close failure")
+    unlink_error = OSError("injected stage setup unlink failure")
+    close_calls = 0
+    unlink_calls = 0
+    cleanup_paths: list[Path] = []
+    close = exact_hdf5.os.close
+    unlink = Path.unlink
+
+    def is_stage(path: Path) -> bool:
+        return path.parent == tmp_path and path.name.startswith(
+            f".{target.name}.gwexpy-"
+        )
+
+    def close_then_fail(descriptor: int) -> None:
+        nonlocal close_calls
+        close_calls += 1
+        close(descriptor)
+        raise close_error
+
+    def unlink_stage(path: Path, *args: object, **kwargs: object) -> None:
+        nonlocal unlink_calls
+        if not is_stage(path):
+            unlink(path, *args, **kwargs)
+            return
+        unlink_calls += 1
+        cleanup_paths.append(path)
+        if cleanup_outcome == "fail-before-delete":
+            raise unlink_error
+        unlink(path, *args, **kwargs)
+
+    monkeypatch.setattr(exact_hdf5.os, "close", close_then_fail)
+    monkeypatch.setattr(Path, "unlink", unlink_stage)
+    native_writer_calls = _count_native_writer(monkeypatch)
+
+    try:
+        if cleanup_outcome == "success":
+            with pytest.raises(OSError) as raised_operation:
+                _exact_series(456, offset=10).write(
+                    target,
+                    format="hdf5",
+                    path="data",
+                    append=True,
+                    overwrite=True,
+                )
+            assert raised_operation.value is close_error
+            assert not isinstance(raised_operation.value, exact_hdf5._RollbackError)
+        else:
+            with pytest.raises(exact_hdf5._RollbackError) as raised_rollback:
+                _exact_series(456, offset=10).write(
+                    target,
+                    format="hdf5",
+                    path="data",
+                    append=True,
+                    overwrite=True,
+                )
+            assert raised_rollback.value.operation_error is close_error
+            assert raised_rollback.value.rollback_errors == (unlink_error,)
+            assert raised_rollback.value.state == "old"
+            assert raised_rollback.value.byte_state is None
+            assert raised_rollback.value.position_state is None
+
+        stages = sorted(tmp_path.glob(f".{target.name}.gwexpy-*.hdf5"))
+        assert target.read_bytes() == before
+        assert native_writer_calls() == 0
+        assert close_calls == 1
+        assert unlink_calls == 1
+        assert len(cleanup_paths) == 1
+        if cleanup_outcome == "success":
+            assert not stages
+        else:
+            assert stages == cleanup_paths
+            assert raised_rollback.value.recovery_path == str(stages[0])
+    finally:
+        for stage in tmp_path.glob(f".{target.name}.gwexpy-*.hdf5"):
+            unlink(stage, missing_ok=True)
+
+
+def test_hdf5_path_stage_setup_delete_after_raise_reports_no_recovery_path(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = tmp_path / "stage-setup-delete-after-raise.hdf5"
+    _exact_series(123).write(target, format="hdf5", path="data")
+    before = target.read_bytes()
+    close_error = OSError("injected stage descriptor close failure")
+    unlink_error = OSError("injected stage setup delete-after-raise")
+    close_calls = 0
+    unlink_calls = 0
+    close = exact_hdf5.os.close
+    unlink = Path.unlink
+
+    def is_stage(path: Path) -> bool:
+        return path.parent == tmp_path and path.name.startswith(
+            f".{target.name}.gwexpy-"
+        )
+
+    def close_then_fail(descriptor: int) -> None:
+        nonlocal close_calls
+        close_calls += 1
+        close(descriptor)
+        raise close_error
+
+    def delete_then_fail(path: Path, *args: object, **kwargs: object) -> None:
+        nonlocal unlink_calls
+        if not is_stage(path):
+            unlink(path, *args, **kwargs)
+            return
+        unlink_calls += 1
+        unlink(path, *args, **kwargs)
+        raise unlink_error
+
+    monkeypatch.setattr(exact_hdf5.os, "close", close_then_fail)
+    monkeypatch.setattr(Path, "unlink", delete_then_fail)
+    native_writer_calls = _count_native_writer(monkeypatch)
+
+    try:
+        with pytest.raises(exact_hdf5._RollbackError) as raised:
+            _exact_series(456, offset=10).write(
+                target,
+                format="hdf5",
+                path="data",
+                append=True,
+                overwrite=True,
+            )
+
+        assert target.read_bytes() == before
+        assert native_writer_calls() == 0
+        assert close_calls == 1
+        assert unlink_calls == 1
+        assert not list(tmp_path.glob(f".{target.name}.gwexpy-*.hdf5"))
+        assert raised.value.operation_error is close_error
+        assert raised.value.rollback_errors == (unlink_error,)
+        assert raised.value.state == "old"
+        assert raised.value.byte_state is None
+        assert raised.value.position_state is None
+        assert raised.value.recovery_path is None
+    finally:
+        for stage in tmp_path.glob(f".{target.name}.gwexpy-*.hdf5"):
+            unlink(stage, missing_ok=True)
+
+
 def test_hdf5_path_replace_failure_preserves_old_file_and_cleans_stage(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

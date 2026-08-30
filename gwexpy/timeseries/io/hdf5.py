@@ -1363,7 +1363,26 @@ def _create_sibling_transaction_file(filepath: Path) -> Path:
             descriptor = os.open(temporary_path, flags, 0o666)
         except FileExistsError:  # pragma: no cover - UUID collision
             continue
-        os.close(descriptor)
+        try:
+            os.close(descriptor)
+        except BaseException as operation_error:
+            cleanup_errors: list[BaseException] = []
+            try:
+                temporary_path.unlink(missing_ok=True)
+            except BaseException as cleanup_error:
+                cleanup_errors.append(cleanup_error)
+            if cleanup_errors:
+                retained_path = _retained_temporary_path(
+                    temporary_path,
+                    cleanup_errors,
+                )
+                raise _RollbackError(
+                    operation_error,
+                    tuple(cleanup_errors),
+                    str(retained_path) if retained_path is not None else None,
+                    state="old",
+                ) from cleanup_errors[0]
+            raise
         return temporary_path
 
 
