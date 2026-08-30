@@ -961,8 +961,7 @@ def _remove_or_recreate_recovery(
         )
     except BaseException as exc:  # pragma: no cover - catastrophic HDF5 failure
         errors.append(exc)
-        retained_path = exc.recovery_path if isinstance(exc, _RollbackError) else None
-        return None, tuple(errors), retained_path
+        return None, tuple(errors), None
     return recreated, tuple(errors), recreated.path
 
 

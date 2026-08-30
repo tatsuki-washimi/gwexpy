@@ -520,6 +520,94 @@ def test_hdf5_handle_recreation_and_public_restore_failure_reports_indeterminate
         )
 
 
+def test_hdf5_handle_partial_recreation_cleanup_and_public_restore_failure_reports_no_recovery_path(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = tmp_path / "recovery-partial-recreation-public-failure.hdf5"
+    with h5py.File(target, "w") as h5file:
+        _exact_series(123).write(h5file, format="hdf5", path="data")
+        create_group = exact_hdf5._create_handle_recovery_group
+        create_calls = 0
+
+        def fail_second_group_create_after_mutation(
+            owner: h5py.File,
+            path: str,
+        ) -> h5py.Group:
+            nonlocal create_calls
+            create_calls += 1
+            group = create_group(owner, path)
+            if create_calls == 2:
+                raise OSError("injected partial recovery recreation failure")
+            return group
+
+        def delete_then_raise(recovery: object) -> None:
+            del recovery.h5file[recovery.path]
+            raise OSError("injected delete-after-raise failure")
+
+        def fail_partial_cleanup(*args: object, **kwargs: object) -> None:
+            raise OSError("injected partial recreation cleanup failure")
+
+        def fail_public_restore(
+            container: h5py.File | h5py.Group,
+            candidate_path: str,
+            *args: object,
+            **kwargs: object,
+        ) -> None:
+            if candidate_path in container:
+                del container[candidate_path]
+            raise OSError("injected public restore failure")
+
+        monkeypatch.setattr(
+            exact_hdf5,
+            "_create_handle_recovery_group",
+            fail_second_group_create_after_mutation,
+        )
+        monkeypatch.setattr(
+            exact_hdf5,
+            "_unlink_handle_recovery",
+            delete_then_raise,
+        )
+        monkeypatch.setattr(
+            exact_hdf5,
+            "_unlink_partial_handle_recovery",
+            fail_partial_cleanup,
+        )
+        monkeypatch.setattr(exact_hdf5, "_restore_dataset", fail_public_restore)
+
+        with pytest.raises(exact_hdf5._RollbackError) as raised:
+            _exact_series(456, offset=10).write(
+                h5file,
+                format="hdf5",
+                path="data",
+                overwrite=True,
+            )
+
+        assert create_calls == 2
+        assert raised.value.state == "indeterminate"
+        assert raised.value.recovery_path is None
+        assert "data" not in h5file
+        nested = [
+            error
+            for error in raised.value.rollback_errors
+            if isinstance(error, exact_hdf5._RollbackError)
+        ]
+        assert len(nested) == 1
+        assert "recovery recreation" in str(nested[0].operation_error)
+        assert any(
+            "partial recreation cleanup" in str(error)
+            for error in nested[0].rollback_errors
+        )
+        assert any(
+            "public restore" in str(error) for error in raised.value.rollback_errors
+        )
+        partial_paths = [
+            name for name in h5file if name.startswith(exact_hdf5._ROLLBACK_PREFIX)
+        ]
+        assert len(partial_paths) == 1
+        assert tuple(h5file[partial_paths[0]].keys()) == ()
+
+
 def test_hdf5_handle_restore_sidecars_reports_all_failures(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
