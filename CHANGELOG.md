@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.1] - 2026-08-31
+
+This maintenance release corrects the HDF5 exact-epoch regression and restores
+lazy bootstrap I/O registration without changing the public API.
+
 ## [0.2.0] - 2026-08-26
 
 This minor release establishes the v0.2.0 semantic-contract baseline for
