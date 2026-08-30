@@ -1,8 +1,8 @@
 # Work Report: Phase 1 qualification handover
 
-**Date**: 2026-08-29 17:17:04 JST  
-**Status**: ⏳ In progress — implementation is paused for a new-session handover  
-**Branch / worktree**: `test/v020-post-release-qualification` / `/home/washimi/.config/superpowers/worktrees/gwexpy/v020-post-release-qualification`  
+**Date**: 2026-08-29 17:17:04 JST
+**Status**: ⏳ In progress — implementation is paused for a new-session handover
+**Branch / worktree**: `test/v020-post-release-qualification` / `/home/washimi/.config/superpowers/worktrees/gwexpy/v020-post-release-qualification`
 **Publication state**: No tag, push, GitHub Release, PyPI/TestPyPI upload, conda-forge update, Zenodo action, or post-release dispatch has been performed.
 
 ## Summary
@@ -102,4 +102,3 @@ first. P0 is NOT approved: fix the dataset-identity-bound HDF5 sidecar design
 and the listed compatibility/atomicity/memory findings with TDD and independent
 spec plus quality review. Do not perform any public release action.
 ```
-
