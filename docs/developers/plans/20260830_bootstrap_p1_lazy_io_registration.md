@@ -6,7 +6,7 @@ plain `import gwexpy`、constructor-only利用、明示的I/O利用の登録契�
 
 P0承認済みのHDF5 exact epoch差分には変更を加えない。
 
-Status: in-progress
+Status: completed
 
 ## 現状の確認
 
@@ -92,7 +92,7 @@ Status: completed (verified: `conda run -n gwexpy pytest tests/test_import_order
 
 ### Phase 4: qualification
 
-Status: in-progress
+Status: completed
 
 1. 新規bootstrap testsと既存のimport order、timeseries I/O、frequencyseries registrationを実行する。
 
@@ -112,8 +112,25 @@ P1 worktreeでの確認結果。
   再現し、P1変更によるfailureではない。
 - `ruff check gwexpy tests`と`mypy gwexpy`は通過した。
 
-HDF5 P0を含むfull v0.2.1 qualificationは、P0 frozen baselineとP1を統合する
-別のapproval済み工程で実行する。
+統合qualificationの結果。
+
+- P0 frozen baselineのsign-off記録を含む`17f5588e6`から
+  `test/v021-p0-p1-integration`を作成した。
+- P1の明示I/O入口は、package単位のimportではなく`register_all()`を通して
+  完全なI/O registryを一度だけ初期化するよう補正した。
+  この補正によりHDF5 compaction subprocessの登録順序をP0と一致させた。
+- P0とP1のfocused selectorは833 passedだった。
+- opt-in exact-time claimは1 passedで、復元差は0 nsだった。
+- `pytest tests -q`は10,492 passed、308 skipped、6 xfailedだった。
+- `ruff check gwexpy tests`と`mypy gwexpy`は通過した。
+- `ruff format --check gwexpy tests`は、P0 frozen baselineでも同じ
+  `tests/docs/test_root_roadmap_contract.py`の未整形1件だけを報告した。
+- `ruff check .`は、既知かつ未変更の`docs_redesign/conf.py:242` D103だけを報告した。
+- `git diff --check origin/main...HEAD`は通過した。
+
+この統合branchはv0.2.1 qualificationの根拠であり、P0承認対象の
+`ae79fb065ae4d5d712c59e49a2afa5c20fd815de`を変更しない。
+merge、push、tag、release、workflow dispatchは未実施である。
 
 ## 受入条件
 
