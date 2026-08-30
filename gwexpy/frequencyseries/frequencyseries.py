@@ -203,7 +203,9 @@ class FrequencySeries(
     @classmethod
     def read(cls, source, *args, **kwargs):  # type: ignore[override]
         """Read a ``FrequencySeries`` from a supported source."""
-        from . import io as _io  # noqa: F401
+        from gwexpy._bootstrap import register_all
+
+        register_all()
 
         fmt = kwargs.get("format")
         source_path = None
@@ -233,7 +235,9 @@ class FrequencySeries(
 
     def write(self, target, *args, **kwargs):  # type: ignore[override]
         """Write a ``FrequencySeries`` through the registered I/O handlers."""
-        from . import io as _io  # noqa: F401
+        from gwexpy._bootstrap import register_all
+
+        register_all()
 
         return super().write(target, *args, **kwargs)
 
