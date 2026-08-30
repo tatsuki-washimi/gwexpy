@@ -774,6 +774,8 @@ def _write_disposable_stage(
         _reject_private_resolution(array, h5file, path)
         _reject_external_link_traversal(array, h5file, path)
         _read_v2_sidecar(h5file)
+        coordinate, relative_path = _transaction_coordinate(array, h5file, path)
+        _existing_dataset(coordinate, relative_path)
         return _write_dataset_once(array, h5file, path, marker, kwargs)
 
 

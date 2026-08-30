@@ -4414,6 +4414,54 @@ def test_hdf5_path_external_overwrite_without_append_rejects_marked_target(
     assert native_writer_calls() == 0
 
 
+@pytest.mark.parametrize("target_kind", ["pathname", "filelike"])
+@pytest.mark.parametrize("link_kind", ["external", "soft"])
+def test_hdf5_disposable_target_rejects_leaf_links_before_native_write(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    target_kind: str,
+    link_kind: str,
+) -> None:
+    external_path = tmp_path / f"disposable-{target_kind}-{link_kind}-external.hdf5"
+    main_path = tmp_path / f"disposable-{target_kind}-{link_kind}.hdf5"
+    with h5py.File(external_path, "w") as external:
+        external.create_dataset("data", data=np.arange(4))
+    with h5py.File(main_path, "w") as h5file:
+        h5file.create_dataset("local", data=np.arange(4))
+        if link_kind == "external":
+            h5file["leaf"] = h5py.ExternalLink(str(external_path), "/data")
+        else:
+            h5file["leaf"] = h5py.SoftLink("/local")
+
+    before = main_path.read_bytes()
+    before_external = external_path.read_bytes()
+    target: object = main_path if target_kind == "pathname" else io.BytesIO(before)
+    native_writer_calls = _count_native_writer(monkeypatch)
+
+    with pytest.raises(ValueError, match=link_kind):
+        _legacy_series(offset=10).write(
+            target,
+            format="hdf5",
+            path="leaf",
+            append=True,
+            overwrite=True,
+        )
+
+    after = main_path.read_bytes() if target_kind == "pathname" else target.getvalue()
+    assert after == before
+    assert external_path.read_bytes() == before_external
+    assert native_writer_calls() == 0
+    with h5py.File(io.BytesIO(after), "r") as h5file:
+        link = h5file.get("leaf", getlink=True)
+        if link_kind == "external":
+            assert isinstance(link, h5py.ExternalLink)
+            assert link.filename == str(external_path)
+            assert link.path == "/data"
+        else:
+            assert isinstance(link, h5py.SoftLink)
+            assert link.path == "/local"
+
+
 @pytest.mark.parametrize("container_kind", ["file", "group"])
 @pytest.mark.parametrize(
     ("link_case", "allowed"),
