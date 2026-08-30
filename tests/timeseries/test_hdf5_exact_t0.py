@@ -4375,6 +4375,45 @@ def test_hdf5_legacy_external_direct_dataset_alias_rejects_marked_target(
         assert not raw_path.exists()
 
 
+@pytest.mark.parametrize("write_path", ["data", "replacement"])
+@pytest.mark.parametrize(
+    "authority_case",
+    ["marker-and-sidecar", "marker-only", "sidecar-only"],
+)
+def test_hdf5_path_external_overwrite_without_append_rejects_marked_target(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    write_path: str,
+    authority_case: str,
+) -> None:
+    path = tmp_path / "external-path-overwrite.hdf5"
+    raw_path = tmp_path / "external-path-overwrite.raw"
+    _exact_series(123).write(path, format="hdf5", path="data")
+    with h5py.File(path, "r+") as h5file:
+        if authority_case == "marker-only":
+            del h5file.attrs[_SIDECAR_ATTRIBUTE_V2]
+        elif authority_case == "sidecar-only":
+            del h5file["data"].attrs["epoch"]
+    raw_path.write_bytes(b"r" * 32)
+    before = path.read_bytes()
+    before_raw = raw_path.read_bytes()
+    native_writer_calls = _count_native_writer(monkeypatch)
+
+    with pytest.raises(ValueError, match="external"):
+        _write_external(
+            _legacy_series(offset=10),
+            path,
+            raw_path,
+            path=write_path,
+            append=False,
+            overwrite=True,
+        )
+
+    assert path.read_bytes() == before
+    assert raw_path.read_bytes() == before_raw
+    assert native_writer_calls() == 0
+
+
 @pytest.mark.parametrize("container_kind", ["file", "group"])
 @pytest.mark.parametrize(
     ("link_case", "allowed"),

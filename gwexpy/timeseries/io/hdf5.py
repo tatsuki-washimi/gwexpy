@@ -417,6 +417,19 @@ def _reject_stale_external_sidecar(
         )
 
 
+def _reject_external_document_replacement(h5file: h5py.File) -> None:
+    """Reject a whole-file external write that would discard exact state."""
+    document = _read_v2_sidecar(h5file)
+    if _build_v2_sidecar(h5file) is not None:
+        raise ValueError(
+            "external HDF5 storage cannot replace a canonically marked dataset"
+        )
+    if document is not None and document.records:
+        raise ValueError(
+            "external HDF5 storage cannot replace a sidecar-managed dataset"
+        )
+
+
 def _local_object_identity(value: h5py.Group | h5py.Dataset) -> int:
     return int(h5py.h5o.get_info(value.id).addr)
 
@@ -1275,7 +1288,7 @@ def _preflight_native_external_write(
             if append:
                 _reject_stale_external_sidecar(array, h5file, path)
             else:
-                _read_v2_sidecar(h5file)
+                _reject_external_document_replacement(h5file)
 
 
 def _create_sibling_transaction_file(filepath: Path) -> Path:
