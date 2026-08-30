@@ -1221,6 +1221,80 @@ def test_hdf5_path_replace_failure_cleans_or_reports_retained_stage(
             unlink(stage, missing_ok=True)
 
 
+def test_hdf5_path_replace_cleanup_does_not_probe_stage_before_unlink(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = tmp_path / "replace-cleanup-probe-failure.hdf5"
+    _exact_series(123).write(target, format="hdf5", path="data")
+    before = target.read_bytes()
+    replace_error = OSError("injected replace failure")
+    cleanup_error = OSError("injected stage unlink failure")
+    inspection_error = PermissionError("injected pre-cleanup inspection failure")
+    created_stages: list[Path] = []
+    primary_failed = False
+    exists_calls = 0
+    unlink_calls = 0
+    exists = Path.exists
+    unlink = Path.unlink
+
+    def fail_replace(
+        source: str | os.PathLike[str],
+        destination: str | os.PathLike[str],
+    ) -> None:
+        nonlocal primary_failed
+        stage = Path(source)
+        assert Path(destination) == target
+        assert exists(stage)
+        created_stages.append(stage)
+        primary_failed = True
+        raise replace_error
+
+    def fail_stage_probe(path: Path) -> bool:
+        nonlocal exists_calls
+        if primary_failed and path in created_stages:
+            exists_calls += 1
+            raise inspection_error
+        return exists(path)
+
+    def fail_stage_unlink(path: Path, *args: object, **kwargs: object) -> None:
+        nonlocal unlink_calls
+        assert path in created_stages
+        unlink_calls += 1
+        raise cleanup_error
+
+    monkeypatch.setattr(exact_hdf5.os, "replace", fail_replace)
+    monkeypatch.setattr(Path, "exists", fail_stage_probe)
+    monkeypatch.setattr(Path, "unlink", fail_stage_unlink)
+    native_writer_calls = _count_native_writer(monkeypatch)
+
+    try:
+        with pytest.raises(exact_hdf5._RollbackError) as raised:
+            _exact_series(456, offset=10).write(
+                target,
+                format="hdf5",
+                path="data",
+                append=True,
+                overwrite=True,
+            )
+
+        assert target.read_bytes() == before
+        assert native_writer_calls() == 1
+        assert exists_calls == 0
+        assert unlink_calls == 1
+        assert len(created_stages) == 1
+        assert exists(created_stages[0])
+        assert raised.value.operation_error is replace_error
+        assert raised.value.rollback_errors == (cleanup_error,)
+        assert raised.value.state == "old"
+        assert raised.value.byte_state is None
+        assert raised.value.position_state is None
+        assert raised.value.recovery_path == str(created_stages[0])
+    finally:
+        for stage in created_stages:
+            unlink(stage, missing_ok=True)
+
+
 def test_hdf5_path_append_preserves_unrelated_entries(tmp_path: Path) -> None:
     target = tmp_path / "append-preserves-unrelated.hdf5"
     _exact_series(123).write(target, format="hdf5", path="data")

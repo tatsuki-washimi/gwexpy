@@ -1424,21 +1424,22 @@ def _write_path_transaction(
             os.chmod(temporary_path, target_mode)
         os.replace(temporary_path, filepath)
     except BaseException as operation_error:
-        if temporary_path.exists():
-            try:
-                temporary_path.unlink()
-            except BaseException as cleanup_error:
-                cleanup_errors = [cleanup_error]
-                retained_path = _retained_temporary_path(
-                    temporary_path,
-                    cleanup_errors,
-                )
-                raise _RollbackError(
-                    operation_error,
-                    tuple(cleanup_errors),
-                    str(retained_path) if retained_path is not None else None,
-                    state="old",
-                ) from cleanup_errors[0]
+        try:
+            temporary_path.unlink()
+        except FileNotFoundError:
+            pass
+        except BaseException as cleanup_error:
+            cleanup_errors = [cleanup_error]
+            retained_path = _retained_temporary_path(
+                temporary_path,
+                cleanup_errors,
+            )
+            raise _RollbackError(
+                operation_error,
+                tuple(cleanup_errors),
+                str(retained_path) if retained_path is not None else None,
+                state="old",
+            ) from cleanup_errors[0]
         raise
     return result
 
