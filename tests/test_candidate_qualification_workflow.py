@@ -53,5 +53,6 @@ def test_candidate_qualification_has_exactly_nineteen_digest_checked_cells() -> 
     text = WORKFLOW.read_text(encoding="utf-8")
     assert "sha256sum -c" in text
     assert "CANDIDATE_SOURCE_SHA" in text
+    assert "awk -F'\"'" in text
     assert "actions/download-artifact@" in text
     assert "actions/upload-artifact@" in text

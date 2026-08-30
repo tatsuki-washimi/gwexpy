@@ -45,7 +45,7 @@ jobs:
         working-directory: candidate
         run: |
           test "$(git rev-parse HEAD)" = "$CANDIDATE_SOURCE_SHA"
-          test "$(python -c 'from pathlib import Path; import re; print(re.search(r"__version__ = \\"([^\\"]+)\\"", Path("gwexpy/_version.py").read_text()).group(1))')" = "$CANDIDATE_VERSION"
+          test "$(awk -F'\"' '/^__version__/ {print $2}' gwexpy/_version.py)" = "$CANDIDATE_VERSION"
       - name: Set up build Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
