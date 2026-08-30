@@ -246,13 +246,15 @@ class TestFrequencySeriesMatrixRegistryBackend:
 
 class TestCollectionsGwpyRegistrationSubprocess:
     """Subprocess-isolated verification that xml.diaggui / dttxml appear in
-    gwpy.io.registry.default_registry for FrequencySeriesDict after
-    ``import gwexpy.frequencyseries``."""
+    gwpy.io.registry.default_registry for FrequencySeriesDict after explicit
+    bootstrap."""
 
     def test_xml_diaggui_in_gwpy_registry_for_frequencyseriesdict(self):
         result = _run_isolated("""\
             from gwpy.io.registry import default_registry as reg
+            import gwexpy
             from gwexpy.frequencyseries import FrequencySeriesDict
+            gwexpy.register_all()
             fmt_names = list(reg.get_formats(FrequencySeriesDict, "Read")["Format"])
             assert "xml.diaggui" in fmt_names, f"xml.diaggui not in {fmt_names}"
             assert "dttxml" in fmt_names, f"dttxml not in {fmt_names}"

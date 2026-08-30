@@ -54,6 +54,59 @@ def _run_isolated(code: str) -> subprocess.CompletedProcess[str]:
 class TestImportOrderIsolated:
     """Tests that require a clean import state (subprocess)."""
 
+    def test_plain_import_leaves_timeseries_io_unloaded(self):
+        """Plain import must not eagerly load or register TimeSeries I/O."""
+        result = _run_isolated("""\
+            import sys
+            import gwexpy
+            from gwpy.io.registry import default_registry
+            from gwexpy.timeseries import TimeSeries
+
+            assert "gwexpy.timeseries.io" not in sys.modules
+            formats = default_registry.get_formats(TimeSeries, "Read")["Format"]
+            assert "hdf.ndscope" not in formats
+        """)
+        assert result.returncode == 0, result.stderr
+
+    def test_constructor_only_use_leaves_timeseries_io_unloaded(self):
+        """Constructing a TimeSeries must not require I/O registration."""
+        result = _run_isolated("""\
+            import sys
+            import numpy as np
+            from gwexpy.timeseries import TimeSeries
+
+            series = TimeSeries(np.ones(4), sample_rate=1)
+            assert series.size == 4
+            assert "gwexpy.timeseries.io" not in sys.modules
+        """)
+        assert result.returncode == 0, result.stderr
+
+    def test_first_explicit_timeseries_write_registers_io_once(self):
+        """The first public write must register I/O once and remain idempotent."""
+        result = _run_isolated("""\
+            import sys
+            import tempfile
+            from pathlib import Path
+            import numpy as np
+            from gwpy.io.registry import default_registry
+            from gwexpy.timeseries import TimeSeries
+
+            assert "gwexpy.timeseries.io" not in sys.modules
+            before = list(default_registry.get_formats(TimeSeries, "Write")["Format"])
+            assert "hdf.ndscope" not in before
+            with tempfile.TemporaryDirectory() as directory:
+                path = Path(directory) / "series.csv"
+                series = TimeSeries(np.ones(4), sample_rate=1)
+                series.write(path, format="csv")
+                first = list(default_registry.get_formats(TimeSeries, "Write")["Format"])
+                series.write(path, format="csv", overwrite=True)
+                second = list(default_registry.get_formats(TimeSeries, "Write")["Format"])
+            assert "gwexpy.timeseries.io" in sys.modules
+            assert first.count("hdf.ndscope") == 1
+            assert second == first
+        """)
+        assert result.returncode == 0, result.stderr
+
     def test_registry_populated_via_parent_import(self):
         """Importing a gwexpy submodule triggers top-level __init__.py,
         which imports all subpackages and populates the registry.

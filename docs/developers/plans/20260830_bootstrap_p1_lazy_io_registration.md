@@ -6,7 +6,7 @@ plain `import gwexpy`、constructor-only利用、明示的I/O利用の登録契�
 
 P0承認済みのHDF5 exact epoch差分には変更を加えない。
 
-Status: planned
+Status: in-progress
 
 ## 現状の確認
 
@@ -47,7 +47,7 @@ on-demand契約違反は同じbootstrap経路による。
 
 ### Phase 1: 登録境界のテスト
 
-Status: planned
+Status: completed (verified: `conda run -n gwexpy pytest tests/test_import_order.py tests/io/test_frequencyseries_registration.py tests/io/test_frequencyseries_collections_registry.py::TestCollectionsGwpyRegistrationSubprocess -q`)
 
 1. `tests/test_import_order.py`へfresh subprocessのRED nodeを追加する。
 
@@ -64,7 +64,7 @@ Status: planned
 
 ### Phase 2: bootstrapとsubpackage importの分離
 
-Status: planned
+Status: completed (verified: `conda run -n gwexpy pytest tests/test_import_order.py tests/io/test_frequencyseries_registration.py tests/io/test_frequencyseries_collections_registry.py::TestCollectionsGwpyRegistrationSubprocess -q`)
 
 1. `gwexpy.__init__`からimplicit `register_all()`を除去する。
 
@@ -79,7 +79,7 @@ Status: planned
 
 ### Phase 3: explicit I/Oのon-demand登録
 
-Status: planned
+Status: completed (verified: `conda run -n gwexpy pytest tests/test_import_order.py tests/io/test_frequencyseries_registration.py tests/io/test_frequencyseries_collections_registry.py::TestCollectionsGwpyRegistrationSubprocess -q`)
 
 1. TimeSeriesとFrequencySeriesのpublic `.read()`／`.write()`が、registry dispatch前に
    対応I/O packageをidempotentにensureするprivate helperを通るようにする。

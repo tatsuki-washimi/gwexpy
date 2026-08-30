@@ -222,6 +222,6 @@ def __dir__() -> list[str]:
     return sorted(set(__all__) | set(globals().keys()))
 
 
-# Mark bootstrap as complete — all subpackages have been imported above,
-# so the registry is fully populated.
-register_all()
+# Register constructors for top-level exports, but defer I/O handlers until a
+# public I/O operation or explicit ``register_all()`` requests them.
+register_all(include_io=False)

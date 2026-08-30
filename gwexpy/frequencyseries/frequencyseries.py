@@ -203,6 +203,8 @@ class FrequencySeries(
     @classmethod
     def read(cls, source, *args, **kwargs):  # type: ignore[override]
         """Read a ``FrequencySeries`` from a supported source."""
+        from . import io as _io  # noqa: F401
+
         fmt = kwargs.get("format")
         source_path = None
         if isinstance(source, (str, os.PathLike)):
@@ -228,6 +230,12 @@ class FrequencySeries(
             if fs is not None:
                 return fs
         return super().read(source, *args, **kwargs)
+
+    def write(self, target, *args, **kwargs):  # type: ignore[override]
+        """Write a ``FrequencySeries`` through the registered I/O handlers."""
+        from . import io as _io  # noqa: F401
+
+        return super().write(target, *args, **kwargs)
 
     def __new__(
         cls,

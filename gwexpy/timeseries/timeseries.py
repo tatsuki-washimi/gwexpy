@@ -165,6 +165,8 @@ class TimeSeries(
         GWF accepts the compatible ``parallel=`` and ``nproc=`` keywords; see
         the generated signature and the GWF I/O guide for their constraints.
         """
+        from . import io as _io  # noqa: F401
+
         fmt = kwargs.get("format")
         source_path = Path(source) if isinstance(source, (str, Path)) else None
         if fmt in {"nc", "netcdf4"}:
@@ -257,6 +259,8 @@ class TimeSeries(
 
         This override preserves minimal metadata for direct CSV round-trips.
         """
+        from . import io as _io  # noqa: F401
+
         fmt = kwargs.get("format")
         target_path = Path(target) if isinstance(target, (str, Path)) else None
         if fmt == "csv" or (
