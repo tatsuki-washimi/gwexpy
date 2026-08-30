@@ -798,11 +798,20 @@ def _existing_dataset(
     return target
 
 
-def _create_handle_recovery_group(h5file: h5py.File) -> h5py.Group:
+def _new_handle_recovery_path(h5file: h5py.File) -> str:
     while True:
         name = f"{_ROLLBACK_PREFIX}{uuid.uuid4().hex}"
         if name not in h5file:
-            return h5file.create_group(name)
+            return f"/{name}"
+
+
+def _create_handle_recovery_group(h5file: h5py.File, path: str) -> h5py.Group:
+    return h5file.create_group(path)
+
+
+def _unlink_partial_handle_recovery(h5file: h5py.File, path: str) -> None:
+    if path in h5file:
+        del h5file[path]
 
 
 def _link_handle_recovery_dataset(
@@ -864,8 +873,7 @@ def _linked_handle_recovery_path(recovery: _HandleRecovery) -> str | None:
 
 
 def _unlink_handle_recovery(recovery: _HandleRecovery) -> None:
-    if recovery.path in recovery.h5file:
-        del recovery.h5file[recovery.path]
+    _unlink_partial_handle_recovery(recovery.h5file, recovery.path)
     if recovery.group.id.valid:
         recovery.group.id.close()
 
@@ -890,11 +898,30 @@ def _prepare_handle_recovery(
     dataset: h5py.Dataset,
     sidecar_snapshot: _SidecarSnapshot,
 ) -> _HandleRecovery:
-    rollback = _create_handle_recovery_group(h5file)
+    path = _new_handle_recovery_path(h5file)
+    try:
+        rollback = _create_handle_recovery_group(h5file, path)
+    except BaseException as operation_error:
+        try:
+            _unlink_partial_handle_recovery(h5file, path)
+        except BaseException as cleanup_error:
+            cleanup_errors = [cleanup_error]
+            try:
+                recovery_path = path if path in h5file else None
+            except BaseException as inspection_error:
+                cleanup_errors.append(inspection_error)
+                recovery_path = path
+            raise _RollbackError(
+                operation_error,
+                tuple(cleanup_errors),
+                recovery_path,
+                state="old",
+            ) from cleanup_error
+        raise
     recovery = _HandleRecovery(
         h5file=h5file,
         group=rollback,
-        path=cast(str, rollback.name),
+        path=path,
         dataset=dataset,
         sidecar_snapshot=sidecar_snapshot,
     )

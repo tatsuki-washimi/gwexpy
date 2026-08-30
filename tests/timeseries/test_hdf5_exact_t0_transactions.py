@@ -109,6 +109,7 @@ def _transaction_target(tmp_path: Path, target_kind: str) -> Iterator[object]:
     "failure_point",
     [
         "group-create",
+        "group-create-partial-cleanup",
         "dataset-link",
         "v1-snapshot",
         "v2-snapshot",
@@ -133,13 +134,31 @@ def test_hdf5_open_recovery_setup_failure_preserves_public_state(
         def fail_setup(*args: object, **kwargs: object) -> None:
             raise RuntimeError(f"injected {failure_point} failure")
 
-        if failure_point == "group-create":
+        if failure_point in {"group-create", "group-create-partial-cleanup"}:
+            create_group = exact_hdf5._create_handle_recovery_group
+
+            def fail_group_create_after_mutation(
+                owner: h5py.File,
+                path: str,
+            ) -> None:
+                create_group(owner, path)
+                fail_setup()
+
             monkeypatch.setattr(
                 exact_hdf5,
                 "_create_handle_recovery_group",
-                fail_setup,
+                fail_group_create_after_mutation,
                 raising=False,
             )
+            if failure_point == "group-create-partial-cleanup":
+                monkeypatch.setattr(
+                    exact_hdf5,
+                    "_unlink_partial_handle_recovery",
+                    lambda *args, **kwargs: (_ for _ in ()).throw(
+                        OSError("injected group create partial cleanup failure")
+                    ),
+                    raising=False,
+                )
         elif failure_point == "dataset-link":
             monkeypatch.setattr(
                 exact_hdf5,
@@ -193,7 +212,7 @@ def test_hdf5_open_recovery_setup_failure_preserves_public_state(
                 raising=False,
             )
 
-        if failure_point == "partial-cleanup":
+        if failure_point in {"group-create-partial-cleanup", "partial-cleanup"}:
             with pytest.raises(exact_hdf5._RollbackError) as raised:
                 _exact_series(456, offset=10).write(
                     h5file,
@@ -273,8 +292,8 @@ def test_hdf5_handle_delete_after_raise_closes_id_then_recreates_recovery(
         created_groups: list[h5py.Group] = []
         unlink_calls = 0
 
-        def capture_group(owner: h5py.File) -> h5py.Group:
-            group = create_group(owner)
+        def capture_group(owner: h5py.File, path: str) -> h5py.Group:
+            group = create_group(owner, path)
             created_groups.append(group)
             return group
 
@@ -396,12 +415,12 @@ def test_hdf5_handle_recovery_recreation_failure_with_complete_restore_reports_o
         create_group = exact_hdf5._create_handle_recovery_group
         create_calls = 0
 
-        def fail_second_group_create(owner: h5py.File) -> h5py.Group:
+        def fail_second_group_create(owner: h5py.File, path: str) -> h5py.Group:
             nonlocal create_calls
             create_calls += 1
             if create_calls == 2:
                 raise OSError("injected recovery recreation failure")
-            return create_group(owner)
+            return create_group(owner, path)
 
         def delete_then_raise(recovery: object) -> None:
             del recovery.h5file[recovery.path]
@@ -447,12 +466,12 @@ def test_hdf5_handle_recreation_and_public_restore_failure_reports_indeterminate
         create_group = exact_hdf5._create_handle_recovery_group
         create_calls = 0
 
-        def fail_second_group_create(owner: h5py.File) -> h5py.Group:
+        def fail_second_group_create(owner: h5py.File, path: str) -> h5py.Group:
             nonlocal create_calls
             create_calls += 1
             if create_calls == 2:
                 raise OSError("injected recovery recreation failure")
-            return create_group(owner)
+            return create_group(owner, path)
 
         def delete_then_raise(recovery: object) -> None:
             del recovery.h5file[recovery.path]
