@@ -357,15 +357,6 @@ def _reject_private_namespace(
     if not preserve_existing:
         return
     if _is_seekable_filelike(target):
-        position = target.tell()
-        try:
-            try:
-                with h5py.File(target, "r") as h5file:
-                    _reject_private_resolution(array, h5file, path)
-            except OSError:
-                pass
-        finally:
-            target.seek(position)
         return
     filepath = _filesystem_path(target)
     if filepath.exists() and h5py.is_hdf5(filepath):

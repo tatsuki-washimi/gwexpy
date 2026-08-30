@@ -1136,6 +1136,15 @@ class _CommitAndPositionRestoreFailBuffer(_FailOnceWriteBuffer):
         return super().seek(offset, whence)
 
 
+class _OriginalPositionRestoreFailBuffer(io.BytesIO):
+    fail_position_restore = False
+
+    def seek(self, offset: int, whence: int = 0) -> int:
+        if self.fail_position_restore and offset == 7 and whence == 0:
+            raise OSError("injected position restore failure")
+        return super().seek(offset, whence)
+
+
 class _CloseFailingBinaryFile:
     def __init__(self, wrapped: object, label: str) -> None:
         self.wrapped = wrapped
@@ -1253,6 +1262,58 @@ def test_hdf5_filelike_precommit_failure_restores_position(
 
     assert target.getvalue() == before
     assert target.tell() == 7
+
+
+def test_hdf5_filelike_private_preflight_position_failure_is_classified(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    initial = io.BytesIO()
+    _exact_series(123).write(initial, format="hdf5", path="data")
+    before = initial.getvalue()
+    target = _OriginalPositionRestoreFailBuffer(before)
+    target.seek(7)
+    target.fail_position_restore = True
+    created_backups: list[Path] = []
+    create_backup = exact_hdf5._create_filelike_backup
+
+    def capture_backup() -> tuple[object, Path]:
+        backup, path = create_backup()
+        created_backups.append(path)
+        return backup, path
+
+    def fail_private_resolution(*args: object, **kwargs: object) -> None:
+        raise RuntimeError("injected private resolution failure")
+
+    monkeypatch.setattr(exact_hdf5, "_create_filelike_backup", capture_backup)
+    monkeypatch.setattr(
+        exact_hdf5,
+        "_reject_private_resolution",
+        fail_private_resolution,
+    )
+    try:
+        with pytest.raises(exact_hdf5._RollbackError) as raised:
+            _exact_series(456, offset=10).write(
+                target,
+                format="hdf5",
+                path="data",
+                append=True,
+                overwrite=True,
+            )
+
+        assert target.getvalue() == before
+        assert raised.value.state == "indeterminate"
+        assert raised.value.byte_state == "old"
+        assert raised.value.position_state == "indeterminate"
+        assert "private resolution" in str(raised.value.operation_error)
+        assert any(
+            "position restore" in str(error) for error in raised.value.rollback_errors
+        )
+        assert len(created_backups) == 1
+        assert raised.value.recovery_path == str(created_backups[0])
+        assert created_backups[0].read_bytes() == before
+    finally:
+        for path in created_backups:
+            path.unlink(missing_ok=True)
 
 
 def test_hdf5_filelike_commit_failure_restores_bytes_and_position() -> None:
