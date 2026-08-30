@@ -3,13 +3,14 @@ from __future__ import annotations
 import copy
 import io
 import json
-import signal
+import shutil
 import struct
 import subprocess
 import sys
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from pathlib import Path
+from typing import cast
 
 import h5py
 import numpy as np
@@ -57,6 +58,7 @@ def _exact_axis_series(t0_ns: int, xunit: str) -> TimeSeries:
         dx=0.25 * u.s,
         unit="V",
         name="X1:AXIS",
+        channel="X1:AXIS",
     )
     series._gwex_t0_gps_ns = t0_ns
     return series
@@ -143,6 +145,65 @@ def _write_external(
     )
 
 
+def _write_fixed_text_attribute(
+    owner: h5py.File | h5py.Group | h5py.Dataset,
+    name: str,
+    value: bytes,
+    *,
+    width: int,
+    padding: int,
+) -> None:
+    if name in owner.attrs:
+        del owner.attrs[name]
+    if padding == h5py.h5t.STR_NULLTERM:
+        if len(value) >= width:
+            raise ValueError("NULLTERM test value must leave room for a terminator")
+        raw = value + b"\0" + b"\0" * (width - len(value) - 1)
+    elif padding == h5py.h5t.STR_NULLPAD:
+        if len(value) > width:
+            raise ValueError("NULLPAD test value exceeds its fixed width")
+        raw = value + b"\0" * (width - len(value))
+    elif padding == h5py.h5t.STR_SPACEPAD:
+        if len(value) > width:
+            raise ValueError("SPACEPAD test value exceeds its fixed width")
+        raw = value + b" " * (width - len(value))
+    else:  # pragma: no cover - test helper invariant
+        raise AssertionError(f"unsupported test padding {padding}")
+
+    datatype = h5py.h5t.C_S1.copy()
+    dataspace = h5py.h5s.create(h5py.h5s.SCALAR)
+    attribute: h5py.h5a.AttrID | None = None
+    try:
+        datatype.set_size(width)
+        datatype.set_strpad(padding)
+        attribute = h5py.h5a.create(
+            owner.id,
+            name.encode("ascii"),
+            datatype,
+            dataspace,
+        )
+        source = np.empty((), dtype=f"S{width}")
+        source[()] = np.bytes_(raw)
+        attribute.write(source, mtype=datatype)
+    finally:
+        if attribute is not None:
+            attribute.close()
+        dataspace.close()
+        datatype.close()
+
+
+def _zero_dimensional_marker_text(text: str, representation: str) -> object:
+    if representation == "fixed-bytes":
+        encoded = text.encode("ascii")
+        return np.array(encoded, dtype=f"S{max(690, len(encoded))}")
+    if representation == "unicode":
+        return np.array(text, dtype=f"U{len(text)}")
+    if representation == "object-str":
+        return np.array(text, dtype=object)
+    assert representation == "object-bytes"
+    return np.array(text.encode("ascii"), dtype=object)
+
+
 def _write_with_storage(
     series: TimeSeries,
     target: object,
@@ -154,6 +215,47 @@ def _write_with_storage(
         _write_external(series, target, raw_path, **kwargs)
     else:
         series.write(target, format="hdf5", **kwargs)
+
+
+def _run_legacy_append_subprocess(path: Path, *, timeout: float = 10) -> None:
+    code = """
+import sys
+import numpy as np
+from gwexpy.timeseries import TimeSeries
+series = TimeSeries(
+    np.arange(8, dtype=np.float32),
+    t0=10,
+    sample_rate=4,
+    unit="V",
+    name="X1:LEGACY",
+)
+series.write(sys.argv[1], format="hdf5", path="ordinary", append=True)
+"""
+    try:
+        result = subprocess.run(
+            [sys.executable, "-c", code, str(path)],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired:
+        pytest.fail(f"HDF5 compaction exceeded {timeout:g} seconds")
+    assert result.returncode == 0, result.stderr or result.stdout
+
+
+def _count_native_writer(monkeypatch: pytest.MonkeyPatch) -> Callable[[], int]:
+    native_writer = exact_hdf5._BASE_WRITER
+    assert native_writer is not None
+    calls = 0
+
+    def count(*args: object, **kwargs: object) -> object:
+        nonlocal calls
+        calls += 1
+        return native_writer(*args, **kwargs)
+
+    monkeypatch.setattr(exact_hdf5, "_BASE_WRITER", count)
+    return lambda: calls
 
 
 def _handle_public_snapshot(container: h5py.File | h5py.Group) -> tuple[object, ...]:
@@ -441,6 +543,7 @@ _SCALAR_ONE_METADATA_CASES = {
 
 def _nonpathname_metadata_case(
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
     target_kind: str,
     metadata_case: str,
 ) -> None:
@@ -521,6 +624,14 @@ def _nonpathname_metadata_case(
         }
         match = None
         expectation = metadata_case
+    elif metadata_case == "nonexact-ordinary-invalid-bytes":
+        attrs = {
+            "x0": replacement.x0.value,
+            "xunit": replacement.xunit.to_string(),
+            "epoch": b"ordinary-\xff",
+        }
+        match = None
+        expectation = metadata_case
     elif metadata_case == "exact-v2-epoch-matching":
         marker = encode_epoch_marker(
             epoch_ns=456,
@@ -569,7 +680,11 @@ def _nonpathname_metadata_case(
         attrs = {
             "x0": replacement.x0.value,
             "xunit": replacement.xunit.to_string(),
-            "epoch": marker_text[:-1] + ("0" if marker_text[-1] != "0" else "1"),
+            "epoch": (
+                marker_text[:-1] + ("0" if marker_text[-1] != "0" else "1")
+            ).encode("ascii")
+            if metadata_case.startswith("nonexact-")
+            else marker_text[:-1] + ("0" if marker_text[-1] != "0" else "1"),
         }
         match = "marker|digest|canonical"
     elif metadata_case in {
@@ -585,7 +700,7 @@ def _nonpathname_metadata_case(
         attrs = {
             "x0": replacement.x0.value,
             "xunit": replacement.xunit.to_string(),
-            "epoch": marker.text,
+            "epoch": marker.text.encode("ascii"),
         }
         match = "authority"
     else:
@@ -598,6 +713,7 @@ def _nonpathname_metadata_case(
 
     attrs_before = copy.deepcopy(attrs)
     with _metadata_target(tmp_path, target_kind) as (target, container, before):
+        native_writer_calls = _count_native_writer(monkeypatch)
         external = "external" in metadata_case
         raw_path = tmp_path / f"metadata-policy-{target_kind}.raw"
         if external:
@@ -632,6 +748,7 @@ def _nonpathname_metadata_case(
             if external:
                 assert raw_path.read_bytes() == before_raw
             assert attrs == attrs_before
+            assert native_writer_calls() == 0
             return
 
         write()
@@ -647,10 +764,18 @@ def _nonpathname_metadata_case(
                 "exact-ordinary-epoch-zero-d-scalar",
             }:
                 assert _marker(dataset).epoch_ns == 1_000_000_000
+            elif expectation == "nonexact-ordinary-invalid-bytes":
+                assert exact_hdf5._read_bounded_text_attribute(
+                    dataset,
+                    "epoch",
+                    limit=255,
+                ) == (b"ordinary-\xff", False)
+                assert _SIDECAR_ATTRIBUTE_V2 not in scope.file.attrs
             else:
                 assert expectation == "nonexact-ordinary-epoch"
                 assert dataset.attrs["epoch"] == repr(replacement.x0.value)
                 assert _SIDECAR_ATTRIBUTE_V2 not in scope.file.attrs
+        assert native_writer_calls() == 2
 
 
 @pytest.mark.parametrize(
@@ -724,6 +849,11 @@ def _nonpathname_metadata_case(
         ),
         pytest.param(
             "pathname",
+            "nonexact-ordinary-invalid-bytes",
+            id="pathname-nonexact-ordinary-invalid-bytes",
+        ),
+        pytest.param(
+            "pathname",
             "exact-external-storage",
             id="pathname-exact-external-storage",
         ),
@@ -766,6 +896,7 @@ def _nonpathname_metadata_case(
                 "nonexact-malformed-v2-epoch",
                 "nonexact-canonical-v2-epoch",
                 "nonexact-ordinary-epoch",
+                "nonexact-ordinary-invalid-bytes",
                 "exact-external-storage",
                 "nonexact-external-canonical-v2",
                 "nonexact-external-malformed-v2",
@@ -793,6 +924,7 @@ def _nonpathname_metadata_case(
                 "nonexact-malformed-v2-epoch",
                 "nonexact-canonical-v2-epoch",
                 "nonexact-ordinary-epoch",
+                "nonexact-ordinary-invalid-bytes",
                 "exact-external-storage",
                 "nonexact-external-canonical-v2",
                 "nonexact-external-malformed-v2",
@@ -803,16 +935,23 @@ def _nonpathname_metadata_case(
 )
 def test_hdf5_write_metadata_policy_fails_before_mutation(
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
     target_kind: str,
     metadata_case: str,
 ) -> None:
     if target_kind != "pathname":
-        _nonpathname_metadata_case(tmp_path, target_kind, metadata_case)
+        _nonpathname_metadata_case(
+            tmp_path,
+            monkeypatch,
+            target_kind,
+            metadata_case,
+        )
         return
     assert target_kind == "pathname"
     path = tmp_path / "metadata-policy.hdf5"
     _exact_series(123).write(path, format="hdf5", path="data")
     before = path.read_bytes()
+    native_writer_calls = _count_native_writer(monkeypatch)
     if metadata_case in _SCALAR_ONE_METADATA_CASES:
         replacement = _exact_series(1_000_000_000, offset=10)
         assert replacement.x0.value == 1.0
@@ -865,9 +1004,17 @@ def test_hdf5_write_metadata_policy_fails_before_mutation(
         assert path.read_bytes() == before
         assert raw_path.read_bytes() == before_raw
         assert attrs == attrs_before
+        assert native_writer_calls() == 0
         return
-    if metadata_case == "nonexact-ordinary-epoch":
-        ordinary_epoch = repr(replacement.x0.value)
+    if metadata_case in {
+        "nonexact-ordinary-epoch",
+        "nonexact-ordinary-invalid-bytes",
+    }:
+        ordinary_epoch: str | bytes = (
+            b"ordinary-\xff"
+            if metadata_case.endswith("invalid-bytes")
+            else repr(replacement.x0.value)
+        )
         attrs = {
             "x0": replacement.x0.value,
             "xunit": replacement.xunit.to_string(),
@@ -884,8 +1031,19 @@ def test_hdf5_write_metadata_policy_fails_before_mutation(
         )
         assert attrs == attrs_before
         with h5py.File(path, "r") as h5file:
-            assert h5file["data"].attrs["epoch"] == ordinary_epoch
+            dataset = h5file["data"]
+            if metadata_case == "nonexact-ordinary-invalid-bytes":
+                assert exact_hdf5._read_bounded_text_attribute(
+                    dataset,
+                    "epoch",
+                    limit=255,
+                ) == (ordinary_epoch, False)
+            else:
+                assert dataset.attrs["epoch"] == ordinary_epoch
             assert _SIDECAR_ATTRIBUTE_V2 not in h5file.attrs
+        assert native_writer_calls() == 2
+        if metadata_case == "nonexact-ordinary-invalid-bytes":
+            return
         assert not hasattr(
             TimeSeries.read(path, format="hdf5", path="data"),
             "_gwex_t0_gps_ns",
@@ -938,7 +1096,7 @@ def test_hdf5_write_metadata_policy_fails_before_mutation(
         attrs = {
             "x0": replacement.x0.value,
             "xunit": replacement.xunit.to_string(),
-            "epoch": supplied_marker.text,
+            "epoch": supplied_marker.text.encode("ascii"),
         }
         match = "exact authority"
     elif metadata_case in {
@@ -954,7 +1112,9 @@ def test_hdf5_write_metadata_policy_fails_before_mutation(
         attrs = {
             "x0": replacement.x0.value,
             "xunit": replacement.xunit.to_string(),
-            "epoch": valid[:-1] + ("0" if valid[-1] != "0" else "1"),
+            "epoch": (valid[:-1] + ("0" if valid[-1] != "0" else "1")).encode("ascii")
+            if metadata_case.startswith("nonexact-")
+            else valid[:-1] + ("0" if valid[-1] != "0" else "1"),
         }
         match = "marker|digest|canonical"
     elif metadata_case == "exact-x0-nonscalar":
@@ -1086,6 +1246,701 @@ def test_hdf5_write_metadata_policy_fails_before_mutation(
 
     assert path.read_bytes() == before
     assert attrs == attrs_before
+    assert native_writer_calls() == 0
+
+
+@pytest.mark.parametrize("target_kind", ["pathname", "filelike", "file", "group"])
+@pytest.mark.parametrize(
+    ("attribute", "value"),
+    [
+        pytest.param("x0", np.complex128(1 + 7j), id="x0-numpy-scalar"),
+        pytest.param("epoch", np.complex128(1 + 7j), id="epoch-numpy-scalar"),
+        pytest.param("x0", 1 + 7j, id="x0-python-scalar"),
+        pytest.param("epoch", 1 + 7j, id="epoch-python-scalar"),
+        pytest.param("x0", np.array(1 + 7j), id="x0-zero-d-array"),
+        pytest.param("epoch", np.array(1 + 7j), id="epoch-zero-d-array"),
+    ],
+)
+def test_hdf5_exact_metadata_rejects_complex_before_native_writer(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    target_kind: str,
+    attribute: str,
+    value: object,
+) -> None:
+    replacement = _exact_series(1_000_000_000, offset=10)
+    assert replacement.x0.value == 1.0
+    attrs: dict[str, object] = {
+        "x0": replacement.x0.value,
+        "xunit": replacement.xunit.to_string(),
+    }
+    attrs[attribute] = value
+    attrs_before = copy.deepcopy(attrs)
+
+    with _metadata_target(tmp_path, target_kind) as (target, container, before):
+        calls = 0
+        native_writer = exact_hdf5._BASE_WRITER
+        assert native_writer is not None
+
+        def count_native_writer(*args: object, **kwargs: object) -> object:
+            nonlocal calls
+            calls += 1
+            return native_writer(*args, **kwargs)
+
+        monkeypatch.setattr(exact_hdf5, "_BASE_WRITER", count_native_writer)
+        with pytest.raises(ValueError, match="scalar"):
+            replacement.write(
+                target,
+                format="hdf5",
+                path="data",
+                append=True,
+                overwrite=True,
+                attrs=attrs,
+            )
+
+        assert calls == 0
+        assert _metadata_target_snapshot(target_kind, target, container) == before
+        assert attrs == attrs_before
+
+
+@pytest.mark.parametrize(
+    "representation",
+    [
+        "python-str",
+        "python-bytes",
+        "numpy-str",
+        "numpy-bytes",
+        "fixed-bytes",
+        "unicode",
+        "object-str",
+        "object-bytes",
+    ],
+)
+def test_hdf5_exact_zero_dimensional_text_marker_validation(
+    representation: str,
+) -> None:
+    series = _exact_series(456, offset=10)
+    marker = encode_epoch_marker(
+        epoch_ns=456,
+        raw_x0=series.x0.value,
+        xunit=series.xunit,
+        token=b"v" * 16,
+    )
+    if representation == "python-str":
+        supplied: object = marker.text
+    elif representation == "python-bytes":
+        supplied = marker.text.encode("ascii")
+    elif representation == "numpy-str":
+        supplied = np.str_(marker.text)
+    elif representation == "numpy-bytes":
+        supplied = np.bytes_(marker.text.encode("ascii"))
+    else:
+        supplied = _zero_dimensional_marker_text(marker.text, representation)
+    attrs: dict[str, object] = {
+        "x0": series.x0.value,
+        "xunit": series.xunit.to_string(),
+        "epoch": supplied,
+    }
+
+    validated = exact_hdf5._validate_caller_write_metadata(
+        series, 456, {"attrs": attrs}
+    )
+
+    assert validated == marker
+    assert attrs["epoch"] is supplied
+
+
+def test_hdf5_caller_text_scalar_accepts_zero_dimensional_string_item(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    supplied = object()
+
+    class FutureStringDType:
+        kind = "T"
+
+    class FutureStringScalar:
+        ndim = 0
+        dtype = FutureStringDType()
+
+        def item(self) -> str:
+            return "marker-text"
+
+    original_asarray = np.asarray
+
+    def future_string_asarray(value: object) -> object:
+        if value is supplied:
+            return FutureStringScalar()
+        return original_asarray(value)
+
+    monkeypatch.setattr(exact_hdf5.np, "asarray", future_string_asarray)
+
+    assert exact_hdf5._caller_text_scalar(supplied) == "marker-text"
+
+
+_ZERO_D_MARKER_REPRESENTATIONS = (
+    "fixed-bytes",
+    "unicode",
+    "object-str",
+    "object-bytes",
+)
+
+
+@pytest.mark.parametrize("target_kind", ["pathname", "filelike", "file", "group"])
+@pytest.mark.parametrize(
+    ("metadata_case", "representation"),
+    [
+        *[
+            pytest.param(
+                "nonexact-canonical", representation, id=f"forged-{representation}"
+            )
+            for representation in _ZERO_D_MARKER_REPRESENTATIONS
+        ],
+        *[
+            pytest.param(
+                "nonexact-malformed", representation, id=f"malformed-{representation}"
+            )
+            for representation in _ZERO_D_MARKER_REPRESENTATIONS
+        ],
+        *[
+            pytest.param(
+                "exact-conflicting-ns", representation, id=f"ns-{representation}"
+            )
+            for representation in _ZERO_D_MARKER_REPRESENTATIONS
+        ],
+        pytest.param(
+            "exact-conflicting-fingerprint",
+            "fixed-bytes",
+            id="fingerprint-fixed-bytes",
+        ),
+        *[
+            pytest.param(
+                "exact-matching", representation, id=f"matching-{representation}"
+            )
+            for representation in ("fixed-bytes", "object-str", "object-bytes")
+        ],
+    ],
+)
+def test_hdf5_zero_dimensional_text_marker_metadata_policy(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    target_kind: str,
+    metadata_case: str,
+    representation: str,
+) -> None:
+    exact = metadata_case.startswith("exact-")
+    replacement = _exact_series(456, offset=10) if exact else _legacy_series(offset=10)
+    marker = encode_epoch_marker(
+        epoch_ns=457 if metadata_case == "exact-conflicting-ns" else 456,
+        raw_x0=(
+            replacement.x0.value + 1.0
+            if metadata_case == "exact-conflicting-fingerprint"
+            else replacement.x0.value
+        ),
+        xunit=replacement.xunit,
+        token=b"w" * 16,
+    )
+    marker_text = marker.text
+    if metadata_case == "nonexact-malformed":
+        marker_text = marker_text[:-1] + ("0" if marker_text[-1] != "0" else "1")
+    supplied = _zero_dimensional_marker_text(marker_text, representation)
+    attrs: dict[str, object] = {
+        "x0": replacement.x0.value,
+        "xunit": replacement.xunit.to_string(),
+        "epoch": supplied,
+    }
+
+    with _metadata_target(tmp_path, target_kind) as (target, container, before):
+        native_writer_calls = _count_native_writer(monkeypatch)
+
+        def write() -> None:
+            replacement.write(
+                target,
+                format="hdf5",
+                path="data",
+                append=True,
+                overwrite=True,
+                attrs=attrs,
+            )
+
+        if metadata_case == "exact-matching":
+            write()
+            assert attrs["epoch"] is supplied
+            assert native_writer_calls() == 2
+            with _open_metadata_target(target_kind, target, container) as scope:
+                stored = _marker(scope["data"])
+                assert stored.lineage_token == marker.lineage_token
+                assert (
+                    _v2_sidecar(scope.file).records[stored.lineage_token].epoch_ns
+                    == 456
+                )
+                recovered = TimeSeries.read(scope, format="hdf5", path="data")
+                assert recovered.t0_gps_ns == 456
+            return
+
+        if metadata_case == "nonexact-canonical":
+            match = "authority"
+        elif metadata_case == "nonexact-malformed":
+            match = "marker|digest|canonical"
+        elif metadata_case == "exact-conflicting-ns":
+            match = "conflict|exact.*epoch|epoch.*exact"
+        else:
+            assert metadata_case == "exact-conflicting-fingerprint"
+            match = "x0|fingerprint"
+        with pytest.raises(ValueError, match=match):
+            write()
+        assert native_writer_calls() == 0
+        assert _metadata_target_snapshot(target_kind, target, container) == before
+        assert attrs["epoch"] is supplied
+
+
+@pytest.mark.parametrize("target_kind", ["pathname", "filelike", "file", "group"])
+@pytest.mark.parametrize("representation", _ZERO_D_MARKER_REPRESENTATIONS)
+@pytest.mark.parametrize("metadata_case", ["canonical", "malformed"])
+def test_hdf5_external_zero_dimensional_marker_fails_before_native_writer(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    target_kind: str,
+    representation: str,
+    metadata_case: str,
+) -> None:
+    replacement = _legacy_series(offset=10)
+    marker = encode_epoch_marker(
+        epoch_ns=999_999_999_999,
+        raw_x0=replacement.x0.value,
+        xunit=replacement.xunit,
+        token=b"x" * 16,
+    )
+    marker_text = marker.text
+    if metadata_case == "malformed":
+        marker_text = marker_text[:-1] + ("0" if marker_text[-1] != "0" else "1")
+    supplied = _zero_dimensional_marker_text(marker_text, representation)
+    attrs: dict[str, object] = {
+        "x0": replacement.x0.value,
+        "xunit": replacement.xunit.to_string(),
+        "epoch": supplied,
+    }
+    raw_path = tmp_path / f"external-zero-d-{target_kind}-{representation}.raw"
+    raw_path.write_bytes(b"r" * 32)
+    before_raw = raw_path.read_bytes()
+
+    with _metadata_target(tmp_path, target_kind) as (target, container, before):
+        native_writer_calls = _count_native_writer(monkeypatch)
+        match = (
+            "authority" if metadata_case == "canonical" else "marker|digest|canonical"
+        )
+        with pytest.raises(ValueError, match=match):
+            _write_external(
+                replacement,
+                target,
+                raw_path,
+                path="other",
+                append=True,
+                overwrite=True,
+                attrs=attrs,
+            )
+
+        assert native_writer_calls() == 0
+        assert _metadata_target_snapshot(target_kind, target, container) == before
+        assert raw_path.read_bytes() == before_raw
+        assert attrs["epoch"] is supplied
+
+
+@pytest.mark.parametrize("target_kind", ["pathname", "filelike", "file", "group"])
+def test_hdf5_nonexact_one_dimensional_marker_text_remains_non_authoritative(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    target_kind: str,
+) -> None:
+    replacement = _legacy_series(offset=10)
+    marker = encode_epoch_marker(
+        epoch_ns=999_999_999_999,
+        raw_x0=replacement.x0.value,
+        xunit=replacement.xunit,
+        token=b"z" * 16,
+    )
+    encoded = marker.text.encode("ascii")
+    supplied = np.array([encoded], dtype=f"S{max(690, len(encoded))}")
+    attrs: dict[str, object] = {
+        "x0": replacement.x0.value,
+        "xunit": replacement.xunit.to_string(),
+        "epoch": supplied,
+    }
+
+    with _metadata_target(tmp_path, target_kind) as (target, container, _):
+        native_writer_calls = _count_native_writer(monkeypatch)
+        replacement.write(
+            target,
+            format="hdf5",
+            path="data",
+            append=True,
+            overwrite=True,
+            attrs=attrs,
+        )
+
+        assert native_writer_calls() == 2
+        assert attrs["epoch"] is supplied
+        with _open_metadata_target(target_kind, target, container) as scope:
+            attribute = scope["data"].attrs.get_id("epoch")
+            try:
+                assert attribute.shape == (1,)
+            finally:
+                attribute.close()
+            assert _SIDECAR_ATTRIBUTE_V2 not in scope.file.attrs
+
+
+@pytest.mark.parametrize("target_kind", ["pathname", "filelike", "file", "group"])
+def test_hdf5_nonexact_output_marker_postcondition_rolls_back(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    target_kind: str,
+) -> None:
+    replacement = _legacy_series(offset=10)
+    forged = encode_epoch_marker(
+        epoch_ns=999_999_999_999,
+        raw_x0=replacement.x0.value,
+        xunit=replacement.xunit,
+        token=b"y" * 16,
+    )
+    attrs: dict[str, object] = {
+        "x0": replacement.x0.value,
+        "xunit": replacement.xunit.to_string(),
+        "epoch": repr(replacement.x0.value),
+    }
+    attrs_before = copy.deepcopy(attrs)
+
+    with _metadata_target(tmp_path, target_kind) as (target, container, before):
+        native_writer = exact_hdf5._BASE_WRITER
+        assert native_writer is not None
+        calls = 0
+
+        def inject_output_marker(*args: object, **kwargs: object) -> object:
+            nonlocal calls
+            calls += 1
+            result = native_writer(*args, **kwargs)
+            assert isinstance(result, h5py.Dataset)
+            result.attrs["x0"] = replacement.x0.value
+            result.attrs["xunit"] = replacement.xunit.to_string()
+            result.attrs["epoch"] = forged.text
+            return result
+
+        monkeypatch.setattr(exact_hdf5, "_BASE_WRITER", inject_output_marker)
+        with pytest.raises(RuntimeError, match="non-exact|authority|marker"):
+            replacement.write(
+                target,
+                format="hdf5",
+                path="data",
+                append=True,
+                overwrite=True,
+                attrs=attrs,
+            )
+
+        assert calls == 2
+        assert _metadata_target_snapshot(target_kind, target, container) == before
+        assert attrs == attrs_before
+
+
+@pytest.mark.parametrize("target_kind", ["pathname", "filelike", "file", "group"])
+def test_hdf5_write_rejects_root_private_namespace_before_native_writer(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    target_kind: str,
+) -> None:
+    reserved = f"{exact_hdf5._ROLLBACK_PREFIX}user"
+    replacement = _exact_series(456, offset=10)
+
+    if target_kind == "group":
+        path = tmp_path / "reserved-group.hdf5"
+        with h5py.File(path, "w") as h5file:
+            target = h5file.create_group(reserved)
+            target.create_dataset("baseline", data=np.arange(4))
+            before = (
+                tuple(h5file.keys()),
+                tuple(target.keys()),
+                tuple(h5file.attrs.items()),
+            )
+            native_writer_calls = _count_native_writer(monkeypatch)
+            with pytest.raises(ValueError, match="private|reserved|rollback"):
+                replacement.write(
+                    target,
+                    format="hdf5",
+                    path="data",
+                    overwrite=True,
+                )
+            assert native_writer_calls() == 0
+            assert (
+                tuple(h5file.keys()),
+                tuple(target.keys()),
+                tuple(h5file.attrs.items()),
+            ) == before
+        return
+
+    with _metadata_target(tmp_path, target_kind) as (target, container, before):
+        native_writer_calls = _count_native_writer(monkeypatch)
+        with pytest.raises(ValueError, match="private|reserved|rollback"):
+            replacement.write(
+                target,
+                format="hdf5",
+                path=f"{reserved}/data",
+                append=True,
+                overwrite=True,
+            )
+        assert native_writer_calls() == 0
+        assert _metadata_target_snapshot(target_kind, target, container) == before
+
+
+def test_hdf5_write_allows_private_prefix_below_nonprivate_group(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "nested-reserved-name.hdf5"
+    nested_name = f"{exact_hdf5._ROLLBACK_PREFIX}user/data"
+    with h5py.File(path, "w") as h5file:
+        container = h5file.create_group("container")
+        _exact_series(456).write(container, format="hdf5", path=nested_name)
+
+        marker = _marker(container[nested_name])
+        assert _v2_sidecar(h5file).records[marker.lineage_token].paths == (
+            f"container/{nested_name}",
+        )
+
+
+@pytest.mark.parametrize("target_kind", ["pathname", "filelike", "file", "group"])
+def test_hdf5_write_rejects_soft_link_into_root_private_namespace(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    target_kind: str,
+) -> None:
+    reserved = f"{exact_hdf5._ROLLBACK_PREFIX}user"
+    replacement = _exact_series(456, offset=10)
+    with _metadata_target(tmp_path, target_kind) as (target, container, _):
+        with _open_metadata_target(target_kind, target, container, mode="r+") as scope:
+            root = scope.file
+            hidden = root.create_group(reserved)
+            link_parent = scope if target_kind == "group" else root
+            link_parent["safe"] = h5py.SoftLink(hidden.name)
+        before = _metadata_target_snapshot(target_kind, target, container)
+        native_writer_calls = _count_native_writer(monkeypatch)
+
+        with pytest.raises(ValueError, match="private|reserved|rollback"):
+            replacement.write(
+                target,
+                format="hdf5",
+                path="safe/data",
+                append=True,
+                overwrite=True,
+            )
+
+        assert native_writer_calls() == 0
+        assert _metadata_target_snapshot(target_kind, target, container) == before
+        with _open_metadata_target(target_kind, target, container) as scope:
+            assert tuple(scope.file[reserved].keys()) == ()
+            link_parent = scope if target_kind == "group" else scope.file
+            assert isinstance(link_parent.get("safe", getlink=True), h5py.SoftLink)
+
+
+def test_hdf5_write_allows_soft_link_to_public_hard_group(tmp_path: Path) -> None:
+    path = tmp_path / "soft-public-parent.hdf5"
+    with h5py.File(path, "w") as h5file:
+        h5file.create_group("public")
+        h5file["safe"] = h5py.SoftLink("/public")
+
+    _exact_series(456).write(
+        path,
+        format="hdf5",
+        path="safe/data",
+        append=True,
+    )
+
+    with h5py.File(path, "r") as h5file:
+        marker = _marker(h5file["public/data"])
+        record = _v2_sidecar(h5file).records[marker.lineage_token]
+        assert record.paths == ("public/data",)
+
+
+def test_hdf5_path_transaction_rechecks_private_resolution_on_staged_copy(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    path = tmp_path / "namespace-race.hdf5"
+    replacement_path = tmp_path / "namespace-race-replacement.hdf5"
+    series = _exact_series(123)
+    marker = encode_epoch_marker(
+        epoch_ns=123,
+        raw_x0=series.x0.value,
+        xunit=series.xunit,
+        token=b"q" * 16,
+    )
+    with h5py.File(path, "w") as root:
+        root.create_group("safe")
+    reserved = f"{exact_hdf5._ROLLBACK_PREFIX}hidden"
+    with h5py.File(replacement_path, "w") as root:
+        hidden = root.create_group(reserved)
+        root["safe"] = h5py.SoftLink(hidden.name)
+        public = root.create_dataset("public", data=np.arange(1))
+        public.attrs["x0"] = series.x0.value
+        public.attrs["xunit"] = series.xunit.to_string()
+        public.attrs["epoch"] = marker.text
+
+    create_calls = 0
+    create_transaction_file = exact_hdf5._create_sibling_transaction_file
+
+    def swap_before_copy(filepath: Path) -> Path:
+        nonlocal create_calls
+        create_calls += 1
+        shutil.copyfile(replacement_path, filepath)
+        return create_transaction_file(filepath)
+
+    monkeypatch.setattr(
+        exact_hdf5,
+        "_create_sibling_transaction_file",
+        swap_before_copy,
+    )
+    native_writer_calls = _count_native_writer(monkeypatch)
+
+    with pytest.raises(ValueError, match="private|reserved|rollback"):
+        series.write(
+            path,
+            format="hdf5",
+            path="safe/data",
+            append=True,
+            attrs={"epoch": marker.text},
+        )
+
+    assert create_calls == 1
+    assert native_writer_calls() == 0
+    with h5py.File(path, "r") as root:
+        assert isinstance(root.get("safe", getlink=True), h5py.SoftLink)
+        assert tuple(root[reserved].keys()) == ()
+        assert _marker(root["public"]) == marker
+
+
+@pytest.mark.parametrize("target_kind", ["pathname", "filelike", "file", "group"])
+def test_hdf5_exact_commit_requires_own_token_in_sidecar(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    target_kind: str,
+) -> None:
+    replacement = _exact_series(456, offset=10)
+    with _metadata_target(tmp_path, target_kind) as (target, container, before):
+        calls = 0
+
+        def omit_marker_record(h5file: h5py.File) -> None:
+            nonlocal calls
+            calls += 1
+            return None
+
+        monkeypatch.setattr(exact_hdf5, "_build_v2_sidecar", omit_marker_record)
+        with pytest.raises(RuntimeError, match="lineage|token|sidecar"):
+            replacement.write(
+                target,
+                format="hdf5",
+                path="data",
+                append=True,
+                overwrite=True,
+            )
+
+        assert calls == 1
+        assert _metadata_target_snapshot(target_kind, target, container) == before
+
+
+def test_hdf5_exact_commit_requires_output_dataset_in_public_traversal(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    path = tmp_path / "physical-output-postcondition.hdf5"
+    series = _exact_series(123)
+    marker = encode_epoch_marker(
+        epoch_ns=123,
+        raw_x0=series.x0.value,
+        xunit=series.xunit,
+        token=b"r" * 16,
+    )
+    reserved = f"{exact_hdf5._ROLLBACK_PREFIX}hidden"
+    with h5py.File(path, "w") as root:
+        root.create_group("safe")
+        root.create_group(reserved)
+        public = root.create_dataset("public", data=np.arange(1))
+        public.attrs["x0"] = series.x0.value
+        public.attrs["xunit"] = series.xunit.to_string()
+        public.attrs["epoch"] = marker.text
+
+    native_writer = exact_hdf5._BASE_WRITER
+    assert native_writer is not None
+    native_calls = 0
+
+    def redirect_actual_write(
+        array: object,
+        container: h5py.File | h5py.Group,
+        *args: object,
+        **kwargs: object,
+    ) -> object:
+        nonlocal native_calls
+        native_calls += 1
+        if native_calls == 2:
+            root = container.file
+            del root["safe"]
+            root["safe"] = h5py.SoftLink(root[reserved].name)
+        return native_writer(array, container, *args, **kwargs)
+
+    monkeypatch.setattr(exact_hdf5, "_BASE_WRITER", redirect_actual_write)
+    with h5py.File(path, "r+") as root:
+        with pytest.raises(RuntimeError, match="public|hard-link|reachable"):
+            series.write(
+                root,
+                format="hdf5",
+                path="safe/data",
+                append=True,
+                attrs={"epoch": marker.text},
+            )
+
+        assert native_calls == 2
+        assert tuple(root[reserved].keys()) == ()
+        assert isinstance(root.get("safe", getlink=True), h5py.SoftLink)
+        assert _SIDECAR_ATTRIBUTE_V2 not in root.attrs
+        assert _marker(root["public"]) == marker
+
+
+def test_hdf5_nonexact_commit_requires_output_dataset_in_public_traversal(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    path = tmp_path / "nonexact-physical-output-postcondition.hdf5"
+    reserved = f"{exact_hdf5._ROLLBACK_PREFIX}hidden"
+    with h5py.File(path, "w") as root:
+        root.create_group("safe")
+        root.create_group(reserved)
+
+    native_writer = exact_hdf5._BASE_WRITER
+    assert native_writer is not None
+    native_calls = 0
+
+    def redirect_actual_write(
+        array: object,
+        container: h5py.File | h5py.Group,
+        *args: object,
+        **kwargs: object,
+    ) -> object:
+        nonlocal native_calls
+        native_calls += 1
+        if native_calls == 2:
+            root = container.file
+            del root["safe"]
+            root["safe"] = h5py.SoftLink(root[reserved].name)
+        return native_writer(array, container, *args, **kwargs)
+
+    monkeypatch.setattr(exact_hdf5, "_BASE_WRITER", redirect_actual_write)
+    with h5py.File(path, "r+") as root:
+        with pytest.raises(RuntimeError, match="public|hard-link|reachable"):
+            _legacy_series().write(
+                root,
+                format="hdf5",
+                path="safe/data",
+                append=True,
+            )
+
+        assert native_calls == 2
+        assert tuple(root[reserved].keys()) == ()
+        assert isinstance(root.get("safe", getlink=True), h5py.SoftLink)
+        assert _SIDECAR_ATTRIBUTE_V2 not in root.attrs
 
 
 def test_hdf5_compaction_adds_marker_only_copy_and_drops_stale_record(
@@ -1154,6 +2009,534 @@ def test_hdf5_compaction_merges_same_lineage_copies(tmp_path: Path) -> None:
         )
 
 
+def test_hdf5_compaction_handles_deep_hierarchy_in_subprocess(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "compact-deep.hdf5"
+    marker = encode_epoch_marker(
+        epoch_ns=123,
+        raw_x0=1.0,
+        xunit="s",
+        token=b"\x71" * 16,
+    )
+    with h5py.File(path, "w") as h5file:
+        group = h5file
+        for _ in range(1_100):
+            group = group.create_group("g")
+        dataset = group.create_dataset("data", data=np.arange(4))
+        dataset.attrs["x0"] = 1.0
+        dataset.attrs["xunit"] = "s"
+        dataset.attrs["epoch"] = marker.text
+
+    _run_legacy_append_subprocess(path)
+
+    with h5py.File(path, "r") as h5file:
+        record = _v2_sidecar(h5file).records[marker.lineage_token]
+        assert len(record.paths) == 1
+        assert record.paths[0].endswith("/data")
+
+
+@pytest.mark.parametrize("link_kind", ["dataset", "group"])
+def test_hdf5_compaction_validates_marker_below_invalid_utf8_link(
+    tmp_path: Path,
+    link_kind: str,
+) -> None:
+    path = tmp_path / "compact-invalid-link-name.hdf5"
+    marker = encode_epoch_marker(
+        epoch_ns=123,
+        raw_x0=1.0,
+        xunit="s",
+        token=b"\x72" * 16,
+    )
+    with h5py.File(path, "w") as h5file:
+        if link_kind == "dataset":
+            dataset = h5file.create_dataset(b"\xff-marker", data=np.arange(4))
+        else:
+            invalid_group = h5file.create_group(b"\xff-group")
+            dataset = invalid_group.create_dataset("marked", data=np.arange(4))
+        dataset.attrs["x0"] = 1.0
+        dataset.attrs["xunit"] = "s"
+        dataset.attrs["epoch"] = marker.text
+        h5file.create_dataset("ascii", data=np.arange(2))
+
+    _legacy_series().write(path, format="hdf5", path="ordinary", append=True)
+
+    with h5py.File(path, "r") as h5file:
+        record = _v2_sidecar(h5file).records[marker.lineage_token]
+        assert record.paths == ()
+
+
+def test_hdf5_compaction_rejects_conflict_below_invalid_utf8_links(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "compact-invalid-link-conflict.hdf5"
+    first = encode_epoch_marker(
+        epoch_ns=123,
+        raw_x0=1.0,
+        xunit="s",
+        token=b"\x73" * 16,
+    )
+    second = encode_epoch_marker(
+        epoch_ns=124,
+        raw_x0=1.0,
+        xunit="s",
+        token=b"\x73" * 16,
+    )
+    with h5py.File(path, "w") as h5file:
+        for name, marker in ((b"\xfe-a", first), (b"\xff-b", second)):
+            dataset = h5file.create_dataset(name, data=np.arange(4))
+            dataset.attrs["x0"] = 1.0
+            dataset.attrs["xunit"] = "s"
+            dataset.attrs["epoch"] = marker.text
+    before = path.read_bytes()
+
+    with pytest.raises(ValueError, match="conflicting|lineage token"):
+        _legacy_series().write(path, format="hdf5", path="ordinary", append=True)
+
+    assert path.read_bytes() == before
+
+
+def test_hdf5_compaction_omits_noncanonical_raw_diagnostic_path(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "compact-dotdot-link.hdf5"
+    marker = encode_epoch_marker(
+        epoch_ns=123,
+        raw_x0=1.0,
+        xunit="s",
+        token=b"\x74" * 16,
+    )
+    with h5py.File(path, "w") as h5file:
+        first = h5file.create_group("a")
+        target = h5file.create_group("z")
+        first[".."] = target
+        dataset = target.create_dataset("data", data=np.arange(4))
+        dataset.attrs["x0"] = 1.0
+        dataset.attrs["xunit"] = "s"
+        dataset.attrs["epoch"] = marker.text
+
+    _legacy_series().write(path, format="hdf5", path="ordinary", append=True)
+
+    with h5py.File(path, "r") as h5file:
+        record = _v2_sidecar(h5file).records[marker.lineage_token]
+        assert record.paths == ()
+
+
+def test_hdf5_raw_link_iteration_fails_closed_if_group_width_changes() -> None:
+    class IncompleteLinks:
+        def iterate(
+            self,
+            callback: object,
+            **kwargs: object,
+        ) -> tuple[None, int]:
+            return None, 1
+
+    class IncompleteID:
+        links = IncompleteLinks()
+
+    class IncompleteGroup:
+        id = IncompleteID()
+
+        def __len__(self) -> int:
+            return 1
+
+    group = cast("h5py.File", IncompleteGroup())
+    with pytest.raises(RuntimeError, match="link iteration ended"):
+        list(exact_hdf5._iter_raw_links(group))
+
+
+def test_hdf5_public_hard_reachability_rejects_foreign_same_address(
+    tmp_path: Path,
+) -> None:
+    first_path = tmp_path / "reachability-first.hdf5"
+    second_path = tmp_path / "reachability-second.hdf5"
+    with (
+        h5py.File(first_path, "w") as first_file,
+        h5py.File(second_path, "w") as second_file,
+    ):
+        local = first_file.create_dataset("data", data=np.arange(1))
+        foreign = second_file.create_dataset("data", data=np.arange(1))
+        assert exact_hdf5._local_object_identity(
+            local
+        ) == exact_hdf5._local_object_identity(foreign)
+
+        assert not exact_hdf5._public_hard_object_reachable(first_file, foreign)
+
+
+@pytest.mark.parametrize(
+    "padding",
+    [
+        pytest.param(h5py.h5t.STR_NULLPAD, id="nullpad"),
+        pytest.param(h5py.h5t.STR_NULLTERM, id="nullterm"),
+        pytest.param(h5py.h5t.STR_SPACEPAD, id="spacepad"),
+    ],
+)
+@pytest.mark.parametrize("operation", ["marker-read", "compaction"])
+def test_hdf5_fixed_padded_marker_attributes_remain_authoritative(
+    tmp_path: Path,
+    padding: int,
+    operation: str,
+) -> None:
+    t0_ns = 1_234_567_890_123_456_789
+    path = tmp_path / f"fixed-padded-marker-{padding}-{operation}.hdf5"
+    _exact_series(t0_ns).write(path, format="hdf5", path="marked")
+    with h5py.File(path, "r+") as h5file:
+        dataset = h5file["marked"]
+        marker = _marker(dataset)
+        _write_fixed_text_attribute(
+            dataset,
+            "epoch",
+            marker.text.encode("ascii"),
+            width=4_096,
+            padding=padding,
+        )
+        _write_fixed_text_attribute(
+            dataset,
+            "xunit",
+            marker.axis.xunit.encode("utf-8"),
+            width=255,
+            padding=padding,
+        )
+        del h5file.attrs[_SIDECAR_ATTRIBUTE_V2]
+
+    if operation == "marker-read":
+        recovered = TimeSeries.read(path, format="hdf5", path="marked")
+        assert recovered.t0_gps_ns == t0_ns
+        return
+
+    assert operation == "compaction"
+    _legacy_series().write(path, format="hdf5", path="ordinary", append=True)
+    with h5py.File(path, "r") as h5file:
+        record = _v2_sidecar(h5file).records[marker.lineage_token]
+        assert record.paths == ("marked",)
+
+
+def test_hdf5_fixed_nullpad_marker_remains_readable_by_gwpy_only(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "fixed-nullpad-gwpy-only.hdf5"
+    original = _exact_series(1_234_567_890_123_456_789)
+    original.write(path, format="hdf5", path="marked")
+    with h5py.File(path, "r+") as h5file:
+        dataset = h5file["marked"]
+        marker = _marker(dataset)
+        _write_fixed_text_attribute(
+            dataset,
+            "epoch",
+            marker.text.encode("ascii"),
+            width=4_096,
+            padding=h5py.h5t.STR_NULLPAD,
+        )
+        _write_fixed_text_attribute(
+            dataset,
+            "xunit",
+            marker.axis.xunit.encode("utf-8"),
+            width=255,
+            padding=h5py.h5t.STR_NULLPAD,
+        )
+
+    code = """
+import sys
+import numpy as np
+assert not any(name == "gwexpy" or name.startswith("gwexpy.") for name in sys.modules)
+from gwpy.timeseries import TimeSeries
+result = TimeSeries.read(sys.argv[1], format="hdf5", path="marked")
+np.testing.assert_array_equal(result.value, np.arange(8, dtype=np.float32))
+assert str(result.channel) == "X1:EXACT"
+assert not any(name == "gwexpy" or name.startswith("gwexpy.") for name in sys.modules)
+"""
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(path)],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    assert result.returncode == 0, result.stderr or result.stdout
+
+
+@pytest.mark.parametrize("attribute", ["epoch", "xunit"])
+@pytest.mark.parametrize("operation", ["read", "compaction"])
+def test_hdf5_fixed_nullpad_marker_rejects_embedded_nonpadding_bytes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    attribute: str,
+    operation: str,
+) -> None:
+    path = tmp_path / f"fixed-nullpad-corruption-{attribute}-{operation}.hdf5"
+    _exact_series(1_000_000_000).write(path, format="hdf5", path="marked")
+    with h5py.File(path, "r+") as h5file:
+        dataset = h5file["marked"]
+        marker = _marker(dataset)
+        value = marker.text.encode("ascii") if attribute == "epoch" else b"s"
+        width = 4_096 if attribute == "epoch" else 255
+        _write_fixed_text_attribute(
+            dataset,
+            attribute,
+            value + b"\0corrupt",
+            width=width,
+            padding=h5py.h5t.STR_NULLPAD,
+        )
+    before = path.read_bytes()
+
+    if operation == "read":
+        native_reader = exact_hdf5._BASE_READER
+        assert native_reader is not None
+        reader_calls = 0
+
+        def count_native_reader(*args: object, **kwargs: object) -> object:
+            nonlocal reader_calls
+            reader_calls += 1
+            return native_reader(*args, **kwargs)
+
+        monkeypatch.setattr(exact_hdf5, "_BASE_READER", count_native_reader)
+        with pytest.raises(ValueError, match="marker|epoch|xunit|unit|corrupt"):
+            TimeSeries.read(path, format="hdf5", path="marked")
+        assert reader_calls == 0
+        assert path.read_bytes() == before
+        return
+
+    assert operation == "compaction"
+    with pytest.raises(ValueError, match="marker|epoch|xunit|unit|corrupt"):
+        _legacy_series().write(path, format="hdf5", path="ordinary", append=True)
+    assert path.read_bytes() == before
+
+
+@pytest.mark.parametrize("storage_kind", ["fixed", "vlen"])
+def test_hdf5_bounded_text_attribute_caps_python_owned_bytes(
+    tmp_path: Path,
+    storage_kind: str,
+) -> None:
+    path = tmp_path / f"bounded-attribute-{storage_kind}.hdf5"
+    payload = b"ordinary-" + b"x" * (1_000_000 if storage_kind == "vlen" else 5_000)
+    with h5py.File(path, "w") as h5file:
+        dataset = h5file.create_dataset("ordinary", data=np.arange(4))
+        if storage_kind == "vlen":
+            dataset.attrs.create(
+                "epoch",
+                payload.decode("ascii"),
+                dtype=h5py.string_dtype("utf-8"),
+            )
+        else:
+            dataset.attrs["epoch"] = np.bytes_(payload)
+
+        raw, truncated = exact_hdf5._read_bounded_text_attribute(
+            dataset,
+            "epoch",
+            limit=4_096,
+        )
+
+    assert truncated
+    assert len(raw) == 4_097
+    assert raw.startswith(b"ordinary-")
+
+
+@pytest.mark.parametrize("storage_kind", ["fixed", "vlen"])
+@pytest.mark.parametrize("operation", ["read", "compaction"])
+def test_hdf5_rejects_oversized_marker_epoch_attribute(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    operation: str,
+    storage_kind: str,
+) -> None:
+    path = tmp_path / f"oversized-{storage_kind}-marker-{operation}.hdf5"
+    _exact_series(1_000_000_000).write(path, format="hdf5", path="marked")
+    with h5py.File(path, "r+") as h5file:
+        dataset = h5file["marked"]
+        marker = _marker(dataset)
+        del dataset.attrs["epoch"]
+        if storage_kind == "fixed":
+            dataset.attrs.create("epoch", np.bytes_(marker.text), dtype="S5000")
+        else:
+            assert storage_kind == "vlen"
+            dataset.attrs.create(
+                "epoch",
+                marker.text + "x" * 5_000,
+                dtype=h5py.string_dtype("utf-8"),
+            )
+    before = path.read_bytes()
+
+    if operation == "read":
+        native_reader = exact_hdf5._BASE_READER
+        assert native_reader is not None
+        reader_calls = 0
+
+        def count_native_reader(*args: object, **kwargs: object) -> object:
+            nonlocal reader_calls
+            reader_calls += 1
+            return native_reader(*args, **kwargs)
+
+        monkeypatch.setattr(exact_hdf5, "_BASE_READER", count_native_reader)
+        with pytest.raises(ValueError, match="epoch|4096|oversized"):
+            TimeSeries.read(path, format="hdf5", path="marked")
+        assert reader_calls == 0
+        assert path.read_bytes() == before
+        return
+
+    assert operation == "compaction"
+    with pytest.raises(ValueError, match="epoch|4096|oversized"):
+        _legacy_series().write(path, format="hdf5", path="ordinary", append=True)
+    assert path.read_bytes() == before
+
+
+@pytest.mark.parametrize(
+    "metadata_case",
+    [
+        "invalid-epoch-bytes",
+        "invalid-xunit-bytes",
+        "nonscalar-epoch",
+        "oversized-fixed-epoch",
+        "oversized-vlen-epoch",
+    ],
+)
+def test_hdf5_compaction_ignores_unrelated_ordinary_raw_attributes(
+    tmp_path: Path,
+    metadata_case: str,
+) -> None:
+    path = tmp_path / f"ordinary-raw-{metadata_case}.hdf5"
+    with h5py.File(path, "w") as h5file:
+        dataset = h5file.create_dataset("unrelated", data=np.arange(4))
+        dataset.attrs["x0"] = 1.0
+        if metadata_case == "invalid-epoch-bytes":
+            dataset.attrs["epoch"] = np.bytes_(b"ordinary-\xff")
+            dataset.attrs["xunit"] = "s"
+        elif metadata_case == "invalid-xunit-bytes":
+            dataset.attrs["epoch"] = np.bytes_(b"ordinary")
+            dataset.attrs["xunit"] = np.bytes_(b"\xff")
+        elif metadata_case == "nonscalar-epoch":
+            dataset.attrs.create(
+                "epoch",
+                np.array(["ordinary"], dtype=object),
+                dtype=h5py.string_dtype("utf-8"),
+            )
+            dataset.attrs["xunit"] = "s"
+        elif metadata_case == "oversized-fixed-epoch":
+            dataset.attrs["epoch"] = np.bytes_(b"ordinary-" + b"x" * 5_000)
+            dataset.attrs["xunit"] = "s"
+        else:
+            assert metadata_case == "oversized-vlen-epoch"
+            dataset.attrs.create(
+                "epoch",
+                "ordinary-" + "x" * 1_000_000,
+                dtype=h5py.string_dtype("utf-8"),
+            )
+            dataset.attrs["xunit"] = "s"
+
+    _legacy_series().write(path, format="hdf5", path="ordinary", append=True)
+
+    with h5py.File(path, "r") as h5file:
+        assert "unrelated" in h5file
+        assert "ordinary" in h5file
+        assert _SIDECAR_ATTRIBUTE_V2 not in h5file.attrs
+
+
+@pytest.mark.parametrize(
+    "raw_x0",
+    [
+        pytest.param(True, id="bool"),
+        pytest.param(np.array([1.0]), id="one-dimensional"),
+        pytest.param(np.complex128(1 + 7j), id="complex"),
+    ],
+)
+def test_hdf5_marker_rejects_nonscalar_raw_x0_before_read_or_compaction(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    raw_x0: object,
+) -> None:
+    path = tmp_path / "marker-invalid-raw-x0.hdf5"
+    _exact_series(1_000_000_000).write(path, format="hdf5", path="marked")
+    with h5py.File(path, "r+") as h5file:
+        del h5file["marked"].attrs["x0"]
+        h5file["marked"].attrs["x0"] = raw_x0
+    before = path.read_bytes()
+
+    native_reader = exact_hdf5._BASE_READER
+    assert native_reader is not None
+    reader_calls = 0
+
+    def count_native_reader(*args: object, **kwargs: object) -> object:
+        nonlocal reader_calls
+        reader_calls += 1
+        return native_reader(*args, **kwargs)
+
+    monkeypatch.setattr(exact_hdf5, "_BASE_READER", count_native_reader)
+    with pytest.raises(ValueError, match="x0|scalar|binary64"):
+        TimeSeries.read(path, format="hdf5", path="marked")
+    assert reader_calls == 0
+
+    with pytest.raises(ValueError, match="x0|scalar|binary64"):
+        _legacy_series().write(path, format="hdf5", path="ordinary", append=True)
+    assert path.read_bytes() == before
+
+
+def test_hdf5_marker_rejects_nonscalar_raw_xunit(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "marker-array-xunit.hdf5"
+    _exact_series(1_000_000_000).write(path, format="hdf5", path="marked")
+    with h5py.File(path, "r+") as h5file:
+        dataset = h5file["marked"]
+        value = dataset.attrs["xunit"]
+        del dataset.attrs["xunit"]
+        dataset.attrs.create(
+            "xunit",
+            np.array([value], dtype=object),
+            dtype=h5py.string_dtype("utf-8"),
+        )
+    before = path.read_bytes()
+
+    with pytest.raises(ValueError, match="xunit.*scalar|scalar.*xunit"):
+        _legacy_series().write(path, format="hdf5", path="ordinary", append=True)
+
+    assert path.read_bytes() == before
+
+
+@pytest.mark.parametrize("operation", ["read", "compaction"])
+def test_hdf5_nonscalar_epoch_does_not_authorize_exact_marker(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    operation: str,
+) -> None:
+    path = tmp_path / f"marker-array-epoch-{operation}.hdf5"
+    _exact_series(1_000_000_000).write(path, format="hdf5", path="marked")
+    with h5py.File(path, "r+") as h5file:
+        dataset = h5file["marked"]
+        value = dataset.attrs["epoch"]
+        del dataset.attrs["epoch"]
+        dataset.attrs.create(
+            "epoch",
+            np.array([value], dtype=object),
+            dtype=h5py.string_dtype("utf-8"),
+        )
+
+    if operation == "read":
+        native_result = GwpyTimeSeries(
+            np.arange(4, dtype=np.float32),
+            t0=2,
+            sample_rate=1,
+        )
+        reader_calls = 0
+
+        def return_native_result(*args: object, **kwargs: object) -> object:
+            nonlocal reader_calls
+            reader_calls += 1
+            return native_result
+
+        monkeypatch.setattr(exact_hdf5, "_BASE_READER", return_native_result)
+        recovered = TimeSeries.read(path, format="hdf5", path="marked")
+
+        assert reader_calls == 1
+        assert getattr(recovered, "_gwex_t0_gps_ns", None) is None
+        np.testing.assert_array_equal(recovered.value, native_result.value)
+        return
+
+    assert operation == "compaction"
+    _legacy_series().write(path, format="hdf5", path="ordinary", append=True)
+    with h5py.File(path, "r") as h5file:
+        assert "ordinary" in h5file
+        assert _SIDECAR_ATTRIBUTE_V2 not in h5file.attrs
+
+
 def test_hdf5_compaction_caps_deterministic_paths_at_sixteen(
     tmp_path: Path,
 ) -> None:
@@ -1187,21 +2570,7 @@ def test_hdf5_compaction_handles_hard_group_alias_and_self_cycle(
         h5file["alias"] = group
         group["self"] = group
 
-    def timeout_handler(signum: int, frame: object) -> None:
-        raise TimeoutError("cycle-safe compaction exceeded three seconds")
-
-    previous = signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(3)
-    try:
-        _legacy_series().write(
-            path,
-            format="hdf5",
-            path="ordinary",
-            append=True,
-        )
-    finally:
-        signal.alarm(0)
-        signal.signal(signal.SIGALRM, previous)
+    _run_legacy_append_subprocess(path)
 
     with h5py.File(path, "r") as h5file:
         record = _v2_sidecar(h5file).records[marker.lineage_token]
@@ -1400,9 +2769,9 @@ def test_hdf5_compaction_rejects_synthetic_observation_bounds(bound: str) -> Non
         return
 
     assert bound == "json-bytes"
-    total_observations = 140 * 16
+    first_over_limit = 2_036
 
-    def byte_observations() -> Iterator[tuple[str, EpochMarker]]:
+    def byte_observations(limit: int) -> Iterator[tuple[str, EpochMarker]]:
         nonlocal yielded
         for record_index in range(140):
             marker = encode_epoch_marker(
@@ -1412,14 +2781,24 @@ def test_hdf5_compaction_rejects_synthetic_observation_bounds(bound: str) -> Non
                 token=record_index.to_bytes(16, "big"),
             )
             for path_index in range(16):
+                if yielded == limit:
+                    return
                 prefix = f"r{record_index:03d}/p{path_index:02d}-"
                 yielded += 1
                 yield prefix + "x" * (4096 - len(prefix)), marker
 
-    with pytest.raises(ValueError, match="8 MiB"):
-        exact_hdf5._serialize_marker_observations(byte_observations())
+    payload = exact_hdf5._serialize_marker_observations(
+        byte_observations(first_over_limit - 1)
+    )
+    assert payload is not None
+    assert len(payload.encode("utf-8")) <= 8 * 1024 * 1024
+    assert yielded == first_over_limit - 1
 
-    assert yielded < total_observations
+    yielded = 0
+    with pytest.raises(ValueError, match="8 MiB"):
+        exact_hdf5._serialize_marker_observations(byte_observations(first_over_limit))
+
+    assert yielded == first_over_limit
 
 
 @pytest.mark.parametrize(
@@ -1828,6 +3207,7 @@ assert type(result) is TimeSeries
 np.testing.assert_array_equal(result.value, np.arange(8, dtype=np.float32))
 assert str(result.unit) == "V"
 assert result.name == "X1:AXIS"
+assert str(result.channel) == "X1:AXIS"
 assert struct.pack(">d", result.x0.value).hex() == sys.argv[2]
 assert result.xunit.to_string() == sys.argv[3]
 assert float(result.dt.value) == 0.25
@@ -1890,6 +3270,145 @@ _INVALID_SIDECARS = [
     '{"schema":"gwexpy.hdf5.sidecar","version":1,"objects":{'
     '"data":{"metadata":{},"provenance":{},"extra":1}}}',
 ]
+
+
+@pytest.mark.parametrize("operation", ["read", "write"])
+def test_hdf5_root_fixed_nullpad_v2_sidecar_remains_valid(
+    tmp_path: Path,
+    operation: str,
+) -> None:
+    path = tmp_path / f"root-fixed-nullpad-sidecar-{operation}.hdf5"
+    _exact_series(123).write(path, format="hdf5", path="data")
+    with h5py.File(path, "r+") as h5file:
+        payload = h5file.attrs[_SIDECAR_ATTRIBUTE_V2].encode("utf-8")
+        _write_fixed_text_attribute(
+            h5file,
+            _SIDECAR_ATTRIBUTE_V2,
+            payload,
+            width=len(payload) + 64,
+            padding=h5py.h5t.STR_NULLPAD,
+        )
+
+    if operation == "read":
+        recovered = TimeSeries.read(path, format="hdf5", path="data")
+        assert recovered.t0_gps_ns == 123
+        return
+
+    assert operation == "write"
+    _exact_series(456).write(
+        path,
+        format="hdf5",
+        path="other",
+        append=True,
+    )
+    with h5py.File(path, "r") as h5file:
+        assert len(_v2_sidecar(h5file).records) == 2
+
+
+@pytest.mark.parametrize("operation", ["read", "write"])
+def test_hdf5_oversized_root_v2_uses_bounded_reader_before_native_io(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    operation: str,
+) -> None:
+    path = tmp_path / f"oversized-root-sidecar-{operation}.hdf5"
+    _legacy_series().write(path, format="hdf5", path="data")
+    with h5py.File(path, "r+") as h5file:
+        h5file.attrs.create(
+            _SIDECAR_ATTRIBUTE_V2,
+            "x" * (8 * 1024 * 1024 + 1),
+            dtype=h5py.string_dtype("utf-8"),
+        )
+
+    bounded_reader = exact_hdf5._read_bounded_text_attribute
+    observations: list[tuple[int, bool, int]] = []
+
+    def capture_bounded_root_read(
+        owner: h5py.File | h5py.Group | h5py.Dataset,
+        name: str,
+        *,
+        limit: int,
+        **kwargs: object,
+    ) -> tuple[bytes, bool] | None:
+        result = bounded_reader(owner, name, limit=limit, **kwargs)
+        if name == _SIDECAR_ATTRIBUTE_V2:
+            assert result is not None
+            raw, truncated = result
+            observations.append((len(raw), truncated, limit))
+        return result
+
+    monkeypatch.setattr(
+        exact_hdf5,
+        "_read_bounded_text_attribute",
+        capture_bounded_root_read,
+    )
+
+    if operation == "read":
+        native_reader = exact_hdf5._BASE_READER
+        assert native_reader is not None
+        reader_calls = 0
+
+        def count_native_reader(*args: object, **kwargs: object) -> object:
+            nonlocal reader_calls
+            reader_calls += 1
+            return native_reader(*args, **kwargs)
+
+        monkeypatch.setattr(exact_hdf5, "_BASE_READER", count_native_reader)
+        with pytest.raises(ValueError, match="invalid exact-epoch sidecar v2"):
+            TimeSeries.read(path, format="hdf5", path="data")
+        assert reader_calls == 0
+    else:
+        assert operation == "write"
+        native_writer_calls = _count_native_writer(monkeypatch)
+        with pytest.raises(ValueError, match="invalid exact-epoch sidecar v2"):
+            _legacy_series(offset=10).write(
+                path,
+                format="hdf5",
+                path="other",
+                append=True,
+            )
+        assert native_writer_calls() == 0
+
+    assert observations == [(8 * 1024 * 1024 + 1, True, 8 * 1024 * 1024)]
+
+
+@pytest.mark.parametrize(
+    "metadata_case",
+    ["nontext", "nonscalar", "invalid-utf8"],
+)
+def test_hdf5_invalid_root_v2_attribute_fails_before_native_reader(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    metadata_case: str,
+) -> None:
+    path = tmp_path / f"invalid-root-sidecar-{metadata_case}.hdf5"
+    _legacy_series().write(path, format="hdf5", path="data")
+    with h5py.File(path, "r+") as h5file:
+        if metadata_case == "nontext":
+            h5file.attrs[_SIDECAR_ATTRIBUTE_V2] = 1
+        elif metadata_case == "nonscalar":
+            h5file.attrs.create(
+                _SIDECAR_ATTRIBUTE_V2,
+                np.array(["not-json"], dtype=object),
+                dtype=h5py.string_dtype("utf-8"),
+            )
+        else:
+            assert metadata_case == "invalid-utf8"
+            h5file.attrs[_SIDECAR_ATTRIBUTE_V2] = np.bytes_(b"\xff")
+
+    native_reader = exact_hdf5._BASE_READER
+    assert native_reader is not None
+    reader_calls = 0
+
+    def count_native_reader(*args: object, **kwargs: object) -> object:
+        nonlocal reader_calls
+        reader_calls += 1
+        return native_reader(*args, **kwargs)
+
+    monkeypatch.setattr(exact_hdf5, "_BASE_READER", count_native_reader)
+    with pytest.raises(ValueError, match="invalid exact-epoch sidecar v2"):
+        TimeSeries.read(path, format="hdf5", path="data")
+    assert reader_calls == 0
 
 
 @pytest.mark.parametrize("payload", _INVALID_SIDECARS)

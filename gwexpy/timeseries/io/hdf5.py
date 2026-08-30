@@ -152,11 +152,12 @@ def _array_axis_metadata(array: Any) -> tuple[Any, Any]:
 
 
 def _caller_binary64_scalar(value: Any, *, label: str) -> float:
-    if isinstance(value, (bool, np.bool_)) or np.ndim(value) != 0:
+    rejected_types = (bool, np.bool_, complex, np.complexfloating)
+    if isinstance(value, rejected_types) or np.ndim(value) != 0:
         raise ValueError(f"{label} must be a finite binary64 scalar")
     if isinstance(value, np.ndarray):
         value = value.item()
-        if isinstance(value, (bool, np.bool_)):
+        if isinstance(value, rejected_types):
             raise ValueError(f"{label} must be a finite binary64 scalar")
     try:
         projected = float(value)
@@ -165,6 +166,25 @@ def _caller_binary64_scalar(value: Any, *, label: str) -> float:
     if not math.isfinite(projected):
         raise ValueError(f"{label} must be a finite binary64 scalar")
     return projected
+
+
+def _caller_text_scalar(value: Any) -> str | bytes | None:
+    """Losslessly unbox caller values that HDF5 can store as scalar text."""
+    if isinstance(value, (str, bytes, np.str_, np.bytes_)):
+        scalar = value
+    else:
+        try:
+            candidate = np.asarray(value)
+        except (TypeError, ValueError):
+            return None
+        if candidate.ndim != 0:
+            return None
+        scalar = candidate.item()
+    if isinstance(scalar, (str, np.str_)):
+        return str(scalar)
+    if isinstance(scalar, (bytes, np.bytes_)):
+        return bytes(scalar)
+    return None
 
 
 def _validate_caller_write_metadata(
@@ -177,11 +197,11 @@ def _validate_caller_write_metadata(
         if attrs and "epoch" in attrs:
             raw_x0, xunit = _array_axis_metadata(array)
             supplied_epoch = attrs["epoch"]
+            text_scalar = _caller_text_scalar(supplied_epoch)
+            if text_scalar is not None:
+                supplied_epoch = text_scalar
             if isinstance(supplied_epoch, bytes):
-                try:
-                    supplied_epoch = supplied_epoch.decode("utf-8")
-                except UnicodeDecodeError as exc:
-                    raise ValueError("caller HDF5 epoch must use UTF-8") from exc
+                supplied_epoch = supplied_epoch.decode("latin-1")
             supplied_marker = decode_epoch_marker(
                 supplied_epoch,
                 raw_x0=raw_x0,
@@ -224,6 +244,9 @@ def _validate_caller_write_metadata(
             raise ValueError("caller HDF5 xunit does not match the TimeSeries axis")
     if "epoch" in attrs:
         supplied_epoch = attrs["epoch"]
+        text_scalar = _caller_text_scalar(supplied_epoch)
+        if text_scalar is not None:
+            supplied_epoch = text_scalar
         if isinstance(supplied_epoch, bytes):
             try:
                 supplied_epoch = supplied_epoch.decode("utf-8")
@@ -289,6 +312,42 @@ def _native_object_path(
     return relative if not prefix else f"{prefix}/{relative}"
 
 
+def _reject_private_namespace(
+    array: Any,
+    target: Any,
+    path: Any,
+    *,
+    preserve_existing: bool,
+) -> None:
+    _, components = _native_path_components(array, path)
+    root_components = components
+    if isinstance(target, (h5py.File, h5py.Group)):
+        object_path = _native_object_path(array, target, path)
+        root_components = tuple(object_path.split("/"))
+    if root_components and root_components[0].startswith(_ROLLBACK_PREFIX):
+        raise ValueError("the root HDF5 rollback namespace is private")
+    if isinstance(target, (h5py.File, h5py.Group)):
+        _reject_private_resolution(array, target, path)
+        return
+    if not preserve_existing:
+        return
+    if _is_seekable_filelike(target):
+        position = target.tell()
+        try:
+            try:
+                with h5py.File(target, "r") as h5file:
+                    _reject_private_resolution(array, h5file, path)
+            except OSError:
+                pass
+        finally:
+            target.seek(position)
+        return
+    filepath = _filesystem_path(target)
+    if filepath.exists() and h5py.is_hdf5(filepath):
+        with h5py.File(filepath, "r") as h5file:
+            _reject_private_resolution(array, h5file, path)
+
+
 def _reject_external_link_traversal(
     array: Any,
     container: h5py.Group | h5py.File,
@@ -319,13 +378,7 @@ def _reject_stale_external_sidecar(
     document = _read_v2_sidecar(container.file)
     target = container.file.get(object_path)
     if isinstance(target, h5py.Dataset):
-        raw_epoch = _text_attribute(target.attrs.get("epoch"), label="epoch")
-        raw_xunit = _text_attribute(target.attrs.get("xunit"), label="xunit")
-        marker = decode_epoch_marker(
-            raw_epoch,
-            raw_x0=target.attrs.get("x0"),
-            xunit=raw_xunit,
-        )
+        marker = _decode_dataset_marker(target)
         if marker is not None:
             validate_marker_record(marker, document)
             raise ValueError(
@@ -344,7 +397,7 @@ def _local_object_identity(value: h5py.Group | h5py.Dataset) -> int:
 
 
 def _serialize_marker_observations(
-    observations: Iterable[tuple[str, EpochMarker]],
+    observations: Iterable[tuple[str | None, EpochMarker]],
 ) -> str | None:
     """Merge local marker observations into one canonical v2 document."""
     markers: dict[str, EpochMarker] = {}
@@ -360,8 +413,13 @@ def _serialize_marker_observations(
             raise ValueError("conflicting local HDF5 markers share one lineage token")
         markers[marker.lineage_token] = marker
         representatives = paths.setdefault(marker.lineage_token, [])
-        path_added = object_path not in representatives and len(representatives) < 16
+        path_added = (
+            object_path is not None
+            and object_path not in representatives
+            and len(representatives) < 16
+        )
         if path_added:
+            assert object_path is not None
             representatives.append(object_path)
         if previous is None or path_added:
             record = record_from_marker(marker, representatives)
@@ -385,28 +443,141 @@ def _serialize_marker_observations(
     return serialize_v2_sidecar(records)
 
 
+def _iter_raw_links(group: h5py.File | h5py.Group) -> Iterator[tuple[bytes, int]]:
+    """Yield link names in raw-byte order without materializing group width."""
+    index = 0
+    link_count = len(group)
+
+    def capture(name: bytes, info: Any) -> tuple[bytes, int]:
+        return name, int(info.type)
+
+    while index < link_count:
+        captured, index = group.id.links.iterate(
+            capture,
+            info=True,
+            idx=index,
+            idx_type=h5py.h5.INDEX_NAME,
+            order=h5py.h5.ITER_INC,
+        )
+        if captured is None:
+            raise RuntimeError("HDF5 link iteration ended before declared group width")
+        name, link_type = captured
+        yield name, link_type
+
+
+def _public_hard_object_reachable(
+    h5file: h5py.File,
+    target: h5py.File | h5py.Group | h5py.Dataset,
+) -> bool:
+    """Return whether a non-private root hard-link path reaches ``target``."""
+    if target.file.id != h5file.id:
+        return False
+    target_identity = _local_object_identity(target)
+    root_identity = _local_object_identity(h5file)
+    if target_identity == root_identity:
+        return True
+    visited = {root_identity}
+    stack: list[tuple[h5py.File | h5py.Group, Iterator[tuple[bytes, int]]]] = [
+        (h5file, _iter_raw_links(h5file))
+    ]
+    while stack:
+        group, links = stack[-1]
+        try:
+            name, link_type = next(links)
+        except StopIteration:
+            stack.pop()
+            continue
+        if len(stack) == 1 and name.startswith(_ROLLBACK_PREFIX.encode("ascii")):
+            continue
+        if link_type != h5py.h5l.TYPE_HARD:
+            continue
+        child = group[name]
+        if not isinstance(child, (h5py.Group, h5py.Dataset)):
+            continue
+        identity = _local_object_identity(child)
+        if identity == target_identity:
+            return True
+        if not isinstance(child, h5py.Group) or identity in visited:
+            continue
+        visited.add(identity)
+        stack.append((child, _iter_raw_links(child)))
+    return False
+
+
+def _reject_private_resolution(
+    array: Any,
+    container: h5py.File | h5py.Group,
+    path: Any,
+) -> None:
+    """Reject a parent that resolves only through the private root namespace."""
+    object_path = _native_object_path(array, container, path)
+    h5file = container.file
+    current: h5py.File | h5py.Group = h5file
+    for component in object_path.split("/")[:-1]:
+        link = current.get(component, getlink=True)
+        if link is None:
+            break
+        if isinstance(link, h5py.ExternalLink):
+            raise ValueError("cannot write through an HDF5 external link")
+        child = current.get(component)
+        if not isinstance(child, h5py.Group):
+            break
+        if child.file.id != h5file.id:
+            raise ValueError("cannot write through an HDF5 external link")
+        current = child
+    if not _public_hard_object_reachable(h5file, current):
+        raise ValueError(
+            "the resolved HDF5 parent is in the private rollback namespace"
+        )
+
+
+def _diagnostic_path(components: tuple[bytes, ...]) -> str | None:
+    """Return a bounded UTF-8 path, or omit a non-authoritative spelling."""
+    try:
+        decoded = tuple(component.decode("utf-8") for component in components)
+        if any(component in {"", ".", ".."} for component in decoded):
+            return None
+        path = "/".join(decoded)
+        encoded = path.encode("utf-8")
+    except UnicodeError:
+        return None
+    if len(encoded) > 4096:
+        return None
+    return path
+
+
 def _build_v2_sidecar(h5file: h5py.File) -> str | None:
     """Rebuild v2 records from cycle-safe local hard-link observations."""
     visited_groups: set[int] = set()
     visited_datasets: set[int] = set()
 
-    def visit(
-        group: h5py.File | h5py.Group,
-        prefix: tuple[str, ...],
-    ) -> Iterator[tuple[str, EpochMarker]]:
-        group_identity = _local_object_identity(group)
-        if group_identity in visited_groups:
-            return
-        visited_groups.add(group_identity)
-        for name in sorted(group.keys()):
-            if not prefix and name.startswith(_ROLLBACK_PREFIX):
+    def observations() -> Iterator[tuple[str | None, EpochMarker]]:
+        visited_groups.add(_local_object_identity(h5file))
+        stack: list[tuple[h5py.File | h5py.Group, Iterator[tuple[bytes, int]]]] = [
+            (h5file, _iter_raw_links(h5file))
+        ]
+        path_components: list[bytes] = []
+        while stack:
+            group, links = stack[-1]
+            try:
+                name, link_type = next(links)
+            except StopIteration:
+                stack.pop()
+                if stack:
+                    path_components.pop()
                 continue
-            link = group.get(name, getlink=True)
-            if not isinstance(link, h5py.HardLink):
+            if len(stack) == 1 and name.startswith(_ROLLBACK_PREFIX.encode("ascii")):
                 continue
-            child = group.get(name)
+            if link_type != h5py.h5l.TYPE_HARD:
+                continue
+            child = group[name]
             if isinstance(child, h5py.Group):
-                yield from visit(child, (*prefix, name))
+                group_identity = _local_object_identity(child)
+                if group_identity in visited_groups:
+                    continue
+                visited_groups.add(group_identity)
+                path_components.append(name)
+                stack.append((child, _iter_raw_links(child)))
                 continue
             if not isinstance(child, h5py.Dataset):
                 continue
@@ -414,19 +585,12 @@ def _build_v2_sidecar(h5file: h5py.File) -> str | None:
             if dataset_identity in visited_datasets:
                 continue
             visited_datasets.add(dataset_identity)
-            raw_epoch = _text_attribute(child.attrs.get("epoch"), label="epoch")
-            raw_xunit = _text_attribute(child.attrs.get("xunit"), label="xunit")
-            marker = decode_epoch_marker(
-                raw_epoch,
-                raw_x0=child.attrs.get("x0"),
-                xunit=raw_xunit,
-            )
+            marker = _decode_dataset_marker(child)
             if marker is None:
                 continue
-            object_path = "/".join((*prefix, name))
-            yield object_path, marker
+            yield _diagnostic_path((*path_components, name)), marker
 
-    return _serialize_marker_observations(visit(h5file, ()))
+    return _serialize_marker_observations(observations())
 
 
 def _apply_sidecar_payload(h5file: h5py.File, payload: str | None) -> None:
@@ -454,6 +618,14 @@ def _commit_sidecar(
     dataset: h5py.Dataset,
     marker: EpochMarker | None,
 ) -> None:
+    if not _public_hard_object_reachable(h5file, dataset):
+        raise RuntimeError(
+            "HDF5 output dataset is not reachable through public hard links"
+        )
+    if marker is None and _decode_dataset_marker(dataset) is not None:
+        raise RuntimeError(
+            "non-exact HDF5 output unexpectedly contains an exact epoch marker"
+        )
     if marker is not None:
         _reset_dataset_axis(dataset, marker)
         validated_marker = decode_epoch_marker(
@@ -465,6 +637,16 @@ def _commit_sidecar(
             raise RuntimeError("prepared exact-epoch marker changed before commit")
         _write_epoch_marker(dataset, marker)
     payload = _build_v2_sidecar(h5file)
+    if marker is not None:
+        if payload is None:
+            raise RuntimeError("exact marker lineage token is missing from sidecar")
+        try:
+            document = parse_v2_sidecar(payload)
+            record = validate_marker_record(marker, document)
+        except ValueError as exc:  # pragma: no cover - builder invariant
+            raise RuntimeError("exact marker sidecar postcondition failed") from exc
+        if record is None:
+            raise RuntimeError("exact marker lineage token is missing from sidecar")
     _apply_sidecar_payload(h5file, payload)
 
 
@@ -605,6 +787,7 @@ def _write_open_container(
     kwargs: dict[str, Any],
 ) -> h5py.Dataset:
     h5file = container.file
+    _reject_private_resolution(array, container, path)
     _reject_external_link_traversal(array, container, path)
     _read_v2_sidecar(h5file)
     object_path = _write_path(array, container, path)
@@ -847,18 +1030,160 @@ def _read_v2_sidecar(h5file: h5py.File) -> SidecarDocument | None:
     if SIDECAR_ATTRIBUTE_V2 not in h5file.attrs:
         return None
     try:
-        return parse_v2_sidecar(h5file.attrs[SIDECAR_ATTRIBUTE_V2])
+        bounded = _read_bounded_text_attribute(
+            h5file,
+            SIDECAR_ATTRIBUTE_V2,
+            limit=_MAX_V2_BYTES,
+            reject_invalid=True,
+        )
+        if bounded is None:  # pragma: no cover - existence checked above
+            raise ValueError("sidecar v2 attribute disappeared during read")
+        raw, truncated = bounded
+        if truncated:
+            raise ValueError("sidecar JSON exceeds 8 MiB")
+        return parse_v2_sidecar(raw)
     except ValueError as exc:
         raise ValueError("invalid exact-epoch sidecar v2") from exc
 
 
-def _text_attribute(value: Any, *, label: str) -> Any:
-    if isinstance(value, bytes):
+def _logical_fixed_text(raw: bytes, padding: int) -> bytes:
+    if padding == h5py.h5t.STR_NULLPAD:
+        return raw.rstrip(b"\0")
+    if padding == h5py.h5t.STR_NULLTERM:
+        return raw.partition(b"\0")[0]
+    if padding == h5py.h5t.STR_SPACEPAD:
+        return raw.rstrip(b" ")
+    raise ValueError("unsupported HDF5 fixed-string padding")
+
+
+def _read_bounded_text_attribute(
+    owner: h5py.File | h5py.Group | h5py.Dataset,
+    name: str,
+    *,
+    limit: int,
+    reject_invalid: bool = False,
+) -> tuple[bytes, bool] | None:
+    """Read one scalar string attribute into at most ``limit + 1`` Python bytes.
+
+    HDF5 may still allocate the source vlen value internally while converting it;
+    this bound applies to the Python-owned destination buffer.
+    """
+    try:
+        attribute = owner.attrs.get_id(name)
+    except KeyError:
+        return None
+    try:
+        type_id = attribute.get_type()
         try:
-            return value.decode("utf-8")
-        except UnicodeDecodeError as exc:
-            raise ValueError(f"invalid UTF-8 in HDF5 {label} attribute") from exc
-    return value
+            if type_id.get_class() != h5py.h5t.STRING:
+                if reject_invalid:
+                    raise ValueError(f"HDF5 {name} attribute must be text")
+                return None
+            if attribute.shape != ():
+                if reject_invalid:
+                    raise ValueError(f"HDF5 {name} attribute must be scalar")
+                return None
+            variable = bool(type_id.is_variable_str())
+            source_size = int(type_id.get_size())
+            complete_fixed = not variable and source_size <= limit + 1
+            read_size = (
+                limit + 1 if variable else source_size if complete_fixed else limit + 1
+            )
+            read_size = max(read_size, 1)
+            destination = np.empty((), dtype=f"S{read_size}")
+            try:
+                if complete_fixed:
+                    attribute.read(destination, mtype=type_id)
+                else:
+                    attribute.read(destination)
+            except (TypeError, ValueError, RuntimeError) as exc:
+                raise ValueError(f"cannot read HDF5 {name} attribute safely") from exc
+            if variable:
+                raw = bytes(destination[()])
+                return raw, len(raw) > limit
+            if complete_fixed:
+                raw = _logical_fixed_text(
+                    destination.tobytes(),
+                    int(type_id.get_strpad()),
+                )
+                return raw, len(raw) > limit
+            raw = destination.tobytes().rstrip(b"\0")
+            return raw, True
+        finally:
+            type_id.close()
+    finally:
+        attribute.close()
+
+
+def _marker_epoch_candidate(dataset: h5py.Dataset) -> str | None:
+    bounded = _read_bounded_text_attribute(dataset, "epoch", limit=4_096)
+    if bounded is None:
+        return None
+    raw_epoch, truncated = bounded
+    text = raw_epoch.decode("latin-1")
+    try:
+        provisional = decode_epoch_marker(text, raw_x0=0.0, xunit="s")
+    except ValueError:
+        if truncated:
+            raise ValueError("HDF5 marker epoch exceeds 4096 bytes") from None
+        return text
+    if provisional is None:
+        return None
+    if truncated:
+        raise ValueError("HDF5 marker epoch exceeds 4096 bytes")
+    return text
+
+
+def _marker_xunit(dataset: h5py.Dataset) -> str:
+    bounded = _read_bounded_text_attribute(dataset, "xunit", limit=255)
+    if bounded is None:
+        raise ValueError("HDF5 marker xunit must be a scalar string")
+    raw_xunit, truncated = bounded
+    if truncated:
+        raise ValueError("HDF5 marker xunit exceeds 255 UTF-8 bytes")
+    try:
+        return raw_xunit.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise ValueError("invalid UTF-8 in HDF5 marker xunit attribute") from exc
+
+
+def _marker_x0(dataset: h5py.Dataset) -> float:
+    try:
+        attribute = dataset.attrs.get_id("x0")
+    except KeyError as exc:
+        raise ValueError("HDF5 marker x0 must be a finite binary64 scalar") from exc
+    try:
+        if attribute.shape != ():
+            raise ValueError("HDF5 marker x0 must be a finite binary64 scalar")
+        type_id = attribute.get_type()
+        try:
+            type_class = type_id.get_class()
+        finally:
+            type_id.close()
+        if type_class not in (h5py.h5t.INTEGER, h5py.h5t.FLOAT):
+            raise ValueError("HDF5 marker x0 must be a finite binary64 scalar")
+        destination = np.empty((), dtype=np.float64)
+        try:
+            attribute.read(destination)
+        except (TypeError, ValueError, RuntimeError) as exc:
+            raise ValueError("HDF5 marker x0 must be a finite binary64 scalar") from exc
+        projected = float(destination[()])
+        if not math.isfinite(projected):
+            raise ValueError("HDF5 marker x0 must be a finite binary64 scalar")
+        return projected
+    finally:
+        attribute.close()
+
+
+def _decode_dataset_marker(dataset: h5py.Dataset) -> EpochMarker | None:
+    raw_epoch = _marker_epoch_candidate(dataset)
+    if raw_epoch is None:
+        return None
+    return decode_epoch_marker(
+        raw_epoch,
+        raw_x0=_marker_x0(dataset),
+        xunit=_marker_xunit(dataset),
+    )
 
 
 def _read_open_container(
@@ -871,10 +1196,7 @@ def _read_open_container(
         _relative_path(path)
     dataset = _gwpy_io_hdf5.find_dataset(source, path=path)
     document = _read_v2_sidecar(dataset.file)
-    raw_x0 = dataset.attrs.get("x0")
-    raw_xunit = _text_attribute(dataset.attrs.get("xunit"), label="xunit")
-    raw_epoch = _text_attribute(dataset.attrs.get("epoch"), label="epoch")
-    marker = decode_epoch_marker(raw_epoch, raw_x0=raw_x0, xunit=raw_xunit)
+    marker = _decode_dataset_marker(dataset)
     if marker is not None:
         validate_marker_record(marker, document)
     start = kwargs.pop("start", None)
@@ -942,6 +1264,12 @@ def register_hdf5_exact_t0_io() -> None:
         exact_epoch = _exact_epoch(array)
         write_kwargs = dict(kwargs)
         marker = _validate_caller_write_metadata(array, exact_epoch, write_kwargs)
+        _reject_private_namespace(
+            array,
+            target,
+            path,
+            preserve_existing=bool(write_kwargs.get("append", False)),
+        )
         if _external_storage_requested(write_kwargs):
             if exact_epoch is not None:
                 raise ValueError(
