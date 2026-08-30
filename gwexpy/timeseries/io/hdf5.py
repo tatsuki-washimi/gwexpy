@@ -10,7 +10,7 @@ import struct
 import uuid
 from collections.abc import Callable, Iterable, Iterator
 from pathlib import Path, PurePosixPath
-from typing import Any
+from typing import Any, BinaryIO, cast
 
 import h5py
 import numpy as np
@@ -73,12 +73,21 @@ class _RollbackError(RuntimeError):
         operation_error: BaseException,
         rollback_errors: tuple[BaseException, ...],
         recovery_path: str | None,
+        *,
+        state: str = "indeterminate",
+        byte_state: str | None = None,
+        position_state: str | None = None,
     ) -> None:
         self.operation_error = operation_error
         self.rollback_errors = rollback_errors
         self.recovery_path = recovery_path
+        self.state = state
+        self.byte_state = byte_state
+        self.position_state = position_state
         self.errors = (operation_error, *rollback_errors)
-        message = "TimeSeries HDF5 write failed and rollback was incomplete"
+        message = (
+            f"TimeSeries HDF5 write failed and rollback was incomplete; state={state}"
+        )
         if recovery_path is not None:
             message += f"; recovery retained at {recovery_path}"
         super().__init__(message)
@@ -692,20 +701,37 @@ def _write_core(
     return _native_writer()(array, container, path=path, **kwargs)
 
 
-def _preflight_core_write(
+def _write_dataset_once(
     array: Any,
     container: h5py.Group | h5py.File,
     path: Any,
+    marker: EpochMarker | None,
     kwargs: dict[str, Any],
-) -> None:
-    """Exercise the native writer without touching a caller-owned handle."""
-    prefix = _group_prefix(container)
-    name = f"gwexpy-t0-preflight-{uuid.uuid4().hex}.hdf5"
-    with h5py.File(name, "w", driver="core", backing_store=False) as isolated:
-        isolated_container: h5py.Group | h5py.File = isolated
-        if prefix:
-            isolated_container = isolated.require_group(prefix)
-        _native_writer()(array, isolated_container, path=path, **kwargs)
+) -> h5py.Dataset:
+    """Write one native dataset and commit its exact-time metadata."""
+    object_path = _native_object_path(array, container, path)
+    dataset = _write_core(array, container, path, kwargs)
+    if _dataset_path(dataset) != object_path:  # pragma: no cover - native invariant
+        raise RuntimeError("native HDF5 writer returned an unexpected dataset path")
+    _commit_sidecar(container.file, dataset, marker)
+    return dataset
+
+
+def _write_disposable_stage(
+    array: Any,
+    stage: BinaryIO,
+    path: Any,
+    marker: EpochMarker | None,
+    kwargs: dict[str, Any],
+    *,
+    mode: str,
+) -> h5py.Dataset:
+    """Write a disposable HDF5 image without in-file recovery objects."""
+    with h5py.File(stage, mode) as h5file:
+        _reject_private_resolution(array, h5file, path)
+        _reject_external_link_traversal(array, h5file, path)
+        _read_v2_sidecar(h5file)
+        return _write_dataset_once(array, h5file, path, marker, kwargs)
 
 
 def _existing_dataset(
@@ -792,23 +818,18 @@ def _write_open_container(
     _reject_private_resolution(array, container, path)
     _reject_external_link_traversal(array, container, path)
     _read_v2_sidecar(h5file)
-    object_path = _native_object_path(array, container, path)
     coordinate, relative_path = _transaction_coordinate(array, container, path)
     existing = _existing_dataset(coordinate, relative_path)
     if existing is not None and not kwargs.get("overwrite", False):
         return _write_core(array, container, path, kwargs)
 
-    _preflight_core_write(array, container, path, kwargs)
     snapshot = _sidecar_snapshot(h5file)
     created_parent_paths = _missing_parent_paths(coordinate, relative_path)
     rollback = (
         _rollback_link(h5file, existing, snapshot) if existing is not None else None
     )
     try:
-        dataset = _write_core(array, container, path, kwargs)
-        if _dataset_path(dataset) != object_path:  # pragma: no cover - native invariant
-            raise RuntimeError("native HDF5 writer returned an unexpected dataset path")
-        _commit_sidecar(h5file, dataset, marker)
+        dataset = _write_dataset_once(array, container, path, marker, kwargs)
     except BaseException as operation_error:
         rollback_errors: list[BaseException] = []
         try:
@@ -848,10 +869,11 @@ def _path_status(path: Path) -> tuple[bool, int | None]:
         status = os.lstat(path)
     except FileNotFoundError:
         return False, None
-    if stat.S_ISLNK(status.st_mode):
-        raise OSError(f"refusing to overwrite symbolic link: {path}")
-    mode = stat.S_IMODE(status.st_mode) if stat.S_ISREG(status.st_mode) else None
-    return True, mode
+    if not stat.S_ISREG(status.st_mode):
+        raise OSError(f"refusing to overwrite non-regular file: {path}")
+    if status.st_nlink > 1:
+        raise OSError(f"refusing to replace file with multiple hard links: {path}")
+    return True, stat.S_IMODE(status.st_mode)
 
 
 def _filesystem_path(value: Any) -> Path:
@@ -965,21 +987,32 @@ def _write_path_transaction(
             mode = "r+"
         else:
             mode = "w"
-        with h5py.File(temporary_path, mode) as temporary_file:
-            result = _write_open_container(
+        python_mode = "r+b" if mode == "r+" else "w+b"
+        with temporary_path.open(python_mode) as temporary_file:
+            result = _write_disposable_stage(
                 array,
-                temporary_file,
+                cast(BinaryIO, temporary_file),
                 path,
                 marker,
                 kwargs,
+                mode=mode,
             )
         if target_mode is not None:
             os.chmod(temporary_path, target_mode)
         os.replace(temporary_path, filepath)
-        return result
-    finally:
+    except BaseException as operation_error:
         if temporary_path.exists():
-            temporary_path.unlink()
+            try:
+                temporary_path.unlink()
+            except BaseException as cleanup_error:
+                raise _RollbackError(
+                    operation_error,
+                    (cleanup_error,),
+                    str(temporary_path),
+                    state="old",
+                ) from cleanup_error
+        raise
+    return result
 
 
 def _write_filelike_transaction(
@@ -992,14 +1025,14 @@ def _write_filelike_transaction(
     snapshot, original_position = _filelike_snapshot(target)
     working = io.BytesIO(snapshot)
     mode = "a" if kwargs.get("append", False) else "w"
-    with h5py.File(working, mode) as working_file:
-        result = _write_open_container(
-            array,
-            working_file,
-            path,
-            marker,
-            kwargs,
-        )
+    result = _write_disposable_stage(
+        array,
+        working,
+        path,
+        marker,
+        kwargs,
+        mode=mode,
+    )
     payload = working.getvalue()
     try:
         _replace_filelike_bytes(target, payload)

@@ -1125,7 +1125,7 @@ def _nonpathname_metadata_case(
                 assert expectation == "nonexact-ordinary-epoch"
                 assert dataset.attrs["epoch"] == repr(replacement.x0.value)
                 assert _SIDECAR_ATTRIBUTE_V2 not in scope.file.attrs
-        assert native_writer_calls() == 2
+        assert native_writer_calls() == 1
 
 
 @pytest.mark.parametrize(
@@ -1391,7 +1391,7 @@ def test_hdf5_write_metadata_policy_fails_before_mutation(
             else:
                 assert dataset.attrs["epoch"] == ordinary_epoch
             assert _SIDECAR_ATTRIBUTE_V2 not in h5file.attrs
-        assert native_writer_calls() == 2
+        assert native_writer_calls() == 1
         if metadata_case == "nonexact-ordinary-invalid-bytes":
             return
         assert not hasattr(
@@ -1815,7 +1815,7 @@ def test_hdf5_zero_dimensional_text_marker_metadata_policy(
         if metadata_case == "exact-matching":
             write()
             assert attrs["epoch"] is supplied
-            assert native_writer_calls() == 2
+            assert native_writer_calls() == 1
             with _open_metadata_target(target_kind, target, container) as scope:
                 stored = _marker(scope["data"])
                 assert stored.lineage_token == marker.lineage_token
@@ -1927,7 +1927,7 @@ def test_hdf5_nonexact_one_dimensional_marker_text_remains_non_authoritative(
             attrs=attrs,
         )
 
-        assert native_writer_calls() == 2
+        assert native_writer_calls() == 1
         assert attrs["epoch"] is supplied
         with _open_metadata_target(target_kind, target, container) as scope:
             attribute = scope["data"].attrs.get_id("epoch")
@@ -1984,7 +1984,7 @@ def test_hdf5_nonexact_output_marker_postcondition_rolls_back(
                 attrs=attrs,
             )
 
-        assert calls == 2
+        assert calls == 1
         assert _metadata_target_snapshot(target_kind, target, container) == before
         assert attrs == attrs_before
 
@@ -2225,7 +2225,7 @@ def test_hdf5_exact_commit_requires_output_dataset_in_public_traversal(
     ) -> object:
         nonlocal native_calls
         native_calls += 1
-        if native_calls == 2:
+        if native_calls == 1:
             root = container.file
             del root["safe"]
             root["safe"] = h5py.SoftLink(root[reserved].name)
@@ -2242,7 +2242,7 @@ def test_hdf5_exact_commit_requires_output_dataset_in_public_traversal(
                 attrs={"epoch": marker.text},
             )
 
-        assert native_calls == 2
+        assert native_calls == 1
         assert tuple(root[reserved].keys()) == ()
         assert isinstance(root.get("safe", getlink=True), h5py.SoftLink)
         assert _SIDECAR_ATTRIBUTE_V2 not in root.attrs
@@ -2271,7 +2271,7 @@ def test_hdf5_nonexact_commit_requires_output_dataset_in_public_traversal(
     ) -> object:
         nonlocal native_calls
         native_calls += 1
-        if native_calls == 2:
+        if native_calls == 1:
             root = container.file
             del root["safe"]
             root["safe"] = h5py.SoftLink(root[reserved].name)
@@ -2287,7 +2287,7 @@ def test_hdf5_nonexact_commit_requires_output_dataset_in_public_traversal(
                 append=True,
             )
 
-        assert native_calls == 2
+        assert native_calls == 1
         assert tuple(root[reserved].keys()) == ()
         assert isinstance(root.get("safe", getlink=True), h5py.SoftLink)
         assert _SIDECAR_ATTRIBUTE_V2 not in root.attrs

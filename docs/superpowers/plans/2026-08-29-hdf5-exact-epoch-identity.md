@@ -21,8 +21,8 @@ Ruff, MyPy, conda environment `gwexpy`.
 
 **Status:** in-progress
 
-Tasks 1–5 and Checkpoint A are completed. Tasks 6–8 were approved for the
-local v0.2.1 P0 scope on 2026-08-30. Tasks 6–10 remain planned; P0 approval
+Tasks 1–6 and Checkpoint A are completed. Tasks 6–8 were approved for the
+local v0.2.1 P0 scope on 2026-08-30. Tasks 7–10 remain planned; P0 approval
 still requires their verification and the independent reviews below.
 
 **Specification:**
@@ -735,7 +735,7 @@ and open-handle rollback risks remain v0.2.1 blockers.
 
 ### Task 6: Introduce one-write disposable staging and atomic pathname writes
 
-**Status:** planned
+**Status:** completed (verified: `rtk conda run -n gwexpy pytest tests/timeseries/test_hdf5_exact_t0_transactions.py -q`; 22 passed, and `rtk conda run -n gwexpy pytest tests/timeseries/test_hdf5_exact_t0.py -q`; 590 passed)
 
 **Files:**
 
