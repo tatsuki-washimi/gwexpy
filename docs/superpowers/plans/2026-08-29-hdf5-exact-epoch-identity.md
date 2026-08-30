@@ -19,7 +19,7 @@ identity-preserving recovery hard link.
 **Tech Stack:** Python 3.11, GWpy 4.x, Astropy units, h5py/HDF5, NumPy, pytest,
 Ruff, MyPy, conda environment `gwexpy`.
 
-**Status:** in-progress
+**Status:** HDF5 P0 approved and frozen at `ae79fb065ae4d5d712c59e49a2afa5c20fd815de`; P1 and release qualification remain pending
 
 Tasks 1–9 and Checkpoint A are completed. Tasks 6–8 were approved for the
 local v0.2.1 P0 scope on 2026-08-30. Task 10 local gates are completed. Three
@@ -32,7 +32,10 @@ to that issue. The fifth fresh review found no Critical, Important, or Minor
 findings and approved specification compliance. The first fresh code-quality
 review found two Important failure-path findings. Both were fixed RED-first, and
 a separate fresh re-review reported no Critical or Important findings and one
-non-blocking Minor test gap. P0 remains a human decision.
+non-blocking Minor test gap. On 2026-08-30, a human approved and closed HDF5
+P0 at `ae79fb065ae4d5d712c59e49a2afa5c20fd815de`. This approval applies only
+to that commit. Any later source or test change requires a P0 diff
+reconfirmation before it can inherit the approval.
 
 **Specification:**
 `docs/superpowers/specs/2026-08-29-hdf5-exact-epoch-identity-design.md`
@@ -1124,7 +1127,7 @@ rtk git commit -m "test: qualify HDF5 exact epoch transactions"
 
 ### Task 10: Run static gates and independent reviews
 
-**Status:** specification and code-quality reviews complete; human P0 decision pending
+**Status:** HDF5 P0 approved and frozen at `ae79fb065ae4d5d712c59e49a2afa5c20fd815de`; P1 and release qualification remain pending
 
 **Files:**
 
@@ -1211,7 +1214,10 @@ Code-quality round 2 at `38c552f03` found no Critical or Important findings and
 one Minor test-maintenance gap for a custom warning hook exception. Its
 assessment is `Ready with minor follow-up`; the present production behavior was
 verified by an isolated public write. Defer that non-blocking test row to normal
-maintenance and leave P0 approval to the human.
+maintenance. On 2026-08-30, a human approved and closed HDF5 P0 at
+`ae79fb065ae4d5d712c59e49a2afa5c20fd815de`. Do not modify this frozen P0
+baseline while working on P1. Reconfirm P0 if a later source or test diff must
+touch it.
 
 - [ ] **Step 5: Verify the final local state**
 
