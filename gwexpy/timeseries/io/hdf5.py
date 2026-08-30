@@ -107,6 +107,21 @@ class _RollbackError(RuntimeError):
         super().__init__(message)
 
 
+class _FilelikeBackupSetupError(RuntimeError):
+    """Carry a file-like backup setup failure through transaction cleanup."""
+
+    def __init__(
+        self,
+        operation_error: BaseException,
+        cleanup_errors: tuple[BaseException, ...],
+        retained_path: Path | None,
+    ) -> None:
+        self.operation_error = operation_error
+        self.cleanup_errors = cleanup_errors
+        self.retained_path = retained_path
+        super().__init__("file-like HDF5 backup setup cleanup failed")
+
+
 def _relative_path(value: Any, *, label: str = "HDF5 path") -> str:
     """Return one canonical, relative POSIX HDF5 object path."""
     if not isinstance(value, str) or not value or value.startswith("/"):
@@ -1211,6 +1226,20 @@ def _flush_filelike(target: Any, *, sync: bool = False) -> None:
         os.fsync(target.fileno())
 
 
+def _retained_temporary_path(
+    path: Path,
+    cleanup_errors: list[BaseException],
+) -> Path | None:
+    try:
+        os.lstat(path)
+    except FileNotFoundError:
+        return None
+    except BaseException as error:
+        cleanup_errors.append(error)
+        return None
+    return path
+
+
 def _create_filelike_backup() -> tuple[BinaryIO, Path]:
     descriptor, name = tempfile.mkstemp(
         prefix="gwexpy-hdf5-backup-",
@@ -1220,9 +1249,23 @@ def _create_filelike_backup() -> tuple[BinaryIO, Path]:
     try:
         os.fchmod(descriptor, 0o600)
         backup = os.fdopen(descriptor, "w+b")
-    except BaseException:
-        os.close(descriptor)
-        path.unlink(missing_ok=True)
+    except BaseException as operation_error:
+        cleanup_errors: list[BaseException] = []
+        try:
+            os.close(descriptor)
+        except BaseException as cleanup_error:
+            cleanup_errors.append(cleanup_error)
+        try:
+            path.unlink(missing_ok=True)
+        except BaseException as cleanup_error:
+            cleanup_errors.append(cleanup_error)
+        if cleanup_errors:
+            retained_path = _retained_temporary_path(path, cleanup_errors)
+            raise _FilelikeBackupSetupError(
+                operation_error,
+                tuple(cleanup_errors),
+                retained_path,
+            ) from cleanup_errors[0]
         raise
     return cast(BinaryIO, backup), path
 
@@ -1404,21 +1447,31 @@ def _write_filelike_transaction(
             mode=mode,
         )
         committed_position = working.tell()
-    except BaseException as operation_error:
+    except BaseException as caught_error:
         rollback_errors: list[BaseException] = []
+        recovery_path: str | None = None
+        if isinstance(caught_error, _FilelikeBackupSetupError):
+            operation_error = caught_error.operation_error
+            rollback_errors.extend(caught_error.cleanup_errors)
+            if caught_error.retained_path is not None:
+                recovery_path = str(caught_error.retained_path)
+        else:
+            operation_error = caught_error
         position_state = "old"
         try:
             target.seek(original_position)
         except BaseException as rollback_error:
             position_state = "indeterminate"
             rollback_errors.append(rollback_error)
-        cleanup_errors, recovery_path = _cleanup_filelike_temporaries(
+        cleanup_errors, cleanup_recovery_path = _cleanup_filelike_temporaries(
             working,
             backup,
             backup_path,
             retain_backup=bool(rollback_errors),
         )
         rollback_errors.extend(cleanup_errors)
+        if cleanup_recovery_path is not None:
+            recovery_path = cleanup_recovery_path
         if rollback_errors:
             raise _RollbackError(
                 operation_error,

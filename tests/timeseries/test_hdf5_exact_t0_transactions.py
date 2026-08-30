@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import errno
 import io
 import json
 import os
@@ -1316,6 +1317,320 @@ def test_hdf5_filelike_copy_rejects_nonbytes_and_oversized_reads(
             io.BytesIO(),
             chunk_size=4,
         )
+
+
+@pytest.mark.parametrize("setup_point", ["fchmod", "fdopen"])
+@pytest.mark.parametrize("close_failure", [False, True])
+def test_hdf5_filelike_backup_setup_cleanup_failure_reports_old_and_retains_path(
+    monkeypatch: pytest.MonkeyPatch,
+    setup_point: str,
+    close_failure: bool,
+) -> None:
+    target = io.BytesIO()
+    _exact_series(123).write(target, format="hdf5", path="data")
+    target.seek(7)
+    before = target.getvalue()
+    setup_error = OSError(f"injected backup {setup_point} failure")
+    close_error = OSError("injected backup setup close failure")
+    unlink_error = OSError("injected backup setup unlink failure")
+    created_paths: list[Path] = []
+    created_descriptors: list[int] = []
+    setup_calls = 0
+    close_calls = 0
+    unlink_calls = 0
+    mkstemp = exact_hdf5.tempfile.mkstemp
+    close = exact_hdf5.os.close
+    unlink = Path.unlink
+
+    def capture_mkstemp(*args: object, **kwargs: object) -> tuple[int, str]:
+        descriptor, name = mkstemp(*args, **kwargs)
+        created_descriptors.append(descriptor)
+        created_paths.append(Path(name))
+        return descriptor, name
+
+    def fail_fchmod(descriptor: int, mode: int) -> None:
+        nonlocal setup_calls
+        setup_calls += 1
+        raise setup_error
+
+    def fail_fdopen(
+        descriptor: int,
+        *args: object,
+        **kwargs: object,
+    ) -> object:
+        nonlocal setup_calls
+        setup_calls += 1
+        raise setup_error
+
+    def close_descriptor(descriptor: int) -> None:
+        nonlocal close_calls
+        close_calls += 1
+        close(descriptor)
+        if close_failure:
+            raise close_error
+
+    def fail_unlink(path: Path, *args: object, **kwargs: object) -> None:
+        nonlocal unlink_calls
+        if path in created_paths:
+            unlink_calls += 1
+            raise unlink_error
+        unlink(path, *args, **kwargs)
+
+    monkeypatch.setattr(exact_hdf5.tempfile, "mkstemp", capture_mkstemp)
+    if setup_point == "fchmod":
+        monkeypatch.setattr(exact_hdf5.os, "fchmod", fail_fchmod)
+    else:
+        monkeypatch.setattr(exact_hdf5.os, "fdopen", fail_fdopen)
+    monkeypatch.setattr(exact_hdf5.os, "close", close_descriptor)
+    monkeypatch.setattr(Path, "unlink", fail_unlink)
+    native_writer_calls = _count_native_writer(monkeypatch)
+
+    try:
+        with pytest.raises(exact_hdf5._RollbackError) as raised:
+            _exact_series(456, offset=10).write(
+                target,
+                format="hdf5",
+                path="data",
+                append=True,
+                overwrite=True,
+            )
+
+        assert target.getvalue() == before
+        assert target.tell() == 7
+        assert native_writer_calls() == 0
+        assert setup_calls == 1
+        assert close_calls == 1
+        assert unlink_calls == 1
+        assert len(created_paths) == len(created_descriptors) == 1
+        assert created_paths[0].exists()
+        with pytest.raises(OSError):
+            os.fstat(created_descriptors[0])
+        assert raised.value.operation_error is setup_error
+        expected_cleanup_errors = (
+            (close_error, unlink_error) if close_failure else (unlink_error,)
+        )
+        assert raised.value.rollback_errors == expected_cleanup_errors
+        assert raised.value.state == "old"
+        assert raised.value.byte_state == "old"
+        assert raised.value.position_state == "old"
+        assert raised.value.recovery_path == str(created_paths[0])
+    finally:
+        for created_path in created_paths:
+            unlink(created_path, missing_ok=True)
+
+
+@pytest.mark.parametrize(
+    "cleanup_outcome",
+    [
+        "success",
+        "close-after-close",
+        "unlink-delete-after-raise",
+        "fdopen-close-then-raise",
+        "lstat-failure",
+    ],
+)
+def test_hdf5_filelike_backup_setup_cleanup_without_retained_path_is_classified(
+    monkeypatch: pytest.MonkeyPatch,
+    cleanup_outcome: str,
+) -> None:
+    target = io.BytesIO()
+    _exact_series(123).write(target, format="hdf5", path="data")
+    target.seek(7)
+    before = target.getvalue()
+    setup_error = OSError("injected backup setup failure")
+    cleanup_error = OSError("injected backup setup cleanup failure")
+    inspection_error = OSError("injected backup setup lstat failure")
+    created_paths: list[Path] = []
+    setup_calls = 0
+    close_calls = 0
+    unlink_calls = 0
+    lstat_calls = 0
+    mkstemp = exact_hdf5.tempfile.mkstemp
+    close = exact_hdf5.os.close
+    lstat = exact_hdf5.os.lstat
+    unlink = Path.unlink
+
+    def capture_mkstemp(*args: object, **kwargs: object) -> tuple[int, str]:
+        descriptor, name = mkstemp(*args, **kwargs)
+        created_paths.append(Path(name))
+        return descriptor, name
+
+    def fail_fchmod(descriptor: int, mode: int) -> None:
+        nonlocal setup_calls
+        setup_calls += 1
+        raise setup_error
+
+    def close_then_fail_fdopen(
+        descriptor: int,
+        *args: object,
+        **kwargs: object,
+    ) -> object:
+        nonlocal setup_calls
+        setup_calls += 1
+        close(descriptor)
+        raise setup_error
+
+    def close_descriptor(descriptor: int) -> None:
+        nonlocal close_calls
+        close_calls += 1
+        close(descriptor)
+        if cleanup_outcome == "close-after-close":
+            raise cleanup_error
+
+    def unlink_backup(path: Path, *args: object, **kwargs: object) -> None:
+        nonlocal unlink_calls
+        if path not in created_paths:
+            unlink(path, *args, **kwargs)
+            return
+        unlink_calls += 1
+        if cleanup_outcome == "lstat-failure":
+            raise cleanup_error
+        unlink(path, *args, **kwargs)
+        if cleanup_outcome == "unlink-delete-after-raise":
+            raise cleanup_error
+
+    def fail_lstat(path: object) -> os.stat_result:
+        nonlocal lstat_calls
+        if Path(path) in created_paths:
+            lstat_calls += 1
+            raise inspection_error
+        return lstat(path)
+
+    monkeypatch.setattr(exact_hdf5.tempfile, "mkstemp", capture_mkstemp)
+    if cleanup_outcome == "fdopen-close-then-raise":
+        monkeypatch.setattr(exact_hdf5.os, "fdopen", close_then_fail_fdopen)
+    else:
+        monkeypatch.setattr(exact_hdf5.os, "fchmod", fail_fchmod)
+    monkeypatch.setattr(exact_hdf5.os, "close", close_descriptor)
+    monkeypatch.setattr(Path, "unlink", unlink_backup)
+    if cleanup_outcome == "lstat-failure":
+        monkeypatch.setattr(exact_hdf5.os, "lstat", fail_lstat)
+    native_writer_calls = _count_native_writer(monkeypatch)
+
+    try:
+        if cleanup_outcome == "success":
+            with pytest.raises(OSError) as raised_operation:
+                _exact_series(456, offset=10).write(
+                    target,
+                    format="hdf5",
+                    path="data",
+                    append=True,
+                    overwrite=True,
+                )
+            assert raised_operation.value is setup_error
+            assert not isinstance(raised_operation.value, exact_hdf5._RollbackError)
+        else:
+            with pytest.raises(exact_hdf5._RollbackError) as raised_rollback:
+                _exact_series(456, offset=10).write(
+                    target,
+                    format="hdf5",
+                    path="data",
+                    append=True,
+                    overwrite=True,
+                )
+            assert raised_rollback.value.operation_error is setup_error
+            if cleanup_outcome == "fdopen-close-then-raise":
+                assert len(raised_rollback.value.rollback_errors) == 1
+                assert (
+                    getattr(raised_rollback.value.rollback_errors[0], "errno", None)
+                    == errno.EBADF
+                )
+            elif cleanup_outcome == "lstat-failure":
+                assert raised_rollback.value.rollback_errors == (
+                    cleanup_error,
+                    inspection_error,
+                )
+            else:
+                assert raised_rollback.value.rollback_errors == (cleanup_error,)
+            assert raised_rollback.value.state == "old"
+            assert raised_rollback.value.byte_state == "old"
+            assert raised_rollback.value.position_state == "old"
+            assert raised_rollback.value.recovery_path is None
+
+        assert target.getvalue() == before
+        assert target.tell() == 7
+        assert native_writer_calls() == 0
+        assert setup_calls == 1
+        assert close_calls == 1
+        assert unlink_calls == 1
+        assert lstat_calls == (1 if cleanup_outcome == "lstat-failure" else 0)
+        assert len(created_paths) == 1
+        if cleanup_outcome == "lstat-failure":
+            assert created_paths[0].exists()
+        else:
+            assert not created_paths[0].exists()
+    finally:
+        for created_path in created_paths:
+            unlink(created_path, missing_ok=True)
+
+
+def test_hdf5_filelike_backup_setup_and_position_failure_reports_indeterminate(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    initial = io.BytesIO()
+    _exact_series(123).write(initial, format="hdf5", path="data")
+    before = initial.getvalue()
+    target = _OriginalPositionRestoreFailBuffer(before)
+    target.seek(7)
+    target.fail_position_restore = True
+    setup_error = OSError("injected backup setup failure")
+    cleanup_error = OSError("injected backup setup unlink failure")
+    created_paths: list[Path] = []
+    setup_calls = 0
+    unlink_calls = 0
+    mkstemp = exact_hdf5.tempfile.mkstemp
+    unlink = Path.unlink
+
+    def capture_mkstemp(*args: object, **kwargs: object) -> tuple[int, str]:
+        descriptor, name = mkstemp(*args, **kwargs)
+        created_paths.append(Path(name))
+        return descriptor, name
+
+    def fail_fchmod(descriptor: int, mode: int) -> None:
+        nonlocal setup_calls
+        setup_calls += 1
+        raise setup_error
+
+    def fail_unlink(path: Path, *args: object, **kwargs: object) -> None:
+        nonlocal unlink_calls
+        if path in created_paths:
+            unlink_calls += 1
+            raise cleanup_error
+        unlink(path, *args, **kwargs)
+
+    monkeypatch.setattr(exact_hdf5.tempfile, "mkstemp", capture_mkstemp)
+    monkeypatch.setattr(exact_hdf5.os, "fchmod", fail_fchmod)
+    monkeypatch.setattr(Path, "unlink", fail_unlink)
+    native_writer_calls = _count_native_writer(monkeypatch)
+
+    try:
+        with pytest.raises(exact_hdf5._RollbackError) as raised:
+            _exact_series(456, offset=10).write(
+                target,
+                format="hdf5",
+                path="data",
+                append=True,
+                overwrite=True,
+            )
+
+        assert target.getvalue() == before
+        assert target.tell() == 7
+        assert native_writer_calls() == 0
+        assert setup_calls == 1
+        assert unlink_calls == 1
+        assert len(created_paths) == 1
+        assert created_paths[0].exists()
+        assert raised.value.operation_error is setup_error
+        assert raised.value.rollback_errors[0] is cleanup_error
+        assert len(raised.value.rollback_errors) == 2
+        assert "position restore" in str(raised.value.rollback_errors[1])
+        assert raised.value.state == "indeterminate"
+        assert raised.value.byte_state == "old"
+        assert raised.value.position_state == "indeterminate"
+        assert raised.value.recovery_path == str(created_paths[0])
+    finally:
+        for created_path in created_paths:
+            unlink(created_path, missing_ok=True)
 
 
 def test_hdf5_filelike_precommit_failure_restores_position(
