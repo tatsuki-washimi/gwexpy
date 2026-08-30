@@ -51,7 +51,8 @@ def test_candidate_qualification_has_exactly_nineteen_digest_checked_cells() -> 
         "docs-en-ja-3.11-wheel",
     }
     text = WORKFLOW.read_text(encoding="utf-8")
-    assert "sha256sum -c" in text
+    assert "hashlib.sha256" in text
+    assert "sha256sum -c" not in text
     assert "CANDIDATE_SOURCE_SHA" in text
     assert "/^__version__/" in text
     assert "actions/download-artifact@" in text

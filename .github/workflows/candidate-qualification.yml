@@ -141,16 +141,19 @@ jobs:
         env:
           PAYLOAD: ${{ runner.temp }}/payload
         run: |
-          cd "$PAYLOAD"
-          python - <<'PY' > payload.sha256
+          python - <<'PY'
+          import hashlib
           import json
+          import os
           from pathlib import Path
-          data=json.loads(Path("candidate-payload.json").read_text())
-          assert data["source_sha"] == __import__("os").environ["CANDIDATE_SOURCE_SHA"]
-          assert data["version"] == __import__("os").environ["CANDIDATE_VERSION"]
-          for name, digest in sorted(data["files"].items()): print(f"{digest}  {name}")
+          payload = Path(os.environ["PAYLOAD"])
+          data = json.loads((payload / "candidate-payload.json").read_text())
+          assert data["source_sha"] == os.environ["CANDIDATE_SOURCE_SHA"]
+          assert data["version"] == os.environ["CANDIDATE_VERSION"]
+          for name, digest in data["files"].items():
+              observed = hashlib.sha256((payload / name).read_bytes()).hexdigest()
+              assert observed == digest, f"digest mismatch: {name}"
           PY
-          sha256sum -c payload.sha256
       - name: Install only the digest-checked candidate artifact
         shell: bash
         env:
