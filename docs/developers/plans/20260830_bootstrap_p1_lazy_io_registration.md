@@ -92,7 +92,7 @@ Status: completed (verified: `conda run -n gwexpy pytest tests/test_import_order
 
 ### Phase 4: qualification
 
-Status: planned
+Status: in-progress
 
 1. 新規bootstrap testsと既存のimport order、timeseries I/O、frequencyseries registrationを実行する。
 
@@ -102,6 +102,18 @@ Status: planned
 3. changed-file Ruff、format check、MyPy、`git diff --check`を実行する。
 
 4. P1完了後、HDF5 P0を含むfull v0.2.1 qualificationを別工程で実行する。
+
+P1 worktreeでの確認結果。
+
+- bootstrap selectorは24 passed。
+- `tests/timeseries`は2,543 passed、64 skipped、3 xfailed。
+- `tests/io`は1,061 passed、23 skipped、6 failedだった。
+  6件はbase `014371a4d`でも同じexact-time binary64 projection failureとして
+  再現し、P1変更によるfailureではない。
+- `ruff check gwexpy tests`と`mypy gwexpy`は通過した。
+
+HDF5 P0を含むfull v0.2.1 qualificationは、P0 frozen baselineとP1を統合する
+別のapproval済み工程で実行する。
 
 ## 受入条件
 
