@@ -24,8 +24,10 @@ Ruff, MyPy, conda environment `gwexpy`.
 Tasks 1–9 and Checkpoint A are completed. Tasks 6–8 were approved for the
 local v0.2.1 P0 scope on 2026-08-30. Task 10 local gates are completed. Three
 fresh specification-review rounds ended with two unresolved Important findings;
-the approved review limit now requires a human scope decision before further
-remediation. Code-quality review has not started, and P0 remains unapproved.
+on 2026-08-30, a human approved one exceptional fourth remediation and fresh
+specification-review cycle limited to those two findings. A fifth specification
+cycle is not authorized. Code-quality review has not started, and P0 remains
+unapproved.
 
 **Specification:**
 `docs/superpowers/specs/2026-08-29-hdf5-exact-epoch-identity-design.md`
@@ -1117,7 +1119,7 @@ rtk git commit -m "test: qualify HDF5 exact epoch transactions"
 
 ### Task 10: Run static gates and independent reviews
 
-**Status:** human scope decision required after three specification-review rounds; code-quality review not started
+**Status:** fourth specification-remediation cycle approved; code-quality review not started
 
 **Files:**
 
@@ -1166,8 +1168,12 @@ Review record on 2026-08-30:
   file-like backup setup cleanup failure, and pathname stage descriptor-close
   failure before the stage path is returned.
 
-The approved three-round limit is exhausted. Do not begin a fourth remediation
-and re-review cycle without a human decision on scope.
+The approved three-round limit was exhausted. On 2026-08-30, a human authorized
+one exceptional fourth remediation and fresh review cycle, limited to the two
+round-3 findings above. Do not broaden the production change beyond temporary
+setup ownership and cleanup classification. If the fourth review still reports a
+Critical or Important finding, do not begin a fifth specification cycle; return
+the remaining decision to the human.
 
 - [ ] **Step 4: Dispatch independent code-quality review**
 
