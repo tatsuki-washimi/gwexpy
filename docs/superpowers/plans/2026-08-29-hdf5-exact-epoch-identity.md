@@ -21,8 +21,8 @@ Ruff, MyPy, conda environment `gwexpy`.
 
 **Status:** in-progress
 
-Tasks 1–6 and Checkpoint A are completed. Tasks 6–8 were approved for the
-local v0.2.1 P0 scope on 2026-08-30. Tasks 7–10 remain planned; P0 approval
+Tasks 1–7 and Checkpoint A are completed. Tasks 6–8 were approved for the
+local v0.2.1 P0 scope on 2026-08-30. Tasks 8–10 remain planned; P0 approval
 still requires their verification and the independent reviews below.
 
 **Specification:**
@@ -835,12 +835,13 @@ rtk git commit -m "fix: stage HDF5 pathname writes atomically"
 
 ### Task 7: Make file-like transactions disk-backed and chunk-bounded
 
-**Status:** planned
+**Status:** completed (verified: `rtk conda run -n gwexpy pytest tests/timeseries/test_hdf5_exact_t0_transactions.py -q`; 47 passed, `rtk conda run -n gwexpy pytest tests/timeseries/test_hdf5_exact_t0.py -q`; 590 passed, and the Task 7 Ruff, format, and MyPy gates passed)
 
 **Files:**
 
 - Modify: `gwexpy/timeseries/io/hdf5.py`
 - Modify: `tests/timeseries/test_hdf5_exact_t0_transactions.py`
+- Modify: `tests/timeseries/test_hdf5_exact_t0.py`
 
 - [ ] **Step 1: Write bounded-copy primitive RED tests**
 

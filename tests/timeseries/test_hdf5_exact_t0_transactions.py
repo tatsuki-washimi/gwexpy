@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import io
+import json
 import os
 import socket
+import subprocess
+import sys
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from pathlib import Path
@@ -399,3 +402,662 @@ def test_hdf5_path_repeated_overwrite_has_bounded_growth(tmp_path: Path) -> None
     assert max(sizes) <= sizes[0] + 512 * 1024
     recovered = TimeSeries.read(target, format="hdf5", path="data")
     assert recovered.t0_gps_ns == 120
+
+
+class _TrackingReader(io.BytesIO):
+    def __init__(self, payload: bytes) -> None:
+        super().__init__(payload)
+        self.requests: list[int] = []
+
+    def read(self, size: int = -1) -> bytes:
+        self.requests.append(size)
+        return super().read(size)
+
+
+class _ShortWriteBuffer:
+    def __init__(self, max_write: int) -> None:
+        self.max_write = max_write
+        self.payload = bytearray()
+
+    def write(self, value: object) -> int:
+        view = memoryview(value)
+        count = min(len(view), self.max_write)
+        self.payload.extend(view[:count])
+        return count
+
+
+class _InvalidWriteBuffer:
+    def __init__(self, result: object) -> None:
+        self.result = result
+
+    def write(self, value: object) -> object:
+        if self.result == "oversize":
+            return len(memoryview(value)) + 1
+        return self.result
+
+
+class _InvalidReadBuffer:
+    def __init__(self, result: object) -> None:
+        self.result = result
+
+    def read(self, size: int) -> object:
+        if self.result == "oversize":
+            return b"x" * (size + 1)
+        return self.result
+
+
+class _FailOnceWriteBuffer(io.BytesIO):
+    fail_next_write = False
+
+    def write(self, value: object) -> int:
+        if self.fail_next_write:
+            self.fail_next_write = False
+            raise OSError("injected commit write failure")
+        return super().write(value)
+
+
+class _PartialCommitAndRollbackFailBuffer(io.BytesIO):
+    def __init__(self, payload: bytes) -> None:
+        super().__init__(payload)
+        self.write_calls = 0
+
+    def write(self, value: object) -> int:
+        self.write_calls += 1
+        if self.write_calls == 1:
+            view = memoryview(value)
+            return super().write(view[: min(10, len(view))])
+        if self.write_calls == 2:
+            raise OSError("injected partial commit failure")
+        if self.write_calls == 3:
+            raise OSError("injected backup restore failure")
+        return super().write(value)
+
+
+class _CommitAndPositionRestoreFailBuffer(_FailOnceWriteBuffer):
+    fail_position_restore = False
+
+    def write(self, value: object) -> int:
+        if self.fail_next_write:
+            self.fail_position_restore = True
+        return super().write(value)
+
+    def seek(self, offset: int, whence: int = 0) -> int:
+        if self.fail_position_restore and offset == 7 and whence == 0:
+            raise OSError("injected position restore failure")
+        return super().seek(offset, whence)
+
+
+class _CloseFailingBinaryFile:
+    def __init__(self, wrapped: object, label: str) -> None:
+        self.wrapped = wrapped
+        self.label = label
+
+    def __getattr__(self, name: str) -> object:
+        return getattr(self.wrapped, name)
+
+    def close(self) -> None:
+        self.wrapped.close()
+        raise OSError(f"injected {self.label} close failure")
+
+
+def test_hdf5_filelike_copy_requests_are_chunk_bounded() -> None:
+    chunk_size = 17
+    payload = bytes(range(100))
+    source = _TrackingReader(payload)
+    destination = io.BytesIO()
+
+    copied = exact_hdf5._copy_filelike(
+        source,
+        destination,
+        chunk_size=chunk_size,
+    )
+
+    assert copied == len(payload)
+    assert destination.getvalue() == payload
+    assert source.requests
+    assert all(0 < request <= chunk_size for request in source.requests)
+
+
+def test_hdf5_filelike_copy_retries_short_positive_writes() -> None:
+    payload = bytes(range(100))
+    destination = _ShortWriteBuffer(max_write=3)
+
+    copied = exact_hdf5._copy_filelike(
+        io.BytesIO(payload),
+        destination,
+        chunk_size=19,
+    )
+
+    assert copied == len(payload)
+    assert destination.payload == payload
+
+
+@pytest.mark.parametrize("invalid_count", [None, 0, -1, "oversize"])
+def test_hdf5_filelike_copy_rejects_none_zero_negative_and_oversize_counts(
+    invalid_count: object,
+) -> None:
+    with pytest.raises(OSError, match="write"):
+        exact_hdf5._copy_filelike(
+            io.BytesIO(b"payload"),
+            _InvalidWriteBuffer(invalid_count),
+            chunk_size=4,
+        )
+
+
+def test_hdf5_filelike_copy_truncates_to_exact_final_size() -> None:
+    source = io.BytesIO(b"short")
+    destination = io.BytesIO(b"stale trailing bytes")
+    destination.seek(0)
+
+    final_size = exact_hdf5._copy_filelike(source, destination, chunk_size=2)
+    destination.truncate(final_size)
+
+    assert final_size == 5
+    assert destination.getvalue() == b"short"
+
+
+@pytest.mark.parametrize(
+    ("read_result", "error_type"),
+    [(None, TypeError), ("text", TypeError), ("oversize", OSError)],
+)
+def test_hdf5_filelike_copy_rejects_nonbytes_and_oversized_reads(
+    read_result: object,
+    error_type: type[Exception],
+) -> None:
+    with pytest.raises(error_type, match="read"):
+        exact_hdf5._copy_filelike(
+            _InvalidReadBuffer(read_result),
+            io.BytesIO(),
+            chunk_size=4,
+        )
+
+
+def test_hdf5_filelike_precommit_failure_restores_position(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = io.BytesIO()
+    _exact_series(123).write(target, format="hdf5", path="data")
+    target.seek(7)
+    before = target.getvalue()
+
+    def reject_snapshot(*args: object, **kwargs: object) -> None:
+        raise AssertionError("full file-like snapshot is forbidden")
+
+    def fail_stage(*args: object, **kwargs: object) -> None:
+        raise RuntimeError("injected precommit stage failure")
+
+    monkeypatch.setattr(
+        exact_hdf5,
+        "_filelike_snapshot",
+        reject_snapshot,
+        raising=False,
+    )
+    monkeypatch.setattr(exact_hdf5, "_write_disposable_stage", fail_stage)
+    with pytest.raises(RuntimeError, match="injected precommit stage failure"):
+        _exact_series(456, offset=10).write(
+            target,
+            format="hdf5",
+            path="data",
+            append=True,
+            overwrite=True,
+        )
+
+    assert target.getvalue() == before
+    assert target.tell() == 7
+
+
+def test_hdf5_filelike_commit_failure_restores_bytes_and_position() -> None:
+    initial = io.BytesIO()
+    _exact_series(123).write(initial, format="hdf5", path="data")
+    target = _FailOnceWriteBuffer(initial.getvalue())
+    target.seek(7)
+    before = target.getvalue()
+    target.fail_next_write = True
+
+    with pytest.raises(OSError, match="injected commit write failure"):
+        _exact_series(456, offset=10).write(
+            target,
+            format="hdf5",
+            path="data",
+            append=True,
+            overwrite=True,
+        )
+
+    assert target.getvalue() == before
+    assert target.tell() == 7
+
+
+def test_hdf5_filelike_incomplete_rollback_retains_durable_backup() -> None:
+    initial = io.BytesIO()
+    _exact_series(123).write(initial, format="hdf5", path="data")
+    before = initial.getvalue()
+    target = _PartialCommitAndRollbackFailBuffer(before)
+    target.seek(7)
+
+    with pytest.raises(exact_hdf5._RollbackError) as raised:
+        _exact_series(456, offset=10).write(
+            target,
+            format="hdf5",
+            path="data",
+            append=True,
+            overwrite=True,
+        )
+
+    recovery_path = Path(str(raised.value.recovery_path))
+    try:
+        assert raised.value.state == "indeterminate"
+        assert raised.value.byte_state == "indeterminate"
+        assert raised.value.position_state == "old"
+        assert target.tell() == 7
+        assert recovery_path.exists()
+        assert recovery_path.stat().st_mode & 0o777 == 0o600
+        assert recovery_path.read_bytes() == before
+        assert "injected partial commit failure" in str(raised.value.operation_error)
+        assert any(
+            "injected backup restore failure" in str(error)
+            for error in raised.value.rollback_errors
+        )
+    finally:
+        recovery_path.unlink(missing_ok=True)
+
+
+def test_hdf5_filelike_classifies_byte_and_position_state_independently() -> None:
+    initial = io.BytesIO()
+    _exact_series(123).write(initial, format="hdf5", path="data")
+    before = initial.getvalue()
+    target = _CommitAndPositionRestoreFailBuffer(before)
+    target.seek(7)
+    target.fail_next_write = True
+
+    with pytest.raises(exact_hdf5._RollbackError) as raised:
+        _exact_series(456, offset=10).write(
+            target,
+            format="hdf5",
+            path="data",
+            append=True,
+            overwrite=True,
+        )
+
+    recovery_path = Path(str(raised.value.recovery_path))
+    try:
+        assert target.getvalue() == before
+        assert raised.value.state == "indeterminate"
+        assert raised.value.byte_state == "old"
+        assert raised.value.position_state == "indeterminate"
+        assert recovery_path.exists()
+        assert recovery_path.read_bytes() == before
+        assert any(
+            "injected position restore failure" in str(error)
+            for error in raised.value.rollback_errors
+        )
+    finally:
+        recovery_path.unlink(missing_ok=True)
+
+
+def test_hdf5_filelike_success_cleanup_failure_warns_new_and_returns(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = io.BytesIO()
+    _exact_series(123).write(target, format="hdf5", path="data")
+    created_backups: list[Path] = []
+    create_backup = exact_hdf5._create_filelike_backup
+    unlink = Path.unlink
+
+    def capture_backup() -> tuple[object, Path]:
+        backup, path = create_backup()
+        created_backups.append(path)
+        return backup, path
+
+    def fail_backup_unlink(
+        path: Path,
+        *args: object,
+        **kwargs: object,
+    ) -> None:
+        if path in created_backups:
+            raise OSError("injected backup unlink failure")
+        unlink(path, *args, **kwargs)
+
+    monkeypatch.setattr(exact_hdf5, "_create_filelike_backup", capture_backup)
+    monkeypatch.setattr(Path, "unlink", fail_backup_unlink)
+    try:
+        with pytest.warns(ResourceWarning, match="state=new.*unlink"):
+            _exact_series(456, offset=10).write(
+                target,
+                format="hdf5",
+                path="data",
+                append=True,
+                overwrite=True,
+            )
+
+        recovered = TimeSeries.read(target, format="hdf5", path="data")
+        assert recovered.t0_gps_ns == 456
+        assert len(created_backups) == 1
+        assert created_backups[0].exists()
+    finally:
+        for path in created_backups:
+            unlink(path, missing_ok=True)
+
+
+@pytest.mark.parametrize("resource_kind", ["working", "backup"])
+def test_hdf5_filelike_success_close_failure_warns_new_and_returns(
+    monkeypatch: pytest.MonkeyPatch,
+    resource_kind: str,
+) -> None:
+    target = io.BytesIO()
+    _exact_series(123).write(target, format="hdf5", path="data")
+    backup_paths: list[Path] = []
+    create_backup = exact_hdf5._create_filelike_backup
+    create_working = exact_hdf5._create_filelike_working
+
+    def capture_backup() -> tuple[object, Path]:
+        backup, path = create_backup()
+        backup_paths.append(path)
+        if resource_kind == "backup":
+            backup = _CloseFailingBinaryFile(backup, "backup")
+        return backup, path
+
+    def capture_working() -> object:
+        working = create_working()
+        if resource_kind == "working":
+            return _CloseFailingBinaryFile(working, "working")
+        return working
+
+    monkeypatch.setattr(exact_hdf5, "_create_filelike_backup", capture_backup)
+    monkeypatch.setattr(exact_hdf5, "_create_filelike_working", capture_working)
+    with pytest.warns(
+        ResourceWarning,
+        match=rf"state=new.*{resource_kind} close",
+    ):
+        _exact_series(456, offset=10).write(
+            target,
+            format="hdf5",
+            path="data",
+            append=True,
+            overwrite=True,
+        )
+
+    assert TimeSeries.read(target, format="hdf5", path="data").t0_gps_ns == 456
+    assert all(not path.exists() for path in backup_paths)
+
+
+def test_hdf5_filelike_success_establishes_working_file_position(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = io.BytesIO()
+    _exact_series(123).write(target, format="hdf5", path="data")
+    target.seek(7)
+    positions: list[int] = []
+    write_stage = exact_hdf5._write_disposable_stage
+
+    def capture_stage_position(*args: object, **kwargs: object) -> object:
+        result = write_stage(*args, **kwargs)
+        positions.append(args[1].tell())
+        return result
+
+    monkeypatch.setattr(
+        exact_hdf5,
+        "_write_disposable_stage",
+        capture_stage_position,
+    )
+    _exact_series(456, offset=10).write(
+        target,
+        format="hdf5",
+        path="data",
+        append=True,
+        overwrite=True,
+    )
+
+    assert len(positions) == 1
+    assert target.tell() == positions[0]
+
+
+def test_hdf5_filelike_complete_rollback_cleanup_failure_reports_old(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    initial = io.BytesIO()
+    _exact_series(123).write(initial, format="hdf5", path="data")
+    before = initial.getvalue()
+    target = _FailOnceWriteBuffer(before)
+    target.seek(7)
+    target.fail_next_write = True
+    created_backups: list[Path] = []
+    create_backup = exact_hdf5._create_filelike_backup
+    unlink = Path.unlink
+
+    def capture_backup() -> tuple[object, Path]:
+        backup, path = create_backup()
+        created_backups.append(path)
+        return backup, path
+
+    def fail_backup_unlink(
+        path: Path,
+        *args: object,
+        **kwargs: object,
+    ) -> None:
+        if path in created_backups:
+            raise OSError("injected rollback cleanup failure")
+        unlink(path, *args, **kwargs)
+
+    monkeypatch.setattr(exact_hdf5, "_create_filelike_backup", capture_backup)
+    monkeypatch.setattr(Path, "unlink", fail_backup_unlink)
+    try:
+        with pytest.raises(exact_hdf5._RollbackError) as raised:
+            _exact_series(456, offset=10).write(
+                target,
+                format="hdf5",
+                path="data",
+                append=True,
+                overwrite=True,
+            )
+
+        assert target.getvalue() == before
+        assert target.tell() == 7
+        assert raised.value.state == "old"
+        assert raised.value.byte_state == "old"
+        assert raised.value.position_state == "old"
+        assert raised.value.recovery_path == str(created_backups[0])
+        assert "injected commit write failure" in str(raised.value.operation_error)
+        assert any(
+            "injected rollback cleanup failure" in str(error)
+            for error in raised.value.rollback_errors
+        )
+    finally:
+        for path in created_backups:
+            unlink(path, missing_ok=True)
+
+
+@pytest.mark.parametrize("outcome", ["success", "complete-rollback"])
+def test_hdf5_filelike_normal_paths_leak_no_tempfiles(
+    monkeypatch: pytest.MonkeyPatch,
+    outcome: str,
+) -> None:
+    initial = io.BytesIO()
+    _exact_series(123).write(initial, format="hdf5", path="data")
+    target: io.BytesIO
+    if outcome == "success":
+        target = io.BytesIO(initial.getvalue())
+    else:
+        target = _FailOnceWriteBuffer(initial.getvalue())
+        target.fail_next_write = True
+    created: list[tuple[object, Path]] = []
+    create_backup = exact_hdf5._create_filelike_backup
+
+    def capture_backup() -> tuple[object, Path]:
+        backup, path = create_backup()
+        created.append((backup, path))
+        return backup, path
+
+    monkeypatch.setattr(exact_hdf5, "_create_filelike_backup", capture_backup)
+    if outcome == "success":
+        _exact_series(456, offset=10).write(
+            target,
+            format="hdf5",
+            path="data",
+            append=True,
+            overwrite=True,
+        )
+    else:
+        with pytest.raises(OSError, match="injected commit write failure"):
+            _exact_series(456, offset=10).write(
+                target,
+                format="hdf5",
+                path="data",
+                append=True,
+                overwrite=True,
+            )
+
+    assert len(created) == 1
+    assert all(getattr(backup, "closed") for backup, _ in created)
+    assert all(not path.exists() for _, path in created)
+
+
+def test_hdf5_filelike_overwrite_preserves_native_existing_entry_semantics() -> None:
+    target = io.BytesIO()
+    _exact_series(123).write(target, format="hdf5", path="data")
+    with h5py.File(target, "r+") as h5file:
+        h5file.create_dataset("unrelated", data=np.arange(4, dtype=np.int16))
+
+    _exact_series(456, offset=10).write(
+        target,
+        format="hdf5",
+        path="data",
+        overwrite=True,
+    )
+
+    recovered = TimeSeries.read(target, format="hdf5", path="data")
+    assert recovered.t0_gps_ns == 456
+    with h5py.File(target, "r") as h5file:
+        np.testing.assert_array_equal(h5file["unrelated"][:], np.arange(4))
+
+
+def test_hdf5_filelike_backup_is_mode_0600_and_fsynced_before_commit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = io.BytesIO()
+    _exact_series(123).write(target, format="hdf5", path="data")
+    events: list[str] = []
+    backup_paths: list[Path] = []
+    create_backup = exact_hdf5._create_filelike_backup
+    write_stage = exact_hdf5._write_disposable_stage
+    fsync = exact_hdf5.os.fsync
+
+    def capture_backup() -> tuple[object, Path]:
+        backup, path = create_backup()
+        backup_paths.append(path)
+        return backup, path
+
+    def record_fsync(descriptor: int) -> None:
+        events.append("fsync")
+        fsync(descriptor)
+
+    def check_before_stage(*args: object, **kwargs: object) -> object:
+        assert events == ["fsync"]
+        assert len(backup_paths) == 1
+        assert backup_paths[0].stat().st_mode & 0o777 == 0o600
+        return write_stage(*args, **kwargs)
+
+    monkeypatch.setattr(exact_hdf5, "_create_filelike_backup", capture_backup)
+    monkeypatch.setattr(exact_hdf5.os, "fsync", record_fsync)
+    monkeypatch.setattr(exact_hdf5, "_write_disposable_stage", check_before_stage)
+    _exact_series(456, offset=10).write(
+        target,
+        format="hdf5",
+        path="data",
+        append=True,
+        overwrite=True,
+    )
+
+    assert events == ["fsync"]
+    assert all(not path.exists() for path in backup_paths)
+
+
+def test_hdf5_filelike_repeated_overwrite_has_bounded_growth() -> None:
+    size_bytes = 1024 * 1024
+    target = io.BytesIO()
+    _large_exact_series(100, size_bytes=size_bytes, fill=0).write(
+        target,
+        format="hdf5",
+        path="data",
+    )
+    sizes = [target.getbuffer().nbytes]
+
+    for index in range(20):
+        _large_exact_series(
+            101 + index,
+            size_bytes=size_bytes,
+            fill=float(index + 1),
+        ).write(
+            target,
+            format="hdf5",
+            path="data",
+            append=True,
+            overwrite=True,
+        )
+        sizes.append(target.getbuffer().nbytes)
+
+    assert max(sizes) <= sizes[0] + 512 * 1024
+    recovered = TimeSeries.read(target, format="hdf5", path="data")
+    assert recovered.t0_gps_ns == 120
+
+
+def _measure_filelike_wrapper_rss(size_mib: int) -> int:
+    code = """
+import gc
+import io
+import json
+import resource
+import sys
+
+import numpy as np
+
+from gwexpy.timeseries import TimeSeries
+
+size_mib = int(sys.argv[1])
+item_count = size_mib * 1024 * 1024 // np.dtype(np.float32).itemsize
+original = TimeSeries(
+    np.zeros(item_count, dtype=np.float32),
+    t0_ns=100,
+    sample_rate=4096,
+    unit="V",
+)
+replacement = TimeSeries(
+    np.ones(item_count, dtype=np.float32),
+    t0_ns=101,
+    sample_rate=4096,
+    unit="V",
+)
+target = io.BytesIO()
+original.write(target, format="hdf5", path="data")
+gc.collect()
+before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+replacement.write(
+    target,
+    format="hdf5",
+    path="data",
+    append=True,
+    overwrite=True,
+)
+gc.collect()
+after = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+if sys.platform == "darwin":
+    before //= 1024
+    after //= 1024
+print(json.dumps({"delta_kib": max(0, after - before)}))
+"""
+    completed = subprocess.run(
+        [sys.executable, "-c", code, str(size_mib)],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    assert completed.returncode == 0, completed.stderr or completed.stdout
+    return int(json.loads(completed.stdout)["delta_kib"])
+
+
+def test_hdf5_filelike_large_write_has_bounded_wrapper_rss() -> None:
+    small_delta_kib = _measure_filelike_wrapper_rss(8)
+    large_delta_kib = _measure_filelike_wrapper_rss(32)
+
+    assert large_delta_kib <= 24 * 1024
+    assert large_delta_kib <= small_delta_kib + 16 * 1024

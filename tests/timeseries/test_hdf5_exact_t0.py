@@ -42,6 +42,15 @@ _CUSTOM_SCALED_TIME_UNIT = u.def_unit(
 )
 
 
+def _filelike_bytes_and_position(target: object) -> tuple[bytes, int]:
+    position = target.tell()
+    target.seek(0)
+    try:
+        return target.read(), position
+    finally:
+        target.seek(position)
+
+
 def _exact_series(t0_ns: int, *, offset: float = 0) -> TimeSeries:
     return TimeSeries(
         np.arange(8, dtype=np.float32) + offset,
@@ -4155,7 +4164,7 @@ def test_hdf5_non_utf8_filelike_path_fails_before_mutation(
         if isinstance(target, io.BytesIO):
             before_buffer = target.getvalue()
         else:
-            before_buffer, _ = exact_hdf5._filelike_snapshot(target)
+            before_buffer, _ = _filelike_bytes_and_position(target)
         before_raw = raw_path.read_bytes()
 
         with pytest.raises(ValueError, match="UTF-8"):
@@ -4168,7 +4177,7 @@ def test_hdf5_non_utf8_filelike_path_fails_before_mutation(
                 overwrite=True,
             )
 
-        after_buffer, position = exact_hdf5._filelike_snapshot(target)
+        after_buffer, position = _filelike_bytes_and_position(target)
         assert after_buffer == before_buffer
         assert position == 7
         assert not target.closed

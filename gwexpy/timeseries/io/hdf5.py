@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import functools
-import io
 import math
 import os
 import shutil
 import stat
 import struct
+import tempfile
 import uuid
+import warnings
 from collections.abc import Callable, Iterable, Iterator
 from pathlib import Path, PurePosixPath
 from typing import Any, BinaryIO, cast
@@ -59,6 +60,7 @@ _NATIVE_HANDLER_ATTR = "_gwexpy_exact_t0_native_handler"
 _ROLLBACK_PREFIX = "__gwexpy_t0_rollback_"
 _MAX_V2_RECORDS = 10_000
 _MAX_V2_BYTES = 8 * 1024 * 1024
+FILELIKE_COPY_CHUNK = 1024 * 1024
 _BASE_READER: Callable[..., Any] | None = None
 _BASE_WRITER: Callable[..., h5py.Dataset] | None = None
 
@@ -892,27 +894,112 @@ def _is_seekable_filelike(value: Any) -> bool:
     )
 
 
-def _filelike_snapshot(target: Any) -> tuple[bytes, Any]:
-    position = target.tell()
-    try:
-        target.seek(0)
-        payload = target.read()
-    finally:
-        target.seek(position)
-    if not isinstance(payload, (bytes, bytearray, memoryview)):
-        raise TypeError("HDF5 file-like target must use binary I/O")
-    return bytes(payload), position
+def _copy_filelike(
+    source: Any,
+    destination: Any,
+    *,
+    chunk_size: int = FILELIKE_COPY_CHUNK,
+) -> int:
+    """Copy binary data from current positions using bounded reads."""
+    if type(chunk_size) is not int or chunk_size <= 0:
+        raise ValueError("HDF5 file-like copy chunk size must be positive")
+    copied = 0
+    while True:
+        chunk = source.read(chunk_size)
+        if not isinstance(chunk, (bytes, bytearray, memoryview)):
+            raise TypeError("HDF5 file-like read must return bytes-like data")
+        if len(chunk) > chunk_size:
+            raise OSError("oversized read while copying HDF5 file-like target")
+        if not chunk:
+            return copied
+        remaining = memoryview(chunk)
+        while remaining:
+            written = destination.write(remaining)
+            if type(written) is not int or written <= 0 or written > len(remaining):
+                raise OSError("invalid write count while copying HDF5 file-like target")
+            copied += written
+            remaining = remaining[written:]
 
 
-def _replace_filelike_bytes(target: Any, payload: bytes) -> None:
-    target.seek(0)
-    written = target.write(payload)
-    if written is not None and written != len(payload):
-        raise OSError("short write while committing HDF5 file-like target")
-    target.truncate()
+def _copy_filelike_image(source: Any, destination: Any) -> int:
+    source.seek(0)
+    destination.seek(0)
+    size = _copy_filelike(source, destination)
+    destination.truncate(size)
+    return size
+
+
+def _flush_filelike(target: Any, *, sync: bool = False) -> None:
     flush = getattr(target, "flush", None)
     if callable(flush):
         flush()
+    if sync:
+        os.fsync(target.fileno())
+
+
+def _create_filelike_backup() -> tuple[BinaryIO, Path]:
+    descriptor, name = tempfile.mkstemp(
+        prefix="gwexpy-hdf5-backup-",
+        suffix=".hdf5",
+    )
+    path = Path(name)
+    try:
+        os.fchmod(descriptor, 0o600)
+        backup = os.fdopen(descriptor, "w+b")
+    except BaseException:
+        os.close(descriptor)
+        path.unlink(missing_ok=True)
+        raise
+    return cast(BinaryIO, backup), path
+
+
+def _create_filelike_working() -> BinaryIO:
+    return cast(BinaryIO, tempfile.TemporaryFile(mode="w+b"))
+
+
+def _cleanup_filelike_temporaries(
+    working: BinaryIO | None,
+    backup: BinaryIO | None,
+    backup_path: Path | None,
+    *,
+    retain_backup: bool,
+) -> tuple[tuple[BaseException, ...], str | None]:
+    errors: list[BaseException] = []
+    for resource in (working, backup):
+        if resource is None:
+            continue
+        try:
+            resource.close()
+        except BaseException as error:
+            errors.append(error)
+    if backup_path is not None and not retain_backup:
+        try:
+            backup_path.unlink()
+        except FileNotFoundError:
+            pass
+        except BaseException as error:
+            errors.append(error)
+    recovery_path = None
+    if backup_path is not None:
+        try:
+            if backup_path.exists():
+                recovery_path = str(backup_path)
+        except BaseException as error:
+            errors.append(error)
+    return tuple(errors), recovery_path
+
+
+def _warn_filelike_cleanup(
+    errors: tuple[BaseException, ...],
+    recovery_path: str | None,
+) -> None:
+    details = "; ".join(str(error) for error in errors)
+    warnings.warn(
+        "TimeSeries HDF5 write committed; state=new; "
+        f"temporary cleanup failed: {details}; recovery_path={recovery_path!r}",
+        ResourceWarning,
+        stacklevel=2,
+    )
 
 
 def _preflight_native_external_write(
@@ -1022,31 +1109,100 @@ def _write_filelike_transaction(
     marker: EpochMarker | None,
     kwargs: dict[str, Any],
 ) -> h5py.Dataset:
-    snapshot, original_position = _filelike_snapshot(target)
-    working = io.BytesIO(snapshot)
-    mode = "a" if kwargs.get("append", False) else "w"
-    result = _write_disposable_stage(
-        array,
-        working,
-        path,
-        marker,
-        kwargs,
-        mode=mode,
-    )
-    payload = working.getvalue()
+    original_position = target.tell()
+    backup: BinaryIO | None = None
+    backup_path: Path | None = None
+    working: BinaryIO | None = None
     try:
-        _replace_filelike_bytes(target, payload)
+        backup, backup_path = _create_filelike_backup()
+        working = _create_filelike_working()
+        _copy_filelike_image(target, backup)
+        _flush_filelike(backup, sync=True)
+        _copy_filelike_image(target, working)
+        working.seek(original_position)
+        mode = "a" if kwargs.get("append", False) else "w"
+        result = _write_disposable_stage(
+            array,
+            working,
+            path,
+            marker,
+            kwargs,
+            mode=mode,
+        )
+        committed_position = working.tell()
     except BaseException as operation_error:
+        rollback_errors: list[BaseException] = []
+        position_state = "old"
         try:
-            _replace_filelike_bytes(target, snapshot)
             target.seek(original_position)
-        except BaseException as rollback_error:  # pragma: no cover - broken file object
+        except BaseException as rollback_error:
+            position_state = "indeterminate"
+            rollback_errors.append(rollback_error)
+        cleanup_errors, recovery_path = _cleanup_filelike_temporaries(
+            working,
+            backup,
+            backup_path,
+            retain_backup=bool(rollback_errors),
+        )
+        rollback_errors.extend(cleanup_errors)
+        if rollback_errors:
             raise _RollbackError(
                 operation_error,
-                (rollback_error,),
-                None,
-            ) from rollback_error
+                tuple(rollback_errors),
+                recovery_path,
+                state="old" if position_state == "old" else "indeterminate",
+                byte_state="old",
+                position_state=position_state,
+            ) from rollback_errors[0]
         raise
+
+    try:
+        _copy_filelike_image(working, target)
+        _flush_filelike(target)
+        target.seek(committed_position)
+    except BaseException as operation_error:
+        rollback_errors = []
+        byte_state = "indeterminate"
+        position_state = "indeterminate"
+        try:
+            _copy_filelike_image(backup, target)
+            _flush_filelike(target)
+            byte_state = "old"
+        except BaseException as rollback_error:
+            rollback_errors.append(rollback_error)
+        try:
+            target.seek(original_position)
+            position_state = "old"
+        except BaseException as rollback_error:
+            rollback_errors.append(rollback_error)
+        cleanup_errors, recovery_path = _cleanup_filelike_temporaries(
+            working,
+            backup,
+            backup_path,
+            retain_backup=bool(rollback_errors),
+        )
+        rollback_errors.extend(cleanup_errors)
+        if rollback_errors:
+            raise _RollbackError(
+                operation_error,
+                tuple(rollback_errors),
+                recovery_path,
+                state=(
+                    "old" if byte_state == position_state == "old" else "indeterminate"
+                ),
+                byte_state=byte_state,
+                position_state=position_state,
+            ) from rollback_errors[0]
+        raise
+
+    cleanup_errors, recovery_path = _cleanup_filelike_temporaries(
+        working,
+        backup,
+        backup_path,
+        retain_backup=False,
+    )
+    if cleanup_errors:
+        _warn_filelike_cleanup(cleanup_errors, recovery_path)
     return result
 
 
