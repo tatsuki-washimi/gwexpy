@@ -19,9 +19,11 @@ identity-preserving recovery hard link.
 **Tech Stack:** Python 3.11, GWpy 4.x, Astropy units, h5py/HDF5, NumPy, pytest,
 Ruff, MyPy, conda environment `gwexpy`.
 
-**Status:** Approved for local Task 1–5 implementation on 2026-08-29. Tasks 6–8
-remain conditionally approved and require the explicit Checkpoint A scope decision
-after Task 5.
+**Status:** in-progress
+
+Tasks 1–5 and Checkpoint A are completed. Tasks 6–8 were approved for the
+local v0.2.1 P0 scope on 2026-08-30. Tasks 6–10 remain planned; P0 approval
+still requires their verification and the independent reviews below.
 
 **Specification:**
 `docs/superpowers/specs/2026-08-29-hdf5-exact-epoch-identity-design.md`
@@ -132,6 +134,8 @@ that point onward, only semantic assertion failures count as RED.
 ---
 
 ### Task 1: Build the canonical epoch-marker codec
+
+**Status:** completed (verified: `rtk conda run -n gwexpy pytest tests/timeseries/test_hdf5_exact_epoch_codec.py -q`)
 
 **Files:**
 
@@ -301,6 +305,8 @@ rtk git commit -m "feat: add canonical HDF5 epoch marker codec"
 
 ### Task 2: Implement the strict v2 sidecar document
 
+**Status:** completed (verified: `rtk conda run -n gwexpy pytest tests/timeseries/test_hdf5_exact_epoch_codec.py -q`)
+
 **Files:**
 
 - Modify: `gwexpy/timeseries/io/_hdf5_exact_epoch.py`
@@ -391,6 +397,8 @@ rtk git commit -m "feat: validate HDF5 exact epoch sidecar v2"
 ---
 
 ### Task 3: Integrate the marker with native GWpy read and write
+
+**Status:** completed (verified: `rtk conda run -n gwexpy pytest tests/timeseries/test_hdf5_exact_t0.py -q`)
 
 **Files:**
 
@@ -527,6 +535,8 @@ rtk git commit -m "feat: integrate exact epoch markers with HDF5 I/O"
 
 ### Task 4: Make identity independent of paths and physical object reuse
 
+**Status:** completed (verified: `rtk conda run -n gwexpy pytest tests/timeseries/test_hdf5_exact_t0.py -q`)
+
 **Files:**
 
 - Modify: `gwexpy/timeseries/io/hdf5.py`
@@ -595,6 +605,8 @@ rtk git commit -m "fix: bind HDF5 exact epochs to dataset lineage"
 ---
 
 ### Task 5: Restore native paths, link safety, and reload idempotence
+
+**Status:** completed (verified: `rtk conda run -n gwexpy pytest tests/timeseries/test_hdf5_exact_t0.py -q`)
 
 **Files:**
 
@@ -679,6 +691,8 @@ rtk git commit -m "fix: preserve native HDF5 paths across reloads"
 
 ### Checkpoint A: Reassess the v0.2.1 transaction scope
 
+**Status:** completed (verified: `rtk conda run -n gwexpy pytest tests/qualification/test_v020_release_claims.py::test_timeseries_hdf5_roundtrip_retains_exact_t0_gps_ns tests/timeseries/test_hdf5_exact_epoch_codec.py tests/timeseries/test_hdf5_exact_t0.py -q`; 705 passed, 1 skipped; Tasks 6–8 approved on 2026-08-30)
+
 **Files:**
 
 - Read-only qualification; do not modify production code during the decision.
@@ -720,6 +734,8 @@ and open-handle rollback risks remain v0.2.1 blockers.
 ---
 
 ### Task 6: Introduce one-write disposable staging and atomic pathname writes
+
+**Status:** planned
 
 **Files:**
 
@@ -818,6 +834,8 @@ rtk git commit -m "fix: stage HDF5 pathname writes atomically"
 ---
 
 ### Task 7: Make file-like transactions disk-backed and chunk-bounded
+
+**Status:** planned
 
 **Files:**
 
@@ -931,6 +949,8 @@ rtk git commit -m "fix: bound HDF5 file-like transaction memory"
 
 ### Task 8: Harden caller-owned handle rollback and recovery
 
+**Status:** planned
+
 **Files:**
 
 - Modify: `gwexpy/timeseries/io/hdf5.py`
@@ -1023,6 +1043,8 @@ rtk git commit -m "fix: preserve HDF5 handle identity during rollback"
 
 ### Task 9: Reconcile the legacy suite and qualify resource invariants
 
+**Status:** planned
+
 **Files:**
 
 - Modify: `tests/timeseries/test_hdf5_exact_t0.py`
@@ -1091,6 +1113,8 @@ rtk git commit -m "test: qualify HDF5 exact epoch transactions"
 ---
 
 ### Task 10: Run static gates and independent reviews
+
+**Status:** planned
 
 **Files:**
 
