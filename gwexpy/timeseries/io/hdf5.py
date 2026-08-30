@@ -1310,13 +1310,17 @@ def _warn_filelike_cleanup(
     errors: tuple[BaseException, ...],
     recovery_path: str | None,
 ) -> None:
-    details = "; ".join(str(error) for error in errors)
-    warnings.warn(
-        "TimeSeries HDF5 write committed; state=new; "
-        f"temporary cleanup failed: {details}; recovery_path={recovery_path!r}",
-        ResourceWarning,
-        stacklevel=2,
-    )
+    try:
+        details = "; ".join(str(error) for error in errors)
+        warnings.warn(
+            "TimeSeries HDF5 write committed; state=new; "
+            f"temporary cleanup failed: {details}; recovery_path={recovery_path!r}",
+            ResourceWarning,
+            stacklevel=2,
+        )
+    except Exception:
+        # The transaction is already committed; notification failure is non-fatal.
+        pass
 
 
 def _preflight_native_external_write(

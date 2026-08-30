@@ -7,6 +7,7 @@ import os
 import socket
 import subprocess
 import sys
+import warnings
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from pathlib import Path
@@ -2101,6 +2102,75 @@ def test_hdf5_filelike_success_cleanup_failure_warns_new_and_returns(
         assert recovered.t0_gps_ns == 456
         assert len(created_backups) == 1
         assert created_backups[0].exists()
+    finally:
+        for path in created_backups:
+            unlink(path, missing_ok=True)
+
+
+def test_hdf5_filelike_committed_cleanup_warning_cannot_become_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = io.BytesIO()
+    _exact_series(123).write(target, format="hdf5", path="data")
+    target.seek(7)
+    before = target.getvalue()
+    created_backups: list[Path] = []
+    committed_positions: list[int] = []
+    unlink_calls = 0
+    create_backup = exact_hdf5._create_filelike_backup
+    write_stage = exact_hdf5._write_disposable_stage
+    unlink = Path.unlink
+
+    def capture_backup() -> tuple[object, Path]:
+        backup, path = create_backup()
+        created_backups.append(path)
+        return backup, path
+
+    def capture_committed_position(*args: object, **kwargs: object) -> object:
+        result = write_stage(*args, **kwargs)
+        committed_positions.append(args[1].tell())
+        return result
+
+    def fail_backup_unlink(
+        path: Path,
+        *args: object,
+        **kwargs: object,
+    ) -> None:
+        nonlocal unlink_calls
+        if path in created_backups:
+            unlink_calls += 1
+            raise OSError("injected backup unlink failure")
+        unlink(path, *args, **kwargs)
+
+    monkeypatch.setattr(exact_hdf5, "_create_filelike_backup", capture_backup)
+    monkeypatch.setattr(
+        exact_hdf5,
+        "_write_disposable_stage",
+        capture_committed_position,
+    )
+    monkeypatch.setattr(Path, "unlink", fail_backup_unlink)
+    native_writer_calls = _count_native_writer(monkeypatch)
+
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", ResourceWarning)
+            _exact_series(456, offset=10).write(
+                target,
+                format="hdf5",
+                path="data",
+                append=True,
+                overwrite=True,
+            )
+
+        assert target.getvalue() != before
+        assert len(committed_positions) == 1
+        assert target.tell() == committed_positions[0]
+        assert native_writer_calls() == 1
+        assert unlink_calls == 1
+        assert len(created_backups) == 1
+        assert created_backups[0].exists()
+        recovered = TimeSeries.read(target, format="hdf5", path="data")
+        assert recovered.t0_gps_ns == 456
     finally:
         for path in created_backups:
             unlink(path, missing_ok=True)
