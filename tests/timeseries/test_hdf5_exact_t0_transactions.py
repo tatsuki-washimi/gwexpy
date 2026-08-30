@@ -1108,86 +1108,117 @@ def test_hdf5_path_stage_setup_delete_after_raise_reports_no_recovery_path(
             unlink(stage, missing_ok=True)
 
 
-def test_hdf5_path_replace_failure_preserves_old_file_and_cleans_stage(
+@pytest.mark.parametrize(
+    "cleanup_outcome",
+    [
+        "success",
+        "fail-before-delete",
+        "delete-after-raise",
+        "inspection-failure",
+    ],
+)
+def test_hdf5_path_replace_failure_cleans_or_reports_retained_stage(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    cleanup_outcome: str,
 ) -> None:
-    target = tmp_path / "replace-failure.hdf5"
+    target = tmp_path / "replace-cleanup-failure.hdf5"
     _exact_series(123).write(target, format="hdf5", path="data")
     before = target.read_bytes()
+    replace_error = OSError("injected replace failure")
+    cleanup_error = OSError("injected stage unlink failure")
+    inspection_error = OSError("injected stage inspection failure")
     created_stages: list[Path] = []
-    create_stage = exact_hdf5._create_sibling_transaction_file
-
-    def capture_stage(path: Path) -> Path:
-        stage = create_stage(path)
-        created_stages.append(stage)
-        return stage
-
-    def fail_replace(source: object, destination: object) -> None:
-        raise OSError("injected replace failure")
-
-    monkeypatch.setattr(exact_hdf5, "_create_sibling_transaction_file", capture_stage)
-    monkeypatch.setattr(exact_hdf5.os, "replace", fail_replace)
-    with pytest.raises(OSError, match="injected replace failure"):
-        _exact_series(456, offset=10).write(
-            target,
-            format="hdf5",
-            path="data",
-            append=True,
-            overwrite=True,
-        )
-
-    assert target.read_bytes() == before
-    assert created_stages
-    assert all(not stage.exists() for stage in created_stages)
-
-
-def test_hdf5_path_replace_and_unlink_failure_reports_old_state_and_stage(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    target = tmp_path / "replace-unlink-failure.hdf5"
-    _exact_series(123).write(target, format="hdf5", path="data")
-    before = target.read_bytes()
-    created_stages: list[Path] = []
-    create_stage = exact_hdf5._create_sibling_transaction_file
+    replace_calls = 0
+    unlink_calls = 0
+    lstat_calls = 0
     unlink = Path.unlink
+    lstat = exact_hdf5.os.lstat
 
-    def capture_stage(path: Path) -> Path:
-        stage = create_stage(path)
+    def fail_replace(
+        source: str | os.PathLike[str],
+        destination: str | os.PathLike[str],
+    ) -> None:
+        nonlocal replace_calls
+        replace_calls += 1
+        stage = Path(source)
+        assert Path(destination) == target
+        assert stage.exists()
         created_stages.append(stage)
-        return stage
+        raise replace_error
 
-    def fail_replace(source: object, destination: object) -> None:
-        raise OSError("injected replace failure")
-
-    def fail_stage_unlink(path: Path, *args: object, **kwargs: object) -> None:
-        if path in created_stages:
-            raise OSError("injected stage unlink failure")
+    def cleanup_stage(path: Path, *args: object, **kwargs: object) -> None:
+        nonlocal unlink_calls
+        assert path in created_stages
+        unlink_calls += 1
+        if cleanup_outcome in {"fail-before-delete", "inspection-failure"}:
+            raise cleanup_error
         unlink(path, *args, **kwargs)
+        if cleanup_outcome == "delete-after-raise":
+            raise cleanup_error
 
-    monkeypatch.setattr(exact_hdf5, "_create_sibling_transaction_file", capture_stage)
+    def inspect_stage(path: str | os.PathLike[str]) -> os.stat_result:
+        nonlocal lstat_calls
+        if Path(path) in created_stages:
+            lstat_calls += 1
+            if cleanup_outcome == "inspection-failure":
+                raise inspection_error
+        return lstat(path)
+
     monkeypatch.setattr(exact_hdf5.os, "replace", fail_replace)
-    monkeypatch.setattr(Path, "unlink", fail_stage_unlink)
-    with pytest.raises(exact_hdf5._RollbackError) as raised:
-        _exact_series(456, offset=10).write(
-            target,
-            format="hdf5",
-            path="data",
-            append=True,
-            overwrite=True,
-        )
+    monkeypatch.setattr(exact_hdf5.os, "lstat", inspect_stage)
+    monkeypatch.setattr(Path, "unlink", cleanup_stage)
+    native_writer_calls = _count_native_writer(monkeypatch)
 
-    assert target.read_bytes() == before
-    assert len(created_stages) == 1
-    assert created_stages[0].exists()
-    assert raised.value.state == "old"
-    assert raised.value.recovery_path == str(created_stages[0])
-    assert "injected replace failure" in str(raised.value.operation_error)
-    assert any(
-        "injected stage unlink failure" in str(error)
-        for error in raised.value.rollback_errors
-    )
+    try:
+        if cleanup_outcome == "success":
+            with pytest.raises(OSError) as raised_operation:
+                _exact_series(456, offset=10).write(
+                    target,
+                    format="hdf5",
+                    path="data",
+                    append=True,
+                    overwrite=True,
+                )
+            assert raised_operation.value is replace_error
+        else:
+            with pytest.raises(exact_hdf5._RollbackError) as raised_rollback:
+                _exact_series(456, offset=10).write(
+                    target,
+                    format="hdf5",
+                    path="data",
+                    append=True,
+                    overwrite=True,
+                )
+            assert raised_rollback.value.operation_error is replace_error
+            expected_errors = (cleanup_error,)
+            if cleanup_outcome == "inspection-failure":
+                expected_errors += (inspection_error,)
+            assert raised_rollback.value.rollback_errors == expected_errors
+            assert raised_rollback.value.state == "old"
+            assert raised_rollback.value.byte_state is None
+            assert raised_rollback.value.position_state is None
+
+        assert target.read_bytes() == before
+        assert native_writer_calls() == 1
+        assert replace_calls == 1
+        assert unlink_calls == 1
+        assert lstat_calls == (0 if cleanup_outcome == "success" else 1)
+        assert len(created_stages) == 1
+        stage = created_stages[0]
+        if cleanup_outcome == "fail-before-delete":
+            assert stage.exists()
+            assert raised_rollback.value.recovery_path == str(stage)
+        elif cleanup_outcome == "inspection-failure":
+            assert stage.exists()
+            assert raised_rollback.value.recovery_path is None
+        else:
+            assert not stage.exists()
+            if cleanup_outcome == "delete-after-raise":
+                assert raised_rollback.value.recovery_path is None
+    finally:
+        for stage in created_stages:
+            unlink(stage, missing_ok=True)
 
 
 def test_hdf5_path_append_preserves_unrelated_entries(tmp_path: Path) -> None:

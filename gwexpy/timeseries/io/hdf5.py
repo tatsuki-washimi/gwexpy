@@ -1428,12 +1428,17 @@ def _write_path_transaction(
             try:
                 temporary_path.unlink()
             except BaseException as cleanup_error:
+                cleanup_errors = [cleanup_error]
+                retained_path = _retained_temporary_path(
+                    temporary_path,
+                    cleanup_errors,
+                )
                 raise _RollbackError(
                     operation_error,
-                    (cleanup_error,),
-                    str(temporary_path),
+                    tuple(cleanup_errors),
+                    str(retained_path) if retained_path is not None else None,
                     state="old",
-                ) from cleanup_error
+                ) from cleanup_errors[0]
         raise
     return result
 
