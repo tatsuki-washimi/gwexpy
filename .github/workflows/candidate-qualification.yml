@@ -1,0 +1,183 @@
+name: v0.2.1 candidate qualification
+
+on:
+  push:
+    branches:
+      - test/v021-candidate-qualification
+
+permissions:
+  contents: read
+
+concurrency:
+  group: candidate-qualification-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CANDIDATE_SOURCE_SHA: 9d421a0353000374e4606e1a2d257720488bc604
+  CANDIDATE_VERSION: "0.2.1"
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  build:
+    name: Build immutable candidate payload
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    outputs:
+      payload_artifact: ${{ steps.payload.outputs.name }}
+    steps:
+      - name: Check out qualification control
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          path: control
+      - name: Check out fixed candidate source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: qualification/v021-candidate-source
+          fetch-depth: 1
+          persist-credentials: false
+          path: candidate
+      - name: Verify candidate source identity
+        working-directory: candidate
+        run: |
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SOURCE_SHA"
+          test "$(python -c 'from pathlib import Path; import re; print(re.search(r"__version__ = \\"([^\\"]+)\\"", Path("gwexpy/_version.py").read_text()).group(1))')" = "$CANDIDATE_VERSION"
+      - name: Set up build Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+      - name: Build one wheel and one sdist
+        working-directory: candidate
+        run: |
+          python -m pip install --disable-pip-version-check build
+          python -m build --sdist --wheel --outdir "$RUNNER_TEMP/payload"
+      - name: Freeze payload digest manifest
+        id: payload
+        env:
+          PAYLOAD: ${{ runner.temp }}/payload
+          MANIFEST: ${{ runner.temp }}/payload/candidate-payload.json
+        run: |
+          python - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          payload = Path(os.environ["PAYLOAD"])
+          files = sorted(path for path in payload.iterdir() if path.is_file())
+          wheel = [path for path in files if path.suffix == ".whl"]
+          sdist = [path for path in files if path.name.endswith(".tar.gz")]
+          if len(files) != 2 or len(wheel) != 1 or len(sdist) != 1:
+              raise SystemExit("candidate payload must contain exactly one wheel and one sdist")
+          data = {"source_sha": os.environ["CANDIDATE_SOURCE_SHA"], "version": os.environ["CANDIDATE_VERSION"], "files": {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in files}}
+          Path(os.environ["MANIFEST"]).write_text(json.dumps(data, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+          echo "name=candidate-payload-${{ github.sha }}" >> "$GITHUB_OUTPUT"
+      - name: Upload immutable candidate payload
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-payload-${{ github.sha }}
+          path: ${{ runner.temp }}/payload
+          if-no-files-found: error
+          retention-days: 30
+
+  qualify:
+    name: ${{ matrix.cell }}
+    needs: build
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {cell: install-ubuntu-3.11-wheel, os: ubuntu-latest, python: "3.11", artifact: wheel, runtime: pip, extras: pytest}
+          - {cell: install-ubuntu-3.11-sdist, os: ubuntu-latest, python: "3.11", artifact: sdist, runtime: pip, extras: pytest}
+          - {cell: install-ubuntu-3.12-wheel, os: ubuntu-latest, python: "3.12", artifact: wheel, runtime: pip, extras: pytest}
+          - {cell: install-ubuntu-3.12-sdist, os: ubuntu-latest, python: "3.12", artifact: sdist, runtime: pip, extras: pytest}
+          - {cell: install-ubuntu-3.13-wheel, os: ubuntu-latest, python: "3.13", artifact: wheel, runtime: pip, extras: pytest}
+          - {cell: install-ubuntu-3.13-sdist, os: ubuntu-latest, python: "3.13", artifact: sdist, runtime: pip, extras: pytest}
+          - {cell: install-ubuntu-3.14-wheel, os: ubuntu-latest, python: "3.14", artifact: wheel, runtime: pip, extras: pytest}
+          - {cell: install-ubuntu-3.14-sdist, os: ubuntu-latest, python: "3.14", artifact: sdist, runtime: pip, extras: pytest}
+          - {cell: install-macos-3.11-wheel, os: macos-latest, python: "3.11", artifact: wheel, runtime: pip, extras: pytest}
+          - {cell: install-macos-3.14-wheel, os: macos-latest, python: "3.14", artifact: wheel, runtime: pip, extras: pytest}
+          - {cell: install-windows-3.11-wheel, os: windows-latest, python: "3.11", artifact: wheel, runtime: pip, extras: pytest}
+          - {cell: install-windows-3.14-wheel, os: windows-latest, python: "3.14", artifact: wheel, runtime: pip, extras: pytest}
+          - {cell: gwpy-4.0.1-wheel, os: ubuntu-latest, python: "3.11", artifact: wheel, runtime: pip, extras: "pytest gwpy==4.0.1"}
+          - {cell: gwpy-4.0.2-wheel, os: ubuntu-latest, python: "3.11", artifact: wheel, runtime: pip, extras: "pytest gwpy==4.0.2"}
+          - {cell: sdist-3.12-claims, os: ubuntu-latest, python: "3.12", artifact: sdist, runtime: pip, extras: pytest}
+          - {cell: conda-3.11, os: ubuntu-latest, python: "3.11", artifact: wheel, runtime: conda, extras: pytest}
+          - {cell: conda-3.14, os: ubuntu-latest, python: "3.14", artifact: wheel, runtime: conda, extras: pytest}
+          - {cell: scientific-3.11-wheel, os: ubuntu-latest, python: "3.11", artifact: wheel, runtime: pip, extras: "pytest mne lalsuite"}
+          - {cell: docs-en-ja-3.11-wheel, os: ubuntu-latest, python: "3.11", artifact: wheel, runtime: pip, extras: "pytest matplotlib"}
+    steps:
+      - name: Check out qualification control
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          path: control
+      - name: Set up Python
+        if: matrix.runtime == 'pip'
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Set up conda runtime
+        if: matrix.runtime == 'conda'
+        uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39
+        with:
+          environment-name: candidate
+          create-args: python=${{ matrix.python }} pip
+          init-shell: bash
+          generate-run-shell: false
+      - name: Download candidate payload
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: candidate-payload-${{ github.sha }}
+          path: ${{ runner.temp }}/payload
+      - name: Verify candidate payload digest
+        shell: bash
+        env:
+          PAYLOAD: ${{ runner.temp }}/payload
+        run: |
+          cd "$PAYLOAD"
+          python - <<'PY' > payload.sha256
+          import json
+          from pathlib import Path
+          data=json.loads(Path("candidate-payload.json").read_text())
+          assert data["source_sha"] == __import__("os").environ["CANDIDATE_SOURCE_SHA"]
+          assert data["version"] == __import__("os").environ["CANDIDATE_VERSION"]
+          for name, digest in sorted(data["files"].items()): print(f"{digest}  {name}")
+          PY
+          sha256sum -c payload.sha256
+      - name: Install only the digest-checked candidate artifact
+        shell: bash
+        env:
+          PAYLOAD: ${{ runner.temp }}/payload
+        run: |
+          artifact=$(python -c "import json, os; from pathlib import Path; d=json.loads((Path(os.environ['PAYLOAD'])/'candidate-payload.json').read_text()); print(next(name for name in d['files'] if name.endswith('.whl') == ('${{ matrix.artifact }}' == 'wheel')))" )
+          if [ "${{ matrix.runtime }}" = conda ]; then
+            micromamba run -n candidate python -m pip install --disable-pip-version-check --no-cache-dir "$PAYLOAD/$artifact" ${{ matrix.extras }}
+            micromamba run -n candidate python -m pip check
+          else
+            python -m pip install --disable-pip-version-check --no-cache-dir "$PAYLOAD/$artifact" ${{ matrix.extras }}
+            python -m pip check
+          fi
+      - name: Verify installed candidate provenance and run focused contracts
+        shell: bash
+        env:
+          TEST_ROOT: ${{ github.workspace }}/control/tests
+        run: |
+          runner=(python)
+          if [ "${{ matrix.runtime }}" = conda ]; then runner=(micromamba run -n candidate python); fi
+          "${runner[@]}" -c "import gwexpy; assert gwexpy.__version__ == '$CANDIDATE_VERSION'; assert 'site-packages' in gwexpy.__file__; print(gwexpy.__file__)"
+          "${runner[@]}" -m pytest -q "$TEST_ROOT/test_import_order.py" "$TEST_ROOT/io/test_frequencyseries_registration.py" "$TEST_ROOT/timeseries/test_hdf5_exact_epoch_codec.py"
+      - name: Upload cell evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: candidate-cell-${{ matrix.cell }}
+          path: ${{ runner.temp }}/payload/candidate-payload.json
+          if-no-files-found: error
+          retention-days: 30
