@@ -3858,8 +3858,148 @@ def test_hdf5_quantized_historical_state_is_preserved_but_not_authoritative(
 
 
 @pytest.mark.parametrize(
+    "target_kind",
+    ["pathname", "filelike", "file", "group"],
+)
+@pytest.mark.parametrize(
+    "native_path",
+    [
+        "relative/series",
+        "/absolute/series",
+        b"relative-bytes/series",
+        b"/absolute-bytes/series",
+        "測定/系列",
+        "測定/バイト系列".encode(),
+    ],
+    ids=[
+        "relative-str",
+        "absolute-str",
+        "relative-bytes",
+        "absolute-bytes",
+        "nonascii-str",
+        "nonascii-bytes",
+    ],
+)
+def test_hdf5_native_path_matrix_preserves_original_object(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    target_kind: str,
+    native_path: str | bytes,
+) -> None:
+    with _metadata_target(tmp_path, target_kind) as (target, container, _):
+        native_writer = exact_hdf5._BASE_WRITER
+        assert native_writer is not None
+        observed_paths: list[object] = []
+
+        def observe_native_path(*args: object, **kwargs: object) -> h5py.Dataset:
+            observed_paths.append(kwargs.get("path"))
+            return native_writer(*args, **kwargs)
+
+        monkeypatch.setattr(exact_hdf5, "_BASE_WRITER", observe_native_path)
+        _exact_series(456, offset=10).write(
+            target,
+            format="hdf5",
+            path=native_path,
+            append=True,
+        )
+
+        assert observed_paths
+        assert all(observed is native_path for observed in observed_paths)
+        decoded = (
+            native_path.decode("utf-8")
+            if isinstance(native_path, bytes)
+            else native_path
+        )
+        object_path = decoded.lstrip("/")
+        if target_kind == "group" and not decoded.startswith("/"):
+            object_path = f"container/{object_path}"
+        with _open_metadata_target(target_kind, target, container) as scope:
+            dataset = scope.file[object_path]
+            assert isinstance(dataset, h5py.Dataset)
+            assert _marker(dataset).epoch_ns == 456
+        native_find_dataset = exact_hdf5._gwpy_io_hdf5.find_dataset
+        observed_read_paths: list[object] = []
+
+        def observe_read_path(*args: object, **kwargs: object) -> h5py.Dataset:
+            observed_read_paths.append(kwargs.get("path"))
+            return native_find_dataset(*args, **kwargs)
+
+        monkeypatch.setattr(
+            exact_hdf5._gwpy_io_hdf5,
+            "find_dataset",
+            observe_read_path,
+        )
+        recovered = TimeSeries.read(target, format="hdf5", path=native_path)
+        assert observed_read_paths[0] is native_path
+        assert recovered.t0_gps_ns == 456
+
+
+@pytest.mark.parametrize(
+    "target_kind",
+    ["pathname", "filelike", "file", "group"],
+)
+@pytest.mark.parametrize(
     "bad_path",
-    ["", "/absolute", "a//b", "a/./b", "a/../b", "a\x00b"],
+    [
+        "",
+        ".",
+        "..",
+        "a//series",
+        "a/./series",
+        "a/../series",
+        "a\x00series",
+        b"",
+        b".",
+        b"..",
+        b"a//series",
+        b"a/./series",
+        b"a/../series",
+        b"a\x00series",
+        b"\xffseries",
+    ],
+    ids=[
+        "empty-str",
+        "dot-str",
+        "dotdot-str",
+        "empty-component-str",
+        "dot-component-str",
+        "dotdot-component-str",
+        "nul-str",
+        "empty-bytes",
+        "dot-bytes",
+        "dotdot-bytes",
+        "empty-component-bytes",
+        "dot-component-bytes",
+        "dotdot-component-bytes",
+        "nul-bytes",
+        "invalid-utf8-bytes",
+    ],
+)
+def test_hdf5_invalid_native_path_fails_before_mutation(
+    tmp_path: Path,
+    target_kind: str,
+    bad_path: str | bytes,
+) -> None:
+    raw_path = tmp_path / f"invalid-native-{target_kind}.raw"
+    raw_path.write_bytes(b"raw-sentinel")
+    before_raw = raw_path.read_bytes()
+    with _metadata_target(tmp_path, target_kind) as (target, container, before):
+        with pytest.raises(ValueError, match="path|UTF-8"):
+            _write_external(
+                _legacy_series(offset=10),
+                target,
+                raw_path,
+                path=bad_path,
+                overwrite=True,
+            )
+
+        assert _metadata_target_snapshot(target_kind, target, container) == before
+        assert raw_path.read_bytes() == before_raw
+
+
+@pytest.mark.parametrize(
+    "bad_path",
+    ["", "a//b", "a/./b", "a/../b", "a\x00b"],
 )
 def test_hdf5_invalid_object_paths_fail_before_creating_a_file(
     tmp_path: Path,
@@ -4224,6 +4364,178 @@ def test_hdf5_legacy_external_direct_dataset_alias_rejects_marked_target(
         np.testing.assert_array_equal(h5file["managed"][()], original.value)
         assert h5file.attrs[_SIDECAR_ATTRIBUTE_V2] == before_sidecar
         assert not raw_path.exists()
+
+
+@pytest.mark.parametrize("container_kind", ["file", "group"])
+@pytest.mark.parametrize(
+    ("link_case", "allowed"),
+    [
+        ("external-leaf", False),
+        ("external-ancestor", False),
+        ("soft-external-ancestor", False),
+        ("soft-leaf", False),
+        ("soft-local-ancestor", True),
+    ],
+)
+def test_hdf5_link_write_policy(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    container_kind: str,
+    link_case: str,
+    allowed: bool,
+) -> None:
+    stem = f"{container_kind}-{link_case}"
+    external_path = tmp_path / f"link-policy-external-{stem}.hdf5"
+    main_path = tmp_path / f"link-policy-main-{stem}.hdf5"
+    _exact_series(999).write(external_path, format="hdf5", path="data")
+    with h5py.File(external_path, "r+") as external:
+        external.create_group("group")
+    before_external = external_path.read_bytes()
+
+    with h5py.File(main_path, "w") as root:
+        container = root if container_kind == "file" else root.create_group("scope")
+        _exact_series(123).write(container, format="hdf5", path="sentinel")
+        local_group = container.create_group("local-group")
+        local_data = container.create_dataset("local-data", data=np.arange(4))
+        container["external-leaf"] = h5py.ExternalLink(str(external_path), "/data")
+        container["external-parent"] = h5py.ExternalLink(
+            str(external_path),
+            "/group",
+        )
+        prefix = container.name.rstrip("/")
+        container["soft-external"] = h5py.SoftLink(f"{prefix}/external-parent")
+        container["soft-leaf"] = h5py.SoftLink(local_data.name)
+        container["soft-local"] = h5py.SoftLink(local_group.name)
+        write_path = {
+            "external-leaf": "external-leaf",
+            "external-ancestor": "external-parent/new",
+            "soft-external-ancestor": "soft-external/new",
+            "soft-leaf": "soft-leaf",
+            "soft-local-ancestor": "soft-local/new",
+        }[link_case]
+        before_sidecar = root.attrs[_SIDECAR_ATTRIBUTE_V2]
+        before_links = {
+            name: repr(container.get(name, getlink=True))
+            for name in (
+                "external-leaf",
+                "external-parent",
+                "soft-external",
+                "soft-leaf",
+                "soft-local",
+            )
+        }
+        native_writer = exact_hdf5._BASE_WRITER
+        assert native_writer is not None
+        native_calls = 0
+
+        def count_native_calls(*args: object, **kwargs: object) -> h5py.Dataset:
+            nonlocal native_calls
+            native_calls += 1
+            return native_writer(*args, **kwargs)
+
+        monkeypatch.setattr(exact_hdf5, "_BASE_WRITER", count_native_calls)
+
+        def operation() -> None:
+            _legacy_series(offset=10).write(
+                container,
+                format="hdf5",
+                path=write_path,
+                append=True,
+                overwrite=True,
+            )
+
+        if allowed:
+            operation()
+            assert native_calls > 0
+            np.testing.assert_array_equal(
+                container["local-group/new"][()],
+                _legacy_series(offset=10).value,
+            )
+        else:
+            with pytest.raises(ValueError, match="external link|soft link"):
+                operation()
+            assert native_calls == 0
+            assert root.attrs[_SIDECAR_ATTRIBUTE_V2] == before_sidecar
+
+        assert {
+            name: repr(container.get(name, getlink=True)) for name in before_links
+        } == before_links
+        assert _marker(container["sentinel"]).epoch_ns == 123
+        assert not any(name.startswith(exact_hdf5._ROLLBACK_PREFIX) for name in root)
+
+    assert external_path.read_bytes() == before_external
+
+
+@pytest.mark.parametrize("source_kind", ["file", "group"])
+@pytest.mark.parametrize(
+    ("resolved_sidecar", "expected"),
+    [("valid", "exact"), ("invalid", "error")],
+)
+def test_hdf5_external_link_read_uses_resolved_file_authority(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    source_kind: str,
+    resolved_sidecar: str,
+    expected: str,
+) -> None:
+    t0_ns = 1_234_567_890_123_456_789
+    stem = f"{source_kind}-{resolved_sidecar}"
+    external_path = tmp_path / f"resolved-read-external-{stem}.hdf5"
+    main_path = tmp_path / f"resolved-read-main-{stem}.hdf5"
+    _exact_series(t0_ns).write(external_path, format="hdf5", path="series")
+    with h5py.File(external_path, "r+") as external:
+        dataset = external["series"]
+        marker = _marker(dataset)
+        if resolved_sidecar == "valid":
+            referring_marker = encode_epoch_marker(
+                epoch_ns=t0_ns + 1,
+                raw_x0=dataset.attrs["x0"],
+                xunit=marker.axis.xunit,
+                token=bytes.fromhex(marker.lineage_token),
+            )
+            referring_payload = serialize_v2_sidecar(
+                [record_from_marker(referring_marker, ["linked"])]
+            )
+        else:
+            external.attrs[_SIDECAR_ATTRIBUTE_V2] = "{}"
+            referring_payload = serialize_v2_sidecar(
+                [record_from_marker(marker, ["linked"])]
+            )
+
+    with h5py.File(main_path, "w") as root:
+        container = root if source_kind == "file" else root.create_group("scope")
+        container["linked"] = h5py.ExternalLink(str(external_path), "/series")
+        root.attrs[_SIDECAR_ATTRIBUTE_V2] = referring_payload
+
+    native_reader = exact_hdf5._BASE_READER
+    assert native_reader is not None
+    native_calls = 0
+
+    def count_native_calls(*args: object, **kwargs: object) -> object:
+        nonlocal native_calls
+        native_calls += 1
+        return native_reader(*args, **kwargs)
+
+    monkeypatch.setattr(exact_hdf5, "_BASE_READER", count_native_calls)
+
+    with h5py.File(main_path, "r") as root:
+        read_source = root if source_kind == "file" else root["scope"]
+        if expected == "error":
+            with pytest.raises(ValueError, match="sidecar"):
+                TimeSeries.read(
+                    read_source,
+                    format="hdf5",
+                    path="linked",
+                )
+            assert native_calls == 0
+        else:
+            recovered = TimeSeries.read(
+                read_source,
+                format="hdf5",
+                path="linked",
+            )
+            assert native_calls == 1
+            assert recovered.t0_gps_ns == t0_ns
 
 
 @pytest.mark.parametrize("container_kind", ["file", "group"])
@@ -4821,10 +5133,8 @@ def test_hdf5_failed_relink_retains_the_original_recovery_hard_link(
         assert any("relink failed" in str(error) for error in rollback_errors)
 
 
-@pytest.mark.parametrize(
-    "imports",
-    [
-        """
+_HDF5_REGISTRY_IMPORT_ORDERS = [
+    """
 from gwpy.io import registry
 from gwpy.timeseries import TimeSeries as GwpyTimeSeries
 base_reader = registry.default_registry.get_reader("hdf5", GwpyTimeSeries)
@@ -4834,12 +5144,17 @@ assert not getattr(base_writer, "_gwexpy_exact_t0_hdf5", False)
 from gwexpy.timeseries import TimeSeries
 from gwexpy.timeseries.io import hdf5 as exact_hdf5
 """,
-        """
+    """
 from gwexpy.timeseries import TimeSeries
 from gwpy.io import registry
 from gwexpy.timeseries.io import hdf5 as exact_hdf5
 """,
-    ],
+]
+
+
+@pytest.mark.parametrize(
+    "imports",
+    _HDF5_REGISTRY_IMPORT_ORDERS,
     ids=["gwpy-registry-first", "gwex-timeseries-first"],
 )
 def test_exact_hdf5_registry_handlers_are_import_order_independent(
@@ -4880,6 +5195,164 @@ with h5py.File(sys.argv[1], "r") as h5file:
 
     result = subprocess.run(
         [sys.executable, "-I", "-c", code, str(path), str(repository)],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr or result.stdout
+
+
+@pytest.mark.parametrize(
+    "imports",
+    _HDF5_REGISTRY_IMPORT_ORDERS,
+    ids=["gwpy-registry-first", "gwex-timeseries-first"],
+)
+def test_hdf5_registry_reload_is_idempotent(
+    tmp_path: Path,
+    imports: str,
+) -> None:
+    path = tmp_path / "reload-idempotent.hdf5"
+    raw_path = tmp_path / "reload-idempotent.raw"
+    repository = Path(__file__).resolve().parents[2]
+    code = (
+        """
+import importlib
+import sys
+import numpy as np
+sys.path.insert(0, sys.argv[3])
+"""
+        + imports
+        + """
+reader = registry.default_registry.get_reader("hdf5", TimeSeries)
+writer = registry.default_registry.get_writer("hdf5", TimeSeries)
+native_attribute = exact_hdf5._NATIVE_HANDLER_ATTR
+native_reader = getattr(reader, native_attribute)
+native_writer = getattr(writer, native_attribute)
+calls = {"read": 0, "write": 0}
+
+def count_reader(*args, **kwargs):
+    calls["read"] += 1
+    return native_reader(*args, **kwargs)
+
+def count_writer(*args, **kwargs):
+    calls["write"] += 1
+    return native_writer(*args, **kwargs)
+
+setattr(reader, native_attribute, count_reader)
+setattr(writer, native_attribute, count_writer)
+for _ in range(2):
+    assert importlib.reload(exact_hdf5) is exact_hdf5
+
+assert registry.default_registry.get_reader("hdf5", TimeSeries) is reader
+assert registry.default_registry.get_writer("hdf5", TimeSeries) is writer
+assert exact_hdf5._BASE_READER is count_reader
+assert exact_hdf5._BASE_WRITER is count_writer
+series = TimeSeries(
+    np.arange(4, dtype=np.float64),
+    t0=10.25,
+    sample_rate=1,
+    name="series",
+)
+registry.default_registry.write(
+    series,
+    sys.argv[1],
+    format="hdf5",
+    path="series",
+    compression=None,
+    external=[(sys.argv[2], 0, 32)],
+)
+result = registry.default_registry.read(
+    TimeSeries,
+    sys.argv[1],
+    format="hdf5",
+    path="series",
+)
+assert calls == {"read": 1, "write": 1}
+assert not hasattr(result, "_gwex_t0_gps_ns")
+assert np.array_equal(result.value, series.value)
+"""
+    )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-c",
+            code,
+            str(path),
+            str(raw_path),
+            str(repository),
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr or result.stdout
+
+
+@pytest.mark.parametrize(
+    "registry_state",
+    [
+        "half-reader",
+        "half-writer",
+        "recursive-reader",
+        "recursive-writer",
+        "noncallable-reader",
+        "noncallable-writer",
+    ],
+)
+def test_hdf5_registry_rejects_half_or_recursive_wrapper(
+    registry_state: str,
+) -> None:
+    repository = Path(__file__).resolve().parents[2]
+    code = """
+import importlib
+import sys
+sys.path.insert(0, sys.argv[2])
+from gwpy.io import registry
+from gwexpy.timeseries import TimeSeries
+from gwexpy.timeseries.io import hdf5 as exact_hdf5
+
+state = sys.argv[1]
+reader = registry.default_registry.get_reader("hdf5", TimeSeries)
+writer = registry.default_registry.get_writer("hdf5", TimeSeries)
+native_reader = reader.__wrapped__
+native_writer = writer.__wrapped__
+native_attribute = "_gwexpy_exact_t0_native_handler"
+if state == "half-reader":
+    registry.default_registry.register_writer(
+        "hdf5", TimeSeries, native_writer, force=True
+    )
+elif state == "half-writer":
+    registry.default_registry.register_reader(
+        "hdf5", TimeSeries, native_reader, force=True
+    )
+elif state == "recursive-reader":
+    setattr(reader, native_attribute, reader)
+elif state == "recursive-writer":
+    setattr(writer, native_attribute, writer)
+elif state == "noncallable-reader":
+    setattr(reader, native_attribute, None)
+elif state == "noncallable-writer":
+    setattr(writer, native_attribute, None)
+else:
+    raise AssertionError(state)
+
+try:
+    importlib.reload(exact_hdf5)
+except RuntimeError as exc:
+    assert any(
+        word in str(exc).lower()
+        for word in ("wrapper", "handler", "registry", "recursive", "invariant")
+    )
+else:
+    raise AssertionError("invalid HDF5 registry wrapper state was accepted")
+"""
+
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, registry_state, str(repository)],
         check=False,
         capture_output=True,
         text=True,

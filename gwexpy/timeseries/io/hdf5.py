@@ -55,6 +55,7 @@ TIME_STATE_NS_KEY = "_gwex_t0_gps_ns"
 
 _MISSING = object()
 _WRAPPER_MARKER = "_gwexpy_exact_t0_hdf5"
+_NATIVE_HANDLER_ATTR = "_gwexpy_exact_t0_native_handler"
 _ROLLBACK_PREFIX = "__gwexpy_t0_rollback_"
 _MAX_V2_RECORDS = 10_000
 _MAX_V2_BYTES = 8 * 1024 * 1024
@@ -105,18 +106,6 @@ def _group_prefix(group: h5py.Group | h5py.File) -> str:
     if name in {"", "/"}:
         return ""
     return _relative_path(name.lstrip("/"), label="HDF5 containing group")
-
-
-def _write_path(array: Any, container: h5py.Group | h5py.File, path: Any) -> str:
-    candidate = path if path is not None else getattr(array, "name", None)
-    if candidate is None:
-        raise ValueError(
-            f"Cannot determine HDF5 path for {type(array).__name__}; "
-            "set name or pass path explicitly"
-        )
-    relative = _relative_path(candidate)
-    prefix = _group_prefix(container)
-    return relative if not prefix else f"{prefix}/{relative}"
 
 
 def _dataset_path(dataset: h5py.Dataset) -> str:
@@ -312,6 +301,19 @@ def _native_object_path(
     return relative if not prefix else f"{prefix}/{relative}"
 
 
+def _transaction_coordinate(
+    array: Any,
+    container: h5py.Group | h5py.File,
+    path: Any,
+) -> tuple[h5py.Group | h5py.File, str]:
+    """Return the rollback container and its decoded relative object path."""
+    absolute, components = _native_path_components(array, path)
+    relative = "/".join(components)
+    if absolute:
+        return container.file, relative
+    return container, relative
+
+
 def _reject_private_namespace(
     array: Any,
     target: Any,
@@ -371,7 +373,7 @@ def _reject_external_link_traversal(
 def _reject_stale_external_sidecar(
     array: Any,
     container: h5py.Group | h5py.File,
-    path: str | None,
+    path: Any,
 ) -> None:
     _reject_external_link_traversal(array, container, path)
     object_path = _native_object_path(array, container, path)
@@ -684,7 +686,7 @@ def _native_writer() -> Callable[..., h5py.Dataset]:
 def _write_core(
     array: Any,
     container: h5py.Group | h5py.File,
-    path: str | None,
+    path: Any,
     kwargs: dict[str, Any],
 ) -> h5py.Dataset:
     return _native_writer()(array, container, path=path, **kwargs)
@@ -693,7 +695,7 @@ def _write_core(
 def _preflight_core_write(
     array: Any,
     container: h5py.Group | h5py.File,
-    path: str | None,
+    path: Any,
     kwargs: dict[str, Any],
 ) -> None:
     """Exercise the native writer without touching a caller-owned handle."""
@@ -782,7 +784,7 @@ def _missing_parent_paths(
 def _write_open_container(
     array: Any,
     container: h5py.Group | h5py.File,
-    path: str | None,
+    path: Any,
     marker: EpochMarker | None,
     kwargs: dict[str, Any],
 ) -> h5py.Dataset:
@@ -790,17 +792,15 @@ def _write_open_container(
     _reject_private_resolution(array, container, path)
     _reject_external_link_traversal(array, container, path)
     _read_v2_sidecar(h5file)
-    object_path = _write_path(array, container, path)
-    relative_path = _relative_path(
-        path if path is not None else getattr(array, "name", None)
-    )
-    existing = _existing_dataset(container, relative_path)
+    object_path = _native_object_path(array, container, path)
+    coordinate, relative_path = _transaction_coordinate(array, container, path)
+    existing = _existing_dataset(coordinate, relative_path)
     if existing is not None and not kwargs.get("overwrite", False):
         return _write_core(array, container, path, kwargs)
 
     _preflight_core_write(array, container, path, kwargs)
     snapshot = _sidecar_snapshot(h5file)
-    created_parent_paths = _missing_parent_paths(container, relative_path)
+    created_parent_paths = _missing_parent_paths(coordinate, relative_path)
     rollback = (
         _rollback_link(h5file, existing, snapshot) if existing is not None else None
     )
@@ -813,7 +813,7 @@ def _write_open_container(
         rollback_errors: list[BaseException] = []
         try:
             _restore_dataset(
-                container,
+                coordinate,
                 relative_path,
                 rollback,
                 created_parent_paths,
@@ -896,7 +896,7 @@ def _replace_filelike_bytes(target: Any, payload: bytes) -> None:
 def _preflight_native_external_write(
     array: Any,
     target: Any,
-    path: str | None,
+    path: Any,
     kwargs: dict[str, Any],
 ) -> None:
     _native_path_components(array, path)
@@ -944,7 +944,7 @@ def _create_sibling_transaction_file(filepath: Path) -> Path:
 def _write_path_transaction(
     array: Any,
     target: Any,
-    path: str | None,
+    path: Any,
     marker: EpochMarker | None,
     kwargs: dict[str, Any],
 ) -> h5py.Dataset:
@@ -985,7 +985,7 @@ def _write_path_transaction(
 def _write_filelike_transaction(
     array: Any,
     target: Any,
-    path: str | None,
+    path: Any,
     marker: EpochMarker | None,
     kwargs: dict[str, Any],
 ) -> h5py.Dataset:
@@ -1188,12 +1188,12 @@ def _decode_dataset_marker(dataset: h5py.Dataset) -> EpochMarker | None:
 
 def _read_open_container(
     source: h5py.HLObject,
-    path: str | None,
+    path: Any,
     target_class: type[Any],
     kwargs: dict[str, Any],
 ) -> Any:
     if path is not None:
-        _relative_path(path)
+        _native_path_components(source, path)
     dataset = _gwpy_io_hdf5.find_dataset(source, path=path)
     document = _read_v2_sidecar(dataset.file)
     marker = _decode_dataset_marker(dataset)
@@ -1225,18 +1225,44 @@ def register_hdf5_exact_t0_io() -> None:
     registry = _io_registry.default_registry
     current_reader = registry.get_reader("hdf5", GwexTimeSeries)
     current_writer = registry.get_writer("hdf5", GwexTimeSeries)
-    if getattr(current_reader, _WRAPPER_MARKER, False) and getattr(
-        current_writer, _WRAPPER_MARKER, False
-    ):
+
+    reader_wrapped = bool(getattr(current_reader, _WRAPPER_MARKER, False))
+    writer_wrapped = bool(getattr(current_writer, _WRAPPER_MARKER, False))
+    if reader_wrapped != writer_wrapped:
+        raise RuntimeError("incomplete TimeSeries HDF5 wrapper registry pair")
+    if reader_wrapped:
+        recovered: list[Callable[..., Any]] = []
+        for label, wrapper in (
+            ("reader", current_reader),
+            ("writer", current_writer),
+        ):
+            native = getattr(wrapper, _NATIVE_HANDLER_ATTR, None)
+            if (
+                not callable(native)
+                or native is wrapper
+                or bool(getattr(native, _WRAPPER_MARKER, False))
+            ):
+                raise RuntimeError(
+                    f"invalid saved native HDF5 {label} handler on wrapper"
+                )
+            recovered.append(native)
+        _BASE_READER, _BASE_WRITER = recovered
         return
 
     _BASE_READER = registry.get_reader("hdf5", TimeSeries)
     _BASE_WRITER = registry.get_writer("hdf5", TimeSeries)
+    if (
+        not callable(_BASE_READER)
+        or not callable(_BASE_WRITER)
+        or bool(getattr(_BASE_READER, _WRAPPER_MARKER, False))
+        or bool(getattr(_BASE_WRITER, _WRAPPER_MARKER, False))
+    ):
+        raise RuntimeError("invalid native TimeSeries HDF5 registry handlers")
 
     @functools.wraps(_BASE_READER)
     def read_exact(
         source: Any,
-        path: str | None = None,
+        path: str | bytes | None = None,
         **kwargs: Any,
     ) -> Any:
         if isinstance(source, h5py.HLObject):
@@ -1258,7 +1284,7 @@ def register_hdf5_exact_t0_io() -> None:
     def write_exact(
         array: Any,
         target: Any,
-        path: str | None = None,
+        path: str | bytes | None = None,
         **kwargs: Any,
     ) -> h5py.Dataset:
         exact_epoch = _exact_epoch(array)
@@ -1284,7 +1310,7 @@ def register_hdf5_exact_t0_io() -> None:
             )
             return _native_writer()(array, target, path=path, **write_kwargs)
         if path is not None:
-            _relative_path(path)
+            _native_path_components(array, path)
         if isinstance(target, (h5py.File, h5py.Group)):
             return _write_open_container(
                 array,
@@ -1311,6 +1337,8 @@ def register_hdf5_exact_t0_io() -> None:
 
     setattr(read_exact, _WRAPPER_MARKER, True)
     setattr(write_exact, _WRAPPER_MARKER, True)
+    setattr(read_exact, _NATIVE_HANDLER_ATTR, _BASE_READER)
+    setattr(write_exact, _NATIVE_HANDLER_ATTR, _BASE_WRITER)
     registry.register_reader("hdf5", GwexTimeSeries, read_exact, force=True)
     registry.register_writer("hdf5", GwexTimeSeries, write_exact, force=True)
 
