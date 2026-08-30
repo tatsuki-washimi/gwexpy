@@ -30,7 +30,8 @@ one remaining Important pathname cleanup-classification issue. On 2026-08-30, a
 human approved one exceptional fifth remediation and fresh review cycle limited
 to that issue. The fifth fresh review found no Critical, Important, or Minor
 findings and approved specification compliance. Code-quality review is next, and
-P0 remains unapproved.
+P0 remains unapproved. The first fresh code-quality review found two Important
+failure-path findings; their Task 10 remediation is in progress.
 
 **Specification:**
 `docs/superpowers/specs/2026-08-29-hdf5-exact-epoch-identity-design.md`
@@ -1122,7 +1123,7 @@ rtk git commit -m "test: qualify HDF5 exact epoch transactions"
 
 ### Task 10: Run static gates and independent reviews
 
-**Status:** specification compliance approved; code-quality review pending
+**Status:** specification compliance approved; code-quality remediation round 1
 
 **Files:**
 
@@ -1197,6 +1198,13 @@ After specification compliance is approved, give a different fresh reviewer the
 same diff and logs. Require review of exception state, cleanup, type safety,
 private API cohesion, test validity, and memory/storage assertions. Fix and
 re-review all Critical or Important findings.
+
+Code-quality round 1 at `f154b5a34` found two Important findings: pathname
+cleanup inspection can replace the primary error before unlink, and a
+warnings-as-errors filter can turn a committed file-like cleanup notification
+into a public failure. Fix both RED-first within Task 10, then use a separate
+fresh re-review. The existing maximum of three code-quality review rounds still
+applies.
 
 - [ ] **Step 5: Verify the final local state**
 
