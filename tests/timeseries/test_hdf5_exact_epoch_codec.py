@@ -59,9 +59,10 @@ def _with_payload(marker: EpochMarker, payload: bytes) -> str:
 
 
 def _redigest(payload_without_digest: bytes) -> bytes:
-    return payload_without_digest + hashlib.sha256(
-        _DOMAIN_SEPARATOR + payload_without_digest
-    ).digest()
+    return (
+        payload_without_digest
+        + hashlib.sha256(_DOMAIN_SEPARATOR + payload_without_digest).digest()
+    )
 
 
 def _fixed_sidecar_marker() -> EpochMarker:
@@ -168,14 +169,13 @@ def _append_canonical_record(document: str, record: str) -> str:
 
 def _exact_size_sidecar(size: int) -> tuple[str, str]:
     full_paths = tuple(
-        f"p{path_index:02x}/" + "x" * (4_096 - 4)
-        for path_index in range(16)
+        f"p{path_index:02x}/" + "x" * (4_096 - 4) for path_index in range(16)
     )
     empty_size = len(exact_epoch_codec.serialize_v2_sidecar([]).encode("utf-8"))
     one_full_size = len(
-        exact_epoch_codec.serialize_v2_sidecar(
-            [_sidecar_record(0, full_paths)]
-        ).encode("utf-8")
+        exact_epoch_codec.serialize_v2_sidecar([_sidecar_record(0, full_paths)]).encode(
+            "utf-8"
+        )
     )
     entry_size = one_full_size - empty_size
     record_count = math.ceil((size - empty_size + 1) / (entry_size + 1))
@@ -294,9 +294,7 @@ def test_v2_sidecar_normalizes_bounded_json_recursion_error() -> None:
     nested = "[" * 1_100 + "]" * 1_100
     raw = (
         '{"schema":"gwexpy.hdf5.sidecar","version":2,"records":'
-        '{"00000000000000000000000000000000":'
-        + nested
-        + "}}"
+        '{"00000000000000000000000000000000":' + nested + "}}"
     )
     assert len(raw.encode("utf-8")) < 3_000
 
@@ -327,15 +325,11 @@ def test_v2_sidecar_rejects_cross_field_mismatch() -> None:
         if field == "token":
             token = "f" * 32
         elif field == "epoch_ns":
-            record["metadata"]["_gwexpy_t0_gps_state"][
-                "_gwex_t0_gps_ns"
-            ] += 1
+            record["metadata"]["_gwexpy_t0_gps_state"]["_gwex_t0_gps_ns"] += 1
         elif field == "xunit":
             record["binding"][field] = "millisecond"
         else:
-            record["binding"][field] = (
-                "0" * (64 if field == "marker_sha256" else 16)
-            )
+            record["binding"][field] = "0" * (64 if field == "marker_sha256" else 16)
         payload["records"][token] = record
         with pytest.raises(ValueError):
             exact_epoch_codec.parse_v2_sidecar(json.dumps(payload))
@@ -400,9 +394,7 @@ def test_v2_sidecar_accepts_exact_byte_limit_and_rejects_plus_one() -> None:
     document = exact_epoch_codec.parse_v2_sidecar(at_limit.encode("utf-8"))
 
     assert document.records
-    oversized = at_limit.replace(
-        f'"{extendable_path}"', f'"{extendable_path}x"', 1
-    )
+    oversized = at_limit.replace(f'"{extendable_path}"', f'"{extendable_path}x"', 1)
     assert len(oversized.encode("utf-8")) == limit + 1
     with pytest.raises(ValueError, match="8 MiB"):
         exact_epoch_codec.parse_v2_sidecar(oversized)
@@ -437,10 +429,7 @@ def test_v2_sidecar_serializer_stops_at_first_oversized_chunk(
 
 
 def test_v2_sidecar_serializer_stops_consuming_oversized_record_stream() -> None:
-    paths = tuple(
-        f"p{path_index:02x}/" + "x" * (4_096 - 4)
-        for path_index in range(16)
-    )
+    paths = tuple(f"p{path_index:02x}/" + "x" * (4_096 - 4) for path_index in range(16))
     yielded = 0
 
     def record_stream() -> object:
@@ -469,9 +458,12 @@ def test_v2_sidecar_accepts_record_limit_and_rejects_plus_one() -> None:
     oversized_payload = json.loads(oversized)
     assert set(oversized_payload) == {"schema", "version", "records"}
     assert len(oversized_payload["records"]) == 10_001
-    assert oversized_payload["records"][records[10_000].lineage_token] == json.loads(
-        exact_epoch_codec.serialize_v2_sidecar(records[10_000:])
-    )["records"][records[10_000].lineage_token]
+    assert (
+        oversized_payload["records"][records[10_000].lineage_token]
+        == json.loads(exact_epoch_codec.serialize_v2_sidecar(records[10_000:]))[
+            "records"
+        ][records[10_000].lineage_token]
+    )
     with pytest.raises(ValueError, match="10000"):
         exact_epoch_codec.parse_v2_sidecar(oversized)
 
@@ -521,9 +513,7 @@ def test_v2_sidecar_path_cap_stops_consumption_at_limit() -> None:
     marker = _fixed_sidecar_marker()
     yielded = 0
 
-    duplicate_record = exact_epoch_codec.record_from_marker(
-        marker, ["group/same"] * 17
-    )
+    duplicate_record = exact_epoch_codec.record_from_marker(marker, ["group/same"] * 17)
 
     def unique_paths() -> object:
         nonlocal yielded
@@ -563,9 +553,9 @@ def test_v2_sidecar_rejects_one_invalid_unselected_record() -> None:
         ]
     )
     payload = json.loads(raw)
-    payload["records"][unselected.lineage_token]["metadata"][
-        "_gwexpy_t0_gps_state"
-    ]["_gwex_t0_gps_ns"] += 1
+    payload["records"][unselected.lineage_token]["metadata"]["_gwexpy_t0_gps_state"][
+        "_gwex_t0_gps_ns"
+    ] += 1
 
     with pytest.raises(ValueError):
         exact_epoch_codec.parse_v2_sidecar(json.dumps(payload))
@@ -721,7 +711,9 @@ def test_v2_marker_envelope_preserves_seeded_random_binary64_values() -> None:
             sign | (rng.randrange(1, 2047) << 52) | rng.getrandbits(52)
             for _ in range(17_952)
         )
-    values = [struct.unpack(">d", pattern.to_bytes(8, "big"))[0] for pattern in patterns]
+    values = [
+        struct.unpack(">d", pattern.to_bytes(8, "big"))[0] for pattern in patterns
+    ]
     for exponent in range(-300, 301, 10):
         power = 10.0**exponent
         values.extend(
@@ -765,9 +757,7 @@ def test_v2_marker_binds_supported_axis_units(xunit: str, epoch_ns: int) -> None
     )
 
     assert marker.epoch_ns == epoch_ns
-    assert decode_epoch_marker(
-        marker.text, raw_x0=-123.25, xunit=xunit
-    ) == marker
+    assert decode_epoch_marker(marker.text, raw_x0=-123.25, xunit=xunit) == marker
 
 
 @pytest.mark.parametrize("raw_x0", [math.inf, -math.inf, math.nan])
@@ -785,21 +775,22 @@ def test_v2_marker_roundtrip_is_byte_canonical() -> None:
     )
 
     assert marker_sha256(marker.text) == marker.marker_sha256
-    assert reconstruct_epoch_marker(
-        lineage_token=marker.lineage_token,
-        epoch_ns=marker.epoch_ns,
-        x0_bits=marker.x0_bits,
-        axis=marker.axis,
-    ) == marker
+    assert (
+        reconstruct_epoch_marker(
+            lineage_token=marker.lineage_token,
+            epoch_ns=marker.epoch_ns,
+            x0_bits=marker.x0_bits,
+            axis=marker.axis,
+        )
+        == marker
+    )
     decoded = decode_epoch_marker(marker.text, raw_x0=1.0000000000000002, xunit="ms")
     assert decoded is not None
     assert decoded.text.encode("ascii") == marker.text.encode("ascii")
 
 
 def test_v2_marker_zero_magnitude_has_one_encoding() -> None:
-    marker = encode_epoch_marker(
-        epoch_ns=0, raw_x0=0.0, xunit="s", token=bytes(16)
-    )
+    marker = encode_epoch_marker(epoch_ns=0, raw_x0=0.0, xunit="s", token=bytes(16))
     payload = _payload(marker)
     xunit_length = int.from_bytes(payload[33:35], "big")
     sign_offset = 35 + xunit_length + 16
@@ -825,9 +816,7 @@ def test_v2_marker_rejects_bad_digest_and_trailing_bytes() -> None:
     bad_digest = payload[:-1] + bytes((payload[-1] ^ 1,))
 
     with pytest.raises(ValueError, match="digest"):
-        decode_epoch_marker(
-            _with_payload(marker, bad_digest), raw_x0=2.5, xunit="s"
-        )
+        decode_epoch_marker(_with_payload(marker, bad_digest), raw_x0=2.5, xunit="s")
     with pytest.raises(ValueError, match="trailing"):
         decode_epoch_marker(
             _with_payload(marker, payload + b"\x00"), raw_x0=2.5, xunit="s"
@@ -848,9 +837,7 @@ def test_v2_marker_rejects_bad_digest_and_trailing_bytes() -> None:
         ("negative_zero", "negative-zero"),
     ],
 )
-def test_v2_marker_rejects_noncanonical_payload_encoding(
-    kind: str, match: str
-) -> None:
+def test_v2_marker_rejects_noncanonical_payload_encoding(kind: str, match: str) -> None:
     epoch_ns = 0 if kind == "negative_zero" else 1
     marker = encode_epoch_marker(
         epoch_ns=epoch_ns, raw_x0=2.5, xunit="s", token=bytes(range(16))
@@ -931,9 +918,7 @@ def test_v2_marker_rejects_wrong_length_token_argument() -> None:
 
 
 def test_reconstruct_epoch_marker_rejects_invalid_lineage_hex() -> None:
-    marker = encode_epoch_marker(
-        epoch_ns=0, raw_x0=0.0, xunit="s", token=bytes(16)
-    )
+    marker = encode_epoch_marker(epoch_ns=0, raw_x0=0.0, xunit="s", token=bytes(16))
 
     with pytest.raises(ValueError, match="lineage_token"):
         reconstruct_epoch_marker(
@@ -945,9 +930,7 @@ def test_reconstruct_epoch_marker_rejects_invalid_lineage_hex() -> None:
 
 
 def test_reconstruct_epoch_marker_rejects_invalid_x0_hex() -> None:
-    marker = encode_epoch_marker(
-        epoch_ns=0, raw_x0=0.0, xunit="s", token=bytes(16)
-    )
+    marker = encode_epoch_marker(epoch_ns=0, raw_x0=0.0, xunit="s", token=bytes(16))
 
     with pytest.raises(ValueError, match="x0_bits"):
         reconstruct_epoch_marker(
@@ -959,9 +942,7 @@ def test_reconstruct_epoch_marker_rejects_invalid_x0_hex() -> None:
 
 
 def test_reconstruct_epoch_marker_rejects_invalid_axis_factor() -> None:
-    marker = encode_epoch_marker(
-        epoch_ns=0, raw_x0=0.0, xunit="s", token=bytes(16)
-    )
+    marker = encode_epoch_marker(epoch_ns=0, raw_x0=0.0, xunit="s", token=bytes(16))
     invalid_axis = AxisBinding(
         xunit=marker.axis.xunit,
         xunit_to_ns_bits="0" * 16,
@@ -1038,11 +1019,7 @@ def test_v2_marker_ascii_character_corruption_inside_magic_raises() -> None:
         epoch_ns=42, raw_x0=2.5, xunit="s", token=bytes(range(16))
     )
     magic_offset = marker.text.index(_TRIPLET_MAGIC)
-    corrupted = (
-        marker.text[: magic_offset + 6]
-        + "x"
-        + marker.text[magic_offset + 7 :]
-    )
+    corrupted = marker.text[: magic_offset + 6] + "x" + marker.text[magic_offset + 7 :]
 
     with pytest.raises(ValueError, match="recognizable"):
         decode_epoch_marker(corrupted, raw_x0=2.5, xunit="s")
@@ -1053,11 +1030,7 @@ def test_v2_marker_nonascii_character_corruption_inside_magic_raises() -> None:
         epoch_ns=42, raw_x0=2.5, xunit="s", token=bytes(range(16))
     )
     magic_offset = marker.text.index(_TRIPLET_MAGIC)
-    corrupted = (
-        marker.text[: magic_offset + 6]
-        + "é"
-        + marker.text[magic_offset + 7 :]
-    )
+    corrupted = marker.text[: magic_offset + 6] + "é" + marker.text[magic_offset + 7 :]
 
     with pytest.raises(ValueError, match="recognizable"):
         decode_epoch_marker(corrupted, raw_x0=2.5, xunit="s")
@@ -1151,9 +1124,7 @@ def test_v2_marker_shifted_guard_boundary_raises() -> None:
 
 
 def test_v2_marker_envelope_has_explicit_sign_including_negative_zero() -> None:
-    positive = encode_epoch_marker(
-        epoch_ns=0, raw_x0=2.5, xunit="s", token=bytes(16)
-    )
+    positive = encode_epoch_marker(epoch_ns=0, raw_x0=2.5, xunit="s", token=bytes(16))
     negative_zero = encode_epoch_marker(
         epoch_ns=0, raw_x0=-0.0, xunit="s", token=bytes(16)
     )
@@ -1164,9 +1135,7 @@ def test_v2_marker_envelope_has_explicit_sign_including_negative_zero() -> None:
 
 
 def test_v2_marker_envelope_uses_fixed_point_without_exponent() -> None:
-    marker = encode_epoch_marker(
-        epoch_ns=0, raw_x0=1e100, xunit="s", token=bytes(16)
-    )
+    marker = encode_epoch_marker(epoch_ns=0, raw_x0=1e100, xunit="s", token=bytes(16))
     prefix, separator, _ = marker.text.partition("0" * 400 + _TRIPLET_MAGIC)
 
     assert separator
@@ -1174,9 +1143,7 @@ def test_v2_marker_envelope_uses_fixed_point_without_exponent() -> None:
 
 
 def test_v2_marker_envelope_has_decimal_point_and_fractional_digit() -> None:
-    marker = encode_epoch_marker(
-        epoch_ns=0, raw_x0=2.0, xunit="s", token=bytes(16)
-    )
+    marker = encode_epoch_marker(epoch_ns=0, raw_x0=2.0, xunit="s", token=bytes(16))
     magic_offset = marker.text.index(_TRIPLET_MAGIC)
     prefix = marker.text[: magic_offset - 400]
 
@@ -1187,9 +1154,7 @@ def test_v2_marker_envelope_has_decimal_point_and_fractional_digit() -> None:
 
 
 def test_v2_marker_envelope_has_exactly_400_guard_zeros_before_magic() -> None:
-    marker = encode_epoch_marker(
-        epoch_ns=0, raw_x0=2.5, xunit="s", token=bytes(16)
-    )
+    marker = encode_epoch_marker(epoch_ns=0, raw_x0=2.5, xunit="s", token=bytes(16))
     magic_offset = marker.text.index(_TRIPLET_MAGIC)
 
     assert marker.text[magic_offset - 400 : magic_offset] == "0" * 400

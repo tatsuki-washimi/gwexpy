@@ -25,9 +25,7 @@ _MAX_XUNIT_BYTES = 255
 _MAX_MAGNITUDE_BYTES = 512
 _ENCODED_MAGIC = "".join(f"{byte:03d}" for byte in _MAGIC)
 _SIDECAR_SCHEMA = "gwexpy.hdf5.sidecar"
-_SIDECAR_JSON_PREFIX = (
-    '{"schema":"gwexpy.hdf5.sidecar","version":2,"records":{'
-)
+_SIDECAR_JSON_PREFIX = '{"schema":"gwexpy.hdf5.sidecar","version":2,"records":{'
 _SIDECAR_JSON_SUFFIX = "}}"
 _MAX_SIDECAR_BYTES = 8 * 1024 * 1024
 _MAX_SIDECAR_RECORDS = 10_000
@@ -263,6 +261,7 @@ def serialize_v2_sidecar(records: Iterable[SidecarRecord]) -> str:
 
 def parse_v2_sidecar(raw: object) -> SidecarDocument:
     """Parse a sidecar v2 JSON document."""
+
     def reject_duplicate_members(
         pairs: list[tuple[str, object]],
     ) -> dict[str, object]:
@@ -486,9 +485,8 @@ def _has_guarded_magic(text: str, *, minimum_guard: int = _GUARD_DIGITS) -> bool
     for offset, character in enumerate(text):
         if zero_run >= minimum_guard:
             remaining = len(text) - offset
-            truncated_magic = (
-                21 <= remaining <= 23
-                and text.startswith(_ENCODED_MAGIC[:-3], offset)
+            truncated_magic = 21 <= remaining <= 23 and text.startswith(
+                _ENCODED_MAGIC[:-3], offset
             )
             window = text[offset : offset + len(_ENCODED_MAGIC)]
             if _looks_like_encoded_magic(window) or truncated_magic:
@@ -561,15 +559,11 @@ def _parse_payload(payload: bytes) -> tuple[bytes, int, bytes, AxisBinding]:
     sign = sign_raw[0]
     if sign not in (0, 1):
         raise ValueError("invalid epoch sign")
-    magnitude_length_raw, offset = _take(
-        payload, offset, 2, "epoch magnitude length"
-    )
+    magnitude_length_raw, offset = _take(payload, offset, 2, "epoch magnitude length")
     magnitude_length = int.from_bytes(magnitude_length_raw, "big")
     if not 1 <= magnitude_length <= _MAX_MAGNITUDE_BYTES:
         raise ValueError("invalid epoch magnitude field length")
-    magnitude_raw, offset = _take(
-        payload, offset, magnitude_length, "epoch magnitude"
-    )
+    magnitude_raw, offset = _take(payload, offset, magnitude_length, "epoch magnitude")
     if magnitude_length > 1 and magnitude_raw[0] == 0:
         raise ValueError("epoch magnitude is not minimally encoded")
     magnitude = int.from_bytes(magnitude_raw, "big")
@@ -590,9 +584,10 @@ def _parse_payload(payload: bytes) -> tuple[bytes, int, bytes, AxisBinding]:
     if _canonical_axis_binding(xunit) != axis:
         raise ValueError("noncanonical or tampered axis binding")
     epoch_ns = -magnitude if sign else magnitude
-    if _build_payload(
-        token=token, epoch_ns=epoch_ns, x0_packed=x0_packed, axis=axis
-    ) != payload:
+    if (
+        _build_payload(token=token, epoch_ns=epoch_ns, x0_packed=x0_packed, axis=axis)
+        != payload
+    ):
         raise ValueError("noncanonical marker payload encoding")
     return token, epoch_ns, x0_packed, axis
 
@@ -623,9 +618,7 @@ def decode_epoch_marker(
         return None
     if len(value) > _MAX_MARKER_CHARS:
         bounded_probe = value[:_MAX_MARKER_CHARS]
-        if _has_guarded_magic(
-            bounded_probe, minimum_guard=_GUARD_DIGITS - 1
-        ):
+        if _has_guarded_magic(bounded_probe, minimum_guard=_GUARD_DIGITS - 1):
             raise ValueError("exact-epoch marker exceeds 4096 ASCII characters")
         return None
     if not value.isascii():
