@@ -21,9 +21,9 @@ Ruff, MyPy, conda environment `gwexpy`.
 
 **Status:** in-progress
 
-Tasks 1–8 and Checkpoint A are completed. Tasks 6–8 were approved for the
-local v0.2.1 P0 scope on 2026-08-30. Tasks 9–10 remain planned; P0 approval
-still requires their verification and the independent reviews below.
+Tasks 1–9 and Checkpoint A are completed. Tasks 6–8 were approved for the
+local v0.2.1 P0 scope on 2026-08-30. Task 10 remains planned; P0 approval
+still requires its verification and the independent reviews below.
 
 **Specification:**
 `docs/superpowers/specs/2026-08-29-hdf5-exact-epoch-identity-design.md`
@@ -1044,7 +1044,7 @@ rtk git commit -m "fix: preserve HDF5 handle identity during rollback"
 
 ### Task 9: Reconcile the legacy suite and qualify resource invariants
 
-**Status:** planned
+**Status:** completed (verified: resource invariants 12 passed; focused HDF5 suite 769 passed; surrounding compatibility selectors 54 passed / 1 skipped; no reconciliation source or test change was required)
 
 **Files:**
 
