@@ -22,8 +22,8 @@ Ruff, MyPy, conda environment `gwexpy`.
 **Status:** in-progress
 
 Tasks 1–9 and Checkpoint A are completed. Tasks 6–8 were approved for the
-local v0.2.1 P0 scope on 2026-08-30. Task 10 remains planned; P0 approval
-still requires its verification and the independent reviews below.
+local v0.2.1 P0 scope on 2026-08-30. Task 10 local gates are completed;
+P0 approval still requires the independent reviews below.
 
 **Specification:**
 `docs/superpowers/specs/2026-08-29-hdf5-exact-epoch-identity-design.md`
@@ -1115,7 +1115,7 @@ rtk git commit -m "test: qualify HDF5 exact epoch transactions"
 
 ### Task 10: Run static gates and independent reviews
 
-**Status:** planned
+**Status:** local gates completed; independent specification and code-quality reviews pending
 
 **Files:**
 
