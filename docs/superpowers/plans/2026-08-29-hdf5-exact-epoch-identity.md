@@ -29,9 +29,10 @@ specification-review cycle limited to those two findings. The fourth review foun
 one remaining Important pathname cleanup-classification issue. On 2026-08-30, a
 human approved one exceptional fifth remediation and fresh review cycle limited
 to that issue. The fifth fresh review found no Critical, Important, or Minor
-findings and approved specification compliance. Code-quality review is next, and
-P0 remains unapproved. The first fresh code-quality review found two Important
-failure-path findings; their Task 10 remediation is in progress.
+findings and approved specification compliance. The first fresh code-quality
+review found two Important failure-path findings. Both were fixed RED-first, and
+a separate fresh re-review reported no Critical or Important findings and one
+non-blocking Minor test gap. P0 remains a human decision.
 
 **Specification:**
 `docs/superpowers/specs/2026-08-29-hdf5-exact-epoch-identity-design.md`
@@ -1123,7 +1124,7 @@ rtk git commit -m "test: qualify HDF5 exact epoch transactions"
 
 ### Task 10: Run static gates and independent reviews
 
-**Status:** specification compliance approved; code-quality remediation round 1
+**Status:** specification and code-quality reviews complete; human P0 decision pending
 
 **Files:**
 
@@ -1205,6 +1206,12 @@ warnings-as-errors filter can turn a committed file-like cleanup notification
 into a public failure. Fix both RED-first within Task 10, then use a separate
 fresh re-review. The existing maximum of three code-quality review rounds still
 applies.
+
+Code-quality round 2 at `38c552f03` found no Critical or Important findings and
+one Minor test-maintenance gap for a custom warning hook exception. Its
+assessment is `Ready with minor follow-up`; the present production behavior was
+verified by an isolated public write. Defer that non-blocking test row to normal
+maintenance and leave P0 approval to the human.
 
 - [ ] **Step 5: Verify the final local state**
 
