@@ -34,6 +34,7 @@ import textwrap
 
 import pytest
 
+import gwexpy
 from gwexpy.frequencyseries import (
     FrequencySeriesDict,
     FrequencySeriesList,
@@ -205,6 +206,7 @@ class TestFrequencySeriesMatrixRegistryBackend:
         FrequencySeriesMatrix.write, unlike the collection containers."""
         from gwpy.io.registry import default_registry as gwpy_reg
 
+        gwexpy.register_all()
         gwpy_format = "gwpy-matrix-audit-write"
         gwpy_reg.register_writer(
             gwpy_format, FrequencySeriesMatrix, _astropy_sentinel_writer
@@ -228,6 +230,7 @@ class TestFrequencySeriesMatrixRegistryBackend:
         FrequencySeriesMatrix.read."""
         from gwpy.io.registry import default_registry as gwpy_reg
 
+        gwexpy.register_all()
         gwpy_format = "gwpy-matrix-audit-read"
         gwpy_reg.register_reader(
             gwpy_format, FrequencySeriesMatrix, _astropy_sentinel_reader
