@@ -307,6 +307,43 @@ def test_v2_sidecar_normalizes_bounded_json_recursion_error() -> None:
         sys.setrecursionlimit(original_limit)
 
 
+def test_v2_sidecar_classifies_deep_nesting_before_record_schema() -> None:
+    nested = "[" * 1_100 + "]" * 1_100
+    raw = (
+        '{"schema":"gwexpy.hdf5.sidecar","version":2,"records":'
+        '{"00000000000000000000000000000000":' + nested + "}}"
+    )
+
+    original_limit = sys.getrecursionlimit()
+    try:
+        sys.setrecursionlimit(max(original_limit, 5_000))
+        with pytest.raises(ValueError, match="nesting"):
+            exact_epoch_codec.parse_v2_sidecar(raw)
+    finally:
+        sys.setrecursionlimit(original_limit)
+
+
+def test_v2_sidecar_classifies_shallow_invalid_record_key_set() -> None:
+    raw = (
+        '{"schema":"gwexpy.hdf5.sidecar","version":2,"records":'
+        '{"00000000000000000000000000000000":{"unexpected":[]}}}'
+    )
+
+    with pytest.raises(ValueError, match="record has an invalid key set"):
+        exact_epoch_codec.parse_v2_sidecar(raw)
+
+
+def test_v2_sidecar_nesting_bound_ignores_brackets_inside_strings() -> None:
+    marker = _fixed_sidecar_marker()
+    record = exact_epoch_codec.record_from_marker(marker, ["[" * 128])
+
+    document = exact_epoch_codec.parse_v2_sidecar(
+        exact_epoch_codec.serialize_v2_sidecar([record])
+    )
+
+    assert document.records[marker.lineage_token] == record
+
+
 def test_v2_sidecar_rejects_cross_field_mismatch() -> None:
     marker, canonical = _sidecar_json_obj()
 

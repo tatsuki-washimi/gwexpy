@@ -31,6 +31,7 @@ _MAX_SIDECAR_BYTES = 8 * 1024 * 1024
 _MAX_SIDECAR_RECORDS = 10_000
 _MAX_PATHS_PER_RECORD = 16
 _MAX_PATH_BYTES = 4096
+_MAX_SIDECAR_NESTING = 64
 _UTF8_COUNT_CHARS = 4096
 _ROOT_KEYS = {"schema", "version", "records"}
 _RECORD_KEYS = {"binding", "metadata", "provenance", "paths"}
@@ -259,6 +260,30 @@ def serialize_v2_sidecar(records: Iterable[SidecarRecord]) -> str:
     return _SIDECAR_JSON_PREFIX + entries + _SIDECAR_JSON_SUFFIX
 
 
+def _validate_sidecar_json_nesting(text: str) -> None:
+    """Reject JSON nesting beyond the sidecar's supported structural depth."""
+    depth = 0
+    in_string = False
+    escaped = False
+    for character in text:
+        if in_string:
+            if escaped:
+                escaped = False
+            elif character == "\\":
+                escaped = True
+            elif character == '"':
+                in_string = False
+            continue
+        if character == '"':
+            in_string = True
+        elif character in "[{":
+            depth += 1
+            if depth > _MAX_SIDECAR_NESTING:
+                raise ValueError("sidecar JSON exceeds the supported nesting depth")
+        elif character in "]}":
+            depth = max(0, depth - 1)
+
+
 def parse_v2_sidecar(raw: object) -> SidecarDocument:
     """Parse a sidecar v2 JSON document."""
 
@@ -294,6 +319,7 @@ def parse_v2_sidecar(raw: object) -> SidecarDocument:
             raise ValueError("sidecar JSON is not valid UTF-8") from exc
     else:
         raise ValueError("sidecar JSON must be str or bytes")
+    _validate_sidecar_json_nesting(text)
     try:
         payload = json.loads(
             text,
