@@ -61,3 +61,27 @@ def test_candidate_qualification_has_exactly_nineteen_digest_checked_cells() -> 
     assert "/^__version__/" in text
     assert "actions/download-artifact@" in text
     assert "actions/upload-artifact@" in text
+
+
+def test_candidate_qualification_runs_candidate_source_contract_tests() -> None:
+    workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
+    steps = workflow["jobs"]["qualify"]["steps"]
+
+    candidate_checkout = next(
+        step for step in steps if step["name"] == "Check out fixed candidate source"
+    )
+    assert (
+        candidate_checkout["with"]["ref"] == "qualification/v021-codec-candidate-source"
+    )
+    assert candidate_checkout["with"]["path"] == "candidate"
+
+    contract_step = next(
+        step
+        for step in steps
+        if step["name"]
+        == "Verify installed candidate provenance and run focused contracts"
+    )
+    assert (
+        contract_step["env"]["TEST_ROOT"] == "${{ github.workspace }}/candidate/tests"
+    )
+    assert "git -C candidate rev-parse HEAD" in contract_step["run"]

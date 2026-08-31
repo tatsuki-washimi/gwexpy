@@ -118,6 +118,13 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
           path: control
+      - name: Check out fixed candidate source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: qualification/v021-codec-candidate-source
+          fetch-depth: 1
+          persist-credentials: false
+          path: candidate
       - name: Set up Python
         if: matrix.runtime == 'pip'
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
@@ -170,10 +177,11 @@ jobs:
       - name: Verify installed candidate provenance and run focused contracts
         shell: bash
         env:
-          TEST_ROOT: ${{ github.workspace }}/control/tests
+          TEST_ROOT: ${{ github.workspace }}/candidate/tests
         run: |
           runner=(python)
           if [ "${{ matrix.runtime }}" = conda ]; then runner=(micromamba run -n candidate python); fi
+          test "$(git -C candidate rev-parse HEAD)" = "$CANDIDATE_SOURCE_SHA"
           "${runner[@]}" -c "import gwexpy; assert gwexpy.__version__ == '$CANDIDATE_VERSION'; assert 'site-packages' in gwexpy.__file__; print(gwexpy.__file__)"
           "${runner[@]}" -m pytest -q "$TEST_ROOT/test_import_order.py" "$TEST_ROOT/io/test_frequencyseries_registration.py" "$TEST_ROOT/timeseries/test_hdf5_exact_epoch_codec.py"
       - name: Upload cell evidence
