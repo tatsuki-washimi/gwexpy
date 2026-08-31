@@ -18,7 +18,9 @@ def test_candidate_qualification_is_a_push_only_private_artifact_matrix() -> Non
     workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
 
     assert set(workflow[True]) == {"push"}
-    assert workflow[True]["push"]["branches"] == ["test/v021-candidate-qualification"]
+    assert workflow[True]["push"]["branches"] == [
+        "test/v021-codec-candidate-qualification"
+    ]
     assert workflow["permissions"] == {"contents": "read"}
     assert workflow["jobs"]["build"]["permissions"] == {"contents": "read"}
     assert "publish" not in WORKFLOW.read_text(encoding="utf-8").lower()
@@ -54,6 +56,8 @@ def test_candidate_qualification_has_exactly_nineteen_digest_checked_cells() -> 
     assert "hashlib.sha256" in text
     assert "sha256sum -c" not in text
     assert "CANDIDATE_SOURCE_SHA" in text
+    assert "97d4eb77e" in text
+    assert "qualification/v021-codec-candidate-source" in text
     assert "/^__version__/" in text
     assert "actions/download-artifact@" in text
     assert "actions/upload-artifact@" in text

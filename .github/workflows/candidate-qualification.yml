@@ -3,7 +3,7 @@ name: v0.2.1 candidate qualification
 on:
   push:
     branches:
-      - test/v021-candidate-qualification
+      - test/v021-codec-candidate-qualification
 
 permissions:
   contents: read
@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  CANDIDATE_SOURCE_SHA: 9d421a0353000374e4606e1a2d257720488bc604
+  CANDIDATE_SOURCE_SHA: 97d4eb77ecb790fbbf2034cc751b9a395609db7e
   CANDIDATE_VERSION: "0.2.1"
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
@@ -37,7 +37,7 @@ jobs:
       - name: Check out fixed candidate source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: qualification/v021-candidate-source
+          ref: qualification/v021-codec-candidate-source
           fetch-depth: 1
           persist-credentials: false
           path: candidate
