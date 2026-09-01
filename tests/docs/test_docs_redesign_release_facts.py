@@ -5,15 +5,21 @@ import json
 import re
 from pathlib import Path
 
+import yaml
 from babel.messages import pofile
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RELEASE_VERSION = "0.2.2"
 RELEASE_DATE = "2026-09-01"
 RELEASE_HISTORY_ENTRY = f"[{RELEASE_VERSION}] - {RELEASE_DATE}"
-ACTIVITY_RELEASE_VERSION = "0.2.0"
-ACTIVITY_RELEASE_SHA = "5c91cf2d1087616c9815d0cbcc082c5f21bb36e9"
-ACTIVITY_CSV_SHA256 = "8411c5acff7beea282d5f24a105ef0573012a923241d83dd4208a0af2fbf63b0"
+RELEASE_DOI_URL = "https://doi.org/10.5281/zenodo.22228340"
+ACTIVITY_RELEASE_VERSION = "0.2.2"
+ACTIVITY_RELEASE_SHA = "2503743cf654606a5baa83c7b7e7c8b8e1e06596"
+ACTIVITY_CSV_SHA256 = "cd72102029af78b05dcb002051365092f128df341125164e4ba7c8a96d4203e3"
+RELEASE_CLOSURE_MANIFEST = (
+    REPO_ROOT
+    / "docs/developers/plans/manifests/audit-manifest-v0.2.2-release-closure.yaml"
+)
 RELEASE_SCOPE_HISTORY = """\
 ### Update history
 
@@ -26,18 +32,22 @@ flowchart LR
 """
 
 
-def test_released_changelog_publishes_the_v020_activity_snapshot() -> None:
-    """Keep the public changelog tied to the immutable v0.2.0 release."""
+def test_released_changelog_publishes_the_v022_activity_snapshot() -> None:
+    """Keep the public changelog tied to the immutable v0.2.2 release."""
     changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     source = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
         encoding="utf-8"
     )
+    handover = (
+        REPO_ROOT
+        / "docs/developers/plans/notes/development-activity-visualization-handover.md"
+    ).read_text(encoding="utf-8")
     activity_svg = (
-        REPO_ROOT / "docs_redesign/_static/images/development-activity-v0.2.0.svg"
+        REPO_ROOT / "docs_redesign/_static/images/development-activity-v0.2.2.svg"
     )
     activity_csv = (
         REPO_ROOT
-        / "docs_redesign/_static/downloads/development-activity-v0.2.0-weekly.csv"
+        / "docs_redesign/_static/downloads/development-activity-v0.2.2-weekly.csv"
     )
 
     assert not re.search(r"^## \[Unreleased\]\s*$", changelog, re.MULTILINE)
@@ -51,12 +61,18 @@ def test_released_changelog_publishes_the_v020_activity_snapshot() -> None:
         f"Target ref: v{ACTIVITY_RELEASE_VERSION}; resolved SHA: {ACTIVITY_RELEASE_SHA}"
     ) in svg_text
     assert f"canonical CSV SHA-256: {ACTIVITY_CSV_SHA256}" in svg_text
-    assert "/_static/images/development-activity-v0.2.0.svg" in source
-    assert "/_static/downloads/development-activity-v0.2.0-weekly.csv" in source
+    assert "/_static/images/development-activity-v0.2.2.svg" in source
+    assert "/_static/downloads/development-activity-v0.2.2-weekly.csv" in source
+    assert f"`v{ACTIVITY_RELEASE_VERSION}`" in handover
+    assert f"(`{ACTIVITY_RELEASE_SHA}`)" in handover
+    assert f"`{ACTIVITY_CSV_SHA256}`" in handover
 
 
-def test_v020_activity_snapshot_has_japanese_public_copy() -> None:
+def test_v022_activity_snapshot_has_japanese_public_copy() -> None:
     """Keep the changelog figure readable on the Japanese docs site."""
+    source_text = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
+        encoding="utf-8"
+    )
     catalogue_path = (
         REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"
     )
@@ -65,8 +81,10 @@ def test_v020_activity_snapshot_has_japanese_public_copy() -> None:
 
     expected_translations = {
         "Weekly development activity": "週次開発活動",
-        "[Download the weekly CSV data](/_static/downloads/development-activity-v0.2.0-weekly.csv)": "[週次 CSV データをダウンロード](/_static/downloads/development-activity-v0.2.0-weekly.csv)",
+        "[Download the weekly CSV data](/_static/downloads/development-activity-v0.2.2-weekly.csv)": "[週次 CSV データをダウンロード](/_static/downloads/development-activity-v0.2.2-weekly.csv)",
+        "The v0.2.2 release is available from [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2) and archived under [Zenodo DOI 10.5281/zenodo.22228340](https://doi.org/10.5281/zenodo.22228340).": "v0.2.2 リリースは [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2) から取得でき、[Zenodo DOI 10.5281/zenodo.22228340](https://doi.org/10.5281/zenodo.22228340) でアーカイブされています。",
     }
+    assert RELEASE_DOI_URL in source_text
     for source, translation in expected_translations.items():
         message = catalogue.get(source)
         assert message is not None
@@ -106,6 +124,60 @@ def test_current_release_facts_match_the_approved_values() -> None:
     release_note_text = release_note.read_text(encoding="utf-8")
     assert f"pip install gwexpy=={RELEASE_VERSION}" in release_note_text
     assert "`TimeSeries.crop()` delegates GWpy-supported bounds" in release_note_text
+    assert "Publication remains on HOLD" not in release_note_text
+    assert "Published on PyPI" in release_note_text
+    assert RELEASE_DOI_URL in release_note_text
+
+
+def test_legacy_web_changelogs_publish_v022_in_each_language() -> None:
+    english = (REPO_ROOT / "docs/web/en/user_guide/changelog.md").read_text(
+        encoding="utf-8"
+    )
+    japanese = (REPO_ROOT / "docs/web/ja/user_guide/changelog.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert "## [0.2.2] - 2026-09-01" in english
+    assert "restores GWpy-compatible default sample selection" in english
+    assert RELEASE_DOI_URL in english
+    assert "## [0.2.2] - 2026-09-01" in japanese
+    assert "GWpy と互換な既定のサンプル選択を復元しました" in japanese
+    assert RELEASE_DOI_URL in japanese
+
+
+def test_v022_release_closure_manifest_binds_distribution_channels() -> None:
+    """Keep the post-publication audit tied to the accepted release bytes."""
+    manifest = yaml.safe_load(RELEASE_CLOSURE_MANIFEST.read_text(encoding="utf-8"))
+
+    assert manifest["schema"] == "gwexpy-v022-release-closure-v1"
+    assert manifest["release"] == {
+        "version": RELEASE_VERSION,
+        "source_sha": ACTIVITY_RELEASE_SHA,
+        "tag": "v0.2.2",
+        "tag_object_sha": "83b1916537214a4446d76d3773c57c35bb3cd6a5",
+        "tagger_utc": "2026-09-01T08:45:28Z",
+    }
+    assert manifest["publication"]["workflow_run_id"] == 33488802448
+    assert manifest["publication"]["wheel_sha256"] == (
+        "64e517b906366d30b96560e1149f39fa343b8e24be977bdb18dbc40868c38126"
+    )
+    assert manifest["publication"]["sdist_sha256"] == (
+        "3448af15e417187f201f1d910e92fc11e04224607b9cb77849e6d9e172383636"
+    )
+    assert manifest["github_release"] == {
+        "id": 380369377,
+        "url": "https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2",
+        "published_at": "2026-09-01T09:29:42Z",
+        "draft": False,
+        "prerelease": False,
+        "assets": 0,
+        "notes_source": "release_notes/v0.2.2.md",
+    }
+    assert manifest["zenodo"]["record_id"] == 22228340
+    assert manifest["zenodo"]["version_doi"] == "10.5281/zenodo.22228340"
+    assert manifest["zenodo"]["concept_doi"] == "10.5281/zenodo.19059422"
+    assert manifest["conda_forge"]["feedstock"] == "conda-forge/gwexpy-feedstock"
+    assert manifest["documentation"]["activity_csv_sha256"] == ACTIVITY_CSV_SHA256
 
 
 def test_redesign_changelog_includes_the_canonical_release_history() -> None:

@@ -2,6 +2,36 @@
 
 Notable changes to the GWexpy project.
 
+## [0.2.2] - 2026-09-01
+
+GWexpy 0.2.2 restores GWpy-compatible default sample selection for
+`TimeSeries.crop()` while retaining exact HDF5 epoch metadata as private
+GWexpy state.
+
+### Fixed
+
+- `TimeSeries.crop()` delegates GWpy-supported bounds to GWpy, including
+  sample-boundary selection at high sample rates.
+- Slicing and cropping propagate exact epoch state only after the base
+  operation succeeds. Cadences that are not integral nanoseconds discard
+  derived exact authority instead of turning a valid GWpy operation into an
+  exception.
+- Collection-first time-series and frequency-series I/O now uses the same
+  stable, on-demand registry bootstrap as scalar I/O.
+
+### Release qualification
+
+- GWpy 4.0.1 and 4.0.2 compatibility checks passed for the released source.
+- Four installation smoke jobs and all 19 qualification cells verified one
+  wheel and sdist payload before PyPI publication.
+- PyPI downloads matched the qualified payload byte for byte and passed a
+  fresh Python 3.12 installation smoke test.
+
+See the [GWpy compatibility policy](https://tatsuki-washimi.github.io/gwexpy/docs/explanation/gwpy_compatibility_policy.html)
+and the [v0.2.2 GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2).
+The archived release has the
+[Zenodo DOI 10.5281/zenodo.22228340](https://doi.org/10.5281/zenodo.22228340).
+
 ## [0.1.4] - 2026-05-14
 ### Added
 - `to_gps()` now has opt-in `dtype=` output modes. The default remains

@@ -1,0 +1,111 @@
+schema: gwexpy-v022-release-closure-v1
+version: 0.2.2
+status: publication-accepted-distribution-propagation-in-progress
+recorded_at_utc: "2026-09-01T09:46:25Z"
+release:
+  version: 0.2.2
+  source_sha: 2503743cf654606a5baa83c7b7e7c8b8e1e06596
+  tag: v0.2.2
+  tag_object_sha: 83b1916537214a4446d76d3773c57c35bb3cd6a5
+  tagger_utc: "2026-09-01T08:45:28Z"
+publication:
+  workflow: .github/workflows/publish-release.yml
+  workflow_run_id: 33488802448
+  event: push
+  conclusion: success
+  smoke: 4-of-4-pass
+  qualification: 19-of-19-pass
+  same_payload_ledger: pass
+  pypi_project: https://pypi.org/project/gwexpy/0.2.2/
+  pypi_byte_identity: pass
+  fresh_install_smoke: pass
+  wheel_sha256: 64e517b906366d30b96560e1149f39fa343b8e24be977bdb18dbc40868c38126
+  sdist_sha256: 3448af15e417187f201f1d910e92fc11e04224607b9cb77849e6d9e172383636
+github_release:
+  id: 380369377
+  url: https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2
+  published_at: "2026-09-01T09:29:42Z"
+  draft: false
+  prerelease: false
+  assets: 0
+  notes_source: release_notes/v0.2.2.md
+zenodo:
+  record_id: 22228340
+  url: https://zenodo.org/records/22228340
+  version_doi: 10.5281/zenodo.22228340
+  concept_doi: 10.5281/zenodo.19059422
+  version: 0.2.2
+  publication_date: "2026-09-01"
+  resource_type: software
+  access_right: open
+  archive:
+    name: tatsuki-washimi/gwexpy-v0.2.2.zip
+    size_bytes: 13662594
+    md5: 76a89b2fc10cbc069640eb7c8c15397c
+conda_forge:
+  feedstock: conda-forge/gwexpy-feedstock
+  state: pending-bot-pr
+  checked_at_utc: "2026-09-01T09:46:25Z"
+  latest_recipe_version: 0.2.0
+  v0.2.2_pull_request: not-created
+  v0.2.2_channel_package: not-available
+  policy: monitor-bot-for-24-hours-before-manual-escalation
+documentation:
+  public_languages:
+    - en
+    - ja
+  legacy_changelogs:
+    - docs/web/en/user_guide/changelog.md
+    - docs/web/ja/user_guide/changelog.md
+  canonical_changelog: docs_redesign/about/changelog.md
+  activity_source_ref: v0.2.2
+  activity_source_sha: 2503743cf654606a5baa83c7b7e7c8b8e1e06596
+  activity_non_merge_commits: 1755
+  activity_svg: docs_redesign/_static/images/development-activity-v0.2.2.svg
+  activity_svg_sha256: 2dbc69c27da5216d27c16c065b4d5c10b328964a3e9154a6701e7b00d63cf872
+  activity_csv: docs_redesign/_static/downloads/development-activity-v0.2.2-weekly.csv
+  activity_csv_sha256: cd72102029af78b05dcb002051365092f128df341125164e4ba7c8a96d4203e3
+  work_report: docs/developers/reports/report_v0.2.2_release_closure_20260901_184625.md
+scope:
+  runtime_code_changed: false
+  released_source_changed: false
+  release_tag_changed: false
+  release_payload_rebuilt: false
+  distribution_metadata_and_public_docs_only: true
+skills:
+  - prep_release
+  - manage_docs
+  - web_docs_release_gates
+  - archive_work
+  - docs-ja
+  - japanese-tech-writing
+  - english-tech-writing
+  - gwexpy_conda_jobs
+  - superpowers:test-driven-development
+  - superpowers:systematic-debugging
+verification:
+  completed:
+    - check: GitHub release REST readback
+      result: published, non-draft, non-prerelease, tag v0.2.2
+    - check: Zenodo API readback
+      result: record 22228340, version 0.2.2, open software archive
+    - check: release refs readback
+      result: tag peels to released R; main and maint/0.2 matched R at closure start
+    - check: docs contract tests
+      result: 179 passed, 4 skipped
+    - check: legacy strict Sphinx build
+      result: passed
+    - check: docs_redesign EN and JA CI-equivalent Sphinx builds
+      result: passed with notebook execution disabled and the repository's known warning baseline
+    - check: rendered EN and JA changelog readback
+      result: v0.2.2 release links, translated Japanese copy, SVG, and CSV present
+  operational_notes:
+    - A GitHub CLI readback requested an unsupported isLatest JSON field; REST readback supplied the authoritative release state.
+    - An initial Zenodo helper expected the obsolete upload_type field; the current-schema API readback passed.
+    - A bare sphinx-build resolved outside the conda environment; python -m sphinx in the gwexpy environment passed.
+    - Full-site external link checking reported unrelated pre-existing broken links and a transient DOI timeout; authoritative GitHub and Zenodo API readbacks passed.
+    - Full notebook execution was stopped after a new public-link requirement was identified; final local Sphinx builds used nb_execution_mode=off and pull-request CI owns isolated notebook execution.
+pending:
+  - conda-forge bot pull request for v0.2.2
+  - conda-forge CI, merge, channel availability, and fresh-environment smoke
+  - documentation pull request CI, merge, deployment, and live-site readback
