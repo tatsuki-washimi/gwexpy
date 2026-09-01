@@ -1,3 +1,6 @@
+import sys
+from types import ModuleType
+
 import numpy as np
 import pytest
 
@@ -128,8 +131,32 @@ def _fake_granger_results():
     }
 
 
-def test_granger_causality_passes_verbose_to_legacy_statsmodels(monkeypatch):
-    from statsmodels.tsa import stattools
+@pytest.fixture
+def install_fake_statsmodels(monkeypatch):
+    """Install a minimal statsmodels module tree around a supplied callable."""
+
+    def install(granger_callable):
+        statsmodels = ModuleType("statsmodels")
+        tsa = ModuleType("statsmodels.tsa")
+        stattools = ModuleType("statsmodels.tsa.stattools")
+        setattr(statsmodels, "__path__", [])
+        setattr(tsa, "__path__", [])
+        setattr(statsmodels, "tsa", tsa)
+        setattr(tsa, "stattools", stattools)
+        setattr(stattools, "grangercausalitytests", granger_callable)
+        setattr(statsmodels, "_gwexpy_test_fake", True)
+
+        monkeypatch.setitem(sys.modules, "statsmodels", statsmodels)
+        monkeypatch.setitem(sys.modules, "statsmodels.tsa", tsa)
+        monkeypatch.setitem(sys.modules, "statsmodels.tsa.stattools", stattools)
+        return stattools
+
+    return install
+
+
+def test_granger_causality_passes_verbose_to_legacy_statsmodels(
+    install_fake_statsmodels,
+):
 
     calls = []
 
@@ -137,12 +164,15 @@ def test_granger_causality_passes_verbose_to_legacy_statsmodels(monkeypatch):
         calls.append((data, maxlag, verbose))
         return _fake_granger_results()
 
-    monkeypatch.setattr(stattools, "grangercausalitytests", legacy_granger)
+    fake_stattools = install_fake_statsmodels(legacy_granger)
     target = TimeSeries([0.0, 1.0, 0.5, 1.5], dt=1)
     cause = TimeSeries([1.0, 0.0, 1.0, 0.0], dt=1)
 
     result = target.granger_causality(cause, maxlag=2, verbose=True)
 
+    assert getattr(sys.modules["statsmodels"], "_gwexpy_test_fake") is True
+    assert sys.modules["statsmodels.tsa.stattools"] is fake_stattools
+    assert getattr(fake_stattools, "grangercausalitytests") is legacy_granger
     assert len(calls) == 1
     data, maxlag, verbose = calls[0]
     assert data.shape == (4, 2)
@@ -152,16 +182,16 @@ def test_granger_causality_passes_verbose_to_legacy_statsmodels(monkeypatch):
     assert result.min_p_value == 0.025
 
 
-def test_granger_causality_omits_verbose_for_modern_statsmodels(monkeypatch):
-    from statsmodels.tsa import stattools
-
+def test_granger_causality_omits_verbose_for_modern_statsmodels(
+    install_fake_statsmodels,
+):
     calls = []
 
     def modern_granger(data, maxlag):
         calls.append((data, maxlag))
         return _fake_granger_results()
 
-    monkeypatch.setattr(stattools, "grangercausalitytests", modern_granger)
+    install_fake_statsmodels(modern_granger)
     target = TimeSeries([0.0, 1.0, 0.5, 1.5], dt=1)
     cause = TimeSeries([1.0, 0.0, 1.0, 0.0], dt=1)
 
@@ -175,15 +205,38 @@ def test_granger_causality_omits_verbose_for_modern_statsmodels(monkeypatch):
     assert result.min_p_value == 0.025
 
 
-def test_granger_causality_propagates_unrelated_type_error(monkeypatch):
-    from statsmodels.tsa import stattools
+def test_granger_causality_passes_verbose_to_kwargs_statsmodels(
+    install_fake_statsmodels,
+):
+    calls = []
+
+    def kwargs_granger(data, maxlag, **kwargs):
+        calls.append((data, maxlag, kwargs))
+        return _fake_granger_results()
+
+    install_fake_statsmodels(kwargs_granger)
+    target = TimeSeries([0.0, 1.0, 0.5, 1.5], dt=1)
+    cause = TimeSeries([1.0, 0.0, 1.0, 0.0], dt=1)
+
+    target.granger_causality(cause, maxlag=2, verbose=True)
+
+    assert len(calls) == 1
+    data, maxlag, kwargs = calls[0]
+    assert data.shape == (4, 2)
+    assert maxlag == 2
+    assert kwargs == {"verbose": True}
+
+
+def test_granger_causality_propagates_unrelated_type_error(
+    install_fake_statsmodels,
+):
 
     expected = TypeError("unrelated statsmodels calculation failure")
 
     def modern_granger(data, maxlag):
         raise expected
 
-    monkeypatch.setattr(stattools, "grangercausalitytests", modern_granger)
+    install_fake_statsmodels(modern_granger)
     target = TimeSeries([0.0, 1.0, 0.5, 1.5], dt=1)
     cause = TimeSeries([1.0, 0.0, 1.0, 0.0], dt=1)
 
