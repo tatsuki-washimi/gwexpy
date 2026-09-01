@@ -44,14 +44,19 @@ env:
 
 jobs:
   gwpy-compat:
-    name: GWpy compatibility
+    name: GWpy compatibility (${{ matrix.gwpy }})
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        gwpy: ["4.0.1", "4.0.2"]
     defaults:
       run:
         shell: bash -leo pipefail {0}
     env:
       PYTHONFAULTHANDLER: "1"
+      GWPY_VERSION: ${{ matrix.gwpy }}
     steps:
       - name: Checkout repository
         timeout-minutes: 5
@@ -71,7 +76,7 @@ jobs:
       - name: Provision compatibility environment
         run: |
           python -m pip install --upgrade pip
-          python -m pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas matplotlib h5py "gwpy>=4.0.0,<5.0.0"
+          python -m pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas matplotlib h5py "gwpy==$GWPY_VERSION"
           python -m pip install lalsuite
           python -m pip install pytest pytest-forked
           python -m pip install -e . --no-deps

@@ -37,10 +37,18 @@ def test_latest_gwpy_proxy_gate_is_wired() -> None:
     }
     assert required_existing | required_new <= paths
 
-    steps = workflow["jobs"]["gwpy-compat"]["steps"]
+    job = workflow["jobs"]["gwpy-compat"]
+    strategy = job["strategy"]
+    assert strategy["fail-fast"] is False
+    assert strategy["matrix"]["gwpy"] == ["4.0.1", "4.0.2"]
+    assert "matrix.gwpy" in job["name"]
+    assert job["env"]["GWPY_VERSION"] == "${{ matrix.gwpy }}"
+
+    steps = job["steps"]
     by_name = {step["name"]: step for step in steps if "name" in step}
     provisioning = by_name["Provision compatibility environment"]["run"]
     assert "python -m pip install lalsuite" in provisioning
+    assert '"gwpy==$GWPY_VERSION"' in provisioning
 
     version_step = by_name["Record compatibility versions"]
     provisioning_index = steps.index(by_name["Provision compatibility environment"])
