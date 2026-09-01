@@ -2,6 +2,34 @@
 
 GWexpy の主な変更履歴を記載します。
 
+## [0.2.2] - 2026-09-01
+
+GWexpy 0.2.2 では、HDF5 の厳密な epoch metadata を GWexpy の private state として保持しつつ、
+`TimeSeries.crop()` について GWpy と互換な既定のサンプル選択を復元しました。
+
+### 修正
+
+- `TimeSeries.crop()` は、高 sample rate における sample 境界選択を含め、GWpy が
+  サポートする境界指定を GWpy へ委譲します。
+- slice と crop は、base operation の成功後にだけ exact epoch state を伝播します。
+  cadence を整数 nanosecond で表現できない場合は、GWpy では正常終了する operation を
+  例外に変えず、派生した exact authority を破棄します。
+- collection-first の time-series および frequency-series I/O は、scalar I/O と同じ
+  安定した on-demand registry bootstrap を使います。
+
+### リリース検証
+
+- 公開対象 source に対して GWpy 4.0.1 および 4.0.2 との互換性検証が PASS しました。
+- 4 件の installation smoke と 19 件すべての qualification cell が、PyPI 公開前に同じ
+  wheel および sdist payload を検証しました。
+- PyPI から取得した配布物は検証済み payload と byte 単位で一致し、隔離した Python 3.12
+  環境での fresh-install smoke も PASS しました。
+
+[GWpy 互換性ポリシー](https://tatsuki-washimi.github.io/gwexpy/docs/ja/explanation/gwpy_compatibility_policy.html)と
+[v0.2.2 GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2)も参照してください。
+アーカイブ済み release の DOI は
+[10.5281/zenodo.22228340](https://doi.org/10.5281/zenodo.22228340)です。
+
 ## [0.1.4] - 2026-05-14
 ### 追加 (Added)
 - `to_gps()` に opt-in の `dtype=` 出力モードを追加しました。デフォルトは

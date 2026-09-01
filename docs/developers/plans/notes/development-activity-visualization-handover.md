@@ -48,13 +48,13 @@ vertical.  The long contextual label `v0.1.3 · GWADW 2026` is horizontal and
 positioned directly above the vertical labels; the legend sits above it to
 avoid a large empty gap.
 
-## Published v0.2.0 record
+## Published v0.2.2 record
 
 The public changelog now contains a static SVG and weekly CSV generated against
-the latest public stable tag, `v0.2.0`
-(`5c91cf2d1087616c9815d0cbcc082c5f21bb36e9`). It contains 1,656 non-merge
+the latest public stable tag, `v0.2.2`
+(`2503743cf654606a5baa83c7b7e7c8b8e1e06596`). It contains 1,755 non-merge
 commits and the weekly CSV SHA-256 is
-`8411c5acff7beea282d5f24a105ef0573012a923241d83dd4208a0af2fbf63b0`.
+`cd72102029af78b05dcb002051365092f128df341125164e4ba7c8a96d4203e3`.
 
 The SVG and CSV are tracked under `docs_redesign/_static/`; the figure,
 download link, caption, and Japanese gettext copy are in
