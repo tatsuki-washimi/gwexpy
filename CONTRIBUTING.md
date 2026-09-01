@@ -48,6 +48,26 @@ Do not commit generated environments, caches, or docs build outputs.
 
 GWexpy is designed to extend GWpy and other core libraries in a way that remains safe and predictable. We avoid "silent monkeypatching" of upstream classes in favor of explicit, documented extension points.
 
+### GWpy Behavioral Compatibility
+
+For APIs corresponding to existing GWpy APIs, when GWpy returns normally with
+finite numerical results, GWexpy defaults must preserve numerical values,
+shape and selected samples, axis information, and successful completion. Any
+intentional numerical divergence requires an explicit user opt-in through a
+GWexpy-specific API or option. Reviewers must block an unexplained default
+difference.
+
+Internal implementations may differ only when scientific behavior is
+preserved and no material performance or resource regression is introduced.
+Performance-sensitive bootstrap, dispatch, I/O, and numerical-kernel changes
+must include proportionate non-regression evidence. Documentation-only changes
+may mark that evidence as not applicable.
+
+Read the canonical
+[GWpy behavioral compatibility policy](https://tatsuki-washimi.github.io/gwexpy/docs/explanation/gwpy_compatibility_policy.html)
+and add direct GWpy-versus-GWexpy tests whenever a corresponding default API
+could change.
+
 **Recommended Extension Patterns:**
 
 1. **Subclassing (Core Types)**: `gwexpy.TimeSeries`, `gwexpy.FrequencySeries`, etc. inherit from GWpy base classes. New methods (e.g., `.fit()`, `.mix_down()`) are added via inheritance, ensuring zero impact on other libraries using the base GWpy types.

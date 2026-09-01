@@ -8,146 +8,88 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-05 00:42+0000\n"
+"POT-Creation-Date: 2026-09-01 10:18+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: docs_redesign/how-to/migration.md
-msgid "This guide summarizes breaking changes between GWexpy releases and provides migration paths for existing code."
-msgstr "このガイドは、GWexpy のリリース間にある破壊的変更と既存コードの移行方法をまとめます。"
-
-#: docs_redesign/how-to/migration.md
-msgid "v0.2.0"
-msgstr "v0.2.0"
-
-#: docs_redesign/how-to/migration.md
-msgid "Lazy registration"
-msgstr "遅延登録"
-
-#: docs_redesign/how-to/migration.md
-msgid "A plain `import gwexpy` no longer eagerly registers constructors or I/O handlers. Supported public I/O entry points register the handlers they need on demand. Call `gwexpy.register_all()` only when an application deliberately needs the complete constructor and I/O surface registered up front."
-msgstr "通常の `import gwexpy` は、constructor と I/O handler を即時登録しなくなりました。対応する公開 I/O entry point は、必要な handler をオンデマンドで登録します。application が constructor と I/O の完全な surface を最初から明示的に登録する必要がある場合だけ、`gwexpy.register_all()` を呼んでください。"
-
-#: docs_redesign/how-to/migration.md
-msgid "Removed developer proxy imports"
-msgstr "削除された開発用 proxy import"
-
-#: docs_redesign/how-to/migration.md
-msgid "The developer-only imports `gwexpy.utils.shell`, `gwexpy.utils.sphinx`, `gwexpy.utils.sphinx.ex2rst`, and `gwexpy.utils.sphinx.zenodo` have been removed. Replace shell helpers with `subprocess` or `shutil.which`, and use maintained documentation or Zenodo tooling directly."
-msgstr "開発専用の `gwexpy.utils.shell`、`gwexpy.utils.sphinx`、`gwexpy.utils.sphinx.ex2rst`、`gwexpy.utils.sphinx.zenodo` は削除されました。shell helper は `subprocess` または `shutil.which` に置き換え、保守されている documentation または Zenodo tooling を直接使ってください。"
-
-#: docs_redesign/how-to/migration.md
-msgid "SDB format name"
-msgstr "SDB の format 名"
-
-#: docs_redesign/how-to/migration.md
-msgid "The undocumented `sqlite` and `sqlite3` format aliases, including their GUI fallback extensions, have been removed. Rename archives to `.sdb` and use `format=\"sdb\"` for direct I/O."
-msgstr "文書化されていなかった `sqlite` と `sqlite3` の format alias は、GUI fallback extension を含めて削除されました。archive は `.sdb` に改名し、direct I/O では `format=\"sdb\"` を使ってください。"
-
-#: docs_redesign/how-to/migration.md
-msgid "SeriesMatrix arithmetic"
-msgstr "SeriesMatrix の算術演算"
-
-#: docs_redesign/how-to/migration.md
-msgid "The v0.2.0 B0 contract rejects dimensional raw-`ndarray` addition and subtraction with `SpectrogramMatrix` atomically with `TypeError`. Do not rely on implicit metadata-dropping arithmetic; convert inputs to an explicitly supported representation first."
-msgstr "v0.2.0 の B0 contract では、次元を持つ raw-`ndarray` と `SpectrogramMatrix` の加算および減算を、原子的に `TypeError` として拒否します。暗黙に metadata を落とす算術演算に依存せず、入力を明示的に対応する表現へ先に変換してください。"
-
-#: ../../how-to/migration.md:1 03f95a69f3a348b9aac98de10477685d
 msgid "Migrating Between GWexpy Versions"
 msgstr "GWexpy バージョン間の移行"
 
-#: ../../how-to/migration.md:3 5f230581ed024efaa1e4a7f160599bb1
-msgid ""
-"This guide summarizes breaking changes between GWexpy releases and provides "
-"migration paths for existing code. It currently covers the changes "
-"introduced in `v0.1.1`."
-msgstr ""
-"このガイドは GWexpy のリリース間の破壊的変更をまとめ、既存コードの移行手順を示します。現在は `v0.1.1` で導入された変更を扱っています。"
+msgid "This guide summarizes breaking changes between GWexpy releases and provides migration paths for existing code."
+msgstr "このガイドは、GWexpy のリリース間にある破壊的変更と既存コードの移行方法をまとめます。"
 
-#: ../../how-to/migration.md:5 c3ad2b5614a84633815cbdd166f2edd9
+msgid "The project-wide [GWpy compatibility policy](../explanation/gwpy_compatibility_policy.md) governs default behavior of APIs corresponding to GWpy. Release-specific notes below describe changes within that contract."
+msgstr "プロジェクト横断の [GWpy 互換性ポリシー](../explanation/gwpy_compatibility_policy.md)は、GWpy 対応 API の既定挙動を規定します。以下のrelease固有noteは、その契約内の変更を説明します。"
+
+msgid "v0.2.0"
+msgstr "v0.2.0"
+
+msgid "Lazy registration"
+msgstr "遅延登録"
+
+msgid "A plain `import gwexpy` no longer eagerly registers constructors or I/O handlers. Supported public I/O entry points register the handlers they need on demand. Call `gwexpy.register_all()` only when an application deliberately needs the complete constructor and I/O surface registered up front."
+msgstr "通常の `import gwexpy` は、constructor と I/O handler を即時登録しなくなりました。対応する公開 I/O entry point は、必要な handler をオンデマンドで登録します。application が constructor と I/O の完全な surface を最初から明示的に登録する必要がある場合だけ、`gwexpy.register_all()` を呼んでください。"
+
+msgid "Removed developer proxy imports"
+msgstr "削除された開発用 proxy import"
+
+msgid "The developer-only imports `gwexpy.utils.shell`, `gwexpy.utils.sphinx`, `gwexpy.utils.sphinx.ex2rst`, and `gwexpy.utils.sphinx.zenodo` have been removed. Replace shell helpers with `subprocess` or `shutil.which`, and use maintained documentation or Zenodo tooling directly."
+msgstr "開発専用の `gwexpy.utils.shell`、`gwexpy.utils.sphinx`、`gwexpy.utils.sphinx.ex2rst`、`gwexpy.utils.sphinx.zenodo` は削除されました。shell helper は `subprocess` または `shutil.which` に置き換え、保守されている documentation または Zenodo tooling を直接使ってください。"
+
+msgid "SDB format name"
+msgstr "SDB の format 名"
+
+msgid "The undocumented `sqlite` and `sqlite3` format aliases, including their GUI fallback extensions, have been removed. Rename archives to `.sdb` and use `format=\"sdb\"` for direct I/O."
+msgstr "文書化されていなかった `sqlite` と `sqlite3` の format alias は、GUI fallback extension を含めて削除されました。archive は `.sdb` に改名し、direct I/O では `format=\"sdb\"` を使ってください。"
+
+msgid "SeriesMatrix arithmetic"
+msgstr "SeriesMatrix の算術演算"
+
+msgid "The v0.2.0 B0 contract rejects dimensional raw-`ndarray` addition and subtraction with `SpectrogramMatrix` atomically with `TypeError`. Do not rely on implicit metadata-dropping arithmetic; convert inputs to an explicitly supported representation first."
+msgstr "v0.2.0 の B0 contract では、次元を持つ raw-`ndarray` と `SpectrogramMatrix` の加算および減算を、原子的に `TypeError` として拒否します。暗黙に metadata を落とす算術演算に依存せず、入力を明示的に対応する表現へ先に変換してください。"
+
+msgid "v0.1.1"
+msgstr "v0.1.1"
+
 msgid "1. Lorentzian Peak Parameters"
 msgstr "1. ローレンツ型ピークのパラメータ"
 
-#: ../../how-to/migration.md:7 13db5f727a784ed3b250c0f0a22b8e31
-msgid ""
-"The `fwhm` (Full Width at Half Maximum) parameter in "
-"`gwexpy.noise.peaks.lorentzian_line()` has been renamed to `gamma` (Half "
-"Width at Half Maximum) to better align with the underlying mathematical "
-"implementation and typical spectral modeling conventions."
-msgstr ""
-"`gwexpy.noise.peaks.lorentzian_line()` の `fwhm`（半値全幅, Full Width at Half "
-"Maximum）パラメータは、内部の数学的実装や一般的なスペクトルモデリングの慣習に合わせて `gamma`（半値半幅, Half Width at "
-"Half Maximum）に改名されました。"
+msgid "The `fwhm` (Full Width at Half Maximum) parameter in `gwexpy.noise.peaks.lorentzian_line()` has been renamed to `gamma` (Half Width at Half Maximum) to better align with the underlying mathematical implementation and typical spectral modeling conventions."
+msgstr "`gwexpy.noise.peaks.lorentzian_line()` の `fwhm`（半値全幅, Full Width at Half Maximum）パラメータは、内部の数学的実装や一般的なスペクトルモデリングの慣習に合わせて `gamma`（半値半幅, Half Width at Half Maximum）に改名されました。"
 
-#: ../../how-to/migration.md:9 ../../how-to/migration.md:29
-#: ../../how-to/migration.md:49 31f418fd131c4c6f87ac75c32e1f5992
-#: b7c696d142e04ceda2ab614226fa82b6 d04ddb83f265448d8c887edf614e6813
 msgid "How to Migrate"
 msgstr "移行方法"
 
-#: ../../how-to/migration.md:10 3272c53a0cfa4239a41b64336f3f39be
-msgid ""
-"If you were using `fwhm`, simply divide your value by 2 and pass it as "
-"`gamma`."
+msgid "If you were using `fwhm`, simply divide your value by 2 and pass it as `gamma`."
 msgstr "`fwhm` を使用していた場合は、値を 2 で割って `gamma` として渡すだけです。"
 
-#: ../../how-to/migration.md:12 ../../how-to/migration.md:32
-#: ../../how-to/migration.md:52 0906efdbfd514bc6869994c672fa122d
-#: 41590ee7caff4204aa845d33de940557 bce8bcf1708347c787266d2a7521fea5
 msgid "**Old (v0.1.0):**"
 msgstr "**旧 (v0.1.0):**"
 
-#: ../../how-to/migration.md:18 ../../how-to/migration.md:38
-#: ../../how-to/migration.md:59 219704d1794f460e8a15100887727e7a
-#: 70fd9a64bbeb4b18af1f1bf1e96ef29c f6c2735cf4c947969b05599e997a0a41
 msgid "**New (v0.1.1):**"
 msgstr "**新 (v0.1.1):**"
 
-#: ../../how-to/migration.md:25 44868a41d8284c3ba7aeb98066d17643
 msgid "2. Spectral Fitting (Generalized Least Squares)"
 msgstr "2. スペクトルフィッティング（一般化最小二乗法）"
 
-#: ../../how-to/migration.md:27 6ff5581e313e4456bf9ccefd8ce090a1
-msgid ""
-"The `stride` parameter has been removed from `fit_bootstrap_spectrum()` as "
-"it was an unsupported keyword argument that caused errors in the underlying "
-"`scipy.signal.periodogram` calls."
-msgstr ""
-"`stride` パラメータは `fit_bootstrap_spectrum()` から削除されました。これは内部の "
-"`scipy.signal.periodogram` 呼び出しでエラーを引き起こす、サポートされていないキーワード引数だったためです。"
+msgid "The `stride` parameter has been removed from `fit_bootstrap_spectrum()` as it was an unsupported keyword argument that caused errors in the underlying `scipy.signal.periodogram` calls."
+msgstr "`stride` パラメータは `fit_bootstrap_spectrum()` から削除されました。これは内部の `scipy.signal.periodogram` 呼び出しでエラーを引き起こす、サポートされていないキーワード引数だったためです。"
 
-#: ../../how-to/migration.md:30 f47870da944841f88a16db3b7ea1bb46
-msgid ""
-"Simply remove the `stride` keyword argument from your "
-"`fit_bootstrap_spectrum` calls. The function now correctly manages data "
-"segmentation through `fftlength` and `overlap`."
-msgstr ""
-"`fit_bootstrap_spectrum` の呼び出しから `stride` "
-"キーワード引数を削除するだけです。この関数は現在、`fftlength` と `overlap` を通じてデータのセグメント分割を正しく管理します。"
+msgid "Simply remove the `stride` keyword argument from your `fit_bootstrap_spectrum` calls. The function now correctly manages data segmentation through `fftlength` and `overlap`."
+msgstr "`fit_bootstrap_spectrum` の呼び出しから `stride` キーワード引数を削除するだけです。この関数は現在、`fftlength` と `overlap` を通じてデータのセグメント分割を正しく管理します。"
 
-#: ../../how-to/migration.md:45 c2c5bd1f5d7f439a9c13a965f53267ca
 msgid "3. SegmentTable Lazy Loading"
 msgstr "3. SegmentTable の遅延読み込み"
 
-#: ../../how-to/migration.md:47 1c2ed3fc6f334663a9c64a3e5a87549c
-msgid ""
-"The `loader` argument in `SegmentTable.add_series_column()` now expects a "
-"callable that takes a single `segment` argument (`loader(segment)`), rather "
-"than a factory that takes an index (`loader(i)`)."
-msgstr ""
-"`SegmentTable.add_series_column()` の `loader` "
-"引数は、インデックスを取るファクトリ（`loader(i)`）ではなく、単一の `segment` "
-"引数を取る呼び出し可能オブジェクト（`loader(segment)`）を期待するようになりました。"
+msgid "The `loader` argument in `SegmentTable.add_series_column()` now expects a callable that takes a single `segment` argument (`loader(segment)`), rather than a factory that takes an index (`loader(i)`)."
+msgstr "`SegmentTable.add_series_column()` の `loader` 引数は、インデックスを取るファクトリ（`loader(i)`）ではなく、単一の `segment` 引数を取る呼び出し可能オブジェクト（`loader(segment)`）を期待するようになりました。"
 
-#: ../../how-to/migration.md:50 5e2cfb2283ba45e390f87746a3c5ebf5
-msgid ""
-"Update your loader functions to accept the `segment` (span) of the row "
-"directly."
+msgid "Update your loader functions to accept the `segment` (span) of the row directly."
 msgstr "loader 関数を、行の `segment`（区間）を直接受け取るよう更新してください。"

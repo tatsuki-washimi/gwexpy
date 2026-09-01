@@ -1,0 +1,111 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-01 00:00+0900\n"
+"Last-Translator: GWexpy Developers\n"
+"Language: ja\n"
+"Language-Team: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "GWpy Behavioral Compatibility Policy"
+msgstr "GWpy 挙動互換性ポリシー"
+
+msgid "GWexpy extends GWpy without silently changing the default scientific result of an existing GWpy API."
+msgstr "GWexpy は、既存の GWpy API が返す既定の科学的結果を暗黙に変えることなく GWpy を拡張します。"
+
+msgid "For APIs corresponding to existing GWpy APIs, when GWpy returns normally with finite numerical results, replacing the corresponding GWpy import with GWexpy under default options must preserve numerical values, shape and selected samples, axis information, and successful completion. Any intentional numerical divergence requires an explicit user opt-in through a GWexpy-specific API or option. Internal implementations may differ only when scientific behavior is preserved and no material performance or resource regression is introduced."
+msgstr "既存の GWpy API に対応する API では、GWpy が有限の数値結果を正常に返す場合、対応する import を既定optionの GWexpy に置き換えても、数値、shapeと選択sample、軸情報、正常終了を維持しなければなりません。意図的な数値差異には、GWexpy 固有の API またはoptionによる明示的な user opt-in が必要です。内部実装を変更できるのは、科学的挙動を維持し、性能またはresourceに重大な退行を生じさせない場合だけです。"
+
+msgid "What must match"
+msgstr "一致させる対象"
+
+msgid "Apply this policy when all of the following are true:"
+msgstr "次のすべてを満たす場合に、このポリシーを適用します。"
+
+msgid "The operation corresponds to an existing public GWpy API."
+msgstr "操作が既存の公開 GWpy API に対応している。"
+
+msgid "The call uses default behavior rather than a GWexpy-specific opt-in."
+msgstr "呼び出しが GWexpy 固有の opt-in ではなく既定挙動を使っている。"
+
+msgid "GWpy accepts the input and returns normally with finite numerical results."
+msgstr "GWpy が入力を受理し、有限の数値結果を正常に返す。"
+
+msgid "Compare the observable result, not the implementation:"
+msgstr "実装ではなく、観測可能な結果を比較します。"
+
+msgid "Area"
+msgstr "対象"
+
+msgid "Required comparison"
+msgstr "必須の比較"
+
+msgid "Numerical result"
+msgstr "数値結果"
+
+msgid "`values` and units exposed by the corresponding API"
+msgstr "対応する API が公開する `values` と単位"
+
+msgid "Selection"
+msgstr "選択"
+
+msgid "`shape`, selected samples, and boundary behavior"
+msgstr "`shape`、選択sample、境界挙動"
+
+msgid "Axes"
+msgstr "軸"
+
+msgid "`t0`, `dt`, `times`, `span`, and equivalent axis information"
+msgstr "`t0`、`dt`、`times`、`span`、および同等の軸情報"
+
+msgid "Completion"
+msgstr "終了状態"
+
+msgid "successful completion in GWpy must not become a GWexpy-only exception"
+msgstr "GWpy で正常終了する操作を GWexpy 固有の例外に変えない"
+
+msgid "A difference in any required comparison is a release blocker unless the user selected an explicit GWexpy-only API or option."
+msgstr "必須比較のいずれかに差異がある場合、userが明示的な GWexpy 固有 API またはoptionを選んでいない限りrelease blockerです。"
+
+msgid "Where extension is allowed"
+msgstr "拡張が許される範囲"
+
+msgid "GWexpy may add containers, metadata, precision-preserving state, I/O formats, and analysis methods that GWpy does not provide. Those additions must remain separate from the default behavior of corresponding GWpy APIs. Merely importing GWexpy is not an opt-in to different numerical semantics."
+msgstr "GWexpy は、GWpy が提供しないcontainer、metadata、精度保持状態、I/O format、解析methodを追加できます。これらの追加機能は、対応する GWpy API の既定挙動から分離しなければなりません。GWexpy を import するだけでは、異なる数値semanticsへの opt-in にはなりません。"
+
+msgid "Invalid or contradictory GWexpy-specific metadata may continue to fail closed. Such malformed extension metadata is outside the normal finite-result case, and must have explicit validation tests."
+msgstr "不正または矛盾した GWexpy 固有metadataは、引き続き fail closed にできます。このような不正な拡張metadataは正常な有限結果の対象外であり、明示的なvalidation testが必要です。"
+
+msgid "Internal changes and resource use"
+msgstr "内部変更とresource使用量"
+
+msgid "Internal structure may change when the public scientific behavior remains the same. Changes to performance-sensitive bootstrap, dispatch, I/O, or numerical kernel paths require performance/resource non-regression evidence proportionate to their risk. A material regression blocks the change unless maintainers explicitly accept and document the trade-off."
+msgstr "公開された科学的挙動が同じであれば、内部構造は変更できます。性能に影響し得るbootstrap、dispatch、I/O、数値kernel pathの変更には、riskに応じた性能・resource non-regression evidenceが必要です。maintainerがtrade-offを明示的に承認し文書化しない限り、重大な退行は変更をblockします。"
+
+msgid "Documentation-only changes may record resource evidence as not applicable."
+msgstr "文書だけの変更では、resource evidenceを該当なしと記録できます。"
+
+msgid "Review checklist"
+msgstr "Review checklist"
+
+msgid "Is this an existing GWpy API?"
+msgstr "これは既存の GWpy API か。"
+
+msgid "Does GWpy return a normal finite result for the case under review?"
+msgstr "review対象のcaseで GWpy は正常な有限結果を返すか。"
+
+msgid "Do GWpy and GWexpy defaults match in values, shape and selected samples, axes, and completion behavior?"
+msgstr "GWpy と GWexpy の既定挙動は、値、shapeと選択sample、軸、終了挙動で一致するか。"
+
+msgid "If they differ, is the difference behind an explicit GWexpy-only opt-in?"
+msgstr "差異がある場合、明示的な GWexpy 固有 opt-in の背後にあるか。"
+
+msgid "If the change is internal, is proportionate performance and resource evidence attached?"
+msgstr "内部変更の場合、相応の性能・resource evidenceが添付されているか。"
+
+msgid "If step 3 fails without satisfying step 4, the review verdict is **BLOCK**."
+msgstr "step 4を満たさずstep 3に失敗した場合、review verdictは **BLOCK** です。"

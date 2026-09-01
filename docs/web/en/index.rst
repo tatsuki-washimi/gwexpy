@@ -10,6 +10,11 @@ GWexpy Documentation
 
 GWexpy extends GWpy with new containers and numerical utilities for time-series and frequency-series data analysis.
 
+For corresponding GWpy APIs, default finite numerical results, sample selection,
+axis information, and successful completion follow the project-wide
+`GWpy behavioral compatibility policy <https://tatsuki-washimi.github.io/gwexpy/docs/explanation/gwpy_compatibility_policy.html>`_.
+Intentional numerical divergence requires explicit user opt-in.
+
 v\ |release| · Python ≥ 3.11 · Last updated: |today|
 
 .. raw:: html

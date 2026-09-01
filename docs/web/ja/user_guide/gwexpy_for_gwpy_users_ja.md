@@ -1,5 +1,9 @@
 # GWpy ユーザー向け移行ガイド
 
+GWpy 対応 API の既定の有限数値結果、選択sample、軸、正常終了は、
+[GWpy 挙動互換性ポリシー](https://tatsuki-washimi.github.io/gwexpy/docs/ja/explanation/gwpy_compatibility_policy.html)
+に従います。意図的な数値差異には明示的な user opt-in が必要です。
+
 ## GWpy 4 の legacy proxy 移行
 
 GWexpy v0.2.0 では、開発用だった `gwexpy.utils.shell`、

@@ -1,5 +1,7 @@
 # GWexpy AI Agent Guidelines
 
+Last-updated: 2026-09-01
+
 **Summary.**  
 This repository is optimized for collaboration with AI Coding Agents (Claude, Codex, Antigravity, Cursor, GitHub Copilot Workspace, etc.). Agents **must** read and follow these guidelines before performing any code changes, tests, or documentation updates.
 
@@ -16,7 +18,7 @@ Before any code changes or runs, ensure ALL items below are satisfied:
   normal and fall back to this document plus README.md/CONTRIBUTING.md.
 - Inspect `docs/developers/plans/` for relevant historical context and design decisions.
 - Ensure you have local environment with `.[dev,test,docs]` installed.
-- **Bootstrap the registry**: call `gwexpy.register_all()` or simply `import gwexpy` before using `ConverterRegistry` lookups.  If you see a `KeyError` mentioning “not registered”, call `gwexpy.register_all()`.
+- **Registry behavior**: supported public I/O entry points register their required handlers on demand. Call `gwexpy.register_all()` only when a task deliberately requires the complete constructor and I/O surface up front. A plain `import gwexpy` is not a full registry bootstrap.
 - Confirm that changes requiring physics judgement will be flagged for **human review**.
 - Log every high-level action and attach it to the PR (see “Audit & tagging” below).
 
@@ -34,10 +36,23 @@ Before any code changes or runs, ensure ALL items below are satisfied:
   - Protect against division-by-zero (use safe eps), regularize ill-conditioned matrices, and document thresholds.
   - Use windowing / zero-padding / overlap rules for FFTs; explicitly mention Fourier normalization convention.
   - See `docs/developers/plans/numerical_hardening_plan.md` for guidelines and examples.
-- **GWpy compatibility.** GWexpy extends `gwpy`. New APIs must:
-  - Avoid breaking `gwpy` semantics.
-  - Provide migration notes if public API diverges.
-  - Add compatibility tests where appropriate.
+- **GWpy behavioral compatibility.** This is a hard requirement for APIs that
+  correspond to existing GWpy APIs. When GWpy returns normally with finite
+  numerical results, the GWexpy default must preserve numerical values, shape
+  and selected samples, axis information, and successful completion. Any
+  intentional numerical divergence requires an explicit opt-in through a
+  GWexpy-specific API or option. See the canonical
+  [GWpy compatibility policy](../docs_redesign/explanation/gwpy_compatibility_policy.md).
+  Apply this checklist before changing or reviewing a corresponding API:
+  1. Is this an existing GWpy API?
+  2. Does GWpy return a normal finite result for the case?
+  3. Compare GWpy and GWexpy defaults: values, shape and selected samples,
+     axes including `t0` and `dt`, and successful completion versus exception.
+  4. If any required result differs, **BLOCK** the change unless the user chose
+     an explicit GWexpy-only opt-in.
+  5. For internal changes, attach performance/resource non-regression evidence
+     proportionate to the affected path; measurement is required for
+     performance-sensitive bootstrap, dispatch, I/O, and numerical kernels.
 
 ---
 
@@ -133,6 +148,13 @@ Agents must run and **pass** the following before creating a PR:
 
 - Prefer `AGENTS.md` as canonical multi-agent guidance. Use `CLAUDE.md` only for Claude-specific notes (if required).
 - Keep this document versioned. Add a `Last-updated: YYYY-MM-DD` header and maintain a changelog for agent-guideline changes.
+
+### Guideline changelog
+
+- **2026-09-01**: Promoted GWpy default finite-result identity to a blocking
+  project rule, required explicit opt-in for numerical divergence, added
+  performance/resource evidence requirements, and corrected lazy registry
+  bootstrap guidance.
 
 ---
 

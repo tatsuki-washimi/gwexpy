@@ -1,5 +1,10 @@
 # Migration Guide for GWpy Users
 
+For APIs corresponding to GWpy, default finite numerical results, selected
+samples, axes, and successful completion are governed by the
+[GWpy behavioral compatibility policy](https://tatsuki-washimi.github.io/gwexpy/docs/explanation/gwpy_compatibility_policy.html).
+Intentional numerical divergence requires explicit user opt-in.
+
 ## GWpy 4 legacy-proxy migration
 
 GWexpy v0.2.0 removes four obsolete developer-only import paths:

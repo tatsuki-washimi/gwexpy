@@ -10,6 +10,10 @@ GWexpy ドキュメント
 
 GWexpy は GWpy を拡張し、時系列および周波数系列データ解析のための新たなコンテナや数値計算ユーティリティを提供します。
 
+GWpy 対応 API の既定の有限数値結果、sample 選択、軸情報、正常終了は、
+プロジェクト横断の `GWpy 挙動互換性ポリシー <https://tatsuki-washimi.github.io/gwexpy/docs/ja/explanation/gwpy_compatibility_policy.html>`_
+に従います。意図的な数値差異には明示的な user opt-in が必要です。
+
 v\ |release| · Python ≥ 3.11 · 最終更新: |today|
 
 .. raw:: html

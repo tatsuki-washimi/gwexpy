@@ -17,6 +17,14 @@ implementation_summary:
   - Exact slice authority is propagated after base selection and dropped for non-integral-nanosecond cadence.
   - Scalar, collection, and matrix public I/O share an idempotent lazy registry bootstrap.
   - Release metadata and the immutable-payload 19-cell qualification workflow target v0.2.2.
+  - Project-wide user, contributor, and agent documentation now enforces the GWpy compatibility policy.
+candidate_provenance:
+  previous_review_candidate: ceec1070382c960234acea0a25719a84139e372b
+  change: compatibility policy promotion
+  policy_candidate_binding:
+    source: commit-containing-this-manifest
+    reviewed_commit_record: docs/developers/plans/manifests/audit-manifest-v0.2.2-release-readiness.yaml
+    state_at_creation: pending-human-review
 human_review:
   scientific_compatibility: pending
   performance: pending
@@ -63,3 +71,8 @@ release_operations_not_performed:
   - tag creation or movement
   - workflow dispatch
   - PyPI, GitHub Release, or Zenodo publication
+operation_status:
+  merge: not-performed
+  tag: not-performed
+  qualification_19_cell: not-dispatched
+  publication: not-performed
