@@ -42,6 +42,11 @@ _CUSTOM_SCALED_TIME_UNIT = u.def_unit(
 )
 
 
+def _ordinary_epoch(value: object) -> str:
+    """Serialize a legacy numeric epoch independently of NumPy's repr style."""
+    return repr(float(value))
+
+
 def _filelike_bytes_and_position(target: object) -> tuple[bytes, int]:
     position = target.tell()
     target.seek(0)
@@ -454,7 +459,7 @@ def test_hdf5_reader_uses_native_gwpy_semantics_for_marker_states(
         native.write(path, format="hdf5", path="series")
         if marker_state == "ordinary":
             with h5py.File(path, "r+") as h5file:
-                h5file["series"].attrs["epoch"] = repr(original.x0.value)
+                h5file["series"].attrs["epoch"] = _ordinary_epoch(original.x0.value)
 
     calls: list[type[object] | None] = []
     native_reader = exact_hdf5._BASE_READER
@@ -969,7 +974,7 @@ def _nonpathname_metadata_case(
         attrs = {
             "x0": replacement.x0.value,
             "xunit": replacement.xunit.to_string(),
-            "epoch": repr(replacement.x0.value + 1.0),
+            "epoch": _ordinary_epoch(replacement.x0.value + 1.0),
         }
         match = "epoch"
     elif metadata_case in {
@@ -979,7 +984,7 @@ def _nonpathname_metadata_case(
         attrs = {
             "x0": replacement.x0.value,
             "xunit": replacement.xunit.to_string(),
-            "epoch": repr(replacement.x0.value),
+            "epoch": _ordinary_epoch(replacement.x0.value),
         }
         match = None
         expectation = metadata_case
@@ -1132,7 +1137,7 @@ def _nonpathname_metadata_case(
                 assert _SIDECAR_ATTRIBUTE_V2 not in scope.file.attrs
             else:
                 assert expectation == "nonexact-ordinary-epoch"
-                assert dataset.attrs["epoch"] == repr(replacement.x0.value)
+                assert dataset.attrs["epoch"] == _ordinary_epoch(replacement.x0.value)
                 assert _SIDECAR_ATTRIBUTE_V2 not in scope.file.attrs
         assert native_writer_calls() == 1
 
@@ -1372,7 +1377,7 @@ def test_hdf5_write_metadata_policy_fails_before_mutation(
         ordinary_epoch: str | bytes = (
             b"ordinary-\xff"
             if metadata_case.endswith("invalid-bytes")
-            else repr(replacement.x0.value)
+            else _ordinary_epoch(replacement.x0.value)
         )
         attrs = {
             "x0": replacement.x0.value,
@@ -1518,11 +1523,11 @@ def test_hdf5_write_metadata_policy_fails_before_mutation(
         attrs = {
             "x0": replacement.x0.value,
             "xunit": replacement.xunit.to_string(),
-            "epoch": repr(replacement.x0.value + 1.0),
+            "epoch": _ordinary_epoch(replacement.x0.value + 1.0),
         }
         match = "epoch"
     elif metadata_case == "exact-ordinary-epoch-matching":
-        ordinary_epoch = repr(replacement.x0.value)
+        ordinary_epoch = _ordinary_epoch(replacement.x0.value)
         attrs = {
             "x0": replacement.x0.value,
             "xunit": replacement.xunit.to_string(),
@@ -1963,7 +1968,7 @@ def test_hdf5_nonexact_output_marker_postcondition_rolls_back(
     attrs: dict[str, object] = {
         "x0": replacement.x0.value,
         "xunit": replacement.xunit.to_string(),
-        "epoch": repr(replacement.x0.value),
+        "epoch": _ordinary_epoch(replacement.x0.value),
     }
     attrs_before = copy.deepcopy(attrs)
 
@@ -3557,7 +3562,7 @@ with h5py.File(sys.argv[1], "r") as h5file:
     if isinstance(raw_epoch, bytes):
         raw_epoch = raw_epoch.decode("ascii")
     assert float(raw_epoch) == dataset.attrs["x0"]
-    assert len(raw_epoch) > len(repr(dataset.attrs["x0"]))
+    assert len(raw_epoch) > len(repr(float(dataset.attrs["x0"])))
     assert struct.pack(">d", dataset.attrs["x0"]).hex() == sys.argv[2]
     assert dataset.attrs["xunit"] == sys.argv[3]
 from gwpy.timeseries import TimeSeries
