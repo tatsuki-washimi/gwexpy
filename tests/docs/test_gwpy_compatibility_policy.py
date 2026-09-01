@@ -156,6 +156,7 @@ def test_release_review_scopes_bind_the_policy_to_lanes_a_and_b() -> None:
         ".agent/AGENTS.md",
         ".clinerules",
         ".github/copilot-instructions.md",
+        ".github/workflows/test-compat-gwpy.yml",
         "CONTRIBUTING.md",
         "README.md",
         "docs/developers/plans/20260901_v0.2.2_gwpy_behavioral_compatibility.md",
@@ -175,12 +176,15 @@ def test_release_review_scopes_bind_the_policy_to_lanes_a_and_b() -> None:
         "docs_redesign/locales/ja/LC_MESSAGES/how-to/migration.po",
         "docs_redesign/locales/ja/LC_MESSAGES/index.po",
         "gwexpy/timeseries/_core.py",
+        "gwexpy/timeseries/_statistics.py",
         "gwexpy/timeseries/timeseries.py",
         "release_notes/v0.2.2.md",
         "tests/docs/test_gwpy_compatibility_policy.py",
         "tests/docs/test_docs_redesign_notebook_compatibility.py",
+        "tests/docs/test_gwpy4_proxy_workflow.py",
         "tests/timeseries/test_exact_gps_epoch.py",
         "tests/timeseries/test_gwpy_behavioral_compatibility.py",
+        "tests/timeseries/test_statistics.py",
     }
     performance_expected = {
         ".agent/AGENTS.md",
