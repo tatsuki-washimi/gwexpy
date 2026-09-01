@@ -20,26 +20,40 @@ implementation_summary:
   - Project-wide user, contributor, and agent documentation now enforces the GWpy compatibility policy.
 candidate_provenance:
   previous_review_candidate: ceec1070382c960234acea0a25719a84139e372b
-  change: compatibility policy promotion
+  reviewed_but_not_releasable_candidate:
+    sha: eb3e7f91203aaf82ebc2e7e7e4c0d74ffbc28c3d
+    pr_ci: passed-16-of-16
+    human_review: approved-all-three-lanes
+    terra_advisory: hold
+    blocking_findings:
+      - A-001
+      - A-002
+      - B-001
+  change: Terra finding remediation
   policy_candidate_binding:
     source: commit-containing-this-manifest
     reviewed_commit_record: docs/developers/plans/manifests/audit-manifest-v0.2.2-release-readiness.yaml
-    state_at_creation: pending-human-review
+    state_at_creation: pending-requalification
 ci_followup:
   failed_candidate: e98425410af9158c98ed3ef95c71936ec1880a40
   run_id: 33461793458
   job_id: 99713280960
   failure: statsmodels-0.15-removed-granger-verbose-argument
-  resolution: advanced-correlation-notebook-version-fallback
+  resolution: statsmodels-signature-capability-detection
   replacement_candidate:
     source: commit-containing-this-manifest
-    state_at_creation: pending-ci-and-human-review
+    state_at_creation: pending-requalification
+terra_findings:
+  A-001: broad-statsmodels-typeerror-fallback
+  A-002: missing-candidate-bound-gwpy-4.0.1-evidence
+  B-001: dirty-performance-evidence-provenance
 human_review:
-  scientific_compatibility: pending
-  performance: pending
-  release_security: pending
-  reason: Release publication is HOLD until all three lanes approve the final candidate SHA.
-verified:
+  binding: commit-containing-this-manifest
+  scientific_compatibility: pending-reapproval
+  performance: pending-reapproval
+  release_security: pending-reapproval
+  reason: All lanes must approve the same replacement candidate SHA.
+historical_verification_not_binding_replacement_candidate:
   - command: conda run -n gwexpy pytest <v0.2.2 focused P0/P1 selector> -q
     environment: GWpy 4.0.1
     result: 904 passed, 2 expected GWpy crop-bound warnings
@@ -68,14 +82,15 @@ verified:
     result: completed for baseline 17f5588e6 and candidate; maintainer decision pending
     evidence: docs/developers/plans/manifests/v0.2.2-bootstrap-io-performance.json
 pending_external_verification:
-  - scientific compatibility human review
-  - performance evidence human review
-  - release-security human review
+  - clean replacement-candidate GWpy 4.0.1 and 4.0.2 compatibility evidence
+  - clean replacement-candidate 30-run performance evidence
+  - all three human review lanes rebound to the replacement candidate SHA
+  - all three Terra advisory lanes approved on the replacement candidate SHA
   - GitHub 19-cell qualification and common payload digest evidence
   - PyPI Trusted Publisher, GitHub environment, and tag ruleset readback
 handoff_operations:
-  - commit candidate changes on fix/v022-gwpy-behavioral-compat
-  - push the candidate branch and open a pull request against main
+  - requalify the replacement candidate on fix/v022-gwpy-behavioral-compat
+  - push the replacement candidate and rerun the full pull-request gate
 release_operations_not_performed:
   - merge
   - tag creation or movement

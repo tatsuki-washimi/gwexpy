@@ -218,7 +218,14 @@ def test_implementation_audit_records_policy_candidate_provenance() -> None:
     assert provenance["previous_review_candidate"] == (
         "ceec1070382c960234acea0a25719a84139e372b"
     )
-    assert provenance["change"] == "compatibility policy promotion"
+    assert provenance["reviewed_but_not_releasable_candidate"] == {
+        "sha": "eb3e7f91203aaf82ebc2e7e7e4c0d74ffbc28c3d",
+        "pr_ci": "passed-16-of-16",
+        "human_review": "approved-all-three-lanes",
+        "terra_advisory": "hold",
+        "blocking_findings": ["A-001", "A-002", "B-001"],
+    }
+    assert provenance["change"] == "Terra finding remediation"
     assert "current_review_candidate" not in provenance
     assert provenance["policy_candidate_binding"] == {
         "source": "commit-containing-this-manifest",
@@ -226,7 +233,19 @@ def test_implementation_audit_records_policy_candidate_provenance() -> None:
             "docs/developers/plans/manifests/"
             "audit-manifest-v0.2.2-release-readiness.yaml"
         ),
-        "state_at_creation": "pending-human-review",
+        "state_at_creation": "pending-requalification",
+    }
+    assert audit["terra_findings"] == {
+        "A-001": "broad-statsmodels-typeerror-fallback",
+        "A-002": "missing-candidate-bound-gwpy-4.0.1-evidence",
+        "B-001": "dirty-performance-evidence-provenance",
+    }
+    assert audit["human_review"] == {
+        "binding": "commit-containing-this-manifest",
+        "scientific_compatibility": "pending-reapproval",
+        "performance": "pending-reapproval",
+        "release_security": "pending-reapproval",
+        "reason": "All lanes must approve the same replacement candidate SHA.",
     }
     assert audit["operation_status"] == {
         "merge": "not-performed",
@@ -239,9 +258,9 @@ def test_implementation_audit_records_policy_candidate_provenance() -> None:
         "run_id": 33461793458,
         "job_id": 99713280960,
         "failure": "statsmodels-0.15-removed-granger-verbose-argument",
-        "resolution": "advanced-correlation-notebook-version-fallback",
+        "resolution": "statsmodels-signature-capability-detection",
         "replacement_candidate": {
             "source": "commit-containing-this-manifest",
-            "state_at_creation": "pending-ci-and-human-review",
+            "state_at_creation": "pending-requalification",
         },
     }
