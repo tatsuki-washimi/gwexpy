@@ -32,12 +32,12 @@ def load_contract_module():
     return module
 
 
-def test_release_contracts_cover_frozen_v011x_releases_and_v020_lane() -> None:
+def test_release_contracts_cover_frozen_releases_and_v022_lane() -> None:
     assert CONTRACTS_PATH.is_file()
     data = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
 
     assert data["schema"] == "gwexpy-release-contracts-v1"
-    assert set(data["releases"]) == {"v0.1.13", "v0.1.14", "v0.2.0"}
+    assert set(data["releases"]) == {"v0.1.13", "v0.1.14", "v0.2.0", "v0.2.2"}
 
     v0113 = data["releases"]["v0.1.13"]
     assert v0113["plan_path"] == (
@@ -93,6 +93,21 @@ def test_release_contracts_cover_frozen_v011x_releases_and_v020_lane() -> None:
 
     v020 = data["releases"]["v0.2.0"]
     assert v020["protected_refs"] == ["main", "maint/0.2"]
+
+    v022 = data["releases"]["v0.2.2"]
+    assert v022["plan_path"].endswith(
+        "20260901_v0.2.2_gwpy_behavioral_compatibility.md"
+    )
+    assert v022["review_evidence_path"].endswith(
+        "audit-manifest-v0.2.2-release-readiness.yaml"
+    )
+    assert set(v022["review_lanes"]) == {
+        "scientific-compatibility",
+        "performance",
+        "release-security",
+    }
+    assert v022["artifact_prefix"] == "v022-integration-evidence"
+    assert v022["protected_refs"] == ["main", "maint/0.2"]
 
 
 def test_release_contract_loader_rejects_unknown_tags() -> None:
@@ -208,6 +223,7 @@ def test_release_contract_cli_emits_exact_tag_protected_refs() -> None:
     contracts = load_contract_module()
 
     assert contracts.protected_refs("v0.2.0") == ["main", "maint/0.2"]
+    assert contracts.protected_refs("v0.2.2") == ["main", "maint/0.2"]
 
 
 def test_v0114_manifest_is_a_sanitized_review_evidence_container() -> None:

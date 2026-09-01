@@ -8,10 +8,11 @@ from pathlib import Path
 from babel.messages import pofile
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-RELEASE_VERSION = "0.2.0"
-RELEASE_DATE = "2026-08-26"
+RELEASE_VERSION = "0.2.2"
+RELEASE_DATE = "2026-09-01"
 RELEASE_HISTORY_ENTRY = f"[{RELEASE_VERSION}] - {RELEASE_DATE}"
-RELEASE_SHA = "5c91cf2d1087616c9815d0cbcc082c5f21bb36e9"
+ACTIVITY_RELEASE_VERSION = "0.2.0"
+ACTIVITY_RELEASE_SHA = "5c91cf2d1087616c9815d0cbcc082c5f21bb36e9"
 ACTIVITY_CSV_SHA256 = "8411c5acff7beea282d5f24a105ef0573012a923241d83dd4208a0af2fbf63b0"
 RELEASE_SCOPE_HISTORY = """\
 ### Update history
@@ -46,7 +47,9 @@ def test_released_changelog_publishes_the_v020_activity_snapshot() -> None:
     assert hashlib.sha256(activity_csv.read_bytes()).hexdigest() == ACTIVITY_CSV_SHA256
 
     svg_text = activity_svg.read_text(encoding="utf-8")
-    assert f"Target ref: v{RELEASE_VERSION}; resolved SHA: {RELEASE_SHA}" in svg_text
+    assert (
+        f"Target ref: v{ACTIVITY_RELEASE_VERSION}; resolved SHA: {ACTIVITY_RELEASE_SHA}"
+    ) in svg_text
     assert f"canonical CSV SHA-256: {ACTIVITY_CSV_SHA256}" in svg_text
     assert "/_static/images/development-activity-v0.2.0.svg" in source
     assert "/_static/downloads/development-activity-v0.2.0-weekly.csv" in source
@@ -71,7 +74,7 @@ def test_v020_activity_snapshot_has_japanese_public_copy() -> None:
 
 
 def test_current_release_facts_match_the_approved_values() -> None:
-    """Pin the approved v0.2.0 facts in every canonical public source."""
+    """Pin the approved v0.2.2 facts in every canonical public source."""
     changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     citation = (REPO_ROOT / "CITATION.cff").read_text(encoding="utf-8")
     zenodo = json.loads((REPO_ROOT / ".zenodo.json").read_text(encoding="utf-8"))
@@ -98,13 +101,11 @@ def test_current_release_facts_match_the_approved_values() -> None:
     assert release_message.id == RELEASE_HISTORY_ENTRY
     assert release_message.string == RELEASE_HISTORY_ENTRY
 
-    assert RELEASE_SCOPE_HISTORY in changelog
-
     release_note = REPO_ROOT / "release_notes" / f"v{RELEASE_VERSION}.md"
     assert release_note.is_file()
     release_note_text = release_note.read_text(encoding="utf-8")
     assert f"pip install gwexpy=={RELEASE_VERSION}" in release_note_text
-    assert RELEASE_SCOPE_HISTORY in release_note_text
+    assert "`TimeSeries.crop()` delegates GWpy-supported bounds" in release_note_text
 
 
 def test_redesign_changelog_includes_the_canonical_release_history() -> None:
@@ -120,6 +121,8 @@ def test_redesign_changelog_includes_the_canonical_release_history() -> None:
     )
     assert canonical_releases == [
         RELEASE_HISTORY_ENTRY,
+        "[0.2.1] - 2026-08-31",
+        "[0.2.0] - 2026-08-26",
         "[0.1.14] - 2026-08-15",
         "[0.1.13] - 2026-08-08",
         "[0.1.12] - 2026-07-31",

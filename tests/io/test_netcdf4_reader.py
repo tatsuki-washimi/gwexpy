@@ -172,8 +172,8 @@ class TestNetCDF4Roundtrip:
             TimeSeries.read(path, format="nc")
 
     @pytest.mark.parametrize("reader", (TimeSeries, TimeSeriesDict, TimeSeriesMatrix))
-    def test_bounded_v2_read_matches_the_exact_positional_crop(self, tmp_path, reader):
-        """Reader bounds use the same large-GPS crop contract as direct reads."""
+    def test_bounded_v2_read_matches_the_direct_crop(self, tmp_path, reader):
+        """Reader bounds follow the public crop contract for each container."""
         path = tmp_path / "bounded.nc"
         t0 = 1_234_567_890.1234567
         dt = 1.0 / 30.0
@@ -195,7 +195,11 @@ class TestNetCDF4Roundtrip:
             values = loaded["x"].value
         else:
             values = loaded.value[0, 0]
-        np.testing.assert_array_equal(values, source.value[100:600])
+        if reader is TimeSeriesMatrix:
+            expected = source.value[100:600]
+        else:
+            expected = source.crop(start, end).value
+        np.testing.assert_array_equal(values, expected)
 
     def test_matrix_reader_preserves_a_v2_dict_axis_during_bounded_read(self, tmp_path):
         """A dict-shaped v2 file must not be realigned through float timestamps."""

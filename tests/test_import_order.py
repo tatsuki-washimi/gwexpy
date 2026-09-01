@@ -107,6 +107,79 @@ class TestImportOrderIsolated:
         """)
         assert result.returncode == 0, result.stderr
 
+    def test_collection_first_io_registers_stable_ndscope_handlers(self):
+        """Collection-first I/O must bootstrap stable registry handlers."""
+        result = _run_isolated("""\
+            import sys
+            import tempfile
+            from pathlib import Path
+            import numpy as np
+            from gwpy.io.registry import default_registry
+            from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+
+            assert "gwexpy.timeseries.io" not in sys.modules
+            before = list(
+                default_registry.get_formats(TimeSeriesDict, "Write")["Format"]
+            )
+            assert "hdf.ndscope" not in before
+
+            collection = TimeSeriesDict(
+                {"X1:TEST": TimeSeries(np.arange(4), sample_rate=2)}
+            )
+            with tempfile.TemporaryDirectory() as directory:
+                path = Path(directory) / "collection.hdf5"
+                collection.write(path, format="hdf.ndscope")
+                first_formats = list(
+                    default_registry.get_formats(TimeSeriesDict, "Write")["Format"]
+                )
+                first_writer = default_registry.get_writer(
+                    "hdf.ndscope", TimeSeriesDict
+                )
+                first_reader = default_registry.get_reader(
+                    "hdf.ndscope", TimeSeriesDict
+                )
+                restored = TimeSeriesDict.read(path, format="hdf.ndscope")
+                collection.write(path, format="hdf.ndscope", overwrite=True)
+                second_formats = list(
+                    default_registry.get_formats(TimeSeriesDict, "Write")["Format"]
+                )
+
+            assert "gwexpy.timeseries.io" in sys.modules
+            assert first_formats.count("hdf.ndscope") == 1
+            assert second_formats == first_formats
+            assert default_registry.get_writer(
+                "hdf.ndscope", TimeSeriesDict
+            ) is first_writer
+            assert default_registry.get_reader(
+                "hdf.ndscope", TimeSeriesDict
+            ) is first_reader
+            np.testing.assert_array_equal(restored["X1:TEST"].value, np.arange(4))
+        """)
+        assert result.returncode == 0, result.stderr
+
+    def test_matrix_first_hdf5_write_bootstraps_io(self):
+        """A direct matrix writer is still an explicit public I/O entry."""
+        result = _run_isolated("""\
+            import sys
+            import tempfile
+            from pathlib import Path
+            import numpy as np
+            from gwexpy.timeseries import TimeSeriesMatrix
+
+            assert "gwexpy.timeseries.io" not in sys.modules
+            matrix = TimeSeriesMatrix(
+                np.arange(8).reshape(1, 1, 8), t0=0, dt=0.25
+            )
+            with tempfile.TemporaryDirectory() as directory:
+                path = Path(directory) / "matrix.hdf5"
+                matrix.write(path, format="hdf5")
+                assert "gwexpy.timeseries.io" in sys.modules
+                restored = TimeSeriesMatrix.read(path, format="hdf5")
+
+            np.testing.assert_array_equal(restored.value, matrix.value)
+        """)
+        assert result.returncode == 0, result.stderr
+
     def test_registry_populated_via_parent_import(self):
         """Importing a gwexpy submodule triggers top-level __init__.py,
         which imports all subpackages and populates the registry.

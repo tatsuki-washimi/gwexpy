@@ -240,6 +240,52 @@ def test_release_smoke_covers_both_artifacts_on_python_311_and_312():
         assert token in workflow if token == "retention-days: 90" else token in smoke
 
 
+def test_v022_release_qualification_has_nineteen_digest_checked_cells():
+    import yaml
+
+    workflow = yaml.safe_load(read_workflow())
+    matrix = workflow["jobs"]["qualify"]["strategy"]["matrix"]["include"]
+
+    assert len(matrix) == 19
+    assert workflow["jobs"]["qualify"]["if"] == (
+        "${{ needs.verify.outputs.version == '0.2.2' }}"
+    )
+    assert workflow["jobs"]["qualification_evidence"]["if"] == (
+        "${{ needs.verify.outputs.version == '0.2.2' }}"
+    )
+    assert {entry["cell"] for entry in matrix} == {
+        "install-ubuntu-3.11-wheel",
+        "install-ubuntu-3.11-sdist",
+        "install-ubuntu-3.12-wheel",
+        "install-ubuntu-3.12-sdist",
+        "install-ubuntu-3.13-wheel",
+        "install-ubuntu-3.13-sdist",
+        "install-ubuntu-3.14-wheel",
+        "install-ubuntu-3.14-sdist",
+        "install-macos-3.11-wheel",
+        "install-macos-3.14-wheel",
+        "install-windows-3.11-wheel",
+        "install-windows-3.14-wheel",
+        "gwpy-4.0.1-wheel",
+        "gwpy-4.0.2-wheel",
+        "sdist-3.12-claims",
+        "conda-3.11",
+        "conda-3.14",
+        "scientific-3.11-wheel",
+        "docs-en-ja-3.11-wheel",
+    }
+    text = read_workflow()
+    qualify = text.split("\n  qualify:\n", maxsplit=1)[1].split(
+        "\n  qualification_evidence:\n", maxsplit=1
+    )[0]
+    assert "release-payload-${{ needs.verify.outputs.source_sha }}" in qualify
+    assert "distribution-sha256.json" in qualify
+    assert "Verify qualification payload digest" in qualify
+    assert "tests/timeseries/test_gwpy_behavioral_compatibility.py" in qualify
+    publish = text.split("\n  publish:\n", maxsplit=1)[1]
+    assert "qualification_evidence" in publish.split("\n    if:", maxsplit=1)[0]
+
+
 def test_release_smoke_executes_with_license_sidecar_path(tmp_path):
     """The shell/Python boundary passes the sidecar path, not its hash value."""
     workflow = read_workflow()
@@ -302,12 +348,12 @@ def test_release_smoke_executes_with_license_sidecar_path(tmp_path):
     assert argument_name == "expected_license_hash_file"
 
 
-def test_releasing_manual_dispatch_supplies_v0114_review_evidence():
+def test_releasing_manual_dispatch_supplies_v022_review_evidence():
     releasing = (WORKFLOW.parents[2] / "RELEASING.md").read_text(encoding="utf-8")
     assert (
         "-f review_evidence="
         "docs/developers/plans/manifests/"
-        "audit-manifest-v0.1.14-release-readiness.yaml"
+        "audit-manifest-v0.2.2-release-readiness.yaml"
     ) in releasing
 
 

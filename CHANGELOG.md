@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.2] - 2026-09-01
+
+This maintenance release restores default behavioural compatibility with GWpy
+for time-series selection while retaining exact HDF5 epoch metadata as
+GWexpy-private state.
+
+### Fixed
+
+- **TimeSeries crop compatibility**: `TimeSeries.crop()` now delegates
+  GWpy-supported arguments to GWpy, so default sample selection, `t0`, `dt`,
+  and success/failure behaviour match GWpy at ordinary and high sample rates.
+- **Exact epoch propagation**: slicing and cropping finish the base operation
+  before propagating private exact state.  A cadence that is not an integral
+  number of nanoseconds now drops derived exact authority instead of causing a
+  successful GWpy operation to fail.
+- **Lazy I/O registration**: collection-first time-series and frequency-series
+  I/O now performs the same idempotent registry bootstrap as scalar I/O.
+  Repeated operations retain reader and writer identity and registration order.
+
 ## [0.2.1] - 2026-08-31
 
 This maintenance release corrects the HDF5 exact-epoch regression and restores

@@ -8,6 +8,7 @@ import numpy as np
 import pytest
 from astropy import units as u
 from gwpy.time import LIGOTimeGPS
+from gwpy.timeseries import TimeSeries as GwpyTimeSeries
 
 from gwexpy.timeseries import TimeSeries
 
@@ -102,11 +103,30 @@ def test_t0_ns_zero_slice_step_keeps_python_error_semantics() -> None:
         series[::0]
 
 
-def test_t0_ns_slice_rejects_a_non_integral_nanosecond_interval() -> None:
+def test_t0_ns_slice_drops_exact_authority_for_non_integral_nanosecond_interval() -> (
+    None
+):
     series = TimeSeries(np.arange(2.0), t0_ns=0, dt=(1 / 3) * u.ns)
 
-    with pytest.raises(ValueError, match="integer number of GPS nanoseconds"):
-        series[1:]
+    result = series[1:]
+
+    np.testing.assert_array_equal(result.value, [1.0])
+    assert not hasattr(result, "_gwex_t0_gps_ns")
+    assert not hasattr(result, "_gwex_dt_gps_ns")
+
+
+def test_t0_ns_crop_drops_exact_authority_for_non_integral_nanosecond_interval() -> (
+    None
+):
+    series = TimeSeries(np.arange(8.0), t0_ns=0, dt=(1 / 3) * u.ns)
+    reference = GwpyTimeSeries(np.arange(8.0), t0=0, dt=(1 / 3) * u.ns)
+
+    result = series.crop(0, 1e-9)
+    expected = reference.crop(0, 1e-9)
+
+    np.testing.assert_array_equal(result.value, expected.value)
+    assert not hasattr(result, "_gwex_t0_gps_ns")
+    assert not hasattr(result, "_gwex_dt_gps_ns")
 
 
 @pytest.mark.parametrize("authority", ["t0", "epoch", "x0", "times"])

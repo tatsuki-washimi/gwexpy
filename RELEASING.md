@@ -7,7 +7,7 @@ dry-runs and must be launched with `--ref main`, which the workflow enforces:
 gh workflow run publish-release.yml --ref main \
   -f release_ref=<existing-final-tag-or-40-character-candidate-sha> \
   -f expected_tag=<final-version-tag> \
-  -f review_evidence=docs/developers/plans/manifests/audit-manifest-v0.1.14-release-readiness.yaml
+  -f review_evidence=docs/developers/plans/manifests/audit-manifest-v0.2.2-release-readiness.yaml
 ```
 
 The accepted tag-specific plan, evidence schema/path, review lanes, S-to-R
@@ -39,7 +39,8 @@ Both a candidate dispatch and a tag push run the frozen-tip validator.  It
 loads the exact expected tag's `protected_refs` from the release contract and
 requires every fetched `origin/<protected-ref>` tip to equal the validated
 40-character source SHA.  The frozen v0.1.13 and v0.1.14 contracts require
-`main` and `maint/0.1`; v0.2.0 requires exactly `main` and `maint/0.2`.
+`main` and `maint/0.1`; v0.2.0 and v0.2.2 require exactly `main` and
+`maint/0.2`.
 A missing protected-ref fetch or any moved tip is a release failure; it is
 never ignored as optional.
 
@@ -58,12 +59,22 @@ accepts only typed release facts (not logs, URLs, credentials, or raw review
 text) and emits a single allowlisted aggregate artifact whose name is selected from the exact release contract:
 `v0113-integration-evidence-<40-character-source-sha>`,
 `v0114-integration-evidence-<40-character-source-sha>`, or
-`v020-integration-evidence-<40-character-source-sha>`.  It is retained for
+`v020-integration-evidence-<40-character-source-sha>`, or
+`v022-integration-evidence-<40-character-source-sha>`.  It is retained for
 90 days.  Record its artifact ID, API digest, `created_at`, and
 `expires_at` in UTC; acceptance requires
 `expires_at - created_at >= 90 days - 5 minutes`.
 Repository retention policy may cap the configured duration, and run/artifact
 deletion or expiry invalidates the evidence.
+
+For v0.2.2, the same build payload also passes a 19-cell qualification matrix.
+Every cell verifies `distribution-sha256.json` before installation and emits
+its source SHA, version, and wheel/sdist digests.
+The `qualification_evidence` job accepts exactly the named 19 cells, rejects a
+digest or source mismatch, and writes
+`v022-qualification-evidence-<40-character-source-sha>`.
+The publish job depends on that aggregate as well as the four-cell smoke
+aggregate, so it cannot publish a payload different from the qualified bytes.
 
 Terra review evidence is advisory orchestration metadata, not identity proof,
 legal approval, or publication authorization.  It contains the reviewed

@@ -147,6 +147,49 @@
         "main",
         "maint/0.2"
       ]
+    },
+    "v0.2.2": {
+      "plan_path": "docs/developers/plans/20260901_v0.2.2_gwpy_behavioral_compatibility.md",
+      "review_evidence_path": "docs/developers/plans/manifests/audit-manifest-v0.2.2-release-readiness.yaml",
+      "review_evidence_schema": "gwexpy-v022-review-evidence-v1",
+      "payload_schema": "gwexpy-v022-release-payload-v1",
+      "integration_evidence_schema": "gwexpy-v022-integration-evidence-v1",
+      "review_lanes": {
+        "scientific-compatibility": [
+          "gwexpy/timeseries/_core.py",
+          "gwexpy/timeseries/timeseries.py",
+          "tests/timeseries/test_exact_gps_epoch.py",
+          "tests/timeseries/test_gwpy_behavioral_compatibility.py"
+        ],
+        "performance": [
+          "gwexpy/_bootstrap.py",
+          "gwexpy/frequencyseries/collections.py",
+          "gwexpy/timeseries/collections.py",
+          "gwexpy/timeseries/matrix.py",
+          "gwexpy/types/series_matrix_io.py",
+          "scripts/benchmarks/bootstrap_io_benchmark.py",
+          "tests/test_bootstrap_io_benchmark.py",
+          "tests/test_import_order.py"
+        ],
+        "release-security": [
+          ".github/workflows/publish-release.yml",
+          "RELEASING.md",
+          "scripts/ci",
+          "scripts/validate_release.py",
+          "tests/test_publish_release_workflow.py",
+          "tests/test_release_contracts.py",
+          "tests/test_validate_release_script.py"
+        ]
+      },
+      "s_to_r_allowed_paths": [
+        "docs/developers/plans/20260901_v0.2.2_gwpy_behavioral_compatibility.md",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.2-release-readiness.yaml"
+      ],
+      "artifact_prefix": "v022-integration-evidence",
+      "protected_refs": [
+        "main",
+        "maint/0.2"
+      ]
     }
   }
 }

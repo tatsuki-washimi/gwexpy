@@ -13,6 +13,7 @@ This module integrates all Mixins into a single TimeSeries class.
 
 from __future__ import annotations
 
+from contextvars import ContextVar
 from operator import index
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, SupportsIndex, cast
@@ -55,6 +56,12 @@ from ._statistics import StatisticsMixin
 
 if TYPE_CHECKING:
     from gwexpy.timeseries import TimeSeriesDict
+
+
+_SUPPRESS_EXACT_FINALIZE_FROM: ContextVar[frozenset[int]] = ContextVar(
+    "_SUPPRESS_EXACT_FINALIZE_FROM", default=frozenset()
+)
+_EXACT_STATE_KEYS = frozenset({"_gwex_t0_gps_ns", "_gwex_dt_gps_ns"})
 
 
 class TimeSeries(
@@ -489,9 +496,18 @@ class TimeSeries(
 
     def __getitem__(self, item: Any) -> Any:
         """Preserve an exact epoch authority when a regular slice advances it."""
-        result = super().__getitem__(item)
         exact = getattr(self, "_gwex_t0_gps_ns", None)
+        exact_dt = getattr(self, "_gwex_dt_gps_ns", None)
         slice_item = item[0] if isinstance(item, tuple) and len(item) == 1 else item
+        if exact is not None and isinstance(slice_item, slice):
+            suppressed = _SUPPRESS_EXACT_FINALIZE_FROM.get()
+            token = _SUPPRESS_EXACT_FINALIZE_FROM.set(suppressed | {id(self)})
+            try:
+                result = super().__getitem__(item)
+            finally:
+                _SUPPRESS_EXACT_FINALIZE_FROM.reset(token)
+        else:
+            result = super().__getitem__(item)
         if (
             exact is None
             or not isinstance(slice_item, slice)
@@ -500,14 +516,11 @@ class TimeSeries(
             return result
 
         try:
-            dt_ns = getattr(self, "_gwex_dt_gps_ns", None)
+            dt_ns = exact_dt
             if dt_ns is None:
                 dt_ns = _integral_dt_gps_ns(self.dt)
-        except (AttributeError, TypeError, ValueError, OverflowError) as exc:
-            raise ValueError(
-                "cannot preserve t0_gps_ns through a slice whose dt is not "
-                "an integer number of nanoseconds"
-            ) from exc
+        except (AttributeError, TypeError, ValueError, OverflowError):
+            return result
 
         start, _, step = slice_item.indices(len(self))
         result._gwex_t0_gps_ns = int(exact) + start * dt_ns
@@ -524,8 +537,11 @@ class TimeSeries(
         if obj is None:
             return
 
-        # Propagate custom _gwex_ attributes
+        # Propagate custom _gwex_ attributes.
+        suppress_exact = id(obj) in _SUPPRESS_EXACT_FINALIZE_FROM.get()
         for key, val in getattr(obj, "__dict__", {}).items():
+            if suppress_exact and key in _EXACT_STATE_KEYS:
+                continue
             if key.startswith("_gwex_") and key not in self.__dict__:
                 self.__dict__[key] = val
 

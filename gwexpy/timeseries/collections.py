@@ -143,6 +143,10 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
     @classmethod
     def read(cls, source, *args: Any, **kwargs: Any):  # type: ignore[override]
         """Read a `TimeSeriesDict` from a supported source."""
+        from gwexpy._bootstrap import register_all
+
+        register_all()
+
         fmt = kwargs.get("format")
         if fmt in {"nc", "netcdf4"}:
             from gwexpy.timeseries.io.netcdf4_ import read_timeseriesdict_netcdf4
@@ -818,6 +822,10 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
         """Write the collection to a supported target."""
+        from gwexpy._bootstrap import register_all
+
+        register_all()
+
         fmt = kwargs.get("format")
         if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
             from gwexpy.interop.root_ import write_root_file
@@ -1968,6 +1976,10 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
     @classmethod
     def read(cls, source, *args: Any, **kwargs: Any):  # type: ignore[override]
         """Read a ``TimeSeriesList`` from a supported source."""
+        from gwexpy._bootstrap import register_all
+
+        register_all()
+
         fmt = kwargs.get("format")
         # Both branches below re-read each entry themselves rather than going
         # through a registered reader, and neither forwarded the bounds — so a
@@ -2037,6 +2049,10 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
 
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
         """Write TimeSeriesList to file (HDF5, ROOT, etc.)."""
+        from gwexpy._bootstrap import register_all
+
+        register_all()
+
         fmt = kwargs.get("format")
         if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
             from gwexpy.interop.root_ import write_root_file

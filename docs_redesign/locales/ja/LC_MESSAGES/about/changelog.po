@@ -43,6 +43,47 @@ msgstr "不変の v0.2.0 リリースタグまでの週次活動です。積み�
 msgid "[Download the weekly CSV data](/_static/downloads/development-activity-v0.2.0-weekly.csv)"
 msgstr "[週次 CSV データをダウンロード](/_static/downloads/development-activity-v0.2.0-weekly.csv)"
 
+#: ../../../CHANGELOG.md
+msgid "[0.2.2] - 2026-09-01"
+msgstr "[0.2.2] - 2026-09-01"
+
+#: ../../../CHANGELOG.md
+msgid ""
+"This maintenance release restores default behavioural compatibility with GWpy for time-series "
+"selection while retaining exact HDF5 epoch metadata as GWexpy-private state."
+msgstr "exact HDF5 epoch metadata を GWexpy の private state として保持しつつ、時系列選択の既定挙動を GWpy と互換に戻したメンテナンスリリースです。"
+
+#: ../../../CHANGELOG.md
+msgid ""
+"**TimeSeries crop compatibility**: `TimeSeries.crop()` now delegates GWpy-supported arguments to "
+"GWpy, so default sample selection, `t0`, `dt`, and success/failure behaviour match GWpy at ordinary "
+"and high sample rates."
+msgstr "**TimeSeries crop 互換性**：`TimeSeries.crop()` は GWpy がサポートする引数を GWpy に委譲するようになり、通常および高 sample rate で、既定の sample 選択、`t0`、`dt`、成功または失敗の挙動が GWpy と一致します。"
+
+#: ../../../CHANGELOG.md
+msgid ""
+"**Exact epoch propagation**: slicing and cropping finish the base operation before propagating "
+"private exact state.  A cadence that is not an integral number of nanoseconds now drops derived "
+"exact authority instead of causing a successful GWpy operation to fail."
+msgstr "**Exact epoch の伝播**：slice と crop は base operation を完了してから private exact state を伝播します。cadence を整数 nanosecond で表現できない場合は、GWpy では成功する operation を失敗させず、派生した exact authority を破棄します。"
+
+#: ../../../CHANGELOG.md
+msgid ""
+"**Lazy I/O registration**: collection-first time-series and frequency-series I/O now performs the "
+"same idempotent registry bootstrap as scalar I/O. Repeated operations retain reader and writer "
+"identity and registration order."
+msgstr "**Lazy I/O registration**：collection-first の time-series および frequency-series I/O は、scalar I/O と同じ idempotent registry bootstrap を実行します。反復 operation の後も reader と writer の identity および登録順を維持します。"
+
+#: ../../../CHANGELOG.md
+msgid "[0.2.1] - 2026-08-31"
+msgstr "[0.2.1] - 2026-08-31"
+
+#: ../../../CHANGELOG.md
+msgid ""
+"This maintenance release corrects the HDF5 exact-epoch regression and restores lazy bootstrap I/O "
+"registration without changing the public API."
+msgstr "public API を変更せずに HDF5 exact-epoch の退行を修正し、lazy bootstrap I/O registration を復元したメンテナンスリリースです。"
+
 #: ../gwexpy-ja-v0111-v0114-release-notes/CHANGELOG.md:15 d4b3d283c36d4cca8c970b0cb22cbd73
 msgid "[0.2.0] - 2026-08-26"
 msgstr "[0.2.0] - 2026-08-26"

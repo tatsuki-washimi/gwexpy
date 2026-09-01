@@ -197,6 +197,10 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
             A new dict containing the data read from the source.
 
         """
+        from gwexpy._bootstrap import register_all
+
+        register_all()
+
         fmt = kwargs.get("format")
         try:
             p = Path(source)
@@ -264,6 +268,10 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
 
     def write(self, target, *args, **kwargs):
         """Write the mapping through the Astropy I/O registry."""
+        from gwexpy._bootstrap import register_all
+
+        register_all()
+
         from astropy.io import registry
 
         return registry.write(self, target, *args, **kwargs)
@@ -655,6 +663,10 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
 
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
         """Write dict to file (HDF5, ROOT, etc.)."""
+        from gwexpy._bootstrap import register_all
+
+        register_all()
+
         fmt = kwargs.get("format")
         if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
             from gwexpy.interop.root_ import write_root_file
@@ -794,6 +806,10 @@ class FrequencySeriesBaseList(PlotMixin, list[_FS]):
             A new list containing the data read from the source.
 
         """
+        from gwexpy._bootstrap import register_all
+
+        register_all()
+
         fmt = kwargs.get("format")
         try:
             p = Path(source)
@@ -851,6 +867,10 @@ class FrequencySeriesBaseList(PlotMixin, list[_FS]):
 
     def write(self, target, *args, **kwargs):
         """Write the list through the Astropy I/O registry."""
+        from gwexpy._bootstrap import register_all
+
+        register_all()
+
         from astropy.io import registry
 
         return registry.write(self, target, *args, **kwargs)
@@ -1057,6 +1077,10 @@ class FrequencySeriesList(ListMapMixin, FrequencySeriesBaseList[FrequencySeries]
 
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
         """Write list to file (HDF5, ROOT, etc.)."""
+        from gwexpy._bootstrap import register_all
+
+        register_all()
+
         fmt = kwargs.get("format")
         if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
             from gwexpy.interop.root_ import write_root_file

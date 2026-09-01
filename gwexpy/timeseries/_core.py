@@ -43,7 +43,7 @@ def _crop_bound_to_float(value: Any | None) -> float | None:
 def _regular_crop_slice(
     start: float | None, end: float | None, *, t0: float, dt: float, size: int
 ) -> slice:
-    """Return the fail-closed positional crop slice for a regular sample axis."""
+    """Return the positional crop slice used by ``TimeSeriesMatrix``."""
     if not np.isfinite(dt) or dt <= 0:
         raise ValueError(f"regular crop requires a positive finite dt, got {dt!r}")
 
@@ -52,9 +52,6 @@ def _regular_crop_slice(
             return default
         position = (bound - t0) / dt
         nearest = round(position)
-        # Only a bit-exact reconstruction is on-grid.  A tolerance based on
-        # the large epoch can incorrectly promote a lower off-grid bound to
-        # the next sample, violating GWpy's documented floor behaviour.
         index = nearest if bound == t0 + nearest * dt else np.floor(position)
         return int(np.clip(index, 0, size))
 
@@ -96,30 +93,12 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
 
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
         """
-        start = _crop_bound_to_float(start)
-        end = _crop_bound_to_float(end)
-        try:
-            dt_quantity = self.dt
-            t0_quantity = self.t0
-            dt = float(dt_quantity.value)
-            t0 = float(t0_quantity.value)
-            sample_slice = _regular_crop_slice(start, end, t0=t0, dt=dt, size=len(self))
-            result = self[sample_slice]
-        except (AttributeError, TypeError, u.UnitConversionError):
-            # Preserve GWpy's irregular-axis behavior; the positional contract
-            # applies only to regular time series.
-            result = super().crop(start=start, end=end, copy=copy)
-        else:
-            if copy:
-                result = result.copy()
-            # A TimeSeries slice derives these values from its xindex.  Retain
-            # the source dt and calculate t0 from an integer sample index so a
-            # materialized large-GPS index cannot move the selected epoch.
-            result._dx = dt_quantity.copy()
-            result._x0 = u.Quantity(
-                float(t0 + sample_slice.start * dt), t0_quantity.unit
-            )
-        return result
+        gwpy_types = (int, float, np.integer, np.floating, u.Quantity)
+        if start is not None and not isinstance(start, gwpy_types):
+            start = _crop_bound_to_float(start)
+        if end is not None and not isinstance(end, gwpy_types):
+            end = _crop_bound_to_float(end)
+        return super().crop(start=start, end=end, copy=copy)
 
     def append(
         self,

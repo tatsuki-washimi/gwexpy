@@ -141,6 +141,10 @@ class SeriesMatrixIOMixin:
 
         from gwpy.io.registry import default_registry as io_registry
 
+        from gwexpy._bootstrap import register_all
+
+        register_all()
+
         if format is None:
             ext = Path(target).suffix.lower()
             if ext in [".h5", ".hdf5", ".hdf"]:
@@ -308,6 +312,10 @@ class SeriesMatrixIOMixin:
 
         import h5py  # noqa: F401 - availability check
         from gwpy.io.registry import default_registry as io_registry
+
+        from gwexpy._bootstrap import register_all
+
+        register_all()
 
         if format is None:
             ext = Path(source).suffix.lower()

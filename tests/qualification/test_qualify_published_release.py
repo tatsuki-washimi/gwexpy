@@ -1418,9 +1418,20 @@ def test_run_cell_records_preflight_failure_and_writes_both_outputs(
 
 
 def test_run_cell_rejects_source_shadowed_origin_and_records_it(
-    qualifier, tmp_path: Path
+    qualifier, monkeypatch, tmp_path: Path
 ) -> None:
+    import gwexpy
+
     claims = qualifier.load_claims(CLAIMS)
+    installed_version = qualifier.importlib.metadata.version
+
+    def version_for_claims(name: str) -> str:
+        if name.lower() == "gwexpy":
+            return claims.version
+        return installed_version(name)
+
+    monkeypatch.setattr(qualifier.importlib.metadata, "version", version_for_claims)
+    monkeypatch.setattr(gwexpy, "__version__", claims.version)
     json_out = tmp_path / "cell.json"
     junit_out = tmp_path / "cell.xml"
     assert not qualifier.run_cell(claims, "conda-3.11", ROOT, None, json_out, junit_out)

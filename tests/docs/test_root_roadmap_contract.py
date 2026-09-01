@@ -53,8 +53,10 @@ def _theme_blocks(future_themes: str) -> list[tuple[str, str]]:
     headings = list(re.finditer(r"^###\s+(.+?)\s*$", future_themes, re.MULTILINE))
     blocks: list[tuple[str, str]] = []
     for index, heading in enumerate(headings):
-        end = headings[index + 1].start() if index + 1 < len(headings) else len(
-            future_themes
+        end = (
+            headings[index + 1].start()
+            if index + 1 < len(headings)
+            else len(future_themes)
         )
         blocks.append((heading.group(1), future_themes[heading.start() : end]))
     return blocks
@@ -178,7 +180,9 @@ def _versioned_future_headings(future_themes: str) -> list[str]:
     """Return future-theme headings that contain a concrete release version."""
     version = re.compile(r"\bv\d+\.\d+(?:\.\d+)?\b", re.IGNORECASE)
     return [
-        heading for heading, _ in _theme_blocks(future_themes) if version.search(heading)
+        heading
+        for heading, _ in _theme_blocks(future_themes)
+        if version.search(heading)
     ]
 
 
@@ -346,8 +350,13 @@ def test_v020_section_records_the_released_outcome_and_ledger() -> None:
 def test_release_scope_authority_is_not_duplicated_in_design() -> None:
     """ROADMAP owns release scope while the design owns taxonomy and triage."""
     assert "canonical source of\n*inclusion criteria*" in ROADMAP
-    assert "Release inclusion scope と Definition of done の正本は `ROADMAP.md`" in DESIGN
-    assert "本文書の\n正本範囲は taxonomy・per-domain goals・theme mapping・triage 規則" in DESIGN
+    assert (
+        "Release inclusion scope と Definition of done の正本は `ROADMAP.md`" in DESIGN
+    )
+    assert (
+        "本文書の\n正本範囲は taxonomy・per-domain goals・theme mapping・triage 規則"
+        in DESIGN
+    )
     assert "Release statements & headline user stories(正本)" not in DESIGN
     assert "`ROADMAP.md` と issue #413 はここからの転記とする" not in DESIGN
 
@@ -453,10 +462,14 @@ def test_future_theme_blocks_have_one_status_each() -> None:
 def test_zero_or_one_theme_may_be_committed() -> None:
     """A release boundary may intentionally have no selected next-minor theme."""
     committed = [
-        status for status in STATUS_RE.findall(ROADMAP) if status.casefold() == "committed"
+        status
+        for status in STATUS_RE.findall(ROADMAP)
+        if status.casefold() == "committed"
     ]
 
-    assert len(committed) <= 1, f"Expected at most one Committed theme, found {len(committed)}"
+    assert len(committed) <= 1, (
+        f"Expected at most one Committed theme, found {len(committed)}"
+    )
 
 
 def test_all_docs_markdown_links_resolve_from_repository_root() -> None:
@@ -490,4 +503,6 @@ def test_required_release_headings_are_present() -> None:
     required = {"v0.1.13", "v0.1.14", "v0.2.0"}
     actual = {match.casefold() for match in RELEASE_HEADING_RE.findall(ROADMAP)}
 
-    assert required <= actual, f"Missing required release headings: {sorted(required - actual)}"
+    assert required <= actual, (
+        f"Missing required release headings: {sorted(required - actual)}"
+    )

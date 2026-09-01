@@ -1,0 +1,108 @@
+{
+  "schema": "gwexpy-v022-bootstrap-io-performance-summary-v1",
+  "raw_report": {
+    "schema": "gwexpy-bootstrap-io-benchmark-v1",
+    "sha256": "1fa9b8cd0ab1746b2bacc1787ab7ab45a2fa0ef1c3638366a3054fe0194d1454"
+  },
+  "environment": {
+    "platform": "Linux-6.17.0-1032-oem-x86_64-with-glibc2.39",
+    "python": "3.11.14",
+    "repetitions_per_scenario": 30
+  },
+  "baseline": {
+    "head_sha": "17f5588e6ee3e50fd34d67a91be50a21bffd0411",
+    "dirty": false,
+    "working_tree_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "candidate": {
+    "head_sha": "97d4eb77ecb790fbbf2034cc751b9a395609db7e",
+    "dirty": true,
+    "working_tree_digest": "1d4fa91e2cfdc693c557bb061193c3724e064345a657a638d807ff11865a7d0c"
+  },
+  "scenarios": {
+    "plain_import": {
+      "baseline": {
+        "wall_seconds": {"median": 1.7849122014595196, "p95": 1.8340578838251531},
+        "peak_rss_bytes": {"median": 345899008.0, "p95": 346886144},
+        "registry_counts": {"read": [39], "write": [20]},
+        "timeseries_io_loaded": [true]
+      },
+      "candidate": {
+        "wall_seconds": {"median": 1.5905605105217546, "p95": 1.6206685591023415},
+        "peak_rss_bytes": {"median": 340678656.0, "p95": 341737472},
+        "registry_counts": {"read": [9], "write": [8]},
+        "timeseries_io_loaded": [false]
+      },
+      "candidate_delta_percent": {
+        "wall_median": -10.888585487781633,
+        "wall_p95": -11.634819522585726,
+        "peak_rss_median": -1.5092127699886326,
+        "peak_rss_p95": -1.4842541534319742
+      }
+    },
+    "constructor_only": {
+      "baseline": {
+        "wall_seconds": {"median": 1.7860472545726225, "p95": 1.8547265420202166},
+        "peak_rss_bytes": {"median": 345884672.0, "p95": 347258880},
+        "registry_counts": {"read": [39], "write": [20]},
+        "timeseries_io_loaded": [true]
+      },
+      "candidate": {
+        "wall_seconds": {"median": 1.5888833934441209, "p95": 1.6232468029484153},
+        "peak_rss_bytes": {"median": 340715520.0, "p95": 341889024},
+        "registry_counts": {"read": [9], "write": [8]},
+        "timeseries_io_loaded": [false]
+      },
+      "candidate_delta_percent": {
+        "wall_median": -11.039117841015933,
+        "wall_p95": -12.480531972096953,
+        "peak_rss_median": -1.494472701004801,
+        "peak_rss_p95": -1.5463552724699237
+      }
+    },
+    "first_hdf5_io": {
+      "baseline": {
+        "wall_seconds": {"median": 1.8089507875265554, "p95": 1.8488812940195203},
+        "peak_rss_bytes": {"median": 347437056.0, "p95": 348618752},
+        "registry_counts": {"read": [39], "write": [20]},
+        "timeseries_io_loaded": [true]
+      },
+      "candidate": {
+        "wall_seconds": {"median": 1.7968786675482988, "p95": 1.8355119600892067},
+        "peak_rss_bytes": {"median": 347426816.0, "p95": 348590080},
+        "registry_counts": {"read": [39], "write": [20]},
+        "timeseries_io_loaded": [true]
+      },
+      "candidate_delta_percent": {
+        "wall_median": -0.6673548037624211,
+        "wall_p95": -0.7231039641949266,
+        "peak_rss_median": -0.002947296444966163,
+        "peak_rss_p95": -0.008224457185823653
+      }
+    },
+    "repeated_hdf5_io": {
+      "baseline": {
+        "wall_seconds": {"median": 1.795717867440544, "p95": 1.8429129160940647},
+        "peak_rss_bytes": {"median": 347744256.0, "p95": 348614656},
+        "registry_counts": {"read": [39], "write": [20]},
+        "timeseries_io_loaded": [true]
+      },
+      "candidate": {
+        "wall_seconds": {"median": 1.784249602118507, "p95": 1.8376943131443113},
+        "peak_rss_bytes": {"median": 347666432.0, "p95": 348401664},
+        "registry_counts": {"read": [39], "write": [20]},
+        "timeseries_io_loaded": [true]
+      },
+      "candidate_delta_percent": {
+        "wall_median": -0.6386451641416713,
+        "wall_p95": -0.28317143497013086,
+        "peak_rss_median": -0.02237966512953493,
+        "peak_rss_p95": -0.0610966855048134
+      }
+    }
+  },
+  "decision": {
+    "status": "requires-maintainer-review",
+    "automatic_threshold": false
+  }
+}

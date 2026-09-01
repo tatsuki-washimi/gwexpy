@@ -1,0 +1,65 @@
+schema: gwexpy-agent-implementation-audit-v1
+version: 0.2.2
+status: implementation-complete-release-hold
+base_sha: 97d4eb77ecb790fbbf2034cc751b9a395609db7e
+worktree: /home/washimi/.config/superpowers/worktrees/gwexpy/v022-gwpy-behavioral-compat
+skills:
+  - superpowers:test-driven-development
+  - extend_gwpy
+  - gwexpy_conda_jobs
+  - performance-profiler
+  - run_tests
+  - lint_check
+  - prep_release
+  - finalize_work
+implementation_summary:
+  - GWpy-supported crop bounds delegate to GWpy.
+  - Exact slice authority is propagated after base selection and dropped for non-integral-nanosecond cadence.
+  - Scalar, collection, and matrix public I/O share an idempotent lazy registry bootstrap.
+  - Release metadata and the immutable-payload 19-cell qualification workflow target v0.2.2.
+human_review:
+  scientific_compatibility: pending
+  performance: pending
+  release_security: pending
+  reason: Release publication is HOLD until all three lanes approve the final candidate SHA.
+verified:
+  - command: conda run -n gwexpy pytest <v0.2.2 focused P0/P1 selector> -q
+    environment: GWpy 4.0.1
+    result: 904 passed, 2 expected GWpy crop-bound warnings
+  - command: conda run -n gwexpy pytest <GWpy compatibility selector> -q
+    environment: GWpy 4.0.2
+    result: 91 passed, 2 expected GWpy crop-bound warnings
+  - command: conda run -n gwexpy pytest tests -q
+    environment: GWpy 4.0.2
+    result: 10565 passed, 308 skipped, 6 xfailed, 0 failed
+  - command: conda run -n gwexpy pytest <final focused release and compatibility selector> -q
+    result: 229 passed
+  - command: conda run -n gwexpy ruff check gwexpy tests scripts/benchmarks/bootstrap_io_benchmark.py
+    result: passed
+  - command: conda run -n gwexpy ruff format --check gwexpy tests scripts/benchmarks/bootstrap_io_benchmark.py
+    result: 988 files already formatted
+  - command: conda run -n gwexpy mypy gwexpy
+    result: Success, no issues in 396 source files
+  - command: conda run -n gwexpy sphinx-build -b html -W --keep-going -D nbsphinx_execute=never -D nbsphinx_allow_errors=0 docs <temporary-output>
+    result: build succeeded
+  - command: conda run -n gwexpy python scripts/check_release_metadata.py
+    result: passed for version 0.2.2 and date 2026-09-01
+  - command: python -m build; twine check --strict; scripts/check_release_artifacts.py
+    result: wheel and sdist built; strict metadata and artifact hygiene passed
+  - command: scripts/benchmarks/bootstrap_io_benchmark.py --repetitions 30
+    result: completed for baseline 17f5588e6 and candidate; maintainer decision pending
+    evidence: docs/developers/plans/manifests/v0.2.2-bootstrap-io-performance.json
+pending_external_verification:
+  - scientific compatibility human review
+  - performance evidence human review
+  - release-security human review
+  - GitHub 19-cell qualification and common payload digest evidence
+  - PyPI Trusted Publisher, GitHub environment, and tag ruleset readback
+handoff_operations:
+  - commit candidate changes on fix/v022-gwpy-behavioral-compat
+  - push the candidate branch and open a pull request against main
+release_operations_not_performed:
+  - merge
+  - tag creation or movement
+  - workflow dispatch
+  - PyPI, GitHub Release, or Zenodo publication

@@ -253,6 +253,191 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
+  qualify:
+    name: Qualify ${{ matrix.cell }}
+    needs: [verify, build]
+    if: ${{ needs.verify.outputs.version == '0.2.2' }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {cell: install-ubuntu-3.11-wheel, os: ubuntu-latest, python: "3.11", distribution: wheel, runtime: pip, extras: pytest}
+          - {cell: install-ubuntu-3.11-sdist, os: ubuntu-latest, python: "3.11", distribution: sdist, runtime: pip, extras: pytest}
+          - {cell: install-ubuntu-3.12-wheel, os: ubuntu-latest, python: "3.12", distribution: wheel, runtime: pip, extras: pytest}
+          - {cell: install-ubuntu-3.12-sdist, os: ubuntu-latest, python: "3.12", distribution: sdist, runtime: pip, extras: pytest}
+          - {cell: install-ubuntu-3.13-wheel, os: ubuntu-latest, python: "3.13", distribution: wheel, runtime: pip, extras: pytest}
+          - {cell: install-ubuntu-3.13-sdist, os: ubuntu-latest, python: "3.13", distribution: sdist, runtime: pip, extras: pytest}
+          - {cell: install-ubuntu-3.14-wheel, os: ubuntu-latest, python: "3.14", distribution: wheel, runtime: pip, extras: pytest}
+          - {cell: install-ubuntu-3.14-sdist, os: ubuntu-latest, python: "3.14", distribution: sdist, runtime: pip, extras: pytest}
+          - {cell: install-macos-3.11-wheel, os: macos-latest, python: "3.11", distribution: wheel, runtime: pip, extras: pytest}
+          - {cell: install-macos-3.14-wheel, os: macos-latest, python: "3.14", distribution: wheel, runtime: pip, extras: pytest}
+          - {cell: install-windows-3.11-wheel, os: windows-latest, python: "3.11", distribution: wheel, runtime: pip, extras: pytest}
+          - {cell: install-windows-3.14-wheel, os: windows-latest, python: "3.14", distribution: wheel, runtime: pip, extras: pytest}
+          - {cell: gwpy-4.0.1-wheel, os: ubuntu-latest, python: "3.11", distribution: wheel, runtime: pip, extras: "pytest gwpy==4.0.1"}
+          - {cell: gwpy-4.0.2-wheel, os: ubuntu-latest, python: "3.11", distribution: wheel, runtime: pip, extras: "pytest gwpy==4.0.2"}
+          - {cell: sdist-3.12-claims, os: ubuntu-latest, python: "3.12", distribution: sdist, runtime: pip, extras: pytest}
+          - {cell: conda-3.11, os: ubuntu-latest, python: "3.11", distribution: wheel, runtime: conda, extras: pytest}
+          - {cell: conda-3.14, os: ubuntu-latest, python: "3.14", distribution: wheel, runtime: conda, extras: pytest}
+          - {cell: scientific-3.11-wheel, os: ubuntu-latest, python: "3.11", distribution: wheel, runtime: pip, extras: "pytest mne lalsuite"}
+          - {cell: docs-en-ja-3.11-wheel, os: ubuntu-latest, python: "3.11", distribution: wheel, runtime: pip, extras: "pytest matplotlib"}
+    steps:
+      - name: Check out verified qualification source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.verify.outputs.source_sha }}
+          fetch-depth: 1
+          path: source
+
+      - name: Set up Python
+        if: matrix.runtime == 'pip'
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Set up conda runtime
+        if: matrix.runtime == 'conda'
+        uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39
+        with:
+          environment-name: qualification
+          create-args: python=${{ matrix.python }} pip
+          init-shell: bash
+          generate-run-shell: false
+
+      - name: Download PyPI payload
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: release-payload-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/release-payload
+
+      - name: Download detached sidecars
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/release-sidecars
+
+      - name: Verify qualification payload digest
+        shell: bash
+        env:
+          EXPECTED_VERSION: ${{ needs.verify.outputs.version }}
+          DISTRIBUTION: ${{ matrix.distribution }}
+        run: |
+          python source/scripts/ci/validate_release_payload.py \
+            --payload-dir "${{ runner.temp }}/release-payload" \
+            --manifest "${{ runner.temp }}/release-sidecars/distribution-sha256.json" \
+            --expected-version "$EXPECTED_VERSION" \
+            --kind "$DISTRIBUTION"
+
+      - name: Install digest-checked distribution and qualification dependencies
+        shell: bash
+        env:
+          EXPECTED_VERSION: ${{ needs.verify.outputs.version }}
+          DISTRIBUTION: ${{ matrix.distribution }}
+        run: |
+          artifact_name="$(python source/scripts/ci/validate_release_payload.py --payload-dir "${{ runner.temp }}/release-payload" --manifest "${{ runner.temp }}/release-sidecars/distribution-sha256.json" --expected-version "$EXPECTED_VERSION" --kind "$DISTRIBUTION")"
+          artifact="${{ runner.temp }}/release-payload/$artifact_name"
+          if [[ "${{ matrix.runtime }}" == "conda" ]]; then
+            micromamba run -n qualification python -m pip install --disable-pip-version-check --no-cache-dir "$artifact" ${{ matrix.extras }}
+            micromamba run -n qualification python -m pip check
+          else
+            python -m pip install --disable-pip-version-check --no-cache-dir "$artifact" ${{ matrix.extras }}
+            python -m pip check
+          fi
+
+      - name: Run installed candidate compatibility contracts
+        shell: bash
+        env:
+          EXPECTED_VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          runner=(python)
+          if [[ "${{ matrix.runtime }}" == "conda" ]]; then runner=(micromamba run -n qualification python); fi
+          cp -R source/tests "${{ runner.temp }}/qualification-tests"
+          "${runner[@]}" -c "import gwexpy; assert gwexpy.__version__ == '$EXPECTED_VERSION'; assert 'site-packages' in gwexpy.__file__; print(gwexpy.__file__)"
+          "${runner[@]}" -m pytest --import-mode=importlib -q \
+            "${{ runner.temp }}/qualification-tests/test_import_order.py" \
+            "${{ runner.temp }}/qualification-tests/io/test_frequencyseries_registration.py" \
+            "${{ runner.temp }}/qualification-tests/timeseries/test_exact_gps_epoch.py" \
+            "${{ runner.temp }}/qualification-tests/timeseries/test_hdf5_exact_epoch_codec.py" \
+            "${{ runner.temp }}/qualification-tests/timeseries/test_gwpy_behavioral_compatibility.py"
+
+      - name: Record qualification cell digest evidence
+        shell: bash
+        env:
+          CELL: ${{ matrix.cell }}
+          SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          VERSION: ${{ needs.verify.outputs.version }}
+          REPORT: ${{ runner.temp }}/qualification-report/qualification.json
+          PAYLOAD_MANIFEST: ${{ runner.temp }}/release-sidecars/distribution-sha256.json
+        run: |
+          mkdir -p "$(dirname "$REPORT")"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          payload = json.loads(Path(os.environ["PAYLOAD_MANIFEST"]).read_text(encoding="utf-8"))
+          report = {"cell": os.environ["CELL"], "source_sha": os.environ["SOURCE_SHA"], "version": os.environ["VERSION"], "files": payload["files"], "status": "passed"}
+          Path(os.environ["REPORT"]).write_text(json.dumps(report, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+
+      - name: Upload qualification cell evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: release-qualification-${{ needs.verify.outputs.source_sha }}-${{ matrix.cell }}
+          path: ${{ runner.temp }}/qualification-report/qualification.json
+          if-no-files-found: error
+          retention-days: 90
+
+  qualification_evidence:
+    name: Aggregate nineteen qualification cells
+    needs: [verify, build, qualify]
+    if: ${{ needs.verify.outputs.version == '0.2.2' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Download all qualification cell evidence
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: release-qualification-${{ needs.verify.outputs.source_sha }}-*
+          path: ${{ runner.temp }}/qualification-cells
+
+      - name: Download detached sidecars
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/release-sidecars
+
+      - name: Assert complete same-payload qualification ledger
+        env:
+          CELLS: ${{ runner.temp }}/qualification-cells
+          SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          VERSION: ${{ needs.verify.outputs.version }}
+          PAYLOAD_MANIFEST: ${{ runner.temp }}/release-sidecars/distribution-sha256.json
+          OUTPUT: ${{ runner.temp }}/qualification-manifest.json
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          expected_cells = {"install-ubuntu-3.11-wheel", "install-ubuntu-3.11-sdist", "install-ubuntu-3.12-wheel", "install-ubuntu-3.12-sdist", "install-ubuntu-3.13-wheel", "install-ubuntu-3.13-sdist", "install-ubuntu-3.14-wheel", "install-ubuntu-3.14-sdist", "install-macos-3.11-wheel", "install-macos-3.14-wheel", "install-windows-3.11-wheel", "install-windows-3.14-wheel", "gwpy-4.0.1-wheel", "gwpy-4.0.2-wheel", "sdist-3.12-claims", "conda-3.11", "conda-3.14", "scientific-3.11-wheel", "docs-en-ja-3.11-wheel"}
+          payload = json.loads(Path(os.environ["PAYLOAD_MANIFEST"]).read_text(encoding="utf-8"))
+          reports = [json.loads(path.read_text(encoding="utf-8")) for path in Path(os.environ["CELLS"]).rglob("qualification.json")]
+          observed = {report["cell"] for report in reports}
+          assert len(reports) == 19 and observed == expected_cells
+          for report in reports:
+              assert report == {"cell": report["cell"], "source_sha": os.environ["SOURCE_SHA"], "version": os.environ["VERSION"], "files": payload["files"], "status": "passed"}
+          output = {"schema": "gwexpy-v022-qualification-evidence-v1", "source_sha": os.environ["SOURCE_SHA"], "version": os.environ["VERSION"], "files": payload["files"], "cells": sorted(observed)}
+          Path(os.environ["OUTPUT"]).write_text(json.dumps(output, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+
+      - name: Upload qualification manifest
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: v022-qualification-evidence-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/qualification-manifest.json
+          if-no-files-found: error
+          retention-days: 90
+
   evidence:
     name: Collect same-run integration evidence
     needs: [verify, build, smoke]
@@ -309,7 +494,7 @@ jobs:
 
   publish:
     name: Publish verified artifacts to PyPI
-    needs: [verify, build, smoke, evidence]
+    needs: [verify, build, smoke, qualify, qualification_evidence, evidence]
     if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
