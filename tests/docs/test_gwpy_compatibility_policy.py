@@ -247,12 +247,27 @@ def test_implementation_audit_records_policy_candidate_provenance() -> None:
         "release_security": "pending-reapproval",
         "reason": "All lanes must approve the same replacement candidate SHA.",
     }
+    assert "verified" not in audit
+    assert audit["historical_verification_not_binding_replacement_candidate"]
     assert audit["operation_status"] == {
+        "release_source_commit": "not-created",
+        "protected_refs": {
+            "main": "not-updated",
+            "maint/0.2": "not-updated",
+        },
         "merge": "not-performed",
         "tag": "not-performed",
         "qualification_19_cell": "not-dispatched",
         "publication": "not-performed",
     }
+    plan = _read(
+        "docs/developers/plans/20260901_v0.2.2_gwpy_behavioral_compatibility.md"
+    )
+    assert "旧 S に対する非 binding の qualification 履歴" in plan
+    assert "eb3e7f91203aaf82ebc2e7e7e4c0d74ffbc28c3d" in plan
+    assert "Human Lane A/B/C: APPROVED on old S only" in plan
+    assert "Terra advisory: HOLD on old S" in plan
+    assert "S′ の Human/Terra review: PENDING" in plan
     assert audit["ci_followup"] == {
         "failed_candidate": "e98425410af9158c98ed3ef95c71936ec1880a40",
         "run_id": 33461793458,

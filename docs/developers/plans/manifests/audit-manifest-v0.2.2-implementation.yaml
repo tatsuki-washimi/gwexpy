@@ -97,6 +97,10 @@ release_operations_not_performed:
   - workflow dispatch
   - PyPI, GitHub Release, or Zenodo publication
 operation_status:
+  release_source_commit: not-created
+  protected_refs:
+    main: not-updated
+    maint/0.2: not-updated
   merge: not-performed
   tag: not-performed
   qualification_19_cell: not-dispatched
