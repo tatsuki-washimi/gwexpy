@@ -1,5 +1,102 @@
 review_evidence_json: |
   {
     "schema": "gwexpy-v022-review-evidence-v1",
-    "entries": []
+    "entries": [
+      {
+        "lane": "scientific-compatibility",
+        "role": "reviewer",
+        "model": "gpt-5.6-terra",
+        "effort": "high",
+        "reviewed_commit": "8e023fdd355190399b1c1aab9c919c11b278aca9",
+        "scope_paths": [
+          ".agent/AGENTS.md",
+          ".clinerules",
+          ".github/copilot-instructions.md",
+          ".github/workflows/test-compat-gwpy.yml",
+          "CONTRIBUTING.md",
+          "README.md",
+          "docs/developers/plans/20260901_v0.2.2_gwpy_behavioral_compatibility.md",
+          "docs/web/en/index.rst",
+          "docs/web/en/user_guide/gwexpy_for_gwpy_users_en.md",
+          "docs/web/ja/index.rst",
+          "docs/web/ja/user_guide/gwexpy_for_gwpy_users_ja.md",
+          "docs_redesign/explanation/gwexpy_for_gwpy_users.md",
+          "docs_redesign/explanation/gwpy_compatibility_policy.md",
+          "docs_redesign/explanation/index.md",
+          "docs_redesign/how-to/fitting/advanced_correlation.ipynb",
+          "docs_redesign/how-to/migration.md",
+          "docs_redesign/index.md",
+          "docs_redesign/locales/ja/LC_MESSAGES/explanation/gwexpy_for_gwpy_users.po",
+          "docs_redesign/locales/ja/LC_MESSAGES/explanation/gwpy_compatibility_policy.po",
+          "docs_redesign/locales/ja/LC_MESSAGES/explanation/index.po",
+          "docs_redesign/locales/ja/LC_MESSAGES/how-to/migration.po",
+          "docs_redesign/locales/ja/LC_MESSAGES/index.po",
+          "gwexpy/timeseries/_core.py",
+          "gwexpy/timeseries/_statistics.py",
+          "gwexpy/timeseries/timeseries.py",
+          "release_notes/v0.2.2.md",
+          "tests/docs/test_docs_redesign_notebook_compatibility.py",
+          "tests/docs/test_gwpy4_proxy_workflow.py",
+          "tests/docs/test_gwpy_compatibility_policy.py",
+          "tests/timeseries/test_exact_gps_epoch.py",
+          "tests/timeseries/test_gwpy_behavioral_compatibility.py",
+          "tests/timeseries/test_statistics.py"
+        ],
+        "scope_digest": "f39fc8f26486227aa672f6948b03a91d750a399d8945af221861df056bc45373",
+        "verdict": "APPROVED",
+        "timestamp_utc": "2026-09-01T07:27:54Z",
+        "raw_report_sha256": "e3b362714f8975d54baf00e1b9d21db4c2788c548b6fb34da9758c4ec0bbc3cd",
+        "finding_ids": [
+          "A-001",
+          "A-002"
+        ]
+      },
+      {
+        "lane": "performance",
+        "role": "reviewer",
+        "model": "gpt-5.6-terra",
+        "effort": "high",
+        "reviewed_commit": "8e023fdd355190399b1c1aab9c919c11b278aca9",
+        "scope_paths": [
+          ".agent/AGENTS.md",
+          "CONTRIBUTING.md",
+          "docs_redesign/explanation/gwpy_compatibility_policy.md",
+          "gwexpy/_bootstrap.py",
+          "gwexpy/frequencyseries/collections.py",
+          "gwexpy/timeseries/collections.py",
+          "gwexpy/timeseries/matrix.py",
+          "gwexpy/types/series_matrix_io.py",
+          "scripts/benchmarks/bootstrap_io_benchmark.py",
+          "tests/test_bootstrap_io_benchmark.py",
+          "tests/test_import_order.py"
+        ],
+        "scope_digest": "3571958676c93af0f2f48be788e6bae20a20892d761791683963005b22f807ef",
+        "verdict": "APPROVED",
+        "timestamp_utc": "2026-09-01T07:28:57Z",
+        "raw_report_sha256": "4d9c8e6b2b0d3d164418cd35d71caf2ef52c742e6399f3eb7936ec3505be5237",
+        "finding_ids": []
+      },
+      {
+        "lane": "release-security",
+        "role": "reviewer",
+        "model": "gpt-5.6-terra",
+        "effort": "high",
+        "reviewed_commit": "8e023fdd355190399b1c1aab9c919c11b278aca9",
+        "scope_paths": [
+          ".github/workflows/publish-release.yml",
+          "RELEASING.md",
+          "docs/developers/plans/manifests/audit-manifest-v0.2.2-implementation.yaml",
+          "scripts/ci",
+          "scripts/validate_release.py",
+          "tests/test_publish_release_workflow.py",
+          "tests/test_release_contracts.py",
+          "tests/test_validate_release_script.py"
+        ],
+        "scope_digest": "00bb6f6e321d5f0fce58d253376982453406288c6186056124dd1138a5e474fc",
+        "verdict": "APPROVED",
+        "timestamp_utc": "2026-09-01T07:27:39Z",
+        "raw_report_sha256": "fd477bb9a797aa2dd091e4fb837ecfb2e29c043f7813c60b50fc3739bb1f3a11",
+        "finding_ids": []
+      }
+    ]
   }
