@@ -166,6 +166,7 @@ def test_release_review_scopes_bind_the_policy_to_lanes_a_and_b() -> None:
         "docs_redesign/explanation/gwexpy_for_gwpy_users.md",
         f"docs_redesign/{POLICY_RELATIVE_PATH}",
         "docs_redesign/explanation/index.md",
+        "docs_redesign/how-to/fitting/advanced_correlation.ipynb",
         "docs_redesign/how-to/migration.md",
         "docs_redesign/index.md",
         "docs_redesign/locales/ja/LC_MESSAGES/explanation/gwexpy_for_gwpy_users.po",
@@ -177,6 +178,7 @@ def test_release_review_scopes_bind_the_policy_to_lanes_a_and_b() -> None:
         "gwexpy/timeseries/timeseries.py",
         "release_notes/v0.2.2.md",
         "tests/docs/test_gwpy_compatibility_policy.py",
+        "tests/docs/test_docs_redesign_notebook_compatibility.py",
         "tests/timeseries/test_exact_gps_epoch.py",
         "tests/timeseries/test_gwpy_behavioral_compatibility.py",
     }
@@ -227,4 +229,15 @@ def test_implementation_audit_records_policy_candidate_provenance() -> None:
         "tag": "not-performed",
         "qualification_19_cell": "not-dispatched",
         "publication": "not-performed",
+    }
+    assert audit["ci_followup"] == {
+        "failed_candidate": "e98425410af9158c98ed3ef95c71936ec1880a40",
+        "run_id": 33461793458,
+        "job_id": 99713280960,
+        "failure": "statsmodels-0.15-removed-granger-verbose-argument",
+        "resolution": "advanced-correlation-notebook-version-fallback",
+        "replacement_candidate": {
+            "source": "commit-containing-this-manifest",
+            "state_at_creation": "pending-ci-and-human-review",
+        },
     }

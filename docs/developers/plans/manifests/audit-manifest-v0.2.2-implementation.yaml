@@ -25,6 +25,15 @@ candidate_provenance:
     source: commit-containing-this-manifest
     reviewed_commit_record: docs/developers/plans/manifests/audit-manifest-v0.2.2-release-readiness.yaml
     state_at_creation: pending-human-review
+ci_followup:
+  failed_candidate: e98425410af9158c98ed3ef95c71936ec1880a40
+  run_id: 33461793458
+  job_id: 99713280960
+  failure: statsmodels-0.15-removed-granger-verbose-argument
+  resolution: advanced-correlation-notebook-version-fallback
+  replacement_candidate:
+    source: commit-containing-this-manifest
+    state_at_creation: pending-ci-and-human-review
 human_review:
   scientific_compatibility: pending
   performance: pending
@@ -39,7 +48,8 @@ verified:
     result: 91 passed, 2 expected GWpy crop-bound warnings
   - command: conda run -n gwexpy pytest tests -q
     environment: GWpy 4.0.2
-    result: 10565 passed, 308 skipped, 6 xfailed, 0 failed
+    candidate: e98425410af9158c98ed3ef95c71936ec1880a40
+    result: 10571 passed, 308 skipped, 6 xfailed, 0 failed
   - command: conda run -n gwexpy pytest <final focused release and compatibility selector> -q
     result: 229 passed
   - command: conda run -n gwexpy ruff check gwexpy tests scripts/benchmarks/bootstrap_io_benchmark.py
