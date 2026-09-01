@@ -57,10 +57,18 @@ jobs:
     env:
       PYTHONFAULTHANDLER: "1"
       GWPY_VERSION: ${{ matrix.gwpy }}
+      EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - name: Checkout repository
         timeout-minutes: 5
         uses: actions/checkout@v7
+        with:
+          ref: ${{ env.EXPECTED_SOURCE_SHA }}
+
+      - name: Verify checked-out source
+        run: |
+          actual_source_sha="$(git rev-parse HEAD)"
+          test "$actual_source_sha" = "$EXPECTED_SOURCE_SHA"
 
       - name: Set up micromamba
         uses: mamba-org/setup-micromamba@v3
@@ -84,9 +92,17 @@ jobs:
       - name: Record compatibility versions
         run: |
           python - <<'PY'
+          import os
           from importlib.metadata import version
 
-          print("gwpy=" + version("gwpy"))
+          expected_gwpy = os.environ["GWPY_VERSION"]
+          actual_gwpy = version("gwpy")
+          if actual_gwpy != expected_gwpy:
+              raise SystemExit(
+                  f"installed gwpy={actual_gwpy}, expected gwpy={expected_gwpy}"
+              )
+
+          print("gwpy=" + actual_gwpy)
           print("lalsuite=" + version("lalsuite"))
           PY
 

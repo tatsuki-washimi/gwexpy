@@ -1,4 +1,4 @@
-"""Keep the latest-GWpy compatibility workflow wired to proxy contracts."""
+"""Keep the exact-GWpy compatibility matrix wired to proxy contracts."""
 
 from pathlib import Path
 
@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github/workflows/test-compat-gwpy.yml"
 
 
-def test_latest_gwpy_proxy_gate_is_wired() -> None:
+def test_exact_gwpy_matrix_proxy_gate_is_wired() -> None:
     workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
     paths = set(workflow[True]["pull_request"]["paths"])
     required_existing = {
@@ -43,9 +43,22 @@ def test_latest_gwpy_proxy_gate_is_wired() -> None:
     assert strategy["matrix"]["gwpy"] == ["4.0.1", "4.0.2"]
     assert "matrix.gwpy" in job["name"]
     assert job["env"]["GWPY_VERSION"] == "${{ matrix.gwpy }}"
+    assert job["env"]["EXPECTED_SOURCE_SHA"] == (
+        "${{ github.event.pull_request.head.sha || github.sha }}"
+    )
 
     steps = job["steps"]
     by_name = {step["name"]: step for step in steps if "name" in step}
+    checkout_step = by_name["Checkout repository"]
+    assert checkout_step["with"]["ref"] == "${{ env.EXPECTED_SOURCE_SHA }}"
+    source_step = by_name["Verify checked-out source"]
+    assert steps.index(source_step) == steps.index(checkout_step) + 1
+    normalized_source_command = " ".join(source_step["run"].split())
+    assert 'actual_source_sha="$(git rev-parse HEAD)"' in normalized_source_command
+    assert 'test "$actual_source_sha" = "$EXPECTED_SOURCE_SHA"' in (
+        normalized_source_command
+    )
+
     provisioning = by_name["Provision compatibility environment"]["run"]
     assert "python -m pip install lalsuite" in provisioning
     assert '"gwpy==$GWPY_VERSION"' in provisioning
@@ -54,7 +67,10 @@ def test_latest_gwpy_proxy_gate_is_wired() -> None:
     provisioning_index = steps.index(by_name["Provision compatibility environment"])
     assert steps.index(version_step) == provisioning_index + 1
     normalized_version_command = " ".join(version_step["run"].split())
-    assert 'version("gwpy")' in normalized_version_command
+    assert 'expected_gwpy = os.environ["GWPY_VERSION"]' in normalized_version_command
+    assert 'actual_gwpy = version("gwpy")' in normalized_version_command
+    assert "if actual_gwpy != expected_gwpy:" in normalized_version_command
+    assert "raise SystemExit(" in normalized_version_command
     assert 'version("lalsuite")' in normalized_version_command
 
     old_focused = by_name["Run focused compatibility tests"]["run"]
