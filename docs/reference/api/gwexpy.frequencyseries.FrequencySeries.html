@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=7f7c277e"></script>
+    <script src="../../_static/documentation_options.js?v=d3f42505"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -1087,10 +1087,13 @@ and ROOT (TGraph/TH1).</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">view</span></code>([dtype][, type])</p></td>
 <td><p>New view of array with the same data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zip</span></code>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.frequencyseries.FrequencySeries.write" title="gwexpy.frequencyseries.FrequencySeries.write"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write</span></code></a>(target, *args, **kwargs)</p></td>
+<td><p>Write a <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> through the registered I/O handlers.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zip</span></code>()</p></td>
 <td><p>Zip the <cite>xindex</cite> and <cite>value</cite> arrays of this <cite>Series</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zpk</span></code>(zeros, poles, gain, *[, analog, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zpk</span></code>(zeros, poles, gain, *[, analog, ...])</p></td>
 <td><p>Filter this <cite>FrequencySeries</cite> by applying a zero-pole-gain filter.</p></td>
 </tr>
 </tbody>
@@ -1195,22 +1198,19 @@ and ROOT (TGraph/TH1).</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code></p></td>
 <td><p>The numerical value of this instance.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write</span></code></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">x0</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">x0</span></code></p></td>
 <td><p>X-axis coordinate of the first data point.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xindex</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xindex</span></code></p></td>
 <td><p>Positions of the data on the x-axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xspan</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xspan</span></code></p></td>
 <td><p>X-axis [low, high) segment encompassed by these data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xunit</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xunit</span></code></p></td>
 <td><p>Unit of x-axis index.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.frequencyseries.FrequencySeries.dt" title="gwexpy.frequencyseries.FrequencySeries.dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dt</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.frequencyseries.FrequencySeries.dt" title="gwexpy.frequencyseries.FrequencySeries.dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dt</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -1256,70 +1256,36 @@ See below for list of acceptable formats.</p></li>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>dttxml</p></td>
+<tr class="row-even"><td><p>csv</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>hdf5</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>ligolw</p></td>
 <td><p>Yes</p></td>
 <td><p>No</p></td>
 <td><p>No</p></td>
 </tr>
-<tr class="row-odd"><td><p>li</p></td>
+<tr class="row-odd"><td><p>txt</p></td>
 <td><p>Yes</p></td>
-<td><p>No</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-even"><td><p>lsf</p></td>
 <td><p>Yes</p></td>
-<td><p>No</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-odd"><td><p>mem</p></td>
-<td><p>Yes</p></td>
-<td><p>No</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-even"><td><p>orf</p></td>
-<td><p>Yes</p></td>
-<td><p>No</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-odd"><td><p>sdb</p></td>
-<td><p>Yes</p></td>
-<td><p>No</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-even"><td><p>taffmat</p></td>
-<td><p>Yes</p></td>
-<td><p>No</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-odd"><td><p>wdf</p></td>
-<td><p>Yes</p></td>
-<td><p>No</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-even"><td><p>win</p></td>
-<td><p>Yes</p></td>
-<td><p>No</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-odd"><td><p>win32</p></td>
-<td><p>Yes</p></td>
-<td><p>No</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-even"><td><p>wvf</p></td>
-<td><p>Yes</p></td>
-<td><p>No</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-odd"><td><p>xml.diaggui</p></td>
-<td><p>Yes</p></td>
-<td><p>No</p></td>
 <td><p>Yes</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeries.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeries.write" title="Link to this definition">#</a></dt>
+<dd><p>Write a <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> through the registered I/O handlers.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2181,6 +2147,7 @@ return a <a class="reference internal" href="#gwexpy.frequencyseries.FrequencySe
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeries"><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeries.__init__"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeries.read"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.read()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeries.write"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.write()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeries.phase"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.phase()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeries.angle"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.angle()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeries.histogram"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.histogram()</span></code></a></li>

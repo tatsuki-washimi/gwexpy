@@ -2,6 +2,10 @@
 
 This guide summarizes breaking changes between GWexpy releases and provides migration paths for existing code.
 
+The project-wide [GWpy compatibility policy](../explanation/gwpy_compatibility_policy.md)
+governs default behavior of APIs corresponding to GWpy. Release-specific notes
+below describe changes within that contract.
+
 ## v0.2.0
 
 ### Lazy registration

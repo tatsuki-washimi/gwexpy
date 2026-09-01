@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../_static/documentation_options.js?v=fd38ff47"></script>
+    <script src="../_static/documentation_options.js?v=51b0fd3c"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,7 +55,7 @@
     <link rel="icon" href="../_static/favicon.svg"/>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
-    <link rel="next" title="GW Python エコシステムにおける GWexpy の位置付け" href="ecosystem.html" />
+    <link rel="next" title="GWpy 挙動互換性ポリシー" href="gwpy_compatibility_policy.html" />
     <link rel="prev" title="前提条件と規約" href="prerequisites_and_conventions.html" />
   
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -386,6 +386,7 @@
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">アーキテクチャとデータフロー</a></li>
 <li class="toctree-l1"><a class="reference internal" href="prerequisites_and_conventions.html">前提条件と規約</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">GWpy ユーザーのための GWexpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwpy_compatibility_policy.html">GWpy 挙動互換性ポリシー</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ecosystem.html">GW Python エコシステムにおける GWexpy の位置付け</a></li>
 <li class="toctree-l1"><a class="reference internal" href="roadmap.html">ロードマップ</a></li>
 </ul>
@@ -459,6 +460,7 @@
 <h1>GWpy ユーザーのための GWexpy<a class="headerlink" href="#gwexpy-for-gwpy-users" title="Link to this heading">#</a></h1>
 <p>このページは <strong>GWpy から GWexpy へ移行するための入口</strong> です。完全な API カタログを目指すものではありません。目的は、何がそのまま使えて、価値の高い差分がどこから始まるのかを手早く把握することです。</p>
 <p><strong>追加 API を差分観点で引ける一覧</strong> が欲しい場合は <a class="reference internal" href="../reference/gwpy_added_api.html"><span class="std std-doc">GWpy 差分 API 一覧</span></a> を参照してください。GWpy 互換性に関係なく全 API を見たい場合は <a class="reference internal" href="../reference/index.html"><span class="std std-doc">API リファレンス</span></a> を使ってください。</p>
+<p>プロジェクト横断の <a class="reference internal" href="gwpy_compatibility_policy.html"><span class="std std-doc">GWpy 互換性ポリシー</span></a>は、対応する GWpy APIについて、既定の有限数値結果、sample 選択、軸情報、正常終了の維持を要求します。意図的に異なる数値挙動が必要な場合は、GWexpy 固有 API または明示的な opt-in optionを使用してください。</p>
 <section id="what-to-lock-in-first">
 <h2>まず最初に押さえること<a class="headerlink" href="#what-to-lock-in-first" title="Link to this heading">#</a></h2>
 <ul class="simple">
@@ -804,11 +806,11 @@
       </div>
     </a>
     <a class="right-next"
-       href="ecosystem.html"
+       href="gwpy_compatibility_policy.html"
        title="次ページ">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">次へ</p>
-        <p class="prev-next-title">GW Python エコシステムにおける GWexpy の位置付け</p>
+        <p class="prev-next-title">GWpy 挙動互換性ポリシー</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

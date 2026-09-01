@@ -159,6 +159,7 @@
       ~FrequencySeries.value_at
       ~FrequencySeries.var
       ~FrequencySeries.view
+      ~FrequencySeries.write
       ~FrequencySeries.zip
       ~FrequencySeries.zpk
    
@@ -202,7 +203,6 @@
       ~FrequencySeries.strides
       ~FrequencySeries.unit
       ~FrequencySeries.value
-      ~FrequencySeries.write
       ~FrequencySeries.x0
       ~FrequencySeries.xindex
       ~FrequencySeries.xspan

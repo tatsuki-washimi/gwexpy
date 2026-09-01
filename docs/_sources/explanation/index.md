@@ -29,6 +29,13 @@ The assumptions, naming, and conventions GWexpy relies on.
 How GWexpy relates to, and differs from, GWpy.
 :::
 
+:::{grid-item-card} GWpy compatibility policy
+:link: gwpy_compatibility_policy
+:link-type: doc
+
+The project-wide contract for default numerical and sample-selection behavior.
+:::
+
 :::{grid-item-card} {octicon}`globe;1.5em;sd-mr-1` Ecosystem positioning
 :link: ecosystem
 :link-type: doc
@@ -85,6 +92,7 @@ How GWexpy is tested and kept correct.
 architecture
 prerequisites_and_conventions
 gwexpy_for_gwpy_users
+gwpy_compatibility_policy
 ecosystem
 roadmap
 ```

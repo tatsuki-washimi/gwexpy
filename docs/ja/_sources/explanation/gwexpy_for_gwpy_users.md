@@ -6,6 +6,12 @@ It is not intended to be a full API catalog. The goal is to understand, quickly,
 If you want a **difference-oriented index of added APIs**, see [GWpy Difference API Index](../reference/gwpy_added_api.md).  
 If you want the full API surface regardless of GWpy compatibility, use the [API Reference](../reference/index.md).
 
+The project-wide [GWpy compatibility policy](gwpy_compatibility_policy.md)
+requires corresponding GWpy APIs to preserve default finite numerical results,
+sample selection, axis information, and successful completion. Use
+GWexpy-specific APIs or explicit opt-in options when you intentionally want
+different numerical behavior.
+
 ## What to lock in first
 
 - **Single-channel workflows are often still familiar.**

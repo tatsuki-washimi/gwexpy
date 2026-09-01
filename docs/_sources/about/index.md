@@ -56,4 +56,5 @@ entries in the resulting `.po` files.
 license
 citation
 changelog
+known_limitations
 ```
