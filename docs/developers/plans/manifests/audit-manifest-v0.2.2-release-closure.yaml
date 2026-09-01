@@ -1,7 +1,7 @@
 schema: gwexpy-v022-release-closure-v1
 version: 0.2.2
-status: publication-accepted-distribution-propagation-in-progress
-recorded_at_utc: "2026-09-01T09:46:25Z"
+status: closure-complete
+recorded_at_utc: "2026-09-01T23:04:27Z"
 release:
   version: 0.2.2
   source_sha: 2503743cf654606a5baa83c7b7e7c8b8e1e06596
@@ -44,12 +44,34 @@ zenodo:
     md5: 76a89b2fc10cbc069640eb7c8c15397c
 conda_forge:
   feedstock: conda-forge/gwexpy-feedstock
-  state: pending-bot-pr
-  checked_at_utc: "2026-09-01T09:46:25Z"
-  latest_recipe_version: 0.2.0
-  v0.2.2_pull_request: not-created
-  v0.2.2_channel_package: not-available
-  policy: monitor-bot-for-24-hours-before-manual-escalation
+  state: complete
+  pull_request:
+    number: 12
+    url: https://github.com/conda-forge/gwexpy-feedstock/pull/12
+    branch: 0.2.2_hff071a
+    merged_at: "2026-09-01T12:31:04Z"
+    merge_commit: 5eea7e9a7d1b15f6a8e625df33595b957ac9e8db
+  recipe:
+    version: 0.2.2
+    source_url: https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.2.tar.gz
+    source_sha256: 3448af15e417187f201f1d910e92fc11e04224607b9cb77849e6d9e172383636
+    build_number: 0
+  ci:
+    package_build: pass
+    linter: pass
+  channel_package:
+    basename: noarch/gwexpy-0.2.2-pyhc364b38_0.conda
+    version: 0.2.2
+    build: pyhc364b38_0
+    build_number: 0
+    uploaded_at: "2026-09-01T12:33:10.289000Z"
+  fresh_install_smoke:
+    result: pass
+    python: 3.12.14
+    metadata_version: 0.2.2
+    module_version: 0.2.2
+    user_site: disabled
+    timeseries_shape: [3]
 documentation:
   public_languages:
     - en
@@ -65,6 +87,12 @@ documentation:
   activity_svg_sha256: 2dbc69c27da5216d27c16c065b4d5c10b328964a3e9154a6701e7b00d63cf872
   activity_csv: docs_redesign/_static/downloads/development-activity-v0.2.2-weekly.csv
   activity_csv_sha256: cd72102029af78b05dcb002051365092f128df341125164e4ba7c8a96d4203e3
+  deployment:
+    pull_request: 697
+    merge_commit: c325f6fa0b4ee8de0ca5f6203880504a2af0f9d9
+    pages_workflow_run_id: 33498679298
+    gh_pages_commit: 202ec1c9cbf5d570b1022d8b593deddd19efece8
+    live_readback: pass
   work_report: docs/developers/reports/report_v0.2.2_release_closure_20260901_184625.md
 scope:
   runtime_code_changed: false
@@ -99,13 +127,16 @@ verification:
       result: passed with notebook execution disabled and the repository's known warning baseline
     - check: rendered EN and JA changelog readback
       result: v0.2.2 release links, translated Japanese copy, SVG, and CSV present
+    - check: documentation pull request and deployment
+      result: PR 697 merged; Pages run 33498679298 and live EN/JA readback passed
+    - check: conda-forge recipe and automation
+      result: bot PR 12 matched version, PyPI sdist URL, SHA-256, and build number; package build and linter passed; merged at 5eea7e9
+    - check: conda-forge channel and fresh install
+      result: noarch/gwexpy-0.2.2-pyhc364b38_0.conda available; Python 3.12 isolated install/import/TimeSeries smoke passed
   operational_notes:
     - A GitHub CLI readback requested an unsupported isLatest JSON field; REST readback supplied the authoritative release state.
     - An initial Zenodo helper expected the obsolete upload_type field; the current-schema API readback passed.
     - A bare sphinx-build resolved outside the conda environment; python -m sphinx in the gwexpy environment passed.
     - Full-site external link checking reported unrelated pre-existing broken links and a transient DOI timeout; authoritative GitHub and Zenodo API readbacks passed.
     - Full notebook execution was stopped after a new public-link requirement was identified; final local Sphinx builds used nb_execution_mode=off and pull-request CI owns isolated notebook execution.
-pending:
-  - conda-forge bot pull request for v0.2.2
-  - conda-forge CI, merge, channel availability, and fresh-environment smoke
-  - documentation pull request CI, merge, deployment, and live-site readback
+    - The first conda smoke observed a separate user-site gwexpy-0.1.14 distribution through importlib.metadata; rerunning with PYTHONNOUSERSITE=1 proved the isolated conda package metadata and module version are both 0.2.2.
