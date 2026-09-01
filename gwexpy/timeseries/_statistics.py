@@ -6,6 +6,7 @@ and classic correlations (Pearson, Kendall, MIC).
 
 from __future__ import annotations
 
+import inspect
 import warnings
 from typing import TYPE_CHECKING, Any, cast
 
@@ -295,6 +296,15 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
 
         # grangercausalitytests returns a dict: {lag: (test_result, params, ...)}
         # test_result[0] contains statistics like {'ssr_ftest': (F-stat, p-value, df_denom, df_num), ...}
+        parameters = inspect.signature(grangercausalitytests).parameters
+        supports_verbose = "verbose" in parameters or any(
+            parameter.kind is inspect.Parameter.VAR_KEYWORD
+            for parameter in parameters.values()
+        )
+        call_kwargs: dict[str, Any] = {"maxlag": maxlag}
+        if supports_verbose:
+            call_kwargs["verbose"] = verbose
+
         with warnings.catch_warnings():
             warnings.filterwarnings(
                 "ignore",
@@ -302,7 +312,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
                 category=FutureWarning,
                 module="statsmodels",
             )
-            res = grangercausalitytests(data, maxlag=maxlag, verbose=verbose)
+            res = grangercausalitytests(data, **call_kwargs)
 
         # Extract p-values for the specified test across all lags
         p_values = []

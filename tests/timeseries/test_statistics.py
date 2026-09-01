@@ -112,3 +112,82 @@ def test_granger_causality(causal_relationship):
         assert p_val_yx > 0.05
     except ImportError:
         pytest.skip("statsmodels not installed")
+
+
+def _fake_granger_results():
+    """Return the nested result shape produced by grangercausalitytests."""
+    return {
+        1: (
+            {"ssr_ftest": (2.5, 0.125, 20.0, 1)},
+            [object(), object(), np.array([[0.0, 1.0]])],
+        ),
+        2: (
+            {"ssr_ftest": (4.0, 0.025, 19.0, 2)},
+            [object(), object(), np.array([[0.0, 0.0, 1.0]])],
+        ),
+    }
+
+
+def test_granger_causality_passes_verbose_to_legacy_statsmodels(monkeypatch):
+    from statsmodels.tsa import stattools
+
+    calls = []
+
+    def legacy_granger(data, maxlag, verbose):
+        calls.append((data, maxlag, verbose))
+        return _fake_granger_results()
+
+    monkeypatch.setattr(stattools, "grangercausalitytests", legacy_granger)
+    target = TimeSeries([0.0, 1.0, 0.5, 1.5], dt=1)
+    cause = TimeSeries([1.0, 0.0, 1.0, 0.0], dt=1)
+
+    result = target.granger_causality(cause, maxlag=2, verbose=True)
+
+    assert len(calls) == 1
+    data, maxlag, verbose = calls[0]
+    assert data.shape == (4, 2)
+    assert maxlag == 2
+    assert verbose is True
+    assert result.best_lag == 2
+    assert result.min_p_value == 0.025
+
+
+def test_granger_causality_omits_verbose_for_modern_statsmodels(monkeypatch):
+    from statsmodels.tsa import stattools
+
+    calls = []
+
+    def modern_granger(data, maxlag):
+        calls.append((data, maxlag))
+        return _fake_granger_results()
+
+    monkeypatch.setattr(stattools, "grangercausalitytests", modern_granger)
+    target = TimeSeries([0.0, 1.0, 0.5, 1.5], dt=1)
+    cause = TimeSeries([1.0, 0.0, 1.0, 0.0], dt=1)
+
+    result = target.granger_causality(cause, maxlag=2, verbose=True)
+
+    assert len(calls) == 1
+    data, maxlag = calls[0]
+    assert data.shape == (4, 2)
+    assert maxlag == 2
+    assert result.best_lag == 2
+    assert result.min_p_value == 0.025
+
+
+def test_granger_causality_propagates_unrelated_type_error(monkeypatch):
+    from statsmodels.tsa import stattools
+
+    expected = TypeError("unrelated statsmodels calculation failure")
+
+    def modern_granger(data, maxlag):
+        raise expected
+
+    monkeypatch.setattr(stattools, "grangercausalitytests", modern_granger)
+    target = TimeSeries([0.0, 1.0, 0.5, 1.5], dt=1)
+    cause = TimeSeries([1.0, 0.0, 1.0, 0.0], dt=1)
+
+    with pytest.raises(TypeError) as exc_info:
+        target.granger_causality(cause, maxlag=2, verbose=True)
+
+    assert exc_info.value is expected

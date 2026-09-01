@@ -19,12 +19,13 @@ def _code_cell_containing(relative_path: str, needle: str) -> str:
     raise AssertionError(f"No code cell contains {needle!r}")
 
 
-def test_advanced_correlation_handles_statsmodels_verbose_removal() -> None:
+def test_advanced_correlation_relies_on_product_granger_compatibility() -> None:
     source = _code_cell_containing(
         "docs_redesign/how-to/fitting/advanced_correlation.ipynb",
         "granger_causality",
     )
 
-    assert "except TypeError as exc:" in source
-    assert "unexpected keyword argument 'verbose'" in source
-    assert "raise" in source
+    assert "except ImportError:" in source
+    assert "statsmodels package is not installed" in source
+    assert "except TypeError" not in source
+    assert "unexpected keyword argument 'verbose'" not in source
