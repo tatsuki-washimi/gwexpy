@@ -13,6 +13,7 @@ This module integrates all Mixins into a single TimeSeries class.
 
 from __future__ import annotations
 
+import inspect
 from contextvars import ContextVar
 from datetime import date
 from operator import index
@@ -64,6 +65,7 @@ _SUPPRESS_EXACT_FINALIZE_FROM: ContextVar[frozenset[int]] = ContextVar(
     "_SUPPRESS_EXACT_FINALIZE_FROM", default=frozenset()
 )
 _EXACT_STATE_KEYS = frozenset({"_gwex_t0_gps_ns", "_gwex_dt_gps_ns"})
+_ARG_OMITTED = object()
 _CSV_ENHANCED_READER_KEYS = frozenset(
     {"config", "channels", "timezone", "resample", "resample_method"}
 )
@@ -318,7 +320,18 @@ class TimeSeries(
         }
 
     def __new__(
-        cls, data: ArrayLike, *args: Any, t0_ns: int | None = None, **kwargs: Any
+        cls,
+        data: ArrayLike,
+        unit: Any = None,
+        t0: Any = _ARG_OMITTED,
+        dt: Any = None,
+        sample_rate: Any = None,
+        times: Any = _ARG_OMITTED,
+        channel: Any = None,
+        name: Any = None,
+        *,
+        t0_ns: int | None = None,
+        **kwargs: Any,
     ) -> TimeSeries:
         """Create a new TimeSeries.
 
@@ -328,6 +341,13 @@ class TimeSeries(
         authority.
         """
         from gwexpy.timeseries.utils import _coerce_t0_gps
+
+        t0_supplied = t0 is not _ARG_OMITTED
+        times_supplied = times is not _ARG_OMITTED
+        if not t0_supplied:
+            t0 = None
+        if not times_supplied:
+            times = None
 
         exact_t0_ns: int | None = None
         if t0_ns is not None:
@@ -340,22 +360,17 @@ class TimeSeries(
                     "t0_ns must be an integer number of GPS nanoseconds"
                 ) from exc
 
-            # ``t0`` can be positional in GWpy's constructor, whose first two
-            # positional parameters after data are ``unit`` and ``t0``.
-            # A second positional argument is therefore a competing epoch
-            # authority.  Do not try to compare a float/time-like value with
-            # an exact integer: callers must select one authority explicitly.
-            conflicting = {"t0", "epoch", "x0", "xindex", "times"}.intersection(kwargs)
-            if len(args) >= 2 or conflicting:
+            conflicting = {"epoch", "x0", "xindex"}.intersection(kwargs)
+            if t0_supplied:
+                conflicting.add("t0")
+            if times_supplied:
+                conflicting.add("times")
+            if conflicting:
                 names = ", ".join(sorted(conflicting))
-                if len(args) >= 2:
-                    names = ", ".join(filter(None, (names, "positional t0")))
                 raise TypeError(
                     f"t0_ns cannot be combined with another epoch authority ({names})"
                 )
 
-        positional_dt = args[2] if len(args) >= 3 else None
-        dt = positional_dt if len(args) >= 3 else kwargs.get("dt")
         should_coerce = True
         xunit = kwargs.get("xunit", None)
         if xunit is not None:
@@ -404,24 +419,12 @@ class TimeSeries(
                 except (u.UnitConversionError, AttributeError, TypeError):
                     return epoch_q
 
-            positional_t0 = args[1] if len(args) >= 2 else None
-            keyword_t0 = kwargs.get("t0")
-            duplicate_t0 = len(args) >= 2 and "t0" in kwargs
-            effective_t0 = positional_t0 if len(args) >= 2 else keyword_t0
             epoch = kwargs.get("epoch")
 
-            # Let GWpy own duplicate/conflicting-argument failures unchanged.
-            if not duplicate_t0 and not (
-                effective_t0 is not None and epoch is not None
-            ):
-                if effective_t0 is not None and _is_gwexpy_only_epoch(effective_t0):
-                    normalized = normalize_epoch(effective_t0)
-                    if len(args) >= 2:
-                        parent_args = list(args)
-                        parent_args[1] = normalized
-                        args = tuple(parent_args)
-                    else:
-                        kwargs["t0"] = normalized
+            # Let GWpy own conflicting-authority failures unchanged.
+            if not (t0 is not None and epoch is not None):
+                if t0 is not None and _is_gwexpy_only_epoch(t0):
+                    t0 = normalize_epoch(t0)
                 elif epoch is not None and _is_gwexpy_only_epoch(epoch):
                     kwargs["epoch"] = normalize_epoch(epoch)
         if exact_t0_ns is not None:
@@ -430,9 +433,20 @@ class TimeSeries(
             # only exact authority.  Normalise into the actual axis unit so
             # GWpy does not reinterpret seconds as (for example) nanoseconds.
             target_unit = _target_axis_unit()
-            kwargs["t0"] = float(u.Quantity(exact_t0_ns, u.ns).to_value(target_unit))
+            t0 = float(u.Quantity(exact_t0_ns, u.ns).to_value(target_unit))
 
-        new = super().__new__(cls, data, *args, **kwargs)
+        new = super().__new__(
+            cls,
+            data,
+            unit,
+            t0,
+            dt,
+            sample_rate,
+            times,
+            channel,
+            name,
+            **kwargs,
+        )
         if exact_t0_ns is not None:
             new._gwex_t0_gps_ns = exact_t0_ns
             try:
@@ -504,7 +518,10 @@ class TimeSeries(
 
         exact_t0_ns = getattr(self, "_gwex_t0_gps_ns", None)
         if exact_t0_ns is not None:
-            new_t0_ns = _integer_gps_ns(value)
+            # GWpy interprets a bare numeric epoch in the current axis unit.
+            # Preserve that public meaning when updating the private
+            # nanosecond authority (notably for ``append(resize=False)``).
+            new_t0_ns = _integer_gps_ns(value, default_unit=self.xunit)
         else:
             new_t0_ns = None
 
@@ -514,6 +531,20 @@ class TimeSeries(
             BaseTimeSeries.x0.__set__(self, value)
         if new_t0_ns is not None:
             self._gwex_t0_gps_ns = new_t0_ns
+
+    def _update_index(self, axis: str, attr: str, value: Any) -> None:
+        """Update a parent-owned index and synchronize exact cadence state."""
+        super()._update_index(axis, attr, value)
+        if (
+            axis != "x"
+            or attr != "dx"
+            or getattr(self, "_gwex_t0_gps_ns", None) is None
+        ):
+            return
+        try:
+            self._gwex_dt_gps_ns = _integral_dt_gps_ns(self.dt)
+        except (AttributeError, TypeError, ValueError):
+            self.__dict__.pop("_gwex_dt_gps_ns", None)
 
     def copy(self, order: Literal["C", "F", "A", "K"] = "C") -> TimeSeries:
         """Copy this series without reconstructing its exact epoch from ``t0``."""
@@ -720,6 +751,17 @@ class TimeSeries(
         """
         return self.arima(order=(p, 0, q), **kwargs)
 
+
+_timeseries_new = cast(Any, TimeSeries.__new__)
+_timeseries_new_signature = inspect.signature(_timeseries_new, follow_wrapped=False)
+_timeseries_new.__signature__ = _timeseries_new_signature.replace(
+    parameters=[
+        parameter.replace(default=None)
+        if parameter.name in {"t0", "times"}
+        else parameter
+        for parameter in _timeseries_new_signature.parameters.values()
+    ]
+)
 
 _timeseries_read = cast(Any, TimeSeries.read).__func__
 _timeseries_read.__signature__ = _gwf_parallel_read_signature(_timeseries_read)

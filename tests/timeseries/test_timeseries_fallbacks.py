@@ -57,7 +57,7 @@ class TestTimeSeriesNewFallbacks:
             # It should fallback to target_unit = u.s
             args, kwargs = mock_super_new.call_args
             # t0 coerced to float via float(t0_q.to(u.s).value) if coerced
-            assert isinstance(kwargs["t0"], float)
+            assert isinstance(args[3], float)
 
     def test_non_convertible_target_unit_keeps_quantity(self):
         # Case where should_coerce is True, but normalization to target_unit fails.
@@ -72,8 +72,8 @@ class TestTimeSeriesNewFallbacks:
 
                 # Check what was passed to super().__new__
                 args, kwargs = mock_super_new.call_args
-                assert isinstance(kwargs["t0"], u.Quantity)
-                assert kwargs["t0"].unit == u.m
+                assert isinstance(args[3], u.Quantity)
+                assert args[3].unit == u.m
 
     def test_epoch_coercion_fallback(self):
         # Same for epoch

@@ -1204,16 +1204,6 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 ts.append(other, **kwargs)
             return self
 
-        # If 'copy' key is present in 'other' (can happen with some readers),
-        # it will cause super().append to fail if 'copy' is not a TimeSeries.
-        # We should filter it out if it's not a TimeSeries.
-        if (
-            hasattr(other, "pop")
-            and "copy" in other
-            and not isinstance(other["copy"], BaseTimeSeries)
-        ):
-            other.pop("copy")
-
         # Ensure we don't pass 'copy' twice if it's already in kwargs
         if "copy" in kwargs:
             copy = kwargs.pop("copy")

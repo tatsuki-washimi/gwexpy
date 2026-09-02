@@ -10,7 +10,7 @@ from astropy import units as u
 from gwpy.time import LIGOTimeGPS
 from gwpy.timeseries import TimeSeries as GwpyTimeSeries
 
-from gwexpy.timeseries import TimeSeries
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
 
 def test_t0_ns_is_exact_at_a_large_gps_epoch() -> None:
@@ -135,6 +135,17 @@ def test_t0_ns_rejects_all_simultaneous_epoch_authorities(authority: str) -> Non
         TimeSeries([1.0], t0_ns=0, dt=1.0, **{authority: 0})
 
 
+@pytest.mark.parametrize("authority", ["t0", "times"])
+def test_t0_ns_rejects_explicit_none_epoch_authorities(authority: str) -> None:
+    with pytest.raises(TypeError, match=rf"t0_ns.*{authority}"):
+        TimeSeries([1.0], t0_ns=0, dt=1.0, **{authority: None})
+
+
+def test_t0_ns_rejects_explicit_none_positional_t0() -> None:
+    with pytest.raises(TypeError, match=r"t0_ns.*t0"):
+        TimeSeries([1.0], None, None, t0_ns=0)
+
+
 def test_t0_gps_ns_is_read_only() -> None:
     series = TimeSeries([1.0], t0_ns=0, dt=1.0)
 
@@ -185,3 +196,98 @@ def test_exact_epoch_metadata_reconstructs_smooth_and_resample_outputs() -> None
     assert series._get_meta_for_constructor()["t0_ns"] == epoch_ns
     assert series.smooth(3).t0_gps_ns == epoch_ns
     assert series.resample(50).t0_gps_ns == epoch_ns
+
+
+@pytest.mark.parametrize("attribute", ["t0", "x0"])
+def test_bare_epoch_setter_uses_the_current_axis_unit(attribute: str) -> None:
+    series = TimeSeries(np.arange(4.0), t0_ns=0, dt=7, xunit=u.ns)
+    reference = GwpyTimeSeries(np.arange(4.0), t0=0, dt=7, xunit=u.ns)
+
+    setattr(series, attribute, 42)
+    setattr(reference, attribute, 42)
+
+    assert series.t0 == reference.t0
+    assert series.x0 == reference.x0
+    assert series.t0_gps_ns == 42
+
+
+@pytest.mark.parametrize("inplace", [True, False], ids=["inplace", "copy"])
+def test_resize_false_append_advances_exact_epoch_in_axis_units(
+    inplace: bool,
+) -> None:
+    left = TimeSeries(np.arange(4.0), t0_ns=1000, dt=7, xunit=u.ns)
+    right = TimeSeries(np.arange(2.0), t0_ns=1028, dt=7, xunit=u.ns)
+
+    result = left.append(right, inplace=inplace, resize=False)
+
+    assert result.t0_gps_ns == 1014
+    assert result._gwex_dt_gps_ns == 7
+    if inplace:
+        assert result is left
+    else:
+        assert result is not left
+        assert left.t0_gps_ns == 1000
+
+
+def test_collection_resize_false_append_preserves_exact_epochs() -> None:
+    left = TimeSeriesDict(
+        {
+            key: TimeSeries(np.arange(4.0), t0_ns=1000, dt=7, xunit=u.ns)
+            for key in ("first", "second")
+        }
+    )
+    right = TimeSeriesDict(
+        {
+            key: TimeSeries(np.arange(2.0), t0_ns=1028, dt=7, xunit=u.ns)
+            for key in ("first", "second")
+        }
+    )
+
+    result = left.append(right, resize=False)
+
+    assert result is left
+    for series in result.values():
+        assert series.t0_gps_ns == 1014
+        assert series._gwex_dt_gps_ns == 7
+
+
+@pytest.mark.parametrize(
+    ("initial_dt", "attribute", "value", "expected_dt_ns"),
+    [
+        pytest.param(7 * u.ns, "dt", 11 * u.ns, 11, id="dt"),
+        pytest.param(7 * u.ns, "dx", 13 * u.ns, 13, id="dx"),
+        pytest.param(1 * u.s, "sample_rate", 4 * u.Hz, 250_000_000, id="sample-rate"),
+    ],
+)
+def test_cadence_setters_synchronize_exact_interval_for_copy_and_slice(
+    initial_dt: u.Quantity,
+    attribute: str,
+    value: u.Quantity,
+    expected_dt_ns: int,
+) -> None:
+    epoch_ns = 1_234_567_890_123_456_789
+    series = TimeSeries(np.arange(6.0), t0_ns=epoch_ns, dt=initial_dt)
+    reference = GwpyTimeSeries(np.arange(6.0), t0=0, dt=initial_dt)
+
+    setattr(series, attribute, value)
+    setattr(reference, attribute, value)
+
+    assert series.dt == reference.dt
+    assert series.dx == reference.dx
+    assert series.sample_rate == reference.sample_rate
+    assert series._gwex_dt_gps_ns == expected_dt_ns
+    assert series.copy()._gwex_dt_gps_ns == expected_dt_ns
+    sliced = series[2:]
+    assert sliced.t0_gps_ns == epoch_ns + 2 * expected_dt_ns
+    assert sliced._gwex_dt_gps_ns == expected_dt_ns
+
+
+def test_nonintegral_cadence_setter_drops_stale_exact_interval() -> None:
+    series = TimeSeries(np.arange(4.0), t0_ns=0, dt=7 * u.ns)
+
+    series.dt = (1 / 3) * u.ns
+
+    assert "_gwex_dt_gps_ns" not in series.__dict__
+    sliced = series[1:]
+    assert "_gwex_t0_gps_ns" not in sliced.__dict__
+    assert "_gwex_dt_gps_ns" not in sliced.__dict__

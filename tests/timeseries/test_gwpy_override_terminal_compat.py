@@ -11,6 +11,7 @@ from __future__ import annotations
 import inspect
 import warnings
 from collections.abc import Callable, Mapping
+from datetime import datetime, timezone
 from typing import Any
 
 import numpy as np
@@ -330,6 +331,78 @@ def test_timeseries_crop_preserves_private_exact_time_authority() -> None:
     assert cropped.__dict__["_gwex_dt_gps_ns"] == 125_000_000
 
 
+@pytest.mark.parametrize(
+    "bound",
+    [
+        pytest.param(np.array(1000.5), id="scalar-array"),
+        pytest.param(np.array([1000.5, 1001.5]), id="vector-array"),
+        pytest.param(1000.5 + 1j, id="complex"),
+    ],
+)
+def test_timeseries_crop_nonextension_bound_outcome_matches_gwpy(
+    bound: Any,
+) -> None:
+    actual_input = _series(TimeSeries, np.arange(8), t0=1000, dt=1)
+    expected_input = _series(GWpyTimeSeries, np.arange(8), t0=1000, dt=1)
+
+    actual_error = _exception_class(lambda: actual_input.crop(bound))
+    expected_error = _exception_class(lambda: expected_input.crop(bound))
+
+    assert actual_error is expected_error
+    if expected_error is None:
+        _assert_series_equal(actual_input.crop(bound), expected_input.crop(bound))
+
+
+def _gps_datetime(second: int) -> datetime:
+    return datetime(1980, 1, 6, 0, 0, second, tzinfo=timezone.utc)
+
+
+def test_timeseries_crop_datetime_extension_converts_to_axis_unit() -> None:
+    actual = TimeSeries(np.arange(5.0), t0_ns=0, dt=1_000_000_000, xunit=u.ns, unit=u.V)
+    expected = GWpyTimeSeries(
+        np.arange(5.0), t0=0, dt=1_000_000_000, xunit=u.ns, unit=u.V
+    )
+    start = _gps_datetime(1)
+    end = _gps_datetime(3)
+
+    assert _exception_class(lambda: expected.crop(start, end)) is TypeError
+    result = actual.crop(start, end)
+
+    np.testing.assert_array_equal(result.value, [1.0, 2.0])
+    assert result.xunit == u.ns
+    assert result.t0_gps_ns == 1_000_000_000
+
+
+def test_timeseriesdict_crop_datetime_extension_converts_per_entry_axis_unit() -> None:
+    actual = TimeSeriesDict(
+        {
+            key: TimeSeries(
+                np.arange(5.0), t0_ns=0, dt=1_000_000_000, xunit=u.ns, unit=u.V
+            )
+            for key in ("first", "second")
+        }
+    )
+    expected = GWpyTimeSeriesDict(
+        {
+            key: GWpyTimeSeries(
+                np.arange(5.0), t0=0, dt=1_000_000_000, xunit=u.ns, unit=u.V
+            )
+            for key in ("first", "second")
+        }
+    )
+    start = _gps_datetime(1)
+    end = _gps_datetime(3)
+
+    assert _exception_class(lambda: expected.crop(start, end)) is TypeError
+    result = actual.crop(start, end)
+
+    assert result is actual
+    for series in result.values():
+        np.testing.assert_array_equal(series.value, [1.0, 2.0])
+        assert series.xunit == u.ns
+        assert series.t0_gps_ns == 1_000_000_000
+
+
 @pytest.mark.parametrize("inplace", [True, False], ids=["inplace", "copy"])
 def test_timeseries_append_contiguous_matches_gwpy(inplace: bool) -> None:
     actual_left = _series(TimeSeries, [1, 2], t0=10, dt=1)
@@ -644,6 +717,21 @@ def test_timeseriesdict_append_single_series_is_explicit_extension() -> None:
     np.testing.assert_array_equal(actual["second"].value, [3, 4, 5, 6])
 
 
+def test_timeseriesdict_append_invalid_copy_key_matches_gwpy_without_mutation() -> None:
+    actual = TimeSeriesDict()
+    expected = GWpyTimeSeriesDict()
+    actual_other = {"copy": 1}
+    expected_other = {"copy": 1}
+
+    actual_error = _exception_class(lambda: actual.append(actual_other))
+    expected_error = _exception_class(lambda: expected.append(expected_other))
+
+    assert expected_error is ValueError
+    assert actual_error is expected_error
+    assert actual_other == expected_other == {"copy": 1}
+    assert actual == expected == {}
+
+
 @pytest.mark.parametrize(
     "rate",
     [
@@ -692,14 +780,19 @@ def test_timeseriesdict_numeric_resample_irregular_outcome_matches_gwpy(
 
 
 @pytest.mark.parametrize(
-    "rate",
-    [pytest.param("0.125s", id="string"), pytest.param(0.125 * u.s, id="quantity")],
+    ("rate", "gwpy_error"),
+    [
+        pytest.param("0.125s", u.UnitConversionError, id="string"),
+        pytest.param(0.125 * u.s, ValueError, id="quantity"),
+    ],
 )
-def test_timeseriesdict_time_bin_resample_is_explicit_extension(rate: Any) -> None:
+def test_timeseriesdict_time_bin_resample_is_explicit_extension(
+    rate: Any, gwpy_error: type[BaseException]
+) -> None:
     actual = _series_dict(TimeSeries, TimeSeriesDict)
     expected = _series_dict(GWpyTimeSeries, GWpyTimeSeriesDict)
 
-    assert _exception_class(lambda: expected.resample(rate)) is not None
+    assert _exception_class(lambda: expected.resample(rate)) is gwpy_error
     result = actual.resample(rate)
 
     assert result is actual
@@ -708,6 +801,20 @@ def test_timeseriesdict_time_bin_resample_is_explicit_extension(rate: Any) -> No
     for series in result.values():
         assert series.dt == 0.125 * u.s
         assert series.t0 == 1000 * u.s
+
+
+def test_timeseriesdict_per_key_time_bin_resample_is_explicit_extension() -> None:
+    actual = _series_dict(TimeSeries, TimeSeriesDict)
+    expected = _series_dict(GWpyTimeSeries, GWpyTimeSeriesDict)
+    rates = {"first": "0.125s", "second": 0.25 * u.s}
+
+    assert _exception_class(lambda: expected.resample(rates)) is u.UnitConversionError
+    result = actual.resample(rates)
+
+    assert result is actual
+    assert actual["first"].dt == 0.125 * u.s
+    assert actual["second"].dt == 0.25 * u.s
+    assert actual["first"].t0 == actual["second"].t0 == 1000 * u.s
 
 
 def test_timeseriesdict_numeric_resample_preserves_private_exact_authority() -> None:

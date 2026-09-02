@@ -5,6 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 from astropy import units as u
+from gwpy.timeseries import TimeSeries as GwpyTimeSeries
 
 from gwexpy.timeseries import TimeSeries
 
@@ -75,16 +76,23 @@ class TestCrop:
         assert len(result) <= 100
 
     def test_crop_array_start(self):
-        # Lines 70-72 — start is array → extract first element
+        # Multi-value arrays are not an absolute-time extension.  Preserve
+        # GWpy's failure instead of silently selecting the first value.
         ts = _make_ts(n=100, sample_rate=100.0, t0=0.0)
-        result = ts.crop(start=np.array([0.1, 0.2]))
-        assert result is not None
+        reference = GwpyTimeSeries(ts.value, sample_rate=100.0, t0=0.0)
+        with pytest.raises(ValueError):
+            reference.crop(start=np.array([0.1, 0.2]))
+        with pytest.raises(ValueError):
+            ts.crop(start=np.array([0.1, 0.2]))
 
     def test_crop_array_end(self):
-        # Lines 74-77 — end is array → extract first element
+        # Match the parent outcome for the upper bound as well.
         ts = _make_ts(n=100, sample_rate=100.0, t0=0.0)
-        result = ts.crop(end=np.array([0.8, 0.9]))
-        assert result is not None
+        reference = GwpyTimeSeries(ts.value, sample_rate=100.0, t0=0.0)
+        with pytest.raises(ValueError):
+            reference.crop(end=np.array([0.8, 0.9]))
+        with pytest.raises(ValueError):
+            ts.crop(end=np.array([0.8, 0.9]))
 
 
 # ---------------------------------------------------------------------------

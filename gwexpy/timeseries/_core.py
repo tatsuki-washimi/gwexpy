@@ -8,6 +8,8 @@ This module contains the base TimeSeries class with essential functionality:
 
 from __future__ import annotations
 
+from datetime import date
+from decimal import Decimal
 from typing import TYPE_CHECKING, Any, Union
 
 try:
@@ -17,6 +19,7 @@ except ImportError:
 
 import numpy as np
 from astropy import units as u
+from astropy.time import Time
 from gwpy.timeseries import TimeSeries as BaseTimeSeries
 from numpy.typing import ArrayLike
 
@@ -38,6 +41,38 @@ def _crop_bound_to_float(value: Any | None) -> float | None:
     if isinstance(result, (np.ndarray, list)) and np.ndim(result) > 0:
         result = result[0]
     return float(result)
+
+
+def _is_gwexpy_only_crop_bound(value: object) -> bool:
+    """Return whether a crop bound uses an explicit GWexpy time extension."""
+    if isinstance(value, (date, Time)):
+        return True
+    if isinstance(value, str):
+        try:
+            float(value)
+        except ValueError:
+            return True
+        return False
+    if isinstance(value, (tuple, list)) and 3 <= len(value) <= 7:
+        return all(
+            isinstance(item, (int, float, np.number))
+            and not isinstance(item, (bool, np.bool_))
+            for item in value
+        )
+    value_type = type(value)
+    return value_type.__name__ == "UTCDateTime" and value_type.__module__.startswith(
+        "obspy."
+    )
+
+
+def _crop_bound_to_axis(value: Any, axis_unit: u.UnitBase) -> float:
+    """Convert an explicit absolute-time extension into an axis-unit value."""
+    gps_seconds = _crop_bound_to_float(value)
+    assert gps_seconds is not None
+    if not axis_unit.is_equivalent(u.s):
+        raise u.UnitConversionError(f"{axis_unit!r} is not a time unit")
+    seconds_per_axis_unit = Decimal(str(axis_unit.decompose(bases=[u.s]).scale))
+    return float(Decimal(str(gps_seconds)) / seconds_per_axis_unit)
 
 
 def _regular_crop_slice(
@@ -97,11 +132,10 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
 
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
         """
-        gwpy_types = (int, float, np.integer, np.floating, u.Quantity)
-        if start is not None and not isinstance(start, gwpy_types):
-            start = _crop_bound_to_float(start)
-        if end is not None and not isinstance(end, gwpy_types):
-            end = _crop_bound_to_float(end)
+        if start is not None and _is_gwexpy_only_crop_bound(start):
+            start = _crop_bound_to_axis(start, self.xunit)
+        if end is not None and _is_gwexpy_only_crop_bound(end):
+            end = _crop_bound_to_axis(end, self.xunit)
         return super().crop(start=start, end=end, copy=copy)
 
     def append(

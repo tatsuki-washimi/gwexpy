@@ -1,15 +1,18 @@
 schema: gwexpy-v023-timeseries-terminal-evidence-v1
 phase: override-terminal-timeseries
-status: focused-green
+status: focused-green-human-time-axis-review-required
 
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 phase_parent: a8f445669fa3469aa068eb8b72956de407255bb5
+review_followup_parent: 657d692bf09060975284db6c8182cdf8177c4e9b
 issues:
   - "#639"
   - "#704"
 
 skills:
   - superpowers:test-driven-development
+  - superpowers:receiving-code-review
+  - superpowers:systematic-debugging
   - extend_gwpy
   - gwexpy_conda_jobs
 
@@ -92,10 +95,48 @@ tdd:
           observation: copy was positional-or-keyword instead of keyword-only
         - surface: TimeSeriesDict.crop
           observation: a third positional argument succeeded where GWpy raised TypeError
+    independent_review_followup:
+      - cycle: exact-epoch-axis-unit
+        result: 5 failed, 29 deselected
+        observation: >-
+          Bare epoch setters and resize-false append interpreted nanosecond-axis
+          values as seconds, including both inplace modes and collection append.
+      - cycle: exact-cadence-setters
+        result: 4 failed, 34 deselected
+        observation: >-
+          dt, dx, and sample_rate updates left stale exact cadence metadata;
+          non-integral cadence did not remove the stale value.
+      - cycle: crop-routing
+        result: 4 failed, 1 passed, 64 deselected
+        observation: >-
+          Datetime bounds stayed in GPS seconds on nanosecond axes, while
+          vector ndarray and complex bounds did not preserve parent outcomes.
+      - cycle: collection-append-input-mutation
+        result: 1 failed
+        observation: >-
+          A mapping key named copy was silently removed and the parent ValueError
+          was suppressed.
+      - cycle: constructor-layout
+        result: 1 failed, 16 passed, 42 deselected
+        observation: >-
+          TimeSeries.__new__ hid the complete GWpy positional-or-keyword prefix
+          behind args and kwargs.
+      - cycle: exact-authority-presence
+        result: 3 failed, 38 deselected
+        observation: >-
+          Restoring the explicit constructor prefix initially lost the distinction
+          between an omitted authority and an explicitly supplied None authority.
   green:
     direct_terminal_suite:
-      gwpy_4_0_1: 64 passed, 0 skipped
-      gwpy_4_0_2: 64 passed, 0 skipped
+      gwpy_4_0_1: 71 passed, 0 skipped
+      gwpy_4_0_2: 71 passed, 0 skipped
+    exact_time_and_constructor_suite:
+      files:
+        - tests/timeseries/test_gwpy_override_terminal_compat.py
+        - tests/timeseries/test_exact_gps_epoch.py
+        - tests/timeseries/test_constructor_compat.py
+      gwpy_4_0_1: 171 passed, 0 skipped
+      gwpy_4_0_2: 171 passed, 0 skipped
     related_suite:
       files:
         - tests/timeseries/test_gwpy_override_terminal_compat.py
@@ -110,11 +151,14 @@ tdd:
         - tests/timeseries/test_resampling.py
         - tests/timeseries/test_spectral_gwpy_phase3_compat.py
         - tests/timeseries/test_gwpy_behavioral_compatibility.py
-      gwpy_4_0_1: 398 passed, 0 skipped
-      gwpy_4_0_2: 398 passed, 0 skipped
+        - tests/timeseries/test_constructor_compat.py
+        - tests/timeseries/test_timeseries_fallbacks.py
+      gwpy_4_0_1: 490 passed, 0 skipped
+      gwpy_4_0_2: 490 passed, 0 skipped
       warnings: >-
         Two expected out-of-span crop warnings and one optional xarray GMT
-        backend discovery warning per environment.
+        backend discovery warning plus one existing xindex-construction warning
+        per environment.
     unexpected_required_skips: 0
 
 implementation_groups:
@@ -137,8 +181,13 @@ implementation_groups:
     pre_fix: >-
       GWexpy accepted crop(start, end, copy) while both installed GWpy oracles
       raised TypeError; the public descriptor also exposed copy as
-      positional-or-keyword.
-    fix: make copy keyword-only and leave the parent crop algorithm authoritative
+      positional-or-keyword. The extension also passed absolute GPS seconds as
+      bare values on non-second axes and broadly intercepted ndarray/complex
+      inputs that belong to the parent route.
+    fix: >-
+      Make copy keyword-only, route only explicit time-like extensions, convert
+      them exactly into the receiver axis unit, and leave all other inputs and
+      the crop algorithm to GWpy.
     fixtures:
       - unbounded and exact-span views
       - inner and one-ULP boundary selection
@@ -146,31 +195,42 @@ implementation_groups:
       - copy true and false memory behavior
       - large GPS epoch
       - private exact t0 and dt authority preservation
+      - scalar and vector ndarray outcomes
+      - complex failure class
+      - datetime extension on a nanosecond axis
     evidence:
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_crop_parameter_layout_matches_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_crop_bounds_and_memory_match_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_crop_copy_is_keyword_only_like_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_crop_preserves_private_exact_time_authority
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_crop_nonextension_bound_outcome_matches_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_crop_datetime_extension_converts_to_axis_unit
 
   - id: implementation-92eb9b7ff87b74f6
     surface: TimeSeries.append
     common_state: fixed
     pre_fix: >-
       GWexpy exposed pad before gap in the public keyword-only layout while
-      both installed GWpy oracles expose gap before pad.
-    fix: restore the GWpy keyword-only order without changing delegation
+      both installed GWpy oracles expose gap before pad. A resize-false append
+      advanced the public nanosecond axis correctly but multiplied its private
+      exact epoch by one billion.
+    fix: >-
+      Restore the GWpy keyword-only order and interpret the parent-owned bare
+      epoch update in the receiver axis unit.
     fixtures:
       - contiguous inplace and copy routes
       - discontiguous raise
       - zero and custom padding
       - mutation, return identity, and memory ownership
       - private exact t0 and dt authority preservation
+      - resize false with inplace true and false on a nanosecond axis
     evidence:
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_append_parameter_layout_matches_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_append_contiguous_matches_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_append_gap_failure_matches_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_append_gap_padding_matches_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_append_preserves_private_exact_time_authority
+      - tests/timeseries/test_exact_gps_epoch.py::test_resize_false_append_advances_exact_epoch_in_axis_units
 
   - id: implementation-23ef21fcc8b15c31
     surface: TimeSeries.t0
@@ -181,11 +241,13 @@ implementation_groups:
       - deletion outcome and fallback value
       - x0 alias synchronization
       - private exact authority update and deletion
+      - bare numeric setter interpreted in the receiver axis unit
     evidence:
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_alias_getters_match_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_alias_setters_match_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_alias_deleters_match_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_aliases_synchronize_private_exact_authority
+      - tests/timeseries/test_exact_gps_epoch.py::test_bare_epoch_setter_uses_the_current_axis_unit
 
   - id: implementation-a3182604e9f5b826
     surface: TimeSeries.x0
@@ -196,11 +258,13 @@ implementation_groups:
       - deletion outcome and fallback value
       - t0 alias synchronization
       - private exact authority update and deletion
+      - bare numeric setter interpreted in the receiver axis unit
     evidence:
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_alias_getters_match_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_alias_setters_match_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_alias_deleters_match_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_aliases_synchronize_private_exact_authority
+      - tests/timeseries/test_exact_gps_epoch.py::test_bare_epoch_setter_uses_the_current_axis_unit
 
   - id: implementation-ca32c15db8247574
     surface: TimeSeries.spectrogram
@@ -250,24 +314,31 @@ implementation_groups:
       - copy true and false memory behavior
       - collection mutation and return identity
       - values, units, time axes, names, and channels
+      - datetime extension converted independently for each nanosecond-axis entry
     evidence:
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_crop_parameter_layout_matches_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_crop_copy_is_keyword_only_like_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_crop_values_mutation_and_memory_match_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_crop_datetime_extension_converts_per_entry_axis_unit
 
   - id: implementation-e6a00793cc380715
     surface: TimeSeriesDict.append
     common_state: fixed
     pre_fix: >-
       GWexpy accepted append(other, copy) while both installed GWpy oracles
-      require copy to be keyword-only.
-    fix: make copy keyword-only; retain the pre-existing single-series extension
+      require copy to be keyword-only. It also deleted an invalid input mapping
+      key named copy and suppressed the parent's ValueError.
+    fix: >-
+      Make copy keyword-only, never mutate the input mapping, and retain the
+      pre-existing single-series extension.
     fixtures:
       - overlapping, new, and untouched keys
       - copy true and false ownership
       - contiguous and padded mappings
       - discontiguous failure
       - collection mutation and return identity
+      - invalid copy-key mapping failure class and input non-mutation
+      - resize-false exact epoch advance for existing keys
     gwexpy_extension:
       fixture: one contiguous TimeSeries appended to every existing key
       gwpy_state: GWpy-fails
@@ -278,6 +349,8 @@ implementation_groups:
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_append_gap_padding_matches_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_append_gap_failure_matches_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_append_single_series_is_explicit_extension
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_append_invalid_copy_key_matches_gwpy_without_mutation
+      - tests/timeseries/test_exact_gps_epoch.py::test_collection_resize_false_append_preserves_exact_epochs
 
   - id: implementation-16fa444d62b9101c
     surface: TimeSeriesDict.resample
@@ -297,12 +370,57 @@ implementation_groups:
       - fixture: time Quantity rate
         gwpy_state: GWpy-fails
         gwpy_exception: ValueError
+      - fixture: per-key string and time-Quantity rates
+        gwpy_state: GWpy-fails
+        gwpy_exception: UnitConversionError
     evidence:
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_resample_parameter_layout_matches_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_numeric_resample_matches_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_numeric_resample_irregular_outcome_matches_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_time_bin_resample_is_explicit_extension
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_per_key_time_bin_resample_is_explicit_extension
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_numeric_resample_preserves_private_exact_authority
+
+  - id: implementation-9173014cab96627f
+    surface: TimeSeries.__new__
+    common_state: fixed
+    pre_fix: >-
+      The override exposed only data, args, keyword-only t0_ns, and kwargs,
+      hiding all seven GWpy positional-or-keyword parameters after data.
+    fix: >-
+      Expose the complete GWpy prefix followed by keyword-only t0_ns. Preserve
+      explicit-authority detection with an internal omission sentinel and make
+      exactly one canonical parent call without exception-based retry.
+    fixtures:
+      - exact common parameter order, kinds, and defaults
+      - every valid positional prefix through name
+      - every positional/keyword duplicate
+      - excess positional argument
+      - supported epoch object identity and one parent call
+      - explicit None t0 and times authority conflicts
+    evidence:
+      - tests/timeseries/test_constructor_compat.py::test_constructor_exposes_gwpy_prefix_and_keyword_only_exact_extension
+      - tests/timeseries/test_constructor_compat.py::test_constructor_every_gwpy_positional_prefix_matches
+      - tests/timeseries/test_constructor_compat.py::test_constructor_duplicate_positional_keyword_outcome_matches_gwpy
+      - tests/timeseries/test_constructor_compat.py::test_constructor_excess_positional_outcome_matches_gwpy
+      - tests/timeseries/test_constructor_compat.py::test_gwpy_supported_epoch_reaches_parent_once_and_unchanged
+      - tests/timeseries/test_constructor_compat.py::test_parent_constructor_failure_is_not_retried
+      - tests/timeseries/test_exact_gps_epoch.py::test_t0_ns_rejects_explicit_none_epoch_authorities
+      - tests/timeseries/test_exact_gps_epoch.py::test_t0_ns_rejects_explicit_none_positional_t0
+
+private_exact_time_augmentation:
+  cadence_setters:
+    - dt
+    - dx
+    - sample_rate
+  contract: >-
+    A successful parent cadence update recomputes integral nanoseconds. A
+    non-integral cadence removes stale private interval metadata; subsequent
+    slicing therefore fails closed instead of advancing an exact epoch with an
+    obsolete interval.
+  evidence:
+    - tests/timeseries/test_exact_gps_epoch.py::test_cadence_setters_synchronize_exact_interval_for_copy_and_slice
+    - tests/timeseries/test_exact_gps_epoch.py::test_nonintegral_cadence_setter_drops_stale_exact_interval
 
 release_constraints:
   new_public_api: false
@@ -310,12 +428,21 @@ release_constraints:
   new_data_format: false
   physics_algorithm_changed: false
   human_physics_review_required: false
+  human_time_axis_metadata_review_required: true
   workflow_changed: false
   override_inventory_regeneration: deferred until all production lanes are stable
 
 static_validation:
   ruff_changed_files: all checks passed
-  ruff_format_changed_files: 4 files already formatted
+  ruff_format_changed_files: 8 files already formatted
   mypy_changed_source_files: success, no issues found in 3 source files
   yaml_safe_load: valid
   git_diff_check: no whitespace errors
+
+human_review:
+  required: true
+  lane: time-axis-metadata
+  reason: >-
+    The private integer epoch and cadence authority now tracks parent-owned
+    setters, buffer-style append, and non-second crop axes. Review must confirm
+    the exact-unit conversion, stale-authority removal, and copy/slice behavior.

@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import inspect
+from collections.abc import Callable
 from datetime import datetime
 from decimal import Decimal
+from typing import Any
 from unittest.mock import patch
 
 import numpy as np
@@ -15,6 +18,24 @@ from gwpy.timeseries import TimeSeries as GwpyTimeSeries
 
 from gwexpy.timeseries import TimeSeries
 
+_POSITIONAL_PREFIX = (
+    u.V,
+    1000,
+    0.25,
+    None,
+    None,
+    "H1:CONSTRUCTOR",
+    "constructor-prefix",
+)
+
+
+def _exception_class(call: Callable[[], Any]) -> type[BaseException] | None:
+    try:
+        call()
+    except BaseException as exc:  # noqa: BLE001 - exception class is the oracle
+        return type(exc)
+    return None
+
 
 class UTCDateTime:
     """Minimal float-compatible stand-in for ObsPy's supported scalar type."""
@@ -23,6 +44,71 @@ class UTCDateTime:
 
     def __float__(self) -> float:
         return 1000.25
+
+
+def test_constructor_exposes_gwpy_prefix_and_keyword_only_exact_extension() -> None:
+    expected = inspect.signature(GwpyTimeSeries.__new__).parameters
+    actual = inspect.signature(TimeSeries.__new__).parameters
+    parent_names = list(expected)
+
+    assert list(actual) == [*parent_names[:-1], "t0_ns", parent_names[-1]]
+    for name in parent_names[:-1]:
+        assert actual[name].kind is expected[name].kind
+        assert actual[name].default == expected[name].default
+    assert actual["t0_ns"].kind is inspect.Parameter.KEYWORD_ONLY
+    assert actual["t0_ns"].default is None
+    assert actual[parent_names[-1]].kind is inspect.Parameter.VAR_KEYWORD
+
+
+@pytest.mark.parametrize("prefix_length", range(len(_POSITIONAL_PREFIX) + 1))
+def test_constructor_every_gwpy_positional_prefix_matches(
+    prefix_length: int,
+) -> None:
+    prefix = _POSITIONAL_PREFIX[:prefix_length]
+
+    expected = GwpyTimeSeries([1.0, 2.0], *prefix)
+    actual = TimeSeries([1.0, 2.0], *prefix)
+
+    _assert_constructor_result_matches_gwpy(expected, actual)
+
+
+@pytest.mark.parametrize(
+    ("name", "prefix_length"),
+    [
+        ("unit", 1),
+        ("t0", 2),
+        ("dt", 3),
+        ("sample_rate", 4),
+        ("times", 5),
+        ("channel", 6),
+        ("name", 7),
+    ],
+)
+def test_constructor_duplicate_positional_keyword_outcome_matches_gwpy(
+    name: str, prefix_length: int
+) -> None:
+    prefix = _POSITIONAL_PREFIX[:prefix_length]
+    duplicate = {name: _POSITIONAL_PREFIX[prefix_length - 1]}
+
+    expected_error = _exception_class(
+        lambda: GwpyTimeSeries([1.0, 2.0], *prefix, **duplicate)
+    )
+    actual_error = _exception_class(
+        lambda: TimeSeries([1.0, 2.0], *prefix, **duplicate)
+    )
+
+    assert expected_error is TypeError
+    assert actual_error is expected_error
+
+
+def test_constructor_excess_positional_outcome_matches_gwpy() -> None:
+    args = (*_POSITIONAL_PREFIX, "excess")
+
+    expected_error = _exception_class(lambda: GwpyTimeSeries([1.0], *args))
+    actual_error = _exception_class(lambda: TimeSeries([1.0], *args))
+
+    assert expected_error is TypeError
+    assert actual_error is expected_error
 
 
 def _assert_constructor_result_matches_gwpy(
@@ -164,10 +250,10 @@ def test_gwpy_supported_epoch_reaches_parent_once_and_unchanged(
 
     parent.assert_called_once()
     call = parent.call_args
-    if form == "positional":
-        assert call.args[3] is epoch
-    else:
-        assert call.kwargs["t0"] is epoch
+    # The explicit GWpy-compatible wrapper binds both public calling forms
+    # before one canonical positional delegation.  The supported object must
+    # still reach the parent unchanged and exactly once.
+    assert call.args[3] is epoch
 
 
 def test_parent_constructor_failure_is_not_retried() -> None:
