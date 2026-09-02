@@ -214,6 +214,20 @@ def test_scalarfield_diff_common_route_matches_gwpy(
     assert tuple(axis.size for axis in actual.axes) == actual.shape
     assert actual.axis0_domain == actual_input.axis0_domain
     assert actual.space_domains == actual_input.space_domains
+    n = kwargs.get("n", args[0] if args else 1)
+    axis = kwargs.get("axis", args[1] if len(args) > 1 else -1)
+    normalized_axis = axis % actual_input.ndim
+    for index, (actual_axis, source_axis) in enumerate(
+        zip(actual.axes, actual_input.axes, strict=True)
+    ):
+        expected_index = (
+            source_axis.index[n:] if index == normalized_axis else source_axis.index
+        )
+        assert actual_axis.unit == expected_index.unit
+        np.testing.assert_array_equal(actual_axis.index.value, expected_index.value)
+    assert np.shares_memory(actual_input.value, actual.value) is np.shares_memory(
+        expected_input.value, expected.value
+    )
 
 
 @pytest.mark.parametrize(
@@ -303,3 +317,83 @@ def test_other_axis_api_rows_remain_no_finding(source: Any) -> None:
     assert swapped.axis_names == tuple(swapped_names)
     assert transposed.axis_names == reversed_names
     assert property_transpose.axis_names == reversed_names
+
+
+def _assert_axis_order(source: Any, result: Any, order: tuple[int, ...]) -> None:
+    expected_names = tuple(source.axis_names[index] for index in order)
+    assert result.axis_names == expected_names
+    for result_axis, source_index in zip(result.axes, order, strict=True):
+        source_axis = source.axes[source_index]
+        assert result_axis.unit == source_axis.unit
+        np.testing.assert_array_equal(result_axis.index.value, source_axis.index.value)
+
+
+@pytest.mark.parametrize(
+    "source", _permutation_sources(), ids=lambda source: type(source).__name__
+)
+@pytest.mark.parametrize("case", ["identity", "numpy-integer", "bool", "invalid"])
+def test_axis_api_numeric_swapaxes_matches_gwpy(source: Any, case: str) -> None:
+    expected_input = GWpyArray(source.value.copy(), unit=source.unit)
+    if case == "identity":
+        axes = (0, 0)
+    elif case == "numpy-integer":
+        axes = (np.int64(0), np.int64(source.ndim - 1))
+    elif case == "bool":
+        axes = (True, False)
+    else:
+        axes = (0, source.ndim)
+
+    actual_error = _exception_class(lambda: source.swapaxes(*axes))
+    expected_error = _exception_class(lambda: expected_input.swapaxes(*axes))
+    assert actual_error is expected_error
+    if expected_error is not None:
+        return
+
+    actual = source.swapaxes(*axes)
+    expected = expected_input.swapaxes(*axes)
+    np.testing.assert_array_equal(actual.value, expected.value)
+    assert np.shares_memory(source.value, actual.value) is np.shares_memory(
+        expected_input.value, expected.value
+    )
+    order = list(range(source.ndim))
+    order[int(axes[0])], order[int(axes[1])] = (
+        order[int(axes[1])],
+        order[int(axes[0])],
+    )
+    _assert_axis_order(source, actual, tuple(order))
+
+
+@pytest.mark.parametrize(
+    "source", _permutation_sources(), ids=lambda source: type(source).__name__
+)
+@pytest.mark.parametrize(
+    "case", ["identity", "numpy-integer", "bool", "duplicate", "excess", "invalid"]
+)
+def test_axis_api_numeric_transpose_matches_gwpy(source: Any, case: str) -> None:
+    expected_input = GWpyArray(source.value.copy(), unit=source.unit)
+    if case == "identity":
+        axes = tuple(range(source.ndim))
+    elif case == "numpy-integer":
+        axes = tuple(np.int64(index) for index in reversed(range(source.ndim)))
+    elif case == "bool":
+        axes = (True, False, *range(2, source.ndim))
+    elif case == "duplicate":
+        axes = (0,) * source.ndim
+    elif case == "excess":
+        axes = (*range(source.ndim), 0)
+    else:
+        axes = (*range(source.ndim - 1), source.ndim)
+
+    actual_error = _exception_class(lambda: source.transpose(*axes))
+    expected_error = _exception_class(lambda: expected_input.transpose(*axes))
+    assert actual_error is expected_error
+    if expected_error is not None:
+        return
+
+    actual = source.transpose(*axes)
+    expected = expected_input.transpose(*axes)
+    np.testing.assert_array_equal(actual.value, expected.value)
+    assert np.shares_memory(source.value, actual.value) is np.shares_memory(
+        expected_input.value, expected.value
+    )
+    _assert_axis_order(source, actual, tuple(int(axis) for axis in axes))

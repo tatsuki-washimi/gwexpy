@@ -11,6 +11,7 @@ import numpy as np
 import pytest
 from astropy import units as u
 from gwpy.types import Array2D as GWpyArray2D
+from matplotlib.colors import LogNorm
 
 from gwexpy.frequencyseries import BifrequencyMap
 
@@ -106,6 +107,27 @@ def test_diagonal_explicit_binned_projection_remains_available() -> None:
     np.testing.assert_array_equal(signed_legacy.frequencies, signed_keyword.frequencies)
 
 
+def test_diagonal_callable_legacy_route_matches_explicit_method() -> None:
+    actual_input, expected_input = _map_pair()
+
+    legacy = actual_input.diagonal(np.nanmean, 3, True)
+    explicit = actual_input.diagonal(method=np.nanmean, bins=3, absolute=True)
+
+    np.testing.assert_allclose(legacy.value, explicit.value, equal_nan=True)
+    np.testing.assert_array_equal(legacy.frequencies, explicit.frequencies)
+    assert legacy.unit == explicit.unit
+    assert _exception_class(lambda: expected_input.diagonal(np.nanmean)) is TypeError
+
+
+def test_diagonal_callable_and_method_duplicate_is_rejected() -> None:
+    actual_input, _ = _map_pair()
+
+    assert (
+        _exception_class(lambda: actual_input.diagonal(np.nanmean, method=np.nanmedian))
+        is TypeError
+    )
+
+
 @pytest.mark.parametrize(
     "args",
     [
@@ -195,12 +217,21 @@ def test_crop_invalid_outcome_matches_gwpy_exception_class(
     )
 
 
-def _artist_payload(plot: Any) -> tuple[np.ndarray, str]:
+def _artist_payload(plot: Any) -> tuple[np.ma.MaskedArray, str]:
     axes = plot.axes[0]
     artists = [*axes.images, *axes.collections]
     assert len(artists) == 1
     artist = artists[0]
-    return np.asarray(artist.get_array()), artist.get_label()
+    return np.ma.asarray(artist.get_array()), artist.get_label()
+
+
+def _assert_masked_payload_equal(
+    actual: np.ma.MaskedArray, expected: np.ma.MaskedArray
+) -> None:
+    np.testing.assert_array_equal(np.ma.getdata(actual), np.ma.getdata(expected))
+    np.testing.assert_array_equal(
+        np.ma.getmaskarray(actual), np.ma.getmaskarray(expected)
+    )
 
 
 @pytest.mark.parametrize("name", [None, "audit-map"])
@@ -216,7 +247,7 @@ def test_plot_common_routes_match_gwpy_artist_source_and_label(
     try:
         actual_payload, actual_label = _artist_payload(actual)
         expected_payload, expected_label = _artist_payload(expected)
-        np.testing.assert_array_equal(actual_payload, expected_payload)
+        _assert_masked_payload_equal(actual_payload, expected_payload)
         assert actual_label == expected_label
     finally:
         plt.close(actual)
@@ -230,3 +261,88 @@ def test_plot_invalid_method_exception_class_matches_gwpy(method: Any) -> None:
     assert _exception_class(lambda: actual_input.plot(method)) is (
         _exception_class(lambda: expected_input.plot(method))
     )
+
+
+def test_plot_routes_plot_and_axes_kwargs_without_forwarding_to_artist() -> None:
+    actual_input, expected_input = _map_pair()
+    kwargs = {
+        "figsize": (5, 3),
+        "dpi": 80,
+        "title": "kwarg audit",
+        "xlabel": "input frequency",
+        "ylabel": "output frequency",
+        "xlim": (12, 35),
+        "ylim": (1.5, 7),
+        "xscale": "linear",
+        "yscale": "linear",
+    }
+
+    actual = actual_input.plot("imshow", **kwargs)
+    expected = expected_input.plot("imshow", **kwargs)
+    try:
+        actual_axes = actual.axes[0]
+        expected_axes = expected.axes[0]
+        np.testing.assert_array_equal(
+            actual.get_size_inches(), expected.get_size_inches()
+        )
+        assert actual.dpi == expected.dpi
+        assert actual_axes.get_title() == expected_axes.get_title()
+        assert actual_axes.get_xlabel() == expected_axes.get_xlabel()
+        assert actual_axes.get_ylabel() == expected_axes.get_ylabel()
+        np.testing.assert_array_equal(actual_axes.get_xlim(), expected_axes.get_xlim())
+        np.testing.assert_array_equal(actual_axes.get_ylim(), expected_axes.get_ylim())
+        assert actual_axes.get_xscale() == expected_axes.get_xscale()
+        assert actual_axes.get_yscale() == expected_axes.get_yscale()
+    finally:
+        plt.close(actual)
+        plt.close(expected)
+
+
+def test_plot_explicit_imshow_norm_does_not_change_method() -> None:
+    actual_input, expected_input = _map_pair()
+    kwargs = {
+        "norm": LogNorm(vmin=1, vmax=11),
+        "interpolation": "bilinear",
+    }
+
+    actual = actual_input.plot("imshow", **kwargs)
+    expected = expected_input.plot("imshow", **kwargs)
+    try:
+        assert len(actual.axes[0].images) == len(expected.axes[0].images) == 1
+        assert not actual.axes[0].collections
+        actual_payload, _ = _artist_payload(actual)
+        expected_payload, _ = _artist_payload(expected)
+        _assert_masked_payload_equal(actual_payload, expected_payload)
+        assert actual.axes[0].images[0].get_interpolation() == "bilinear"
+    finally:
+        plt.close(actual)
+        plt.close(expected)
+
+
+def test_plot_pcolormesh_log_norm_mask_matches_gwpy() -> None:
+    actual_input, expected_input = _map_pair()
+
+    actual = actual_input.plot("pcolormesh", norm=LogNorm(vmin=1, vmax=11))
+    expected = expected_input.plot("pcolormesh", norm=LogNorm(vmin=1, vmax=11))
+    try:
+        actual_payload, _ = _artist_payload(actual)
+        expected_payload, _ = _artist_payload(expected)
+        _assert_masked_payload_equal(actual_payload, expected_payload)
+    finally:
+        plt.close(actual)
+        plt.close(expected)
+
+
+@pytest.mark.parametrize("method", ["imshow", "pcolormesh"])
+def test_plot_one_point_axis_failure_class_matches_gwpy(method: str) -> None:
+    kwargs = {
+        "unit": u.V,
+        "xindex": [10] * u.Hz,
+        "yindex": [20] * u.Hz,
+    }
+    actual_input = BifrequencyMap([[1.0]], **kwargs)
+    expected_input = GWpyArray2D([[1.0]], **kwargs)
+
+    actual_error = _exception_class(lambda: actual_input.plot(method))
+    expected_error = _exception_class(lambda: expected_input.plot(method))
+    assert actual_error is expected_error is ValueError

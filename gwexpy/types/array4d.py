@@ -437,8 +437,6 @@ class Array4D(Array):
 
     def _transpose_int(self, axes: tuple[int, ...]):
         """Transpose axes and update axis metadata."""
-        if len(axes) != 4 or set(axes) != {0, 1, 2, 3}:
-            raise ValueError(f"Invalid transpose axes for 4D: {axes}")
         new_data = GwpyArray.transpose(self, axes)
         self._apply_axis_metadata(new_data, list(axes))
         return new_data

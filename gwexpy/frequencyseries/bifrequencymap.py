@@ -365,109 +365,37 @@ class BifrequencyMap(Array2D):
         """
         from gwpy.plot import Plot
 
-        # Separate kwargs for Plot constructor and plotting method
-        plot_kwargs = {}
-        for key in ["figsize", "dpi", "title"]:
-            if key in kwargs:
-                plot_kwargs[key] = kwargs.pop(key)
-
-        if "geometry" in kwargs:
-            plot_kwargs["geometry"] = kwargs.pop("geometry")
-
-        # Background color for masked values (e.g. below vmin in LogNorm)
-        # Default to 'gray' as requested
         background_color = kwargs.pop("background_color", "gray")
-
-        # Initialize Plot
-        plot = Plot(**plot_kwargs)
-        ax = plot.gca()
-        ax.set_facecolor(background_color)
-
-        # Labels
-        xlabel = "Frequency 2"
-        if hasattr(self.frequency2, "unit") and str(self.frequency2.unit) != "":
-            xlabel += f" [{self.frequency2.unit}]"
-
-        ylabel = "Frequency 1"
-        if hasattr(self.frequency1, "unit") and str(self.frequency1.unit) != "":
-            ylabel += f" [{self.frequency1.unit}]"
-
-        ax.set_xlabel(kwargs.pop("xlabel", xlabel))
-        ax.set_ylabel(kwargs.pop("ylabel", ylabel))
-
-        # Scaling
-        if "xscale" in kwargs:
-            ax.set_xscale(kwargs.pop("xscale"))
-        if "yscale" in kwargs:
-            ax.set_yscale(kwargs.pop("yscale"))
-
-        # Plotting
-        # If norm is provided (e.g. LogNorm), pcolormesh is often more robust for sparse data/zeros
-        if "norm" in kwargs and method == "imshow":
-            # We can't easily know if user *explicitly* passed 'imshow' vs default.
-            # But let's assume if they want LogNorm on a map, pcolormesh is safer.
-            method = "pcolormesh"
+        explicit_xlabel = "xlabel" in kwargs
+        explicit_ylabel = "ylabel" in kwargs
 
         if method == "imshow":
             kwargs.setdefault("origin", "lower")
             kwargs.setdefault("aspect", "auto")
             kwargs.setdefault("interpolation", "nearest")
             kwargs.setdefault("cmap", "inferno")
-
-            if "extent" not in kwargs:
-                # Calculate extent [x0, x1, y0, y1]
-                x0 = self.frequency2[0].value
-                x1 = self.frequency2[-1].value
-                y0 = self.frequency1[0].value
-                y1 = self.frequency1[-1].value
-
-                # Correct for pixel edges
-                if len(self.frequency2) > 1:
-                    df1 = (x1 - x0) / (len(self.frequency2) - 1)
-                    extent_x = [x0 - df1 / 2, x1 + df1 / 2]
-                else:
-                    extent_x = [x0, x1]
-
-                if len(self.frequency1) > 1:
-                    df2 = (y1 - y0) / (len(self.frequency1) - 1)
-                    extent_y = [y0 - df2 / 2, y1 + df2 / 2]
-                else:
-                    extent_y = [y0, y1]
-
-                kwargs["extent"] = extent_x + extent_y
-
-            layer = ax.imshow(self.value.T, **kwargs)
-
         elif method == "pcolormesh":
             kwargs.setdefault("cmap", "inferno")
-            # pcolormesh expects bin edges or centers.
-            # If we pass centers (frequency arrays), it infers edges.
-            # However, for LogNorm, we must ensure values <= 0 are masked.
 
-            # Mask zeros/negative if LogNorm is used, to avoid warning/error or invisible output
-            if "norm" in kwargs:
-                from matplotlib.colors import LogNorm
+        plot = Plot(self, method=method, **kwargs)
+        ax = plot.gca()
+        ax.set_facecolor(background_color)
 
-                if isinstance(kwargs["norm"], LogNorm):
-                    # Mask <= 0
-                    val_to_plot = np.ma.masked_less_equal(self.value.T, 0)
-                else:
-                    val_to_plot = self.value.T
-            else:
-                val_to_plot = self.value.T
+        if not explicit_xlabel:
+            xlabel = "Frequency 2"
+            if hasattr(self.frequency2, "unit") and str(self.frequency2.unit) != "":
+                xlabel += f" [{self.frequency2.unit}]"
+            ax.set_xlabel(xlabel)
+        if not explicit_ylabel:
+            ylabel = "Frequency 1"
+            if hasattr(self.frequency1, "unit") and str(self.frequency1.unit) != "":
+                ylabel += f" [{self.frequency1.unit}]"
+            ax.set_ylabel(ylabel)
 
-            layer = ax.pcolormesh(
-                self.frequency2.value, self.frequency1.value, val_to_plot, **kwargs
-            )
-        else:
-            if not isinstance(method, str):
-                raise TypeError(
-                    f"attribute name must be string, not '{type(method).__name__}'"
-                )
-            raise AttributeError(f"'Axes' object has no attribute '{method}'")
+        if method not in {"imshow", "pcolormesh"}:
+            return plot
 
-        # Colorbar
-        # Try to use unit
+        layer = ax.images[-1] if method == "imshow" else ax.collections[-1]
         label = self.name or ""
         if self.unit:
             label = f"{label} [{self.unit}]".strip()
@@ -567,12 +495,13 @@ class BifrequencyMap(Array2D):
             projection.
 
         """
-        if not isinstance(offset, str) and all(
+        extension_method = isinstance(offset, str) or callable(offset)
+        if not extension_method and all(
             option is _NOT_GIVEN for option in (method, bins, absolute)
         ):
             return Array2D.diagonal(self, offset, axis1, axis2, **kwargs)
 
-        if isinstance(offset, str):
+        if extension_method:
             if method is not _NOT_GIVEN:
                 raise TypeError("diagonal() received multiple values for 'method'")
             method = offset

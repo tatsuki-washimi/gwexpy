@@ -194,6 +194,9 @@ class AxisApiMixin(ABC):
 
     def swapaxes(self: AxisApiHost, axis1: int | str, axis2: int | str) -> Any:
         """Swap two axes by index or name."""
+        if not isinstance(axis1, str) and not isinstance(axis2, str):
+            return self._swapaxes_int(axis1, axis2)
+
         idx1 = self._get_axis_index(axis1)
         idx2 = self._get_axis_index(axis2)
         if idx1 == idx2:
@@ -210,13 +213,12 @@ class AxisApiMixin(ABC):
             axes = tuple(axes[0])
         axes = tuple(axes)
 
-        if len(axes) != ndim:
-            raise ValueError("axes don't match array")
+        if any(isinstance(axis, str) for axis in axes):
+            if len(axes) != ndim:
+                raise ValueError("axes don't match array")
+            axes = tuple(self._get_axis_index(axis) for axis in axes)
 
-        # Convert to int indices
-        perm_int = [self._get_axis_index(ax) for ax in axes]
-
-        return self._transpose_int(tuple(perm_int))
+        return self._transpose_int(axes)
 
     @property
     def T(self):

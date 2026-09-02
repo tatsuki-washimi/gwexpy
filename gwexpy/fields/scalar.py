@@ -1504,7 +1504,18 @@ class ScalarField(FieldBase):
                 raise TypeError(
                     "diff() 'mode' is only valid when comparing ScalarField objects"
                 )
-            return GwpyArray.diff(self, n, axis)
+            result = GwpyArray.diff(self, n, axis)
+            axis_number = int(axis) % self.ndim
+            difference_order = int(n)
+            axis_attribute = (
+                "_axis0_index",
+                "_axis1_index",
+                "_axis2_index",
+                "_axis3_index",
+            )[axis_number]
+            source_index = getattr(self, axis_attribute)
+            setattr(result, axis_attribute, source_index[difference_order:])
+            return result
 
         other = n
         if mode is not None and axis != -1:

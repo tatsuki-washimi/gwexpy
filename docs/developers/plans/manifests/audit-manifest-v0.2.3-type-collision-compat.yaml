@@ -4,6 +4,8 @@ status: focused-green
 
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 phase_parent: e5f791722666601346f9990c247cce610fdfe85d
+initial_implementation: 8e3cbae56e85bcef1b730b6d32742bcaed42a64c
+review_followup_parent: a8f445669fa3469aa068eb8b72956de407255bb5
 
 issues:
   - "#639"
@@ -36,12 +38,17 @@ implementation_groups:
   swapaxes: implementation-321a2a828a5762c4
   transpose: implementation-7bd5fd7fac04ddac
   array2d_T: implementation-6ec502d60552f7ed
+implementation_group_note: >-
+  These are implementation-base audit anchors. Centralized inventory regeneration
+  after all parallel compatibility fixes owns any identifier changes.
 
 terminal_test_references:
   bifrequencymap_diagonal:
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_diagonal_common_numeric_routes_match_gwpy
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_diagonal_explicit_binned_projection_remains_available
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_diagonal_invalid_outcome_is_explicitly_classified
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_diagonal_callable_legacy_route_matches_explicit_method
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_diagonal_callable_and_method_duplicate_is_rejected
   bifrequencymap_crop:
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_crop_common_route_matches_gwpy
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_crop_explicit_two_axis_extension_preserves_legacy_selection
@@ -49,6 +56,10 @@ terminal_test_references:
   bifrequencymap_plot:
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_plot_common_routes_match_gwpy_artist_source_and_label
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_plot_invalid_method_exception_class_matches_gwpy
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_plot_routes_plot_and_axes_kwargs_without_forwarding_to_artist
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_plot_explicit_imshow_norm_does_not_change_method
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_plot_pcolormesh_log_norm_mask_matches_gwpy
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_plot_one_point_axis_failure_class_matches_gwpy
   scalarfield_diff:
     - tests/types/test_gwpy_override_terminal_compat.py::test_scalarfield_diff_common_route_matches_gwpy
     - tests/types/test_gwpy_override_terminal_compat.py::test_scalarfield_diff_failure_class_matches_gwpy
@@ -57,10 +68,12 @@ terminal_test_references:
     - tests/types/test_gwpy_override_terminal_compat.py::test_array2d_numeric_swapaxes_matches_gwpy
     - tests/types/test_gwpy_override_terminal_compat.py::test_array2d_named_axis_permutations_remain_explicit_extensions
     - tests/types/test_gwpy_override_terminal_compat.py::test_other_axis_api_rows_remain_no_finding
+    - tests/types/test_gwpy_override_terminal_compat.py::test_axis_api_numeric_swapaxes_matches_gwpy
   transpose:
     - tests/types/test_gwpy_override_terminal_compat.py::test_array2d_numeric_transpose_matches_gwpy
     - tests/types/test_gwpy_override_terminal_compat.py::test_array2d_named_axis_permutations_remain_explicit_extensions
     - tests/types/test_gwpy_override_terminal_compat.py::test_other_axis_api_rows_remain_no_finding
+    - tests/types/test_gwpy_override_terminal_compat.py::test_axis_api_numeric_transpose_matches_gwpy
   array2d_T:
     - tests/types/test_gwpy_override_terminal_compat.py::test_array2d_T_keeps_gwpy_swapped_metadata_contract
 
@@ -73,6 +86,7 @@ contracts:
       - explicit bins keyword
       - explicit absolute keyword
       - legacy string first positional argument
+      - legacy callable first positional argument
     extension_result: existing binned FrequencySeries projection
     exception_retry: false
   bifrequencymap_crop:
@@ -85,12 +99,15 @@ contracts:
     copy_and_view_identity: matched to installed GWpy on the common route
     exception_retry: false
   bifrequencymap_plot:
-    valid_methods:
+    qualified_methods:
       - imshow
       - pcolormesh
-    artist_source: transposed exactly as GWpy Array2D axis ordering requires
+    common_route: GWpy Plot constructor distributes figure, axes, and artist kwargs
+    artist_source: exact masked data and mask from the GWpy Array2D plot route
     unnamed_map: succeeds without constructing a label from null
     invalid_method: AttributeError, matching installed GWpy
+    one_point_axis: ValueError, matching installed GWpy
+    explicit_imshow_norm: remains imshow and preserves interpolation
     presentation_defaults_retained:
       - inferno colour map
       - background colour
@@ -98,6 +115,11 @@ contracts:
       - existing layout keyword routing
   scalarfield_diff:
     default_route: GWpy Array.diff with n and axis
+    reduced_axis_coordinates: source trailing endpoints beginning at index n
+    metadata_preserved:
+      - axis units and names
+      - time and space domains
+      - all unreduced physical coordinates
     extension_predicate: first argument is a ScalarField
     extension_modes:
       - diff
@@ -113,7 +135,17 @@ contracts:
     numeric_metadata: xindex and yindex remain unchanged, matching GWpy
     named_axes: existing explicit GWexpy metadata-aware extension
     property_T: distinct GWpy route with swapped xindex/yindex and semantic names
-    other_axis_hosts: no-finding characterization retained
+    other_axis_hosts:
+      - ScalarField
+      - Array
+      - Array3D
+      - Array4D
+    other_axis_host_numeric_route: parent-first without exception retry
+    numeric_edge_contracts:
+      - identity calls preserve parent view sharing
+      - numpy integer axes succeed
+      - bool axes and invalid, duplicate, or excess axes match parent outcomes
+      - out-of-range axes raise numpy AxisError like the parent
 
 comparators:
   exact:
@@ -127,6 +159,7 @@ comparators:
     - field axis names, lengths, and domains
     - view versus copy memory sharing where applicable
     - plotted artist source array and label
+    - plotted masked-array data and mask
   exception_message_exact: false
   presentation_pixels_style_layout: excluded
 
@@ -145,28 +178,39 @@ tdd:
     followup_invalid_plot_method_cycle:
       result: 2 failed, 1 passed
       cause: non-string methods raised AttributeError instead of GWpy TypeError
+    independent_review_followup:
+      environment: gwexpy
+      gwpy: 4.0.2
+      result: 30 failed, 78 passed
+      primary_causes:
+        - non-Array2D numeric axis routes copied identity results and rejected numpy integers
+        - BifrequencyMap plot leaked axes kwargs and changed imshow to pcolormesh for norms
+        - ScalarField finite differences replaced physical coordinates with dimensionless arange
+        - callable legacy diagonal methods collided with the numeric parent route
   green:
     differential_and_contract_set:
-      gwpy_4_0_1: 66 passed
-      gwpy_4_0_2: 66 passed
+      gwpy_4_0_1: 113 passed
+      gwpy_4_0_2: 113 passed
     focused_affected_regressions:
-      gwpy_4_0_1: 139 passed
-      gwpy_4_0_2: 139 passed
+      gwpy_4_0_1: 186 passed
+      gwpy_4_0_2: 186 passed
     related_regression_suite:
       environment: gwexpy
-      result: 2515 passed, 37 pre-existing optional skips, 1 expected failure
+      result: 2804 passed, 37 pre-existing optional skips, 1 expected failure
       warnings: 17 dependency or pre-existing metadata warnings
     unexpected_required_skips: 0
 
 physics_and_data_model:
   finite_difference_values_and_units: delegated unchanged to GWpy
+  finite_difference_coordinates: trailing source endpoints retained for each order
   field_comparison_values_and_units: existing extension retained unchanged
   bifrequency_plot_axis_order: aligned to GWpy xindex/yindex authority
   binned_projection: only explicit opt-in can select the specialized calculation
   human_review: required
   human_review_reasons:
     - BifrequencyMap plot source orientation and frequency-axis authority changed
-    - ScalarField finite-difference results reduce one axis and use existing finalize rules
+    - ScalarField finite-difference results use trailing physical coordinates on the reduced axis
+    - ScalarField comparison with differing units or coordinates remains an extension requiring review
     - numeric Array2D permutation intentionally retains GWpy stale axis metadata
 
 release_constraints:
@@ -178,7 +222,7 @@ release_constraints:
 static_validation:
   ruff_changed_python_files: all checks passed
   ruff_format_changed_python_files: all files formatted
-  mypy_changed_source_files: success, no issues found in 3 source files
+  mypy_changed_source_files: success, no issues found in 6 source files
   yaml_safe_load: valid
   git_diff_check: clean
 
@@ -212,6 +256,9 @@ changed_files:
   - gwexpy/fields/scalar.py
   - gwexpy/frequencyseries/bifrequencymap.py
   - gwexpy/types/array2d.py
+  - gwexpy/types/array3d.py
+  - gwexpy/types/array4d.py
+  - gwexpy/types/axis_api.py
   - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py
   - tests/frequencyseries/test_standalone_contracts.py
   - tests/types/test_gwpy_override_terminal_compat.py

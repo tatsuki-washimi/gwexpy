@@ -272,8 +272,6 @@ class Array3D(Array):
         return new_data
 
     def _transpose_int(self, axes: tuple[int, ...]):
-        if len(axes) != 3 or set(axes) != {0, 1, 2}:
-            raise ValueError(f"Invalid transpose axes for 3D: {axes}")
         new_data = GwpyArray.transpose(self, axes)
         self._apply_axis_metadata(new_data, list(axes))
         return new_data
