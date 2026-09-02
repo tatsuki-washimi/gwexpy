@@ -31,6 +31,46 @@ def test_gwpy_reads_timeseriesdict_hdf5(tmp_path):
         assert str(gwpy_ts.unit) == str(expected.unit)
 
 
+def test_timeseriesdict_hdf5_append_preserves_existing_entries(tmp_path):
+    old = TimeSeries(
+        np.arange(4.0), sample_rate=2.0, t0=1.0, unit="m", name="old series"
+    )
+    new = TimeSeries(
+        np.arange(4.0) + 10,
+        sample_rate=2.0,
+        t0=1.0,
+        unit="m",
+        name="new series",
+    )
+
+    outfile = tmp_path / "tsd_append.h5"
+    TimeSeriesDict({"old": old}).write(
+        outfile, format="hdf5", layout="dataset"
+    )
+    TimeSeriesDict({"new": new}).write(
+        outfile, format="hdf5", layout="dataset", append=True
+    )
+
+    with h5py.File(outfile, "r") as h5f:
+        assert set(h5f.keys()) == {"old", "new"}
+        assert read_hdf5_keymap(h5f) == {"old": "old", "new": "new"}
+        assert read_hdf5_order(h5f) == ["old", "new"]
+
+    gwpy_tsd = GwpyTimeSeriesDict.read(outfile, format="hdf5")
+    assert set(gwpy_tsd) == {"old", "new"}
+    np.testing.assert_allclose(gwpy_tsd["old"].value, old.value)
+    np.testing.assert_allclose(gwpy_tsd["new"].value, new.value)
+    assert gwpy_tsd["old"].name == old.name
+    assert gwpy_tsd["new"].name == new.name
+
+    gwexpy_tsd = TimeSeriesDict.read(outfile, format="hdf5")
+    assert list(gwexpy_tsd) == ["old", "new"]
+    np.testing.assert_allclose(gwexpy_tsd["old"].value, old.value)
+    np.testing.assert_allclose(gwexpy_tsd["new"].value, new.value)
+    assert gwexpy_tsd["old"].name == old.name
+    assert gwexpy_tsd["new"].name == new.name
+
+
 def test_gwpy_reads_timeserieslist_hdf5(tmp_path):
     ts1 = TimeSeries(np.arange(3.0), sample_rate=1.0, t0=0, unit="m")
     ts2 = TimeSeries(np.arange(3.0) * 2, sample_rate=1.0, t0=0, unit="m")

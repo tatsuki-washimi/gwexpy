@@ -847,12 +847,15 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             )
         if fmt in ("hdf5", "h5", "hdf"):
             overwrite = bool(kwargs.pop("overwrite", False))
+            append = bool(kwargs.pop("append", False))
             mode = kwargs.pop("mode", None)
+            if append and mode is None:
+                mode = "a"
             layout = normalize_layout(kwargs.pop("layout", "gwpy"))
-            used: set[str] = set()
-            keymap: dict[str, str] = {}
-            order: list[str] = []
             with ensure_hdf5_file(target, mode=mode, overwrite=overwrite) as h5f:
+                used = set(h5f.keys())
+                keymap = read_hdf5_keymap(h5f)
+                order = read_hdf5_order(h5f) or list(h5f.keys())
                 for key, ts in self.items():
                     safe = safe_hdf5_key(str(key))
                     name = unique_hdf5_key(safe, used=used)
