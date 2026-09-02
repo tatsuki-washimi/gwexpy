@@ -205,18 +205,17 @@ class AxisApiMixin(ABC):
 
     def transpose(self, *axes):
         """Permute the dimensions of an array."""
-        # Normalize axes
         ndim = len(self.axes)
-        if not axes:
-            axes = tuple(range(ndim))[::-1]
-        elif len(axes) == 1 and isinstance(axes[0], (tuple, list)):
-            axes = tuple(axes[0])
-        axes = tuple(axes)
+        named_axes = axes
+        if len(axes) == 1 and isinstance(axes[0], (tuple, list)):
+            nested_axes = tuple(axes[0])
+            if any(isinstance(axis, str) for axis in nested_axes):
+                named_axes = nested_axes
 
-        if any(isinstance(axis, str) for axis in axes):
-            if len(axes) != ndim:
+        if any(isinstance(axis, str) for axis in named_axes):
+            if len(named_axes) != ndim:
                 raise ValueError("axes don't match array")
-            axes = tuple(self._get_axis_index(axis) for axis in axes)
+            axes = tuple(self._get_axis_index(axis) for axis in named_axes)
 
         return self._transpose_int(axes)
 
@@ -233,7 +232,7 @@ class AxisApiMixin(ABC):
     def _swapaxes_int(self, a: int, b: int):
         pass
 
-    def _transpose_int(self, axes: tuple[int, ...]):
+    def _transpose_int(self, axes: tuple[Any, ...]):
         """Apply transpose through the base implementation and restore axis names.
 
         Subclasses can override this if they need a custom transpose path.
@@ -245,6 +244,7 @@ class AxisApiMixin(ABC):
 
         base = cast(Any, super())
         new_obj = base.transpose(*axes)
+        order = self._canonical_transpose_order(axes)
         # new_obj is the transposed array (view).
         # We need to reorder metadata.
 
@@ -256,8 +256,19 @@ class AxisApiMixin(ABC):
         # i.e. new_obj axis i comes from self axis axes[i].
 
         if hasattr(new_obj, "_set_axis_name"):
-            for i, origin_idx in enumerate(axes):
+            for i, origin_idx in enumerate(order):
                 origin_name = old_axes_info[origin_idx][1]
                 new_obj._set_axis_name(i, origin_name)
 
         return new_obj
+
+    def _canonical_transpose_order(self, axes: tuple[Any, ...]) -> tuple[int, ...]:
+        """Return a metadata permutation after the parent accepted ``axes``."""
+        if not axes or (len(axes) == 1 and axes[0] is None):
+            return tuple(range(len(self.axes) - 1, -1, -1))
+        if len(axes) == 1:
+            try:
+                return tuple(axes[0])
+            except TypeError:
+                pass
+        return tuple(axes)

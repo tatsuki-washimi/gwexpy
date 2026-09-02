@@ -1,11 +1,12 @@
 schema: gwexpy-v023-type-collision-compat-evidence-v1
 phase: override-inventory-specialized-type-closure
-status: focused-green
+status: focused-green-human-review-required
 
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 phase_parent: e5f791722666601346f9990c247cce610fdfe85d
 initial_implementation: 8e3cbae56e85bcef1b730b6d32742bcaed42a64c
 review_followup_parent: a8f445669fa3469aa068eb8b72956de407255bb5
+second_review_integration_parent: 8016d7a90a57314899c2ef4908dfc85af1a0ee3c
 
 issues:
   - "#639"
@@ -49,6 +50,9 @@ terminal_test_references:
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_diagonal_invalid_outcome_is_explicitly_classified
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_diagonal_callable_legacy_route_matches_explicit_method
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_diagonal_callable_and_method_duplicate_is_rejected
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_diagonal_legacy_explicit_defaults_match_keyword_extension
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_diagonal_legacy_zero_bins_preserves_value_error
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_diagonal_legacy_positional_keyword_duplicates_are_rejected
   bifrequencymap_crop:
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_crop_common_route_matches_gwpy
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_crop_explicit_two_axis_extension_preserves_legacy_selection
@@ -59,6 +63,7 @@ terminal_test_references:
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_plot_routes_plot_and_axes_kwargs_without_forwarding_to_artist
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_plot_explicit_imshow_norm_does_not_change_method
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_plot_pcolormesh_log_norm_mask_matches_gwpy
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_plot_nonfinite_log_norm_source_data_and_mask_match_gwpy
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_plot_one_point_axis_failure_class_matches_gwpy
   scalarfield_diff:
     - tests/types/test_gwpy_override_terminal_compat.py::test_scalarfield_diff_common_route_matches_gwpy
@@ -74,6 +79,7 @@ terminal_test_references:
     - tests/types/test_gwpy_override_terminal_compat.py::test_array2d_named_axis_permutations_remain_explicit_extensions
     - tests/types/test_gwpy_override_terminal_compat.py::test_other_axis_api_rows_remain_no_finding
     - tests/types/test_gwpy_override_terminal_compat.py::test_axis_api_numeric_transpose_matches_gwpy
+    - tests/types/test_gwpy_override_terminal_compat.py::test_axis_api_single_argument_transpose_matches_gwpy
   array2d_T:
     - tests/types/test_gwpy_override_terminal_compat.py::test_array2d_T_keeps_gwpy_swapped_metadata_contract
 
@@ -88,6 +94,11 @@ contracts:
       - legacy string first positional argument
       - legacy callable first positional argument
     extension_result: existing binned FrequencySeries projection
+    legacy_positional_binding:
+      bins: explicit None and falsey zero remain distinguishable from omission
+      absolute: explicit false remains distinguishable from omission
+      duplicate_positional_keyword: TypeError for both string and callable methods
+      zero_bins: ValueError, matching the explicit keyword extension route
     exception_retry: false
   bifrequencymap_crop:
     default_route: GWpy Array2D crop over xindex/frequency2
@@ -108,6 +119,7 @@ contracts:
     invalid_method: AttributeError, matching installed GWpy
     one_point_axis: ValueError, matching installed GWpy
     explicit_imshow_norm: remains imshow and preserves interpolation
+    nonfinite_log_norm: exact artist source data and mask match GWpy
     presentation_defaults_retained:
       - inferno colour map
       - background colour
@@ -146,6 +158,9 @@ contracts:
       - numpy integer axes succeed
       - bool axes and invalid, duplicate, or excess axes match parent outcomes
       - out-of-range axes raise numpy AxisError like the parent
+      - transpose None uses the parent reverse-order view
+      - tuple, list, numpy array, range, and memoryview single arguments use the parent route
+    transpose_metadata: canonical integer order is derived only after parent acceptance
 
 comparators:
   exact:
@@ -187,16 +202,23 @@ tdd:
         - BifrequencyMap plot leaked axes kwargs and changed imshow to pcolormesh for norms
         - ScalarField finite differences replaced physical coordinates with dimensionless arange
         - callable legacy diagonal methods collided with the numeric parent route
+    second_review_followup:
+      environment: gwexpy
+      gwpy: 4.0.2
+      result: 26 failed, 120 passed
+      primary_causes:
+        - transpose metadata consumed None and single non-tuple sequence inputs as axis scalars
+        - falsey legacy diagonal positional values were mistaken for omitted arguments
   green:
     differential_and_contract_set:
-      gwpy_4_0_1: 113 passed
-      gwpy_4_0_2: 113 passed
+      gwpy_4_0_1: 151 passed
+      gwpy_4_0_2: 151 passed
     focused_affected_regressions:
-      gwpy_4_0_1: 186 passed
-      gwpy_4_0_2: 186 passed
+      gwpy_4_0_1: 224 passed
+      gwpy_4_0_2: 224 passed
     related_regression_suite:
       environment: gwexpy
-      result: 2804 passed, 37 pre-existing optional skips, 1 expected failure
+      result: 3082 passed, 37 pre-existing optional skips, 1 expected failure
       warnings: 17 dependency or pre-existing metadata warnings
     unexpected_required_skips: 0
 
@@ -232,18 +254,36 @@ commands:
     tests/frequencyseries/test_bifrequencymap_gwpy_compat.py
     tests/types/test_gwpy_override_terminal_compat.py
     tests/frequencyseries/test_standalone_contracts.py
+  second_review_red: >-
+    MPLBACKEND=Agg conda run -n gwexpy pytest -q
+    tests/types/test_gwpy_override_terminal_compat.py
+    tests/frequencyseries/test_bifrequencymap_gwpy_compat.py
   focused_gwpy_4_0_1: >-
-    conda run -n main pytest -q
+    MPLBACKEND=Agg conda run -n main pytest -q
     tests/frequencyseries/test_bifrequencymap_gwpy_compat.py
     tests/types/test_gwpy_override_terminal_compat.py
     tests/frequencyseries/test_standalone_contracts.py
   focused_gwpy_4_0_2: >-
-    conda run -n gwexpy pytest -q
+    MPLBACKEND=Agg conda run -n gwexpy pytest -q
     tests/frequencyseries/test_bifrequencymap_gwpy_compat.py
     tests/types/test_gwpy_override_terminal_compat.py
     tests/frequencyseries/test_standalone_contracts.py
+  focused_affected_regressions_both_oracles: >-
+    for environment in main gwexpy; do MPLBACKEND=Agg conda run -n
+    "$environment" pytest -q
+    tests/frequencyseries/test_bifrequencymap.py
+    tests/frequencyseries/test_bifrequencymap_logic.py
+    tests/frequencyseries/test_standalone_contracts.py
+    tests/types/test_types_array2d_axes.py
+    tests/types/test_types_plane2d.py
+    tests/types/test_types_array3d_plane.py
+    tests/types/test_types_array4d.py
+    tests/fields/test_scalarfield_visualization.py
+    tests/frequencyseries/test_bifrequencymap_gwpy_compat.py
+    tests/types/test_gwpy_override_terminal_compat.py; done
   related_regressions: >-
-    conda run -n gwexpy pytest -q tests/frequencyseries tests/types tests/fields
+    MPLBACKEND=Agg conda run -n gwexpy pytest -q
+    tests/frequencyseries tests/types tests/fields
 
 focused_tests:
   - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py

@@ -397,3 +397,41 @@ def test_axis_api_numeric_transpose_matches_gwpy(source: Any, case: str) -> None
         expected_input.value, expected.value
     )
     _assert_axis_order(source, actual, tuple(int(axis) for axis in axes))
+
+
+def _single_transpose_argument(case: str, ndim: int) -> Any:
+    order = tuple(range(ndim - 1, -1, -1))
+    if case == "none":
+        return None
+    if case == "tuple":
+        return order
+    if case == "list":
+        return list(order)
+    if case == "ndarray":
+        return np.asarray(order)
+    if case == "range":
+        return range(ndim - 1, -1, -1)
+    return memoryview(bytes(order))
+
+
+@pytest.mark.parametrize(
+    "source", _permutation_sources(), ids=lambda source: type(source).__name__
+)
+@pytest.mark.parametrize(
+    "case", ["none", "tuple", "list", "ndarray", "range", "memoryview"]
+)
+def test_axis_api_single_argument_transpose_matches_gwpy(
+    source: Any, case: str
+) -> None:
+    expected_input = GWpyArray(source.value.copy(), unit=source.unit)
+    argument = _single_transpose_argument(case, source.ndim)
+
+    actual = source.transpose(argument)
+    expected = expected_input.transpose(argument)
+
+    np.testing.assert_array_equal(actual.value, expected.value)
+    assert np.shares_memory(source.value, actual.value) is np.shares_memory(
+        expected_input.value, expected.value
+    )
+    order = tuple(range(source.ndim - 1, -1, -1))
+    _assert_axis_order(source, actual, order)

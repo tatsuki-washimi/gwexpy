@@ -128,6 +128,50 @@ def test_diagonal_callable_and_method_duplicate_is_rejected() -> None:
     )
 
 
+@pytest.mark.parametrize("method", ["mean", np.nanmean])
+def test_diagonal_legacy_explicit_defaults_match_keyword_extension(method: Any) -> None:
+    actual_input, _ = _map_pair()
+
+    legacy = actual_input.diagonal(method, None, False)
+    explicit = actual_input.diagonal(method=method, bins=None, absolute=False)
+
+    np.testing.assert_allclose(legacy.value, explicit.value, equal_nan=True)
+    np.testing.assert_array_equal(legacy.frequencies, explicit.frequencies)
+    assert legacy.unit == explicit.unit
+
+
+@pytest.mark.parametrize("method", ["mean", np.nanmean])
+def test_diagonal_legacy_zero_bins_preserves_value_error(method: Any) -> None:
+    actual_input, _ = _map_pair()
+
+    assert (
+        _exception_class(lambda: actual_input.diagonal(method, 0))
+        is (_exception_class(lambda: actual_input.diagonal(method=method, bins=0)))
+        is ValueError
+    )
+
+
+@pytest.mark.parametrize("method", ["mean", np.nanmean])
+@pytest.mark.parametrize(
+    ("args", "kwargs"),
+    [
+        pytest.param((None,), {"bins": 3}, id="none-bins"),
+        pytest.param((0,), {"bins": 3}, id="zero-bins"),
+        pytest.param((None, False), {"absolute": True}, id="false-absolute"),
+        pytest.param((None, False), {"absolute": False}, id="same-false-absolute"),
+    ],
+)
+def test_diagonal_legacy_positional_keyword_duplicates_are_rejected(
+    method: Any, args: tuple[Any, ...], kwargs: dict[str, Any]
+) -> None:
+    actual_input, _ = _map_pair()
+
+    assert (
+        _exception_class(lambda: actual_input.diagonal(method, *args, **kwargs))
+        is TypeError
+    )
+
+
 @pytest.mark.parametrize(
     "args",
     [
@@ -327,6 +371,37 @@ def test_plot_pcolormesh_log_norm_mask_matches_gwpy() -> None:
     try:
         actual_payload, _ = _artist_payload(actual)
         expected_payload, _ = _artist_payload(expected)
+        _assert_masked_payload_equal(actual_payload, expected_payload)
+    finally:
+        plt.close(actual)
+        plt.close(expected)
+
+
+@pytest.mark.parametrize("method", ["imshow", "pcolormesh"])
+def test_plot_nonfinite_log_norm_source_data_and_mask_match_gwpy(
+    method: str,
+) -> None:
+    values = np.array(
+        [
+            [1.0, np.nan, 3.0, 4.0],
+            [5.0, 6.0, -1.0, 8.0],
+            [9.0, 10.0, 11.0, np.inf],
+        ]
+    )
+    kwargs = {
+        "unit": u.V,
+        "xindex": [10, 20, 40] * u.Hz,
+        "yindex": [1, 2, 4, 8] * u.Hz,
+    }
+    actual_input = BifrequencyMap(values.copy(), **kwargs)
+    expected_input = GWpyArray2D(values.copy(), **kwargs)
+
+    actual = actual_input.plot(method, norm=LogNorm(vmin=1, vmax=11))
+    expected = expected_input.plot(method, norm=LogNorm(vmin=1, vmax=11))
+    try:
+        actual_payload, _ = _artist_payload(actual)
+        expected_payload, _ = _artist_payload(expected)
+        assert np.ma.getmaskarray(expected_payload).any()
         _assert_masked_payload_equal(actual_payload, expected_payload)
     finally:
         plt.close(actual)

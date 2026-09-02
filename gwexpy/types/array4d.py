@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 from astropy.units import Quantity, dimensionless_unscaled
 from gwpy.types.array import Array as GwpyArray
@@ -435,8 +437,9 @@ class Array4D(Array):
         self._apply_axis_metadata(new_data, order)
         return new_data
 
-    def _transpose_int(self, axes: tuple[int, ...]):
+    def _transpose_int(self, axes: tuple[Any, ...]):
         """Transpose axes and update axis metadata."""
-        new_data = GwpyArray.transpose(self, axes)
-        self._apply_axis_metadata(new_data, list(axes))
+        new_data = GwpyArray.transpose(self, *axes)
+        order = self._canonical_transpose_order(axes)
+        self._apply_axis_metadata(new_data, list(order))
         return new_data

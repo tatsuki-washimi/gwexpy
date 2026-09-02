@@ -11,6 +11,14 @@ from scipy.interpolate import interp1d
 _NOT_GIVEN = object()
 
 
+class _ImplicitDiagonalAxis(int):
+    """Integer default whose identity records whether an argument was supplied."""
+
+
+_IMPLICIT_DIAGONAL_AXIS1 = _ImplicitDiagonalAxis(0)
+_IMPLICIT_DIAGONAL_AXIS2 = _ImplicitDiagonalAxis(1)
+
+
 class BifrequencyMap(Array2D):
     """A map class with two distinct frequency axes.
 
@@ -460,8 +468,8 @@ class BifrequencyMap(Array2D):
     def diagonal(
         self,
         offset=0,
-        axis1=0,
-        axis2=1,
+        axis1=_IMPLICIT_DIAGONAL_AXIS1,
+        axis2=_IMPLICIT_DIAGONAL_AXIS2,
         *,
         method=_NOT_GIVEN,
         bins=_NOT_GIVEN,
@@ -495,27 +503,27 @@ class BifrequencyMap(Array2D):
             projection.
 
         """
+        axis1_supplied = axis1 is not _IMPLICIT_DIAGONAL_AXIS1
+        axis2_supplied = axis2 is not _IMPLICIT_DIAGONAL_AXIS2
         extension_method = isinstance(offset, str) or callable(offset)
         if not extension_method and all(
             option is _NOT_GIVEN for option in (method, bins, absolute)
         ):
-            return Array2D.diagonal(self, offset, axis1, axis2, **kwargs)
+            parent_axis1 = axis1 if axis1_supplied else 0
+            parent_axis2 = axis2 if axis2_supplied else 1
+            return Array2D.diagonal(self, offset, parent_axis1, parent_axis2, **kwargs)
 
         if extension_method:
             if method is not _NOT_GIVEN:
                 raise TypeError("diagonal() received multiple values for 'method'")
             method = offset
-            legacy_bins = None if axis1 == 0 else axis1
-            legacy_absolute = (
-                False if axis2 == 1 and not isinstance(axis2, bool) else axis2
-            )
             if bins is _NOT_GIVEN:
-                bins = legacy_bins
-            elif legacy_bins is not None:
+                bins = axis1 if axis1_supplied else None
+            elif axis1_supplied:
                 raise TypeError("diagonal() received multiple values for 'bins'")
             if absolute is _NOT_GIVEN:
-                absolute = legacy_absolute
-            elif legacy_absolute is not False:
+                absolute = axis2 if axis2_supplied else False
+            elif axis2_supplied:
                 raise TypeError("diagonal() received multiple values for 'absolute'")
         else:
             if method is _NOT_GIVEN:
