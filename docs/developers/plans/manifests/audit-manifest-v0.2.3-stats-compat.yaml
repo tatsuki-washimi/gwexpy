@@ -1,6 +1,6 @@
 schema: gwexpy-v023-stats-compat-evidence-v1
 phase: override-inventory-shared-statistics-closure
-status: focused-green-after-data-model-review
+status: focused-green-pending-human-data-model-signoff
 
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 phase_parent: 7191530e30db8f208d4ec57d14d563e9c9cf7ef7
@@ -13,6 +13,7 @@ skills:
   - superpowers:test-driven-development
   - extend_gwpy
   - gwexpy_conda_jobs
+  - verify_physics
 
 oracles:
   - environment: main
@@ -57,16 +58,22 @@ contracts:
   explicit_extension:
     input: ignore_nan=true
     status: retained existing public opt-in
-    implementation: NumPy nan reduction over raw values with a unit wrapper
+    implementation:
+      quantity_no_out: subclass-aware nan reduction followed by the shared metadata postprocessor
+      non_quantity_or_out: pre-existing raw NumPy reduction route
     default: false
     var_unit: input unit squared
   reduction_results:
-    normalization_point: after successful parent reduction only
+    normalization_point: after a successful parent default or Quantity no-out nan reduction
     parent_exception_retry: false
-    out_objects: returned untouched
+    out_behavior:
+      default_parent_route: installed GWpy identity, mutation, and exception behavior
+      explicit_ndarray: pre-existing mutation and non-identical Quantity return preserved
+      explicit_quantity: pre-existing UnitConversionError-after-mutation preserved
     array2d_and_plane2d:
       implicit_indices: follow GWpy result shape and index-access outcome
       explicit_indices: preserve GWpy stale-index behavior where GWpy preserves it
+      explicit_default_valued_indices: classified as explicit by private-index provenance
     project_nd_types:
       keepdims_true:
         type: source type
@@ -156,24 +163,58 @@ tdd:
     focused_axis_and_statistics_regressions:
       gwpy_4_0_1: 849 passed, 1 pre-existing optional skip
       gwpy_4_0_2: 848 passed, 2 pre-existing optional skips
-    types_and_fields_regressions:
-      gwpy_4_0_1: 2423 passed, 15 approved skips, 1 expected failure
-      gwpy_4_0_2: 2423 passed, 15 approved skips, 1 expected failure
-      warnings_per_environment: 17 dependency or pre-existing metadata warnings
     unexpected_required_skips: 0
+  explicit_default_index_provenance_followup:
+    red:
+      gwpy_4_0_1: 32 failed, 721 passed
+      gwpy_4_0_2: 32 failed, 721 passed
+      primary_cause: explicit dimensionless default-valued indices were classified as implicit
+    green:
+      gwpy_4_0_1: 753 passed
+      gwpy_4_0_2: 753 passed
+  explicit_ignore_nan_metadata_followup:
+    red:
+      environment: gwexpy
+      selected_cases: 216
+      result: 216 failed, 777 deselected
+      primary_cause: successful no-out reductions returned plain Quantity objects
+    green:
+      selected_cases: 240
+      gwpy_4_0_2: 240 passed, 753 deselected
+      coverage:
+        normalized_metadata_cases: 216
+        SeriesMatrix_raw_array_characterizations: 12
+        legacy_out_characterizations: 12
+    full_expanded_matrix:
+      gwpy_4_0_1: 993 passed
+      gwpy_4_0_2: 993 passed
+    axes:
+      - 0
+      - -1
+      - [0, 1]
+    keepdims:
+      - false
+      - true
+    unexpected_required_skips: 0
+  final_types_and_fields_regressions:
+    gwpy_4_0_1: 2735 passed, 15 approved skips, 1 expected failure
+    gwpy_4_0_2: 2735 passed, 15 approved skips, 1 expected failure
+    warnings_per_environment: 17 dependency or pre-existing metadata warnings
 
 physics:
   parent_default_authority: GWpy values and units are preserved exactly
   var_dimension: corrected from input-unit to input-unit-squared
   nan_policy: default propagation restored; omission remains explicit
   human_review:
-    status: approved
+    status: pending
+    required: true
     scope:
       - dimension-dropping result-type mapping
       - surviving-axis name, coordinate, and unit preservation
       - keepdims reduced-axis representation
       - GWpy Array2D and Plane2D stale-index parity
-    evidence: independent data-model review requested and accepted this follow-up contract
+      - explicit ignore_nan Quantity no-out result normalization
+    evidence: automated checks are green; independent human data-model signoff is still required
 
 release_constraints:
   new_public_api: false
@@ -184,7 +225,7 @@ release_constraints:
 static_validation:
   ruff_changed_python_files: all checks passed
   ruff_format_changed_python_files: all files formatted
-  mypy_changed_source_files: success, no issues found in 1 source file
+  mypy_changed_source_files: success, no issues found in 2 source files
   yaml_safe_load: valid
   git_diff_check: clean
 
@@ -207,6 +248,13 @@ commands:
   data_model_regressions: >-
     /home/washimi/miniforge3/envs/{main,gwexpy}/bin/python -m pytest -q
     tests/types tests/fields
+  explicit_ignore_nan_red: >-
+    /home/washimi/miniforge3/envs/gwexpy/bin/python -m pytest -q
+    tests/types/test_gwpy_stats_compat.py -k
+    explicit_ignore_nan_reduction_uses_shared_metadata_postprocessor
+  expanded_differential: >-
+    /home/washimi/miniforge3/envs/{main,gwexpy}/bin/python -m pytest -q
+    tests/types/test_gwpy_stats_compat.py
 
 focused_tests:
   - tests/types/test_gwpy_stats_compat.py
@@ -223,6 +271,7 @@ focused_tests:
 
 changed_files:
   - gwexpy/types/_stats.py
+  - gwexpy/types/array2d.py
   - tests/types/test_gwpy_stats_compat.py
   - tests/types/test_stats_mixin.py
   - docs/developers/plans/manifests/audit-manifest-v0.2.3-stats-compat.yaml

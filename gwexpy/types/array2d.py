@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import numpy as np
-from astropy.units import dimensionless_unscaled
 from gwpy.types.array2d import Array2D as GwpyArray2D
 
 from ._stats import StatisticalMethodsMixin
@@ -18,26 +16,6 @@ class Array2D(AxisApiMixin, StatisticalMethodsMixin, GwpyArray2D):
 
     def __new__(cls, data, axis_names=None, **kwargs):
         """Create a 2D array with explicit axis naming."""
-        # We enforce y->axis0, x->axis1 convention if defaults missing
-        # This keeps properties consistent across Array2D wrappers
-
-        # Check shape to generate defaults
-        # data might be list, create array-like to check shape?
-        # Gwpy handles data parsing. We can't easily check shape before super.
-        # But we can try relying on Gwpy.
-        # Actually, best to let Gwpy create object, then fix indices if default?
-
-        # But Gwpy constructor will set them.
-        # If we pass explicit defaults in kwargs, Gwpy uses them.
-
-        # Resolve data shape
-        shape = np.shape(data)
-        if len(shape) == 2:
-            if "xindex" not in kwargs:
-                kwargs["xindex"] = np.arange(shape[0]) * dimensionless_unscaled
-            if "yindex" not in kwargs:
-                kwargs["yindex"] = np.arange(shape[1]) * dimensionless_unscaled
-
         obj = super().__new__(cls, data, **kwargs)
         if axis_names is None:
             name0, name1 = "axis0", "axis1"

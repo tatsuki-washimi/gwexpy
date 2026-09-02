@@ -9,6 +9,7 @@ from typing import Any
 import numpy as np
 import pytest
 from astropy import units as u
+from astropy.units import UnitConversionError
 from gwpy.frequencyseries import FrequencySeries as GwpyFrequencySeries
 from gwpy.timeseries import TimeSeries as GwpyTimeSeries
 from gwpy.types.array import Array as GwpyArray
@@ -24,6 +25,7 @@ from gwexpy.types.array3d import Array3D
 from gwexpy.types.array4d import Array4D
 from gwexpy.types.plane2d import Plane2D
 from gwexpy.types.series import Series
+from gwexpy.types.seriesmatrix import SeriesMatrix
 
 
 @dataclass(frozen=True)
@@ -358,14 +360,19 @@ ARRAY2D_CASES = (
 def _make_array2d_pair(
     gwexpy_class: type,
     *,
-    explicit_indices: bool,
+    index_route: str,
 ) -> tuple[Any, GwpyArray2D]:
     values = np.arange(6, dtype=np.float64).reshape(2, 3)
     kwargs = {"unit": u.m}
-    if explicit_indices:
+    if index_route == "explicit-physical":
         kwargs.update(
             xindex=[10, 20] * u.s,
             yindex=[1, 2, 4] * u.Hz,
+        )
+    elif index_route == "explicit-default-valued":
+        kwargs.update(
+            xindex=np.arange(2),
+            yindex=np.arange(3),
         )
     if gwexpy_class is Plane2D:
         actual = gwexpy_class(
@@ -387,19 +394,18 @@ def _make_array2d_pair(
 @pytest.mark.parametrize("method_name", STAT_METHODS)
 @pytest.mark.parametrize("axis", [0, 1])
 @pytest.mark.parametrize(
-    "explicit_indices",
-    [False, True],
-    ids=["implicit-indices", "explicit-indices"],
+    "index_route",
+    ["implicit", "explicit-physical", "explicit-default-valued"],
 )
 def test_array2d_keepdims_axis_metadata_matches_gwpy(
     gwexpy_class: type,
     method_name: str,
     axis: int,
-    explicit_indices: bool,
+    index_route: str,
 ) -> None:
     actual_input, expected_input = _make_array2d_pair(
         gwexpy_class,
-        explicit_indices=explicit_indices,
+        index_route=index_route,
     )
 
     actual = getattr(actual_input, method_name)(axis=axis, keepdims=True)
@@ -412,19 +418,18 @@ def test_array2d_keepdims_axis_metadata_matches_gwpy(
 @pytest.mark.parametrize("method_name", ["min", "max"])
 @pytest.mark.parametrize("axis", [0, 1])
 @pytest.mark.parametrize(
-    "explicit_indices",
-    [False, True],
-    ids=["implicit-indices", "explicit-indices"],
+    "index_route",
+    ["implicit", "explicit-physical", "explicit-default-valued"],
 )
 def test_array2d_min_max_reduced_stale_index_outcome_matches_gwpy(
     gwexpy_class: type,
     method_name: str,
     axis: int,
-    explicit_indices: bool,
+    index_route: str,
 ) -> None:
     actual_input, expected_input = _make_array2d_pair(
         gwexpy_class,
-        explicit_indices=explicit_indices,
+        index_route=index_route,
     )
 
     try:
@@ -609,3 +614,240 @@ def test_project_nd_reductions_return_coherent_axis_objects(
     _assert_numeric_result_equal(actual, expected, compare_gwpy_axes=False)
     assert actual.name == expected.name
     _assert_project_reduction_axes(actual, actual_input, axis, keepdims)
+
+
+NAN_ARRAY3D_CASE = ProjectAxisCase(
+    Array3D,
+    (2, 3, 4),
+    {
+        "axis_names": ("time", "distance", "frequency"),
+        "axis0": [10, 20] * u.s,
+        "axis1": [1, 2, 4] * u.m,
+        "axis2": [5, 6, 8, 11] * u.Hz,
+    },
+)
+
+
+NAN_METADATA_CASES = (
+    pytest.param(
+        ProjectAxisCase(
+            Array,
+            (2, 3, 4),
+            {"axis_names": ("time", "distance", "frequency")},
+        ),
+        id="Array",
+    ),
+    pytest.param(
+        ProjectAxisCase(
+            Array2D,
+            (2, 3),
+            {
+                "axis_names": ("time", "frequency"),
+                "xindex": [10, 20] * u.s,
+                "yindex": [1, 2, 4] * u.Hz,
+            },
+        ),
+        id="Array2D",
+    ),
+    pytest.param(
+        ProjectAxisCase(
+            Plane2D,
+            (2, 3),
+            {
+                "axis1_name": "time",
+                "axis2_name": "frequency",
+                "xindex": [10, 20] * u.s,
+                "yindex": [1, 2, 4] * u.Hz,
+            },
+        ),
+        id="Plane2D",
+    ),
+    pytest.param(
+        NAN_ARRAY3D_CASE,
+        id="Array3D",
+    ),
+    pytest.param(
+        ProjectAxisCase(
+            Array4D,
+            (2, 3, 4, 5),
+            {
+                "axis_names": ("time", "x", "y", "z"),
+                "axis0": [10, 20] * u.s,
+                "axis1": [1, 2, 4] * u.m,
+                "axis2": [5, 6, 8, 11] * u.m,
+                "axis3": [0, 2, 4, 8, 16] * u.m,
+            },
+        ),
+        id="Array4D",
+    ),
+    pytest.param(
+        ProjectAxisCase(
+            ScalarField,
+            (2, 3, 4, 5),
+            {
+                "axis_names": ("time", "x", "y", "z"),
+                "axis0": [10, 20] * u.s,
+                "axis1": [1, 2, 4] * u.m,
+                "axis2": [5, 6, 8, 11] * u.m,
+                "axis3": [0, 2, 4, 8, 16] * u.m,
+            },
+        ),
+        id="ScalarField",
+    ),
+)
+
+NAN_REDUCTION_AXES = (
+    pytest.param(0, id="first-axis"),
+    pytest.param(-1, id="last-axis"),
+    pytest.param((0, 1), id="axis-tuple"),
+)
+
+
+def _make_nan_metadata_source(case: ProjectAxisCase) -> Any:
+    values = np.arange(1, np.prod(case.shape) + 1, dtype=np.float64).reshape(case.shape)
+    values.reshape(-1)[1] = np.nan
+    return case.gwexpy_class(
+        values,
+        unit=u.V,
+        name="nan-statistics-source",
+        **case.constructor_kwargs,
+    )
+
+
+def _assert_index_metadata_matches(actual: Any, expected: Any, attribute: str) -> None:
+    try:
+        expected_index = getattr(expected, attribute)
+    except Exception as expected_error:
+        with pytest.raises(type(expected_error)):
+            getattr(actual, attribute)
+        return
+
+    actual_index = getattr(actual, attribute)
+    assert actual_index.info.name == expected_index.info.name
+    assert actual_index.unit == expected_index.unit
+    np.testing.assert_array_equal(actual_index.value, expected_index.value)
+
+
+def _assert_reduction_metadata_matches(actual: Any, expected: Any) -> None:
+    assert type(actual) is type(expected)
+    assert getattr(actual, "name", None) == getattr(expected, "name", None)
+    assert getattr(actual, "axis_names", None) == getattr(expected, "axis_names", None)
+
+    for attribute in ("xindex", "yindex"):
+        _assert_index_metadata_matches(actual, expected, attribute)
+
+    expected_axes = getattr(expected, "axes", ())
+    actual_axes = getattr(actual, "axes", ())
+    assert len(actual_axes) == len(expected_axes)
+    for actual_axis, expected_axis in zip(actual_axes, expected_axes, strict=True):
+        assert actual_axis.name == expected_axis.name
+        assert actual_axis.unit == expected_axis.unit
+        np.testing.assert_array_equal(
+            actual_axis.index.value,
+            expected_axis.index.value,
+        )
+
+
+@pytest.mark.parametrize("case", NAN_METADATA_CASES)
+@pytest.mark.parametrize("method_name", STAT_METHODS)
+@pytest.mark.parametrize("axis", NAN_REDUCTION_AXES)
+@pytest.mark.parametrize("keepdims", [False, True], ids=["drop", "keep"])
+def test_explicit_ignore_nan_reduction_uses_shared_metadata_postprocessor(
+    case: ProjectAxisCase,
+    method_name: str,
+    axis: int | tuple[int, ...],
+    keepdims: bool,
+) -> None:
+    source = _make_nan_metadata_source(case)
+    template_method = (
+        "mean"
+        if isinstance(source, Array2D) and method_name in {"min", "max"}
+        else method_name
+    )
+    metadata_template = getattr(source, template_method)(
+        axis=axis,
+        keepdims=keepdims,
+    )
+    if template_method != method_name and getattr(metadata_template, "ndim", 0) == 1:
+        metadata_template.name = f"{source.name} {method_name}"
+    function = getattr(np, f"nan{method_name}")
+    expected_values = function(source.value, axis=axis, keepdims=keepdims)
+    expected_unit = u.V**2 if method_name == "var" else u.V
+
+    with np.errstate(all="ignore"):
+        actual = getattr(source, method_name)(
+            axis=axis,
+            keepdims=keepdims,
+            ignore_nan=True,
+        )
+
+    assert actual.unit == expected_unit
+    np.testing.assert_array_equal(actual.value, expected_values)
+    _assert_reduction_metadata_matches(actual, metadata_template)
+
+
+@pytest.mark.parametrize("method_name", STAT_METHODS)
+@pytest.mark.parametrize("keepdims", [False, True], ids=["drop", "keep"])
+def test_series_matrix_ignore_nan_keeps_raw_ndarray_route(
+    method_name: str,
+    keepdims: bool,
+) -> None:
+    values = np.arange(24, dtype=np.float64).reshape(2, 3, 4)
+    values[0, 0, 1] = np.nan
+    source = SeriesMatrix(values, xindex=np.arange(values.shape[-1]))
+    function = getattr(np, f"nan{method_name}")
+    expected = function(values, axis=-1, keepdims=keepdims)
+
+    actual = getattr(source, method_name)(
+        axis=-1,
+        keepdims=keepdims,
+        ignore_nan=True,
+    )
+
+    assert type(actual) is np.ndarray
+    np.testing.assert_array_equal(actual, expected)
+
+
+@pytest.mark.parametrize("method_name", STAT_METHODS)
+def test_explicit_ignore_nan_ndarray_out_behavior_is_preserved(
+    method_name: str,
+) -> None:
+    source = _make_nan_metadata_source(NAN_ARRAY3D_CASE)
+    output = np.full(source.shape[:-1], -99.0)
+    function = getattr(np, f"nan{method_name}")
+    expected = function(source.value, axis=-1)
+
+    actual = getattr(source, method_name)(
+        axis=-1,
+        out=output,
+        ignore_nan=True,
+    )
+
+    assert actual is not output
+    assert type(actual) is u.Quantity
+    assert actual.unit == (u.V**2 if method_name == "var" else u.V)
+    np.testing.assert_array_equal(output, expected)
+    np.testing.assert_array_equal(actual.value, expected)
+
+
+@pytest.mark.parametrize("method_name", STAT_METHODS)
+def test_explicit_ignore_nan_quantity_out_error_and_mutation_are_preserved(
+    method_name: str,
+) -> None:
+    source = _make_nan_metadata_source(NAN_ARRAY3D_CASE)
+    output = u.Quantity(
+        np.full(source.shape[:-1], -99.0),
+        unit=u.V**2 if method_name == "var" else u.V,
+    )
+    function = getattr(np, f"nan{method_name}")
+    expected = function(source.value, axis=-1)
+
+    with pytest.raises(UnitConversionError):
+        getattr(source, method_name)(
+            axis=-1,
+            out=output,
+            ignore_nan=True,
+        )
+
+    assert output.unit == u.dimensionless_unscaled
+    np.testing.assert_array_equal(output.value, expected)

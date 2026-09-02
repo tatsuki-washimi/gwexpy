@@ -29,11 +29,36 @@ class StatisticalMethodsMixin:
         result_unit_power=1,
         **kwargs,
     ):
-        # Extract data and unit
-        data = np.asarray(self)
         unit = getattr(self, "unit", None)
-
         func = func_nan if ignore_nan else func_raw
+
+        if (
+            ignore_nan
+            and unit is not None
+            and kwargs.get("out") is None
+            and self._has_gwpy_quantity_parent()
+        ):
+
+            def nan_reduction(*args, **function_kwargs):
+                return func_nan(*args, **function_kwargs)
+
+            nan_reduction.__name__ = func_raw.__name__
+            wrap_function = getattr(self, "_wrap_function")
+            result = wrap_function(
+                nan_reduction,
+                unit=unit**result_unit_power,
+                **kwargs,
+            )
+            return self._normalize_reduction_result(
+                result,
+                axis=kwargs.get("axis"),
+                keepdims=kwargs.get("keepdims", False),
+            )
+
+        # Non-GWpy matrix types and pre-existing ``out`` extension routes use
+        # raw NumPy arrays deliberately.  In particular, do not alter their
+        # return identity, mutation, or exception behavior here.
+        data = np.asarray(self)
 
         # Pull out arguments that numpy functions expect
         # This is a bit generic but works for mean, std, var, min, max, median
@@ -106,22 +131,17 @@ class StatisticalMethodsMixin:
 
     def _normalize_array2d_result(self, result, *, axis):
         """Match GWpy's implicit-index behavior without changing outcomes."""
-        from astropy.units import dimensionless_unscaled
         from gwpy.types.array2d import Array2D as GwpyArray2D
 
-        source_indices = (getattr(self, "xindex"), getattr(self, "yindex"))
-        shape = getattr(self, "shape")
-        implicit = tuple(
-            index.unit == dimensionless_unscaled
-            and np.array_equal(index.value, np.arange(shape[position]))
-            for position, index in enumerate(source_indices)
+        explicit = tuple(
+            f"_{attribute}" in self.__dict__ for attribute in ("xindex", "yindex")
         )
 
         if isinstance(result, GwpyArray2D):
-            for attribute, is_implicit in zip(
-                ("xindex", "yindex"), implicit, strict=True
+            for attribute, is_explicit in zip(
+                ("xindex", "yindex"), explicit, strict=True
             ):
-                if is_implicit and f"_{attribute}" in result.__dict__:
+                if not is_explicit and f"_{attribute}" in result.__dict__:
                     delattr(result, attribute)
             return result
 
@@ -136,7 +156,7 @@ class StatisticalMethodsMixin:
         ]
         if (
             len(surviving_axes) == 1
-            and implicit[surviving_axes[0]]
+            and not explicit[surviving_axes[0]]
             and "_xindex" in result.__dict__
         ):
             delattr(result, "xindex")
