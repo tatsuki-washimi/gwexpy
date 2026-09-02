@@ -53,7 +53,8 @@ def test_array2d_swapaxes():
     # axis0 was space (5), axis1 was time (10)
     # New: axis0 should be time, axis1 should be space
 
-    arr_t = arr.swapaxes(0, 1)
+    # Named axes explicitly select GWexpy's metadata-aware extension.
+    arr_t = arr.swapaxes("space", "time")
 
     assert arr_t.shape == (10, 5)
     assert arr_t.axes[0].name == "time"

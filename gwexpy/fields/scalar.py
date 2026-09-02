@@ -1457,14 +1457,18 @@ class ScalarField(FieldBase):
     # Comparison & Summary Methods (Phase 2)
     # =========================================================================
 
-    def diff(self, other, mode="diff"):
-        """Compute difference or ratio between two ScalarField objects.
+    def diff(self, n=1, axis=-1, *, mode=None):
+        """Compute a GWpy finite difference or compare two fields.
 
         Parameters
         ----------
-        other : ScalarField
-            The field to compare against.
-        mode : str, optional
+        n : int or ScalarField, optional
+            Difference order for the GWpy-compatible route. Passing another
+            `ScalarField` explicitly selects the field-comparison extension.
+        axis : int or str, optional
+            Difference axis, or the legacy positional comparison mode when
+            ``n`` is a `ScalarField`.
+        mode : str, keyword-only, optional
             Comparison mode:
             - 'diff': Difference (self - other)
             - 'ratio': Ratio (self / other)
@@ -1493,28 +1497,42 @@ class ScalarField(FieldBase):
         <ScalarField(2, 2, 2, 2)@time, 1.0>
 
         """
-        from astropy import units as u
+        from gwpy.types.array import Array as GwpyArray
+
+        if not isinstance(n, ScalarField):
+            if mode is not None:
+                raise TypeError(
+                    "diff() 'mode' is only valid when comparing ScalarField objects"
+                )
+            return GwpyArray.diff(self, n, axis)
+
+        other = n
+        if mode is not None and axis != -1:
+            raise TypeError("diff() received multiple values for comparison mode")
+        comparison_mode = mode if mode is not None else "diff" if axis == -1 else axis
 
         if self.shape != other.shape:
             raise ValueError(f"Shape mismatch: {self.shape} vs {other.shape}")
 
         valid_modes = ("diff", "ratio", "percent")
-        if mode not in valid_modes:
-            raise ValueError(f"Invalid mode '{mode}'. Must be one of {valid_modes}.")
+        if comparison_mode not in valid_modes:
+            raise ValueError(
+                f"Invalid mode '{comparison_mode}'. Must be one of {valid_modes}."
+            )
 
-        if mode == "diff":
+        if comparison_mode == "diff":
             result_data = self.value - other.value
             result_unit = self.unit
-        elif mode == "ratio":
+        elif comparison_mode == "ratio":
             with np.errstate(divide="ignore", invalid="ignore"):
                 result_data = self.value / other.value
             result_unit = u.dimensionless_unscaled
-        elif mode == "percent":
+        elif comparison_mode == "percent":
             with np.errstate(divide="ignore", invalid="ignore"):
                 result_data = (self.value - other.value) / other.value * 100
             result_unit = u.percent
         else:
-            raise ValueError(f"Invalid mode '{mode}'")
+            raise ValueError(f"Invalid mode '{comparison_mode}'")
 
         result = ScalarField(
             result_data,

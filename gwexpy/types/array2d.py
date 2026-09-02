@@ -88,6 +88,29 @@ class Array2D(AxisApiMixin, StatisticalMethodsMixin, GwpyArray2D):
     def _isel_tuple(self, item_tuple):
         return self.__getitem__(item_tuple)
 
+    def swapaxes(self, axis1, axis2):
+        """Swap axes, preserving GWpy metadata on numeric calls."""
+        if isinstance(axis1, str) or isinstance(axis2, str):
+            return AxisApiMixin.swapaxes(self, axis1, axis2)
+        return GwpyArray2D.swapaxes(self, axis1, axis2)
+
+    def transpose(self, *axes):
+        """Transpose through GWpy unless a named-axis extension is used."""
+        normalized = (
+            axes[0] if len(axes) == 1 and isinstance(axes[0], (tuple, list)) else axes
+        )
+        if any(isinstance(axis, str) for axis in normalized):
+            return AxisApiMixin.transpose(self, *axes)
+        return GwpyArray2D.transpose(self, *axes)
+
+    @property
+    def T(self):  # noqa: N802
+        """Return the GWpy two-dimensional transpose with swapped axes."""
+        transposed = GwpyArray2D.T.fget(self)
+        transposed._axis0_name = self._axis1_name
+        transposed._axis1_name = self._axis0_name
+        return transposed
+
     def _swapaxes_int(self, a, b):
         if {a, b} != {0, 1}:
             raise ValueError(f"Invalid axis indices: {a}, {b}")

@@ -8,6 +8,8 @@ from gwpy.frequencyseries import FrequencySeries
 from gwpy.types import Array2D
 from scipy.interpolate import interp1d
 
+_NOT_GIVEN = object()
+
 
 class BifrequencyMap(Array2D):
     """A map class with two distinct frequency axes.
@@ -205,19 +207,36 @@ class BifrequencyMap(Array2D):
             name=f"Inverse of {self.name}" if self.name else "Inverse",
         )
 
-    def crop(self, low=None, high=None, low2=None, high2=None) -> BifrequencyMap:
-        """Crop this BifrequencyMap to a specific frequency range.
+    def crop(
+        self,
+        start=None,
+        end=None,
+        *legacy_axes,
+        copy=False,
+        low=_NOT_GIVEN,
+        high=_NOT_GIVEN,
+        low2=_NOT_GIVEN,
+        high2=_NOT_GIVEN,
+    ) -> BifrequencyMap:
+        """Crop this map using the GWpy first-axis contract by default.
 
         Parameters
         ----------
-        low : float, u.Quantity, optional
-            Lower bound for frequency1 (X/cols).
-        high : float, u.Quantity, optional
-            Upper bound for frequency1 (X/cols).
+        start, end : float, `~astropy.units.Quantity`, optional
+            Bounds on the GWpy ``xindex`` (``frequency2``) axis.
+        *legacy_axes
+            Optional ``low2, high2`` positional bounds for the explicit
+            legacy two-axis route.
+        copy : bool, optional
+            Copy the selected data instead of returning a view.
+        low, high : float, `~astropy.units.Quantity`, optional
+            Backwards-compatible aliases for ``start`` and ``end``.
         low2 : float, u.Quantity, optional
-            Lower bound for frequency2 (Y/rows). If None, uses `low`.
+            Explicitly select the legacy two-axis crop and set the lower
+            bound for frequency2 (rows).
         high2 : float, u.Quantity, optional
-            Upper bound for frequency2 (Y/rows). If None, uses `high`.
+            Explicitly select the legacy two-axis crop and set the upper
+            bound for frequency2 (rows).
 
         Returns
         -------
@@ -225,18 +244,45 @@ class BifrequencyMap(Array2D):
             The cropped map.
 
         """
-        if low2 is None:
-            low2 = low
-        if high2 is None:
-            high2 = high
+        if low is not _NOT_GIVEN:
+            if start is not None:
+                raise TypeError("crop() received both 'start' and 'low'")
+            start = low
+        if high is not _NOT_GIVEN:
+            if end is not None:
+                raise TypeError("crop() received both 'end' and 'high'")
+            end = high
+
+        if len(legacy_axes) > 2:
+            raise TypeError(
+                f"crop() takes at most 5 positional arguments "
+                f"({len(legacy_axes) + 3} given)"
+            )
+        if legacy_axes:
+            if low2 is not _NOT_GIVEN:
+                raise TypeError("crop() received multiple values for 'low2'")
+            low2 = legacy_axes[0]
+        if len(legacy_axes) == 2:
+            if high2 is not _NOT_GIVEN:
+                raise TypeError("crop() received multiple values for 'high2'")
+            high2 = legacy_axes[1]
+
+        two_axis = low2 is not _NOT_GIVEN or high2 is not _NOT_GIVEN
+        if not two_axis:
+            return Array2D.crop(self, start, end, copy=copy)
+
+        if low2 is _NOT_GIVEN:
+            low2 = start
+        if high2 is _NOT_GIVEN:
+            high2 = end
 
         # Select indices for f1 (cols/yindex)
         f1 = self.frequency1.value
         idx1 = np.ones(len(f1), dtype=bool)
-        if low is not None:
-            idx1 &= f1 >= float(low)
-        if high is not None:
-            idx1 &= f1 <= float(high)
+        if start is not None:
+            idx1 &= f1 >= float(start)
+        if end is not None:
+            idx1 &= f1 <= float(end)
 
         # Select indices for f2 (rows/xindex)
         f2 = self.frequency2.value
@@ -338,13 +384,13 @@ class BifrequencyMap(Array2D):
         ax.set_facecolor(background_color)
 
         # Labels
-        xlabel = "Frequency 1"
-        if hasattr(self.frequency1, "unit") and str(self.frequency1.unit) != "":
-            xlabel += f" [{self.frequency1.unit}]"
-
-        ylabel = "Frequency 2"
+        xlabel = "Frequency 2"
         if hasattr(self.frequency2, "unit") and str(self.frequency2.unit) != "":
-            ylabel += f" [{self.frequency2.unit}]"
+            xlabel += f" [{self.frequency2.unit}]"
+
+        ylabel = "Frequency 1"
+        if hasattr(self.frequency1, "unit") and str(self.frequency1.unit) != "":
+            ylabel += f" [{self.frequency1.unit}]"
 
         ax.set_xlabel(kwargs.pop("xlabel", xlabel))
         ax.set_ylabel(kwargs.pop("ylabel", ylabel))
@@ -370,27 +416,27 @@ class BifrequencyMap(Array2D):
 
             if "extent" not in kwargs:
                 # Calculate extent [x0, x1, y0, y1]
-                x0 = self.frequency1[0].value
-                x1 = self.frequency1[-1].value
-                y0 = self.frequency2[0].value
-                y1 = self.frequency2[-1].value
+                x0 = self.frequency2[0].value
+                x1 = self.frequency2[-1].value
+                y0 = self.frequency1[0].value
+                y1 = self.frequency1[-1].value
 
                 # Correct for pixel edges
-                if len(self.frequency1) > 1:
-                    df1 = (x1 - x0) / (len(self.frequency1) - 1)
+                if len(self.frequency2) > 1:
+                    df1 = (x1 - x0) / (len(self.frequency2) - 1)
                     extent_x = [x0 - df1 / 2, x1 + df1 / 2]
                 else:
                     extent_x = [x0, x1]
 
-                if len(self.frequency2) > 1:
-                    df2 = (y1 - y0) / (len(self.frequency2) - 1)
+                if len(self.frequency1) > 1:
+                    df2 = (y1 - y0) / (len(self.frequency1) - 1)
                     extent_y = [y0 - df2 / 2, y1 + df2 / 2]
                 else:
                     extent_y = [y0, y1]
 
                 kwargs["extent"] = extent_x + extent_y
 
-            layer = ax.imshow(self.value, **kwargs)
+            layer = ax.imshow(self.value.T, **kwargs)
 
         elif method == "pcolormesh":
             kwargs.setdefault("cmap", "inferno")
@@ -404,23 +450,27 @@ class BifrequencyMap(Array2D):
 
                 if isinstance(kwargs["norm"], LogNorm):
                     # Mask <= 0
-                    val_to_plot = np.ma.masked_less_equal(self.value, 0)
+                    val_to_plot = np.ma.masked_less_equal(self.value.T, 0)
                 else:
-                    val_to_plot = self.value
+                    val_to_plot = self.value.T
             else:
-                val_to_plot = self.value
+                val_to_plot = self.value.T
 
             layer = ax.pcolormesh(
-                self.frequency1.value, self.frequency2.value, val_to_plot, **kwargs
+                self.frequency2.value, self.frequency1.value, val_to_plot, **kwargs
             )
         else:
-            raise ValueError(f"Unknown plot method: {method}")
+            if not isinstance(method, str):
+                raise TypeError(
+                    f"attribute name must be string, not '{type(method).__name__}'"
+                )
+            raise AttributeError(f"'Axes' object has no attribute '{method}'")
 
         # Colorbar
         # Try to use unit
-        label = self.name
+        label = self.name or ""
         if self.unit:
-            label += f" [{self.unit}]"
+            label = f"{label} [{self.unit}]".strip()
         plot.colorbar(layer, label=label)
 
         return plot
@@ -479,33 +529,74 @@ class BifrequencyMap(Array2D):
 
         return FrequencySeries(data, frequencies=result_axis, unit=self.unit, name=name)
 
-    def diagonal(self, method="mean", bins=None, absolute=False, **kwargs):
-        """Calculate statistics along the diagonal axis `(f2 - f1)`.
+    def diagonal(
+        self,
+        offset=0,
+        axis1=0,
+        axis2=1,
+        *,
+        method=_NOT_GIVEN,
+        bins=_NOT_GIVEN,
+        absolute=_NOT_GIVEN,
+        **kwargs,
+    ):
+        """Return a GWpy diagonal or an explicit binned projection.
 
         Parameters
         ----------
-        method : str, optional
+        offset, axis1, axis2 : int, optional
+            Standard NumPy/GWpy diagonal selection parameters.
+        method : str, keyword-only, optional
             Statistical method to use.
             Supported: 'mean', 'median', 'max', 'min', 'std', 'rms', 'percentile'.
-            Default is 'mean'.
             All methods ignore NaNs in the data by default.
-        bins : int or array-like, optional
+        bins : int or array-like, keyword-only, optional
             Number of bins or bin edges for the diagonal axis.
             If None (default), it is automatically determined based on the resolution
             of frequency axes (max(df1, df2)).
-        absolute : bool, optional
+        absolute : bool, keyword-only, optional
             If True, calculates statistics along the absolute difference ``abs(f2 - f1)``.
-            Default is False.
         **kwargs
             Additional arguments passed to the statistical function.
             For 'percentile', use `percentile=...`.
 
         Returns
         -------
-        FrequencySeries
-            The result of the diagonal projection.
+        BifrequencyMap or FrequencySeries
+            The ordinary diagonal view, or an explicitly requested binned
+            projection.
 
         """
+        if not isinstance(offset, str) and all(
+            option is _NOT_GIVEN for option in (method, bins, absolute)
+        ):
+            return Array2D.diagonal(self, offset, axis1, axis2, **kwargs)
+
+        if isinstance(offset, str):
+            if method is not _NOT_GIVEN:
+                raise TypeError("diagonal() received multiple values for 'method'")
+            method = offset
+            legacy_bins = None if axis1 == 0 else axis1
+            legacy_absolute = (
+                False if axis2 == 1 and not isinstance(axis2, bool) else axis2
+            )
+            if bins is _NOT_GIVEN:
+                bins = legacy_bins
+            elif legacy_bins is not None:
+                raise TypeError("diagonal() received multiple values for 'bins'")
+            if absolute is _NOT_GIVEN:
+                absolute = legacy_absolute
+            elif legacy_absolute is not False:
+                raise TypeError("diagonal() received multiple values for 'absolute'")
+        else:
+            if method is _NOT_GIVEN:
+                method = "mean"
+
+        if bins is _NOT_GIVEN:
+            bins = None
+        if absolute is _NOT_GIVEN:
+            absolute = False
+
         from scipy.stats import binned_statistic
 
         # Create meshgrid for frequencies

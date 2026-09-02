@@ -1,0 +1,220 @@
+schema: gwexpy-v023-type-collision-compat-evidence-v1
+phase: override-inventory-specialized-type-closure
+status: focused-green
+
+implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
+phase_parent: e5f791722666601346f9990c247cce610fdfe85d
+
+issues:
+  - "#639"
+  - "#704"
+
+skills:
+  - superpowers:test-driven-development
+  - extend_gwpy
+  - gwexpy_conda_jobs
+  - verify_physics
+
+oracles:
+  - environment: main
+    python: 3.12.12
+    gwpy: 4.0.1
+    numpy: 1.26.4
+    astropy: 6.1.7
+  - environment: gwexpy
+    python: 3.11.14
+    gwpy: 4.0.2
+    numpy: 1.26.4
+    astropy: 6.1.7
+oracle_version_difference: none observed in this differential matrix
+
+implementation_groups:
+  bifrequencymap_diagonal: implementation-00f692e43b52f2a5
+  bifrequencymap_crop: implementation-846feae87e99c269
+  bifrequencymap_plot: implementation-2522944a0a4f921a
+  scalarfield_diff: implementation-3ccbd38c00c2dbe4
+  swapaxes: implementation-321a2a828a5762c4
+  transpose: implementation-7bd5fd7fac04ddac
+  array2d_T: implementation-6ec502d60552f7ed
+
+terminal_test_references:
+  bifrequencymap_diagonal:
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_diagonal_common_numeric_routes_match_gwpy
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_diagonal_explicit_binned_projection_remains_available
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_diagonal_invalid_outcome_is_explicitly_classified
+  bifrequencymap_crop:
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_crop_common_route_matches_gwpy
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_crop_explicit_two_axis_extension_preserves_legacy_selection
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_crop_invalid_outcome_matches_gwpy_exception_class
+  bifrequencymap_plot:
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_plot_common_routes_match_gwpy_artist_source_and_label
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_plot_invalid_method_exception_class_matches_gwpy
+  scalarfield_diff:
+    - tests/types/test_gwpy_override_terminal_compat.py::test_scalarfield_diff_common_route_matches_gwpy
+    - tests/types/test_gwpy_override_terminal_compat.py::test_scalarfield_diff_failure_class_matches_gwpy
+    - tests/types/test_gwpy_override_terminal_compat.py::test_scalarfield_diff_field_comparison_requires_explicit_field_type
+  swapaxes:
+    - tests/types/test_gwpy_override_terminal_compat.py::test_array2d_numeric_swapaxes_matches_gwpy
+    - tests/types/test_gwpy_override_terminal_compat.py::test_array2d_named_axis_permutations_remain_explicit_extensions
+    - tests/types/test_gwpy_override_terminal_compat.py::test_other_axis_api_rows_remain_no_finding
+  transpose:
+    - tests/types/test_gwpy_override_terminal_compat.py::test_array2d_numeric_transpose_matches_gwpy
+    - tests/types/test_gwpy_override_terminal_compat.py::test_array2d_named_axis_permutations_remain_explicit_extensions
+    - tests/types/test_gwpy_override_terminal_compat.py::test_other_axis_api_rows_remain_no_finding
+  array2d_T:
+    - tests/types/test_gwpy_override_terminal_compat.py::test_array2d_T_keeps_gwpy_swapped_metadata_contract
+
+contracts:
+  bifrequencymap_diagonal:
+    default_route: GWpy Array2D diagonal with offset, axis1, and axis2
+    default_result: diagonal view with GWpy values, unit, metadata, and memory sharing
+    extension_predicate:
+      - explicit method keyword
+      - explicit bins keyword
+      - explicit absolute keyword
+      - legacy string first positional argument
+    extension_result: existing binned FrequencySeries projection
+    exception_retry: false
+  bifrequencymap_crop:
+    default_route: GWpy Array2D crop over xindex/frequency2
+    common_signature: start, end, keyword-only copy
+    extension_predicate:
+      - explicit low2 or high2 keyword
+      - a third or fourth legacy positional bound
+    extension_result: existing inclusive two-axis selection
+    copy_and_view_identity: matched to installed GWpy on the common route
+    exception_retry: false
+  bifrequencymap_plot:
+    valid_methods:
+      - imshow
+      - pcolormesh
+    artist_source: transposed exactly as GWpy Array2D axis ordering requires
+    unnamed_map: succeeds without constructing a label from null
+    invalid_method: AttributeError, matching installed GWpy
+    presentation_defaults_retained:
+      - inferno colour map
+      - background colour
+      - colour bar
+      - existing layout keyword routing
+  scalarfield_diff:
+    default_route: GWpy Array.diff with n and axis
+    extension_predicate: first argument is a ScalarField
+    extension_modes:
+      - diff
+      - ratio
+      - percent
+    exception_retry: false
+    numpy_prepend_append:
+      provider_support: NumPy 1.26.4 supports both options
+      gwpy_surface: GWpy Array.diff does not expose either option
+      required_outcome: TypeError parity, not successful extension
+  array2d_axis_permutation:
+    numeric_swapaxes_and_transpose: direct GWpy Array2D route
+    numeric_metadata: xindex and yindex remain unchanged, matching GWpy
+    named_axes: existing explicit GWexpy metadata-aware extension
+    property_T: distinct GWpy route with swapped xindex/yindex and semantic names
+    other_axis_hosts: no-finding characterization retained
+
+comparators:
+  exact:
+    - success or failure
+    - exception class
+    - parameter order, kind, and default for GWpy common parameters
+    - numerical values
+    - numerical shape and dtype
+    - unit and name
+    - xindex and yindex values and units
+    - field axis names, lengths, and domains
+    - view versus copy memory sharing where applicable
+    - plotted artist source array and label
+  exception_message_exact: false
+  presentation_pixels_style_layout: excluded
+
+tdd:
+  red:
+    environment: gwexpy
+    gwpy: 4.0.2
+    selected_cases: 59
+    result: 43 failed, 16 passed
+    primary_causes:
+      - BifrequencyMap diagonal default selected the binned extension
+      - BifrequencyMap crop selected both axes and rejected copy
+      - unnamed BifrequencyMap plot failed while artist orientation diverged
+      - numeric Array2D and Plane2D permutations rewrote GWpy metadata
+      - ScalarField diff required another field and hid GWpy finite differences
+    followup_invalid_plot_method_cycle:
+      result: 2 failed, 1 passed
+      cause: non-string methods raised AttributeError instead of GWpy TypeError
+  green:
+    differential_and_contract_set:
+      gwpy_4_0_1: 66 passed
+      gwpy_4_0_2: 66 passed
+    focused_affected_regressions:
+      gwpy_4_0_1: 139 passed
+      gwpy_4_0_2: 139 passed
+    related_regression_suite:
+      environment: gwexpy
+      result: 2515 passed, 37 pre-existing optional skips, 1 expected failure
+      warnings: 17 dependency or pre-existing metadata warnings
+    unexpected_required_skips: 0
+
+physics_and_data_model:
+  finite_difference_values_and_units: delegated unchanged to GWpy
+  field_comparison_values_and_units: existing extension retained unchanged
+  bifrequency_plot_axis_order: aligned to GWpy xindex/yindex authority
+  binned_projection: only explicit opt-in can select the specialized calculation
+  human_review: required
+  human_review_reasons:
+    - BifrequencyMap plot source orientation and frequency-axis authority changed
+    - ScalarField finite-difference results reduce one axis and use existing finalize rules
+    - numeric Array2D permutation intentionally retains GWpy stale axis metadata
+
+release_constraints:
+  new_public_api: false
+  new_dependency: false
+  workflow_changed: false
+  override_inventory_modified_by_this_change: false
+
+static_validation:
+  ruff_changed_python_files: all checks passed
+  ruff_format_changed_python_files: all files formatted
+  mypy_changed_source_files: success, no issues found in 3 source files
+  yaml_safe_load: valid
+  git_diff_check: clean
+
+commands:
+  red: >-
+    conda run -n gwexpy pytest -q
+    tests/frequencyseries/test_bifrequencymap_gwpy_compat.py
+    tests/types/test_gwpy_override_terminal_compat.py
+    tests/frequencyseries/test_standalone_contracts.py
+  focused_gwpy_4_0_1: >-
+    conda run -n main pytest -q
+    tests/frequencyseries/test_bifrequencymap_gwpy_compat.py
+    tests/types/test_gwpy_override_terminal_compat.py
+    tests/frequencyseries/test_standalone_contracts.py
+  focused_gwpy_4_0_2: >-
+    conda run -n gwexpy pytest -q
+    tests/frequencyseries/test_bifrequencymap_gwpy_compat.py
+    tests/types/test_gwpy_override_terminal_compat.py
+    tests/frequencyseries/test_standalone_contracts.py
+  related_regressions: >-
+    conda run -n gwexpy pytest -q tests/frequencyseries tests/types tests/fields
+
+focused_tests:
+  - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py
+  - tests/types/test_gwpy_override_terminal_compat.py
+  - tests/frequencyseries/test_standalone_contracts.py
+  - tests/types/test_types_array2d_axes.py
+  - tests/types/test_types_plane2d.py
+
+changed_files:
+  - gwexpy/fields/scalar.py
+  - gwexpy/frequencyseries/bifrequencymap.py
+  - gwexpy/types/array2d.py
+  - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py
+  - tests/frequencyseries/test_standalone_contracts.py
+  - tests/types/test_gwpy_override_terminal_compat.py
+  - tests/types/test_types_array2d_axes.py
+  - tests/types/test_types_plane2d.py
+  - docs/developers/plans/manifests/audit-manifest-v0.2.3-type-collision-compat.yaml

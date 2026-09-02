@@ -158,7 +158,7 @@ def test_bifrequencymap_projection_helpers_return_gwpy_frequencyseries():
     assert projected.channel is None
     assert projected.epoch is None
 
-    diagonal = bmap.diagonal()
+    diagonal = bmap.diagonal(method="mean")
     assert type(diagonal) is GwpyFrequencySeries
     assert diagonal.unit == u.s
     assert diagonal.name == "map (diagonal mean)"

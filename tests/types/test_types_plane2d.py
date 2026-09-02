@@ -32,7 +32,8 @@ def test_plane2d_swapaxes():
     # Current: axis1=rows (size 2), axis2=cols (size 3)
     # p.axis1 size=2, p.axis2 size=3
 
-    p_t = p.swapaxes(0, 1)  # or p.T
+    # Named axes explicitly select GWexpy's metadata-aware extension.
+    p_t = p.swapaxes("rows", "cols")
 
     assert p_t.shape == (3, 2)
 
@@ -60,7 +61,7 @@ def test_plane2d_swapaxes_metadata():
     # yindex size must match axis 1 (size 3)
     p = Plane2D(data, axis1_name="re_s", axis2_name="im_s", xindex=axis1, yindex=axis2)
 
-    s = p.swapaxes(0, 1)
+    s = p.swapaxes("re_s", "im_s")
 
     assert s.axis1.name == "im_s"
     assert s.axis2.name == "re_s"
