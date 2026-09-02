@@ -152,11 +152,9 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
         """Append another `TimeSeries`, returning a GWexpy `TimeSeries`."""
         exact_t0_ns = getattr(self, "_gwex_t0_gps_ns", None)
         exact_dt_ns = getattr(self, "_gwex_dt_gps_ns", None)
-        preserve_buffer_epoch = (
-            not resize and exact_t0_ns is not None and exact_dt_ns is not None
-        )
+        track_buffer_epoch = not resize and exact_t0_ns is not None
         token = None
-        if preserve_buffer_epoch:
+        if track_buffer_epoch:
             token = _EXACT_BUFFER_APPEND_DEPTH.set(_EXACT_BUFFER_APPEND_DEPTH.get() + 1)
         try:
             res = super().append(
@@ -183,7 +181,10 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
                 channel=getattr(res, "channel", None),
             )
 
-        if preserve_buffer_epoch:
+        if track_buffer_epoch and exact_dt_ns is None:
+            result.__dict__.pop("_gwex_t0_gps_ns", None)
+            result.__dict__.pop("_gwex_dt_gps_ns", None)
+        elif track_buffer_epoch:
             assert exact_t0_ns is not None
             assert exact_dt_ns is not None
             current_t0_ns = getattr(result, "_gwex_t0_gps_ns", exact_t0_ns)

@@ -9,6 +9,7 @@ import pytest
 from astropy import units as u
 from gwpy.time import LIGOTimeGPS
 from gwpy.timeseries import TimeSeries as GwpyTimeSeries
+from gwpy.timeseries import TimeSeriesDict as GwpyTimeSeriesDict
 
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
@@ -368,6 +369,120 @@ def test_collection_resize_false_append_advances_large_exact_epochs() -> None:
         assert result[key]._gwex_dt_gps_ns == dt_ns
 
 
+def _series_without_exact_cadence(cadence: str) -> TimeSeries:
+    epoch_ns = 1_234_567_890_123_456_789
+    if cadence == "one-third-nanosecond":
+        return TimeSeries(np.arange(8.0), t0_ns=epoch_ns, dt=(1 / 3) * u.ns)
+    series = TimeSeries(np.arange(8.0), t0_ns=epoch_ns, dt=8 * u.ns)
+    series.dt = np.nextafter(np.nextafter(8.0, -np.inf), -np.inf) * u.ns
+    return series
+
+
+@pytest.mark.parametrize(
+    "cadence",
+    ["one-third-nanosecond", "two-ulps-below-eight"],
+)
+@pytest.mark.parametrize("inplace", [True, False], ids=["inplace", "copy"])
+def test_resize_false_append_does_not_resurrect_unavailable_exact_cadence(
+    cadence: str,
+    inplace: bool,
+) -> None:
+    source = _series_without_exact_cadence(cadence)
+    epoch_ns = source.t0_gps_ns
+    reference = GwpyTimeSeries(
+        source.value.copy(),
+        unit=source.unit,
+        t0=float(source.t0.value),
+        dt=float(source.dt.value),
+        xunit=source.xunit,
+    )
+    other = TimeSeries(
+        np.arange(3.0),
+        t0=float(source.xspan[1]),
+        dt=float(source.dt.value),
+        xunit=source.xunit,
+    )
+    reference_other = GwpyTimeSeries(
+        np.arange(3.0),
+        t0=float(reference.xspan[1]),
+        dt=float(reference.dt.value),
+        xunit=reference.xunit,
+    )
+    assert "_gwex_dt_gps_ns" not in source.__dict__
+
+    result = source.append(other, inplace=inplace, resize=False)
+    expected = reference.append(reference_other, inplace=inplace, resize=False)
+
+    np.testing.assert_array_equal(result.value, expected.value)
+    assert result.t0 == expected.t0
+    assert result.dt == expected.dt
+    assert (result is source) is (expected is reference)
+    assert "_gwex_t0_gps_ns" not in result.__dict__
+    assert "_gwex_dt_gps_ns" not in result.__dict__
+    if not inplace:
+        assert source.t0_gps_ns == epoch_ns
+        assert "_gwex_dt_gps_ns" not in source.__dict__
+
+
+@pytest.mark.parametrize(
+    "cadence",
+    ["one-third-nanosecond", "two-ulps-below-eight"],
+)
+@pytest.mark.parametrize("copy_entries", [True, False], ids=["copy", "reuse"])
+def test_collection_resize_false_append_clears_unavailable_exact_cadence(
+    cadence: str,
+    copy_entries: bool,
+) -> None:
+    source_entry = _series_without_exact_cadence(cadence)
+    reference_entry = GwpyTimeSeries(
+        source_entry.value.copy(),
+        unit=source_entry.unit,
+        t0=float(source_entry.t0.value),
+        dt=float(source_entry.dt.value),
+        xunit=source_entry.xunit,
+    )
+    actual = TimeSeriesDict({"channel": source_entry})
+    expected = GwpyTimeSeriesDict({"channel": reference_entry})
+    other = TimeSeriesDict(
+        {
+            "channel": TimeSeries(
+                np.arange(3.0),
+                t0=float(source_entry.xspan[1]),
+                dt=float(source_entry.dt.value),
+                xunit=source_entry.xunit,
+            )
+        }
+    )
+    expected_other = GwpyTimeSeriesDict(
+        {
+            "channel": GwpyTimeSeries(
+                np.arange(3.0),
+                t0=float(reference_entry.xspan[1]),
+                dt=float(reference_entry.dt.value),
+                xunit=reference_entry.xunit,
+            )
+        }
+    )
+    assert "_gwex_dt_gps_ns" not in source_entry.__dict__
+
+    result = actual.append(other, copy=copy_entries, resize=False)
+    expected_result = expected.append(
+        expected_other,
+        copy=copy_entries,
+        resize=False,
+    )
+
+    assert result is actual
+    assert expected_result is expected
+    np.testing.assert_array_equal(result["channel"].value, expected["channel"].value)
+    assert result["channel"].t0 == expected["channel"].t0
+    assert result["channel"].dt == expected["channel"].dt
+    assert result["channel"] is source_entry
+    assert expected["channel"] is reference_entry
+    assert "_gwex_t0_gps_ns" not in result["channel"].__dict__
+    assert "_gwex_dt_gps_ns" not in result["channel"].__dict__
+
+
 @pytest.mark.parametrize(
     ("initial_dt", "attribute", "value", "expected_dt_ns"),
     [
@@ -410,14 +525,29 @@ def test_nonintegral_cadence_setter_drops_stale_exact_interval() -> None:
     assert "_gwex_dt_gps_ns" not in sliced.__dict__
 
 
-def test_cadence_two_ulps_from_integer_drops_exact_interval() -> None:
+@pytest.mark.parametrize("direction", [-np.inf, np.inf], ids=["below", "above"])
+def test_cadence_one_ulp_from_integer_keeps_exact_interval(direction: float) -> None:
+    epoch_ns = 1_234_567_890_123_456_789
+    series = TimeSeries(np.arange(4.0), t0_ns=epoch_ns, dt=7 * u.ns)
+    one_ulp_from_eight = np.nextafter(8.0, direction)
+
+    series.dt = one_ulp_from_eight * u.ns
+
+    assert series._gwex_dt_gps_ns == 8
+    assert series[1:].t0_gps_ns == epoch_ns + 8
+
+
+@pytest.mark.parametrize("direction", [-np.inf, np.inf], ids=["below", "above"])
+def test_cadence_two_ulps_from_integer_drops_exact_interval(
+    direction: float,
+) -> None:
     series = TimeSeries(np.arange(4.0), t0_ns=0, dt=7 * u.ns)
-    two_ulps_below_eight = np.nextafter(
-        np.nextafter(8.0, -np.inf),
-        -np.inf,
+    two_ulps_from_eight = np.nextafter(
+        np.nextafter(8.0, direction),
+        direction,
     )
 
-    series.dt = two_ulps_below_eight * u.ns
+    series.dt = two_ulps_from_eight * u.ns
 
     assert "_gwex_dt_gps_ns" not in series.__dict__
     sliced = series[1:]
@@ -431,8 +561,21 @@ def test_nonfinite_cadence_construction_still_fails_closed(dt: u.Quantity) -> No
 
     series = TimeSeries(np.arange(2.0), t0_ns=0, dt=dt)
 
-    assert np.isnan(series.dt.value) is np.isnan(reference.dt.value)
-    assert np.isinf(series.dt.value) is np.isinf(reference.dt.value)
+    assert bool(np.isnan(series.dt.value)) == bool(np.isnan(reference.dt.value))
+    assert bool(np.isinf(series.dt.value)) == bool(np.isinf(reference.dt.value))
+    assert "_gwex_dt_gps_ns" not in series.__dict__
+
+
+@pytest.mark.parametrize("dt", [np.nan * u.ns, np.inf * u.ns], ids=["nan", "inf"])
+def test_nonfinite_cadence_setter_clears_exact_interval(dt: u.Quantity) -> None:
+    series = TimeSeries(np.arange(2.0), t0_ns=0, dt=7 * u.ns)
+    reference = GwpyTimeSeries(np.arange(2.0), t0=0, dt=7 * u.ns)
+
+    series.dt = dt
+    reference.dt = dt
+
+    assert bool(np.isnan(series.dt.value)) == bool(np.isnan(reference.dt.value))
+    assert bool(np.isinf(series.dt.value)) == bool(np.isinf(reference.dt.value))
     assert "_gwex_dt_gps_ns" not in series.__dict__
 
 
