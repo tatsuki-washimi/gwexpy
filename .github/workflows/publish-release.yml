@@ -256,7 +256,7 @@ jobs:
   qualify:
     name: Qualify ${{ matrix.cell }}
     needs: [verify, build]
-    if: ${{ needs.verify.outputs.version == '0.2.2' }}
+    if: ${{ needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
@@ -349,19 +349,35 @@ jobs:
         shell: bash
         env:
           EXPECTED_VERSION: ${{ needs.verify.outputs.version }}
+          JUNIT: ${{ runner.temp }}/qualification-report/pytest.xml
         run: |
           runner=(python)
           if [[ "${{ matrix.runtime }}" == "conda" ]]; then runner=(micromamba run -n qualification python); fi
           cp -R source/tests "${{ runner.temp }}/qualification-tests"
           "${runner[@]}" -c "import gwexpy; assert gwexpy.__version__ == '$EXPECTED_VERSION'; assert 'site-packages' in gwexpy.__file__; print(gwexpy.__file__)"
-          "${runner[@]}" -m pytest --import-mode=importlib -q \
-            "${{ runner.temp }}/qualification-tests/test_import_order.py" \
-            "${{ runner.temp }}/qualification-tests/io/test_frequencyseries_registration.py" \
-            "${{ runner.temp }}/qualification-tests/timeseries/test_exact_gps_epoch.py" \
-            "${{ runner.temp }}/qualification-tests/timeseries/test_hdf5_exact_epoch_codec.py" \
+          tests=(
+            "${{ runner.temp }}/qualification-tests/test_import_order.py"
+            "${{ runner.temp }}/qualification-tests/io/test_frequencyseries_registration.py"
+            "${{ runner.temp }}/qualification-tests/timeseries/test_exact_gps_epoch.py"
+            "${{ runner.temp }}/qualification-tests/timeseries/test_hdf5_exact_epoch_codec.py"
             "${{ runner.temp }}/qualification-tests/timeseries/test_gwpy_behavioral_compatibility.py"
+          )
+          case "$EXPECTED_VERSION" in
+            0.2.2)
+              "${runner[@]}" -m pytest --import-mode=importlib -q "${tests[@]}"
+              ;;
+            0.2.3)
+              python -c 'import os; from pathlib import Path; Path(os.environ["JUNIT"]).parent.mkdir(parents=True, exist_ok=True)'
+              "${runner[@]}" -m pytest --junitxml="$JUNIT" --import-mode=importlib -q "${tests[@]}"
+              ;;
+            *)
+              echo "unsupported qualification version: $EXPECTED_VERSION" >&2
+              exit 1
+              ;;
+          esac
 
-      - name: Record qualification cell digest evidence
+      - name: Record qualification cell digest evidence (v0.2.2 historical)
+        if: needs.verify.outputs.version == '0.2.2'
         shell: bash
         env:
           CELL: ${{ matrix.cell }}
@@ -380,6 +396,27 @@ jobs:
           Path(os.environ["REPORT"]).write_text(json.dumps(report, sort_keys=True) + "\n", encoding="utf-8")
           PY
 
+      - name: Record qualification cell skip evidence (v0.2.3)
+        if: needs.verify.outputs.version == '0.2.3'
+        shell: bash
+        env:
+          CELL: ${{ matrix.cell }}
+          SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          VERSION: ${{ needs.verify.outputs.version }}
+          REPORT: ${{ runner.temp }}/qualification-report/qualification.json
+          JUNIT: ${{ runner.temp }}/qualification-report/pytest.xml
+          PAYLOAD_MANIFEST: ${{ runner.temp }}/release-sidecars/distribution-sha256.json
+          EXPECTED_SKIPS: source/scripts/ci/v023_qualification_expected_skips.json
+        run: |
+          python source/scripts/ci/qualification_evidence.py record \
+            --version "$VERSION" \
+            --cell "$CELL" \
+            --source-sha "$SOURCE_SHA" \
+            --payload-manifest "$PAYLOAD_MANIFEST" \
+            --report "$REPORT" \
+            --junit "$JUNIT" \
+            --expected-skips "$EXPECTED_SKIPS"
+
       - name: Upload qualification cell evidence
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
@@ -391,10 +428,24 @@ jobs:
   qualification_evidence:
     name: Aggregate nineteen qualification cells
     needs: [verify, build, qualify]
-    if: ${{ needs.verify.outputs.version == '0.2.2' }}
+    if: ${{ needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Check out verified qualification source
+        if: needs.verify.outputs.version == '0.2.3'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.verify.outputs.source_sha }}
+          fetch-depth: 1
+          path: source
+
+      - name: Set up Python
+        if: needs.verify.outputs.version == '0.2.3'
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+
       - name: Download all qualification cell evidence
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
@@ -407,7 +458,27 @@ jobs:
           name: release-sidecars-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-sidecars
 
-      - name: Assert complete same-payload qualification ledger
+      - name: Select qualification evidence contract
+        id: qualification_contract
+        env:
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          case "$VERSION" in
+            0.2.2)
+              printf '%s\n' 'evidence_schema=gwexpy-v022-qualification-evidence-v1' 'artifact_prefix=v022-qualification-evidence' >> "$GITHUB_OUTPUT"
+              ;;
+            0.2.3)
+              python source/scripts/ci/qualification_evidence.py contract \
+                --version "$VERSION" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "unsupported qualification version: $VERSION" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Assert historical v0.2.2 same-payload qualification ledger
+        if: needs.verify.outputs.version == '0.2.2'
         env:
           CELLS: ${{ runner.temp }}/qualification-cells
           SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
@@ -430,10 +501,28 @@ jobs:
           Path(os.environ["OUTPUT"]).write_text(json.dumps(output, sort_keys=True) + "\n", encoding="utf-8")
           PY
 
+      - name: Assert v0.2.3 skip and same-payload qualification ledger
+        if: needs.verify.outputs.version == '0.2.3'
+        env:
+          CELLS: ${{ runner.temp }}/qualification-cells
+          SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          VERSION: ${{ needs.verify.outputs.version }}
+          PAYLOAD_MANIFEST: ${{ runner.temp }}/release-sidecars/distribution-sha256.json
+          OUTPUT: ${{ runner.temp }}/qualification-manifest.json
+          EXPECTED_SKIPS: source/scripts/ci/v023_qualification_expected_skips.json
+        run: |
+          python source/scripts/ci/qualification_evidence.py aggregate \
+            --version "$VERSION" \
+            --source-sha "$SOURCE_SHA" \
+            --payload-manifest "$PAYLOAD_MANIFEST" \
+            --reports-dir "$CELLS" \
+            --output "$OUTPUT" \
+            --expected-skips "$EXPECTED_SKIPS"
+
       - name: Upload qualification manifest
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: v022-qualification-evidence-${{ needs.verify.outputs.source_sha }}
+          name: ${{ steps.qualification_contract.outputs.artifact_prefix }}-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/qualification-manifest.json
           if-no-files-found: error
           retention-days: 90

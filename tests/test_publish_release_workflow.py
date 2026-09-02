@@ -240,40 +240,173 @@ def test_release_smoke_covers_both_artifacts_on_python_311_and_312():
         assert token in workflow if token == "retention-days: 90" else token in smoke
 
 
-def test_v022_release_qualification_has_nineteen_digest_checked_cells():
+def test_v022_and_v023_release_qualification_share_exact_nineteen_cells():
     import yaml
 
     workflow = yaml.safe_load(read_workflow())
     matrix = workflow["jobs"]["qualify"]["strategy"]["matrix"]["include"]
 
     assert len(matrix) == 19
-    assert workflow["jobs"]["qualify"]["if"] == (
-        "${{ needs.verify.outputs.version == '0.2.2' }}"
+    allowlist = (
+        "${{ needs.verify.outputs.version == '0.2.2' || "
+        "needs.verify.outputs.version == '0.2.3' }}"
     )
-    assert workflow["jobs"]["qualification_evidence"]["if"] == (
-        "${{ needs.verify.outputs.version == '0.2.2' }}"
-    )
-    assert {entry["cell"] for entry in matrix} == {
-        "install-ubuntu-3.11-wheel",
-        "install-ubuntu-3.11-sdist",
-        "install-ubuntu-3.12-wheel",
-        "install-ubuntu-3.12-sdist",
-        "install-ubuntu-3.13-wheel",
-        "install-ubuntu-3.13-sdist",
-        "install-ubuntu-3.14-wheel",
-        "install-ubuntu-3.14-sdist",
-        "install-macos-3.11-wheel",
-        "install-macos-3.14-wheel",
-        "install-windows-3.11-wheel",
-        "install-windows-3.14-wheel",
-        "gwpy-4.0.1-wheel",
-        "gwpy-4.0.2-wheel",
-        "sdist-3.12-claims",
-        "conda-3.11",
-        "conda-3.14",
-        "scientific-3.11-wheel",
-        "docs-en-ja-3.11-wheel",
-    }
+    assert workflow["jobs"]["qualify"]["if"] == allowlist
+    assert workflow["jobs"]["qualification_evidence"]["if"] == allowlist
+    assert matrix == [
+        {
+            "cell": "install-ubuntu-3.11-wheel",
+            "os": "ubuntu-latest",
+            "python": "3.11",
+            "distribution": "wheel",
+            "runtime": "pip",
+            "extras": "pytest",
+        },
+        {
+            "cell": "install-ubuntu-3.11-sdist",
+            "os": "ubuntu-latest",
+            "python": "3.11",
+            "distribution": "sdist",
+            "runtime": "pip",
+            "extras": "pytest",
+        },
+        {
+            "cell": "install-ubuntu-3.12-wheel",
+            "os": "ubuntu-latest",
+            "python": "3.12",
+            "distribution": "wheel",
+            "runtime": "pip",
+            "extras": "pytest",
+        },
+        {
+            "cell": "install-ubuntu-3.12-sdist",
+            "os": "ubuntu-latest",
+            "python": "3.12",
+            "distribution": "sdist",
+            "runtime": "pip",
+            "extras": "pytest",
+        },
+        {
+            "cell": "install-ubuntu-3.13-wheel",
+            "os": "ubuntu-latest",
+            "python": "3.13",
+            "distribution": "wheel",
+            "runtime": "pip",
+            "extras": "pytest",
+        },
+        {
+            "cell": "install-ubuntu-3.13-sdist",
+            "os": "ubuntu-latest",
+            "python": "3.13",
+            "distribution": "sdist",
+            "runtime": "pip",
+            "extras": "pytest",
+        },
+        {
+            "cell": "install-ubuntu-3.14-wheel",
+            "os": "ubuntu-latest",
+            "python": "3.14",
+            "distribution": "wheel",
+            "runtime": "pip",
+            "extras": "pytest",
+        },
+        {
+            "cell": "install-ubuntu-3.14-sdist",
+            "os": "ubuntu-latest",
+            "python": "3.14",
+            "distribution": "sdist",
+            "runtime": "pip",
+            "extras": "pytest",
+        },
+        {
+            "cell": "install-macos-3.11-wheel",
+            "os": "macos-latest",
+            "python": "3.11",
+            "distribution": "wheel",
+            "runtime": "pip",
+            "extras": "pytest",
+        },
+        {
+            "cell": "install-macos-3.14-wheel",
+            "os": "macos-latest",
+            "python": "3.14",
+            "distribution": "wheel",
+            "runtime": "pip",
+            "extras": "pytest",
+        },
+        {
+            "cell": "install-windows-3.11-wheel",
+            "os": "windows-latest",
+            "python": "3.11",
+            "distribution": "wheel",
+            "runtime": "pip",
+            "extras": "pytest",
+        },
+        {
+            "cell": "install-windows-3.14-wheel",
+            "os": "windows-latest",
+            "python": "3.14",
+            "distribution": "wheel",
+            "runtime": "pip",
+            "extras": "pytest",
+        },
+        {
+            "cell": "gwpy-4.0.1-wheel",
+            "os": "ubuntu-latest",
+            "python": "3.11",
+            "distribution": "wheel",
+            "runtime": "pip",
+            "extras": "pytest gwpy==4.0.1",
+        },
+        {
+            "cell": "gwpy-4.0.2-wheel",
+            "os": "ubuntu-latest",
+            "python": "3.11",
+            "distribution": "wheel",
+            "runtime": "pip",
+            "extras": "pytest gwpy==4.0.2",
+        },
+        {
+            "cell": "sdist-3.12-claims",
+            "os": "ubuntu-latest",
+            "python": "3.12",
+            "distribution": "sdist",
+            "runtime": "pip",
+            "extras": "pytest",
+        },
+        {
+            "cell": "conda-3.11",
+            "os": "ubuntu-latest",
+            "python": "3.11",
+            "distribution": "wheel",
+            "runtime": "conda",
+            "extras": "pytest",
+        },
+        {
+            "cell": "conda-3.14",
+            "os": "ubuntu-latest",
+            "python": "3.14",
+            "distribution": "wheel",
+            "runtime": "conda",
+            "extras": "pytest",
+        },
+        {
+            "cell": "scientific-3.11-wheel",
+            "os": "ubuntu-latest",
+            "python": "3.11",
+            "distribution": "wheel",
+            "runtime": "pip",
+            "extras": "pytest mne lalsuite",
+        },
+        {
+            "cell": "docs-en-ja-3.11-wheel",
+            "os": "ubuntu-latest",
+            "python": "3.11",
+            "distribution": "wheel",
+            "runtime": "pip",
+            "extras": "pytest matplotlib",
+        },
+    ]
     text = read_workflow()
     qualify = text.split("\n  qualify:\n", maxsplit=1)[1].split(
         "\n  qualification_evidence:\n", maxsplit=1
@@ -282,8 +415,86 @@ def test_v022_release_qualification_has_nineteen_digest_checked_cells():
     assert "distribution-sha256.json" in qualify
     assert "Verify qualification payload digest" in qualify
     assert "tests/timeseries/test_gwpy_behavioral_compatibility.py" in qualify
+    assert '--junitxml="$JUNIT"' in qualify
+    assert "v023_qualification_expected_skips.json" in qualify
+    assert "qualification_evidence.py record" in qualify
+    assert "needs.verify.outputs.version == '0.2.3'" in qualify
     publish = text.split("\n  publish:\n", maxsplit=1)[1]
     assert "qualification_evidence" in publish.split("\n    if:", maxsplit=1)[0]
+
+
+def test_qualification_evidence_switch_is_fail_closed_and_versioned():
+    import yaml
+
+    text = read_workflow()
+    workflow = yaml.safe_load(text)
+    qualify_job = workflow["jobs"]["qualify"]
+    run_step = next(
+        step
+        for step in qualify_job["steps"]
+        if step["name"] == "Run installed candidate compatibility contracts"
+    )
+    assert "if" not in run_step
+    assert "0.2.3)" in run_step["run"]
+    assert '--junitxml="$JUNIT"' in run_step["run"]
+
+    aggregate = text.split("\n  qualification_evidence:\n", maxsplit=1)[1].split(
+        "\n  evidence:\n", maxsplit=1
+    )[0]
+
+    assert "qualification_evidence.py contract" in aggregate
+    assert "qualification_evidence.py aggregate" in aggregate
+    assert "v023_qualification_expected_skips.json" in aggregate
+    assert "steps.qualification_contract.outputs.artifact_prefix" in aggregate
+    assert "continue-on-error" not in aggregate
+    assert "always()" not in aggregate
+
+    publish = text.split("\n  publish:\n", maxsplit=1)[1]
+    needs = publish.split("\n    if:", maxsplit=1)[0]
+    assert (
+        "needs: [verify, build, smoke, qualify, qualification_evidence, evidence]"
+        in needs
+    )
+
+
+def test_v022_historical_evidence_does_not_require_v023_candidate_files():
+    import yaml
+
+    text = read_workflow()
+    workflow = yaml.safe_load(text)
+    historical_record = next(
+        step
+        for step in workflow["jobs"]["qualify"]["steps"]
+        if step["name"]
+        == "Record qualification cell digest evidence (v0.2.2 historical)"
+    )
+    assert historical_record["if"] == "needs.verify.outputs.version == '0.2.2'"
+    assert "python - <<'PY'" in historical_record["run"]
+    assert "qualification_evidence.py" not in historical_record["run"]
+
+    historical_aggregate = next(
+        step
+        for step in workflow["jobs"]["qualification_evidence"]["steps"]
+        if step["name"] == "Assert historical v0.2.2 same-payload qualification ledger"
+    )
+    assert historical_aggregate["if"] == ("needs.verify.outputs.version == '0.2.2'")
+    assert (
+        '"schema": "gwexpy-v022-qualification-evidence-v1"'
+        in historical_aggregate["run"]
+    )
+    assert "qualification_evidence.py" not in historical_aggregate["run"]
+
+    aggregate_steps = workflow["jobs"]["qualification_evidence"]["steps"]
+    checkout = next(
+        step
+        for step in aggregate_steps
+        if step["name"] == "Check out verified qualification source"
+    )
+    setup_python = next(
+        step for step in aggregate_steps if step["name"] == "Set up Python"
+    )
+    assert checkout["if"] == "needs.verify.outputs.version == '0.2.3'"
+    assert setup_python["if"] == "needs.verify.outputs.version == '0.2.3'"
 
 
 def test_release_smoke_executes_with_license_sidecar_path(tmp_path):

@@ -32,12 +32,18 @@ def load_contract_module():
     return module
 
 
-def test_release_contracts_cover_frozen_releases_and_v022_lane() -> None:
+def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
     assert CONTRACTS_PATH.is_file()
     data = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
 
     assert data["schema"] == "gwexpy-release-contracts-v1"
-    assert set(data["releases"]) == {"v0.1.13", "v0.1.14", "v0.2.0", "v0.2.2"}
+    assert set(data["releases"]) == {
+        "v0.1.13",
+        "v0.1.14",
+        "v0.2.0",
+        "v0.2.2",
+        "v0.2.3",
+    }
 
     v0113 = data["releases"]["v0.1.13"]
     assert v0113["plan_path"] == (
@@ -108,6 +114,50 @@ def test_release_contracts_cover_frozen_releases_and_v022_lane() -> None:
     }
     assert v022["artifact_prefix"] == "v022-integration-evidence"
     assert v022["protected_refs"] == ["main", "maint/0.2"]
+
+    v023 = data["releases"]["v0.2.3"]
+    assert v023["plan_path"] == (
+        "docs/developers/plans/20260902_v0.2.3_gwpy_behavioral_compatibility.md"
+    )
+    assert v023["review_evidence_path"] == (
+        "docs/developers/plans/manifests/audit-manifest-v0.2.3-release-readiness.yaml"
+    )
+    assert v023["review_evidence_schema"] == "gwexpy-v023-review-evidence-v1"
+    assert v023["payload_schema"] == "gwexpy-v023-release-payload-v1"
+    assert v023["integration_evidence_schema"] == (
+        "gwexpy-v023-integration-evidence-v1"
+    )
+    assert set(v023["review_lanes"]) == {
+        "data-model",
+        "release-security",
+        "scientific-compatibility",
+    }
+    assert {
+        ".github/workflows/publish-release.yml",
+        "scripts/ci",
+        "tests/test_publish_release_workflow.py",
+        "tests/test_qualification_skip_evidence.py",
+        "tests/test_release_contracts.py",
+    } <= set(v023["review_lanes"]["release-security"])
+    assert {"gwexpy/fields", "gwexpy/types", "tests/fields", "tests/types"} <= set(
+        v023["review_lanes"]["data-model"]
+    )
+    assert {
+        ".github/workflows/test-compat-gwpy.yml",
+        "gwexpy/frequencyseries",
+        "gwexpy/spectrogram",
+        "gwexpy/time",
+        "gwexpy/timeseries",
+        "scripts/audit_gwpy_overrides.py",
+        "tests/test_gwpy_override_inventory.py",
+    } <= set(v023["review_lanes"]["scientific-compatibility"])
+    assert v023["s_to_r_allowed_paths"] == [
+        "docs/developers/plans/20260902_v0.2.3_gwpy_behavioral_compatibility.md",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.3-release-readiness.yaml",
+    ]
+    assert v023["artifact_prefix"] == "v023-integration-evidence"
+    assert v023["protected_refs"] == ["main", "maint/0.2"]
+    assert "qualification_profile" not in v023
 
 
 def test_release_contract_loader_rejects_unknown_tags() -> None:
@@ -224,6 +274,7 @@ def test_release_contract_cli_emits_exact_tag_protected_refs() -> None:
 
     assert contracts.protected_refs("v0.2.0") == ["main", "maint/0.2"]
     assert contracts.protected_refs("v0.2.2") == ["main", "maint/0.2"]
+    assert contracts.protected_refs("v0.2.3") == ["main", "maint/0.2"]
 
 
 def test_v0114_manifest_is_a_sanitized_review_evidence_container() -> None:

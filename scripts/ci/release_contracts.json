@@ -222,6 +222,80 @@
         "main",
         "maint/0.2"
       ]
+    },
+    "v0.2.3": {
+      "plan_path": "docs/developers/plans/20260902_v0.2.3_gwpy_behavioral_compatibility.md",
+      "review_evidence_path": "docs/developers/plans/manifests/audit-manifest-v0.2.3-release-readiness.yaml",
+      "review_evidence_schema": "gwexpy-v023-review-evidence-v1",
+      "payload_schema": "gwexpy-v023-release-payload-v1",
+      "integration_evidence_schema": "gwexpy-v023-integration-evidence-v1",
+      "review_lanes": {
+        "data-model": [
+          "docs/developers/plans/20260902_v0.2.3_gwpy_behavioral_compatibility.md",
+          "docs/developers/plans/manifests/audit-manifest-v0.2.3-stats-compat.yaml",
+          "docs/developers/plans/manifests/audit-manifest-v0.2.3-type-collision-compat.yaml",
+          "gwexpy/fields",
+          "gwexpy/types",
+          "tests/fields",
+          "tests/types"
+        ],
+        "release-security": [
+          ".github/workflows/publish-release.yml",
+          ".zenodo.json",
+          "CHANGELOG.md",
+          "CITATION.cff",
+          "RELEASING.md",
+          "docs/developers/plans/20260902_v0.2.3_gwpy_behavioral_compatibility.md",
+          "docs/developers/plans/manifests/audit-manifest-v0.2.3-release-readiness.yaml",
+          "gwexpy/_version.py",
+          "release_notes",
+          "requirements/release-build.txt",
+          "scripts/ci",
+          "scripts/validate_release.py",
+          "tests/docs",
+          "tests/test_check_release_metadata_script.py",
+          "tests/test_gen_release_notes.py",
+          "tests/test_publish_release_workflow.py",
+          "tests/test_qualification_skip_evidence.py",
+          "tests/test_release_contracts.py",
+          "tests/test_validate_release_script.py"
+        ],
+        "scientific-compatibility": [
+          ".agent/AGENTS.md",
+          ".github/workflows/test-compat-gwpy.yml",
+          "CONTRIBUTING.md",
+          "README.md",
+          "docs/developers/plans/20260902_v0.2.3_gwpy_behavioral_compatibility.md",
+          "docs/developers/plans/manifests",
+          "docs/web/en",
+          "docs/web/ja",
+          "docs_redesign",
+          "docs_redesign/explanation/gwpy_compatibility_policy.md",
+          "gwexpy/frequencyseries",
+          "gwexpy/plot",
+          "gwexpy/signal",
+          "gwexpy/spectrogram",
+          "gwexpy/time",
+          "gwexpy/timeseries",
+          "release_notes",
+          "scripts/audit_gwpy_overrides.py",
+          "tests/frequencyseries",
+          "tests/plot",
+          "tests/spectrogram",
+          "tests/test_gwpy_override_inventory.py",
+          "tests/time",
+          "tests/timeseries"
+        ]
+      },
+      "s_to_r_allowed_paths": [
+        "docs/developers/plans/20260902_v0.2.3_gwpy_behavioral_compatibility.md",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.3-release-readiness.yaml"
+      ],
+      "artifact_prefix": "v023-integration-evidence",
+      "protected_refs": [
+        "main",
+        "maint/0.2"
+      ]
     }
   }
 }
