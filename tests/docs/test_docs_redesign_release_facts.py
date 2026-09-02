@@ -150,6 +150,7 @@ def test_v022_release_closure_manifest_binds_distribution_channels() -> None:
     manifest = yaml.safe_load(RELEASE_CLOSURE_MANIFEST.read_text(encoding="utf-8"))
 
     assert manifest["schema"] == "gwexpy-v022-release-closure-v1"
+    assert manifest["status"] == "closure-complete"
     assert manifest["release"] == {
         "version": RELEASE_VERSION,
         "source_sha": ACTIVITY_RELEASE_SHA,
@@ -176,8 +177,53 @@ def test_v022_release_closure_manifest_binds_distribution_channels() -> None:
     assert manifest["zenodo"]["record_id"] == 22228340
     assert manifest["zenodo"]["version_doi"] == "10.5281/zenodo.22228340"
     assert manifest["zenodo"]["concept_doi"] == "10.5281/zenodo.19059422"
-    assert manifest["conda_forge"]["feedstock"] == "conda-forge/gwexpy-feedstock"
+    assert manifest["conda_forge"] == {
+        "feedstock": "conda-forge/gwexpy-feedstock",
+        "state": "complete",
+        "pull_request": {
+            "number": 12,
+            "url": "https://github.com/conda-forge/gwexpy-feedstock/pull/12",
+            "branch": "0.2.2_hff071a",
+            "merged_at": "2026-09-01T12:31:04Z",
+            "merge_commit": "5eea7e9a7d1b15f6a8e625df33595b957ac9e8db",
+        },
+        "recipe": {
+            "version": RELEASE_VERSION,
+            "source_url": "https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.2.tar.gz",
+            "source_sha256": (
+                "3448af15e417187f201f1d910e92fc11e04224607b9cb77849e6d9e172383636"
+            ),
+            "build_number": 0,
+        },
+        "ci": {
+            "package_build": "pass",
+            "linter": "pass",
+        },
+        "channel_package": {
+            "basename": "noarch/gwexpy-0.2.2-pyhc364b38_0.conda",
+            "version": RELEASE_VERSION,
+            "build": "pyhc364b38_0",
+            "build_number": 0,
+            "uploaded_at": "2026-09-01T12:33:10.289000Z",
+        },
+        "fresh_install_smoke": {
+            "result": "pass",
+            "python": "3.12.14",
+            "metadata_version": RELEASE_VERSION,
+            "module_version": RELEASE_VERSION,
+            "user_site": "disabled",
+            "timeseries_shape": [3],
+        },
+    }
+    assert manifest["documentation"]["deployment"] == {
+        "pull_request": 697,
+        "merge_commit": "c325f6fa0b4ee8de0ca5f6203880504a2af0f9d9",
+        "pages_workflow_run_id": 33498679298,
+        "gh_pages_commit": "202ec1c9cbf5d570b1022d8b593deddd19efece8",
+        "live_readback": "pass",
+    }
     assert manifest["documentation"]["activity_csv_sha256"] == ACTIVITY_CSV_SHA256
+    assert "pending" not in manifest
 
 
 def test_redesign_changelog_includes_the_canonical_release_history() -> None:

@@ -1,9 +1,9 @@
 # v0.2.2 リリースclosure作業報告
 
-**記録日時**: 2026-09-01 18:46:25 JST  
+**記録日時**: 2026-09-02 08:04:27 JST  
 **対象version**: `0.2.2`  
-**状態**: PyPI publication acceptance済み。GitHub ReleaseとZenodoは完了し、documentation deploymentとconda-forge伝播を継続中。  
-**作業branch**: `docs/v022-release-closure`  
+**状態**: release closure完了。  
+**最終監査branch**: `docs/v022-release-closure-final`  
 **基点**: release source R `2503743cf654606a5baa83c7b7e7c8b8e1e06596`
 
 ## 結論
@@ -11,10 +11,8 @@
 v0.2.2の公開payloadは、tag-triggered workflowで検証したbytesとPyPIから取得したbytesが一致し、fresh-install smokeも完了している。
 
 GitHub Release `v0.2.2`を公開し、Zenodo version DOI `10.5281/zenodo.22228340`のmetadataをreadbackした。
-公開docsについては、英語版と日本語版のrelease note、v0.2.2までのdevelopment activity plot、weekly CSVを専用branchへ追加した。
-
-conda-forgeはbot PR生成待ちである。
-release直後のpolicyに従い、24時間以内は手動feedstock更新へ切り替えず監視する。
+公開docsはPR #697でmainへ反映し、GitHub Pagesの英語版と日本語版でrelease note、v0.2.2までのdevelopment activity plot、weekly CSVを確認した。
+conda-forgeのbot PR #12はCI通過後にマージされ、公開channelのpackageをPython 3.12の隔離環境で検証した。
 
 ## 不変のrelease identity
 
@@ -63,6 +61,21 @@ runtime codeとscientific behaviorも変更していない。
 - v0.2.2 tagまでの1,755 non-merge commitsからSVGとweekly CSVを再生成した。
 - weekly CSV SHA-256は`cd72102029af78b05dcb002051365092f128df341125164e4ba7c8a96d4203e3`である。
 - 日本語gettext catalogの変更messageは空翻訳・fuzzyを残していない。
+- PR #697は`c325f6fa0b4ee8de0ca5f6203880504a2af0f9d9`としてmainへマージした。
+- GitHub Pages run `33498679298`はsuccessで完了し、gh-pages commitは`202ec1c9cbf5d570b1022d8b593deddd19efece8`である。
+- live EN/JA changelog、SVG、CSVのreadbackはpassedである。
+
+## conda-forge
+
+- Feedstock: <https://github.com/conda-forge/gwexpy-feedstock>
+- bot PR: [#12](https://github.com/conda-forge/gwexpy-feedstock/pull/12)（`gwexpy v0.2.2`）
+- recipe: version `0.2.2`、build number `0`
+- source: `https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.2.tar.gz`
+- source SHA-256: `3448af15e417187f201f1d910e92fc11e04224607b9cb77849e6d9e172383636`
+- CI: package buildとconda-forge-linterがpass
+- merge: `2026-09-01T12:31:04Z`、commit `5eea7e9a7d1b15f6a8e625df33595b957ac9e8db`
+- channel package: `noarch/gwexpy-0.2.2-pyhc364b38_0.conda`（`2026-09-01T12:33:10.289000Z`）
+- fresh smoke: `PYTHONNOUSERSITE=1`のPython `3.12.14`環境でmetadata version、module version、import path、`TimeSeries([1, 2, 3], dt=1).shape == (3,)`を確認
 
 ## ローカル検証
 
@@ -89,18 +102,14 @@ runtime codeとscientific behaviorも変更していない。
 - full-site link checkには既存の無関係なbroken linkとZenodo/DOIの一時timeoutが含まれた。GitHub Release、PyPI、Zenodoのrelease identityはそれぞれのauthoritative readbackで検証した。
 - 重複して起動した旧disposable Sphinx buildを、対象PIDを確認した上でTERM終了した。source treeとtracked filesへの影響はない。
 - canonical public pageへのrelease link追加を決めた時点で、変更前sourceを読むfull notebook buildを中断した。最終local buildは`nb_execution_mode=off`で完了し、isolated notebook executionはPR CIの責務とした。
+- 初回のconda smokeでは親ユーザーsiteの`gwexpy-0.1.14.dist-info`が`importlib.metadata`の探索に混入した。`PYTHONNOUSERSITE=1`で再実行し、conda packageとmoduleがともに`0.2.2`であることを確認した。
 
 これらはrelease source、tag、payload、publication workflowのdefectではない。
 
-## 未完了項目
+## 完了状態
 
-1. documentation PRのCIを完了し、mainへ反映する。
-2. Docs Pages deploymentを監視し、EN/JA release note、SVG、CSVをlive readbackする。
-3. conda-forge bot PRでversion、source URL、sdist SHA-256を確認する。
-4. conda-forge CI、merge、channel availability、fresh-environment smokeを確認する。
-5. すべて完了後、closure manifestを最終状態へ更新する。
-
-conda-forge bot PRが公開後24時間以内に生成されない場合は、その時点でmanual follow-upを別途判断する。
+GitHub Release、Zenodo、英語版と日本語版のDocs Pages、conda-forge recipeとchannel package、fresh conda installのすべてを確認した。
+本closure作業によるrelease source、tag、公開payloadの変更はない。
 
 ## 監査正典
 
