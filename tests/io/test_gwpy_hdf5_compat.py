@@ -135,8 +135,7 @@ def test_timeseriesdict_hdf5_append_rejects_create_modes_without_mutation(
     )
     original_bytes = outfile.read_bytes()
 
-    error = None
-    try:
+    with pytest.raises(ValueError, match="append=True.*mode"):
         TimeSeriesDict({"new": new}).write(
             outfile,
             format="hdf5",
@@ -144,11 +143,8 @@ def test_timeseriesdict_hdf5_append_rejects_create_modes_without_mutation(
             append=True,
             mode=mode,
         )
-    except Exception as exc:  # noqa: BLE001 - assert the public exception below
-        error = exc
 
     assert outfile.read_bytes() == original_bytes
-    assert isinstance(error, ValueError)
     with h5py.File(outfile, "r") as h5f:
         assert set(h5f) == {"old"}
         assert read_hdf5_keymap(h5f) == {"old": "old"}
@@ -157,6 +153,84 @@ def test_timeseriesdict_hdf5_append_rejects_create_modes_without_mutation(
     assert list(result) == ["old"]
     np.testing.assert_allclose(result["old"].value, old.value)
     assert result["old"].name == old.name
+
+
+@pytest.mark.parametrize("mode", ["a", "r+"])
+def test_timeseriesdict_hdf5_merge_mode_preflights_existing_logical_keys(
+    tmp_path, mode
+):
+    old = TimeSeries(
+        np.arange(3.0), sample_rate=2.0, t0=1.0, unit="m", name="old series"
+    )
+    fresh = TimeSeries(
+        np.arange(3.0) + 10,
+        sample_rate=2.0,
+        t0=1.0,
+        unit="m",
+        name="fresh series",
+    )
+    replacement = TimeSeries(
+        np.arange(3.0) + 20,
+        sample_rate=2.0,
+        t0=1.0,
+        unit="m",
+        name="replacement series",
+    )
+
+    outfile = tmp_path / f"tsd_merge_duplicate_{mode}.h5"
+    TimeSeriesDict({"old": old}).write(
+        outfile, format="hdf5", layout="dataset"
+    )
+
+    with pytest.raises(ValueError, match="logical key"):
+        TimeSeriesDict({"fresh": fresh, "old": replacement}).write(
+            outfile, format="hdf5", layout="dataset", mode=mode
+        )
+
+    with h5py.File(outfile, "r") as h5f:
+        assert set(h5f) == {"old"}
+        assert read_hdf5_keymap(h5f) == {"old": "old"}
+        assert read_hdf5_order(h5f) == ["old"]
+        np.testing.assert_allclose(h5f["old"][()], old.value)
+    result = TimeSeriesDict.read(outfile, format="hdf5")
+    assert list(result) == ["old"]
+    np.testing.assert_allclose(result["old"].value, old.value)
+    assert result["old"].name == old.name
+
+
+@pytest.mark.parametrize("mode", ["a", "r+"])
+def test_timeseriesdict_hdf5_merge_mode_preserves_distinct_logical_keys(
+    tmp_path, mode
+):
+    old = TimeSeries(
+        np.arange(3.0), sample_rate=2.0, t0=1.0, unit="m", name="old series"
+    )
+    new = TimeSeries(
+        np.arange(3.0) + 10,
+        sample_rate=2.0,
+        t0=1.0,
+        unit="m",
+        name="new series",
+    )
+
+    outfile = tmp_path / f"tsd_merge_distinct_{mode}.h5"
+    TimeSeriesDict({"old": old}).write(
+        outfile, format="hdf5", layout="dataset"
+    )
+    TimeSeriesDict({"new": new}).write(
+        outfile, format="hdf5", layout="dataset", mode=mode
+    )
+
+    with h5py.File(outfile, "r") as h5f:
+        assert set(h5f) == {"old", "new"}
+        assert read_hdf5_keymap(h5f) == {"old": "old", "new": "new"}
+        assert read_hdf5_order(h5f) == ["old", "new"]
+    result = TimeSeriesDict.read(outfile, format="hdf5")
+    assert list(result) == ["old", "new"]
+    np.testing.assert_allclose(result["old"].value, old.value)
+    np.testing.assert_allclose(result["new"].value, new.value)
+    assert result["old"].name == old.name
+    assert result["new"].name == new.name
 
 
 @pytest.mark.parametrize("duplicate_key", ["mapped", "fallback"])
@@ -275,6 +349,123 @@ def test_timeseriesdict_hdf5_append_reconciles_partial_stale_manifest(tmp_path):
     np.testing.assert_allclose(result["new"].value, new.value)
     assert result["logical_b"].name == old_b.name
     assert result["old_a"].name == old_a.name
+    assert result["new"].name == new.name
+
+
+def test_timeseriesdict_hdf5_append_filters_unrelated_and_linked_root_objects(
+    tmp_path,
+):
+    listed = TimeSeries(
+        np.arange(3.0), sample_rate=2.0, t0=1.0, unit="m", name="listed series"
+    )
+    omitted = GwpyTimeSeries(
+        np.arange(3.0) + 10,
+        sample_rate=2.0,
+        t0=1.0,
+        unit="m",
+        name="omitted native series",
+    )
+    new = TimeSeries(
+        np.arange(3.0) + 20,
+        sample_rate=2.0,
+        t0=1.0,
+        unit="m",
+        name="new series",
+    )
+
+    outfile = tmp_path / "tsd_filter_merge_candidates.h5"
+    with h5py.File(outfile, "w") as h5f:
+        listed.write(h5f, format="hdf5", path="listed")
+        omitted.write(h5f, format="hdf5", path="omitted")
+        h5f.create_dataset("unrelated", data=[101.0, 102.0, 103.0])
+        non_time = h5f.create_dataset(
+            "non_time_axis", data=[201.0, 202.0, 203.0]
+        )
+        non_time.attrs["x0"] = 0.0
+        non_time.attrs["dx"] = 1.0
+        non_time.attrs["xunit"] = "Hz"
+        h5f["soft_alias"] = h5py.SoftLink("/omitted")
+        write_hdf5_manifest(
+            h5f,
+            kind="TimeSeriesDict",
+            layout=LAYOUT_DATASET,
+            keymap={"listed": "logical_listed"},
+            order=["listed"],
+        )
+
+    TimeSeriesDict({"new": new}).write(
+        outfile, format="hdf5", layout="dataset", append=True
+    )
+
+    with h5py.File(outfile, "r") as h5f:
+        assert set(h5f) == {
+            "listed",
+            "omitted",
+            "unrelated",
+            "non_time_axis",
+            "soft_alias",
+            "new",
+        }
+        assert isinstance(h5f.get("soft_alias", getlink=True), h5py.SoftLink)
+        np.testing.assert_allclose(h5f["unrelated"][()], [101.0, 102.0, 103.0])
+        np.testing.assert_allclose(
+            h5f["non_time_axis"][()], [201.0, 202.0, 203.0]
+        )
+        assert read_hdf5_keymap(h5f) == {
+            "listed": "logical_listed",
+            "omitted": "omitted",
+            "new": "new",
+        }
+        assert read_hdf5_order(h5f) == ["listed", "omitted", "new"]
+
+    result = TimeSeriesDict.read(outfile, format="hdf5")
+    assert list(result) == ["logical_listed", "omitted", "new"]
+    np.testing.assert_allclose(result["logical_listed"].value, listed.value)
+    np.testing.assert_allclose(result["omitted"].value, omitted.value)
+    np.testing.assert_allclose(result["new"].value, new.value)
+    assert result["logical_listed"].name == listed.name
+    assert result["omitted"].name == omitted.name
+    assert result["new"].name == new.name
+
+
+def test_timeseriesdict_hdf5_append_accepts_legacy_time_axis_candidates(tmp_path):
+    complex_values = np.array([1 + 2j, 3 + 4j])
+    new = TimeSeries(
+        np.arange(3.0),
+        sample_rate=2.0,
+        t0=1.0,
+        unit="m",
+        name="new series",
+    )
+
+    outfile = tmp_path / "tsd_legacy_candidates.h5"
+    with h5py.File(outfile, "w") as h5f:
+        complex_ds = h5f.create_dataset("complex", data=complex_values)
+        complex_ds.attrs["xunit"] = "ms"
+        empty_ds = h5f.create_dataset("empty", data=np.array([], dtype=float))
+        empty_ds.attrs["xunit"] = "s"
+        non_scalar = h5f.create_dataset("non_scalar_xunit", data=[99.0])
+        non_scalar.attrs["xunit"] = np.array(["s"], dtype=h5py.string_dtype())
+
+    TimeSeriesDict({"new": new}).write(
+        outfile, format="hdf5", layout="dataset", append=True
+    )
+
+    with h5py.File(outfile, "r") as h5f:
+        assert set(h5f) == {"complex", "empty", "non_scalar_xunit", "new"}
+        assert read_hdf5_keymap(h5f) == {
+            "complex": "complex",
+            "empty": "empty",
+            "new": "new",
+        }
+        assert read_hdf5_order(h5f) == ["complex", "empty", "new"]
+        np.testing.assert_allclose(h5f["non_scalar_xunit"][()], [99.0])
+
+    result = TimeSeriesDict.read(outfile, format="hdf5")
+    assert list(result) == ["complex", "empty", "new"]
+    np.testing.assert_allclose(result["complex"].value, complex_values)
+    assert result["empty"].size == 0
+    np.testing.assert_allclose(result["new"].value, new.value)
     assert result["new"].name == new.name
 
 

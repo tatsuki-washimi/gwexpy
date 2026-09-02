@@ -91,6 +91,19 @@ def _coerce_reader_result(cls, reader_result):
     return result
 
 
+def _is_timeseries_hdf5_dataset(obj: Any) -> bool:
+    """Return whether an HDF5 dataset has a scalar time-axis unit."""
+    if not isinstance(obj, h5py.Dataset) or obj.ndim != 1:
+        return False
+    xunit = obj.attrs.get("xunit", "undef")
+    if getattr(xunit, "shape", ()) != ():
+        return False
+    try:
+        return u.s.is_equivalent(xunit)
+    except (TypeError, ValueError, u.UnitsError):
+        return False
+
+
 class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesDict):
     """A dictionary of TimeSeries, indexed by name.
 
@@ -855,6 +868,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 )
             if append and mode is None:
                 mode = "a"
+            merge = append or mode in ("a", "r+")
             layout = normalize_layout(kwargs.pop("layout", "gwpy"))
             with ensure_hdf5_file(
                 target,
@@ -863,18 +877,28 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             ) as h5f:
                 root_names = list(h5f.keys())
                 used = set(root_names)
-                if append:
+                if merge:
                     from gwexpy.timeseries.io.hdf5 import _ROLLBACK_PREFIX
 
-                    object_type = (
-                        h5py.Dataset if layout == LAYOUT_DATASET else h5py.Group
-                    )
-                    eligible = [
-                        name
-                        for name in root_names
-                        if not name.startswith(_ROLLBACK_PREFIX)
-                        and isinstance(h5f.get(name), object_type)
-                    ]
+                    eligible = []
+                    for name in root_names:
+                        if name.startswith(_ROLLBACK_PREFIX):
+                            continue
+                        link = h5f.get(name, getlink=True)
+                        if not isinstance(link, h5py.HardLink):
+                            continue
+                        obj = h5f[name]
+                        if layout == LAYOUT_DATASET:
+                            if _is_timeseries_hdf5_dataset(obj):
+                                eligible.append(name)
+                            continue
+                        if not isinstance(obj, h5py.Group):
+                            continue
+                        data_link = obj.get("data", getlink=True)
+                        if not isinstance(data_link, h5py.HardLink):
+                            continue
+                        if _is_timeseries_hdf5_dataset(obj.get("data")):
+                            eligible.append(name)
                     eligible_set = set(eligible)
                     stored_keymap = read_hdf5_keymap(h5f)
                     keymap = {
@@ -892,13 +916,11 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
                     incoming_logical = [str(key) for key in self]
                     if len(incoming_logical) != len(set(incoming_logical)):
-                        raise ValueError(
-                            "HDF5 append contains duplicate logical keys"
-                        )
+                        raise ValueError("HDF5 merge contains duplicate logical keys")
                     for logical in incoming_logical:
                         if logical in logical_to_physical:
                             raise ValueError(
-                                f"HDF5 append logical key already exists: {logical!r}"
+                                f"HDF5 merge logical key already exists: {logical!r}"
                             )
 
                     order = []
