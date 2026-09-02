@@ -125,7 +125,10 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
         if ignore_nan is not True:
-            return cast("TimeSeries", BaseTimeSeries.rms(self, stride))
+            result = cast("TimeSeries", BaseTimeSeries.rms(self, stride))
+            from ._epoch import _restore_exact_time_authority
+
+            return cast("TimeSeries", _restore_exact_time_authority(self, result))
 
         stride_s = _stride_to_seconds(stride)
         stridesamp = int(stride_s * self.sample_rate.to("Hz").value)
@@ -144,13 +147,19 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             mean = np.nanmean if ignore_nan else np.mean
             data = np.sqrt(mean(np.abs(trimmed) ** 2, axis=1))
         name = f"{self.name} {stride}-second RMS"
-        return self.__class__(  # type: ignore[return-value]
-            data,
-            channel=self.channel,
-            t0=self.t0,
-            name=name,
-            sample_rate=1.0 / stride_s,
+        result = cast(
+            "TimeSeries",
+            self.__class__(
+                data,
+                channel=self.channel,
+                t0=self.t0,
+                name=name,
+                sample_rate=1.0 / stride_s,
+            ),
         )
+        from ._epoch import _restore_exact_time_authority
+
+        return cast("TimeSeries", _restore_exact_time_authority(self, result))
 
     # ===============================
     # Correlation & Causality

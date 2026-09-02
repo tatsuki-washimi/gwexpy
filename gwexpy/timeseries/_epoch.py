@@ -47,3 +47,17 @@ def _integer_gps_ns(value: Any, *, default_unit: u.UnitBase = u.s) -> int:
 def _integral_dt_gps_ns(value: Any) -> int:
     """Return an integral time interval in nanoseconds or raise ``ValueError``."""
     return _integer_gps_ns(value)
+
+
+def _restore_exact_time_authority(source: Any, result: Any) -> Any:
+    """Restore private exact epoch and cadence state on a derived series."""
+    exact_t0_ns = getattr(source, "_gwex_t0_gps_ns", None)
+    if exact_t0_ns is None:
+        return result
+
+    result._gwex_t0_gps_ns = exact_t0_ns
+    try:
+        result._gwex_dt_gps_ns = _integral_dt_gps_ns(result.dt)
+    except (TypeError, ValueError):
+        result.__dict__.pop("_gwex_dt_gps_ns", None)
+    return result

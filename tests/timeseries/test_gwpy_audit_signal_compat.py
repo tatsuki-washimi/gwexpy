@@ -78,6 +78,18 @@ def _exception_class(call: Callable[[], Any]) -> type[BaseException] | None:
     return None
 
 
+def _assert_exact_time_authority(
+    series: TimeSeries,
+    *,
+    epoch_ns: int,
+    dt_ns: int,
+) -> None:
+    assert series.t0_gps_ns == epoch_ns
+    assert series.__dict__["_gwex_dt_gps_ns"] == dt_ns
+    if len(series) > 1:
+        assert series[1:].t0_gps_ns == epoch_ns + dt_ns
+
+
 def _assert_parameter_layout(
     ours: Callable[..., Any],
     upstream: Callable[..., Any],
@@ -144,13 +156,45 @@ def test_heterodyne_wrong_length_failure_class_matches_gwpy() -> None:
 
 
 def test_heterodyne_quantity_stride_is_explicit_extension() -> None:
-    _, actual_input = _series_pair(np.arange(40, dtype=float))
+    expected_input, actual_input = _series_pair(np.arange(40, dtype=float))
     phase = np.linspace(0, 1, 40)
 
+    assert (
+        _exception_class(lambda: expected_input.heterodyne(phase, 2 * u.s)) is TypeError
+    )
     actual = actual_input.heterodyne(phase, 2 * u.s)
     numeric = actual_input.heterodyne(phase, 2)
 
     _assert_series_equal(actual, numeric)
+
+
+def test_heterodyne_dimensionless_quantity_stride_matches_gwpy() -> None:
+    phase = np.linspace(0, 1, 40)
+    expected_input, actual_input = _series_pair(np.arange(40, dtype=float))
+
+    expected = expected_input.heterodyne(phase, 2 * u.one)
+    actual = actual_input.heterodyne(phase, 2 * u.one)
+
+    _assert_series_equal(actual, expected)
+
+
+def test_heterodyne_non_time_stride_failure_class_matches_gwpy() -> None:
+    phase = np.linspace(0, 1, 40)
+    expected_input, actual_input = _series_pair(np.arange(40, dtype=float))
+
+    assert _exception_class(
+        lambda: actual_input.heterodyne(phase, 2 * u.m)
+    ) is _exception_class(lambda: expected_input.heterodyne(phase, 2 * u.m))
+
+
+def test_heterodyne_preserves_exact_time_authority() -> None:
+    epoch_ns = 1_234_567_890_123_456_789
+    samples = np.arange(64, dtype=float)
+    series = TimeSeries(samples, t0_ns=epoch_ns, dt=0.125)
+
+    result = series.heterodyne(np.linspace(0, 2, samples.size), stride=2)
+
+    _assert_exact_time_authority(result, epoch_ns=epoch_ns, dt_ns=2_000_000_000)
 
 
 def test_demodulate_signature_matches_gwpy() -> None:
@@ -196,14 +240,75 @@ def test_demodulate_matches_gwpy_values_and_metadata(exp: bool, deg: bool) -> No
             _assert_series_equal(actual_series, expected_series)
 
 
-def test_demodulate_quantity_frequency_and_stride_are_explicit_extensions() -> None:
+def test_demodulate_parent_frequency_quantity_and_time_stride_extension() -> None:
     time = np.arange(80) / 8
-    _, actual_input = _series_pair(np.cos(2 * np.pi * 1.25 * time))
+    expected_input, actual_input = _series_pair(np.cos(2 * np.pi * 1.25 * time))
 
+    assert (
+        _exception_class(
+            lambda: expected_input.demodulate(1.25 * u.Hz, 2 * u.s, exp=True)
+        )
+        is TypeError
+    )
     actual = actual_input.demodulate(1.25 * u.Hz, 2 * u.s, exp=True)
     numeric = actual_input.demodulate(1.25, 2, exp=True)
 
     _assert_series_equal(actual, numeric)
+
+
+@pytest.mark.parametrize("frequency", [1000 * u.mHz, 1 * u.one, 1 * u.m])
+def test_demodulate_quantity_frequency_preserves_gwpy_raw_magnitude(
+    frequency: u.Quantity,
+) -> None:
+    samples = np.sin(np.arange(80) * 0.21) + np.arange(80) * 0.013
+    expected_input, actual_input = _series_pair(samples)
+
+    expected = expected_input.demodulate(frequency, 2, exp=True)
+    actual = actual_input.demodulate(frequency, 2, exp=True)
+
+    _assert_series_equal(actual, expected)
+
+
+def test_demodulate_dimensionless_quantity_stride_matches_gwpy() -> None:
+    samples = np.sin(np.arange(80) * 0.21) + np.arange(80) * 0.013
+    expected_input, actual_input = _series_pair(samples)
+
+    expected = expected_input.demodulate(1.25, 2 * u.one, exp=True)
+    actual = actual_input.demodulate(1.25, 2 * u.one, exp=True)
+
+    _assert_series_equal(actual, expected)
+
+
+def test_demodulate_non_time_stride_failure_class_matches_gwpy() -> None:
+    expected_input, actual_input = _series_pair(np.arange(40, dtype=float))
+
+    assert _exception_class(
+        lambda: actual_input.demodulate(1.25, 2 * u.m, exp=True)
+    ) is _exception_class(lambda: expected_input.demodulate(1.25, 2 * u.m, exp=True))
+
+
+@pytest.mark.parametrize(
+    ("exp", "deg"),
+    [
+        pytest.param(True, True, id="complex"),
+        pytest.param(False, True, id="pair-degrees"),
+        pytest.param(False, False, id="pair-radians"),
+    ],
+)
+def test_demodulate_preserves_exact_time_authority(exp: bool, deg: bool) -> None:
+    epoch_ns = 1_234_567_890_123_456_789
+    samples = np.sin(np.arange(64) * 0.2)
+    series = TimeSeries(samples, t0_ns=epoch_ns, dt=0.125)
+
+    result = series.demodulate(1.25, stride=2, exp=exp, deg=deg)
+    outputs = (result,) if exp else result
+
+    for output in outputs:
+        _assert_exact_time_authority(
+            output,
+            epoch_ns=epoch_ns,
+            dt_ns=2_000_000_000,
+        )
 
 
 def test_rms_signature_keeps_only_keyword_nan_extension() -> None:
@@ -259,6 +364,19 @@ def test_rms_ignore_nan_true_remains_explicit_extension() -> None:
     assert actual.dt == 1 * u.s
 
 
+@pytest.mark.parametrize("ignore_nan", [None, True])
+def test_rms_preserves_exact_time_authority(ignore_nan: bool | None) -> None:
+    epoch_ns = 1_234_567_890_123_456_789
+    samples = np.arange(64, dtype=float)
+    samples[2] = np.nan
+    series = TimeSeries(samples, t0_ns=epoch_ns, dt=0.125)
+    kwargs = {} if ignore_nan is None else {"ignore_nan": ignore_nan}
+
+    result = series.rms(2, **kwargs)
+
+    _assert_exact_time_authority(result, epoch_ns=epoch_ns, dt_ns=2_000_000_000)
+
+
 def test_resample_signature_keeps_gwpy_positional_layout() -> None:
     _assert_parameter_layout(
         TimeSeries.resample,
@@ -301,6 +419,98 @@ def test_resample_numeric_route_does_not_consume_time_bin_keywords() -> None:
     assert _exception_class(
         lambda: actual_input.resample(4, ignore_nan=True)
     ) is _exception_class(lambda: expected_input.resample(4, ignore_nan=True))
+
+
+def test_resample_same_rate_warning_and_identity_match_gwpy() -> None:
+    expected_input, actual_input = _series_pair(np.arange(40, dtype=float))
+
+    with pytest.warns(UserWarning, match="matches current sample_rate"):
+        expected = expected_input.resample(8)
+    with pytest.warns(UserWarning, match="matches current sample_rate"):
+        actual = actual_input.resample(8)
+
+    assert expected is expected_input
+    assert actual is actual_input
+
+
+@pytest.mark.parametrize(
+    "call",
+    [
+        pytest.param(
+            lambda series: series.heterodyne(
+                np.zeros(40),
+                np.zeros(40),
+                False,
+            ),
+            id="heterodyne-excess-positional",
+        ),
+        pytest.param(
+            lambda series: series.heterodyne(
+                np.zeros(40),
+                phase=np.zeros(40),
+            ),
+            id="heterodyne-duplicate-phase",
+        ),
+        pytest.param(
+            lambda series: series.demodulate(1, 2, False),
+            id="demodulate-excess-positional",
+        ),
+        pytest.param(
+            lambda series: series.demodulate(1, f=1),
+            id="demodulate-duplicate-frequency",
+        ),
+        pytest.param(
+            lambda series: series.rms(1, False),
+            id="rms-excess-positional",
+        ),
+        pytest.param(
+            lambda series: series.rms(1, stride=1),
+            id="rms-duplicate-stride",
+        ),
+        pytest.param(
+            lambda series: series.resample(4, "hann", "fir", None, "extra"),
+            id="resample-excess-positional",
+        ),
+        pytest.param(
+            lambda series: series.resample(4, "hann", window="hann"),
+            id="resample-duplicate-window",
+        ),
+    ],
+)
+def test_binding_failure_class_matches_gwpy(call: Callable[[Any], Any]) -> None:
+    expected_input, actual_input = _series_pair(np.arange(40, dtype=float))
+
+    assert _exception_class(lambda: call(actual_input)) is _exception_class(
+        lambda: call(expected_input)
+    )
+
+
+@pytest.mark.parametrize(
+    "operation",
+    [
+        pytest.param(
+            lambda series: series.heterodyne(np.zeros(40), 1),
+            id="heterodyne",
+        ),
+        pytest.param(
+            lambda series: series.demodulate(1.25, 1, exp=True),
+            id="demodulate",
+        ),
+        pytest.param(lambda series: series.rms(1), id="rms"),
+        pytest.param(lambda series: series.resample(4), id="resample"),
+    ],
+)
+def test_nonfinite_masks_match_gwpy(operation: Callable[[Any], Any]) -> None:
+    samples = np.arange(40, dtype=float)
+    samples[2] = np.inf
+    samples[18] = -np.inf
+    expected_input, actual_input = _series_pair(samples)
+
+    with np.errstate(all="ignore"):
+        expected = operation(expected_input)
+        actual = operation(actual_input)
+
+    _assert_series_equal(actual, expected)
 
 
 @pytest.mark.parametrize(

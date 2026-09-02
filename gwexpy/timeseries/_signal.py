@@ -626,12 +626,12 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         """
         # A time Quantity is an existing GWexpy-only extension. Route it by
         # explicit type before entering the unchanged GWpy implementation.
-        if isinstance(stride, u.Quantity):
+        if isinstance(stride, u.Quantity) and stride.unit.is_equivalent(u.s):
             stride = float(stride.to_value(u.s))
 
         from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
-        return cast(
+        result = cast(
             "TimeSeries",
             BaseTimeSeries.heterodyne(
                 self,
@@ -640,6 +640,9 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
                 singlesided=singlesided,
             ),
         )
+        from ._epoch import _restore_exact_time_authority
+
+        return cast("TimeSeries", _restore_exact_time_authority(self, result))
 
     def demodulate(
         self,
@@ -692,12 +695,10 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             for a more flexible lock-in amplifier interface.
 
         """
-        # Frequency and time Quantities are existing GWexpy-only extensions.
-        # Classify them before the parent call so parent failures are never
-        # intercepted and retried.
-        if isinstance(f, u.Quantity):
-            f = float(f.to_value(u.Hz))
-        if isinstance(stride, u.Quantity):
+        # GWpy accepts any frequency Quantity by stripping its unit later in
+        # heterodyne, so ``f`` must reach the parent unchanged. Only a
+        # time-equivalent stride uses the existing GWexpy seconds extension.
+        if isinstance(stride, u.Quantity) and stride.unit.is_equivalent(u.s):
             stride = float(stride.to_value(u.s))
 
         from gwpy.timeseries import TimeSeries as BaseTimeSeries

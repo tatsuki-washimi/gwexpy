@@ -38,9 +38,17 @@ implementation_groups:
       - unit was inherited from the input instead of becoming dimensionless
       - scalar and two-dimensional phase inputs raised TypeError instead of ValueError
       - stride default and public annotations differed from GWpy
+      - all Quantity strides were normalized, changing parent-supported dimensionless behavior
+      - exact output cadence authority remained at the input sample period
     default_route: direct installed GWpy implementation
+    parent_quantity_routes:
+      - dimensionless Quantity stride is passed unchanged
+      - non-time dimensionful Quantity stride is passed unchanged, preserving parent failure
     explicit_extensions:
-      - a time Quantity stride is classified before the parent call and converted to seconds
+      - only a time-equivalent Quantity stride, which raises parent TypeError, is classified before the parent call and converted to seconds
+    exact_time_augmentation: >-
+      Exact input epoch authority is retained and output cadence authority is
+      derived from the parent result, including after slicing.
   demodulate:
     id: 8ea74
     issues: [639, 704]
@@ -49,10 +57,19 @@ implementation_groups:
       - the non-GWpy phase parameter changed positional and keyword binding
       - exp and deg were not keyword-only and appeared in the wrong order
       - complex and amplitude outputs inherited the input unit
+      - frequency Quantities were converted to Hz, changing GWpy raw-magnitude behavior
+      - all Quantity strides were normalized instead of preserving parent routes
+      - exact output cadence authority remained at the input sample period
     default_route: direct installed GWpy implementation
+    parent_quantity_routes:
+      - every frequency Quantity is passed unchanged, including mHz, dimensionless, and length units
+      - dimensionless and non-time dimensionful Quantity strides are passed unchanged
+      - GWpy strips the frequency unit through its phase array conversion and uses the raw magnitude
     explicit_extensions:
-      - a frequency Quantity is classified and converted to Hz before the parent call
-      - a time Quantity stride is classified and converted to seconds before the parent call
+      - only a time-equivalent Quantity stride, which raises parent TypeError, is classified before the parent call and converted to seconds
+    exact_time_augmentation: >-
+      Complex, amplitude, degree-phase, and radian-phase outputs retain the
+      exact input epoch and derive their exact cadence from the parent result.
   rms:
     id: c7b130
     issues: [451, 639, 704]
@@ -61,9 +78,13 @@ implementation_groups:
       - NaNs were omitted by default instead of propagated
       - integer stride names were rendered with a forced decimal suffix
       - zero, sub-sample, irregular-axis, float32, and unnamed outcomes differed
+      - default and explicit ignore_nan outputs reconstructed a rounded large epoch
     default_route: direct installed GWpy implementation when ignore_nan is omitted or false
     explicit_extensions:
       - ignore_nan=true retains finite-sample windowing and promoted arithmetic
+    exact_time_augmentation: >-
+      Both default and ignore_nan=true results retain the exact input epoch and
+      derive exact output cadence, including slice advancement.
   resample:
     id: 8c5dcc
     issues: [639, 703, 704]
@@ -118,13 +139,20 @@ fixtures:
     - scalar phase ValueError
     - two-dimensional phase ValueError
     - wrong-length one-dimensional phase ValueError
-    - explicit Quantity stride extension
+    - parent-supported dimensionless Quantity stride
+    - parent non-time Quantity failure
+    - explicit time-equivalent Quantity stride extension
+    - exact epoch and cadence authority through slicing
   demodulate:
     - complex exponential output
     - amplitude and degree phase pair
     - amplitude and radian phase pair
-    - explicit Quantity frequency and stride extensions
+    - raw-magnitude behavior for mHz, dimensionless, and length frequency Quantities
+    - parent-supported dimensionless Quantity stride
+    - parent non-time Quantity stride failure
+    - explicit time-equivalent Quantity stride extension
     - rejection of the former phase keyword
+    - exact authority for every output branch through slicing
   rms:
     - integer, float, and multi-second stride names
     - NaN propagation by default
@@ -132,6 +160,7 @@ fixtures:
     - zero, negative, sub-sample, and Quantity stride failures
     - float32 subnormal-scale input
     - unit-bearing, named, channel-bearing, and unnamed inputs
+    - exact authority for default and ignore_nan=true through slicing
   resample:
     - integer downsampling
     - non-integer resampling
@@ -140,6 +169,11 @@ fixtures:
     - true-irregular and nearly-irregular axes
     - string and time-Quantity bin aggregation
     - exact integer-nanosecond epoch preservation
+    - same-rate warning and object identity
+  shared_hardening:
+    - positional and keyword duplicate binding for all four APIs
+    - excess positional binding for all four APIs
+    - positive infinity, negative infinity, and NaN masks for all four APIs
 
 tdd:
   red:
@@ -151,13 +185,20 @@ tdd:
       - demodulate signature and unit mismatches
       - rms default NaN, name, numeric, and failure mismatches
       - resample signature and true-irregular failure mismatch
+  review_hardening_red:
+    gwpy_4_0_1: 13 failed, 46 passed
+    gwpy_4_0_2: 13 failed, 46 passed
+    collected_cases: 59
+    causes:
+      - over-normalized parent-supported Quantity inputs
+      - stale or rounded exact epoch and cadence authority
   green:
     differential:
-      gwpy_4_0_1: 33 passed, 0 skipped
-      gwpy_4_0_2: 33 passed, 0 skipped
+      gwpy_4_0_1: 59 passed, 0 skipped
+      gwpy_4_0_2: 59 passed, 0 skipped
     affected_regressions:
-      gwpy_4_0_1: 302 passed, 0 skipped
-      gwpy_4_0_2: 302 passed, 0 skipped
+      gwpy_4_0_1: 328 passed, 0 skipped
+      gwpy_4_0_2: 328 passed, 0 skipped
     unexpected_required_skips: 0
 
 physics:
@@ -170,6 +211,12 @@ physics:
     when the input has a physical unit. v0.2.3 intentionally preserves that
     observable public behavior; a physically motivated alternative must be a
     later explicit opt-in.
+  demodulate_quantity_semantics: >-
+    GWpy accepts arbitrary frequency Quantity units but discards the unit when
+    converting its generated phase to an ndarray. Consequently 1000 mHz is
+    treated with raw magnitude 1000 rather than converted to 1 Hz, while
+    dimensionless and even length Quantities also succeed. v0.2.3 preserves
+    this behavior exactly and does not reinterpret parent-supported inputs.
   rms_float32: >-
     GWpy squares float32 input without promotion, so sufficiently small finite
     amplitudes underflow to zero. The default now preserves that behavior. The
@@ -177,7 +224,13 @@ physics:
   resample_axis: >-
     The parent-selected samples, cadence, and visible epoch are unchanged. The
     private exact integer-nanosecond epoch augmentation is restored afterward.
-  human_review: required for dimensionless trend units and float32 RMS underflow parity
+  exact_time: >-
+    Derived signal trends keep the supplied integer-nanosecond epoch and set
+    private cadence authority from their visible dt, so slicing advances by
+    the output stride rather than the input sample period.
+  human_review: >-
+    Required for dimensionless trend units, raw-magnitude frequency Quantity
+    semantics, and float32 RMS underflow parity.
 
 release_constraints:
   new_public_api: false
@@ -188,7 +241,7 @@ release_constraints:
 static_validation:
   ruff_changed_files: all checks passed
   ruff_format_check: all files formatted
-  mypy_changed_source_files: success, no issues found in 3 source files
+  mypy_changed_source_files: success, no issues found in 4 source files
   yaml_safe_load: valid
   git_diff_check: clean
 
