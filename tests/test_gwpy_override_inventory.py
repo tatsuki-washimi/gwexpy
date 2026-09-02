@@ -28,6 +28,11 @@ WORKFLOW = ROOT / ".github/workflows/test-compat-gwpy.yml"
 SUPPORTED_GWPY = ("4.0.1", "4.0.2")
 SCHEMA = "gwexpy-v023-gwpy-override-inventory-v1"
 IMPLEMENTATION_BASE = "a8085b71446d3ef3417a7e5b5ac8efb156368eac"
+UPSTREAM_DEPENDENCY_PROVENANCE = (
+    "GWpy providers retain package-relative source/line; inherited "
+    "NumPy/Astropy providers retain normalized provider, member, kind, "
+    "descriptor, and signature without source path or resolved version."
+)
 EXPECTED_ROOTS = {
     "gwexpy.fields.scalar.ScalarField": (
         "gwexpy.fields.scalar:ScalarField",
@@ -43,7 +48,10 @@ EXPECTED_ROOTS = {
     ),
     "gwexpy.plot.field.FieldPlot": ("gwexpy.plot.field:FieldPlot",),
     "gwexpy.plot.plot.Plot": ("gwexpy.plot.plot:Plot", "gwexpy.plot:Plot"),
-    "gwexpy.plot.skymap.SkyMap": ("gwexpy.plot.skymap:SkyMap",),
+    "gwexpy.plot.skymap.SkyMap": (
+        "gwexpy.plot.skymap:SkyMap",
+        "gwexpy.plot:SkyMap",
+    ),
     "gwexpy.spectrogram.spectrogram.Spectrogram": (
         "gwexpy.spectrogram:Spectrogram",
         "gwexpy:Spectrogram",
@@ -116,25 +124,62 @@ def _run_cli(*arguments: str) -> subprocess.CompletedProcess[str]:
     )
 
 
+def _transition_pending_case(
+    manifest: dict[str, Any], state: str = "no-finding"
+) -> dict[str, Any]:
+    case = next(item for item in manifest["cases"] if item["counterpart_present"])
+    case["state"] = state
+    case["fixture"] = "representative-behavior"
+    case["case_key"] = "/".join(
+        (
+            case["public_class"],
+            case["member"],
+            case["gwpy_version"],
+            case["fixture"],
+        )
+    )
+    case["comparator"] = {"name": "exact"}
+    case["evidence"] = {
+        "behavior": [{"assertion": "equivalent"}],
+        "oracle_projection_digest": manifest["oracle_projections"][
+            case["gwpy_version"]
+        ]["digest"],
+    }
+    case["observations"] = {
+        "gwexpy": {"outcome": "return", "value": "same"},
+        "gwpy": {"outcome": "return", "value": "same"},
+    }
+    return case
+
+
 def test_manifest_has_initial_structural_population_and_canonical_json() -> None:
     audit = _load_audit_module()
     manifest = _load_manifest()
 
     assert manifest["schema"] == SCHEMA
-    assert manifest["policy"]["implementation_base"] == IMPLEMENTATION_BASE
-    assert manifest["policy"]["public_root_rule"] == (
-        "byte-sorted gwexpy Python paths; literal top-level list/tuple __all__; "
-        "static vars(module) exports; canonical GWexpy class identity; internal "
-        "root exclusions"
-    )
-    assert manifest["policy"]["member_walk_rule"] == (
-        "first effective vars(owner) binding in the GWexpy MRO prefix before "
-        "the first GWpy class; public callable/descriptors plus __new__/__init__"
-    )
-    assert manifest["policy"]["pristine_oracle_rule"] == (
-        "separate -I worker; sanitized PYTHONPATH/PYTHONHOME; no GWexpy import; "
-        "exact GWpy 4.0.1/4.0.2"
-    )
+    assert manifest["policy"] == {
+        "behavioral_owner": "v0.2.3-compatibility-audit",
+        "fixture_key": ["public_class", "member", "gwpy_version", "fixture"],
+        "implementation_base": IMPLEMENTATION_BASE,
+        "member_walk_rule": (
+            "first effective vars(owner) binding in the GWexpy MRO prefix before "
+            "the first GWpy class; public callable/descriptors plus __new__/__init__"
+        ),
+        "oracle_versions": ["4.0.1", "4.0.2"],
+        "pristine_oracle_rule": (
+            "separate -I worker; sanitized PYTHONPATH/PYTHONHOME; no GWexpy import; "
+            "exact GWpy 4.0.1/4.0.2"
+        ),
+        "provisional_states": ["unreviewed", "differential-required"],
+        "public_root_rule": (
+            "byte-sorted gwexpy Python paths; literal top-level list/tuple __all__; "
+            "static vars(module) exports plus two-pass unique canonical-class-name "
+            "lazy alias association; canonical GWexpy class identity; internal "
+            "root exclusions"
+        ),
+        "terminal_states": ["fixed", "no-finding", "GWpy-fails", "GWexpy-only"],
+        "upstream_dependency_provenance": UPSTREAM_DEPENDENCY_PROVENANCE,
+    }
     assert manifest["summary"] == {
         "cases": 1146,
         "constructors": 11,
@@ -142,9 +187,12 @@ def test_manifest_has_initial_structural_population_and_canonical_json() -> None
         "counterpart_implementation_groups": 66,
         "counterpart_present_per_version": 132,
         "differential-required": 264,
+        "fixed": 0,
         "GWexpy-only": 882,
         "logical_members": 573,
+        "no-finding": 0,
         "public_roots": 16,
+        "GWpy-fails": 0,
         "unreviewed": 0,
     }
     assert MANIFEST.read_text(encoding="utf-8") == audit.canonical_manifest_json(
@@ -170,6 +218,45 @@ def test_manifest_matches_current_source_mro_population() -> None:
     audit.validate_source_population(manifest, current)
     assert len(current["public_roots"]) == 16
     assert len(current["members"]) == 573
+
+
+def test_lazy_skymap_export_alias_is_associated_without_getattr(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    audit = _load_audit_module()
+    plot_module = importlib.import_module("gwexpy.plot")
+    monkeypatch.delitem(vars(plot_module), "SkyMap", raising=False)
+
+    def reject_dynamic_lookup(name: str) -> object:
+        raise AssertionError(f"dynamic lookup executed for {name}")
+
+    monkeypatch.setattr(plot_module, "__getattr__", reject_dynamic_lookup)
+    discovered = {
+        f"{value.__module__}.{value.__qualname__}": exports
+        for value, exports in audit.discover_public_classes(ROOT)
+    }
+
+    assert discovered["gwexpy.plot.skymap.SkyMap"] == (
+        "gwexpy.plot.skymap:SkyMap",
+        "gwexpy.plot:SkyMap",
+    )
+
+
+def test_lazy_class_alias_routing_fails_closed_when_not_unique() -> None:
+    audit = _load_audit_module()
+
+    class First:
+        pass
+
+    class Second:
+        pass
+
+    First.__name__ = "Duplicate"
+    Second.__name__ = "Duplicate"
+    with pytest.raises(audit.InventoryError, match="missing lazy class export route"):
+        audit._select_unique_lazy_class("Missing", [First])
+    with pytest.raises(audit.InventoryError, match="ambiguous lazy class export route"):
+        audit._select_unique_lazy_class("Duplicate", [First, Second])
 
 
 def test_current_supported_version_pristine_projection_matches_manifest() -> None:
@@ -323,6 +410,42 @@ def test_live_worker_proves_isolation_and_exact_current_version() -> None:
     }
 
 
+def test_oracle_first_non_callable_binding_masks_callable_base(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    audit = _load_audit_module()
+    for name in tuple(sys.modules):
+        if name == "gwexpy" or name.startswith("gwexpy."):
+            monkeypatch.delitem(sys.modules, name)
+
+    class CallableBase:
+        def masked(self) -> None:
+            return None
+
+    class NonCallableMask(CallableBase):
+        masked = None
+
+    CallableBase.__module__ = "gwpy.synthetic_masking"
+    NonCallableMask.__module__ = "gwpy.synthetic_masking"
+    synthetic = ModuleType("gwpy.synthetic_masking")
+    synthetic.NonCallableMask = NonCallableMask
+    monkeypatch.setitem(sys.modules, synthetic.__name__, synthetic)
+
+    projection = audit.build_oracle_projection(
+        version("gwpy"),
+        [
+            {
+                "counterpart_class": "gwpy.synthetic_masking.NonCallableMask",
+                "member": "masked",
+                "member_id": "gwexpy.synthetic.Public/masked",
+                "public_class": "gwexpy.synthetic.Public",
+            }
+        ],
+    )
+
+    assert projection["members"][0]["present"] is False
+
+
 @pytest.mark.parametrize("mutation", ["orphan", "duplicate", "unsorted"])
 def test_manifest_reference_and_order_defects_fail_closed(mutation: str) -> None:
     audit = _load_audit_module()
@@ -359,12 +482,45 @@ def test_summary_digest_and_presence_inconsistency_fail_closed(mutation: str) ->
         audit.validate_manifest(manifest)
 
 
+def test_terminal_transition_with_case_derived_summary_is_valid() -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    _transition_pending_case(manifest)
+    manifest["summary"] = audit.calculate_summary(
+        manifest["cases"], manifest["members"], manifest["oracle_projections"]
+    )
+
+    audit.validate_manifest(manifest)
+    assert manifest["summary"]["no-finding"] == 1
+    assert manifest["summary"]["differential-required"] == 263
+
+
+def test_terminal_transition_with_stale_summary_fails_closed() -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    _transition_pending_case(manifest)
+
+    with pytest.raises(audit.InventoryError, match="summary mismatch"):
+        audit.validate_manifest(manifest)
+
+
 def test_strict_json_loader_rejects_duplicate_keys(tmp_path: Path) -> None:
     audit = _load_audit_module()
     duplicate = tmp_path / "duplicate.json"
     duplicate.write_text('{"schema":"first","schema":"second"}\n', encoding="utf-8")
     with pytest.raises(audit.InventoryError, match="duplicate JSON key: schema"):
         audit.load_json_strict(duplicate)
+
+
+@pytest.mark.parametrize("constant", ["NaN", "Infinity", "-Infinity"])
+def test_strict_json_loader_rejects_non_finite_constants(
+    tmp_path: Path, constant: str
+) -> None:
+    audit = _load_audit_module()
+    non_finite = tmp_path / "non-finite.json"
+    non_finite.write_text(f'{{"value":{constant}}}\n', encoding="utf-8")
+    with pytest.raises(audit.InventoryError, match="non-finite JSON constant"):
+        audit.load_json_strict(non_finite)
 
 
 @pytest.mark.parametrize("state", ["fixed", "no-finding", "GWpy-fails"])
@@ -394,6 +550,86 @@ def test_behavioral_terminal_states_require_differential_evidence(state: str) ->
     case["comparator"] = {"name": "exact"}
     case["evidence"]["behavior"] = []
     with pytest.raises(audit.InventoryError):
+        audit.validate_manifest(manifest)
+
+
+def test_fixed_state_requires_specific_issue_beyond_inventory_issue() -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    case = _transition_pending_case(manifest, state="fixed")
+    case["evidence"]["pre_fix_mismatch"] = {"outcome": "mismatch"}
+    case["evidence"]["green_test"] = "tests/test_specific_regression.py"
+    case["issues"] = ["#639"]
+    summary = copy.deepcopy(manifest["summary"])
+    for state in (*audit.TERMINAL_STATES, *audit.PROVISIONAL_STATES):
+        summary.setdefault(state, 0)
+    summary["fixed"] += 1
+    summary["differential-required"] -= 1
+    manifest["summary"] = summary
+
+    with pytest.raises(
+        audit.InventoryError, match="fixed case requires a specific issue reference"
+    ):
+        audit.validate_manifest(manifest)
+
+
+@pytest.mark.parametrize(
+    ("state", "field", "value"),
+    [
+        ("differential-required", "comparator", {"name": "exact"}),
+        (
+            "differential-required",
+            "observations",
+            {"gwexpy": {"outcome": "return"}, "gwpy": {"outcome": "pending"}},
+        ),
+        ("differential-required", "issues", []),
+        ("GWexpy-only", "issues", []),
+    ],
+)
+def test_initial_states_require_exact_comparator_observations_and_issues(
+    state: str, field: str, value: object
+) -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    case = next(item for item in manifest["cases"] if item["state"] == state)
+    case[field] = value
+
+    with pytest.raises(audit.InventoryError):
+        audit.validate_manifest(manifest)
+
+
+@pytest.mark.parametrize("state", ["differential-required", "GWexpy-only"])
+def test_initial_states_reject_extra_evidence_fields(state: str) -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    case = next(item for item in manifest["cases"] if item["state"] == state)
+    case["evidence"]["unexpected"] = True
+
+    with pytest.raises(audit.InventoryError, match="evidence schema"):
+        audit.validate_manifest(manifest)
+
+
+@pytest.mark.parametrize(
+    ("mutation", "expected"),
+    [
+        ("extra", "policy schema mismatch"),
+        ("owner", "behavioral owner policy mismatch"),
+        ("provenance", "upstream dependency provenance policy mismatch"),
+    ],
+)
+def test_policy_shape_owner_and_dependency_provenance_are_exact(
+    mutation: str, expected: str
+) -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    if mutation == "extra":
+        manifest["policy"]["unexpected"] = True
+    elif mutation == "owner":
+        manifest["policy"]["behavioral_owner"] = "someone-else"
+    else:
+        manifest["policy"]["upstream_dependency_provenance"] = "unbounded"
+
+    with pytest.raises(audit.InventoryError, match=expected):
         audit.validate_manifest(manifest)
 
 

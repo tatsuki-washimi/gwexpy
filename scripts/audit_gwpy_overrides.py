@@ -41,8 +41,8 @@ AUDIT_OWNER = "v0.2.3-compatibility-audit"
 IMPLEMENTATION_BASE = "a8085b71446d3ef3417a7e5b5ac8efb156368eac"
 PUBLIC_ROOT_RULE = (
     "byte-sorted gwexpy Python paths; literal top-level list/tuple __all__; "
-    "static vars(module) exports; canonical GWexpy class identity; internal "
-    "root exclusions"
+    "static vars(module) exports plus two-pass unique canonical-class-name lazy "
+    "alias association; canonical GWexpy class identity; internal root exclusions"
 )
 MEMBER_WALK_RULE = (
     "first effective vars(owner) binding in the GWexpy MRO prefix before "
@@ -51,6 +51,11 @@ MEMBER_WALK_RULE = (
 PRISTINE_ORACLE_RULE = (
     "separate -I worker; sanitized PYTHONPATH/PYTHONHOME; no GWexpy import; "
     "exact GWpy 4.0.1/4.0.2"
+)
+UPSTREAM_DEPENDENCY_PROVENANCE = (
+    "GWpy providers retain package-relative source/line; inherited "
+    "NumPy/Astropy providers retain normalized provider, member, kind, "
+    "descriptor, and signature without source path or resolved version."
 )
 
 
@@ -320,6 +325,29 @@ def _public_root_allowed(value: type[Any]) -> bool:
     )
 
 
+def _select_unique_lazy_class(
+    export_name: str, candidates: Sequence[type[Any]]
+) -> type[Any]:
+    """Select one static canonical-name route, failing closed otherwise."""
+
+    unique: list[type[Any]] = []
+    for candidate in candidates:
+        if candidate.__name__ != export_name:
+            continue
+        if not any(candidate is existing for existing in unique):
+            unique.append(candidate)
+    if not unique:
+        raise InventoryError(f"missing lazy class export route: {export_name}")
+    if len(unique) != 1:
+        routes = ", ".join(
+            sorted((_fqname(item) for item in unique), key=lambda item: item.encode())
+        )
+        raise InventoryError(
+            f"ambiguous lazy class export route: {export_name} ({routes})"
+        )
+    return unique[0]
+
+
 def discover_public_classes(
     repository: Path,
 ) -> list[tuple[type[Any], tuple[str, ...]]]:
@@ -329,6 +357,7 @@ def discover_public_classes(
     if str(repository) not in sys.path:
         sys.path.insert(0, str(repository))
     exports: dict[type[Any], set[str]] = {}
+    export_modules: list[tuple[str, tuple[str, ...]]] = []
     paths = sorted(
         package_root.rglob("*.py"),
         key=lambda item: item.relative_to(repository).as_posix().encode("utf-8"),
@@ -352,6 +381,12 @@ def discover_public_classes(
             or any(part.startswith("_") for part in module_parts[1:])
         ):
             continue
+        export_modules.append((module_name, names))
+
+    snapshots: list[tuple[str, tuple[str, ...], dict[str, Any]]] = []
+    classes_by_name: dict[str, list[type[Any]]] = {}
+    missing = object()
+    for module_name, names in export_modules:
         try:
             module = importlib.import_module(module_name)
         except Exception as exc:
@@ -359,9 +394,24 @@ def discover_public_classes(
                 f"cannot import explicit export module {module_name}: {type(exc).__name__}"
             ) from exc
         namespace = vars(module)
+        snapshot = {name: namespace.get(name, missing) for name in names}
+        snapshots.append((module_name, names, snapshot))
+        for value in snapshot.values():
+            if inspect.isclass(value):
+                classes_by_name.setdefault(value.__name__, []).append(value)
+
+    for module_name, names, snapshot in snapshots:
         for name in names:
-            value = namespace.get(name)
-            if inspect.isclass(value) and _public_root_allowed(value):
+            value = snapshot[name]
+            if inspect.isclass(value):
+                if _public_root_allowed(value):
+                    exports.setdefault(value, set()).add(f"{module_name}:{name}")
+                continue
+            candidates = classes_by_name.get(name)
+            if candidates is None:
+                continue
+            value = _select_unique_lazy_class(name, candidates)
+            if _public_root_allowed(value):
                 exports.setdefault(value, set()).add(f"{module_name}:{name}")
     return [
         (value, tuple(sorted(paths, key=lambda item: item.encode("utf-8"))))
@@ -582,15 +632,13 @@ def build_oracle_projection(
         module_name, qualname = _split_fqname(counterpart_name)
         counterpart = _resolve_qualname(module_name, qualname)
         member = str(query["member"])
-        provider = next(
-            (
-                owner
-                for owner in inspect.getmro(counterpart)
-                if member in vars(owner)
-                and raw_binding_kind(vars(owner)[member]) is not None
-            ),
+        binding_owner = next(
+            (owner for owner in inspect.getmro(counterpart) if member in vars(owner)),
             None,
         )
+        raw = vars(binding_owner)[member] if binding_owner is not None else None
+        kind = raw_binding_kind(raw) if binding_owner is not None else None
+        provider = binding_owner if kind is not None else None
         result: dict[str, Any] = {
             "counterpart_class": counterpart_name,
             "descriptor": None,
@@ -604,8 +652,6 @@ def build_oracle_projection(
             "source": None,
         }
         if provider is not None:
-            raw = vars(provider)[member]
-            kind = raw_binding_kind(raw)
             assert kind is not None
             result.update(
                 {
@@ -639,7 +685,11 @@ def build_oracle_projection(
 
 def _worker_main() -> int:
     try:
-        payload = json.load(sys.stdin, object_pairs_hook=_reject_duplicate_pairs)
+        payload = json.load(
+            sys.stdin,
+            object_pairs_hook=_reject_duplicate_pairs,
+            parse_constant=_reject_non_finite_constant,
+        )
         if not isinstance(payload, dict):
             raise InventoryError("oracle payload must be an object")
         if (
@@ -678,10 +728,16 @@ def _reject_duplicate_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return result
 
 
+def _reject_non_finite_constant(value: str) -> None:
+    raise InventoryError(f"non-finite JSON constant: {value}")
+
+
 def load_json_strict(path: Path) -> dict[str, Any]:
     try:
         loaded = json.loads(
-            path.read_text(encoding="utf-8"), object_pairs_hook=_reject_duplicate_pairs
+            path.read_text(encoding="utf-8"),
+            object_pairs_hook=_reject_duplicate_pairs,
+            parse_constant=_reject_non_finite_constant,
         )
     except (OSError, json.JSONDecodeError) as exc:
         raise InventoryError(f"cannot load manifest: {type(exc).__name__}") from exc
@@ -758,7 +814,9 @@ def run_pristine_oracle(
         raise InventoryError(message)
     try:
         projection = json.loads(
-            completed.stdout, object_pairs_hook=_reject_duplicate_pairs
+            completed.stdout,
+            object_pairs_hook=_reject_duplicate_pairs,
+            parse_constant=_reject_non_finite_constant,
         )
     except json.JSONDecodeError as exc:
         raise InventoryError("oracle stdout is not canonical JSON") from exc
@@ -815,6 +873,71 @@ def _implementation_groups(
     return {
         member_version: labels.get(raw_key) if raw_key is not None else None
         for member_version, raw_key in raw_keys.items()
+    }
+
+
+def calculate_summary(
+    cases: Sequence[Mapping[str, Any]],
+    members: Sequence[Mapping[str, Any]],
+    projections: Mapping[str, Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Calculate structural and workflow counts from the actual case states."""
+
+    state_counts = {
+        state: sum(case.get("state") == state for case in cases)
+        for state in (*TERMINAL_STATES, *PROVISIONAL_STATES)
+    }
+    present_per_version = {
+        oracle_version: sum(
+            item.get("present") is True
+            for item in projections[oracle_version]["members"]
+        )
+        for oracle_version in SUPPORTED_GWPY
+    }
+    absent_per_version = {
+        oracle_version: len(members) - present_per_version[oracle_version]
+        for oracle_version in SUPPORTED_GWPY
+    }
+    if len(set(present_per_version.values())) != 1:
+        raise InventoryError("counterpart-present count differs by oracle version")
+    if len(set(absent_per_version.values())) != 1:
+        raise InventoryError("counterpart-absent count differs by oracle version")
+    implementation_group_count = len(
+        {
+            case.get("implementation_group")
+            for case in cases
+            if case.get("implementation_group") is not None
+        }
+    )
+    return {
+        "cases": len(cases),
+        "constructors": sum(member.get("constructor") is True for member in members),
+        "counterpart_absent_per_version": next(iter(absent_per_version.values())),
+        "counterpart_implementation_groups": implementation_group_count,
+        "counterpart_present_per_version": next(iter(present_per_version.values())),
+        "differential-required": state_counts["differential-required"],
+        "fixed": state_counts["fixed"],
+        "GWexpy-only": state_counts["GWexpy-only"],
+        "GWpy-fails": state_counts["GWpy-fails"],
+        "logical_members": len(members),
+        "no-finding": state_counts["no-finding"],
+        "public_roots": len({member.get("public_class") for member in members}),
+        "unreviewed": state_counts["unreviewed"],
+    }
+
+
+def _manifest_policy() -> dict[str, Any]:
+    return {
+        "behavioral_owner": AUDIT_OWNER,
+        "fixture_key": ["public_class", "member", "gwpy_version", "fixture"],
+        "implementation_base": IMPLEMENTATION_BASE,
+        "member_walk_rule": MEMBER_WALK_RULE,
+        "oracle_versions": list(SUPPORTED_GWPY),
+        "pristine_oracle_rule": PRISTINE_ORACLE_RULE,
+        "provisional_states": list(PROVISIONAL_STATES),
+        "public_root_rule": PUBLIC_ROOT_RULE,
+        "terminal_states": list(TERMINAL_STATES),
+        "upstream_dependency_provenance": UPSTREAM_DEPENDENCY_PROVENANCE,
     }
 
 
@@ -882,28 +1005,6 @@ def build_manifest(
             }
             cases.append(case)
     cases.sort(key=_case_sort_key)
-    state_counts = {
-        state: sum(case["state"] == state for case in cases)
-        for state in (*TERMINAL_STATES, *PROVISIONAL_STATES)
-    }
-    present_per_version = {
-        oracle_version: sum(
-            item["present"] for item in projections[oracle_version]["members"]
-        )
-        for oracle_version in SUPPORTED_GWPY
-    }
-    absent_per_version = {
-        oracle_version: len(members) - present_per_version[oracle_version]
-        for oracle_version in SUPPORTED_GWPY
-    }
-    constructor_count = sum(member["constructor"] for member in members)
-    implementation_group_count = len(
-        {
-            case["implementation_group"]
-            for case in cases
-            if case["implementation_group"] is not None
-        }
-    )
     manifest = {
         "cases": cases,
         "members": members,
@@ -911,45 +1012,11 @@ def build_manifest(
             oracle_version: projections[oracle_version]
             for oracle_version in SUPPORTED_GWPY
         },
-        "policy": {
-            "behavioral_owner": AUDIT_OWNER,
-            "fixture_key": [
-                "public_class",
-                "member",
-                "gwpy_version",
-                "fixture",
-            ],
-            "implementation_base": IMPLEMENTATION_BASE,
-            "member_walk_rule": MEMBER_WALK_RULE,
-            "oracle_versions": list(SUPPORTED_GWPY),
-            "pristine_oracle_rule": PRISTINE_ORACLE_RULE,
-            "provisional_states": list(PROVISIONAL_STATES),
-            "public_root_rule": PUBLIC_ROOT_RULE,
-            "terminal_states": list(TERMINAL_STATES),
-            "upstream_dependency_provenance": (
-                "GWpy providers retain package-relative source/line; inherited "
-                "NumPy/Astropy providers retain normalized provider, member, kind, "
-                "descriptor, and signature without source path or resolved version."
-            ),
-        },
+        "policy": _manifest_policy(),
         "population_digest": population["digest"],
         "public_roots": list(population["public_roots"]),
         "schema": SCHEMA,
-        "summary": {
-            "cases": len(cases),
-            "constructors": constructor_count,
-            "counterpart_absent_per_version": len(set(absent_per_version.values())) == 1
-            and next(iter(absent_per_version.values())),
-            "counterpart_implementation_groups": implementation_group_count,
-            "counterpart_present_per_version": len(set(present_per_version.values()))
-            == 1
-            and next(iter(present_per_version.values())),
-            "differential-required": state_counts["differential-required"],
-            "GWexpy-only": state_counts["GWexpy-only"],
-            "logical_members": len(members),
-            "public_roots": len(population["public_roots"]),
-            "unreviewed": state_counts["unreviewed"],
-        },
+        "summary": calculate_summary(cases, members, projections),
     }
     return manifest
 
@@ -1090,6 +1157,15 @@ def _validate_case(
             },
             "GWexpy-only observation mismatch",
         )
+        _require(case.get("issues") == ["#639"], "GWexpy-only issue mismatch")
+        _require(
+            evidence
+            == {
+                "behavior": [],
+                "oracle_projection_digest": projections[oracle_version]["digest"],
+            },
+            "GWexpy-only evidence schema mismatch",
+        )
     elif state == "differential-required":
         _require(observed["present"] is True, "pending differential lacks counterpart")
         _require(fixture == PENDING_FIXTURE, "pending differential fixture mismatch")
@@ -1098,7 +1174,24 @@ def _validate_case(
         )
         _require(case.get("issues") == ["#639"], "pending differential issue mismatch")
         _require(
-            behavior == [], "initial pending differential must have empty evidence"
+            case.get("comparator") == {"name": "pending"},
+            "pending differential comparator mismatch",
+        )
+        _require(
+            case.get("observations")
+            == {
+                "gwexpy": {"outcome": "pending"},
+                "gwpy": {"outcome": "pending"},
+            },
+            "pending differential observation mismatch",
+        )
+        _require(
+            evidence
+            == {
+                "behavior": [],
+                "oracle_projection_digest": projections[oracle_version]["digest"],
+            },
+            "pending differential evidence schema mismatch",
         )
         _require(
             case.get("implementation_group") is not None,
@@ -1119,6 +1212,16 @@ def _validate_case(
             "behavioral terminal lacks comparator",
         )
         if state == "fixed":
+            issues = case.get("issues")
+            _require(
+                isinstance(issues, list)
+                and "#639" in issues
+                and any(
+                    isinstance(issue, str) and bool(issue.strip()) and issue != "#639"
+                    for issue in issues
+                ),
+                "fixed case requires a specific issue reference beyond #639",
+            )
             _require(
                 bool(evidence.get("pre_fix_mismatch")),
                 "fixed case lacks pre-fix mismatch",
@@ -1154,7 +1257,17 @@ def validate_manifest(manifest: Mapping[str, Any]) -> None:
         "inventory top-level schema mismatch",
     )
     _require(manifest.get("schema") == SCHEMA, "invalid inventory schema")
-    policy = manifest.get("policy", {})
+    policy = manifest.get("policy")
+    _require(isinstance(policy, dict), "inventory policy must be an object")
+    _require(set(policy) == set(_manifest_policy()), "policy schema mismatch")
+    _require(
+        policy.get("behavioral_owner") == AUDIT_OWNER,
+        "behavioral owner policy mismatch",
+    )
+    _require(
+        policy.get("upstream_dependency_provenance") == UPSTREAM_DEPENDENCY_PROVENANCE,
+        "upstream dependency provenance policy mismatch",
+    )
     _require(
         policy.get("implementation_base") == IMPLEMENTATION_BASE,
         "implementation base mismatch",
@@ -1269,15 +1382,8 @@ def validate_manifest(manifest: Mapping[str, Any]) -> None:
         manifest.get("population_digest") == expected_population_digest,
         "population digest mismatch",
     )
-    rebuilt = build_manifest(
-        {
-            "public_roots": roots,
-            "members": members_list,
-            "digest": expected_population_digest,
-        },
-        projections,
-    )
-    _require(manifest.get("summary") == rebuilt["summary"], "summary mismatch")
+    expected_summary = calculate_summary(cases, members_list, projections)
+    _require(manifest.get("summary") == expected_summary, "summary mismatch")
     _require(
         not any(
             isinstance(value, str) and (value.startswith("/") or "0x" in value.lower())
