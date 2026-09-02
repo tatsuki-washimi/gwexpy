@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import copy
 import importlib
 import importlib.util
@@ -9,6 +10,7 @@ import inspect
 import json
 import os
 import re
+import shlex
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
@@ -2165,3 +2167,32 @@ def test_workflow_runs_ordinary_inventory_check_in_each_existing_matrix_cell() -
         if step.get("name") == "Provision compatibility environment"
     )
     assert "PyYAML" in provision["run"]
+
+
+def test_workflow_installs_inventory_fitting_import_dependency() -> None:
+    required_inventory_imports = {"iminuit"}
+    fitting_sources = (
+        ROOT / "gwexpy/fitting/core.py",
+        ROOT / "gwexpy/fitting/gls.py",
+    )
+    unconditional_imports = {
+        node.module.split(".", 1)[0]
+        for source in fitting_sources
+        for node in ast.parse(source.read_text(encoding="utf-8")).body
+        if isinstance(node, ast.ImportFrom) and node.module is not None
+    }
+    assert required_inventory_imports <= unconditional_imports
+
+    workflow = yaml.load(WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
+    provision = next(
+        step
+        for step in workflow["jobs"]["gwpy-compat"]["steps"]
+        if step.get("name") == "Provision compatibility environment"
+    )
+    installed_tokens = {
+        token
+        for line in provision["run"].splitlines()
+        if " pip install " in line
+        for token in shlex.split(line)
+    }
+    assert required_inventory_imports <= installed_tokens
