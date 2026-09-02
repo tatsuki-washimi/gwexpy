@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import inspect
+import warnings
 from datetime import UTC, datetime
+from decimal import Decimal
+from fractions import Fraction
 
 import numpy as np
 import pytest
@@ -76,6 +79,59 @@ def test_to_gps_invalid_date_components_preserve_gwpy_failure(value, error):
         gwexpy_time.to_gps(value)
 
 
+@pytest.mark.parametrize("function_name", ["to_gps", "tconvert"])
+@pytest.mark.parametrize("container", [tuple, list])
+@pytest.mark.parametrize(
+    ("components", "error"),
+    [
+        pytest.param(
+            [Decimal("2017"), Decimal("1"), Decimal("1")],
+            TypeError,
+            id="decimal",
+        ),
+        pytest.param(
+            [Fraction(2017, 1), Fraction(1, 1), Fraction(1, 1)],
+            TypeError,
+            id="fraction",
+        ),
+        pytest.param([True, True, True], OverflowError, id="bool"),
+        pytest.param(
+            [np.bool_(True), np.bool_(True), np.bool_(True)],
+            OverflowError,
+            id="numpy-bool",
+        ),
+        pytest.param([2017 + 0j, 1 + 0j, 1 + 0j], TypeError, id="complex"),
+        pytest.param(["2017", "1", "1"], TypeError, id="numeric-strings"),
+    ],
+)
+def test_numeric_like_date_components_preserve_gwpy_failure(
+    function_name,
+    container,
+    components,
+    error,
+):
+    value = container(components)
+    gwpy_function = getattr(gwpy_time, function_name)
+    gwexpy_function = getattr(gwexpy_time, function_name)
+
+    # Year 1 reaches ERFA before LAL rejects its negative GPS representation.
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message='ERFA function ".*dubious year')
+        warnings.filterwarnings(
+            "ignore",
+            message="In future, it will be an error for 'np.bool_'",
+            category=DeprecationWarning,
+        )
+        warnings.filterwarnings(
+            "ignore",
+            message="Casting complex values to real discards the imaginary part",
+        )
+        with pytest.raises(error):
+            gwpy_function(value)
+        with pytest.raises(error):
+            gwexpy_function(value)
+
+
 @pytest.mark.parametrize(
     ("value", "expected"),
     [
@@ -86,13 +142,17 @@ def test_to_gps_invalid_date_components_preserve_gwpy_failure(value, error):
             id="numeric-ndarray",
         ),
         pytest.param(
-            ["2017-01-01", "2017-01-02"],
-            [1167264018.0, 1167350418.0],
+            ["2017-01-01", "2017-01-02", "2017-01-03"],
+            [1167264018.0, 1167350418.0, 1167436818.0],
             id="date-string-list",
         ),
         pytest.param(
-            [datetime(2017, 1, 1, tzinfo=UTC), datetime(2017, 1, 2, tzinfo=UTC)],
-            [1167264018.0, 1167350418.0],
+            [
+                datetime(2017, 1, 1, tzinfo=UTC),
+                datetime(2017, 1, 2, tzinfo=UTC),
+                datetime(2017, 1, 3, tzinfo=UTC),
+            ],
+            [1167264018.0, 1167350418.0, 1167436818.0],
             id="datetime-list",
         ),
     ],
@@ -103,9 +163,26 @@ def test_to_gps_explicit_vector_extensions_remain(value, expected):
     np.testing.assert_array_equal(result, expected)
 
 
-def test_tconvert_restores_canonical_parameter_name():
-    parameters = inspect.signature(gwexpy_time.tconvert).parameters
-    assert next(iter(parameters)) == "gpsordate"
+def test_tconvert_first_parameter_matches_canonical_introspection():
+    parameter = next(iter(inspect.signature(gwexpy_time.tconvert).parameters.values()))
+
+    assert parameter.name == "gpsordate"
+    assert parameter.kind is inspect.Parameter.POSITIONAL_OR_KEYWORD
+    assert parameter.default == "now"
+
+
+def test_tconvert_no_argument_is_bounded_by_real_gwpy_calls():
+    before = gwpy_time.tconvert()
+    result = gwexpy_time.tconvert()
+    after = gwpy_time.tconvert()
+
+    assert type(result) is type(before)
+    assert before <= result <= after
+
+
+def test_tconvert_positional_gps_matches_gwpy():
+    value = 1126259462
+    _assert_same_scalar(gwexpy_time.tconvert(value), gwpy_time.tconvert(value))
 
 
 @pytest.mark.parametrize(
@@ -144,8 +221,33 @@ def test_tconvert_preserves_documented_t_alias():
 
 
 def test_tconvert_rejects_canonical_name_and_alias_together():
-    with pytest.raises(TypeError, match="cannot specify both 'gpsordate' and 't'"):
-        gwexpy_time.tconvert(gpsordate=1126259462, t=1126259463)
+    for canonical in (1126259462, "now"):
+        with pytest.raises(TypeError, match="cannot specify both 'gpsordate' and 't'"):
+            gwexpy_time.tconvert(gpsordate=canonical, t=1126259463)
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        pytest.param(
+            ["2017-01-01", "2017-01-02", "2017-01-03"],
+            id="iso-string-list",
+        ),
+        pytest.param(
+            [
+                datetime(2017, 1, 1, tzinfo=UTC),
+                datetime(2017, 1, 2, tzinfo=UTC),
+                datetime(2017, 1, 3, tzinfo=UTC),
+            ],
+            id="datetime-list",
+        ),
+    ],
+)
+def test_tconvert_non_numeric_date_vectors_remain_extensions(value):
+    np.testing.assert_array_equal(
+        gwexpy_time.tconvert(value),
+        gwexpy_time.to_gps(value),
+    )
 
 
 @pytest.mark.parametrize(

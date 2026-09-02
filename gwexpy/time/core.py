@@ -20,11 +20,8 @@ except ImportError:
 __all__ = ["to_gps", "from_gps", "tconvert"]
 
 
-class _TConvertDefault:
+class _TConvertDefault(str):
     """Omission marker that preserves the canonical displayed default."""
-
-    def __repr__(self):
-        return repr("now")
 
 
 class _TConvertAliasOmitted:
@@ -34,7 +31,7 @@ class _TConvertAliasOmitted:
         return "<omitted>"
 
 
-_TCONVERT_DEFAULT = _TConvertDefault()
+_TCONVERT_DEFAULT = _TConvertDefault("now")
 _TCONVERT_ALIAS_OMITTED = _TConvertAliasOmitted()
 
 
@@ -48,17 +45,6 @@ def _is_array(obj):
     return isinstance(obj, (list, tuple))
 
 
-def _is_date_component_sequence(obj):
-    """Return whether *obj* has GWpy's scalar date-component call shape."""
-    if not isinstance(obj, (list, tuple)) or not 3 <= len(obj) <= 7:
-        return False
-    return all(
-        isinstance(item, (int, float, np.number))
-        and not isinstance(item, (bool, np.bool_))
-        for item in obj
-    )
-
-
 def _is_numeric_array(arr):
     if arr.dtype.kind in ("i", "u", "f"):
         return True
@@ -69,6 +55,19 @@ def _is_numeric_array(arr):
         return True
     except (TypeError, ValueError):
         return False
+
+
+def _is_date_component_sequence(obj):
+    """Return whether *obj* has GWpy's scalar date-component call shape."""
+    if not isinstance(obj, (list, tuple)) or not 3 <= len(obj) <= 7:
+        return False
+    try:
+        values = np.asarray(obj)
+    except (TypeError, ValueError):
+        return False
+    if values.dtype.kind == "c":
+        return True
+    return _is_numeric_array(values)
 
 
 _VALID_DTYPES = frozenset({None, float, "float", "quantity"})

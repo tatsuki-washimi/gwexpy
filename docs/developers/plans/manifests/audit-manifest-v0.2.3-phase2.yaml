@@ -39,9 +39,11 @@ contracts:
       gpsSeconds/gpsNanoSeconds fields, including GWpy's microsecond-limited
       conversion semantics.
     date_components: >-
-      Numeric tuple/list inputs of length 3 through 7 always enter the GWpy
-      scalar date-component path; invalid dates and float components preserve
-      the oracle exception class without vector fallback.
+      Tuple/list inputs of length 3 through 7 that the generic vector
+      classifier recognizes as numeric-like always enter the GWpy scalar
+      date-component path. Decimal, Fraction, bool, numpy.bool_, complex, and
+      numeric-string components preserve the oracle failure class without
+      vector fallback.
     extensions_preserved:
       - numeric ndarray inputs, including length 3
       - numeric tuple/list inputs outside the 3 through 7 component boundary
@@ -51,6 +53,7 @@ contracts:
   tconvert:
     canonical_parameter: gpsordate
     default: now
+    introspection: positional-or-keyword with a default equal to string now
     extension_alias: t
     conflict: supplying gpsordate and t together raises TypeError
   from_gps:
@@ -76,8 +79,10 @@ contracts:
       - 8
       - 9
     assertions:
+      - GWpy-compatible return type and exact dtype
       - exact metadata equality with the parent
       - exact shape and value equality with the parent
+      - exact channel, xunit, span, and materialized times equality
       - finite sample rate
 
 tdd:
@@ -92,6 +97,13 @@ tdd:
       cause: >-
         1 MHz cadence was quantized and 10 MHz cadence collapsed to zero at
         the large epoch; absolute-axis reconstruction warnings were emitted.
+    review_hardening:
+      gwpy_4_0_1: 25 failed, 48 passed
+      gwpy_4_0_2: 25 failed, 48 passed
+      cause: >-
+        Twenty-four numeric-like date-component routes were still vectorized,
+        and the canonical gpsordate default rendered as now but was not equal
+        to the string default under introspection.
   green:
     narrow_time:
       gwpy_4_0_1: 49 passed
@@ -99,9 +111,12 @@ tdd:
     narrow_ifft:
       gwpy_4_0_1: 8 passed
       gwpy_4_0_2: 8 passed
+    review_hardening:
+      gwpy_4_0_1: 73 passed
+      gwpy_4_0_2: 73 passed
     broadened_focused_suite:
-      gwpy_4_0_1: 158 passed
-      gwpy_4_0_2: 158 passed
+      gwpy_4_0_1: 186 passed
+      gwpy_4_0_2: 186 passed
       includes:
         - full time core and contract tests
         - default and transient IFFT regressions
@@ -122,7 +137,7 @@ physics:
 
 static_validation:
   ruff_check: all checks passed
-  ruff_format_check: 5 files already formatted
+  ruff_format_check: 3 changed Python files already formatted
   git_diff_check: clean
   yaml_safe_load: valid
 
