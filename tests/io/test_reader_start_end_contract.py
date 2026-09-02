@@ -27,6 +27,7 @@ import warnings
 
 import numpy as np
 import pytest
+from gwpy.timeseries import TimeSeriesDict as GwpyTimeSeriesDict
 
 from gwexpy.interop.errors import IoNotImplementedError
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesList
@@ -302,7 +303,7 @@ class TestOracleEquality:
 
 
 class TestChannelsThatDoNotCoverTheWindow:
-    """A channel with no data in the window yields nothing, not the wrong samples.
+    """Mixed coverage follows each format's public parent contract.
 
     :meth:`gwpy.types.series.Series.crop` computes its stop index as
     ``floor((end - x0) / dx)`` without guarding ``end < x0``; the negative index
@@ -321,7 +322,7 @@ class TestChannelsThatDoNotCoverTheWindow:
         return TimeSeriesDict({"A": series, "B": late})
 
     @pytest.mark.parametrize("fmt", ["hdf5", "zarr"])
-    def test_channel_starting_after_the_window_comes_back_empty(
+    def test_channel_starting_after_the_window_matches_format_contract(
         self, tmp_path, mixed_epoch, fmt
     ):
         if fmt == "zarr":
@@ -329,13 +330,15 @@ class TestChannelsThatDoNotCoverTheWindow:
         path = tmp_path / f"mixed.{fmt}"
         mixed_epoch.write(str(path), format=fmt)
 
-        got = TimeSeriesDict.read(str(path), format=fmt, start=0.2, end=0.5)
-
-        assert len(got["A"]) == 3, "the covered channel is unaffected"
-        assert len(got["B"]) == 0, (
-            "channel B spans [10, 20) and holds nothing in [0.2, 0.5); returning "
-            "samples here means the negative-index wraparound fired"
-        )
+        if fmt == "hdf5":
+            with pytest.raises(ValueError):
+                GwpyTimeSeriesDict.read(str(path), format=fmt, start=0.2, end=0.5)
+            with pytest.raises(ValueError):
+                TimeSeriesDict.read(str(path), format=fmt, start=0.2, end=0.5)
+        else:
+            got = TimeSeriesDict.read(str(path), format=fmt, start=0.2, end=0.5)
+            assert len(got["A"]) == 3, "the covered channel is unaffected"
+            assert len(got["B"]) == 0
 
     @pytest.mark.parametrize("fmt", ["hdf5", "zarr"])
     def test_no_returned_sample_lies_outside_the_request(
@@ -347,6 +350,13 @@ class TestChannelsThatDoNotCoverTheWindow:
         path = tmp_path / f"mixed2.{fmt}"
         mixed_epoch.write(str(path), format=fmt)
 
+        if fmt == "hdf5":
+            with pytest.raises(ValueError):
+                GwpyTimeSeriesDict.read(str(path), format=fmt, start=0.2, end=0.5)
+            with pytest.raises(ValueError):
+                TimeSeriesDict.read(str(path), format=fmt, start=0.2, end=0.5)
+            return
+
         got = TimeSeriesDict.read(str(path), format=fmt, start=0.2, end=0.5)
         for key, val in got.items():
             if len(val) == 0:
@@ -354,13 +364,15 @@ class TestChannelsThatDoNotCoverTheWindow:
             assert float(val.span[0]) >= 0.2, key
             assert float(val.span[1]) <= 0.5, key
 
-    def test_a_window_before_all_data_yields_nothing(self, tmp_path):
+    def test_a_window_before_all_data_matches_gwpy_failure(self, tmp_path):
         late = TimeSeries(np.arange(100, dtype=float), t0=10.0, dt=DT, name="B")
         path = tmp_path / "late.h5"
         TimeSeriesDict({"B": late}).write(str(path), format="hdf5")
 
-        got = TimeSeriesDict.read(str(path), format="hdf5", start=0.2, end=0.5)
-        assert len(got["B"]) == 0
+        with pytest.raises(ValueError):
+            GwpyTimeSeriesDict.read(str(path), format="hdf5", start=0.2, end=0.5)
+        with pytest.raises(ValueError):
+            TimeSeriesDict.read(str(path), format="hdf5", start=0.2, end=0.5)
 
 
 class TestWindowsTheFileDoesNotCover:
@@ -371,13 +383,9 @@ class TestWindowsTheFileDoesNotCover:
     and checks afterwards that the result covers the request. While readers
     returned whole files that check could never fire.
 
-    It only fires on formats that reach the registry. ``zarr`` and generic
-    ``hdf5`` are served by early-return branches in
-    :meth:`gwexpy.timeseries.collections.TimeSeriesDict.read`, so they return the
-    empty crop instead of raising, and do not honour ``pad``/``gap``. That
-    divergence is pinned rather than fixed: an empty result is visibly empty,
-    unlike a full-span result masquerading as a windowed one. Unifying it belongs
-    with the v0.2.0 reader-contract work.
+    Generic HDF5 now reaches the installed-GWpy route as part of the v0.2.3
+    compatibility closure, so its gap/coverage failure is compared directly.
+    ``zarr`` remains an explicit GWexpy backend and keeps its own crop path.
     """
 
     @pytest.fixture
@@ -409,9 +417,11 @@ class TestWindowsTheFileDoesNotCover:
         assert len(got["A"]) == 10
         assert got["A"].span == (0.0, 1.0)
 
-    def test_early_return_formats_return_the_empty_crop_instead(self, sources):
-        got = TimeSeriesDict.read(sources["hdf5"], format="hdf5", start=5.0, end=9.0)
-        assert len(got["A"]) == 0
+    def test_hdf5_outside_coverage_matches_gwpy_failure(self, sources):
+        with pytest.raises(ValueError):
+            GwpyTimeSeriesDict.read(sources["hdf5"], format="hdf5", start=5.0, end=9.0)
+        with pytest.raises(ValueError):
+            TimeSeriesDict.read(sources["hdf5"], format="hdf5", start=5.0, end=9.0)
 
     def test_a_covered_window_behaves_identically_across_both_paths(self, sources):
         """Where it matters — inside the data — the paths must not diverge."""
@@ -590,7 +600,7 @@ class TestNonNanosecondGrids:
         )
         _assert_matches_oracle(got, full.crop(start, end))
 
-    def test_window_before_data_with_non_ns_epoch_yields_nothing(self, tmp_path):
+    def test_window_before_data_with_non_ns_epoch_matches_gwpy(self, tmp_path):
         """``crop(edge, edge)`` at a non-ns ``t0`` wrapped to nine samples."""
         third = TimeSeries(
             np.arange(N_SAMPLES, dtype=float),
@@ -601,7 +611,9 @@ class TestNonNanosecondGrids:
         )
         source = _write_hdf5(tmp_path, third)
         got = TimeSeriesDict.read(source, format="hdf5", end=0.2)["A"]
-        assert len(got) == 0
+        oracle = GwpyTimeSeriesDict.read(source, format="hdf5", end=0.2)["A"]
+        _assert_matches_oracle(got, oracle)
+        assert len(got) == 8
 
     def test_in_span_bounded_read_emits_no_crop_warning(self, tmp_path, series):
         """The synthesised upper bound used to sit 1 ns past the span end,

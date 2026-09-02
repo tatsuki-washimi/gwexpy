@@ -12,6 +12,25 @@ base_sha: eb62c6a056a7a8992fe1f00e115d6173050c64fc
 status: completed
 stopped: false
 
+superseded_in_v0_2_3:
+  scope: generic TimeSeriesDict HDF5 gap and coverage outcomes only
+  reason: >-
+    The v0.2.3 patch policy makes installed-GWpy success/failure and selected
+    samples authoritative for counterpart APIs. The earlier fast-path
+    divergence below was explicitly deferred to v0.2.0 and can no longer remain
+    an implicit default extension.
+  replacement_contract: >-
+    Plain format="hdf5" delegates names, group, start, end, gap, pad,
+    open-handle, and merge outcomes to the installed GWpy 4.0.x public reader.
+    Exception classes are compared; message text is not contracted. Explicit
+    GWexpy collection manifests and exact-time sidecars retain their
+    augmentation path.
+  evidence:
+    - tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_read_matches_gwpy
+    - tests/io/test_reader_start_end_contract.py::TestChannelsThatDoNotCoverTheWindow
+    - tests/io/test_reader_start_end_contract.py::TestWindowsTheFileDoesNotCover
+    - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids
+
 # Recorded as a repo-relative marker on purpose: this file is published, and an
 # absolute worktree path leaks a local username and does not reproduce.
 worktree: "<local worktree for branch codex/v0113-lane-h>"

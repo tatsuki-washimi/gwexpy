@@ -94,6 +94,86 @@ def _coerce_reader_result(cls, reader_result):
     return result
 
 
+_GWEXPY_EXACT_HDF5_ATTRS = {
+    "_gwexpy_sidecar_json_v1",
+    "_gwexpy_sidecar_json_v2",
+}
+_GWEXPY_COLLECTION_HDF5_ATTRS = {
+    "gwexpy_keymap",
+    "gwexpy_kind",
+    "gwexpy_layout",
+    "gwexpy_layout_version",
+    "gwexpy_order",
+}
+
+
+def _gwexpy_hdf5_augmentation_attrs(source: Any) -> set[str]:
+    """Return the recognised private root attributes on an HDF5 source."""
+    private_attrs = _GWEXPY_EXACT_HDF5_ATTRS | _GWEXPY_COLLECTION_HDF5_ATTRS
+
+    def present(container: h5py.HLObject) -> set[str]:
+        return private_attrs.intersection(container.file.attrs)
+
+    if isinstance(source, h5py.HLObject):
+        return present(source)
+    if not isinstance(source, (str, Path)):
+        return set()
+    try:
+        with h5py.File(source, "r") as h5file:
+            return present(h5file)
+    except OSError:
+        # Let GWpy's public reader own invalid/missing-source semantics.
+        return set()
+
+
+def _coerce_native_hdf5_result(cls, reader_result):
+    """View native GWpy entries as GWexpy without copying their payloads."""
+    TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
+    result = cls()
+    for key, value in reader_result.items():
+        result[key] = value if isinstance(value, TimeSeries) else value.view(TimeSeries)
+    provenance = getattr(reader_result, "_gwexpy_io", None)
+    if isinstance(provenance, dict):
+        result._gwexpy_io = {**provenance}
+    return result
+
+
+def _restore_native_hdf5_exact_state(source: Any, result: Any, group: Any) -> Any:
+    """Overlay private exact state after GWpy has resolved the public read."""
+    TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
+
+    def restore(container: h5py.HLObject) -> None:
+        root = container[group] if group else container
+        for key, selected in result.items():
+            exact = TimeSeries.read(root[str(key)], format="hdf5")
+            candidate = exact
+            if (
+                candidate.shape != selected.shape
+                or not (candidate.xindex == selected.xindex).all()
+            ):
+                if not len(selected):
+                    continue
+                candidate = exact.crop(selected.span[0], selected.span[1])
+            if (
+                candidate.shape != selected.shape
+                or not (candidate.xindex == selected.xindex).all()
+            ):
+                # A padded/merged public result is not a lossless slice of this
+                # marker authority.  Keep the GWpy result and fail closed by
+                # leaving private exact state absent.
+                continue
+            for attr in ("_gwex_t0_gps_ns", "_gwex_dt_gps_ns"):
+                if hasattr(candidate, attr):
+                    setattr(selected, attr, getattr(candidate, attr))
+
+    if isinstance(source, h5py.HLObject):
+        restore(source)
+    else:
+        with h5py.File(source, "r") as h5file:
+            restore(h5file)
+    return result
+
+
 def _is_timeseries_hdf5_dataset(obj: Any, *, allow_missing_xunit: bool = False) -> bool:
     """Return whether an HDF5 dataset is eligible as a TimeSeries entry."""
     if not isinstance(obj, h5py.Dataset) or obj.ndim != 1:
@@ -366,6 +446,25 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             _reject_timezone_reinterpretation(
                 "hdf5", kwargs.pop("timezone", None), None
             )
+            augmentation_attrs = _gwexpy_hdf5_augmentation_attrs(source)
+            if fmt == "hdf5" and not (
+                augmentation_attrs & _GWEXPY_COLLECTION_HDF5_ATTRS
+            ):
+                # Plain HDF5 is a GWpy API.  Delegate the complete public
+                # binding (including names/group, open handles, start/end,
+                # and failure behavior) to the parent class.  Exact sidecars
+                # are overlaid only after GWpy has resolved that public result.
+                result = _coerce_native_hdf5_result(
+                    cls,
+                    BaseTimeSeriesDict.read(source, *args, **kwargs),
+                )
+                if augmentation_attrs & _GWEXPY_EXACT_HDF5_ATTRS:
+                    return _restore_native_hdf5_exact_state(
+                        source,
+                        result,
+                        kwargs.get("group"),
+                    )
+                return result
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
             # This branch reopens the file and re-reads each dataset itself
@@ -910,6 +1009,16 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 overwrite=overwrite,
             )
         if fmt in ("hdf5", "h5", "hdf"):
+            requested_layout = kwargs.get("layout")
+            native_layout = "layout" not in kwargs or (
+                isinstance(requested_layout, str) and requested_layout.lower() == "gwpy"
+            )
+            if fmt == "hdf5" and native_layout and "mode" not in kwargs:
+                # Keep the ordinary route identical to GWpy.  Explicit
+                # dataset/group layouts and mode= remain GWexpy opt-ins.
+                native_kwargs = dict(kwargs)
+                native_kwargs.pop("layout", None)
+                return super().write(target, *args, **native_kwargs)
             overwrite = bool(kwargs.pop("overwrite", False))
             append = bool(kwargs.pop("append", False))
             mode = kwargs.pop("mode", None)
