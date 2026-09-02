@@ -181,16 +181,17 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
                 channel=getattr(res, "channel", None),
             )
 
-        if track_buffer_epoch and exact_dt_ns is None:
-            result.__dict__.pop("_gwex_t0_gps_ns", None)
-            result.__dict__.pop("_gwex_dt_gps_ns", None)
-        elif track_buffer_epoch:
+        if track_buffer_epoch:
             assert exact_t0_ns is not None
-            assert exact_dt_ns is not None
-            current_t0_ns = getattr(result, "_gwex_t0_gps_ns", exact_t0_ns)
             appended_rows = np.shape(other)[0]
-            result._gwex_t0_gps_ns = current_t0_ns + appended_rows * exact_dt_ns
-            result._gwex_dt_gps_ns = exact_dt_ns
+            if exact_dt_ns is None:
+                result.__dict__.pop("_gwex_dt_gps_ns", None)
+                if appended_rows:
+                    result.__dict__.pop("_gwex_t0_gps_ns", None)
+            else:
+                current_t0_ns = getattr(result, "_gwex_t0_gps_ns", exact_t0_ns)
+                result._gwex_t0_gps_ns = current_t0_ns + appended_rows * exact_dt_ns
+                result._gwex_dt_gps_ns = exact_dt_ns
         return result
 
     # find_peaks is inherited from SignalAnalysisMixin in the final TimeSeries class

@@ -369,18 +369,26 @@ def test_collection_resize_false_append_advances_large_exact_epochs() -> None:
         assert result[key]._gwex_dt_gps_ns == dt_ns
 
 
+_UNAVAILABLE_EXACT_CADENCES = (
+    "one-third-nanosecond",
+    "two-ulps-below-eight",
+    "two-ulps-above-eight",
+)
+
+
 def _series_without_exact_cadence(cadence: str) -> TimeSeries:
     epoch_ns = 1_234_567_890_123_456_789
     if cadence == "one-third-nanosecond":
         return TimeSeries(np.arange(8.0), t0_ns=epoch_ns, dt=(1 / 3) * u.ns)
+    direction = -np.inf if cadence == "two-ulps-below-eight" else np.inf
     series = TimeSeries(np.arange(8.0), t0_ns=epoch_ns, dt=8 * u.ns)
-    series.dt = np.nextafter(np.nextafter(8.0, -np.inf), -np.inf) * u.ns
+    series.dt = np.nextafter(np.nextafter(8.0, direction), direction) * u.ns
     return series
 
 
 @pytest.mark.parametrize(
     "cadence",
-    ["one-third-nanosecond", "two-ulps-below-eight"],
+    _UNAVAILABLE_EXACT_CADENCES,
 )
 @pytest.mark.parametrize("inplace", [True, False], ids=["inplace", "copy"])
 def test_resize_false_append_does_not_resurrect_unavailable_exact_cadence(
@@ -426,7 +434,7 @@ def test_resize_false_append_does_not_resurrect_unavailable_exact_cadence(
 
 @pytest.mark.parametrize(
     "cadence",
-    ["one-third-nanosecond", "two-ulps-below-eight"],
+    _UNAVAILABLE_EXACT_CADENCES,
 )
 @pytest.mark.parametrize("copy_entries", [True, False], ids=["copy", "reuse"])
 def test_collection_resize_false_append_clears_unavailable_exact_cadence(
@@ -480,6 +488,104 @@ def test_collection_resize_false_append_clears_unavailable_exact_cadence(
     assert result["channel"] is source_entry
     assert expected["channel"] is reference_entry
     assert "_gwex_t0_gps_ns" not in result["channel"].__dict__
+    assert "_gwex_dt_gps_ns" not in result["channel"].__dict__
+
+
+@pytest.mark.parametrize("cadence", _UNAVAILABLE_EXACT_CADENCES)
+@pytest.mark.parametrize("inplace", [True, False], ids=["inplace", "copy"])
+def test_empty_resize_false_append_preserves_exact_epoch_without_exact_cadence(
+    cadence: str,
+    inplace: bool,
+) -> None:
+    source = _series_without_exact_cadence(cadence)
+    epoch_ns = source.t0_gps_ns
+    reference = GwpyTimeSeries(
+        source.value.copy(),
+        unit=source.unit,
+        t0=float(source.t0.value),
+        dt=float(source.dt.value),
+        xunit=source.xunit,
+    )
+    other = TimeSeries(
+        np.empty(0),
+        t0=float(source.xspan[1]),
+        dt=float(source.dt.value),
+        xunit=source.xunit,
+    )
+    reference_other = GwpyTimeSeries(
+        np.empty(0),
+        t0=float(reference.xspan[1]),
+        dt=float(reference.dt.value),
+        xunit=reference.xunit,
+    )
+
+    result = source.append(other, inplace=inplace, resize=False)
+    expected = reference.append(reference_other, inplace=inplace, resize=False)
+
+    np.testing.assert_array_equal(result.value, expected.value)
+    assert result.t0 == expected.t0
+    assert result.dt == expected.dt
+    assert (result is source) is (expected is reference)
+    assert result.t0_gps_ns == epoch_ns
+    assert "_gwex_dt_gps_ns" not in result.__dict__
+    if not inplace:
+        assert source.t0_gps_ns == epoch_ns
+        assert "_gwex_dt_gps_ns" not in source.__dict__
+
+
+@pytest.mark.parametrize("cadence", _UNAVAILABLE_EXACT_CADENCES)
+@pytest.mark.parametrize("copy_entries", [True, False], ids=["copy", "reuse"])
+def test_collection_empty_resize_false_append_preserves_exact_epoch(
+    cadence: str,
+    copy_entries: bool,
+) -> None:
+    source_entry = _series_without_exact_cadence(cadence)
+    epoch_ns = source_entry.t0_gps_ns
+    reference_entry = GwpyTimeSeries(
+        source_entry.value.copy(),
+        unit=source_entry.unit,
+        t0=float(source_entry.t0.value),
+        dt=float(source_entry.dt.value),
+        xunit=source_entry.xunit,
+    )
+    actual = TimeSeriesDict({"channel": source_entry})
+    expected = GwpyTimeSeriesDict({"channel": reference_entry})
+    other = TimeSeriesDict(
+        {
+            "channel": TimeSeries(
+                np.empty(0),
+                t0=float(source_entry.xspan[1]),
+                dt=float(source_entry.dt.value),
+                xunit=source_entry.xunit,
+            )
+        }
+    )
+    expected_other = GwpyTimeSeriesDict(
+        {
+            "channel": GwpyTimeSeries(
+                np.empty(0),
+                t0=float(reference_entry.xspan[1]),
+                dt=float(reference_entry.dt.value),
+                xunit=reference_entry.xunit,
+            )
+        }
+    )
+
+    result = actual.append(other, copy=copy_entries, resize=False)
+    expected_result = expected.append(
+        expected_other,
+        copy=copy_entries,
+        resize=False,
+    )
+
+    assert result is actual
+    assert expected_result is expected
+    np.testing.assert_array_equal(result["channel"].value, expected["channel"].value)
+    assert result["channel"].t0 == expected["channel"].t0
+    assert result["channel"].dt == expected["channel"].dt
+    assert result["channel"] is source_entry
+    assert expected["channel"] is reference_entry
+    assert result["channel"].t0_gps_ns == epoch_ns
     assert "_gwex_dt_gps_ns" not in result["channel"].__dict__
 
 
