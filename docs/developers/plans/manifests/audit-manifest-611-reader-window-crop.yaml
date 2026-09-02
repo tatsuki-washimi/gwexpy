@@ -30,6 +30,15 @@ superseded_in_v0_2_3:
     - tests/io/test_reader_start_end_contract.py::TestChannelsThatDoNotCoverTheWindow
     - tests/io/test_reader_start_end_contract.py::TestWindowsTheFileDoesNotCover
     - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids
+  human_data_model_signoff:
+    status: required
+    scope: >-
+      The non-nanosecond HDF5 request ending before the stored data returns
+      eight samples in both installed GWpy oracles. Compatibility requires
+      preserving that measured outcome, but its scientific/data-selection
+      meaning needs explicit human acceptance before release.
+    evidence:
+      - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids::test_window_before_data_with_non_ns_epoch_matches_gwpy
 
 # Recorded as a repo-relative marker on purpose: this file is published, and an
 # absolute worktree path leaks a local username and does not reproduce.

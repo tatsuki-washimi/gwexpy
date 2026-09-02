@@ -1,10 +1,11 @@
 schema: gwexpy-v023-io-terminal-evidence-v1
 phase: override-terminal-io
-status: focused-green
+status: focused-green-human-data-model-signoff-required
 
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
-phase_parent: e23f228f3b274c908be3d1fbb1aea83636b74ab1
+phase_parent: 052162aa6a3352888010b3793d2b7fa9d8329afe
 lane_started_from: 1ede60dda1efa07c7b752bf9121e7d9a98cf4943
+independent_review_base: bf4e3b9f223bf16ef6acad8bb6d50d4b29967d3d
 issues:
   - "#611"
   - "#639"
@@ -32,19 +33,23 @@ oracle_version_difference: >-
 oracle_execution: >-
   Each direct test constructs independent installed-GWpy and GWexpy objects in
   the same pinned environment. Files are written independently except where a
-  cross-read is the fixture under test. No result from GWexpy is used to build
-  the GWpy oracle.
+  cross-read is the fixture under test. The sole deliberate exception is the
+  exact-time native-attribute comparator: its GWpy input is constructed from
+  the GWexpy object's actual public projection so x0 has identical binary64
+  input. That comparator is isolated from the common independent fixtures.
 
 scope:
   counterpart_rows: 6
   public_api_change: false
   new_dependency: false
-  scientific_or_data_model_review_required: false
+  scientific_or_data_model_review_required: true
   production_change: >-
     Restore native TimeSeriesDict HDF5 binding and outcomes for ordinary files,
     and overlay grandfathered exact-time authority only after GWpy resolves an
     exact-sidecar file's public selection. TimeSeries and FrequencySeries CSV
-    and HDF5 fixes from the reviewed Phase 0 and Phase 4 work are reused.
+    and HDF5 fixes from the reviewed Phase 0 and Phase 4 work are reused. A
+    default append to an existing GWexpy collection manifest is reconciled by
+    its existing explicit layout rather than leaving the manifest stale.
 
 route_contract:
   csv:
@@ -63,9 +68,19 @@ route_contract:
       only marker-authorized private exact epoch/cadence state on lossless
       selected slices; uncertain padded or merged projections remain without
       private exact authority.
+    exact_filelike: >-
+      Seekable file-like inspection restores the caller's position before the
+      GWpy read, never closes the caller-owned object, and restores the
+      post-GWpy position after the private overlay inspection. Lossless
+      names/group/start/end selections retain exact authority; padded and
+      multi-source merged results clear it.
     collection_manifest: >-
       Existing explicit GWexpy collection layouts and mode= routes retain their
-      enhanced implementation and manifest semantics.
+      enhanced implementation and manifest semantics. A later default
+      append=True detects those root attrs, reuses the stored dataset/group
+      layout, and refreshes keymap/order after successful entry writes so old
+      and new entries stay visible. A conflicting explicit append layout fails
+      before mutation.
     exact_authority: >-
       The dataset-local epoch marker plus file _gwexpy_sidecar_json_v2 remain
       the grandfathered private authority. This lane does not redesign or
@@ -90,8 +105,9 @@ comparators:
     exact:
       - input object mutation
       - source file mutation on reads and failed writes
+      - seekable file-like position and ownership
       - open HDF5 handle validity after reads
-      - writer return behavior
+      - writer return type, validity, path, owning handle, and dataset payload
   hdf5:
     exact:
       - dataset and group topology
@@ -116,6 +132,19 @@ comparators:
     round-trip is required only for dtype=complex, where both installed GWpy
     releases themselves successfully read the native output.
 
+intentional_extensions_and_exceptions:
+  exact_projection_oracle: >-
+    The native-attribute check intentionally derives only GWpy's public t0/dt
+    input from the exact GWexpy object. All ordinary fixtures are built
+    independently from a shared literal specification.
+  hdf5_suffix_auto_identification: >-
+    Existing GWexpy TimeSeries-family contract requires explicit
+    format="hdf5" even for an .h5 suffix. This is a documented intentional
+    exception to GWpy auto-identification, not a hidden differential pass.
+  evidence:
+    - tests/io/test_hdf5_timeseries_family.py::test_timeseries_hdf5_requires_explicit_format
+    - tests/io/test_hdf5_timeseries_family.py::test_timeseriesdict_hdf5_requires_explicit_format
+
 tdd:
   red:
     initial_direct_matrix:
@@ -132,27 +161,79 @@ tdd:
         - exact-sidecar names/group selection returned an empty result
         - exact-sidecar open-handle selection raised TypeError
     superseded_611_expectations:
-      result: 5 failed, 219 passed
+      gwpy_4_0_1: 5 failed, 219 passed
+      gwpy_4_0_2: 5 failed, 219 passed
       observation: >-
         Five historical tests expected the old custom HDF5 gap behavior. Four
         expected empty output where both GWpy oracles raise ValueError, and one
         expected empty output where both return eight samples. The expectations
         now compare the installed GWpy outcome and exception class directly.
+    independent_review_followup:
+      gwpy_4_0_1: 5 failed
+      gwpy_4_0_2: 5 failed
+      mismatches:
+        - >-
+          Four path/open-handle by dataset/group cases appended a native
+          dataset without refreshing the pre-existing GWexpy manifest, hiding
+          the new entry from the default GWexpy reader.
+        - >-
+          A seekable exact-sidecar BytesIO followed the native public result
+          but lost its private exact authority because augmentation inspection
+          only recognised paths and open h5py objects.
+      fixture_adjustment: >-
+        Both GWpy oracles reject a multi-source list of BytesIO objects with
+        TypeError, so the merge-authority test uses two exact-sidecar Paths.
+        Single-source BytesIO covers lossless names/group/start/end and padded
+        selection, position, and lifecycle behavior directly.
   green:
     direct_terminal_suite:
       file: tests/io/test_gwpy_override_terminal_io.py
-      gwpy_4_0_1: 9 passed, 0 skipped
-      gwpy_4_0_2: 9 passed, 0 skipped
+      gwpy_4_0_1: 14 passed, 0 skipped
+      gwpy_4_0_2: 14 passed, 0 skipped
     focused_affected_suite:
-      gwpy_4_0_1: 224 passed, 0 skipped
-      gwpy_4_0_2: 224 passed, 0 skipped
+      gwpy_4_0_1: 229 passed, 0 skipped
+      gwpy_4_0_2: 229 passed, 0 skipped
     exact_time_hdf5_regression:
       gwpy_4_0_1: 806 passed, 0 skipped
       gwpy_4_0_2: 806 passed, 0 skipped
     full_io_suite:
-      gwpy_4_0_1: 1163 passed, 8 approved optional skips
-      gwpy_4_0_2: 1149 passed, 23 approved optional skips
+      gwpy_4_0_1: 1168 passed, 8 skips
+      gwpy_4_0_2: 1154 passed, 23 skips
     unexpected_required_skips: 0
+
+observed_full_io_skips:
+  common:
+    - count: 1
+      node: tests/io/test_zarr_reader.py
+      reason: zarr tests require GWEXPY_ALLOW_ZARR=1
+    - count: 2
+      node: tests/io/test_audio_metadata.py
+      reason: no provenance mechanism available
+    - count: 2
+      node: gwpy/io/tests/test_datafind.py
+      reason: no GWDataFind server configured on this host
+    - count: 1
+      node: tests selected by tests/conftest.py optional-dependency guard
+      reason: missing requests_pelican
+    - count: 1
+      node: tests/io/test_ffldatafind.py
+      reason: Japanese-locale OS-error expectation is not portable on this host
+    - count: 1
+      node: gwpy/io/tests/test_nds2.py
+      reason: not implemented for Nds2DataType
+  gwpy_4_0_2_environment_only:
+    - count: 8
+      node: tests selected by tests/conftest.py optional-dependency guard
+      reason: missing gwpy.io.gwf.framecpp
+    - count: 6
+      node: tests selected by tests/conftest.py optional-dependency guard
+      reason: missing gssapi
+    - count: 1
+      node: tests/io/test_kerberos.py
+      reason: Kerberos or GSSAPI unavailable or not configured
+  classification: >-
+    These are environment/optional-backend skips, not required compatibility
+    nodes. The direct and focused affected matrices contain zero skips.
 
 terminal_recommendations:
   - member_id: gwexpy.timeseries.timeseries.TimeSeries/read
@@ -172,6 +253,7 @@ terminal_recommendations:
     fixtures:
       - native CSV writer kwargs and byte output
       - native HDF5 cross-read, topology, native attrs, and x0 bits
+      - closed path-owned and live caller-owned HDF5 Dataset return semantics
       - exact marker private augmentation without native-topology drift
       - complex output and only GWpy-supported dtype=complex round-trip
       - invalid writer keyword exception class and input non-mutation
@@ -186,11 +268,14 @@ terminal_recommendations:
     fixtures:
       - names and group selection by path and open handle
       - exact-sidecar names/group selection with private authority restoration
+      - exact BytesIO position/lifecycle and lossless start/end restoration
+      - private exact authority removal for padding and multi-source merge
       - positional names/start/end and bounded selection
       - missing dataset and outside-coverage exception classes
       - no source mutation
     evidence:
       - tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_read_matches_gwpy
+      - tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_exact_filelike_preserves_public_and_private_contracts
       - tests/io/test_reader_start_end_contract.py::TestChannelsThatDoNotCoverTheWindow
       - tests/io/test_reader_start_end_contract.py::TestWindowsTheFileDoesNotCover
       - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids
@@ -203,8 +288,11 @@ terminal_recommendations:
       - append, overwrite, and existing-file failure without mutation
       - exact entry default write and append with sidecar restoration
       - explicit enhanced layout and mode regression coverage
+      - default append reconciliation of existing dataset/group manifests
+      - path and caller-owned open-handle manifest append
     evidence:
       - tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_write_matches_gwpy
+      - tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_default_append_reconciles_existing_manifest
       - tests/io/test_gwpy_hdf5_compat.py::test_timeseriesdict_hdf5_append_preserves_existing_entries
       - tests/io/test_gwpy_hdf5_compat.py::test_timeseriesdict_hdf5_append_reconciles_native_file_without_manifest
 
@@ -225,12 +313,25 @@ terminal_recommendations:
     fixtures:
       - native CSV writer kwargs and byte output
       - native HDF5 topology, attrs, and bidirectional cross-read
+      - closed path-owned and live caller-owned HDF5 Dataset return semantics
       - complex native output and only GWpy-supported round-trip
       - uppercase suffix failure class and input non-mutation
     evidence:
       - tests/io/test_gwpy_override_terminal_io.py::test_frequencyseries_write_matches_gwpy
       - tests/io/test_gwpy_csv_phase4_compat.py::test_native_writer_kwargs_are_forwarded
       - tests/io/test_gwpy_csv_phase4_compat.py::test_complex_csv_matches_native_write_and_supported_roundtrip
+
+human_data_model_signoff:
+  status: required
+  release_gate: true
+  scope: >-
+    For a non-nanosecond HDF5 series whose requested end precedes the stored
+    epoch, both installed GWpy oracles return eight samples rather than an empty
+    result or an exception. v0.2.3 compatibility preserves that measured
+    selection, but a human must explicitly accept its scientific/data-model
+    meaning before release.
+  evidence:
+    - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids::test_window_before_data_with_non_ns_epoch_matches_gwpy
 
 verification:
   focused_affected_command: >-
@@ -251,9 +352,32 @@ verification:
     tests/frequencyseries/test_hdf5_layouts.py
   io_gates:
     registry_smoke: passed in both oracle environments
-    io_contract: 1418 passed, 9 approved optional skips, 1 deselected
-    io_conformance: 73 passed, 5 approved optional skips
-    io_optional: 71 passed, 2 approved optional skips
+    io_contract:
+      result: 1423 passed, 9 skips, 1 deselected
+      skip_classification: >-
+        Eight nodes have the same node/reason groups listed under
+        observed_full_io_skips.common. The ninth is
+        tests/table/test_root_eventtable_io.py, where optional uproot is not
+        installed. The deselected node is excluded by the gate's documented
+        not-network and not-nds selector.
+    io_conformance:
+      result: 73 passed, 5 skips
+      skip_classification:
+        - count: 1
+          node: tests/io_conformance/test_generated_read.py
+          reason: zarr tests require GWEXPY_ALLOW_ZARR=1
+        - count: 2
+          node: tests/io_conformance/test_read_conformance.py
+          reason: optional framel backend unavailable for framel aliases
+        - count: 2
+          node: tests/io_conformance/test_write_roundtrip.py
+          reason: optional framel module unavailable for framel aliases
+    io_optional:
+      result: 71 passed, 2 skips
+      skip_classification:
+        - count: 2
+          node: tests/io/test_audio_metadata.py
+          reason: no provenance mechanism available
   static:
     ruff: all checks passed
     format: all files formatted

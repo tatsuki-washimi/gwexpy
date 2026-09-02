@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from contextlib import nullcontext
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, SupportsIndex, cast
 
@@ -116,14 +117,25 @@ def _gwexpy_hdf5_augmentation_attrs(source: Any) -> set[str]:
 
     if isinstance(source, h5py.HLObject):
         return present(source)
+    position = None
     if not isinstance(source, (str, Path)):
-        return set()
+        try:
+            position = source.tell()
+            source.seek(position)
+        except (AttributeError, OSError, TypeError, ValueError):
+            return set()
     try:
         with h5py.File(source, "r") as h5file:
             return present(h5file)
-    except OSError:
+    except (OSError, TypeError, ValueError):
         # Let GWpy's public reader own invalid/missing-source semantics.
         return set()
+    finally:
+        if position is not None:
+            try:
+                source.seek(position)
+            except (AttributeError, OSError, TypeError, ValueError):
+                pass
 
 
 def _coerce_native_hdf5_result(cls, reader_result):
@@ -153,6 +165,10 @@ def _restore_native_hdf5_exact_state(source: Any, result: Any, group: Any) -> An
             ):
                 if not len(selected):
                     continue
+                if selected.span[0] < exact.span[0] or selected.span[1] > exact.span[1]:
+                    # Padding or a merge extends beyond this marker's source
+                    # span, so no one sidecar is authoritative for the result.
+                    continue
                 candidate = exact.crop(selected.span[0], selected.span[1])
             if (
                 candidate.shape != selected.shape
@@ -169,8 +185,15 @@ def _restore_native_hdf5_exact_state(source: Any, result: Any, group: Any) -> An
     if isinstance(source, h5py.HLObject):
         restore(source)
     else:
-        with h5py.File(source, "r") as h5file:
-            restore(h5file)
+        position = None
+        if not isinstance(source, (str, Path)):
+            position = source.tell()
+        try:
+            with h5py.File(source, "r") as h5file:
+                restore(h5file)
+        finally:
+            if position is not None:
+                source.seek(position)
     return result
 
 
@@ -1013,12 +1036,25 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             native_layout = "layout" not in kwargs or (
                 isinstance(requested_layout, str) and requested_layout.lower() == "gwpy"
             )
-            if fmt == "hdf5" and native_layout and "mode" not in kwargs:
+            append_requested = bool(kwargs.get("append", False))
+            target_augmentation_attrs = (
+                _gwexpy_hdf5_augmentation_attrs(target) if append_requested else set()
+            )
+            reconcile_manifest = bool(
+                target_augmentation_attrs & _GWEXPY_COLLECTION_HDF5_ATTRS
+            )
+            if (
+                fmt == "hdf5"
+                and native_layout
+                and "mode" not in kwargs
+                and not reconcile_manifest
+            ):
                 # Keep the ordinary route identical to GWpy.  Explicit
                 # dataset/group layouts and mode= remain GWexpy opt-ins.
                 native_kwargs = dict(kwargs)
                 native_kwargs.pop("layout", None)
                 return super().write(target, *args, **native_kwargs)
+            layout_was_explicit = "layout" in kwargs
             overwrite = bool(kwargs.pop("overwrite", False))
             append = bool(kwargs.pop("append", False))
             mode = kwargs.pop("mode", None)
@@ -1029,12 +1065,35 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             if append and mode is None:
                 mode = "a"
             merge = append or mode in ("a", "r+")
-            layout = normalize_layout(kwargs.pop("layout", "gwpy"))
-            with ensure_hdf5_file(
-                target,
-                mode=mode,
-                overwrite=overwrite and not append,
-            ) as h5f:
+            layout_request = kwargs.pop("layout", "gwpy")
+            hdf_context = (
+                nullcontext(target)
+                if isinstance(target, h5py.File)
+                else ensure_hdf5_file(
+                    target,
+                    mode=mode,
+                    overwrite=overwrite and not append,
+                )
+            )
+            with hdf_context as h5f:
+                stored_layout = None
+                if merge and reconcile_manifest:
+                    stored_layout = h5f.attrs.get("gwexpy_layout")
+                    if isinstance(stored_layout, bytes):
+                        stored_layout = stored_layout.decode("utf-8")
+                    if stored_layout is not None:
+                        stored_layout = normalize_layout(str(stored_layout))
+                if stored_layout is None:
+                    layout = normalize_layout(layout_request)
+                elif layout_was_explicit:
+                    layout = normalize_layout(layout_request)
+                    if layout != stored_layout:
+                        raise ValueError(
+                            "HDF5 append layout does not match the existing "
+                            f"GWexpy manifest: {layout!r} != {stored_layout!r}"
+                        )
+                else:
+                    layout = stored_layout
                 root_names = list(h5f.keys())
                 used = set(root_names)
                 if merge:

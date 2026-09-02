@@ -19,6 +19,7 @@ from gwpy.timeseries import TimeSeriesDict as GwpyTimeSeriesDict
 
 import gwexpy
 from gwexpy.frequencyseries import FrequencySeries
+from gwexpy.io.hdf5_collection import read_hdf5_keymap, read_hdf5_order
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 from gwexpy.timeseries.io.hdf5 import (
     SIDECAR_ATTRIBUTE_V1,
@@ -97,6 +98,30 @@ def _native_hdf_snapshot(path: Path) -> dict[str, Any]:
 
         h5file.visititems(capture)
     return snapshot
+
+
+def _assert_closed_hdf_writer_return(actual: Any, expected: Any) -> None:
+    """Compare the dataset handle returned for a path-owned HDF5 write."""
+    assert type(actual) is type(expected) is h5py.Dataset
+    assert not actual.id.valid
+    assert not expected.id.valid
+
+
+def _assert_open_hdf_writer_return(
+    actual: Any,
+    expected: Any,
+    actual_file: h5py.File,
+    expected_file: h5py.File,
+    *,
+    path: str,
+) -> None:
+    """Compare the live dataset returned for a caller-owned HDF5 handle."""
+    assert type(actual) is type(expected) is h5py.Dataset
+    assert actual.id.valid and expected.id.valid
+    assert actual.name == expected.name == path
+    assert actual.file == actual_file
+    assert expected.file == expected_file
+    np.testing.assert_array_equal(actual[()], expected[()])
 
 
 def _series_pair(kind: str, values: Any = None) -> tuple[Any, Any]:
@@ -230,13 +255,30 @@ def test_timeseries_write_matches_gwpy(tmp_path: Path) -> None:
 
     actual_hdf = tmp_path / "actual.h5"
     expected_hdf = tmp_path / "expected.h5"
-    assert actual.write(actual_hdf, format="hdf5", path="series") is not None
-    assert expected.write(expected_hdf, format="hdf5", path="series") is not None
+    actual_return = actual.write(actual_hdf, format="hdf5", path="series")
+    expected_return = expected.write(expected_hdf, format="hdf5", path="series")
+    _assert_closed_hdf_writer_return(actual_return, expected_return)
     assert _native_hdf_snapshot(actual_hdf) == _native_hdf_snapshot(expected_hdf)
     _assert_series_equal(
         GwpyTimeSeries.read(actual_hdf, format="hdf5", path="series"),
         expected,
     )
+
+    actual_handle_path = tmp_path / "actual-handle.h5"
+    expected_handle_path = tmp_path / "expected-handle.h5"
+    with (
+        h5py.File(actual_handle_path, "w") as actual_file,
+        h5py.File(expected_handle_path, "w") as expected_file,
+    ):
+        actual_return = actual.write(actual_file, format="hdf5", path="series")
+        expected_return = expected.write(expected_file, format="hdf5", path="series")
+        _assert_open_hdf_writer_return(
+            actual_return,
+            expected_return,
+            actual_file,
+            expected_file,
+            path="/series",
+        )
     _assert_series_equal(
         TimeSeries.read(expected_hdf, format="hdf5", path="series"),
         expected,
@@ -477,34 +519,20 @@ def test_timeseriesdict_write_matches_gwpy(tmp_path: Path) -> None:
     """TimeSeriesDict.write matches native topology and existing-file policy."""
 
     def make_pair(offset: float = 0) -> tuple[TimeSeriesDict, GwpyTimeSeriesDict]:
+        specs = (
+            ("H1:STRAIN", np.arange(4.0) + offset, "colon"),
+            ("nested/path", np.arange(4.0) + 10 + offset, "slash"),
+        )
         actual = TimeSeriesDict(
             {
-                "H1:STRAIN": TimeSeries(
-                    np.arange(4.0) + offset,
-                    t0=10,
-                    dt=0.5,
-                    unit="m",
-                    name="colon",
-                ),
-                "nested/path": TimeSeries(
-                    np.arange(4.0) + 10 + offset,
-                    t0=10,
-                    dt=0.5,
-                    unit="m",
-                    name="slash",
-                ),
+                key: TimeSeries(values.copy(), t0=10, dt=0.5, unit="m", name=name)
+                for key, values, name in specs
             }
         )
         expected = GwpyTimeSeriesDict(
             {
-                key: GwpyTimeSeries(
-                    value.value.copy(),
-                    t0=value.t0,
-                    dt=value.dt,
-                    unit=value.unit,
-                    name=value.name,
-                )
-                for key, value in actual.items()
+                key: GwpyTimeSeries(values.copy(), t0=10, dt=0.5, unit="m", name=name)
+                for key, values, name in specs
             }
         )
         return actual, expected
@@ -607,6 +635,152 @@ def test_timeseriesdict_write_matches_gwpy(tmp_path: Path) -> None:
     _assert_series_equal(gwpy_back["exact:new"], exact_new)
 
 
+@pytest.mark.parametrize("layout", ["dataset", "group"])
+@pytest.mark.parametrize("target_kind", ["path", "handle"])
+def test_timeseriesdict_default_append_reconciles_existing_manifest(
+    tmp_path: Path,
+    layout: str,
+    target_kind: str,
+) -> None:
+    """A default append cannot leave a prior GWexpy manifest stale."""
+    path = tmp_path / f"{layout}-{target_kind}.h5"
+    old = TimeSeriesDict({"old": TimeSeries([1.0, 2.0], t0=10, dt=0.5, name="old")})
+    new = TimeSeriesDict({"new": TimeSeries([3.0, 4.0], t0=10, dt=0.5, name="new")})
+    old.write(path, format="hdf5", layout=layout)
+
+    if target_kind == "path":
+        new.write(path, format="hdf5", append=True)
+    else:
+        with h5py.File(path, "a") as target:
+            new.write(target, format="hdf5", append=True)
+            assert target.id.valid
+
+    restored = TimeSeriesDict.read(path, format="hdf5")
+    assert list(restored) == ["old", "new"]
+    np.testing.assert_array_equal(restored["old"].value, [1.0, 2.0])
+    np.testing.assert_array_equal(restored["new"].value, [3.0, 4.0])
+
+    with h5py.File(path, "r") as h5file:
+        keymap = read_hdf5_keymap(h5file)
+        order = read_hdf5_order(h5file)
+        assert [keymap[name] for name in order] == ["old", "new"]
+        names = order if layout == "dataset" else [f"{name}/data" for name in order]
+
+    gwpy_visible = GwpyTimeSeriesDict.read(path, format="hdf5", names=names)
+    assert list(gwpy_visible) == names
+    np.testing.assert_array_equal(gwpy_visible[names[0]].value, [1.0, 2.0])
+    np.testing.assert_array_equal(gwpy_visible[names[1]].value, [3.0, 4.0])
+
+    before_mismatch = path.read_bytes()
+    other_layout = "group" if layout == "dataset" else "dataset"
+    with pytest.raises(ValueError):
+        TimeSeriesDict({"mismatch": TimeSeries([5.0], t0=10, dt=0.5)}).write(
+            path,
+            format="hdf5",
+            layout=other_layout,
+            append=True,
+        )
+    assert path.read_bytes() == before_mismatch
+
+
+def test_timeseriesdict_exact_filelike_preserves_public_and_private_contracts(
+    tmp_path: Path,
+) -> None:
+    """BytesIO inspection is non-owning; only lossless slices keep authority."""
+
+    def exact_blob(epoch_ns: int, values: list[float]) -> bytes:
+        target = io.BytesIO()
+        series = TimeSeriesDict(
+            {
+                "L1": TimeSeries(
+                    values,
+                    t0_ns=epoch_ns,
+                    dt=0.25,
+                    name="exact",
+                )
+            }
+        )
+        series.write(target, format="hdf5", group="science")
+        assert not target.closed
+        return target.getvalue()
+
+    blob = exact_blob(2_000_000_000, [1.0, 2.0, 3.0, 4.0])
+
+    def source_pair(payload: bytes) -> tuple[io.BytesIO, io.BytesIO]:
+        actual_source = io.BytesIO(payload)
+        expected_source = io.BytesIO(payload)
+        actual_source.seek(7)
+        expected_source.seek(7)
+        return actual_source, expected_source
+
+    actual_source, expected_source = source_pair(blob)
+    expected = GwpyTimeSeriesDict.read(
+        expected_source,
+        format="hdf5",
+        names=["L1"],
+        group="science",
+        start=2.25,
+        end=2.75,
+    )
+    actual = TimeSeriesDict.read(
+        actual_source,
+        format="hdf5",
+        names=["L1"],
+        group="science",
+        start=2.25,
+        end=2.75,
+    )
+    _assert_dict_equal(actual, expected)
+    assert actual["L1"]._gwex_t0_gps_ns == 2_250_000_000
+    assert actual_source.tell() == expected_source.tell()
+    assert not actual_source.closed and not expected_source.closed
+
+    padded_source, padded_oracle_source = source_pair(blob)
+    padded_oracle = GwpyTimeSeriesDict.read(
+        padded_oracle_source,
+        format="hdf5",
+        names=["L1"],
+        group="science",
+        start=1.75,
+        end=3.0,
+        pad=0,
+    )
+    padded = TimeSeriesDict.read(
+        padded_source,
+        format="hdf5",
+        names=["L1"],
+        group="science",
+        start=1.75,
+        end=3.0,
+        pad=0,
+    )
+    _assert_dict_equal(padded, padded_oracle)
+    assert not hasattr(padded["L1"], "_gwex_t0_gps_ns")
+    assert padded_source.tell() == padded_oracle_source.tell()
+    assert not padded_source.closed and not padded_oracle_source.closed
+
+    next_blob = exact_blob(3_000_000_000, [5.0, 6.0, 7.0, 8.0])
+    first_path = tmp_path / "first.h5"
+    second_path = tmp_path / "second.h5"
+    first_path.write_bytes(blob)
+    second_path.write_bytes(next_blob)
+    merged_sources = [first_path, second_path]
+    merged_oracle = GwpyTimeSeriesDict.read(
+        merged_sources,
+        format="hdf5",
+        names=["L1"],
+        group="science",
+    )
+    merged = TimeSeriesDict.read(
+        merged_sources,
+        format="hdf5",
+        names=["L1"],
+        group="science",
+    )
+    _assert_dict_equal(merged, merged_oracle)
+    assert not hasattr(merged["L1"], "_gwex_t0_gps_ns")
+
+
 @pytest.mark.parametrize("explicit", [False, True], ids=["suffix", "explicit"])
 def test_frequencyseries_read_matches_gwpy(tmp_path: Path, explicit: bool) -> None:
     """FrequencySeries.read keeps comments inert and preserves irregular axes."""
@@ -673,13 +847,30 @@ def test_frequencyseries_write_matches_gwpy(tmp_path: Path) -> None:
 
     actual_hdf = tmp_path / "actual.h5"
     expected_hdf = tmp_path / "expected.h5"
-    assert actual.write(actual_hdf, format="hdf5", path="spectrum") is not None
-    assert expected.write(expected_hdf, format="hdf5", path="spectrum") is not None
+    actual_return = actual.write(actual_hdf, format="hdf5", path="spectrum")
+    expected_return = expected.write(expected_hdf, format="hdf5", path="spectrum")
+    _assert_closed_hdf_writer_return(actual_return, expected_return)
     assert _native_hdf_snapshot(actual_hdf) == _native_hdf_snapshot(expected_hdf)
     _assert_series_equal(
         GwpyFrequencySeries.read(actual_hdf, format="hdf5", path="spectrum"),
         expected,
     )
+
+    actual_handle_path = tmp_path / "actual-handle.h5"
+    expected_handle_path = tmp_path / "expected-handle.h5"
+    with (
+        h5py.File(actual_handle_path, "w") as actual_file,
+        h5py.File(expected_handle_path, "w") as expected_file,
+    ):
+        actual_return = actual.write(actual_file, format="hdf5", path="spectrum")
+        expected_return = expected.write(expected_file, format="hdf5", path="spectrum")
+        _assert_open_hdf_writer_return(
+            actual_return,
+            expected_return,
+            actual_file,
+            expected_file,
+            path="/spectrum",
+        )
     _assert_series_equal(
         FrequencySeries.read(expected_hdf, format="hdf5", path="spectrum"),
         expected,
