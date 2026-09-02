@@ -1,0 +1,228 @@
+schema: gwexpy-v023-phase3-evidence-v1
+phase: spectral-compatibility-and-from-gps-terminal-mapping
+status: focused-green
+
+implementation_base: ef96a3a10188c2303c3de1dcc6bbafd9947c4c20
+
+skills:
+  - superpowers:test-driven-development
+  - gwexpy_conda_jobs
+  - extend_gwpy
+  - verify_physics
+
+oracle_isolation:
+  research_working_directory: /tmp
+  python_flags: -I -S
+  environment_removed:
+    - PYTHONPATH
+    - PYTHONHOME
+  user_site_disabled: true
+  purelib_added_explicitly: true
+  assertions:
+    - no GWexpy module was imported by the oracle process
+    - no repository or worktree path was present on the oracle sys.path
+  note: >-
+    Differential pytest runs execute GWexpy and the installed GWpy in the same
+    pinned cell. The expected results were first established independently in
+    the pristine oracle processes described here.
+
+oracles:
+  - environment: main
+    python: 3.12.12
+    gwpy: 4.0.1
+    numpy: 1.26.4
+    scipy: 1.13.1
+  - environment: gwexpy
+    python: 3.11.14
+    gwpy: 4.0.2
+    numpy: 1.26.4
+    scipy: 1.12.0
+oracle_version_difference: none observed in the Phase 3 fixture matrix
+
+comparators:
+  parent_spectral_exact:
+    finite_rtol: 0.0
+    finite_atol: 0.0
+    exact:
+      - shape
+      - dtype
+      - unit
+      - name
+      - channel
+      - epoch jd1 and jd2
+      - frequency axis values and unit
+      - time axis values and unit when present
+    nonfinite_masks:
+      - isnan on real and imaginary components
+      - isposinf on real and imaginary components
+      - isneginf on real and imaginary components
+  gwexpy_explicit_epsilon_formula:
+    finite_rtol: 1.0e-12
+    finite_atol: 0.0
+    exact:
+      - output unit
+      - name
+      - channel
+  failure_outcome:
+    exact:
+      - success or failure
+      - exception class
+
+contracts:
+  csd:
+    issue: 698
+    default: parent result and parent unit are authoritative
+    same_unit_fixture: no-finding
+    mixed_unit_fixture: fixed
+    corrected_unit_opt_in_added: false
+  rayleigh_spectrogram:
+    issue: 699
+    default: parent segment selection and numerical result are authoritative
+    fixtures:
+      even_exact_half_overlap: no-finding
+      even_three_quarter_overlap: fixed
+      odd_recommended_overlap: fixed
+    corrected_route:
+      visibility: private
+      consumer: TimeSeries.rayleigh_test
+      public_export_added: false
+  transfer_function:
+    issue: 702
+    parent_compatible_routes:
+      - steady with epsilon omitted
+      - steady with epsilon=None
+      - deprecated method=gwpy
+      - deprecated method=csd_psd
+      - deprecated method=auto with fftlength
+    parent_operation: csd[:size] / psd[:size]
+    exact_metadata:
+      - unit
+      - name
+      - channel
+      - epoch
+    extensions_preserved:
+      - steady with explicit numeric epsilon including 0.0
+      - transient mode
+      - transient alignment and downsampling
+  regularity_guards:
+    issue: 703
+    parent_default_routes:
+      TimeSeries.fft: parent AttributeError on a true irregular time axis
+      TimeSeries.psd: parent AttributeError on a true irregular time axis
+      TimeSeries.asd: parent AttributeError on a true irregular time axis
+      TimeSeries.csd: parent AttributeError on a true irregular time axis
+      TimeSeries.coherence: parent AttributeError on a true irregular time axis
+      FrequencySeries.ifft: parent AttributeError on a true irregular frequency axis
+    extension_guards_preserved:
+      - TimeSeries.fft mode=transient
+      - FrequencySeries.ifft mode=transient
+      - TimeSeries.rfft
+    terminal_fixtures:
+      parametric_regular: no-finding
+      explicit_regular_quantity_axis: no-finding
+      true_irregular_seconds: GWpy-fails
+      true_irregular_milliseconds: GWpy-fails
+      nearly_regular_float_axis: GWpy-fails
+      TimeSeries.rfft: GWexpy-only
+
+from_gps_terminal_mapping:
+  parent_issue: 704
+  evidence_source:
+    - docs/developers/plans/manifests/audit-manifest-v0.2.3-phase2.yaml
+    - tests/time/test_gwpy_phase2_compat.py
+  entries:
+    ordinary_integer:
+      state: no-finding
+    numeric_string:
+      state: no-finding
+    scientific_numeric_string:
+      state: no-finding
+    ordinary_fractional_gps:
+      state: no-finding
+    half_microsecond_float:
+      state: fixed
+      issue: 704
+      pre_fix: rounded to 125299 microseconds instead of the parent 125298
+    LIGOTimeGPS_like:
+      state: fixed
+      issue: 704
+      boundaries:
+        - ordinary nanoseconds
+        - 500 nanoseconds
+        - 1500 nanoseconds
+      pre_fix: rejected by the Astropy scalar route while the parent succeeded
+    exact_leap_second_1167264017:
+      state: GWpy-fails
+      exception: ValueError
+    ndarray_vectorization:
+      state: GWexpy-only
+      contract: maps the parent scalar route element by element
+    astropy_time_input:
+      state: GWexpy-only
+
+tdd:
+  red:
+    environment: gwexpy
+    gwpy: 4.0.2
+    collected_cases: 39
+    result: 22 failed, 17 passed
+    expected_failures:
+      - mixed-unit CSD unit
+      - Rayleigh 75 percent and odd recommended overlap values
+      - rayleigh_test public-route dependency
+      - steady transfer unit, name, and epoch metadata
+      - true-irregular TimeSeries spectral exception classes
+      - default FrequencySeries IFFT exception class
+    supplemental_green_cases:
+      - zero-denominator non-finite mask parity
+      - default auto-mode IFFT routing parity
+  green:
+    combined_focused_suite:
+      gwpy_4_0_1: 148 passed, 1 pre-existing skip, 2 expected failures
+      gwpy_4_0_2: 148 passed, 1 pre-existing skip, 2 expected failures
+    phase3_differential:
+      gwpy_4_0_1: 41 passed
+      gwpy_4_0_2: 41 passed
+    rayleigh_null_and_calibration:
+      gwpy_4_0_1: 50 passed
+      gwpy_4_0_2: 50 passed
+    related_regressions:
+      gwpy_4_0_1: 57 passed, 1 pre-existing skip, 2 expected failures
+      gwpy_4_0_2: 57 passed, 1 pre-existing skip, 2 expected failures
+
+physics:
+  parent_finite_values: bit-identical in every parent-backed fixture
+  mixed_unit_csd: >-
+    The parent unit is intentionally preserved even where a cross-unit label
+    may be scientifically preferable; a correction requires a later explicit
+    opt-in.
+  rayleigh: >-
+    Public compatibility uses the parent segment count. The GWexpy-only
+    rayleigh_test retains the corrected hop count, and its complete null-model,
+    odd-length, segment-layout, and calibration suite remains green.
+  explicit_epsilon: >-
+    The existing regularized formula and physical response unit are preserved.
+    A bare numeric epsilon still has an implicit PSD-scale interpretation and
+    remains an explicit GWexpy-only option.
+  transfer_epoch: >-
+    Direct parent arithmetic preserves numerator axis authority and avoids the
+    one-second drift observed when reconstructing a FrequencySeries from an
+    Astropy Time epoch near GPS 1000.
+  human_review: required for mixed-unit and Rayleigh semantic judgment
+
+static_validation:
+  ruff_changed_files: all checks passed
+  mypy_changed_source_files: success, no issues found in 4 source files
+  yaml_safe_load: valid
+  git_diff_check: clean
+
+focused_tests:
+  - tests/timeseries/test_spectral_gwpy_phase3_compat.py
+  - tests/statistics/test_rayleigh_null_model.py
+  - tests/timeseries/test_transfer_function_compat.py
+  - tests/timeseries/test_timeseries_extensions.py
+  - tests/timeseries/test_transform_axis_contracts.py
+  - tests/frequencyseries/test_ifft_gwpy_compat.py
+  - tests/frequencyseries/test_fs_methods.py::TestIfft
+  - tests/timeseries/test_numerical_contracts.py
+  - tests/timeseries/test_matrix_spectral.py

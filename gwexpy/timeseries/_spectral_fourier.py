@@ -165,12 +165,11 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         `FrequencySeries`
 
         """
-        self._check_regular("fft")
-
         if mode == "gwpy":
             return self._fft_gwpy(nfft=nfft, **kwargs)
 
         if mode == "transient":
+            self._check_regular("fft")
             return self._fft_transient(
                 nfft=nfft,
                 pad_mode=pad_mode,
@@ -367,35 +366,24 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         return self._super_ts().rfft(*args, **kwargs)
 
     def psd(self, *args: Any, **kwargs: Any) -> FrequencySeries:
-        self._check_regular("psd")
         FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         res = self._super_ts().psd(*args, **kwargs)
         return self._restore_spectral_metadata(res.view(FrequencySeries))
 
     def asd(self, *args: Any, **kwargs: Any) -> FrequencySeries:
-        self._check_regular("asd")
         FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         res = self._super_ts().asd(*args, **kwargs)
         return self._restore_spectral_metadata(res.view(FrequencySeries))
 
     def csd(self, other: Any, *args: Any, **kwargs: Any) -> FrequencySeries:
-        self._check_regular("csd")
         FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         res = self._super_ts().csd(other, *args, **kwargs)
-        # GWpy's csd sometimes returns incorrect units when inputs have different units
-        target_unit = (
-            self.unit * getattr(other, "unit", u.dimensionless_unscaled) / u.Hz
-        )
-        res_fs = res.view(FrequencySeries)
-        if res_fs.unit != target_unit:
-            res_fs.override_unit(target_unit)
-        return res_fs
+        return res.view(FrequencySeries)
 
     def coherence(self, *args: Any, **kwargs: Any) -> FrequencySeries:
-        self._check_regular("coherence")
         FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         res = self._super_ts().coherence(*args, **kwargs)
@@ -449,23 +437,33 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
 
         Notes
         -----
-        **Divergence from GWpy** (#506): the per-segment averaging uses
-        `_rayleigh_with_hop_count`, not GWpy's `rayleigh()`. GWpy advances
-        segment starts by ``fftlength - overlap`` but counts segments using
-        ``overlap``; those agree only at exactly 50% overlap, so for an odd
-        FFT length -- where the recommended Hann overlap is not
-        ``nfft // 2`` -- or for any other explicit overlap, GWpy omits valid
-        segments or requests short ones. This method derives both the count
-        and the slice starts from the same hop.
-
-        The reported statistic values therefore differ from
-        `gwpy.timeseries.TimeSeries.rayleigh_spectrogram()` in exactly those
-        configurations, and from GWexpy ``<=v0.1.11``. At the default
-        50%-overlap path the two agree. `TimeSeries.rayleigh_test()` rejects
-        the divergent overlaps outright, so this affects direct
-        `rayleigh_spectrogram()` callers only.
+        The default path preserves GWpy's segment selection and numerical
+        result. GWexpy's corrected hop-count implementation remains private
+        and is used only by the GWexpy-specific `TimeSeries.rayleigh_test()`.
 
         """
+        Spectrogram = ConverterRegistry.get_constructor("Spectrogram")
+
+        res = self._super_ts().rayleigh_spectrogram(
+            stride,
+            fftlength=fftlength,
+            overlap=overlap,
+            window=window,
+            nproc=nproc,
+            **kwargs,
+        )
+        return res.view(Spectrogram)
+
+    def _rayleigh_spectrogram_with_hop_count(
+        self,
+        stride: float,
+        fftlength: float | None = None,
+        overlap: float | None = 0,
+        window: WindowLike = "hann",
+        nproc: int = 1,
+        **kwargs: Any,
+    ) -> Spectrogram:
+        """Compute a Rayleigh spectrogram with the private corrected hop count."""
         Spectrogram = ConverterRegistry.get_constructor("Spectrogram")
 
         from gwpy.signal.spectral import _ui as spectral_ui

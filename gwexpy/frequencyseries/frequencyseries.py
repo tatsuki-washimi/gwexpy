@@ -788,7 +788,6 @@ class FrequencySeries(
             Additional arguments passed to parent ifft.
 
         """
-        self._check_regular("ifft")
         TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
 
         mode_to_use = mode
@@ -812,6 +811,8 @@ class FrequencySeries(
 
         if mode_to_use != "transient":
             raise ValueError(f"Unknown ifft mode: {mode}")
+
+        self._check_regular("ifft")
 
         # transient inverse: undo factor2 and 1/n normalization
         n_freq = len(self)

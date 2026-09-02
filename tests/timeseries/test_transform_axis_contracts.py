@@ -32,13 +32,19 @@ def test_transient_fft_one_sided_frequency_axis_even_and_odd_lengths():
             assert spectrum.frequencies[-1].to_value(u.Hz) < sample_rate / 2.0
 
 
-@pytest.mark.parametrize("method_name", ["fft", "psd", "asd"])
-def test_frequency_domain_transforms_reject_irregular_sampling(method_name):
+@pytest.mark.parametrize(
+    ("method_name", "missing_axis_attribute"),
+    [("fft", "dx"), ("psd", "sample_rate"), ("asd", "sample_rate")],
+)
+def test_frequency_domain_transforms_preserve_parent_irregular_axis_failure(
+    method_name,
+    missing_axis_attribute,
+):
     series = TimeSeries([1.0, 2.0, 3.0], times=[0.0, 1.0, 3.0] * u.s)
 
     method = getattr(series, method_name)
 
-    with pytest.raises(ValueError, match="requires a regular sample rate"):
+    with pytest.raises(AttributeError, match=missing_axis_attribute):
         method()
 
 

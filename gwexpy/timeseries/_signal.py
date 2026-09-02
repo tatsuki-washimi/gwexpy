@@ -1355,7 +1355,10 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             raise ValueError(f"mode must be 'steady' or 'transient', got: {mode}")
 
         def _divide_with_special_rules(
-            num_series: Any, den_series: Any, epsilon: float = 0.0
+            num_series: Any,
+            den_series: Any,
+            epsilon: float = 0.0,
+            unit_override: Any = None,
         ) -> Any:
             size = min(num_series.size, den_series.size)
             num = num_series[:size]
@@ -1418,6 +1421,8 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
                     "Failed to determine unit for transfer function.", exc_info=True
                 )
                 unit = None
+            if unit_override is not None:
+                unit = unit_override
 
             return num.__class__(
                 out_vals,
@@ -1445,7 +1450,16 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
                 average=average,
                 **kwargs,
             )
-            tf = _divide_with_special_rules(csd, psd, epsilon=epsilon or 0.0)
+            size = min(csd.size, psd.size)
+            if epsilon is None:
+                return csd[:size] / psd[:size]
+
+            tf = _divide_with_special_rules(
+                csd,
+                psd,
+                epsilon=epsilon,
+                unit_override=other.unit / self.unit,
+            )
             if other.name and self.name:
                 tf.name = f"{other.name} / {self.name}"
             return tf

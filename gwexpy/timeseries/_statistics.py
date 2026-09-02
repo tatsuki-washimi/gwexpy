@@ -446,8 +446,9 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
 
         # Each output column contains nstride + noverlap samples.  Welch
         # segments start one hop apart, where hop = nfft - noverlap.  The
-        # same hop is used by rayleigh_spectrogram(), so the null sample size
-        # and the actual statistic cannot diverge for odd FFT lengths.
+        # The private corrected estimator used below has the same hop, so the
+        # null sample size and actual statistic cannot diverge for odd FFT
+        # lengths. The public rayleigh_spectrogram() keeps GWpy semantics.
         nchunk = nstride + noverlap
         if nchunk < nfft:
             raise ValueError("not enough samples for one complete FFT segment")
@@ -469,7 +470,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
                 stacklevel=2,
             )
 
-        rs = self.rayleigh_spectrogram(
+        rs = cast(Any, self)._rayleigh_spectrogram_with_hop_count(
             stride=stride, fftlength=fftlength, overlap=overlap
         )
         return rayleigh_pvalue(rs, n_samples=n_samples, nfft=nfft, **kwargs)
