@@ -1037,8 +1037,10 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 isinstance(requested_layout, str) and requested_layout.lower() == "gwpy"
             )
             append_requested = bool(kwargs.get("append", False))
+            requested_mode = kwargs.get("mode")
+            merge_requested = append_requested or requested_mode in {"a", "r+"}
             target_augmentation_attrs = (
-                _gwexpy_hdf5_augmentation_attrs(target) if append_requested else set()
+                _gwexpy_hdf5_augmentation_attrs(target) if merge_requested else set()
             )
             reconcile_manifest = bool(
                 target_augmentation_attrs & _GWEXPY_COLLECTION_HDF5_ATTRS
@@ -1089,7 +1091,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                     layout = normalize_layout(layout_request)
                     if layout != stored_layout:
                         raise ValueError(
-                            "HDF5 append layout does not match the existing "
+                            "HDF5 merge layout does not match the existing "
                             f"GWexpy manifest: {layout!r} != {stored_layout!r}"
                         )
                 else:

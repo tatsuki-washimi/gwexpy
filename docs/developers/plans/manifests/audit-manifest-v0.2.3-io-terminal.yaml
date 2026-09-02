@@ -6,6 +6,7 @@ implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 phase_parent: 052162aa6a3352888010b3793d2b7fa9d8329afe
 lane_started_from: 1ede60dda1efa07c7b752bf9121e7d9a98cf4943
 independent_review_base: bf4e3b9f223bf16ef6acad8bb6d50d4b29967d3d
+merge_mode_review_base: c96e873e75f212ee30725f065cfd0525f0c7a680
 issues:
   - "#611"
   - "#639"
@@ -48,8 +49,9 @@ scope:
     and overlay grandfathered exact-time authority only after GWpy resolves an
     exact-sidecar file's public selection. TimeSeries and FrequencySeries CSV
     and HDF5 fixes from the reviewed Phase 0 and Phase 4 work are reused. A
-    default append to an existing GWexpy collection manifest is reconciled by
-    its existing explicit layout rather than leaving the manifest stale.
+    default append or explicit mode="a"/"r+" merge into an existing GWexpy
+    collection manifest is reconciled by its existing explicit layout rather
+    than leaving the manifest stale.
 
 route_contract:
   csv:
@@ -77,10 +79,11 @@ route_contract:
     collection_manifest: >-
       Existing explicit GWexpy collection layouts and mode= routes retain their
       enhanced implementation and manifest semantics. A later default
-      append=True detects those root attrs, reuses the stored dataset/group
-      layout, and refreshes keymap/order after successful entry writes so old
-      and new entries stay visible. A conflicting explicit append layout fails
-      before mutation.
+      append=True or explicit mode="a"/"r+" detects those root attrs, reuses
+      the stored dataset/group layout, and refreshes keymap/order after
+      successful entry writes so old and new entries stay visible. A
+      conflicting explicit merge layout fails before mutation. An ordinary
+      write without append or an explicit merge mode retains its prior route.
     exact_authority: >-
       The dataset-local epoch marker plus file _gwexpy_sidecar_json_v2 remain
       the grandfathered private authority. This lane does not redesign or
@@ -105,6 +108,7 @@ comparators:
     exact:
       - input object mutation
       - source file mutation on reads and failed writes
+      - raw bytes, topology, and attributes after rejected merge-layout mismatch
       - seekable file-like position and ownership
       - open HDF5 handle validity after reads
       - writer return type, validity, path, owning handle, and dataset payload
@@ -185,20 +189,31 @@ tdd:
         TypeError, so the merge-authority test uses two exact-sidecar Paths.
         Single-source BytesIO covers lossless names/group/start/end and padded
         selection, position, and lifecycle behavior directly.
+    explicit_merge_mode_followup:
+      gwpy_4_0_1: 12 failed, 12 passed
+      gwpy_4_0_2: 12 failed, 12 passed
+      mismatches:
+        - >-
+          Four mode/target combinations with a stored group layout and omitted
+          layout rewrote the manifest as dataset layout and hid the old entries.
+        - >-
+          Eight stored-layout/mode/target combinations with an explicitly
+          mismatching layout wrote new objects and replaced the manifest rather
+          than rejecting the request before mutation.
   green:
     direct_terminal_suite:
       file: tests/io/test_gwpy_override_terminal_io.py
-      gwpy_4_0_1: 14 passed, 0 skipped
-      gwpy_4_0_2: 14 passed, 0 skipped
+      gwpy_4_0_1: 38 passed, 0 skipped
+      gwpy_4_0_2: 38 passed, 0 skipped
     focused_affected_suite:
-      gwpy_4_0_1: 229 passed, 0 skipped
-      gwpy_4_0_2: 229 passed, 0 skipped
+      gwpy_4_0_1: 253 passed, 0 skipped
+      gwpy_4_0_2: 253 passed, 0 skipped
     exact_time_hdf5_regression:
       gwpy_4_0_1: 806 passed, 0 skipped
       gwpy_4_0_2: 806 passed, 0 skipped
     full_io_suite:
-      gwpy_4_0_1: 1168 passed, 8 skips
-      gwpy_4_0_2: 1154 passed, 23 skips
+      gwpy_4_0_1: 1192 passed, 8 skips
+      gwpy_4_0_2: 1178 passed, 23 skips
     unexpected_required_skips: 0
 
 observed_full_io_skips:
@@ -290,9 +305,13 @@ terminal_recommendations:
       - explicit enhanced layout and mode regression coverage
       - default append reconciliation of existing dataset/group manifests
       - path and caller-owned open-handle manifest append
+      - explicit mode="a"/"r+" manifest reconciliation by path and open handle
+      - omitted/matching layout success and mismatching layout preflight failure
+      - colon/slash logical-key preservation with GWpy physical-name cross-read
     evidence:
       - tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_write_matches_gwpy
       - tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_default_append_reconciles_existing_manifest
+      - tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_explicit_merge_mode_reconciles_existing_manifest
       - tests/io/test_gwpy_hdf5_compat.py::test_timeseriesdict_hdf5_append_preserves_existing_entries
       - tests/io/test_gwpy_hdf5_compat.py::test_timeseriesdict_hdf5_append_reconciles_native_file_without_manifest
 
@@ -353,7 +372,8 @@ verification:
   io_gates:
     registry_smoke: passed in both oracle environments
     io_contract:
-      result: 1423 passed, 9 skips, 1 deselected
+      gwpy_4_0_1: 1447 passed, 9 skips, 1 deselected
+      gwpy_4_0_2: 1447 passed, 9 skips, 1 deselected
       skip_classification: >-
         Eight nodes have the same node/reason groups listed under
         observed_full_io_skips.common. The ninth is
@@ -361,7 +381,8 @@ verification:
         installed. The deselected node is excluded by the gate's documented
         not-network and not-nds selector.
     io_conformance:
-      result: 73 passed, 5 skips
+      gwpy_4_0_1: 73 passed, 5 skips
+      gwpy_4_0_2: 73 passed, 5 skips
       skip_classification:
         - count: 1
           node: tests/io_conformance/test_generated_read.py
@@ -373,7 +394,8 @@ verification:
           node: tests/io_conformance/test_write_roundtrip.py
           reason: optional framel module unavailable for framel aliases
     io_optional:
-      result: 71 passed, 2 skips
+      gwpy_4_0_1: 71 passed, 2 skips
+      gwpy_4_0_2: 71 passed, 2 skips
       skip_classification:
         - count: 2
           node: tests/io/test_audio_metadata.py

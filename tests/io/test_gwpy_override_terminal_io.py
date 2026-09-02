@@ -683,6 +683,99 @@ def test_timeseriesdict_default_append_reconciles_existing_manifest(
     assert path.read_bytes() == before_mismatch
 
 
+@pytest.mark.parametrize("mode", ["a", "r+"])
+@pytest.mark.parametrize("target_kind", ["path", "handle"])
+@pytest.mark.parametrize("stored_layout", ["dataset", "group"])
+@pytest.mark.parametrize(
+    "layout_request",
+    ["omitted", "matching", "mismatching"],
+)
+def test_timeseriesdict_explicit_merge_mode_reconciles_existing_manifest(
+    tmp_path: Path,
+    mode: str,
+    target_kind: str,
+    stored_layout: str,
+    layout_request: str,
+) -> None:
+    """Explicit merge modes inherit or validate an existing manifest layout."""
+    path = tmp_path / f"{mode}-{target_kind}-{stored_layout}-{layout_request}.h5"
+    old_values = {
+        "old:colon": [1.0, 2.0],
+        "old/slash": [3.0, 4.0],
+    }
+    new_values = {
+        "new:colon": [5.0, 6.0],
+        "new/slash": [7.0, 8.0],
+    }
+    old = TimeSeriesDict(
+        {
+            key: TimeSeries(values, t0=10, dt=0.5, name=key)
+            for key, values in old_values.items()
+        }
+    )
+    new = TimeSeriesDict(
+        {
+            key: TimeSeries(values, t0=10, dt=0.5, name=key)
+            for key, values in new_values.items()
+        }
+    )
+    old.write(path, format="hdf5", layout=stored_layout)
+    before_bytes = path.read_bytes()
+    before_snapshot = _native_hdf_snapshot(path)
+
+    write_kwargs: dict[str, Any] = {"format": "hdf5", "mode": mode}
+    if layout_request == "matching":
+        write_kwargs["layout"] = stored_layout
+    elif layout_request == "mismatching":
+        write_kwargs["layout"] = "group" if stored_layout == "dataset" else "dataset"
+
+    def write(target: Any) -> None:
+        returned = new.write(target, **write_kwargs)
+        assert returned == target
+
+    if layout_request == "mismatching":
+        if target_kind == "path":
+            with pytest.raises(ValueError):
+                write(path)
+        else:
+            with h5py.File(path, mode) as target:
+                with pytest.raises(ValueError):
+                    write(target)
+                assert target.id.valid
+        assert path.read_bytes() == before_bytes
+        assert _native_hdf_snapshot(path) == before_snapshot
+        return
+
+    if target_kind == "path":
+        write(path)
+    else:
+        with h5py.File(path, mode) as target:
+            write(target)
+            assert target.id.valid
+
+    restored = TimeSeriesDict.read(path, format="hdf5")
+    all_values = {**old_values, **new_values}
+    assert list(restored) == list(all_values)
+    for key, values in all_values.items():
+        np.testing.assert_array_equal(restored[key].value, values)
+
+    with h5py.File(path, "r") as h5file:
+        keymap = read_hdf5_keymap(h5file)
+        order = read_hdf5_order(h5file)
+        assert h5file.attrs["gwexpy_layout"] == (
+            "dataset-per-entry" if stored_layout == "dataset" else "group-per-entry"
+        )
+        assert [keymap[name] for name in order] == list(all_values)
+        names = (
+            order if stored_layout == "dataset" else [f"{name}/data" for name in order]
+        )
+
+    gwpy_visible = GwpyTimeSeriesDict.read(path, format="hdf5", names=names)
+    assert list(gwpy_visible) == names
+    for physical, values in zip(names, all_values.values(), strict=True):
+        np.testing.assert_array_equal(gwpy_visible[physical].value, values)
+
+
 def test_timeseriesdict_exact_filelike_preserves_public_and_private_contracts(
     tmp_path: Path,
 ) -> None:
