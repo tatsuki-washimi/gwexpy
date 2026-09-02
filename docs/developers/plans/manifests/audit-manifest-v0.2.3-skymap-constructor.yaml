@@ -1,0 +1,56 @@
+schema: gwexpy-v023-skymap-constructor-evidence-v1
+phase: override-audit-closure
+status: focused-green
+
+implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
+phase_parent: 6e6813e3237baa5b59860eded316737fa8a2a2c3
+issues: [639, 704]
+
+skills:
+  - superpowers:test-driven-development
+  - extend_gwpy
+  - gwexpy_conda_jobs
+
+oracles:
+  - environment: main
+    python: 3.12.12
+    gwpy: 4.0.1
+  - environment: gwexpy
+    python: 3.11.14
+    gwpy: 4.0.2
+
+contract:
+  public_class: gwexpy.plot.SkyMap
+  gwpy_counterpart: gwpy.plot.Plot
+  data_bearing_constructor:
+    route: inherited Plot axes unless projection is explicitly supplied
+    compared:
+      - successful completion
+      - axes count and projection name
+      - plotted x and y source data
+  empty_constructor:
+    route: existing all-sky projection specialization
+    optional_dependency: ligo.skymap
+
+tdd:
+  red:
+    environment: gwexpy
+    gwpy: 4.0.2
+    result: 1 failed
+    cause: implicit all-sky projection was injected into a GWpy-valid TimeSeries plot
+    exception: AttributeError
+  green:
+    gwpy_4_0_1: 5 passed, 1 known pcolormesh presentation warning
+    gwpy_4_0_2: 5 passed, 1 known pcolormesh presentation warning
+    unexpected_required_skips: 0
+
+evidence:
+  - tests/plot/test_skymap_gwpy_constructor_compat.py::test_skymap_accepts_parent_timeseries_constructor_surface
+  - tests/test_skymap.py::test_skymap_init
+
+release_constraints:
+  new_public_api: false
+  new_dependency: false
+  presentation_parity_required: false
+  physics_review_required: false
+  override_inventory_regeneration_required: true

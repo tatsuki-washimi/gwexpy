@@ -52,8 +52,11 @@ class SkyMap(Plot):
             Keyword arguments passed to :class:`gwexpy.plot.Plot`.
 
         """
-        # Default projection: Mollweide in hour angle (RA) units
-        if "projection" not in kwargs and "geometry" not in kwargs:
+        # The implicit all-sky projection belongs to the empty specialized
+        # constructor.  Data-bearing calls are part of the inherited GWpy
+        # ``Plot(*data)`` surface and must use its normal axes unless callers
+        # explicitly request a projection.
+        if not args and "projection" not in kwargs and "geometry" not in kwargs:
             kwargs.setdefault("projection", "astro hours mollweide")
 
         # Ensure at least one axis if no data provided
