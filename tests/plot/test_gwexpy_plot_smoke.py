@@ -30,6 +30,9 @@ def test_timeseriesdict_plot_not_blank():
 
     plot = tsd.plot()
 
-    assert len(plot.axes) >= 2
+    artist_count = sum(
+        len(axis.lines) + len(axis.collections) + len(axis.images) for axis in plot.axes
+    )
+    assert artist_count >= 2
 
     plt.close(plot)

@@ -20,6 +20,9 @@ from typing import Any
 import numpy as np
 from astropy import units as u
 from astropy.time import Time
+from gwpy.io.registry import default_registry as io_registry
+from gwpy.io.registry import identify_factory
+from gwpy.timeseries import TimeSeries as GwpyTimeSeries
 
 from gwexpy.io.utils import (
     _consume_warning_state,
@@ -903,10 +906,35 @@ def write_timeseries_csv(
 try:
     from ._registration import register_timeseries_format  # noqa: E402
 
+    _native_timeseries_csv_reader = io_registry.get_reader("csv", GwpyTimeSeries)
+    _native_timeseries_csv_writer = io_registry.get_writer("csv", GwpyTimeSeries)
+
+    def _identify_enhanced_csv(
+        _origin: str,
+        filepath: str | Path | None,
+        _fileobj: Any,
+        *_args: Any,
+        **_kwargs: Any,
+    ) -> bool:
+        return filepath is not None and str(filepath).lower().endswith(".csv")
+
     register_timeseries_format(
         "csv",
         reader_dict=read_timeseriesdict_csv,
+        reader_single=_native_timeseries_csv_reader,
+        writer_single=_native_timeseries_csv_writer,
+        identifier_dict=_identify_enhanced_csv,
+        identifier_single=identify_factory("csv"),
         extension="csv",
+    )
+
+    # ``register_timeseries_format`` shares the single-series identifier with
+    # matrices by default.  CSV matrices keep the enhanced, case-insensitive
+    # route while the exact TimeSeries surface uses GWpy's native identifier.
+    from .. import TimeSeriesMatrix  # noqa: E402
+
+    io_registry.register_identifier(
+        "csv", TimeSeriesMatrix, _identify_enhanced_csv, force=True
     )
 except (ImportError, AttributeError):  # pragma: no cover
     pass

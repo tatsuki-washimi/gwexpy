@@ -15,6 +15,7 @@ from .provenance import validated_provenance
 
 if TYPE_CHECKING:
     from astropy.units import Quantity
+    from gwpy.plot import Plot
 
     from gwexpy.frequencyseries import FrequencySeriesList
     from gwexpy.timeseries import TimeSeriesList
@@ -99,6 +100,21 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
                  yindex=<Index [0., 1.] Hz>)>
 
     """
+
+    def plot(
+        self,
+        method: str = "pcolormesh",
+        figsize: tuple[float, float] = (12, 6),
+        xscale: str = "auto-gps",
+        **kwargs,
+    ) -> Plot:
+        """Plot the data for this `Spectrogram`."""
+        return super().plot(
+            method=method,
+            figsize=figsize,
+            xscale=xscale,
+            **kwargs,
+        )
 
     def __array_finalize__(self, obj: Any) -> None:
         """Detach provenance when GWpy creates a derived Spectrogram."""

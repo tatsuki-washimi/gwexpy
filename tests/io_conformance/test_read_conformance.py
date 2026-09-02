@@ -80,7 +80,7 @@ def _make_text_fixture(tmp_path: Path, suffix: str, fmt: str) -> SeriesCase:
         values=_TEXT_VALUES,
         sample_rate=1.0,
         t0=123.0,
-        name="ch1" if fmt == "csv" else None,
+        name=None,
         channel=None,
         unit=None,
     )

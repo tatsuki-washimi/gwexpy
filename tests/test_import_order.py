@@ -96,10 +96,11 @@ class TestImportOrderIsolated:
             assert "hdf.ndscope" not in before
             with tempfile.TemporaryDirectory() as directory:
                 path = Path(directory) / "series.csv"
+                second_path = Path(directory) / "series-second.csv"
                 series = TimeSeries(np.ones(4), sample_rate=1)
                 series.write(path, format="csv")
                 first = list(default_registry.get_formats(TimeSeries, "Write")["Format"])
-                series.write(path, format="csv", overwrite=True)
+                series.write(second_path, format="csv")
                 second = list(default_registry.get_formats(TimeSeries, "Write")["Format"])
             assert "gwexpy.timeseries.io" in sys.modules
             assert first.count("hdf.ndscope") == 1

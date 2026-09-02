@@ -1,0 +1,233 @@
+schema: gwexpy-v023-phase4-evidence-v1
+phase: plot-and-csv-default-route-compatibility
+status: focused-green
+
+implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
+phase_parent: b1fb47c43c9835d4472d70ea9c6ee6f2d50502ee
+
+skills:
+  - superpowers:test-driven-development
+  - audit_io_backends
+  - extend_gwpy
+  - gwexpy_conda_jobs
+
+oracles:
+  - environment: main
+    python: 3.12.12
+    gwpy: 4.0.1
+    numpy: 1.26.4
+  - environment: gwexpy
+    python: 3.11.14
+    gwpy: 4.0.2
+    numpy: 1.26.4
+oracle_version_difference: none observed in the Phase 4 fixture matrix
+oracle_execution: >-
+  Every differential case constructs the expected result with the installed
+  GWpy class in the same pinned environment, and constructs the observed result
+  independently with the GWexpy class. No expected numerical array, signature,
+  output text, or success/failure outcome is copied between the two objects.
+
+comparators:
+  public_signature:
+    exact:
+      - parameter order and names
+      - parameter kinds
+      - defaults
+      - annotations
+      - return annotation
+  plot_outcome:
+    exact:
+      - success or failure
+      - exception class
+    successful_result:
+      - GWpy Plot ancestry
+      - TimeSeriesDict artist labels
+    excluded:
+      - pixels
+      - style
+      - layout
+      - axes-count parity
+  csv_series:
+    finite_rtol: 0.0
+    finite_atol: 0.0
+    exact:
+      - success or failure
+      - exception class
+      - shape
+      - dtype
+      - unit
+      - axis values and unit
+      - name
+      - channel
+      - FrequencySeries epoch
+  csv_writer:
+    exact:
+      - return value
+      - UTF-8 output text
+      - forwarded NumPy writer kwargs
+
+plot_contracts:
+  issue: 706
+  TimeSeries.plot:
+    layout: [method, figsize, xscale]
+    defaults: [plot, [12, 4], auto-gps]
+    success_fixture: [plot, [10, 4], linear]
+    step_outcome: GWpy-fails-TypeError
+  FrequencySeries.plot:
+    layout: [method, xscale]
+    defaults: [plot, log]
+    success_fixture: [plot, linear]
+    step_outcome: GWpy-fails-TypeError
+    negative_hz_power_yscale_default: preserved
+  Spectrogram.plot:
+    layout: [method, figsize, xscale]
+    defaults: [pcolormesh, [12, 6], auto-gps]
+    success_fixture: [imshow, [10, 6], linear]
+    step_outcome: GWpy-fails-TypeError
+  TimeSeriesDict.plot:
+    layout: [label, method, figsize, xscale]
+    defaults: [key, plot, [12, 4], auto-gps]
+    success_fixture: [name, plot, [10, 4], linear]
+    step_outcome: compatible-success
+    input_route:
+      overlay: values-view container
+      separate: expanded values
+  binding_matrix:
+    - every supported positional prefix
+    - every positional and keyword duplicate
+    - one excess positional argument for each class
+    - arbitrary valid artist kwargs
+
+csv_contracts:
+  parent_issue: 704
+  ordinary_TimeSeries_read:
+    condition: >-
+      format is csv, or the lower-case .csv suffix identifies csv, and none of
+      config/channels/timezone/resample/resample_method is present
+    route: captured GWpy native csv reader registered for exact TimeSeries
+  enhanced_TimeSeries_read:
+    condition: >-
+      format is absent, None, or csv and at least one enhanced-only key is
+      present; an explicit None value still selects this route
+    route: existing enhanced reader
+  explicit_non_csv_TimeSeries_read:
+    condition: any enhanced-only key is present with a non-csv format
+    route: explicit format remains authoritative
+    outcome_in_fixture: TypeError matching the selected txt reader contract
+  ordinary_TimeSeries_write:
+    route: captured GWpy native csv writer registered for exact TimeSeries
+  direct_helpers:
+    read_timeseries_csv: enhanced semantics retained
+    write_timeseries_csv: enhanced semantics retained
+  FrequencySeries:
+    read: captured GWpy native csv reader registered for exact class
+    write: captured GWpy native csv writer registered for exact class
+  collections:
+    TimeSeriesDict_reader: enhanced
+    TimeSeriesMatrix_reader: enhanced
+    uppercase_matrix_identifier: enhanced case-insensitive behavior retained
+  identifier:
+    exact_single_TimeSeries: GWpy case-sensitive identify_factory csv
+    exact_single_FrequencySeries: GWpy case-sensitive identify_factory csv
+    uppercase_single_suffix: GWpy-fails-IORegistryError
+  reader_fixtures:
+    - plain numeric data
+    - delimiter
+    - commented header
+    - non-comment header failure
+    - skiprows
+    - dtype
+    - usecols
+    - TimeSeries start/end crop
+    - FrequencySeries start/end TypeError
+    - file-like input
+  writer_fixtures:
+    - lower-case suffix and explicit format
+    - delimiter/header/comments/fmt forwarding
+    - unknown keyword TypeError
+    - excess positional TypeError
+    - return value None
+  complex_data:
+    write: compatible success with exact text output
+    default_read: GWpy-fails-ValueError
+    dtype_complex_read: compatible success
+    roundtrip_requirement: applied only to the dtype=complex route where GWpy succeeds
+
+from_gps_terminal_evidence:
+  parent_issue: 704
+  evidence_sources:
+    - docs/developers/plans/manifests/audit-manifest-v0.2.3-phase2.yaml
+    - docs/developers/plans/manifests/audit-manifest-v0.2.3-phase3.yaml
+    - tests/time/test_gwpy_phase2_compat.py
+  entries:
+    ordinary_integer: no-finding
+    numeric_string: no-finding
+    scientific_numeric_string: no-finding
+    ordinary_fractional_gps: no-finding
+    half_microsecond_float: fixed
+    LIGOTimeGPS_like: fixed
+    exact_leap_second_1167264017: GWpy-fails
+    ndarray_vectorization: GWpy-fails-with-GWexpy-extension
+    astropy_time_input: GWpy-fails-with-GWexpy-extension
+  unreviewed: 0
+  differential_required: 0
+  inventory_application: parent override-inventory regeneration after this commit
+
+tdd:
+  red:
+    environment: gwexpy
+    gwpy: 4.0.2
+    collected_cases: 67
+    result: 37 failed, 30 passed
+    expected_failures:
+      plot: 9
+      csv: 28
+    primary_causes:
+      - four PlotMixin-only signatures rejected supported positional arguments
+      - TimeSeries CSV public read and write always intercepted the native route
+      - FrequencySeries used a custom permissive reader and lacked an exact identifier
+      - TimeSeriesDict passed the dict instead of the GWpy values-container routes
+  green:
+    phase4_differential:
+      gwpy_4_0_1: 81 passed, 0 skipped
+      gwpy_4_0_2: 81 passed, 0 skipped
+    affected_regression_suite:
+      environment: gwexpy
+      result: 1770 passed, 29 pre-existing optional skips
+      warnings: 34 dependency or presentation warnings outside the Phase 4 comparator
+    analysis_plot_regressions:
+      environment: gwexpy
+      result: 68 passed
+      warnings: 4 dependency or existing validation warnings
+    unexpected_required_skips: 0
+
+typing_fallout:
+  file: gwexpy/analysis/coupling_result.py
+  change: CouplingResult.plot_cf kwargs annotation changed from object to Any
+  reason: >-
+    The exact typed FrequencySeries.plot signature makes a dict[str, object]
+    expansion potentially collide with typed method/xscale parameters in mypy.
+    Plot kwargs are dynamically typed, and Any was already imported.
+  runtime_change: none
+  parameter_kind_change: none
+
+release_constraints:
+  new_public_api: false
+  new_dependency: false
+  presentation_parity_required: false
+  workflow_changed: false
+  override_inventory_changed_by_phase4: false
+
+static_validation:
+  ruff_changed_files: all checks passed
+  mypy_changed_source_files: success, no issues found in 7 source files
+  yaml_safe_load: valid
+  git_diff_check: clean
+
+focused_tests:
+  - tests/plot/test_gwpy_phase4_compat.py
+  - tests/io/test_gwpy_csv_phase4_compat.py
+  - tests/plot/test_gwexpy_plot_smoke.py
+  - tests/io/test_csv_txt_contract.py
+  - tests/io_conformance/test_read_conformance.py
+  - tests/test_import_order.py

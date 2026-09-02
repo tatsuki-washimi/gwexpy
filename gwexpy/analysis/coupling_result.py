@@ -105,7 +105,7 @@ class CouplingResult:
         self,
         figsize: tuple[float, float] | None = None,
         xlim: tuple[float, float] | None = None,
-        **kwargs: object,
+        **kwargs: Any,
     ) -> Plot:
         """Plot the Coupling Function and its Upper Limit."""
         # Crop data if xlim provided

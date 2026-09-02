@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Any, SupportsIndex, cast
+from typing import TYPE_CHECKING, Any, SupportsIndex, cast
 
 import h5py
 
@@ -58,6 +58,9 @@ from ._gwf_io import (
 )
 from .spectral import coherence_matrix_from_collection, csd_matrix_from_collection
 
+if TYPE_CHECKING:
+    from gwpy.plot import Plot
+
 
 def _parse_fft_positional_args(
     args: tuple[Any, ...],
@@ -91,9 +94,7 @@ def _coerce_reader_result(cls, reader_result):
     return result
 
 
-def _is_timeseries_hdf5_dataset(
-    obj: Any, *, allow_missing_xunit: bool = False
-) -> bool:
+def _is_timeseries_hdf5_dataset(obj: Any, *, allow_missing_xunit: bool = False) -> bool:
     """Return whether an HDF5 dataset is eligible as a TimeSeries entry."""
     if not isinstance(obj, h5py.Dataset) or obj.ndim != 1:
         return False
@@ -161,6 +162,47 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 channel=None)>}
 
     """
+
+    def plot(
+        self,
+        label: str = "key",
+        method: str = "plot",
+        figsize: tuple[float, float] = (12, 4),
+        xscale: str = "auto-gps",
+        **kwargs,
+    ) -> Plot:
+        """Plot the data for this `TimeSeriesDict`."""
+        kwargs.update(
+            {
+                "method": method,
+                "label": label,
+                "figsize": figsize,
+                "xscale": xscale,
+            }
+        )
+
+        plot_type = ConverterRegistry.get_constructor("Plot")
+        if kwargs.get("separate", False):
+            plot = plot_type(*self.values(), **kwargs)
+        else:
+            plot = plot_type(self.values(), **kwargs)
+
+        artist_attribute = {"plot": "lines", "scatter": "collections"}.get(
+            method, "lines"
+        )
+        artists = [
+            artist for axis in plot.axes for artist in getattr(axis, artist_attribute)
+        ]
+        for key, artist in zip(self, artists, strict=True):
+            if label.lower() == "name":
+                artist_label = self[key].name
+            elif label.lower() == "key":
+                artist_label = str(key)
+            else:
+                artist_label = label
+            artist.set_label(artist_label)
+
+        return plot
 
     @classmethod
     def read(cls, source, *args: Any, **kwargs: Any):  # type: ignore[override]
@@ -919,16 +961,13 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                         ):
                             eligible.append(name)
                     eligible_set = set(eligible)
-                    keymap = {
-                        name: stored_keymap.get(name, name) for name in eligible
-                    }
+                    keymap = {name: stored_keymap.get(name, name) for name in eligible}
 
                     logical_to_physical: dict[str, str] = {}
                     for physical, logical in keymap.items():
                         if logical in logical_to_physical:
                             raise ValueError(
-                                "ambiguous existing HDF5 logical key "
-                                f"{logical!r}"
+                                f"ambiguous existing HDF5 logical key {logical!r}"
                             )
                         logical_to_physical[logical] = physical
 

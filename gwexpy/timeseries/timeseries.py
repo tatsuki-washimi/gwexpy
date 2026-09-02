@@ -16,7 +16,6 @@ from __future__ import annotations
 from contextvars import ContextVar
 from datetime import date
 from operator import index
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, SupportsIndex, cast
 
 import numpy as np
@@ -56,6 +55,8 @@ from ._statistics import StatisticsMixin
 # Import legacy for remaining methods
 
 if TYPE_CHECKING:
+    from gwpy.plot import Plot
+
     from gwexpy.timeseries import TimeSeriesDict
 
 
@@ -63,6 +64,9 @@ _SUPPRESS_EXACT_FINALIZE_FROM: ContextVar[frozenset[int]] = ContextVar(
     "_SUPPRESS_EXACT_FINALIZE_FROM", default=frozenset()
 )
 _EXACT_STATE_KEYS = frozenset({"_gwex_t0_gps_ns", "_gwex_dt_gps_ns"})
+_CSV_ENHANCED_READER_KEYS = frozenset(
+    {"config", "channels", "timezone", "resample", "resample_method"}
+)
 
 
 def _is_gwexpy_only_epoch(value: object) -> bool:
@@ -184,6 +188,17 @@ class TimeSeries(
 
     """
 
+    def plot(
+        self,
+        method: str = "plot",
+        figsize: tuple[int, int] = (12, 4),
+        xscale: str = "auto-gps",
+        **kwargs,
+    ) -> Plot:
+        """Plot the data for this timeseries."""
+        kwargs.update(figsize=figsize, xscale=xscale)
+        return super().plot(method=method, **kwargs)
+
     @classmethod
     def read(cls, source, *args, **kwargs):  # type: ignore[override]
         """Read a `TimeSeries` from a supported source.
@@ -199,7 +214,6 @@ class TimeSeries(
         register_all()
 
         fmt = kwargs.get("format")
-        source_path = Path(source) if isinstance(source, (str, Path)) else None
         if fmt in {"nc", "netcdf4"}:
             from .io.netcdf4_ import read_timeseries_netcdf4
 
@@ -218,14 +232,12 @@ class TimeSeries(
             reader_kwargs = dict(kwargs)
             reader_kwargs.pop("format", None)
             return cls(read_timeseries_zarr(source, **reader_kwargs))
-        if fmt == "csv" or (
-            fmt is None
-            and source_path is not None
-            and source_path.suffix.lower() == ".csv"
-        ):
+        if fmt in {None, "csv"} and not _CSV_ENHANCED_READER_KEYS.isdisjoint(kwargs):
             from .io.csv_enhanced import read_timeseries_csv
 
-            return read_timeseries_csv(source, **kwargs)
+            reader_kwargs = dict(kwargs)
+            reader_kwargs.pop("format", None)
+            return read_timeseries_csv(source, **reader_kwargs)
 
         source, gwf_format = _prepare_gwf_parallel_source(
             source, kwargs.get("format"), kwargs
@@ -286,26 +298,10 @@ class TimeSeries(
         return super().read(source, *args, **kwargs)
 
     def write(self, target, *args, **kwargs):  # type: ignore[override]
-        """Write a `TimeSeries` to a supported target.
-
-        This override preserves minimal metadata for direct CSV round-trips.
-        """
+        """Write a `TimeSeries` through the registered I/O handlers."""
         from gwexpy._bootstrap import register_all
 
         register_all()
-
-        fmt = kwargs.get("format")
-        target_path = Path(target) if isinstance(target, (str, Path)) else None
-        if fmt == "csv" or (
-            fmt is None
-            and target_path is not None
-            and target_path.suffix.lower() == ".csv"
-        ):
-            from .io.csv_enhanced import write_timeseries_csv
-
-            write_kwargs = dict(kwargs)
-            write_kwargs.pop("format", None)
-            return write_timeseries_csv(self, target, **write_kwargs)
         return super().write(target, *args, **kwargs)
 
     def _get_meta_for_constructor(self) -> dict[str, Any]:

@@ -25,7 +25,9 @@ def test_csv_timeseries_roundtrip_autodetect(tmp_path):
     ts2 = TimeSeries.read(path)
 
     np.testing.assert_allclose(ts2.value, ts.value)
-    assert str(ts2.unit) == str(ts.unit)
+    np.testing.assert_allclose(ts2.times.value, ts.times.value)
+    assert str(ts2.unit) == ""
+    assert ts2.name is None
 
 
 def test_csv_timeseriesdict_reads_single_file(tmp_path):
