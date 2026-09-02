@@ -35,12 +35,12 @@ oracle_runs:
     python: 3.11.14
     gwpy: 4.0.2
     version_source: importlib.metadata.version
-    result: 100 passed
+    result: 109 passed
   - environment: main
     python: 3.12.12
     gwpy: 4.0.1
     version_source: importlib.metadata.version
-    result: 100 passed
+    result: 109 passed
 constructor_routing:
   gwpy_supported_pass_through:
     - numeric scalar
@@ -57,6 +57,9 @@ constructor_routing:
     - numeric date-shaped tuple or list of length 3 through 7
   parent_call_contract: exactly once with supported epoch object unchanged
   parent_failure_contract: propagated without retry
+  date_component_contract: parsed once through scalar gwpy.time.to_gps
+  exact_epoch_conflicts: t0, epoch, x0, xindex, times, or positional t0
+  normalized_axis_unit_precedence: explicit time-equivalent xunit before dt.unit
 focused_tests:
   - tests/timeseries/test_constructor_compat.py
   - tests/timeseries/test_exact_gps_epoch.py

@@ -122,7 +122,7 @@ class TimeSeries(
     t0_ns : `int`, optional, keyword-only
         Exact GPS epoch in integer nanoseconds. This is the authoritative
         epoch representation for :attr:`t0_gps_ns`; it cannot be combined
-        with ``t0``, ``epoch``, ``x0``, or ``times``.
+        with ``t0``, ``epoch``, ``x0``, ``xindex``, or ``times``.
 
     dt : `float`, `~astropy.units.Quantity`, optional, default: `1`
         Time resolution for these data.
@@ -349,7 +349,7 @@ class TimeSeries(
             # A second positional argument is therefore a competing epoch
             # authority.  Do not try to compare a float/time-like value with
             # an exact integer: callers must select one authority explicitly.
-            conflicting = {"t0", "epoch", "x0", "times"}.intersection(kwargs)
+            conflicting = {"t0", "epoch", "x0", "xindex", "times"}.intersection(kwargs)
             if len(args) >= 2 or conflicting:
                 names = ", ".join(sorted(conflicting))
                 if len(args) >= 2:
@@ -373,21 +373,33 @@ class TimeSeries(
                 if dt.unit != u.dimensionless_unscaled and phys != "time":
                     should_coerce = False
 
+        def _target_axis_unit() -> u.UnitBase:
+            explicit_xunit: u.UnitBase | None = None
+            if xunit is not None:
+                try:
+                    explicit_xunit = u.Unit(xunit)
+                except (ValueError, TypeError):
+                    pass
+                else:
+                    if explicit_xunit.is_equivalent(u.s):
+                        return explicit_xunit
+            if isinstance(dt, u.Quantity):
+                return dt.unit
+            if explicit_xunit is not None:
+                return explicit_xunit
+            return u.s
+
         if should_coerce:
             # Determine target unit for t0/epoch normalization
-            target_unit = u.s
-            if isinstance(dt, u.Quantity):
-                target_unit = dt.unit
-            else:
-                xunit = kwargs.get("xunit")
-                if xunit is not None:
-                    try:
-                        target_unit = u.Unit(xunit)
-                    except (ValueError, TypeError):
-                        pass
+            target_unit = _target_axis_unit()
 
             def normalize_epoch(value: object) -> object:
-                epoch_q = _coerce_t0_gps(value)
+                if isinstance(value, (tuple, list)):
+                    from gwpy.time import to_gps as gwpy_to_gps
+
+                    epoch_q = u.Quantity(float(gwpy_to_gps(value)), u.s)
+                else:
+                    epoch_q = _coerce_t0_gps(value)
                 if epoch_q is None:
                     return value
                 try:
@@ -421,15 +433,7 @@ class TimeSeries(
             # for compatibility, while keeping the supplied integer as the
             # only exact authority.  Normalise into the actual axis unit so
             # GWpy does not reinterpret seconds as (for example) nanoseconds.
-            target_unit = u.s
-            dt = kwargs.get("dt")
-            if isinstance(dt, u.Quantity):
-                target_unit = dt.unit
-            elif kwargs.get("xunit") is not None:
-                try:
-                    target_unit = u.Unit(kwargs["xunit"])
-                except (TypeError, ValueError):
-                    pass
+            target_unit = _target_axis_unit()
             kwargs["t0"] = float(u.Quantity(exact_t0_ns, u.ns).to_value(target_unit))
 
         new = super().__new__(cls, data, *args, **kwargs)

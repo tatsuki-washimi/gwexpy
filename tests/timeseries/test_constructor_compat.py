@@ -94,6 +94,33 @@ def test_gwexpy_only_epoch_uses_same_positional_and_keyword_route(
 
 
 @pytest.mark.parametrize(
+    ("epoch", "expected_gps"),
+    [
+        ((2017, 1, 1), 1_167_264_018.0),
+        ([2017, 1, 1, 0, 0, 0, 123_456], 1_167_264_018.123_456),
+    ],
+)
+@pytest.mark.parametrize("form", ["positional", "keyword"])
+def test_date_component_epoch_uses_scalar_gwpy_date_parsing(
+    epoch: object, expected_gps: float, form: str
+) -> None:
+    if form == "positional":
+        series = TimeSeries([1.0, 2.0], None, epoch, 1 * u.s)
+    else:
+        series = TimeSeries([1.0, 2.0], t0=epoch, dt=1 * u.s)
+
+    assert series.t0.to_value(u.s) == pytest.approx(expected_gps, abs=1e-7)
+
+
+@pytest.mark.parametrize("epoch", [(2017, 13, 1), [2017, 13, 1]])
+def test_invalid_date_component_epoch_preserves_scalar_parser_error(
+    epoch: object,
+) -> None:
+    with pytest.raises(ValueError):
+        TimeSeries([1.0, 2.0], t0=epoch, dt=1 * u.s)
+
+
+@pytest.mark.parametrize(
     ("epoch", "error"),
     [
         ("2017-01-01T00:00:00", ValueError),
@@ -154,3 +181,43 @@ def test_parent_constructor_failure_is_not_retried() -> None:
             TimeSeries([1.0, 2.0], t0=1000, dt=1 * u.ms)
 
     parent.assert_called_once()
+
+
+def test_t0_ns_rejects_xindex_as_a_competing_epoch_authority() -> None:
+    with pytest.raises(TypeError, match=r"t0_ns.*xindex"):
+        TimeSeries(
+            [1.0, 2.0],
+            t0_ns=1_167_264_018_000_000_000,
+            dt=1 * u.s,
+            xindex=[100.0, 101.0] * u.s,
+        )
+
+
+def test_iso_epoch_normalization_prefers_explicit_xunit_to_dt_unit() -> None:
+    series = TimeSeries(
+        [1.0, 2.0],
+        t0="2017-01-01T00:00:00",
+        dt=1 * u.ms,
+        xunit=u.s,
+    )
+
+    assert series.times.unit == u.s
+    assert series.dt.to_value(u.s) == pytest.approx(0.001)
+    assert series.t0.to_value(u.s) == pytest.approx(1_167_264_018.0, abs=1e-7)
+
+
+def test_t0_ns_visible_epoch_prefers_explicit_xunit_to_dt_unit() -> None:
+    exact_t0_ns = 1_167_264_018_123_456_789
+    series = TimeSeries(
+        [1.0, 2.0],
+        t0_ns=exact_t0_ns,
+        dt=1 * u.ms,
+        xunit=u.s,
+    )
+
+    assert series.times.unit == u.s
+    assert series.dt.to_value(u.s) == pytest.approx(0.001)
+    assert series.t0.to_value(u.s) == pytest.approx(
+        exact_t0_ns / 1_000_000_000, rel=0, abs=1e-6
+    )
+    assert series.t0_gps_ns == exact_t0_ns
