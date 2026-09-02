@@ -5,11 +5,13 @@ from __future__ import annotations
 import copy
 import importlib
 import importlib.util
+import inspect
 import json
 import os
 import re
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 from importlib.metadata import version
 from pathlib import Path
 from types import ModuleType
@@ -660,10 +662,10 @@ def test_manifest_has_terminal_structural_population_and_canonical_json() -> Non
         ),
         "provisional_states": ["unreviewed", "differential-required"],
         "public_root_rule": (
-            "byte-sorted gwexpy Python paths; literal top-level list/tuple __all__; "
-            "static vars(module) exports plus two-pass unique canonical-class-name "
-            "lazy alias association; canonical GWexpy class identity; internal "
-            "root exclusions"
+            "byte-sorted gwexpy Python paths; final literal top-level list/tuple "
+            "__all__; full static vars(module) candidates plus two-pass unique "
+            "canonical-class-name lazy alias association; canonical GWexpy class "
+            "identity; internal root exclusions"
         ),
         "terminal_states": ["fixed", "no-finding", "GWpy-fails", "GWexpy-only"],
         "upstream_dependency_provenance": UPSTREAM_DEPENDENCY_PROVENANCE,
@@ -747,6 +749,133 @@ def test_lazy_class_alias_routing_fails_closed_when_not_unique() -> None:
         audit._select_unique_lazy_class("Duplicate", [First, Second])
 
 
+def _write_synthetic_export_module(repository: Path, module: str, source: str) -> None:
+    path = repository.joinpath(*module.split("."))
+    path = path.with_suffix(".py")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(source, encoding="utf-8")
+
+
+def _synthetic_gwpy_class(name: str, module: str) -> type[Any]:
+    from gwpy.types import Array as GwpyArray
+
+    return type(name, (GwpyArray,), {"__module__": module})
+
+
+def test_lazy_only_class_is_found_in_full_explicit_module_namespace(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    audit = _load_audit_module()
+    _write_synthetic_export_module(
+        tmp_path,
+        "gwexpy.public",
+        '__all__ = ["Ghost", "helper", "ALL_CAPS"]\n',
+    )
+    _write_synthetic_export_module(
+        tmp_path,
+        "gwexpy.hidden",
+        '__all__ = ["helper"]\nclass Ghost(Array):\n    pass\n',
+    )
+    public = ModuleType("gwexpy.public")
+    setattr(public, "__all__", ["Ghost", "helper", "ALL_CAPS"])
+
+    def reject_dynamic_lookup(name: str) -> object:
+        raise AssertionError(f"dynamic lookup executed for {name}")
+
+    setattr(public, "__getattr__", reject_dynamic_lookup)
+    hidden = ModuleType("gwexpy.hidden")
+    hidden.helper = object()  # type: ignore[attr-defined]
+    ghost = _synthetic_gwpy_class("Ghost", "gwexpy.hidden")
+    hidden.Ghost = ghost  # type: ignore[attr-defined]
+    modules = {public.__name__: public, hidden.__name__: hidden}
+    monkeypatch.setattr(audit.importlib, "import_module", modules.__getitem__)
+
+    discovered = audit.discover_public_classes(tmp_path)
+
+    assert discovered == [(ghost, ("gwexpy.public:Ghost",))]
+
+
+def test_lazy_only_class_route_ambiguity_fails_closed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    audit = _load_audit_module()
+    _write_synthetic_export_module(tmp_path, "gwexpy.public", '__all__ = ["Ghost"]\n')
+    modules: dict[str, ModuleType] = {"gwexpy.public": ModuleType("gwexpy.public")}
+    modules["gwexpy.public"].__all__ = ["Ghost"]  # type: ignore[attr-defined]
+    for suffix in ("one", "two"):
+        module_name = f"gwexpy.hidden_{suffix}"
+        _write_synthetic_export_module(
+            tmp_path,
+            module_name,
+            '__all__ = ["helper"]\nclass Ghost(Array):\n    pass\n',
+        )
+        module = ModuleType(module_name)
+        module.helper = object()  # type: ignore[attr-defined]
+        module.Ghost = _synthetic_gwpy_class("Ghost", module_name)  # type: ignore[attr-defined]
+        modules[module_name] = module
+    monkeypatch.setattr(audit.importlib, "import_module", modules.__getitem__)
+
+    with pytest.raises(audit.InventoryError, match="ambiguous lazy class export route"):
+        audit.discover_public_classes(tmp_path)
+
+
+def test_missing_static_lazy_class_route_fails_closed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    audit = _load_audit_module()
+    _write_synthetic_export_module(tmp_path, "gwexpy.public", '__all__ = ["Ghost"]\n')
+    _write_synthetic_export_module(
+        tmp_path,
+        "gwexpy.hidden",
+        '__all__ = ["helper"]\nclass Ghost(Array):\n    pass\n',
+    )
+    public = ModuleType("gwexpy.public")
+    setattr(public, "__all__", ["Ghost"])
+    hidden = ModuleType("gwexpy.hidden")
+    hidden.helper = object()  # type: ignore[attr-defined]
+    modules = {public.__name__: public, hidden.__name__: hidden}
+    monkeypatch.setattr(audit.importlib, "import_module", modules.__getitem__)
+
+    with pytest.raises(audit.InventoryError, match="missing lazy class export route"):
+        audit.discover_public_classes(tmp_path)
+
+
+def test_present_nonclass_export_masks_a_lazy_class_candidate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    audit = _load_audit_module()
+    _write_synthetic_export_module(tmp_path, "gwexpy.public", '__all__ = ["Ghost"]\n')
+    _write_synthetic_export_module(
+        tmp_path,
+        "gwexpy.hidden",
+        '__all__ = ["helper"]\nclass Ghost(Array):\n    pass\n',
+    )
+    public = ModuleType("gwexpy.public")
+    setattr(public, "__all__", ["Ghost"])
+    public.Ghost = 42  # type: ignore[attr-defined]
+    hidden = ModuleType("gwexpy.hidden")
+    hidden.helper = object()  # type: ignore[attr-defined]
+    hidden.Ghost = _synthetic_gwpy_class("Ghost", "gwexpy.hidden")  # type: ignore[attr-defined]
+    modules = {public.__name__: public, hidden.__name__: hidden}
+    monkeypatch.setattr(audit.importlib, "import_module", modules.__getitem__)
+
+    assert audit.discover_public_classes(tmp_path) == []
+
+
+def test_literal_all_uses_the_final_top_level_assignment() -> None:
+    audit = _load_audit_module()
+    tree = audit.ast.parse('__all__ = ["Old"]\n__all__ = ("New",)\n')
+
+    assert audit._literal_all_names(tree) == ("New",)
+
+
+def test_literal_all_annotation_without_value_does_not_rebind() -> None:
+    audit = _load_audit_module()
+    tree = audit.ast.parse('__all__ = ["Kept"]\n__all__: list[str]\n')
+
+    assert audit._literal_all_names(tree) == ("Kept",)
+
+
 def test_current_supported_version_pristine_projection_matches_manifest() -> None:
     result = _run_cli(
         "--check",
@@ -779,6 +908,227 @@ def test_ordinary_and_terminal_checks_accept_closed_manifest() -> None:
     )
     assert terminal.returncode == 0, terminal.stderr
     assert "inventory check passed" in terminal.stdout
+
+
+def test_terminal_cli_rejects_schema_valid_catalog_and_evidence_drift(
+    tmp_path: Path,
+) -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    case = next(item for item in manifest["cases"] if item["state"] == "fixed")
+    case["state"] = "no-finding"
+    case["evidence"] = {
+        "behavior": [
+            {
+                "reference": (
+                    "tests/test_gwpy_override_inventory.py"
+                    "::test_selector_that_does_not_exist"
+                )
+            }
+        ],
+        "oracle_projection_digest": manifest["oracle_projections"][
+            case["gwpy_version"]
+        ]["digest"],
+    }
+    _refresh_summary(audit, manifest)
+    changed = tmp_path / "catalog-drift.json"
+    changed.write_text(audit.canonical_manifest_json(manifest), encoding="utf-8")
+
+    result = _run_cli(
+        "--check",
+        "--require-terminal",
+        "--manifest",
+        str(changed),
+        "--oracle-python",
+        _current_oracle_argument(),
+    )
+
+    assert result.returncode == 2
+    assert "manifest/catalog drift" in result.stderr
+
+
+def test_catalog_binding_compares_canonical_json_not_python_numeric_equality() -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    manifest["summary"]["cases"] = float(manifest["summary"]["cases"])
+
+    with pytest.raises(audit.InventoryError, match="manifest/catalog drift"):
+        audit.validate_catalog_binding(manifest, _stored_population(manifest))
+
+
+def test_manifest_evidence_selector_set_is_frozen_and_recursion_safe() -> None:
+    audit = _load_audit_module()
+
+    selectors = audit.manifest_evidence_selectors(_load_manifest())
+
+    assert len(selectors) == 58
+    assert list(selectors) == sorted(selectors, key=lambda item: item.encode("utf-8"))
+    assert {
+        selector
+        for selector in selectors
+        if selector.startswith("tests/test_gwpy_override_inventory.py::")
+    } == {
+        "tests/test_gwpy_override_inventory.py"
+        "::test_terminal_array_family_T_matches_gwpy",
+        "tests/test_gwpy_override_inventory.py"
+        "::test_terminal_plot_show_lifecycle_matches_gwpy",
+    }
+
+
+def test_evidence_selector_extraction_includes_each_distinct_reference_channel() -> (
+    None
+):
+    audit = _load_audit_module()
+    references = (
+        "tests/frequencyseries/test_bifrequencymap_gwpy_compat.py"
+        "::test_crop_common_route_matches_gwpy",
+        "tests/frequencyseries/test_bifrequencymap_gwpy_compat.py"
+        "::test_diagonal_common_numeric_routes_match_gwpy",
+        "tests/frequencyseries/test_bifrequencymap_gwpy_compat.py"
+        "::test_plot_common_routes_match_gwpy_artist_source_and_label",
+    )
+    manifest = {
+        "cases": [
+            {
+                "evidence": {
+                    "behavior": [{"reference": references[0]}],
+                    "green_test": {"reference": references[1]},
+                    "pre_fix_mismatch": {"reference": references[2]},
+                }
+            }
+        ]
+    }
+
+    assert audit.manifest_evidence_selectors(manifest) == references
+
+
+def test_evidence_collection_rejects_an_existing_file_with_a_missing_node() -> None:
+    audit = _load_audit_module()
+    missing = (
+        "tests/test_gwpy_override_inventory.py::test_selector_that_does_not_exist",
+    )
+
+    with pytest.raises(audit.InventoryError, match="evidence collection failed"):
+        audit.run_evidence_pytest(ROOT, missing, execute=False)
+
+
+def test_evidence_collection_uses_bounded_argv_without_a_shell(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    audit = _load_audit_module()
+    selector = "tests/test_gwpy_override_inventory.py::test_terminal_array_family_T_matches_gwpy"
+    observed: dict[str, Any] = {}
+
+    def fake_run(command: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        observed["command"] = command
+        observed["kwargs"] = kwargs
+        return subprocess.CompletedProcess(command, 0, stdout="collected\n", stderr="")
+
+    monkeypatch.setattr(audit.subprocess, "run", fake_run)
+
+    interpreter = str(ROOT / "synthetic-python")
+    output = audit.run_evidence_pytest(
+        ROOT, (selector,), execute=False, python_executable=interpreter
+    )
+
+    assert output == "collected\n"
+    assert observed["command"] == [
+        interpreter,
+        "-m",
+        "pytest",
+        "--collect-only",
+        "-qq",
+        "--maxfail=1",
+        "--tb=short",
+        "-p",
+        "no:cacheprovider",
+        "--",
+        selector,
+    ]
+    assert observed["kwargs"]["shell"] is False
+    assert observed["kwargs"]["cwd"] == ROOT
+    assert isinstance(observed["kwargs"]["timeout"], int)
+    assert "capture_output" not in observed["kwargs"]
+    assert observed["kwargs"]["stdout"].closed is True
+    assert observed["kwargs"]["stderr"].closed is True
+
+
+def _write_evidence_junit(path: Path, *, cases: int, skipped: int = 0) -> None:
+    root = ET.Element("testsuites")
+    suite = ET.SubElement(root, "testsuite")
+    for index in range(cases):
+        testcase = ET.SubElement(
+            suite, "testcase", classname="evidence", name=f"test_{index}"
+        )
+        if index < skipped:
+            ET.SubElement(testcase, "skipped")
+    ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
+
+
+def test_evidence_junit_requires_exact_reviewed_count_and_no_skips(
+    tmp_path: Path,
+) -> None:
+    audit = _load_audit_module()
+    accepted = tmp_path / "accepted.xml"
+    _write_evidence_junit(accepted, cases=383)
+    audit.validate_evidence_junit(accepted)
+
+    wrong_count = tmp_path / "wrong-count.xml"
+    _write_evidence_junit(wrong_count, cases=382)
+    with pytest.raises(audit.InventoryError, match="expected 383 cases, got 382"):
+        audit.validate_evidence_junit(wrong_count)
+
+    skipped = tmp_path / "skipped.xml"
+    _write_evidence_junit(skipped, cases=383, skipped=1)
+    with pytest.raises(audit.InventoryError, match="skipped=1"):
+        audit.validate_evidence_junit(skipped)
+
+
+def test_evidence_execution_rejects_recursive_invocation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    audit = _load_audit_module()
+    monkeypatch.setenv("GWEXPY_OVERRIDE_EVIDENCE_CHILD", "1")
+
+    with pytest.raises(audit.InventoryError, match="recursive evidence execution"):
+        audit.run_evidence_pytest(
+            ROOT,
+            (
+                "tests/test_gwpy_override_inventory.py"
+                "::test_terminal_array_family_T_matches_gwpy",
+            ),
+            execute=True,
+        )
+
+
+def test_execute_evidence_requires_terminal_check() -> None:
+    result = _run_cli(
+        "--check",
+        "--execute-evidence",
+        "--manifest",
+        str(MANIFEST),
+        "--oracle-python",
+        _current_oracle_argument(),
+    )
+
+    assert result.returncode == 2
+    assert "--execute-evidence requires --require-terminal" in result.stderr
+
+
+def test_terminal_cli_can_execute_every_catalog_evidence_selector() -> None:
+    result = _run_cli(
+        "--check",
+        "--require-terminal",
+        "--execute-evidence",
+        "--manifest",
+        str(MANIFEST),
+        "--oracle-python",
+        _current_oracle_argument(),
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "383 passed" in result.stdout
+    assert "evidence execution passed: selectors=58, cases=383" in result.stdout
 
 
 @pytest.mark.parametrize(
@@ -1306,6 +1656,65 @@ def test_oracle_worker_stdin_uses_strict_json_decoder() -> None:
     assert "non-finite JSON float" in result.stderr
 
 
+def test_oracle_worker_malformed_nested_query_exits_two_without_traceback() -> None:
+    payload = {
+        "expected_cwd": str(ROOT),
+        "expected_version": version("gwpy"),
+        "queries": [{}],
+        "schema": "gwexpy-v023-gwpy-override-oracle-v1",
+    }
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "--oracle-worker"],
+        cwd=ROOT,
+        env=os.environ | {"PYTHONDONTWRITEBYTECODE": "1"},
+        input=json.dumps(payload),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "malformed oracle input" in result.stderr
+    assert "Traceback" not in result.stderr
+
+
+def test_cli_malformed_nested_manifest_exits_two_without_traceback(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    manifest["members"][0] = None
+    malformed = tmp_path / "malformed.json"
+    malformed.write_text(audit.canonical_manifest_json(manifest), encoding="utf-8")
+    monkeypatch.setattr(
+        audit,
+        "build_source_population",
+        lambda repository: _stored_population(manifest),
+    )
+    monkeypatch.setattr(
+        audit,
+        "run_pristine_oracle",
+        lambda *args, **kwargs: manifest["oracle_projections"][version("gwpy")],
+    )
+
+    result = audit.main(
+        [
+            "--check",
+            "--manifest",
+            str(malformed),
+            "--oracle-python",
+            _current_oracle_argument(),
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert result == 2
+    assert "member must be an object" in captured.err
+    assert "Traceback" not in captured.err
+
+
 def test_oracle_stdout_uses_strict_json_decoder(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -1318,6 +1727,46 @@ def test_oracle_stdout_uses_strict_json_decoder(
 
     monkeypatch.setattr(audit.subprocess, "run", fake_run)
     with pytest.raises(audit.InventoryError, match="non-finite JSON float"):
+        audit.run_pristine_oracle(SCRIPT, version("gwpy"), sys.executable, [])
+
+
+def test_relative_oracle_executable_is_resolved_before_temporary_cwd(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    audit = _load_audit_module()
+    executable = tmp_path / "oracle-python"
+    executable.symlink_to(sys.executable)
+    monkeypatch.chdir(tmp_path)
+
+    parsed = audit.parse_oracle_arguments((f"{version('gwpy')}={executable.name}",))
+
+    assert parsed == {version("gwpy"): str(executable.resolve())}
+
+
+def test_oracle_subprocess_has_timeout_and_output_limit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    audit = _load_audit_module()
+
+    def timeout(*args: object, **kwargs: object) -> None:
+        assert kwargs["shell"] is False
+        assert isinstance(kwargs["timeout"], int)
+        raise subprocess.TimeoutExpired("synthetic-oracle", int(kwargs["timeout"]))
+
+    monkeypatch.setattr(audit.subprocess, "run", timeout)
+    with pytest.raises(audit.InventoryError, match="oracle .* timed out"):
+        audit.run_pristine_oracle(SCRIPT, version("gwpy"), sys.executable, [])
+
+    def oversized(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(
+            args=[],
+            returncode=0,
+            stdout="x" * (audit.SUBPROCESS_OUTPUT_LIMIT + 1),
+            stderr="",
+        )
+
+    monkeypatch.setattr(audit.subprocess, "run", oversized)
+    with pytest.raises(audit.InventoryError, match="oracle .* exceeded output limit"):
         audit.run_pristine_oracle(SCRIPT, version("gwpy"), sys.executable, [])
 
 
@@ -1540,6 +1989,62 @@ def test_extractor_covers_bindings_inherited_aliases_and_constructors() -> None:
     assert "inherited" not in {item["member"] for item in masked}
 
 
+def test_callable_numpy_generic_descriptor_records_stable_call_evidence() -> None:
+    import numpy as np
+
+    audit = _load_audit_module()
+    raw = vars(np.ndarray)["swapaxes"]
+
+    assert audit.raw_binding_kind(raw) == "generic-descriptor"
+    descriptor = audit._oracle_descriptor(raw, "generic-descriptor", np.ndarray)
+    assert descriptor["accessors"] == ["get"]
+    assert descriptor["details"] == {
+        "call": {
+            "signature": {"available": False, "error": "ValueError"},
+            "source": None,
+        }
+    }
+
+
+def test_callable_generic_descriptor_projection_never_invokes_get() -> None:
+    audit = _load_audit_module()
+    accesses: list[str] = []
+
+    class ExplosiveDescriptor:
+        __signature__ = inspect.Signature(
+            [inspect.Parameter("value", inspect.Parameter.POSITIONAL_ONLY)]
+        )
+
+        def __get__(self, instance: object, owner: type | None = None) -> object:
+            accesses.append("get")
+            raise AssertionError("descriptor execution is forbidden")
+
+        def __call__(self, value: object, /) -> object:
+            return value
+
+    raw = ExplosiveDescriptor()
+
+    assert audit.raw_binding_kind(raw) == "generic-descriptor"
+    descriptor = audit._descriptor_projection(raw, "generic-descriptor", ROOT)
+    assert accesses == []
+    assert descriptor["accessors"] == ["get"]
+    assert descriptor["details"]["call"]["signature"] == {
+        "available": True,
+        "parameters": [
+            {
+                "annotation": {"kind": "empty"},
+                "default": {"kind": "empty"},
+                "kind": "POSITIONAL_ONLY",
+                "name": "value",
+            }
+        ],
+        "return_annotation": {"kind": "empty"},
+    }
+    assert descriptor["details"]["call"]["source"]["path"] == (
+        "tests/test_gwpy_override_inventory.py"
+    )
+
+
 def test_unavailable_signature_records_only_stable_exception_class() -> None:
     audit = _load_audit_module()
 
@@ -1595,6 +2100,7 @@ def test_workflow_runs_ordinary_inventory_check_in_each_existing_matrix_cell() -
     paths = set(workflow["on"]["pull_request"]["paths"])
     assert {
         "gwexpy/**",
+        "tests/**",
         "scripts/audit_gwpy_overrides.py",
         "tests/test_gwpy_override_inventory.py",
         "docs/developers/plans/manifests/audit-manifest-v0.2.3-gwpy-overrides.json",
@@ -1603,7 +2109,15 @@ def test_workflow_runs_ordinary_inventory_check_in_each_existing_matrix_cell() -
     inventory = next(
         step for step in steps if step.get("name") == "Check GWpy override inventory"
     )
+    assert inventory["timeout-minutes"] == "12"
     command = " ".join(inventory["run"].split())
     assert "scripts/audit_gwpy_overrides.py --check" in command
     assert '--oracle-python "$GWPY_VERSION=@current"' in command
-    assert "--require-terminal" not in command
+    assert "--require-terminal" in command
+    assert "--execute-evidence" in command
+    provision = next(
+        step
+        for step in steps
+        if step.get("name") == "Provision compatibility environment"
+    )
+    assert "PyYAML" in provision["run"]

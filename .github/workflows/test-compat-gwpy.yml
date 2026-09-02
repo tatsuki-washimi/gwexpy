@@ -21,6 +21,7 @@ on:
       - "gwexpy/utils/**"
       - "gwexpy/table/**"
       - "tests/timeseries/**"
+      - "tests/**"
       - "tests/table/**"
       - "tests/interop/**"
       - "tests/test_gwpy4_proxy_contract.py"
@@ -90,7 +91,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas matplotlib h5py "gwpy==$GWPY_VERSION"
           python -m pip install lalsuite
-          python -m pip install pytest pytest-forked
+          python -m pip install pytest pytest-forked PyYAML
           python -m pip install -e . --no-deps
 
       - name: Record compatibility versions
@@ -111,8 +112,9 @@ jobs:
           PY
 
       - name: Check GWpy override inventory
+        timeout-minutes: 12
         run: |
-          python scripts/audit_gwpy_overrides.py --check \
+          python scripts/audit_gwpy_overrides.py --check --require-terminal --execute-evidence \
             --manifest docs/developers/plans/manifests/audit-manifest-v0.2.3-gwpy-overrides.json \
             --oracle-python "$GWPY_VERSION=@current"
 

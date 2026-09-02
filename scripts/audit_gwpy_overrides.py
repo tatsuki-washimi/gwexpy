@@ -12,10 +12,12 @@ import inspect
 import json
 import math
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
 import types
+import xml.etree.ElementTree as ET
 from collections.abc import Iterator, Mapping, Sequence
 from importlib.metadata import version as distribution_version
 from pathlib import Path, PurePosixPath
@@ -59,9 +61,10 @@ CASE_KEYS = frozenset(
 AUDIT_OWNER = "v0.2.3-compatibility-audit"
 IMPLEMENTATION_BASE = "a8085b71446d3ef3417a7e5b5ac8efb156368eac"
 PUBLIC_ROOT_RULE = (
-    "byte-sorted gwexpy Python paths; literal top-level list/tuple __all__; "
-    "static vars(module) exports plus two-pass unique canonical-class-name lazy "
-    "alias association; canonical GWexpy class identity; internal root exclusions"
+    "byte-sorted gwexpy Python paths; final literal top-level list/tuple __all__; "
+    "full static vars(module) candidates plus two-pass unique canonical-class-name "
+    "lazy alias association; canonical GWexpy class identity; internal root "
+    "exclusions"
 )
 MEMBER_WALK_RULE = (
     "first effective vars(owner) binding in the GWexpy MRO prefix before "
@@ -75,6 +78,18 @@ UPSTREAM_DEPENDENCY_PROVENANCE = (
     "GWpy providers retain package-relative source/line; inherited "
     "NumPy/Astropy providers retain normalized provider, member, kind, "
     "descriptor, and signature without source path or resolved version."
+)
+EVIDENCE_TIMEOUT_SECONDS = 300
+ORACLE_TIMEOUT_SECONDS = 120
+SUBPROCESS_OUTPUT_LIMIT = 2_000_000
+EXPECTED_EVIDENCE_CASES = 383
+EVIDENCE_CHILD_ENV = "GWEXPY_OVERRIDE_EVIDENCE_CHILD"
+SELF_EVIDENCE_PATH = "tests/test_gwpy_override_inventory.py"
+SAFE_SELF_EVIDENCE_SELECTORS = frozenset(
+    {
+        "test_terminal_array_family_T_matches_gwpy",
+        "test_terminal_plot_show_lifecycle_matches_gwpy",
+    }
 )
 
 
@@ -1035,6 +1050,19 @@ def _callable_descriptor(raw: Any, kind: str) -> Any:
     return raw
 
 
+def _raw_type_call(raw: Any) -> Any | None:
+    """Resolve an instance's ``__call__`` implementation from static MRO vars."""
+
+    return next(
+        (
+            vars(owner)["__call__"]
+            for owner in inspect.getmro(type(raw))
+            if "__call__" in vars(owner)
+        ),
+        None,
+    )
+
+
 def _package_relative_source(path: str | None, *, gwpy_owned: bool) -> str | None:
     if not path or not gwpy_owned:
         return None
@@ -1080,7 +1108,19 @@ def _descriptor_projection(raw: Any, kind: str, repository: Path) -> dict[str, A
                 }
         return {"accessors": accessors, "details": details}
     if kind == "generic-descriptor":
-        return {"accessors": _descriptor_slots(raw), "details": {}}
+        details = {}
+        if callable(raw):
+            raw_call = _raw_type_call(raw)
+            details["call"] = {
+                "signature": normalize_signature(raw),
+                "source": _source_reference(raw, repository)
+                or (
+                    _source_reference(raw_call, repository)
+                    if raw_call is not None
+                    else None
+                ),
+            }
+        return {"accessors": _descriptor_slots(raw), "details": details}
     target = _callable_descriptor(raw, kind)
     return {
         "accessors": [],
@@ -1097,22 +1137,36 @@ def _literal_all_names(tree: ast.Module) -> tuple[str, ...]:
     names: list[str] = []
     for statement in tree.body:
         value: ast.expr | None = None
+        assigns_all = False
         if isinstance(statement, ast.Assign) and any(
             isinstance(target, ast.Name) and target.id == "__all__"
             for target in statement.targets
         ):
+            assigns_all = True
             value = statement.value
         elif (
             isinstance(statement, ast.AnnAssign)
             and isinstance(statement.target, ast.Name)
             and statement.target.id == "__all__"
+            and statement.value is not None
         ):
+            assigns_all = True
             value = statement.value
+        if not assigns_all:
+            continue
         if isinstance(value, (ast.List, ast.Tuple)) and all(
             isinstance(item, ast.Constant) and isinstance(item.value, str)
             for item in value.elts
         ):
-            names.extend(item.value for item in value.elts)
+            # Python assignment replaces the previous object.  Mirroring that
+            # semantics avoids retaining stale exports from an earlier literal.
+            names = []
+            for item in value.elts:
+                assert isinstance(item, ast.Constant)
+                assert isinstance(item.value, str)
+                names.append(item.value)
+        else:
+            names = []
     return tuple(sorted(set(names), key=lambda item: item.encode("utf-8")))
 
 
@@ -1170,7 +1224,7 @@ def discover_public_classes(
     if str(repository) not in sys.path:
         sys.path.insert(0, str(repository))
     exports: dict[type[Any], set[str]] = {}
-    export_modules: list[tuple[str, tuple[str, ...]]] = []
+    export_modules: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
     paths = sorted(
         package_root.rglob("*.py"),
         key=lambda item: item.relative_to(repository).as_posix().encode("utf-8"),
@@ -1194,12 +1248,18 @@ def discover_public_classes(
             or any(part.startswith("_") for part in module_parts[1:])
         ):
             continue
-        export_modules.append((module_name, names))
+        declared_classes = tuple(
+            statement.name
+            for statement in tree.body
+            if isinstance(statement, ast.ClassDef)
+        )
+        export_modules.append((module_name, names, declared_classes))
 
     snapshots: list[tuple[str, tuple[str, ...], dict[str, Any]]] = []
     classes_by_name: dict[str, list[type[Any]]] = {}
+    declared_class_names: set[str] = set()
     missing = object()
-    for module_name, names in export_modules:
+    for module_name, names, declared_classes in export_modules:
         try:
             module = importlib.import_module(module_name)
         except Exception as exc:
@@ -1209,7 +1269,11 @@ def discover_public_classes(
         namespace = vars(module)
         snapshot = {name: namespace.get(name, missing) for name in names}
         snapshots.append((module_name, names, snapshot))
-        for value in snapshot.values():
+        declared_class_names.update(declared_classes)
+        # The public export can be lazy while its canonical class is imported
+        # into another explicit module under a non-exported helper name.  Build
+        # candidates from static namespace snapshots only; never call getattr.
+        for value in namespace.values():
             if inspect.isclass(value):
                 classes_by_name.setdefault(value.__name__, []).append(value)
 
@@ -1220,10 +1284,14 @@ def discover_public_classes(
                 if _public_root_allowed(value):
                     exports.setdefault(value, set()).add(f"{module_name}:{name}")
                 continue
-            candidates = classes_by_name.get(name)
-            if candidates is None:
+            # A concrete non-class binding masks any same-named class visible in
+            # another module, just as an effective MRO binding masks its bases.
+            if value is not missing:
                 continue
-            value = _select_unique_lazy_class(name, candidates)
+            candidates = classes_by_name.get(name)
+            if candidates is None and name not in declared_class_names:
+                continue
+            value = _select_unique_lazy_class(name, candidates or ())
             if _public_root_allowed(value):
                 exports.setdefault(value, set()).add(f"{module_name}:{name}")
     return [
@@ -1399,7 +1467,17 @@ def _oracle_descriptor(raw: Any, kind: str, provider: type[Any]) -> dict[str, An
             }
         return {"accessors": accessors, "details": details}
     if kind == "generic-descriptor":
-        return {"accessors": _descriptor_slots(raw), "details": {}}
+        details = {}
+        if callable(raw):
+            raw_call = _raw_type_call(raw)
+            details["call"] = {
+                "signature": normalize_signature(raw),
+                "source": _oracle_source(raw, provider)
+                or (
+                    _oracle_source(raw_call, provider) if raw_call is not None else None
+                ),
+            }
+        return {"accessors": _descriptor_slots(raw), "details": details}
     return {
         "accessors": [],
         "details": {
@@ -1513,8 +1591,24 @@ def _worker_main() -> int:
         ):
             raise InventoryError("invalid oracle payload schema")
         expected_cwd = payload.get("expected_cwd")
+        queries = payload.get("queries")
+        query_keys = {
+            "counterpart_class",
+            "member",
+            "member_id",
+            "public_class",
+        }
+        if not isinstance(expected_cwd, str) or not isinstance(queries, list):
+            raise InventoryError("invalid oracle payload fields")
+        if any(
+            not isinstance(query, dict)
+            or set(query) != query_keys
+            or not all(isinstance(value, str) and value for value in query.values())
+            for query in queries
+        ):
+            raise InventoryError("malformed oracle input: invalid query schema")
         projection = build_oracle_projection(
-            str(payload.get("expected_version")), payload.get("queries", [])
+            str(payload.get("expected_version")), queries
         )
         projection["isolation"]["cwd_matches_expected"] = (
             isinstance(expected_cwd, str) and os.getcwd() == expected_cwd
@@ -1523,8 +1617,11 @@ def _worker_main() -> int:
         projection["digest"] = digest_json(unsigned)
         sys.stdout.write(canonical_compact_json(projection) + "\n")
         return 0
-    except (InventoryError, json.JSONDecodeError, TypeError, ValueError) as exc:
+    except InventoryError as exc:
         print(str(exc), file=sys.stderr)
+        return 2
+    except (AttributeError, IndexError, KeyError, TypeError, ValueError) as exc:
+        print(f"malformed oracle input: {type(exc).__name__}", file=sys.stderr)
         return 2
 
 
@@ -1581,12 +1678,68 @@ def parse_oracle_arguments(values: Sequence[str]) -> dict[str, str]:
             raise InventoryError(f"duplicate oracle version: {oracle_version}")
         if not executable:
             raise InventoryError(f"empty oracle executable for {oracle_version}")
-        parsed[oracle_version] = (
-            sys.executable if executable == "@current" else executable
-        )
+        if executable == "@current":
+            resolved = Path(sys.executable).resolve()
+        else:
+            located = shutil.which(executable)
+            resolved = Path(located or executable).resolve()
+        parsed[oracle_version] = str(resolved)
     if not parsed:
         raise InventoryError("at least one --oracle-python is required")
     return parsed
+
+
+def _run_bounded_subprocess(
+    command: Sequence[str],
+    *,
+    cwd: str | Path,
+    environment: Mapping[str, str],
+    input_text: str | None,
+    timeout: int,
+    label: str,
+) -> subprocess.CompletedProcess[str]:
+    """Run one shell-free child without retaining unbounded output in memory."""
+
+    try:
+        with (
+            tempfile.TemporaryFile(mode="w+b") as stdout_file,
+            tempfile.TemporaryFile(mode="w+b") as stderr_file,
+        ):
+            completed = subprocess.run(
+                list(command),
+                cwd=cwd,
+                env=dict(environment),
+                input=input_text,
+                stdout=stdout_file,
+                stderr=stderr_file,
+                text=True,
+                check=False,
+                shell=False,
+                timeout=timeout,
+            )
+            stdout_size = stdout_file.tell()
+            stderr_size = stderr_file.tell()
+            returned_stdout = completed.stdout or ""
+            returned_stderr = completed.stderr or ""
+            returned_size = len(returned_stdout.encode("utf-8")) + len(
+                returned_stderr.encode("utf-8")
+            )
+            if stdout_size + stderr_size + returned_size > SUBPROCESS_OUTPUT_LIMIT:
+                raise InventoryError(f"{label} exceeded output limit")
+            stdout_file.seek(0)
+            stderr_file.seek(0)
+            stdout = stdout_file.read().decode("utf-8") or returned_stdout
+            stderr = stderr_file.read().decode("utf-8") or returned_stderr
+    except subprocess.TimeoutExpired as exc:
+        raise InventoryError(f"{label} timed out") from exc
+    except OSError as exc:
+        raise InventoryError(f"cannot execute {label}: {type(exc).__name__}") from exc
+    return subprocess.CompletedProcess(
+        args=list(command),
+        returncode=completed.returncode,
+        stdout=stdout,
+        stderr=stderr,
+    )
 
 
 def run_pristine_oracle(
@@ -1618,29 +1771,28 @@ def run_pristine_oracle(
             "queries": queries,
             "schema": WORKER_SCHEMA,
         }
-        try:
-            completed = subprocess.run(
-                [executable, "-I", str(script.resolve()), "--oracle-worker"],
-                cwd=temporary,
-                env=environment,
-                input=canonical_compact_json(payload),
-                capture_output=True,
-                text=True,
-                check=False,
-            )
-        except OSError as exc:
-            raise InventoryError(
-                f"cannot execute oracle {oracle_version}: {type(exc).__name__}"
-            ) from exc
+        completed = _run_bounded_subprocess(
+            [executable, "-I", str(script.resolve()), "--oracle-worker"],
+            cwd=temporary,
+            environment=environment,
+            input_text=canonical_compact_json(payload),
+            timeout=ORACLE_TIMEOUT_SECONDS,
+            label=f"oracle {oracle_version}",
+        )
+    stdout = completed.stdout or ""
+    stderr = completed.stderr or ""
     if completed.returncode != 0:
-        message = completed.stderr.strip() or f"exit {completed.returncode}"
+        message = stderr.strip()[-4000:] or f"exit {completed.returncode}"
         raise InventoryError(message)
     try:
-        projection = decode_json_strict(completed.stdout)
+        projection = decode_json_strict(stdout)
     except json.JSONDecodeError as exc:
         raise InventoryError("oracle stdout is not canonical JSON") from exc
-    if completed.stdout != canonical_compact_json(projection) + "\n":
+    if not isinstance(projection, dict):
+        raise InventoryError("oracle stdout must be a JSON object")
+    if stdout != canonical_compact_json(projection) + "\n":
         raise InventoryError("oracle stdout is not canonical JSON")
+    _validate_projection(oracle_version, projection)
     isolation = projection.get("isolation", {})
     if isolation != {
         "cwd_matches_expected": True,
@@ -1946,14 +2098,20 @@ def _validate_projection(oracle_version: str, projection: Mapping[str, Any]) -> 
         "invalid oracle isolation evidence",
     )
     members = projection.get("members")
-    _require(isinstance(members, list), "oracle members must be a list")
-    ids = [item.get("member_id") for item in members]
+    if not isinstance(members, list):
+        raise InventoryError("oracle members must be a list")
+    member_objects: list[dict[str, Any]] = []
+    for item in members:
+        if not isinstance(item, dict):
+            raise InventoryError("oracle member must be an object")
+        member_objects.append(item)
+    ids = [item.get("member_id") for item in member_objects]
     _require(
         ids == sorted(ids, key=lambda item: str(item).encode("utf-8")),
         "oracle members are unsorted",
     )
     _require(len(ids) == len(set(ids)), "duplicate oracle member")
-    for item in members:
+    for item in member_objects:
         present = item.get("present")
         _require(isinstance(present, bool), "oracle presence must be boolean")
         if present:
@@ -1968,6 +2126,10 @@ def _validate_projection(oracle_version: str, projection: Mapping[str, Any]) -> 
             provider = str(item["provider"])
             if provider.startswith("gwpy."):
                 source = item.get("source")
+                _require(
+                    source is None or isinstance(source, dict),
+                    "oracle source must be an object or null",
+                )
                 _require(
                     source is None or not str(source.get("path", "")).startswith("/"),
                     "absolute oracle source path",
@@ -2353,6 +2515,14 @@ def validate_manifest(manifest: Mapping[str, Any]) -> None:
     _require(isinstance(roots, list), "public roots must be a list")
     _require(isinstance(members_list, list), "members must be a list")
     _require(isinstance(cases, list), "cases must be a list")
+    _require(
+        all(isinstance(item, dict) for item in roots),
+        "public root must be an object",
+    )
+    _require(
+        all(isinstance(item, dict) for item in members_list),
+        "member must be an object",
+    )
     root_ids = [item.get("public_class") for item in roots]
     _require(
         root_ids == sorted(root_ids, key=lambda item: str(item).encode("utf-8")),
@@ -2460,6 +2630,130 @@ def validate_source_population(
     )
 
 
+def validate_catalog_binding(
+    manifest: Mapping[str, Any], population: Mapping[str, Any]
+) -> None:
+    """Require the checked artifact to match the reviewed code catalog exactly."""
+
+    expected = build_manifest(population, manifest["oracle_projections"])
+    _require(
+        canonical_manifest_json(manifest) == canonical_manifest_json(expected),
+        "manifest/catalog drift",
+    )
+
+
+def manifest_evidence_selectors(manifest: Mapping[str, Any]) -> tuple[str, ...]:
+    """Return every reviewed pytest selector in deterministic byte order."""
+
+    selectors: set[str] = set()
+    cases = manifest.get("cases")
+    if not isinstance(cases, list):
+        raise InventoryError("manifest cases must be a list")
+    for case in cases:
+        try:
+            evidence = case["evidence"]
+            references = [
+                *(entry["reference"] for entry in evidence["behavior"]),
+            ]
+            if "green_test" in evidence:
+                references.append(evidence["green_test"]["reference"])
+            if "pre_fix_mismatch" in evidence:
+                references.append(evidence["pre_fix_mismatch"]["reference"])
+        except (KeyError, TypeError) as exc:
+            raise InventoryError("malformed evidence reference") from exc
+        for reference in references:
+            _validate_test_reference_text(reference, "evidence")
+            assert isinstance(reference, str)
+            path, _, selector = reference.partition("::")
+            selector_name = selector.partition("[")[0]
+            if (
+                path == SELF_EVIDENCE_PATH
+                and selector_name not in SAFE_SELF_EVIDENCE_SELECTORS
+            ):
+                raise InventoryError(
+                    f"recursive inventory evidence selector is forbidden: {reference}"
+                )
+            selectors.add(reference)
+    return tuple(sorted(selectors, key=lambda item: item.encode("utf-8")))
+
+
+def validate_evidence_junit(path: Path) -> None:
+    """Require the executed evidence set to be complete and entirely passing."""
+
+    try:
+        root = ET.parse(path).getroot()
+    except (ET.ParseError, OSError) as exc:
+        raise InventoryError(
+            f"cannot parse evidence JUnit: {type(exc).__name__}"
+        ) from exc
+    testcases = list(root.iter("testcase"))
+    skipped = sum(any(child.tag == "skipped" for child in case) for case in testcases)
+    failures = sum(any(child.tag == "failure" for child in case) for case in testcases)
+    errors = sum(any(child.tag == "error" for child in case) for case in testcases)
+    if len(testcases) != EXPECTED_EVIDENCE_CASES:
+        raise InventoryError(
+            "evidence execution expected "
+            f"{EXPECTED_EVIDENCE_CASES} cases, got {len(testcases)}"
+        )
+    if skipped or failures or errors:
+        raise InventoryError(
+            "evidence execution is not entirely passing: "
+            f"skipped={skipped}, failures={failures}, errors={errors}"
+        )
+
+
+def run_evidence_pytest(
+    repository: Path,
+    selectors: Sequence[str],
+    *,
+    execute: bool,
+    python_executable: str | None = None,
+) -> str:
+    """Collect or execute evidence nodes through a bounded, shell-free argv."""
+
+    if not selectors:
+        raise InventoryError("manifest has no evidence selectors")
+    if execute and os.environ.get(EVIDENCE_CHILD_ENV) == "1":
+        raise InventoryError("recursive evidence execution is forbidden")
+    command = [python_executable or sys.executable, "-m", "pytest"]
+    if execute:
+        command.append("-q")
+        action = "execution"
+    else:
+        command.extend(("--collect-only", "-qq"))
+        action = "collection"
+    command.extend(("--maxfail=1", "--tb=short", "-p", "no:cacheprovider"))
+    environment = os.environ.copy()
+    environment["PYTHONDONTWRITEBYTECODE"] = "1"
+    environment.pop("PYTEST_ADDOPTS", None)
+    environment[EVIDENCE_CHILD_ENV] = "1"
+    with tempfile.TemporaryDirectory(prefix="gwexpy-override-evidence-") as temporary:
+        junit = Path(temporary) / "evidence.xml"
+        if execute:
+            command.append(f"--junitxml={junit}")
+        command.extend(("--", *selectors))
+        if sum(len(item.encode("utf-8")) + 1 for item in command) > 100_000:
+            raise InventoryError(f"evidence {action} argv exceeds limit")
+        completed = _run_bounded_subprocess(
+            command,
+            cwd=repository,
+            environment=environment,
+            input_text=None,
+            timeout=EVIDENCE_TIMEOUT_SECONDS,
+            label=f"evidence {action}",
+        )
+        if execute and completed.returncode == 0:
+            validate_evidence_junit(junit)
+    if completed.returncode != 0:
+        detail = (completed.stderr or completed.stdout).strip()
+        if detail:
+            detail = f": {detail[-4000:]}"
+        raise InventoryError(
+            f"evidence {action} failed with exit {completed.returncode}{detail}"
+        )
+    return completed.stdout
+
+
 def _refuse_behavioral_overwrite(path: Path) -> None:
     if not path.exists():
         return
@@ -2485,13 +2779,19 @@ def _parse_arguments(argv: Sequence[str] | None) -> argparse.Namespace:
     parser.add_argument("--manifest", type=Path)
     parser.add_argument("--oracle-python", action="append", default=[])
     parser.add_argument("--require-terminal", action="store_true")
+    parser.add_argument("--execute-evidence", action="store_true")
     return parser.parse_args(argv)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parse_arguments(argv)
     if args.oracle_worker:
-        if args.manifest is not None or args.oracle_python or args.require_terminal:
+        if (
+            args.manifest is not None
+            or args.oracle_python
+            or args.require_terminal
+            or args.execute_evidence
+        ):
             print("oracle worker accepts stdin only", file=sys.stderr)
             return 2
         return _worker_main()
@@ -2500,6 +2800,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             raise InventoryError("--manifest is required")
         if args.require_terminal and not args.check:
             raise InventoryError("--require-terminal is check-only")
+        if args.execute_evidence and not args.check:
+            raise InventoryError("--execute-evidence is check-only")
+        if args.execute_evidence and not args.require_terminal:
+            raise InventoryError("--execute-evidence requires --require-terminal")
         oracles = parse_oracle_arguments(args.oracle_python)
         if args.write and set(oracles) != set(SUPPORTED_GWPY):
             raise InventoryError("--write requires exactly GWpy 4.0.1 and 4.0.2")
@@ -2533,8 +2837,32 @@ def main(argv: Sequence[str] | None = None) -> int:
                 raise InventoryError(
                     f"oracle projection drift for GWpy {oracle_version}"
                 )
+        validate_catalog_binding(manifest, population)
         if args.require_terminal:
             require_terminal_cases(manifest["cases"])
+        if args.require_terminal:
+            selectors = manifest_evidence_selectors(manifest)
+            for executable in oracles.values():
+                run_evidence_pytest(
+                    repository,
+                    selectors,
+                    execute=False,
+                    python_executable=executable,
+                )
+            print(f"evidence collection passed: selectors={len(selectors)}")
+            if args.execute_evidence:
+                for executable in oracles.values():
+                    evidence_output = run_evidence_pytest(
+                        repository,
+                        selectors,
+                        execute=True,
+                        python_executable=executable,
+                    )
+                    sys.stdout.write(evidence_output)
+                print(
+                    "evidence execution passed: "
+                    f"selectors={len(selectors)}, cases={EXPECTED_EVIDENCE_CASES}"
+                )
         print(
             "inventory check passed: "
             f"members={len(manifest['members'])}, "
@@ -2543,6 +2871,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     except InventoryError as exc:
         print(str(exc), file=sys.stderr)
+        return 2
+    except (AttributeError, IndexError, KeyError, TypeError, ValueError) as exc:
+        print(f"malformed input: {type(exc).__name__}", file=sys.stderr)
         return 2
 
 
