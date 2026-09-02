@@ -353,6 +353,9 @@ human_data_model_signoff:
     - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids::test_window_before_data_with_non_ns_epoch_matches_gwpy
 
 verification:
+  direct_terminal_command: >-
+    <oracle-python> -m pytest -q
+    tests/io/test_gwpy_override_terminal_io.py
   focused_affected_command: >-
     <oracle-python> -m pytest -q
     tests/io/test_gwpy_override_terminal_io.py
@@ -369,30 +372,63 @@ verification:
     tests/timeseries/test_hdf5_exact_epoch_codec.py
     tests/frequencyseries/test_hdf5_gwpy_interop.py
     tests/frequencyseries/test_hdf5_layouts.py
+  full_io_command: >-
+    PYTEST_ADDOPTS=-rs <oracle-python> -m pytest -q tests/io
+  gate_commands:
+    registry_smoke: >-
+      <oracle-python> -c 'import gwexpy; gwexpy.register_all()'
+    io_contract: >-
+      PYTEST_ADDOPTS=-rs <oracle-python> scripts/ci/run_gate.py io-contract
+    io_conformance: >-
+      PYTEST_ADDOPTS=-rs <oracle-python> scripts/ci/run_gate.py io-conformance
+    io_optional: >-
+      PYTEST_ADDOPTS=-rs <oracle-python> scripts/ci/run_gate.py io-optional
   io_gates:
     registry_smoke: passed in both oracle environments
     io_contract:
       gwpy_4_0_1: 1447 passed, 9 skips, 1 deselected
-      gwpy_4_0_2: 1447 passed, 9 skips, 1 deselected
-      skip_classification: >-
-        Eight nodes have the same node/reason groups listed under
-        observed_full_io_skips.common. The ninth is
-        tests/table/test_root_eventtable_io.py, where optional uproot is not
-        installed. The deselected node is excluded by the gate's documented
-        not-network and not-nds selector.
+      gwpy_4_0_2: 1433 passed, 24 skips, 1 deselected
+      skip_classification:
+        both_environments: >-
+          Eight nodes have the same node/reason groups listed under
+          observed_full_io_skips.common. The ninth is
+          tests/table/test_root_eventtable_io.py, where optional uproot is not
+          installed. The deselected node is excluded by the gate's documented
+          not-network and not-nds selector.
+        gwpy_4_0_2_environment_only:
+          - count: 8
+            node: tests selected by tests/conftest.py optional-dependency guard
+            reason: missing gwpy.io.gwf.framecpp
+          - count: 6
+            node: tests selected by tests/conftest.py optional-dependency guard
+            reason: missing gssapi
+          - count: 1
+            node: tests/io/test_kerberos.py
+            reason: Kerberos or GSSAPI unavailable or not configured
     io_conformance:
       gwpy_4_0_1: 73 passed, 5 skips
-      gwpy_4_0_2: 73 passed, 5 skips
+      gwpy_4_0_2: 71 passed, 7 skips
       skip_classification:
-        - count: 1
-          node: tests/io_conformance/test_generated_read.py
-          reason: zarr tests require GWEXPY_ALLOW_ZARR=1
-        - count: 2
-          node: tests/io_conformance/test_read_conformance.py
-          reason: optional framel backend unavailable for framel aliases
-        - count: 2
-          node: tests/io_conformance/test_write_roundtrip.py
-          reason: optional framel module unavailable for framel aliases
+        gwpy_4_0_1:
+          - count: 1
+            node: tests/io_conformance/test_generated_read.py
+            reason: zarr tests require GWEXPY_ALLOW_ZARR=1
+          - count: 2
+            node: tests/io_conformance/test_read_conformance.py
+            reason: optional framel backend unavailable for framel aliases
+          - count: 2
+            node: tests/io_conformance/test_write_roundtrip.py
+            reason: optional framel module unavailable for framel aliases
+        gwpy_4_0_2:
+          - count: 1
+            node: tests/io_conformance/test_generated_read.py
+            reason: zarr tests require GWEXPY_ALLOW_ZARR=1
+          - count: 4
+            node: tests/io_conformance/test_read_conformance.py
+            reason: optional framecpp/framel backends unavailable for their aliases
+          - count: 2
+            node: tests/io_conformance/test_write_roundtrip.py
+            reason: optional framecpp backend unavailable for its aliases
     io_optional:
       gwpy_4_0_1: 71 passed, 2 skips
       gwpy_4_0_2: 71 passed, 2 skips
