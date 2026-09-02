@@ -55,6 +55,7 @@ _PAYLOAD_SCHEMAS = {
 }
 _SHA40 = re.compile(r"^[0-9a-f]{40}$")
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
+_JUNIT_COUNTER = re.compile(r"^(0|[1-9][0-9]*)$")
 _MAX_BASELINE_BYTES = 256 * 1024
 _MAX_JSON_BYTES = 2 * 1024 * 1024
 _MAX_JUNIT_BYTES = 32 * 1024 * 1024
@@ -102,8 +103,29 @@ def _canonical_json_bytes(data: object) -> bytes:
     return (text + "\n").encode("utf-8")
 
 
+def _reject_symlink_ancestors(path: Path, *, description: str) -> None:
+    try:
+        for ancestor in path.absolute().parents:
+            metadata = ancestor.lstat()
+            if stat.S_ISLNK(metadata.st_mode):
+                raise QualificationEvidenceError(
+                    f"{description} has a symlink ancestor"
+                )
+            if not stat.S_ISDIR(metadata.st_mode):
+                raise QualificationEvidenceError(
+                    f"{description} ancestor must be a directory"
+                )
+    except QualificationEvidenceError:
+        raise
+    except OSError as exc:
+        raise QualificationEvidenceError(
+            f"cannot inspect {description} ancestors"
+        ) from exc
+
+
 def _read_regular_bytes(path: Path, *, maximum: int, description: str) -> bytes:
     try:
+        _reject_symlink_ancestors(path, description=description)
         metadata = path.lstat()
         if stat.S_ISLNK(metadata.st_mode) or not stat.S_ISREG(metadata.st_mode):
             raise QualificationEvidenceError(f"{description} must be a regular file")
@@ -250,40 +272,105 @@ def _parse_junit(path: Path) -> tuple[int, tuple[SkipCase, ...]]:
     raw = _read_regular_bytes(
         path, maximum=_MAX_JUNIT_BYTES, description="pytest JUnit report"
     )
-    upper = raw.upper()
-    if b"<!DOCTYPE" in upper or b"<!ENTITY" in upper:
+    try:
+        text = raw.decode("utf-8", errors="strict")
+    except UnicodeDecodeError as exc:
+        raise QualificationEvidenceError(
+            "pytest JUnit report must be strict UTF-8"
+        ) from exc
+    if "\x00" in text:
+        raise QualificationEvidenceError("pytest JUnit report must be strict UTF-8 XML")
+    upper = text.upper()
+    if "<!DOCTYPE" in upper or "<!ENTITY" in upper:
         raise QualificationEvidenceError("pytest JUnit report contains unsafe XML")
     try:
-        root = etree.fromstring(raw)
+        root = etree.fromstring(text)
     except etree.ParseError as exc:
         raise QualificationEvidenceError("invalid pytest JUnit XML") from exc
-    if root.tag not in {"testsuite", "testsuites"}:
-        raise QualificationEvidenceError("unsupported pytest JUnit root")
+    root_children = list(root)
     if (
-        next(root.iter("failure"), None) is not None
-        or next(root.iter("error"), None) is not None
+        root.tag != "testsuites"
+        or len(root_children) != 1
+        or root_children[0].tag != "testsuite"
     ):
         raise QualificationEvidenceError(
-            "pytest JUnit report contains a failed or errored testcase"
+            "pytest JUnit report has an invalid single-suite hierarchy"
         )
-    testcases = list(root.iter("testcase"))
+    suite = root_children[0]
+    testcases = [child for child in suite if child.tag == "testcase"]
+    allowed_suite_children = {"properties", "system-err", "system-out", "testcase"}
+    if (
+        any(child.tag not in allowed_suite_children for child in suite)
+        or list(suite.iter("testcase")) != testcases
+        or any(
+            descendant is not suite and descendant.tag in {"testsuite", "testsuites"}
+            for descendant in suite.iter()
+        )
+    ):
+        raise QualificationEvidenceError(
+            "pytest JUnit report has an invalid testcase hierarchy"
+        )
     if not testcases:
         raise QualificationEvidenceError("pytest JUnit report has no testcases")
 
-    skips: list[SkipCase] = []
-    for testcase in testcases:
-        skipped = [child for child in testcase if child.tag == "skipped"]
-        if not skipped:
-            continue
-        if len(skipped) != 1 or any(
-            child.tag in {"error", "failure"} for child in testcase
-        ):
+    declared: dict[str, int] = {}
+    for counter in ("tests", "failures", "errors", "skipped"):
+        raw_counter = suite.get(counter)
+        if raw_counter is None or _JUNIT_COUNTER.fullmatch(raw_counter) is None:
             raise QualificationEvidenceError(
-                "pytest JUnit testcase has ambiguous skip status"
+                f"pytest JUnit report has an invalid {counter} counter"
             )
+        declared[counter] = int(raw_counter)
+
+    outcomes = {"failures": 0, "errors": 0, "skipped": 0}
+    testcase_statuses: list[list[etree.Element[str]]] = []
+    outcome_names = {"failure": "failures", "error": "errors", "skipped": "skipped"}
+    for testcase in testcases:
+        direct = [child for child in testcase if child.tag in outcome_names]
+        nested = [
+            descendant
+            for descendant in testcase.iter()
+            if descendant is not testcase and descendant.tag in outcome_names
+        ]
+        if nested != direct or len(direct) > 1:
+            raise QualificationEvidenceError(
+                "pytest JUnit testcase has an ambiguous outcome hierarchy"
+            )
+        testcase_statuses.append(direct)
+        if direct:
+            outcomes[outcome_names[direct[0].tag]] += 1
+
+    direct_status_ids = {
+        id(status) for statuses in testcase_statuses for status in statuses
+    }
+    if any(
+        descendant.tag in outcome_names and id(descendant) not in direct_status_ids
+        for descendant in suite.iter()
+    ):
+        raise QualificationEvidenceError(
+            "pytest JUnit report has an invalid outcome hierarchy"
+        )
+
+    if declared["tests"] != len(testcases) or any(
+        declared[counter] != outcomes[counter]
+        for counter in ("failures", "errors", "skipped")
+    ):
+        raise QualificationEvidenceError(
+            "pytest JUnit declared counters do not match testcase outcomes"
+        )
+    if outcomes["failures"] or outcomes["errors"]:
+        raise QualificationEvidenceError(
+            "pytest JUnit report contains a failed or errored testcase"
+        )
+
+    skips: list[SkipCase] = []
+    for testcase, statuses in zip(testcases, testcase_statuses, strict=True):
+        if not statuses:
+            continue
+        skipped = statuses[0]
         classname = testcase.get("classname")
         name = testcase.get("name")
-        message = skipped[0].get("message")
+        message = skipped.get("message")
         if classname is None:
             raise QualificationEvidenceError("skipped testcase has no classname")
         if name is None:
@@ -447,7 +534,12 @@ def record_cell(
     return report
 
 
-def _load_cell_reports(reports_dir: Path) -> list[dict[str, Any]]:
+def _load_cell_reports(
+    reports_dir: Path, *, require_canonical: bool
+) -> list[dict[str, Any]]:
+    _reject_symlink_ancestors(
+        reports_dir, description="qualification reports directory"
+    )
     if reports_dir.is_symlink() or not reports_dir.is_dir():
         raise QualificationEvidenceError(
             "qualification reports must be a real directory"
@@ -458,7 +550,12 @@ def _load_cell_reports(reports_dir: Path) -> list[dict[str, Any]]:
             "qualification evidence must contain exactly 19 records"
         )
     return [
-        _load_json(path, description="qualification cell report")[0] for path in paths
+        _load_json(
+            path,
+            description="qualification cell report",
+            require_canonical=require_canonical,
+        )[0]
+        for path in paths
     ]
 
 
@@ -487,7 +584,9 @@ def aggregate_reports(
     files = _payload_files(
         Path(payload_manifest), version=version, source_sha=source_sha
     )
-    reports = _load_cell_reports(Path(reports_dir))
+    reports = _load_cell_reports(
+        Path(reports_dir), require_canonical=version == "0.2.3"
+    )
     observed_cells: set[str] = set()
 
     if version == "0.2.2":

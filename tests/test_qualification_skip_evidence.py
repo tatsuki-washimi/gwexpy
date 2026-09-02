@@ -112,7 +112,9 @@ def write_junit(path: Path, skips: list[tuple[str, str, str]]) -> Path:
         for classname, name, message in skips
     )
     path.write_text(
-        f'<testsuites><testsuite name="pytest">{cases}</testsuite></testsuites>',
+        '<testsuites name="pytest tests"><testsuite name="pytest" '
+        f'errors="0" failures="0" skipped="{len(skips)}" '
+        f'tests="{len(skips) + 1}">{cases}</testsuite></testsuites>',
         encoding="utf-8",
     )
     return path
@@ -296,6 +298,57 @@ def test_baseline_rejects_noncanonical_json_and_symlink(tmp_path: Path) -> None:
         evidence.load_expected_skips(symlink)
 
 
+@pytest.mark.parametrize("protected_input", ["baseline", "junit", "payload"])
+def test_record_rejects_symlink_ancestor_for_protected_inputs(
+    tmp_path: Path,
+    protected_input: str,
+) -> None:
+    evidence = load_module()
+    real = tmp_path / "real"
+    real.mkdir()
+    alias = tmp_path / "alias"
+    alias.symlink_to(real, target_is_directory=True)
+    real_paths = {
+        "baseline": write_baseline(real / "baseline.json"),
+        "junit": write_junit(real / "pytest.xml", []),
+        "payload": write_payload(real / "payload.json"),
+    }
+    selected_paths = {
+        name: alias / path.name if name == protected_input else path
+        for name, path in real_paths.items()
+    }
+
+    with pytest.raises(evidence.QualificationEvidenceError, match="symlink ancestor"):
+        evidence.record_cell(
+            version="0.2.3",
+            cell=EXPECTED_CELLS[0],
+            source_sha=SOURCE_SHA,
+            payload_manifest=selected_paths["payload"],
+            report_path=tmp_path / "qualification.json",
+            junit_path=selected_paths["junit"],
+            expected_skips_path=selected_paths["baseline"],
+        )
+
+
+def test_aggregate_rejects_reports_directory_symlink_ancestor(tmp_path: Path) -> None:
+    evidence = load_module()
+    real = tmp_path / "real"
+    reports = real / "reports"
+    reports.mkdir(parents=True)
+    alias = tmp_path / "alias"
+    alias.symlink_to(real, target_is_directory=True)
+
+    with pytest.raises(evidence.QualificationEvidenceError, match="symlink ancestor"):
+        evidence.aggregate_reports(
+            version="0.2.3",
+            source_sha=SOURCE_SHA,
+            payload_manifest=write_payload(tmp_path / "payload.json"),
+            reports_dir=alias / "reports",
+            output_path=tmp_path / "aggregate.json",
+            expected_skips_path=write_baseline(tmp_path / "baseline.json"),
+        )
+
+
 def test_baseline_rejects_duplicate_json_keys(tmp_path: Path) -> None:
     evidence = load_module()
     path = tmp_path / "duplicate-key.json"
@@ -314,8 +367,9 @@ def test_junit_skip_parser_rejects_noncanonical_or_duplicate_cases(
     evidence = load_module()
     missing = tmp_path / "missing.xml"
     missing.write_text(
-        '<testsuite><testcase name="test_name"><skipped message="reason"/>'
-        "</testcase></testsuite>",
+        '<testsuites><testsuite tests="1" failures="0" errors="0" skipped="1">'
+        '<testcase name="test_name"><skipped message="reason"/></testcase>'
+        "</testsuite></testsuites>",
         encoding="utf-8",
     )
     with pytest.raises(evidence.QualificationEvidenceError, match="classname"):
@@ -333,12 +387,113 @@ def test_junit_skip_parser_rejects_noncanonical_or_duplicate_cases(
 
     failure = tmp_path / "failure.xml"
     failure.write_text(
-        '<testsuite><testcase classname="tests.required" name="test_failure">'
-        "<failure/></testcase></testsuite>",
+        '<testsuites><testsuite tests="1" failures="1" errors="0" skipped="0">'
+        '<testcase classname="tests.required" name="test_failure">'
+        "<failure/></testcase></testsuite></testsuites>",
         encoding="utf-8",
     )
     with pytest.raises(evidence.QualificationEvidenceError, match="failed|errored"):
         evidence.parse_junit_skips(failure)
+
+
+@pytest.mark.parametrize(
+    "document",
+    [
+        (
+            '<testsuite tests="1" failures="0" errors="0" skipped="0">'
+            '<testcase classname="tests.required" name="test_passes"/>'
+            "</testsuite>"
+        ),
+        (
+            "<testsuites>"
+            '<testcase classname="tests.required" name="test_passes"/>'
+            "</testsuites>"
+        ),
+        (
+            "<testsuites>"
+            '<testsuite tests="1" failures="0" errors="0" skipped="0">'
+            '<testcase classname="tests.required" name="test_one"/>'
+            "</testsuite>"
+            '<testsuite tests="1" failures="0" errors="0" skipped="0">'
+            '<testcase classname="tests.required" name="test_two"/>'
+            "</testsuite>"
+            "</testsuites>"
+        ),
+        (
+            '<testsuites><testsuite failures="0" errors="0" skipped="0">'
+            '<testcase classname="tests.required" name="test_passes"/>'
+            "</testsuite></testsuites>"
+        ),
+        (
+            '<testsuites><testsuite tests="-1" failures="0" errors="0" '
+            'skipped="0"><testcase classname="tests.required" '
+            'name="test_passes"/></testsuite></testsuites>'
+        ),
+        (
+            '<testsuites><testsuite tests="one" failures="0" errors="0" '
+            'skipped="0"><testcase classname="tests.required" '
+            'name="test_passes"/></testsuite></testsuites>'
+        ),
+        (
+            '<testsuites><testsuite tests="2" failures="0" errors="0" '
+            'skipped="0"><testcase classname="tests.required" '
+            'name="test_passes"/></testsuite></testsuites>'
+        ),
+        (
+            '<testsuites><testsuite tests="1" failures="1" errors="0" '
+            'skipped="0"><testcase classname="tests.required" '
+            'name="test_passes"/></testsuite></testsuites>'
+        ),
+        (
+            '<testsuites><testsuite tests="1" failures="0" errors="1" '
+            'skipped="0"><testcase classname="tests.required" '
+            'name="test_passes"/></testsuite></testsuites>'
+        ),
+        (
+            '<testsuites><testsuite tests="1" failures="0" errors="0" '
+            'skipped="1"><testcase classname="tests.required" '
+            'name="test_passes"/></testsuite></testsuites>'
+        ),
+        (
+            '<testsuites><testsuite tests="1" failures="0" errors="0" '
+            'skipped="0"><testcase classname="tests.required" '
+            'name="test_passes"/><failure/></testsuite></testsuites>'
+        ),
+    ],
+)
+def test_junit_parser_requires_pytest_single_suite_and_truthful_counters(
+    tmp_path: Path,
+    document: str,
+) -> None:
+    evidence = load_module()
+    junit = tmp_path / "forged.xml"
+    junit.write_text(document, encoding="utf-8")
+
+    with pytest.raises(
+        evidence.QualificationEvidenceError,
+        match="hierarchy|counter|declared|declaration",
+    ):
+        evidence.parse_junit_skips(junit)
+
+
+@pytest.mark.parametrize("encoding", ["utf-16", "utf-16-le"])
+def test_junit_parser_rejects_utf16_dtd_entity_bypass(
+    tmp_path: Path,
+    encoding: str,
+) -> None:
+    evidence = load_module()
+    junit = tmp_path / "utf16-entity.xml"
+    document = (
+        '<?xml version="1.0" encoding="utf-16"?>'
+        '<!DOCTYPE testsuites [<!ENTITY reason "forged optional skip">]>'
+        '<testsuites><testsuite tests="1" failures="0" errors="0" skipped="1">'
+        '<testcase classname="tests.optional" name="test_backend">'
+        '<skipped message="&reason;"/></testcase></testsuite></testsuites>'
+    )
+    junit.write_bytes(document.encode(encoding))
+
+    with pytest.raises(evidence.QualificationEvidenceError, match="UTF-8"):
+        evidence.parse_junit_skips(junit)
 
 
 def test_parser_consumes_pytests_builtin_junit_skip_tuple(tmp_path: Path) -> None:
@@ -473,6 +628,59 @@ def test_aggregate_rejects_duplicate_cell_and_baseline_identity_mismatch(
             output_path=tmp_path / "aggregate.json",
             expected_skips_path=baseline,
         )
+
+
+def test_aggregate_rejects_noncanonical_v023_cell_report(tmp_path: Path) -> None:
+    evidence = load_module()
+    baseline = write_baseline(tmp_path / "baseline.json")
+    payload = write_payload(tmp_path / "payload.json")
+    reports = tmp_path / "reports"
+    reports.mkdir()
+    junit = write_junit(tmp_path / "pytest.xml", [])
+    for index, cell in enumerate(EXPECTED_CELLS):
+        evidence.record_cell(
+            version="0.2.3",
+            cell=cell,
+            source_sha=SOURCE_SHA,
+            payload_manifest=payload,
+            report_path=reports / str(index) / "qualification.json",
+            junit_path=junit,
+            expected_skips_path=baseline,
+        )
+    report = reports / "0" / "qualification.json"
+    data = json.loads(report.read_text(encoding="utf-8"))
+    report.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+    with pytest.raises(evidence.QualificationEvidenceError, match="canonical"):
+        evidence.aggregate_reports(
+            version="0.2.3",
+            source_sha=SOURCE_SHA,
+            payload_manifest=payload,
+            reports_dir=reports,
+            output_path=tmp_path / "aggregate.json",
+            expected_skips_path=baseline,
+        )
+
+
+def test_record_preserves_noncanonical_payload_manifest_serialization(
+    tmp_path: Path,
+) -> None:
+    evidence = load_module()
+    payload = write_payload(tmp_path / "payload.json")
+    data = json.loads(payload.read_text(encoding="utf-8"))
+    payload.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+    result = evidence.record_cell(
+        version="0.2.3",
+        cell=EXPECTED_CELLS[0],
+        source_sha=SOURCE_SHA,
+        payload_manifest=payload,
+        report_path=tmp_path / "qualification.json",
+        junit_path=write_junit(tmp_path / "pytest.xml", []),
+        expected_skips_path=write_baseline(tmp_path / "baseline.json"),
+    )
+
+    assert result["files"] == FILES
 
 
 def test_aggregate_rejects_duplicate_cell_with_exactly_nineteen_records(

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -13,6 +14,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACTS_PATH = ROOT / "scripts" / "ci" / "release_contracts.json"
 LOADER_PATH = ROOT / "scripts" / "ci" / "release_contract.py"
+V023_IMPLEMENTATION_BASE = "a8085b71446d3ef3417a7e5b5ac8efb156368eac"
 V0114_MANIFEST = (
     ROOT
     / "docs"
@@ -30,6 +32,40 @@ def load_contract_module():
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
+
+
+def _git_commit_available(revision: str) -> bool:
+    result = subprocess.run(
+        ["git", "cat-file", "-e", f"{revision}^{{commit}}"],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+    )
+    return result.returncode == 0
+
+
+def _candidate_revision() -> str:
+    """Select the PR head instead of GitHub's synthetic merge commit when present."""
+    event_path = os.environ.get("GITHUB_EVENT_PATH")
+    if event_path:
+        try:
+            event = json.loads(Path(event_path).read_text(encoding="utf-8"))
+            revision = event["pull_request"]["head"]["sha"]
+        except (KeyError, OSError, TypeError, json.JSONDecodeError):
+            pass
+        else:
+            if (
+                isinstance(revision, str)
+                and len(revision) == 40
+                and all(character in "0123456789abcdef" for character in revision)
+                and _git_commit_available(revision)
+            ):
+                return revision
+    return "HEAD"
+
+
+def _review_scope_covers(path: str, scope: set[str]) -> bool:
+    return any(path == entry or path.startswith(f"{entry}/") for entry in scope)
 
 
 def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
@@ -144,12 +180,20 @@ def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
     )
     assert {
         ".github/workflows/test-compat-gwpy.yml",
+        "gwexpy/analysis/coupling_result.py",
         "gwexpy/frequencyseries",
         "gwexpy/spectrogram",
         "gwexpy/time",
         "gwexpy/timeseries",
         "scripts/audit_gwpy_overrides.py",
+        "tests/io/test_csv_txt_contract.py",
+        "tests/io/test_gwpy_csv_phase4_compat.py",
+        "tests/io/test_gwpy_hdf5_compat.py",
+        "tests/io_conformance/test_read_conformance.py",
+        "tests/test_compatibility_fixes.py",
+        "tests/test_gwpy_constructor_terminal_compat.py",
         "tests/test_gwpy_override_inventory.py",
+        "tests/test_import_order.py",
     } <= set(v023["review_lanes"]["scientific-compatibility"])
     assert v023["s_to_r_allowed_paths"] == [
         "docs/developers/plans/20260902_v0.2.3_gwpy_behavioral_compatibility.md",
@@ -158,6 +202,40 @@ def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
     assert v023["artifact_prefix"] == "v023-integration-evidence"
     assert v023["protected_refs"] == ["main", "maint/0.2"]
     assert "qualification_profile" not in v023
+
+
+def test_v023_review_lanes_cover_every_fixed_base_candidate_change() -> None:
+    if not _git_commit_available(V023_IMPLEMENTATION_BASE):
+        pytest.fail(
+            "fixed v0.2.3 implementation base is unavailable; "
+            "the authoritative review-scope gate requires fetch-depth: 0"
+        )
+    candidate = _candidate_revision()
+    result = subprocess.run(
+        [
+            "git",
+            "-c",
+            "core.quotepath=false",
+            "diff",
+            "--name-only",
+            "--diff-filter=ACDMRTUXB",
+            f"{V023_IMPLEMENTATION_BASE}..{candidate}",
+            "--",
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    changed_paths = {path for path in result.stdout.splitlines() if path}
+    contracts = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
+    lanes = contracts["releases"]["v0.2.3"]["review_lanes"]
+    scope = {path for paths in lanes.values() for path in paths}
+
+    uncovered = sorted(
+        path for path in changed_paths if not _review_scope_covers(path, scope)
+    )
+    assert uncovered == []
 
 
 def test_release_contract_loader_rejects_unknown_tags() -> None:
