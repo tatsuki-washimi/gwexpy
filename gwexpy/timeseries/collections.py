@@ -849,13 +849,67 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             overwrite = bool(kwargs.pop("overwrite", False))
             append = bool(kwargs.pop("append", False))
             mode = kwargs.pop("mode", None)
+            if append and mode in {"w", "w-", "x"}:
+                raise ValueError(
+                    f"append=True is incompatible with HDF5 create mode {mode!r}"
+                )
             if append and mode is None:
                 mode = "a"
             layout = normalize_layout(kwargs.pop("layout", "gwpy"))
-            with ensure_hdf5_file(target, mode=mode, overwrite=overwrite) as h5f:
-                used = set(h5f.keys())
-                keymap = read_hdf5_keymap(h5f)
-                order = read_hdf5_order(h5f) or list(h5f.keys())
+            with ensure_hdf5_file(
+                target,
+                mode=mode,
+                overwrite=overwrite and not append,
+            ) as h5f:
+                root_names = list(h5f.keys())
+                used = set(root_names)
+                if append:
+                    from gwexpy.timeseries.io.hdf5 import _ROLLBACK_PREFIX
+
+                    object_type = (
+                        h5py.Dataset if layout == LAYOUT_DATASET else h5py.Group
+                    )
+                    eligible = [
+                        name
+                        for name in root_names
+                        if not name.startswith(_ROLLBACK_PREFIX)
+                        and isinstance(h5f.get(name), object_type)
+                    ]
+                    eligible_set = set(eligible)
+                    stored_keymap = read_hdf5_keymap(h5f)
+                    keymap = {
+                        name: stored_keymap.get(name, name) for name in eligible
+                    }
+
+                    logical_to_physical: dict[str, str] = {}
+                    for physical, logical in keymap.items():
+                        if logical in logical_to_physical:
+                            raise ValueError(
+                                "ambiguous existing HDF5 logical key "
+                                f"{logical!r}"
+                            )
+                        logical_to_physical[logical] = physical
+
+                    incoming_logical = [str(key) for key in self]
+                    if len(incoming_logical) != len(set(incoming_logical)):
+                        raise ValueError(
+                            "HDF5 append contains duplicate logical keys"
+                        )
+                    for logical in incoming_logical:
+                        if logical in logical_to_physical:
+                            raise ValueError(
+                                f"HDF5 append logical key already exists: {logical!r}"
+                            )
+
+                    order = []
+                    ordered = set()
+                    for name in [*read_hdf5_order(h5f), *eligible]:
+                        if name in eligible_set and name not in ordered:
+                            order.append(name)
+                            ordered.add(name)
+                else:
+                    keymap = read_hdf5_keymap(h5f)
+                    order = read_hdf5_order(h5f) or root_names
                 for key, ts in self.items():
                     safe = safe_hdf5_key(str(key))
                     name = unique_hdf5_key(safe, used=used)

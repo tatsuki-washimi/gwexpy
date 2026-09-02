@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import h5py
 import numpy as np
+import pytest
 from gwpy.frequencyseries import FrequencySeries as GwpyFrequencySeries
 from gwpy.spectrogram import Spectrogram as GwpySpectrogram
 from gwpy.timeseries import TimeSeries as GwpyTimeSeries
@@ -12,7 +13,12 @@ from gwexpy.frequencyseries import (
     FrequencySeriesDict,
     FrequencySeriesList,
 )
-from gwexpy.io.hdf5_collection import read_hdf5_keymap, read_hdf5_order
+from gwexpy.io.hdf5_collection import (
+    LAYOUT_DATASET,
+    read_hdf5_keymap,
+    read_hdf5_order,
+    write_hdf5_manifest,
+)
 from gwexpy.spectrogram import Spectrogram, SpectrogramDict, SpectrogramList
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesList
 
@@ -69,6 +75,287 @@ def test_timeseriesdict_hdf5_append_preserves_existing_entries(tmp_path):
     np.testing.assert_allclose(gwexpy_tsd["new"].value, new.value)
     assert gwexpy_tsd["old"].name == old.name
     assert gwexpy_tsd["new"].name == new.name
+
+
+def test_timeseriesdict_hdf5_append_takes_precedence_over_overwrite(tmp_path):
+    old = TimeSeries(
+        np.arange(3.0), sample_rate=2.0, t0=1.0, unit="m", name="old series"
+    )
+    new = TimeSeries(
+        np.arange(3.0) + 10,
+        sample_rate=2.0,
+        t0=1.0,
+        unit="m",
+        name="new series",
+    )
+
+    outfile = tmp_path / "tsd_append_overwrite.h5"
+    TimeSeriesDict({"old": old}).write(
+        outfile, format="hdf5", layout="dataset"
+    )
+    TimeSeriesDict({"new": new}).write(
+        outfile,
+        format="hdf5",
+        layout="dataset",
+        append=True,
+        overwrite=True,
+    )
+
+    with h5py.File(outfile, "r") as h5f:
+        assert set(h5f) == {"old", "new"}
+        assert read_hdf5_keymap(h5f) == {"old": "old", "new": "new"}
+        assert read_hdf5_order(h5f) == ["old", "new"]
+
+    result = TimeSeriesDict.read(outfile, format="hdf5")
+    assert list(result) == ["old", "new"]
+    np.testing.assert_allclose(result["old"].value, old.value)
+    np.testing.assert_allclose(result["new"].value, new.value)
+    assert result["old"].name == old.name
+    assert result["new"].name == new.name
+
+
+@pytest.mark.parametrize("mode", ["w", "w-", "x"])
+def test_timeseriesdict_hdf5_append_rejects_create_modes_without_mutation(
+    tmp_path, mode
+):
+    old = TimeSeries(
+        np.arange(3.0), sample_rate=2.0, t0=1.0, unit="m", name="old series"
+    )
+    new = TimeSeries(
+        np.arange(3.0) + 10,
+        sample_rate=2.0,
+        t0=1.0,
+        unit="m",
+        name="new series",
+    )
+
+    outfile = tmp_path / f"tsd_append_mode_{mode}.h5"
+    TimeSeriesDict({"old": old}).write(
+        outfile, format="hdf5", layout="dataset"
+    )
+    original_bytes = outfile.read_bytes()
+
+    error = None
+    try:
+        TimeSeriesDict({"new": new}).write(
+            outfile,
+            format="hdf5",
+            layout="dataset",
+            append=True,
+            mode=mode,
+        )
+    except Exception as exc:  # noqa: BLE001 - assert the public exception below
+        error = exc
+
+    assert outfile.read_bytes() == original_bytes
+    assert isinstance(error, ValueError)
+    with h5py.File(outfile, "r") as h5f:
+        assert set(h5f) == {"old"}
+        assert read_hdf5_keymap(h5f) == {"old": "old"}
+        assert read_hdf5_order(h5f) == ["old"]
+    result = TimeSeriesDict.read(outfile, format="hdf5")
+    assert list(result) == ["old"]
+    np.testing.assert_allclose(result["old"].value, old.value)
+    assert result["old"].name == old.name
+
+
+@pytest.mark.parametrize("duplicate_key", ["mapped", "fallback"])
+def test_timeseriesdict_hdf5_append_preflights_existing_logical_keys(
+    tmp_path, duplicate_key
+):
+    mapped = TimeSeries(
+        np.arange(3.0), sample_rate=2.0, t0=1.0, unit="m", name="mapped series"
+    )
+    fallback = TimeSeries(
+        np.arange(3.0) + 10,
+        sample_rate=2.0,
+        t0=1.0,
+        unit="m",
+        name="fallback series",
+    )
+    fresh = TimeSeries(
+        np.arange(3.0) + 20,
+        sample_rate=2.0,
+        t0=1.0,
+        unit="m",
+        name="fresh series",
+    )
+    replacement = TimeSeries(
+        np.arange(3.0) + 30,
+        sample_rate=2.0,
+        t0=1.0,
+        unit="m",
+        name="replacement series",
+    )
+
+    outfile = tmp_path / f"tsd_duplicate_{duplicate_key}.h5"
+    TimeSeriesDict(
+        {"mapped_physical": mapped, "fallback": fallback}
+    ).write(outfile, format="hdf5", layout="dataset")
+    with h5py.File(outfile, "r+") as h5f:
+        write_hdf5_manifest(
+            h5f,
+            kind="TimeSeriesDict",
+            layout=LAYOUT_DATASET,
+            keymap={"mapped_physical": "mapped"},
+            order=["mapped_physical", "fallback"],
+        )
+
+    with pytest.raises(ValueError, match="logical key"):
+        TimeSeriesDict(
+            {"fresh": fresh, duplicate_key: replacement}
+        ).write(outfile, format="hdf5", layout="dataset", append=True)
+
+    with h5py.File(outfile, "r") as h5f:
+        assert set(h5f) == {"mapped_physical", "fallback"}
+        assert read_hdf5_keymap(h5f) == {"mapped_physical": "mapped"}
+        assert read_hdf5_order(h5f) == ["mapped_physical", "fallback"]
+        np.testing.assert_allclose(h5f["mapped_physical"][()], mapped.value)
+        np.testing.assert_allclose(h5f["fallback"][()], fallback.value)
+
+
+def test_timeseriesdict_hdf5_append_reconciles_partial_stale_manifest(tmp_path):
+    old_a = TimeSeries(
+        np.arange(3.0), sample_rate=2.0, t0=1.0, unit="m", name="old a"
+    )
+    old_b = TimeSeries(
+        np.arange(3.0) + 10,
+        sample_rate=2.0,
+        t0=1.0,
+        unit="m",
+        name="old b",
+    )
+    new = TimeSeries(
+        np.arange(3.0) + 20,
+        sample_rate=2.0,
+        t0=1.0,
+        unit="m",
+        name="new series",
+    )
+    private = "__gwexpy_t0_rollback_hidden"
+
+    outfile = tmp_path / "tsd_partial_manifest.h5"
+    with h5py.File(outfile, "w") as h5f:
+        old_a.write(h5f, format="hdf5", path="old_a")
+        old_b.write(h5f, format="hdf5", path="old_b")
+        h5f.create_group("wrong_kind")
+        h5f.create_dataset(private, data=[99.0])
+        write_hdf5_manifest(
+            h5f,
+            kind="TimeSeriesDict",
+            layout=LAYOUT_DATASET,
+            keymap={
+                "old_b": "logical_b",
+                "missing": "ghost",
+                "wrong_kind": "wrong_kind",
+                private: "private",
+            },
+            order=["missing", "old_b", "old_b", "wrong_kind", private],
+        )
+
+    TimeSeriesDict({"new": new}).write(
+        outfile, format="hdf5", layout="dataset", append=True
+    )
+
+    with h5py.File(outfile, "r") as h5f:
+        assert set(h5f) == {"old_a", "old_b", "wrong_kind", private, "new"}
+        assert read_hdf5_order(h5f) == ["old_b", "old_a", "new"]
+        assert read_hdf5_keymap(h5f) == {
+            "old_a": "old_a",
+            "old_b": "logical_b",
+            "new": "new",
+        }
+        assert isinstance(h5f["wrong_kind"], h5py.Group)
+        np.testing.assert_allclose(h5f[private][()], [99.0])
+
+    result = TimeSeriesDict.read(outfile, format="hdf5")
+    assert list(result) == ["logical_b", "old_a", "new"]
+    np.testing.assert_allclose(result["logical_b"].value, old_b.value)
+    np.testing.assert_allclose(result["old_a"].value, old_a.value)
+    np.testing.assert_allclose(result["new"].value, new.value)
+    assert result["logical_b"].name == old_b.name
+    assert result["old_a"].name == old_a.name
+    assert result["new"].name == new.name
+
+
+def test_timeseriesdict_hdf5_append_rejects_ambiguous_existing_logical_keys(
+    tmp_path,
+):
+    old_a = TimeSeries(np.arange(3.0), sample_rate=2.0, t0=1.0, unit="m")
+    old_b = TimeSeries(np.arange(3.0) + 10, sample_rate=2.0, t0=1.0, unit="m")
+    new = TimeSeries(np.arange(3.0) + 20, sample_rate=2.0, t0=1.0, unit="m")
+
+    outfile = tmp_path / "tsd_ambiguous_manifest.h5"
+    TimeSeriesDict({"old_a": old_a, "old_b": old_b}).write(
+        outfile, format="hdf5", layout="dataset"
+    )
+    with h5py.File(outfile, "r+") as h5f:
+        write_hdf5_manifest(
+            h5f,
+            kind="TimeSeriesDict",
+            layout=LAYOUT_DATASET,
+            keymap={"old_a": "duplicate", "old_b": "duplicate"},
+            order=["old_a", "old_b"],
+        )
+
+    with pytest.raises(ValueError, match="ambiguous.*logical key"):
+        TimeSeriesDict({"new": new}).write(
+            outfile, format="hdf5", layout="dataset", append=True
+        )
+
+    with h5py.File(outfile, "r") as h5f:
+        assert set(h5f) == {"old_a", "old_b"}
+        assert read_hdf5_keymap(h5f) == {
+            "old_a": "duplicate",
+            "old_b": "duplicate",
+        }
+        assert read_hdf5_order(h5f) == ["old_a", "old_b"]
+        np.testing.assert_allclose(h5f["old_a"][()], old_a.value)
+        np.testing.assert_allclose(h5f["old_b"][()], old_b.value)
+
+
+def test_timeseriesdict_hdf5_append_reconciles_native_file_without_manifest(
+    tmp_path,
+):
+    native = GwpyTimeSeries(
+        np.arange(3.0), sample_rate=2.0, t0=1.0, unit="m", name="native series"
+    )
+    new = TimeSeries(
+        np.arange(3.0) + 10,
+        sample_rate=2.0,
+        t0=1.0,
+        unit="m",
+        name="new series",
+    )
+
+    outfile = tmp_path / "tsd_native_append.h5"
+    native.write(outfile, format="hdf5", path="native")
+    with h5py.File(outfile, "r") as h5f:
+        assert read_hdf5_keymap(h5f) == {}
+        assert read_hdf5_order(h5f) == []
+
+    TimeSeriesDict({"new": new}).write(
+        outfile, format="hdf5", layout="dataset", append=True
+    )
+
+    with h5py.File(outfile, "r") as h5f:
+        assert set(h5f) == {"native", "new"}
+        assert read_hdf5_keymap(h5f) == {"native": "native", "new": "new"}
+        assert read_hdf5_order(h5f) == ["native", "new"]
+
+    gwpy_result = GwpyTimeSeriesDict.read(outfile, format="hdf5")
+    assert set(gwpy_result) == {"native", "new"}
+    np.testing.assert_allclose(gwpy_result["native"].value, native.value)
+    np.testing.assert_allclose(gwpy_result["new"].value, new.value)
+    assert gwpy_result["native"].name == native.name
+    assert gwpy_result["new"].name == new.name
+
+    gwexpy_result = TimeSeriesDict.read(outfile, format="hdf5")
+    assert list(gwexpy_result) == ["native", "new"]
+    np.testing.assert_allclose(gwexpy_result["native"].value, native.value)
+    np.testing.assert_allclose(gwexpy_result["new"].value, new.value)
+    assert gwexpy_result["native"].name == native.name
+    assert gwexpy_result["new"].name == new.name
 
 
 def test_gwpy_reads_timeserieslist_hdf5(tmp_path):
