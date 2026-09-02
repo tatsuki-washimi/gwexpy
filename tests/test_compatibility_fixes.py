@@ -129,7 +129,8 @@ class TestPlotShowClose:
 
         # Check close parameter
         assert "close" in params
-        assert sig.parameters["close"].default is True
+        assert sig.parameters["close"].kind is inspect.Parameter.KEYWORD_ONLY
+        assert sig.parameters["close"].default is False
 
         # Check block parameter
         assert "block" in params

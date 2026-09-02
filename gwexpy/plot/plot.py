@@ -300,44 +300,45 @@ class Plot(BasePlot):
         return plot_mmm(median, min_s, max_s, ax=ax, **kwargs)
 
     def show(
-        self, warn: bool = True, close: bool = True, block: bool | None = None
+        self,
+        warn: bool = True,
+        block: bool | None = None,
+        *,
+        close: bool = False,
     ) -> None:
-        """Show the figure.
+        """Show the figure with GWpy-compatible positional arguments.
 
         Parameters
         ----------
         warn : bool, optional
             Unused, kept for API compatibility. Default is True.
-        close : bool, optional
-            If True (default), close the figure after showing to free
-            resources and prevent double display in Jupyter.
-            Set to False if you need to call savefig() after show().
         block : bool or None, optional
             Whether to block execution until the figure window is closed.
             If None (default), uses matplotlib's default behavior.
             Set to False to continue execution immediately after showing,
             which allows savefig() to work in scripted workflows.
+        close : bool, keyword-only, optional
+            Explicit GWexpy extension. If True, close the figure after the
+            GWpy display path returns. The default is False so that plain
+            ``show()`` has the same lifecycle as GWpy.
 
         Examples
         --------
         >>> plot = Plot(data)
-        >>> plot.show(close=False, block=False)  # Non-blocking, keep figure
+        >>> plot.show(block=False)  # Non-blocking, keep figure
         >>> plot.savefig("output.png")  # Works because figure is still open
 
         Notes
         -----
-        In Jupyter notebooks, setting ``close=True`` prevents the figure
-        from being displayed twice (once by show() and once by the
-        notebook's automatic display).
-
-        In script mode, ``plt.show()`` blocks by default until the window
-        is closed. Use ``block=False`` if you need to save after showing.
+        ``warn`` and ``block`` retain GWpy's positional layout. Use the
+        keyword-only ``close=True`` extension in notebooks when explicitly
+        closing after display is desired.
 
         """
-        import matplotlib.pyplot as plt
-
-        plt.show(block=block)
+        super().show(warn=warn, block=block)
         if close:
+            import matplotlib.pyplot as plt
+
             plt.close(self)
 
     def _repr_png_(self) -> bytes | None:

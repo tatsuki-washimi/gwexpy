@@ -1,0 +1,63 @@
+schema: gwexpy-v023-plot-show-evidence-v1
+phase: override-audit-closure
+status: focused-green
+
+implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
+phase_parent: 7191530e30db8f208d4ec57d14d563e9c9cf7ef7
+issues: [639, 704]
+
+skills:
+  - superpowers:test-driven-development
+  - extend_gwpy
+  - gwexpy_conda_jobs
+
+oracles:
+  - environment: main
+    python: 3.12.12
+    gwpy: 4.0.1
+  - environment: gwexpy
+    python: 3.11.14
+    gwpy: 4.0.2
+
+contract:
+  affected_public_classes:
+    - gwexpy.plot.Plot
+    - gwexpy.plot.FieldPlot
+    - gwexpy.plot.SkyMap
+  gwpy_positional_layout: [warn, block]
+  gwpy_defaults: [true, null]
+  close_extension:
+    kind: keyword-only
+    default: false
+    explicit_true: closes the figure after the GWpy display path returns
+  default_lifecycle: figure remains open, matching GWpy
+  exception_comparison: success or failure and exception class
+
+tdd:
+  red:
+    environment: gwexpy
+    gwpy: 4.0.2
+    result: 6 failed, 1 passed
+    causes:
+      - close occupied GWpy's second positional slot
+      - close defaulted to true and changed plain-show lifecycle
+      - a third user positional argument was accepted
+  green:
+    focused:
+      gwpy_4_0_1: 7 passed
+      gwpy_4_0_2: 7 passed
+    affected_plot_regression:
+      gwpy_4_0_2: 75 passed, 1 expected backend warning
+    unexpected_required_skips: 0
+
+evidence:
+  - tests/plot/test_show_gwpy_compat.py::test_show_preserves_gwpy_positional_surface
+  - tests/plot/test_show_gwpy_compat.py::test_show_default_keeps_figure_open_like_gwpy
+  - tests/plot/test_show_gwpy_compat.py::test_show_close_is_explicit_extension
+  - tests/plot/test_show_gwpy_compat.py::test_show_rejects_legacy_positional_close_slot
+
+release_constraints:
+  new_public_api: false
+  new_dependency: false
+  physics_review_required: false
+  override_inventory_regeneration_required: true
