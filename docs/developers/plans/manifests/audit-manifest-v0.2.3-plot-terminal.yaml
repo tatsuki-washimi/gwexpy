@@ -1,0 +1,139 @@
+schema: gwexpy-v023-plot-terminal-evidence-v1
+phase: override-audit-closure
+status: focused-green
+
+implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
+issues: [639, 704]
+
+skills:
+  - visualize_fields
+  - superpowers:test-driven-development
+  - gwexpy_conda_jobs
+
+oracles:
+  - environment: main
+    python: 3.12.12
+    gwpy: 4.0.1
+  - environment: gwexpy
+    python: 3.11.14
+    gwpy: 4.0.2
+
+scope:
+  production_change: none
+  reason: all assigned default routes matched their installed GWpy oracle
+  public_api_change: false
+  new_dependency: false
+  human_visual_or_data_model_review_required: false
+
+comparators:
+  call_surface:
+    exact:
+      - parameter name and order
+      - parameter kind
+      - default value
+      - success or failure
+      - exception class
+    return_annotation: excluded as non-behavioral
+  figure_set:
+    exact:
+      - return values
+      - label
+      - visibility
+      - dpi
+      - size
+      - plotted line source coordinates and values after mutation
+  image_artist:
+    exact:
+      - source value shape
+      - source values
+      - source mask including nonfinite handling
+      - imshow extent
+      - pcolormesh mesh coordinates
+      - axes data limits derived from source coordinates
+  excluded_presentation:
+    - rendered pixels
+    - colors and style
+    - layout and colorbar placement
+    - final view limits
+    - default display scale
+    - interpolation appearance
+
+terminal_recommendations:
+  - member_id: gwexpy.plot.plot.Plot/set
+    state: no-finding
+    evidence:
+      - tests/plot/test_gwpy_override_terminal_plot.py::test_plot_set_matches_gwpy
+  - member_id: gwexpy.plot.field.FieldPlot/set
+    state: no-finding
+    evidence:
+      - tests/plot/test_gwpy_override_terminal_plot.py::test_fieldplot_set_matches_gwpy
+  - member_id: gwexpy.plot.skymap.SkyMap/set
+    state: no-finding
+    evidence:
+      - tests/plot/test_gwpy_override_terminal_plot.py::test_skymap_set_matches_gwpy
+  - member_id: gwexpy.types.array2d.Array2D/imshow
+    state: no-finding
+    evidence:
+      - tests/plot/test_gwpy_override_terminal_plot.py::test_array2d_imshow_matches_gwpy
+  - member_id: gwexpy.types.array2d.Array2D/pcolormesh
+    state: no-finding
+    evidence:
+      - tests/plot/test_gwpy_override_terminal_plot.py::test_array2d_pcolormesh_matches_gwpy
+  - member_id: gwexpy.types.plane2d.Plane2D/imshow
+    state: no-finding
+    evidence:
+      - tests/plot/test_gwpy_override_terminal_plot.py::test_plane2d_imshow_matches_gwpy
+  - member_id: gwexpy.types.plane2d.Plane2D/pcolormesh
+    state: no-finding
+    evidence:
+      - tests/plot/test_gwpy_override_terminal_plot.py::test_plane2d_pcolormesh_matches_gwpy
+  - member_id: gwexpy.spectrogram.spectrogram.Spectrogram/imshow
+    state: no-finding
+    evidence:
+      - tests/plot/test_gwpy_override_terminal_plot.py::test_spectrogram_imshow_matches_gwpy
+  - member_id: gwexpy.spectrogram.spectrogram.Spectrogram/pcolormesh
+    state: no-finding
+    evidence:
+      - tests/plot/test_gwpy_override_terminal_plot.py::test_spectrogram_pcolormesh_matches_gwpy
+
+binding_matrix:
+  set:
+    - empty call
+    - representative supported keyword-only call
+    - positional rejection
+    - unknown property rejection
+    - duplicate keyword rejection
+  imshow_and_pcolormesh:
+    - empty call
+    - representative cmap, alpha, and LogNorm call
+    - positional rejection
+    - duplicate method routing rejection
+    - unknown artist property rejection
+
+oracle_observations:
+  gwpy_version_difference: none in the focused nine-node matrix
+  spectrogram_presentation_difference: >-
+    GWexpy retains its existing default log frequency view and automatic
+    colorbar. Artist source values, masks, extents or mesh coordinates, and
+    axes data limits still match GWpy. These presentation defaults are not
+    treated as a behavioral defect under the v0.2.3 scope.
+
+verification:
+  focused:
+    command: >-
+      <oracle-python> -m pytest
+      tests/plot/test_gwpy_override_terminal_plot.py -q
+    gwpy_4_0_1: 9 passed, 0 skipped
+    gwpy_4_0_2: 9 passed, 0 skipped
+    unexpected_required_skips: 0
+  affected:
+    command: >-
+      <oracle-python> -m pytest tests/plot tests/types tests/spectrogram -q
+    gwpy_4_0_1: 3599 passed, 20 optional skips, 2 xfailed
+    gwpy_4_0_2: 3597 passed, 22 optional skips, 2 xfailed
+  static:
+    ruff: all checks passed
+    format: already formatted
+    mypy: success, no issues found in one test source file
+    yaml_safe_load: valid with nine terminal recommendations
+    git_diff_check: clean
