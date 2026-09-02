@@ -163,12 +163,40 @@ def test_to_gps_explicit_vector_extensions_remain(value, expected):
     np.testing.assert_array_equal(result, expected)
 
 
+def test_nested_numeric_sequences_match_equivalent_ndarray_extensions():
+    values = np.array(
+        [
+            [1000.0, 2000.0],
+            [3000.0, 4000.0],
+            [5000.0, 6000.0],
+        ],
+    )
+    nested_values = (
+        values.tolist(),
+        tuple(tuple(row) for row in values),
+        values,
+    )
+
+    for function_name in ("to_gps", "tconvert"):
+        function = getattr(gwexpy_time, function_name)
+        expected = function(values)
+        for value in nested_values:
+            result = function(value)
+            assert isinstance(result, np.ndarray)
+            assert result.shape == values.shape
+            assert result.dtype == expected.dtype
+            np.testing.assert_array_equal(result, expected)
+
+
 def test_tconvert_first_parameter_matches_canonical_introspection():
     parameter = next(iter(inspect.signature(gwexpy_time.tconvert).parameters.values()))
+    expected = next(iter(inspect.signature(gwpy_time.tconvert).parameters.values()))
 
-    assert parameter.name == "gpsordate"
-    assert parameter.kind is inspect.Parameter.POSITIONAL_OR_KEYWORD
-    assert parameter.default == "now"
+    assert parameter.name == expected.name
+    assert parameter.kind is expected.kind
+    assert type(parameter.default) is type(expected.default)
+    assert parameter.default == expected.default
+    assert parameter.annotation == expected.annotation
 
 
 def test_tconvert_no_argument_is_bounded_by_real_gwpy_calls():
@@ -221,7 +249,10 @@ def test_tconvert_preserves_documented_t_alias():
 
 
 def test_tconvert_rejects_canonical_name_and_alias_together():
-    for canonical in (1126259462, "now"):
+    introspected_default = (
+        inspect.signature(gwexpy_time.tconvert).parameters["gpsordate"].default
+    )
+    for canonical in (1126259462, introspected_default):
         with pytest.raises(TypeError, match="cannot specify both 'gpsordate' and 't'"):
             gwexpy_time.tconvert(gpsordate=canonical, t=1126259463)
 
@@ -292,6 +323,56 @@ def test_from_gps_vector_maps_the_gwpy_scalar_route():
     assert result.dtype == object
     assert result.shape == values.shape
     assert result.tolist() == expected
+
+
+def test_from_gps_empty_vectors_preserve_rank_and_object_dtype():
+    for values in (np.array([], dtype=float), np.empty((0, 2), dtype=float)):
+        result = gwexpy_time.from_gps(values)
+
+        assert isinstance(result, np.ndarray)
+        assert result.shape == values.shape
+        assert result.dtype == object
+        assert result.size == 0
+
+
+def test_from_gps_multidimensional_vectors_map_scalar_route():
+    object_values = np.empty((2, 2), dtype=object)
+    object_values[:] = [
+        [
+            gwpy_time.LIGOTimeGPS(1167264102, 500),
+            gwpy_time.LIGOTimeGPS(1167264102, 1500),
+        ],
+        [
+            gwpy_time.LIGOTimeGPS(1167264102, 999999500),
+            gwpy_time.LIGOTimeGPS(1167264103, 500),
+        ],
+    ]
+    numeric_values = np.array(
+        [
+            [1167264018.0, 1167264102.1252985],
+            [1167264103.0, 1167264104.5],
+        ],
+    )
+
+    for values in (numeric_values, object_values):
+        expected = np.empty(values.shape, dtype=object)
+        for index in np.ndindex(values.shape):
+            expected[index] = gwpy_time.from_gps(values[index])
+
+        result = gwexpy_time.from_gps(values)
+
+        assert isinstance(result, np.ndarray)
+        assert result.shape == values.shape
+        assert result.dtype == object
+        np.testing.assert_array_equal(result, expected)
+
+
+def test_from_gps_nonfinite_vectors_preserve_gwpy_failure_class():
+    for value in (np.nan, np.inf, -np.inf):
+        with pytest.raises(RuntimeError):
+            gwpy_time.from_gps(value)
+        with pytest.raises(RuntimeError):
+            gwexpy_time.from_gps(np.array([1167264018.0, value]))
 
 
 def test_from_gps_leap_second_preserves_gwpy_failure_class_for_scalar_and_vector():

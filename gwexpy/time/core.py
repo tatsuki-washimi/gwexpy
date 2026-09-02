@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import importlib
+import inspect as _inspect
 from decimal import ROUND_HALF_EVEN, Decimal
 from typing import Any
 
@@ -64,6 +65,8 @@ def _is_date_component_sequence(obj):
     try:
         values = np.asarray(obj)
     except (TypeError, ValueError):
+        return False
+    if values.ndim != 1 or any(np.ndim(item) != 0 for item in obj):
         return False
     if values.dtype.kind == "c":
         return True
@@ -367,3 +370,20 @@ def tconvert(
     if is_numeric:
         return from_gps(t_norm, *args, **kwargs)
     return to_gps(t_norm, *args, **kwargs)
+
+
+_tconvert_runtime_signature = _inspect.signature(tconvert)
+_tconvert_runtime_parameters = tuple(_tconvert_runtime_signature.parameters.values())
+_tconvert_gwpy_parameter = next(
+    iter(_inspect.signature(_gwpy_tconvert).parameters.values())
+)
+setattr(
+    tconvert,
+    "__signature__",
+    _tconvert_runtime_signature.replace(
+        parameters=(
+            _tconvert_gwpy_parameter,
+            *_tconvert_runtime_parameters[1:],
+        ),
+    ),
+)

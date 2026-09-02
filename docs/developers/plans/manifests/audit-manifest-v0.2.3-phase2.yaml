@@ -39,21 +39,25 @@ contracts:
       gpsSeconds/gpsNanoSeconds fields, including GWpy's microsecond-limited
       conversion semantics.
     date_components: >-
-      Tuple/list inputs of length 3 through 7 that the generic vector
-      classifier recognizes as numeric-like always enter the GWpy scalar
-      date-component path. Decimal, Fraction, bool, numpy.bool_, complex, and
-      numeric-string components preserve the oracle failure class without
-      vector fallback.
+      One-dimensional tuple/list inputs of 3 through 7 scalar components that
+      the generic vector classifier recognizes as numeric-like always enter
+      the GWpy scalar date-component path. Decimal, Fraction, bool,
+      numpy.bool_, complex, and numeric-string components preserve the oracle
+      failure class without vector fallback.
     extensions_preserved:
       - numeric ndarray inputs, including length 3
       - numeric tuple/list inputs outside the 3 through 7 component boundary
+      - nested numeric list/tuple inputs, including three-row inputs
       - lists of date strings and datetime objects
       - explicit dtype output modes
       - exact numpy.datetime64 conversion
   tconvert:
     canonical_parameter: gpsordate
     default: now
-    introspection: positional-or-keyword with a default equal to string now
+    introspection: >-
+      The first public Parameter exactly matches GWpy in name, kind, default
+      type and value, and annotation; its plain-string default is separate
+      from the private runtime omission marker.
     extension_alias: t
     conflict: supplying gpsordate and t together raises TypeError
   from_gps:
@@ -63,6 +67,9 @@ contracts:
       - half-microsecond float rounding
       - 500 nanosecond and 1500 nanosecond LIGOTimeGPS inputs
       - leap-second ValueError for scalar and vector routes
+      - empty one- and two-dimensional vectors
+      - multidimensional numeric and object arrays of LIGOTimeGPS values
+      - NaN and positive/negative infinity preserve scalar RuntimeError
   frequencyseries_ifft:
     default_axis_authority:
       - parent t0
@@ -104,6 +111,13 @@ tdd:
         Twenty-four numeric-like date-component routes were still vectorized,
         and the canonical gpsordate default rendered as now but was not equal
         to the string default under introspection.
+    final_hardening:
+      gwpy_4_0_1: 3 failed, 66 passed
+      gwpy_4_0_2: 3 failed, 66 passed
+      cause: >-
+        Nested three-row sequences entered the scalar date-component route,
+        and introspection exposed the runtime omission marker so replaying the
+        inspected default with t bypassed conflict detection.
   green:
     narrow_time:
       gwpy_4_0_1: 49 passed
@@ -114,9 +128,12 @@ tdd:
     review_hardening:
       gwpy_4_0_1: 73 passed
       gwpy_4_0_2: 73 passed
+    final_hardening:
+      gwpy_4_0_1: 69 passed
+      gwpy_4_0_2: 69 passed
     broadened_focused_suite:
-      gwpy_4_0_1: 186 passed
-      gwpy_4_0_2: 186 passed
+      gwpy_4_0_1: 190 passed
+      gwpy_4_0_2: 190 passed
       includes:
         - full time core and contract tests
         - default and transient IFFT regressions
@@ -129,16 +146,33 @@ physics:
     gwpy_4_0_1: 1.0
     gwpy_4_0_2: 1.0
   maximum_roundtrip_error:
-    gwpy_4_0_1: 3.33e-16
-    gwpy_4_0_2: 3.33e-16
+    gwpy_4_0_1: 4.440892098500626e-16
+    gwpy_4_0_2: 4.440892098500626e-16
+  measurement_fixture: >-
+    tests/frequencyseries/test_ifft_gwpy_compat.py::_one_sided_spectrum with
+    original_length=8, sample_rate=10000000 Hz, and the checked-in large epoch
+  measurement_environments:
+    - main
+    - gwexpy
+  measurement_command_template: >-
+    conda run -n ENV python -c "import numpy as np; from astropy import units
+    as u; from gwpy.time import LIGOTimeGPS; from gwexpy.frequencyseries import
+    FrequencySeries; n=8; samples=np.arange(n,dtype=float);
+    signal=samples+0.25*np.cos(2*np.pi*samples/n);
+    spectrum=np.fft.rfft(signal)/n; spectrum[1:]*=2;
+    result=FrequencySeries(spectrum,df=(10000000/n)*u.Hz,
+    epoch=LIGOTimeGPS(1234567890,123456789),unit=u.m,name='phase-2-ifft',
+    channel='H1:PHASE2-STRAIN').ifft();
+    print(np.max(np.abs(result.value-signal)))"
   reconstructed_dt_seconds: 1.0e-7
   reconstructed_sample_rate_finite: true
   human_review: required for FFT metadata and sampling-grid judgment
 
 static_validation:
   ruff_check: all checks passed
-  ruff_format_check: 3 changed Python files already formatted
-  git_diff_check: clean
+  ruff_format_check: 2 changed Python files formatted and check passed
+  mypy: no issues found in 1 changed source file
+  git_diff_check: scoped Phase 2 paths clean
   yaml_safe_load: valid
 
 focused_tests:
