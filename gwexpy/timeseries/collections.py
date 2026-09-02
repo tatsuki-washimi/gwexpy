@@ -1188,7 +1188,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
     # --- Waveform Operations ---
 
-    def crop(self, start=None, end=None, copy=False) -> TimeSeriesDict:
+    def crop(self, start=None, end=None, *, copy=False) -> TimeSeriesDict:
         """Crop each TimeSeries in place and return ``self``.
 
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
@@ -1197,7 +1197,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             self[key] = ts.crop(start=start, end=end, copy=copy)
         return self
 
-    def append(self, other, copy=True, **kwargs) -> TimeSeriesDict:
+    def append(self, other, *, copy=True, **kwargs) -> TimeSeriesDict:
         """Append another mapping of `TimeSeries` or a single `TimeSeries` to each item."""
         if isinstance(other, BaseTimeSeries):
             for ts in self.values():

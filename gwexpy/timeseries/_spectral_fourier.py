@@ -389,7 +389,16 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         res = self._super_ts().coherence(*args, **kwargs)
         return res.view(FrequencySeries)
 
-    def spectrogram(self, *args: Any, **kwargs: Any) -> Spectrogram:
+    def spectrogram(
+        self,
+        stride: float,
+        fftlength: float | None = None,
+        overlap: float | None = None,
+        window: WindowLike = "hann",
+        method: str = "median",
+        nproc: int = 1,
+        **kwargs: Any,
+    ) -> Spectrogram:
         """Compute the average power spectrogram.
 
         This method overrides the base gwpy implementation to return
@@ -403,17 +412,36 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         """
         Spectrogram = ConverterRegistry.get_constructor("Spectrogram")
 
-        res = self._super_ts().spectrogram(*args, **kwargs)
+        res = self._super_ts().spectrogram(
+            stride,
+            fftlength=fftlength,
+            overlap=overlap,
+            window=window,
+            method=method,
+            nproc=nproc,
+            **kwargs,
+        )
         return res.view(Spectrogram)
 
-    def spectrogram2(self, *args: Any, **kwargs: Any) -> Spectrogram:
+    def spectrogram2(
+        self,
+        fftlength: float,
+        overlap: float | None = None,
+        window: WindowLike = "hann",
+        **kwargs: Any,
+    ) -> Spectrogram:
         """Compute an alternative spectrogram (spectrogram2).
 
         Returns Spectrogram.
         """
         Spectrogram = ConverterRegistry.get_constructor("Spectrogram")
 
-        res = self._super_ts().spectrogram2(*args, **kwargs)
+        res = self._super_ts().spectrogram2(
+            fftlength,
+            overlap=overlap,
+            window=window,
+            **kwargs,
+        )
         return res.view(Spectrogram)
 
     def rayleigh_spectrogram(

@@ -1,0 +1,321 @@
+schema: gwexpy-v023-timeseries-terminal-evidence-v1
+phase: override-terminal-timeseries
+status: focused-green
+
+implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
+phase_parent: a8f445669fa3469aa068eb8b72956de407255bb5
+issues:
+  - "#639"
+  - "#704"
+
+skills:
+  - superpowers:test-driven-development
+  - extend_gwpy
+  - gwexpy_conda_jobs
+
+oracles:
+  - environment: main
+    python: 3.12.12
+    gwpy: 4.0.1
+  - environment: gwexpy
+    python: 3.11.14
+    gwpy: 4.0.2
+oracle_version_difference: none observed in this fixture matrix
+oracle_execution: >-
+  Every common-path fixture constructs an independent installed-GWpy input and
+  a separate GWexpy input in the same pinned environment. Extension fixtures
+  first record the installed-GWpy exception class and do not use a GWexpy
+  result as an oracle.
+
+comparators:
+  call_layout:
+    exact:
+      - parameter order and names
+      - parameter kinds
+      - default values
+    annotations: >-
+      Excluded from the runtime binding comparator. GWexpy intentionally uses
+      its own subclass return annotations and broader extension input types;
+      neither changes Python call binding.
+  numeric_payload:
+    finite_rtol: 0.0
+    finite_atol: 0.0
+    exact:
+      - shape
+      - dtype
+      - NaN mask
+      - positive infinity mask
+      - negative infinity mask
+  metadata:
+    exact:
+      - unit
+      - name
+      - channel
+      - t0 and x0 values and units
+      - dt value and unit
+      - time-axis values and unit
+      - spectrogram frequency-axis values and unit
+  lifecycle:
+    exact:
+      - success or failure
+      - exception class
+      - return identity relative to the receiver
+      - input mutation
+      - result memory sharing relative to the receiver and new-key source
+
+tdd:
+  red:
+    environment: gwexpy
+    gwpy: 4.0.2
+    collected_cases: 58
+    result: 6 failed, 52 passed
+    mismatches:
+      - surface: TimeSeries.crop
+        observation: copy was positional-or-keyword instead of keyword-only
+      - surface: TimeSeries.append
+        observation: gap and pad appeared in the opposite keyword-only order
+      - surface: TimeSeries.spectrogram
+        observation: public layout was collapsed to args and kwargs
+      - surface: TimeSeries.spectrogram2
+        observation: public layout was collapsed to args and kwargs
+      - surface: TimeSeriesDict.append
+        observation: copy was positional-or-keyword instead of keyword-only
+      - surface: TimeSeries.crop
+        observation: a third positional argument succeeded where GWpy raised TypeError
+    handoff_audit:
+      environment: gwexpy
+      gwpy: 4.0.2
+      collected_cases: 60
+      result: 2 failed, 58 passed
+      mismatches:
+        - surface: TimeSeriesDict.crop
+          observation: copy was positional-or-keyword instead of keyword-only
+        - surface: TimeSeriesDict.crop
+          observation: a third positional argument succeeded where GWpy raised TypeError
+  green:
+    direct_terminal_suite:
+      gwpy_4_0_1: 64 passed, 0 skipped
+      gwpy_4_0_2: 64 passed, 0 skipped
+    related_suite:
+      files:
+        - tests/timeseries/test_gwpy_override_terminal_compat.py
+        - tests/timeseries/test_core.py
+        - tests/timeseries/test_core_coverage.py
+        - tests/timeseries/test_core_methods.py
+        - tests/timeseries/test_crop_timing_contract.py
+        - tests/timeseries/test_exact_gps_epoch.py
+        - tests/timeseries/test_collections_batch.py
+        - tests/timeseries/test_collections_provenance.py
+        - tests/timeseries/test_collections_spectral_compat.py
+        - tests/timeseries/test_resampling.py
+        - tests/timeseries/test_spectral_gwpy_phase3_compat.py
+        - tests/timeseries/test_gwpy_behavioral_compatibility.py
+      gwpy_4_0_1: 398 passed, 0 skipped
+      gwpy_4_0_2: 398 passed, 0 skipped
+      warnings: >-
+        Two expected out-of-span crop warnings and one optional xarray GMT
+        backend discovery warning per environment.
+    unexpected_required_skips: 0
+
+implementation_groups:
+  - id: implementation-009b3dbd5ecafb0c
+    surface: TimeSeries.copy
+    common_state: no-finding
+    fixtures:
+      - C, F, A, and K order
+      - nonsharing copy and layout flags
+      - GWpy-visible metadata
+      - private exact t0 and dt authority preservation
+    evidence:
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_copy_parameter_layout_matches_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_copy_orders_match_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_copy_preserves_private_exact_time_authority
+
+  - id: implementation-437446342322a767
+    surface: TimeSeries.crop
+    common_state: fixed
+    pre_fix: >-
+      GWexpy accepted crop(start, end, copy) while both installed GWpy oracles
+      raised TypeError; the public descriptor also exposed copy as
+      positional-or-keyword.
+    fix: make copy keyword-only and leave the parent crop algorithm authoritative
+    fixtures:
+      - unbounded and exact-span views
+      - inner and one-ULP boundary selection
+      - out-of-span clamping
+      - copy true and false memory behavior
+      - large GPS epoch
+      - private exact t0 and dt authority preservation
+    evidence:
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_crop_parameter_layout_matches_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_crop_bounds_and_memory_match_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_crop_copy_is_keyword_only_like_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_crop_preserves_private_exact_time_authority
+
+  - id: implementation-92eb9b7ff87b74f6
+    surface: TimeSeries.append
+    common_state: fixed
+    pre_fix: >-
+      GWexpy exposed pad before gap in the public keyword-only layout while
+      both installed GWpy oracles expose gap before pad.
+    fix: restore the GWpy keyword-only order without changing delegation
+    fixtures:
+      - contiguous inplace and copy routes
+      - discontiguous raise
+      - zero and custom padding
+      - mutation, return identity, and memory ownership
+      - private exact t0 and dt authority preservation
+    evidence:
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_append_parameter_layout_matches_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_append_contiguous_matches_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_append_gap_failure_matches_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_append_gap_padding_matches_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_append_preserves_private_exact_time_authority
+
+  - id: implementation-23ef21fcc8b15c31
+    surface: TimeSeries.t0
+    common_state: no-finding
+    fixtures:
+      - getter
+      - numeric, Quantity, and LIGOTimeGPS setters
+      - deletion outcome and fallback value
+      - x0 alias synchronization
+      - private exact authority update and deletion
+    evidence:
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_alias_getters_match_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_alias_setters_match_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_alias_deleters_match_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_aliases_synchronize_private_exact_authority
+
+  - id: implementation-a3182604e9f5b826
+    surface: TimeSeries.x0
+    common_state: no-finding
+    fixtures:
+      - getter
+      - numeric, Quantity, and LIGOTimeGPS setters
+      - deletion outcome and fallback value
+      - t0 alias synchronization
+      - private exact authority update and deletion
+    evidence:
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_alias_getters_match_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_alias_setters_match_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_alias_deleters_match_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_aliases_synchronize_private_exact_authority
+
+  - id: implementation-ca32c15db8247574
+    surface: TimeSeries.spectrogram
+    common_state: fixed
+    pre_fix: >-
+      GWexpy exposed only args and kwargs instead of the GWpy stride,
+      fftlength, overlap, window, method, nproc, kwargs layout.
+    fix: expose the GWpy layout and continue delegating the calculation to GWpy
+    fixtures:
+      - parent defaults
+      - explicit stride, fftlength, overlap, window, method, and nproc
+      - true irregular failure
+      - nearly irregular success
+    evidence:
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_spectrogram_parameter_layout_matches_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_spectrogram_regular_routes_match_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_spectrogram_irregular_outcomes_match_gwpy
+
+  - id: implementation-313413059371b6e8
+    surface: TimeSeries.spectrogram2
+    common_state: fixed
+    pre_fix: >-
+      GWexpy exposed only args and kwargs instead of the GWpy fftlength,
+      overlap, window, kwargs layout.
+    fix: expose the GWpy layout and continue delegating the calculation to GWpy
+    fixtures:
+      - parent defaults
+      - explicit fftlength, overlap, window, and scaling
+      - true irregular failure
+      - nearly irregular success
+    evidence:
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_spectrogram2_parameter_layout_matches_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_spectrogram2_regular_routes_match_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_spectrogram_irregular_outcomes_match_gwpy
+
+  - id: implementation-eba93ad184916988
+    surface: TimeSeriesDict.crop
+    common_state: fixed
+    pre_fix: >-
+      GWexpy accepted crop(start, end, copy) while both installed GWpy oracles
+      raised TypeError; copy was positional-or-keyword instead of keyword-only.
+    fix: make copy keyword-only and retain key-wise parent crop delegation
+    fixtures:
+      - parameter order, kind, and default
+      - third-positional failure class
+      - unbounded and inner bounds
+      - copy true and false memory behavior
+      - collection mutation and return identity
+      - values, units, time axes, names, and channels
+    evidence:
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_crop_parameter_layout_matches_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_crop_copy_is_keyword_only_like_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_crop_values_mutation_and_memory_match_gwpy
+
+  - id: implementation-e6a00793cc380715
+    surface: TimeSeriesDict.append
+    common_state: fixed
+    pre_fix: >-
+      GWexpy accepted append(other, copy) while both installed GWpy oracles
+      require copy to be keyword-only.
+    fix: make copy keyword-only; retain the pre-existing single-series extension
+    fixtures:
+      - overlapping, new, and untouched keys
+      - copy true and false ownership
+      - contiguous and padded mappings
+      - discontiguous failure
+      - collection mutation and return identity
+    gwexpy_extension:
+      fixture: one contiguous TimeSeries appended to every existing key
+      gwpy_state: GWpy-fails
+      gwpy_exception: AttributeError
+    evidence:
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_append_parameter_layout_matches_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_append_mapping_matches_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_append_gap_padding_matches_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_append_gap_failure_matches_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_append_single_series_is_explicit_extension
+
+  - id: implementation-16fa444d62b9101c
+    surface: TimeSeriesDict.resample
+    common_state: no-finding
+    fixtures:
+      - scalar numeric rate
+      - per-key numeric rates
+      - collection mutation and return identity
+      - per-key result replacement and metadata
+      - true irregular failure
+      - nearly irregular success
+      - private exact t0 and dt authority preservation
+    gwexpy_extensions:
+      - fixture: string time-bin rate
+        gwpy_state: GWpy-fails
+        gwpy_exception: UnitConversionError
+      - fixture: time Quantity rate
+        gwpy_state: GWpy-fails
+        gwpy_exception: ValueError
+    evidence:
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_resample_parameter_layout_matches_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_numeric_resample_matches_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_numeric_resample_irregular_outcome_matches_gwpy
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_time_bin_resample_is_explicit_extension
+      - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseriesdict_numeric_resample_preserves_private_exact_authority
+
+release_constraints:
+  new_public_api: false
+  new_dependency: false
+  new_data_format: false
+  physics_algorithm_changed: false
+  human_physics_review_required: false
+  workflow_changed: false
+  override_inventory_regeneration: deferred until all production lanes are stable
+
+static_validation:
+  ruff_changed_files: all checks passed
+  ruff_format_changed_files: 4 files already formatted
+  mypy_changed_source_files: success, no issues found in 3 source files
+  yaml_safe_load: valid
+  git_diff_check: no whitespace errors

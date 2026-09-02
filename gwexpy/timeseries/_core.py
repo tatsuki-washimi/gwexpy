@@ -87,7 +87,11 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
         return self[-n:]
 
     def crop(
-        self, start: Any | None = None, end: Any | None = None, copy: bool = False
+        self,
+        start: Any | None = None,
+        end: Any | None = None,
+        *,
+        copy: bool = False,
     ) -> TimeSeriesCore:
         """Crop this series to the given GPS start and end times.
 
@@ -105,8 +109,8 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
         other: TimeSeries | BaseTimeSeries | ArrayLike,
         *,
         inplace: bool = True,
-        pad: Any = None,
         gap: Any = None,
+        pad: Any = None,
         resize: bool = True,
     ) -> TimeSeriesCore:
         """Append another `TimeSeries`, returning a GWexpy `TimeSeries`."""
