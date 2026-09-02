@@ -15,6 +15,13 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTRACTS_PATH = ROOT / "scripts" / "ci" / "release_contracts.json"
 LOADER_PATH = ROOT / "scripts" / "ci" / "release_contract.py"
 V023_IMPLEMENTATION_BASE = "a8085b71446d3ef3417a7e5b5ac8efb156368eac"
+V023_PLAN = (
+    ROOT
+    / "docs"
+    / "developers"
+    / "plans"
+    / "20260902_v0.2.3_gwpy_behavioral_compatibility.md"
+)
 V0114_MANIFEST = (
     ROOT
     / "docs"
@@ -237,6 +244,21 @@ def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
     assert v023["artifact_prefix"] == "v023-integration-evidence"
     assert v023["protected_refs"] == ["main", "maint/0.2"]
     assert "qualification_profile" not in v023
+
+
+def test_v023_plan_limits_hdf5_private_augmentation_to_named_markers() -> None:
+    plan = V023_PLAN.read_text(encoding="utf-8")
+
+    for marker in (
+        "`_gwexpy_sidecar_json_v1`",
+        "`_gwexpy_sidecar_json_v2`",
+        "dataset の `epoch` attribute",
+    ):
+        assert marker in plan
+    assert (
+        "これら以外の dataset/group topology、logical path、native attributes "
+        "は、GWpy oracle と一致させる。"
+    ) in plan
 
 
 def test_v023_review_lanes_cover_every_fixed_base_candidate_change() -> None:

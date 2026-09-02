@@ -601,7 +601,11 @@ class TestNonNanosecondGrids:
         _assert_matches_oracle(got, full.crop(start, end))
 
     def test_window_before_data_with_non_ns_epoch_matches_gwpy(self, tmp_path):
-        """``crop(edge, edge)`` at a non-ns ``t0`` wrapped to nine samples."""
+        """A non-ns ``crop(edge, edge)`` currently returns eight samples.
+
+        This records the inherited GWpy oracle result, not approval of its
+        selection semantics.
+        """
         third = TimeSeries(
             np.arange(N_SAMPLES, dtype=float),
             t0=1.0 / 3.0,
