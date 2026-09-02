@@ -62,9 +62,9 @@ AUDIT_OWNER = "v0.2.3-compatibility-audit"
 IMPLEMENTATION_BASE = "a8085b71446d3ef3417a7e5b5ac8efb156368eac"
 PUBLIC_ROOT_RULE = (
     "byte-sorted gwexpy Python paths; final literal top-level list/tuple __all__; "
-    "full static vars(module) candidates plus two-pass unique canonical-class-name "
-    "lazy alias association; canonical GWexpy class identity; internal root "
-    "exclusions"
+    "all-source top-level class route index plus static vars(module) resolution; "
+    "two-pass unique canonical-class-name lazy alias association; canonical GWexpy "
+    "class identity; internal root exclusions"
 )
 MEMBER_WALK_RULE = (
     "first effective vars(owner) binding in the GWexpy MRO prefix before "
@@ -1215,6 +1215,12 @@ def _select_unique_lazy_class(
     return unique[0]
 
 
+def _looks_like_class_export(name: str) -> bool:
+    """Distinguish unresolved class-style exports from functions and constants."""
+
+    return bool(name) and name[0].isupper() and not name.isupper()
+
+
 def discover_public_classes(
     repository: Path,
 ) -> list[tuple[type[Any], tuple[str, ...]]]:
@@ -1224,7 +1230,8 @@ def discover_public_classes(
     if str(repository) not in sys.path:
         sys.path.insert(0, str(repository))
     exports: dict[type[Any], set[str]] = {}
-    export_modules: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
+    export_modules: list[tuple[str, tuple[str, ...]]] = []
+    class_routes: dict[str, set[str]] = {}
     paths = sorted(
         package_root.rglob("*.py"),
         key=lambda item: item.relative_to(repository).as_posix().encode("utf-8"),
@@ -1236,10 +1243,13 @@ def discover_public_classes(
             raise InventoryError(
                 f"cannot scan {source.relative_to(repository)}: {type(exc).__name__}"
             ) from exc
+        module_name = _module_name(source, package_root)
+        for statement in tree.body:
+            if isinstance(statement, ast.ClassDef):
+                class_routes.setdefault(statement.name, set()).add(module_name)
         names = _literal_all_names(tree)
         if not names:
             continue
-        module_name = _module_name(source, package_root)
         module_parts = module_name.split(".")
         if (
             "gui" in module_parts
@@ -1248,18 +1258,12 @@ def discover_public_classes(
             or any(part.startswith("_") for part in module_parts[1:])
         ):
             continue
-        declared_classes = tuple(
-            statement.name
-            for statement in tree.body
-            if isinstance(statement, ast.ClassDef)
-        )
-        export_modules.append((module_name, names, declared_classes))
+        export_modules.append((module_name, names))
 
     snapshots: list[tuple[str, tuple[str, ...], dict[str, Any]]] = []
     classes_by_name: dict[str, list[type[Any]]] = {}
-    declared_class_names: set[str] = set()
     missing = object()
-    for module_name, names, declared_classes in export_modules:
+    for module_name, names in export_modules:
         try:
             module = importlib.import_module(module_name)
         except Exception as exc:
@@ -1269,7 +1273,6 @@ def discover_public_classes(
         namespace = vars(module)
         snapshot = {name: namespace.get(name, missing) for name in names}
         snapshots.append((module_name, names, snapshot))
-        declared_class_names.update(declared_classes)
         # The public export can be lazy while its canonical class is imported
         # into another explicit module under a non-exported helper name.  Build
         # candidates from static namespace snapshots only; never call getattr.
@@ -1288,10 +1291,30 @@ def discover_public_classes(
             # another module, just as an effective MRO binding masks its bases.
             if value is not missing:
                 continue
-            candidates = classes_by_name.get(name)
-            if candidates is None and name not in declared_class_names:
+            routes = sorted(
+                class_routes.get(name, ()), key=lambda item: item.encode("utf-8")
+            )
+            if not routes:
+                if _looks_like_class_export(name):
+                    raise InventoryError(f"missing lazy class export route: {name}")
                 continue
-            value = _select_unique_lazy_class(name, candidates or ())
+            if len(routes) != 1:
+                raise InventoryError(
+                    f"ambiguous lazy class export route: {name} ({', '.join(routes)})"
+                )
+            candidate_module_name = routes[0]
+            try:
+                candidate_module = importlib.import_module(candidate_module_name)
+            except Exception as exc:
+                raise InventoryError(
+                    "cannot import static class candidate module "
+                    f"{candidate_module_name}: {type(exc).__name__}"
+                ) from exc
+            candidate = vars(candidate_module).get(name, missing)
+            if not inspect.isclass(candidate):
+                raise InventoryError(f"missing lazy class export route: {name}")
+            candidates = [*classes_by_name.get(name, ()), candidate]
+            value = _select_unique_lazy_class(name, candidates)
             if _public_root_allowed(value):
                 exports.setdefault(value, set()).add(f"{module_name}:{name}")
     return [

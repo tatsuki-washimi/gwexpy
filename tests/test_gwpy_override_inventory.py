@@ -663,9 +663,10 @@ def test_manifest_has_terminal_structural_population_and_canonical_json() -> Non
         "provisional_states": ["unreviewed", "differential-required"],
         "public_root_rule": (
             "byte-sorted gwexpy Python paths; final literal top-level list/tuple "
-            "__all__; full static vars(module) candidates plus two-pass unique "
-            "canonical-class-name lazy alias association; canonical GWexpy class "
-            "identity; internal root exclusions"
+            "__all__; all-source top-level class route index plus static "
+            "vars(module) resolution; two-pass unique canonical-class-name lazy "
+            "alias association; canonical GWexpy class identity; internal root "
+            "exclusions"
         ),
         "terminal_states": ["fixed", "no-finding", "GWpy-fails", "GWexpy-only"],
         "upstream_dependency_provenance": UPSTREAM_DEPENDENCY_PROVENANCE,
@@ -795,6 +796,34 @@ def test_lazy_only_class_is_found_in_full_explicit_module_namespace(
     assert discovered == [(ghost, ("gwexpy.public:Ghost",))]
 
 
+def test_lazy_only_class_is_found_in_module_without_literal_all(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    audit = _load_audit_module()
+    _write_synthetic_export_module(tmp_path, "gwexpy.public", '__all__ = ["Ghost"]\n')
+    _write_synthetic_export_module(
+        tmp_path,
+        "gwexpy.hidden",
+        "class Ghost(Array):\n    pass\n",
+    )
+    public = ModuleType("gwexpy.public")
+    setattr(public, "__all__", ["Ghost"])
+
+    def reject_dynamic_lookup(name: str) -> object:
+        raise AssertionError(f"dynamic lookup executed for {name}")
+
+    setattr(public, "__getattr__", reject_dynamic_lookup)
+    hidden = ModuleType("gwexpy.hidden")
+    ghost = _synthetic_gwpy_class("Ghost", "gwexpy.hidden")
+    hidden.Ghost = ghost  # type: ignore[attr-defined]
+    modules = {public.__name__: public, hidden.__name__: hidden}
+    monkeypatch.setattr(audit.importlib, "import_module", modules.__getitem__)
+
+    discovered = audit.discover_public_classes(tmp_path)
+
+    assert discovered == [(ghost, ("gwexpy.public:Ghost",))]
+
+
 def test_lazy_only_class_route_ambiguity_fails_closed(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -835,6 +864,21 @@ def test_missing_static_lazy_class_route_fails_closed(
     hidden.helper = object()  # type: ignore[attr-defined]
     modules = {public.__name__: public, hidden.__name__: hidden}
     monkeypatch.setattr(audit.importlib, "import_module", modules.__getitem__)
+
+    with pytest.raises(audit.InventoryError, match="missing lazy class export route"):
+        audit.discover_public_classes(tmp_path)
+
+
+def test_missing_lazy_class_with_no_static_route_fails_closed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    audit = _load_audit_module()
+    _write_synthetic_export_module(tmp_path, "gwexpy.public", '__all__ = ["Ghost"]\n')
+    public = ModuleType("gwexpy.public")
+    setattr(public, "__all__", ["Ghost"])
+    monkeypatch.setattr(
+        audit.importlib, "import_module", {public.__name__: public}.__getitem__
+    )
 
     with pytest.raises(audit.InventoryError, match="missing lazy class export route"):
         audit.discover_public_classes(tmp_path)
