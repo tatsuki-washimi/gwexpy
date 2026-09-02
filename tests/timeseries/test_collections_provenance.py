@@ -58,17 +58,15 @@ def test_netcdf_public_roundtrip_retains_reader_provenance(tmp_path) -> None:
     }
 
 
-def test_crop_copies_collection_provenance_for_requested_subclass() -> None:
-    """Cropping a collection keeps independent top-level provenance."""
+def test_crop_preserves_collection_provenance_in_place() -> None:
+    """Cropping a collection keeps its top-level provenance in place."""
     source = _RequestedTimeSeriesDict({"signal": TimeSeries(np.arange(6), t0=0, dt=1)})
     source._gwexpy_io = {"format": "source", "nested": {"kept": True}}
 
     result = source.crop(1, 4)
 
+    assert result is source
     assert type(result) is _RequestedTimeSeriesDict
     assert list(result) == ["signal"]
     np.testing.assert_array_equal(result["signal"].value, [1, 2, 3])
-    assert result._gwexpy_io == source._gwexpy_io
-    assert result._gwexpy_io is not source._gwexpy_io
-    result._gwexpy_io["crop"] = "changed"
-    assert "crop" not in source._gwexpy_io
+    assert result._gwexpy_io == {"format": "source", "nested": {"kept": True}}

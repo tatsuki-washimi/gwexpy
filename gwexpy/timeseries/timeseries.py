@@ -14,6 +14,7 @@ This module integrates all Mixins into a single TimeSeries class.
 from __future__ import annotations
 
 from contextvars import ContextVar
+from datetime import date
 from operator import index
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, SupportsIndex, cast
@@ -62,6 +63,27 @@ _SUPPRESS_EXACT_FINALIZE_FROM: ContextVar[frozenset[int]] = ContextVar(
     "_SUPPRESS_EXACT_FINALIZE_FROM", default=frozenset()
 )
 _EXACT_STATE_KEYS = frozenset({"_gwex_t0_gps_ns", "_gwex_dt_gps_ns"})
+
+
+def _is_gwexpy_only_epoch(value: object) -> bool:
+    """Return whether ``value`` needs GWexpy's explicit time normalizer."""
+    # ``datetime`` deliberately arrives through its ``date`` base class.
+    # NumPy ``datetime64`` is excluded: GWpy 4 accepts it (despite producing an
+    # unusual axis), so default construction must pass it through unchanged.
+    if isinstance(value, date):
+        return True
+    if isinstance(value, str):
+        try:
+            float(value)
+        except ValueError:
+            return True
+    if isinstance(value, (tuple, list)) and 3 <= len(value) <= 7:
+        return all(
+            isinstance(item, (int, float, np.number))
+            and not isinstance(item, (bool, np.bool_))
+            for item in value
+        )
+    return False
 
 
 class TimeSeries(
@@ -336,6 +358,8 @@ class TimeSeries(
                     f"t0_ns cannot be combined with another epoch authority ({names})"
                 )
 
+        positional_dt = args[2] if len(args) >= 3 else None
+        dt = positional_dt if len(args) >= 3 else kwargs.get("dt")
         should_coerce = True
         xunit = kwargs.get("xunit", None)
         if xunit is not None:
@@ -344,7 +368,6 @@ class TimeSeries(
             except (ValueError, TypeError):
                 should_coerce = False
         else:
-            dt = kwargs.get("dt", None)
             if isinstance(dt, u.Quantity):
                 phys = getattr(dt.unit, "physical_type", None)
                 if dt.unit != u.dimensionless_unscaled and phys != "time":
@@ -353,7 +376,6 @@ class TimeSeries(
         if should_coerce:
             # Determine target unit for t0/epoch normalization
             target_unit = u.s
-            dt = kwargs.get("dt")
             if isinstance(dt, u.Quantity):
                 target_unit = dt.unit
             else:
@@ -364,24 +386,36 @@ class TimeSeries(
                     except (ValueError, TypeError):
                         pass
 
-            if "t0" in kwargs and kwargs["t0"] is not None:
-                t0_q = _coerce_t0_gps(kwargs["t0"])
-                if t0_q is not None:
-                    try:
-                        # For GWpy 4.0 compatibility: convert to float value in target_unit.
-                        # Using a Quantity with a different unit than the axis (dt)
-                        # can trigger incorrect internal conversions in some GWpy versions.
-                        kwargs["t0"] = float(t0_q.to(target_unit).value)
-                    except (u.UnitConversionError, AttributeError, TypeError):
-                        kwargs["t0"] = t0_q
+            def normalize_epoch(value: object) -> object:
+                epoch_q = _coerce_t0_gps(value)
+                if epoch_q is None:
+                    return value
+                try:
+                    # GWpy stores a bare x0 in the axis unit selected by dt/xunit.
+                    return float(epoch_q.to(target_unit).value)
+                except (u.UnitConversionError, AttributeError, TypeError):
+                    return epoch_q
 
-            if "epoch" in kwargs and kwargs["epoch"] is not None:
-                epoch_q = _coerce_t0_gps(kwargs["epoch"])
-                if epoch_q is not None:
-                    try:
-                        kwargs["epoch"] = float(epoch_q.to(target_unit).value)
-                    except (u.UnitConversionError, AttributeError, TypeError):
-                        kwargs["epoch"] = epoch_q
+            positional_t0 = args[1] if len(args) >= 2 else None
+            keyword_t0 = kwargs.get("t0")
+            duplicate_t0 = len(args) >= 2 and "t0" in kwargs
+            effective_t0 = positional_t0 if len(args) >= 2 else keyword_t0
+            epoch = kwargs.get("epoch")
+
+            # Let GWpy own duplicate/conflicting-argument failures unchanged.
+            if not duplicate_t0 and not (
+                effective_t0 is not None and epoch is not None
+            ):
+                if effective_t0 is not None and _is_gwexpy_only_epoch(effective_t0):
+                    normalized = normalize_epoch(effective_t0)
+                    if len(args) >= 2:
+                        parent_args = list(args)
+                        parent_args[1] = normalized
+                        args = tuple(parent_args)
+                    else:
+                        kwargs["t0"] = normalized
+                elif epoch is not None and _is_gwexpy_only_epoch(epoch):
+                    kwargs["epoch"] = normalize_epoch(epoch)
         if exact_t0_ns is not None:
             # GWpy's public axis is float/Quantity based.  Retain that view
             # for compatibility, while keeping the supplied integer as the

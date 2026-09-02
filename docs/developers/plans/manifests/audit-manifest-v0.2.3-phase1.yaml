@@ -1,0 +1,66 @@
+schema: gwexpy-v023-phase1-evidence-v1
+phase: constructor-and-collection
+status: focused-green
+
+upstream_filterba_evidence:
+  repository: https://github.com/gwpy/gwpy
+  tag: v3.0.14
+  annotated_tag_object: c9a0cc099ad506e7ef08fc384c5d1d78d99e0d0a
+  commit: 9a0113d49016a3231fca6db78af789ca46c15599
+  source: gwpy/frequencyseries/frequencyseries.py
+  plan_requested_lines: 322-326
+  requested_lines_observation: >-
+    At the pinned commit, lines 322-326 are part of the filter documentation;
+    the historical filterba implementation is at lines 348-352.
+  verified_lines: 348-352
+  signature: "filterba(self, *args, **kwargs)"
+  warning:
+    category: DeprecationWarning
+    message: >-
+      filterba will be removed soon, please use FrequencySeries.filter instead,
+      with the same arguments
+  delegation: "return self.filter(*args, **kwargs)"
+  underlying_defaults:
+    source: gwpy/frequencyseries/_fdcommon.py
+    lines: 42-43
+    analog: false
+    inplace: false
+  source_permalink: >-
+    https://github.com/gwpy/gwpy/blob/9a0113d49016a3231fca6db78af789ca46c15599/gwpy/frequencyseries/frequencyseries.py#L348-L352
+  defaults_permalink: >-
+    https://github.com/gwpy/gwpy/blob/9a0113d49016a3231fca6db78af789ca46c15599/gwpy/frequencyseries/_fdcommon.py#L42-L43
+
+oracle_runs:
+  - environment: gwexpy
+    python: 3.11.14
+    gwpy: 4.0.2
+    version_source: importlib.metadata.version
+    result: 100 passed
+  - environment: main
+    python: 3.12.12
+    gwpy: 4.0.1
+    version_source: importlib.metadata.version
+    result: 100 passed
+constructor_routing:
+  gwpy_supported_pass_through:
+    - numeric scalar
+    - numeric string
+    - decimal.Decimal
+    - astropy.units.Quantity
+    - astropy.time.Time
+    - gwpy.time.LIGOTimeGPS
+    - numpy.datetime64
+    - float-compatible UTCDateTime
+  gwexpy_only_normalized:
+    - nonnumeric date string
+    - datetime.date and datetime.datetime
+    - numeric date-shaped tuple or list of length 3 through 7
+  parent_call_contract: exactly once with supported epoch object unchanged
+  parent_failure_contract: propagated without retry
+focused_tests:
+  - tests/timeseries/test_constructor_compat.py
+  - tests/timeseries/test_exact_gps_epoch.py
+  - tests/timeseries/test_timeseries_fallbacks.py
+  - tests/timeseries/test_collections_batch.py
+  - tests/timeseries/test_collections_provenance.py
+  - tests/frequencyseries/test_filterba_compat.py

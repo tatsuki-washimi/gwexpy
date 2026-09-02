@@ -3,6 +3,8 @@ from __future__ import annotations
 import numpy as np
 import pytest
 from astropy import units as u
+from gwpy.timeseries import TimeSeries as GwpyTimeSeries
+from gwpy.timeseries import TimeSeriesDict as GwpyTimeSeriesDict
 
 from gwexpy.timeseries import TimeSeries
 from gwexpy.timeseries.collections import TimeSeriesDict, TimeSeriesList
@@ -99,16 +101,69 @@ def test_timeseriesdict_rms():
 # --- TimeSeriesDict: crop ---
 
 
-def test_timeseriesdict_crop():
+def test_timeseriesdict_crop_mutates_and_returns_self_like_gwpy():
     ts1 = _make_series(np.arange(10.0), t0=0, dt=1)
     ts2 = _make_series(np.arange(10.0) * 2, t0=0, dt=1)
     td = TimeSeriesDict({"a": ts1, "b": ts2})
+    expected = GwpyTimeSeriesDict(
+        {
+            "a": GwpyTimeSeries(np.arange(10.0), t0=0, dt=1, unit=u.m),
+            "b": GwpyTimeSeries(np.arange(10.0) * 2, t0=0, dt=1, unit=u.m),
+        }
+    )
 
     cropped = td.crop(start=2, end=7)
-    assert cropped is not td
-    assert list(cropped) == ["a", "b"]
-    assert cropped["a"].shape[0] == 5
-    assert cropped["b"].shape[0] == 5
+    expected_result = expected.crop(start=2, end=7)
+
+    assert cropped is td
+    assert expected_result is expected
+    assert list(td) == list(expected) == ["a", "b"]
+    for key in td:
+        np.testing.assert_array_equal(td[key].value, expected[key].value)
+        np.testing.assert_array_equal(td[key].times.value, expected[key].times.value)
+        assert td[key].unit == expected[key].unit
+        assert td[key].t0 == expected[key].t0
+        assert td[key].dt == expected[key].dt
+
+
+def test_timeseriesdict_prepend_is_key_wise_like_gwpy():
+    td = TimeSeriesDict(
+        {
+            "shared": _make_series([3.0, 4.0], t0=2),
+            "untouched": _make_series([10.0, 11.0], t0=2),
+        }
+    )
+    other = TimeSeriesDict(
+        {
+            "shared": _make_series([1.0, 2.0], t0=0),
+            "new": _make_series([20.0, 21.0], t0=0),
+        }
+    )
+    expected = GwpyTimeSeriesDict(
+        {
+            "shared": GwpyTimeSeries([3.0, 4.0], t0=2, dt=1, unit=u.m),
+            "untouched": GwpyTimeSeries([10.0, 11.0], t0=2, dt=1, unit=u.m),
+        }
+    )
+    expected_other = GwpyTimeSeriesDict(
+        {
+            "shared": GwpyTimeSeries([1.0, 2.0], t0=0, dt=1, unit=u.m),
+            "new": GwpyTimeSeries([20.0, 21.0], t0=0, dt=1, unit=u.m),
+        }
+    )
+
+    result = td.prepend(other)
+    expected_result = expected.prepend(expected_other)
+
+    assert result is td
+    assert expected_result is expected
+    assert list(td) == list(expected) == ["shared", "untouched", "new"]
+    for key in td:
+        np.testing.assert_array_equal(td[key].value, expected[key].value)
+        np.testing.assert_array_equal(td[key].times.value, expected[key].times.value)
+        assert td[key].unit == expected[key].unit
+        assert td[key].t0 == expected[key].t0
+        assert td[key].dt == expected[key].dt
 
 
 # --- TimeSeriesDict: rolling operations ---

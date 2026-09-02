@@ -68,7 +68,7 @@ class TestTimeSeriesNewFallbacks:
             with patch("gwexpy.timeseries.utils._coerce_t0_gps") as mock_coerce:
                 mock_coerce.return_value = 10.0 * u.m  # non-convertible to 's'
                 # Pass dt='s' to set target_unit='s'
-                TimeSeries([1, 2, 3], t0=1234.5, dt=1.0 * u.s)
+                TimeSeries([1, 2, 3], t0="2017-01-01", dt=1.0 * u.s)
 
                 # Check what was passed to super().__new__
                 args, kwargs = mock_super_new.call_args
@@ -81,7 +81,7 @@ class TestTimeSeriesNewFallbacks:
             mock_super_new.return_value = np.array([1, 2, 3]).view(TimeSeries)
             with patch("gwexpy.timeseries.utils._coerce_t0_gps") as mock_coerce:
                 mock_coerce.return_value = 20.0 * u.kg
-                TimeSeries([1, 2, 3], epoch=5678.9)
+                TimeSeries([1, 2, 3], epoch="2017-01-01")
                 args, kwargs = mock_super_new.call_args
                 assert kwargs["epoch"].unit == u.kg
 

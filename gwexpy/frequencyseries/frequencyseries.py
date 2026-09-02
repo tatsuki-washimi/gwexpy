@@ -11,6 +11,7 @@ from __future__ import annotations
 import csv
 import io
 import os
+import warnings
 from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, SupportsIndex, TypeVar, cast
@@ -594,11 +595,18 @@ class FrequencySeries(
 
     # --- Interop helpers ---
     def filterba(self, *args, **kwargs):
-        """Apply a [b, a] filter to this FrequencySeries.
+        """Apply a legacy filter definition to this FrequencySeries.
 
-        Inherited from gwpy.
+        This preserves the call shape from GWpy 3.0.14; GWpy 4 no longer
+        provides ``filterba``.
         """
-        return super().filterba(*args, **kwargs)
+        warnings.warn(
+            "filterba will be removed soon, please use FrequencySeries.filter "
+            "instead, with the same arguments",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.filter(*args, **kwargs)
 
     def to_pandas(
         self,

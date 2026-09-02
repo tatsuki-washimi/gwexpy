@@ -1150,26 +1150,13 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
     # --- Waveform Operations ---
 
     def crop(self, start=None, end=None, copy=False) -> TimeSeriesDict:
-        """Crop each TimeSeries in the dict.
+        """Crop each TimeSeries in place and return ``self``.
 
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
-        Returns a new TimeSeriesDict.
         """
-        from gwexpy.time import to_gps
-
-        # Convert inputs to GPS if provided
-        if start is not None:
-            start = float(to_gps(start))
-        if end is not None:
-            end = float(to_gps(end))
-
-        new_dict = self.__class__()
         for key, ts in self.items():
-            new_dict[key] = ts.crop(start=start, end=end, copy=copy)
-        provenance = getattr(self, "_gwexpy_io", None)
-        if isinstance(provenance, dict):
-            new_dict._gwexpy_io = {**provenance}
-        return new_dict
+            self[key] = ts.crop(start=start, end=end, copy=copy)
+        return self
 
     def append(self, other, copy=True, **kwargs) -> TimeSeriesDict:
         """Append another mapping of `TimeSeries` or a single `TimeSeries` to each item."""
@@ -1194,13 +1181,16 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
         return super().append(other, copy=copy, **kwargs)
 
-    def prepend(self, *args, **kwargs) -> TimeSeriesDict:
-        """Prepend to each TimeSeries in the dict (in-place).
+    def prepend(self, other, **kwargs) -> TimeSeriesDict:
+        """Prepend ``other`` to this mapping key by key.
 
         Returns self.
         """
-        for ts in self.values():
-            ts.prepend(*args, **kwargs)
+        for key, series in other.items():
+            if key in self:
+                self[key].prepend(series, **kwargs)
+            else:
+                self[key] = series
         return self
 
     shift = _make_dict_map_method("shift", doc="Shift each TimeSeries in the dict.")
