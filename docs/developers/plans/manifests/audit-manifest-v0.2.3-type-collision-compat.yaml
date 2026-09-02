@@ -228,15 +228,20 @@ tdd:
         - falsey legacy diagonal positional values were mistaken for omitted arguments
   green:
     differential_and_contract_set:
-      gwpy_4_0_1: 151 passed
-      gwpy_4_0_2: 151 passed
+      gwpy_4_0_1: 152 passed
+      gwpy_4_0_2: 152 passed
     focused_affected_regressions:
-      gwpy_4_0_1: 224 passed
-      gwpy_4_0_2: 224 passed
+      gwpy_4_0_1: 225 passed
+      gwpy_4_0_2: 225 passed
     related_regression_suite:
-      environment: gwexpy
-      result: 3082 passed, 37 pre-existing optional skips, 1 expected failure
-      warnings: 17 dependency or pre-existing metadata warnings
+      gwpy_4_0_1:
+        environment: main
+        result: 3089 passed, 31 skipped, 1 xfailed
+        warnings: 17 dependency or pre-existing metadata warnings
+      gwpy_4_0_2:
+        environment: gwexpy
+        result: 3083 passed, 37 skipped, 1 xfailed
+        warnings: 17 dependency or pre-existing metadata warnings
     unexpected_required_skips: 0
     bifrequency_plot_signoff_evidence:
       gwpy_4_0_1: 1 passed
@@ -304,9 +309,17 @@ commands:
     tests/fields/test_scalarfield_visualization.py
     tests/frequencyseries/test_bifrequencymap_gwpy_compat.py
     tests/types/test_gwpy_override_terminal_compat.py; done
-  related_regressions: >-
-    MPLBACKEND=Agg conda run -n gwexpy pytest -q
-    tests/frequencyseries tests/types tests/fields
+  related_regressions_both_oracles: >-
+    for environment in main gwexpy; do MPLBACKEND=Agg conda run -n
+    "$environment" pytest -q tests/frequencyseries tests/types tests/fields;
+    done
+  bifrequency_related_tests_both_oracles: >-
+    for environment in main gwexpy; do MPLBACKEND=Agg conda run -n
+    "$environment" pytest -q
+    tests/frequencyseries/test_bifrequencymap_gwpy_compat.py
+    tests/frequencyseries/test_bifrequencymap.py
+    tests/frequencyseries/test_bifrequencymap_logic.py
+    tests/frequencyseries/test_standalone_contracts.py; done
   bifrequency_plot_signoff_evidence_both_oracles: >-
     for environment in main gwexpy; do MPLBACKEND=Agg conda run -n
     "$environment" pytest -q
