@@ -18,9 +18,35 @@ class Array(AxisApiMixin, StatisticalMethodsMixin, GwpyArray):
 
     _metadata_slots = getattr(GwpyArray, "_metadata_slots", ()) + ("_axis_names",)
 
-    def __new__(cls, data, axis_names=None, **kwargs):
+    def __new__(
+        cls,
+        value,
+        *,
+        unit=None,
+        name=None,
+        epoch=None,
+        channel=None,
+        dtype=None,
+        copy=True,
+        subok=True,
+        order=None,
+        ndmin=0,
+        axis_names=None,
+    ):
         """Create an array and initialize axis names."""
-        obj = super().__new__(cls, data, **kwargs)
+        obj = super().__new__(
+            cls,
+            value,
+            unit=unit,
+            name=name,
+            epoch=epoch,
+            channel=channel,
+            dtype=dtype,
+            copy=copy,
+            subok=subok,
+            order=order,
+            ndmin=ndmin,
+        )
         if axis_names is None:
             axis_names = [f"axis{i}" for i in range(obj.ndim)]
         else:

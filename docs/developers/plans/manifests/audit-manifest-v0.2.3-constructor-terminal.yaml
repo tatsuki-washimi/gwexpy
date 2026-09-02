@@ -1,0 +1,259 @@
+schema: gwexpy-v023-constructor-terminal-evidence-v1
+phase: override-terminal-constructors
+status: focused-green-human-data-model-review-required
+
+implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
+implementation_parent: 657d692bf09060975284db6c8182cdf8177c4e9b
+issues:
+  - "#639"
+  - "#704"
+
+skills:
+  - superpowers:test-driven-development
+  - extend_gwpy
+  - gwexpy_conda_jobs
+
+oracles:
+  - environment: main
+    python: 3.12.12
+    gwpy: 4.0.1
+    numpy: 1.26.4
+    astropy: 6.1.7
+  - environment: gwexpy
+    python: 3.11.14
+    gwpy: 4.0.2
+    numpy: 1.26.4
+    astropy: 6.1.7
+oracle_version_difference: none observed in this constructor matrix
+
+comparison_contract:
+  binding:
+    exact:
+      - common parameter order and names
+      - common parameter kinds and defaults
+      - every supported positional prefix
+      - duplicate positional and keyword outcome
+      - excess positional outcome
+    annotations: excluded because subclass return and extension input annotations do not change binding
+  result:
+    exact:
+      - success or failure
+      - exception class
+      - values, shape, and dtype
+      - unit, name, epoch, and channel
+      - regular two-dimensional and frequency axes
+      - copy-false memory sharing
+  exception_message_exact: false
+  presentation_pixels_style_layout: excluded
+
+constructor_rows:
+  - public_class: gwexpy.types.array.Array
+    member: __new__
+    gwpy_counterpart: gwpy.types.Array.__new__
+    state: fixed
+    pre_fix: >-
+      The override collapsed the GWpy keyword-only constructor into data,
+      positional axis_names, and kwargs, rejected the GWpy value= form, and
+      exposed the extension as a positional slot.
+    fix: expose the complete GWpy Array prefix and make axis_names keyword-only
+    evidence:
+      - tests/test_gwpy_constructor_terminal_compat.py::test_constructor_common_parameter_layout_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_array_family_common_keyword_route_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_array_family_copy_false_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_array_family_common_failure_class_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_gwpy_array_keyword_only_binding_is_not_hijacked
+
+  - public_class: gwexpy.types.array2d.Array2D
+    member: __new__
+    gwpy_counterpart: gwpy.types.Array2D.__new__
+    state: fixed
+    pre_fix: >-
+      The positional axis_names extension occupied GWpy's unit slot and the
+      remaining x/y constructor prefix was hidden behind kwargs.
+    fix: restore the complete GWpy Array2D positional prefix and isolate axis_names as keyword-only
+    evidence:
+      - tests/test_gwpy_constructor_terminal_compat.py::test_constructor_common_parameter_layout_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_array2d_family_full_positional_prefix_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_array2d_family_explicit_indices_match_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_array_family_copy_false_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_array_family_common_failure_class_matches_gwpy
+
+  - public_class: gwexpy.types.array3d.Array3D
+    member: __new__
+    gwpy_counterpart: gwpy.types.Array.__new__
+    state: fixed
+    pre_fix: >-
+      The specialized axis parameters were positional, the GWpy value= form
+      failed, and a positional unit succeeded although GWpy raises TypeError.
+    fix: expose the GWpy Array keyword-only prefix before explicit axis extensions
+    evidence:
+      - tests/test_gwpy_constructor_terminal_compat.py::test_constructor_common_parameter_layout_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_array_family_common_keyword_route_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_array_family_copy_false_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_gwpy_array_keyword_only_binding_is_not_hijacked
+
+  - public_class: gwexpy.types.array4d.Array4D
+    member: __new__
+    gwpy_counterpart: gwpy.types.Array.__new__
+    state: fixed
+    pre_fix: >-
+      The specialized axis parameters were positional, the GWpy value= form
+      failed, and a positional unit succeeded although GWpy raises TypeError.
+    fix: expose the GWpy Array keyword-only prefix before explicit axis extensions
+    evidence:
+      - tests/test_gwpy_constructor_terminal_compat.py::test_constructor_common_parameter_layout_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_array_family_common_keyword_route_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_array_family_copy_false_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_gwpy_array_keyword_only_binding_is_not_hijacked
+
+  - public_class: gwexpy.types.plane2d.Plane2D
+    member: __new__
+    gwpy_counterpart: gwpy.types.Array2D.__new__
+    state: fixed
+    pre_fix: >-
+      A GWpy-valid second positional unit was silently consumed as axis1_name,
+      leaving the result dimensionless, and the rest of the parent prefix was unavailable.
+    fix: restore the GWpy Array2D prefix and keep semantic names keyword-only
+    evidence:
+      - tests/test_gwpy_constructor_terminal_compat.py::test_constructor_common_parameter_layout_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_array2d_family_full_positional_prefix_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_array2d_family_explicit_indices_match_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_array_family_copy_false_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_array_family_common_failure_class_matches_gwpy
+
+  - public_class: gwexpy.fields.scalar.ScalarField
+    member: __new__
+    gwpy_counterpart: gwpy.types.Array.__new__
+    state: fixed
+    pre_fix: >-
+      FieldBase hid the GWpy Array parameter layout, rejected value=, and
+      accepted positional metadata that the counterpart rejects.
+    fix: expose the GWpy Array keyword-only prefix before explicit field-axis and domain options
+    evidence:
+      - tests/test_gwpy_constructor_terminal_compat.py::test_constructor_common_parameter_layout_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_array_family_common_keyword_route_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_array_family_copy_false_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_gwpy_array_keyword_only_binding_is_not_hijacked
+
+  - public_class: gwexpy.frequencyseries.frequencyseries.FrequencySeries
+    member: __new__
+    gwpy_counterpart: gwpy.frequencyseries.FrequencySeries.__new__
+    state: no-finding
+    evidence:
+      - tests/test_gwpy_constructor_terminal_compat.py::test_constructor_common_parameter_layout_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_frequencyseries_common_constructor_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_frequencyseries_common_failure_class_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_frequencyseries_explicit_frequency_index_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_frequencyseries_explicit_noise_range_extension_is_isolated
+
+  - public_class: gwexpy.timeseries.timeseries.TimeSeries
+    member: __new__
+    gwpy_counterpart: gwpy.timeseries.TimeSeries.__new__
+    state: fixed
+    ownership: existing phase-1 and TimeSeries terminal lanes
+    pre_fix: >-
+      GWpy-supported epochs could be normalized before the parent call and the
+      override hid the public positional prefix behind args and kwargs.
+    evidence:
+      - tests/timeseries/test_constructor_compat.py::test_constructor_exposes_gwpy_prefix_and_keyword_only_exact_extension
+      - tests/timeseries/test_constructor_compat.py::test_constructor_every_gwpy_positional_prefix_matches
+      - tests/timeseries/test_constructor_compat.py::test_constructor_duplicate_positional_keyword_outcome_matches_gwpy
+      - tests/timeseries/test_constructor_compat.py::test_constructor_excess_positional_outcome_matches_gwpy
+      - tests/timeseries/test_constructor_compat.py::test_gwpy_supported_epoch_reaches_parent_once_and_unchanged
+      - tests/timeseries/test_constructor_compat.py::test_parent_constructor_failure_is_not_retried
+
+  - public_class: gwexpy.plot.plot.Plot
+    member: __init__
+    gwpy_counterpart: gwpy.plot.Plot.__init__
+    state: no-finding
+    evidence:
+      - tests/test_gwpy_constructor_terminal_compat.py::test_plot_constructor_variadic_binding_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_plot_family_data_constructor_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_plot_family_failure_class_matches_gwpy
+
+  - public_class: gwexpy.plot.field.FieldPlot
+    member: __init__
+    gwpy_counterpart: gwpy.plot.Plot.__init__
+    state: no-finding
+    evidence:
+      - tests/test_gwpy_constructor_terminal_compat.py::test_plot_constructor_variadic_binding_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_plot_family_data_constructor_matches_gwpy
+      - tests/test_gwpy_constructor_terminal_compat.py::test_plot_family_failure_class_matches_gwpy
+
+  - public_class: gwexpy.plot.skymap.SkyMap
+    member: __init__
+    gwpy_counterpart: gwpy.plot.Plot.__init__
+    state: fixed
+    ownership: existing SkyMap constructor lane
+    pre_fix: >-
+      The implicit all-sky projection was injected into a GWpy-valid
+      data-bearing TimeSeries constructor call and failed.
+    evidence:
+      - tests/test_gwpy_constructor_terminal_compat.py::test_plot_constructor_variadic_binding_matches_gwpy
+      - tests/plot/test_skymap_gwpy_constructor_compat.py::test_skymap_accepts_parent_timeseries_constructor_surface
+
+explicit_extensions:
+  GWexpy-only:
+    - Array axis_names
+    - Array2D axis_names
+    - Array3D and Array4D named physical axes
+    - Plane2D semantic axis names
+    - ScalarField axis and domain metadata
+    - FrequencySeries fmin and fmax noise-generation hints
+    - FieldPlot last_field_colorbar state
+    - SkyMap empty-constructor all-sky projection
+    - TimeSeries t0_ns exact epoch authority
+  GWpy-fails: >-
+    Each installed oracle rejects the listed extension keywords with TypeError;
+    those concrete extension fixtures must not be used as evidence of a common parent success route.
+  exception_retry: false
+
+tdd:
+  red:
+    environment: gwexpy
+    gwpy: 4.0.2
+    collected_cases: 41
+    result: 15 failed, 26 passed
+    mismatches:
+      - six Array-family common parameter layouts were collapsed or reordered
+      - four GWpy value= forms were rejected
+      - Array2D and Plane2D rejected the full parent positional prefix
+      - Array3D, Array4D, and ScalarField accepted a positional unit rejected by GWpy
+  green:
+    direct_constructor_suite:
+      gwpy_4_0_1: 45 passed
+      gwpy_4_0_2: 45 passed
+    statistics_provenance_suite:
+      gwpy_4_0_1: 993 passed
+      gwpy_4_0_2: 993 passed
+    related_suite:
+      gwpy_4_0_1: 3719 passed, 33 approved optional skips, 1 expected failure
+      gwpy_4_0_2: 3713 passed, 39 approved optional skips, 1 expected failure
+    unexpected_required_skips: 0
+
+physics_and_data_model:
+  numerical_algorithms_changed: false
+  value_unit_axis_authority: delegated unchanged to the GWpy constructors
+  field_constructor_signature_changed: true
+  human_review: required
+  human_review_reason: >-
+    ScalarField and the specialized Array classes now expose the parent keyword-only
+    metadata prefix before their explicit physical-axis extensions.
+
+release_constraints:
+  new_public_api: false
+  new_dependency: false
+  workflow_changed: false
+  override_inventory_modified_by_this_change: false
+
+commands:
+  red: >-
+    conda run -n gwexpy pytest -q tests/test_gwpy_constructor_terminal_compat.py
+  focused_green: >-
+    conda run -n {main,gwexpy} pytest -q tests/test_gwpy_constructor_terminal_compat.py
+  statistics_regression: >-
+    conda run -n {main,gwexpy} pytest -q tests/types/test_gwpy_stats_compat.py
+  related_regression: >-
+    conda run -n {main,gwexpy} pytest -q tests/types tests/fields
+    tests/frequencyseries tests/plot tests/test_gwpy_constructor_terminal_compat.py
+    tests/test_skymap.py

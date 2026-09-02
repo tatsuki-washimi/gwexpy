@@ -60,17 +60,37 @@ class Array4D(Array):
 
     def __new__(
         cls,
-        data,
+        value,
+        *,
         unit=None,
+        name=None,
+        epoch=None,
+        channel=None,
+        dtype=None,
+        copy=True,
+        subok=True,
+        order=None,
+        ndmin=0,
         axis0=None,
         axis1=None,
         axis2=None,
         axis3=None,
         axis_names=None,
-        **kwargs,
     ):
         """Create a 4D array with explicit axis names and indices."""
-        obj = super().__new__(cls, data, unit=unit, **kwargs)
+        obj = super().__new__(
+            cls,
+            value,
+            unit=unit,
+            name=name,
+            epoch=epoch,
+            channel=channel,
+            dtype=dtype,
+            copy=copy,
+            subok=subok,
+            order=order,
+            ndmin=ndmin,
+        )
         if obj.ndim != 4:
             raise ValueError(f"Array4D must be 4-dimensional, got {obj.ndim}D")
 

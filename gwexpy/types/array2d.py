@@ -14,9 +14,37 @@ class Array2D(AxisApiMixin, StatisticalMethodsMixin, GwpyArray2D):
 
     _metadata_slots = GwpyArray2D._metadata_slots + ("_axis0_name", "_axis1_name")
 
-    def __new__(cls, data, axis_names=None, **kwargs):
+    def __new__(
+        cls,
+        data,
+        unit=None,
+        x0=None,
+        dx=None,
+        xindex=None,
+        xunit=None,
+        y0=None,
+        dy=None,
+        yindex=None,
+        yunit=None,
+        *,
+        axis_names=None,
+        **kwargs,
+    ):
         """Create a 2D array with explicit axis naming."""
-        obj = super().__new__(cls, data, **kwargs)
+        obj = super().__new__(
+            cls,
+            data,
+            unit=unit,
+            x0=x0,
+            dx=dx,
+            xindex=xindex,
+            xunit=xunit,
+            y0=y0,
+            dy=dy,
+            yindex=yindex,
+            yunit=yunit,
+            **kwargs,
+        )
         if axis_names is None:
             name0, name1 = "axis0", "axis1"
         else:

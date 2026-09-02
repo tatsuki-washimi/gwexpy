@@ -69,8 +69,17 @@ class FieldBase(Array4D):
 
     def __new__(
         cls,
-        data,
+        value,
+        *,
         unit=None,
+        name=None,
+        epoch=None,
+        channel=None,
+        dtype=None,
+        copy=True,
+        subok=True,
+        order=None,
+        ndmin=0,
         axis0=None,
         axis1=None,
         axis2=None,
@@ -78,7 +87,6 @@ class FieldBase(Array4D):
         axis_names=None,
         axis0_domain: str = "time",
         space_domain: str | dict[str, str] = "real",
-        **kwargs,
     ):
         """Create a field object with domain-aware axis defaults."""
         # Set default axis names based on domain
@@ -97,14 +105,21 @@ class FieldBase(Array4D):
 
         obj = super().__new__(
             cls,
-            data,
+            value,
             unit=unit,
+            name=name,
+            epoch=epoch,
+            channel=channel,
+            dtype=dtype,
+            copy=copy,
+            subok=subok,
+            order=order,
+            ndmin=ndmin,
             axis0=axis0,
             axis1=axis1,
             axis2=axis2,
             axis3=axis3,
             axis_names=axis_names,
-            **kwargs,
         )
 
         # Set domain states

@@ -31,8 +31,19 @@ class Plane2D(FittingMixin, Array2D):
     def __new__(
         cls,
         data,
+        unit=None,
+        x0=None,
+        dx=None,
+        xindex=None,
+        xunit=None,
+        y0=None,
+        dy=None,
+        yindex=None,
+        yunit=None,
+        *,
         axis1_name: str = "axis1",
         axis2_name: str = "axis2",
+        axis_names=None,
         **kwargs,
     ):
         """Create a plane with explicit names for both axes.
@@ -41,17 +52,35 @@ class Plane2D(FittingMixin, Array2D):
         ----------
         data : array-like
             Two-dimensional values to wrap.
+        unit, x0, dx, xindex, xunit, y0, dy, yindex, yunit
+            GWpy ``Array2D`` constructor parameters, forwarded unchanged.
         axis1_name : str, optional
             Semantic name for dimension 0.
         axis2_name : str, optional
             Semantic name for dimension 1.
+        axis_names : iterable of str, optional
+            Existing alias for specifying both semantic axis names together.
         **kwargs
             Forwarded to :class:`gwexpy.types.Array2D`.
 
         """
-        if "axis_names" in kwargs:
-            axis1_name, axis2_name = kwargs.pop("axis_names")
-        obj = super().__new__(cls, data, axis_names=(axis1_name, axis2_name), **kwargs)
+        if axis_names is not None:
+            axis1_name, axis2_name = axis_names
+        obj = super().__new__(
+            cls,
+            data,
+            unit=unit,
+            x0=x0,
+            dx=dx,
+            xindex=xindex,
+            xunit=xunit,
+            y0=y0,
+            dy=dy,
+            yindex=yindex,
+            yunit=yunit,
+            axis_names=(axis1_name, axis2_name),
+            **kwargs,
+        )
         return obj
 
     @property
