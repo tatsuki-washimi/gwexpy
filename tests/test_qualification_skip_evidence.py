@@ -530,6 +530,107 @@ def test_parser_consumes_pytests_builtin_junit_skip_tuple(tmp_path: Path) -> Non
     ]
 
 
+@pytest.mark.parametrize(
+    "document",
+    [
+        (
+            '<testsuites xmlns:z="urn:forged"><testsuite tests="1" failures="0" '
+            'errors="0" skipped="0"><testcase classname="tests.required" '
+            'name="test_hidden"><z:skipped message="hidden skip"/></testcase>'
+            "</testsuite></testsuites>"
+        ),
+        (
+            '<testsuites><testsuite tests="1" failures="0" errors="0" '
+            'skipped="0"><testcase classname="tests.required" '
+            'name="test_hidden"><evil/></testcase></testsuite></testsuites>'
+        ),
+        (
+            '<testsuites xmlns:z="urn:forged"><testsuite tests="1" failures="0" '
+            'errors="0" skipped="0"><z:testcase classname="tests.required" '
+            'name="test_hidden"/></testsuite></testsuites>'
+        ),
+        (
+            '<testsuites xmlns:z="urn:forged"><testsuite tests="1" failures="0" '
+            'errors="0" skipped="0"><testcase classname="tests.required" '
+            'name="test_hidden"><properties><z:property name="role" '
+            'value="forged"/></properties></testcase></testsuite></testsuites>'
+        ),
+        (
+            '<testsuites><testsuite tests="1" failures="0" errors="0" '
+            'skipped="0"><system-out>forged suite output</system-out>'
+            '<testcase classname="tests.required" name="test_hidden"/>'
+            "</testsuite></testsuites>"
+        ),
+        (
+            '<testsuites xmlns:z="urn:forged"><z:testsuite tests="1" '
+            'failures="0" errors="0" skipped="0"><testcase '
+            'classname="tests.required" name="test_hidden"/>'
+            "</z:testsuite></testsuites>"
+        ),
+        (
+            '<testsuites><evil/><testsuite tests="1" failures="0" errors="0" '
+            'skipped="0"><testcase classname="tests.required" '
+            'name="test_hidden"/></testsuite></testsuites>'
+        ),
+        (
+            '<z:testsuites xmlns:z="urn:forged"><z:testsuite tests="1" '
+            'failures="0" errors="0" skipped="0"><z:testcase '
+            'classname="tests.required" name="test_hidden"/>'
+            "</z:testsuite></z:testsuites>"
+        ),
+    ],
+)
+def test_junit_parser_rejects_unknown_or_namespaced_tags(
+    tmp_path: Path,
+    document: str,
+) -> None:
+    evidence = load_module()
+    junit = tmp_path / "forged-tag.xml"
+    junit.write_text(document, encoding="utf-8")
+
+    with pytest.raises(evidence.QualificationEvidenceError, match="tag|hierarchy"):
+        evidence.parse_junit_skips(junit)
+
+
+def test_parser_accepts_pytest_properties_and_captured_output(tmp_path: Path) -> None:
+    evidence = load_module()
+    test_file = tmp_path / "test_builtin_metadata.py"
+    test_file.write_text(
+        "import sys\n\n"
+        "def test_metadata(record_property, record_testsuite_property):\n"
+        "    record_property('detector', 'H1')\n"
+        "    record_testsuite_property('oracle', 'GWpy')\n"
+        "    print('captured stdout')\n"
+        "    print('captured stderr', file=sys.stderr)\n",
+        encoding="utf-8",
+    )
+    junit = tmp_path / "pytest-metadata.xml"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "-p",
+            "no:cacheprovider",
+            "-o",
+            "junit_logging=all",
+            f"--junitxml={junit}",
+            str(test_file),
+        ],
+        cwd=tmp_path,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    xml = junit.read_text(encoding="utf-8")
+    for tag in ("<properties>", "<property ", "<system-out>", "<system-err>"):
+        assert tag in xml
+    assert evidence.parse_junit_skips(junit) == []
+
+
 def test_aggregate_v023_requires_one_valid_report_for_every_cell(
     tmp_path: Path,
 ) -> None:

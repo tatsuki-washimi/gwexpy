@@ -56,6 +56,18 @@ _PAYLOAD_SCHEMAS = {
 _SHA40 = re.compile(r"^[0-9a-f]{40}$")
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _JUNIT_COUNTER = re.compile(r"^(0|[1-9][0-9]*)$")
+_JUNIT_TAGS = {
+    "error",
+    "failure",
+    "properties",
+    "property",
+    "skipped",
+    "system-err",
+    "system-out",
+    "testcase",
+    "testsuite",
+    "testsuites",
+}
 _MAX_BASELINE_BYTES = 256 * 1024
 _MAX_JSON_BYTES = 2 * 1024 * 1024
 _MAX_JUNIT_BYTES = 32 * 1024 * 1024
@@ -287,6 +299,13 @@ def _parse_junit(path: Path) -> tuple[int, tuple[SkipCase, ...]]:
         root = etree.fromstring(text)
     except etree.ParseError as exc:
         raise QualificationEvidenceError("invalid pytest JUnit XML") from exc
+    if any(
+        not isinstance(element.tag, str) or element.tag not in _JUNIT_TAGS
+        for element in root.iter()
+    ):
+        raise QualificationEvidenceError(
+            "pytest JUnit report contains an unknown or namespaced tag"
+        )
     root_children = list(root)
     if (
         root.tag != "testsuites"
@@ -298,9 +317,10 @@ def _parse_junit(path: Path) -> tuple[int, tuple[SkipCase, ...]]:
         )
     suite = root_children[0]
     testcases = [child for child in suite if child.tag == "testcase"]
-    allowed_suite_children = {"properties", "system-err", "system-out", "testcase"}
+    allowed_suite_children = {"properties", "testcase"}
     if (
         any(child.tag not in allowed_suite_children for child in suite)
+        or sum(child.tag == "properties" for child in suite) > 1
         or list(suite.iter("testcase")) != testcases
         or any(
             descendant is not suite and descendant.tag in {"testsuite", "testsuites"}
@@ -325,7 +345,22 @@ def _parse_junit(path: Path) -> tuple[int, tuple[SkipCase, ...]]:
     outcomes = {"failures": 0, "errors": 0, "skipped": 0}
     testcase_statuses: list[list[etree.Element[str]]] = []
     outcome_names = {"failure": "failures", "error": "errors", "skipped": "skipped"}
+    allowed_testcase_children = {
+        "error",
+        "failure",
+        "properties",
+        "skipped",
+        "system-err",
+        "system-out",
+    }
     for testcase in testcases:
+        if any(child.tag not in allowed_testcase_children for child in testcase) or any(
+            sum(child.tag == singleton for child in testcase) > 1
+            for singleton in ("properties", "system-err", "system-out")
+        ):
+            raise QualificationEvidenceError(
+                "pytest JUnit testcase has an invalid child hierarchy"
+            )
         direct = [child for child in testcase if child.tag in outcome_names]
         nested = [
             descendant
@@ -339,6 +374,24 @@ def _parse_junit(path: Path) -> tuple[int, tuple[SkipCase, ...]]:
         testcase_statuses.append(direct)
         if direct:
             outcomes[outcome_names[direct[0].tag]] += 1
+
+    for properties in root.iter("properties"):
+        if any(child.tag != "property" for child in properties):
+            raise QualificationEvidenceError(
+                "pytest JUnit properties has an invalid child hierarchy"
+            )
+    for terminal_tag in (
+        "error",
+        "failure",
+        "property",
+        "skipped",
+        "system-err",
+        "system-out",
+    ):
+        if any(list(element) for element in root.iter(terminal_tag)):
+            raise QualificationEvidenceError(
+                "pytest JUnit terminal element has an invalid child hierarchy"
+            )
 
     direct_status_ids = {
         id(status) for statuses in testcase_statuses for status in statuses

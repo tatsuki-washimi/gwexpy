@@ -68,6 +68,39 @@ def _review_scope_covers(path: str, scope: set[str]) -> bool:
     return any(path == entry or path.startswith(f"{entry}/") for entry in scope)
 
 
+def _changed_paths_between(repo: Path, base: str, candidate: str) -> set[str]:
+    result = subprocess.run(
+        [
+            "git",
+            "diff",
+            "--no-renames",
+            "--name-only",
+            "-z",
+            "--diff-filter=ACDMRTUXB",
+            f"{base}..{candidate}",
+            "--",
+        ],
+        cwd=repo,
+        check=True,
+        capture_output=True,
+    )
+    raw_paths = result.stdout
+    if not isinstance(raw_paths, bytes) or (
+        raw_paths and not raw_paths.endswith(b"\0")
+    ):
+        raise AssertionError("git diff did not return canonical NUL-delimited bytes")
+    try:
+        paths = [
+            raw_path.decode("utf-8", errors="strict")
+            for raw_path in raw_paths.split(b"\0")
+        ]
+    except UnicodeDecodeError as exc:
+        raise AssertionError("git diff returned a non-UTF-8 path") from exc
+    if paths[-1] != "" or any(not path for path in paths[:-1]):
+        raise AssertionError("git diff returned a malformed path list")
+    return set(paths[:-1])
+
+
 def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
     assert CONTRACTS_PATH.is_file()
     data = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
@@ -189,6 +222,8 @@ def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
         "tests/io/test_csv_txt_contract.py",
         "tests/io/test_gwpy_csv_phase4_compat.py",
         "tests/io/test_gwpy_hdf5_compat.py",
+        "tests/io/test_gwpy_override_terminal_io.py",
+        "tests/io/test_reader_start_end_contract.py",
         "tests/io_conformance/test_read_conformance.py",
         "tests/test_compatibility_fixes.py",
         "tests/test_gwpy_constructor_terminal_compat.py",
@@ -211,23 +246,7 @@ def test_v023_review_lanes_cover_every_fixed_base_candidate_change() -> None:
             "the authoritative review-scope gate requires fetch-depth: 0"
         )
     candidate = _candidate_revision()
-    result = subprocess.run(
-        [
-            "git",
-            "-c",
-            "core.quotepath=false",
-            "diff",
-            "--name-only",
-            "--diff-filter=ACDMRTUXB",
-            f"{V023_IMPLEMENTATION_BASE}..{candidate}",
-            "--",
-        ],
-        cwd=ROOT,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    changed_paths = {path for path in result.stdout.splitlines() if path}
+    changed_paths = _changed_paths_between(ROOT, V023_IMPLEMENTATION_BASE, candidate)
     contracts = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
     lanes = contracts["releases"]["v0.2.3"]["review_lanes"]
     scope = {path for paths in lanes.values() for path in paths}
@@ -236,6 +255,73 @@ def test_v023_review_lanes_cover_every_fixed_base_candidate_change() -> None:
         path for path in changed_paths if not _review_scope_covers(path, scope)
     )
     assert uncovered == []
+
+
+def test_review_scope_diff_preserves_both_paths_of_a_rename(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+
+    def git(*arguments: str) -> str:
+        result = subprocess.run(
+            ["git", *arguments],
+            cwd=repo,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        return result.stdout.strip()
+
+    git("init", "-q")
+    git("config", "user.name", "Qualification Test")
+    git("config", "user.email", "qualification@example.invalid")
+    old_path = repo / "outside-scope.txt"
+    old_path.write_text("same content\n", encoding="utf-8")
+    git("add", "--all")
+    git("commit", "-q", "-m", "base")
+    base = git("rev-parse", "HEAD")
+
+    new_path = repo / "covered" / "inside-scope.txt"
+    new_path.parent.mkdir()
+    old_path.rename(new_path)
+    git("add", "--all")
+    git("commit", "-q", "-m", "rename")
+
+    changed_paths = _changed_paths_between(repo, base, "HEAD")
+
+    assert changed_paths == {"outside-scope.txt", "covered/inside-scope.txt"}
+    assert sorted(
+        path for path in changed_paths if not _review_scope_covers(path, {"covered"})
+    ) == ["outside-scope.txt"]
+
+
+def test_review_scope_diff_preserves_newlines_in_paths(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+
+    def git(*arguments: str) -> str:
+        result = subprocess.run(
+            ["git", *arguments],
+            cwd=repo,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        return result.stdout.strip()
+
+    git("init", "-q")
+    git("config", "user.name", "Qualification Test")
+    git("config", "user.email", "qualification@example.invalid")
+    git("commit", "-q", "--allow-empty", "-m", "base")
+    base = git("rev-parse", "HEAD")
+
+    changed_path = "covered/line\nbreak.txt"
+    path = repo / changed_path
+    path.parent.mkdir()
+    path.write_text("content\n", encoding="utf-8")
+    git("add", "--all")
+    git("commit", "-q", "-m", "newline path")
+
+    assert _changed_paths_between(repo, base, "HEAD") == {changed_path}
 
 
 def test_release_contract_loader_rejects_unknown_tags() -> None:
