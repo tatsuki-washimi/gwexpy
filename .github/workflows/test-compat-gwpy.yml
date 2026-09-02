@@ -8,6 +8,7 @@ on:
     # Unrelated PRs outside this dependency and proxy-contract cone skip this
     # gate; main push and manual dispatch keep full coverage.
     paths:
+      - "gwexpy/**"
       - "gwexpy/timeseries/**"
       - "gwexpy/frequencyseries/**"
       - "gwexpy/spectrogram/**"
@@ -23,6 +24,9 @@ on:
       - "tests/table/**"
       - "tests/interop/**"
       - "tests/test_gwpy4_proxy_contract.py"
+      - "tests/test_gwpy_override_inventory.py"
+      - "scripts/audit_gwpy_overrides.py"
+      - "docs/developers/plans/manifests/audit-manifest-v0.2.3-gwpy-overrides.json"
       - "docs/developers/contracts/public_io_contract.*"
       - "pyproject.toml"
       - "requirements*.txt"
@@ -105,6 +109,12 @@ jobs:
           print("gwpy=" + actual_gwpy)
           print("lalsuite=" + version("lalsuite"))
           PY
+
+      - name: Check GWpy override inventory
+        run: |
+          python scripts/audit_gwpy_overrides.py --check \
+            --manifest docs/developers/plans/manifests/audit-manifest-v0.2.3-gwpy-overrides.json \
+            --oracle-python "$GWPY_VERSION=@current"
 
       - name: Run focused compatibility tests
         run: |
