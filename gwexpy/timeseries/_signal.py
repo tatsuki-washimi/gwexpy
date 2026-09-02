@@ -562,13 +562,11 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
 
     def heterodyne(
         self,
-        phase: Union[
-            Sequence[NumberLike], NDArray[np.floating], NDArray[np.complex128]
-        ],
-        stride: Union[NumberLike, u.Quantity] = 1.0,
+        phase: ArrayLike,
+        stride: float = 1,
         *,
         singlesided: bool = False,
-    ) -> TimeSeriesSignalMixin:
+    ) -> TimeSeries:
         """Compute the average magnitude and phase of the TimeSeries after.
 
         heterodyning with a given phase series.
@@ -626,56 +624,31 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             for a higher-level lock-in amplifier interface
 
         """
-        # --- Phase validation (GWpy-compatible) ---
-        try:
-            phase = np.asarray(phase)  # make sure phase is a numpy array
-            if phase.ndim != 1:
-                raise TypeError(f"Phase is not array_like: ndim={phase.ndim}")
-            _ = len(phase)  # ensure len() works
-        except TypeError as e:
-            raise TypeError(f"Phase is not array_like: {e}") from e
-
-        if len(phase) != len(self):
-            raise ValueError("Phase array must be the same length as the TimeSeries")
-
-        # --- Stride calculation ---
+        # A time Quantity is an existing GWexpy-only extension. Route it by
+        # explicit type before entering the unchanged GWpy implementation.
         if isinstance(stride, u.Quantity):
-            stride_s = stride.to("s").value
-        else:
-            stride_s = float(stride)
+            stride = float(stride.to_value(u.s))
 
-        stridesamp = int(stride_s * self.sample_rate.value)
-        nsteps = int(self.size // stridesamp)
+        from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
-        # --- Heterodyne loop (GWpy-identical) ---
-        out_data = np.zeros(nsteps, dtype=complex)
-        for step in range(nsteps):
-            istart = stridesamp * step
-            iend = istart + stridesamp
-            mixed = np.exp(-1j * phase[istart:iend]) * self.value[istart:iend]
-            out_data[step] = 2 * mixed.mean() if singlesided else mixed.mean()
-
-        # --- Build output TimeSeries (GWpy-compatible) ---
-        # Use constructor with explicit sample_rate to ensure proper dt/sample_rate
-        out = self.__class__(
-            out_data,
-            t0=self.t0,
-            sample_rate=1 / stride_s,
-            unit=self.unit,
-            name=self.name,
-            channel=self.channel,
+        return cast(
+            "TimeSeries",
+            BaseTimeSeries.heterodyne(
+                self,
+                phase,
+                stride,
+                singlesided=singlesided,
+            ),
         )
-
-        return out
 
     def demodulate(
         self,
-        f: Union[NumberLike, u.Quantity],
-        stride: Union[NumberLike, u.Quantity] = 1.0,
-        phase: float = 0.0,
-        deg: bool = True,
+        f: float,
+        stride: float = 1,
+        *,
         exp: bool = False,
-    ) -> Any:
+        deg: bool = True,
+    ) -> tuple[TimeSeries, TimeSeries] | TimeSeries:
         r"""Compute the average magnitude and phase of the TimeSeries at a.
 
         given frequency (GWpy-compatible).
@@ -691,13 +664,11 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             Frequency (Hz) at which to demodulate.
         stride : float or Quantity, default: 1.0
             Time step for averaging in seconds.
-        phase : float, default: 0.0
-            Initial phase offset in radians.
-        deg : bool, default: True
-            If True, return phase in degrees; else radians.
         exp : bool, default: False
             If True, return a single complex TimeSeries ($mag \cdot e^{i\phi}$).
             If False (default), return a tuple of (magnitude, phase) TimeSeries.
+        deg : bool, default: True
+            If True, return phase in degrees; else radians.
 
         Returns
         -------
@@ -708,7 +679,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         Notes
         -----
         **Phase Convention (GWpy-identical)**
-        The phase model is built as $\phi(t) = 2\pi f t + \text{phase}$.
+        The phase model is built as $\phi(t) = 2\pi f t$.
         The mixing operation is $x(t) \cdot e^{-i\phi(t)}$.
         The result is always multiplied by 2 (``singlesided=True``) to
         recover the full amplitude of real signals, matching GWpy.
@@ -721,39 +692,26 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             for a more flexible lock-in amplifier interface.
 
         """
-        # Build phase for a fixed frequency
-        from astropy.units import Quantity
+        # Frequency and time Quantities are existing GWexpy-only extensions.
+        # Classify them before the parent call so parent failures are never
+        # intercepted and retried.
+        if isinstance(f, u.Quantity):
+            f = float(f.to_value(u.Hz))
+        if isinstance(stride, u.Quantity):
+            stride = float(stride.to_value(u.s))
 
-        if isinstance(f, Quantity):
-            f_val = f.to("Hz").value
-        else:
-            f_val = float(f)
+        from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
-        if self.dt is None:
-            raise ValueError("demodulate requires defined dt")
-        dt_val = self.dt.to("s").value if hasattr(self.dt, "to") else float(self.dt)
-
-        phase_arr = 2 * np.pi * f_val * dt_val * np.arange(self.size)
-        if phase != 0.0:
-            phase_arr += float(phase)
-
-        # Call heterodyne with singlesided=True (standard for demodulate)
-        out = self.heterodyne(phase_arr, stride=stride, singlesided=True)
-
-        if exp:
-            return out
-
-        mag = out.abs()
-        ph_val = np.angle(out.value, deg=deg)
-        ph = self.__class__(
-            ph_val,
-            t0=out.t0,
-            dt=out.dt,
-            channel=self.channel,
-            name=self.name,
+        return cast(
+            "tuple[TimeSeries, TimeSeries] | TimeSeries",
+            BaseTimeSeries.demodulate(
+                self,
+                f,
+                stride,
+                exp=exp,
+                deg=deg,
+            ),
         )
-        ph.override_unit("deg" if deg else "rad")
-        return mag, ph
 
     def baseband(
         self,
@@ -1172,7 +1130,11 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
                 phase0=phase0,
                 prefer_dt=True,
             )
-            outc = self.heterodyne(phase_series, stride=stride, singlesided=singlesided)
+            outc = self.heterodyne(
+                phase_series,
+                stride=cast(float, stride),
+                singlesided=singlesided,
+            )
 
         # === Output formatting ===
         if output == "complex":

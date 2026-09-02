@@ -34,20 +34,16 @@ def test_demodulate_basic():
     assert_allclose(outc.value, expected_complex, rtol=1e-3)
 
 
-def test_demodulate_phase_offset():
-    """Test demodulate with an initial phase offset."""
+def test_demodulate_rejects_non_gwpy_phase_keyword():
+    """The default route does not accept the former phase extension."""
     fs = 1024.0
     t = np.arange(0, 5, 1 / fs)
     f0 = 20.0
-    # Signal: cos(wt + pi/4)
-    # Demodulate with ref phase: pi/4
-    # Result should have 0 phase.
     data = np.cos(2 * np.pi * f0 * t + np.pi / 4)
     ts = TimeSeries(data, sample_rate=fs)
 
-    mag, ph = ts.demodulate(f0, stride=1.0, phase=np.pi / 4, deg=False)
-    assert_allclose(mag.value, 1.0, rtol=1e-3)
-    assert_allclose(ph.value, 0.0, atol=1e-7)
+    with pytest.raises(TypeError):
+        ts.demodulate(f0, stride=1.0, phase=np.pi / 4, deg=False)
 
 
 def test_lock_in_lpf_mode_recovery():

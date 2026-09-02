@@ -24,7 +24,9 @@ from numpy.typing import ArrayLike
 from ._typing import TimeSeriesAttrs
 
 if TYPE_CHECKING:
-    pass
+    from gwpy.signal.window import WindowLike
+
+    from .timeseries import TimeSeries
 
 NumberLike: TypeAlias = Union[int, float, np.number]
 QuantityLike: TypeAlias = Union[ArrayLike, u.Quantity]
@@ -574,11 +576,12 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
 
     def resample(
         self,
-        rate: str | NumberLike | u.Quantity,
-        *args: Any,
-        ignore_nan: bool | None = None,
+        rate: float,
+        window: WindowLike = "hamming",
+        ftype: Literal["fir", "iir"] = "fir",
+        n: int | None = None,
         **kwargs: Any,
-    ) -> TimeSeriesResamplingMixin:
+    ) -> TimeSeries:
         """Resample the TimeSeries.
 
         If ``rate`` is a time-string (e.g. ``"1s"``) or time Quantity,
@@ -603,12 +606,18 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
                 is_time_bin = True
 
         if is_time_bin:
-            return self._resample_time_bin(rate, ignore_nan=ignore_nan, **kwargs)
+            return cast("TimeSeries", self._resample_time_bin(rate, **kwargs))
         else:
-            self._check_regular("Signal processing resample")
             from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
-            result = BaseTimeSeries.resample(self, rate, *args, **kwargs)
+            result = BaseTimeSeries.resample(
+                self,
+                rate,
+                window,
+                ftype,
+                n,
+                **kwargs,
+            )
             exact_t0_ns = getattr(self, "_gwex_t0_gps_ns", None)
             if exact_t0_ns is not None:
                 from ._epoch import _integral_dt_gps_ns
@@ -618,7 +627,7 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
                     result._gwex_dt_gps_ns = _integral_dt_gps_ns(result.dt)
                 except (TypeError, ValueError):
                     result.__dict__.pop("_gwex_dt_gps_ns", None)
-            return result
+            return cast("TimeSeries", result)
 
     # ===============================
     # _resample_time_bin - Internal

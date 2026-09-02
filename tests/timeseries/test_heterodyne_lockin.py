@@ -105,12 +105,12 @@ class TestHeterodyneGWpyCompatibility:
         # stridesamp = 100, nsteps = floor(1005 / 100) = 10
         assert len(het) == 10
 
-    def test_phase_not_array_like_raises_typeerror(self):
-        """Test that non-array-like phase raises TypeError."""
+    def test_phase_not_array_like_raises_valueerror(self):
+        """Test that non-array-like phase matches GWpy's ValueError."""
         ts = TimeSeries(np.ones(100), dt=0.01, unit="V")
 
         # Scalar float
-        with pytest.raises(TypeError, match="Phase is not array_like"):
+        with pytest.raises(ValueError, match="Phase is not array_like"):
             ts.heterodyne(phase=3.14, stride=1.0)
 
         # None-like that can't be converted

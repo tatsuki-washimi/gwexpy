@@ -84,7 +84,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
     # ===============================
 
     def rms(  # type: ignore[override]
-        self, stride: float = 1, *, ignore_nan: bool = True
+        self, stride: float = 1, *, ignore_nan: bool | None = None
     ) -> TimeSeries:
         """Calculate the root-mean-square value once per ``stride`` seconds.
 
@@ -101,7 +101,8 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             Stride in seconds between RMS calculations.  Quantity-like values
             are intentionally rejected to keep the public API narrow.
         ignore_nan : `bool`, optional
-            If true (the default), calculate each window from finite samples.
+            Explicit GWexpy extension. If true, calculate each window from
+            finite samples. If omitted or false, use the GWpy default route.
 
         Returns
         -------
@@ -121,8 +122,11 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         convention ``sqrt(mean(|x|**2))`` is used.
 
         """
-        if getattr(self, "sample_rate", None) is None:
-            raise ValueError("rms(stride) requires a regularly-sampled TimeSeries")
+        from gwpy.timeseries import TimeSeries as BaseTimeSeries
+
+        if ignore_nan is not True:
+            return cast("TimeSeries", BaseTimeSeries.rms(self, stride))
+
         stride_s = _stride_to_seconds(stride)
         stridesamp = int(stride_s * self.sample_rate.to("Hz").value)
         if stridesamp < 1:
@@ -139,7 +143,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             warnings.filterwarnings("ignore", "Mean of empty slice", RuntimeWarning)
             mean = np.nanmean if ignore_nan else np.mean
             data = np.sqrt(mean(np.abs(trimmed) ** 2, axis=1))
-        name = f"{self.name} {stride_s}-second RMS" if self.name is not None else None
+        name = f"{self.name} {stride}-second RMS"
         return self.__class__(  # type: ignore[return-value]
             data,
             channel=self.channel,

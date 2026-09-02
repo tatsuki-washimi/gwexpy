@@ -1,0 +1,204 @@
+schema: gwexpy-v023-timeseries-signal-audit-evidence-v1
+phase: exhaustive-override-timeseries-signal-closure
+status: focused-green
+
+implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
+phase_parent: 7191530e30db8f208d4ec57d14d563e9c9cf7ef7
+
+skills:
+  - superpowers:test-driven-development
+  - extend_gwpy
+  - gwexpy_conda_jobs
+  - verify_physics
+
+oracles:
+  - environment: main
+    python: 3.12.12
+    gwpy: 4.0.1
+    numpy: 1.26.4
+    scipy: 1.13.1
+  - environment: gwexpy
+    python: 3.11.14
+    gwpy: 4.0.2
+    numpy: 1.26.4
+    scipy: 1.12.0
+oracle_version_difference: none observed in the fixture matrix
+oracle_execution: >-
+  Every differential case independently constructs an installed GWpy object
+  and a GWexpy object in the same pinned environment. Expected payloads,
+  metadata, signatures, and exception classes are obtained from the installed
+  GWpy implementation rather than copied constants.
+
+implementation_groups:
+  heterodyne:
+    id: 5a5dee
+    issues: [639, 704]
+    terminal_state: fixed
+    pre_fix:
+      - unit was inherited from the input instead of becoming dimensionless
+      - scalar and two-dimensional phase inputs raised TypeError instead of ValueError
+      - stride default and public annotations differed from GWpy
+    default_route: direct installed GWpy implementation
+    explicit_extensions:
+      - a time Quantity stride is classified before the parent call and converted to seconds
+  demodulate:
+    id: 8ea74
+    issues: [639, 704]
+    terminal_state: fixed
+    pre_fix:
+      - the non-GWpy phase parameter changed positional and keyword binding
+      - exp and deg were not keyword-only and appeared in the wrong order
+      - complex and amplitude outputs inherited the input unit
+    default_route: direct installed GWpy implementation
+    explicit_extensions:
+      - a frequency Quantity is classified and converted to Hz before the parent call
+      - a time Quantity stride is classified and converted to seconds before the parent call
+  rms:
+    id: c7b130
+    issues: [451, 639, 704]
+    terminal_state: fixed
+    pre_fix:
+      - NaNs were omitted by default instead of propagated
+      - integer stride names were rendered with a forced decimal suffix
+      - zero, sub-sample, irregular-axis, float32, and unnamed outcomes differed
+    default_route: direct installed GWpy implementation when ignore_nan is omitted or false
+    explicit_extensions:
+      - ignore_nan=true retains finite-sample windowing and promoted arithmetic
+  resample:
+    id: 8c5dcc
+    issues: [639, 703, 704]
+    terminal_state: fixed
+    pre_fix:
+      - numeric signature hid window, ftype, and n behind variadic arguments
+      - an early regularity guard changed true-irregular failure from AttributeError to ValueError
+      - numeric calls silently consumed the time-bin-only ignore_nan keyword
+    default_route: direct installed GWpy implementation for numeric and frequency-Quantity rates
+    exact_time_augmentation: >-
+      Existing integer-nanosecond epoch state is restored on the parent result
+      without changing the GWpy-visible time axis.
+    explicit_extensions:
+      - string time-bin rule
+      - time Quantity bin rule
+
+comparators:
+  successful_series:
+    finite_rtol: 0.0
+    finite_atol: 0.0
+    exact:
+      - shape
+      - dtype
+      - unit
+      - name
+      - channel
+      - t0
+      - dt
+      - materialized time axis values and unit
+    nonfinite_masks:
+      - isnan on real and imaginary components
+      - isposinf on real and imaginary components
+      - isneginf on real and imaginary components
+  signature:
+    exact:
+      - parameter order and names
+      - parameter kinds
+      - defaults
+      - annotations and return annotation for heterodyne and demodulate
+      - complete GWpy positional prefix for resample
+      - keyword-only explicit ignore_nan extension for rms
+  failure_outcome:
+    exact:
+      - success or failure
+      - exception class
+    excluded:
+      - exception message text
+
+fixtures:
+  heterodyne:
+    - single-sided and double-sided finite values
+    - scalar phase ValueError
+    - two-dimensional phase ValueError
+    - wrong-length one-dimensional phase ValueError
+    - explicit Quantity stride extension
+  demodulate:
+    - complex exponential output
+    - amplitude and degree phase pair
+    - amplitude and radian phase pair
+    - explicit Quantity frequency and stride extensions
+    - rejection of the former phase keyword
+  rms:
+    - integer, float, and multi-second stride names
+    - NaN propagation by default
+    - explicit NaN omission
+    - zero, negative, sub-sample, and Quantity stride failures
+    - float32 subnormal-scale input
+    - unit-bearing, named, channel-bearing, and unnamed inputs
+  resample:
+    - integer downsampling
+    - non-integer resampling
+    - frequency Quantity rate
+    - positional window, ftype, and n
+    - true-irregular and nearly-irregular axes
+    - string and time-Quantity bin aggregation
+    - exact integer-nanosecond epoch preservation
+
+tdd:
+  red:
+    gwpy_4_0_1: 18 failed, 11 passed
+    gwpy_4_0_2: 18 failed, 11 passed
+    collected_cases: 29
+    causes:
+      - heterodyne unit and exception-class mismatches
+      - demodulate signature and unit mismatches
+      - rms default NaN, name, numeric, and failure mismatches
+      - resample signature and true-irregular failure mismatch
+  green:
+    differential:
+      gwpy_4_0_1: 33 passed, 0 skipped
+      gwpy_4_0_2: 33 passed, 0 skipped
+    affected_regressions:
+      gwpy_4_0_1: 302 passed, 0 skipped
+      gwpy_4_0_2: 302 passed, 0 skipped
+    unexpected_required_skips: 0
+
+physics:
+  numerical_authority: >-
+    Default numerical kernels are the installed GWpy implementations. Finite
+    heterodyne, demodulate, RMS, and resample payloads are bit-identical in all
+    differential fixtures.
+  heterodyne_and_demodulate_unit: >-
+    GWpy finalization labels complex and amplitude trends dimensionless even
+    when the input has a physical unit. v0.2.3 intentionally preserves that
+    observable public behavior; a physically motivated alternative must be a
+    later explicit opt-in.
+  rms_float32: >-
+    GWpy squares float32 input without promotion, so sufficiently small finite
+    amplitudes underflow to zero. The default now preserves that behavior. The
+    explicit ignore_nan=true extension retains promoted arithmetic.
+  resample_axis: >-
+    The parent-selected samples, cadence, and visible epoch are unchanged. The
+    private exact integer-nanosecond epoch augmentation is restored afterward.
+  human_review: required for dimensionless trend units and float32 RMS underflow parity
+
+release_constraints:
+  new_public_api: false
+  new_dependency: false
+  new_format: false
+  inventory_manifest_regenerated_here: false
+
+static_validation:
+  ruff_changed_files: all checks passed
+  ruff_format_check: all files formatted
+  mypy_changed_source_files: success, no issues found in 3 source files
+  yaml_safe_load: valid
+  git_diff_check: clean
+
+focused_tests:
+  - tests/timeseries/test_gwpy_audit_signal_compat.py
+  - tests/timeseries/test_heterodyne_lockin.py
+  - tests/timeseries/test_demodulate_lockin_ext.py
+  - tests/timeseries/test_signal_d1.py
+  - tests/timeseries/test_rms_compat.py
+  - tests/timeseries/test_resampling.py
+  - tests/timeseries/test_exact_gps_epoch.py
+  - tests/timeseries/test_baseband.py
+  - tests/timeseries/test_collections_batch.py
