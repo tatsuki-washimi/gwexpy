@@ -803,11 +803,11 @@ class FrequencySeries(
             ts = super().ifft(**kwargs)
             return TimeSeries(
                 ts.value,
-                times=ts.times,
+                t0=ts.t0,
+                dt=ts.dt,
                 unit=ts.unit,
                 name=ts.name,
                 channel=ts.channel,
-                epoch=ts.epoch,
             )
 
         if mode_to_use != "transient":

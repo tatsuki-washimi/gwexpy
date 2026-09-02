@@ -8,6 +8,7 @@ from typing import Any
 import numpy as np
 from astropy import units as u
 from astropy.time import Time
+from gwpy.time import from_gps as _gwpy_from_gps
 from gwpy.time import tconvert as _gwpy_tconvert
 from gwpy.time import to_gps as _gwpy_to_gps
 
@@ -19,6 +20,24 @@ except ImportError:
 __all__ = ["to_gps", "from_gps", "tconvert"]
 
 
+class _TConvertDefault:
+    """Omission marker that preserves the canonical displayed default."""
+
+    def __repr__(self):
+        return repr("now")
+
+
+class _TConvertAliasOmitted:
+    """Stable omission marker for the GWexpy-only ``t=`` alias."""
+
+    def __repr__(self):
+        return "<omitted>"
+
+
+_TCONVERT_DEFAULT = _TConvertDefault()
+_TCONVERT_ALIAS_OMITTED = _TConvertAliasOmitted()
+
+
 def _is_array(obj):
     if isinstance(obj, (str, bytes)):
         return False
@@ -27,6 +46,17 @@ def _is_array(obj):
     if isinstance(obj, np.ndarray):
         return obj.ndim > 0
     return isinstance(obj, (list, tuple))
+
+
+def _is_date_component_sequence(obj):
+    """Return whether *obj* has GWpy's scalar date-component call shape."""
+    if not isinstance(obj, (list, tuple)) or not 3 <= len(obj) <= 7:
+        return False
+    return all(
+        isinstance(item, (int, float, np.number))
+        and not isinstance(item, (bool, np.bool_))
+        for item in obj
+    )
 
 
 def _is_numeric_array(arr):
@@ -184,7 +214,12 @@ def to_gps(t, *args, dtype=None, **kwargs):
     t_norm = _normalize_time_input(t)
 
     if isinstance(t_norm, Time):
-        result = t_norm.gps
+        if t_norm.isscalar and dtype is None:
+            result = _gwpy_to_gps(t_norm, *args, **kwargs)
+        else:
+            result = t_norm.gps
+    elif _is_date_component_sequence(t_norm):
+        result = _gwpy_to_gps(t_norm, *args, **kwargs)
     elif not _is_array(t_norm):
         if isinstance(t_norm, np.datetime64):
             result = _datetime64_scalar_to_gps(t_norm, *args, **kwargs)
@@ -251,6 +286,16 @@ def from_gps(gps, *args, **kwargs):
             leap_second_strict="raise",
         )
 
+    if not args and not kwargs:
+        if not _is_array(gps_norm):
+            return _gwpy_from_gps(gps_norm)
+
+        values = np.asarray(gps_norm)
+        result = np.empty(values.shape, dtype=object)
+        for index in np.ndindex(values.shape):
+            result[index] = _gwpy_from_gps(values[index])
+        return result
+
     try:
         values = _as_astropy_gps_input(gps_norm)
         times = Time(values, format="gps", *args, **kwargs)
@@ -262,20 +307,29 @@ def from_gps(gps, *args, **kwargs):
     )
 
 
-def tconvert(t="now", *args, **kwargs):
+def tconvert(
+    gpsordate=_TCONVERT_DEFAULT,
+    *args,
+    t=_TCONVERT_ALIAS_OMITTED,
+    **kwargs,
+):
     """Convert a time between GPS seconds and UTC datetime.
 
-    This function automatically detects the type of the input `t`. If `t` is
+    This function automatically detects the type of the input. If it is
     numeric (or an array of numbers), it is assumed to be a GPS time and is
-    converted to a datetime (like `from_gps`). If `t` is a string, datetime,
-    or an array of those types, it is converted to GPS seconds (like `to_gps`).
+    converted to a datetime (like `from_gps`). If the input is a string,
+    datetime, or an array of those types, it is converted to GPS seconds
+    (like `to_gps`).
 
     Parameters
     ----------
-    t : numeric, str, datetime.datetime, array-like, optional
+    gpsordate : numeric, str, datetime.datetime, array-like, optional
         The input time(s) to convert. Defaults to "now".
     *args
         Additional positional arguments passed to the underlying converter.
+    t : numeric, str, datetime.datetime, array-like, optional
+        GWexpy compatibility alias for ``gpsordate``. Supplying both names is
+        an error.
     **kwargs
         Additional keyword arguments passed to the underlying converter.
 
@@ -285,10 +339,22 @@ def tconvert(t="now", *args, **kwargs):
         The converted time. The return type depends on the input type.
 
     """
-    t_norm = _normalize_time_input(t)
+    canonical_given = gpsordate is not _TCONVERT_DEFAULT
+    alias_given = t is not _TCONVERT_ALIAS_OMITTED
+    if canonical_given and alias_given:
+        raise TypeError("cannot specify both 'gpsordate' and 't'")
+    if alias_given:
+        gpsordate = t
+    elif not canonical_given:
+        gpsordate = "now"
+
+    t_norm = _normalize_time_input(gpsordate)
 
     if isinstance(t_norm, np.datetime64):
         return to_gps(t_norm, *args, **kwargs)
+
+    if _is_date_component_sequence(t_norm):
+        return _gwpy_tconvert(t_norm, *args, **kwargs)
 
     if not _is_array(t_norm):
         return _gwpy_tconvert(t_norm, *args, **kwargs)

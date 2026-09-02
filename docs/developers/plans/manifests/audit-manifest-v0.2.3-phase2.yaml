@@ -1,0 +1,136 @@
+schema: gwexpy-v023-phase2-evidence-v1
+phase: time-conversion-and-fft-metadata
+status: focused-green
+
+skills:
+  - superpowers:test-driven-development
+  - gwexpy_conda_jobs
+  - extend_gwpy
+  - verify_physics
+
+oracle_isolation:
+  working_directory: /tmp
+  python_flags: -I -S
+  environment_removed:
+    - PYTHONPATH
+    - PYTHONHOME
+  user_site_disabled: true
+  purelib_added_explicitly: true
+  assertions:
+    - no GWexpy module was imported
+    - no repository or worktree path was present on sys.path
+  note: >-
+    The GWpy 4.0.2 environment contains a GWexpy editable-install finder, so
+    -I alone is insufficient for a pristine oracle process.
+
+oracles:
+  - environment: main
+    python: 3.12.12
+    gwpy: 4.0.1
+  - environment: gwexpy
+    python: 3.11.14
+    gwpy: 4.0.2
+oracle_version_difference: none observed in the Phase 2 fixture matrix
+
+contracts:
+  to_gps:
+    scalar_astropy_time: >-
+      The default result has the oracle LIGOTimeGPS type and exact integer
+      gpsSeconds/gpsNanoSeconds fields, including GWpy's microsecond-limited
+      conversion semantics.
+    date_components: >-
+      Numeric tuple/list inputs of length 3 through 7 always enter the GWpy
+      scalar date-component path; invalid dates and float components preserve
+      the oracle exception class without vector fallback.
+    extensions_preserved:
+      - numeric ndarray inputs, including length 3
+      - numeric tuple/list inputs outside the 3 through 7 component boundary
+      - lists of date strings and datetime objects
+      - explicit dtype output modes
+      - exact numpy.datetime64 conversion
+  tconvert:
+    canonical_parameter: gpsordate
+    default: now
+    extension_alias: t
+    conflict: supplying gpsordate and t together raises TypeError
+  from_gps:
+    scalar: delegates to the GWpy scalar implementation
+    vector: maps the same scalar route element by element and preserves shape
+    boundaries:
+      - half-microsecond float rounding
+      - 500 nanosecond and 1500 nanosecond LIGOTimeGPS inputs
+      - leap-second ValueError for scalar and vector routes
+  frequencyseries_ifft:
+    default_axis_authority:
+      - parent t0
+      - parent dt
+    forbidden_reconstruction: absolute times
+    transient_extension_changed: false
+    fixture_epoch: LIGOTimeGPS(1234567890, 123456789)
+    sample_rates_hz:
+      - 4
+      - 4096
+      - 1000000
+      - 10000000
+    original_lengths:
+      - 8
+      - 9
+    assertions:
+      - exact metadata equality with the parent
+      - exact shape and value equality with the parent
+      - finite sample rate
+
+tdd:
+  red:
+    time:
+      gwpy_4_0_1: 26 failed, 12 passed
+      gwpy_4_0_2: 26 failed, 12 passed
+      cause: expected compatibility mismatches, with no collection errors
+    ifft:
+      gwpy_4_0_1: 4 failed, 4 passed
+      gwpy_4_0_2: 4 failed, 4 passed
+      cause: >-
+        1 MHz cadence was quantized and 10 MHz cadence collapsed to zero at
+        the large epoch; absolute-axis reconstruction warnings were emitted.
+  green:
+    narrow_time:
+      gwpy_4_0_1: 49 passed
+      gwpy_4_0_2: 49 passed
+    narrow_ifft:
+      gwpy_4_0_1: 8 passed
+      gwpy_4_0_2: 8 passed
+    broadened_focused_suite:
+      gwpy_4_0_1: 158 passed
+      gwpy_4_0_2: 158 passed
+      includes:
+        - full time core and contract tests
+        - default and transient IFFT regressions
+        - TimeSeries constructor compatibility regression
+
+physics:
+  sample_rate_hz: 10000000
+  epoch: LIGOTimeGPS(1234567890, 123456789)
+  parseval_ratio:
+    gwpy_4_0_1: 1.0
+    gwpy_4_0_2: 1.0
+  maximum_roundtrip_error:
+    gwpy_4_0_1: 3.33e-16
+    gwpy_4_0_2: 3.33e-16
+  reconstructed_dt_seconds: 1.0e-7
+  reconstructed_sample_rate_finite: true
+  human_review: required for FFT metadata and sampling-grid judgment
+
+static_validation:
+  ruff_check: all checks passed
+  ruff_format_check: 5 files already formatted
+  git_diff_check: clean
+  yaml_safe_load: valid
+
+focused_tests:
+  - tests/time/test_gwpy_phase2_compat.py
+  - tests/time/test_time_contracts.py
+  - tests/time/test_time_core.py
+  - tests/frequencyseries/test_ifft_gwpy_compat.py
+  - tests/frequencyseries/test_fs_methods.py::TestIfft
+  - tests/timeseries/test_new_core_api.py
+  - tests/timeseries/test_constructor_compat.py

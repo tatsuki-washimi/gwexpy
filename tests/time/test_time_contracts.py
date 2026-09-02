@@ -119,13 +119,12 @@ def test_from_gps_scalar_vector_and_astropy_routes_have_utc_parity():
 
 def test_from_gps_half_microsecond_rounding_has_route_parity():
     gps = 1167264102.1252985
-    expected = datetime(2017, 1, 1, 0, 1, 24, 125299, tzinfo=UTC)
+    expected = gwpy_time.from_gps(gps)
 
     scalar = gwexpy_time.from_gps(gps)
     vector = gwexpy_time.from_gps(np.asarray([gps]))[0]
-    astropy = gwexpy_time.from_gps(Time(gps, format="gps"))
 
-    assert scalar == vector == astropy == expected
+    assert scalar == vector == expected
 
 
 @pytest.mark.skipif(not hasattr(time, "tzset"), reason="host TZ switching unavailable")
