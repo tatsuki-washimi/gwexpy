@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import copy
 import hashlib
 import importlib
 import inspect
@@ -17,7 +18,7 @@ import tempfile
 import types
 from collections.abc import Iterator, Mapping, Sequence
 from importlib.metadata import version as distribution_version
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any, get_args, get_origin
 
 SCHEMA = "gwexpy-v023-gwpy-override-inventory-v1"
@@ -37,6 +38,24 @@ INTERNAL_CLASS_TOKENS = (
 )
 ABSENT_FIXTURE = "__counterpart_absent__"
 PENDING_FIXTURE = "__pending_differential__"
+CASE_KEYS = frozenset(
+    {
+        "case_key",
+        "comparator",
+        "counterpart_present",
+        "evidence",
+        "fixture",
+        "gwpy_version",
+        "implementation_group",
+        "issues",
+        "member",
+        "member_id",
+        "observations",
+        "owner",
+        "public_class",
+        "state",
+    }
+)
 AUDIT_OWNER = "v0.2.3-compatibility-audit"
 IMPLEMENTATION_BASE = "a8085b71446d3ef3417a7e5b5ac8efb156368eac"
 PUBLIC_ROOT_RULE = (
@@ -61,6 +80,800 @@ UPSTREAM_DEPENDENCY_PROVENANCE = (
 
 class InventoryError(RuntimeError):
     """Raised when inventory input or evidence fails closed validation."""
+
+
+def _terminal_closure(
+    state: str,
+    fixture: str,
+    reference: str,
+    *,
+    issues: Sequence[str] = ("#639", "#704"),
+    pre_fix: str | None = None,
+    comparator: str = "exact-result-and-metadata",
+    observations: Mapping[str, Mapping[str, Any]] | None = None,
+    pre_fix_observations: Mapping[str, Mapping[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Create one immutable-by-convention terminal-evidence specification."""
+
+    if state == "fixed" and not pre_fix:
+        raise InventoryError(f"fixed closure lacks pre-fix evidence: {fixture}")
+    if observations is None:
+        observations = {
+            "gwexpy": {"outcome": "return"},
+            "gwpy": {"outcome": "return"},
+        }
+    if state == "fixed" and pre_fix_observations is None:
+        pre_fix_observations = {
+            "gwexpy": {"detail": pre_fix, "outcome": "mismatch"},
+            "gwpy": {"outcome": "return"},
+        }
+    return {
+        "behavior": (reference,),
+        "comparator": comparator,
+        "fixture": fixture,
+        "issues": tuple(issues),
+        "observations": copy.deepcopy(observations),
+        "pre_fix": pre_fix,
+        "pre_fix_observations": copy.deepcopy(pre_fix_observations),
+        "state": state,
+    }
+
+
+def _build_terminal_closures() -> dict[str, dict[str, Any]]:
+    """Return the reviewed one-fixture closure for every GWpy-present row.
+
+    Entries are deliberately registered by exact logical ``member_id`` rather
+    than inferred from method names.  A newly exported class or override is
+    therefore left provisional until it receives its own reviewed evidence.
+    """
+
+    closures: dict[str, dict[str, Any]] = {}
+
+    def register(
+        public_classes: str | Sequence[str],
+        members: str | Sequence[str],
+        closure: dict[str, Any],
+    ) -> None:
+        classes = (
+            (public_classes,) if isinstance(public_classes, str) else public_classes
+        )
+        names = (members,) if isinstance(members, str) else members
+        for public_class in classes:
+            for member in names:
+                member_id = f"{public_class}/{member}"
+                if member_id in closures:
+                    raise InventoryError(f"duplicate terminal closure: {member_id}")
+                closures[member_id] = closure
+
+    array_family = (
+        "gwexpy.fields.scalar.ScalarField",
+        "gwexpy.types.array.Array",
+        "gwexpy.types.array3d.Array3D",
+        "gwexpy.types.array4d.Array4D",
+    )
+    array2d_family = (
+        "gwexpy.types.array2d.Array2D",
+        "gwexpy.types.plane2d.Plane2D",
+    )
+    statistics_classes = (
+        "gwexpy.fields.scalar.ScalarField",
+        "gwexpy.frequencyseries.frequencyseries.FrequencySeries",
+        "gwexpy.timeseries.timeseries.TimeSeries",
+        "gwexpy.types.array.Array",
+        "gwexpy.types.array2d.Array2D",
+        "gwexpy.types.array3d.Array3D",
+        "gwexpy.types.array4d.Array4D",
+        "gwexpy.types.plane2d.Plane2D",
+        "gwexpy.types.series.Series",
+    )
+
+    register(
+        array_family,
+        "__new__",
+        _terminal_closure(
+            "fixed",
+            "gwpy-common-keyword-constructor",
+            "tests/test_gwpy_constructor_terminal_compat.py::test_array_family_common_keyword_route_matches_gwpy",
+            pre_fix=(
+                "GWexpy constructor extensions occupied or hid GWpy constructor "
+                "slots and rejected parent-supported calling forms."
+            ),
+            comparator="exact-constructor-result-and-binding",
+        ),
+    )
+    register(
+        array2d_family,
+        "__new__",
+        _terminal_closure(
+            "fixed",
+            "gwpy-full-positional-constructor-prefix",
+            "tests/test_gwpy_constructor_terminal_compat.py::test_array2d_family_full_positional_prefix_matches_gwpy",
+            pre_fix=(
+                "GWexpy axis-name extensions occupied GWpy positional constructor "
+                "slots and hid the remaining parent prefix."
+            ),
+            comparator="exact-constructor-result-and-binding",
+        ),
+    )
+    register(
+        "gwexpy.frequencyseries.frequencyseries.FrequencySeries",
+        "__new__",
+        _terminal_closure(
+            "no-finding",
+            "common-frequencyseries-constructor",
+            "tests/test_gwpy_constructor_terminal_compat.py::test_frequencyseries_common_constructor_matches_gwpy",
+            comparator="exact-constructor-result-and-binding",
+        ),
+    )
+    register(
+        "gwexpy.timeseries.timeseries.TimeSeries",
+        "__new__",
+        _terminal_closure(
+            "fixed",
+            "complete-gwpy-timeseries-constructor-prefix",
+            "tests/timeseries/test_constructor_compat.py::test_constructor_every_gwpy_positional_prefix_matches",
+            pre_fix=(
+                "The override hid the GWpy positional prefix and normalized some "
+                "parent-supported epochs before dispatch."
+            ),
+            comparator="exact-constructor-result-and-binding",
+        ),
+    )
+    register(
+        ("gwexpy.plot.plot.Plot", "gwexpy.plot.field.FieldPlot"),
+        "__init__",
+        _terminal_closure(
+            "no-finding",
+            "data-bearing-plot-constructor",
+            "tests/test_gwpy_constructor_terminal_compat.py::test_plot_family_data_constructor_matches_gwpy",
+            comparator="exact-constructor-result-and-binding",
+        ),
+    )
+    register(
+        "gwexpy.plot.skymap.SkyMap",
+        "__init__",
+        _terminal_closure(
+            "fixed",
+            "data-bearing-skymap-constructor",
+            "tests/plot/test_skymap_gwpy_constructor_compat.py::test_skymap_accepts_parent_timeseries_constructor_surface",
+            pre_fix=(
+                "SkyMap injected an all-sky projection into a GWpy-valid "
+                "data-bearing constructor and raised AttributeError."
+            ),
+            comparator="exact-constructor-result-and-binding",
+        ),
+    )
+
+    register(
+        statistics_classes,
+        ("max", "mean", "median", "min", "std", "var"),
+        _terminal_closure(
+            "fixed",
+            "finite-and-nonfinite-default-reduction",
+            "tests/types/test_gwpy_stats_compat.py::test_shared_statistics_default_matches_gwpy_nonfinite_behavior",
+            pre_fix=(
+                "Shared reductions changed GWpy default non-finite behavior, "
+                "result metadata, or public calling forms."
+            ),
+            comparator="exact-reduction-values-masks-and-metadata",
+        ),
+    )
+
+    register(
+        array_family,
+        "T",
+        _terminal_closure(
+            "no-finding",
+            "reverse-axis-property",
+            "tests/test_gwpy_override_inventory.py::test_terminal_array_family_T_matches_gwpy",
+            comparator="exact-axis-permutation-result",
+        ),
+    )
+    register(
+        array_family,
+        "swapaxes",
+        _terminal_closure(
+            "fixed",
+            "numeric-axis-swap",
+            "tests/types/test_gwpy_override_terminal_compat.py::test_axis_api_numeric_swapaxes_matches_gwpy",
+            pre_fix=(
+                "The shared axis route copied same-axis results, rejected NumPy "
+                "integer axes, and raised IndexError where GWpy raises AxisError."
+            ),
+            comparator="exact-axis-permutation-result",
+        ),
+    )
+    register(
+        array_family,
+        "transpose",
+        _terminal_closure(
+            "fixed",
+            "numeric-axis-transpose",
+            "tests/types/test_gwpy_override_terminal_compat.py::test_axis_api_numeric_transpose_matches_gwpy",
+            pre_fix=(
+                "The shared axis route rejected GWpy-supported None and sequence "
+                "arguments and changed identity, NumPy-integer, or failure outcomes."
+            ),
+            comparator="exact-axis-permutation-result",
+        ),
+    )
+    register(
+        array2d_family,
+        "T",
+        _terminal_closure(
+            "no-finding",
+            "array2d-transpose-property",
+            "tests/types/test_gwpy_override_terminal_compat.py::test_array2d_T_keeps_gwpy_swapped_metadata_contract",
+            comparator="exact-axis-permutation-result",
+        ),
+    )
+    register(
+        array2d_family,
+        "swapaxes",
+        _terminal_closure(
+            "fixed",
+            "array2d-numeric-axis-swap",
+            "tests/types/test_gwpy_override_terminal_compat.py::test_array2d_numeric_swapaxes_matches_gwpy",
+            pre_fix=(
+                "Numeric Array2D-family permutations rewrote axis metadata instead "
+                "of preserving the installed GWpy result."
+            ),
+            comparator="exact-axis-permutation-result",
+        ),
+    )
+    register(
+        array2d_family,
+        "transpose",
+        _terminal_closure(
+            "fixed",
+            "array2d-numeric-axis-transpose",
+            "tests/types/test_gwpy_override_terminal_compat.py::test_array2d_numeric_transpose_matches_gwpy",
+            pre_fix=(
+                "Numeric Array2D-family permutations rewrote axis metadata instead "
+                "of preserving the installed GWpy result."
+            ),
+            comparator="exact-axis-permutation-result",
+        ),
+    )
+    register(
+        "gwexpy.fields.scalar.ScalarField",
+        "diff",
+        _terminal_closure(
+            "fixed",
+            "numeric-finite-difference",
+            "tests/types/test_gwpy_override_terminal_compat.py::test_scalarfield_diff_common_route_matches_gwpy",
+            pre_fix=(
+                "ScalarField.diff hid the GWpy finite-difference surface behind "
+                "a field-comparison operation."
+            ),
+            comparator="exact-values-shape-unit-and-axes",
+        ),
+    )
+    register(
+        "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap",
+        "diagonal",
+        _terminal_closure(
+            "fixed",
+            "numeric-diagonal-view",
+            "tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_diagonal_common_numeric_routes_match_gwpy",
+            pre_fix=(
+                "BifrequencyMap.diagonal selected its binned extension by default "
+                "instead of the GWpy Array2D diagonal view."
+            ),
+            comparator="exact-values-metadata-and-view-sharing",
+        ),
+    )
+    register(
+        "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap",
+        "crop",
+        _terminal_closure(
+            "fixed",
+            "single-axis-common-crop",
+            "tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_crop_common_route_matches_gwpy",
+            pre_fix=(
+                "BifrequencyMap.crop always selected two axes and exposed copy in "
+                "a calling form that diverged from GWpy."
+            ),
+            comparator="exact-values-metadata-and-memory",
+        ),
+    )
+    register(
+        "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap",
+        "plot",
+        _terminal_closure(
+            "fixed",
+            "common-bifrequency-plot-route",
+            "tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_plot_common_routes_match_gwpy_artist_source_and_label",
+            pre_fix=(
+                "BifrequencyMap.plot failed for unnamed data and changed the GWpy "
+                "artist route, source orientation, or keyword ownership."
+            ),
+            comparator="exact-plot-outcome-and-artist-source",
+        ),
+    )
+
+    plot_surface_references = {
+        "gwexpy.plot.plot.Plot": "test_plot_set_matches_gwpy",
+        "gwexpy.plot.field.FieldPlot": "test_fieldplot_set_matches_gwpy",
+        "gwexpy.plot.skymap.SkyMap": "test_skymap_set_matches_gwpy",
+    }
+    for public_class, node in plot_surface_references.items():
+        register(
+            public_class,
+            "set",
+            _terminal_closure(
+                "no-finding",
+                "figure-property-update",
+                f"tests/plot/test_gwpy_override_terminal_plot.py::{node}",
+                comparator="exact-binding-outcome-and-figure-state",
+            ),
+        )
+        register(
+            public_class,
+            "show",
+            _terminal_closure(
+                "fixed",
+                "gwpy-positional-show-surface",
+                "tests/test_gwpy_override_inventory.py::test_terminal_plot_show_lifecycle_matches_gwpy",
+                pre_fix=(
+                    "The close extension occupied a GWpy positional slot and the "
+                    "default closed figures that GWpy leaves open."
+                ),
+                comparator="exact-show-binding-and-lifecycle",
+            ),
+        )
+
+    image_rows = {
+        "gwexpy.types.array2d.Array2D": {
+            "imshow": "test_array2d_imshow_matches_gwpy",
+            "pcolormesh": "test_array2d_pcolormesh_matches_gwpy",
+        },
+        "gwexpy.types.plane2d.Plane2D": {
+            "imshow": "test_plane2d_imshow_matches_gwpy",
+            "pcolormesh": "test_plane2d_pcolormesh_matches_gwpy",
+        },
+        "gwexpy.spectrogram.spectrogram.Spectrogram": {
+            "imshow": "test_spectrogram_imshow_matches_gwpy",
+            "pcolormesh": "test_spectrogram_pcolormesh_matches_gwpy",
+        },
+    }
+    for public_class, members in image_rows.items():
+        for member, node in members.items():
+            register(
+                public_class,
+                member,
+                _terminal_closure(
+                    "no-finding",
+                    "finite-and-nonfinite-image-artist",
+                    f"tests/plot/test_gwpy_override_terminal_plot.py::{node}",
+                    comparator="exact-binding-outcome-and-artist-source",
+                ),
+            )
+
+    register(
+        (
+            "gwexpy.timeseries.timeseries.TimeSeries",
+            "gwexpy.frequencyseries.frequencyseries.FrequencySeries",
+            "gwexpy.spectrogram.spectrogram.Spectrogram",
+            "gwexpy.timeseries.collections.TimeSeriesDict",
+        ),
+        "plot",
+        _terminal_closure(
+            "fixed",
+            "supported-positional-plot-prefix",
+            "tests/plot/test_gwpy_phase4_compat.py::test_every_supported_positional_prefix_matches_gwpy",
+            issues=("#639", "#704", "#706"),
+            pre_fix=(
+                "The override signatures and positional routing displaced GWpy plot "
+                "arguments or changed success and failure outcomes."
+            ),
+            comparator="exact-binding-and-plot-outcome",
+        ),
+    )
+
+    io_rows = {
+        "gwexpy.timeseries.timeseries.TimeSeries": {
+            "read": ("test_timeseries_read_matches_gwpy", "#700"),
+            "write": ("test_timeseries_write_matches_gwpy", "#700"),
+        },
+        "gwexpy.timeseries.collections.TimeSeriesDict": {
+            "read": ("test_timeseriesdict_read_matches_gwpy", "#611"),
+            "write": ("test_timeseriesdict_write_matches_gwpy", "#611"),
+        },
+        "gwexpy.frequencyseries.frequencyseries.FrequencySeries": {
+            "read": ("test_frequencyseries_read_matches_gwpy", "#701"),
+            "write": ("test_frequencyseries_write_matches_gwpy", "#701"),
+        },
+    }
+    for public_class, members in io_rows.items():
+        for member, (node, issue) in members.items():
+            register(
+                public_class,
+                member,
+                _terminal_closure(
+                    "fixed",
+                    f"native-{member}-route",
+                    f"tests/io/test_gwpy_override_terminal_io.py::{node}",
+                    issues=("#639", issue, "#704"),
+                    pre_fix=(
+                        f"The {member} override changed GWpy native routing, data, "
+                        "metadata, or failure outcomes for ordinary inputs."
+                    ),
+                    comparator="exact-io-outcome-payload-and-metadata",
+                ),
+            )
+
+    timeseries = "gwexpy.timeseries.timeseries.TimeSeries"
+    timeseries_terminal = {
+        "copy": (
+            "no-finding",
+            "array-copy-order-C",
+            "tests/timeseries/test_gwpy_override_terminal_compat.py"
+            "::test_timeseries_copy_orders_match_gwpy",
+            None,
+            "exact-values-metadata-binding-and-outcome",
+            None,
+            None,
+        ),
+        "crop": (
+            "fixed",
+            "third-positional-copy-rejection",
+            "tests/timeseries/test_gwpy_override_terminal_compat.py"
+            "::test_timeseries_crop_copy_is_keyword_only_like_gwpy",
+            "GWexpy accepted a third positional copy argument that GWpy "
+            "rejected with TypeError.",
+            "exact-call-outcome-and-exception-class",
+            {
+                "gwexpy": {
+                    "exception_class": "TypeError",
+                    "outcome": "exception",
+                },
+                "gwpy": {"exception_class": "TypeError", "outcome": "exception"},
+            },
+            {
+                "gwexpy": {"outcome": "return"},
+                "gwpy": {"exception_class": "TypeError", "outcome": "exception"},
+            },
+        ),
+        "append": (
+            "fixed",
+            "gwpy-append-parameter-layout",
+            "tests/timeseries/test_gwpy_override_terminal_compat.py"
+            "::test_timeseries_append_parameter_layout_matches_gwpy",
+            "GWexpy exposed pad before gap in the public keyword-only parameter "
+            "layout, unlike GWpy.",
+            "exact-parameter-layout",
+            None,
+            None,
+        ),
+        "t0": (
+            "fixed",
+            "none-epoch-setter",
+            "tests/timeseries/test_exact_gps_epoch.py"
+            "::test_epoch_setters_accept_none_and_clear_exact_authority[t0]",
+            "GWexpy rejected a GWpy-supported None t0 assignment with TypeError.",
+            "exact-setter-outcome-and-metadata",
+            None,
+            {
+                "gwexpy": {
+                    "exception_class": "TypeError",
+                    "outcome": "exception",
+                },
+                "gwpy": {"outcome": "return"},
+            },
+        ),
+        "x0": (
+            "fixed",
+            "none-epoch-setter",
+            "tests/timeseries/test_exact_gps_epoch.py"
+            "::test_epoch_setters_accept_none_and_clear_exact_authority[x0]",
+            "GWexpy rejected a GWpy-supported None x0 assignment with TypeError.",
+            "exact-setter-outcome-and-metadata",
+            None,
+            {
+                "gwexpy": {
+                    "exception_class": "TypeError",
+                    "outcome": "exception",
+                },
+                "gwpy": {"outcome": "return"},
+            },
+        ),
+        "spectrogram": (
+            "fixed",
+            "gwpy-spectrogram-parameter-layout",
+            "tests/timeseries/test_gwpy_override_terminal_compat.py"
+            "::test_timeseries_spectrogram_parameter_layout_matches_gwpy",
+            "GWexpy hid the public GWpy spectrogram parameter layout behind "
+            "variadic arguments.",
+            "exact-parameter-layout",
+            None,
+            None,
+        ),
+        "spectrogram2": (
+            "fixed",
+            "gwpy-spectrogram2-parameter-layout",
+            "tests/timeseries/test_gwpy_override_terminal_compat.py"
+            "::test_timeseries_spectrogram2_parameter_layout_matches_gwpy",
+            "GWexpy hid the public GWpy spectrogram2 parameter layout behind "
+            "variadic arguments.",
+            "exact-parameter-layout",
+            None,
+            None,
+        ),
+    }
+    for member, (
+        state,
+        fixture,
+        reference,
+        pre_fix,
+        comparator,
+        observations,
+        pre_fix_observations,
+    ) in timeseries_terminal.items():
+        register(
+            timeseries,
+            member,
+            _terminal_closure(
+                state,
+                fixture,
+                reference,
+                pre_fix=pre_fix,
+                comparator=comparator,
+                observations=observations,
+                pre_fix_observations=pre_fix_observations,
+            ),
+        )
+
+    register(
+        timeseries,
+        ("dt", "dx"),
+        _terminal_closure(
+            "no-finding",
+            "cadence-set-copy-and-slice",
+            "tests/timeseries/test_exact_gps_epoch.py::test_cadence_setters_synchronize_exact_interval_for_copy_and_slice",
+            comparator="exact-cadence-property-outcome",
+        ),
+    )
+
+    collection = "gwexpy.timeseries.collections.TimeSeriesDict"
+    collection_terminal = {
+        "append": (
+            "fixed",
+            "invalid-copy-key-mapping",
+            "test_timeseriesdict_append_invalid_copy_key_matches_gwpy_without_mutation",
+            "GWexpy removed an invalid copy key from the input mapping and "
+            "suppressed the ValueError raised by GWpy.",
+            "exact-call-outcome-mutation-and-exception-class",
+            {
+                "gwexpy": {
+                    "exception_class": "ValueError",
+                    "outcome": "exception",
+                },
+                "gwpy": {"exception_class": "ValueError", "outcome": "exception"},
+            },
+            {
+                "gwexpy": {"outcome": "return"},
+                "gwpy": {"exception_class": "ValueError", "outcome": "exception"},
+            },
+        ),
+        "crop": (
+            "fixed",
+            "third-positional-copy-rejection",
+            "test_timeseriesdict_crop_copy_is_keyword_only_like_gwpy",
+            "GWexpy accepted a third positional copy argument that GWpy "
+            "rejected with TypeError.",
+            "exact-call-outcome-and-exception-class",
+            {
+                "gwexpy": {
+                    "exception_class": "TypeError",
+                    "outcome": "exception",
+                },
+                "gwpy": {"exception_class": "TypeError", "outcome": "exception"},
+            },
+            {
+                "gwexpy": {"outcome": "return"},
+                "gwpy": {"exception_class": "TypeError", "outcome": "exception"},
+            },
+        ),
+        "resample": (
+            "no-finding",
+            "mapping-numeric-resample",
+            "test_timeseriesdict_numeric_resample_matches_gwpy",
+            None,
+            "exact-collection-values-metadata-and-mutation",
+            None,
+            None,
+        ),
+    }
+    for member, (
+        state,
+        fixture,
+        node,
+        pre_fix,
+        comparator,
+        observations,
+        pre_fix_observations,
+    ) in collection_terminal.items():
+        register(
+            collection,
+            member,
+            _terminal_closure(
+                state,
+                fixture,
+                f"tests/timeseries/test_gwpy_override_terminal_compat.py::{node}",
+                pre_fix=pre_fix,
+                comparator=comparator,
+                observations=observations,
+                pre_fix_observations=pre_fix_observations,
+            ),
+        )
+    register(
+        collection,
+        "prepend",
+        _terminal_closure(
+            "fixed",
+            "key-wise-mapping-prepend",
+            "tests/timeseries/test_collections_batch.py::test_timeseriesdict_prepend_is_key_wise_like_gwpy",
+            pre_fix=(
+                "The collection override broadcast a single series instead of "
+                "performing GWpy-compatible key-wise mapping prepend semantics."
+            ),
+            comparator="exact-collection-values-metadata-and-mutation",
+        ),
+    )
+
+    signal_rows = {
+        "heterodyne": (
+            "test_heterodyne_matches_gwpy_values_and_metadata",
+            "The override changed output units, phase failure classes, stride "
+            "semantics, public binding, and exact output cadence.",
+            ("#639", "#704"),
+        ),
+        "demodulate": (
+            "test_demodulate_matches_gwpy_values_and_metadata",
+            "The override changed binding, output units, Quantity semantics, and "
+            "exact output cadence relative to GWpy.",
+            ("#639", "#704"),
+        ),
+        "rms": (
+            "test_rms_default_matches_gwpy_values_and_metadata",
+            "The override omitted NaNs by default and changed naming, numerical, "
+            "failure, and exact-time outcomes.",
+            ("#451", "#639", "#704"),
+        ),
+    }
+    for member, (node, pre_fix, issues) in signal_rows.items():
+        register(
+            timeseries,
+            member,
+            _terminal_closure(
+                "fixed",
+                f"default-{member}-route",
+                f"tests/timeseries/test_gwpy_audit_signal_compat.py::{node}",
+                issues=issues,
+                pre_fix=pre_fix,
+                comparator="exact-values-nonfinite-masks-and-metadata",
+            ),
+        )
+    register(
+        timeseries,
+        "resample",
+        _terminal_closure(
+            "fixed",
+            "gwpy-resample-parameter-layout",
+            "tests/timeseries/test_gwpy_audit_signal_compat.py"
+            "::test_resample_signature_keeps_gwpy_positional_layout",
+            issues=("#639", "#703", "#704"),
+            pre_fix=(
+                "GWexpy hid the GWpy window, ftype, and n parameters behind "
+                "variadic arguments."
+            ),
+            comparator="exact-parameter-layout",
+        ),
+    )
+
+    register(
+        "gwexpy.frequencyseries.frequencyseries.FrequencySeries",
+        "ifft",
+        _terminal_closure(
+            "fixed",
+            "large-epoch-high-rate-ifft",
+            "tests/frequencyseries/test_ifft_gwpy_compat.py::test_ifft_default_preserves_parent_axis_shape_and_values",
+            issues=("#639", "#703", "#704"),
+            pre_fix=(
+                "The override reconstructed cadence from absolute times, quantizing "
+                "high-rate metadata and collapsing ten-megahertz cadence."
+            ),
+            comparator="exact-values-shape-dtype-and-axis-metadata",
+        ),
+    )
+    for member in ("fft", "psd", "asd", "coherence"):
+        register(
+            timeseries,
+            member,
+            _terminal_closure(
+                "fixed",
+                "true-irregular-seconds",
+                "tests/timeseries/test_spectral_gwpy_phase3_compat.py"
+                "::test_true_irregular_axis_preserves_parent_failure_class"
+                f"[{member}-seconds]",
+                issues=("#639", "#703", "#704"),
+                pre_fix=(
+                    "Phase 3 classifies this fixture as GWpy-fails for upstream "
+                    "support; the override inventory classifies the row as fixed "
+                    "because GWexpy previously replaced GWpy's AttributeError "
+                    "with ValueError."
+                ),
+                comparator="exact-failure-outcome-and-exception-class",
+                observations={
+                    "gwexpy": {
+                        "exception_class": "AttributeError",
+                        "outcome": "exception",
+                    },
+                    "gwpy": {
+                        "exception_class": "AttributeError",
+                        "outcome": "exception",
+                    },
+                },
+                pre_fix_observations={
+                    "gwexpy": {
+                        "exception_class": "ValueError",
+                        "outcome": "exception",
+                    },
+                    "gwpy": {
+                        "exception_class": "AttributeError",
+                        "outcome": "exception",
+                    },
+                },
+            ),
+        )
+    register(
+        timeseries,
+        "csd",
+        _terminal_closure(
+            "fixed",
+            "mixed-unit-default-csd",
+            "tests/timeseries/test_spectral_gwpy_phase3_compat.py::test_csd_default_preserves_the_parent_result",
+            issues=("#639", "#698", "#704"),
+            pre_fix="The default CSD route changed the unit selected by GWpy.",
+            comparator="exact-spectral-values-unit-and-metadata",
+        ),
+    )
+    register(
+        timeseries,
+        "rayleigh_spectrogram",
+        _terminal_closure(
+            "fixed",
+            "odd-recommended-overlap-rayleigh",
+            "tests/timeseries/test_spectral_gwpy_phase3_compat.py::test_rayleigh_spectrogram_default_preserves_the_parent_result",
+            issues=("#639", "#699", "#704"),
+            pre_fix=(
+                "The default Rayleigh route used a corrected segment selection "
+                "instead of the installed GWpy selection."
+            ),
+            comparator="exact-spectral-values-unit-and-metadata",
+        ),
+    )
+    register(
+        timeseries,
+        "transfer_function",
+        _terminal_closure(
+            "fixed",
+            "steady-default-transfer",
+            "tests/timeseries/test_spectral_gwpy_phase3_compat.py::test_steady_transfer_default_preserves_the_parent_result",
+            issues=("#639", "#702", "#704"),
+            pre_fix=(
+                "The steady transfer route changed GWpy unit, name, channel, or "
+                "epoch metadata and zero-denominator behavior."
+            ),
+            comparator="exact-spectral-values-nonfinite-masks-and-metadata",
+        ),
+    )
+
+    return dict(sorted(closures.items(), key=lambda item: item[0].encode("utf-8")))
+
+
+TERMINAL_CLOSURES = _build_terminal_closures()
 
 
 def canonical_compact_json(value: Any) -> str:
@@ -685,11 +1498,7 @@ def build_oracle_projection(
 
 def _worker_main() -> int:
     try:
-        payload = json.load(
-            sys.stdin,
-            object_pairs_hook=_reject_duplicate_pairs,
-            parse_constant=_reject_non_finite_constant,
-        )
+        payload = decode_json_strict(sys.stdin.read())
         if not isinstance(payload, dict):
             raise InventoryError("oracle payload must be an object")
         if (
@@ -732,13 +1541,27 @@ def _reject_non_finite_constant(value: str) -> None:
     raise InventoryError(f"non-finite JSON constant: {value}")
 
 
+def _parse_finite_json_float(value: str) -> float:
+    parsed = float(value)
+    if not math.isfinite(parsed):
+        raise InventoryError(f"non-finite JSON float: {value}")
+    return parsed
+
+
+def decode_json_strict(value: str) -> Any:
+    """Decode JSON with duplicate and all non-finite numbers rejected."""
+
+    return json.loads(
+        value,
+        object_pairs_hook=_reject_duplicate_pairs,
+        parse_constant=_reject_non_finite_constant,
+        parse_float=_parse_finite_json_float,
+    )
+
+
 def load_json_strict(path: Path) -> dict[str, Any]:
     try:
-        loaded = json.loads(
-            path.read_text(encoding="utf-8"),
-            object_pairs_hook=_reject_duplicate_pairs,
-            parse_constant=_reject_non_finite_constant,
-        )
+        loaded = decode_json_strict(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise InventoryError(f"cannot load manifest: {type(exc).__name__}") from exc
     if not isinstance(loaded, dict):
@@ -813,11 +1636,7 @@ def run_pristine_oracle(
         message = completed.stderr.strip() or f"exit {completed.returncode}"
         raise InventoryError(message)
     try:
-        projection = json.loads(
-            completed.stdout,
-            object_pairs_hook=_reject_duplicate_pairs,
-            parse_constant=_reject_non_finite_constant,
-        )
+        projection = decode_json_strict(completed.stdout)
     except json.JSONDecodeError as exc:
         raise InventoryError("oracle stdout is not canonical JSON") from exc
     if completed.stdout != canonical_compact_json(projection) + "\n":
@@ -926,6 +1745,21 @@ def calculate_summary(
     }
 
 
+def require_terminal_cases(cases: Sequence[Mapping[str, Any]]) -> None:
+    """Fail with stable counts when any provisional inventory cases remain."""
+
+    counts = {
+        state: sum(case.get("state") == state for case in cases)
+        for state in PROVISIONAL_STATES
+    }
+    if any(counts.values()):
+        raise InventoryError(
+            "provisional states remain: "
+            f"differential-required={counts['differential-required']}, "
+            f"unreviewed={counts['unreviewed']}"
+        )
+
+
 def _manifest_policy() -> dict[str, Any]:
     return {
         "behavioral_owner": AUDIT_OWNER,
@@ -938,6 +1772,44 @@ def _manifest_policy() -> dict[str, Any]:
         "public_root_rule": PUBLIC_ROOT_RULE,
         "terminal_states": list(TERMINAL_STATES),
         "upstream_dependency_provenance": UPSTREAM_DEPENDENCY_PROVENANCE,
+    }
+
+
+def _terminal_case_fields(
+    closure: Mapping[str, Any], projection_digest: str
+) -> dict[str, Any]:
+    """Materialize a reviewed closure without sharing mutable manifest values."""
+
+    state = str(closure["state"])
+    behavior = [
+        {"reference": str(reference)} for reference in closure.get("behavior", ())
+    ]
+    evidence: dict[str, Any] = {
+        "behavior": behavior,
+        "oracle_projection_digest": projection_digest,
+    }
+    if state == "fixed":
+        reference = str(closure["behavior"][0])
+        pre_fix_observations = copy.deepcopy(closure["pre_fix_observations"])
+        pre_fix_observations["gwexpy"].setdefault("detail", str(closure["pre_fix"]))
+        evidence.update(
+            {
+                "green_test": {"reference": reference},
+                "pre_fix_mismatch": {
+                    "gwexpy": pre_fix_observations["gwexpy"],
+                    "gwpy": pre_fix_observations["gwpy"],
+                    "reference": reference,
+                },
+            }
+        )
+    return {
+        "comparator": {"name": str(closure["comparator"])},
+        "evidence": evidence,
+        "fixture": str(closure["fixture"]),
+        "issues": list(closure["issues"]),
+        "observations": copy.deepcopy(closure["observations"]),
+        "owner": AUDIT_OWNER,
+        "state": state,
     }
 
 
@@ -957,51 +1829,66 @@ def build_manifest(
             projection = projections[oracle_version]
             counterpart = projection_maps[oracle_version][member["member_id"]]
             if counterpart["present"]:
-                fixture = PENDING_FIXTURE
-                state = "differential-required"
-                comparator = {"name": "pending"}
-                observations = {
-                    "gwexpy": {"outcome": "pending"},
-                    "gwpy": {"outcome": "pending"},
-                }
-                owner: str | None = AUDIT_OWNER
+                closure = TERMINAL_CLOSURES.get(str(member["member_id"]))
+                if closure is None:
+                    fields = {
+                        "comparator": {"name": "pending"},
+                        "evidence": {
+                            "behavior": [],
+                            "oracle_projection_digest": projection["digest"],
+                        },
+                        "fixture": PENDING_FIXTURE,
+                        "issues": ["#639"],
+                        "observations": {
+                            "gwexpy": {"outcome": "pending"},
+                            "gwpy": {"outcome": "pending"},
+                        },
+                        "owner": AUDIT_OWNER,
+                        "state": "differential-required",
+                    }
+                else:
+                    fields = _terminal_case_fields(closure, str(projection["digest"]))
             else:
-                fixture = ABSENT_FIXTURE
-                state = "GWexpy-only"
-                comparator = {"name": "counterpart-absence"}
-                observations = {
-                    "gwexpy": {
-                        "kind": member["kind"],
-                        "outcome": "attribute-present",
+                fields = {
+                    "comparator": {"name": "counterpart-absence"},
+                    "evidence": {
+                        "behavior": [],
+                        "oracle_projection_digest": projection["digest"],
                     },
-                    "gwpy": {"outcome": "attribute-absent"},
+                    "fixture": ABSENT_FIXTURE,
+                    "issues": ["#639"],
+                    "observations": {
+                        "gwexpy": {
+                            "kind": member["kind"],
+                            "outcome": "attribute-present",
+                        },
+                        "gwpy": {"outcome": "attribute-absent"},
+                    },
+                    "owner": None,
+                    "state": "GWexpy-only",
                 }
-                owner = None
             case = {
                 "case_key": "/".join(
                     (
                         str(member["public_class"]),
                         str(member["member"]),
                         oracle_version,
-                        fixture,
+                        str(fields["fixture"]),
                     )
                 ),
-                "comparator": comparator,
+                "comparator": fields["comparator"],
                 "counterpart_present": bool(counterpart["present"]),
-                "evidence": {
-                    "behavior": [],
-                    "oracle_projection_digest": projection["digest"],
-                },
-                "fixture": fixture,
+                "evidence": fields["evidence"],
+                "fixture": fields["fixture"],
                 "gwpy_version": oracle_version,
                 "implementation_group": groups[(member["member_id"], oracle_version)],
-                "issues": ["#639"],
+                "issues": fields["issues"],
                 "member": member["member"],
                 "member_id": member["member_id"],
-                "observations": observations,
-                "owner": owner,
+                "observations": fields["observations"],
+                "owner": fields["owner"],
                 "public_class": member["public_class"],
-                "state": state,
+                "state": fields["state"],
             }
             cases.append(case)
     cases.sort(key=_case_sort_key)
@@ -1024,6 +1911,16 @@ def build_manifest(
 def _require(condition: bool, message: str) -> None:
     if not condition:
         raise InventoryError(message)
+
+
+def _validate_recursive_finite(value: Any) -> None:
+    _require(
+        not any(
+            isinstance(item, float) and not math.isfinite(item)
+            for item in walk_manifest_values(value)
+        ),
+        "manifest contains non-finite float",
+    )
 
 
 def _validate_projection(oracle_version: str, projection: Mapping[str, Any]) -> None:
@@ -1094,6 +1991,145 @@ def _validate_projection(oracle_version: str, projection: Mapping[str, Any]) -> 
                 )
 
 
+def _is_nonempty_string(value: Any) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
+def _validate_test_reference_text(value: Any, label: str) -> None:
+    _require(_is_nonempty_string(value), f"{label} reference must be a string")
+    assert isinstance(value, str)
+    _require(value == value.strip(), f"{label} reference is not canonical")
+    path_text, separator, selector = value.partition("::")
+    _require(separator == "::" and bool(selector.strip()), f"{label} selector missing")
+    _require(selector == selector.strip(), f"{label} selector is not canonical")
+    _require("\\" not in path_text, f"{label} reference is not POSIX-relative")
+    relative = PurePosixPath(path_text)
+    _require(
+        not relative.is_absolute()
+        and relative.as_posix() == path_text
+        and relative.parts
+        and relative.parts[0] == "tests"
+        and relative.suffix == ".py"
+        and all(part not in {"", ".", ".."} for part in relative.parts),
+        f"{label} reference is not a canonical repo-relative test path",
+    )
+    repository = Path(__file__).resolve().parents[1]
+    referenced = (repository / Path(*relative.parts)).resolve()
+    try:
+        referenced.relative_to(repository)
+    except ValueError as exc:
+        raise InventoryError(f"{label} reference escapes repository") from exc
+    _require(referenced.is_file(), f"{label} reference file does not exist")
+
+
+def _validate_test_reference(value: Any, label: str) -> None:
+    _require(
+        isinstance(value, dict) and set(value) == {"reference"},
+        f"{label} reference schema mismatch",
+    )
+    _validate_test_reference_text(value["reference"], label)
+
+
+def _validate_typed_observation(value: Any, label: str) -> None:
+    _require(isinstance(value, dict), f"{label} observation must be an object")
+    outcome = value.get("outcome")
+    _require(
+        _is_nonempty_string(outcome) and outcome != "pending",
+        f"{label} observation outcome must be a concrete string",
+    )
+    exception_class = value.get("exception_class")
+    if outcome == "exception":
+        _require(
+            _is_nonempty_string(exception_class),
+            f"{label} exception_class must be a nonempty string",
+        )
+    elif "exception_class" in value:
+        _require(
+            _is_nonempty_string(exception_class),
+            f"{label} exception_class must be a nonempty string",
+        )
+
+
+def _validate_terminal_observations(value: Any, label: str) -> None:
+    _require(
+        isinstance(value, dict) and set(value) == {"gwpy", "gwexpy"},
+        f"{label} observation schema mismatch",
+    )
+    _validate_typed_observation(value["gwpy"], f"{label} gwpy")
+    _validate_typed_observation(value["gwexpy"], f"{label} gwexpy")
+
+
+def _validate_terminal_comparator(value: Any) -> None:
+    _require(isinstance(value, dict), "terminal comparator must be an object")
+    name = value.get("name")
+    _require(
+        _is_nonempty_string(name) and name != "pending",
+        "terminal comparator name must be a concrete string",
+    )
+    assert isinstance(name, str)
+    expected_keys = (
+        {"name", "rtol", "atol"} if name.startswith("approximate") else {"name"}
+    )
+    _require(set(value) == expected_keys, "terminal comparator schema mismatch")
+    if name.startswith("approximate"):
+        for tolerance in ("rtol", "atol"):
+            number = value[tolerance]
+            _require(
+                (type(number) is int and number >= 0)
+                or (type(number) is float and math.isfinite(number) and number >= 0),
+                f"terminal comparator {tolerance} must be finite and nonnegative",
+            )
+
+
+def _validate_terminal_issues(value: Any, *, fixed: bool) -> None:
+    _require(
+        isinstance(value, list)
+        and all(_is_nonempty_string(issue) for issue in value)
+        and "#639" in value,
+        "behavioral terminal issues must contain #639 strings",
+    )
+    if fixed:
+        _require(
+            any(issue != "#639" for issue in value),
+            "fixed case requires a specific issue reference beyond #639",
+        )
+
+
+def _validate_behavior_references(value: Any) -> None:
+    _require(
+        isinstance(value, list) and bool(value),
+        "behavioral terminal lacks differential evidence",
+    )
+    for index, reference in enumerate(value):
+        _validate_test_reference(reference, f"behavior[{index}]")
+
+
+def _validate_fixed_evidence(evidence: Mapping[str, Any]) -> None:
+    _require(
+        set(evidence)
+        == {
+            "behavior",
+            "green_test",
+            "oracle_projection_digest",
+            "pre_fix_mismatch",
+        },
+        "fixed evidence schema mismatch",
+    )
+    _validate_test_reference(evidence["green_test"], "green_test")
+    mismatch = evidence["pre_fix_mismatch"]
+    _require(
+        isinstance(mismatch, dict) and set(mismatch) == {"reference", "gwpy", "gwexpy"},
+        "pre_fix_mismatch schema mismatch",
+    )
+    _validate_test_reference_text(mismatch["reference"], "pre_fix_mismatch")
+    _validate_typed_observation(mismatch["gwpy"], "pre_fix_mismatch gwpy")
+    _validate_typed_observation(mismatch["gwexpy"], "pre_fix_mismatch gwexpy")
+    _require(
+        mismatch["gwpy"] != mismatch["gwexpy"],
+        "pre_fix_mismatch observations must differ",
+    )
+
+
 def _validate_case(
     case: Mapping[str, Any],
     members: Mapping[str, Mapping[str, Any]],
@@ -1101,6 +2137,10 @@ def _validate_case(
     projection_members: Mapping[str, Mapping[str, Mapping[str, Any]]],
     implementation_groups: Mapping[tuple[str, str], str | None],
 ) -> None:
+    _require(
+        isinstance(case, dict) and set(case) == CASE_KEYS,
+        "case schema mismatch",
+    )
     member_id = str(case.get("member_id"))
     _require(member_id in members, "orphan case member reference")
     member = members[member_id]
@@ -1119,9 +2159,14 @@ def _validate_case(
         == implementation_groups[(member_id, oracle_version)],
         "case implementation group mismatch",
     )
-    fixture = str(case.get("fixture"))
+    fixture = case.get("fixture")
     expected_key = "/".join(
-        (str(member["public_class"]), str(member["member"]), oracle_version, fixture)
+        (
+            str(member["public_class"]),
+            str(member["member"]),
+            oracle_version,
+            str(fixture),
+        )
     )
     _require(case.get("case_key") == expected_key, "case key mismatch")
     evidence = case.get("evidence")
@@ -1133,7 +2178,8 @@ def _validate_case(
     )
     behavior = evidence.get("behavior")
     _require(isinstance(behavior, list), "behavior evidence must be a list")
-    state = str(case.get("state"))
+    state = case.get("state")
+    _require(isinstance(state, str), "case state must be a string")
     _require(state in {*TERMINAL_STATES, *PROVISIONAL_STATES}, "unknown case state")
     if state == "GWexpy-only":
         _require(observed["present"] is False, "GWexpy-only counterpart is present")
@@ -1202,46 +2248,46 @@ def _validate_case(
     elif state in BEHAVIORAL_TERMINAL_STATES:
         _require(observed["present"] is True, "behavioral terminal lacks counterpart")
         _require(
-            fixture not in {ABSENT_FIXTURE, PENDING_FIXTURE},
-            "behavioral terminal has reserved fixture",
+            _is_nonempty_string(fixture)
+            and fixture not in {ABSENT_FIXTURE, PENDING_FIXTURE},
+            "behavioral terminal fixture must be concrete",
         )
-        _require(bool(behavior), "behavioral terminal lacks differential evidence")
-        _require(case.get("owner") is not None, "behavioral terminal lacks owner")
         _require(
-            case.get("comparator", {}).get("name") not in {None, "pending"},
-            "behavioral terminal lacks comparator",
+            _is_nonempty_string(case.get("owner")),
+            "behavioral terminal owner must be a nonempty string",
         )
+        _validate_terminal_issues(case.get("issues"), fixed=state == "fixed")
+        _validate_terminal_comparator(case.get("comparator"))
+        _validate_terminal_observations(case.get("observations"), state)
+        expected_evidence_keys = (
+            {
+                "behavior",
+                "green_test",
+                "oracle_projection_digest",
+                "pre_fix_mismatch",
+            }
+            if state == "fixed"
+            else {"behavior", "oracle_projection_digest"}
+        )
+        _require(
+            set(evidence) == expected_evidence_keys,
+            f"{state} evidence schema mismatch",
+        )
+        _validate_behavior_references(behavior)
         if state == "fixed":
-            issues = case.get("issues")
-            _require(
-                isinstance(issues, list)
-                and "#639" in issues
-                and any(
-                    isinstance(issue, str) and bool(issue.strip()) and issue != "#639"
-                    for issue in issues
-                ),
-                "fixed case requires a specific issue reference beyond #639",
-            )
-            _require(
-                bool(evidence.get("pre_fix_mismatch")),
-                "fixed case lacks pre-fix mismatch",
-            )
-            _require(bool(evidence.get("green_test")), "fixed case lacks green test")
+            _validate_fixed_evidence(evidence)
         if state == "GWpy-fails":
-            gwpy_observation = case.get("observations", {}).get("gwpy", {})
+            gwpy_observation = case["observations"]["gwpy"]
             _require(
                 gwpy_observation.get("outcome") == "exception",
                 "GWpy-fails lacks exception outcome",
-            )
-            _require(
-                bool(gwpy_observation.get("exception_class")),
-                "GWpy-fails lacks exception class",
             )
 
 
 def validate_manifest(manifest: Mapping[str, Any]) -> None:
     """Validate schema, references, ordering, digests, and state evidence."""
 
+    _validate_recursive_finite(manifest)
     _require(
         set(manifest)
         == {
@@ -1355,6 +2401,11 @@ def validate_manifest(manifest: Mapping[str, Any]) -> None:
                 "oracle/source member reference mismatch",
             )
     implementation_groups = _implementation_groups(members_list, projections)
+    for case in cases:
+        _require(
+            isinstance(case, dict) and set(case) == CASE_KEYS,
+            "case schema mismatch",
+        )
     _require(cases == sorted(cases, key=_case_sort_key), "cases are unsorted")
     case_keys = [case.get("case_key") for case in cases]
     _require(len(case_keys) == len(set(case_keys)), "duplicate case key")
@@ -1483,16 +2534,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     f"oracle projection drift for GWpy {oracle_version}"
                 )
         if args.require_terminal:
-            counts = {
-                state: sum(case["state"] == state for case in manifest["cases"])
-                for state in PROVISIONAL_STATES
-            }
-            if any(counts.values()):
-                raise InventoryError(
-                    "provisional states remain: "
-                    f"differential-required={counts['differential-required']}, "
-                    f"unreviewed={counts['unreviewed']}"
-                )
+            require_terminal_cases(manifest["cases"])
         print(
             "inventory check passed: "
             f"members={len(manifest['members'])}, "

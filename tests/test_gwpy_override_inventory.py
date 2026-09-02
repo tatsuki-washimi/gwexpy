@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import importlib
 import importlib.util
 import json
 import os
@@ -33,6 +34,28 @@ UPSTREAM_DEPENDENCY_PROVENANCE = (
     "NumPy/Astropy providers retain normalized provider, member, kind, "
     "descriptor, and signature without source path or resolved version."
 )
+CASE_KEYS = {
+    "case_key",
+    "comparator",
+    "counterpart_present",
+    "evidence",
+    "fixture",
+    "gwpy_version",
+    "implementation_group",
+    "issues",
+    "member",
+    "member_id",
+    "observations",
+    "owner",
+    "public_class",
+    "state",
+}
+TEST_REFERENCE = {
+    "reference": (
+        "tests/test_gwpy_override_inventory.py"
+        "::test_terminal_transition_with_case_derived_summary_is_valid"
+    )
+}
 EXPECTED_ROOTS = {
     "gwexpy.fields.scalar.ScalarField": (
         "gwexpy.fields.scalar:ScalarField",
@@ -124,10 +147,52 @@ def _run_cli(*arguments: str) -> subprocess.CompletedProcess[str]:
     )
 
 
-def _transition_pending_case(
-    manifest: dict[str, Any], state: str = "no-finding"
+def _make_present_case_pending(
+    manifest: dict[str, Any], case: dict[str, Any] | None = None
 ) -> dict[str, Any]:
-    case = next(item for item in manifest["cases"] if item["counterpart_present"])
+    """Turn one present terminal case into an exact synthetic pending case."""
+
+    if case is None:
+        case = next(
+            item
+            for item in manifest["cases"]
+            if item["counterpart_present"] and item["state"] == "fixed"
+        )
+    case["state"] = "differential-required"
+    case["fixture"] = "__pending_differential__"
+    case["case_key"] = "/".join(
+        (
+            case["public_class"],
+            case["member"],
+            case["gwpy_version"],
+            case["fixture"],
+        )
+    )
+    case["comparator"] = {"name": "pending"}
+    case["evidence"] = {
+        "behavior": [],
+        "oracle_projection_digest": manifest["oracle_projections"][
+            case["gwpy_version"]
+        ]["digest"],
+    }
+    case["observations"] = {
+        "gwexpy": {"outcome": "pending"},
+        "gwpy": {"outcome": "pending"},
+    }
+    case["issues"] = ["#639"]
+    case["owner"] = "v0.2.3-compatibility-audit"
+    return case
+
+
+def _transition_pending_case(
+    manifest: dict[str, Any],
+    state: str = "no-finding",
+    case: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if case is None:
+        case = _make_present_case_pending(manifest)
+    elif case["state"] not in {"differential-required", "unreviewed"}:
+        _make_present_case_pending(manifest, case)
     case["state"] = state
     case["fixture"] = "representative-behavior"
     case["case_key"] = "/".join(
@@ -140,7 +205,7 @@ def _transition_pending_case(
     )
     case["comparator"] = {"name": "exact"}
     case["evidence"] = {
-        "behavior": [{"assertion": "equivalent"}],
+        "behavior": [copy.deepcopy(TEST_REFERENCE)],
         "oracle_projection_digest": manifest["oracle_projections"][
             case["gwpy_version"]
         ]["digest"],
@@ -149,10 +214,433 @@ def _transition_pending_case(
         "gwexpy": {"outcome": "return", "value": "same"},
         "gwpy": {"outcome": "return", "value": "same"},
     }
+    case["issues"] = ["#639"]
+    case["owner"] = "v0.2.3-compatibility-audit"
+    if state == "GWpy-fails":
+        case["observations"]["gwpy"] = {
+            "exception_class": "ValueError",
+            "outcome": "exception",
+        }
+    elif state == "fixed":
+        case["issues"].append("#640")
+        case["evidence"].update(
+            {
+                "green_test": copy.deepcopy(TEST_REFERENCE),
+                "pre_fix_mismatch": {
+                    "gwexpy": {"outcome": "return", "value": "before"},
+                    "gwpy": {"outcome": "return", "value": "upstream"},
+                    "reference": TEST_REFERENCE["reference"],
+                },
+            }
+        )
     return case
 
 
-def test_manifest_has_initial_structural_population_and_canonical_json() -> None:
+def _refresh_summary(audit: ModuleType, manifest: dict[str, Any]) -> None:
+    manifest["summary"] = audit.calculate_summary(
+        manifest["cases"], manifest["members"], manifest["oracle_projections"]
+    )
+
+
+def _stored_population(manifest: dict[str, Any]) -> dict[str, Any]:
+    """Recreate the source-population input represented by a stored manifest."""
+
+    return {
+        "digest": manifest["population_digest"],
+        "members": manifest["members"],
+        "public_roots": manifest["public_roots"],
+    }
+
+
+def test_terminal_closure_catalog_covers_every_present_logical_member() -> None:
+    audit = _load_audit_module()
+    manifest = _load_manifest()
+    present_member_ids = {
+        item["member_id"]
+        for item in manifest["oracle_projections"]["4.0.2"]["members"]
+        if item["present"]
+    }
+
+    assert set(audit.TERMINAL_CLOSURES) == present_member_ids
+
+
+def test_manifest_builder_expands_terminal_closure_across_both_oracles() -> None:
+    audit = _load_audit_module()
+    stored = _load_manifest()
+    manifest = audit.build_manifest(
+        _stored_population(stored), stored["oracle_projections"]
+    )
+    present_cases = [case for case in manifest["cases"] if case["counterpart_present"]]
+
+    assert len(present_cases) == sum(
+        item["present"] for item in stored["oracle_projections"]["4.0.2"]["members"]
+    ) * len(SUPPORTED_GWPY)
+    assert {case["state"] for case in present_cases} <= {
+        "fixed",
+        "no-finding",
+        "GWpy-fails",
+    }
+    assert manifest["summary"]["differential-required"] == 0
+    assert manifest["summary"]["unreviewed"] == 0
+    audit.require_terminal_cases(manifest["cases"])
+    audit.validate_manifest(manifest)
+
+
+@pytest.mark.parametrize(
+    ("member_id", "state"),
+    [
+        ("gwexpy.types.array.Array/__new__", "fixed"),
+        (
+            "gwexpy.frequencyseries.frequencyseries.FrequencySeries/__new__",
+            "no-finding",
+        ),
+        ("gwexpy.timeseries.collections.TimeSeriesDict/prepend", "fixed"),
+        ("gwexpy.timeseries.timeseries.TimeSeries/heterodyne", "fixed"),
+        ("gwexpy.plot.plot.Plot/show", "fixed"),
+        ("gwexpy.plot.plot.Plot/set", "no-finding"),
+        ("gwexpy.types.array.Array/swapaxes", "fixed"),
+        ("gwexpy.fields.scalar.ScalarField/transpose", "fixed"),
+        ("gwexpy.types.array4d.Array4D/T", "no-finding"),
+    ],
+)
+def test_terminal_closure_catalog_pins_representative_decisions(
+    member_id: str, state: str
+) -> None:
+    audit = _load_audit_module()
+
+    closure = audit.TERMINAL_CLOSURES[member_id]
+    assert closure["state"] == state
+    assert closure["fixture"] not in {audit.ABSENT_FIXTURE, audit.PENDING_FIXTURE}
+    assert closure["behavior"]
+
+
+def test_terminal_closure_catalog_uses_direct_row_differential_evidence() -> None:
+    audit = _load_audit_module()
+    transpose_reference = (
+        "tests/test_gwpy_override_inventory.py"
+        "::test_terminal_array_family_T_matches_gwpy"
+    )
+    show_reference = (
+        "tests/test_gwpy_override_inventory.py"
+        "::test_terminal_plot_show_lifecycle_matches_gwpy"
+    )
+
+    for public_class in (
+        "gwexpy.fields.scalar.ScalarField",
+        "gwexpy.types.array.Array",
+        "gwexpy.types.array3d.Array3D",
+        "gwexpy.types.array4d.Array4D",
+    ):
+        assert audit.TERMINAL_CLOSURES[f"{public_class}/T"]["behavior"] == (
+            transpose_reference,
+        )
+    for public_class in (
+        "gwexpy.plot.field.FieldPlot",
+        "gwexpy.plot.plot.Plot",
+        "gwexpy.plot.skymap.SkyMap",
+    ):
+        assert audit.TERMINAL_CLOSURES[f"{public_class}/show"]["behavior"] == (
+            show_reference,
+        )
+
+
+@pytest.mark.parametrize(
+    ("member_id", "fixture", "reference", "comparator"),
+    [
+        pytest.param(
+            "gwexpy.timeseries.timeseries.TimeSeries/crop",
+            "third-positional-copy-rejection",
+            "tests/timeseries/test_gwpy_override_terminal_compat.py"
+            "::test_timeseries_crop_copy_is_keyword_only_like_gwpy",
+            "exact-call-outcome-and-exception-class",
+            id="timeseries-crop",
+        ),
+        pytest.param(
+            "gwexpy.timeseries.timeseries.TimeSeries/append",
+            "gwpy-append-parameter-layout",
+            "tests/timeseries/test_gwpy_override_terminal_compat.py"
+            "::test_timeseries_append_parameter_layout_matches_gwpy",
+            "exact-parameter-layout",
+            id="timeseries-append",
+        ),
+        pytest.param(
+            "gwexpy.timeseries.timeseries.TimeSeries/t0",
+            "none-epoch-setter",
+            "tests/timeseries/test_exact_gps_epoch.py"
+            "::test_epoch_setters_accept_none_and_clear_exact_authority[t0]",
+            "exact-setter-outcome-and-metadata",
+            id="timeseries-t0",
+        ),
+        pytest.param(
+            "gwexpy.timeseries.timeseries.TimeSeries/x0",
+            "none-epoch-setter",
+            "tests/timeseries/test_exact_gps_epoch.py"
+            "::test_epoch_setters_accept_none_and_clear_exact_authority[x0]",
+            "exact-setter-outcome-and-metadata",
+            id="timeseries-x0",
+        ),
+        pytest.param(
+            "gwexpy.timeseries.timeseries.TimeSeries/spectrogram",
+            "gwpy-spectrogram-parameter-layout",
+            "tests/timeseries/test_gwpy_override_terminal_compat.py"
+            "::test_timeseries_spectrogram_parameter_layout_matches_gwpy",
+            "exact-parameter-layout",
+            id="timeseries-spectrogram",
+        ),
+        pytest.param(
+            "gwexpy.timeseries.timeseries.TimeSeries/spectrogram2",
+            "gwpy-spectrogram2-parameter-layout",
+            "tests/timeseries/test_gwpy_override_terminal_compat.py"
+            "::test_timeseries_spectrogram2_parameter_layout_matches_gwpy",
+            "exact-parameter-layout",
+            id="timeseries-spectrogram2",
+        ),
+        pytest.param(
+            "gwexpy.timeseries.collections.TimeSeriesDict/crop",
+            "third-positional-copy-rejection",
+            "tests/timeseries/test_gwpy_override_terminal_compat.py"
+            "::test_timeseriesdict_crop_copy_is_keyword_only_like_gwpy",
+            "exact-call-outcome-and-exception-class",
+            id="timeseriesdict-crop",
+        ),
+        pytest.param(
+            "gwexpy.timeseries.collections.TimeSeriesDict/append",
+            "invalid-copy-key-mapping",
+            "tests/timeseries/test_gwpy_override_terminal_compat.py"
+            "::test_timeseriesdict_append_invalid_copy_key_matches_gwpy_without_mutation",
+            "exact-call-outcome-mutation-and-exception-class",
+            id="timeseriesdict-append",
+        ),
+        pytest.param(
+            "gwexpy.timeseries.timeseries.TimeSeries/resample",
+            "gwpy-resample-parameter-layout",
+            "tests/timeseries/test_gwpy_audit_signal_compat.py"
+            "::test_resample_signature_keeps_gwpy_positional_layout",
+            "exact-parameter-layout",
+            id="timeseries-resample",
+        ),
+    ],
+)
+def test_terminal_fixed_timeseries_evidence_uses_the_defect_fixture(
+    member_id: str,
+    fixture: str,
+    reference: str,
+    comparator: str,
+) -> None:
+    audit = _load_audit_module()
+    closure = audit.TERMINAL_CLOSURES[member_id]
+
+    assert closure["state"] == "fixed"
+    assert closure["fixture"] == fixture
+    assert closure["behavior"] == (reference,)
+    assert closure["comparator"] == comparator
+
+
+@pytest.mark.parametrize(
+    ("member", "reference"),
+    [
+        pytest.param(
+            member,
+            "tests/timeseries/test_spectral_gwpy_phase3_compat.py"
+            "::test_true_irregular_axis_preserves_parent_failure_class"
+            f"[{member}-seconds]",
+            id=member,
+        )
+        for member in ("fft", "psd", "asd", "coherence")
+    ],
+)
+def test_terminal_spectral_rows_use_the_concrete_fixed_failure_fixture(
+    member: str, reference: str
+) -> None:
+    audit = _load_audit_module()
+    closure = audit.TERMINAL_CLOSURES[
+        f"gwexpy.timeseries.timeseries.TimeSeries/{member}"
+    ]
+    fields = audit._terminal_case_fields(closure, "d" * 64)
+
+    assert closure["state"] == "fixed"
+    assert closure["fixture"] == "true-irregular-seconds"
+    assert closure["behavior"] == (reference,)
+    assert closure["comparator"] == "exact-failure-outcome-and-exception-class"
+    assert fields["observations"] == {
+        "gwexpy": {"exception_class": "AttributeError", "outcome": "exception"},
+        "gwpy": {"exception_class": "AttributeError", "outcome": "exception"},
+    }
+    mismatch = fields["evidence"]["pre_fix_mismatch"]
+    assert {
+        side: {key: value for key, value in mismatch[side].items() if key != "detail"}
+        for side in ("gwexpy", "gwpy")
+    } == {
+        "gwexpy": {"exception_class": "ValueError", "outcome": "exception"},
+        "gwpy": {"exception_class": "AttributeError", "outcome": "exception"},
+    }
+    assert "upstream support" in mismatch["gwexpy"]["detail"]
+
+
+@pytest.mark.parametrize(
+    ("member_id", "current", "before"),
+    [
+        pytest.param(
+            "gwexpy.timeseries.timeseries.TimeSeries/crop",
+            {
+                "gwexpy": {"exception_class": "TypeError", "outcome": "exception"},
+                "gwpy": {"exception_class": "TypeError", "outcome": "exception"},
+            },
+            {
+                "gwexpy": {"outcome": "return"},
+                "gwpy": {"exception_class": "TypeError", "outcome": "exception"},
+            },
+            id="timeseries-crop",
+        ),
+        pytest.param(
+            "gwexpy.timeseries.collections.TimeSeriesDict/crop",
+            {
+                "gwexpy": {"exception_class": "TypeError", "outcome": "exception"},
+                "gwpy": {"exception_class": "TypeError", "outcome": "exception"},
+            },
+            {
+                "gwexpy": {"outcome": "return"},
+                "gwpy": {"exception_class": "TypeError", "outcome": "exception"},
+            },
+            id="timeseriesdict-crop",
+        ),
+        pytest.param(
+            "gwexpy.timeseries.collections.TimeSeriesDict/append",
+            {
+                "gwexpy": {"exception_class": "ValueError", "outcome": "exception"},
+                "gwpy": {"exception_class": "ValueError", "outcome": "exception"},
+            },
+            {
+                "gwexpy": {"outcome": "return"},
+                "gwpy": {"exception_class": "ValueError", "outcome": "exception"},
+            },
+            id="timeseriesdict-append",
+        ),
+        pytest.param(
+            "gwexpy.timeseries.timeseries.TimeSeries/t0",
+            {
+                "gwexpy": {"outcome": "return"},
+                "gwpy": {"outcome": "return"},
+            },
+            {
+                "gwexpy": {"exception_class": "TypeError", "outcome": "exception"},
+                "gwpy": {"outcome": "return"},
+            },
+            id="timeseries-t0",
+        ),
+        pytest.param(
+            "gwexpy.timeseries.timeseries.TimeSeries/x0",
+            {
+                "gwexpy": {"outcome": "return"},
+                "gwpy": {"outcome": "return"},
+            },
+            {
+                "gwexpy": {"exception_class": "TypeError", "outcome": "exception"},
+                "gwpy": {"outcome": "return"},
+            },
+            id="timeseries-x0",
+        ),
+    ],
+)
+def test_terminal_fixed_observations_describe_the_selected_behavior(
+    member_id: str,
+    current: dict[str, dict[str, str]],
+    before: dict[str, dict[str, str]],
+) -> None:
+    audit = _load_audit_module()
+    fields = audit._terminal_case_fields(audit.TERMINAL_CLOSURES[member_id], "d" * 64)
+
+    assert fields["observations"] == current
+    mismatch = fields["evidence"]["pre_fix_mismatch"]
+    assert {
+        side: {key: value for key, value in mismatch[side].items() if key != "detail"}
+        for side in ("gwexpy", "gwpy")
+    } == before
+
+
+def test_terminal_cadence_fixture_name_matches_selected_evidence_scope() -> None:
+    audit = _load_audit_module()
+
+    for member in ("dt", "dx"):
+        closure = audit.TERMINAL_CLOSURES[
+            f"gwexpy.timeseries.timeseries.TimeSeries/{member}"
+        ]
+        assert closure["fixture"] == "cadence-set-copy-and-slice"
+
+
+@pytest.mark.parametrize(
+    ("module_name", "class_name", "shape"),
+    [
+        pytest.param(
+            "gwexpy.fields.scalar", "ScalarField", (2, 2, 3, 4), id="ScalarField"
+        ),
+        pytest.param("gwexpy.types.array", "Array", (2, 3, 4), id="Array"),
+        pytest.param("gwexpy.types.array3d", "Array3D", (2, 3, 4), id="Array3D"),
+        pytest.param("gwexpy.types.array4d", "Array4D", (2, 2, 3, 4), id="Array4D"),
+    ],
+)
+def test_terminal_array_family_T_matches_gwpy(
+    module_name: str, class_name: str, shape: tuple[int, ...]
+) -> None:
+    import numpy as np
+    from astropy import units as u
+    from gwpy.types import Array as GwpyArray
+
+    actual_type = vars(importlib.import_module(module_name))[class_name]
+    values = np.arange(np.prod(shape), dtype=np.float64).reshape(shape)
+    actual_input = actual_type(values.copy(), unit=u.m, name="transpose-source")
+    expected_input = GwpyArray(values.copy(), unit=u.m, name="transpose-source")
+
+    actual = actual_input.T
+    expected = expected_input.T
+
+    assert actual.shape == expected.shape
+    assert actual.dtype == expected.dtype
+    assert actual.unit == expected.unit
+    assert actual.name == expected.name
+    np.testing.assert_array_equal(actual.value, expected.value)
+    assert np.shares_memory(actual_input.value, actual.value) is np.shares_memory(
+        expected_input.value, expected.value
+    )
+
+
+@pytest.mark.parametrize("class_name", ["Plot", "FieldPlot", "SkyMap"])
+def test_terminal_plot_show_lifecycle_matches_gwpy(
+    class_name: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from gwpy.plot import Plot as GwpyPlot
+    from gwpy.timeseries import TimeSeries as GwpyTimeSeries
+    from matplotlib.figure import Figure
+
+    # Dynamic access is intentional in this behavior test; only the static
+    # inventory scanner is prohibited from executing package ``__getattr__``.
+    actual_type = getattr(importlib.import_module("gwexpy.plot"), class_name)
+    source = GwpyTimeSeries(np.arange(4.0), t0=0, dt=1, name="show-source")
+    actual = actual_type(source.copy())
+    expected = GwpyPlot(source.copy())
+    original_close = plt.close
+    show_calls: list[tuple[Figure, bool]] = []
+    close_calls: list[Figure | None] = []
+
+    def record_show(figure: Figure, warn: bool = True) -> None:
+        show_calls.append((figure, warn))
+
+    monkeypatch.setattr(Figure, "show", record_show)
+    monkeypatch.setattr(plt, "close", lambda figure=None: close_calls.append(figure))
+    try:
+        actual_result = actual.show(False, False)
+        expected_result = expected.show(False, False)
+        assert actual_result is expected_result is None
+        assert show_calls == [(actual, False), (expected, False)]
+        assert close_calls == []
+    finally:
+        original_close(actual)
+        original_close(expected)
+
+
+def test_manifest_has_terminal_structural_population_and_canonical_json() -> None:
     audit = _load_audit_module()
     manifest = _load_manifest()
 
@@ -181,16 +669,16 @@ def test_manifest_has_initial_structural_population_and_canonical_json() -> None
         "upstream_dependency_provenance": UPSTREAM_DEPENDENCY_PROVENANCE,
     }
     assert manifest["summary"] == {
-        "cases": 1146,
+        "cases": 1150,
         "constructors": 11,
         "counterpart_absent_per_version": 441,
-        "counterpart_implementation_groups": 66,
-        "counterpart_present_per_version": 132,
-        "differential-required": 264,
-        "fixed": 0,
+        "counterpart_implementation_groups": 70,
+        "counterpart_present_per_version": 134,
+        "differential-required": 0,
+        "fixed": 224,
         "GWexpy-only": 882,
-        "logical_members": 573,
-        "no-finding": 0,
+        "logical_members": 575,
+        "no-finding": 44,
         "public_roots": 16,
         "GWpy-fails": 0,
         "unreviewed": 0,
@@ -217,7 +705,7 @@ def test_manifest_matches_current_source_mro_population() -> None:
     audit.validate_manifest(manifest)
     audit.validate_source_population(manifest, current)
     assert len(current["public_roots"]) == 16
-    assert len(current["members"]) == 573
+    assert len(current["members"]) == 575
 
 
 def test_lazy_skymap_export_alias_is_associated_without_getattr(
@@ -271,7 +759,7 @@ def test_current_supported_version_pristine_projection_matches_manifest() -> Non
     assert "inventory check passed" in result.stdout
 
 
-def test_ordinary_check_permits_provisional_but_terminal_check_rejects_counts() -> None:
+def test_ordinary_and_terminal_checks_accept_closed_manifest() -> None:
     ordinary = _run_cli(
         "--check",
         "--manifest",
@@ -289,11 +777,8 @@ def test_ordinary_check_permits_provisional_but_terminal_check_rejects_counts() 
         "--oracle-python",
         _current_oracle_argument(),
     )
-    assert terminal.returncode != 0
-    assert (
-        "provisional states remain: differential-required=264, unreviewed=0"
-        in terminal.stderr
-    )
+    assert terminal.returncode == 0, terminal.stderr
+    assert "inventory check passed" in terminal.stdout
 
 
 @pytest.mark.parametrize(
@@ -485,22 +970,295 @@ def test_summary_digest_and_presence_inconsistency_fail_closed(mutation: str) ->
 def test_terminal_transition_with_case_derived_summary_is_valid() -> None:
     audit = _load_audit_module()
     manifest = copy.deepcopy(_load_manifest())
-    _transition_pending_case(manifest)
+    case = _make_present_case_pending(manifest)
+    _refresh_summary(audit, manifest)
+    assert manifest["summary"]["differential-required"] == 1
+
+    _transition_pending_case(manifest, case=case)
+    _refresh_summary(audit, manifest)
+
+    audit.validate_manifest(manifest)
+    assert manifest["summary"]["no-finding"] == 45
+    assert manifest["summary"]["differential-required"] == 0
+
+
+def test_multiple_fixtures_for_one_member_version_validate() -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    original = next(item for item in manifest["cases"] if item["counterpart_present"])
+    additional = _transition_pending_case(manifest, case=copy.deepcopy(original))
+    manifest["cases"].append(additional)
+    manifest["cases"].sort(key=audit._case_sort_key)
     manifest["summary"] = audit.calculate_summary(
         manifest["cases"], manifest["members"], manifest["oracle_projections"]
     )
 
     audit.validate_manifest(manifest)
-    assert manifest["summary"]["no-finding"] == 1
-    assert manifest["summary"]["differential-required"] == 263
+    assert (
+        sum(
+            case["member_id"] == original["member_id"]
+            and case["gwpy_version"] == original["gwpy_version"]
+            for case in manifest["cases"]
+        )
+        == 2
+    )
+
+
+def test_all_provisional_cases_can_reach_terminal_gate() -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    present_cases = [case for case in manifest["cases"] if case["counterpart_present"]]
+    for case in present_cases:
+        _make_present_case_pending(manifest, case)
+    _refresh_summary(audit, manifest)
+    assert manifest["summary"]["differential-required"] == len(present_cases) == 268
+
+    for case in present_cases:
+        _transition_pending_case(manifest, case=case)
+    manifest["cases"].sort(key=audit._case_sort_key)
+    _refresh_summary(audit, manifest)
+
+    audit.validate_manifest(manifest)
+    audit.require_terminal_cases(manifest["cases"])
+    assert manifest["summary"]["differential-required"] == 0
+    assert manifest["summary"]["unreviewed"] == 0
+
+
+def test_fixed_terminal_schema_can_validate() -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    case = _make_present_case_pending(manifest)
+    _refresh_summary(audit, manifest)
+    _transition_pending_case(manifest, state="fixed", case=case)
+    _refresh_summary(audit, manifest)
+
+    audit.validate_manifest(manifest)
 
 
 def test_terminal_transition_with_stale_summary_fails_closed() -> None:
     audit = _load_audit_module()
     manifest = copy.deepcopy(_load_manifest())
-    _transition_pending_case(manifest)
+    case = _make_present_case_pending(manifest)
+    _refresh_summary(audit, manifest)
+    _transition_pending_case(manifest, case=case)
 
     with pytest.raises(audit.InventoryError, match="summary mismatch"):
+        audit.validate_manifest(manifest)
+
+
+@pytest.mark.parametrize("mutation", ["extra", "missing", "non-object"])
+def test_case_top_level_key_set_is_exact(mutation: str) -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    case = manifest["cases"][0]
+    assert set(case) == CASE_KEYS
+    if mutation == "non-object":
+        manifest["cases"][0] = True
+    elif mutation == "extra":
+        case["unexpected"] = True
+    else:
+        del case["issues"]
+
+    with pytest.raises(audit.InventoryError, match="case schema mismatch"):
+        audit.validate_manifest(manifest)
+
+
+@pytest.mark.parametrize("state", ["no-finding", "GWpy-fails"])
+def test_behavioral_terminal_common_fields_are_strict(state: str) -> None:
+    audit = _load_audit_module()
+    mutations = [
+        ("owner", None),
+        ("owner", ""),
+        ("owner", True),
+        ("fixture", ""),
+        ("fixture", True),
+        ("fixture", audit.PENDING_FIXTURE),
+        ("issues", []),
+        ("issues", ["#640"]),
+        ("issues", ["#639", True]),
+        ("comparator", True),
+        ("comparator", {}),
+        ("comparator", {"name": ""}),
+        ("comparator", {"name": True}),
+    ]
+    for field, value in mutations:
+        manifest = copy.deepcopy(_load_manifest())
+        case = _transition_pending_case(manifest, state=state)
+        case[field] = value
+        if field == "fixture":
+            case["case_key"] = "/".join(
+                (
+                    case["public_class"],
+                    case["member"],
+                    case["gwpy_version"],
+                    str(value),
+                )
+            )
+        _refresh_summary(audit, manifest)
+        with pytest.raises(audit.InventoryError):
+            audit.validate_manifest(manifest)
+
+
+@pytest.mark.parametrize(
+    "comparator",
+    [
+        {"name": "exact", "rtol": 0.0},
+        {"name": "approximate"},
+        {"name": "approximate", "rtol": 0.0},
+        {"name": "approximate", "rtol": -1.0, "atol": 0.0},
+        {"name": "approximate", "rtol": 0.0, "atol": -1.0},
+        {"name": "approximate", "rtol": True, "atol": 0.0},
+        {"name": "approximate", "rtol": 0.0, "atol": False},
+        {"name": "approximate", "rtol": float("inf"), "atol": 0.0},
+        {"name": "approximate", "rtol": 0.0, "atol": float("nan")},
+    ],
+)
+def test_terminal_comparator_schema_and_tolerances_are_strict(
+    comparator: dict[str, object],
+) -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    case = _transition_pending_case(manifest)
+    case["comparator"] = comparator
+    _refresh_summary(audit, manifest)
+
+    with pytest.raises(audit.InventoryError):
+        audit.validate_manifest(manifest)
+
+
+def test_approximate_comparator_with_explicit_finite_tolerances_is_valid() -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    case = _transition_pending_case(manifest)
+    case["comparator"] = {"name": "approximate", "rtol": 1e-7, "atol": 0}
+    manifest["summary"] = audit.calculate_summary(
+        manifest["cases"], manifest["members"], manifest["oracle_projections"]
+    )
+
+    audit.validate_manifest(manifest)
+
+
+@pytest.mark.parametrize(
+    ("side", "observation"),
+    [
+        ("gwpy", True),
+        ("gwpy", {}),
+        ("gwpy", {"outcome": True}),
+        ("gwpy", {"outcome": ""}),
+        ("gwpy", {"outcome": "pending"}),
+        ("gwpy", {"outcome": "exception"}),
+        ("gwpy", {"outcome": "exception", "exception_class": ""}),
+        ("gwpy", {"outcome": "exception", "exception_class": True}),
+    ],
+)
+def test_terminal_observations_are_typed(side: str, observation: object) -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    case = _transition_pending_case(manifest)
+    case["observations"][side] = observation
+    _refresh_summary(audit, manifest)
+
+    with pytest.raises(audit.InventoryError):
+        audit.validate_manifest(manifest)
+
+
+@pytest.mark.parametrize("keys", [{"gwpy"}, {"gwexpy"}, {"gwpy", "gwexpy", "extra"}])
+def test_terminal_observation_sides_are_exact(keys: set[str]) -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    case = _transition_pending_case(manifest)
+    case["observations"] = {key: {"outcome": "return"} for key in keys}
+    _refresh_summary(audit, manifest)
+
+    with pytest.raises(audit.InventoryError, match="observation schema"):
+        audit.validate_manifest(manifest)
+
+
+@pytest.mark.parametrize(
+    "behavior",
+    [
+        [True],
+        [{"reference": True}],
+        [{"reference": "../outside.py::test_escape"}],
+        [{"reference": "/tmp/outside.py::test_escape"}],
+        [{"reference": "tests/does-not-exist.py::test_missing"}],
+        [{"reference": "tests/test_gwpy_override_inventory.py"}],
+        [{"reference": "tests/test_gwpy_override_inventory.py::"}],
+        [{"reference": TEST_REFERENCE["reference"], "extra": True}],
+    ],
+)
+def test_behavior_references_are_structured_safe_and_existing(
+    behavior: list[object],
+) -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    case = _transition_pending_case(manifest)
+    case["evidence"]["behavior"] = behavior
+    _refresh_summary(audit, manifest)
+
+    with pytest.raises(audit.InventoryError, match="reference|behavior"):
+        audit.validate_manifest(manifest)
+
+
+@pytest.mark.parametrize("state", ["no-finding", "GWpy-fails"])
+def test_non_fixed_terminal_evidence_key_set_is_exact(state: str) -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    case = _transition_pending_case(manifest, state=state)
+    case["evidence"]["unexpected"] = True
+    _refresh_summary(audit, manifest)
+
+    with pytest.raises(audit.InventoryError, match="evidence schema"):
+        audit.validate_manifest(manifest)
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "missing-pre-fix",
+        "missing-green",
+        "extra",
+        "green-bool",
+        "green-missing-file",
+        "pre-fix-bool",
+        "pre-fix-extra",
+        "pre-fix-missing-side",
+        "pre-fix-bad-observation",
+        "pre-fix-traversal",
+        "equal-pre-fix",
+    ],
+)
+def test_fixed_evidence_schema_is_structured_and_exact(mutation: str) -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    case = _transition_pending_case(manifest, state="fixed")
+    if mutation == "missing-pre-fix":
+        del case["evidence"]["pre_fix_mismatch"]
+    elif mutation == "missing-green":
+        del case["evidence"]["green_test"]
+    elif mutation == "extra":
+        case["evidence"]["unexpected"] = True
+    elif mutation == "green-bool":
+        case["evidence"]["green_test"] = True
+    elif mutation == "green-missing-file":
+        case["evidence"]["green_test"] = {"reference": "tests/missing.py::test_missing"}
+    elif mutation == "pre-fix-bool":
+        case["evidence"]["pre_fix_mismatch"] = True
+    elif mutation == "pre-fix-extra":
+        case["evidence"]["pre_fix_mismatch"]["extra"] = True
+    elif mutation == "pre-fix-missing-side":
+        del case["evidence"]["pre_fix_mismatch"]["gwpy"]
+    elif mutation == "pre-fix-bad-observation":
+        case["evidence"]["pre_fix_mismatch"]["gwpy"] = True
+    elif mutation == "pre-fix-traversal":
+        case["evidence"]["pre_fix_mismatch"]["reference"] = "../outside.py::test_escape"
+    else:
+        observation = {"outcome": "return", "value": "same"}
+        case["evidence"]["pre_fix_mismatch"]["gwpy"] = observation
+        case["evidence"]["pre_fix_mismatch"]["gwexpy"] = copy.deepcopy(observation)
+    _refresh_summary(audit, manifest)
+
+    with pytest.raises(audit.InventoryError):
         audit.validate_manifest(manifest)
 
 
@@ -521,6 +1279,56 @@ def test_strict_json_loader_rejects_non_finite_constants(
     non_finite.write_text(f'{{"value":{constant}}}\n', encoding="utf-8")
     with pytest.raises(audit.InventoryError, match="non-finite JSON constant"):
         audit.load_json_strict(non_finite)
+
+
+@pytest.mark.parametrize("number", ["1e999", "-1e999"])
+def test_strict_json_loader_rejects_overflowing_floats(
+    tmp_path: Path, number: str
+) -> None:
+    audit = _load_audit_module()
+    overflow = tmp_path / "overflow.json"
+    overflow.write_text(f'{{"value":{number}}}\n', encoding="utf-8")
+    with pytest.raises(audit.InventoryError, match="non-finite JSON float"):
+        audit.load_json_strict(overflow)
+
+
+def test_oracle_worker_stdin_uses_strict_json_decoder() -> None:
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "--oracle-worker"],
+        cwd=ROOT,
+        env=os.environ | {"PYTHONDONTWRITEBYTECODE": "1"},
+        input='{"value":1e999}\n',
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 2
+    assert "non-finite JSON float" in result.stderr
+
+
+def test_oracle_stdout_uses_strict_json_decoder(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    audit = _load_audit_module()
+
+    def fake_run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(
+            args=[], returncode=0, stdout='{"x":1e999}\n'
+        )
+
+    monkeypatch.setattr(audit.subprocess, "run", fake_run)
+    with pytest.raises(audit.InventoryError, match="non-finite JSON float"):
+        audit.run_pristine_oracle(SCRIPT, version("gwpy"), sys.executable, [])
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), float("-inf")])
+def test_manifest_validation_rejects_recursive_non_finite_values(value: float) -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    manifest["cases"][0]["observations"]["gwpy"]["value"] = value
+
+    with pytest.raises(audit.InventoryError, match="non-finite float"):
+        audit.validate_manifest(manifest)
 
 
 @pytest.mark.parametrize("state", ["fixed", "no-finding", "GWpy-fails"])
@@ -557,15 +1365,8 @@ def test_fixed_state_requires_specific_issue_beyond_inventory_issue() -> None:
     audit = _load_audit_module()
     manifest = copy.deepcopy(_load_manifest())
     case = _transition_pending_case(manifest, state="fixed")
-    case["evidence"]["pre_fix_mismatch"] = {"outcome": "mismatch"}
-    case["evidence"]["green_test"] = "tests/test_specific_regression.py"
     case["issues"] = ["#639"]
-    summary = copy.deepcopy(manifest["summary"])
-    for state in (*audit.TERMINAL_STATES, *audit.PROVISIONAL_STATES):
-        summary.setdefault(state, 0)
-    summary["fixed"] += 1
-    summary["differential-required"] -= 1
-    manifest["summary"] = summary
+    _refresh_summary(audit, manifest)
 
     with pytest.raises(
         audit.InventoryError, match="fixed case requires a specific issue reference"
@@ -591,7 +1392,10 @@ def test_initial_states_require_exact_comparator_observations_and_issues(
 ) -> None:
     audit = _load_audit_module()
     manifest = copy.deepcopy(_load_manifest())
-    case = next(item for item in manifest["cases"] if item["state"] == state)
+    if state == "differential-required":
+        case = _make_present_case_pending(manifest)
+    else:
+        case = next(item for item in manifest["cases"] if item["state"] == state)
     case[field] = value
 
     with pytest.raises(audit.InventoryError):
@@ -602,7 +1406,10 @@ def test_initial_states_require_exact_comparator_observations_and_issues(
 def test_initial_states_reject_extra_evidence_fields(state: str) -> None:
     audit = _load_audit_module()
     manifest = copy.deepcopy(_load_manifest())
-    case = next(item for item in manifest["cases"] if item["state"] == state)
+    if state == "differential-required":
+        case = _make_present_case_pending(manifest)
+    else:
+        case = next(item for item in manifest["cases"] if item["state"] == state)
     case["evidence"]["unexpected"] = True
 
     with pytest.raises(audit.InventoryError, match="evidence schema"):
