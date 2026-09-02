@@ -1,8 +1,9 @@
 schema: gwexpy-v023-phase3-evidence-v1
-phase: spectral-compatibility-and-from-gps-terminal-mapping
+phase: spectral-compatibility-and-from-gps-differential
 status: focused-green
 
-implementation_base: ef96a3a10188c2303c3de1dcc6bbafd9947c4c20
+implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
+phase_parent: ef96a3a10188c2303c3de1dcc6bbafd9947c4c20
 
 skills:
   - superpowers:test-driven-development
@@ -125,26 +126,27 @@ contracts:
       nearly_regular_float_axis: GWpy-fails
       TimeSeries.rfft: GWexpy-only
 
-from_gps_terminal_mapping:
+from_gps_differential_evidence:
   parent_issue: 704
+  terminal_application: deferred-to-phase4
   evidence_source:
     - docs/developers/plans/manifests/audit-manifest-v0.2.3-phase2.yaml
     - tests/time/test_gwpy_phase2_compat.py
   entries:
     ordinary_integer:
-      state: no-finding
+      proposed_terminal_state: no-finding
     numeric_string:
-      state: no-finding
+      proposed_terminal_state: no-finding
     scientific_numeric_string:
-      state: no-finding
+      proposed_terminal_state: no-finding
     ordinary_fractional_gps:
-      state: no-finding
+      proposed_terminal_state: no-finding
     half_microsecond_float:
-      state: fixed
+      proposed_terminal_state: fixed
       issue: 704
       pre_fix: rounded to 125299 microseconds instead of the parent 125298
     LIGOTimeGPS_like:
-      state: fixed
+      proposed_terminal_state: fixed
       issue: 704
       boundaries:
         - ordinary nanoseconds
@@ -152,13 +154,16 @@ from_gps_terminal_mapping:
         - 1500 nanoseconds
       pre_fix: rejected by the Astropy scalar route while the parent succeeded
     exact_leap_second_1167264017:
-      state: GWpy-fails
+      proposed_terminal_state: GWpy-fails
       exception: ValueError
     ndarray_vectorization:
-      state: GWexpy-only
-      contract: maps the parent scalar route element by element
+      proposed_terminal_state: GWpy-fails
+      exception: TypeError
+      gwexpy_extension_outcome: maps the parent scalar route element by element
     astropy_time_input:
-      state: GWexpy-only
+      proposed_terminal_state: GWpy-fails
+      exception: TypeError
+      gwexpy_extension_outcome: successful vector conversion
 
 tdd:
   red:
