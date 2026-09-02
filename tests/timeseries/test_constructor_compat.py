@@ -239,21 +239,31 @@ def test_gwexpy_only_epoch_types_are_not_successful_gwpy_constructor_inputs(
 def test_gwpy_supported_epoch_reaches_parent_once_and_unchanged(
     epoch: object, form: str
 ) -> None:
+    data = [1.0, 2.0]
     parent_result = np.array([1.0, 2.0]).view(TimeSeries)
     with patch(
         "gwpy.timeseries.TimeSeries.__new__", return_value=parent_result
     ) as parent:
         if form == "positional":
-            TimeSeries([1.0, 2.0], None, epoch, 1 * u.ms)
+            TimeSeries(data, None, epoch, 1 * u.ms)
         else:
-            TimeSeries([1.0, 2.0], t0=epoch, dt=1 * u.ms)
+            TimeSeries(data, t0=epoch, dt=1 * u.ms)
 
     parent.assert_called_once()
     call = parent.call_args
-    # The explicit GWpy-compatible wrapper binds both public calling forms
-    # before one canonical positional delegation.  The supported object must
-    # still reach the parent unchanged and exactly once.
-    assert call.args[3] is epoch
+    assert call.args[0] is TimeSeries
+    assert call.args[1] is data
+    if form == "positional":
+        assert len(call.args) == 5
+        assert call.args[2] is None
+        assert call.args[3] is epoch
+        assert call.args[4] == 1 * u.ms
+        assert call.kwargs == {}
+    else:
+        assert len(call.args) == 2
+        assert call.kwargs["t0"] is epoch
+        assert call.kwargs["dt"] == 1 * u.ms
+        assert set(call.kwargs) == {"t0", "dt"}
 
 
 def test_parent_constructor_failure_is_not_retried() -> None:

@@ -25,6 +25,8 @@ from numpy.typing import ArrayLike
 
 from gwexpy.types.mixin import RegularityMixin
 
+from ._epoch import _EXACT_BUFFER_APPEND_DEPTH
+
 QuantityLike: TypeAlias = Union[ArrayLike, u.Quantity]
 
 
@@ -148,17 +150,46 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
         resize: bool = True,
     ) -> TimeSeriesCore:
         """Append another `TimeSeries`, returning a GWexpy `TimeSeries`."""
-        res = super().append(other, inplace=inplace, pad=pad, gap=gap, resize=resize)
-        if inplace:
-            return self
-        if isinstance(res, self.__class__):
-            return res
-        return self.__class__(
-            res.value,
-            times=res.times,
-            unit=res.unit,
-            name=res.name,
-            channel=getattr(res, "channel", None),
+        exact_t0_ns = getattr(self, "_gwex_t0_gps_ns", None)
+        exact_dt_ns = getattr(self, "_gwex_dt_gps_ns", None)
+        preserve_buffer_epoch = (
+            not resize and exact_t0_ns is not None and exact_dt_ns is not None
         )
+        token = None
+        if preserve_buffer_epoch:
+            token = _EXACT_BUFFER_APPEND_DEPTH.set(_EXACT_BUFFER_APPEND_DEPTH.get() + 1)
+        try:
+            res = super().append(
+                other,
+                inplace=inplace,
+                pad=pad,
+                gap=gap,
+                resize=resize,
+            )
+        finally:
+            if token is not None:
+                _EXACT_BUFFER_APPEND_DEPTH.reset(token)
+
+        if inplace:
+            result = self
+        elif isinstance(res, self.__class__):
+            result = res
+        else:
+            result = self.__class__(
+                res.value,
+                times=res.times,
+                unit=res.unit,
+                name=res.name,
+                channel=getattr(res, "channel", None),
+            )
+
+        if preserve_buffer_epoch:
+            assert exact_t0_ns is not None
+            assert exact_dt_ns is not None
+            current_t0_ns = getattr(result, "_gwex_t0_gps_ns", exact_t0_ns)
+            appended_rows = np.shape(other)[0]
+            result._gwex_t0_gps_ns = current_t0_ns + appended_rows * exact_dt_ns
+            result._gwex_dt_gps_ns = exact_dt_ns
+        return result
 
     # find_peaks is inherited from SignalAnalysisMixin in the final TimeSeries class

@@ -31,7 +31,11 @@ from ._analysis import TimeSeriesAnalysisMixin
 
 # Import Core Base
 from ._core import TimeSeriesCore
-from ._epoch import _integer_gps_ns, _integral_dt_gps_ns
+from ._epoch import (
+    _EXACT_BUFFER_APPEND_DEPTH,
+    _integer_gps_ns,
+    _integral_dt_gps_ns,
+)
 from ._gwf_io import (
     _GWF_BACKENDS,
     _GWF_PARALLEL_HELP,
@@ -65,7 +69,7 @@ _SUPPRESS_EXACT_FINALIZE_FROM: ContextVar[frozenset[int]] = ContextVar(
     "_SUPPRESS_EXACT_FINALIZE_FROM", default=frozenset()
 )
 _EXACT_STATE_KEYS = frozenset({"_gwex_t0_gps_ns", "_gwex_dt_gps_ns"})
-_ARG_OMITTED = object()
+_TIMESERIES_NEW_BINDING_SIGNATURE: inspect.Signature
 _CSV_ENHANCED_READER_KEYS = frozenset(
     {"config", "channels", "timezone", "resample", "resample_method"}
 )
@@ -322,14 +326,7 @@ class TimeSeries(
     def __new__(
         cls,
         data: ArrayLike,
-        unit: Any = None,
-        t0: Any = _ARG_OMITTED,
-        dt: Any = None,
-        sample_rate: Any = None,
-        times: Any = _ARG_OMITTED,
-        channel: Any = None,
-        name: Any = None,
-        *,
+        *args: Any,
         t0_ns: int | None = None,
         **kwargs: Any,
     ) -> TimeSeries:
@@ -342,12 +339,24 @@ class TimeSeries(
         """
         from gwexpy.timeseries.utils import _coerce_t0_gps
 
-        t0_supplied = t0 is not _ARG_OMITTED
-        times_supplied = times is not _ARG_OMITTED
-        if not t0_supplied:
-            t0 = None
-        if not times_supplied:
-            times = None
+        binding_kwargs = dict(kwargs)
+        if t0_ns is not None:
+            binding_kwargs["t0_ns"] = t0_ns
+        bound = _TIMESERIES_NEW_BINDING_SIGNATURE.bind(
+            cls, data, *args, **binding_kwargs
+        )
+        t0_supplied = "t0" in bound.arguments
+        times_supplied = "times" in bound.arguments
+        t0 = bound.arguments.get("t0")
+        dt = bound.arguments.get("dt")
+        parent_args = list(args)
+        parent_kwargs = dict(kwargs)
+
+        def replace_t0(value: object) -> None:
+            if len(parent_args) >= 2:
+                parent_args[1] = value
+            else:
+                parent_kwargs["t0"] = value
 
         exact_t0_ns: int | None = None
         if t0_ns is not None:
@@ -372,7 +381,7 @@ class TimeSeries(
                 )
 
         should_coerce = True
-        xunit = kwargs.get("xunit", None)
+        xunit = parent_kwargs.get("xunit", None)
         if xunit is not None:
             try:
                 should_coerce = u.Unit(xunit).is_equivalent(u.s)
@@ -419,34 +428,23 @@ class TimeSeries(
                 except (u.UnitConversionError, AttributeError, TypeError):
                     return epoch_q
 
-            epoch = kwargs.get("epoch")
+            epoch = parent_kwargs.get("epoch")
 
             # Let GWpy own conflicting-authority failures unchanged.
             if not (t0 is not None and epoch is not None):
                 if t0 is not None and _is_gwexpy_only_epoch(t0):
-                    t0 = normalize_epoch(t0)
+                    replace_t0(normalize_epoch(t0))
                 elif epoch is not None and _is_gwexpy_only_epoch(epoch):
-                    kwargs["epoch"] = normalize_epoch(epoch)
+                    parent_kwargs["epoch"] = normalize_epoch(epoch)
         if exact_t0_ns is not None:
             # GWpy's public axis is float/Quantity based.  Retain that view
             # for compatibility, while keeping the supplied integer as the
             # only exact authority.  Normalise into the actual axis unit so
             # GWpy does not reinterpret seconds as (for example) nanoseconds.
             target_unit = _target_axis_unit()
-            t0 = float(u.Quantity(exact_t0_ns, u.ns).to_value(target_unit))
+            replace_t0(float(u.Quantity(exact_t0_ns, u.ns).to_value(target_unit)))
 
-        new = super().__new__(
-            cls,
-            data,
-            unit,
-            t0,
-            dt,
-            sample_rate,
-            times,
-            channel,
-            name,
-            **kwargs,
-        )
+        new = super().__new__(cls, data, *parent_args, **parent_kwargs)
         if exact_t0_ns is not None:
             new._gwex_t0_gps_ns = exact_t0_ns
             try:
@@ -512,34 +510,80 @@ class TimeSeries(
         BaseTimeSeries.x0.__delete__(self)
         self.__dict__.pop("_gwex_t0_gps_ns", None)
 
+    @property
+    def dt(self) -> Any:
+        """GWpy-compatible cadence view synchronized with exact metadata."""
+        from gwpy.timeseries import TimeSeries as BaseTimeSeries
+
+        return BaseTimeSeries.dt.__get__(self, type(self))
+
+    @dt.setter
+    def dt(self, value: Any) -> None:
+        from gwpy.timeseries import TimeSeries as BaseTimeSeries
+
+        BaseTimeSeries.dt.__set__(self, value)
+
+    @dt.deleter
+    def dt(self) -> None:
+        from gwpy.timeseries import TimeSeries as BaseTimeSeries
+
+        BaseTimeSeries.dt.__delete__(self)
+        self._synchronize_exact_cadence()
+
+    @property
+    def dx(self) -> Any:
+        """GWpy-compatible cadence alias synchronized with exact metadata."""
+        from gwpy.timeseries import TimeSeries as BaseTimeSeries
+
+        return BaseTimeSeries.dx.__get__(self, type(self))
+
+    @dx.setter
+    def dx(self, value: Any) -> None:
+        from gwpy.timeseries import TimeSeries as BaseTimeSeries
+
+        BaseTimeSeries.dx.__set__(self, value)
+
+    @dx.deleter
+    def dx(self) -> None:
+        from gwpy.timeseries import TimeSeries as BaseTimeSeries
+
+        BaseTimeSeries.dx.__delete__(self)
+        self._synchronize_exact_cadence()
+
     def _set_exact_epoch(self, value: Any, *, alias: str) -> None:
         """Set a GWpy epoch alias without desynchronizing exact authority."""
         from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
         exact_t0_ns = getattr(self, "_gwex_t0_gps_ns", None)
-        if exact_t0_ns is not None:
-            # GWpy interprets a bare numeric epoch in the current axis unit.
-            # Preserve that public meaning when updating the private
-            # nanosecond authority (notably for ``append(resize=False)``).
-            new_t0_ns = _integer_gps_ns(value, default_unit=self.xunit)
-        else:
-            new_t0_ns = None
-
         if alias == "t0":
             BaseTimeSeries.t0.__set__(self, value)
         else:
             BaseTimeSeries.x0.__set__(self, value)
-        if new_t0_ns is not None:
+        if exact_t0_ns is None:
+            return
+        if _EXACT_BUFFER_APPEND_DEPTH.get():
+            return
+
+        # Conversion is private augmentation after the parent has accepted the
+        # original value.  A successful but sub-nanosecond/non-scalar parent
+        # value invalidates exact authority without changing GWpy semantics.
+        try:
+            new_t0_ns = _integer_gps_ns(value, default_unit=self.xunit)
+        except (TypeError, ValueError):
+            self.__dict__.pop("_gwex_t0_gps_ns", None)
+        else:
             self._gwex_t0_gps_ns = new_t0_ns
 
     def _update_index(self, axis: str, attr: str, value: Any) -> None:
         """Update a parent-owned index and synchronize exact cadence state."""
         super()._update_index(axis, attr, value)
-        if (
-            axis != "x"
-            or attr != "dx"
-            or getattr(self, "_gwex_t0_gps_ns", None) is None
-        ):
+        if axis != "x" or attr != "dx":
+            return
+        self._synchronize_exact_cadence()
+
+    def _synchronize_exact_cadence(self) -> None:
+        """Refresh private integral cadence after a successful parent update."""
+        if getattr(self, "_gwex_t0_gps_ns", None) is None:
             return
         try:
             self._gwex_dt_gps_ns = _integral_dt_gps_ns(self.dt)
@@ -753,15 +797,26 @@ class TimeSeries(
 
 
 _timeseries_new = cast(Any, TimeSeries.__new__)
-_timeseries_new_signature = inspect.signature(_timeseries_new, follow_wrapped=False)
-_timeseries_new.__signature__ = _timeseries_new_signature.replace(
+_parent_timeseries_new_signature = inspect.signature(
+    TimeSeriesCore.__new__, follow_wrapped=False
+)
+_parent_timeseries_new_parameters = list(
+    _parent_timeseries_new_signature.parameters.values()
+)
+_parent_timeseries_new_kwargs = _parent_timeseries_new_parameters.pop()
+_TIMESERIES_NEW_BINDING_SIGNATURE = _parent_timeseries_new_signature.replace(
     parameters=[
-        parameter.replace(default=None)
-        if parameter.name in {"t0", "times"}
-        else parameter
-        for parameter in _timeseries_new_signature.parameters.values()
+        *_parent_timeseries_new_parameters,
+        inspect.Parameter(
+            "t0_ns",
+            kind=inspect.Parameter.KEYWORD_ONLY,
+            default=None,
+            annotation=int | None,
+        ),
+        _parent_timeseries_new_kwargs,
     ]
 )
+_timeseries_new.__signature__ = _TIMESERIES_NEW_BINDING_SIGNATURE
 
 _timeseries_read = cast(Any, TimeSeries.read).__func__
 _timeseries_read.__signature__ = _gwf_parallel_read_signature(_timeseries_read)

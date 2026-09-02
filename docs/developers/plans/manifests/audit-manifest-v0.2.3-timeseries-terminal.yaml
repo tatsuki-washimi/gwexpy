@@ -5,6 +5,8 @@ status: focused-green-human-time-axis-review-required
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 phase_parent: a8f445669fa3469aa068eb8b72956de407255bb5
 review_followup_parent: 657d692bf09060975284db6c8182cdf8177c4e9b
+re_review_target: ddff041f1d8679b6dc504034ebf3665ba6c03b4c
+re_review_followup_base: b60b9be8f0e2c56cdd06682de798fcf129bc8240
 issues:
   - "#639"
   - "#704"
@@ -126,6 +128,28 @@ tdd:
         observation: >-
           Restoring the explicit constructor prefix initially lost the distinction
           between an omitted authority and an explicitly supplied None authority.
+    independent_re_review_followup:
+      - cycle: constructor-caller-form
+        result: 18 failed
+        observation: >-
+          Canonical all-positional delegation changed both supported positional
+          and keyword calling forms before the single parent call.
+      - cycle: exact-setter-buffer-and-cadence
+        result: 23 failed, 2 passed, 39 deselected
+        observation: >-
+          Parent-valid None and fractional setters were intercepted, a large
+          resize-false append reconstructed rounded public time, ULP-close
+          integral cadence was dropped, and cadence deletion retained stale state.
+      - cycle: nonfinite-ulp-guard
+        result: 1 failed, 1 passed, 64 deselected
+        observation: >-
+          The initial ULP fallback attempted to round infinity instead of
+          preserving fail-closed non-integral cadence handling.
+      - cycle: strict-one-ulp-boundary
+        result: 1 failed, 66 deselected
+        observation: >-
+          Using the larger adjacent-integer spacing accepted a value two ULPs
+          below eight nanoseconds; tolerance must use the observed float's ULP.
   green:
     direct_terminal_suite:
       gwpy_4_0_1: 71 passed, 0 skipped
@@ -135,8 +159,12 @@ tdd:
         - tests/timeseries/test_gwpy_override_terminal_compat.py
         - tests/timeseries/test_exact_gps_epoch.py
         - tests/timeseries/test_constructor_compat.py
-      gwpy_4_0_1: 171 passed, 0 skipped
-      gwpy_4_0_2: 171 passed, 0 skipped
+      gwpy_4_0_1: 197 passed, 0 skipped
+      gwpy_4_0_2: 197 passed, 0 skipped
+    constructor_terminal_suite:
+      file: tests/test_gwpy_constructor_terminal_compat.py
+      gwpy_4_0_1: 45 passed, 0 skipped
+      gwpy_4_0_2: 45 passed, 0 skipped
     related_suite:
       files:
         - tests/timeseries/test_gwpy_override_terminal_compat.py
@@ -153,8 +181,8 @@ tdd:
         - tests/timeseries/test_gwpy_behavioral_compatibility.py
         - tests/timeseries/test_constructor_compat.py
         - tests/timeseries/test_timeseries_fallbacks.py
-      gwpy_4_0_1: 490 passed, 0 skipped
-      gwpy_4_0_2: 490 passed, 0 skipped
+      gwpy_4_0_1: 516 passed, 0 skipped
+      gwpy_4_0_2: 516 passed, 0 skipped
       warnings: >-
         Two expected out-of-span crop warnings and one optional xarray GMT
         backend discovery warning plus one existing xindex-construction warning
@@ -213,10 +241,12 @@ implementation_groups:
       GWexpy exposed pad before gap in the public keyword-only layout while
       both installed GWpy oracles expose gap before pad. A resize-false append
       advanced the public nanosecond axis correctly but multiplied its private
-      exact epoch by one billion.
+      exact epoch by one billion. The first follow-up still reconstructed a
+      large exact epoch from the parent-rounded public float.
     fix: >-
-      Restore the GWpy keyword-only order and interpret the parent-owned bare
-      epoch update in the receiver axis unit.
+      Restore the GWpy keyword-only order. During a resize-false buffer update,
+      let the parent update its public axis once but advance private authority
+      from the existing integer epoch by the appended integer sample count.
     fixtures:
       - contiguous inplace and copy routes
       - discontiguous raise
@@ -224,6 +254,7 @@ implementation_groups:
       - mutation, return identity, and memory ownership
       - private exact t0 and dt authority preservation
       - resize false with inplace true and false on a nanosecond axis
+      - large exact epoch with three appended 125000000-nanosecond samples
     evidence:
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_append_parameter_layout_matches_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_append_contiguous_matches_gwpy
@@ -231,10 +262,20 @@ implementation_groups:
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_append_gap_padding_matches_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_append_preserves_private_exact_time_authority
       - tests/timeseries/test_exact_gps_epoch.py::test_resize_false_append_advances_exact_epoch_in_axis_units
+      - tests/timeseries/test_exact_gps_epoch.py::test_resize_false_append_advances_large_exact_epoch_without_float_roundtrip
+      - tests/timeseries/test_exact_gps_epoch.py::test_collection_resize_false_append_advances_large_exact_epochs
 
   - id: implementation-23ef21fcc8b15c31
     surface: TimeSeries.t0
-    common_state: no-finding
+    common_state: fixed
+    pre_fix: >-
+      Exact-series setters converted private metadata before parent validation,
+      rejecting GWpy-valid None and fractional-nanosecond inputs and replacing
+      the parent's exception class for invalid vector inputs.
+    fix: >-
+      Delegate the original value to the parent exactly once. After success,
+      update representable integer authority or clear it; never retry a parent
+      failure.
     fixtures:
       - getter
       - numeric, Quantity, and LIGOTimeGPS setters
@@ -242,16 +283,30 @@ implementation_groups:
       - x0 alias synchronization
       - private exact authority update and deletion
       - bare numeric setter interpreted in the receiver axis unit
+      - None and fractional-nanosecond parent-supported values
+      - vector failure class and single parent dispatch
     evidence:
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_alias_getters_match_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_alias_setters_match_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_alias_deleters_match_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_aliases_synchronize_private_exact_authority
       - tests/timeseries/test_exact_gps_epoch.py::test_bare_epoch_setter_uses_the_current_axis_unit
+      - tests/timeseries/test_exact_gps_epoch.py::test_epoch_setters_accept_none_and_clear_exact_authority
+      - tests/timeseries/test_exact_gps_epoch.py::test_epoch_setters_clear_exact_authority_for_nonintegral_parent_value
+      - tests/timeseries/test_exact_gps_epoch.py::test_epoch_setter_failure_class_is_owned_by_parent
+      - tests/timeseries/test_exact_gps_epoch.py::test_epoch_setter_passes_parent_supported_value_once
 
   - id: implementation-a3182604e9f5b826
     surface: TimeSeries.x0
-    common_state: no-finding
+    common_state: fixed
+    pre_fix: >-
+      Exact-series setters converted private metadata before parent validation,
+      rejecting GWpy-valid None and fractional-nanosecond inputs and replacing
+      the parent's exception class for invalid vector inputs.
+    fix: >-
+      Delegate the original value to the parent exactly once. After success,
+      update representable integer authority or clear it; never retry a parent
+      failure.
     fixtures:
       - getter
       - numeric, Quantity, and LIGOTimeGPS setters
@@ -259,12 +314,44 @@ implementation_groups:
       - t0 alias synchronization
       - private exact authority update and deletion
       - bare numeric setter interpreted in the receiver axis unit
+      - None and fractional-nanosecond parent-supported values
+      - vector failure class and single parent dispatch
     evidence:
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_alias_getters_match_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_alias_setters_match_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_alias_deleters_match_gwpy
       - tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_epoch_aliases_synchronize_private_exact_authority
       - tests/timeseries/test_exact_gps_epoch.py::test_bare_epoch_setter_uses_the_current_axis_unit
+      - tests/timeseries/test_exact_gps_epoch.py::test_epoch_setters_accept_none_and_clear_exact_authority
+      - tests/timeseries/test_exact_gps_epoch.py::test_epoch_setters_clear_exact_authority_for_nonintegral_parent_value
+      - tests/timeseries/test_exact_gps_epoch.py::test_epoch_setter_failure_class_is_owned_by_parent
+      - tests/timeseries/test_exact_gps_epoch.py::test_epoch_setter_passes_parent_supported_value_once
+
+  - id: implementation-1526683702d5e1c7
+    surface: TimeSeries.dt
+    common_state: no-finding
+    fixtures:
+      - numeric and Quantity setter parity through the parent descriptor
+      - direct deletion restores the parent default in the receiver axis unit
+      - ULP-close integral private cadence and non-integral fail-closed state
+      - copy and slice exact authority after mutation
+    evidence:
+      - tests/timeseries/test_exact_gps_epoch.py::test_cadence_setters_synchronize_exact_interval_for_copy_and_slice
+      - tests/timeseries/test_exact_gps_epoch.py::test_cadence_deletion_recomputes_exact_default_interval
+      - tests/timeseries/test_exact_gps_epoch.py::test_nonintegral_cadence_setter_drops_stale_exact_interval
+
+  - id: implementation-0aabdbc83debafc8
+    surface: TimeSeries.dx
+    common_state: no-finding
+    fixtures:
+      - numeric and Quantity setter parity through the parent descriptor
+      - direct deletion restores the parent default in the receiver axis unit
+      - ULP-close integral private cadence and non-integral fail-closed state
+      - copy and slice exact authority after mutation
+    evidence:
+      - tests/timeseries/test_exact_gps_epoch.py::test_cadence_setters_synchronize_exact_interval_for_copy_and_slice
+      - tests/timeseries/test_exact_gps_epoch.py::test_cadence_deletion_recomputes_exact_default_interval
+      - tests/timeseries/test_exact_gps_epoch.py::test_nonintegral_cadence_setter_drops_stale_exact_interval
 
   - id: implementation-ca32c15db8247574
     surface: TimeSeries.spectrogram
@@ -386,17 +473,21 @@ implementation_groups:
     common_state: fixed
     pre_fix: >-
       The override exposed only data, args, keyword-only t0_ns, and kwargs,
-      hiding all seven GWpy positional-or-keyword parameters after data.
+      hiding all seven GWpy positional-or-keyword parameters after data. The
+      first structural fix then delegated every supplied form as a nine-item
+      positional call, changing the original parent calling form.
     fix: >-
-      Expose the complete GWpy prefix followed by keyword-only t0_ns. Preserve
-      explicit-authority detection with an internal omission sentinel and make
-      exactly one canonical parent call without exception-based retry.
+      Publish and manually bind the complete GWpy prefix followed by keyword-only
+      t0_ns, while retaining the caller's original args and kwargs for the one
+      parent call. Only an explicit GWexpy normalization replaces its value in
+      the same positional or keyword route; no parent exception is retried.
     fixtures:
       - exact common parameter order, kinds, and defaults
       - every valid positional prefix through name
       - every positional/keyword duplicate
       - excess positional argument
       - supported epoch object identity and one parent call
+      - unchanged positional and keyword route into the parent
       - explicit None t0 and times authority conflicts
     evidence:
       - tests/timeseries/test_constructor_compat.py::test_constructor_exposes_gwpy_prefix_and_keyword_only_exact_extension
@@ -414,13 +505,19 @@ private_exact_time_augmentation:
     - dx
     - sample_rate
   contract: >-
-    A successful parent cadence update recomputes integral nanoseconds. A
-    non-integral cadence removes stale private interval metadata; subsequent
-    slicing therefore fails closed instead of advancing an exact epoch with an
-    obsolete interval.
+    A successful parent cadence update recomputes integral nanoseconds,
+    accepting only values within one floating-point ULP of an integer after
+    unit conversion. A true non-integral cadence removes stale metadata.
+    sample_rate=None and direct dt/dx deletion recompute the parent default in
+    the receiver axis unit, so subsequent copy and slicing never use an obsolete
+    interval. Nonfinite cadence remains fail-closed.
   evidence:
     - tests/timeseries/test_exact_gps_epoch.py::test_cadence_setters_synchronize_exact_interval_for_copy_and_slice
     - tests/timeseries/test_exact_gps_epoch.py::test_nonintegral_cadence_setter_drops_stale_exact_interval
+    - tests/timeseries/test_exact_gps_epoch.py::test_cadence_two_ulps_from_integer_drops_exact_interval
+    - tests/timeseries/test_exact_gps_epoch.py::test_sample_rate_setter_keeps_ulp_close_integral_exact_cadence
+    - tests/timeseries/test_exact_gps_epoch.py::test_cadence_deletion_recomputes_exact_default_interval
+    - tests/timeseries/test_exact_gps_epoch.py::test_nonfinite_cadence_construction_still_fails_closed
 
 release_constraints:
   new_public_api: false
@@ -434,7 +531,7 @@ release_constraints:
 
 static_validation:
   ruff_changed_files: all checks passed
-  ruff_format_changed_files: 8 files already formatted
+  ruff_format_changed_files: 6 files already formatted
   mypy_changed_source_files: success, no issues found in 3 source files
   yaml_safe_load: valid
   git_diff_check: no whitespace errors

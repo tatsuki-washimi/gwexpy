@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import math
+from contextvars import ContextVar
 from decimal import Decimal, InvalidOperation
 from operator import index
 from typing import Any
@@ -9,6 +11,10 @@ from typing import Any
 import numpy as np
 from astropy import units as u
 from gwpy.time import LIGOTimeGPS
+
+_EXACT_BUFFER_APPEND_DEPTH: ContextVar[int] = ContextVar(
+    "_EXACT_BUFFER_APPEND_DEPTH", default=0
+)
 
 
 def _integer_gps_ns(value: Any, *, default_unit: u.UnitBase = u.s) -> int:
@@ -46,7 +52,30 @@ def _integer_gps_ns(value: Any, *, default_unit: u.UnitBase = u.s) -> int:
 
 def _integral_dt_gps_ns(value: Any) -> int:
     """Return an integral time interval in nanoseconds or raise ``ValueError``."""
-    return _integer_gps_ns(value)
+    try:
+        return _integer_gps_ns(value)
+    except ValueError as exact_error:
+        raw_value = value.value if isinstance(value, u.Quantity) else value
+        raw_scalar = np.asarray(raw_value)
+        if raw_scalar.ndim != 0 or not isinstance(
+            raw_scalar.item(), (float, np.floating)
+        ):
+            raise
+        try:
+            if isinstance(value, u.Quantity):
+                nanoseconds = float(value.to_value(u.ns))
+            else:
+                nanoseconds = float(u.Quantity(value, u.s).to_value(u.ns))
+        except (TypeError, ValueError):
+            raise exact_error from None
+
+        if not math.isfinite(nanoseconds):
+            raise exact_error from None
+        nearest = round(nanoseconds)
+        tolerance = math.ulp(nanoseconds)
+        if abs(nanoseconds - nearest) <= tolerance:
+            return nearest
+        raise exact_error from None
 
 
 def _restore_exact_time_authority(source: Any, result: Any) -> Any:

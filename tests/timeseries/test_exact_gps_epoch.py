@@ -180,13 +180,73 @@ def test_epoch_setters_synchronize_exact_authority(attribute: str) -> None:
 
 
 @pytest.mark.parametrize("attribute", ["t0", "x0"])
-def test_epoch_setters_reject_non_integral_nanoseconds(attribute: str) -> None:
-    series = TimeSeries([1.0], t0_ns=0, dt=1.0)
+def test_epoch_setters_clear_exact_authority_for_nonintegral_parent_value(
+    attribute: str,
+) -> None:
+    series = TimeSeries([1.0], t0_ns=0, dt=1, xunit=u.ns)
+    reference = GwpyTimeSeries([1.0], t0=0, dt=1, xunit=u.ns)
 
-    with pytest.raises(ValueError, match="integer number of GPS nanoseconds"):
-        setattr(series, attribute, 1.5 * u.ns)
+    setattr(series, attribute, 1.5 * u.ns)
+    setattr(reference, attribute, 1.5 * u.ns)
 
-    assert series.t0_gps_ns == 0
+    assert getattr(series, attribute) == getattr(reference, attribute)
+    assert "_gwex_t0_gps_ns" not in series.__dict__
+
+
+@pytest.mark.parametrize("attribute", ["t0", "x0"])
+def test_epoch_setters_accept_none_and_clear_exact_authority(attribute: str) -> None:
+    series = TimeSeries([1.0], t0_ns=7, dt=1, xunit=u.ns)
+    reference = GwpyTimeSeries([1.0], t0=7, dt=1, xunit=u.ns)
+
+    setattr(series, attribute, None)
+    setattr(reference, attribute, None)
+
+    assert series.t0 == reference.t0
+    assert series.x0 == reference.x0
+    assert "_gwex_t0_gps_ns" not in series.__dict__
+
+
+@pytest.mark.parametrize("attribute", ["t0", "x0"])
+def test_epoch_setter_failure_class_is_owned_by_parent(attribute: str) -> None:
+    epoch_ns = 1_234_567_890_123_456_789
+    value = np.array([1.0, 2.0]) * u.ns
+    series = TimeSeries([1.0], t0_ns=epoch_ns, dt=1, xunit=u.ns)
+    reference = GwpyTimeSeries([1.0], t0=0, dt=1, xunit=u.ns)
+
+    with pytest.raises(ValueError) as expected:
+        setattr(reference, attribute, value)
+    with pytest.raises(type(expected.value)):
+        setattr(series, attribute, value)
+
+    assert series.t0_gps_ns == epoch_ns
+
+
+@pytest.mark.parametrize("attribute", ["t0", "x0"])
+@pytest.mark.parametrize(
+    "value",
+    [None, 1.5 * u.ns, LIGOTimeGPS(0, 2)],
+    ids=["none", "fractional-nanosecond", "ligotimegps"],
+)
+def test_epoch_setter_passes_parent_supported_value_once(
+    attribute: str,
+    value: object,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    series = TimeSeries([1.0], t0_ns=0, dt=1, xunit=u.ns)
+    calls: list[tuple[str, str, object]] = []
+    original = TimeSeries._update_index
+
+    def spy(self: TimeSeries, axis: str, attr: str, observed: object) -> None:
+        calls.append((axis, attr, observed))
+        original(self, axis, attr, observed)
+
+    monkeypatch.setattr(TimeSeries, "_update_index", spy)
+
+    setattr(series, attribute, value)
+
+    assert len(calls) == 1
+    assert calls[0][:2] == ("x", "x0")
+    assert calls[0][2] is value
 
 
 def test_exact_epoch_metadata_reconstructs_smooth_and_resample_outputs() -> None:
@@ -229,6 +289,30 @@ def test_resize_false_append_advances_exact_epoch_in_axis_units(
         assert left.t0_gps_ns == 1000
 
 
+@pytest.mark.parametrize("inplace", [True, False], ids=["inplace", "copy"])
+def test_resize_false_append_advances_large_exact_epoch_without_float_roundtrip(
+    inplace: bool,
+) -> None:
+    epoch_ns = 1_234_567_890_123_456_789
+    dt_ns = 125_000_000
+    left = TimeSeries(np.arange(8.0), t0_ns=epoch_ns, dt=dt_ns * u.ns)
+    right = TimeSeries(
+        np.arange(3.0),
+        t0_ns=epoch_ns + 8 * dt_ns,
+        dt=dt_ns * u.ns,
+    )
+
+    result = left.append(right, inplace=inplace, resize=False)
+
+    assert result.t0_gps_ns == epoch_ns + 3 * dt_ns
+    assert result._gwex_dt_gps_ns == dt_ns
+    if inplace:
+        assert result is left
+    else:
+        assert result is not left
+        assert left.t0_gps_ns == epoch_ns
+
+
 def test_collection_resize_false_append_preserves_exact_epochs() -> None:
     left = TimeSeriesDict(
         {
@@ -249,6 +333,39 @@ def test_collection_resize_false_append_preserves_exact_epochs() -> None:
     for series in result.values():
         assert series.t0_gps_ns == 1014
         assert series._gwex_dt_gps_ns == 7
+
+
+def test_collection_resize_false_append_advances_large_exact_epochs() -> None:
+    epoch_ns = 1_234_567_890_123_456_789
+    dt_ns = 125_000_000
+    offsets = {"first": 0, "second": 2_000_000_000}
+    left = TimeSeriesDict(
+        {
+            key: TimeSeries(
+                np.arange(8.0),
+                t0_ns=epoch_ns + offset,
+                dt=dt_ns * u.ns,
+            )
+            for key, offset in offsets.items()
+        }
+    )
+    right = TimeSeriesDict(
+        {
+            key: TimeSeries(
+                np.arange(3.0),
+                t0_ns=epoch_ns + offset + 8 * dt_ns,
+                dt=dt_ns * u.ns,
+            )
+            for key, offset in offsets.items()
+        }
+    )
+
+    result = left.append(right, resize=False)
+
+    assert result is left
+    for key, offset in offsets.items():
+        assert result[key].t0_gps_ns == epoch_ns + offset + 3 * dt_ns
+        assert result[key]._gwex_dt_gps_ns == dt_ns
 
 
 @pytest.mark.parametrize(
@@ -291,3 +408,80 @@ def test_nonintegral_cadence_setter_drops_stale_exact_interval() -> None:
     sliced = series[1:]
     assert "_gwex_t0_gps_ns" not in sliced.__dict__
     assert "_gwex_dt_gps_ns" not in sliced.__dict__
+
+
+def test_cadence_two_ulps_from_integer_drops_exact_interval() -> None:
+    series = TimeSeries(np.arange(4.0), t0_ns=0, dt=7 * u.ns)
+    two_ulps_below_eight = np.nextafter(
+        np.nextafter(8.0, -np.inf),
+        -np.inf,
+    )
+
+    series.dt = two_ulps_below_eight * u.ns
+
+    assert "_gwex_dt_gps_ns" not in series.__dict__
+    sliced = series[1:]
+    assert "_gwex_t0_gps_ns" not in sliced.__dict__
+    assert "_gwex_dt_gps_ns" not in sliced.__dict__
+
+
+@pytest.mark.parametrize("dt", [np.nan * u.ns, np.inf * u.ns], ids=["nan", "inf"])
+def test_nonfinite_cadence_construction_still_fails_closed(dt: u.Quantity) -> None:
+    reference = GwpyTimeSeries(np.arange(2.0), t0=0, dt=dt)
+
+    series = TimeSeries(np.arange(2.0), t0_ns=0, dt=dt)
+
+    assert np.isnan(series.dt.value) is np.isnan(reference.dt.value)
+    assert np.isinf(series.dt.value) is np.isinf(reference.dt.value)
+    assert "_gwex_dt_gps_ns" not in series.__dict__
+
+
+@pytest.mark.parametrize(
+    ("sample_rate_hz", "expected_dt_ns"),
+    [
+        pytest.param(4, 250_000_000, id="4-hz"),
+        pytest.param(8, 125_000_000, id="8-hz"),
+        pytest.param(1_000, 1_000_000, id="1-khz"),
+        pytest.param(1_000_000, 1_000, id="1-mhz"),
+        pytest.param(10_000_000, 100, id="10-mhz"),
+        pytest.param(125_000_000, 8, id="125-mhz"),
+        pytest.param(1_000_000_000, 1, id="1-ghz"),
+    ],
+)
+def test_sample_rate_setter_keeps_ulp_close_integral_exact_cadence(
+    sample_rate_hz: int,
+    expected_dt_ns: int,
+) -> None:
+    epoch_ns = 1_234_567_890_123_456_789
+    series = TimeSeries(np.arange(4.0), t0_ns=epoch_ns, dt=7, xunit=u.ns)
+    reference = GwpyTimeSeries(np.arange(4.0), t0=0, dt=7, xunit=u.ns)
+
+    series.sample_rate = sample_rate_hz * u.Hz
+    reference.sample_rate = sample_rate_hz * u.Hz
+
+    assert series.dt == reference.dt
+    assert series._gwex_dt_gps_ns == expected_dt_ns
+    assert series.copy()._gwex_dt_gps_ns == expected_dt_ns
+    assert series[1:].t0_gps_ns == epoch_ns + expected_dt_ns
+
+
+@pytest.mark.parametrize("operation", ["sample-rate-none", "del-dt", "del-dx"])
+def test_cadence_deletion_recomputes_exact_default_interval(operation: str) -> None:
+    epoch_ns = 1_234_567_890_123_456_789
+    series = TimeSeries(np.arange(4.0), t0_ns=epoch_ns, dt=7, xunit=u.ns)
+    reference = GwpyTimeSeries(np.arange(4.0), t0=0, dt=7, xunit=u.ns)
+
+    if operation == "sample-rate-none":
+        series.sample_rate = None
+        reference.sample_rate = None
+    elif operation == "del-dt":
+        del series.dt
+        del reference.dt
+    else:
+        del series.dx
+        del reference.dx
+
+    assert series.dt == reference.dt == 1 * u.ns
+    assert series._gwex_dt_gps_ns == 1
+    assert series.copy()._gwex_dt_gps_ns == 1
+    assert series[1:].t0_gps_ns == epoch_ns + 1
