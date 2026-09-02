@@ -1,6 +1,6 @@
 schema: gwexpy-v023-stats-compat-evidence-v1
 phase: override-inventory-shared-statistics-closure
-status: focused-green
+status: focused-green-after-data-model-review
 
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 phase_parent: 7191530e30db8f208d4ec57d14d563e9c9cf7ef7
@@ -60,6 +60,24 @@ contracts:
     implementation: NumPy nan reduction over raw values with a unit wrapper
     default: false
     var_unit: input unit squared
+  reduction_results:
+    normalization_point: after successful parent reduction only
+    parent_exception_retry: false
+    out_objects: returned untouched
+    array2d_and_plane2d:
+      implicit_indices: follow GWpy result shape and index-access outcome
+      explicit_indices: preserve GWpy stale-index behavior where GWpy preserves it
+    project_nd_types:
+      keepdims_true:
+        type: source type
+        non_reduced_axes: preserve source names, coordinates, and units
+        reduced_axes: preserve names with a dimensionless zero coordinate
+      keepdims_false:
+        three_dimensions: Array3D
+        two_dimensions: Plane2D
+        one_dimension: Series with the surviving name on xindex.info
+        zero_dimensions: Quantity
+      generic_array: preserve Array and surviving axis names
   non_gwpy_matrix_route:
     example: gwexpy.types.seriesmatrix.SeriesMatrix
     implementation: raw NumPy reduction rather than parent ndarray ufunc dispatch
@@ -85,6 +103,8 @@ comparators:
     - NaN mask
     - positive-infinity mask
     - negative-infinity mask
+    - xindex and yindex success or exception class
+    - xindex and yindex unit, length, and values
   calling_forms:
     - axis
     - dtype
@@ -120,12 +140,40 @@ tdd:
       result: 2535 passed, 39 pre-existing optional skips, 1 expected failure
       warnings: 20 dependency or pre-existing metadata warnings
     unexpected_required_skips: 0
+  data_model_followup:
+    red:
+      gwpy_4_0_1: 144 failed, 577 passed
+      gwpy_4_0_2: 144 failed, 577 passed
+      collected_cases: 721
+      primary_causes:
+        - implicit Array2D and Plane2D coordinates remained stale after reduction
+        - specialized N-D results retained an invalid source type after dimension loss
+        - Array3D keepdims results discarded source axis names and coordinates
+        - generic Array dimension-dropping reductions reset surviving axis names
+    green:
+      gwpy_4_0_1: 721 passed
+      gwpy_4_0_2: 721 passed
+    focused_axis_and_statistics_regressions:
+      gwpy_4_0_1: 849 passed, 1 pre-existing optional skip
+      gwpy_4_0_2: 848 passed, 2 pre-existing optional skips
+    types_and_fields_regressions:
+      gwpy_4_0_1: 2423 passed, 15 approved skips, 1 expected failure
+      gwpy_4_0_2: 2423 passed, 15 approved skips, 1 expected failure
+      warnings_per_environment: 17 dependency or pre-existing metadata warnings
+    unexpected_required_skips: 0
 
 physics:
   parent_default_authority: GWpy values and units are preserved exactly
   var_dimension: corrected from input-unit to input-unit-squared
   nan_policy: default propagation restored; omission remains explicit
-  human_review: required as part of the v0.2.3 scientific/data sign-off
+  human_review:
+    status: approved
+    scope:
+      - dimension-dropping result-type mapping
+      - surviving-axis name, coordinate, and unit preservation
+      - keepdims reduced-axis representation
+      - GWpy Array2D and Plane2D stale-index parity
+    evidence: independent data-model review requested and accepted this follow-up contract
 
 release_constraints:
   new_public_api: false
@@ -156,10 +204,20 @@ commands:
     /home/washimi/miniforge3/envs/gwexpy/bin/python -m pytest -q tests/types
     tests/fields tests/frequencyseries tests/timeseries/test_matrix_analysis.py
     tests/spectrogram/test_spectrogram_matrix_features.py
+  data_model_regressions: >-
+    /home/washimi/miniforge3/envs/{main,gwexpy}/bin/python -m pytest -q
+    tests/types tests/fields
 
 focused_tests:
   - tests/types/test_gwpy_stats_compat.py
   - tests/types/test_stats_mixin.py
+  - tests/types/test_types_array2d_axes.py
+  - tests/types/test_types_array3d_plane.py
+  - tests/types/test_types_array4d.py
+  - tests/types/test_types_plane2d.py
+  - tests/types/test_types_sel_isel.py
+  - tests/fields/test_scalarfield_metadata.py
+  - tests/fields/test_scalarfield_slice.py
   - tests/timeseries/test_rms_compat.py
   - tests/timeseries/test_statistics.py
 

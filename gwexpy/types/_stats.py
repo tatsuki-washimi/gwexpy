@@ -48,7 +48,163 @@ class StatisticalMethodsMixin:
 
     def _call_parent_stat(self, method, *args, **kwargs):
         parent = super()
-        return getattr(parent, method)(*args, **kwargs)
+        result = getattr(parent, method)(*args, **kwargs)
+        if kwargs.get("out") is not None:
+            return result
+        return self._normalize_reduction_result(
+            result,
+            axis=kwargs.get("axis"),
+            keepdims=kwargs.get("keepdims", False),
+        )
+
+    def _normalize_reduction_result(self, result, *, axis, keepdims):
+        """Restore axis invariants after a successful parent reduction."""
+        from .array import Array
+        from .array2d import Array2D
+        from .array3d import Array3D
+        from .array4d import Array4D
+
+        if isinstance(self, Array2D):
+            return self._normalize_array2d_result(result, axis=axis)
+
+        reduced_axes = self._normalized_reduction_axes(axis)
+        if type(self) is Array:
+            if keepdims:
+                result._axis_names = list(self.axis_names)
+            else:
+                result._axis_names = [
+                    name
+                    for index, name in enumerate(self.axis_names)
+                    if index not in reduced_axes
+                ]
+            return result
+
+        if not isinstance(self, (Array3D, Array4D)):
+            return result
+
+        from astropy.units import dimensionless_unscaled
+
+        source_axes = tuple(self.axes)
+        if keepdims or result.ndim == self.ndim:
+            for index, source_axis in enumerate(source_axes):
+                setattr(result, f"_axis{index}_name", source_axis.name)
+                if index in reduced_axes:
+                    index_values = np.arange(result.shape[index])
+                    axis_index = index_values * dimensionless_unscaled
+                else:
+                    axis_index = source_axis.index
+                setattr(result, f"_axis{index}_index", axis_index)
+            result._axis_names = [source_axis.name for source_axis in source_axes]
+            return result
+
+        surviving_axes = [
+            source_axis
+            for index, source_axis in enumerate(source_axes)
+            if index not in reduced_axes
+        ]
+        return self._rebuild_reduced_result(result, surviving_axes)
+
+    def _normalize_array2d_result(self, result, *, axis):
+        """Match GWpy's implicit-index behavior without changing outcomes."""
+        from astropy.units import dimensionless_unscaled
+        from gwpy.types.array2d import Array2D as GwpyArray2D
+
+        source_indices = (getattr(self, "xindex"), getattr(self, "yindex"))
+        shape = getattr(self, "shape")
+        implicit = tuple(
+            index.unit == dimensionless_unscaled
+            and np.array_equal(index.value, np.arange(shape[position]))
+            for position, index in enumerate(source_indices)
+        )
+
+        if isinstance(result, GwpyArray2D):
+            for attribute, is_implicit in zip(
+                ("xindex", "yindex"), implicit, strict=True
+            ):
+                if is_implicit and f"_{attribute}" in result.__dict__:
+                    delattr(result, attribute)
+            return result
+
+        if getattr(result, "ndim", 0) != 1:
+            return result
+
+        reduced_axes = self._normalized_reduction_axes(axis)
+        surviving_axes = [
+            position
+            for position in range(getattr(self, "ndim"))
+            if position not in reduced_axes
+        ]
+        if (
+            len(surviving_axes) == 1
+            and implicit[surviving_axes[0]]
+            and "_xindex" in result.__dict__
+        ):
+            delattr(result, "xindex")
+        return result
+
+    def _normalized_reduction_axes(self, axis):
+        ndim = getattr(self, "ndim")
+        if axis is None:
+            return tuple(range(ndim))
+        axes = axis if isinstance(axis, tuple) else (axis,)
+        return tuple(int(item) % ndim for item in axes)
+
+    def _rebuild_reduced_result(self, result, surviving_axes):
+        from astropy.units import Quantity
+
+        metadata = {
+            name: value
+            for name in ("name", "epoch", "channel")
+            if (value := getattr(result, name, None)) is not None
+        }
+        values = result.value
+        unit = result.unit
+
+        if not surviving_axes:
+            return Quantity(values, unit=unit, copy=False)
+
+        if len(surviving_axes) == 1:
+            from .series import Series
+
+            rebuilt = Series(
+                values,
+                unit=unit,
+                xindex=surviving_axes[0].index,
+                copy=False,
+                **metadata,
+            )
+            rebuilt.xindex.info.name = surviving_axes[0].name
+            return rebuilt
+
+        if len(surviving_axes) == 2:
+            from .plane2d import Plane2D
+
+            return Plane2D(
+                values,
+                unit=unit,
+                axis1_name=surviving_axes[0].name,
+                axis2_name=surviving_axes[1].name,
+                xindex=surviving_axes[0].index,
+                yindex=surviving_axes[1].index,
+                copy=False,
+                **metadata,
+            )
+
+        if len(surviving_axes) == 3:
+            from .array3d import Array3D
+
+            return Array3D(
+                values,
+                unit=unit,
+                axis_names=[axis_.name for axis_ in surviving_axes],
+                axis0=surviving_axes[0].index,
+                axis1=surviving_axes[1].index,
+                axis2=surviving_axes[2].index,
+                copy=False,
+                **metadata,
+            )
+
+        return result
 
     def _has_gwpy_quantity_parent(self):
         from astropy.units import Quantity
