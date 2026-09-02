@@ -59,6 +59,7 @@ terminal_test_references:
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_crop_invalid_outcome_matches_gwpy_exception_class
   bifrequencymap_plot:
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_plot_common_routes_match_gwpy_artist_source_and_label
+    - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_default_plot_signoff_evidence_records_geometry_labels_and_input_state
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_plot_invalid_method_exception_class_matches_gwpy
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_plot_routes_plot_and_axes_kwargs_without_forwarding_to_artist
     - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_plot_explicit_imshow_norm_does_not_change_method
@@ -120,6 +121,18 @@ contracts:
     one_point_axis: ValueError, matching installed GWpy
     explicit_imshow_norm: remains imshow and preserves interpolation
     nonfinite_log_norm: exact artist source data and mask match GWpy
+    default_geometry_signoff_evidence:
+      fixture:
+        shape: [3, 4]
+        xindex_hz: [11, 23, 47]
+        yindex_hz: [2, 5, 9, 14]
+      extent_and_effective_limits: exact GWpy match at x=[11, 71], y=[2, 19]
+      artist: AxesImage with lower origin and exact transposed source payload
+      input_nonmutation: values, xindex, and yindex remain unchanged
+      axis_label_text:
+        gwpy: 'Frequency [$\mathrm{Hz}$] on both axes'
+        gwexpy: 'Frequency 2 [Hz] on x; Frequency 1 [Hz] on y'
+        classification: domain-specific text-only presentation difference pending human sign-off
     presentation_defaults_retained:
       - inferno colour map
       - background colour
@@ -175,6 +188,10 @@ comparators:
     - view versus copy memory sharing where applicable
     - plotted artist source array and label
     - plotted masked-array data and mask
+    - default plot extent and effective x/y limits
+    - default plot input values and axis metadata remain unmodified
+  recorded_presentation_difference:
+    - default BifrequencyMap axis-label text, with axis semantics asserted separately
   exception_message_exact: false
   presentation_pixels_style_layout: excluded
 
@@ -221,6 +238,12 @@ tdd:
       result: 3082 passed, 37 pre-existing optional skips, 1 expected failure
       warnings: 17 dependency or pre-existing metadata warnings
     unexpected_required_skips: 0
+    bifrequency_plot_signoff_evidence:
+      gwpy_4_0_1: 1 passed
+      gwpy_4_0_2: 1 passed
+    bifrequency_related_tests:
+      gwpy_4_0_1: 59 passed
+      gwpy_4_0_2: 59 passed
 
 physics_and_data_model:
   finite_difference_values_and_units: delegated unchanged to GWpy
@@ -284,6 +307,11 @@ commands:
   related_regressions: >-
     MPLBACKEND=Agg conda run -n gwexpy pytest -q
     tests/frequencyseries tests/types tests/fields
+  bifrequency_plot_signoff_evidence_both_oracles: >-
+    for environment in main gwexpy; do MPLBACKEND=Agg conda run -n
+    "$environment" pytest -q
+    tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_default_plot_signoff_evidence_records_geometry_labels_and_input_state;
+    done
 
 focused_tests:
   - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py

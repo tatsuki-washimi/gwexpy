@@ -298,6 +298,86 @@ def test_plot_common_routes_match_gwpy_artist_source_and_label(
         plt.close(expected)
 
 
+def test_default_plot_signoff_evidence_records_geometry_labels_and_input_state() -> (
+    None
+):
+    values = np.array(
+        [
+            [101.0, 103.0, 107.0, 109.0],
+            [211.0, 223.0, 227.0, 229.0],
+            [307.0, 311.0, 313.0, 317.0],
+        ]
+    )
+    kwargs = {
+        "unit": u.V,
+        "xindex": [11, 23, 47] * u.Hz,
+        "yindex": [2, 5, 9, 14] * u.Hz,
+        "name": "orientation-evidence",
+    }
+    actual_input = BifrequencyMap(values.copy(), **kwargs)
+    expected_input = GWpyArray2D(values.copy(), **kwargs)
+    actual_xindex = actual_input.xindex.copy()
+    actual_yindex = actual_input.yindex.copy()
+    expected_xindex = expected_input.xindex.copy()
+    expected_yindex = expected_input.yindex.copy()
+
+    actual = actual_input.plot()
+    expected = expected_input.plot()
+    try:
+        actual_axes = actual.axes[0]
+        expected_axes = expected.axes[0]
+        assert len(actual_axes.images) == len(expected_axes.images) == 1
+        assert not actual_axes.collections
+        assert not expected_axes.collections
+
+        actual_artist = actual_axes.images[0]
+        expected_artist = expected_axes.images[0]
+        assert type(actual_artist) is type(expected_artist)
+        assert actual_artist.origin == expected_artist.origin == "lower"
+        np.testing.assert_array_equal(actual_artist.get_extent(), [11, 71, 2, 19])
+        np.testing.assert_array_equal(
+            actual_artist.get_extent(), expected_artist.get_extent()
+        )
+        np.testing.assert_array_equal(actual_axes.get_xlim(), [11, 71])
+        np.testing.assert_array_equal(actual_axes.get_xlim(), expected_axes.get_xlim())
+        np.testing.assert_array_equal(actual_axes.get_ylim(), [2, 19])
+        np.testing.assert_array_equal(actual_axes.get_ylim(), expected_axes.get_ylim())
+
+        actual_payload, actual_label = _artist_payload(actual)
+        expected_payload, expected_label = _artist_payload(expected)
+        _assert_masked_payload_equal(actual_payload, np.ma.asarray(values.T))
+        _assert_masked_payload_equal(actual_payload, expected_payload)
+        assert actual_label == expected_label
+
+        # GWexpy keeps domain-specific axis names while GWpy uses generic
+        # frequency labels. Record both defaults as the scoped text-only
+        # presentation difference; their axis/artist authority is identical.
+        assert (actual_axes.get_xlabel(), actual_axes.get_ylabel()) == (
+            "Frequency 2 [Hz]",
+            "Frequency 1 [Hz]",
+        )
+        assert (expected_axes.get_xlabel(), expected_axes.get_ylabel()) == (
+            r"Frequency [$\mathrm{Hz}$]",
+            r"Frequency [$\mathrm{Hz}$]",
+        )
+
+        np.testing.assert_array_equal(actual_input.value, values)
+        np.testing.assert_array_equal(expected_input.value, values)
+        np.testing.assert_array_equal(actual_input.xindex, actual_xindex)
+        np.testing.assert_array_equal(actual_input.yindex, actual_yindex)
+        np.testing.assert_array_equal(expected_input.xindex, expected_xindex)
+        np.testing.assert_array_equal(expected_input.yindex, expected_yindex)
+        assert actual_input.unit == expected_input.unit == u.V
+        assert actual_input.name == expected_input.name == "orientation-evidence"
+        assert actual_input.xindex.unit == expected_input.xindex.unit == u.Hz
+        assert actual_input.yindex.unit == expected_input.yindex.unit == u.Hz
+        np.testing.assert_array_equal(actual_input.frequency2, actual_xindex)
+        np.testing.assert_array_equal(actual_input.frequency1, actual_yindex)
+    finally:
+        plt.close(actual)
+        plt.close(expected)
+
+
 @pytest.mark.parametrize("method", ["not-a-method", None, 1])
 def test_plot_invalid_method_exception_class_matches_gwpy(method: Any) -> None:
     actual_input, expected_input = _map_pair()
