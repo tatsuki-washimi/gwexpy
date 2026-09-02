@@ -41,10 +41,17 @@ def test_mean_ignore_nan_false():
     assert result == pytest.approx(5.5)
 
 
-def test_mean_with_nan_ignored():
+def test_mean_with_nan_propagated_by_default():
     data = np.array([[[1.0, np.nan, 3.0]]])
     sm = _make_sm(data)
     result = sm.mean()
+    assert np.isnan(result)
+
+
+def test_mean_with_nan_explicitly_ignored():
+    data = np.array([[[1.0, np.nan, 3.0]]])
+    sm = _make_sm(data)
+    result = sm.mean(ignore_nan=True)
     assert result == pytest.approx(2.0)
 
 

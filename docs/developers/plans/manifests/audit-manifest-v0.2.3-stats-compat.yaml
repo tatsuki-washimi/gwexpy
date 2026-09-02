@@ -1,0 +1,170 @@
+schema: gwexpy-v023-stats-compat-evidence-v1
+phase: override-inventory-shared-statistics-closure
+status: focused-green
+
+implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
+phase_parent: 7191530e30db8f208d4ec57d14d563e9c9cf7ef7
+
+issues:
+  - "#639"
+  - "#704"
+
+skills:
+  - superpowers:test-driven-development
+  - extend_gwpy
+  - gwexpy_conda_jobs
+
+oracles:
+  - environment: main
+    python: 3.12.12
+    gwpy: 4.0.1
+    numpy: 1.26.4
+    astropy: 6.1.7
+  - environment: gwexpy
+    python: 3.11.14
+    gwpy: 4.0.2
+    numpy: 1.26.4
+    astropy: 6.1.7
+oracle_version_difference: none observed in the shared-statistics matrix
+
+implementation_groups:
+  mean: implementation-9553b5e8cb73bae9
+  std: implementation-9f76388a40ccd671
+  var: implementation-3478d84f99e4b0ba
+  min: implementation-9f8a7560b71e039d
+  max: implementation-ab1009fe96b2e4be
+  median: implementation-a5e7c2557de8003e
+
+public_classes:
+  - gwexpy.fields.scalar.ScalarField
+  - gwexpy.frequencyseries.frequencyseries.FrequencySeries
+  - gwexpy.timeseries.timeseries.TimeSeries
+  - gwexpy.types.array.Array
+  - gwexpy.types.array2d.Array2D
+  - gwexpy.types.array3d.Array3D
+  - gwexpy.types.array4d.Array4D
+  - gwexpy.types.plane2d.Plane2D
+  - gwexpy.types.series.Series
+
+contracts:
+  default_route:
+    implementation: direct next-MRO parent dispatch
+    routing_predicate: instance is an Astropy Quantity subclass
+    exception_retry: false
+    nan: propagated exactly as by installed GWpy
+    positive_and_negative_infinity: masks and finite values match installed GWpy
+    var_unit: input unit squared
+  explicit_extension:
+    input: ignore_nan=true
+    status: retained existing public opt-in
+    implementation: NumPy nan reduction over raw values with a unit wrapper
+    default: false
+    var_unit: input unit squared
+  non_gwpy_matrix_route:
+    example: gwexpy.types.seriesmatrix.SeriesMatrix
+    implementation: raw NumPy reduction rather than parent ndarray ufunc dispatch
+    reason: SeriesMatrix deliberately sets __array_ufunc__ to null
+    default_nan: propagated
+  signatures:
+    mean: parent positional surface plus keyword-only where and ignore_nan
+    std: parent positional surface plus keyword-only where and ignore_nan
+    var: parent positional surface plus keyword-only where and ignore_nan
+    min: NumPy parent positional initial/where surface plus keyword-only ignore_nan
+    max: NumPy parent positional initial/where surface plus keyword-only ignore_nan
+    median: parent axis-and-keyword surface; ignore_nan consumed from keywords
+
+comparators:
+  exact:
+    - success or failure
+    - exception class
+    - parameter order, kind, and default
+    - numerical shape
+    - dtype
+    - unit
+    - finite values with rtol 0 and atol 0
+    - NaN mask
+    - positive-infinity mask
+    - negative-infinity mask
+  calling_forms:
+    - axis
+    - dtype
+    - out
+    - ddof
+    - keepdims
+    - where
+    - initial
+    - overwrite_input
+  exception_message_exact: false
+
+tdd:
+  red:
+    environment: gwexpy
+    gwpy: 4.0.2
+    collected_cases: 513
+    result: 270 failed, 243 passed
+    primary_causes:
+      - NaN was omitted by default instead of propagated
+      - var returned the input unit instead of its square
+      - where was accepted positionally by mean, std, and var
+      - median accepted parent-invalid extra positional arguments
+      - out and min/max unit-aware calling forms bypassed the parent contract
+  green:
+    differential_matrix:
+      gwpy_4_0_1: 513 passed
+      gwpy_4_0_2: 513 passed
+    focused_with_existing_statistics_tests:
+      gwpy_4_0_1: 577 passed, 1 pre-existing optional skip
+      gwpy_4_0_2: 576 passed, 2 pre-existing optional skips
+    related_regression_suite:
+      environment: gwexpy
+      result: 2535 passed, 39 pre-existing optional skips, 1 expected failure
+      warnings: 20 dependency or pre-existing metadata warnings
+    unexpected_required_skips: 0
+
+physics:
+  parent_default_authority: GWpy values and units are preserved exactly
+  var_dimension: corrected from input-unit to input-unit-squared
+  nan_policy: default propagation restored; omission remains explicit
+  human_review: required as part of the v0.2.3 scientific/data sign-off
+
+release_constraints:
+  new_public_api: false
+  new_dependency: false
+  workflow_changed: false
+  override_inventory_modified_by_this_change: false
+
+static_validation:
+  ruff_changed_python_files: all checks passed
+  ruff_format_changed_python_files: all files formatted
+  mypy_changed_source_files: success, no issues found in 1 source file
+  yaml_safe_load: valid
+  git_diff_check: clean
+
+commands:
+  red: >-
+    /home/washimi/miniforge3/envs/gwexpy/bin/python -m pytest -q
+    tests/types/test_gwpy_stats_compat.py
+  focused_gwpy_4_0_1: >-
+    /home/washimi/miniforge3/envs/main/bin/python -m pytest -q
+    tests/types/test_gwpy_stats_compat.py tests/types/test_stats_mixin.py
+    tests/timeseries/test_rms_compat.py tests/timeseries/test_statistics.py
+  focused_gwpy_4_0_2: >-
+    /home/washimi/miniforge3/envs/gwexpy/bin/python -m pytest -q
+    tests/types/test_gwpy_stats_compat.py tests/types/test_stats_mixin.py
+    tests/timeseries/test_rms_compat.py tests/timeseries/test_statistics.py
+  related_regressions: >-
+    /home/washimi/miniforge3/envs/gwexpy/bin/python -m pytest -q tests/types
+    tests/fields tests/frequencyseries tests/timeseries/test_matrix_analysis.py
+    tests/spectrogram/test_spectrogram_matrix_features.py
+
+focused_tests:
+  - tests/types/test_gwpy_stats_compat.py
+  - tests/types/test_stats_mixin.py
+  - tests/timeseries/test_rms_compat.py
+  - tests/timeseries/test_statistics.py
+
+changed_files:
+  - gwexpy/types/_stats.py
+  - tests/types/test_gwpy_stats_compat.py
+  - tests/types/test_stats_mixin.py
+  - docs/developers/plans/manifests/audit-manifest-v0.2.3-stats-compat.yaml

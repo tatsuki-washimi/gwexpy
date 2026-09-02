@@ -10,6 +10,9 @@ except ImportError as _exc:
     ) from _exc
 
 
+_NO_VALUE = getattr(np, "_NoValue")
+
+
 class StatisticalMethodsMixin:
     """Mixin class providing statistical methods with ignore_nan support.
 
@@ -17,7 +20,15 @@ class StatisticalMethodsMixin:
     For matrices, use axis parameter to specify the reduction axis.
     """
 
-    def _apply_stat_func(self, func_nan, func_raw, ignore_nan, **kwargs):
+    def _apply_stat_func(
+        self,
+        func_nan,
+        func_raw,
+        ignore_nan,
+        *,
+        result_unit_power=1,
+        **kwargs,
+    ):
         # Extract data and unit
         data = np.asarray(self)
         unit = getattr(self, "unit", None)
@@ -31,8 +42,18 @@ class StatisticalMethodsMixin:
         if unit is not None:
             from astropy.units import Quantity
 
+            unit = unit**result_unit_power
             return Quantity(res, unit=unit)
         return res
+
+    def _call_parent_stat(self, method, *args, **kwargs):
+        parent = super()
+        return getattr(parent, method)(*args, **kwargs)
+
+    def _has_gwpy_quantity_parent(self):
+        from astropy.units import Quantity
+
+        return isinstance(self, Quantity)
 
     def mean(
         self,
@@ -40,10 +61,19 @@ class StatisticalMethodsMixin:
         dtype=None,
         out=None,
         keepdims=False,
+        *,
         where=True,
-        **kwargs,
+        ignore_nan=False,
     ):
-        ignore_nan = kwargs.pop("ignore_nan", True)
+        if not ignore_nan and self._has_gwpy_quantity_parent():
+            return self._call_parent_stat(
+                "mean",
+                axis=axis,
+                dtype=dtype,
+                out=out,
+                keepdims=keepdims,
+                where=where,
+            )
         return self._apply_stat_func(
             np.nanmean,
             np.mean,
@@ -53,7 +83,6 @@ class StatisticalMethodsMixin:
             out=out,
             keepdims=keepdims,
             where=where,
-            **kwargs,
         )
 
     def std(
@@ -63,10 +92,20 @@ class StatisticalMethodsMixin:
         out=None,
         ddof=0,
         keepdims=False,
+        *,
         where=True,
-        **kwargs,
+        ignore_nan=False,
     ):
-        ignore_nan = kwargs.pop("ignore_nan", True)
+        if not ignore_nan and self._has_gwpy_quantity_parent():
+            return self._call_parent_stat(
+                "std",
+                axis=axis,
+                dtype=dtype,
+                out=out,
+                ddof=ddof,
+                keepdims=keepdims,
+                where=where,
+            )
         return self._apply_stat_func(
             np.nanstd,
             np.std,
@@ -77,7 +116,6 @@ class StatisticalMethodsMixin:
             ddof=ddof,
             keepdims=keepdims,
             where=where,
-            **kwargs,
         )
 
     def var(
@@ -87,21 +125,31 @@ class StatisticalMethodsMixin:
         out=None,
         ddof=0,
         keepdims=False,
+        *,
         where=True,
-        **kwargs,
+        ignore_nan=False,
     ):
-        ignore_nan = kwargs.pop("ignore_nan", True)
+        if not ignore_nan and self._has_gwpy_quantity_parent():
+            return self._call_parent_stat(
+                "var",
+                axis=axis,
+                dtype=dtype,
+                out=out,
+                ddof=ddof,
+                keepdims=keepdims,
+                where=where,
+            )
         return self._apply_stat_func(
             np.nanvar,
             np.var,
             ignore_nan,
+            result_unit_power=2,
             axis=axis,
             dtype=dtype,
             out=out,
             ddof=ddof,
             keepdims=keepdims,
             where=where,
-            **kwargs,
         )
 
     def min(
@@ -109,20 +157,22 @@ class StatisticalMethodsMixin:
         axis=None,
         out=None,
         keepdims=False,
-        initial=None,
-        where=True,
-        **kwargs,
+        initial=_NO_VALUE,
+        where=_NO_VALUE,
+        *,
+        ignore_nan=False,
     ):
-        ignore_nan = kwargs.pop("ignore_nan", True)
+        kwargs = {"axis": axis, "out": out, "keepdims": keepdims}
+        if initial is not _NO_VALUE:
+            kwargs["initial"] = initial
+        if where is not _NO_VALUE:
+            kwargs["where"] = where
+        if not ignore_nan and self._has_gwpy_quantity_parent():
+            return self._call_parent_stat("min", **kwargs)
         return self._apply_stat_func(
             np.nanmin,
             np.min,
             ignore_nan,
-            axis=axis,
-            out=out,
-            keepdims=keepdims,
-            initial=initial,
-            where=where,
             **kwargs,
         )
 
@@ -131,29 +181,28 @@ class StatisticalMethodsMixin:
         axis=None,
         out=None,
         keepdims=False,
-        initial=None,
-        where=True,
-        **kwargs,
+        initial=_NO_VALUE,
+        where=_NO_VALUE,
+        *,
+        ignore_nan=False,
     ):
-        ignore_nan = kwargs.pop("ignore_nan", True)
+        kwargs = {"axis": axis, "out": out, "keepdims": keepdims}
+        if initial is not _NO_VALUE:
+            kwargs["initial"] = initial
+        if where is not _NO_VALUE:
+            kwargs["where"] = where
+        if not ignore_nan and self._has_gwpy_quantity_parent():
+            return self._call_parent_stat("max", **kwargs)
         return self._apply_stat_func(
             np.nanmax,
             np.max,
             ignore_nan,
-            axis=axis,
-            out=out,
-            keepdims=keepdims,
-            initial=initial,
-            where=where,
             **kwargs,
         )
 
     def median(
         self,
         axis=None,
-        out=None,
-        overwrite_input=False,
-        keepdims=False,
         **kwargs,
     ):
         """Compute the median.
@@ -163,17 +212,12 @@ class StatisticalMethodsMixin:
         axis : int or None, optional
             Axis along which to compute the median. If None, compute over the
             flattened array.
-        out : ndarray, optional
-            Output array.
-        overwrite_input : bool, optional
-            If True, allow the input array to be modified by the calculation.
-        keepdims : bool, optional
-            If True, the reduced axes are left in the result as dimensions with
-            size one.
         ignore_nan : bool, optional
-            If True (default), use ``numpy.nanmedian`` and ignore NaNs.
+            If True, use ``numpy.nanmedian`` and ignore NaNs. The default is
+            False, matching GWpy and NumPy NaN propagation.
         **kwargs
-            Passed to the underlying NumPy implementation.
+            Passed to the GWpy implementation, or to ``numpy.nanmedian`` when
+            ``ignore_nan=True``.
 
         Returns
         -------
@@ -182,13 +226,16 @@ class StatisticalMethodsMixin:
             returned with the same unit where applicable.
 
         """
-        ignore_nan = kwargs.pop("ignore_nan", True)
-        # overwrite_input is only in median/nanmedian
-        base_kwargs = dict(
-            axis=axis, out=out, overwrite_input=overwrite_input, keepdims=keepdims
+        ignore_nan = kwargs.pop("ignore_nan", False)
+        if not ignore_nan and self._has_gwpy_quantity_parent():
+            return self._call_parent_stat("median", axis=axis, **kwargs)
+        return self._apply_stat_func(
+            np.nanmedian,
+            np.median,
+            ignore_nan,
+            axis=axis,
+            **kwargs,
         )
-        base_kwargs.update(kwargs)
-        return self._apply_stat_func(np.nanmedian, np.median, ignore_nan, **base_kwargs)
 
     def rms(self, axis=None, keepdims=False, ignore_nan=True):
         """Compute the Root Mean Square (RMS) value.
