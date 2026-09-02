@@ -91,11 +91,20 @@ def _coerce_reader_result(cls, reader_result):
     return result
 
 
-def _is_timeseries_hdf5_dataset(obj: Any) -> bool:
-    """Return whether an HDF5 dataset has a scalar time-axis unit."""
+def _is_timeseries_hdf5_dataset(
+    obj: Any, *, allow_missing_xunit: bool = False
+) -> bool:
+    """Return whether an HDF5 dataset is eligible as a TimeSeries entry."""
     if not isinstance(obj, h5py.Dataset) or obj.ndim != 1:
         return False
-    xunit = obj.attrs.get("xunit", "undef")
+    kind = obj.dtype.kind
+    if kind not in {"b", "u", "i", "f", "c"} and not (
+        kind == "V" and obj.dtype.fields is None
+    ):
+        return False
+    if "xunit" not in obj.attrs:
+        return allow_missing_xunit
+    xunit = obj.attrs["xunit"]
     if getattr(xunit, "shape", ()) != ():
         return False
     try:
@@ -880,6 +889,9 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 if merge:
                     from gwexpy.timeseries.io.hdf5 import _ROLLBACK_PREFIX
 
+                    stored_keymap = read_hdf5_keymap(h5f)
+                    stored_order = read_hdf5_order(h5f)
+                    manifest_explicit = set(stored_order) | set(stored_keymap)
                     eligible = []
                     for name in root_names:
                         if name.startswith(_ROLLBACK_PREFIX):
@@ -888,8 +900,12 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                         if not isinstance(link, h5py.HardLink):
                             continue
                         obj = h5f[name]
+                        allow_missing_xunit = name in manifest_explicit
                         if layout == LAYOUT_DATASET:
-                            if _is_timeseries_hdf5_dataset(obj):
+                            if _is_timeseries_hdf5_dataset(
+                                obj,
+                                allow_missing_xunit=allow_missing_xunit,
+                            ):
                                 eligible.append(name)
                             continue
                         if not isinstance(obj, h5py.Group):
@@ -897,10 +913,12 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                         data_link = obj.get("data", getlink=True)
                         if not isinstance(data_link, h5py.HardLink):
                             continue
-                        if _is_timeseries_hdf5_dataset(obj.get("data")):
+                        if _is_timeseries_hdf5_dataset(
+                            obj.get("data"),
+                            allow_missing_xunit=allow_missing_xunit,
+                        ):
                             eligible.append(name)
                     eligible_set = set(eligible)
-                    stored_keymap = read_hdf5_keymap(h5f)
                     keymap = {
                         name: stored_keymap.get(name, name) for name in eligible
                     }
@@ -925,7 +943,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
                     order = []
                     ordered = set()
-                    for name in [*read_hdf5_order(h5f), *eligible]:
+                    for name in [*stored_order, *eligible]:
                         if name in eligible_set and name not in ordered:
                             order.append(name)
                             ordered.add(name)

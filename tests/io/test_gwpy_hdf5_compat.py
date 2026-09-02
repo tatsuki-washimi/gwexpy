@@ -469,6 +469,95 @@ def test_timeseriesdict_hdf5_append_accepts_legacy_time_axis_candidates(tmp_path
     assert result["new"].name == new.name
 
 
+def test_timeseriesdict_hdf5_append_preserves_manifest_explicit_legacy_entries(
+    tmp_path,
+):
+    ordered_values = np.array([1.0, 2.0, 3.0])
+    mapped_values = np.array([11.0, 12.0, 13.0])
+    new = TimeSeries(
+        np.arange(3.0) + 20,
+        sample_rate=2.0,
+        t0=1.0,
+        unit="m",
+        name="new series",
+    )
+
+    outfile = tmp_path / "tsd_explicit_legacy_candidates.h5"
+    with h5py.File(outfile, "w") as h5f:
+        ordered = h5f.create_dataset("legacy_ordered", data=ordered_values)
+        ordered.attrs["x0"] = 12.5
+        ordered.attrs["dx"] = 0.25
+        ordered.attrs["unit"] = "m"
+        ordered.attrs["name"] = "ordered legacy series"
+        mapped = h5f.create_dataset("legacy_mapped", data=mapped_values)
+        mapped.attrs["x0"] = 22.5
+        mapped.attrs["dx"] = 0.5
+        mapped.attrs["unit"] = "m"
+        mapped.attrs["name"] = "mapped legacy series"
+        h5f.create_dataset("unrelated", data=[101.0, 102.0, 103.0])
+        invalid = h5f.create_dataset("invalid_frequency", data=[201.0, 202.0])
+        invalid.attrs["xunit"] = "Hz"
+        invalid_string = h5f.create_dataset(
+            "invalid_string", data=np.array([b"a", b"b"], dtype="S1")
+        )
+        invalid_string.attrs["xunit"] = "s"
+        write_hdf5_manifest(
+            h5f,
+            kind="TimeSeriesDict",
+            layout=LAYOUT_DATASET,
+            keymap={
+                "legacy_mapped": "logical_mapped",
+                "invalid_frequency": "invalid_frequency",
+                "invalid_string": "invalid_string",
+            },
+            order=["legacy_ordered", "invalid_frequency", "invalid_string"],
+        )
+
+    TimeSeriesDict({"new": new}).write(
+        outfile, format="hdf5", layout="dataset", append=True
+    )
+
+    with h5py.File(outfile, "r") as h5f:
+        assert set(h5f) == {
+            "legacy_ordered",
+            "legacy_mapped",
+            "unrelated",
+            "invalid_frequency",
+            "invalid_string",
+            "new",
+        }
+        assert "xunit" not in h5f["legacy_ordered"].attrs
+        assert "xunit" not in h5f["legacy_mapped"].attrs
+        np.testing.assert_allclose(h5f["unrelated"][()], [101.0, 102.0, 103.0])
+        np.testing.assert_allclose(h5f["invalid_frequency"][()], [201.0, 202.0])
+        np.testing.assert_array_equal(h5f["invalid_string"][()], [b"a", b"b"])
+        assert read_hdf5_keymap(h5f) == {
+            "legacy_ordered": "legacy_ordered",
+            "legacy_mapped": "logical_mapped",
+            "new": "new",
+        }
+        assert read_hdf5_order(h5f) == [
+            "legacy_ordered",
+            "legacy_mapped",
+            "new",
+        ]
+
+    result = TimeSeriesDict.read(outfile, format="hdf5")
+    assert list(result) == ["legacy_ordered", "logical_mapped", "new"]
+    np.testing.assert_allclose(result["legacy_ordered"].value, ordered_values)
+    np.testing.assert_allclose(result["logical_mapped"].value, mapped_values)
+    np.testing.assert_allclose(result["new"].value, new.value)
+    assert result["legacy_ordered"].name == "ordered legacy series"
+    assert result["logical_mapped"].name == "mapped legacy series"
+    assert str(result["legacy_ordered"].unit) == "m"
+    assert str(result["logical_mapped"].unit) == "m"
+    assert result["legacy_ordered"].t0.value == 12.5
+    assert result["logical_mapped"].t0.value == 22.5
+    assert result["legacy_ordered"].dt.value == 0.25
+    assert result["logical_mapped"].dt.value == 0.5
+    assert result["new"].name == new.name
+
+
 def test_timeseriesdict_hdf5_append_rejects_ambiguous_existing_logical_keys(
     tmp_path,
 ):
