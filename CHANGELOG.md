@@ -13,10 +13,11 @@ historical approval remains bound only to candidate
 [aggregate sign-off report](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md).
 The candidate adds no public API or dependency.
 
-The release remains **HOLD** pending current-candidate human scientific/data-
-model sign-off reapproval, followed by same-candidate scientific/data-model
-review, same-candidate release-security review, candidate-wide QA, and 19-cell
-qualification. Any later runtime/data-model semantic change invalidates an
+The release remains **HOLD** pending current-candidate human
+scientific/data-model sign-off reapproval, followed by same-candidate
+scientific/data-model review, same-candidate release-security review,
+candidate-wide QA, and 19-cell qualification. Any later runtime/data-model
+semantic change invalidates an
 aggregate sign-off and requires reapproval.
 
 The current inventory evidence covers 575 logical members with 62 selectors

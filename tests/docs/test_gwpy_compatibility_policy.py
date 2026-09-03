@@ -597,6 +597,15 @@ def test_v023_human_review_records_distinguish_historical_and_current_state() ->
     assert type_collision["physics_and_data_model"]["approved_candidate_sha"] == (
         V023_HISTORICAL_SIGNOFF_CANDIDATE
     )
+    axis_label_classification = type_collision["contracts"]["bifrequencymap_plot"][
+        "default_geometry_signoff_evidence"
+    ]["axis_label_text"]["classification"]
+    assert axis_label_classification == (
+        "domain-specific text-only presentation difference was approved by human "
+        "scientific/data-model sign-off for historical candidate "
+        f"{V023_HISTORICAL_SIGNOFF_CANDIDATE}; current candidate "
+        f"{V023_CURRENT_SIGNOFF_CANDIDATE} is pending-reapproval."
+    )
 
     legacy_rayleigh = yaml.safe_load(
         _read(
@@ -639,6 +648,18 @@ def test_v023_human_review_records_distinguish_historical_and_current_state() ->
         assert "float32 RMS underflow" in disclosure
         assert "stale Array2D/Plane2D `min`/`max` indices" in disclosure
         assert "stale numeric `swapaxes`/`transpose` metadata" in disclosure
+
+
+def test_v023_disclosure_keeps_data_model_compound_intact() -> None:
+    for disclosure_path in ("CHANGELOG.md", "release_notes/v0.2.3.md"):
+        disclosure = _read(disclosure_path)
+        normalized = " ".join(disclosure.split())
+        assert "data-\nmodel" not in disclosure
+        assert "data- model" not in normalized
+        assert (
+            "current-candidate human scientific/data-model sign-off reapproval"
+            in normalized
+        )
 
 
 def test_release_review_scopes_bind_the_policy_to_lanes_a_and_b() -> None:
