@@ -1457,6 +1457,42 @@ class ScalarField(FieldBase):
     # Comparison & Summary Methods (Phase 2)
     # =========================================================================
 
+    def _new_with_left_metadata(
+        self,
+        value,
+        *,
+        unit,
+        axes=None,
+        metadata_source=None,
+    ) -> ScalarField:
+        """Build a result with this field's physical-grid authority."""
+        if axes is None:
+            axes = (
+                self._axis0_index,
+                self._axis1_index,
+                self._axis2_index,
+                self._axis3_index,
+            )
+        if metadata_source is None:
+            metadata_source = self
+        metadata = self._metadata_kwargs(metadata_source)
+        result = ScalarField(
+            value,
+            unit=unit,
+            axis0=axes[0],
+            axis1=axes[1],
+            axis2=axes[2],
+            axis3=axes[3],
+            axis_names=list(self.axis_names),
+            axis0_domain=self._axis0_domain,
+            space_domain=self._space_domains,
+            copy=False,
+            **metadata,
+        )
+        result._axis0_offset = getattr(self, "_axis0_offset", None)
+        self._propagate_gwex_attrs(result)
+        return result
+
     def diff(self, n=1, axis=-1, *, mode=None):
         """Compute a GWpy finite difference or compare two fields.
 
@@ -1507,18 +1543,24 @@ class ScalarField(FieldBase):
                 raise TypeError(
                     "diff() 'mode' is only valid when comparing ScalarField objects"
                 )
-            result = GwpyArray.diff(self, n, axis)
+            parent_input = self.view(GwpyArray)
+            parent_result = GwpyArray.diff(parent_input, n, axis)
             axis_number = int(axis) % self.ndim
             difference_order = int(n)
-            axis_attribute = (
-                "_axis0_index",
-                "_axis1_index",
-                "_axis2_index",
-                "_axis3_index",
-            )[axis_number]
-            source_index = getattr(self, axis_attribute)
-            setattr(result, axis_attribute, source_index[difference_order:])
-            return result
+            result_axes = [
+                self._axis0_index,
+                self._axis1_index,
+                self._axis2_index,
+                self._axis3_index,
+            ]
+            result_axes[axis_number] = result_axes[axis_number][difference_order:]
+            result_value, result_unit = self._value_unit(parent_result)
+            return self._new_with_left_metadata(
+                result_value,
+                unit=result_unit,
+                axes=result_axes,
+                metadata_source=parent_result,
+            )
 
         other = n
         if mode is not None and axis != -1:
@@ -1534,15 +1576,21 @@ class ScalarField(FieldBase):
                 f"Invalid mode '{comparison_mode}'. Must be one of {valid_modes}."
             )
 
+        self._validate_field_alignment(other)
+        other_values = other.to_value(self.unit)
+
         if comparison_mode == "diff":
-            return self - other
+            result_data = self.value - other_values
+            result_unit = self.unit
         if comparison_mode == "ratio":
             with np.errstate(divide="ignore", invalid="ignore"):
-                return (self / other).to(u.dimensionless_unscaled)
+                result_data = self.value / other_values
+            result_unit = u.dimensionless_unscaled
         if comparison_mode == "percent":
             with np.errstate(divide="ignore", invalid="ignore"):
-                return ((self - other) / other).to(u.percent)
-        raise ValueError(f"Invalid mode '{comparison_mode}'")
+                result_data = (self.value - other_values) / other_values * 100
+            result_unit = u.percent
+        return self._new_with_left_metadata(result_data, unit=result_unit)
 
     def zscore(self, baseline_t=None):
         """Compute z-score normalized field using a baseline period.

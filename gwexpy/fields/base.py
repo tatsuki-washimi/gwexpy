@@ -11,11 +11,22 @@ from ..types.array4d import Array4D
 
 __all__ = ["FieldBase"]
 
-# Tolerance for axis coordinate comparison.  Keep relative tolerance disabled:
-# large absolute coordinates such as GPS seconds must not allow order-second
-# jitter through relative scaling.
+# Tolerance for axis coordinate comparison.  This is an absolute magnitude in
+# the unscaled, decomposed SI base unit for the axis (for example seconds,
+# metres, hertz, or inverse metres).  Keep relative tolerance disabled: large
+# absolute coordinates such as GPS seconds must not allow order-second jitter
+# through relative scaling.
 _AXIS_RTOL = 0.0
 _AXIS_ATOL = 1e-12
+
+
+def _canonical_axis_unit(unit: u.UnitBase) -> u.UnitBase:
+    """Return an unscaled decomposed unit for order-invariant comparison."""
+    decomposed = unit.decompose()
+    canonical = u.dimensionless_unscaled
+    for base, power in zip(decomposed.bases, decomposed.powers, strict=True):
+        canonical *= base**power
+    return canonical
 
 
 def _axis_coordinates_close(left, right) -> bool:
@@ -28,11 +39,16 @@ def _axis_coordinates_close(left, right) -> bool:
     if not right_unit.is_equivalent(left_unit):
         return False
 
+    comparison_unit = _canonical_axis_unit(left_unit)
     left_values = (
-        left.to_value(left_unit) if hasattr(left, "to_value") else np.asarray(left)
+        left.to_value(comparison_unit)
+        if hasattr(left, "to_value")
+        else np.asarray(left)
     )
     right_values = (
-        right.to_value(left_unit) if hasattr(right, "to_value") else np.asarray(right)
+        right.to_value(comparison_unit)
+        if hasattr(right, "to_value")
+        else np.asarray(right)
     )
     return np.allclose(
         np.asarray(left_values),
@@ -192,34 +208,35 @@ class FieldBase(Array4D):
         if len(fields) > 1:
             first = fields[0]
             for other in fields[1:]:
-                # 1. Check axis0 domain (Time vs Frequency)
-                if first._axis0_domain != other._axis0_domain:
-                    raise ValueError(
-                        f"Field domain mismatch: {first._axis0_domain} vs "
-                        f"{other._axis0_domain}. Perform domain transform "
-                        "(e.g., fft_time) before operation."
-                    )
-
-                # 2. Check spatial domains (Real vs K-space)
-                if first._space_domains != other._space_domains:
-                    raise ValueError(
-                        "Field spatial domain mismatch: "
-                        f"{first._space_domains} vs {other._space_domains}."
-                    )
-
-                # 3. Check coordinates (All 4 axes must align)
-                for i in range(4):
-                    idx1 = getattr(first, f"_axis{i}_index")
-                    idx2 = getattr(other, f"_axis{i}_index")
-                    if not _axis_coordinates_close(idx1, idx2):
-                        name = first.axis_names[i]
-                        raise ValueError(
-                            f"Field coordinate mismatch on axis {i} ('{name}'). "
-                            "Regrid operands to a common grid before operation."
-                        )
+                first._validate_field_alignment(other)
 
         # Defer to superclass (Array4D -> Array -> GwpyArray)
         return super().__array_ufunc__(ufunc, method, *inputs, **kwargs)
+
+    def _validate_field_alignment(self, other: FieldBase) -> None:
+        """Reject arithmetic between fields on different physical grids."""
+        if self._axis0_domain != other._axis0_domain:
+            raise ValueError(
+                f"Field domain mismatch: {self._axis0_domain} vs "
+                f"{other._axis0_domain}. Perform domain transform "
+                "(e.g., fft_time) before operation."
+            )
+
+        if self._space_domains != other._space_domains:
+            raise ValueError(
+                "Field spatial domain mismatch: "
+                f"{self._space_domains} vs {other._space_domains}."
+            )
+
+        for i in range(4):
+            left_index = getattr(self, f"_axis{i}_index")
+            right_index = getattr(other, f"_axis{i}_index")
+            if not _axis_coordinates_close(left_index, right_index):
+                name = self.axis_names[i]
+                raise ValueError(
+                    f"Field coordinate mismatch on axis {i} ('{name}'). "
+                    "Regrid operands to a common grid before operation."
+                )
 
     @property
     def axis0_domain(self):

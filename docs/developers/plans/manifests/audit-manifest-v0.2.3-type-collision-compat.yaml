@@ -79,6 +79,13 @@ terminal_test_references:
     - tests/fields/test_scalarfield_diff_comparison_contract.py::test_comparison_preserves_shape_dtype_metadata_and_inputs
     - tests/fields/test_scalarfield_diff_comparison_contract.py::test_zero_denominator_preserves_numpy_nonfinite_masks
     - tests/fields/test_scalarfield_diff_comparison_contract.py::test_comparison_preserves_astropy_masked_operands
+    - tests/fields/test_scalarfield_diff_comparison_contract.py::test_frequency_domain_comparison_preserves_left_domain
+    - tests/fields/test_scalarfield_diff_comparison_contract.py::test_frequency_domain_numeric_diff_preserves_domain_and_matches_gwpy
+    - tests/fields/test_scalarfield_diff_comparison_contract.py::test_rhs_subclass_cannot_override_left_metadata
+    - tests/fields/test_scalarfield_diff_comparison_contract.py::test_rhs_only_astropy_mask_preserves_mask_with_left_metadata
+    - tests/fields/test_scalarfield_diff_comparison_contract.py::test_coordinate_tolerance_rejects_same_physical_shift_in_either_order
+    - tests/fields/test_scalarfield_diff_comparison_contract.py::test_coordinate_tolerance_accepts_subthreshold_shift_in_either_order
+    - tests/fields/test_scalarfield_diff_comparison_contract.py::test_comparison_rejects_unit_incompatible_coordinate_axis
   swapaxes:
     - tests/types/test_gwpy_override_terminal_compat.py::test_array2d_numeric_swapaxes_matches_gwpy
     - tests/types/test_gwpy_override_terminal_compat.py::test_array2d_named_axis_permutations_remain_explicit_extensions
@@ -148,7 +155,9 @@ contracts:
       - colour bar
       - existing layout keyword routing
   scalarfield_diff:
-    default_route: GWpy Array.diff with n and axis
+    default_route: >-
+      GWpy Array.diff calculation and failure behavior with n and axis, followed
+      by deterministic LHS physical-domain and coordinate reconstruction
     reduced_axis_coordinates: source trailing endpoints beginning at index n
     metadata_preserved:
       - axis units and names
@@ -165,6 +174,9 @@ contracts:
       space_domains: exact
       coordinate_axes: all four physical grids must match
       equivalent_coordinate_units: accepted after conversion
+      coordinate_tolerance: >-
+        rtol=0 and atol=1e-12 in an unscaled decomposed physical base unit,
+        independent of operand order and display unit
       coordinate_mismatch: ValueError
     comparison_units:
       rhs: converted to the left-hand data unit before comparison
@@ -179,6 +191,7 @@ contracts:
         - axis values, units, and names
         - time and space domains
         - native GWpy metadata and _gwex_ attributes
+        - LHS authority when only the RHS is a subclass or Astropy Masked
       inputs_mutated: false
     zero_denominator:
       regularization: none
@@ -268,6 +281,16 @@ tdd:
         - incompatible data units were accepted
         - time, spatial-domain, and all four coordinate mismatches were accepted
         - field-comparison reconstruction discarded left-hand native metadata
+    scalarfield_comparison_independent_review_followup:
+      parent: c53df8da1a7ae601d64bb6d5b990f69b0068928f
+      environment: gwexpy
+      gwpy: 4.0.2
+      result: 21 failed, 54 passed
+      intended_failure_causes:
+        - frequency-domain comparison failed construction or reset to time
+        - numeric frequency-domain diff reset domains or failed on spatial axes
+        - RHS-only subclasses and masks could become NumPy metadata authority
+        - display-unit-scaled axis tolerance was operand-order asymmetric
   green:
     differential_and_contract_set:
       gwpy_4_0_1: 152 passed
@@ -292,17 +315,17 @@ tdd:
       gwpy_4_0_1: 59 passed
       gwpy_4_0_2: 59 passed
     scalarfield_comparison_contract:
-      gwpy_4_0_1: 48 passed
-      gwpy_4_0_2: 48 passed
+      gwpy_4_0_1: 75 passed
+      gwpy_4_0_2: 75 passed
     scalarfield_diff_differential_and_contract:
-      gwpy_4_0_1: 55 passed, 88 deselected
-      gwpy_4_0_2: 55 passed, 88 deselected
+      gwpy_4_0_1: 85 passed, 88 deselected
+      gwpy_4_0_2: 85 passed, 88 deselected
     type_collision_with_scalarfield_comparison:
-      gwpy_4_0_1: 200 passed
-      gwpy_4_0_2: 200 passed
+      gwpy_4_0_1: 227 passed
+      gwpy_4_0_2: 227 passed
     field_and_type_regressions:
-      gwpy_4_0_1: 2807 passed, 15 approved skips, 1 expected failure
-      gwpy_4_0_2: 2807 passed, 15 approved skips, 1 expected failure
+      gwpy_4_0_1: 2834 passed, 15 approved skips, 1 expected failure
+      gwpy_4_0_2: 2834 passed, 15 approved skips, 1 expected failure
 
 physics_and_data_model:
   finite_difference_values_and_units: delegated unchanged to GWpy
@@ -313,7 +336,12 @@ physics_and_data_model:
     units respectively.
   field_comparison_grid_authority: >-
     Shape, axis0 domain, spatial domains, and all four physical grids must align;
-    equivalent coordinate units are accepted and result metadata comes from the LHS.
+    equivalent coordinate units are accepted with an order-invariant 1e-12
+    canonical-base-unit absolute tolerance and result metadata comes from the LHS.
+  field_comparison_dispatch_authority: >-
+    RHS-only subclasses and masks cannot replace LHS metadata; Astropy operand
+    masks are unioned while name, channel, epoch, domains, axes, and _gwex_
+    attributes are deterministically restored from the LHS.
   field_comparison_nonfinite_and_mask_semantics: >-
     No epsilon is introduced; NumPy IEEE nonfinite classification and Astropy
     Masked operand masks are retained.
@@ -338,6 +366,10 @@ static_validation:
   mypy_changed_source_files: success, no issues found in 6 source files
   yaml_safe_load: valid
   git_diff_check: clean
+  scalarfield_review_followup:
+    ruff: all checks passed for 3 bounded Python files
+    format: all 3 bounded Python files formatted
+    mypy: success, no issues found in 2 bounded source files
 
 commands:
   red: >-
@@ -417,6 +449,7 @@ focused_tests:
   - tests/fields/test_scalarfield_diff_comparison_contract.py
 
 changed_files:
+  - gwexpy/fields/base.py
   - gwexpy/fields/scalar.py
   - gwexpy/frequencyseries/bifrequencymap.py
   - gwexpy/types/array2d.py

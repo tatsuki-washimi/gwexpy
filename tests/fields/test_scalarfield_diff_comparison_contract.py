@@ -29,6 +29,10 @@ _EQUIVALENT_AXES = (
 )
 
 
+class _RightHandScalarField(ScalarField):
+    """Test-only subclass that must not become comparison metadata authority."""
+
+
 def _field(
     values: float | np.ndarray,
     *,
@@ -103,6 +107,45 @@ def _assert_left_metadata(result: ScalarField, left: ScalarField) -> None:
         assert actual.name == expected.name
         assert actual.unit == expected.unit
         np.testing.assert_array_equal(actual.index.value, expected.index.value)
+
+
+def _frequency_field(
+    values: float | np.ndarray,
+    *,
+    dimensionless_axes: bool,
+    unit: u.UnitBase = u.V,
+    name: str = "left frequency field",
+) -> ScalarField:
+    if dimensionless_axes:
+        axes = tuple(np.arange(size) * u.dimensionless_unscaled for size in _SHAPE)
+    else:
+        axes = (
+            np.array([10.0, 20.0, 30.0, 40.0]) * u.Hz,
+            _LEFT_AXES[1],
+            _LEFT_AXES[2],
+            _LEFT_AXES[3],
+        )
+    data = (
+        np.full(_SHAPE, values)
+        if np.asarray(values).ndim == 0
+        else np.asarray(values).reshape(_SHAPE)
+    )
+    result = ScalarField(
+        data,
+        unit=unit,
+        name=name,
+        epoch=1_234_567_890.25,
+        channel="H1:FREQUENCY-FIELD",
+        axis0=axes[0],
+        axis1=axes[1],
+        axis2=axes[2],
+        axis3=axes[3],
+        axis_names=("frequency", "east", "north", "height"),
+        axis0_domain="frequency",
+        space_domain="real",
+    )
+    result._gwex_comparison_provenance = f"{name}-provenance"
+    return result
 
 
 @pytest.mark.parametrize(
@@ -306,6 +349,167 @@ def test_comparison_preserves_astropy_masked_operands(
         np.asarray(result.unmasked)[~combined_mask],
         expected[~combined_mask],
     )
+
+
+@pytest.mark.parametrize("mode", ["diff", "ratio", "percent"])
+@pytest.mark.parametrize(
+    "dimensionless_axes", [False, True], ids=["physical-units", "dimensionless"]
+)
+def test_frequency_domain_comparison_preserves_left_domain(
+    dimensionless_axes: bool, mode: str
+) -> None:
+    left = _frequency_field(2.0, dimensionless_axes=dimensionless_axes)
+    right = _frequency_field(
+        1.0,
+        dimensionless_axes=dimensionless_axes,
+        name="right frequency field",
+    )
+
+    result = left.diff(right, mode=mode)
+
+    assert result.axis0_domain == "frequency"
+    assert result.space_domains == left.space_domains
+    _assert_left_metadata(result, left)
+
+
+@pytest.mark.parametrize("axis", range(4))
+@pytest.mark.parametrize(
+    "dimensionless_axes", [False, True], ids=["physical-units", "dimensionless"]
+)
+def test_frequency_domain_numeric_diff_preserves_domain_and_matches_gwpy(
+    dimensionless_axes: bool, axis: int
+) -> None:
+    values = np.arange(np.prod(_SHAPE), dtype=np.float64).reshape(_SHAPE)
+    source = _frequency_field(values, dimensionless_axes=dimensionless_axes)
+    expected = GWpyArray(values, unit=source.unit, name=source.name).diff(1, axis)
+
+    result = source.diff(1, axis)
+
+    assert result.shape == expected.shape
+    assert result.dtype == expected.dtype
+    assert result.unit == expected.unit
+    assert result.axis0_domain == "frequency"
+    assert result.space_domains == source.space_domains
+    np.testing.assert_array_equal(result.value, expected.value)
+    for axis_number, (actual_axis, source_axis) in enumerate(
+        zip(result.axes, source.axes, strict=True)
+    ):
+        expected_index = (
+            source_axis.index[1:] if axis_number == axis else source_axis.index
+        )
+        assert actual_axis.name == source_axis.name
+        assert actual_axis.unit == expected_index.unit
+        np.testing.assert_array_equal(actual_axis.index.value, expected_index.value)
+
+
+@pytest.mark.parametrize("mode", ["diff", "ratio", "percent"])
+def test_rhs_subclass_cannot_override_left_metadata(mode: str) -> None:
+    left = _field(2.0, name="authoritative left")
+    right = _RightHandScalarField(
+        np.full(_SHAPE, 1_000.0),
+        unit=u.mV,
+        name="non-authoritative right",
+        epoch=987_654_321.5,
+        channel="L1:RIGHT-SUBCLASS",
+        axis0=_EQUIVALENT_AXES[0],
+        axis1=_EQUIVALENT_AXES[1],
+        axis2=_EQUIVALENT_AXES[2],
+        axis3=_EQUIVALENT_AXES[3],
+        axis_names=_AXIS_NAMES,
+    )
+    right._gwex_comparison_provenance = "right-provenance"
+    right._gwex_rhs_only = "must not propagate"
+
+    result = left.diff(right, mode=mode)
+
+    assert type(result) is ScalarField
+    _assert_left_metadata(result, left)
+    assert not hasattr(result, "_gwex_rhs_only")
+
+
+@pytest.mark.parametrize("mode", ["diff", "ratio", "percent"])
+def test_rhs_only_astropy_mask_preserves_mask_with_left_metadata(mode: str) -> None:
+    left = _field(2.0, name="authoritative left")
+    right_mask = (np.arange(np.prod(_SHAPE)) % 5 == 0).reshape(_SHAPE)
+    right = ScalarField(
+        Masked(np.full(_SHAPE, 1_000.0), mask=right_mask),
+        unit=u.mV,
+        name="masked right",
+        epoch=987_654_321.5,
+        channel="L1:MASKED-RIGHT",
+        axis0=_EQUIVALENT_AXES[0],
+        axis1=_EQUIVALENT_AXES[1],
+        axis2=_EQUIVALENT_AXES[2],
+        axis3=_EQUIVALENT_AXES[3],
+        axis_names=_AXIS_NAMES,
+    )
+    right._gwex_comparison_provenance = "right-provenance"
+    right._gwex_rhs_only = "must not propagate"
+
+    result = left.diff(right, mode=mode)
+
+    np.testing.assert_array_equal(result.mask, right_mask)
+    _assert_left_metadata(result, left)
+    assert not hasattr(result, "_gwex_rhs_only")
+
+
+def _axis1_in(unit: u.UnitBase, *, shift: u.Quantity = 0.0 * u.m) -> u.Quantity:
+    values = _LEFT_AXES[1].copy()
+    values[0] += shift
+    return values.to(unit)
+
+
+@pytest.mark.parametrize(
+    ("left_unit", "right_unit"),
+    [(u.km, u.m), (u.m, u.km)],
+    ids=["km-left", "m-left"],
+)
+def test_coordinate_tolerance_rejects_same_physical_shift_in_either_order(
+    left_unit: u.UnitBase, right_unit: u.UnitBase
+) -> None:
+    left_axes = (_LEFT_AXES[0], _axis1_in(left_unit), *_LEFT_AXES[2:])
+    right_axes = (
+        _LEFT_AXES[0],
+        _axis1_in(right_unit, shift=5e-10 * u.m),
+        *_LEFT_AXES[2:],
+    )
+    left = _field(2.0, axes=left_axes)
+    right = _field(1.0, axes=right_axes, name="right field")
+
+    with pytest.raises(ValueError, match="Field coordinate mismatch on axis 1"):
+        left.diff(right)
+
+
+@pytest.mark.parametrize(
+    ("left_unit", "right_unit"),
+    [(u.km, u.m), (u.m, u.km)],
+    ids=["km-left", "m-left"],
+)
+def test_coordinate_tolerance_accepts_subthreshold_shift_in_either_order(
+    left_unit: u.UnitBase, right_unit: u.UnitBase
+) -> None:
+    left_axes = (_LEFT_AXES[0], _axis1_in(left_unit), *_LEFT_AXES[2:])
+    right_axes = (
+        _LEFT_AXES[0],
+        _axis1_in(right_unit, shift=5e-13 * u.m),
+        *_LEFT_AXES[2:],
+    )
+    left = _field(2.0, axes=left_axes)
+    right = _field(1.0, axes=right_axes, name="right field")
+
+    result = left.diff(right)
+
+    _assert_left_metadata(result, left)
+
+
+@pytest.mark.parametrize("mode", ["diff", "ratio", "percent"])
+def test_comparison_rejects_unit_incompatible_coordinate_axis(mode: str) -> None:
+    left = _field(2.0)
+    right = _field(1.0, name="right field")
+    right._axis1_index = right._axis1_index.value * u.s
+
+    with pytest.raises(ValueError, match="Field coordinate mismatch on axis 1"):
+        left.diff(right, mode=mode)
 
 
 def test_comparison_shape_mismatch_is_fail_closed() -> None:
