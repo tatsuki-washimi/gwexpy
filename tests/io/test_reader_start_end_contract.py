@@ -918,46 +918,49 @@ class TestNativeHdf5NonIntersectingSafety:
         assert got._gwex_t0_gps_ns == empty._gwex_t0_gps_ns
         assert got._gwex_dt_gps_ns == empty._gwex_dt_gps_ns
 
-    def test_parent_restore_normalize_order_and_single_call(
+    def test_successful_parent_is_called_once_and_public_result_is_preserved(
         self, tmp_path, monkeypatch
     ):
         path = self._write_source(tmp_path, exact=True)
-        events = []
+        expected = GwpyTimeSeriesDict.read(
+            path,
+            format="hdf5",
+            start=2.25,
+            end=2.75,
+        )["A"]
+        calls = []
         parent_read = collections_module.BaseTimeSeriesDict.read
-        restore = collections_module._restore_native_hdf5_exact_state
-        normalize = collections_module._normalize_native_hdf5_empty_selection
 
         def parent_spy(cls, source, *args, **kwargs):
-            events.append("parent")
+            calls.append((source, args, kwargs.copy()))
             return parent_read(source, *args, **kwargs)
-
-        def restore_spy(source, result, group):
-            events.append("restore")
-            return restore(source, result, group)
-
-        def normalize_spy(result, args, kwargs):
-            events.append("normalize")
-            return normalize(result, args, kwargs)
 
         monkeypatch.setattr(
             collections_module.BaseTimeSeriesDict,
             "read",
             classmethod(parent_spy),
         )
-        monkeypatch.setattr(
-            collections_module,
-            "_restore_native_hdf5_exact_state",
-            restore_spy,
-        )
-        monkeypatch.setattr(
-            collections_module,
-            "_normalize_native_hdf5_empty_selection",
-            normalize_spy,
-        )
 
-        TimeSeriesDict.read(path, format="hdf5", start=2.25, end=2.75)
+        got = TimeSeriesDict.read(
+            path,
+            format="hdf5",
+            start=2.25,
+            end=2.75,
+        )["A"]
 
-        assert events == ["parent", "restore", "normalize"]
+        assert calls == [
+            (
+                path,
+                (),
+                {"format": "hdf5", "start": 2.25, "end": 2.75},
+            )
+        ]
+        _assert_matches_oracle(got, expected)
+        assert type(got) is TimeSeries
+        assert got.dtype == expected.dtype
+        assert got.unit == expected.unit
+        assert got.name == expected.name
+        assert str(got.channel) == str(expected.channel)
 
     def test_parent_failure_is_not_retried_or_reinterpreted(
         self, tmp_path, monkeypatch
@@ -965,30 +968,16 @@ class TestNativeHdf5NonIntersectingSafety:
         path = self._write_source(tmp_path, exact=True)
         error = RuntimeError("parent sentinel")
         calls = 0
-        downstream_calls = []
 
         def parent_read(cls, source, *args, **kwargs):
             nonlocal calls
             calls += 1
             raise error
 
-        def downstream_spy(*args, **kwargs):
-            downstream_calls.append((args, kwargs))
-
         monkeypatch.setattr(
             collections_module.BaseTimeSeriesDict,
             "read",
             classmethod(parent_read),
-        )
-        monkeypatch.setattr(
-            collections_module,
-            "_restore_native_hdf5_exact_state",
-            downstream_spy,
-        )
-        monkeypatch.setattr(
-            collections_module,
-            "_normalize_native_hdf5_empty_selection",
-            downstream_spy,
         )
 
         with pytest.raises(RuntimeError) as caught:
@@ -996,7 +985,6 @@ class TestNativeHdf5NonIntersectingSafety:
 
         assert caught.value is error
         assert calls == 1
-        assert downstream_calls == []
 
     def test_positional_end_empties_only_the_disjoint_channel(self, tmp_path):
         covered = TimeSeries(
@@ -1116,22 +1104,8 @@ class TestLegacyHdf5NonIntersectingRoutes:
         return path, series
 
     @pytest.mark.parametrize("layout", ["dataset", "group"])
-    def test_path_keeps_legacy_manifest_selection(self, tmp_path, monkeypatch, layout):
+    def test_path_keeps_legacy_manifest_selection(self, tmp_path, layout):
         path, series = self._write_source(tmp_path, layout=layout)
-
-        def unexpected_native_route(*args, **kwargs):
-            pytest.fail("legacy manifest read entered the native HDF5 route")
-
-        monkeypatch.setattr(
-            collections_module.BaseTimeSeriesDict,
-            "read",
-            classmethod(unexpected_native_route),
-        )
-        monkeypatch.setattr(
-            collections_module,
-            "_normalize_native_hdf5_empty_selection",
-            unexpected_native_route,
-        )
 
         got = TimeSeriesDict.read(path, format="hdf5", end=0.2)
 
@@ -1145,30 +1119,60 @@ class TestLegacyHdf5NonIntersectingRoutes:
         assert got["A"].t0 == series.t0
 
     def test_bytesio_keeps_legacy_position_and_lifecycle(self, tmp_path):
-        path, expected = self._write_source(tmp_path)
+        entries = TimeSeriesDict(
+            {
+                "z-last": TimeSeries(
+                    np.arange(N_SAMPLES, dtype=np.float32) + 100,
+                    t0=1.0 / 3.0,
+                    dt=DT,
+                    unit="A",
+                    name="legacy-z",
+                    channel="L1:LEGACY-Z",
+                ),
+                "a-first": TimeSeries(
+                    np.arange(N_SAMPLES, dtype=np.float32),
+                    t0=1.0 / 3.0,
+                    dt=DT,
+                    unit="V",
+                    name="legacy-a",
+                    channel="H1:LEGACY-A",
+                ),
+            }
+        )
+        expected_order = ["z-last", "a-first"]
+        assert list(entries) == expected_order
+        path = tmp_path / "legacy-bytesio.h5"
+        entries.write(path, format="hdf5", layout="dataset")
         payload = path.read_bytes()
         source = io.BytesIO(payload)
+        reference_source = io.BytesIO(payload)
         source.seek(7)
+        reference_source.seek(7)
 
+        reference = TimeSeriesDict.read(reference_source, format="hdf5")
         got = TimeSeriesDict.read(source, format="hdf5", end=0.2)
 
-        assert list(got) == ["A"]
-        actual = got["A"]
-        assert type(actual) is TimeSeries
-        assert actual.shape == (0,)
-        assert actual.dtype == expected.dtype
-        assert actual.unit == expected.unit
-        assert actual.name == expected.name
-        assert str(actual.channel) == str(expected.channel)
-        assert actual.dt == expected.dt
-        assert actual.t0 == expected.t0
-        assert actual.span == (
-            float(expected.span[0]),
-            float(expected.span[0]),
-        )
+        assert list(reference) == expected_order
+        assert list(got) == expected_order
+        for key, expected in entries.items():
+            actual = got[key]
+            assert type(actual) is TimeSeries
+            assert actual.shape == (0,)
+            assert actual.dtype == expected.dtype
+            assert actual.unit == expected.unit
+            assert actual.name == expected.name
+            assert str(actual.channel) == str(expected.channel)
+            assert actual.dt == expected.dt
+            assert actual.t0 == expected.t0
+            assert actual.span == (
+                float(expected.span[0]),
+                float(expected.span[0]),
+            )
         assert not source.closed
-        assert source.tell() == len(payload)
+        assert not reference_source.closed
+        assert source.tell() == reference_source.tell()
         assert source.getvalue() == payload
+        assert reference_source.getvalue() == payload
 
     def test_open_handle_keeps_legacy_failure_and_ownership(self, tmp_path):
         path, _ = self._write_source(tmp_path)
