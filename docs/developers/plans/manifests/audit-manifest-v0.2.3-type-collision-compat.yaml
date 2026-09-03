@@ -1,6 +1,6 @@
 schema: gwexpy-v023-type-collision-compat-evidence-v1
 phase: override-inventory-specialized-type-closure
-status: focused-green-human-review-pending-reapproval
+status: focused-green-human-review-approved
 
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 phase_parent: e5f791722666601346f9990c247cce610fdfe85d
@@ -156,7 +156,7 @@ contracts:
           domain-specific text-only presentation difference was approved by
           human scientific/data-model sign-off for historical candidate
           c7b79db7fee2e646069679a0efe3d65c7ed4e562; current candidate
-          0a3d09a117827113b02e4a2ce73bccd3b1ba95d2 is pending-reapproval.
+          0a3d09a117827113b02e4a2ce73bccd3b1ba95d2 approval excludes this contract.
     presentation_defaults_retained:
       - inferno colour map
       - background colour
@@ -384,7 +384,7 @@ physics_and_data_model:
   scalarfield_independent_review:
     code: ready, no Critical or Important findings
     physics_and_data_model: ready, no Critical or Important findings
-    human_release_signoff: pending-reapproval
+    human_release_signoff: historical-approval-only
   human_review_reasons:
     - BifrequencyMap plot source orientation and frequency-axis authority changed
     - ScalarField finite-difference results use trailing physical coordinates on the reduced axis
@@ -508,7 +508,7 @@ changed_files:
 
 human_scientific_data_model_signoff:
   schema: gwexpy-v023-human-scientific-data-model-signoff-v1
-  status: pending-reapproval
+  status: approved
   historical_approval:
     status: approved
     date: "2026-09-03"
@@ -516,15 +516,23 @@ human_scientific_data_model_signoff:
     candidate_sha: c7b79db7fee2e646069679a0efe3d65c7ed4e562
   current_candidate:
     sha: 0a3d09a117827113b02e4a2ce73bccd3b1ba95d2
-    status: pending-reapproval
-    trigger: hdf5-auto-identification-runtime-semantic-change
+    status: approved
+    date: "2026-09-03"
+    approver_role: release owner
+    approval_scope:
+      accepted_parent_parity_risks:
+        - mixed_unit_csd_v2_per_hz_label
+        - public_rayleigh_parent_segments_private_corrected_route_finite_mc_limits
+        - signal_dimensionless_raw_quantity_float32_underflow
+        - stale_array2d_plane2d_min_max_indices
+        - stale_numeric_swapaxes_transpose_metadata
+      other_contracts: excluded
   aggregate_report: docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md
   non_intersecting_window_safety:
     issue: "#611"
     status: approved-separately-unchanged
   global_release_gate: hold
   remaining_gates:
-    - current-candidate human scientific/data-model sign-off reapproval
     - same-candidate scientific/data-model review
     - same-candidate release-security review
     - candidate-wide QA

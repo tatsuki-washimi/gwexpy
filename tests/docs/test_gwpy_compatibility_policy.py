@@ -15,7 +15,6 @@ POLICY_TITLE = "GWpy Behavioral Compatibility Policy"
 SAFETY_EXCEPTION = "non_intersecting_window_safety"
 V023_HISTORICAL_SIGNOFF_CANDIDATE = "c7b79db7fee2e646069679a0efe3d65c7ed4e562"
 V023_CURRENT_SIGNOFF_CANDIDATE = "0a3d09a117827113b02e4a2ce73bccd3b1ba95d2"
-V023_REAPPROVAL_TRIGGER = "hdf5-auto-identification-runtime-semantic-change"
 V023_SIGNOFF_REPORT = (
     "docs/developers/reports/"
     "report_v0.2.3_human_scientific_data_model_signoff_20260903.md"
@@ -27,10 +26,7 @@ V023_LATER_RELEASE_GATES = [
     "candidate-wide QA",
     "19-cell qualification",
 ]
-V023_REMAINING_RELEASE_GATES = [
-    "current-candidate human scientific/data-model sign-off reapproval",
-    *V023_LATER_RELEASE_GATES,
-]
+V023_REMAINING_RELEASE_GATES = V023_LATER_RELEASE_GATES
 V023_ACCEPTED_PARENT_PARITY_RISKS = [
     "mixed_unit_csd_v2_per_hz_label",
     "public_rayleigh_parent_segments_private_corrected_route_finite_mc_limits",
@@ -76,7 +72,7 @@ def _markdown_front_matter(relative_path: str) -> dict[str, object]:
 def _expected_v023_signoff_block() -> dict[str, object]:
     return {
         "schema": V023_SIGNOFF_SCHEMA,
-        "status": "pending-reapproval",
+        "status": "approved",
         "historical_approval": {
             "status": "approved",
             "date": "2026-09-03",
@@ -85,8 +81,13 @@ def _expected_v023_signoff_block() -> dict[str, object]:
         },
         "current_candidate": {
             "sha": V023_CURRENT_SIGNOFF_CANDIDATE,
-            "status": "pending-reapproval",
-            "trigger": V023_REAPPROVAL_TRIGGER,
+            "status": "approved",
+            "date": "2026-09-03",
+            "approver_role": "release owner",
+            "approval_scope": {
+                "accepted_parent_parity_risks": V023_ACCEPTED_PARENT_PARITY_RISKS,
+                "other_contracts": "excluded",
+            },
         },
         "aggregate_report": V023_SIGNOFF_REPORT,
         "non_intersecting_window_safety": {
@@ -303,16 +304,22 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
     assert "親 reader が正常終了した後だけ" in plan
     assert "compatibility_exception" in plan
     assert "8bfe36f9684989188c2f32e65ba429fe8bdfaf29" in plan
-    assert "Human scientific/data-model sign-off: **PENDING REAPPROVAL**" in plan
+    assert "Human scientific/data-model sign-off: **APPROVED**" in plan
     assert V023_HISTORICAL_SIGNOFF_CANDIDATE in plan
     assert V023_CURRENT_SIGNOFF_CANDIDATE in plan
     assert V023_SIGNOFF_REPORT in plan
     assert "historical approval" in plan
+    assert "parent-parity risks only" in plan
+    assert "PENDING REAPPROVAL" not in plan
     for remaining_gate in V023_REMAINING_RELEASE_GATES:
         assert remaining_gate in plan
 
     io_audit = yaml.safe_load(
         _read("docs/developers/plans/manifests/audit-manifest-v0.2.3-io-terminal.yaml")
+    )
+    assert io_audit["status"] == (
+        "focused-green-611-approved-separately-unchanged-"
+        "aggregate-signoff-approved-global-release-hold"
     )
     exception = io_audit["intentional_extensions_and_exceptions"][SAFETY_EXCEPTION]
     assert exception["inventory_marker"] == SAFETY_EXCEPTION
@@ -353,15 +360,20 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
         "release_notes/v0.2.3.md",
     ]
     assert signoff["aggregate_signoff"] == {
-        "status": "pending-reapproval",
+        "status": "approved",
         "historical_approval": {
             "status": "approved",
             "candidate_sha": V023_HISTORICAL_SIGNOFF_CANDIDATE,
         },
         "current_candidate": {
             "sha": V023_CURRENT_SIGNOFF_CANDIDATE,
-            "status": "pending-reapproval",
-            "trigger": V023_REAPPROVAL_TRIGGER,
+            "status": "approved",
+            "date": "2026-09-03",
+            "approver_role": "release owner",
+            "approval_scope": {
+                "accepted_parent_parity_risks": V023_ACCEPTED_PARENT_PARITY_RISKS,
+                "other_contracts": "excluded",
+            },
         },
     }
     assert signoff["global_release_gate"] == "hold"
@@ -379,7 +391,7 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
         assert "class, dtype, unit, name/channel, and cadence" in normalized_disclosure
         assert "public `t0`/`span`" in normalized_disclosure
         assert "private exact-time authority" in normalized_disclosure
-        assert "human scientific/data-model sign-off is pending reapproval" in (
+        assert "human scientific/data-model sign-off is approved" in (
             normalized_disclosure
         )
         assert V023_HISTORICAL_SIGNOFF_CANDIDATE in normalized_disclosure
@@ -432,11 +444,13 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
     assert all("#611" in case["issues"] for case in marked_cases)
 
 
-def test_v023_aggregate_human_signoff_preserves_history_and_resets_current() -> None:
+def test_v023_aggregate_human_signoff_preserves_history_and_approves_current_risks() -> (
+    None
+):
     signoff = _markdown_front_matter(V023_SIGNOFF_REPORT)
 
     assert signoff["schema"] == V023_SIGNOFF_SCHEMA
-    assert signoff["status"] == "pending-reapproval"
+    assert signoff["status"] == "approved"
     historical = signoff["historical_approval"]
     assert historical["status"] == "approved"
     assert historical["date"] == "2026-09-03"
@@ -500,9 +514,15 @@ def test_v023_aggregate_human_signoff_preserves_history_and_resets_current() -> 
     ]
     assert signoff["current_candidate"] == {
         "sha": V023_CURRENT_SIGNOFF_CANDIDATE,
-        "status": "pending-reapproval",
-        "trigger": V023_REAPPROVAL_TRIGGER,
+        "status": "approved",
+        "date": "2026-09-03",
+        "approver_role": "release owner",
+        "approval_scope": {
+            "accepted_parent_parity_risks": V023_ACCEPTED_PARENT_PARITY_RISKS,
+            "other_contracts": "excluded",
+        },
     }
+    assert "unconditionally_approved_contracts" not in signoff["current_candidate"]
     assert signoff["non_intersecting_window_safety"] == {
         "issue": "#611",
         "status": "approved-separately-unchanged",
@@ -516,46 +536,52 @@ def test_v023_aggregate_human_signoff_preserves_history_and_resets_current() -> 
 
     report = " ".join(_read(V023_SIGNOFF_REPORT).split())
     assert "historical approval is bound only to" in report
+    assert "current approval is bound only to" in report
     assert V023_HISTORICAL_SIGNOFF_CANDIDATE in report
     assert V023_CURRENT_SIGNOFF_CANDIDATE in report
-    assert "pending reapproval" in report
+    assert "exactly the five parent-parity risks" in report
+    assert "does not approve any other contract" in report
+    assert "pending reapproval" not in report
     assert "#611" in report
     assert "previously approved" in report
     assert "is not reapproved" in report
     assert "does not make the release GO" in report
 
 
-def test_v023_human_review_records_distinguish_historical_and_current_state() -> None:
+def test_v023_human_review_records_distinguish_historical_and_current_approval() -> (
+    None
+):
     expected_statuses = {
         "audit-manifest-v0.2.3-phase2.yaml": (
-            "focused-green-human-fft-time-axis-review-pending-reapproval"
+            "focused-green-human-fft-time-axis-review-approved"
         ),
         "audit-manifest-v0.2.3-phase3.yaml": (
-            "focused-green-human-spectral-review-pending-reapproval"
+            "focused-green-human-spectral-review-approved"
         ),
         "audit-manifest-v0.2.3-timeseries-signal.yaml": (
-            "focused-green-human-signal-semantics-review-pending-reapproval"
+            "focused-green-human-signal-semantics-review-approved"
         ),
         "audit-manifest-v0.2.3-timeseries-terminal.yaml": (
-            "focused-green-human-time-axis-review-pending-reapproval"
+            "focused-green-human-time-axis-review-approved"
         ),
         "audit-manifest-v0.2.3-constructor-terminal.yaml": (
-            "focused-green-human-data-model-review-pending-reapproval"
+            "focused-green-human-data-model-review-approved"
         ),
         "audit-manifest-v0.2.3-stats-compat.yaml": (
-            "focused-green-human-data-model-signoff-pending-reapproval"
+            "focused-green-human-data-model-signoff-approved"
         ),
         "audit-manifest-v0.2.3-type-collision-compat.yaml": (
-            "focused-green-human-review-pending-reapproval"
+            "focused-green-human-review-approved"
         ),
         "audit-manifest-v0.2.3-scalarfield-diff-comparison.yaml": (
-            "focused-green-human-data-model-review-pending-reapproval"
+            "focused-green-human-data-model-review-approved"
         ),
     }
     for filename, expected_status in expected_statuses.items():
         manifest_text = _read(f"docs/developers/plans/manifests/{filename}")
         manifest = yaml.safe_load(manifest_text)
         assert manifest["status"] == expected_status
+        assert "pending-reapproval" not in manifest_text, filename
         assert manifest["human_scientific_data_model_signoff"] == (
             _expected_v023_signoff_block()
         )
@@ -566,9 +592,9 @@ def test_v023_human_review_records_distinguish_historical_and_current_state() ->
             "audit-manifest-v0.2.3-scalarfield-diff-comparison.yaml"
         )
     )
-    assert scalarfield["decision"]["release_signoff"] == "pending-reapproval"
+    assert scalarfield["decision"]["release_signoff"] == "historical-approval-only"
     assert scalarfield["independent_review"]["human_release_signoff"] == (
-        "pending-reapproval"
+        "historical-approval-only"
     )
     assert scalarfield["physics_and_data_model"]["human_review"]["status"] == (
         "approved"
@@ -578,7 +604,7 @@ def test_v023_human_review_records_distinguish_historical_and_current_state() ->
         == V023_HISTORICAL_SIGNOFF_CANDIDATE
     )
     assert scalarfield["release_constraints"]["human_signoff_gate"] == (
-        "pending-reapproval"
+        "historical-approval-preserved-current-scope-excluded"
     )
 
     type_collision = yaml.safe_load(
@@ -592,7 +618,7 @@ def test_v023_human_review_records_distinguish_historical_and_current_state() ->
         type_collision["physics_and_data_model"]["scalarfield_independent_review"][
             "human_release_signoff"
         ]
-        == "pending-reapproval"
+        == "historical-approval-only"
     )
     assert type_collision["physics_and_data_model"]["approved_candidate_sha"] == (
         V023_HISTORICAL_SIGNOFF_CANDIDATE
@@ -604,7 +630,7 @@ def test_v023_human_review_records_distinguish_historical_and_current_state() ->
         "domain-specific text-only presentation difference was approved by human "
         "scientific/data-model sign-off for historical candidate "
         f"{V023_HISTORICAL_SIGNOFF_CANDIDATE}; current candidate "
-        f"{V023_CURRENT_SIGNOFF_CANDIDATE} is pending-reapproval."
+        f"{V023_CURRENT_SIGNOFF_CANDIDATE} approval excludes this contract."
     )
 
     legacy_rayleigh = yaml.safe_load(
@@ -614,7 +640,7 @@ def test_v023_human_review_records_distinguish_historical_and_current_state() ->
         )
     )
     superseded = legacy_rayleigh["superseded_in_v0_2_3"]
-    assert superseded["status"] == ("current-evidence-human-signoff-pending-reapproval")
+    assert superseded["status"] == "current-evidence-human-signoff-approved"
     assert superseded["gwpy_4_0_1"] == "50 passed"
     assert superseded["gwpy_4_0_2"] == "50 passed"
     assert legacy_rayleigh["physics_review"]["status"] == "pending_human_signoff"
@@ -624,18 +650,19 @@ def test_v023_human_review_records_distinguish_historical_and_current_state() ->
 
     for disclosure_path in ("CHANGELOG.md", "release_notes/v0.2.3.md"):
         disclosure = " ".join(_read(disclosure_path).split())
-        assert "human scientific/data-model sign-off is pending reapproval" in (
-            disclosure
-        )
+        assert "human scientific/data-model sign-off is approved" in (disclosure)
         assert V023_HISTORICAL_SIGNOFF_CANDIDATE in disclosure
         assert V023_CURRENT_SIGNOFF_CANDIDATE in disclosure
         assert "historical approval" in disclosure
+        assert "strictly limited to exactly five" in disclosure
+        assert "does not approve other contracts" in disclosure
         assert "release remains **HOLD**" in disclosure
         assert "same-candidate scientific/data-model review" in disclosure
         assert "same-candidate release-security review" in disclosure
         assert "candidate-wide QA" in disclosure
         assert "19-cell qualification" in disclosure
         assert "requires reapproval" in disclosure
+        assert "pending reapproval" not in disclosure
         assert (
             "stale axis metadata on specific Array2D/Plane2D reductions and "
             "numeric array permutations" in disclosure
@@ -657,7 +684,7 @@ def test_v023_disclosure_keeps_data_model_compound_intact() -> None:
         assert "data-\nmodel" not in disclosure
         assert "data- model" not in normalized
         assert (
-            "current-candidate human scientific/data-model sign-off reapproval"
+            "current-candidate human scientific/data-model sign-off is approved"
             in normalized
         )
 

@@ -5,20 +5,19 @@
 This maintenance-release candidate implements GWpy 4.0.1/4.0.2 compatibility
 fixes across the audited GWpy-derived API surface. Automated differential
 evidence is green for runtime candidate
-`0a3d09a117827113b02e4a2ce73bccd3b1ba95d2`. The human scientific/data-model
-sign-off is pending reapproval for that current candidate because native HDF5
-auto-identification is a later runtime/data-model semantic change. The
-historical approval remains bound only to candidate
-`c7b79db7fee2e646069679a0efe3d65c7ed4e562`; see the
+`0a3d09a117827113b02e4a2ce73bccd3b1ba95d2`. The current-candidate human
+scientific/data-model sign-off is approved on 2026-09-03 by the release owner,
+strictly limited to exactly five disclosed parent-parity risks. It does not
+approve other contracts. The historical approval remains bound only to
+candidate `c7b79db7fee2e646069679a0efe3d65c7ed4e562`; see the
 [aggregate sign-off report](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md).
 The candidate adds no public API or dependency.
 
-The release remains **HOLD** pending current-candidate human
-scientific/data-model sign-off reapproval, followed by same-candidate
-scientific/data-model review, same-candidate release-security review,
-candidate-wide QA, and 19-cell qualification. Any later runtime/data-model
-semantic change invalidates an
-aggregate sign-off and requires reapproval.
+The release remains **HOLD** pending same-candidate scientific/data-model
+review, same-candidate release-security review, candidate-wide QA, and 19-cell
+qualification. Any later runtime/data-model semantic change invalidates an
+aggregate sign-off and requires reapproval. Documentation-only recording
+commits do not alter the runtime candidate.
 
 The current inventory evidence covers 575 logical members with 62 selectors
 and 396 executed cases per oracle. The historical c7 approval covered the same
@@ -75,11 +74,13 @@ generated inventory's 1,150 case rows are a separate logical version-row count.
   selecting data outside a completely disjoint requested HDF5 window. See the
   [GWpy behavioral compatibility policy](https://tatsuki-washimi.github.io/gwexpy/docs/explanation/gwpy_compatibility_policy.html).
 - The #611 safety exception is `approved-separately-unchanged`; its independent
-  human approval and release-note gates remain satisfied, and the aggregate
-  reset does not require its reapproval. Its scope remains limited to the fully
+  human approval and release-note gates remain satisfied, and the current
+  reapproval does not reapprove it. Its scope remains limited to the fully
   disjoint read-window subcase.
-- The historical c7 human scientific/data-model approval accepted exactly five
-  disclosed parent-parity risk groups:
+- The current-candidate human scientific/data-model approval is strictly
+  limited to exactly five disclosed parent-parity risk groups and does not
+  approve other contracts. The historical c7 approval of the same five risks
+  remains recorded separately:
 
   1. the mixed-unit CSD `V²/Hz` label;
   2. public Rayleigh parent segment selection with a private corrected route

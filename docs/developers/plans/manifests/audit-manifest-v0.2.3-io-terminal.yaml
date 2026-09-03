@@ -1,6 +1,6 @@
 schema: gwexpy-v023-io-terminal-evidence-v1
 phase: override-terminal-io
-status: focused-green-611-approved-separately-unchanged-aggregate-signoff-pending-reapproval-global-release-hold
+status: focused-green-611-approved-separately-unchanged-aggregate-signoff-approved-global-release-hold
 
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 phase_parent: 052162aa6a3352888010b3793d2b7fa9d8329afe
@@ -516,17 +516,25 @@ human_data_model_signoff:
     - CHANGELOG.md
     - release_notes/v0.2.3.md
   aggregate_signoff:
-    status: pending-reapproval
+    status: approved
     historical_approval:
       status: approved
       candidate_sha: c7b79db7fee2e646069679a0efe3d65c7ed4e562
     current_candidate:
       sha: 0a3d09a117827113b02e4a2ce73bccd3b1ba95d2
-      status: pending-reapproval
-      trigger: hdf5-auto-identification-runtime-semantic-change
+      status: approved
+      date: "2026-09-03"
+      approver_role: release owner
+      approval_scope:
+        accepted_parent_parity_risks:
+          - mixed_unit_csd_v2_per_hz_label
+          - public_rayleigh_parent_segments_private_corrected_route_finite_mc_limits
+          - signal_dimensionless_raw_quantity_float32_underflow
+          - stale_array2d_plane2d_min_max_indices
+          - stale_numeric_swapaxes_transpose_metadata
+        other_contracts: excluded
   global_release_gate: hold
   global_release_pending_reasons:
-    - current-candidate human scientific/data-model sign-off reapproval
     - same-candidate scientific/data-model review
     - same-candidate release-security review
     - candidate-wide QA

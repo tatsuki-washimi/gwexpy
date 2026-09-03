@@ -1,6 +1,6 @@
 schema: gwexpy-v023-scalarfield-diff-comparison-evidence-v1
 phase: scalarfield-field-comparison-hardening
-status: focused-green-human-data-model-review-pending-reapproval
+status: focused-green-human-data-model-review-approved
 
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 implementation_parent: f21087061794d232df8bc50350d83dba25a31b39
@@ -24,13 +24,14 @@ skills:
 decision:
   date: 2026-09-03
   implementation_contract: approved by the user for implementation
-  release_signoff: pending-reapproval
+  release_signoff: historical-approval-only
   note: >-
     The earlier approval to implement the fail-closed contract was not by
     itself final sign-off. The later aggregate human scientific/data-model
     sign-off is historical for candidate
-    c7b79db7fee2e646069679a0efe3d65c7ed4e562; current candidate
-    0a3d09a117827113b02e4a2ce73bccd3b1ba95d2 is pending reapproval.
+    c7b79db7fee2e646069679a0efe3d65c7ed4e562. The current-candidate approval for
+    0a3d09a117827113b02e4a2ce73bccd3b1ba95d2 is limited to five parent-parity
+    risks and excludes this ScalarField contract.
 
 independent_review:
   reviewed_commit: bc4184ac80fd498c5c4f95b3abd425967252c0db
@@ -42,7 +43,7 @@ independent_review:
     status: ready
     critical_findings: 0
     important_findings: 0
-  human_release_signoff: pending-reapproval
+  human_release_signoff: historical-approval-only
 
 scope:
   included:
@@ -278,7 +279,7 @@ release_constraints:
   workflow_changed: false
   generated_override_inventory_changed: false
   human_signoff_required: true
-  human_signoff_gate: pending-reapproval
+  human_signoff_gate: historical-approval-preserved-current-scope-excluded
 
 changed_files:
   - gwexpy/fields/base.py
@@ -289,7 +290,7 @@ changed_files:
 
 human_scientific_data_model_signoff:
   schema: gwexpy-v023-human-scientific-data-model-signoff-v1
-  status: pending-reapproval
+  status: approved
   historical_approval:
     status: approved
     date: "2026-09-03"
@@ -297,15 +298,23 @@ human_scientific_data_model_signoff:
     candidate_sha: c7b79db7fee2e646069679a0efe3d65c7ed4e562
   current_candidate:
     sha: 0a3d09a117827113b02e4a2ce73bccd3b1ba95d2
-    status: pending-reapproval
-    trigger: hdf5-auto-identification-runtime-semantic-change
+    status: approved
+    date: "2026-09-03"
+    approver_role: release owner
+    approval_scope:
+      accepted_parent_parity_risks:
+        - mixed_unit_csd_v2_per_hz_label
+        - public_rayleigh_parent_segments_private_corrected_route_finite_mc_limits
+        - signal_dimensionless_raw_quantity_float32_underflow
+        - stale_array2d_plane2d_min_max_indices
+        - stale_numeric_swapaxes_transpose_metadata
+      other_contracts: excluded
   aggregate_report: docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md
   non_intersecting_window_safety:
     issue: "#611"
     status: approved-separately-unchanged
   global_release_gate: hold
   remaining_gates:
-    - current-candidate human scientific/data-model sign-off reapproval
     - same-candidate scientific/data-model review
     - same-candidate release-security review
     - candidate-wide QA
