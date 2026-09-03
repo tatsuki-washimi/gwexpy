@@ -1,6 +1,6 @@
 schema: gwexpy-v023-io-terminal-evidence-v1
 phase: override-terminal-io
-status: focused-green-human-data-model-signoff-required
+status: focused-green-611-signoff-approved-global-release-gates-pending
 
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 phase_parent: 052162aa6a3352888010b3793d2b7fa9d8329afe
@@ -34,10 +34,12 @@ oracle_version_difference: >-
 oracle_execution: >-
   Each direct test constructs independent installed-GWpy and GWexpy objects in
   the same pinned environment. Files are written independently except where a
-  cross-read is the fixture under test. The sole deliberate exception is the
-  exact-time native-attribute comparator: its GWpy input is constructed from
-  the GWexpy object's actual public projection so x0 has identical binary64
-  input. That comparator is isolated from the common independent fixtures.
+  cross-read is the fixture under test. The exact-time native-attribute
+  comparator constructs GWpy input from the GWexpy object's actual public
+  projection so x0 has identical binary64 input. The separately named
+  non_intersecting_window_safety case deliberately expects GWpy's outside-
+  window samples and GWexpy's zero-length result; it is never folded into an
+  ordinary parity comparator.
 
 scope:
   counterpart_rows: 6
@@ -51,7 +53,9 @@ scope:
     and HDF5 fixes from the reviewed Phase 0 and Phase 4 work are reused. A
     default append or explicit mode="a"/"r+" merge into an existing GWexpy
     collection manifest is reconciled by its existing explicit layout rather
-    than leaving the manifest stale.
+    than leaving the manifest stale. After a successful parent read, the named
+    #611 safety exception converts only mathematically completely disjoint
+    returned entries to zero length.
 
 route_contract:
   csv:
@@ -64,7 +68,8 @@ route_contract:
   hdf5:
     plain_format_hdf5: >-
       Installed GWpy owns names, group, start, end, gap, pad, open-handle,
-      append, overwrite, existing-file, and error behavior.
+      append, overwrite, existing-file, and error behavior, except for the
+      named post-success non_intersecting_window_safety subcase below.
     exact_sidecar_only: >-
       GWpy first resolves the public collection result. GWexpy then restores
       only marker-authorized private exact epoch/cadence state on lossless
@@ -88,6 +93,13 @@ route_contract:
       The dataset-local epoch marker plus file _gwexpy_sidecar_json_v2 remain
       the grandfathered private authority. This lane does not redesign or
       remove that protocol.
+    non_intersecting_window_safety: >-
+      Only after the parent reader succeeds, compare explicit start/end bounds
+      with each returned mathematical span. A completely disjoint entry becomes
+      zero length. Partial/full overlap, pad semantics, parent errors, keys and
+      ordering, and caller-owned source lifecycle stay unchanged. A safety-
+      created empty drops private exact-time authority while preserving the
+      fixture-contracted public empty metadata.
 
 comparators:
   binding_and_outcome:
@@ -145,9 +157,26 @@ intentional_extensions_and_exceptions:
     Existing GWexpy TimeSeries-family contract requires explicit
     format="hdf5" even for an .h5 suffix. This is a documented intentional
     exception to GWpy auto-identification, not a hidden differential pass.
+  non_intersecting_window_safety:
+    inventory_marker: non_intersecting_window_safety
+    member: gwexpy.timeseries.collections.TimeSeriesDict/read
+    terminal_state: fixed
+    issue: "#611"
+    before: >-
+      GWpy 4.0.1 and 4.0.2 return eight samples outside the requested window
+      when a non-nanosecond HDF5 epoch makes a completely disjoint end bound
+      become a negative wrapped stop index.
+    after: >-
+      GWexpy returns a zero-length, key-preserving entry for that completely
+      disjoint subcase only.
+    invariants: >-
+      The parent must first return normally. Parent exceptions are not caught
+      or reinterpreted; partial overlap, pad, other results, source ownership,
+      and source position are preserved.
   evidence:
     - tests/io/test_hdf5_timeseries_family.py::test_timeseries_hdf5_requires_explicit_format
     - tests/io/test_hdf5_timeseries_family.py::test_timeseriesdict_hdf5_requires_explicit_format
+    - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids::test_window_before_data_with_non_ns_epoch_returns_metadata_empty
 
 tdd:
   red:
@@ -167,11 +196,22 @@ tdd:
     superseded_611_expectations:
       gwpy_4_0_1: 5 failed, 219 passed
       gwpy_4_0_2: 5 failed, 219 passed
-      observation: >-
+      historical_observation: >-
         Five historical tests expected the old custom HDF5 gap behavior. Four
         expected empty output where both GWpy oracles raise ValueError, and one
         expected empty output where both return eight samples. The expectations
-        now compare the installed GWpy outcome and exception class directly.
+        initially changed to compare installed GWpy outcomes directly. The
+        eight-sample completely disjoint case was later approved as the named
+        non_intersecting_window_safety exception; the four parent-error cases
+        continue to preserve the GWpy exception class.
+    non_intersecting_window_safety:
+      gwpy_4_0_1: expected eight outside-window samples, GWexpy initially returned eight
+      gwpy_4_0_2: expected eight outside-window samples, GWexpy initially returned eight
+      red_contract: >-
+        The approved safety test requires a zero-length result, key retention,
+        explicit public empty metadata, and no inherited private exact-time
+        authority, so the pre-exception runtime was red in both oracle
+        environments.
     independent_review_followup:
       gwpy_4_0_1: 5 failed
       gwpy_4_0_2: 5 failed
@@ -201,6 +241,19 @@ tdd:
           mismatching layout wrote new objects and replaced the manifest rather
           than rejecting the request before mutation.
   green:
+    non_intersecting_window_safety:
+      runtime_freeze: 8bfe36f9684989188c2f32e65ba429fe8bdfaf29
+      evidence_hardening:
+        - 012f49b02adddaebc732df49f51f101db653d150
+        - ceb14862d86f15f04f80c408f094995845dd4bab
+      focused_hardening:
+        gwpy_4_0_1: 24 passed
+        gwpy_4_0_2: 24 passed
+      related_regression:
+        gwpy_4_0_1: 715 passed
+        gwpy_4_0_2: 795 passed, 1 pre-existing GMT warning
+      independent_spec_review: pass
+      independent_quality_review: approved
     direct_terminal_suite:
       file: tests/io/test_gwpy_override_terminal_io.py
       gwpy_4_0_1: 38 passed, 0 skipped
@@ -280,6 +333,7 @@ terminal_recommendations:
 
   - member_id: gwexpy.timeseries.collections.TimeSeriesDict/read
     state: fixed
+    compatibility_exception: non_intersecting_window_safety
     fixtures:
       - names and group selection by path and open handle
       - exact-sidecar names/group selection with private authority restoration
@@ -287,6 +341,7 @@ terminal_recommendations:
       - private exact authority removal for padding and multi-source merge
       - positional names/start/end and bounded selection
       - missing dataset and outside-coverage exception classes
+      - completely disjoint successful parent selection becomes zero length
       - no source mutation
     evidence:
       - tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_read_matches_gwpy
@@ -294,6 +349,7 @@ terminal_recommendations:
       - tests/io/test_reader_start_end_contract.py::TestChannelsThatDoNotCoverTheWindow
       - tests/io/test_reader_start_end_contract.py::TestWindowsTheFileDoesNotCover
       - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids
+      - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids::test_window_before_data_with_non_ns_epoch_returns_metadata_empty
 
   - member_id: gwexpy.timeseries.collections.TimeSeriesDict/write
     state: fixed
@@ -341,16 +397,21 @@ terminal_recommendations:
       - tests/io/test_gwpy_csv_phase4_compat.py::test_complex_csv_matches_native_write_and_supported_roundtrip
 
 human_data_model_signoff:
-  status: required
-  release_gate: true
+  status: approved-for-non_intersecting_window_safety
+  decision_date: "2026-09-03"
+  approver_role: release owner
+  release_gate_for_this_exception: satisfied
+  global_release_gate: pending-other-scientific-and-release-reviews
   scope: >-
     For a non-nanosecond HDF5 series whose requested end precedes the stored
     epoch, both installed GWpy oracles return eight samples rather than an empty
-    result or an exception. v0.2.3 compatibility preserves that measured
-    selection, but a human must explicitly accept its scientific/data-model
-    meaning before release.
+    result or an exception. Those samples are mathematically outside the
+    requested interval because the upstream negative stop index wraps. The
+    release owner approved a zero-length result as the single named safety
+    exception, while preserving all partial-overlap, padding, parent-error,
+    key, metadata, ownership, and position contracts described above.
   evidence:
-    - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids::test_window_before_data_with_non_ns_epoch_matches_gwpy
+    - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids::test_window_before_data_with_non_ns_epoch_returns_metadata_empty
 
 verification:
   direct_terminal_command: >-

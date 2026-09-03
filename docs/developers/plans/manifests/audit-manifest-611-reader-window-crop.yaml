@@ -18,27 +18,49 @@ superseded_in_v0_2_3:
     The v0.2.3 patch policy makes installed-GWpy success/failure and selected
     samples authoritative for counterpart APIs. The earlier fast-path
     divergence below was explicitly deferred to v0.2.0 and can no longer remain
-    an implicit default extension.
+    an implicit default extension. The one completely disjoint successful-read
+    outcome described below is now a named, human-approved safety exception,
+    not a general restoration of that earlier fast path.
   replacement_contract: >-
     Plain format="hdf5" delegates names, group, start, end, gap, pad,
     open-handle, and merge outcomes to the installed GWpy 4.0.x public reader.
-    Exception classes are compared; message text is not contracted. Explicit
-    GWexpy collection manifests and exact-time sidecars retain their
-    augmentation path.
+    Exception classes are compared; message text is not contracted. Only after
+    a successful parent read, a mathematically completely disjoint explicit
+    start/end window is converted to a zero-length entry under the named
+    non_intersecting_window_safety exception. Partial overlap, pad, parent
+    errors, keys/order, lifecycle, explicit GWexpy collection manifests, and
+    exact-time sidecar routes retain their contracted outcomes.
+  compatibility_exception:
+    name: non_intersecting_window_safety
+    inventory_state: fixed
+    runtime_freeze: 8bfe36f9684989188c2f32e65ba429fe8bdfaf29
+    evidence_hardening:
+      - 012f49b02adddaebc732df49f51f101db653d150
+      - ceb14862d86f15f04f80c408f094995845dd4bab
+    before: >-
+      GWpy 4.0.1/4.0.2 can return eight samples wholly outside the requested
+      interval because a negative stop index wraps.
+    after: >-
+      GWexpy returns a zero-length, key-preserving entry only for that complete
+      non-intersection and drops private exact-time authority from the
+      safety-created empty.
   evidence:
     - tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_read_matches_gwpy
     - tests/io/test_reader_start_end_contract.py::TestChannelsThatDoNotCoverTheWindow
     - tests/io/test_reader_start_end_contract.py::TestWindowsTheFileDoesNotCover
     - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids
   human_data_model_signoff:
-    status: required
+    status: approved
+    decision_date: "2026-09-03"
+    approver_role: release owner
     scope: >-
       The non-nanosecond HDF5 request ending before the stored data returns
-      eight samples in both installed GWpy oracles. Compatibility requires
-      preserving that measured outcome, but its scientific/data-selection
-      meaning needs explicit human acceptance before release.
+      eight outside-window samples in both installed GWpy oracles. The release
+      owner approved the zero-length safety result because the mathematical
+      intersection is empty; this approval does not extend to partial overlap,
+      padding, parent errors, or any other API result.
     evidence:
-      - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids::test_window_before_data_with_non_ns_epoch_matches_gwpy
+      - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids::test_window_before_data_with_non_ns_epoch_returns_metadata_empty
 
 # Recorded as a repo-relative marker on purpose: this file is published, and an
 # absolute worktree path leaks a local username and does not reproduce.

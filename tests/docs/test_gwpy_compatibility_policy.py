@@ -194,6 +194,60 @@ def test_policy_and_new_navigation_have_japanese_translations() -> None:
             assert release_heading.string == "v0.1.1"
 
 
+def test_v023_plan_records_the_approved_safety_exception() -> None:
+    plan = _read(
+        "docs/developers/plans/20260902_v0.2.3_gwpy_behavioral_compatibility.md"
+    )
+    assert SAFETY_EXCEPTION in plan
+    assert "親 reader が正常終了した後だけ" in plan
+    assert "compatibility_exception" in plan
+    assert "8bfe36f9684989188c2f32e65ba429fe8bdfaf29" in plan
+
+    io_audit = yaml.safe_load(
+        _read(
+            "docs/developers/plans/manifests/"
+            "audit-manifest-v0.2.3-io-terminal.yaml"
+        )
+    )
+    exception = io_audit["intentional_extensions_and_exceptions"][
+        SAFETY_EXCEPTION
+    ]
+    assert exception == {
+        "inventory_marker": SAFETY_EXCEPTION,
+        "member": "gwexpy.timeseries.collections.TimeSeriesDict/read",
+        "terminal_state": "fixed",
+        "issue": "#611",
+        "before": (
+            "GWpy 4.0.1 and 4.0.2 return eight samples outside the requested "
+            "window when a non-nanosecond HDF5 epoch makes a completely "
+            "disjoint end bound become a negative wrapped stop index."
+        ),
+        "after": (
+            "GWexpy returns a zero-length, key-preserving entry for that "
+            "completely disjoint subcase only."
+        ),
+        "invariants": (
+            "The parent must first return normally. Parent exceptions are not "
+            "caught or reinterpreted; partial overlap, pad, other results, "
+            "source ownership, and source position are preserved."
+        ),
+    }
+    signoff = io_audit["human_data_model_signoff"]
+    assert signoff["status"] == "approved-for-non_intersecting_window_safety"
+    assert signoff["release_gate_for_this_exception"] == "satisfied"
+    assert signoff["global_release_gate"].startswith("pending-")
+
+    legacy_audit = yaml.safe_load(
+        _read(
+            "docs/developers/plans/manifests/"
+            "audit-manifest-611-reader-window-crop.yaml"
+        )
+    )
+    amendment = legacy_audit["superseded_in_v0_2_3"]
+    assert amendment["compatibility_exception"]["name"] == SAFETY_EXCEPTION
+    assert amendment["human_data_model_signoff"]["status"] == "approved"
+
+
 def test_release_review_scopes_bind_the_policy_to_lanes_a_and_b() -> None:
     contracts = json.loads(_read("scripts/ci/release_contracts.json"))
     lanes = contracts["releases"]["v0.2.2"]["review_lanes"]
