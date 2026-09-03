@@ -96,11 +96,11 @@ path for tag runs.  For v0.1.14 it is
 `docs/developers/plans/manifests/audit-manifest-v0.1.14-release-readiness.yaml`;
 for v0.2.3 it is
 `docs/developers/plans/manifests/audit-manifest-v0.2.3-release-readiness.yaml`.
-The v0.2.3 source-preparation form deliberately contains the configured schema
-and an empty `entries` array, so it establishes the review scope path but does
-not authorize a release. The executable gate rejects that placeholder. Only
-the coordinator replaces it after all three same-candidate lane reviews are
-`APPROVED`.
+At source commit `S`, the v0.2.3 source-preparation form deliberately starts
+with the configured schema and an empty `entries` array, so it establishes the
+review scope path but does not authorize a release. The executable gate rejects
+that placeholder. Only the coordinator may replace it in `R` after all three
+same-candidate lane reviews are `APPROVED`.
 
 The selected evidence file must contain
 exactly one top-level `review_evidence_json: |` block whose content is the

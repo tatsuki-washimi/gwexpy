@@ -12,6 +12,11 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 RELEASE_VERSION = "0.2.2"
 RELEASE_DATE = "2026-09-01"
 RELEASE_HISTORY_ENTRY = f"[{RELEASE_VERSION}] - {RELEASE_DATE}"
+CANDIDATE_RELEASE_VERSION = "0.2.3"
+CANDIDATE_RELEASE_DATE = "2026-09-04"
+CANDIDATE_RELEASE_HISTORY_ENTRY = (
+    f"[{CANDIDATE_RELEASE_VERSION}] - {CANDIDATE_RELEASE_DATE}"
+)
 RELEASE_DOI_URL = "https://doi.org/10.5281/zenodo.22228340"
 ACTIVITY_RELEASE_VERSION = "0.2.2"
 ACTIVITY_RELEASE_SHA = "2503743cf654606a5baa83c7b7e7c8b8e1e06596"
@@ -91,8 +96,8 @@ def test_v022_activity_snapshot_has_japanese_public_copy() -> None:
         assert message.string == translation
 
 
-def test_current_release_facts_match_the_approved_values() -> None:
-    """Pin the approved v0.2.2 facts in every canonical public source."""
+def test_published_v022_facts_and_v023_candidate_metadata_are_distinct() -> None:
+    """Preserve v0.2.2 history while staging v0.2.3 release identity."""
     changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     citation = (REPO_ROOT / "CITATION.cff").read_text(encoding="utf-8")
     zenodo = json.loads((REPO_ROOT / ".zenodo.json").read_text(encoding="utf-8"))
@@ -106,13 +111,22 @@ def test_current_release_facts_match_the_approved_values() -> None:
         rf"^## {re.escape(RELEASE_HISTORY_ENTRY)}$", changelog, re.MULTILINE
     )
     assert re.search(
-        rf"^version: {re.escape(RELEASE_VERSION)}$", citation, re.MULTILINE
+        rf"^## {re.escape(CANDIDATE_RELEASE_HISTORY_ENTRY)}$",
+        changelog,
+        re.MULTILINE,
     )
     assert re.search(
-        rf"^date-released: {re.escape(RELEASE_DATE)}$", citation, re.MULTILINE
+        rf"^version: {re.escape(CANDIDATE_RELEASE_VERSION)}$",
+        citation,
+        re.MULTILINE,
     )
-    assert zenodo["version"] == RELEASE_VERSION
-    assert zenodo["publication_date"] == RELEASE_DATE
+    assert re.search(
+        rf"^date-released: {re.escape(CANDIDATE_RELEASE_DATE)}$",
+        citation,
+        re.MULTILINE,
+    )
+    assert zenodo["version"] == CANDIDATE_RELEASE_VERSION
+    assert zenodo["publication_date"] == CANDIDATE_RELEASE_DATE
 
     release_message = catalogue.get(RELEASE_HISTORY_ENTRY)
     assert release_message is not None
@@ -238,6 +252,7 @@ def test_redesign_changelog_includes_the_canonical_release_history() -> None:
         r"^## (\[[^\]]+\] - \d{4}-\d{2}-\d{2})$", canonical, re.MULTILINE
     )
     assert canonical_releases == [
+        CANDIDATE_RELEASE_HISTORY_ENTRY,
         RELEASE_HISTORY_ENTRY,
         "[0.2.1] - 2026-08-31",
         "[0.2.0] - 2026-08-26",

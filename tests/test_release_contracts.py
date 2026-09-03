@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import os
@@ -513,31 +514,108 @@ def test_v0114_manifest_is_a_sanitized_review_evidence_container() -> None:
     assert '"schema": "gwexpy-v0114-review-evidence-v1"' in source
 
 
-def test_v023_manifest_is_a_sanitized_non_authorizing_placeholder() -> None:
-    assert V023_MANIFEST.is_file()
-    source = V023_MANIFEST.read_text(encoding="utf-8")
+def _assert_v023_sanitized_review_evidence_container(path: Path) -> None:
+    source = path.read_text(encoding="utf-8")
 
-    assert source.count("review_evidence_json:") == 1
     assert source.startswith("review_evidence_json: |\n")
     assert all(line.startswith("  ") for line in source.splitlines()[1:] if line)
     payload = json.loads(
         "\n".join(line[2:] for line in source.splitlines()[1:] if line)
     )
-    assert payload == {
-        "schema": "gwexpy-v023-review-evidence-v1",
-        "entries": [],
-    }
+    assert isinstance(payload, dict)
+    assert set(payload) == {"schema", "entries"}
+    assert payload["schema"] == "gwexpy-v023-review-evidence-v1"
+    assert isinstance(payload["entries"], list)
+    if payload["entries"]:
+        validator = load_review_validator()
+        validator.validate_review_evidence(
+            path,
+            None,
+            None,
+            ROOT,
+            expected_tag="v0.2.3",
+        )
 
 
-def test_v023_placeholder_is_rejected_by_executable_review_gate() -> None:
+def test_v023_manifest_is_a_sanitized_review_evidence_container() -> None:
+    assert V023_MANIFEST.is_file()
+
+    _assert_v023_sanitized_review_evidence_container(V023_MANIFEST)
+
+
+def test_v023_manifest_container_accepts_populated_final_state(
+    tmp_path: Path,
+) -> None:
+    contracts = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
+    lanes = contracts["releases"]["v0.2.3"]["review_lanes"]
+    commit = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    entries = []
+    for lane, configured_paths in sorted(lanes.items()):
+        paths = sorted(set(configured_paths), key=lambda item: item.encode("utf-8"))
+        tree = subprocess.run(
+            ["git", "ls-tree", "-r", "-z", "--full-tree", commit, "--", *paths],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+        ).stdout
+        entries.append(
+            {
+                "lane": lane,
+                "role": "reviewer",
+                "model": "gpt-5.6-terra",
+                "effort": "high",
+                "reviewed_commit": commit,
+                "scope_paths": paths,
+                "scope_digest": hashlib.sha256(tree).hexdigest(),
+                "verdict": "APPROVED",
+                "timestamp_utc": "2026-09-03T00:00:00Z",
+                "raw_report_sha256": "b" * 64,
+                "finding_ids": [],
+            }
+        )
+    populated = tmp_path / "audit-manifest-v0.2.3-release-readiness.yaml"
+    payload = json.dumps(
+        {
+            "schema": "gwexpy-v023-review-evidence-v1",
+            "entries": entries,
+        },
+        indent=2,
+    )
+    populated.write_text(
+        "review_evidence_json: |\n"
+        + "\n".join(f"  {line}" for line in payload.splitlines())
+        + "\n",
+        encoding="utf-8",
+    )
+    _assert_v023_sanitized_review_evidence_container(populated)
+
+
+def test_v023_empty_placeholder_is_rejected_by_executable_review_gate(
+    tmp_path: Path,
+) -> None:
     validator = load_review_validator()
+    placeholder = tmp_path / "audit-manifest-v0.2.3-release-readiness.yaml"
+    placeholder.write_text(
+        "review_evidence_json: |\n"
+        "  {\n"
+        '    "schema": "gwexpy-v023-review-evidence-v1",\n'
+        '    "entries": []\n'
+        "  }\n",
+        encoding="utf-8",
+    )
 
     with pytest.raises(
         validator.ReleaseReviewEvidenceError,
         match="exactly one reviewed commit",
     ):
         validator.validate_review_evidence(
-            V023_MANIFEST,
+            placeholder,
             None,
             None,
             ROOT,
