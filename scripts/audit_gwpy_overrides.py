@@ -65,6 +65,25 @@ TIMESERIESDICT_READ_MEMBER_ID = "gwexpy.timeseries.collections.TimeSeriesDict/re
 TIMESERIESDICT_READ_PARITY_REFERENCE = (
     "tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_read_matches_gwpy"
 )
+HDF5_AUTO_READ_REFERENCE = (
+    "tests/io/test_hdf5_timeseries_family.py::test_native_hdf5_auto_read_matches_gwpy"
+)
+HDF5_AUTO_WRITE_REFERENCE = (
+    "tests/io/test_hdf5_timeseries_family.py::test_native_hdf5_auto_write_matches_gwpy"
+)
+HDF5_AUTO_DICT_APPEND_REFERENCE = (
+    "tests/io/test_hdf5_timeseries_family.py"
+    "::test_timeseriesdict_auto_write_reconciles_existing_manifest"
+)
+HDF5_AUTO_ROUTE_REFERENCES = {
+    "gwexpy.timeseries.timeseries.TimeSeries/read": (HDF5_AUTO_READ_REFERENCE,),
+    "gwexpy.timeseries.timeseries.TimeSeries/write": (HDF5_AUTO_WRITE_REFERENCE,),
+    "gwexpy.timeseries.collections.TimeSeriesDict/read": (HDF5_AUTO_READ_REFERENCE,),
+    "gwexpy.timeseries.collections.TimeSeriesDict/write": (
+        HDF5_AUTO_WRITE_REFERENCE,
+        HDF5_AUTO_DICT_APPEND_REFERENCE,
+    ),
+}
 NON_INTERSECTING_WINDOW_SAFETY_REFERENCE = (
     "tests/io/test_reader_start_end_contract.py"
     "::TestNonNanosecondGrids"
@@ -110,7 +129,7 @@ UPSTREAM_DEPENDENCY_PROVENANCE = (
 EVIDENCE_TIMEOUT_SECONDS = 300
 ORACLE_TIMEOUT_SECONDS = 120
 SUBPROCESS_OUTPUT_LIMIT = 2_000_000
-EXPECTED_EVIDENCE_CASES = 384
+EXPECTED_EVIDENCE_CASES = 396
 EVIDENCE_CHILD_ENV = "GWEXPY_OVERRIDE_EVIDENCE_CHILD"
 SELF_EVIDENCE_PATH = "tests/test_gwpy_override_inventory.py"
 SAFE_SELF_EVIDENCE_SELECTORS = frozenset(
@@ -546,6 +565,9 @@ def _build_terminal_closures() -> dict[str, dict[str, Any]]:
             io_observations: Mapping[str, Mapping[str, Any]] | None = None
             if is_non_intersecting_safety_exception:
                 io_observations = NON_INTERSECTING_WINDOW_SAFETY_OBSERVATIONS
+            additional_behavior = HDF5_AUTO_ROUTE_REFERENCES.get(member_id, ())
+            if is_non_intersecting_safety_exception:
+                additional_behavior += (NON_INTERSECTING_WINDOW_SAFETY_REFERENCE,)
             register(
                 public_class,
                 member,
@@ -557,11 +579,7 @@ def _build_terminal_closures() -> dict[str, dict[str, Any]]:
                     pre_fix=io_pre_fix,
                     comparator="exact-io-outcome-payload-and-metadata",
                     observations=io_observations,
-                    additional_behavior=(
-                        (NON_INTERSECTING_WINDOW_SAFETY_REFERENCE,)
-                        if is_non_intersecting_safety_exception
-                        else ()
-                    ),
+                    additional_behavior=additional_behavior,
                     compatibility_exception=(
                         NON_INTERSECTING_WINDOW_SAFETY
                         if is_non_intersecting_safety_exception
@@ -2408,9 +2426,10 @@ def _validate_compatibility_exception(
     behavior = evidence.get("behavior") if isinstance(evidence, dict) else None
     _require(
         isinstance(behavior, list)
-        and behavior[:2]
+        and behavior[:3]
         == [
             {"reference": TIMESERIESDICT_READ_PARITY_REFERENCE},
+            {"reference": HDF5_AUTO_READ_REFERENCE},
             {"reference": NON_INTERSECTING_WINDOW_SAFETY_REFERENCE},
         ],
         "compatibility_exception lacks dedicated #611 safety evidence",

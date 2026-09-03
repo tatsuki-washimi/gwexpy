@@ -21,6 +21,10 @@ reapproval.
   unspecified target in truncating mode. Native `names=`, `group=`, append,
   duplicate-name, legacy-manifest, and link-safety outcomes now follow the
   installed GWpy oracle while private exact-time sidecars remain additive.
+- **Native HDF5 auto-identification**: `TimeSeries` and `TimeSeriesDict` now
+  match GWpy for native `.h5` / `.hdf5` auto-read and auto-write. Structural
+  NDScope detection retains precedence over the lower-priority generic HDF5
+  route; other ambiguous and GWexpy-only class families remain explicit.
 - **HDF5 window safety (#611)**: GWpy 4.0.x can return samples outside the
   requested interval for a completely non-intersecting HDF5 collection
   window because negative stop indices wrap. GWexpy now returns a zero-length

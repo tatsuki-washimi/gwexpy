@@ -151,12 +151,14 @@ msgstr "**自動判別でよい**のは、拡張子から reader が一意に決
 
 #: ../../how-to/io_formats.md:28 05bd5ab6323b43c79644dad00d919f9f
 msgid ""
-"For generic **HDF5**, set **`format=\"hdf5\"` explicitly**. The `.h5` / "
-"`.hdf5` extensions overlap multiple HDF5-backed families, and auto-"
-"identification is not uniform across classes."
+"GWpy-backed **`TimeSeries`** and **`TimeSeriesDict`** auto-identify native "
+"HDF5 for `.h5` / `.hdf5`; structurally identified NDScope files take "
+"precedence. Set **`format=\"hdf5\"` explicitly** for other ambiguous or "
+"GWexpy-only HDF5 class families."
 msgstr ""
-"汎用 **HDF5** は **`format=\"hdf5\"` を明示**してください。`.h5` / `.hdf5` は複数の HDF5 "
-"系経路で共有されており、クラスによって自動判別の挙動が揃っていません。"
+"GWpy-backed の **`TimeSeries`** と **`TimeSeriesDict`** は、`.h5` / `.hdf5` の native "
+"HDF5 を自動判別します。構造が NDScope に一致するファイルは、汎用の native 経路より先に選択されます。その他の曖昧な HDF5 "
+"ファミリ、または GWexpy-only のクラスでは **`format=\"hdf5\"` を明示**してください。"
 
 #: ../../how-to/io_formats.md:29 4dcc2fe7dd4a47d99dd8be9b0ec8b26d
 msgid ""
@@ -770,17 +772,22 @@ msgstr "**HDF5** (`.h5`, `.hdf5`)"
 
 #: ../../how-to/io_formats.md:16 ff6e42f1e1054ea99072d496babb49f7
 msgid ""
-"`.read(..., format=\"hdf5\")`, `.write(..., format=\"hdf5\")` on major "
-"classes"
-msgstr "各クラスの `.read(..., format=\"hdf5\")`, `.write(..., format=\"hdf5\")`"
+"`TimeSeries.read()` / `.write()`, `TimeSeriesDict.read()` / `.write()`; "
+"other classes use `format=\"hdf5\"`"
+msgstr ""
+"`TimeSeries.read()` / `.write()`, `TimeSeriesDict.read()` / `.write()`。"
+"その他のクラスは `format=\"hdf5\"` を使用"
 
 #: ../../how-to/io_formats.md:16 f9ce53d15c25490a9765035b30e4a119
 msgid "Long-term storage with metadata"
 msgstr "長期保存、メタデータ保持"
 
 #: ../../how-to/io_formats.md:16 e942ce38cd9f4294ba35870d2b4de518
-msgid "Prefer explicit `format=\"hdf5\"`"
-msgstr "`format=\"hdf5\"` の明示を推奨"
+msgid ""
+"Native time-series HDF5 auto-identifies; prefer explicit format for other "
+"families"
+msgstr ""
+"native time-series HDF5 は自動判別。その他のファミリは明示を推奨"
 
 #: ../../how-to/io_formats.md:16 d1014d01a76840e6b9fbd0dd05aee80a
 msgid "**hdf.ndscope** (`.h5`, `.hdf5`)"

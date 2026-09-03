@@ -334,10 +334,16 @@ not add `time_scale=` or `time_unit=`.
 - Reason: public docs already present HDF5 as the main storage path for
   `FrequencySeries`, `Spectrogram`, `Histogram`, `EventTable`, and related
   collection classes.
-- Generic `hdf5` currently requires explicit `format="hdf5"` in the published
-  contract.
-- Reason: `.h5` / `.hdf5` overlaps multiple HDF5-backed families, and
-  auto-identification is not uniform across the current class surface.
+- GWpy-backed `TimeSeries` and `TimeSeriesDict` auto-identify native HDF5 for
+  `.h5` and `.hdf5` reads and writes. Structural NDScope identification has
+  higher priority than the generic native route.
+- The format-wide `public_auto_identify` flag remains false because it denotes
+  a uniform guarantee across every published HDF5 class family. The
+  `TimeSeries` / `TimeSeriesDict` behavior above is a class-scoped behavioral
+  guarantee pinned by dedicated tests.
+- Other ambiguous or GWexpy-only HDF5 class families should keep
+  `format="hdf5"` explicit; class families without a generic identifier require
+  it. This does not broaden `TimeSeriesList` or matrix-only direct-I/O routes.
 - `FrequencySeriesMatrix` and `SpectrogramMatrix` stay outside the published
   HDF5 contract until matrix-axis serialization is hardened.
 - Field classes stay outside this schema slice until their direct-I/O story is

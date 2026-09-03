@@ -58,6 +58,12 @@ TIME_STATE_NS_KEY = "_gwex_t0_gps_ns"
 _MISSING = object()
 _WRAPPER_MARKER = "_gwexpy_exact_t0_hdf5"
 _NATIVE_HANDLER_ATTR = "_gwexpy_exact_t0_native_handler"
+_DICT_AUTO_READER_MARKER = "_gwexpy_hdf5_auto_dict_reader"
+_DICT_AUTO_READER_DELEGATE_ATTR = "_gwexpy_hdf5_auto_dict_delegate"
+_DICT_AUTO_WRITER_MARKER = "_gwexpy_hdf5_auto_dict_writer"
+_DICT_AUTO_WRITER_DELEGATE_ATTR = "_gwexpy_hdf5_auto_dict_write_delegate"
+_DICT_AUTO_WRITER_DISPATCH_KW = "_gwexpy_hdf5_auto_writer_dispatch"
+_DICT_AUTO_WRITER_SENTINEL = object()
 _ROLLBACK_PREFIX = "__gwexpy_t0_rollback_"
 _MAX_V2_RECORDS = 10_000
 _MAX_V2_BYTES = 8 * 1024 * 1024
@@ -739,6 +745,21 @@ def _native_writer() -> Callable[..., h5py.Dataset]:
     if _BASE_WRITER is None:  # pragma: no cover - registration invariant
         raise RuntimeError("TimeSeries HDF5 exact writer is not registered")
     return _BASE_WRITER
+
+
+def _write_native_hdf5_dict(
+    collection: Any,
+    target: Any,
+    *args: Any,
+    **kwargs: Any,
+) -> Any:
+    """Call the parent GWpy dict writer without exact-class redispatch."""
+    native_writer = _io_registry.default_registry.get_writer("hdf5", TimeSeriesDict)
+    if not callable(native_writer) or bool(
+        getattr(native_writer, _DICT_AUTO_WRITER_MARKER, False)
+    ):
+        raise RuntimeError("invalid native TimeSeriesDict HDF5 registry writer")
+    return native_writer(collection, target, *args, **kwargs)
 
 
 def _write_core(
@@ -1763,13 +1784,16 @@ def _read_open_container(
 
 
 def register_hdf5_exact_t0_io() -> None:
-    """Register TimeSeries-only exact-epoch wrappers for native HDF5."""
+    """Register exact native HDF5 routes below structural specialisations."""
     global _BASE_READER, _BASE_WRITER
+    from gwexpy.timeseries.collections import TimeSeriesDict as GwexTimeSeriesDict
     from gwexpy.timeseries.timeseries import TimeSeries as GwexTimeSeries
 
     registry = _io_registry.default_registry
     current_reader = registry.get_reader("hdf5", GwexTimeSeries)
     current_writer = registry.get_writer("hdf5", GwexTimeSeries)
+    current_dict_reader = registry.get_reader("hdf5", GwexTimeSeriesDict)
+    current_dict_writer = registry.get_writer("hdf5", GwexTimeSeriesDict)
 
     reader_wrapped = bool(getattr(current_reader, _WRAPPER_MARKER, False))
     writer_wrapped = bool(getattr(current_writer, _WRAPPER_MARKER, False))
@@ -1792,100 +1816,197 @@ def register_hdf5_exact_t0_io() -> None:
                 )
             recovered.append(native)
         _BASE_READER, _BASE_WRITER = recovered
-        return
+        read_exact = current_reader
+        write_exact = current_writer
+    else:
+        _BASE_READER = registry.get_reader("hdf5", TimeSeries)
+        _BASE_WRITER = registry.get_writer("hdf5", TimeSeries)
+        if (
+            not callable(_BASE_READER)
+            or not callable(_BASE_WRITER)
+            or bool(getattr(_BASE_READER, _WRAPPER_MARKER, False))
+            or bool(getattr(_BASE_WRITER, _WRAPPER_MARKER, False))
+        ):
+            raise RuntimeError("invalid native TimeSeries HDF5 registry handlers")
 
-    _BASE_READER = registry.get_reader("hdf5", TimeSeries)
-    _BASE_WRITER = registry.get_writer("hdf5", TimeSeries)
-    if (
-        not callable(_BASE_READER)
-        or not callable(_BASE_WRITER)
-        or bool(getattr(_BASE_READER, _WRAPPER_MARKER, False))
-        or bool(getattr(_BASE_WRITER, _WRAPPER_MARKER, False))
-    ):
-        raise RuntimeError("invalid native TimeSeries HDF5 registry handlers")
-
-    @functools.wraps(_BASE_READER)
-    def read_exact(
-        source: Any,
-        path: str | bytes | None = None,
-        **kwargs: Any,
-    ) -> Any:
-        if isinstance(source, h5py.HLObject):
-            return _read_open_container(
-                source,
-                path,
-                GwexTimeSeries,
-                dict(kwargs),
-            )
-        with h5py.File(source, "r") as h5file:
-            return _read_open_container(
-                h5file,
-                path,
-                GwexTimeSeries,
-                dict(kwargs),
-            )
-
-    @functools.wraps(_BASE_WRITER)
-    def write_exact(
-        array: Any,
-        target: Any,
-        path: str | bytes | None = None,
-        **kwargs: Any,
-    ) -> h5py.Dataset:
-        exact_epoch = _exact_epoch(array)
-        write_kwargs = dict(kwargs)
-        marker = _validate_caller_write_metadata(array, exact_epoch, write_kwargs)
-        _reject_private_namespace(
-            array,
-            target,
-            path,
-            preserve_existing=bool(write_kwargs.get("append", False)),
-        )
-        if _external_storage_requested(write_kwargs):
-            if exact_epoch is not None:
-                raise ValueError(
-                    "external HDF5 storage is incompatible with exact TimeSeries "
-                    "epoch transactions"
+        @functools.wraps(_BASE_READER)
+        def read_exact(
+            source: Any,
+            path: str | bytes | None = None,
+            **kwargs: Any,
+        ) -> Any:
+            if isinstance(source, h5py.HLObject):
+                return _read_open_container(
+                    source,
+                    path,
+                    GwexTimeSeries,
+                    dict(kwargs),
                 )
-            _preflight_native_external_write(
+            with h5py.File(source, "r") as h5file:
+                return _read_open_container(
+                    h5file,
+                    path,
+                    GwexTimeSeries,
+                    dict(kwargs),
+                )
+
+        @functools.wraps(_BASE_WRITER)
+        def write_exact(
+            array: Any,
+            target: Any,
+            path: str | bytes | None = None,
+            **kwargs: Any,
+        ) -> h5py.Dataset:
+            exact_epoch = _exact_epoch(array)
+            write_kwargs = dict(kwargs)
+            marker = _validate_caller_write_metadata(array, exact_epoch, write_kwargs)
+            _reject_private_namespace(
                 array,
                 target,
                 path,
-                write_kwargs,
+                preserve_existing=bool(write_kwargs.get("append", False)),
             )
-            return _native_writer()(array, target, path=path, **write_kwargs)
-        if path is not None:
-            _native_path_components(array, path)
-        if isinstance(target, (h5py.File, h5py.Group)):
-            return _write_open_container(
+            if _external_storage_requested(write_kwargs):
+                if exact_epoch is not None:
+                    raise ValueError(
+                        "external HDF5 storage is incompatible with exact TimeSeries "
+                        "epoch transactions"
+                    )
+                _preflight_native_external_write(
+                    array,
+                    target,
+                    path,
+                    write_kwargs,
+                )
+                return _native_writer()(array, target, path=path, **write_kwargs)
+            if path is not None:
+                _native_path_components(array, path)
+            if isinstance(target, (h5py.File, h5py.Group)):
+                return _write_open_container(
+                    array,
+                    target,
+                    path,
+                    marker,
+                    write_kwargs,
+                )
+            if _is_seekable_filelike(target):
+                return _write_filelike_transaction(
+                    array,
+                    target,
+                    path,
+                    marker,
+                    write_kwargs,
+                )
+            return _write_path_transaction(
                 array,
                 target,
                 path,
                 marker,
                 write_kwargs,
             )
-        if _is_seekable_filelike(target):
-            return _write_filelike_transaction(
-                array,
-                target,
-                path,
-                marker,
-                write_kwargs,
+
+        setattr(read_exact, _WRAPPER_MARKER, True)
+        setattr(write_exact, _WRAPPER_MARKER, True)
+        setattr(read_exact, _NATIVE_HANDLER_ATTR, _BASE_READER)
+        setattr(write_exact, _NATIVE_HANDLER_ATTR, _BASE_WRITER)
+
+    read_descriptor = GwexTimeSeriesDict.__dict__.get("read")
+    read_dict_delegate = getattr(read_descriptor, "__func__", None)
+    if not callable(read_dict_delegate):  # pragma: no cover - class invariant
+        raise RuntimeError("invalid TimeSeriesDict public read descriptor")
+
+    if bool(getattr(current_dict_reader, _DICT_AUTO_READER_MARKER, False)):
+        saved_delegate = getattr(
+            current_dict_reader,
+            _DICT_AUTO_READER_DELEGATE_ATTR,
+            None,
+        )
+        if (
+            not callable(saved_delegate)
+            or saved_delegate is current_dict_reader
+            or saved_delegate is not read_dict_delegate
+        ):
+            raise RuntimeError("invalid recursive TimeSeriesDict HDF5 registry adapter")
+        read_dict_auto = current_dict_reader
+    else:
+
+        @functools.wraps(read_dict_delegate)
+        def read_dict_auto(source: Any, *args: Any, **kwargs: Any) -> Any:
+            """Route identified native HDF5 through the public explicit reader."""
+            return read_dict_delegate(
+                GwexTimeSeriesDict,
+                source,
+                *args,
+                format="hdf5",
+                **kwargs,
             )
-        return _write_path_transaction(
-            array,
-            target,
-            path,
-            marker,
-            write_kwargs,
+
+        setattr(read_dict_auto, _DICT_AUTO_READER_MARKER, True)
+        setattr(
+            read_dict_auto,
+            _DICT_AUTO_READER_DELEGATE_ATTR,
+            read_dict_delegate,
         )
 
-    setattr(read_exact, _WRAPPER_MARKER, True)
-    setattr(write_exact, _WRAPPER_MARKER, True)
-    setattr(read_exact, _NATIVE_HANDLER_ATTR, _BASE_READER)
-    setattr(write_exact, _NATIVE_HANDLER_ATTR, _BASE_WRITER)
-    registry.register_reader("hdf5", GwexTimeSeries, read_exact, force=True)
-    registry.register_writer("hdf5", GwexTimeSeries, write_exact, force=True)
+    write_descriptor = GwexTimeSeriesDict.__dict__.get("write")
+    write_dict_delegate = getattr(write_descriptor, "__func__", write_descriptor)
+    if not callable(write_dict_delegate):  # pragma: no cover - class invariant
+        raise RuntimeError("invalid TimeSeriesDict public write descriptor")
+
+    if bool(getattr(current_dict_writer, _DICT_AUTO_WRITER_MARKER, False)):
+        saved_delegate = getattr(
+            current_dict_writer,
+            _DICT_AUTO_WRITER_DELEGATE_ATTR,
+            None,
+        )
+        if (
+            not callable(saved_delegate)
+            or saved_delegate is current_dict_writer
+            or saved_delegate is not write_dict_delegate
+        ):
+            raise RuntimeError("invalid recursive TimeSeriesDict HDF5 writer adapter")
+        write_dict_auto = current_dict_writer
+    else:
+
+        @functools.wraps(write_dict_delegate)
+        def write_dict_auto(
+            collection: Any,
+            target: Any,
+            *args: Any,
+            **kwargs: Any,
+        ) -> Any:
+            """Route identified native HDF5 through the public explicit writer."""
+            write_kwargs = dict(kwargs)
+            write_kwargs[_DICT_AUTO_WRITER_DISPATCH_KW] = _DICT_AUTO_WRITER_SENTINEL
+            return write_dict_delegate(
+                collection,
+                target,
+                *args,
+                format="hdf5",
+                **write_kwargs,
+            )
+
+        setattr(write_dict_auto, _DICT_AUTO_WRITER_MARKER, True)
+        setattr(
+            write_dict_auto,
+            _DICT_AUTO_WRITER_DELEGATE_ATTR,
+            write_dict_delegate,
+        )
+
+    registry.register_reader(
+        "hdf5", GwexTimeSeries, read_exact, force=True, priority=-1
+    )
+    registry.register_writer(
+        "hdf5", GwexTimeSeries, write_exact, force=True, priority=-1
+    )
+    registry.register_reader(
+        "hdf5", GwexTimeSeriesDict, read_dict_auto, force=True, priority=-1
+    )
+    registry.register_writer(
+        "hdf5", GwexTimeSeriesDict, write_dict_auto, force=True, priority=-1
+    )
+    registry.register_identifier("hdf5", GwexTimeSeries, identify_hdf5, force=True)
+    registry.register_identifier("hdf5", GwexTimeSeriesDict, identify_hdf5, force=True)
 
 
 register_hdf5_exact_t0_io()

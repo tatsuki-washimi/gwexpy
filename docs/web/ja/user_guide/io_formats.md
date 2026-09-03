@@ -38,7 +38,7 @@ gwexpy の利用者向け I/O ガイドです。
 
 - **まず保存形式を選ぶ**なら、GW 系データは **HDF5**、観測網の既存資産は **MiniSEED / SAC / WIN / ATS**、汎用交換は **CSV / NetCDF4 / Zarr**、ロガー固有データは **GBD / TDMS / SDB / WAV / Audio** を起点に考えると整理しやすいです。**MTH5** については、現時点の public direct-I/O は **`ats.mth5` の単一路だけ** で、汎用の standalone **`format="mth5"`** はまだ公開していません。
 - **自動判別でよい**のは、拡張子から reader が一意に決まる場合です。
-- 汎用 **HDF5** は **`format="hdf5"` を明示**してください。`.h5` / `.hdf5` は複数の HDF5 系経路で共有されており、クラスによって自動判別の挙動が揃っていません。
+- GWpy-backed の **`TimeSeries`** と **`TimeSeriesDict`** は、`.h5` / `.hdf5` の native HDF5 を自動判別します。構造が NDScope に一致するファイルは、汎用の native 経路より先に選択されます。その他の曖昧な HDF5 ファミリ、または GWexpy-only のクラスでは **`format="hdf5"` を明示**してください。
 - **`format=` を明示する**のは、`.xml` のように経路が複数ありうる場合、独自拡張子を使っている場合、または実験データで自動判別が不安な場合です。
 - **`timezone` を必ず指定する**のは、ファイル内に UTC/GPS がなくローカル時刻だけを持つ形式です。現時点でユーザーが明示必須なのは **GBD** です。
 - **Read only / Write only に注意する**: 表の `○ / ×` は「読めるが書けない」「書けるが読めない」を意味します。
@@ -143,7 +143,7 @@ GW 系の標準保存・交換・取得経路です。
 | 形式 / 経路 | 読 / 写 | 主な入口 | 用途 | 備考 |
 |---|:---:|---|---|---|
 | **GWF** (`.gwf`) | ○ / ○ | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | LIGO/KAGRA の標準交換 | 標準形式。gwpy 経由 |
-| **HDF5** (`.h5`, `.hdf5`) | ○ / ○ | 各クラスの `.read(..., format="hdf5")`, `.write(..., format="hdf5")` | 長期保存、メタデータ保持 | `format="hdf5"` の明示を推奨 |
+| **HDF5** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeries.read()` / `.write()`, `TimeSeriesDict.read()` / `.write()`。その他のクラスは `format="hdf5"` を使用 | 長期保存、メタデータ保持 | native time-series HDF5 は自動判別。その他のファミリは明示を推奨 |
 | **hdf.ndscope** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeriesDict.read(..., format="hdf.ndscope")`, `.write(..., format="hdf.ndscope")` | ndscope 互換 | `TimeSeriesDict` 限定。writer は `rate_hz` を使用し、reader は外部データの `sample_rate` も受理します。データを持つ group にどちらの属性もない場合は、黙って読み飛ばさず group 名を含む `ValueError` を送出します。旧 alias: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` |
 | **xml.diaggui** (`.xml`, `.xml.gz`) | ○ / × | `TimeSeriesDict.read(..., format="xml.diaggui", products="...")` | DiagGUI / DTT 出力 | `products` 必須。旧 alias: `dttxml` |
 | **NDS2** | ○ / × | `TimeSeries.fetch()` | 検出器データサーバ取得 | ネットワーク経由 |
@@ -157,7 +157,7 @@ GW 系の標準保存・交換・取得経路です。
 from gwexpy.timeseries.collections import TimeSeriesDict
 from gwexpy.timeseries import TimeSeries
 
-tsd = TimeSeriesDict.read("data.h5", format="hdf5")
+tsd = TimeSeriesDict.read("data.h5")  # native HDF5 を自動判別
 frame = TimeSeriesDict.read("data.gwf", format="gwf")
 merged = TimeSeriesDict.read(["part0.gwf", "part1.gwf"], "H1:STRAIN", pad=float("nan"))
 dtt = TimeSeriesDict.read("diag.xml", format="xml.diaggui", products="TS")

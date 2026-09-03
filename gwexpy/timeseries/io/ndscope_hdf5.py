@@ -21,6 +21,7 @@ through the shared registration helper.
 from __future__ import annotations
 
 from collections.abc import Iterable
+from contextlib import nullcontext
 from pathlib import Path
 from typing import Any
 
@@ -96,6 +97,27 @@ def _sample_rate_from_attrs(attrs: Any, *, group_name: str) -> float:
 # ---------------------------------------------------------------------------
 
 
+def _has_ndscope_structure(root: h5py.File | h5py.Group) -> bool:
+    """Return whether *root* contains at least one NDScope channel group."""
+    for key in root:
+        item = root[key]
+        if not isinstance(item, h5py.Group):
+            continue
+        if "gps_start" not in item.attrs:
+            continue
+        if any(ds_name in item for ds_name in _NDSCOPE_DATA_KEYS):
+            return True
+    return False
+
+
+def _has_hdf5_suffix(path: Any) -> bool:
+    """Return whether *path* has a supported NDScope HDF5 suffix."""
+    if not isinstance(path, (str, Path)):
+        return False
+    normalized = str(path).lower()
+    return normalized.endswith((".hdf5", ".h5"))
+
+
 def identify_ndscope_hdf5(
     origin: type,
     filepath: str | Path | None,
@@ -105,9 +127,11 @@ def identify_ndscope_hdf5(
 ) -> bool:
     """Identify an ndscope HDF5 file by its internal structure.
 
-    Returns ``True`` when *filepath* points to an HDF5 file whose root
-    contains at least one Group with a ``gps_start`` attribute plus at least
-    one dataset named ``raw``, ``mean``, ``min``, or ``max``.
+    Returns ``True`` when *filepath*, or a caller-owned `h5py.File`, has a
+    supported suffix and a root containing at least one Group with a
+    ``gps_start`` attribute plus at least one dataset named ``raw``, ``mean``,
+    ``min``, or ``max``. Named binary handles are inspected through their path,
+    without reading or closing the caller-owned handle.
 
     Sampling-rate metadata is deliberately *not* part of this test.  An
     NDScope file whose groups all lack ``rate_hz``/``sample_rate`` is still an
@@ -118,24 +142,24 @@ def identify_ndscope_hdf5(
     is meant to help catch.  Validity of the rate is the reader's contract;
     see :func:`_sample_rate_from_attrs`.
     """
-    if filepath is None:
-        return False
-    path = str(filepath)
-    if not (path.lower().endswith(".hdf5") or path.lower().endswith(".h5")):
-        return False
     try:
+        h5file = fileobj
+        if not isinstance(h5file, h5py.File) and args:
+            h5file = args[0]
+        if isinstance(h5file, h5py.File):
+            if not _has_hdf5_suffix(h5file.filename):
+                return False
+            return _has_ndscope_structure(h5file)
+
+        path = filepath
+        if path is None:
+            path = getattr(fileobj, "name", None)
+        if not _has_hdf5_suffix(path):
+            return False
         with h5py.File(path, "r") as f:
-            for key in f:
-                item = f[key]
-                if not isinstance(item, h5py.Group):
-                    continue
-                if "gps_start" not in item.attrs:
-                    continue
-                if any(ds_name in item for ds_name in _NDSCOPE_DATA_KEYS):
-                    return True
-    except (OSError, KeyError, AttributeError, TypeError):
+            return _has_ndscope_structure(f)
+    except (OSError, KeyError, AttributeError, TypeError, ValueError):
         return False
-    return False
 
 
 # ---------------------------------------------------------------------------
@@ -151,6 +175,8 @@ def _resolve_source(source: Any) -> str:
     """
     if isinstance(source, (str, Path)):
         return str(source)
+    if isinstance(source, h5py.File):
+        return str(source.filename)
     # file-like object (e.g. _io.FileIO opened by gwpy)
     if hasattr(source, "name"):
         return str(source.name)
@@ -158,7 +184,7 @@ def _resolve_source(source: Any) -> str:
 
 
 def read_timeseriesdict_ndscope_hdf5(
-    source: str | Path,
+    source: str | Path | h5py.File | list[str | Path] | tuple[str | Path, ...],
     *,
     channels: Iterable[str] | None = None,
     start: float | None = None,
@@ -169,10 +195,11 @@ def read_timeseriesdict_ndscope_hdf5(
 
     Parameters
     ----------
-    source : str, Path, or list of str/Path
-        Path to the HDF5 file, or a list of paths.  When a list is
-        given, channels found in several files are concatenated along
-        the time axis and channels unique to one file are merged in.
+    source : str, Path, h5py.File, or list/tuple of str/Path
+        Path to the HDF5 file, a caller-owned open HDF5 file, or a list/tuple
+        of paths. When multiple paths are given, channels found in several
+        files are concatenated along the time axis and channels unique to one
+        file are merged in. Caller-owned HDF5 files are not closed.
     channels : iterable of str, optional
         Channel names to read.  If ``None``, all channels are read.
     start : float, optional
@@ -206,7 +233,12 @@ def read_timeseriesdict_ndscope_hdf5(
     wanted = set(channels) if channels is not None else None
     out = TimeSeriesDict()
 
-    with h5py.File(_resolve_source(source), "r") as f:
+    source_context = (
+        nullcontext(source)
+        if isinstance(source, h5py.File)
+        else h5py.File(_resolve_source(source), "r")
+    )
+    with source_context as f:
         for grp_name in f:
             item = f[grp_name]
             if not isinstance(item, h5py.Group):
@@ -363,5 +395,4 @@ register_timeseries_format(
     reader_dict=read_timeseriesdict_ndscope_hdf5,
     writer_dict=write_timeseriesdict_ndscope_hdf5,
     magic_identifier=identify_ndscope_hdf5,
-    extension="hdf5",
 )

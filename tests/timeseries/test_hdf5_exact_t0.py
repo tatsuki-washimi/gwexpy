@@ -5325,12 +5325,20 @@ sys.path.insert(0, sys.argv[3])
 """
         + imports
         + """
+from gwpy.timeseries import TimeSeriesDict as GwpyTimeSeriesDict
+from gwexpy.timeseries import TimeSeriesDict
 reader = registry.default_registry.get_reader("hdf5", TimeSeries)
 writer = registry.default_registry.get_writer("hdf5", TimeSeries)
+parent_dict_writer = registry.default_registry.get_writer(
+    "hdf5", GwpyTimeSeriesDict
+)
+dict_reader = registry.default_registry.get_reader("hdf5", TimeSeriesDict)
+dict_writer = registry.default_registry.get_writer("hdf5", TimeSeriesDict)
 native_attribute = exact_hdf5._NATIVE_HANDLER_ATTR
 native_reader = getattr(reader, native_attribute)
 native_writer = getattr(writer, native_attribute)
 calls = {"read": 0, "write": 0}
+dict_calls = {"write": 0}
 
 def count_reader(*args, **kwargs):
     calls["read"] += 1
@@ -5340,15 +5348,33 @@ def count_writer(*args, **kwargs):
     calls["write"] += 1
     return native_writer(*args, **kwargs)
 
+def count_dict_writer(*args, **kwargs):
+    dict_calls["write"] += 1
+    return parent_dict_writer(*args, **kwargs)
+
 setattr(reader, native_attribute, count_reader)
 setattr(writer, native_attribute, count_writer)
+registry.default_registry.register_writer(
+    "hdf5", GwpyTimeSeriesDict, count_dict_writer, force=True
+)
 for _ in range(2):
     assert importlib.reload(exact_hdf5) is exact_hdf5
 
 assert registry.default_registry.get_reader("hdf5", TimeSeries) is reader
 assert registry.default_registry.get_writer("hdf5", TimeSeries) is writer
+assert registry.default_registry.get_reader("hdf5", TimeSeriesDict) is dict_reader
+assert registry.default_registry.get_writer("hdf5", TimeSeriesDict) is dict_writer
+assert registry.default_registry.get_writer(
+    "hdf5", GwpyTimeSeriesDict
+) is count_dict_writer
 assert exact_hdf5._BASE_READER is count_reader
 assert exact_hdf5._BASE_WRITER is count_writer
+assert registry.default_registry._readers[("hdf5", TimeSeries)][1] == -1
+assert registry.default_registry._writers[("hdf5", TimeSeries)][1] == -1
+assert registry.default_registry._readers[("hdf5", TimeSeriesDict)][1] == -1
+assert registry.default_registry._writers[("hdf5", TimeSeriesDict)] == (dict_writer, -1)
+assert registry.default_registry._readers[("hdf.ndscope", TimeSeries)][1] == 0
+assert registry.default_registry._readers[("hdf.ndscope", TimeSeriesDict)][1] == 0
 series = TimeSeries(
     np.arange(4, dtype=np.float64),
     t0=10.25,
@@ -5372,6 +5398,18 @@ result = registry.default_registry.read(
 assert calls == {"read": 1, "write": 1}
 assert not hasattr(result, "_gwex_t0_gps_ns")
 assert np.array_equal(result.value, series.value)
+auto_path = sys.argv[1] + ".auto.h5"
+auto_written = series.write(auto_path)
+assert type(auto_written).__name__ == "Dataset"
+auto_result = TimeSeries.read(auto_path)
+assert calls == {"read": 2, "write": 2}
+assert np.array_equal(auto_result.value, series.value)
+dict_path = sys.argv[1] + ".dict.h5"
+assert TimeSeriesDict({"A": series}).write(dict_path) is None
+assert dict_calls == {"write": 1}
+dict_result = TimeSeriesDict.read(dict_path)
+assert list(dict_result) == ["A"]
+assert np.array_equal(dict_result["A"].value, series.value)
 """
     )
 
@@ -5402,6 +5440,10 @@ assert np.array_equal(result.value, series.value)
         "recursive-writer",
         "noncallable-reader",
         "noncallable-writer",
+        "recursive-dict-reader",
+        "noncallable-dict-reader",
+        "recursive-dict-writer",
+        "noncallable-dict-writer",
     ],
 )
 def test_hdf5_registry_rejects_half_or_recursive_wrapper(
@@ -5413,12 +5455,14 @@ import importlib
 import sys
 sys.path.insert(0, sys.argv[2])
 from gwpy.io import registry
-from gwexpy.timeseries import TimeSeries
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 from gwexpy.timeseries.io import hdf5 as exact_hdf5
 
 state = sys.argv[1]
 reader = registry.default_registry.get_reader("hdf5", TimeSeries)
 writer = registry.default_registry.get_writer("hdf5", TimeSeries)
+dict_reader = registry.default_registry.get_reader("hdf5", TimeSeriesDict)
+dict_writer = registry.default_registry.get_writer("hdf5", TimeSeriesDict)
 native_reader = reader.__wrapped__
 native_writer = writer.__wrapped__
 native_attribute = "_gwexpy_exact_t0_native_handler"
@@ -5438,6 +5482,18 @@ elif state == "noncallable-reader":
     setattr(reader, native_attribute, None)
 elif state == "noncallable-writer":
     setattr(writer, native_attribute, None)
+elif state == "recursive-dict-reader":
+    setattr(dict_reader, "_gwexpy_hdf5_auto_dict_reader", True)
+    setattr(dict_reader, "_gwexpy_hdf5_auto_dict_delegate", dict_reader)
+elif state == "noncallable-dict-reader":
+    setattr(dict_reader, "_gwexpy_hdf5_auto_dict_reader", True)
+    setattr(dict_reader, "_gwexpy_hdf5_auto_dict_delegate", None)
+elif state == "recursive-dict-writer":
+    setattr(dict_writer, "_gwexpy_hdf5_auto_dict_writer", True)
+    setattr(dict_writer, "_gwexpy_hdf5_auto_dict_write_delegate", dict_writer)
+elif state == "noncallable-dict-writer":
+    setattr(dict_writer, "_gwexpy_hdf5_auto_dict_writer", True)
+    setattr(dict_writer, "_gwexpy_hdf5_auto_dict_write_delegate", None)
 else:
     raise AssertionError(state)
 

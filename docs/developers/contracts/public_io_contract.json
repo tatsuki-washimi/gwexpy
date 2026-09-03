@@ -246,7 +246,7 @@
                 ]
             },
             "public_auto_identify": false,
-            "registry_auto_identify": false,
+            "registry_auto_identify": true,
             "required_args": {
                 "read": [],
                 "write": []
@@ -257,7 +257,9 @@
                 "Published readers and writers must round-trip core axis metadata and units needed for reconstruction."
             ],
             "notes": [
-                "Published usage should set format=\"hdf5\" explicitly because .h5/.hdf5 overlaps specialized HDF5 families and auto-identification is not uniform across classes.",
+                "GWpy-backed TimeSeries and TimeSeriesDict auto-identify native HDF5 for .h5 and .hdf5; structurally identified NDScope files take precedence over the generic native route.",
+                "The format-wide public_auto_identify flag remains false because it represents a uniform guarantee across every published HDF5 class family; the TimeSeries and TimeSeriesDict behavior is a class-scoped guarantee.",
+                "Published usage for other ambiguous or GWexpy-only HDF5 class families should set format=\"hdf5\" explicitly.",
                 "Public HDF5 direct I/O covers documented time-series, frequency-series, spectrogram, histogram, and event-table families.",
                 "GWpy segment classes remain part of the broader registry-backed implementation surface, but they are not part of the published HDF5 direct-I/O contract in this slice.",
                 "FrequencySeriesMatrix and SpectrogramMatrix remain outside the published HDF5 contract until matrix-axis serialization is hardened.",

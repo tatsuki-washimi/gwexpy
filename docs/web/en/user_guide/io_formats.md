@@ -38,7 +38,7 @@ For data sharing and long-term storage, prefer structured formats such as **HDF5
 
 - If you need a **default GW storage format**, start with **HDF5**. For existing seismic or geophysical assets, start with **MiniSEED / SAC / WIN / ATS**. For general interchange, start with **CSV / NetCDF4 / Zarr**. For logger- or device-specific data, start with **GBD / TDMS / SDB / WAV / Audio**. For **MTH5**, the current public direct-I/O story is only the single **`ats.mth5`** path. A generic standalone **`format="mth5"`** route is not published yet.
 - **Auto-detect is fine** when the extension uniquely selects one reader.
-- For generic **HDF5**, set **`format="hdf5"` explicitly**. The `.h5` / `.hdf5` extensions overlap multiple HDF5-backed families, and auto-identification is not uniform across classes.
+- GWpy-backed **`TimeSeries`** and **`TimeSeriesDict`** auto-identify native HDF5 for `.h5` / `.hdf5`; structurally identified NDScope files take precedence. Set **`format="hdf5"` explicitly** for other ambiguous or GWexpy-only HDF5 class families.
 - **Set `format=` explicitly** for ambiguous extensions such as `.xml`, for custom lab extensions, or whenever auto-detection is unclear.
 - **Pass `timezone` explicitly** when the file stores local wall-clock time without embedded UTC/GPS. In the current user-facing guide, **GBD** is the main required case.
 - **Read-only / write-only matters**: `○ / ×` means a format can be read but not written.
@@ -144,7 +144,7 @@ If you are unsure, start with **HDF5**. Use **GWF** when you need external stand
 | Format / Path | R / W | Main entry | Best for | Notes |
 |---|:---:|---|---|---|
 | **GWF** (`.gwf`) | ○ / ○ | `TimeSeries.read()`, `TimeSeriesDict.read()`, `StateVector.read()`, `StateVectorDict.read()`, `.write()` | Standard LIGO/KAGRA frame exchange | Standard format, via gwpy |
-| **HDF5** (`.h5`, `.hdf5`) | ○ / ○ | `.read(..., format="hdf5")`, `.write(..., format="hdf5")` on major classes | Long-term storage with metadata | Prefer explicit `format="hdf5"` |
+| **HDF5** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeries.read()` / `.write()`, `TimeSeriesDict.read()` / `.write()`; other classes use `format="hdf5"` | Long-term storage with metadata | Native time-series HDF5 auto-identifies; prefer explicit format for other families |
 | **hdf.ndscope** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeriesDict.read(..., format="hdf.ndscope")`, `.write(..., format="hdf.ndscope")` | ndscope-compatible HDF5 | `TimeSeriesDict` only. Writers use `rate_hz`; readers also accept external `sample_rate`. A group holding data but neither attribute raises `ValueError` naming the group, rather than being silently skipped. Legacy aliases: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` |
 | **xml.diaggui** (`.xml`, `.xml.gz`) | ○ / × | `TimeSeriesDict.read(..., format="xml.diaggui", products="...")` | DiagGUI / DTT outputs | `products` is required; legacy alias: `dttxml` |
 | **NDS2** | ○ / × | `TimeSeries.fetch()` | Detector data server access | Network path |
@@ -158,7 +158,7 @@ If you are unsure, start with **HDF5**. Use **GWF** when you need external stand
 from gwexpy.timeseries.collections import TimeSeriesDict
 from gwexpy.timeseries import TimeSeries
 
-tsd = TimeSeriesDict.read("data.h5", format="hdf5")
+tsd = TimeSeriesDict.read("data.h5")  # native HDF5 auto-identification
 frame = TimeSeriesDict.read("data.gwf", format="gwf")
 merged = TimeSeriesDict.read(["part0.gwf", "part1.gwf"], "H1:STRAIN", pad=float("nan"))
 dtt = TimeSeriesDict.read("diag.xml", format="xml.diaggui", products="TS")

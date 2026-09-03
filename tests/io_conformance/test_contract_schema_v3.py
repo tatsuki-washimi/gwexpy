@@ -30,7 +30,7 @@ def test_v2_contract_loads_with_v3_defaults():
     assert len(contract["formats"]) == 25
 
     formats = _formats_by_canonical(contract)
-    assert formats["hdf5"]["registry_auto_identify"] is False
+    assert formats["hdf5"]["registry_auto_identify"] is True
     assert formats["xml.diaggui"]["registry_auto_identify"] is True
     assert "read_auto_identify" not in formats["hdf5"]
     assert "read_auto_identify" not in formats["xml.diaggui"]
@@ -186,7 +186,7 @@ def test_registry_auto_identify_defaults_are_preserved():
     contract = load_public_io_contract(CONTRACT_PATH)
     formats = _formats_by_canonical(contract)
 
-    assert formats["hdf5"]["registry_auto_identify"] is False
+    assert formats["hdf5"]["registry_auto_identify"] is True
     assert formats["hdf5"]["public_auto_identify"] is False
     assert formats["xml.diaggui"]["registry_auto_identify"] is True
 

@@ -133,6 +133,32 @@ def test_docs_describe_numeric_csv_time_scale_limitation() -> None:
     assert "v0.1.14" in ja
 
 
+def test_docs_describe_native_hdf5_auto_identification_boundary() -> None:
+    contract = _load_contract()
+    contract_md = _read(CONTRACT_MD)
+    en = _read(EN_GUIDE)
+    ja = _read(JA_GUIDE)
+    redesign_en = _read(REDESIGN_EN_GUIDE)
+
+    assert contract["hdf5"]["public_auto_identify"] is False
+    assert contract["hdf5"]["registry_auto_identify"] is True
+    notes = " ".join(contract["hdf5"]["notes"])
+    assert "GWpy-backed TimeSeries and TimeSeriesDict" in notes
+    assert "format-wide public_auto_identify flag remains false" in notes
+    assert "class-scoped guarantee" in notes
+    for source in (contract_md, en, redesign_en):
+        assert "TimeSeries" in source
+        assert "TimeSeriesDict" in source
+        assert "native HDF5" in source
+        assert "`.h5`" in source and "`.hdf5`" in source
+        assert "explicit" in source
+    assert "TimeSeries" in ja
+    assert "TimeSeriesDict" in ja
+    assert "native HDF5" in ja
+    assert "`.h5`" in ja and "`.hdf5`" in ja
+    assert "明示" in ja
+
+
 def test_docs_seismic_table_matches_current_public_boundary():
     contract = _load_contract()
     en = _read(EN_GUIDE)

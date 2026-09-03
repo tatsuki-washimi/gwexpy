@@ -1104,6 +1104,16 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 overwrite=overwrite,
             )
         if fmt in ("hdf5", "h5", "hdf"):
+            from gwexpy.timeseries.io.hdf5 import (
+                _DICT_AUTO_WRITER_DISPATCH_KW,
+                _DICT_AUTO_WRITER_SENTINEL,
+            )
+
+            auto_writer_dispatch = (
+                kwargs.get(_DICT_AUTO_WRITER_DISPATCH_KW) is _DICT_AUTO_WRITER_SENTINEL
+            )
+            if auto_writer_dispatch:
+                kwargs.pop(_DICT_AUTO_WRITER_DISPATCH_KW)
             requested_layout = kwargs.get("layout")
             native_layout = "layout" not in kwargs or (
                 isinstance(requested_layout, str) and requested_layout.lower() == "gwpy"
@@ -1127,6 +1137,16 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 # dataset/group layouts and mode= remain GWexpy opt-ins.
                 native_kwargs = dict(kwargs)
                 native_kwargs.pop("layout", None)
+                if auto_writer_dispatch:
+                    from gwexpy.timeseries.io.hdf5 import _write_native_hdf5_dict
+
+                    native_kwargs.pop("format", None)
+                    return _write_native_hdf5_dict(
+                        self,
+                        target,
+                        *args,
+                        **native_kwargs,
+                    )
                 return super().write(target, *args, **native_kwargs)
             layout_was_explicit = "layout" in kwargs
             overwrite = bool(kwargs.pop("overwrite", False))

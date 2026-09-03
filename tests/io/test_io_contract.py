@@ -612,8 +612,12 @@ def test_current_public_boundary_decisions_are_recorded():
         "HistogramList",
     ]
     assert entries["hdf5"]["public_auto_identify"] is False
-    assert entries["hdf5"]["registry_auto_identify"] is False
+    assert entries["hdf5"]["registry_auto_identify"] is True
     assert entries["hdf5"]["metadata_requirements"]
+    hdf5_notes = " ".join(entries["hdf5"]["notes"])
+    assert "GWpy-backed TimeSeries and TimeSeriesDict" in hdf5_notes
+    assert "format-wide public_auto_identify flag remains false" in hdf5_notes
+    assert "structurally identified NDScope files take precedence" in hdf5_notes
     assert _api_classes(entries["xml.diaggui"], "public_api", "read") == [
         "TimeSeriesDict"
     ]

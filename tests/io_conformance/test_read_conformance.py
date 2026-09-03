@@ -265,9 +265,18 @@ def test_hdf5_explicit_read(hdf5_case: SeriesCase) -> None:
     )
 
 
-def test_hdf5_requires_explicit_format(hdf5_case: SeriesCase) -> None:
-    with pytest.raises(IORegistryError, match="Format could not be identified"):
-        TimeSeries.read(hdf5_case.path)
+def test_hdf5_auto_identify(hdf5_case: SeriesCase) -> None:
+    actual = TimeSeries.read(hdf5_case.path)
+
+    assert_timeseries_close(
+        actual,
+        hdf5_case.values,
+        sample_rate=hdf5_case.sample_rate,
+        t0=hdf5_case.t0,
+        name=hdf5_case.name,
+        channel=hdf5_case.channel,
+        unit=hdf5_case.unit,
+    )
 
 
 def test_csv_explicit_and_auto_identify(csv_case: SeriesCase) -> None:

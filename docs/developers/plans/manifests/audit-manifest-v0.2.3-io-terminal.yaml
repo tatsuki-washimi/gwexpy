@@ -55,7 +55,9 @@ scope:
     collection manifest is reconciled by its existing explicit layout rather
     than leaving the manifest stale. After a successful parent read, the named
     #611 safety exception converts only mathematically completely disjoint
-    returned entries to zero length.
+    returned entries to zero length. Native TimeSeries and TimeSeriesDict HDF5
+    auto-identification is restored for .h5/.hdf5 while structural NDScope
+    identification remains authoritative.
 
 route_contract:
   csv:
@@ -66,6 +68,14 @@ route_contract:
       helpers. No new public selector was added.
     collections: existing explicit collection-directory extension
   hdf5:
+    native_auto_identification: >-
+      GWpy-backed TimeSeries and TimeSeriesDict identify native .h5/.hdf5 for
+      reads and writes. The generic HDF5 handlers have priority -1, so the
+      priority-0 structural NDScope route wins whenever its schema matches.
+      Existing valid .hdf files remain content-identifiable for reads, while
+      .hdf auto-write retains the GWpy failure. Named binary handles preserve
+      ownership and position; caller-owned h5py.File objects remain valid;
+      bare BytesIO still requires an explicit format.
     plain_format_hdf5: >-
       Installed GWpy owns names, group, start, end, gap, pad, open-handle,
       append, overwrite, existing-file, and error behavior, except for the
@@ -123,6 +133,7 @@ comparators:
       - raw bytes, topology, and attributes after rejected merge-layout mismatch
       - seekable file-like position and ownership
       - open HDF5 handle validity after reads
+      - repeated auto-read leaves no descriptor open on the source path
       - writer return type, validity, path, owning handle, and dataset payload
   hdf5:
     exact:
@@ -148,15 +159,36 @@ comparators:
     round-trip is required only for dtype=complex, where both installed GWpy
     releases themselves successfully read the native output.
 
+fixed_parity_findings:
+  hdf5_suffix_auto_identification:
+    state: fixed
+    finding: >-
+      Exact GWexpy TimeSeries and TimeSeriesDict now match GWpy 4.0.1 and
+      4.0.2 native HDF5 auto-read and auto-write behavior for .h5 and .hdf5.
+      Structural NDScope identification retains higher priority, and
+      TimeSeriesList remains explicit-only.
+    evidence:
+      - tests/io/test_hdf5_timeseries_family.py::test_native_hdf5_auto_read_matches_gwpy
+      - tests/io/test_hdf5_timeseries_family.py::test_native_hdf5_auto_read_source_forms_match_gwpy
+      - tests/io/test_hdf5_timeseries_family.py::test_native_hdf5_auto_write_matches_gwpy
+      - tests/io/test_hdf5_timeseries_family.py::test_timeseriesdict_auto_write_reconciles_existing_manifest
+      - tests/io/test_hdf5_timeseries_family.py::test_timeseriesdict_hdf5_write_expands_tilde_like_gwpy
+      - tests/io/test_hdf5_timeseries_family.py::test_hdf_suffix_keeps_gwpy_read_write_asymmetry
+      - tests/io/test_hdf5_timeseries_family.py::test_named_binary_handle_auto_read_matches_gwpy
+      - tests/io/test_hdf5_timeseries_family.py::test_caller_owned_h5py_file_auto_read_matches_gwpy
+      - tests/io/test_hdf5_timeseries_family.py::test_repeated_native_hdf5_auto_read_does_not_leak_file_descriptors
+      - tests/io/test_hdf5_timeseries_family.py::test_bare_bytesio_auto_failure_and_explicit_hdf5_success_match_gwpy
+      - tests/io/test_hdf5_timeseries_family.py::test_structural_ndscope_auto_read_wins_over_native_hdf5
+      - tests/io/test_hdf5_timeseries_family.py::test_structural_ndscope_auto_read_from_caller_owned_source
+      - tests/io/test_hdf5_timeseries_family.py::test_structural_ndscope_auto_read_uses_caller_owned_in_memory_file
+      - tests/io/test_hdf5_timeseries_family.py::test_native_hdf5_auto_read_keeps_disjoint_window_safety
+      - tests/timeseries/test_hdf5_exact_t0.py::test_hdf5_registry_reload_is_idempotent
+
 intentional_extensions_and_exceptions:
   exact_projection_oracle: >-
     The native-attribute check intentionally derives only GWpy's public t0/dt
     input from the exact GWexpy object. All ordinary fixtures are built
     independently from a shared literal specification.
-  hdf5_suffix_auto_identification: >-
-    Existing GWexpy TimeSeries-family contract requires explicit
-    format="hdf5" even for an .h5 suffix. This is a documented intentional
-    exception to GWpy auto-identification, not a hidden differential pass.
   non_intersecting_window_safety:
     inventory_marker: non_intersecting_window_safety
     member: gwexpy.timeseries.collections.TimeSeriesDict/read
@@ -174,14 +206,46 @@ intentional_extensions_and_exceptions:
       or reinterpreted; partial overlap, pad, other results, source ownership,
       and source position are preserved.
   evidence:
-    - tests/io/test_hdf5_timeseries_family.py::test_timeseries_hdf5_requires_explicit_format
-    - tests/io/test_hdf5_timeseries_family.py::test_timeseriesdict_hdf5_requires_explicit_format
     - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids::test_window_before_data_with_non_ns_epoch_returns_metadata_empty
     - tests/io/test_reader_start_end_contract.py::TestNativeHdf5NonIntersectingSafety
     - tests/io/test_reader_start_end_contract.py::TestLegacyHdf5NonIntersectingRoutes
 
 tdd:
   red:
+    hdf5_auto_identification:
+      gwpy_4_0_1: 15 failed, 8 passed
+      failing_boundaries:
+        - native .h5 had no exact GWexpy HDF5 identifier
+        - native .hdf5 fell through to the extension-only NDScope route
+        - auto-write either failed or emitted NDScope topology
+        - named binary handles and content-identifiable .hdf reads failed
+        - auto-format-omitted #611 normalization was unreachable
+      already_green_guards:
+        - bare BytesIO auto-identification fails while explicit HDF5 succeeds
+        - structurally valid NDScope reads auto-identify for both suffixes
+        - TimeSeriesList remains explicit-only
+    caller_owned_ndscope_source_followup:
+      initial_probe: 4 failed, 4 passed
+      mismatches:
+        - >-
+          Caller-owned h5py.File objects bypassed the path-only structural
+          identifier, so native HDF5 won instead of NDScope.
+        - >-
+          After identification, the NDScope reader reopened .filename instead
+          of consuming the supplied object, which failed for an in-memory core
+          driver file with backing_store=False.
+    exact_dict_adapter_followup:
+      initial_probe: 4 failed, 6 passed
+      mismatches:
+        - >-
+          Repeated registration and reload recreated the exact
+          TimeSeriesDict reader adapter instead of preserving handler identity.
+        - >-
+          Registering the parent writer directly bypassed the explicit-route
+          manifest reconciliation and hid appended entries from later reads.
+        - >-
+          Direct parent-writer delegation before registry dispatch omitted
+          Astropy target preprocessing, including tilde expansion.
     initial_direct_matrix:
       gwpy_4_0_1: 3 failed, 6 passed
       gwpy_4_0_2: 3 failed, 6 passed
@@ -243,6 +307,28 @@ tdd:
           mismatching layout wrote new objects and replaced the manifest rather
           than rejecting the request before mutation.
   green:
+    hdf5_auto_identification:
+      gwpy_4_0_1: 47 passed
+      gwpy_4_0_2: 47 passed
+      required_skips: 0
+      repeated_resource_probe: >-
+        After a warm read and 32 repeated auto-reads for each of TimeSeries and
+        TimeSeriesDict, no Linux file descriptor remained open on the source.
+      registration_invariant_probe:
+        gwpy_4_0_1: 12 passed
+        gwpy_4_0_2: 12 passed
+      caller_owned_ndscope_source_probe:
+        gwpy_4_0_1: 8 passed
+        gwpy_4_0_2: 8 passed
+      dict_writer_route_probe:
+        gwpy_4_0_1: 12 passed
+        gwpy_4_0_2: 12 passed
+    hdf5_auto_related_regression:
+      gwpy_4_0_1: 889 passed
+      gwpy_4_0_2: 889 passed
+    ndscope_hdf5_regression:
+      gwpy_4_0_1: 61 passed, 1 optional skip
+      gwpy_4_0_2: 61 passed, 1 optional skip
     non_intersecting_window_safety:
       runtime_freeze: 8bfe36f9684989188c2f32e65ba429fe8bdfaf29
       evidence_hardening:
@@ -316,10 +402,16 @@ terminal_recommendations:
       - native default merge failure and gap=ignore success
       - file-like input, start/end, positional binding, duplicate binding
       - native HDF5 cross-read and missing-file exception class
+      - native .h5/.hdf5 auto-read and content-identifiable .hdf read
+      - Path, string, and single-element list source forms
+      - named binary handle ownership and final position
+      - caller-owned h5py.File validity and repeated-read descriptor closure
     evidence:
       - tests/io/test_gwpy_override_terminal_io.py::test_timeseries_read_matches_gwpy
       - tests/io/test_gwpy_csv_phase4_compat.py::test_plain_timeseries_csv_uses_native_reader
       - tests/io/test_gwpy_csv_phase4_compat.py::test_timeseries_reader_kwargs_match_native_gwpy
+      - tests/io/test_hdf5_timeseries_family.py::test_caller_owned_h5py_file_auto_read_matches_gwpy
+      - tests/io/test_hdf5_timeseries_family.py::test_repeated_native_hdf5_auto_read_does_not_leak_file_descriptors
 
   - member_id: gwexpy.timeseries.timeseries.TimeSeries/write
     state: fixed
@@ -330,6 +422,7 @@ terminal_recommendations:
       - exact marker private augmentation without native-topology drift
       - complex output and only GWpy-supported dtype=complex round-trip
       - invalid writer keyword exception class and input non-mutation
+      - native .h5/.hdf5 auto-write and .hdf auto-write failure
     evidence:
       - tests/io/test_gwpy_override_terminal_io.py::test_timeseries_write_matches_gwpy
       - tests/io/test_gwpy_csv_phase4_compat.py::test_native_writer_route_and_output
@@ -348,6 +441,10 @@ terminal_recommendations:
       - missing dataset and outside-coverage exception classes
       - completely disjoint successful parent selection becomes zero length
       - no source mutation
+      - native .h5/.hdf5 auto-read through the explicit-route adapter
+      - format-omitted native and exact-sidecar #611 normalization
+      - caller-owned h5py.File validity and repeated-read descriptor closure
+      - structural NDScope priority for path, named handle, and in-memory h5py.File
     evidence:
       - tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_read_matches_gwpy
       - tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_exact_filelike_preserves_public_and_private_contracts
@@ -357,6 +454,8 @@ terminal_recommendations:
       - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids::test_window_before_data_with_non_ns_epoch_returns_metadata_empty
       - tests/io/test_reader_start_end_contract.py::TestNativeHdf5NonIntersectingSafety
       - tests/io/test_reader_start_end_contract.py::TestLegacyHdf5NonIntersectingRoutes
+      - tests/io/test_hdf5_timeseries_family.py::test_caller_owned_h5py_file_auto_read_matches_gwpy
+      - tests/io/test_hdf5_timeseries_family.py::test_repeated_native_hdf5_auto_read_does_not_leak_file_descriptors
 
   - member_id: gwexpy.timeseries.collections.TimeSeriesDict/write
     state: fixed
@@ -371,6 +470,9 @@ terminal_recommendations:
       - explicit mode="a"/"r+" manifest reconciliation by path and open handle
       - omitted/matching layout success and mismatching layout preflight failure
       - colon/slash logical-key preservation with GWpy physical-name cross-read
+      - native .h5/.hdf5 auto-write with generic priority below NDScope
+      - format-omitted dataset/group manifest append through the explicit route
+      - Astropy tilde-target preprocessing for explicit and auto-selected writes
     evidence:
       - tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_write_matches_gwpy
       - tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_default_append_reconciles_existing_manifest
@@ -433,6 +535,10 @@ human_data_model_signoff:
     - tests/io/test_reader_start_end_contract.py::TestLegacyHdf5NonIntersectingRoutes
 
 verification:
+  hdf5_auto_identification_command: >-
+    <oracle-python> -m pytest -q
+    tests/io/test_hdf5_timeseries_family.py
+    tests/io_conformance/test_read_conformance.py::test_hdf5_auto_identify
   direct_terminal_command: >-
     <oracle-python> -m pytest -q
     tests/io/test_gwpy_override_terminal_io.py
@@ -468,6 +574,12 @@ verification:
       PYTEST_ADDOPTS=-rs <oracle-python> scripts/ci/run_gate.py io-conformance
     io_optional: >-
       PYTEST_ADDOPTS=-rs <oracle-python> scripts/ci/run_gate.py io-optional
+    override_inventory: >-
+      <gwpy-4.0.1-python> scripts/audit_gwpy_overrides.py --check
+      --require-terminal --execute-evidence --manifest
+      docs/developers/plans/manifests/audit-manifest-v0.2.3-gwpy-overrides.json
+      --oracle-python 4.0.1=<gwpy-4.0.1-python>
+      --oracle-python 4.0.2=<gwpy-4.0.2-python>
   io_gates:
     registry_smoke: passed in both oracle environments
     io_contract:
@@ -498,22 +610,28 @@ verification:
           - count: 1
             node: tests/io_conformance/test_generated_read.py
             reason: zarr tests require GWEXPY_ALLOW_ZARR=1
-          - count: 2
-            node: tests/io_conformance/test_read_conformance.py
-            reason: optional framel backend unavailable for framel aliases
-          - count: 2
-            node: tests/io_conformance/test_write_roundtrip.py
-            reason: optional framel module unavailable for framel aliases
-        gwpy_4_0_2:
-          - count: 1
-            node: tests/io_conformance/test_generated_read.py
-            reason: zarr tests require GWEXPY_ALLOW_ZARR=1
           - count: 4
             node: tests/io_conformance/test_read_conformance.py
             reason: optional framecpp/framel backends unavailable for their aliases
           - count: 2
             node: tests/io_conformance/test_write_roundtrip.py
             reason: optional framecpp backend unavailable for its aliases
+        gwpy_4_0_2:
+          - count: 1
+            node: tests/io_conformance/test_generated_read.py
+            reason: zarr tests require GWEXPY_ALLOW_ZARR=1
+          - count: 2
+            node: tests/io_conformance/test_read_conformance.py
+            reason: optional framel backend unavailable for framel aliases
+          - count: 2
+            node: tests/io_conformance/test_write_roundtrip.py
+            reason: optional framel module unavailable for framel aliases
+    override_inventory:
+      selectors: 62
+      members: 575
+      gwpy_4_0_1: 396 passed
+      gwpy_4_0_2: 396 passed
+      generated_manifest: byte-identical after independent regeneration
     io_optional:
       gwpy_4_0_1: 71 passed, 2 skips
       gwpy_4_0_2: 71 passed, 2 skips
@@ -524,7 +642,12 @@ verification:
   static:
     ruff: all checks passed
     format: all files formatted
-    mypy: success on gwexpy/timeseries/collections.py
+    mypy: >-
+      success on gwexpy/timeseries/collections.py,
+      gwexpy/timeseries/io/hdf5.py, and
+      gwexpy/timeseries/io/ndscope_hdf5.py
+    docs_sync: ja/en heading counts synchronized
+    gettext: valid with existing placeholder-header warnings
     yaml_safe_load: valid
     git_diff_check: clean
 

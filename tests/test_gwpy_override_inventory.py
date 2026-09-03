@@ -60,6 +60,25 @@ TIMESERIESDICT_READ = "gwexpy.timeseries.collections.TimeSeriesDict/read"
 TIMESERIESDICT_READ_PARITY_REFERENCE = (
     "tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_read_matches_gwpy"
 )
+HDF5_AUTO_READ_REFERENCE = (
+    "tests/io/test_hdf5_timeseries_family.py::test_native_hdf5_auto_read_matches_gwpy"
+)
+HDF5_AUTO_WRITE_REFERENCE = (
+    "tests/io/test_hdf5_timeseries_family.py::test_native_hdf5_auto_write_matches_gwpy"
+)
+HDF5_AUTO_DICT_APPEND_REFERENCE = (
+    "tests/io/test_hdf5_timeseries_family.py"
+    "::test_timeseriesdict_auto_write_reconciles_existing_manifest"
+)
+HDF5_AUTO_ROUTE_REFERENCES = {
+    "gwexpy.timeseries.timeseries.TimeSeries/read": (HDF5_AUTO_READ_REFERENCE,),
+    "gwexpy.timeseries.timeseries.TimeSeries/write": (HDF5_AUTO_WRITE_REFERENCE,),
+    "gwexpy.timeseries.collections.TimeSeriesDict/read": (HDF5_AUTO_READ_REFERENCE,),
+    "gwexpy.timeseries.collections.TimeSeriesDict/write": (
+        HDF5_AUTO_WRITE_REFERENCE,
+        HDF5_AUTO_DICT_APPEND_REFERENCE,
+    ),
+}
 NON_INTERSECTING_WINDOW_SAFETY_REFERENCE = (
     "tests/io/test_reader_start_end_contract.py"
     "::TestNonNanosecondGrids"
@@ -337,6 +356,7 @@ def test_timeseriesdict_read_closure_records_narrow_safety_exception() -> None:
     assert closure["compatibility_exception"] == NON_INTERSECTING_WINDOW_SAFETY
     assert closure["behavior"] == (
         TIMESERIESDICT_READ_PARITY_REFERENCE,
+        HDF5_AUTO_READ_REFERENCE,
         NON_INTERSECTING_WINDOW_SAFETY_REFERENCE,
     )
     assert fields["compatibility_exception"] == NON_INTERSECTING_WINDOW_SAFETY
@@ -373,10 +393,29 @@ def test_only_timeseriesdict_read_oracle_rows_carry_safety_exception() -> None:
         case["evidence"]["behavior"]
         == [
             {"reference": TIMESERIESDICT_READ_PARITY_REFERENCE},
+            {"reference": HDF5_AUTO_READ_REFERENCE},
             {"reference": NON_INTERSECTING_WINDOW_SAFETY_REFERENCE},
         ]
         for case in marked
     )
+
+
+def test_hdf5_io_rows_record_dedicated_auto_route_evidence() -> None:
+    audit = _load_audit_module()
+    manifest = _load_manifest()
+
+    for member_id, references in HDF5_AUTO_ROUTE_REFERENCES.items():
+        closure = audit.TERMINAL_CLOSURES[member_id]
+        assert set(references) <= set(closure["behavior"])
+        cases = [case for case in manifest["cases"] if case["member_id"] == member_id]
+        assert len(cases) == 2
+        assert all(
+            all(
+                {"reference": reference} in case["evidence"]["behavior"]
+                for reference in references
+            )
+            for case in cases
+        )
 
 
 def test_v1_cases_without_optional_safety_marker_remain_structurally_valid() -> None:
@@ -1210,7 +1249,7 @@ def test_manifest_evidence_selector_set_is_frozen_and_recursion_safe() -> None:
 
     selectors = audit.manifest_evidence_selectors(_load_manifest())
 
-    assert len(selectors) == 59
+    assert len(selectors) == 62
     assert list(selectors) == sorted(selectors, key=lambda item: item.encode("utf-8"))
     assert {
         selector
@@ -1319,16 +1358,16 @@ def test_evidence_junit_requires_exact_reviewed_count_and_no_skips(
 ) -> None:
     audit = _load_audit_module()
     accepted = tmp_path / "accepted.xml"
-    _write_evidence_junit(accepted, cases=384)
+    _write_evidence_junit(accepted, cases=396)
     audit.validate_evidence_junit(accepted)
 
     wrong_count = tmp_path / "wrong-count.xml"
-    _write_evidence_junit(wrong_count, cases=383)
-    with pytest.raises(audit.InventoryError, match="expected 384 cases, got 383"):
+    _write_evidence_junit(wrong_count, cases=395)
+    with pytest.raises(audit.InventoryError, match="expected 396 cases, got 395"):
         audit.validate_evidence_junit(wrong_count)
 
     skipped = tmp_path / "skipped.xml"
-    _write_evidence_junit(skipped, cases=384, skipped=1)
+    _write_evidence_junit(skipped, cases=396, skipped=1)
     with pytest.raises(audit.InventoryError, match="skipped=1"):
         audit.validate_evidence_junit(skipped)
 
@@ -1376,8 +1415,8 @@ def test_terminal_cli_can_execute_every_catalog_evidence_selector() -> None:
     )
 
     assert result.returncode == 0, result.stderr
-    assert "384 passed" in result.stdout
-    assert "evidence execution passed: selectors=59, cases=384" in result.stdout
+    assert "396 passed" in result.stdout
+    assert "evidence execution passed: selectors=62, cases=396" in result.stdout
 
 
 @pytest.mark.parametrize(
