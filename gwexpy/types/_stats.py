@@ -56,19 +56,25 @@ class StatisticalMethodsMixin:
             )
 
         # Non-GWpy matrix types and explicit ``out`` extension routes use raw
-        # NumPy arrays deliberately.  The Quantity failure preflight below is
-        # the sole exception to their pre-existing mutation behavior.
+        # NumPy arrays deliberately.
         data = np.asarray(self)
 
         # A Quantity ``out`` makes NumPy's nan reductions return a
         # dimensionless Quantity because ``data`` is deliberately unitless.
-        # Validate the final wrapping conversion before NumPy can overwrite
-        # the caller's values and unit on a conversion failure.
+        # Run the reduction against a matching sacrificial buffer so NumPy's
+        # validation keeps its original precedence, but a later unit failure
+        # cannot overwrite the caller's values or unit.
+        quantity_out = None
+        staged_out = None
         if ignore_nan and unit is not None:
-            from astropy.units import Quantity, dimensionless_unscaled
+            from astropy.units import Quantity
 
-            if isinstance(kwargs.get("out"), Quantity):
-                Quantity(0, unit=dimensionless_unscaled).to(unit**result_unit_power)
+            candidate_out = kwargs.get("out")
+            if isinstance(candidate_out, Quantity):
+                quantity_out = candidate_out
+                staged_out = candidate_out.copy()
+                staged_out.flags.writeable = candidate_out.flags.writeable
+                kwargs["out"] = staged_out
 
         # Pull out arguments that numpy functions expect
         # This is a bit generic but works for mean, std, var, min, max, median
@@ -78,7 +84,11 @@ class StatisticalMethodsMixin:
             from astropy.units import Quantity
 
             unit = unit**result_unit_power
-            return Quantity(res, unit=unit)
+            result = Quantity(res, unit=unit)
+            if quantity_out is not None and staged_out is not None:
+                np.copyto(np.asarray(quantity_out), np.asarray(staged_out))
+                quantity_out._set_unit(staged_out.unit)
+            return result
         return res
 
     def _call_parent_stat(self, method, *args, **kwargs):

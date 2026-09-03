@@ -868,3 +868,128 @@ def test_explicit_ignore_nan_quantity_out_failure_is_atomic(
 
     assert output.unit == original_unit
     np.testing.assert_array_equal(output.value, original.value)
+
+
+def _assert_quantity_out_validation_is_atomic(
+    source: Array3D,
+    method_name: str,
+    output: u.Quantity,
+    **kwargs: Any,
+) -> None:
+    expected_output = output.copy()
+    expected_output.flags.writeable = output.flags.writeable
+    function = getattr(np, f"nan{method_name}")
+    try:
+        function(source.value, out=expected_output, **kwargs)
+    except (TypeError, ValueError) as expected_error:
+        expected_error_type = type(expected_error)
+    else:
+        pytest.fail("the NumPy validation reference unexpectedly succeeded")
+
+    original = output.copy()
+    original_unit = output.unit
+    try:
+        getattr(source, method_name)(out=output, ignore_nan=True, **kwargs)
+    except (TypeError, ValueError) as actual_error:
+        assert type(actual_error) is expected_error_type
+    else:
+        pytest.fail("the GWexpy validation route unexpectedly succeeded")
+
+    assert output.unit == original_unit
+    np.testing.assert_array_equal(output.value, original.value)
+
+
+@pytest.mark.parametrize("method_name", STAT_METHODS)
+def test_explicit_ignore_nan_quantity_out_preserves_invalid_axis_precedence(
+    method_name: str,
+) -> None:
+    source = _make_nan_metadata_source(NAN_ARRAY3D_CASE)
+    output = u.Quantity(-99.0, unit=u.V**2 if method_name == "var" else u.V)
+
+    _assert_quantity_out_validation_is_atomic(
+        source,
+        method_name,
+        output,
+        axis=99,
+    )
+
+
+@pytest.mark.parametrize("method_name", STAT_METHODS)
+def test_explicit_ignore_nan_quantity_out_preserves_shape_error_precedence(
+    method_name: str,
+) -> None:
+    source = _make_nan_metadata_source(NAN_ARRAY3D_CASE)
+    output = u.Quantity(
+        np.full((2, 2), -99.0),
+        unit=u.V**2 if method_name == "var" else u.V,
+    )
+
+    _assert_quantity_out_validation_is_atomic(
+        source,
+        method_name,
+        output,
+        axis=-1,
+    )
+
+
+@pytest.mark.parametrize("method_name", STAT_METHODS)
+def test_explicit_ignore_nan_quantity_out_preserves_readonly_error_precedence(
+    method_name: str,
+) -> None:
+    source = _make_nan_metadata_source(NAN_ARRAY3D_CASE)
+    output = u.Quantity(
+        np.full(source.shape[:-1], -99.0),
+        unit=u.V**2 if method_name == "var" else u.V,
+    )
+    output.flags.writeable = False
+
+    _assert_quantity_out_validation_is_atomic(
+        source,
+        method_name,
+        output,
+        axis=-1,
+    )
+
+
+@pytest.mark.parametrize("method_name", ["mean", "std", "var", "min", "max"])
+def test_explicit_ignore_nan_quantity_out_preserves_dtype_error_precedence(
+    method_name: str,
+) -> None:
+    source = _make_nan_metadata_source(NAN_ARRAY3D_CASE)
+    output = u.Quantity(
+        np.full(source.shape[:-1], -99, dtype=np.int64),
+        unit=u.V**2 if method_name == "var" else u.V,
+        dtype=np.int64,
+    )
+
+    _assert_quantity_out_validation_is_atomic(
+        source,
+        method_name,
+        output,
+        axis=-1,
+    )
+
+
+@pytest.mark.parametrize("method_name", STAT_METHODS)
+def test_explicit_ignore_nan_dimensionless_quantity_out_success_is_preserved(
+    method_name: str,
+) -> None:
+    values = _values(NAN_ARRAY3D_CASE, "nan")
+    source = Array3D(values, unit=u.dimensionless_unscaled)
+    output = u.Quantity(
+        np.full(source.shape[:-1], -99.0),
+        unit=u.dimensionless_unscaled,
+    )
+    expected = getattr(np, f"nan{method_name}")(values, axis=-1)
+
+    result = getattr(source, method_name)(
+        axis=-1,
+        out=output,
+        ignore_nan=True,
+    )
+
+    assert result is not output
+    assert result.unit == u.dimensionless_unscaled
+    assert output.unit == u.dimensionless_unscaled
+    np.testing.assert_array_equal(result.value, expected)
+    np.testing.assert_array_equal(output.value, expected)

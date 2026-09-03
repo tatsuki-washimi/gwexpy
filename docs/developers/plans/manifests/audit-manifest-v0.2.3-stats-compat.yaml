@@ -62,9 +62,14 @@ contracts:
       quantity_no_out: subclass-aware nan reduction followed by the shared metadata postprocessor
       non_quantity_or_ndarray_out: pre-existing raw NumPy reduction route
       quantity_out:
-        computation: pre-existing raw NumPy reduction route
-        dimensionful_failure: conversion is validated before NumPy receives out
-        dimensionless_success: pre-existing mutation and return semantics preserved
+        computation: raw NumPy reduction against a sacrificial Quantity copy
+        staged_properties:
+          - shape
+          - dtype
+          - writeable flag
+        validation_precedence: NumPy axis, shape, dtype, and read-only errors
+        dimensionful_failure: staged result conversion fails without caller mutation
+        dimensionless_success: staged values and unit commit to caller after validation
     default: false
     var_unit: input unit squared
   reduction_results:
@@ -77,7 +82,10 @@ contracts:
         non_convertible_result_unit: atomic UnitConversionError before mutation
         failure_values: unchanged
         failure_unit: unchanged
-        convertible_result_unit: pre-existing behavior preserved
+        validation_errors: exact NumPy exception class precedes unit conversion
+        convertible_result_unit:
+          values_and_unit: committed to caller out
+          return_identity: non-identical Quantity result preserved
     array2d_and_plane2d:
       implicit_indices: follow GWpy result shape and index-access outcome
       explicit_indices: preserve GWpy stale-index behavior where GWpy preserves it
@@ -251,6 +259,36 @@ tdd:
         gwpy_4_0_1: 3308 passed, 33 pre-existing optional skips, 1 expected failure, 21 warnings
         gwpy_4_0_2: 3300 passed, 41 pre-existing optional skips, 1 expected failure, 20 warnings
       unexpected_required_skips: 0
+  explicit_ignore_nan_quantity_out_validation_followup:
+    red:
+      environment: gwexpy
+      gwpy: 4.0.2
+      selected_cases: 23
+      result: 23 failed, 1017 deselected
+      primary_cause: eager unit preflight masked NumPy validation precedence
+      expected_exception_classes:
+        invalid_axis: AxisError
+        out_shape_mismatch: ValueError
+        incompatible_dtype: TypeError
+        read_only_out: ValueError
+    pre_fix_dimensionless_characterization:
+      selected_cases: 6
+      result: 6 passed, 1034 deselected
+      contract:
+        - values written to out
+        - out remains dimensionless
+        - returned Quantity is not out
+    green:
+      full_expanded_matrix:
+        gwpy_4_0_1: 1040 passed
+        gwpy_4_0_2: 1040 passed
+      focused_with_existing_statistics_tests:
+        gwpy_4_0_1: 1105 passed, 1 pre-existing optional skip
+        gwpy_4_0_2: 1104 passed, 2 pre-existing optional skips
+      fresh_focused_and_related_aggregate:
+        gwpy_4_0_1: 3337 passed, 33 pre-existing optional skips, 1 expected failure, 21 warnings
+        gwpy_4_0_2: 3329 passed, 41 pre-existing optional skips, 1 expected failure, 20 warnings
+      unexpected_required_skips: 0
 
 physics:
   parent_default_authority: GWpy values and units are preserved exactly
@@ -311,6 +349,13 @@ commands:
     rtk conda run -n gwexpy python -m pytest -q
     tests/types/test_gwpy_stats_compat.py -k
     explicit_ignore_nan_quantity_out_failure_is_atomic
+  quantity_out_validation_red: >-
+    rtk conda run -n gwexpy python -m pytest -q
+    tests/types/test_gwpy_stats_compat.py -k
+    'quantity_out_preserves_invalid_axis_precedence or
+    quantity_out_preserves_shape_error_precedence or
+    quantity_out_preserves_readonly_error_precedence or
+    quantity_out_preserves_dtype_error_precedence'
   latest_related_regressions: >-
     rtk conda run -n {main,gwexpy} python -m pytest -q tests/types tests/fields
     tests/frequencyseries tests/timeseries/test_matrix_analysis.py
