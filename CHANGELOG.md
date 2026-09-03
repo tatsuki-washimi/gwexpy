@@ -4,16 +4,25 @@
 
 This maintenance-release candidate implements GWpy 4.0.1/4.0.2 compatibility
 fixes across the audited GWpy-derived API surface. Automated differential
-evidence is green. The human scientific/data-model sign-off is approved for
-the exact candidate `c7b79db7fee2e646069679a0efe3d65c7ed4e562`; see the
+evidence is green for runtime candidate
+`0a3d09a117827113b02e4a2ce73bccd3b1ba95d2`. The human scientific/data-model
+sign-off is pending reapproval for that current candidate because native HDF5
+auto-identification is a later runtime/data-model semantic change. The
+historical approval remains bound only to candidate
+`c7b79db7fee2e646069679a0efe3d65c7ed4e562`; see the
 [aggregate sign-off report](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md).
 The candidate adds no public API or dependency.
 
-This sign-off does not make the release GO. The release remains **HOLD** pending
-same-candidate scientific/data-model review, same-candidate release-security
-review, candidate-wide QA, and 19-cell qualification. Any later
-runtime/data-model semantic change invalidates this sign-off and requires
-reapproval.
+The release remains **HOLD** pending current-candidate human scientific/data-
+model sign-off reapproval, followed by same-candidate scientific/data-model
+review, same-candidate release-security review, candidate-wide QA, and 19-cell
+qualification. Any later runtime/data-model semantic change invalidates an
+aggregate sign-off and requires reapproval.
+
+The current inventory evidence covers 575 logical members with 62 selectors
+and 396 executed cases per oracle. The historical c7 approval covered the same
+575 logical members with 59 selectors and 384 executed cases per oracle; the
+generated inventory's 1,150 case rows are a separate logical version-row count.
 
 ### Implemented with automated evidence
 
@@ -35,17 +44,17 @@ reapproval.
   retains the series class, dtype, unit, name/channel, and cadence; its public
   `t0`/`span` collapse to the stored series start boundary. It does not inherit
   private exact-time authority from the source.
-- **Constructors and time axes (sign-off approved)**: GWpy-supported `t0` and `epoch` inputs now
+- **Constructors and time axes (historically approved for c7)**: GWpy-supported `t0` and `epoch` inputs now
   take the parent route without exception-driven retries. Positional and
   keyword forms bind consistently, while the existing exact `t0_ns`
   authority remains separate. Copy, slice, crop, append, and supported
   time-axis mutations preserve or invalidate private exact state according to
   the resulting cadence.
-- **Time and frequency conversion (sign-off approved)**: scalar and date-component `to_gps()` and
+- **Time and frequency conversion (historically approved for c7)**: scalar and date-component `to_gps()` and
   `tconvert()` calls, `from_gps()` inputs, and `FrequencySeries.ifft()` timing
   metadata now match the active GWpy oracle. Invalid date-shaped values fail
   instead of falling back to vector interpretation.
-- **Spectral, signal, and statistics routes (sign-off approved)**: default CSD, Rayleigh,
+- **Spectral, signal, and statistics routes (historically approved for c7)**: default CSD, Rayleigh,
   heterodyne, demodulate, RMS, resampling, reductions, and axis-result types
   now follow GWpy values, units, shapes, metadata, and exception classes.
 - **Plotting, CSV, and collections**: plot methods accept the complete GWpy
@@ -53,7 +62,7 @@ reapproval.
   failures. Plain CSV uses the native GWpy route; existing enhanced-only
   arguments remain explicit opt-ins. Collection crop, prepend, and the
   historical `filterba()` shim preserve their established call contracts.
-- **Specialized arrays and fields (sign-off approved)**: inherited constructor binding,
+- **Specialized arrays and fields (historically approved for c7)**: inherited constructor binding,
   transposition, BifrequencyMap plotting, ScalarField finite differences,
   unit conversion, grid validation, and percentage comparisons now have
   explicit GWpy or fail-closed data-model contracts.
@@ -64,11 +73,12 @@ reapproval.
   from GWpy in this release. It prevents an upstream negative-index wrap from
   selecting data outside a completely disjoint requested HDF5 window. See the
   [GWpy behavioral compatibility policy](https://tatsuki-washimi.github.io/gwexpy/docs/explanation/gwpy_compatibility_policy.html).
-- The aggregate human sign-off does not reapprove #611; that safety exception
-  was previously approved under its separate evidence and remains limited to
-  the fully disjoint read-window subcase.
-- The human scientific/data-model sign-off accepts exactly five disclosed
-  parent-parity risk groups for this candidate:
+- The #611 safety exception is `approved-separately-unchanged`; its independent
+  human approval and release-note gates remain satisfied, and the aggregate
+  reset does not require its reapproval. Its scope remains limited to the fully
+  disjoint read-window subcase.
+- The historical c7 human scientific/data-model approval accepted exactly five
+  disclosed parent-parity risk groups:
 
   1. the mixed-unit CSD `V²/Hz` label;
   2. public Rayleigh parent segment selection with a private corrected route

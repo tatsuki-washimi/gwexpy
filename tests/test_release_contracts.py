@@ -220,6 +220,8 @@ def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
     )
     assert {
         ".github/workflows/test-compat-gwpy.yml",
+        "docs/developers/contracts/public_io_contract.json",
+        "docs/developers/contracts/public_io_contract.md",
         "gwexpy/analysis/coupling_result.py",
         "gwexpy/frequencyseries",
         "gwexpy/spectrogram",
@@ -230,7 +232,11 @@ def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
         "tests/io/test_gwpy_csv_phase4_compat.py",
         "tests/io/test_gwpy_hdf5_compat.py",
         "tests/io/test_gwpy_override_terminal_io.py",
+        "tests/io/test_hdf5_timeseries_family.py",
+        "tests/io/test_io_contract.py",
+        "tests/io/test_io_docs_contract_sync.py",
         "tests/io/test_reader_start_end_contract.py",
+        "tests/io_conformance/test_contract_schema_v3.py",
         "tests/io_conformance/test_read_conformance.py",
         "tests/test_compatibility_fixes.py",
         "tests/test_gwpy_constructor_terminal_compat.py",

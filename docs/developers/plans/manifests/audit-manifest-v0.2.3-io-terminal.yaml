@@ -1,6 +1,6 @@
 schema: gwexpy-v023-io-terminal-evidence-v1
 phase: override-terminal-io
-status: focused-green-611-signoff-and-disclosure-approved-global-release-gates-pending
+status: focused-green-611-approved-separately-unchanged-aggregate-signoff-pending-reapproval-global-release-hold
 
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 phase_parent: 052162aa6a3352888010b3793d2b7fa9d8329afe
@@ -506,7 +506,7 @@ terminal_recommendations:
       - tests/io/test_gwpy_csv_phase4_compat.py::test_complex_csv_matches_native_write_and_supported_roundtrip
 
 human_data_model_signoff:
-  status: approved-for-non_intersecting_window_safety
+  status: approved-separately-unchanged
   decision_date: "2026-09-03"
   approver_role: release owner
   human_approval_gate: satisfied
@@ -515,8 +515,18 @@ human_data_model_signoff:
   release_note_evidence:
     - CHANGELOG.md
     - release_notes/v0.2.3.md
+  aggregate_signoff:
+    status: pending-reapproval
+    historical_approval:
+      status: approved
+      candidate_sha: c7b79db7fee2e646069679a0efe3d65c7ed4e562
+    current_candidate:
+      sha: 0a3d09a117827113b02e4a2ce73bccd3b1ba95d2
+      status: pending-reapproval
+      trigger: hdf5-auto-identification-runtime-semantic-change
   global_release_gate: hold
   global_release_pending_reasons:
+    - current-candidate human scientific/data-model sign-off reapproval
     - same-candidate scientific/data-model review
     - same-candidate release-security review
     - candidate-wide QA
