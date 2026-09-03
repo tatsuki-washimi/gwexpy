@@ -234,7 +234,9 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
     }
     signoff = io_audit["human_data_model_signoff"]
     assert signoff["status"] == "approved-for-non_intersecting_window_safety"
-    assert signoff["release_gate_for_this_exception"] == "satisfied"
+    assert signoff["human_approval_gate"] == "satisfied"
+    assert signoff["release_note_gate"] == "pending"
+    assert signoff["release_gate_for_this_exception"].startswith("pending-")
     assert signoff["global_release_gate"].startswith("pending-")
 
     legacy_audit = yaml.safe_load(

@@ -400,7 +400,9 @@ human_data_model_signoff:
   status: approved-for-non_intersecting_window_safety
   decision_date: "2026-09-03"
   approver_role: release owner
-  release_gate_for_this_exception: satisfied
+  human_approval_gate: satisfied
+  release_note_gate: pending
+  release_gate_for_this_exception: pending-release-note-disclosure
   global_release_gate: pending-other-scientific-and-release-reviews
   scope: >-
     For a non-nanosecond HDF5 series whose requested end precedes the stored
