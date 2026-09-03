@@ -280,6 +280,7 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
     assert signoff["release_gate_for_this_exception"].startswith("pending-")
     assert signoff["global_release_gate"] == "hold"
     assert set(signoff["global_release_pending_reasons"]) == {
+        "v0.2.3 release-control implementation",
         "release-note disclosure",
         "remaining scientific/data-model review",
         "same-candidate scientific and release-security review",
