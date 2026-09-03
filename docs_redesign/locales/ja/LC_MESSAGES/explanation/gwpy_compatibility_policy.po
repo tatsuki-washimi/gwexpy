@@ -17,8 +17,8 @@ msgstr "GWpy 挙動互換性ポリシー"
 msgid "GWexpy extends GWpy without silently changing the default scientific result of an existing GWpy API."
 msgstr "GWexpy は、既存の GWpy API が返す既定の科学的結果を暗黙に変えることなく GWpy を拡張します。"
 
-msgid "For APIs corresponding to existing GWpy APIs, when GWpy returns normally with finite numerical results, replacing the corresponding GWpy import with GWexpy under default options must preserve numerical values, shape and selected samples, axis information, and successful completion. Any intentional numerical divergence requires an explicit user opt-in through a GWexpy-specific API or option, unless it is a named, human-approved safety exception that meets every gate below. Internal implementations may differ only when scientific behavior is preserved and no material performance or resource regression is introduced."
-msgstr "既存の GWpy API に対応する API では、GWpy が有限の数値結果を正常に返す場合、対応する import を既定optionの GWexpy に置き換えても、数値、shapeと選択sample、軸情報、正常終了を維持しなければなりません。意図的な数値差異には、GWexpy 固有の API またはoptionによる明示的な user opt-in が必要です。ただし、以下のすべてのgateを満たす名前付き・human-approvedの安全例外は除きます。内部実装を変更できるのは、科学的挙動を維持し、性能またはresourceに重大な退行を生じさせない場合だけです。"
+msgid "For APIs corresponding to existing GWpy APIs, when GWpy returns normally with finite numerical results, replacing the corresponding GWpy import with GWexpy under default options must preserve numerical values, shape and selected samples, axis information, and successful completion. Any intentional divergence from these guarantees requires an explicit user opt-in through a GWexpy-specific API or option, unless it is a named, human-approved safety exception that meets every gate below. Internal implementations may differ only when scientific behavior is preserved and no material performance or resource regression is introduced."
+msgstr "既存の GWpy API に対応する API では、GWpy が有限の数値結果を正常に返す場合、対応する import を既定optionの GWexpy に置き換えても、数値、shapeと選択sample、軸情報、正常終了を維持しなければなりません。これらの保証から意図的に外れる場合は、GWexpy 固有の API またはoptionによる明示的な user opt-in が必要です。ただし、以下のすべてのgateを満たす名前付き・human-approvedの安全例外は除きます。内部実装を変更できるのは、科学的挙動を維持し、性能またはresourceに重大な退行を生じさせない場合だけです。"
 
 msgid "What must match"
 msgstr "一致させる対象"

@@ -28,8 +28,9 @@ superseded_in_v0_2_3:
     a successful parent read, a mathematically completely disjoint explicit
     start/end window is converted to a zero-length entry under the named
     non_intersecting_window_safety exception. Partial overlap, pad, parent
-    errors, keys/order, lifecycle, explicit GWexpy collection manifests, and
-    exact-time sidecar routes retain their contracted outcomes.
+    errors, keys/order, lifecycle, explicit GWexpy collection-manifest route
+    selection, exact-time sidecar route selection, and all outcomes outside the
+    named safety subcase retain their contracts.
   compatibility_exception:
     name: non_intersecting_window_safety
     inventory_state: fixed
@@ -342,4 +343,6 @@ reviewer: >-
   (physics-reviewer, python-reviewer, gwexpy-compatibility-checker) against
   the frozen first commit; verdicts FAIL / Block / PASS-with-findings, all
   findings re-measured in-session and resolved as second_review_round above.
-  Human review still pending.
+  At the v0.1.13 freeze, human review was still pending. The later v0.2.3
+  human decision for non_intersecting_window_safety is recorded in the
+  superseding section above.

@@ -40,10 +40,11 @@ Before any code changes or runs, ensure ALL items below are satisfied:
   correspond to existing GWpy APIs. When GWpy returns normally with finite
   numerical results, the GWexpy default must preserve numerical values, shape
   and selected samples, axis information, and successful completion. Any
-  intentional numerical divergence requires an explicit opt-in through a
-  GWexpy-specific API or option. The only alternative is a named, human-approved
-  safety exception satisfying every canonical evidence, approval, scope, and
-  disclosure gate. The approved `non_intersecting_window_safety` exception is
+  intentional divergence from these guarantees requires an explicit opt-in
+  through a GWexpy-specific API or option. The only alternative is a named,
+  human-approved safety exception satisfying every canonical evidence,
+  approval, scope, and disclosure gate. The approved
+  `non_intersecting_window_safety` exception is
   limited to its documented completely disjoint HDF5 read-window subcase. See
   the canonical
   [GWpy compatibility policy](../docs_redesign/explanation/gwpy_compatibility_policy.md).

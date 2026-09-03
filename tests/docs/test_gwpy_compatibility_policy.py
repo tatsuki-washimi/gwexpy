@@ -33,7 +33,7 @@ def _read(relative_path: str) -> str:
 
 def test_canonical_policy_defines_the_behavioral_contract() -> None:
     policy = _read(f"docs_redesign/{POLICY_RELATIVE_PATH}")
-    policy_lower = policy.lower()
+    policy_lower = " ".join(policy.lower().split())
 
     assert f"# {POLICY_TITLE}" in policy
     assert POLICY_SUMMARY in " ".join(policy.split())
@@ -58,6 +58,7 @@ def test_canonical_policy_narrowly_gates_the_named_safety_exception() -> None:
     assert f"`{SAFETY_EXCEPTION}`" in policy
     for required in (
         "named, human-approved safety exception",
+        "divergence from these guarantees",
         "outside the requested sample-selection domain",
         "direct dual-oracle evidence",
         "scientific/data-model approval",
@@ -102,22 +103,49 @@ def test_public_entry_points_link_to_the_canonical_policy() -> None:
 
 
 def test_public_policy_summaries_do_not_hide_the_safety_exception() -> None:
-    english_sources = (
+    english_summary_sources = (
         "README.md",
         "docs_redesign/index.md",
-        "docs_redesign/explanation/gwexpy_for_gwpy_users.md",
         "docs/web/en/index.rst",
+    )
+    for source in english_summary_sources:
+        summary = " ".join(_read(source).lower().split())
+        for required in (
+            "divergence from these guarantees",
+            "named",
+            "human-approved",
+            "safety exception",
+            "gate",
+        ):
+            assert required in summary, (source, required)
+
+    english_detail_sources = (
+        "docs_redesign/explanation/gwexpy_for_gwpy_users.md",
         "docs/web/en/user_guide/gwexpy_for_gwpy_users_en.md",
     )
-    for source in english_sources:
-        assert "safety exception" in _read(source).lower(), source
+    for source in english_detail_sources:
+        detail = " ".join(_read(source).lower().split())
+        for required in (
+            SAFETY_EXCEPTION,
+            "sole named, human-approved safety exception",
+            "completely disjoint hdf5",
+            "every policy gate",
+        ):
+            assert required in detail, (source, required)
 
     japanese_sources = (
         "docs/web/ja/index.rst",
         "docs/web/ja/user_guide/gwexpy_for_gwpy_users_ja.md",
     )
     for source in japanese_sources:
-        assert "安全例外" in _read(source), source
+        summary = _read(source)
+        for required in ("名前付き", "human-approved", "安全例外", "gate"):
+            assert required in summary, (source, required)
+    japanese_detail = _read(
+        "docs/web/ja/user_guide/gwexpy_for_gwpy_users_ja.md"
+    )
+    assert SAFETY_EXCEPTION in japanese_detail
+    assert "完全非交差の HDF5" in japanese_detail
 
 
 def test_agent_and_contributor_rules_make_divergence_a_blocker() -> None:
@@ -199,6 +227,7 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
         "docs/developers/plans/20260902_v0.2.3_gwpy_behavioral_compatibility.md"
     )
     assert SAFETY_EXCEPTION in plan
+    assert "Release decision: **HOLD**" in plan
     assert "親 reader が正常終了した後だけ" in plan
     assert "compatibility_exception" in plan
     assert "8bfe36f9684989188c2f32e65ba429fe8bdfaf29" in plan
@@ -212,32 +241,51 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
     exception = io_audit["intentional_extensions_and_exceptions"][
         SAFETY_EXCEPTION
     ]
-    assert exception == {
-        "inventory_marker": SAFETY_EXCEPTION,
-        "member": "gwexpy.timeseries.collections.TimeSeriesDict/read",
-        "terminal_state": "fixed",
-        "issue": "#611",
-        "before": (
-            "GWpy 4.0.1 and 4.0.2 return eight samples outside the requested "
-            "window when a non-nanosecond HDF5 epoch makes a completely "
-            "disjoint end bound become a negative wrapped stop index."
-        ),
-        "after": (
-            "GWexpy returns a zero-length, key-preserving entry for that "
-            "completely disjoint subcase only."
-        ),
-        "invariants": (
-            "The parent must first return normally. Parent exceptions are not "
-            "caught or reinterpreted; partial overlap, pad, other results, "
-            "source ownership, and source position are preserved."
-        ),
-    }
+    assert exception["inventory_marker"] == SAFETY_EXCEPTION
+    assert exception["member"] == (
+        "gwexpy.timeseries.collections.TimeSeriesDict/read"
+    )
+    assert exception["terminal_state"] == "fixed"
+    assert exception["issue"] == "#611"
+    assert "eight samples outside" in exception["before"]
+    assert "negative wrapped stop index" in exception["before"]
+    assert "zero-length, key-preserving" in exception["after"]
+    assert "completely disjoint subcase only" in exception["after"]
+    for invariant in (
+        "parent must first return normally",
+        "parent exceptions are not caught",
+        "partial overlap",
+        "source ownership",
+        "source position",
+    ):
+        assert invariant.lower() in exception["invariants"].lower()
+    evidence = io_audit["intentional_extensions_and_exceptions"]["evidence"]
+    assert (
+        "tests/io/test_reader_start_end_contract.py"
+        "::TestNativeHdf5NonIntersectingSafety" in evidence
+    )
+    assert (
+        "tests/io/test_reader_start_end_contract.py"
+        "::TestLegacyHdf5NonIntersectingRoutes" in evidence
+    )
+    command = io_audit["verification"][
+        "non_intersecting_window_safety_command"
+    ]
+    assert "TestNativeHdf5NonIntersectingSafety" in command
+    assert "TestLegacyHdf5NonIntersectingRoutes" in command
     signoff = io_audit["human_data_model_signoff"]
     assert signoff["status"] == "approved-for-non_intersecting_window_safety"
     assert signoff["human_approval_gate"] == "satisfied"
     assert signoff["release_note_gate"] == "pending"
     assert signoff["release_gate_for_this_exception"].startswith("pending-")
-    assert signoff["global_release_gate"].startswith("pending-")
+    assert signoff["global_release_gate"] == "hold"
+    assert set(signoff["global_release_pending_reasons"]) == {
+        "release-note disclosure",
+        "remaining scientific/data-model review",
+        "same-candidate scientific and release-security review",
+        "candidate-wide QA",
+        "19-cell qualification",
+    }
 
     legacy_audit = yaml.safe_load(
         _read(
@@ -248,6 +296,7 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
     amendment = legacy_audit["superseded_in_v0_2_3"]
     assert amendment["compatibility_exception"]["name"] == SAFETY_EXCEPTION
     assert amendment["human_data_model_signoff"]["status"] == "approved"
+    assert "At the v0.1.13 freeze" in legacy_audit["reviewer"]
 
 
 def test_release_review_scopes_bind_the_policy_to_lanes_a_and_b() -> None:

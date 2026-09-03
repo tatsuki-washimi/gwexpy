@@ -7,11 +7,11 @@ For APIs corresponding to existing GWpy APIs, when GWpy returns normally with
 finite numerical results, replacing the corresponding GWpy import with GWexpy
 under default options must preserve numerical values, shape and selected
 samples, axis information, and successful completion. Any intentional
-numerical divergence requires an explicit user opt-in through a GWexpy-specific
-API or option, unless it is a named, human-approved safety exception that meets
-every gate below. Internal implementations may differ only when scientific
-behavior is preserved and no material performance or resource regression is
-introduced.
+divergence from these guarantees requires an explicit user opt-in through a
+GWexpy-specific API or option, unless it is a named, human-approved safety
+exception that meets every gate below. Internal implementations may differ only
+when scientific behavior is preserved and no material performance or resource
+regression is introduced.
 
 ## What must match
 

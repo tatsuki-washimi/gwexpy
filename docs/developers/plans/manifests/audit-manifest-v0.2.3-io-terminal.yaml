@@ -177,6 +177,8 @@ intentional_extensions_and_exceptions:
     - tests/io/test_hdf5_timeseries_family.py::test_timeseries_hdf5_requires_explicit_format
     - tests/io/test_hdf5_timeseries_family.py::test_timeseriesdict_hdf5_requires_explicit_format
     - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids::test_window_before_data_with_non_ns_epoch_returns_metadata_empty
+    - tests/io/test_reader_start_end_contract.py::TestNativeHdf5NonIntersectingSafety
+    - tests/io/test_reader_start_end_contract.py::TestLegacyHdf5NonIntersectingRoutes
 
 tdd:
   red:
@@ -249,6 +251,9 @@ tdd:
       focused_hardening:
         gwpy_4_0_1: 24 passed
         gwpy_4_0_2: 24 passed
+      complete_named_exception_evidence:
+        gwpy_4_0_1: 25 passed
+        gwpy_4_0_2: 25 passed
       related_regression:
         gwpy_4_0_1: 715 passed
         gwpy_4_0_2: 795 passed, 1 pre-existing GMT warning
@@ -350,6 +355,8 @@ terminal_recommendations:
       - tests/io/test_reader_start_end_contract.py::TestWindowsTheFileDoesNotCover
       - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids
       - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids::test_window_before_data_with_non_ns_epoch_returns_metadata_empty
+      - tests/io/test_reader_start_end_contract.py::TestNativeHdf5NonIntersectingSafety
+      - tests/io/test_reader_start_end_contract.py::TestLegacyHdf5NonIntersectingRoutes
 
   - member_id: gwexpy.timeseries.collections.TimeSeriesDict/write
     state: fixed
@@ -403,7 +410,13 @@ human_data_model_signoff:
   human_approval_gate: satisfied
   release_note_gate: pending
   release_gate_for_this_exception: pending-release-note-disclosure
-  global_release_gate: pending-other-scientific-and-release-reviews
+  global_release_gate: hold
+  global_release_pending_reasons:
+    - release-note disclosure
+    - remaining scientific/data-model review
+    - same-candidate scientific and release-security review
+    - candidate-wide QA
+    - 19-cell qualification
   scope: >-
     For a non-nanosecond HDF5 series whose requested end precedes the stored
     epoch, both installed GWpy oracles return eight samples rather than an empty
@@ -414,6 +427,8 @@ human_data_model_signoff:
     key, metadata, ownership, and position contracts described above.
   evidence:
     - tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids::test_window_before_data_with_non_ns_epoch_returns_metadata_empty
+    - tests/io/test_reader_start_end_contract.py::TestNativeHdf5NonIntersectingSafety
+    - tests/io/test_reader_start_end_contract.py::TestLegacyHdf5NonIntersectingRoutes
 
 verification:
   direct_terminal_command: >-
@@ -435,6 +450,11 @@ verification:
     tests/timeseries/test_hdf5_exact_epoch_codec.py
     tests/frequencyseries/test_hdf5_gwpy_interop.py
     tests/frequencyseries/test_hdf5_layouts.py
+  non_intersecting_window_safety_command: >-
+    <oracle-python> -m pytest -q
+    tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids::test_window_before_data_with_non_ns_epoch_returns_metadata_empty
+    tests/io/test_reader_start_end_contract.py::TestNativeHdf5NonIntersectingSafety
+    tests/io/test_reader_start_end_contract.py::TestLegacyHdf5NonIntersectingRoutes
   full_io_command: >-
     PYTEST_ADDOPTS=-rs <oracle-python> -m pytest -q tests/io
   gate_commands:

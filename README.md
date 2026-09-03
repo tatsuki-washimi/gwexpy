@@ -11,7 +11,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
-**gwexpy** is an extension library for [GWpy](https://gwpy.github.io/) for experimental physics and gravitational-wave data analysis. It adds matrix-aware containers, field operations, fitting workflows, expanded I/O, and interoperability layers while preserving the default finite numerical results, sample selection, and axis behavior of corresponding GWpy APIs. Intentional numerical differences require explicit user opt-in, except for a named, human-approved safety exception that satisfies the compatibility policy's evidence and disclosure gates.
+**gwexpy** is an extension library for [GWpy](https://gwpy.github.io/) for experimental physics and gravitational-wave data analysis. It adds matrix-aware containers, field operations, fitting workflows, expanded I/O, and interoperability layers while preserving the default finite numerical results, sample selection, and axis behavior of corresponding GWpy APIs. Intentional divergence from these guarantees requires explicit user opt-in, except for a named, human-approved safety exception that satisfies every compatibility-policy gate.
 
 GWexpy is an independent package built on top of GWpy. It is not an official component of the GWpy project.
 
