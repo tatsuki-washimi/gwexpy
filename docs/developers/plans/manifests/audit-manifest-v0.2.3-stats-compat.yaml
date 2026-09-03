@@ -60,7 +60,11 @@ contracts:
     status: retained existing public opt-in
     implementation:
       quantity_no_out: subclass-aware nan reduction followed by the shared metadata postprocessor
-      non_quantity_or_out: pre-existing raw NumPy reduction route
+      non_quantity_or_ndarray_out: pre-existing raw NumPy reduction route
+      quantity_out:
+        computation: pre-existing raw NumPy reduction route
+        dimensionful_failure: conversion is validated before NumPy receives out
+        dimensionless_success: pre-existing mutation and return semantics preserved
     default: false
     var_unit: input unit squared
   reduction_results:
@@ -69,7 +73,11 @@ contracts:
     out_behavior:
       default_parent_route: installed GWpy identity, mutation, and exception behavior
       explicit_ndarray: pre-existing mutation and non-identical Quantity return preserved
-      explicit_quantity: pre-existing UnitConversionError-after-mutation preserved
+      explicit_quantity:
+        non_convertible_result_unit: atomic UnitConversionError before mutation
+        failure_values: unchanged
+        failure_unit: unchanged
+        convertible_result_unit: pre-existing behavior preserved
     array2d_and_plane2d:
       implicit_indices: follow GWpy result shape and index-access outcome
       explicit_indices: preserve GWpy stale-index behavior where GWpy preserves it
@@ -200,6 +208,49 @@ tdd:
     gwpy_4_0_1: 2735 passed, 15 approved skips, 1 expected failure
     gwpy_4_0_2: 2735 passed, 15 approved skips, 1 expected failure
     warnings_per_environment: 17 dependency or pre-existing metadata warnings
+  explicit_ignore_nan_quantity_out_atomicity_followup:
+    red:
+      environment: gwexpy
+      gwpy: 4.0.2
+      selected_cases: 24
+      result: 24 failed, 987 deselected
+      root_cause: >-
+        The extension strips the source to ndarray, so NumPy's nan reduction
+        retags Quantity out as dimensionless and writes its values before the
+        final physical-unit wrapper raises UnitConversionError.
+      observed_failure_mutation:
+        values: overwritten with the reduction result
+        unit: changed to dimensionless
+    coverage:
+      methods:
+        - mean
+        - std
+        - var
+        - min
+        - max
+        - median
+      result_shapes:
+        - scalar
+        - one-dimensional
+        - two-dimensional
+        - keepdims
+    green:
+      focused_atomic_cases:
+        gwpy_4_0_1: 24 passed
+        gwpy_4_0_2: 24 passed
+      full_expanded_matrix:
+        gwpy_4_0_1: 1011 passed
+        gwpy_4_0_2: 1011 passed
+      focused_with_existing_statistics_tests:
+        gwpy_4_0_1: 1076 passed, 1 pre-existing optional skip
+        gwpy_4_0_2: 1075 passed, 2 pre-existing optional skips
+      related_regression_suite:
+        gwpy_4_0_1: 3277 passed, 32 pre-existing optional skips, 1 expected failure, 21 warnings
+        gwpy_4_0_2: 3270 passed, 39 pre-existing optional skips, 1 expected failure, 20 warnings
+      fresh_focused_and_related_aggregate:
+        gwpy_4_0_1: 3308 passed, 33 pre-existing optional skips, 1 expected failure, 21 warnings
+        gwpy_4_0_2: 3300 passed, 41 pre-existing optional skips, 1 expected failure, 20 warnings
+      unexpected_required_skips: 0
 
 physics:
   parent_default_authority: GWpy values and units are preserved exactly
@@ -214,6 +265,7 @@ physics:
       - keepdims reduced-axis representation
       - GWpy Array2D and Plane2D stale-index parity
       - explicit ignore_nan Quantity no-out result normalization
+      - explicit ignore_nan Quantity out failure atomicity
     evidence: automated checks are green; independent human data-model signoff is still required
 
 release_constraints:
@@ -255,6 +307,15 @@ commands:
   expanded_differential: >-
     /home/washimi/miniforge3/envs/{main,gwexpy}/bin/python -m pytest -q
     tests/types/test_gwpy_stats_compat.py
+  quantity_out_atomic_red: >-
+    rtk conda run -n gwexpy python -m pytest -q
+    tests/types/test_gwpy_stats_compat.py -k
+    explicit_ignore_nan_quantity_out_failure_is_atomic
+  latest_related_regressions: >-
+    rtk conda run -n {main,gwexpy} python -m pytest -q tests/types tests/fields
+    tests/frequencyseries tests/timeseries/test_matrix_analysis.py
+    tests/timeseries/test_rms_compat.py tests/timeseries/test_statistics.py
+    tests/spectrogram/test_spectrogram_matrix_features.py
 
 focused_tests:
   - tests/types/test_gwpy_stats_compat.py

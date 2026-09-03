@@ -830,24 +830,41 @@ def test_explicit_ignore_nan_ndarray_out_behavior_is_preserved(
     np.testing.assert_array_equal(actual.value, expected)
 
 
+QUANTITY_OUT_REDUCTION_SHAPES = (
+    pytest.param(None, False, (), id="scalar"),
+    pytest.param((0, 1), False, (4,), id="one-dimensional"),
+    pytest.param(-1, False, (2, 3), id="two-dimensional"),
+    pytest.param(-1, True, (2, 3, 1), id="keepdims"),
+)
+
+
 @pytest.mark.parametrize("method_name", STAT_METHODS)
-def test_explicit_ignore_nan_quantity_out_error_and_mutation_are_preserved(
+@pytest.mark.parametrize(
+    ("axis", "keepdims", "output_shape"),
+    QUANTITY_OUT_REDUCTION_SHAPES,
+)
+def test_explicit_ignore_nan_quantity_out_failure_is_atomic(
     method_name: str,
+    axis: int | tuple[int, ...] | None,
+    keepdims: bool,
+    output_shape: tuple[int, ...],
 ) -> None:
     source = _make_nan_metadata_source(NAN_ARRAY3D_CASE)
     output = u.Quantity(
-        np.full(source.shape[:-1], -99.0),
+        np.arange(np.prod(output_shape) or 1, dtype=np.float64).reshape(output_shape)
+        - 99.0,
         unit=u.V**2 if method_name == "var" else u.V,
     )
-    function = getattr(np, f"nan{method_name}")
-    expected = function(source.value, axis=-1)
+    original = output.copy()
+    original_unit = output.unit
 
     with pytest.raises(UnitConversionError):
         getattr(source, method_name)(
-            axis=-1,
+            axis=axis,
+            keepdims=keepdims,
             out=output,
             ignore_nan=True,
         )
 
-    assert output.unit == u.dimensionless_unscaled
-    np.testing.assert_array_equal(output.value, expected)
+    assert output.unit == original_unit
+    np.testing.assert_array_equal(output.value, original.value)

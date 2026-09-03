@@ -55,10 +55,20 @@ class StatisticalMethodsMixin:
                 keepdims=kwargs.get("keepdims", False),
             )
 
-        # Non-GWpy matrix types and pre-existing ``out`` extension routes use
-        # raw NumPy arrays deliberately.  In particular, do not alter their
-        # return identity, mutation, or exception behavior here.
+        # Non-GWpy matrix types and explicit ``out`` extension routes use raw
+        # NumPy arrays deliberately.  The Quantity failure preflight below is
+        # the sole exception to their pre-existing mutation behavior.
         data = np.asarray(self)
+
+        # A Quantity ``out`` makes NumPy's nan reductions return a
+        # dimensionless Quantity because ``data`` is deliberately unitless.
+        # Validate the final wrapping conversion before NumPy can overwrite
+        # the caller's values and unit on a conversion failure.
+        if ignore_nan and unit is not None:
+            from astropy.units import Quantity, dimensionless_unscaled
+
+            if isinstance(kwargs.get("out"), Quantity):
+                Quantity(0, unit=dimensionless_unscaled).to(unit**result_unit_power)
 
         # Pull out arguments that numpy functions expect
         # This is a bit generic but works for mean, std, var, min, max, median
