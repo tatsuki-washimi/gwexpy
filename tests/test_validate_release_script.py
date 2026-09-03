@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import os
@@ -12,6 +13,31 @@ from pathlib import Path
 import pytest
 
 SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "validate_release.py"
+CONTRACTS_PATH = SCRIPT_PATH.parent / "ci" / "release_contracts.json"
+V023_PLAN_PATH = (
+    "docs/developers/plans/20260902_v0.2.3_gwpy_behavioral_compatibility.md"
+)
+V023_REVIEW_EVIDENCE_PATH = (
+    "docs/developers/plans/manifests/audit-manifest-v0.2.3-release-readiness.yaml"
+)
+V023_EMPTY_REVIEW_EVIDENCE = """\
+review_evidence_json: |
+  {
+    "schema": "gwexpy-v023-review-evidence-v1",
+    "entries": []
+  }
+"""
+V023_POPULATED_REVIEW_EVIDENCE = """\
+review_evidence_json: |
+  {
+    "schema": "gwexpy-v023-review-evidence-v1",
+    "entries": [
+      {
+        "lane": "release-security"
+      }
+    ]
+  }
+"""
 
 
 def load_validator():
@@ -33,6 +59,26 @@ def git(repo: Path, *args: str, env: dict[str, str] | None = None) -> str:
         env=env,
     )
     return result.stdout.strip()
+
+
+def v023_review_lanes() -> dict[str, list[str]]:
+    contracts = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
+    return contracts["releases"]["v0.2.3"]["review_lanes"]
+
+
+def materialize_v023_review_scope(repo: Path) -> None:
+    scope_paths = {path for paths in v023_review_lanes().values() for path in paths}
+    for path in sorted(scope_paths):
+        if path == V023_REVIEW_EVIDENCE_PATH:
+            continue
+        candidate = repo / path
+        if candidate.exists():
+            continue
+        if any(other.startswith(f"{path}/") for other in scope_paths):
+            candidate.mkdir(parents=True)
+        else:
+            candidate.parent.mkdir(parents=True, exist_ok=True)
+            candidate.write_text(f"review scope fixture: {path}\n", encoding="utf-8")
 
 
 def make_repo(
@@ -63,6 +109,91 @@ def make_repo(
     if maintenance_branch is not None:
         git(repo, "branch", maintenance_branch)
     return repo
+
+
+def make_v023_s_to_r_repo(
+    tmp_path: Path,
+    *,
+    source_manifest: str | None = V023_EMPTY_REVIEW_EVIDENCE,
+) -> tuple[Path, Path, Path, str]:
+    repo = tmp_path / "review-repo"
+    repo.mkdir(parents=True)
+    git(repo, "init", "-b", "main")
+    git(repo, "config", "user.name", "Release Test")
+    git(repo, "config", "user.email", "release-test@example.invalid")
+    plan = repo / V023_PLAN_PATH
+    manifest = repo / V023_REVIEW_EVIDENCE_PATH
+    plan.parent.mkdir(parents=True)
+    manifest.parent.mkdir(parents=True)
+    plan.write_text("- [ ] coordinator evidence\n", encoding="utf-8")
+    if source_manifest is not None:
+        manifest.write_text(source_manifest, encoding="utf-8")
+    materialize_v023_review_scope(repo)
+    git(repo, "add", ".")
+    git(repo, "commit", "-m", "S")
+    return repo, plan, manifest, git(repo, "rev-parse", "HEAD")
+
+
+def commit_v023_r(
+    repo: Path,
+    plan: Path,
+    manifest: Path,
+    *,
+    update_plan: bool = False,
+) -> str:
+    reviewed_commit = git(repo, "rev-parse", "HEAD")
+    if update_plan:
+        plan.write_text("- [x] coordinator evidence\n", encoding="utf-8")
+    entries = []
+    for lane, configured_paths in sorted(v023_review_lanes().items()):
+        paths = sorted(set(configured_paths), key=lambda item: item.encode("utf-8"))
+        tree = subprocess.run(
+            [
+                "git",
+                "ls-tree",
+                "-r",
+                "-z",
+                "--full-tree",
+                reviewed_commit,
+                "--",
+                *paths,
+            ],
+            cwd=repo,
+            check=True,
+            capture_output=True,
+        ).stdout
+        entries.append(
+            {
+                "lane": lane,
+                "role": "reviewer",
+                "model": "gpt-5.6-terra",
+                "effort": "high",
+                "reviewed_commit": reviewed_commit,
+                "scope_paths": paths,
+                "scope_digest": hashlib.sha256(tree).hexdigest(),
+                "verdict": "APPROVED",
+                "timestamp_utc": "2026-09-03T00:00:00Z",
+                "raw_report_sha256": hashlib.sha256(
+                    f"{lane}-report".encode()
+                ).hexdigest(),
+                "finding_ids": [],
+            }
+        )
+    payload = json.dumps(
+        {
+            "schema": "gwexpy-v023-review-evidence-v1",
+            "entries": entries,
+        },
+        indent=2,
+    )
+    manifest.write_text(
+        "review_evidence_json: |\n"
+        + "".join(f"  {line}\n" for line in payload.splitlines()),
+        encoding="utf-8",
+    )
+    git(repo, "add", ".")
+    git(repo, "commit", "-m", "R")
+    return git(repo, "rev-parse", "HEAD")
 
 
 def tag_annotated(
@@ -343,3 +474,101 @@ def test_s_to_r_uses_v0114_plan_and_allowed_paths(tmp_path: Path):
     source_sha = git(repo, "rev-parse", "HEAD")
 
     validator.validate_s_to_r(repo, reviewed_commit, source_sha, expected_tag="v0.1.14")
+
+
+@pytest.mark.parametrize(
+    "expected_tag",
+    ["v0.1.13", "v0.1.14", "v0.2.0", "v0.2.2"],
+)
+def test_historical_s_to_r_contracts_retain_same_commit_behavior(
+    tmp_path: Path,
+    expected_tag: str,
+) -> None:
+    validator = load_validator()
+    repo = make_repo(tmp_path)
+    commit = git(repo, "rev-parse", "HEAD")
+
+    validator.validate_s_to_r(
+        repo,
+        commit,
+        commit,
+        expected_tag=expected_tag,
+    )
+
+
+def test_v023_s_to_r_rejects_the_same_reviewed_and_source_commit(
+    tmp_path: Path,
+) -> None:
+    validator = load_validator()
+    repo, _plan, _manifest, reviewed_commit = make_v023_s_to_r_repo(tmp_path)
+
+    with pytest.raises(validator.ReleaseValidationError, match="distinct commits"):
+        validator.validate_s_to_r(
+            repo,
+            reviewed_commit,
+            reviewed_commit,
+            expected_tag="v0.2.3",
+        )
+
+
+@pytest.mark.parametrize(
+    "source_manifest",
+    [
+        pytest.param(None, id="absent"),
+        pytest.param(V023_POPULATED_REVIEW_EVIDENCE, id="already-populated"),
+        pytest.param(
+            f"unreviewed: true\n{V023_EMPTY_REVIEW_EVIDENCE}",
+            id="extra-yaml",
+        ),
+        pytest.param(
+            "review_evidence_json: |\n"
+            '  {"schema": "gwexpy-v023-review-evidence-v1", "entries": []}\n',
+            id="alternate-json-format",
+        ),
+        pytest.param(
+            "review_evidence_json: >\n"
+            '  {"schema":"gwexpy-v023-review-evidence-v1","entries":[]}\n',
+            id="malformed-block",
+        ),
+    ],
+)
+def test_v023_s_to_r_rejects_noncanonical_source_placeholder(
+    tmp_path: Path,
+    source_manifest: str | None,
+) -> None:
+    validator = load_validator()
+    repo, plan, manifest, reviewed_commit = make_v023_s_to_r_repo(
+        tmp_path,
+        source_manifest=source_manifest,
+    )
+    source_sha = commit_v023_r(repo, plan, manifest, update_plan=True)
+
+    with pytest.raises(
+        validator.ReleaseValidationError,
+        match="exact empty review evidence placeholder",
+    ):
+        validator.validate_s_to_r(
+            repo,
+            reviewed_commit,
+            source_sha,
+            expected_tag="v0.2.3",
+        )
+
+
+@pytest.mark.parametrize("update_plan", [False, True])
+def test_v023_s_to_r_accepts_distinct_source_with_exact_empty_placeholder(
+    tmp_path: Path,
+    update_plan: bool,
+) -> None:
+    validator = load_validator()
+    repo, plan, manifest, reviewed_commit = make_v023_s_to_r_repo(tmp_path)
+    source_sha = commit_v023_r(repo, plan, manifest, update_plan=update_plan)
+
+    validated_commit = validator.validate_review_evidence(
+        repo,
+        manifest,
+        source_sha,
+        expected_tag="v0.2.3",
+    )
+
+    assert validated_commit == reviewed_commit

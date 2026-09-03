@@ -102,6 +102,11 @@ review scope path but does not authorize a release. The executable gate rejects
 that placeholder. Only the coordinator may replace it in `R` after all three
 same-candidate lane reviews are `APPROVED`.
 
+For v0.2.3, `S` and `R` must be distinct commits. Before accepting the allowed
+`S..R` delta, the validator reads the configured evidence path directly from
+`S` and requires the byte-exact empty placeholder. Validation fails closed if
+the placeholder is absent, already populated, malformed, or contains extra YAML.
+
 The selected evidence file must contain
 exactly one top-level `review_evidence_json: |` block whose content is the
 strict JSON review-evidence schema; no YAML text is allowed outside that block,

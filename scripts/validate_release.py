@@ -19,6 +19,13 @@ RELEASE_TAG_PATTERN = re.compile(
 )
 SHA_PATTERN = re.compile(r"^[0-9a-f]{40}$")
 DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+V023_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER = b"""\
+review_evidence_json: |
+  {
+    "schema": "gwexpy-v023-review-evidence-v1",
+    "entries": []
+  }
+"""
 
 
 class ReleaseValidationError(ValueError):
@@ -315,6 +322,29 @@ def _validate_plan_delta(
             )
 
 
+def _validate_v023_review_source_placeholder(
+    repo_root: Path,
+    reviewed_commit: str,
+    evidence_path: str,
+) -> None:
+    try:
+        source = _git_bytes(
+            repo_root,
+            "show",
+            f"{reviewed_commit}:{evidence_path}",
+        )
+    except ReleaseValidationError as exc:
+        raise ReleaseValidationError(
+            "v0.2.3 reviewed source must contain the exact empty review "
+            "evidence placeholder"
+        ) from exc
+    if source != V023_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER:
+        raise ReleaseValidationError(
+            "v0.2.3 reviewed source must contain the exact empty review "
+            "evidence placeholder"
+        )
+
+
 def validate_s_to_r(
     repo_root: Path | str,
     reviewed_commit: str,
@@ -324,6 +354,8 @@ def validate_s_to_r(
 ) -> None:
     """Bind Terra's reviewed S to R through only coordinator-owned deltas."""
     root = Path(repo_root).resolve()
+    if expected_tag == "v0.2.3" and reviewed_commit == source_sha:
+        raise ReleaseValidationError("v0.2.3 S-to-R binding requires distinct commits")
     ancestor = subprocess.run(
         ["git", "merge-base", "--is-ancestor", reviewed_commit, source_sha],
         cwd=root,
@@ -336,6 +368,12 @@ def validate_s_to_r(
     )
     paths = {path for path in changed.split("\0") if path}
     contract = _release_contract(expected_tag)
+    if expected_tag == "v0.2.3":
+        _validate_v023_review_source_placeholder(
+            root,
+            reviewed_commit,
+            str(contract["review_evidence_path"]),
+        )
     allowed_paths = set(cast(list[str], contract["s_to_r_allowed_paths"]))
     if not paths <= allowed_paths:
         raise ReleaseValidationError(

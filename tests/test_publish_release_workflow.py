@@ -99,6 +99,16 @@ def test_releasing_doc_separates_enforced_controls_from_operational_rules():
     assert "not a guarantee the platform provides" in releasing[operational:]
 
 
+def test_releasing_documents_strict_v023_source_to_evidence_transition():
+    releasing = re.sub(
+        r"\s+", " ", (WORKFLOW.parents[2] / "RELEASING.md").read_text(encoding="utf-8")
+    )
+
+    assert "For v0.2.3, `S` and `R` must be distinct commits." in releasing
+    assert "byte-exact empty placeholder" in releasing
+    assert "absent, already populated, malformed, or contains extra YAML" in releasing
+
+
 def releasing_readback(*, collapse: bool) -> str:
     """Return the readback section, optionally with wrapping collapsed.
 
