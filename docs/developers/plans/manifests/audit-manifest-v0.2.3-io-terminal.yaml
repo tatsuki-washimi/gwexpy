@@ -610,22 +610,22 @@ verification:
           - count: 1
             node: tests/io_conformance/test_generated_read.py
             reason: zarr tests require GWEXPY_ALLOW_ZARR=1
-          - count: 4
-            node: tests/io_conformance/test_read_conformance.py
-            reason: optional framecpp/framel backends unavailable for their aliases
-          - count: 2
-            node: tests/io_conformance/test_write_roundtrip.py
-            reason: optional framecpp backend unavailable for its aliases
-        gwpy_4_0_2:
-          - count: 1
-            node: tests/io_conformance/test_generated_read.py
-            reason: zarr tests require GWEXPY_ALLOW_ZARR=1
           - count: 2
             node: tests/io_conformance/test_read_conformance.py
             reason: optional framel backend unavailable for framel aliases
           - count: 2
             node: tests/io_conformance/test_write_roundtrip.py
             reason: optional framel module unavailable for framel aliases
+        gwpy_4_0_2:
+          - count: 1
+            node: tests/io_conformance/test_generated_read.py
+            reason: zarr tests require GWEXPY_ALLOW_ZARR=1
+          - count: 4
+            node: tests/io_conformance/test_read_conformance.py
+            reason: optional framecpp/framel backends unavailable for their aliases
+          - count: 2
+            node: tests/io_conformance/test_write_roundtrip.py
+            reason: optional framecpp backend unavailable for its aliases
     override_inventory:
       selectors: 62
       members: 575
