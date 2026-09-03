@@ -325,6 +325,44 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
     assert "At the v0.1.13 freeze" in legacy_audit["reviewer"]
 
 
+def test_v023_pending_human_review_records_are_explicit_and_current() -> None:
+    expected_statuses = {
+        "audit-manifest-v0.2.3-phase2.yaml": (
+            "focused-green-human-fft-time-axis-review-pending"
+        ),
+        "audit-manifest-v0.2.3-phase3.yaml": (
+            "focused-green-human-spectral-review-pending"
+        ),
+        "audit-manifest-v0.2.3-timeseries-signal.yaml": (
+            "focused-green-human-signal-semantics-review-pending"
+        ),
+    }
+    for filename, expected_status in expected_statuses.items():
+        manifest = yaml.safe_load(
+            _read(f"docs/developers/plans/manifests/{filename}")
+        )
+        assert manifest["status"] == expected_status
+
+    legacy_rayleigh = yaml.safe_load(
+        _read(
+            "docs/developers/plans/manifests/"
+            "audit-manifest-506-rayleigh-null-model.yaml"
+        )
+    )
+    superseded = legacy_rayleigh["superseded_in_v0_2_3"]
+    assert superseded["status"] == "current-evidence-awaiting-human-signoff"
+    assert superseded["gwpy_4_0_1"] == "50 passed"
+    assert superseded["gwpy_4_0_2"] == "50 passed"
+
+    for disclosure_path in ("CHANGELOG.md", "release_notes/v0.2.3.md"):
+        disclosure = " ".join(_read(disclosure_path).split())
+        assert (
+            "stale axis metadata on specific Array2D/Plane2D reductions and "
+            "numeric array permutations"
+            in disclosure
+        )
+
+
 def test_release_review_scopes_bind_the_policy_to_lanes_a_and_b() -> None:
     contracts = json.loads(_read("scripts/ci/release_contracts.json"))
     lanes = contracts["releases"]["v0.2.2"]["review_lanes"]

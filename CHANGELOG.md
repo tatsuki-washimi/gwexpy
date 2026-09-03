@@ -56,9 +56,9 @@ dependency.
 - Pending human sign-off, parent-compatible defaults retain observable GWpy
   quirks, including
   mixed-unit CSD unit labeling, raw-magnitude frequency `Quantity` handling,
-  float32 RMS underflow, and stale axis metadata on specific numeric array
-  permutations. Corrected or metadata-aware GWexpy-only routes remain
-  explicit where already available.
+  float32 RMS underflow, and stale axis metadata on specific Array2D/Plane2D
+  reductions and numeric array permutations. Corrected or metadata-aware
+  GWexpy-only routes remain explicit where already available.
 
 ## [0.2.2] - 2026-09-01
 

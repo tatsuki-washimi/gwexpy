@@ -32,3 +32,16 @@ verification:
   lint: "ruff check gwexpy/ tests/ passed."
   typing: "mypy gwexpy/ passed."
   ci: pending-push
+
+superseded_in_v0_2_3:
+  status: current-evidence-awaiting-human-signoff
+  current_manifest: audit-manifest-v0.2.3-phase3.yaml
+  decision: >-
+    Preserve the public GWpy segment-selection result and keep the corrected
+    hop-count route private to rayleigh_test.
+  evidence: tests/statistics/test_rayleigh_null_model.py
+  gwpy_4_0_1: 50 passed
+  gwpy_4_0_2: 50 passed
+  note: >-
+    The physics_review and 38-test result above describe the earlier #506
+    review point. This block is the current v0.2.3 evidence pointer.
