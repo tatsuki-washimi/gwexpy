@@ -14,6 +14,7 @@ issues:
 
 skills:
   - superpowers:test-driven-development
+  - manage_field_metadata
   - extend_gwpy
   - gwexpy_conda_jobs
   - verify_physics
@@ -70,6 +71,14 @@ terminal_test_references:
     - tests/types/test_gwpy_override_terminal_compat.py::test_scalarfield_diff_common_route_matches_gwpy
     - tests/types/test_gwpy_override_terminal_compat.py::test_scalarfield_diff_failure_class_matches_gwpy
     - tests/types/test_gwpy_override_terminal_compat.py::test_scalarfield_diff_field_comparison_requires_explicit_field_type
+    - tests/fields/test_scalarfield_diff_comparison_contract.py::test_comparison_converts_equivalent_data_units
+    - tests/fields/test_scalarfield_diff_comparison_contract.py::test_comparison_rejects_incompatible_data_units
+    - tests/fields/test_scalarfield_diff_comparison_contract.py::test_comparison_rejects_each_misaligned_coordinate_axis
+    - tests/fields/test_scalarfield_diff_comparison_contract.py::test_comparison_accepts_equivalent_units_on_each_coordinate_axis
+    - tests/fields/test_scalarfield_diff_comparison_contract.py::test_comparison_rejects_domain_mismatch
+    - tests/fields/test_scalarfield_diff_comparison_contract.py::test_comparison_preserves_shape_dtype_metadata_and_inputs
+    - tests/fields/test_scalarfield_diff_comparison_contract.py::test_zero_denominator_preserves_numpy_nonfinite_masks
+    - tests/fields/test_scalarfield_diff_comparison_contract.py::test_comparison_preserves_astropy_masked_operands
   swapaxes:
     - tests/types/test_gwpy_override_terminal_compat.py::test_array2d_numeric_swapaxes_matches_gwpy
     - tests/types/test_gwpy_override_terminal_compat.py::test_array2d_named_axis_permutations_remain_explicit_extensions
@@ -150,6 +159,30 @@ contracts:
       - diff
       - ratio
       - percent
+    comparison_alignment:
+      shape: exact
+      axis0_domain: exact
+      space_domains: exact
+      coordinate_axes: all four physical grids must match
+      equivalent_coordinate_units: accepted after conversion
+      coordinate_mismatch: ValueError
+    comparison_units:
+      rhs: converted to the left-hand data unit before comparison
+      incompatible: astropy.units.UnitConversionError
+      diff: left-hand data unit
+      ratio: dimensionless_unscaled
+      percent: astropy percent, with 100 percent equal to one dimensionless
+    comparison_metadata:
+      authority: left-hand field
+      preserved:
+        - shape and dtype
+        - axis values, units, and names
+        - time and space domains
+        - native GWpy metadata and _gwex_ attributes
+      inputs_mutated: false
+    zero_denominator:
+      regularization: none
+      outcome: preserve NumPy and Astropy Masked NaN, positive Inf, negative Inf, finite, and mask semantics
     exception_retry: false
     numpy_prepend_append:
       provider_support: NumPy 1.26.4 supports both options
@@ -226,6 +259,15 @@ tdd:
       primary_causes:
         - transpose metadata consumed None and single non-tuple sequence inputs as axis scalars
         - falsey legacy diagonal positional values were mistaken for omitted arguments
+    scalarfield_comparison_hardening:
+      environment: gwexpy
+      gwpy: 4.0.2
+      result: 39 failed, 6 passed
+      intended_failure_causes:
+        - equivalent data units were compared as raw magnitudes
+        - incompatible data units were accepted
+        - time, spatial-domain, and all four coordinate mismatches were accepted
+        - field-comparison reconstruction discarded left-hand native metadata
   green:
     differential_and_contract_set:
       gwpy_4_0_1: 152 passed
@@ -249,18 +291,39 @@ tdd:
     bifrequency_related_tests:
       gwpy_4_0_1: 59 passed
       gwpy_4_0_2: 59 passed
+    scalarfield_comparison_contract:
+      gwpy_4_0_1: 48 passed
+      gwpy_4_0_2: 48 passed
+    scalarfield_diff_differential_and_contract:
+      gwpy_4_0_1: 55 passed, 88 deselected
+      gwpy_4_0_2: 55 passed, 88 deselected
+    type_collision_with_scalarfield_comparison:
+      gwpy_4_0_1: 200 passed
+      gwpy_4_0_2: 200 passed
+    field_and_type_regressions:
+      gwpy_4_0_1: 2807 passed, 15 approved skips, 1 expected failure
+      gwpy_4_0_2: 2807 passed, 15 approved skips, 1 expected failure
 
 physics_and_data_model:
   finite_difference_values_and_units: delegated unchanged to GWpy
   finite_difference_coordinates: trailing source endpoints retained for each order
-  field_comparison_values_and_units: existing extension retained unchanged
+  field_comparison_values_and_units: >-
+    Equivalent RHS data units are converted to the LHS unit; incompatible units
+    fail closed; diff, ratio, and percent return LHS, dimensionless, and percent
+    units respectively.
+  field_comparison_grid_authority: >-
+    Shape, axis0 domain, spatial domains, and all four physical grids must align;
+    equivalent coordinate units are accepted and result metadata comes from the LHS.
+  field_comparison_nonfinite_and_mask_semantics: >-
+    No epsilon is introduced; NumPy IEEE nonfinite classification and Astropy
+    Masked operand masks are retained.
   bifrequency_plot_axis_order: aligned to GWpy xindex/yindex authority
   binned_projection: only explicit opt-in can select the specialized calculation
   human_review: required
   human_review_reasons:
     - BifrequencyMap plot source orientation and frequency-axis authority changed
     - ScalarField finite-difference results use trailing physical coordinates on the reduced axis
-    - ScalarField comparison with differing units or coordinates remains an extension requiring review
+    - ScalarField comparison unit conversion, fail-closed grid alignment, and percent scaling require sign-off
     - numeric Array2D permutation intentionally retains GWpy stale axis metadata
 
 release_constraints:
@@ -325,6 +388,25 @@ commands:
     "$environment" pytest -q
     tests/frequencyseries/test_bifrequencymap_gwpy_compat.py::test_default_plot_signoff_evidence_records_geometry_labels_and_input_state;
     done
+  scalarfield_comparison_red: >-
+    rtk env MPLBACKEND=Agg /home/washimi/miniforge3/envs/gwexpy/bin/python
+    -m pytest -q tests/fields/test_scalarfield_diff_comparison_contract.py
+    -p no:cacheprovider
+  scalarfield_comparison_both_oracles: >-
+    for environment in main gwexpy; do rtk conda run -n "$environment" env
+    MPLBACKEND=Agg python -m pytest -q
+    tests/fields/test_scalarfield_diff_comparison_contract.py -p no:cacheprovider;
+    done
+  scalarfield_diff_differential_both_oracles: >-
+    for environment in main gwexpy; do rtk conda run -n "$environment" env
+    MPLBACKEND=Agg python -m pytest -q
+    tests/fields/test_scalarfield_diff_comparison_contract.py
+    tests/types/test_gwpy_override_terminal_compat.py -k scalarfield_diff
+    -p no:cacheprovider; done
+  field_and_type_regressions_both_oracles: >-
+    for environment in main gwexpy; do rtk conda run -n "$environment" env
+    MPLBACKEND=Agg python -m pytest -q tests/fields tests/types
+    -p no:cacheprovider; done
 
 focused_tests:
   - tests/frequencyseries/test_bifrequencymap_gwpy_compat.py
@@ -332,6 +414,7 @@ focused_tests:
   - tests/frequencyseries/test_standalone_contracts.py
   - tests/types/test_types_array2d_axes.py
   - tests/types/test_types_plane2d.py
+  - tests/fields/test_scalarfield_diff_comparison_contract.py
 
 changed_files:
   - gwexpy/fields/scalar.py
@@ -345,4 +428,6 @@ changed_files:
   - tests/types/test_gwpy_override_terminal_compat.py
   - tests/types/test_types_array2d_axes.py
   - tests/types/test_types_plane2d.py
+  - tests/fields/test_scalarfield_diff_comparison_contract.py
+  - docs/developers/plans/manifests/audit-manifest-v0.2.3-scalarfield-diff-comparison.yaml
   - docs/developers/plans/manifests/audit-manifest-v0.2.3-type-collision-compat.yaml

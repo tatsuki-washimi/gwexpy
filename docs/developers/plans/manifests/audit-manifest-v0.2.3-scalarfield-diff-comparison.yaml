@@ -1,0 +1,203 @@
+schema: gwexpy-v023-scalarfield-diff-comparison-evidence-v1
+phase: scalarfield-field-comparison-hardening
+status: focused-green-pending-independent-and-human-data-model-review
+
+implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
+implementation_parent: f21087061794d232df8bc50350d83dba25a31b39
+
+issues:
+  - "#639"
+  - "#704"
+
+skills:
+  - superpowers:test-driven-development
+  - manage_field_metadata
+  - extend_gwpy
+  - verify_physics
+  - gwexpy_conda_jobs
+  - git-commit-conventional
+
+decision:
+  date: 2026-09-03
+  implementation_contract: approved by the user for implementation
+  release_signoff: pending
+  note: >-
+    Approval to implement the fail-closed contract is not final physics or
+    data-model sign-off for the release candidate.
+
+scope:
+  included:
+    - ScalarField.diff with a ScalarField first argument
+    - diff, ratio, and percent comparison modes
+    - data-unit conversion and incompatibility rejection
+    - shape, domain, and four-axis physical-grid validation
+    - LHS metadata authority and input nonmutation
+    - IEEE nonfinite and Astropy Masked behavior at zero denominators
+    - preservation of the existing numeric GWpy Array.diff route
+  excluded:
+    - issue "#611" reader-window selection
+    - changes to general FieldBase ufunc validation
+    - changes to the generated GWpy override inventory
+    - new alignment, interpolation, or regridding APIs
+    - release version, date, changelog, and publication metadata
+
+contract:
+  routing:
+    numeric_first_argument: unchanged GWpy Array.diff route
+    scalarfield_first_argument: explicit GWexpy field-comparison extension
+    exception_retry: false
+  validation_order:
+    - existing Python binding
+    - exact shape check
+    - comparison mode check
+    - FieldBase ufunc domain, spatial-domain, and coordinate validation
+    - Astropy data-unit validation and conversion
+  alignment:
+    shape: exact
+    axis0_domain: exact
+    space_domains: exact
+    axes: all four physical coordinate grids
+    coordinate_units: equivalent units accepted after conversion
+    mismatch_exception: ValueError
+  data_units:
+    requirement: RHS must be equivalent to the LHS unit
+    conversion_authority: LHS unit
+    incompatible_exception: astropy.units.UnitConversionError
+  outputs:
+    diff:
+      expression: self - other
+      unit: LHS unit
+    ratio:
+      expression: (self / other).to(dimensionless_unscaled)
+      unit: dimensionless_unscaled
+    percent:
+      expression: ((self - other) / other).to(percent)
+      unit: percent
+      scale_identity: 100 percent equals one dimensionless
+  metadata:
+    authority: LHS
+    preserved:
+      - shape and dtype
+      - native name, channel, and epoch
+      - all axis values, units, and names
+      - axis0 and spatial domains
+      - _gwex_ prefixed attributes
+    input_mutation: none
+  zero_denominator:
+    epsilon_or_regularization: none
+    required_outcomes:
+      - finite values
+      - NaN
+      - positive infinity
+      - negative infinity
+      - Astropy Masked union mask
+
+tdd:
+  red:
+    environment: gwexpy
+    python: 3.11.14
+    gwpy: 4.0.2
+    command: >-
+      rtk env MPLBACKEND=Agg /home/washimi/miniforge3/envs/gwexpy/bin/python
+      -m pytest -q tests/fields/test_scalarfield_diff_comparison_contract.py
+      -p no:cacheprovider
+    result: 39 failed, 6 passed
+    intended_failures:
+      - equivalent RHS magnitudes were not converted
+      - incompatible units did not raise
+      - domain and coordinate mismatches did not raise
+      - manually reconstructed results lost LHS native metadata
+  green:
+    dedicated_contract:
+      gwpy_4_0_1: 48 passed
+      gwpy_4_0_2: 48 passed
+    differential_plus_contract:
+      gwpy_4_0_1: 55 passed, 88 deselected
+      gwpy_4_0_2: 55 passed, 88 deselected
+    type_collision_plus_contract:
+      gwpy_4_0_1: 200 passed
+      gwpy_4_0_2: 200 passed
+    related_fields_and_types:
+      gwpy_4_0_1: 2807 passed, 15 approved skips, 1 expected failure
+      gwpy_4_0_2: 2807 passed, 15 approved skips, 1 expected failure
+    unexpected_required_skips: 0
+
+oracles:
+  - environment: main
+    python: 3.12.12
+    gwpy: 4.0.1
+    numpy: 1.26.4
+    astropy: 6.1.7
+  - environment: gwexpy
+    python: 3.11.14
+    gwpy: 4.0.2
+    numpy: 1.26.4
+    astropy: 6.1.7
+oracle_version_difference: none observed on the numeric diff route or extension contract
+
+commands:
+  focused_each_oracle: >-
+    rtk conda run -n <oracle-env> env MPLBACKEND=Agg python -m pytest -q
+    tests/fields/test_scalarfield_diff_comparison_contract.py
+    tests/frequencyseries/test_bifrequencymap_gwpy_compat.py
+    tests/types/test_gwpy_override_terminal_compat.py
+    tests/frequencyseries/test_standalone_contracts.py -p no:cacheprovider
+  related_each_oracle: >-
+    rtk conda run -n <oracle-env> env MPLBACKEND=Agg python -m pytest -q
+    tests/fields tests/types -p no:cacheprovider
+  ruff: >-
+    rtk conda run -n gwexpy python -m ruff check
+    gwexpy/fields/scalar.py
+    tests/fields/test_scalarfield_diff_comparison_contract.py
+  format: >-
+    rtk conda run -n gwexpy python -m ruff format --check
+    gwexpy/fields/scalar.py
+    tests/fields/test_scalarfield_diff_comparison_contract.py
+  mypy: >-
+    rtk conda run -n gwexpy python -m mypy gwexpy/fields/scalar.py
+  yaml: >-
+    rtk /home/washimi/miniforge3/envs/gwexpy/bin/python -c
+    "from pathlib import Path; import yaml; yaml.safe_load(Path(...).read_text())"
+  whitespace: rtk git diff --check
+
+physics_and_data_model:
+  dimensional_analysis:
+    diff: subtraction after RHS-to-LHS conversion retains the LHS physical unit
+    ratio: equivalent units cancel to a scale-normalized dimensionless result
+    percent: dimensionless fractional change is converted to the percent scale
+  grid_safety: >-
+    Comparison is rejected before arithmetic when temporal/spatial domains or
+    any physical coordinate grid differ; no implicit regridding is performed.
+  numerical_behavior: >-
+    Division uses NumPy and Astropy semantics without an epsilon, preserving
+    signed infinities, NaNs, finite values, and Astropy operand masks.
+  input_nonmutation: verified for values, units, native metadata, domains, and axes
+  human_review:
+    required: true
+    status: pending independent implementation review and maintainer sign-off
+    requested_decisions:
+      - accept LHS as unit and metadata authority
+      - accept equivalent coordinate-unit conversion with existing FieldBase tolerance
+      - accept fail-closed behavior for domain and physical-grid mismatches
+      - accept unregularized IEEE zero-denominator and Astropy mask semantics
+      - accept percent output scaling where 100 percent equals one dimensionless
+
+static_validation:
+  ruff_changed_python_files: passed
+  ruff_format_changed_python_files: passed
+  mypy_changed_source_files: passed
+  yaml_safe_load: passed
+  git_diff_check: passed
+
+release_constraints:
+  new_public_api: false
+  new_dependency: false
+  workflow_changed: false
+  generated_override_inventory_changed: false
+  human_signoff_required: true
+
+changed_files:
+  - gwexpy/fields/scalar.py
+  - tests/fields/test_scalarfield_diff_comparison_contract.py
+  - docs/developers/plans/manifests/audit-manifest-v0.2.3-type-collision-compat.yaml
+  - docs/developers/plans/manifests/audit-manifest-v0.2.3-scalarfield-diff-comparison.yaml

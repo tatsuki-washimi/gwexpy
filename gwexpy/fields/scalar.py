@@ -1479,7 +1479,8 @@ class ScalarField(FieldBase):
         -------
         ScalarField
             Result field. For 'diff', unit is same as input.
-            For 'ratio' and 'percent', unit is dimensionless.
+            For 'ratio', unit is dimensionless. For 'percent', unit is
+            percent.
 
         Raises
         ------
@@ -1487,6 +1488,8 @@ class ScalarField(FieldBase):
             If mode is not recognized.
         ValueError
             If shapes are incompatible.
+        astropy.units.UnitConversionError
+            If the two fields have incompatible data units.
 
         Examples
         --------
@@ -1532,32 +1535,14 @@ class ScalarField(FieldBase):
             )
 
         if comparison_mode == "diff":
-            result_data = self.value - other.value
-            result_unit = self.unit
-        elif comparison_mode == "ratio":
+            return self - other
+        if comparison_mode == "ratio":
             with np.errstate(divide="ignore", invalid="ignore"):
-                result_data = self.value / other.value
-            result_unit = u.dimensionless_unscaled
-        elif comparison_mode == "percent":
+                return (self / other).to(u.dimensionless_unscaled)
+        if comparison_mode == "percent":
             with np.errstate(divide="ignore", invalid="ignore"):
-                result_data = (self.value - other.value) / other.value * 100
-            result_unit = u.percent
-        else:
-            raise ValueError(f"Invalid mode '{comparison_mode}'")
-
-        result = ScalarField(
-            result_data,
-            unit=result_unit,
-            axis0=self._axis0_index,
-            axis1=self._axis1_index,
-            axis2=self._axis2_index,
-            axis3=self._axis3_index,
-            axis_names=list(self.axis_names),
-            axis0_domain=self._axis0_domain,
-            space_domain=self._space_domains,
-        )
-        self._propagate_gwex_attrs(result)
-        return result
+                return ((self - other) / other).to(u.percent)
+        raise ValueError(f"Invalid mode '{comparison_mode}'")
 
     def zscore(self, baseline_t=None):
         """Compute z-score normalized field using a baseline period.
