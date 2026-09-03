@@ -857,12 +857,14 @@ class TestNativeHdf5NonIntersectingSafety:
         path = self._write_source(tmp_path, exact=False)
         returned = TimeSeries(
             np.arange(4, dtype=np.float32),
-            t0=2.0,
+            t0_ns=2_000_000_000,
             dt=0.25,
             unit="V",
             name="returned",
             channel="H1:RETURNED",
         )
+        assert hasattr(returned, "_gwex_t0_gps_ns")
+        assert hasattr(returned, "_gwex_dt_gps_ns")
         calls = []
 
         def parent_read(cls, source, *args, **kwargs):
@@ -878,12 +880,17 @@ class TestNativeHdf5NonIntersectingSafety:
         got = TimeSeriesDict.read(path, *read_args, format="hdf5")["A"]
 
         assert calls == [(path, read_args, {"format": "hdf5"})]
+        assert type(got) is TimeSeries
         assert got.shape == (0,)
         assert float(got.t0.value) == expected_t0
+        assert got.span == (expected_t0, expected_t0)
         assert got.dtype == returned.dtype
         assert got.unit == returned.unit
         assert got.name == returned.name
         assert str(got.channel) == str(returned.channel)
+        assert got.dt == returned.dt
+        assert not hasattr(got, "_gwex_t0_gps_ns")
+        assert not hasattr(got, "_gwex_dt_gps_ns")
 
     def test_parent_created_empty_object_is_not_replaced(self, tmp_path, monkeypatch):
         path = self._write_source(tmp_path, exact=False)
@@ -1022,11 +1029,29 @@ class TestNativeHdf5NonIntersectingSafety:
 
         assert list(got) == ["covered", "disjoint"]
         _assert_matches_oracle(got["covered"], parent["covered"])
+        assert type(got["covered"]) is TimeSeries
+        assert got["covered"].dtype == covered.dtype
+        assert got["covered"].unit == covered.unit
+        assert got["covered"].name == covered.name
+        assert str(got["covered"].channel) == str(covered.channel)
+        assert got["covered"].dt == covered.dt
+        assert got["covered"].t0 == parent["covered"].t0
+        assert got["covered"].span == parent["covered"].span
         assert parent["disjoint"].size > 0
+        assert type(got["disjoint"]) is TimeSeries
         assert got["disjoint"].shape == (0,)
+        assert got["disjoint"].dtype == disjoint.dtype
+        assert got["disjoint"].unit == disjoint.unit
         assert got["disjoint"].t0 == disjoint.t0
+        assert got["disjoint"].dt == disjoint.dt
+        assert got["disjoint"].span == (
+            float(disjoint.span[0]),
+            float(disjoint.span[0]),
+        )
         assert got["disjoint"].name == disjoint.name
         assert str(got["disjoint"].channel) == str(disjoint.channel)
+        assert not hasattr(got["disjoint"], "_gwex_t0_gps_ns")
+        assert not hasattr(got["disjoint"], "_gwex_dt_gps_ns")
 
     def test_explicit_pad_preserves_the_parent_result(self, tmp_path):
         path = self._write_source(tmp_path, exact=True)
@@ -1037,13 +1062,40 @@ class TestNativeHdf5NonIntersectingSafety:
         assert expected.size > 0
         _assert_matches_oracle(got, expected)
 
-    def test_duplicate_positional_keyword_bound_keeps_parent_error(self, tmp_path):
+    def test_duplicate_positional_keyword_bound_keeps_parent_error(
+        self, tmp_path, monkeypatch
+    ):
         path = self._write_source(tmp_path, exact=False)
 
         with pytest.raises(TypeError) as parent_error:
             GwpyTimeSeriesDict.read(path, ["A"], None, 1.75, end=1.75, format="hdf5")
         with pytest.raises(type(parent_error.value)):
             TimeSeriesDict.read(path, ["A"], None, 1.75, end=1.75, format="hdf5")
+
+        sentinel = TypeError("parent binding sentinel")
+        calls = []
+
+        def parent_read(cls, source, *args, **kwargs):
+            calls.append((source, args, kwargs.copy()))
+            raise sentinel
+
+        monkeypatch.setattr(
+            collections_module.BaseTimeSeriesDict,
+            "read",
+            classmethod(parent_read),
+        )
+
+        with pytest.raises(TypeError) as caught:
+            TimeSeriesDict.read(path, ["A"], None, 1.75, end=1.75, format="hdf5")
+
+        assert caught.value is sentinel
+        assert calls == [
+            (
+                path,
+                (["A"], None, 1.75),
+                {"end": 1.75, "format": "hdf5"},
+            )
+        ]
 
 
 class TestLegacyHdf5NonIntersectingRoutes:
@@ -1093,16 +1145,30 @@ class TestLegacyHdf5NonIntersectingRoutes:
         assert got["A"].t0 == series.t0
 
     def test_bytesio_keeps_legacy_position_and_lifecycle(self, tmp_path):
-        path, _ = self._write_source(tmp_path)
+        path, expected = self._write_source(tmp_path)
         payload = path.read_bytes()
         source = io.BytesIO(payload)
         source.seek(7)
 
         got = TimeSeriesDict.read(source, format="hdf5", end=0.2)
 
-        assert got["A"].shape == (0,)
+        assert list(got) == ["A"]
+        actual = got["A"]
+        assert type(actual) is TimeSeries
+        assert actual.shape == (0,)
+        assert actual.dtype == expected.dtype
+        assert actual.unit == expected.unit
+        assert actual.name == expected.name
+        assert str(actual.channel) == str(expected.channel)
+        assert actual.dt == expected.dt
+        assert actual.t0 == expected.t0
+        assert actual.span == (
+            float(expected.span[0]),
+            float(expected.span[0]),
+        )
         assert not source.closed
         assert source.tell() == len(payload)
+        assert source.getvalue() == payload
 
     def test_open_handle_keeps_legacy_failure_and_ownership(self, tmp_path):
         path, _ = self._write_source(tmp_path)
