@@ -15697,11 +15697,15 @@
       "comparator": {
         "name": "exact-io-outcome-payload-and-metadata"
       },
+      "compatibility_exception": "non_intersecting_window_safety",
       "counterpart_present": true,
       "evidence": {
         "behavior": [
           {
             "reference": "tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_read_matches_gwpy"
+          },
+          {
+            "reference": "tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids::test_window_before_data_with_non_ns_epoch_returns_metadata_empty"
           }
         ],
         "green_test": {
@@ -15731,9 +15735,11 @@
       "member_id": "gwexpy.timeseries.collections.TimeSeriesDict/read",
       "observations": {
         "gwexpy": {
+          "detail": "GWexpy returns a zero-length key-preserving result for the dedicated non-intersecting native HDF5 window.",
           "outcome": "return"
         },
         "gwpy": {
+          "detail": "GWpy 4.0.x returns nonempty outside-window samples for the dedicated non-intersecting native HDF5 window.",
           "outcome": "return"
         }
       },
@@ -15746,11 +15752,15 @@
       "comparator": {
         "name": "exact-io-outcome-payload-and-metadata"
       },
+      "compatibility_exception": "non_intersecting_window_safety",
       "counterpart_present": true,
       "evidence": {
         "behavior": [
           {
             "reference": "tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_read_matches_gwpy"
+          },
+          {
+            "reference": "tests/io/test_reader_start_end_contract.py::TestNonNanosecondGrids::test_window_before_data_with_non_ns_epoch_returns_metadata_empty"
           }
         ],
         "green_test": {
@@ -15780,9 +15790,11 @@
       "member_id": "gwexpy.timeseries.collections.TimeSeriesDict/read",
       "observations": {
         "gwexpy": {
+          "detail": "GWexpy returns a zero-length key-preserving result for the dedicated non-intersecting native HDF5 window.",
           "outcome": "return"
         },
         "gwpy": {
+          "detail": "GWpy 4.0.x returns nonempty outside-window samples for the dedicated non-intersecting native HDF5 window.",
           "outcome": "return"
         }
       },
@@ -40006,7 +40018,7 @@
               }
             },
             "source": {
-              "line": 70,
+              "line": 86,
               "path": "gwexpy/fields/base.py"
             }
           }
@@ -40034,7 +40046,7 @@
       "raw_descriptor_identity": "gwexpy.fields.base.FieldBase::__new__::staticmethod",
       "resolution": "inherited-gwexpy-base",
       "source": {
-        "line": 70,
+        "line": 86,
         "path": "gwexpy/fields/base.py"
       }
     },
@@ -40119,7 +40131,7 @@
               }
             },
             "source": {
-              "line": 413,
+              "line": 430,
               "path": "gwexpy/fields/base.py"
             }
           }
@@ -40147,7 +40159,7 @@
       "raw_descriptor_identity": "gwexpy.fields.base.FieldBase::animate::function",
       "resolution": "inherited-gwexpy-base",
       "source": {
-        "line": 413,
+        "line": 430,
         "path": "gwexpy/fields/base.py"
       }
     },
@@ -40312,7 +40324,7 @@
               }
             },
             "source": {
-              "line": 224,
+              "line": 241,
               "path": "gwexpy/fields/base.py"
             }
           }
@@ -40340,7 +40352,7 @@
       "raw_descriptor_identity": "gwexpy.fields.base.FieldBase::axis0_domain::property",
       "resolution": "inherited-gwexpy-base",
       "source": {
-        "line": 224,
+        "line": 241,
         "path": "gwexpy/fields/base.py"
       }
     },
@@ -40475,7 +40487,7 @@
               }
             },
             "source": {
-              "line": 2206,
+              "line": 2242,
               "path": "gwexpy/fields/scalar.py"
             }
           }
@@ -40503,7 +40515,7 @@
       "raw_descriptor_identity": "gwexpy.fields.scalar.ScalarField::coherence_map::function",
       "resolution": "direct",
       "source": {
-        "line": 2206,
+        "line": 2242,
         "path": "gwexpy/fields/scalar.py"
       }
     },
@@ -40554,7 +40566,7 @@
               }
             },
             "source": {
-              "line": 1943,
+              "line": 1979,
               "path": "gwexpy/fields/scalar.py"
             }
           }
@@ -40582,7 +40594,7 @@
       "raw_descriptor_identity": "gwexpy.fields.scalar.ScalarField::compute_psd::function",
       "resolution": "direct",
       "source": {
-        "line": 1943,
+        "line": 1979,
         "path": "gwexpy/fields/scalar.py"
       }
     },
@@ -40643,7 +40655,7 @@
               }
             },
             "source": {
-              "line": 2148,
+              "line": 2184,
               "path": "gwexpy/fields/scalar.py"
             }
           }
@@ -40671,7 +40683,7 @@
       "raw_descriptor_identity": "gwexpy.fields.scalar.ScalarField::compute_xcorr::function",
       "resolution": "direct",
       "source": {
-        "line": 2148,
+        "line": 2184,
         "path": "gwexpy/fields/scalar.py"
       }
     },
@@ -40735,7 +40747,7 @@
               }
             },
             "source": {
-              "line": 1460,
+              "line": 1498,
               "path": "gwexpy/fields/scalar.py"
             }
           }
@@ -40763,7 +40775,7 @@
       "raw_descriptor_identity": "gwexpy.fields.scalar.ScalarField::diff::function",
       "resolution": "direct",
       "source": {
-        "line": 1460,
+        "line": 1498,
         "path": "gwexpy/fields/scalar.py"
       }
     },
@@ -41172,7 +41184,7 @@
               }
             },
             "source": {
-              "line": 2062,
+              "line": 2098,
               "path": "gwexpy/fields/scalar.py"
             }
           }
@@ -41200,7 +41212,7 @@
       "raw_descriptor_identity": "gwexpy.fields.scalar.ScalarField::filter::function",
       "resolution": "direct",
       "source": {
-        "line": 2062,
+        "line": 2098,
         "path": "gwexpy/fields/scalar.py"
       }
     },
@@ -41262,7 +41274,7 @@
               }
             },
             "source": {
-              "line": 1973,
+              "line": 2009,
               "path": "gwexpy/fields/scalar.py"
             }
           }
@@ -41290,7 +41302,7 @@
       "raw_descriptor_identity": "gwexpy.fields.scalar.ScalarField::freq_space_map::function",
       "resolution": "direct",
       "source": {
-        "line": 1973,
+        "line": 2009,
         "path": "gwexpy/fields/scalar.py"
       }
     },
@@ -41471,7 +41483,7 @@
               }
             },
             "source": {
-              "line": 237,
+              "line": 254,
               "path": "gwexpy/fields/base.py"
             }
           }
@@ -41499,7 +41511,7 @@
       "raw_descriptor_identity": "gwexpy.fields.base.FieldBase::get_slice::function",
       "resolution": "inherited-gwexpy-base",
       "source": {
-        "line": 237,
+        "line": 254,
         "path": "gwexpy/fields/base.py"
       }
     },
@@ -42368,7 +42380,7 @@
               }
             },
             "source": {
-              "line": 361,
+              "line": 378,
               "path": "gwexpy/fields/base.py"
             }
           }
@@ -42396,7 +42408,7 @@
       "raw_descriptor_identity": "gwexpy.fields.base.FieldBase::plot::function",
       "resolution": "inherited-gwexpy-base",
       "source": {
-        "line": 361,
+        "line": 378,
         "path": "gwexpy/fields/base.py"
       }
     },
@@ -42848,7 +42860,7 @@
               }
             },
             "source": {
-              "line": 1832,
+              "line": 1868,
               "path": "gwexpy/fields/scalar.py"
             }
           }
@@ -42876,7 +42888,7 @@
       "raw_descriptor_identity": "gwexpy.fields.scalar.ScalarField::plot_time_space_map::function",
       "resolution": "direct",
       "source": {
-        "line": 1832,
+        "line": 1868,
         "path": "gwexpy/fields/scalar.py"
       }
     },
@@ -43040,7 +43052,7 @@
               }
             },
             "source": {
-              "line": 2281,
+              "line": 2317,
               "path": "gwexpy/fields/scalar.py"
             }
           }
@@ -43068,7 +43080,7 @@
       "raw_descriptor_identity": "gwexpy.fields.scalar.ScalarField::psd::function",
       "resolution": "direct",
       "source": {
-        "line": 2281,
+        "line": 2317,
         "path": "gwexpy/fields/scalar.py"
       }
     },
@@ -43204,7 +43216,7 @@
               }
             },
             "source": {
-              "line": 2002,
+              "line": 2038,
               "path": "gwexpy/fields/scalar.py"
             }
           }
@@ -43232,7 +43244,7 @@
       "raw_descriptor_identity": "gwexpy.fields.scalar.ScalarField::resample::function",
       "resolution": "direct",
       "source": {
-        "line": 2002,
+        "line": 2038,
         "path": "gwexpy/fields/scalar.py"
       }
     },
@@ -43703,7 +43715,7 @@
               }
             },
             "source": {
-              "line": 229,
+              "line": 246,
               "path": "gwexpy/fields/base.py"
             }
           }
@@ -43731,7 +43743,7 @@
       "raw_descriptor_identity": "gwexpy.fields.base.FieldBase::space_domains::property",
       "resolution": "inherited-gwexpy-base",
       "source": {
-        "line": 229,
+        "line": 246,
         "path": "gwexpy/fields/base.py"
       }
     },
@@ -43783,7 +43795,7 @@
               }
             },
             "source": {
-              "line": 2241,
+              "line": 2277,
               "path": "gwexpy/fields/scalar.py"
             }
           }
@@ -43811,7 +43823,7 @@
       "raw_descriptor_identity": "gwexpy.fields.scalar.ScalarField::spectral_density::function",
       "resolution": "direct",
       "source": {
-        "line": 2241,
+        "line": 2277,
         "path": "gwexpy/fields/scalar.py"
       }
     },
@@ -44103,7 +44115,7 @@
               }
             },
             "source": {
-              "line": 2175,
+              "line": 2211,
               "path": "gwexpy/fields/scalar.py"
             }
           }
@@ -44131,7 +44143,7 @@
       "raw_descriptor_identity": "gwexpy.fields.scalar.ScalarField::time_delay_map::function",
       "resolution": "direct",
       "source": {
-        "line": 2175,
+        "line": 2211,
         "path": "gwexpy/fields/scalar.py"
       }
     },
@@ -44206,7 +44218,7 @@
               }
             },
             "source": {
-              "line": 1736,
+              "line": 1772,
               "path": "gwexpy/fields/scalar.py"
             }
           }
@@ -44234,7 +44246,7 @@
       "raw_descriptor_identity": "gwexpy.fields.scalar.ScalarField::time_space_map::function",
       "resolution": "direct",
       "source": {
-        "line": 1736,
+        "line": 1772,
         "path": "gwexpy/fields/scalar.py"
       }
     },
@@ -44309,7 +44321,7 @@
               }
             },
             "source": {
-              "line": 1642,
+              "line": 1678,
               "path": "gwexpy/fields/scalar.py"
             }
           }
@@ -44337,7 +44349,7 @@
       "raw_descriptor_identity": "gwexpy.fields.scalar.ScalarField::time_stat_map::function",
       "resolution": "direct",
       "source": {
-        "line": 1642,
+        "line": 1678,
         "path": "gwexpy/fields/scalar.py"
       }
     },
@@ -44655,7 +44667,7 @@
               }
             },
             "source": {
-              "line": 1562,
+              "line": 1598,
               "path": "gwexpy/fields/scalar.py"
             }
           }
@@ -44683,7 +44695,7 @@
       "raw_descriptor_identity": "gwexpy.fields.scalar.ScalarField::zscore::function",
       "resolution": "direct",
       "source": {
-        "line": 1562,
+        "line": 1598,
         "path": "gwexpy/fields/scalar.py"
       }
     },
@@ -57373,7 +57385,7 @@
               }
             },
             "source": {
-              "line": 1370,
+              "line": 1442,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -57397,7 +57409,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::append::function",
       "resolution": "direct",
       "source": {
-        "line": 1370,
+        "line": 1442,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -57825,7 +57837,7 @@
               }
             },
             "source": {
-              "line": 882,
+              "line": 954,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -57849,7 +57861,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::coherence::function",
       "resolution": "direct",
       "source": {
-        "line": 882,
+        "line": 954,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -57977,7 +57989,7 @@
               }
             },
             "source": {
-              "line": 757,
+              "line": 829,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -58001,7 +58013,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::coherence_matrix::function",
       "resolution": "direct",
       "source": {
-        "line": 757,
+        "line": 829,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -58053,7 +58065,7 @@
               }
             },
             "source": {
-              "line": 1505,
+              "line": 1577,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -58077,7 +58089,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::correlation::function",
       "resolution": "direct",
       "source": {
-        "line": 1505,
+        "line": 1577,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -58142,7 +58154,7 @@
               }
             },
             "source": {
-              "line": 1361,
+              "line": 1433,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -58166,7 +58178,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::crop::function",
       "resolution": "direct",
       "source": {
-        "line": 1361,
+        "line": 1433,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -58283,7 +58295,7 @@
               }
             },
             "source": {
-              "line": 825,
+              "line": 897,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -58307,7 +58319,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::csd::function",
       "resolution": "direct",
       "source": {
-        "line": 825,
+        "line": 897,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -58424,7 +58436,7 @@
               }
             },
             "source": {
-              "line": 694,
+              "line": 766,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -58448,7 +58460,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::csd_matrix::function",
       "resolution": "direct",
       "source": {
-        "line": 694,
+        "line": 766,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -58724,7 +58736,7 @@
               }
             },
             "source": {
-              "line": 1513,
+              "line": 1585,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -58748,7 +58760,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::distance_correlation::function",
       "resolution": "direct",
       "source": {
-        "line": 1513,
+        "line": 1585,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -59026,7 +59038,7 @@
               }
             },
             "source": {
-              "line": 614,
+              "line": 686,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -59050,7 +59062,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::from_control::classmethod",
       "resolution": "direct",
       "source": {
-        "line": 614,
+        "line": 686,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -59102,7 +59114,7 @@
               }
             },
             "source": {
-              "line": 590,
+              "line": 662,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -59126,7 +59138,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::from_mne::classmethod",
       "resolution": "direct",
       "source": {
-        "line": 590,
+        "line": 662,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -59189,7 +59201,7 @@
               }
             },
             "source": {
-              "line": 603,
+              "line": 675,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -59213,7 +59225,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::from_obspy::classmethod",
       "resolution": "direct",
       "source": {
-        "line": 603,
+        "line": 675,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -59287,7 +59299,7 @@
               }
             },
             "source": {
-              "line": 983,
+              "line": 1055,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -59311,7 +59323,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::from_pandas::classmethod",
       "resolution": "direct",
       "source": {
-        "line": 983,
+        "line": 1055,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -59374,7 +59386,7 @@
               }
             },
             "source": {
-              "line": 996,
+              "line": 1068,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -59398,7 +59410,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::from_polars::classmethod",
       "resolution": "direct",
       "source": {
-        "line": 996,
+        "line": 1068,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -59749,7 +59761,7 @@
               }
             },
             "source": {
-              "line": 1537,
+              "line": 1609,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -59773,7 +59785,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::ica::function",
       "resolution": "direct",
       "source": {
-        "line": 1537,
+        "line": 1609,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -60049,7 +60061,7 @@
               }
             },
             "source": {
-              "line": 1473,
+              "line": 1545,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -60073,7 +60085,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::is_contiguous::function",
       "resolution": "direct",
       "source": {
-        "line": 1473,
+        "line": 1545,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -60124,7 +60136,7 @@
               }
             },
             "source": {
-              "line": 1521,
+              "line": 1593,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -60148,7 +60160,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::ktau::function",
       "resolution": "direct",
       "source": {
-        "line": 1521,
+        "line": 1593,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -60189,7 +60201,7 @@
               }
             },
             "source": {
-              "line": 1481,
+              "line": 1553,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -60213,7 +60225,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::kurtosis::function",
       "resolution": "direct",
       "source": {
-        "line": 1481,
+        "line": 1553,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -60264,7 +60276,7 @@
               }
             },
             "source": {
-              "line": 663,
+              "line": 735,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -60288,7 +60300,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::lock_in::function",
       "resolution": "direct",
       "source": {
-        "line": 663,
+        "line": 735,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -60404,7 +60416,7 @@
               }
             },
             "source": {
-              "line": 1501,
+              "line": 1573,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -60428,7 +60440,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::max::function",
       "resolution": "direct",
       "source": {
-        "line": 1501,
+        "line": 1573,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -60469,7 +60481,7 @@
               }
             },
             "source": {
-              "line": 1485,
+              "line": 1557,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -60493,7 +60505,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::mean::function",
       "resolution": "direct",
       "source": {
-        "line": 1485,
+        "line": 1557,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -60544,7 +60556,7 @@
               }
             },
             "source": {
-              "line": 1509,
+              "line": 1581,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -60568,7 +60580,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::mic::function",
       "resolution": "direct",
       "source": {
-        "line": 1509,
+        "line": 1581,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -60609,7 +60621,7 @@
               }
             },
             "source": {
-              "line": 1497,
+              "line": 1569,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -60633,7 +60645,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::min::function",
       "resolution": "direct",
       "source": {
-        "line": 1497,
+        "line": 1569,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -60834,7 +60846,7 @@
               }
             },
             "source": {
-              "line": 1533,
+              "line": 1605,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -60858,7 +60870,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::pca::function",
       "resolution": "direct",
       "source": {
-        "line": 1533,
+        "line": 1605,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -60909,7 +60921,7 @@
               }
             },
             "source": {
-              "line": 1517,
+              "line": 1589,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -60933,7 +60945,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::pcc::function",
       "resolution": "direct",
       "source": {
-        "line": 1517,
+        "line": 1589,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -61123,7 +61135,7 @@
               }
             },
             "source": {
-              "line": 269,
+              "line": 341,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -61147,7 +61159,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::plot::function",
       "resolution": "direct",
       "source": {
-        "line": 269,
+        "line": 341,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -61200,7 +61212,7 @@
               }
             },
             "source": {
-              "line": 1182,
+              "line": 1254,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -61224,7 +61236,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::plot_all::function",
       "resolution": "direct",
       "source": {
-        "line": 1182,
+        "line": 1254,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -61276,7 +61288,7 @@
               }
             },
             "source": {
-              "line": 1383,
+              "line": 1455,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -61300,7 +61312,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::prepend::function",
       "resolution": "direct",
       "source": {
-        "line": 1383,
+        "line": 1455,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -61610,7 +61622,7 @@
               }
             },
             "source": {
-              "line": 310,
+              "line": 382,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -61634,7 +61646,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::read::classmethod",
       "resolution": "direct",
       "source": {
-        "line": 310,
+        "line": 382,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -61685,7 +61697,7 @@
               }
             },
             "source": {
-              "line": 545,
+              "line": 617,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -61709,7 +61721,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::resample::function",
       "resolution": "direct",
       "source": {
-        "line": 545,
+        "line": 617,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -61750,7 +61762,7 @@
               }
             },
             "source": {
-              "line": 1493,
+              "line": 1565,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -61774,7 +61786,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::rms::function",
       "resolution": "direct",
       "source": {
-        "line": 1493,
+        "line": 1565,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -61870,7 +61882,7 @@
               }
             },
             "source": {
-              "line": 1282,
+              "line": 1354,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -61894,7 +61906,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::rolling_max::function",
       "resolution": "direct",
       "source": {
-        "line": 1282,
+        "line": 1354,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -61990,7 +62002,7 @@
               }
             },
             "source": {
-              "line": 1188,
+              "line": 1260,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -62014,7 +62026,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::rolling_mean::function",
       "resolution": "direct",
       "source": {
-        "line": 1188,
+        "line": 1260,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -62110,7 +62122,7 @@
               }
             },
             "source": {
-              "line": 1236,
+              "line": 1308,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -62134,7 +62146,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::rolling_median::function",
       "resolution": "direct",
       "source": {
-        "line": 1236,
+        "line": 1308,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -62230,7 +62242,7 @@
               }
             },
             "source": {
-              "line": 1259,
+              "line": 1331,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -62254,7 +62266,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::rolling_min::function",
       "resolution": "direct",
       "source": {
-        "line": 1259,
+        "line": 1331,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -62361,7 +62373,7 @@
               }
             },
             "source": {
-              "line": 1211,
+              "line": 1283,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -62385,7 +62397,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::rolling_std::function",
       "resolution": "direct",
       "source": {
-        "line": 1211,
+        "line": 1283,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -62501,7 +62513,7 @@
               }
             },
             "source": {
-              "line": 1477,
+              "line": 1549,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -62525,7 +62537,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::skewness::function",
       "resolution": "direct",
       "source": {
-        "line": 1477,
+        "line": 1549,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -62726,7 +62738,7 @@
               }
             },
             "source": {
-              "line": 1527,
+              "line": 1599,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -62750,7 +62762,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::state_segments::function",
       "resolution": "direct",
       "source": {
-        "line": 1527,
+        "line": 1599,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -62791,7 +62803,7 @@
               }
             },
             "source": {
-              "line": 1489,
+              "line": 1561,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -62815,7 +62827,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::std::function",
       "resolution": "direct",
       "source": {
-        "line": 1489,
+        "line": 1561,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -62942,7 +62954,7 @@
               }
             },
             "source": {
-              "line": 1305,
+              "line": 1377,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -62966,7 +62978,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::to_matrix::function",
       "resolution": "direct",
       "source": {
-        "line": 1305,
+        "line": 1377,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -63019,7 +63031,7 @@
               }
             },
             "source": {
-              "line": 584,
+              "line": 656,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -63043,7 +63055,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::to_mne::function",
       "resolution": "direct",
       "source": {
-        "line": 584,
+        "line": 656,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -63096,7 +63108,7 @@
               }
             },
             "source": {
-              "line": 597,
+              "line": 669,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -63120,7 +63132,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::to_obspy::function",
       "resolution": "direct",
       "source": {
-        "line": 597,
+        "line": 669,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -63173,7 +63185,7 @@
               }
             },
             "source": {
-              "line": 977,
+              "line": 1049,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -63197,7 +63209,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::to_pandas::function",
       "resolution": "direct",
       "source": {
-        "line": 977,
+        "line": 1049,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -63250,7 +63262,7 @@
               }
             },
             "source": {
-              "line": 990,
+              "line": 1062,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -63274,7 +63286,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::to_polars::function",
       "resolution": "direct",
       "source": {
-        "line": 990,
+        "line": 1062,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -63318,7 +63330,7 @@
               }
             },
             "source": {
-              "line": 1003,
+              "line": 1075,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -63342,7 +63354,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::to_tmultigraph::function",
       "resolution": "direct",
       "source": {
-        "line": 1003,
+        "line": 1075,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -63468,7 +63480,7 @@
               }
             },
             "source": {
-              "line": 1469,
+              "line": 1541,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -63492,7 +63504,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::value_at::function",
       "resolution": "direct",
       "source": {
-        "line": 1469,
+        "line": 1541,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -63632,7 +63644,7 @@
               }
             },
             "source": {
-              "line": 1009,
+              "line": 1081,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -63656,7 +63668,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesDict::write::function",
       "resolution": "direct",
       "source": {
-        "line": 1009,
+        "line": 1081,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -64175,7 +64187,7 @@
               }
             },
             "source": {
-              "line": 1765,
+              "line": 1837,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -64199,7 +64211,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::coherence::function",
       "resolution": "direct",
       "source": {
-        "line": 1765,
+        "line": 1837,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -64327,7 +64339,7 @@
               }
             },
             "source": {
-              "line": 1638,
+              "line": 1710,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -64351,7 +64363,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::coherence_matrix::function",
       "resolution": "direct",
       "source": {
-        "line": 1638,
+        "line": 1710,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -64403,7 +64415,7 @@
               }
             },
             "source": {
-              "line": 2224,
+              "line": 2296,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -64427,7 +64439,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::correlation::function",
       "resolution": "direct",
       "source": {
-        "line": 2224,
+        "line": 2296,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -64492,7 +64504,7 @@
               }
             },
             "source": {
-              "line": 2037,
+              "line": 2109,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -64516,7 +64528,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::crop::function",
       "resolution": "direct",
       "source": {
-        "line": 2037,
+        "line": 2109,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -64633,7 +64645,7 @@
               }
             },
             "source": {
-              "line": 1701,
+              "line": 1773,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -64657,7 +64669,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::csd::function",
       "resolution": "direct",
       "source": {
-        "line": 1701,
+        "line": 1773,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -64774,7 +64786,7 @@
               }
             },
             "source": {
-              "line": 1580,
+              "line": 1652,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -64798,7 +64810,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::csd_matrix::function",
       "resolution": "direct",
       "source": {
-        "line": 1580,
+        "line": 1652,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -65599,7 +65611,7 @@
               }
             },
             "source": {
-              "line": 2396,
+              "line": 2468,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -65623,7 +65635,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::ica::function",
       "resolution": "direct",
       "source": {
-        "line": 2396,
+        "line": 2468,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -65708,7 +65720,7 @@
               }
             },
             "source": {
-              "line": 1832,
+              "line": 1904,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -65732,7 +65744,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::impute::function",
       "resolution": "direct",
       "source": {
-        "line": 1832,
+        "line": 1904,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -65933,7 +65945,7 @@
               }
             },
             "source": {
-              "line": 2192,
+              "line": 2264,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -65957,7 +65969,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::is_contiguous::function",
       "resolution": "direct",
       "source": {
-        "line": 2192,
+        "line": 2264,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -65998,7 +66010,7 @@
               }
             },
             "source": {
-              "line": 2200,
+              "line": 2272,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -66022,7 +66034,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::kurtosis::function",
       "resolution": "direct",
       "source": {
-        "line": 2200,
+        "line": 2272,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -66073,7 +66085,7 @@
               }
             },
             "source": {
-              "line": 2097,
+              "line": 2169,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -66097,7 +66109,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::lock_in::function",
       "resolution": "direct",
       "source": {
-        "line": 2097,
+        "line": 2169,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -66213,7 +66225,7 @@
               }
             },
             "source": {
-              "line": 2220,
+              "line": 2292,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -66237,7 +66249,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::max::function",
       "resolution": "direct",
       "source": {
-        "line": 2220,
+        "line": 2292,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -66278,7 +66290,7 @@
               }
             },
             "source": {
-              "line": 2204,
+              "line": 2276,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -66302,7 +66314,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::mean::function",
       "resolution": "direct",
       "source": {
-        "line": 2204,
+        "line": 2276,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -66353,7 +66365,7 @@
               }
             },
             "source": {
-              "line": 2228,
+              "line": 2300,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -66377,7 +66389,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::mic::function",
       "resolution": "direct",
       "source": {
-        "line": 2228,
+        "line": 2300,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -66418,7 +66430,7 @@
               }
             },
             "source": {
-              "line": 2216,
+              "line": 2288,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -66442,7 +66454,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::min::function",
       "resolution": "direct",
       "source": {
-        "line": 2216,
+        "line": 2288,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -66643,7 +66655,7 @@
               }
             },
             "source": {
-              "line": 2392,
+              "line": 2464,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -66667,7 +66679,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::pca::function",
       "resolution": "direct",
       "source": {
-        "line": 2392,
+        "line": 2464,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -66878,7 +66890,7 @@
               }
             },
             "source": {
-              "line": 2400,
+              "line": 2472,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -66902,7 +66914,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::plot_all::function",
       "resolution": "direct",
       "source": {
-        "line": 2400,
+        "line": 2472,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -67190,7 +67202,7 @@
               }
             },
             "source": {
-              "line": 2262,
+              "line": 2334,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -67214,7 +67226,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::read::classmethod",
       "resolution": "direct",
       "source": {
-        "line": 2262,
+        "line": 2334,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -67330,7 +67342,7 @@
               }
             },
             "source": {
-              "line": 2212,
+              "line": 2284,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -67354,7 +67366,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::rms::function",
       "resolution": "direct",
       "source": {
-        "line": 2212,
+        "line": 2284,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -67450,7 +67462,7 @@
               }
             },
             "source": {
-              "line": 1959,
+              "line": 2031,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -67474,7 +67486,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::rolling_max::function",
       "resolution": "direct",
       "source": {
-        "line": 1959,
+        "line": 2031,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -67570,7 +67582,7 @@
               }
             },
             "source": {
-              "line": 1865,
+              "line": 1937,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -67594,7 +67606,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::rolling_mean::function",
       "resolution": "direct",
       "source": {
-        "line": 1865,
+        "line": 1937,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -67690,7 +67702,7 @@
               }
             },
             "source": {
-              "line": 1913,
+              "line": 1985,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -67714,7 +67726,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::rolling_median::function",
       "resolution": "direct",
       "source": {
-        "line": 1913,
+        "line": 1985,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -67810,7 +67822,7 @@
               }
             },
             "source": {
-              "line": 1936,
+              "line": 2008,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -67834,7 +67846,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::rolling_min::function",
       "resolution": "direct",
       "source": {
-        "line": 1936,
+        "line": 2008,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -67941,7 +67953,7 @@
               }
             },
             "source": {
-              "line": 1888,
+              "line": 1960,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -67965,7 +67977,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::rolling_std::function",
       "resolution": "direct",
       "source": {
-        "line": 1888,
+        "line": 1960,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -68081,7 +68093,7 @@
               }
             },
             "source": {
-              "line": 2196,
+              "line": 2268,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -68105,7 +68117,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::skewness::function",
       "resolution": "direct",
       "source": {
-        "line": 2196,
+        "line": 2268,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -68296,7 +68308,7 @@
               }
             },
             "source": {
-              "line": 2208,
+              "line": 2280,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -68320,7 +68332,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::std::function",
       "resolution": "direct",
       "source": {
-        "line": 2208,
+        "line": 2280,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -68447,7 +68459,7 @@
               }
             },
             "source": {
-              "line": 1982,
+              "line": 2054,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -68471,7 +68483,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::to_matrix::function",
       "resolution": "direct",
       "source": {
-        "line": 1982,
+        "line": 2054,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -68512,7 +68524,7 @@
               }
             },
             "source": {
-              "line": 2236,
+              "line": 2308,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -68536,7 +68548,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::to_pandas::function",
       "resolution": "direct",
       "source": {
-        "line": 2236,
+        "line": 2308,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -68580,7 +68592,7 @@
               }
             },
             "source": {
-              "line": 2256,
+              "line": 2328,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -68604,7 +68616,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::to_tmultigraph::function",
       "resolution": "direct",
       "source": {
-        "line": 2256,
+        "line": 2328,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -68730,7 +68742,7 @@
               }
             },
             "source": {
-              "line": 2188,
+              "line": 2260,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -68754,7 +68766,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::value_at::function",
       "resolution": "direct",
       "source": {
-        "line": 2188,
+        "line": 2260,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -68894,7 +68906,7 @@
               }
             },
             "source": {
-              "line": 2336,
+              "line": 2408,
               "path": "gwexpy/timeseries/collections.py"
             }
           }
@@ -68918,7 +68930,7 @@
       "raw_descriptor_identity": "gwexpy.timeseries.collections.TimeSeriesList::write::function",
       "resolution": "direct",
       "source": {
-        "line": 2336,
+        "line": 2408,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -127866,7 +127878,7 @@
     ],
     "upstream_dependency_provenance": "GWpy providers retain package-relative source/line; inherited NumPy/Astropy providers retain normalized provider, member, kind, descriptor, and signature without source path or resolved version."
   },
-  "population_digest": "9c528a2b81660074545d2f75a4aa2d62e8e82b47ff777d453e0a18434829e780",
+  "population_digest": "34d01541078605055064dd7a6fb80ee05d4fcc3352a2e25f658cdf7e2abc775b",
   "public_roots": [
     {
       "counterpart_class": "gwpy.types.array.Array",
@@ -127959,7 +127971,7 @@
       ],
       "public_class": "gwexpy.timeseries.collections.TimeSeriesDict",
       "source": {
-        "line": 220,
+        "line": 292,
         "path": "gwexpy/timeseries/collections.py"
       }
     },
@@ -127971,7 +127983,7 @@
       ],
       "public_class": "gwexpy.timeseries.collections.TimeSeriesList",
       "source": {
-        "line": 1542,
+        "line": 1614,
         "path": "gwexpy/timeseries/collections.py"
       }
     },

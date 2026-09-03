@@ -54,6 +54,17 @@ CASE_KEYS = {
     "public_class",
     "state",
 }
+OPTIONAL_CASE_KEYS = {"compatibility_exception"}
+NON_INTERSECTING_WINDOW_SAFETY = "non_intersecting_window_safety"
+TIMESERIESDICT_READ = "gwexpy.timeseries.collections.TimeSeriesDict/read"
+TIMESERIESDICT_READ_PARITY_REFERENCE = (
+    "tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_read_matches_gwpy"
+)
+NON_INTERSECTING_WINDOW_SAFETY_REFERENCE = (
+    "tests/io/test_reader_start_end_contract.py"
+    "::TestNonNanosecondGrids"
+    "::test_window_before_data_with_non_ns_epoch_returns_metadata_empty"
+)
 TEST_REFERENCE = {
     "reference": (
         "tests/test_gwpy_override_inventory.py"
@@ -162,6 +173,7 @@ def _make_present_case_pending(
             for item in manifest["cases"]
             if item["counterpart_present"] and item["state"] == "fixed"
         )
+    case.pop("compatibility_exception", None)
     case["state"] = "differential-required"
     case["fixture"] = "__pending_differential__"
     case["case_key"] = "/".join(
@@ -256,6 +268,31 @@ def _stored_population(manifest: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _timeseriesdict_read_cases(manifest: dict[str, Any]) -> list[dict[str, Any]]:
+    return [
+        case for case in manifest["cases"] if case["member_id"] == TIMESERIESDICT_READ
+    ]
+
+
+def _add_non_intersecting_window_safety_marker(
+    manifest: dict[str, Any],
+    *,
+    include_safety_evidence: bool = True,
+) -> dict[str, Any]:
+    case = _timeseriesdict_read_cases(manifest)[0]
+    case["compatibility_exception"] = NON_INTERSECTING_WINDOW_SAFETY
+    case["evidence"]["behavior"] = [
+        entry
+        for entry in case["evidence"]["behavior"]
+        if entry.get("reference") != NON_INTERSECTING_WINDOW_SAFETY_REFERENCE
+    ]
+    if include_safety_evidence:
+        case["evidence"]["behavior"].append(
+            {"reference": NON_INTERSECTING_WINDOW_SAFETY_REFERENCE}
+        )
+    return case
+
+
 def test_terminal_closure_catalog_covers_every_present_logical_member() -> None:
     audit = _load_audit_module()
     manifest = _load_manifest()
@@ -288,6 +325,172 @@ def test_manifest_builder_expands_terminal_closure_across_both_oracles() -> None
     assert manifest["summary"]["unreviewed"] == 0
     audit.require_terminal_cases(manifest["cases"])
     audit.validate_manifest(manifest)
+
+
+def test_timeseriesdict_read_closure_records_narrow_safety_exception() -> None:
+    audit = _load_audit_module()
+    closure = audit.TERMINAL_CLOSURES[TIMESERIESDICT_READ]
+    fields = audit._terminal_case_fields(closure, "d" * 64)
+
+    assert audit.OPTIONAL_CASE_KEYS == frozenset(OPTIONAL_CASE_KEYS)
+    assert closure["state"] == "fixed"
+    assert closure["compatibility_exception"] == NON_INTERSECTING_WINDOW_SAFETY
+    assert closure["behavior"] == (
+        TIMESERIESDICT_READ_PARITY_REFERENCE,
+        NON_INTERSECTING_WINDOW_SAFETY_REFERENCE,
+    )
+    assert fields["compatibility_exception"] == NON_INTERSECTING_WINDOW_SAFETY
+    assert "#611" in fields["issues"]
+    assert (
+        "GWpy 4.0.x returns nonempty outside-window samples"
+        in fields["observations"]["gwpy"]["detail"]
+    )
+    assert (
+        "GWexpy returns a zero-length key-preserving result"
+        in fields["observations"]["gwexpy"]["detail"]
+    )
+    assert fields["evidence"]["pre_fix_mismatch"]["gwexpy"]["detail"] == (
+        "The read override changed GWpy native routing, data, metadata, or "
+        "failure outcomes for ordinary inputs."
+    )
+
+
+def test_only_timeseriesdict_read_oracle_rows_carry_safety_exception() -> None:
+    manifest = _load_manifest()
+    marked = [case for case in manifest["cases"] if "compatibility_exception" in case]
+
+    assert [
+        (case["member_id"], case["gwpy_version"], case["compatibility_exception"])
+        for case in marked
+    ] == [
+        (TIMESERIESDICT_READ, "4.0.1", NON_INTERSECTING_WINDOW_SAFETY),
+        (TIMESERIESDICT_READ, "4.0.2", NON_INTERSECTING_WINDOW_SAFETY),
+    ]
+    assert all(case["state"] == "fixed" for case in marked)
+    assert all(case["counterpart_present"] is True for case in marked)
+    assert all("#611" in case["issues"] for case in marked)
+    assert all(
+        case["evidence"]["behavior"]
+        == [
+            {"reference": TIMESERIESDICT_READ_PARITY_REFERENCE},
+            {"reference": NON_INTERSECTING_WINDOW_SAFETY_REFERENCE},
+        ]
+        for case in marked
+    )
+
+
+def test_v1_cases_without_optional_safety_marker_remain_structurally_valid() -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    legacy_case = next(
+        case
+        for case in manifest["cases"]
+        if case["member_id"] == "gwexpy.timeseries.collections.TimeSeriesDict/write"
+        and case["gwpy_version"] == "4.0.1"
+    )
+
+    assert set(legacy_case) == CASE_KEYS
+    assert {
+        entry["reference"] for entry in legacy_case["evidence"]["behavior"]
+    }.isdisjoint({NON_INTERSECTING_WINDOW_SAFETY_REFERENCE})
+    audit.validate_manifest(manifest)
+
+
+@pytest.mark.parametrize(
+    ("mutation", "expected"),
+    [
+        pytest.param(
+            "null",
+            "compatibility_exception must be a nonempty string",
+            id="explicit-null",
+        ),
+        pytest.param(
+            "unknown-token",
+            "unknown compatibility_exception",
+            id="unknown-token",
+        ),
+        pytest.param(
+            "unknown-key",
+            "case schema mismatch",
+            id="unknown-optional-key",
+        ),
+        pytest.param(
+            "wrong-member",
+            "compatibility_exception is only valid for TimeSeriesDict/read",
+            id="wrong-member",
+        ),
+        pytest.param(
+            "wrong-state",
+            "compatibility_exception requires fixed state",
+            id="wrong-state",
+        ),
+        pytest.param(
+            "absent-611",
+            "compatibility_exception requires issue #611",
+            id="absent-611",
+        ),
+        pytest.param(
+            "missing-safety-evidence",
+            "compatibility_exception lacks dedicated #611 safety evidence",
+            id="missing-safety-evidence",
+        ),
+        pytest.param(
+            "safety-evidence-without-marker",
+            "dedicated #611 safety evidence requires compatibility_exception",
+            id="safety-evidence-without-marker",
+        ),
+        pytest.param(
+            "safety-observations-without-marker",
+            "dedicated #611 safety observations require compatibility_exception",
+            id="safety-observations-without-marker",
+        ),
+    ],
+)
+def test_optional_safety_exception_rejects_invalid_placement(
+    mutation: str, expected: str
+) -> None:
+    audit = _load_audit_module()
+    manifest = copy.deepcopy(_load_manifest())
+    if mutation == "wrong-member":
+        case = next(
+            case
+            for case in manifest["cases"]
+            if case["member_id"] == "gwexpy.timeseries.collections.TimeSeriesDict/write"
+        )
+        case["compatibility_exception"] = NON_INTERSECTING_WINDOW_SAFETY
+        case["evidence"]["behavior"].append(
+            {"reference": NON_INTERSECTING_WINDOW_SAFETY_REFERENCE}
+        )
+    else:
+        case = _add_non_intersecting_window_safety_marker(
+            manifest,
+            include_safety_evidence=mutation != "missing-safety-evidence",
+        )
+    if mutation == "null":
+        case["compatibility_exception"] = None
+    elif mutation == "unknown-token":
+        case["compatibility_exception"] = "unsafe-parity-exception"
+    elif mutation == "unknown-key":
+        case["future_compatibility_exception"] = NON_INTERSECTING_WINDOW_SAFETY
+    elif mutation == "wrong-state":
+        case["state"] = "no-finding"
+        del case["evidence"]["green_test"]
+        del case["evidence"]["pre_fix_mismatch"]
+        _refresh_summary(audit, manifest)
+    elif mutation == "absent-611":
+        case["issues"].remove("#611")
+    elif mutation == "safety-evidence-without-marker":
+        del case["compatibility_exception"]
+    elif mutation == "safety-observations-without-marker":
+        del case["compatibility_exception"]
+        case["evidence"]["behavior"] = [
+            entry
+            for entry in case["evidence"]["behavior"]
+            if entry["reference"] != NON_INTERSECTING_WINDOW_SAFETY_REFERENCE
+        ]
+
+    with pytest.raises(audit.InventoryError, match=expected):
+        audit.validate_manifest(manifest)
 
 
 @pytest.mark.parametrize(
@@ -1007,7 +1210,7 @@ def test_manifest_evidence_selector_set_is_frozen_and_recursion_safe() -> None:
 
     selectors = audit.manifest_evidence_selectors(_load_manifest())
 
-    assert len(selectors) == 58
+    assert len(selectors) == 59
     assert list(selectors) == sorted(selectors, key=lambda item: item.encode("utf-8"))
     assert {
         selector
@@ -1116,16 +1319,16 @@ def test_evidence_junit_requires_exact_reviewed_count_and_no_skips(
 ) -> None:
     audit = _load_audit_module()
     accepted = tmp_path / "accepted.xml"
-    _write_evidence_junit(accepted, cases=383)
+    _write_evidence_junit(accepted, cases=384)
     audit.validate_evidence_junit(accepted)
 
     wrong_count = tmp_path / "wrong-count.xml"
-    _write_evidence_junit(wrong_count, cases=382)
-    with pytest.raises(audit.InventoryError, match="expected 383 cases, got 382"):
+    _write_evidence_junit(wrong_count, cases=383)
+    with pytest.raises(audit.InventoryError, match="expected 384 cases, got 383"):
         audit.validate_evidence_junit(wrong_count)
 
     skipped = tmp_path / "skipped.xml"
-    _write_evidence_junit(skipped, cases=383, skipped=1)
+    _write_evidence_junit(skipped, cases=384, skipped=1)
     with pytest.raises(audit.InventoryError, match="skipped=1"):
         audit.validate_evidence_junit(skipped)
 
@@ -1173,8 +1376,8 @@ def test_terminal_cli_can_execute_every_catalog_evidence_selector() -> None:
     )
 
     assert result.returncode == 0, result.stderr
-    assert "383 passed" in result.stdout
-    assert "evidence execution passed: selectors=58, cases=383" in result.stdout
+    assert "384 passed" in result.stdout
+    assert "evidence execution passed: selectors=59, cases=384" in result.stdout
 
 
 @pytest.mark.parametrize(

@@ -58,6 +58,34 @@ CASE_KEYS = frozenset(
         "state",
     }
 )
+OPTIONAL_CASE_KEYS = frozenset({"compatibility_exception"})
+NON_INTERSECTING_WINDOW_SAFETY = "non_intersecting_window_safety"
+ALLOWED_COMPATIBILITY_EXCEPTIONS = frozenset({NON_INTERSECTING_WINDOW_SAFETY})
+TIMESERIESDICT_READ_MEMBER_ID = "gwexpy.timeseries.collections.TimeSeriesDict/read"
+TIMESERIESDICT_READ_PARITY_REFERENCE = (
+    "tests/io/test_gwpy_override_terminal_io.py::test_timeseriesdict_read_matches_gwpy"
+)
+NON_INTERSECTING_WINDOW_SAFETY_REFERENCE = (
+    "tests/io/test_reader_start_end_contract.py"
+    "::TestNonNanosecondGrids"
+    "::test_window_before_data_with_non_ns_epoch_returns_metadata_empty"
+)
+NON_INTERSECTING_WINDOW_SAFETY_OBSERVATIONS = {
+    "gwexpy": {
+        "detail": (
+            "GWexpy returns a zero-length key-preserving result for the dedicated "
+            "non-intersecting native HDF5 window."
+        ),
+        "outcome": "return",
+    },
+    "gwpy": {
+        "detail": (
+            "GWpy 4.0.x returns nonempty outside-window samples for the dedicated "
+            "non-intersecting native HDF5 window."
+        ),
+        "outcome": "return",
+    },
+}
 AUDIT_OWNER = "v0.2.3-compatibility-audit"
 IMPLEMENTATION_BASE = "a8085b71446d3ef3417a7e5b5ac8efb156368eac"
 PUBLIC_ROOT_RULE = (
@@ -82,7 +110,7 @@ UPSTREAM_DEPENDENCY_PROVENANCE = (
 EVIDENCE_TIMEOUT_SECONDS = 300
 ORACLE_TIMEOUT_SECONDS = 120
 SUBPROCESS_OUTPUT_LIMIT = 2_000_000
-EXPECTED_EVIDENCE_CASES = 383
+EXPECTED_EVIDENCE_CASES = 384
 EVIDENCE_CHILD_ENV = "GWEXPY_OVERRIDE_EVIDENCE_CHILD"
 SELF_EVIDENCE_PATH = "tests/test_gwpy_override_inventory.py"
 SAFE_SELF_EVIDENCE_SELECTORS = frozenset(
@@ -107,6 +135,8 @@ def _terminal_closure(
     comparator: str = "exact-result-and-metadata",
     observations: Mapping[str, Mapping[str, Any]] | None = None,
     pre_fix_observations: Mapping[str, Mapping[str, Any]] | None = None,
+    additional_behavior: Sequence[str] = (),
+    compatibility_exception: str | None = None,
 ) -> dict[str, Any]:
     """Create one immutable-by-convention terminal-evidence specification."""
 
@@ -122,8 +152,8 @@ def _terminal_closure(
             "gwexpy": {"detail": pre_fix, "outcome": "mismatch"},
             "gwpy": {"outcome": "return"},
         }
-    return {
-        "behavior": (reference,),
+    closure: dict[str, Any] = {
+        "behavior": (reference, *additional_behavior),
         "comparator": comparator,
         "fixture": fixture,
         "issues": tuple(issues),
@@ -132,6 +162,9 @@ def _terminal_closure(
         "pre_fix_observations": copy.deepcopy(pre_fix_observations),
         "state": state,
     }
+    if compatibility_exception is not None:
+        closure["compatibility_exception"] = compatibility_exception
+    return closure
 
 
 def _build_terminal_closures() -> dict[str, dict[str, Any]]:
@@ -486,7 +519,7 @@ def _build_terminal_closures() -> dict[str, dict[str, Any]]:
         ),
     )
 
-    io_rows = {
+    io_rows: dict[str, dict[str, tuple[str, str]]] = {
         "gwexpy.timeseries.timeseries.TimeSeries": {
             "read": ("test_timeseries_read_matches_gwpy", "#700"),
             "write": ("test_timeseries_write_matches_gwpy", "#700"),
@@ -500,8 +533,19 @@ def _build_terminal_closures() -> dict[str, dict[str, Any]]:
             "write": ("test_frequencyseries_write_matches_gwpy", "#701"),
         },
     }
-    for public_class, members in io_rows.items():
-        for member, (node, issue) in members.items():
+    for public_class, io_members in io_rows.items():
+        for member, (node, issue) in io_members.items():
+            member_id = f"{public_class}/{member}"
+            is_non_intersecting_safety_exception = (
+                member_id == TIMESERIESDICT_READ_MEMBER_ID
+            )
+            io_pre_fix = (
+                f"The {member} override changed GWpy native routing, data, "
+                "metadata, or failure outcomes for ordinary inputs."
+            )
+            io_observations: Mapping[str, Mapping[str, Any]] | None = None
+            if is_non_intersecting_safety_exception:
+                io_observations = NON_INTERSECTING_WINDOW_SAFETY_OBSERVATIONS
             register(
                 public_class,
                 member,
@@ -510,11 +554,19 @@ def _build_terminal_closures() -> dict[str, dict[str, Any]]:
                     f"native-{member}-route",
                     f"tests/io/test_gwpy_override_terminal_io.py::{node}",
                     issues=("#639", issue, "#704"),
-                    pre_fix=(
-                        f"The {member} override changed GWpy native routing, data, "
-                        "metadata, or failure outcomes for ordinary inputs."
-                    ),
+                    pre_fix=io_pre_fix,
                     comparator="exact-io-outcome-payload-and-metadata",
+                    observations=io_observations,
+                    additional_behavior=(
+                        (NON_INTERSECTING_WINDOW_SAFETY_REFERENCE,)
+                        if is_non_intersecting_safety_exception
+                        else ()
+                    ),
+                    compatibility_exception=(
+                        NON_INTERSECTING_WINDOW_SAFETY
+                        if is_non_intersecting_safety_exception
+                        else None
+                    ),
                 ),
             )
 
@@ -1977,7 +2029,7 @@ def _terminal_case_fields(
                 },
             }
         )
-    return {
+    fields = {
         "comparator": {"name": str(closure["comparator"])},
         "evidence": evidence,
         "fixture": str(closure["fixture"]),
@@ -1986,6 +2038,9 @@ def _terminal_case_fields(
         "owner": AUDIT_OWNER,
         "state": state,
     }
+    if "compatibility_exception" in closure:
+        fields["compatibility_exception"] = str(closure["compatibility_exception"])
+    return fields
 
 
 def build_manifest(
@@ -2003,6 +2058,7 @@ def build_manifest(
         for oracle_version in SUPPORTED_GWPY:
             projection = projections[oracle_version]
             counterpart = projection_maps[oracle_version][member["member_id"]]
+            fields: dict[str, Any]
             if counterpart["present"]:
                 closure = TERMINAL_CLOSURES.get(str(member["member_id"]))
                 if closure is None:
@@ -2042,7 +2098,7 @@ def build_manifest(
                     "owner": None,
                     "state": "GWexpy-only",
                 }
-            case = {
+            case: dict[str, Any] = {
                 "case_key": "/".join(
                     (
                         str(member["public_class"]),
@@ -2065,6 +2121,8 @@ def build_manifest(
                 "public_class": member["public_class"],
                 "state": fields["state"],
             }
+            if "compatibility_exception" in fields:
+                case["compatibility_exception"] = fields["compatibility_exception"]
             cases.append(case)
     cases.sort(key=_case_sort_key)
     manifest = {
@@ -2315,6 +2373,54 @@ def _validate_fixed_evidence(evidence: Mapping[str, Any]) -> None:
     )
 
 
+def _validate_compatibility_exception(
+    case: Mapping[str, Any], observed: Mapping[str, Any]
+) -> None:
+    value = case["compatibility_exception"]
+    _require(
+        _is_nonempty_string(value),
+        "compatibility_exception must be a nonempty string",
+    )
+    _require(
+        value in ALLOWED_COMPATIBILITY_EXCEPTIONS,
+        "unknown compatibility_exception",
+    )
+    _require(
+        case.get("member_id") == TIMESERIESDICT_READ_MEMBER_ID
+        and case.get("fixture") == "native-read-route",
+        "compatibility_exception is only valid for TimeSeriesDict/read "
+        "native-read-route",
+    )
+    _require(
+        case.get("state") == "fixed",
+        "compatibility_exception requires fixed state",
+    )
+    _require(
+        case.get("counterpart_present") is True and observed.get("present") is True,
+        "compatibility_exception requires a present counterpart",
+    )
+    issues = case.get("issues")
+    _require(
+        isinstance(issues, list) and "#611" in issues,
+        "compatibility_exception requires issue #611",
+    )
+    evidence = case.get("evidence")
+    behavior = evidence.get("behavior") if isinstance(evidence, dict) else None
+    _require(
+        isinstance(behavior, list)
+        and behavior[:2]
+        == [
+            {"reference": TIMESERIESDICT_READ_PARITY_REFERENCE},
+            {"reference": NON_INTERSECTING_WINDOW_SAFETY_REFERENCE},
+        ],
+        "compatibility_exception lacks dedicated #611 safety evidence",
+    )
+    _require(
+        case.get("observations") == NON_INTERSECTING_WINDOW_SAFETY_OBSERVATIONS,
+        "compatibility_exception lacks dedicated #611 safety observations",
+    )
+
+
 def _validate_case(
     case: Mapping[str, Any],
     members: Mapping[str, Mapping[str, Any]],
@@ -2322,8 +2428,11 @@ def _validate_case(
     projection_members: Mapping[str, Mapping[str, Mapping[str, Any]]],
     implementation_groups: Mapping[tuple[str, str], str | None],
 ) -> None:
+    case_keys = set(case) if isinstance(case, dict) else set()
     _require(
-        isinstance(case, dict) and set(case) == CASE_KEYS,
+        isinstance(case, dict)
+        and CASE_KEYS <= case_keys
+        and case_keys <= CASE_KEYS | OPTIONAL_CASE_KEYS,
         "case schema mismatch",
     )
     member_id = str(case.get("member_id"))
@@ -2366,6 +2475,26 @@ def _validate_case(
     state = case.get("state")
     _require(isinstance(state, str), "case state must be a string")
     _require(state in {*TERMINAL_STATES, *PROVISIONAL_STATES}, "unknown case state")
+    has_compatibility_exception = "compatibility_exception" in case
+    if (
+        any(
+            item == NON_INTERSECTING_WINDOW_SAFETY_REFERENCE
+            for item in walk_manifest_values(evidence)
+        )
+        and not has_compatibility_exception
+    ):
+        raise InventoryError(
+            "dedicated #611 safety evidence requires compatibility_exception"
+        )
+    if (
+        case.get("observations") == NON_INTERSECTING_WINDOW_SAFETY_OBSERVATIONS
+        and not has_compatibility_exception
+    ):
+        raise InventoryError(
+            "dedicated #611 safety observations require compatibility_exception"
+        )
+    if has_compatibility_exception:
+        _validate_compatibility_exception(case, observed)
     if state == "GWexpy-only":
         _require(observed["present"] is False, "GWexpy-only counterpart is present")
         _require(fixture == ABSENT_FIXTURE, "GWexpy-only fixture mismatch")
@@ -2595,8 +2724,11 @@ def validate_manifest(manifest: Mapping[str, Any]) -> None:
             )
     implementation_groups = _implementation_groups(members_list, projections)
     for case in cases:
+        case_keys = set(case) if isinstance(case, dict) else set()
         _require(
-            isinstance(case, dict) and set(case) == CASE_KEYS,
+            isinstance(case, dict)
+            and CASE_KEYS <= case_keys
+            and case_keys <= CASE_KEYS | OPTIONAL_CASE_KEYS,
             "case schema mismatch",
         )
     _require(cases == sorted(cases, key=_case_sort_key), "cases are unsorted")
