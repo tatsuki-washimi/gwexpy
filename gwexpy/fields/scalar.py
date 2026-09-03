@@ -1476,6 +1476,8 @@ class ScalarField(FieldBase):
         if metadata_source is None:
             metadata_source = self
         metadata = self._metadata_kwargs(metadata_source)
+        if hasattr(self, "_epoch"):
+            metadata["epoch"] = self._epoch
         result = ScalarField(
             value,
             unit=unit,
@@ -1545,15 +1547,16 @@ class ScalarField(FieldBase):
                 )
             parent_input = self.view(GwpyArray)
             parent_result = GwpyArray.diff(parent_input, n, axis)
-            axis_number = int(axis) % self.ndim
-            difference_order = int(n)
             result_axes = [
                 self._axis0_index,
                 self._axis1_index,
                 self._axis2_index,
                 self._axis3_index,
             ]
-            result_axes[axis_number] = result_axes[axis_number][difference_order:]
+            if parent_result.shape != self.shape:
+                axis_number = int(axis) % self.ndim
+                difference_order = int(n)
+                result_axes[axis_number] = result_axes[axis_number][difference_order:]
             result_value, result_unit = self._value_unit(parent_result)
             return self._new_with_left_metadata(
                 result_value,

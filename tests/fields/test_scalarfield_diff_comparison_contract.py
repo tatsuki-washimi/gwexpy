@@ -9,6 +9,7 @@ import numpy as np
 import pytest
 from astropy import units as u
 from astropy.utils.masked import Masked
+from gwpy.time import LIGOTimeGPS
 from gwpy.types import Array as GWpyArray
 
 from gwexpy.fields import ScalarField
@@ -41,6 +42,7 @@ def _field(
     axis0_domain: str = "time",
     space_domain: str | dict[str, str] = "real",
     name: str = "left field",
+    epoch: object = 1_234_567_890.25,
 ) -> ScalarField:
     data = (
         np.full(_SHAPE, values)
@@ -51,7 +53,7 @@ def _field(
         data,
         unit=unit,
         name=name,
-        epoch=1_234_567_890.25,
+        epoch=epoch,
         channel="H1:SCALARFIELD-DIFF",
         axis0=axes[0],
         axis1=axes[1],
@@ -72,6 +74,7 @@ def _snapshot(field: ScalarField) -> dict[str, Any]:
         "name": field.name,
         "channel": str(field.channel),
         "epoch": field.epoch,
+        "exact_epoch": field._epoch,
         "axis_names": field.axis_names,
         "axis0_domain": field.axis0_domain,
         "space_domains": field.space_domains,
@@ -86,6 +89,7 @@ def _assert_snapshot(field: ScalarField, expected: dict[str, Any]) -> None:
     assert field.name == expected["name"]
     assert str(field.channel) == expected["channel"]
     assert field.epoch == expected["epoch"]
+    assert field._epoch == expected["exact_epoch"]
     assert field.axis_names == expected["axis_names"]
     assert field.axis0_domain == expected["axis0_domain"]
     assert field.space_domains == expected["space_domains"]
@@ -99,6 +103,7 @@ def _assert_left_metadata(result: ScalarField, left: ScalarField) -> None:
     assert result.name == left.name
     assert result.channel == left.channel
     assert result.epoch == left.epoch
+    assert result._epoch == left._epoch
     assert result.axis_names == left.axis_names
     assert result.axis0_domain == left.axis0_domain
     assert result.space_domains == left.space_domains
@@ -404,7 +409,7 @@ def test_frequency_domain_numeric_diff_preserves_domain_and_matches_gwpy(
 
 @pytest.mark.parametrize("mode", ["diff", "ratio", "percent"])
 def test_rhs_subclass_cannot_override_left_metadata(mode: str) -> None:
-    left = _field(2.0, name="authoritative left")
+    left = _field(2.0, name="authoritative left", epoch=111)
     right = _RightHandScalarField(
         np.full(_SHAPE, 1_000.0),
         unit=u.mV,
@@ -429,7 +434,11 @@ def test_rhs_subclass_cannot_override_left_metadata(mode: str) -> None:
 
 @pytest.mark.parametrize("mode", ["diff", "ratio", "percent"])
 def test_rhs_only_astropy_mask_preserves_mask_with_left_metadata(mode: str) -> None:
-    left = _field(2.0, name="authoritative left")
+    left = _field(
+        2.0,
+        name="authoritative left",
+        epoch=LIGOTimeGPS(111, 1),
+    )
     right_mask = (np.arange(np.prod(_SHAPE)) % 5 == 0).reshape(_SHAPE)
     right = ScalarField(
         Masked(np.full(_SHAPE, 1_000.0), mask=right_mask),
@@ -533,3 +542,76 @@ def test_numeric_diff_route_still_matches_installed_gwpy(n: int, axis: int) -> N
     assert actual.dtype == expected.dtype
     assert actual.unit == expected.unit
     np.testing.assert_array_equal(actual.value, expected.value)
+
+
+@pytest.mark.parametrize(
+    "axis",
+    [
+        pytest.param("x", id="string"),
+        pytest.param(None, id="none"),
+        pytest.param(object(), id="arbitrary-object"),
+    ],
+)
+def test_zero_order_numeric_diff_does_not_validate_axis(axis: object) -> None:
+    values = np.arange(np.prod(_SHAPE), dtype=np.float64).reshape(_SHAPE)
+    actual_input = _field(values)
+    expected_input = GWpyArray(values, unit=u.V, name=actual_input.name)
+
+    actual = actual_input.diff(0, axis)
+    expected = expected_input.diff(0, axis)
+
+    assert isinstance(actual, ScalarField)
+    assert actual.shape == expected.shape
+    assert actual.dtype == expected.dtype
+    assert actual.unit == expected.unit
+    np.testing.assert_array_equal(actual.value, expected.value)
+    assert np.shares_memory(actual_input.value, actual.value) is np.shares_memory(
+        expected_input.value, expected.value
+    )
+    _assert_left_metadata(actual, actual_input)
+
+
+@pytest.mark.parametrize("mode", ["diff", "ratio", "percent"])
+@pytest.mark.parametrize(
+    "epoch",
+    [
+        pytest.param(111, id="small-integral"),
+        pytest.param(111.25, id="fractional"),
+        pytest.param(LIGOTimeGPS(111, 1), id="exact-nanosecond"),
+    ],
+)
+def test_comparison_preserves_exact_left_epoch(epoch: object, mode: str) -> None:
+    left = _field(2.0, name="authoritative left", epoch=epoch)
+    right = _field(1.0, name="non-authoritative right", epoch=987_654_321.5)
+    left_exact_epoch = left._epoch
+    right_exact_epoch = right._epoch
+
+    result = left.diff(right, mode=mode)
+
+    assert result._epoch == left_exact_epoch
+    assert result.epoch == left.epoch
+    assert left._epoch == left_exact_epoch
+    assert right._epoch == right_exact_epoch
+
+
+@pytest.mark.parametrize(
+    "epoch",
+    [
+        pytest.param(111, id="small-integral"),
+        pytest.param(111.25, id="fractional"),
+        pytest.param(LIGOTimeGPS(111, 1), id="exact-nanosecond"),
+    ],
+)
+def test_numeric_diff_preserves_exact_left_epoch(epoch: object) -> None:
+    values = np.arange(np.prod(_SHAPE), dtype=np.float64).reshape(_SHAPE)
+    source = _field(values, epoch=epoch)
+    expected_source = GWpyArray(values, unit=source.unit, epoch=epoch)
+    source_exact_epoch = source._epoch
+
+    result = source.diff(1, 0)
+    expected = expected_source.diff(1, 0)
+
+    assert result._epoch == source_exact_epoch
+    assert result._epoch == expected._epoch
+    assert result.epoch == source.epoch
+    assert source._epoch == source_exact_epoch

@@ -86,6 +86,9 @@ terminal_test_references:
     - tests/fields/test_scalarfield_diff_comparison_contract.py::test_coordinate_tolerance_rejects_same_physical_shift_in_either_order
     - tests/fields/test_scalarfield_diff_comparison_contract.py::test_coordinate_tolerance_accepts_subthreshold_shift_in_either_order
     - tests/fields/test_scalarfield_diff_comparison_contract.py::test_comparison_rejects_unit_incompatible_coordinate_axis
+    - tests/fields/test_scalarfield_diff_comparison_contract.py::test_zero_order_numeric_diff_does_not_validate_axis
+    - tests/fields/test_scalarfield_diff_comparison_contract.py::test_comparison_preserves_exact_left_epoch
+    - tests/fields/test_scalarfield_diff_comparison_contract.py::test_numeric_diff_preserves_exact_left_epoch
   swapaxes:
     - tests/types/test_gwpy_override_terminal_compat.py::test_array2d_numeric_swapaxes_matches_gwpy
     - tests/types/test_gwpy_override_terminal_compat.py::test_array2d_named_axis_permutations_remain_explicit_extensions
@@ -158,6 +161,9 @@ contracts:
     default_route: >-
       GWpy Array.diff calculation and failure behavior with n and axis, followed
       by deterministic LHS physical-domain and coordinate reconstruction
+    zero_order_route: >-
+      after GWpy succeeds without axis validation, an unchanged result shape
+      preserves all axes without post-parent axis coercion
     reduced_axis_coordinates: source trailing endpoints beginning at index n
     metadata_preserved:
       - axis units and names
@@ -191,6 +197,7 @@ contracts:
         - axis values, units, and names
         - time and space domains
         - native GWpy metadata and _gwex_ attributes
+        - exact private LHS epoch without a public Time-to-GPS round trip
         - LHS authority when only the RHS is a subclass or Astropy Masked
       inputs_mutated: false
     zero_denominator:
@@ -291,6 +298,22 @@ tdd:
         - numeric frequency-domain diff reset domains or failed on spatial axes
         - RHS-only subclasses and masks could become NumPy metadata authority
         - display-unit-scaled axis tolerance was operand-order asymmetric
+    scalarfield_comparison_second_review_zero_order:
+      parent: 97f32daf4a361b5ae2f26361854a2be9c8ceebee
+      environment: gwexpy
+      gwpy: 4.0.2
+      result: 3 failed
+      intended_failure: >-
+        successful GWpy n=0 calls with string, None, or arbitrary-object axes
+        were rejected by post-parent int(axis) coercion
+    scalarfield_comparison_second_review_exact_epoch:
+      parent: 97f32daf4a361b5ae2f26361854a2be9c8ceebee
+      environment: gwexpy
+      gwpy: 4.0.2
+      result: 14 failed, 4 passed, 72 deselected
+      intended_failure: >-
+        public Time epoch reconstruction shifted small integral GPS seconds and
+        discarded exact nanoseconds on comparison and numeric routes
   green:
     differential_and_contract_set:
       gwpy_4_0_1: 152 passed
@@ -315,17 +338,17 @@ tdd:
       gwpy_4_0_1: 59 passed
       gwpy_4_0_2: 59 passed
     scalarfield_comparison_contract:
-      gwpy_4_0_1: 75 passed
-      gwpy_4_0_2: 75 passed
+      gwpy_4_0_1: 90 passed
+      gwpy_4_0_2: 90 passed
     scalarfield_diff_differential_and_contract:
-      gwpy_4_0_1: 85 passed, 88 deselected
-      gwpy_4_0_2: 85 passed, 88 deselected
+      gwpy_4_0_1: 100 passed, 88 deselected
+      gwpy_4_0_2: 100 passed, 88 deselected
     type_collision_with_scalarfield_comparison:
-      gwpy_4_0_1: 227 passed
-      gwpy_4_0_2: 227 passed
+      gwpy_4_0_1: 242 passed
+      gwpy_4_0_2: 242 passed
     field_and_type_regressions:
-      gwpy_4_0_1: 2834 passed, 15 approved skips, 1 expected failure
-      gwpy_4_0_2: 2834 passed, 15 approved skips, 1 expected failure
+      gwpy_4_0_1: 2849 passed, 15 approved skips, 1 expected failure
+      gwpy_4_0_2: 2849 passed, 15 approved skips, 1 expected failure
 
 physics_and_data_model:
   finite_difference_values_and_units: delegated unchanged to GWpy
@@ -342,6 +365,9 @@ physics_and_data_model:
     RHS-only subclasses and masks cannot replace LHS metadata; Astropy operand
     masks are unioned while name, channel, epoch, domains, axes, and _gwex_
     attributes are deterministically restored from the LHS.
+  scalarfield_epoch_authority: >-
+    Reconstructed comparison and numeric-diff results receive the LHS private
+    epoch directly, preserving small integral GPS values and nanosecond precision.
   field_comparison_nonfinite_and_mask_semantics: >-
     No epsilon is introduced; NumPy IEEE nonfinite classification and Astropy
     Masked operand masks are retained.
@@ -370,6 +396,10 @@ static_validation:
     ruff: all checks passed for 3 bounded Python files
     format: all 3 bounded Python files formatted
     mypy: success, no issues found in 2 bounded source files
+  scalarfield_second_review_followup:
+    ruff: all checks passed for 2 bounded Python files
+    format: both bounded Python files formatted
+    mypy: success, no issues found in 1 bounded source file
 
 commands:
   red: >-

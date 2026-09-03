@@ -6,6 +6,8 @@ implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 implementation_parent: f21087061794d232df8bc50350d83dba25a31b39
 initial_implementation: c53df8da1a7ae601d64bb6d5b990f69b0068928f
 independent_review_followup_parent: c53df8da1a7ae601d64bb6d5b990f69b0068928f
+first_review_followup: 97f32daf4a361b5ae2f26361854a2be9c8ceebee
+second_review_followup_parent: 97f32daf4a361b5ae2f26361854a2be9c8ceebee
 
 issues:
   - "#639"
@@ -37,6 +39,8 @@ scope:
     - deterministic LHS metadata authority against RHS-only subclasses and masks
     - IEEE nonfinite and Astropy Masked behavior at zero denominators
     - GWpy numeric Array.diff calculation with LHS physical-domain reconstruction
+    - GWpy zero-order numeric diff short-circuit without post-parent axis coercion
+    - lossless LHS private epoch authority for reconstructed results
     - coordinate tolerance in an order-invariant canonical physical unit
   excluded:
     - issue "#611" reader-window selection
@@ -52,6 +56,7 @@ contract:
       deterministic reconstruction of LHS physical domains and axes
     scalarfield_first_argument: explicit GWexpy field-comparison extension
     exception_retry: false
+    zero_order_numeric_axis_validation: none after the GWpy parent succeeds
   validation_order:
     - existing Python binding
     - exact shape check
@@ -91,6 +96,7 @@ contract:
     preserved:
       - shape and dtype
       - native name, channel, and epoch
+      - exact private epoch without a public Time-to-GPS round trip
       - all axis values, units, and names
       - axis0 and spatial domains
       - _gwex_ prefixed attributes
@@ -133,19 +139,42 @@ tdd:
       - numeric frequency-domain diff reset domains or failed on spatial axes
       - RHS-only subclasses and masks could become NumPy metadata authority
       - display-unit-scaled coordinate tolerance was operand-order asymmetric
+  second_review_zero_order_red:
+    environment: gwexpy
+    python: 3.11.14
+    gwpy: 4.0.2
+    command: >-
+      rtk conda run -n gwexpy python -m pytest -q
+      tests/fields/test_scalarfield_diff_comparison_contract.py::test_zero_order_numeric_diff_does_not_validate_axis
+    result: 3 failed
+    intended_failure: >-
+      post-parent int(axis) rejected string, None, and arbitrary-object axes
+      even though GWpy short-circuits n=0 before axis validation
+  second_review_exact_epoch_red:
+    environment: gwexpy
+    python: 3.11.14
+    gwpy: 4.0.2
+    command: >-
+      rtk conda run -n gwexpy python -m pytest -q
+      tests/fields/test_scalarfield_diff_comparison_contract.py
+      -k "exact_left_epoch or rhs_subclass or rhs_only"
+    result: 14 failed, 4 passed, 72 deselected
+    intended_failure: >-
+      reconstructing through the public Astropy Time epoch shifted small
+      integral GPS seconds by one second and discarded exact nanoseconds
   green:
     dedicated_contract:
-      gwpy_4_0_1: 75 passed
-      gwpy_4_0_2: 75 passed
+      gwpy_4_0_1: 90 passed
+      gwpy_4_0_2: 90 passed
     differential_plus_contract:
-      gwpy_4_0_1: 85 passed, 88 deselected
-      gwpy_4_0_2: 85 passed, 88 deselected
+      gwpy_4_0_1: 100 passed, 88 deselected
+      gwpy_4_0_2: 100 passed, 88 deselected
     type_collision_plus_contract:
-      gwpy_4_0_1: 227 passed
-      gwpy_4_0_2: 227 passed
+      gwpy_4_0_1: 242 passed
+      gwpy_4_0_2: 242 passed
     related_fields_and_types:
-      gwpy_4_0_1: 2834 passed, 15 approved skips, 1 expected failure
-      gwpy_4_0_2: 2834 passed, 15 approved skips, 1 expected failure
+      gwpy_4_0_1: 2849 passed, 15 approved skips, 1 expected failure
+      gwpy_4_0_2: 2849 passed, 15 approved skips, 1 expected failure
     unexpected_required_skips: 0
 
 oracles:
@@ -204,6 +233,8 @@ physics_and_data_model:
     Arithmetic is performed on validated unit-aware magnitudes and the result is
     rebuilt from LHS metadata, preventing RHS-only NumPy subclass dispatch from
     replacing name, channel, epoch, physical axes, domains, or _gwex_ attributes.
+    The original private epoch value is passed directly into reconstruction so
+    small GPS seconds and nanosecond precision are not reparsed through a float.
   numerical_behavior: >-
     Division uses NumPy and Astropy semantics without an epsilon, preserving
     signed infinities, NaNs, finite values, and Astropy operand masks.
