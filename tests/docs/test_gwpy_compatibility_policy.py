@@ -310,6 +310,9 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
     assert V023_SIGNOFF_REPORT in plan
     assert "historical approval" in plan
     assert "parent-parity risks only" in plan
+    assert "release identity only" in plan
+    assert "does not rebind" in plan
+    assert "does not broaden" in plan
     assert "PENDING REAPPROVAL" not in plan
     for remaining_gate in V023_REMAINING_RELEASE_GATES:
         assert remaining_gate in plan
@@ -541,6 +544,9 @@ def test_v023_aggregate_human_signoff_preserves_history_and_approves_current_ris
     assert V023_CURRENT_SIGNOFF_CANDIDATE in report
     assert "exactly the five parent-parity risks" in report
     assert "does not approve any other contract" in report
+    assert "release identity only" in report
+    assert "does not rebind" in report
+    assert "does not broaden" in report
     assert "pending reapproval" not in report
     assert "#611" in report
     assert "previously approved" in report

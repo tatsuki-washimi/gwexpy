@@ -559,12 +559,12 @@ def test_release_smoke_executes_with_license_sidecar_path(tmp_path):
     assert argument_name == "expected_license_hash_file"
 
 
-def test_releasing_manual_dispatch_supplies_v022_review_evidence():
+def test_releasing_manual_dispatch_supplies_v023_review_evidence():
     releasing = (WORKFLOW.parents[2] / "RELEASING.md").read_text(encoding="utf-8")
     assert (
         "-f review_evidence="
         "docs/developers/plans/manifests/"
-        "audit-manifest-v0.2.2-release-readiness.yaml"
+        "audit-manifest-v0.2.3-release-readiness.yaml"
     ) in releasing
 
 
@@ -654,7 +654,19 @@ def test_releasing_documents_tag_specific_integration_artifact_prefixes():
 
     assert "selected from the exact release contract" in releasing
     assert "`v020-integration-evidence-<40-character-source-sha>`" in releasing
+    assert "`v022-integration-evidence-<40-character-source-sha>`" in releasing
+    assert "`v023-integration-evidence-<40-character-source-sha>`" in releasing
     assert "currently `v0114-integration-evidence" not in releasing
+
+
+def test_releasing_preserves_v022_history_and_documents_v023_qualification():
+    releasing = (WORKFLOW.parents[2] / "RELEASING.md").read_text(encoding="utf-8")
+
+    assert "For v0.2.2" in releasing
+    assert "`v022-qualification-evidence-<40-character-source-sha>`" in releasing
+    assert "For v0.2.3" in releasing
+    assert "`v023-qualification-evidence-<40-character-source-sha>`" in releasing
+    assert "`scripts/ci/v023_qualification_expected_skips.json`" in releasing
 
 
 def test_workflow_contract_revision_disagreement_fails_closed(tmp_path: Path):

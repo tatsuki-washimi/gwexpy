@@ -7,7 +7,7 @@ dry-runs and must be launched with `--ref main`, which the workflow enforces:
 gh workflow run publish-release.yml --ref main \
   -f release_ref=<existing-final-tag-or-40-character-candidate-sha> \
   -f expected_tag=<final-version-tag> \
-  -f review_evidence=docs/developers/plans/manifests/audit-manifest-v0.2.2-release-readiness.yaml
+  -f review_evidence=docs/developers/plans/manifests/audit-manifest-v0.2.3-release-readiness.yaml
 ```
 
 The accepted tag-specific plan, evidence schema/path, review lanes, S-to-R
@@ -40,7 +40,7 @@ loads the exact expected tag's `protected_refs` from the release contract and
 requires every fetched `origin/<protected-ref>` tip to equal the validated
 40-character source SHA.  The frozen v0.1.13 and v0.1.14 contracts require
 `main` and `maint/0.1`; v0.2.0 and v0.2.2 require exactly `main` and
-`maint/0.2`.
+`maint/0.2`, as does v0.2.3.
 A missing protected-ref fetch or any moved tip is a release failure; it is
 never ignored as optional.
 
@@ -60,21 +60,29 @@ text) and emits a single allowlisted aggregate artifact whose name is selected f
 `v0113-integration-evidence-<40-character-source-sha>`,
 `v0114-integration-evidence-<40-character-source-sha>`, or
 `v020-integration-evidence-<40-character-source-sha>`, or
-`v022-integration-evidence-<40-character-source-sha>`.  It is retained for
+`v022-integration-evidence-<40-character-source-sha>`, or
+`v023-integration-evidence-<40-character-source-sha>`.  It is retained for
 90 days.  Record its artifact ID, API digest, `created_at`, and
 `expires_at` in UTC; acceptance requires
 `expires_at - created_at >= 90 days - 5 minutes`.
 Repository retention policy may cap the configured duration, and run/artifact
 deletion or expiry invalidates the evidence.
 
-For v0.2.2, the same build payload also passes a 19-cell qualification matrix.
-Every cell verifies `distribution-sha256.json` before installation and emits
-its source SHA, version, and wheel/sdist digests.
-The `qualification_evidence` job accepts exactly the named 19 cells, rejects a
-digest or source mismatch, and writes
+For v0.2.2, the historical same-build qualification also used a 19-cell
+matrix. Every cell verified `distribution-sha256.json` before installation
+and emitted its source SHA, version, and wheel/sdist digests. The historical
+aggregate is named
 `v022-qualification-evidence-<40-character-source-sha>`.
-The publish job depends on that aggregate as well as the four-cell smoke
-aggregate, so it cannot publish a payload different from the qualified bytes.
+
+For v0.2.3, the same 19 named cells additionally record JUnit outcomes and
+bind optional skips to the reviewed baseline in
+`scripts/ci/v023_qualification_expected_skips.json`. A new or changed skip is
+a release HOLD. The `qualification_evidence` job rejects a cell, digest,
+source, payload, or skip mismatch and writes
+`v023-qualification-evidence-<40-character-source-sha>`.
+For both releases, the publish job depends on the version-specific
+qualification aggregate as well as the four-cell smoke aggregate, so it
+cannot publish a payload different from the qualified bytes.
 
 Terra review evidence is advisory orchestration metadata, not identity proof,
 legal approval, or publication authorization.  It contains the reviewed
@@ -85,8 +93,16 @@ and protected-environment controls remain the only publication authorization.
 The coordinator-owned path selected for the expected tag by
 `scripts/ci/release_contracts.json` is the sole release-gate review-evidence
 path for tag runs.  For v0.1.14 it is
-`docs/developers/plans/manifests/audit-manifest-v0.1.14-release-readiness.yaml`.
-It must contain
+`docs/developers/plans/manifests/audit-manifest-v0.1.14-release-readiness.yaml`;
+for v0.2.3 it is
+`docs/developers/plans/manifests/audit-manifest-v0.2.3-release-readiness.yaml`.
+The v0.2.3 source-preparation form deliberately contains the configured schema
+and an empty `entries` array, so it establishes the review scope path but does
+not authorize a release. The executable gate rejects that placeholder. Only
+the coordinator replaces it after all three same-candidate lane reviews are
+`APPROVED`.
+
+The selected evidence file must contain
 exactly one top-level `review_evidence_json: |` block whose content is the
 strict JSON review-evidence schema; no YAML text is allowed outside that block,
 and duplicate JSON keys are rejected.  The document is size-bounded, `model`

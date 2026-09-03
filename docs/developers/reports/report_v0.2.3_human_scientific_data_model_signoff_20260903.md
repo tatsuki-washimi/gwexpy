@@ -97,6 +97,13 @@ documentation-only correction at
 `5d27c4ae8a1341e79aadf4751449784b2f575455` and this recording change do not
 alter or rebind the runtime candidate.
 
+Setting `gwexpy/_version.py` to `0.2.3` and synchronizing its citation metadata
+is release identity only. It is not a runtime/data-model semantic change, does
+not rebind the current approval from
+`0a3d09a117827113b02e4a2ce73bccd3b1ba95d2`, and does not broaden the approval
+beyond exactly the five accepted parent-parity risks. The global decision
+remains **HOLD**, with all four later gates still pending.
+
 The historical c7 inventory evidence covered 575 logical members with 59
 selectors and 384 executed cases per oracle. The current 0a3d inventory still
 has 575 logical members, but its HDF5 evidence expands the executable closure

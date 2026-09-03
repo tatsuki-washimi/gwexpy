@@ -14,6 +14,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACTS_PATH = ROOT / "scripts" / "ci" / "release_contracts.json"
 LOADER_PATH = ROOT / "scripts" / "ci" / "release_contract.py"
+REVIEW_VALIDATOR_PATH = ROOT / "scripts" / "ci" / "validate_release_review_evidence.py"
 V023_IMPLEMENTATION_BASE = "a8085b71446d3ef3417a7e5b5ac8efb156368eac"
 V023_PLAN = (
     ROOT
@@ -30,10 +31,29 @@ V0114_MANIFEST = (
     / "manifests"
     / "audit-manifest-v0.1.14-release-readiness.yaml"
 )
+V023_MANIFEST = (
+    ROOT
+    / "docs"
+    / "developers"
+    / "plans"
+    / "manifests"
+    / "audit-manifest-v0.2.3-release-readiness.yaml"
+)
 
 
 def load_contract_module():
     spec = importlib.util.spec_from_file_location("release_contract", LOADER_PATH)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def load_review_validator():
+    spec = importlib.util.spec_from_file_location(
+        "validate_release_review_evidence", REVIEW_VALIDATOR_PATH
+    )
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
@@ -491,3 +511,48 @@ def test_v0114_manifest_is_a_sanitized_review_evidence_container() -> None:
     assert source.count("review_evidence_json:") == 1
     assert source.startswith("review_evidence_json: |\n")
     assert '"schema": "gwexpy-v0114-review-evidence-v1"' in source
+
+
+def test_v023_manifest_is_a_sanitized_non_authorizing_placeholder() -> None:
+    assert V023_MANIFEST.is_file()
+    source = V023_MANIFEST.read_text(encoding="utf-8")
+
+    assert source.count("review_evidence_json:") == 1
+    assert source.startswith("review_evidence_json: |\n")
+    assert all(line.startswith("  ") for line in source.splitlines()[1:] if line)
+    payload = json.loads(
+        "\n".join(line[2:] for line in source.splitlines()[1:] if line)
+    )
+    assert payload == {
+        "schema": "gwexpy-v023-review-evidence-v1",
+        "entries": [],
+    }
+
+
+def test_v023_placeholder_is_rejected_by_executable_review_gate() -> None:
+    validator = load_review_validator()
+
+    with pytest.raises(
+        validator.ReleaseReviewEvidenceError,
+        match="exactly one reviewed commit",
+    ):
+        validator.validate_review_evidence(
+            V023_MANIFEST,
+            None,
+            None,
+            ROOT,
+            expected_tag="v0.2.3",
+        )
+
+
+@pytest.mark.parametrize(
+    "lane",
+    ["data-model", "release-security", "scientific-compatibility"],
+)
+def test_v023_configured_review_scope_paths_exist_in_source_tree(lane: str) -> None:
+    data = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
+    paths = data["releases"]["v0.2.3"]["review_lanes"][lane]
+
+    missing = [path for path in paths if not (ROOT / path).exists()]
+
+    assert missing == []

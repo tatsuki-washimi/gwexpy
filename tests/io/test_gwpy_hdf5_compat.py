@@ -50,9 +50,7 @@ def test_timeseriesdict_hdf5_append_preserves_existing_entries(tmp_path):
     )
 
     outfile = tmp_path / "tsd_append.h5"
-    TimeSeriesDict({"old": old}).write(
-        outfile, format="hdf5", layout="dataset"
-    )
+    TimeSeriesDict({"old": old}).write(outfile, format="hdf5", layout="dataset")
     TimeSeriesDict({"new": new}).write(
         outfile, format="hdf5", layout="dataset", append=True
     )
@@ -90,9 +88,7 @@ def test_timeseriesdict_hdf5_append_takes_precedence_over_overwrite(tmp_path):
     )
 
     outfile = tmp_path / "tsd_append_overwrite.h5"
-    TimeSeriesDict({"old": old}).write(
-        outfile, format="hdf5", layout="dataset"
-    )
+    TimeSeriesDict({"old": old}).write(outfile, format="hdf5", layout="dataset")
     TimeSeriesDict({"new": new}).write(
         outfile,
         format="hdf5",
@@ -130,9 +126,7 @@ def test_timeseriesdict_hdf5_append_rejects_create_modes_without_mutation(
     )
 
     outfile = tmp_path / f"tsd_append_mode_{mode}.h5"
-    TimeSeriesDict({"old": old}).write(
-        outfile, format="hdf5", layout="dataset"
-    )
+    TimeSeriesDict({"old": old}).write(outfile, format="hdf5", layout="dataset")
     original_bytes = outfile.read_bytes()
 
     with pytest.raises(ValueError, match="append=True.*mode"):
@@ -178,9 +172,7 @@ def test_timeseriesdict_hdf5_merge_mode_preflights_existing_logical_keys(
     )
 
     outfile = tmp_path / f"tsd_merge_duplicate_{mode}.h5"
-    TimeSeriesDict({"old": old}).write(
-        outfile, format="hdf5", layout="dataset"
-    )
+    TimeSeriesDict({"old": old}).write(outfile, format="hdf5", layout="dataset")
 
     with pytest.raises(ValueError, match="logical key"):
         TimeSeriesDict({"fresh": fresh, "old": replacement}).write(
@@ -199,9 +191,7 @@ def test_timeseriesdict_hdf5_merge_mode_preflights_existing_logical_keys(
 
 
 @pytest.mark.parametrize("mode", ["a", "r+"])
-def test_timeseriesdict_hdf5_merge_mode_preserves_distinct_logical_keys(
-    tmp_path, mode
-):
+def test_timeseriesdict_hdf5_merge_mode_preserves_distinct_logical_keys(tmp_path, mode):
     old = TimeSeries(
         np.arange(3.0), sample_rate=2.0, t0=1.0, unit="m", name="old series"
     )
@@ -214,9 +204,7 @@ def test_timeseriesdict_hdf5_merge_mode_preserves_distinct_logical_keys(
     )
 
     outfile = tmp_path / f"tsd_merge_distinct_{mode}.h5"
-    TimeSeriesDict({"old": old}).write(
-        outfile, format="hdf5", layout="dataset"
-    )
+    TimeSeriesDict({"old": old}).write(outfile, format="hdf5", layout="dataset")
     TimeSeriesDict({"new": new}).write(
         outfile, format="hdf5", layout="dataset", mode=mode
     )
@@ -263,9 +251,9 @@ def test_timeseriesdict_hdf5_append_preflights_existing_logical_keys(
     )
 
     outfile = tmp_path / f"tsd_duplicate_{duplicate_key}.h5"
-    TimeSeriesDict(
-        {"mapped_physical": mapped, "fallback": fallback}
-    ).write(outfile, format="hdf5", layout="dataset")
+    TimeSeriesDict({"mapped_physical": mapped, "fallback": fallback}).write(
+        outfile, format="hdf5", layout="dataset"
+    )
     with h5py.File(outfile, "r+") as h5f:
         write_hdf5_manifest(
             h5f,
@@ -276,9 +264,9 @@ def test_timeseriesdict_hdf5_append_preflights_existing_logical_keys(
         )
 
     with pytest.raises(ValueError, match="logical key"):
-        TimeSeriesDict(
-            {"fresh": fresh, duplicate_key: replacement}
-        ).write(outfile, format="hdf5", layout="dataset", append=True)
+        TimeSeriesDict({"fresh": fresh, duplicate_key: replacement}).write(
+            outfile, format="hdf5", layout="dataset", append=True
+        )
 
     with h5py.File(outfile, "r") as h5f:
         assert set(h5f) == {"mapped_physical", "fallback"}
@@ -289,9 +277,7 @@ def test_timeseriesdict_hdf5_append_preflights_existing_logical_keys(
 
 
 def test_timeseriesdict_hdf5_append_reconciles_partial_stale_manifest(tmp_path):
-    old_a = TimeSeries(
-        np.arange(3.0), sample_rate=2.0, t0=1.0, unit="m", name="old a"
-    )
+    old_a = TimeSeries(np.arange(3.0), sample_rate=2.0, t0=1.0, unit="m", name="old a")
     old_b = TimeSeries(
         np.arange(3.0) + 10,
         sample_rate=2.0,
@@ -378,9 +364,7 @@ def test_timeseriesdict_hdf5_append_filters_unrelated_and_linked_root_objects(
         listed.write(h5f, format="hdf5", path="listed")
         omitted.write(h5f, format="hdf5", path="omitted")
         h5f.create_dataset("unrelated", data=[101.0, 102.0, 103.0])
-        non_time = h5f.create_dataset(
-            "non_time_axis", data=[201.0, 202.0, 203.0]
-        )
+        non_time = h5f.create_dataset("non_time_axis", data=[201.0, 202.0, 203.0])
         non_time.attrs["x0"] = 0.0
         non_time.attrs["dx"] = 1.0
         non_time.attrs["xunit"] = "Hz"
@@ -408,9 +392,7 @@ def test_timeseriesdict_hdf5_append_filters_unrelated_and_linked_root_objects(
         }
         assert isinstance(h5f.get("soft_alias", getlink=True), h5py.SoftLink)
         np.testing.assert_allclose(h5f["unrelated"][()], [101.0, 102.0, 103.0])
-        np.testing.assert_allclose(
-            h5f["non_time_axis"][()], [201.0, 202.0, 203.0]
-        )
+        np.testing.assert_allclose(h5f["non_time_axis"][()], [201.0, 202.0, 203.0])
         assert read_hdf5_keymap(h5f) == {
             "listed": "logical_listed",
             "omitted": "omitted",
