@@ -228,6 +228,7 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
     )
     assert SAFETY_EXCEPTION in plan
     assert "Release decision: **HOLD**" in plan
+    assert "Status: implementation-complete-focused-green-19-cell-execution-pending" in plan
     assert "親 reader が正常終了した後だけ" in plan
     assert "compatibility_exception" in plan
     assert "8bfe36f9684989188c2f32e65ba429fe8bdfaf29" in plan
@@ -280,7 +281,6 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
     assert signoff["release_gate_for_this_exception"].startswith("pending-")
     assert signoff["global_release_gate"] == "hold"
     assert set(signoff["global_release_pending_reasons"]) == {
-        "v0.2.3 release-control implementation",
         "release-note disclosure",
         "remaining scientific/data-model review",
         "same-candidate scientific and release-security review",
