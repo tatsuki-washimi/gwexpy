@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-09-01 00:00+0900\n"
+"PO-Revision-Date: 2026-09-03 00:00+0900\n"
 "Last-Translator: GWexpy Developers\n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -17,8 +17,8 @@ msgstr "GWpy 挙動互換性ポリシー"
 msgid "GWexpy extends GWpy without silently changing the default scientific result of an existing GWpy API."
 msgstr "GWexpy は、既存の GWpy API が返す既定の科学的結果を暗黙に変えることなく GWpy を拡張します。"
 
-msgid "For APIs corresponding to existing GWpy APIs, when GWpy returns normally with finite numerical results, replacing the corresponding GWpy import with GWexpy under default options must preserve numerical values, shape and selected samples, axis information, and successful completion. Any intentional numerical divergence requires an explicit user opt-in through a GWexpy-specific API or option. Internal implementations may differ only when scientific behavior is preserved and no material performance or resource regression is introduced."
-msgstr "既存の GWpy API に対応する API では、GWpy が有限の数値結果を正常に返す場合、対応する import を既定optionの GWexpy に置き換えても、数値、shapeと選択sample、軸情報、正常終了を維持しなければなりません。意図的な数値差異には、GWexpy 固有の API またはoptionによる明示的な user opt-in が必要です。内部実装を変更できるのは、科学的挙動を維持し、性能またはresourceに重大な退行を生じさせない場合だけです。"
+msgid "For APIs corresponding to existing GWpy APIs, when GWpy returns normally with finite numerical results, replacing the corresponding GWpy import with GWexpy under default options must preserve numerical values, shape and selected samples, axis information, and successful completion. Any intentional numerical divergence requires an explicit user opt-in through a GWexpy-specific API or option, unless it is a named, human-approved safety exception that meets every gate below. Internal implementations may differ only when scientific behavior is preserved and no material performance or resource regression is introduced."
+msgstr "既存の GWpy API に対応する API では、GWpy が有限の数値結果を正常に返す場合、対応する import を既定optionの GWexpy に置き換えても、数値、shapeと選択sample、軸情報、正常終了を維持しなければなりません。意図的な数値差異には、GWexpy 固有の API またはoptionによる明示的な user opt-in が必要です。ただし、以下のすべてのgateを満たす名前付き・human-approvedの安全例外は除きます。内部実装を変更できるのは、科学的挙動を維持し、性能またはresourceに重大な退行を生じさせない場合だけです。"
 
 msgid "What must match"
 msgstr "一致させる対象"
@@ -68,8 +68,35 @@ msgstr "終了状態"
 msgid "successful completion in GWpy must not become a GWexpy-only exception"
 msgstr "GWpy で正常終了する操作を GWexpy 固有の例外に変えない"
 
-msgid "A difference in any required comparison is a release blocker unless the user selected an explicit GWexpy-only API or option."
-msgstr "必須比較のいずれかに差異がある場合、userが明示的な GWexpy 固有 API またはoptionを選んでいない限りrelease blockerです。"
+msgid "A difference in any required comparison is a release blocker unless the user selected an explicit GWexpy-only API or option or the difference is a named, human-approved safety exception satisfying every requirement below."
+msgstr "必須比較のいずれかに差異がある場合、userが明示的な GWexpy 固有 API またはoptionを選んだ場合、または差異が以下のすべての要件を満たす名前付き・human-approvedの安全例外である場合を除き、release blockerです。"
+
+msgid "Named safety exceptions"
+msgstr "名前付き安全例外"
+
+msgid "A safety exception is not a general license to improve, reinterpret, or replace GWpy behavior. It is allowed only for a narrowly identified subcase where the normal GWpy result is demonstrably unsafe or outside the requested sample-selection domain. Every safety exception must have all of the following:"
+msgstr "安全例外は、GWpy の挙動を改善、再解釈、置換する一般的な許可ではありません。通常の GWpy 結果が危険である、または要求されたsample-selection domainの外側にあることを実証できる、狭く特定されたsubcaseだけで許可されます。すべての安全例外は次の条件を満たさなければなりません。"
+
+msgid "A stable name recorded as an inventory marker on only the affected cases."
+msgstr "影響を受けるcaseだけにinventory markerとして記録された安定した名前。"
+
+msgid "Direct dual-oracle evidence against every supported GWpy oracle."
+msgstr "サポート対象のすべての GWpy oracle に対する直接の dual-oracle evidence。"
+
+msgid "Human scientific/data-model approval of the deliberate divergence."
+msgstr "意図的な差異に対するhuman scientific/data-model approval。"
+
+msgid "Release-note disclosure that identifies the before/after behavior."
+msgstr "変更前後の挙動を特定するrelease-note disclosure。"
+
+msgid "Scope narrower than the whole public API, with parent errors and all other results preserved."
+msgstr "public API 全体より狭いscopeであり、親のerrorとその他すべての結果を維持すること。"
+
+msgid "The only approved exception is `non_intersecting_window_safety`. It applies after a successful parent HDF5 `TimeSeriesDict.read()` call when an explicit read window is mathematically completely disjoint from a returned series and GWpy selected only samples outside the requested sample-selection domain. GWexpy returns a zero-length entry for that disjoint key. It does not reinterpret parent errors, modify a partial overlap, override `pad=`, remove collection keys, or change any other result."
+msgstr "承認済みの例外は `non_intersecting_window_safety` だけです。これは、親の HDF5 `TimeSeriesDict.read()` が成功した後、明示的なread windowと返却seriesが数学的に完全非交差であり、GWpy が要求されたsample-selection domainの外側にあるsampleだけを選択した場合に適用します。GWexpy はその非交差keyにzero-length entryを返します。親のerrorを再解釈せず、部分交差を変更せず、`pad=`を上書きせず、collection keyを削除せず、その他の結果も変更しません。"
+
+msgid "An unexplained divergence, an unmarked divergence, or a proposed extension of this exception beyond that subcase remains a release blocker."
+msgstr "説明のない差異、markerのない差異、またはこの例外を当該subcaseより広げる提案は、引き続きrelease blockerです。"
 
 msgid "Where extension is allowed"
 msgstr "拡張が許される範囲"
@@ -101,8 +128,8 @@ msgstr "review対象のcaseで GWpy は正常な有限結果を返すか。"
 msgid "Do GWpy and GWexpy defaults match in values, shape and selected samples, axes, and completion behavior?"
 msgstr "GWpy と GWexpy の既定挙動は、値、shapeと選択sample、軸、終了挙動で一致するか。"
 
-msgid "If they differ, is the difference behind an explicit GWexpy-only opt-in?"
-msgstr "差異がある場合、明示的な GWexpy 固有 opt-in の背後にあるか。"
+msgid "If they differ, is the difference behind an explicit GWexpy-only opt-in or a named, human-approved safety exception satisfying every gate above?"
+msgstr "差異がある場合、明示的な GWexpy 固有 opt-in の背後にあるか、または上記のすべてのgateを満たす名前付き・human-approvedの安全例外か。"
 
 msgid "If the change is internal, is proportionate performance and resource evidence attached?"
 msgstr "内部変更の場合、相応の性能・resource evidenceが添付されているか。"

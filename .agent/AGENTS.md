@@ -1,6 +1,6 @@
 # GWexpy AI Agent Guidelines
 
-Last-updated: 2026-09-01
+Last-updated: 2026-09-03
 
 **Summary.**  
 This repository is optimized for collaboration with AI Coding Agents (Claude, Codex, Antigravity, Cursor, GitHub Copilot Workspace, etc.). Agents **must** read and follow these guidelines before performing any code changes, tests, or documentation updates.
@@ -41,7 +41,11 @@ Before any code changes or runs, ensure ALL items below are satisfied:
   numerical results, the GWexpy default must preserve numerical values, shape
   and selected samples, axis information, and successful completion. Any
   intentional numerical divergence requires an explicit opt-in through a
-  GWexpy-specific API or option. See the canonical
+  GWexpy-specific API or option. The only alternative is a named, human-approved
+  safety exception satisfying every canonical evidence, approval, scope, and
+  disclosure gate. The approved `non_intersecting_window_safety` exception is
+  limited to its documented completely disjoint HDF5 read-window subcase. See
+  the canonical
   [GWpy compatibility policy](../docs_redesign/explanation/gwpy_compatibility_policy.md).
   Apply this checklist before changing or reviewing a corresponding API:
   1. Is this an existing GWpy API?
@@ -49,7 +53,8 @@ Before any code changes or runs, ensure ALL items below are satisfied:
   3. Compare GWpy and GWexpy defaults: values, shape and selected samples,
      axes including `t0` and `dt`, and successful completion versus exception.
   4. If any required result differs, **BLOCK** the change unless the user chose
-     an explicit GWexpy-only opt-in.
+     an explicit GWexpy-only opt-in or the named, human-approved safety
+     exception satisfies every canonical gate.
   5. For internal changes, attach performance/resource non-regression evidence
      proportionate to the affected path; measurement is required for
      performance-sensitive bootstrap, dispatch, I/O, and numerical kernels.
@@ -151,6 +156,9 @@ Agents must run and **pass** the following before creating a PR:
 
 ### Guideline changelog
 
+- **2026-09-03**: Added the narrowly gated, human-approved
+  `non_intersecting_window_safety` exception without weakening the default GWpy
+  parity rule.
 - **2026-09-01**: Promoted GWpy default finite-result identity to a blocking
   project rule, required explicit opt-in for numerical divergence, added
   performance/resource evidence requirements, and corrected lazy registry

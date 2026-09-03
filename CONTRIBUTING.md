@@ -54,8 +54,11 @@ For APIs corresponding to existing GWpy APIs, when GWpy returns normally with
 finite numerical results, GWexpy defaults must preserve numerical values,
 shape and selected samples, axis information, and successful completion. Any
 intentional numerical divergence requires an explicit user opt-in through a
-GWexpy-specific API or option. Reviewers must block an unexplained default
-difference.
+GWexpy-specific API or option. The sole alternative is a named, human-approved
+safety exception satisfying every canonical policy gate. The currently approved
+`non_intersecting_window_safety` exception is restricted to the documented,
+completely disjoint HDF5 read-window subcase. Reviewers must block an
+unexplained, unmarked, or broader default difference.
 
 Internal implementations may differ only when scientific behavior is
 preserved and no material performance or resource regression is introduced.

@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / "docs_redesign"
 POLICY_RELATIVE_PATH = "explanation/gwpy_compatibility_policy.md"
 POLICY_TITLE = "GWpy Behavioral Compatibility Policy"
+SAFETY_EXCEPTION = "non_intersecting_window_safety"
 POLICY_SUMMARY = (
     "For APIs corresponding to existing GWpy APIs, when GWpy returns normally "
     "with finite numerical results"
@@ -50,6 +51,25 @@ def test_canonical_policy_defines_the_behavioral_contract() -> None:
         assert f"`{comparison}`" in policy
 
 
+def test_canonical_policy_narrowly_gates_the_named_safety_exception() -> None:
+    policy = _read(f"docs_redesign/{POLICY_RELATIVE_PATH}")
+    policy_lower = " ".join(policy.lower().split())
+
+    assert f"`{SAFETY_EXCEPTION}`" in policy
+    for required in (
+        "named, human-approved safety exception",
+        "outside the requested sample-selection domain",
+        "direct dual-oracle evidence",
+        "scientific/data-model approval",
+        "release-note disclosure",
+        "parent errors",
+        "all other results",
+        "unexplained divergence",
+    ):
+        assert required in policy_lower
+    assert "explicit gwexpy-only opt-in or a named" in policy_lower
+
+
 def test_public_entry_points_link_to_the_canonical_policy() -> None:
     redesign_sources = {
         "README.md": "gwpy_compatibility_policy.html",
@@ -81,14 +101,35 @@ def test_public_entry_points_link_to_the_canonical_policy() -> None:
         assert target in _read(source), source
 
 
+def test_public_policy_summaries_do_not_hide_the_safety_exception() -> None:
+    english_sources = (
+        "README.md",
+        "docs_redesign/index.md",
+        "docs_redesign/explanation/gwexpy_for_gwpy_users.md",
+        "docs/web/en/index.rst",
+        "docs/web/en/user_guide/gwexpy_for_gwpy_users_en.md",
+    )
+    for source in english_sources:
+        assert "safety exception" in _read(source).lower(), source
+
+    japanese_sources = (
+        "docs/web/ja/index.rst",
+        "docs/web/ja/user_guide/gwexpy_for_gwpy_users_ja.md",
+    )
+    for source in japanese_sources:
+        assert "安全例外" in _read(source), source
+
+
 def test_agent_and_contributor_rules_make_divergence_a_blocker() -> None:
     agents = _read(".agent/AGENTS.md")
     contributing = _read("CONTRIBUTING.md")
 
-    assert "Last-updated: 2026-09-01" in agents
+    assert "Last-updated: 2026-09-03" in agents
     assert "GWpy behavioral compatibility" in agents
     assert "BLOCK" in agents
     assert "explicit opt-in" in agents
+    assert SAFETY_EXCEPTION in agents
+    assert "named, human-approved safety exception" in " ".join(agents.split())
     assert "performance/resource non-regression evidence" in agents
     assert "or simply `import gwexpy`" not in agents
     assert "register their required handlers on demand" in agents
@@ -96,6 +137,10 @@ def test_agent_and_contributor_rules_make_divergence_a_blocker() -> None:
     assert "GWpy Behavioral Compatibility" in contributing
     assert "finite numerical results" in contributing
     assert "explicit user opt-in" in contributing
+    assert SAFETY_EXCEPTION in contributing
+    assert "named, human-approved safety exception" in " ".join(
+        contributing.split()
+    )
     assert "performance or resource" in contributing
     assert "gwpy_compatibility_policy.html" in contributing
 
@@ -103,6 +148,7 @@ def test_agent_and_contributor_rules_make_divergence_a_blocker() -> None:
         guidance = _read(source)
         assert ".agent/AGENTS.md" in guidance
         assert "BLOCK" in guidance
+        assert SAFETY_EXCEPTION in guidance
 
 
 def test_policy_and_new_navigation_have_japanese_translations() -> None:

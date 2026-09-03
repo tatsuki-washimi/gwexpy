@@ -2,7 +2,8 @@
 
 GWpy 対応 API の既定の有限数値結果、選択sample、軸、正常終了は、
 [GWpy 挙動互換性ポリシー](https://tatsuki-washimi.github.io/gwexpy/docs/ja/explanation/gwpy_compatibility_policy.html)
-に従います。意図的な数値差異には明示的な user opt-in が必要です。
+に従います。意図的な数値差異には明示的な user opt-in が必要ですが、
+全ポリシー gate を満たす名前付き・human-approved の安全例外は除きます。
 
 ## GWpy 4 の legacy proxy 移行
 

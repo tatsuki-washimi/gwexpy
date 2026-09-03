@@ -3,7 +3,8 @@
 For APIs corresponding to GWpy, default finite numerical results, selected
 samples, axes, and successful completion are governed by the
 [GWpy behavioral compatibility policy](https://tatsuki-washimi.github.io/gwexpy/docs/explanation/gwpy_compatibility_policy.html).
-Intentional numerical divergence requires explicit user opt-in.
+Intentional numerical divergence requires explicit user opt-in, except for a
+named, human-approved safety exception satisfying every policy gate.
 
 ## GWpy 4 legacy-proxy migration
 

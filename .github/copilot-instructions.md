@@ -4,7 +4,9 @@ Read and follow [`.agent/AGENTS.md`](../.agent/AGENTS.md) as the authoritative
 project guidance. **BLOCK** changes that alter default finite numerical values
 or units, shape or selected samples and boundaries, axis information, or
 successful completion for a corresponding GWpy API without an explicit
-GWexpy-only opt-in.
+GWexpy-only opt-in or the canonically gated
+`non_intersecting_window_safety` exception. Treat every other unexplained
+default divergence as **BLOCK**.
 
 **rtk** is a CLI proxy that filters and compresses command outputs, saving 60-90% tokens.
 
