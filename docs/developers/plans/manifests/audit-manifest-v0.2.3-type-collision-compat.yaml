@@ -7,6 +7,7 @@ phase_parent: e5f791722666601346f9990c247cce610fdfe85d
 initial_implementation: 8e3cbae56e85bcef1b730b6d32742bcaed42a64c
 review_followup_parent: a8f445669fa3469aa068eb8b72956de407255bb5
 second_review_integration_parent: 8016d7a90a57314899c2ef4908dfc85af1a0ee3c
+scalarfield_final_reviewed_commit: bc4184ac80fd498c5c4f95b3abd425967252c0db
 
 issues:
   - "#639"
@@ -374,6 +375,10 @@ physics_and_data_model:
   bifrequency_plot_axis_order: aligned to GWpy xindex/yindex authority
   binned_projection: only explicit opt-in can select the specialized calculation
   human_review: required
+  scalarfield_independent_review:
+    code: ready, no Critical or Important findings
+    physics_and_data_model: ready, no Critical or Important findings
+    human_release_signoff: pending
   human_review_reasons:
     - BifrequencyMap plot source orientation and frequency-axis authority changed
     - ScalarField finite-difference results use trailing physical coordinates on the reduced axis

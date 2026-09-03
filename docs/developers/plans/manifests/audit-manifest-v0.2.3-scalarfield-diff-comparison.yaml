@@ -1,6 +1,6 @@
 schema: gwexpy-v023-scalarfield-diff-comparison-evidence-v1
 phase: scalarfield-field-comparison-hardening
-status: focused-green-pending-independent-and-human-data-model-review
+status: focused-green-pending-human-data-model-review
 
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 implementation_parent: f21087061794d232df8bc50350d83dba25a31b39
@@ -28,6 +28,18 @@ decision:
   note: >-
     Approval to implement the fail-closed contract is not final physics or
     data-model sign-off for the release candidate.
+
+independent_review:
+  reviewed_commit: bc4184ac80fd498c5c4f95b3abd425967252c0db
+  code_review:
+    status: ready
+    critical_findings: 0
+    important_findings: 0
+  physics_and_data_model_review:
+    status: ready
+    critical_findings: 0
+    important_findings: 0
+  human_release_signoff: pending
 
 scope:
   included:
@@ -241,7 +253,7 @@ physics_and_data_model:
   input_nonmutation: verified for values, units, native metadata, domains, and axes
   human_review:
     required: true
-    status: pending independent implementation review and maintainer sign-off
+    status: pending maintainer sign-off; independent code and physics reviews ready
     requested_decisions:
       - accept LHS as unit and metadata authority
       - accept equivalent coordinate-unit conversion with 1e-12 canonical-base-unit tolerance
