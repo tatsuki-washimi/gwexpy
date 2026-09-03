@@ -1,6 +1,6 @@
 schema: gwexpy-v023-phase3-evidence-v1
 phase: spectral-compatibility-and-from-gps-differential
-status: focused-green-human-spectral-review-pending
+status: focused-green-human-spectral-review-approved
 
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 phase_parent: ef96a3a10188c2303c3de1dcc6bbafd9947c4c20
@@ -213,7 +213,10 @@ physics:
     Direct parent arithmetic preserves numerator axis authority and avoids the
     one-second drift observed when reconstructing a FrequencySeries from an
     Astropy Time epoch near GPS 1000.
-  human_review: required for mixed-unit and Rayleigh semantic judgment
+  human_review: >-
+    Approved for mixed-unit and Rayleigh semantic judgment on candidate
+    c7b79db7fee2e646069679a0efe3d65c7ed4e562, including the recorded
+    parent-parity risks and finite-Monte-Carlo limitations.
 
 static_validation:
   ruff_changed_files: all checks passed
@@ -231,3 +234,23 @@ focused_tests:
   - tests/frequencyseries/test_fs_methods.py::TestIfft
   - tests/timeseries/test_numerical_contracts.py
   - tests/timeseries/test_matrix_spectral.py
+
+human_scientific_data_model_signoff:
+  schema: gwexpy-v023-human-scientific-data-model-signoff-v1
+  status: approved
+  date: "2026-09-03"
+  approver_role: release owner
+  approved_candidate_sha: c7b79db7fee2e646069679a0efe3d65c7ed4e562
+  aggregate_report: docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md
+  non_intersecting_window_safety:
+    issue: "#611"
+    status: previously-approved-not-reapproved
+  global_release_gate: hold
+  remaining_gates:
+    - same-candidate scientific/data-model review
+    - same-candidate release-security review
+    - candidate-wide QA
+    - 19-cell qualification
+  invalidation_rule: >-
+    Any later runtime/data-model semantic change invalidates this sign-off and
+    requires reapproval.

@@ -13,6 +13,33 @@ DOCS = ROOT / "docs_redesign"
 POLICY_RELATIVE_PATH = "explanation/gwpy_compatibility_policy.md"
 POLICY_TITLE = "GWpy Behavioral Compatibility Policy"
 SAFETY_EXCEPTION = "non_intersecting_window_safety"
+V023_SIGNOFF_CANDIDATE = "c7b79db7fee2e646069679a0efe3d65c7ed4e562"
+V023_SIGNOFF_REPORT = (
+    "docs/developers/reports/"
+    "report_v0.2.3_human_scientific_data_model_signoff_20260903.md"
+)
+V023_SIGNOFF_SCHEMA = "gwexpy-v023-human-scientific-data-model-signoff-v1"
+V023_REMAINING_RELEASE_GATES = [
+    "same-candidate scientific/data-model review",
+    "same-candidate release-security review",
+    "candidate-wide QA",
+    "19-cell qualification",
+]
+V023_ACCEPTED_PARENT_PARITY_RISKS = [
+    "mixed_unit_csd_v2_per_hz_label",
+    "public_rayleigh_parent_segments_private_corrected_route_finite_mc_limits",
+    "signal_dimensionless_raw_quantity_float32_underflow",
+    "stale_array2d_plane2d_min_max_indices",
+    "stale_numeric_swapaxes_transpose_metadata",
+]
+V023_UNCONDITIONALLY_APPROVED_CONTRACTS = [
+    "ifft_exact_time_lifecycle",
+    "constructor_prefix_keyword_only_extensions",
+    "coherent_dimension_reductions",
+    "quantity_out_validation_precedence_atomic_conversion_dimensionless_success",
+    "bifrequencymap_axes",
+    "scalarfield_diff_comparison",
+]
 POLICY_SUMMARY = (
     "For APIs corresponding to existing GWpy APIs, when GWpy returns normally "
     "with finite numerical results"
@@ -29,6 +56,15 @@ PUBLIC_POLICY_JA_URL = (
 
 def _read(relative_path: str) -> str:
     return (ROOT / relative_path).read_text(encoding="utf-8")
+
+
+def _markdown_front_matter(relative_path: str) -> dict[str, object]:
+    document = _read(relative_path)
+    assert document.startswith("---\n"), relative_path
+    front_matter, _body = document[4:].split("\n---\n", maxsplit=1)
+    loaded = yaml.safe_load(front_matter)
+    assert isinstance(loaded, dict), relative_path
+    return loaded
 
 
 def test_canonical_policy_defines_the_behavioral_contract() -> None:
@@ -142,9 +178,7 @@ def test_public_policy_summaries_do_not_hide_the_safety_exception() -> None:
         summary = _read(source)
         for required in ("名前付き", "human-approved", "安全例外", "gate"):
             assert required in summary, (source, required)
-    japanese_detail = _read(
-        "docs/web/ja/user_guide/gwexpy_for_gwpy_users_ja.md"
-    )
+    japanese_detail = _read("docs/web/ja/user_guide/gwexpy_for_gwpy_users_ja.md")
     assert SAFETY_EXCEPTION in japanese_detail
     assert "完全非交差の HDF5" in japanese_detail
 
@@ -167,9 +201,7 @@ def test_agent_and_contributor_rules_make_divergence_a_blocker() -> None:
     assert "finite numerical results" in contributing
     assert "explicit user opt-in" in contributing
     assert SAFETY_EXCEPTION in contributing
-    assert "named, human-approved safety exception" in " ".join(
-        contributing.split()
-    )
+    assert "named, human-approved safety exception" in " ".join(contributing.split())
     assert "performance or resource" in contributing
     assert "gwpy_compatibility_policy.html" in contributing
 
@@ -229,24 +261,26 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
     )
     assert SAFETY_EXCEPTION in plan
     assert "Release decision: **HOLD**" in plan
-    assert "Status: implementation-complete-focused-green-19-cell-execution-pending" in plan
+    assert (
+        "Status: implementation-complete-focused-green-19-cell-execution-pending"
+        in plan
+    )
     assert "親 reader が正常終了した後だけ" in plan
     assert "compatibility_exception" in plan
     assert "8bfe36f9684989188c2f32e65ba429fe8bdfaf29" in plan
+    assert "Human scientific/data-model sign-off: **APPROVED**" in plan
+    assert V023_SIGNOFF_CANDIDATE in plan
+    assert V023_SIGNOFF_REPORT in plan
+    assert "残存 human review" not in plan
+    for remaining_gate in V023_REMAINING_RELEASE_GATES:
+        assert remaining_gate in plan
 
     io_audit = yaml.safe_load(
-        _read(
-            "docs/developers/plans/manifests/"
-            "audit-manifest-v0.2.3-io-terminal.yaml"
-        )
+        _read("docs/developers/plans/manifests/audit-manifest-v0.2.3-io-terminal.yaml")
     )
-    exception = io_audit["intentional_extensions_and_exceptions"][
-        SAFETY_EXCEPTION
-    ]
+    exception = io_audit["intentional_extensions_and_exceptions"][SAFETY_EXCEPTION]
     assert exception["inventory_marker"] == SAFETY_EXCEPTION
-    assert exception["member"] == (
-        "gwexpy.timeseries.collections.TimeSeriesDict/read"
-    )
+    assert exception["member"] == ("gwexpy.timeseries.collections.TimeSeriesDict/read")
     assert exception["terminal_state"] == "fixed"
     assert exception["issue"] == "#611"
     assert "eight samples outside" in exception["before"]
@@ -270,9 +304,7 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
         "tests/io/test_reader_start_end_contract.py"
         "::TestLegacyHdf5NonIntersectingRoutes" in evidence
     )
-    command = io_audit["verification"][
-        "non_intersecting_window_safety_command"
-    ]
+    command = io_audit["verification"]["non_intersecting_window_safety_command"]
     assert "TestNativeHdf5NonIntersectingSafety" in command
     assert "TestLegacyHdf5NonIntersectingRoutes" in command
     signoff = io_audit["human_data_model_signoff"]
@@ -285,12 +317,7 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
         "release_notes/v0.2.3.md",
     ]
     assert signoff["global_release_gate"] == "hold"
-    assert set(signoff["global_release_pending_reasons"]) == {
-        "remaining scientific/data-model review",
-        "same-candidate scientific and release-security review",
-        "candidate-wide QA",
-        "19-cell qualification",
-    }
+    assert signoff["global_release_pending_reasons"] == (V023_REMAINING_RELEASE_GATES)
 
     for disclosure_path in ("CHANGELOG.md", "release_notes/v0.2.3.md"):
         disclosure = _read(disclosure_path)
@@ -304,9 +331,12 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
         assert "class, dtype, unit, name/channel, and cadence" in normalized_disclosure
         assert "public `t0`/`span`" in normalized_disclosure
         assert "private exact-time authority" in normalized_disclosure
+        assert "human scientific/data-model sign-off is approved" in (
+            normalized_disclosure
+        )
         assert (
             "Scientific and data-model release sign-off remains pending"
-            in normalized_disclosure
+            not in normalized_disclosure
         )
         assert (
             "restores GWpy 4.0.1/4.0.2 default behavior across"
@@ -315,8 +345,7 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
 
     legacy_audit = yaml.safe_load(
         _read(
-            "docs/developers/plans/manifests/"
-            "audit-manifest-611-reader-window-crop.yaml"
+            "docs/developers/plans/manifests/audit-manifest-611-reader-window-crop.yaml"
         )
     )
     amendment = legacy_audit["superseded_in_v0_2_3"]
@@ -325,23 +354,153 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
     assert "At the v0.1.13 freeze" in legacy_audit["reviewer"]
 
 
-def test_v023_pending_human_review_records_are_explicit_and_current() -> None:
+def test_v023_aggregate_human_signoff_is_exact_candidate_bound() -> None:
+    signoff = _markdown_front_matter(V023_SIGNOFF_REPORT)
+
+    assert signoff["schema"] == V023_SIGNOFF_SCHEMA
+    assert signoff["status"] == "approved"
+    assert signoff["date"] == "2026-09-03"
+    assert signoff["approver_role"] == "release owner"
+    assert signoff["approved_candidate_sha"] == V023_SIGNOFF_CANDIDATE
+    assert signoff["accepted_parent_parity_risks"] == (
+        V023_ACCEPTED_PARENT_PARITY_RISKS
+    )
+    assert signoff["unconditionally_approved_contracts"] == (
+        V023_UNCONDITIONALLY_APPROVED_CONTRACTS
+    )
+    scope = signoff["approval_scope"]
+    assert scope["release"] == "v0.2.3"
+    assert scope["kind"] == "human scientific/data-model sign-off"
+    assert scope["covered_records"] == [
+        "docs/developers/plans/manifests/audit-manifest-v0.2.3-phase2.yaml",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.3-phase3.yaml",
+        (
+            "docs/developers/plans/manifests/"
+            "audit-manifest-v0.2.3-timeseries-signal.yaml"
+        ),
+        (
+            "docs/developers/plans/manifests/"
+            "audit-manifest-v0.2.3-timeseries-terminal.yaml"
+        ),
+        (
+            "docs/developers/plans/manifests/"
+            "audit-manifest-v0.2.3-constructor-terminal.yaml"
+        ),
+        ("docs/developers/plans/manifests/audit-manifest-v0.2.3-stats-compat.yaml"),
+        (
+            "docs/developers/plans/manifests/"
+            "audit-manifest-v0.2.3-type-collision-compat.yaml"
+        ),
+        (
+            "docs/developers/plans/manifests/"
+            "audit-manifest-v0.2.3-scalarfield-diff-comparison.yaml"
+        ),
+        ("docs/developers/plans/manifests/audit-manifest-506-rayleigh-null-model.yaml"),
+    ]
+    assert scope["excludes"] == [
+        "release GO decision",
+        "same-candidate scientific/data-model review",
+        "same-candidate release-security review",
+        "candidate-wide QA",
+        "19-cell qualification",
+    ]
+    assert signoff["non_intersecting_window_safety"] == {
+        "issue": "#611",
+        "status": "previously-approved-not-reapproved",
+    }
+    assert signoff["release_decision"] == {
+        "status": "HOLD",
+        "remaining_gates": V023_REMAINING_RELEASE_GATES,
+    }
+    assert "runtime/data-model semantic change" in signoff["invalidation_rule"]
+    assert "requires reapproval" in signoff["invalidation_rule"]
+
+    report = " ".join(_read(V023_SIGNOFF_REPORT).split())
+    assert "approval is bound only to" in report
+    assert V023_SIGNOFF_CANDIDATE in report
+    assert "#611" in report
+    assert "previously approved" in report
+    assert "is not reapproved" in report
+    assert "does not make the release GO" in report
+
+
+def test_v023_human_review_records_reference_the_aggregate_approval() -> None:
     expected_statuses = {
         "audit-manifest-v0.2.3-phase2.yaml": (
-            "focused-green-human-fft-time-axis-review-pending"
+            "focused-green-human-fft-time-axis-review-approved"
         ),
         "audit-manifest-v0.2.3-phase3.yaml": (
-            "focused-green-human-spectral-review-pending"
+            "focused-green-human-spectral-review-approved"
         ),
         "audit-manifest-v0.2.3-timeseries-signal.yaml": (
-            "focused-green-human-signal-semantics-review-pending"
+            "focused-green-human-signal-semantics-review-approved"
+        ),
+        "audit-manifest-v0.2.3-timeseries-terminal.yaml": (
+            "focused-green-human-time-axis-review-approved"
+        ),
+        "audit-manifest-v0.2.3-constructor-terminal.yaml": (
+            "focused-green-human-data-model-review-approved"
+        ),
+        "audit-manifest-v0.2.3-stats-compat.yaml": (
+            "focused-green-human-data-model-signoff-approved"
+        ),
+        "audit-manifest-v0.2.3-type-collision-compat.yaml": (
+            "focused-green-human-review-approved"
+        ),
+        "audit-manifest-v0.2.3-scalarfield-diff-comparison.yaml": (
+            "focused-green-human-data-model-review-approved"
         ),
     }
     for filename, expected_status in expected_statuses.items():
-        manifest = yaml.safe_load(
-            _read(f"docs/developers/plans/manifests/{filename}")
-        )
+        manifest_text = _read(f"docs/developers/plans/manifests/{filename}")
+        manifest = yaml.safe_load(manifest_text)
         assert manifest["status"] == expected_status
+        assert "pending" not in manifest_text.lower(), filename
+        assert manifest["human_scientific_data_model_signoff"] == {
+            "schema": V023_SIGNOFF_SCHEMA,
+            "status": "approved",
+            "date": "2026-09-03",
+            "approver_role": "release owner",
+            "approved_candidate_sha": V023_SIGNOFF_CANDIDATE,
+            "aggregate_report": V023_SIGNOFF_REPORT,
+            "non_intersecting_window_safety": {
+                "issue": "#611",
+                "status": "previously-approved-not-reapproved",
+            },
+            "global_release_gate": "hold",
+            "remaining_gates": V023_REMAINING_RELEASE_GATES,
+            "invalidation_rule": (
+                "Any later runtime/data-model semantic change invalidates "
+                "this sign-off and requires reapproval."
+            ),
+        }
+
+    scalarfield = yaml.safe_load(
+        _read(
+            "docs/developers/plans/manifests/"
+            "audit-manifest-v0.2.3-scalarfield-diff-comparison.yaml"
+        )
+    )
+    assert scalarfield["decision"]["release_signoff"] == "approved"
+    assert scalarfield["independent_review"]["human_release_signoff"] == ("approved")
+    assert scalarfield["physics_and_data_model"]["human_review"]["status"] == (
+        "approved"
+    )
+    assert scalarfield["release_constraints"]["human_signoff_gate"] == ("satisfied")
+
+    type_collision = yaml.safe_load(
+        _read(
+            "docs/developers/plans/manifests/"
+            "audit-manifest-v0.2.3-type-collision-compat.yaml"
+        )
+    )
+    assert type_collision["physics_and_data_model"]["human_review"] == ("approved")
+    assert (
+        type_collision["physics_and_data_model"]["scalarfield_independent_review"][
+            "human_release_signoff"
+        ]
+        == "approved"
+    )
 
     legacy_rayleigh = yaml.safe_load(
         _read(
@@ -350,17 +509,51 @@ def test_v023_pending_human_review_records_are_explicit_and_current() -> None:
         )
     )
     superseded = legacy_rayleigh["superseded_in_v0_2_3"]
-    assert superseded["status"] == "current-evidence-awaiting-human-signoff"
+    assert superseded["status"] == "current-evidence-human-signoff-approved"
     assert superseded["gwpy_4_0_1"] == "50 passed"
     assert superseded["gwpy_4_0_2"] == "50 passed"
+    assert legacy_rayleigh["physics_review"]["status"] == "pending_human_signoff"
+    assert legacy_rayleigh["human_scientific_data_model_signoff"] == {
+        "schema": V023_SIGNOFF_SCHEMA,
+        "status": "approved",
+        "date": "2026-09-03",
+        "approver_role": "release owner",
+        "approved_candidate_sha": V023_SIGNOFF_CANDIDATE,
+        "aggregate_report": V023_SIGNOFF_REPORT,
+        "non_intersecting_window_safety": {
+            "issue": "#611",
+            "status": "previously-approved-not-reapproved",
+        },
+        "global_release_gate": "hold",
+        "remaining_gates": V023_REMAINING_RELEASE_GATES,
+        "invalidation_rule": (
+            "Any later runtime/data-model semantic change invalidates this "
+            "sign-off and requires reapproval."
+        ),
+    }
 
     for disclosure_path in ("CHANGELOG.md", "release_notes/v0.2.3.md"):
         disclosure = " ".join(_read(disclosure_path).split())
+        assert "human scientific/data-model sign-off is approved" in disclosure
+        assert V023_SIGNOFF_CANDIDATE in disclosure
+        assert "release remains **HOLD**" in disclosure
+        assert "same-candidate scientific/data-model review" in disclosure
+        assert "same-candidate release-security review" in disclosure
+        assert "candidate-wide QA" in disclosure
+        assert "19-cell qualification" in disclosure
+        assert "requires reapproval" in disclosure
         assert (
             "stale axis metadata on specific Array2D/Plane2D reductions and "
-            "numeric array permutations"
-            in disclosure
+            "numeric array permutations" in disclosure
         )
+        assert "mixed-unit CSD `V²/Hz` label" in disclosure
+        assert "public Rayleigh parent segment selection" in disclosure
+        assert "known finite-Monte-Carlo limitations" in disclosure
+        assert "dimensionless signal outputs" in disclosure
+        assert "raw-magnitude frequency `Quantity` handling" in disclosure
+        assert "float32 RMS underflow" in disclosure
+        assert "stale Array2D/Plane2D `min`/`max` indices" in disclosure
+        assert "stale numeric `swapaxes`/`transpose` metadata" in disclosure
 
 
 def test_release_review_scopes_bind_the_policy_to_lanes_a_and_b() -> None:

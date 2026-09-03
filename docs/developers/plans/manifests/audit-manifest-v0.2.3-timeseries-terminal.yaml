@@ -1,6 +1,6 @@
 schema: gwexpy-v023-timeseries-terminal-evidence-v1
 phase: override-terminal-timeseries
-status: focused-green-human-time-axis-review-required
+status: focused-green-human-time-axis-review-approved
 
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 phase_parent: a8f445669fa3469aa068eb8b72956de407255bb5
@@ -590,6 +590,8 @@ static_validation:
 
 human_review:
   required: true
+  status: approved
+  approved_candidate_sha: c7b79db7fee2e646069679a0efe3d65c7ed4e562
   lane: time-axis-metadata
   reason: >-
     The private integer epoch and cadence authority now tracks parent-owned
@@ -597,3 +599,23 @@ human_review:
     the exact-unit conversion, stale-authority removal (including buffer append
     without exact cadence), empty-append no-op preservation, and copy/slice
     behavior.
+
+human_scientific_data_model_signoff:
+  schema: gwexpy-v023-human-scientific-data-model-signoff-v1
+  status: approved
+  date: "2026-09-03"
+  approver_role: release owner
+  approved_candidate_sha: c7b79db7fee2e646069679a0efe3d65c7ed4e562
+  aggregate_report: docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md
+  non_intersecting_window_safety:
+    issue: "#611"
+    status: previously-approved-not-reapproved
+  global_release_gate: hold
+  remaining_gates:
+    - same-candidate scientific/data-model review
+    - same-candidate release-security review
+    - candidate-wide QA
+    - 19-cell qualification
+  invalidation_rule: >-
+    Any later runtime/data-model semantic change invalidates this sign-off and
+    requires reapproval.

@@ -279,6 +279,21 @@ def test_v023_review_lanes_cover_every_fixed_base_candidate_change() -> None:
     assert uncovered == []
 
 
+def test_v023_signoff_report_is_in_all_same_candidate_review_lanes() -> None:
+    contracts = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
+    lanes = contracts["releases"]["v0.2.3"]["review_lanes"]
+    signoff_report = (
+        "docs/developers/reports/"
+        "report_v0.2.3_human_scientific_data_model_signoff_20260903.md"
+    )
+
+    assert {lane for lane, paths in lanes.items() if signoff_report in paths} == {
+        "data-model",
+        "release-security",
+        "scientific-compatibility",
+    }
+
+
 def test_review_scope_diff_preserves_both_paths_of_a_rename(tmp_path: Path) -> None:
     repo = tmp_path / "repo"
     repo.mkdir()

@@ -1,6 +1,6 @@
 schema: gwexpy-v023-type-collision-compat-evidence-v1
 phase: override-inventory-specialized-type-closure
-status: focused-green-human-review-required
+status: focused-green-human-review-approved
 
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 phase_parent: e5f791722666601346f9990c247cce610fdfe85d
@@ -152,7 +152,9 @@ contracts:
       axis_label_text:
         gwpy: 'Frequency [$\mathrm{Hz}$] on both axes'
         gwexpy: 'Frequency 2 [Hz] on x; Frequency 1 [Hz] on y'
-        classification: domain-specific text-only presentation difference pending human sign-off
+        classification: >-
+          domain-specific text-only presentation difference approved by human
+          scientific/data-model sign-off
     presentation_defaults_retained:
       - inferno colour map
       - background colour
@@ -374,11 +376,13 @@ physics_and_data_model:
     Masked operand masks are retained.
   bifrequency_plot_axis_order: aligned to GWpy xindex/yindex authority
   binned_projection: only explicit opt-in can select the specialized calculation
-  human_review: required
+  human_review: approved
+  human_review_required: true
+  approved_candidate_sha: c7b79db7fee2e646069679a0efe3d65c7ed4e562
   scalarfield_independent_review:
     code: ready, no Critical or Important findings
     physics_and_data_model: ready, no Critical or Important findings
-    human_release_signoff: pending
+    human_release_signoff: approved
   human_review_reasons:
     - BifrequencyMap plot source orientation and frequency-axis authority changed
     - ScalarField finite-difference results use trailing physical coordinates on the reduced axis
@@ -499,3 +503,23 @@ changed_files:
   - tests/fields/test_scalarfield_diff_comparison_contract.py
   - docs/developers/plans/manifests/audit-manifest-v0.2.3-scalarfield-diff-comparison.yaml
   - docs/developers/plans/manifests/audit-manifest-v0.2.3-type-collision-compat.yaml
+
+human_scientific_data_model_signoff:
+  schema: gwexpy-v023-human-scientific-data-model-signoff-v1
+  status: approved
+  date: "2026-09-03"
+  approver_role: release owner
+  approved_candidate_sha: c7b79db7fee2e646069679a0efe3d65c7ed4e562
+  aggregate_report: docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md
+  non_intersecting_window_safety:
+    issue: "#611"
+    status: previously-approved-not-reapproved
+  global_release_gate: hold
+  remaining_gates:
+    - same-candidate scientific/data-model review
+    - same-candidate release-security review
+    - candidate-wide QA
+    - 19-cell qualification
+  invalidation_rule: >-
+    Any later runtime/data-model semantic change invalidates this sign-off and
+    requires reapproval.
