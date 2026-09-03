@@ -5,8 +5,8 @@ selectors through ``**kwargs``, dropped them, and returned the whole file. The
 caller got numerically wrong data for the span it asked for, with nothing in the
 result to say so.
 
-Two contracts are asserted here, and "warns and returns the full span" is not an
-option for either:
+Two general contracts are asserted here, and "warns and returns the full span"
+is not an option for either:
 
 * **applies** — the result equals ``full_read.crop(start, end)``. The oracle is
   the full read cropped, not an independently computed window, so off-grid
@@ -18,17 +18,26 @@ anyway: cropping costs two lines, and refusing would remove function GWpy itself
 provides (its own WAV and ASCII readers crop). Only ``ats.mth5`` and
 ``xml.diaggui`` refuse, because the repository has no fixture that would let a
 windowed result be verified for them.
+
+Native HDF5 has one narrower post-success safety rule. If GWpy returns samples
+whose span is wholly disjoint from an explicit request, GWexpy preserves the
+collection key with a boundary-anchored empty series. Parent failures,
+overlapping results, and explicit ``pad=`` behavior remain parent-owned.
 """
 
 from __future__ import annotations
 
+import io
 import sqlite3
 import warnings
 
+import h5py
 import numpy as np
 import pytest
+from gwpy.time import LIGOTimeGPS
 from gwpy.timeseries import TimeSeriesDict as GwpyTimeSeriesDict
 
+import gwexpy.timeseries.collections as collections_module
 from gwexpy.interop.errors import IoNotImplementedError
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesList
 
@@ -600,24 +609,59 @@ class TestNonNanosecondGrids:
         )
         _assert_matches_oracle(got, full.crop(start, end))
 
-    def test_window_before_data_with_non_ns_epoch_matches_gwpy(self, tmp_path):
-        """A non-ns ``crop(edge, edge)`` currently returns eight samples.
-
-        This records the inherited GWpy oracle result, not approval of its
-        selection semantics.
-        """
+    def test_window_before_data_with_non_ns_epoch_returns_metadata_empty(
+        self, tmp_path
+    ):
+        """A successful parent read cannot return samples outside the window."""
         third = TimeSeries(
-            np.arange(N_SAMPLES, dtype=float),
+            np.arange(N_SAMPLES, dtype=np.float32),
             t0=1.0 / 3.0,
             dt=DT,
+            unit="V",
             name="A",
             channel="A",
         )
         source = _write_hdf5(tmp_path, third)
         got = TimeSeriesDict.read(source, format="hdf5", end=0.2)["A"]
-        oracle = GwpyTimeSeriesDict.read(source, format="hdf5", end=0.2)["A"]
-        _assert_matches_oracle(got, oracle)
-        assert len(got) == 8
+
+        assert type(got) is TimeSeries
+        assert got.shape == (0,)
+        assert got.dtype == np.dtype(np.float32)
+        assert got.unit == third.unit
+        assert got.name == third.name
+        assert str(got.channel) == str(third.channel)
+        assert got.dt == third.dt
+        assert got.t0 == third.t0
+        assert got.span == (float(third.span[0]), float(third.span[0]))
+        assert not hasattr(got, "_gwex_t0_gps_ns")
+        assert not hasattr(got, "_gwex_dt_gps_ns")
+
+    def test_exact_sidecar_window_before_data_drops_private_authority(self, tmp_path):
+        """An empty selection keeps public metadata, not source exact authority."""
+        exact = TimeSeries(
+            np.arange(4, dtype=np.float32),
+            t0_ns=2_000_000_001,
+            dt=0.25,
+            unit="V",
+            name="exact",
+            channel="H1:EXACT",
+        )
+        source = tmp_path / "exact-before.h5"
+        TimeSeriesDict({"X": exact}).write(source, format="hdf5")
+
+        got = TimeSeriesDict.read(source, format="hdf5", end=1.75)["X"]
+
+        assert type(got) is TimeSeries
+        assert got.shape == (0,)
+        assert got.dtype == exact.dtype
+        assert got.unit == exact.unit
+        assert got.name == exact.name
+        assert str(got.channel) == str(exact.channel)
+        assert got.dt == exact.dt
+        assert got.t0 == exact.t0
+        assert got.span == (float(exact.span[0]), float(exact.span[0]))
+        assert not hasattr(got, "_gwex_t0_gps_ns")
+        assert not hasattr(got, "_gwex_dt_gps_ns")
 
     def test_in_span_bounded_read_emits_no_crop_warning(self, tmp_path, series):
         """The synthesised upper bound used to sit 1 ns past the span end,
@@ -628,6 +672,445 @@ class TestNonNanosecondGrids:
             warnings.simplefilter("always")
             TimeSeriesDict.read(source, format="hdf5", start=0.2)
         assert not [w for w in recorded if "crop given" in str(w.message)]
+
+
+class TestNativeHdf5NonIntersectingSafety:
+    """The native post-success exception is narrow and source-neutral."""
+
+    @staticmethod
+    def _write_source(tmp_path, *, exact):
+        if exact:
+            series = TimeSeries(
+                np.arange(4, dtype=np.float32),
+                t0_ns=2_000_000_001,
+                dt=0.25,
+                unit="V",
+                name="signal",
+                channel="H1:SIGNAL",
+            )
+        else:
+            series = TimeSeries(
+                np.arange(4, dtype=np.float32),
+                t0=2.000000001,
+                dt=0.25,
+                unit="V",
+                name="signal",
+                channel="H1:SIGNAL",
+            )
+        path = tmp_path / f"{'exact' if exact else 'native'}.h5"
+        TimeSeriesDict({"A": series}).write(path, format="hdf5")
+        with h5py.File(path, "r") as h5file:
+            assert "gwexpy_kind" not in h5file.attrs
+            assert ("_gwexpy_sidecar_json_v2" in h5file.attrs) is exact
+        return path
+
+    @pytest.mark.parametrize("exact", [False, True], ids=["native", "exact-v2"])
+    @pytest.mark.parametrize("source_kind", ["path", "handle", "bytesio"])
+    def test_window_before_data_preserves_source_and_public_metadata(
+        self, tmp_path, exact, source_kind
+    ):
+        path = self._write_source(tmp_path, exact=exact)
+        before = path.read_bytes()
+        full = TimeSeriesDict.read(path, format="hdf5")["A"]
+        expected = full[:0]
+
+        if source_kind == "path":
+            got = TimeSeriesDict.read(path, format="hdf5", end=1.75)["A"]
+        elif source_kind == "handle":
+            with h5py.File(path, "r") as source:
+                got = TimeSeriesDict.read(source, format="hdf5", end=1.75)["A"]
+                assert source.id.valid
+        else:
+            source = io.BytesIO(before)
+            oracle_source = io.BytesIO(before)
+            source.seek(7)
+            oracle_source.seek(7)
+            GwpyTimeSeriesDict.read(oracle_source, format="hdf5", end=1.75)
+            got = TimeSeriesDict.read(source, format="hdf5", end=1.75)["A"]
+            assert not source.closed
+            assert source.tell() == oracle_source.tell()
+
+        _assert_matches_oracle(got, expected)
+        assert type(got) is TimeSeries
+        assert not hasattr(got, "_gwex_t0_gps_ns")
+        assert not hasattr(got, "_gwex_dt_gps_ns")
+        assert path.read_bytes() == before
+
+    @pytest.mark.parametrize("exact", [False, True], ids=["native", "exact-v2"])
+    def test_parent_created_after_data_empty_is_unchanged(self, tmp_path, exact):
+        path = self._write_source(tmp_path, exact=exact)
+
+        expected = GwpyTimeSeriesDict.read(path, format="hdf5", start=3.25)["A"]
+        got = TimeSeriesDict.read(path, format="hdf5", start=3.25)["A"]
+
+        assert expected.shape == (0,)
+        _assert_matches_oracle(got, expected)
+        assert not hasattr(got, "_gwex_t0_gps_ns")
+        assert not hasattr(got, "_gwex_dt_gps_ns")
+
+    def test_sub_ns_nonexact_overlap_uses_the_raw_float_bound(self, tmp_path):
+        from gwpy.time import to_gps
+
+        t0 = 1.0 / 3.0
+        series = TimeSeries(
+            np.arange(4, dtype=np.float32),
+            t0=t0,
+            dt=0.25,
+            name="nonexact",
+            channel="H1:NONEXACT",
+        )
+        path = tmp_path / "sub-ns-nonexact-overlap.h5"
+        TimeSeriesDict({"A": series}).write(path, format="hdf5")
+        end = t0 + 1e-10
+        assert end > float(series.span[0])
+        assert float(to_gps(end)) <= float(series.span[0])
+
+        parent = GwpyTimeSeriesDict.read(path, format="hdf5", end=end)["A"]
+        got = TimeSeriesDict.read(path, format="hdf5", end=end)["A"]
+
+        assert parent.size > 0
+        _assert_matches_oracle(got, parent)
+
+    def test_sub_binary64_nonexact_overlap_uses_longdouble_bound(self, tmp_path):
+        t0 = 1.0 / 3.0
+        series = TimeSeries(
+            np.arange(4, dtype=np.float32),
+            t0=t0,
+            dt=0.25,
+            name="nonexact",
+            channel="H1:NONEXACT",
+        )
+        path = tmp_path / "longdouble-nonexact-overlap.h5"
+        TimeSeriesDict({"A": series}).write(path, format="hdf5")
+        end = np.longdouble(t0) + np.longdouble("1e-19")
+        assert end > np.longdouble(series.span[0])
+        assert float(end) == float(series.span[0])
+
+        parent = GwpyTimeSeriesDict.read(path, format="hdf5", end=end)["A"]
+        got = TimeSeriesDict.read(path, format="hdf5", end=end)["A"]
+
+        assert parent.size > 0
+        _assert_matches_oracle(got, parent)
+
+    def test_one_ns_exact_overlap_at_large_epoch_is_left_untouched(self, tmp_path):
+        t0_ns = 1_234_567_890_123_456_789
+        exact = TimeSeries(
+            np.arange(4, dtype=np.float32),
+            t0_ns=t0_ns,
+            dt=0.25,
+            unit="V",
+            name="exact",
+            channel="H1:EXACT",
+        )
+        path = tmp_path / "large-exact-overlap.h5"
+        TimeSeriesDict({"A": exact}).write(path, format="hdf5")
+        end_ns = t0_ns + 1
+        end = LIGOTimeGPS(
+            end_ns // 1_000_000_000,
+            end_ns % 1_000_000_000,
+        )
+
+        parent = GwpyTimeSeriesDict.read(path, format="hdf5", end=end)["A"]
+        got = TimeSeriesDict.read(path, format="hdf5", end=end)["A"]
+
+        assert parent.size > 0
+        _assert_matches_oracle(got, parent)
+        assert got._gwex_t0_gps_ns == t0_ns
+        assert got._gwex_dt_gps_ns == 250_000_000
+
+    def test_sub_ns_exact_overlap_uses_longdouble_bound(self, tmp_path):
+        from gwpy.time import to_gps
+
+        t0_ns = 1_234_567_890_123_456_789
+        exact = TimeSeries(
+            np.arange(4, dtype=np.float32),
+            t0_ns=t0_ns,
+            dt=0.25,
+            name="exact",
+            channel="H1:EXACT",
+        )
+        path = tmp_path / "longdouble-exact-overlap.h5"
+        TimeSeriesDict({"A": exact}).write(path, format="hdf5")
+        exact_t0 = np.longdouble(t0_ns) / np.longdouble(1_000_000_000)
+        end = exact_t0 + np.longdouble("1e-10")
+        assert end > exact_t0
+        assert to_gps(end).ns() == t0_ns
+
+        parent = GwpyTimeSeriesDict.read(path, format="hdf5", end=end)["A"]
+        got = TimeSeriesDict.read(path, format="hdf5", end=end)["A"]
+
+        assert parent.size > 0
+        _assert_matches_oracle(got, parent)
+        assert got._gwex_t0_gps_ns == t0_ns
+        assert got._gwex_dt_gps_ns == 250_000_000
+
+    @pytest.mark.parametrize(
+        ("read_args", "expected_t0"),
+        [
+            pytest.param((["A"], None, 2.0), 2.0, id="end-equals-left"),
+            pytest.param((["A"], 3.0), 3.0, id="start-equals-right"),
+        ],
+    )
+    def test_positional_equality_boundaries_empty_nonempty_parent_result(
+        self, tmp_path, monkeypatch, read_args, expected_t0
+    ):
+        path = self._write_source(tmp_path, exact=False)
+        returned = TimeSeries(
+            np.arange(4, dtype=np.float32),
+            t0=2.0,
+            dt=0.25,
+            unit="V",
+            name="returned",
+            channel="H1:RETURNED",
+        )
+        calls = []
+
+        def parent_read(cls, source, *args, **kwargs):
+            calls.append((source, args, kwargs.copy()))
+            return GwpyTimeSeriesDict({"A": returned})
+
+        monkeypatch.setattr(
+            collections_module.BaseTimeSeriesDict,
+            "read",
+            classmethod(parent_read),
+        )
+
+        got = TimeSeriesDict.read(path, *read_args, format="hdf5")["A"]
+
+        assert calls == [(path, read_args, {"format": "hdf5"})]
+        assert got.shape == (0,)
+        assert float(got.t0.value) == expected_t0
+        assert got.dtype == returned.dtype
+        assert got.unit == returned.unit
+        assert got.name == returned.name
+        assert str(got.channel) == str(returned.channel)
+
+    def test_parent_created_empty_object_is_not_replaced(self, tmp_path, monkeypatch):
+        path = self._write_source(tmp_path, exact=False)
+        empty = TimeSeries(
+            np.empty(0, dtype=np.float32),
+            t0_ns=2_000_000_001,
+            dt=0.25,
+            unit="V",
+            name="empty",
+            channel="H1:EMPTY",
+        )
+
+        def parent_read(cls, source, *args, **kwargs):
+            return GwpyTimeSeriesDict({"A": empty})
+
+        monkeypatch.setattr(
+            collections_module.BaseTimeSeriesDict,
+            "read",
+            classmethod(parent_read),
+        )
+
+        got = TimeSeriesDict.read(path, end=1.75, format="hdf5")["A"]
+
+        assert got is empty
+        assert got._gwex_t0_gps_ns == empty._gwex_t0_gps_ns
+        assert got._gwex_dt_gps_ns == empty._gwex_dt_gps_ns
+
+    def test_parent_restore_normalize_order_and_single_call(
+        self, tmp_path, monkeypatch
+    ):
+        path = self._write_source(tmp_path, exact=True)
+        events = []
+        parent_read = collections_module.BaseTimeSeriesDict.read
+        restore = collections_module._restore_native_hdf5_exact_state
+        normalize = collections_module._normalize_native_hdf5_empty_selection
+
+        def parent_spy(cls, source, *args, **kwargs):
+            events.append("parent")
+            return parent_read(source, *args, **kwargs)
+
+        def restore_spy(source, result, group):
+            events.append("restore")
+            return restore(source, result, group)
+
+        def normalize_spy(result, args, kwargs):
+            events.append("normalize")
+            return normalize(result, args, kwargs)
+
+        monkeypatch.setattr(
+            collections_module.BaseTimeSeriesDict,
+            "read",
+            classmethod(parent_spy),
+        )
+        monkeypatch.setattr(
+            collections_module,
+            "_restore_native_hdf5_exact_state",
+            restore_spy,
+        )
+        monkeypatch.setattr(
+            collections_module,
+            "_normalize_native_hdf5_empty_selection",
+            normalize_spy,
+        )
+
+        TimeSeriesDict.read(path, format="hdf5", start=2.25, end=2.75)
+
+        assert events == ["parent", "restore", "normalize"]
+
+    def test_parent_failure_is_not_retried_or_reinterpreted(
+        self, tmp_path, monkeypatch
+    ):
+        path = self._write_source(tmp_path, exact=True)
+        error = RuntimeError("parent sentinel")
+        calls = 0
+        downstream_calls = []
+
+        def parent_read(cls, source, *args, **kwargs):
+            nonlocal calls
+            calls += 1
+            raise error
+
+        def downstream_spy(*args, **kwargs):
+            downstream_calls.append((args, kwargs))
+
+        monkeypatch.setattr(
+            collections_module.BaseTimeSeriesDict,
+            "read",
+            classmethod(parent_read),
+        )
+        monkeypatch.setattr(
+            collections_module,
+            "_restore_native_hdf5_exact_state",
+            downstream_spy,
+        )
+        monkeypatch.setattr(
+            collections_module,
+            "_normalize_native_hdf5_empty_selection",
+            downstream_spy,
+        )
+
+        with pytest.raises(RuntimeError) as caught:
+            TimeSeriesDict.read(path, format="hdf5", end=1.75)
+
+        assert caught.value is error
+        assert calls == 1
+        assert downstream_calls == []
+
+    def test_positional_end_empties_only_the_disjoint_channel(self, tmp_path):
+        covered = TimeSeries(
+            np.arange(N_SAMPLES, dtype=np.float32),
+            t0=0,
+            dt=DT,
+            unit="V",
+            name="covered",
+            channel="H1:COVERED",
+        )
+        disjoint = TimeSeries(
+            np.arange(N_SAMPLES, dtype=np.float32) + 100,
+            t0=1.0 / 3.0,
+            dt=DT,
+            unit="V",
+            name="disjoint",
+            channel="L1:DISJOINT",
+        )
+        path = tmp_path / "mixed-native.h5"
+        TimeSeriesDict({"covered": covered, "disjoint": disjoint}).write(
+            path, format="hdf5"
+        )
+
+        parent = GwpyTimeSeriesDict.read(
+            path, ["covered", "disjoint"], None, 0.2, format="hdf5"
+        )
+        got = TimeSeriesDict.read(
+            path, ["covered", "disjoint"], None, 0.2, format="hdf5"
+        )
+
+        assert list(got) == ["covered", "disjoint"]
+        _assert_matches_oracle(got["covered"], parent["covered"])
+        assert parent["disjoint"].size > 0
+        assert got["disjoint"].shape == (0,)
+        assert got["disjoint"].t0 == disjoint.t0
+        assert got["disjoint"].name == disjoint.name
+        assert str(got["disjoint"].channel) == str(disjoint.channel)
+
+    def test_explicit_pad_preserves_the_parent_result(self, tmp_path):
+        path = self._write_source(tmp_path, exact=True)
+
+        expected = GwpyTimeSeriesDict.read(path, format="hdf5", end=1.75, pad=0)["A"]
+        got = TimeSeriesDict.read(path, format="hdf5", end=1.75, pad=0)["A"]
+
+        assert expected.size > 0
+        _assert_matches_oracle(got, expected)
+
+    def test_duplicate_positional_keyword_bound_keeps_parent_error(self, tmp_path):
+        path = self._write_source(tmp_path, exact=False)
+
+        with pytest.raises(TypeError) as parent_error:
+            GwpyTimeSeriesDict.read(path, ["A"], None, 1.75, end=1.75, format="hdf5")
+        with pytest.raises(type(parent_error.value)):
+            TimeSeriesDict.read(path, ["A"], None, 1.75, end=1.75, format="hdf5")
+
+
+class TestLegacyHdf5NonIntersectingRoutes:
+    """The safety change does not broaden legacy manifest source support."""
+
+    @staticmethod
+    def _write_source(tmp_path, *, layout="dataset"):
+        series = TimeSeries(
+            np.arange(N_SAMPLES, dtype=np.float32),
+            t0=1.0 / 3.0,
+            dt=DT,
+            unit="V",
+            name="legacy",
+            channel="H1:LEGACY",
+        )
+        path = tmp_path / f"legacy-{layout}.h5"
+        TimeSeriesDict({"A": series}).write(path, format="hdf5", layout=layout)
+        return path, series
+
+    @pytest.mark.parametrize("layout", ["dataset", "group"])
+    def test_path_keeps_legacy_manifest_selection(self, tmp_path, monkeypatch, layout):
+        path, series = self._write_source(tmp_path, layout=layout)
+
+        def unexpected_native_route(*args, **kwargs):
+            pytest.fail("legacy manifest read entered the native HDF5 route")
+
+        monkeypatch.setattr(
+            collections_module.BaseTimeSeriesDict,
+            "read",
+            classmethod(unexpected_native_route),
+        )
+        monkeypatch.setattr(
+            collections_module,
+            "_normalize_native_hdf5_empty_selection",
+            unexpected_native_route,
+        )
+
+        got = TimeSeriesDict.read(path, format="hdf5", end=0.2)
+
+        assert list(got) == ["A"]
+        assert got["A"].shape == (0,)
+        assert got["A"].dtype == series.dtype
+        assert got["A"].unit == series.unit
+        assert got["A"].name == series.name
+        assert str(got["A"].channel) == str(series.channel)
+        assert got["A"].dt == series.dt
+        assert got["A"].t0 == series.t0
+
+    def test_bytesio_keeps_legacy_position_and_lifecycle(self, tmp_path):
+        path, _ = self._write_source(tmp_path)
+        payload = path.read_bytes()
+        source = io.BytesIO(payload)
+        source.seek(7)
+
+        got = TimeSeriesDict.read(source, format="hdf5", end=0.2)
+
+        assert got["A"].shape == (0,)
+        assert not source.closed
+        assert source.tell() == len(payload)
+
+    def test_open_handle_keeps_legacy_failure_and_ownership(self, tmp_path):
+        path, _ = self._write_source(tmp_path)
+
+        with h5py.File(path, "r") as source:
+            with pytest.raises(TypeError):
+                TimeSeriesDict.read(source, format="hdf5", end=0.2)
+            assert source.id.valid
 
 
 class TestBoundTypes:

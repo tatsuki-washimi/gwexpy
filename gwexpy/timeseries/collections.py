@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import logging
 from contextlib import nullcontext
+from fractions import Fraction
+from numbers import Integral, Real
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, SupportsIndex, cast
 
@@ -194,6 +196,76 @@ def _restore_native_hdf5_exact_state(source: Any, result: Any, group: Any) -> An
         finally:
             if position is not None:
                 source.seek(position)
+    return result
+
+
+def _normalize_native_hdf5_empty_selection(
+    result: Any,
+    args: tuple[Any, ...],
+    kwargs: dict[str, Any],
+) -> Any:
+    """Empty successful native reads whose returned span misses the request.
+
+    This runs only after the parent binding and read have completed, so parent
+    exceptions remain untouched. Direct boundary slices retain public series
+    metadata without re-running ``crop`` on any overlapping parent result.
+    """
+    if kwargs.get("pad") is not None:
+        return result
+
+    start = args[1] if len(args) > 1 else kwargs.get("start")
+    end = args[2] if len(args) > 2 else kwargs.get("end")
+    if start is None and end is None:
+        return result
+
+    from gwpy.time import to_gps
+
+    def normalize_bound(bound: Any) -> Fraction | None:
+        if bound is None:
+            return None
+        try:
+            if isinstance(bound, Integral):
+                return Fraction(int(bound), 1)
+            if isinstance(bound, Real):
+                as_integer_ratio = getattr(bound, "as_integer_ratio", None)
+                if as_integer_ratio is None:
+                    return None
+                numerator, denominator = as_integer_ratio()
+                return Fraction(int(numerator), int(denominator))
+            gps = to_gps(bound)
+            nanoseconds = int(gps.gpsSeconds) * 1_000_000_000 + int(gps.gpsNanoSeconds)
+            return Fraction(nanoseconds, 1_000_000_000)
+        except (ArithmeticError, AttributeError, RuntimeError, TypeError, ValueError):
+            # The parent already accepted and read this bound. If its exact
+            # ordering cannot be recovered here, leave that result untouched.
+            return None
+
+    start = normalize_bound(start)
+    end = normalize_bound(end)
+    for key, entry in result.items():
+        if not len(entry):
+            continue
+        exact_lo_ns = getattr(entry, "_gwex_t0_gps_ns", None)
+        exact_dt_ns = getattr(entry, "_gwex_dt_gps_ns", None)
+        if exact_lo_ns is not None and exact_dt_ns is not None:
+            exact_lo_ns = int(exact_lo_ns)
+            lo = Fraction(exact_lo_ns, 1_000_000_000)
+            hi = lo + Fraction(len(entry) * int(exact_dt_ns), 1_000_000_000)
+        else:
+            lo, hi = (
+                Fraction(*float(bound).as_integer_ratio()) for bound in entry.span
+            )
+        before = end is not None and end <= lo
+        after = start is not None and start >= hi
+        if before:
+            empty = entry[:0]
+        elif after:
+            empty = entry[len(entry) :]
+        else:
+            continue
+        empty.__dict__.pop("_gwex_t0_gps_ns", None)
+        empty.__dict__.pop("_gwex_dt_gps_ns", None)
+        result[key] = empty
     return result
 
 
@@ -482,12 +554,12 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                     BaseTimeSeriesDict.read(source, *args, **kwargs),
                 )
                 if augmentation_attrs & _GWEXPY_EXACT_HDF5_ATTRS:
-                    return _restore_native_hdf5_exact_state(
+                    result = _restore_native_hdf5_exact_state(
                         source,
                         result,
                         kwargs.get("group"),
                     )
-                return result
+                return _normalize_native_hdf5_empty_selection(result, args, kwargs)
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
             # This branch reopens the file and re-reads each dataset itself
