@@ -1,6 +1,6 @@
 schema: gwexpy-v023-io-terminal-evidence-v1
 phase: override-terminal-io
-status: focused-green-611-signoff-approved-global-release-gates-pending
+status: focused-green-611-signoff-and-disclosure-approved-global-release-gates-pending
 
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 phase_parent: 052162aa6a3352888010b3793d2b7fa9d8329afe
@@ -408,11 +408,13 @@ human_data_model_signoff:
   decision_date: "2026-09-03"
   approver_role: release owner
   human_approval_gate: satisfied
-  release_note_gate: pending
-  release_gate_for_this_exception: pending-release-note-disclosure
+  release_note_gate: satisfied
+  release_gate_for_this_exception: satisfied
+  release_note_evidence:
+    - CHANGELOG.md
+    - release_notes/v0.2.3.md
   global_release_gate: hold
   global_release_pending_reasons:
-    - release-note disclosure
     - remaining scientific/data-model review
     - same-candidate scientific and release-security review
     - candidate-wide QA

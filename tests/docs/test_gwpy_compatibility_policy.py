@@ -85,6 +85,7 @@ def test_public_entry_points_link_to_the_canonical_policy() -> None:
         "release_notes/v0.2.2.md": (
             "../docs_redesign/explanation/gwpy_compatibility_policy.md"
         ),
+        "release_notes/v0.2.3.md": PUBLIC_POLICY_URL,
         "docs/developers/plans/20260901_v0.2.2_gwpy_behavioral_compatibility.md": (
             "../../../docs_redesign/explanation/gwpy_compatibility_policy.md"
         ),
@@ -277,16 +278,40 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
     signoff = io_audit["human_data_model_signoff"]
     assert signoff["status"] == "approved-for-non_intersecting_window_safety"
     assert signoff["human_approval_gate"] == "satisfied"
-    assert signoff["release_note_gate"] == "pending"
-    assert signoff["release_gate_for_this_exception"].startswith("pending-")
+    assert signoff["release_note_gate"] == "satisfied"
+    assert signoff["release_gate_for_this_exception"] == "satisfied"
+    assert signoff["release_note_evidence"] == [
+        "CHANGELOG.md",
+        "release_notes/v0.2.3.md",
+    ]
     assert signoff["global_release_gate"] == "hold"
     assert set(signoff["global_release_pending_reasons"]) == {
-        "release-note disclosure",
         "remaining scientific/data-model review",
         "same-candidate scientific and release-security review",
         "candidate-wide QA",
         "19-cell qualification",
     }
+
+    for disclosure_path in ("CHANGELOG.md", "release_notes/v0.2.3.md"):
+        disclosure = _read(disclosure_path)
+        normalized_disclosure = " ".join(disclosure.split())
+        assert "negative stop indices wrap" in normalized_disclosure
+        assert "completely non-intersecting" in normalized_disclosure
+        assert "zero-length" in normalized_disclosure
+        assert "Partial overlap" in normalized_disclosure
+        assert "`pad=`" in normalized_disclosure
+        assert "parent reader errors" in normalized_disclosure
+        assert "class, dtype, unit, name/channel, and cadence" in normalized_disclosure
+        assert "public `t0`/`span`" in normalized_disclosure
+        assert "private exact-time authority" in normalized_disclosure
+        assert (
+            "Scientific and data-model release sign-off remains pending"
+            in normalized_disclosure
+        )
+        assert (
+            "restores GWpy 4.0.1/4.0.2 default behavior across"
+            not in normalized_disclosure
+        )
 
     legacy_audit = yaml.safe_load(
         _read(

@@ -102,6 +102,16 @@ def test_golden_v0_1_11(tmp_path: Path) -> None:
     )
 
 
+def test_v0_2_3_note_is_generated_from_the_tracked_changelog() -> None:
+    """The reviewed v0.2.3 note must stay byte-identical to its source section."""
+    module = _load_module()
+    changelog = (SCRIPT.parents[1] / "CHANGELOG.md").read_text(encoding="utf-8")
+    body = module.extract_single_version(changelog, "0.2.3")
+    expected = module.build_release_note("0.2.3", body).encode("utf-8")
+
+    assert (RELEASE_NOTES_DIR / "v0.2.3.md").read_bytes() == expected
+
+
 # ---------------------------------------------------------------------------
 # Test 2: only the target version file is changed; others are untouched
 # ---------------------------------------------------------------------------
