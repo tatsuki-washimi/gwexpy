@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -129,6 +130,65 @@ def test_repository_baseline_is_canonical_complete_and_initially_empty() -> None
     assert all(not skips for skips in loaded.cells.values())
     assert raw == canonical_json(baseline_data())
     assert loaded.sha256 == hashlib.sha256(raw).hexdigest() == BASELINE_SHA256
+
+
+def test_repository_baseline_survives_crlf_checkout(tmp_path: Path) -> None:
+    source_attributes = ROOT / ".gitattributes"
+    assert source_attributes.is_file()
+
+    repository = tmp_path / "repository"
+    repository.mkdir()
+    shutil.copyfile(source_attributes, repository / ".gitattributes")
+
+    baseline = (
+        repository
+        / "scripts"
+        / "ci"
+        / "v023_qualification_expected_skips.json"
+    )
+    baseline.parent.mkdir(parents=True)
+    shutil.copyfile(BASELINE, baseline)
+
+    for args in (
+        ["init", "-q", "-b", "main"],
+        ["config", "user.email", "test@example.invalid"],
+        ["config", "user.name", "Qualification test"],
+        ["config", "core.autocrlf", "true"],
+        ["config", "core.eol", "crlf"],
+    ):
+        subprocess.run(
+            ["git", *args],
+            cwd=repository,
+            check=True,
+            capture_output=True,
+        )
+    subprocess.run(
+        ["git", "add", "."],
+        cwd=repository,
+        check=True,
+        capture_output=True,
+    )
+    subprocess.run(
+        ["git", "commit", "-qm", "baseline"],
+        cwd=repository,
+        check=True,
+        capture_output=True,
+    )
+
+    baseline.unlink()
+    subprocess.run(
+        ["git", "checkout", "--", "."],
+        cwd=repository,
+        check=True,
+        capture_output=True,
+    )
+
+    raw = baseline.read_bytes()
+    assert raw == BASELINE.read_bytes()
+    assert b"\r\n" not in raw
+    assert hashlib.sha256(raw).hexdigest() == BASELINE_SHA256
+    evidence = load_module()
+    assert evidence.load_expected_skips(baseline).sha256 == BASELINE_SHA256
 
 
 def test_version_contract_preserves_v022_and_adds_v023() -> None:
