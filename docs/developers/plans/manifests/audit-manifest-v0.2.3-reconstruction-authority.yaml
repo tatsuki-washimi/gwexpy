@@ -7,7 +7,7 @@ purpose: >-
 status: classification-complete-focused-green-runtime-frozen-review-pending
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 supersedes_runtime_candidate: 8200a30a9e131cb357b17f0b64f5d6de995a2a26
-runtime_candidate: 5cb05b2bc89e9e36ec7da7b5f0260a02fbb02260
+runtime_candidate: 431bde639da6cbb5bdc988064892c2d4b536ca7d
 oracles:
   - gwpy-4.0.1
   - gwpy-4.0.2
@@ -166,6 +166,12 @@ entries:
     action: use ts.x0/ts.dt
     evidence:
       - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_standardize_timeseries_integer_reconstruction_preserves_axis
+  - id: preprocess.align
+    source: gwexpy/timeseries/preprocess.py:_align_series_to_grid
+    classification: axis-coordinate
+    action: interpret dimensionless aligned output numerically in mixed time-based alignment without converting its public axis
+    evidence:
+      - tests/timeseries/test_extensions.py::test_align_time_based_with_dimensionless_dt
   - id: preprocess.standardize-matrix
     source: gwexpy/timeseries/preprocess.py:standardize_matrix
     classification: axis-coordinate
