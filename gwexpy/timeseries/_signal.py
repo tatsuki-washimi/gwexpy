@@ -176,13 +176,18 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             analytic = analytic[n_pad:-n_pad]
 
         # 7. Wrap
-        return self.__class__(
+        result = self.__class__(
             analytic,
             x0=self.x0,
             dt=self.dt,
             unit=self.unit,
             channel=self.channel,
             name=self.name,
+        )
+        from ._epoch import _restore_exact_time_authority
+
+        return cast(
+            "TimeSeriesSignalMixin", _restore_exact_time_authority(self, result)
         )
 
     def envelope(self, *args: Any, **kwargs: Any) -> TimeSeriesSignalMixin:
@@ -260,7 +265,9 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
 
         # Override unit
         out.override_unit("deg" if deg else "rad")
-        return out
+        from ._epoch import _restore_exact_time_authority
+
+        return cast("TimeSeriesSignalMixin", _restore_exact_time_authority(self, out))
 
     def radian(self, unwrap: bool = False) -> TimeSeriesSignalMixin:
         """Calculate the phase angle of the TimeSeries in radians.
@@ -291,7 +298,9 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             phi, x0=self.x0, dt=self.dt, channel=self.channel, name=self.name
         )
         out.override_unit("rad")
-        return out
+        from ._epoch import _restore_exact_time_authority
+
+        return cast("TimeSeriesSignalMixin", _restore_exact_time_authority(self, out))
 
     def degree(self, unwrap: bool = False) -> TimeSeriesSignalMixin:
         """Calculate the phase angle of the TimeSeries in degrees.
@@ -322,7 +331,9 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             phi, x0=self.x0, dt=self.dt, channel=self.channel, name=self.name
         )
         out.override_unit("deg")
-        return out
+        from ._epoch import _restore_exact_time_authority
+
+        return cast("TimeSeriesSignalMixin", _restore_exact_time_authority(self, out))
 
     def unwrap_phase(self, deg: bool = False, **kwargs: Any) -> TimeSeriesSignalMixin:
         """Alias for instantaneous_phase(unwrap=True)."""
@@ -430,7 +441,9 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             f_inst, x0=self.x0, dt=self.dt, channel=self.channel, name=self.name
         )
         out.override_unit("Hz")
-        return out
+        from ._epoch import _restore_exact_time_authority
+
+        return cast("TimeSeriesSignalMixin", _restore_exact_time_authority(self, out))
 
     # ===============================
     # Demodulation Methods
@@ -558,7 +571,9 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             kwargs["times"] = self.times
 
         out = self.__class__(y, **kwargs)
-        return out
+        from ._epoch import _restore_exact_time_authority
+
+        return cast("TimeSeriesSignalMixin", _restore_exact_time_authority(self, out))
 
     def heterodyne(
         self,
@@ -1141,7 +1156,9 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         if output == "complex":
             return outc
         elif output == "amp_phase":
-            mag = outc.abs()
+            from ._epoch import _restore_exact_time_authority
+
+            mag = _restore_exact_time_authority(outc, outc.abs())
             ph = self.__class__(
                 np.angle(outc.value, deg=deg),
                 x0=outc.x0,
@@ -1150,8 +1167,10 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
                 name=self.name,
             )
             ph.override_unit("deg" if deg else "rad")
-            return mag, ph
+            return mag, _restore_exact_time_authority(outc, ph)
         else:  # output == "iq"
+            from ._epoch import _restore_exact_time_authority
+
             i = self.__class__(
                 outc.value.real,
                 x0=outc.x0,
@@ -1168,7 +1187,10 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
                 name=self.name,
                 unit=self.unit,
             )
-            return i, q
+            return (
+                _restore_exact_time_authority(outc, i),
+                _restore_exact_time_authority(outc, q),
+            )
 
     # ===============================
     # Cross-correlation Methods

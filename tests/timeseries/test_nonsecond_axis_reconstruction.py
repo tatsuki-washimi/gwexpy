@@ -118,6 +118,42 @@ def test_timeseriesmatrix_copy_preserves_nonsecond_axis() -> None:
     )
 
 
+@pytest.mark.parametrize(
+    ("operation", "expected_x0"),
+    [
+        ("astype", 1 * u.min),
+        ("real", 1 * u.min),
+        ("transpose", 1 * u.min),
+        ("reshape", 1 * u.min),
+        ("add", 1 * u.min),
+        ("diff", 2 * u.min),
+        ("pad", 0 * u.min),
+    ],
+)
+def test_timeseriesmatrix_reconstruction_preserves_nonsecond_axis(
+    operation: str, expected_x0: u.Quantity
+) -> None:
+    source = _matrix()
+    if operation == "astype":
+        result = source.astype(np.float32)
+    elif operation == "real":
+        result = source.real
+    elif operation == "transpose":
+        result = source.T
+    elif operation == "reshape":
+        result = source.reshape(1, 1)
+    elif operation == "add":
+        result = source + 1
+    elif operation == "diff":
+        result = source.diff()
+    else:
+        result = source.pad((1, 1))
+
+    assert result.xunit == u.min
+    assert result.x0 == expected_x0
+    assert result.dx == 1 * u.min
+
+
 def test_standardize_matrix_integer_reconstruction_preserves_axis() -> None:
     source = _matrix(dtype=np.int16)
 

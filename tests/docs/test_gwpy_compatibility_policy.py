@@ -297,23 +297,21 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
     )
     assert SAFETY_EXCEPTION in plan
     assert "Release decision: **HOLD**" in plan
-    assert (
-        "Status: implementation-complete-focused-green-19-cell-execution-pending"
-        in plan
-    )
+    assert "Status: in-progress" in plan
     assert "親 reader が正常終了した後だけ" in plan
     assert "compatibility_exception" in plan
     assert "8bfe36f9684989188c2f32e65ba429fe8bdfaf29" in plan
-    assert "Human scientific/data-model sign-off: **APPROVED**" in plan
+    assert "Human scientific/data-model sign-off was **APPROVED**" in plan
     assert V023_HISTORICAL_SIGNOFF_CANDIDATE in plan
     assert V023_CURRENT_SIGNOFF_CANDIDATE in plan
     assert V023_SIGNOFF_REPORT in plan
     assert "historical approval" in plan
-    assert "parent-parity risks only" in plan
+    assert "covered only the five" in plan
+    assert "parent-parity risks" in plan
     assert "release identity only" in plan
     assert "does not rebind" in plan
     assert "does not broaden" in plan
-    assert "PENDING REAPPROVAL" not in plan
+    assert "pending reapproval" in plan
     for remaining_gate in V023_REMAINING_RELEASE_GATES:
         assert remaining_gate in plan
 

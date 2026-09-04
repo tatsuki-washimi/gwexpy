@@ -490,6 +490,7 @@ class TimeSeriesMatrixCoreMixin:
         return {
             "data": data,
             "times": xindex,  # Map xindex to times
+            "xunit": getattr(self, "xunit", None),
             "rows": getattr(self, "rows", None),
             "cols": getattr(self, "cols", None),
             "meta": getattr(self, "meta", None),

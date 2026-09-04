@@ -473,6 +473,7 @@ class SeriesMatrix(  # type: ignore[misc]
         return matrix_cls(
             values,
             xindex=_copy_xindex(self.xindex),
+            xunit=self.xunit,
             meta=_copy_metadata_matrix(self.meta),
             rows=_copy_metadata_dict(self.rows, "row") if self.rows else self.rows,
             cols=_copy_metadata_dict(self.cols, "col") if self.cols else self.cols,
@@ -561,6 +562,7 @@ class SeriesMatrix(  # type: ignore[misc]
             rows=_copy_metadata_dict(self.rows, "row"),
             cols=_copy_metadata_dict(self.cols, "col"),
             xindex=_copy_xindex(self.xindex),
+            xunit=self.xunit,
             name=self.name,
             epoch=self.epoch,
             attrs=deepcopy(self.attrs),
@@ -581,6 +583,7 @@ class SeriesMatrix(  # type: ignore[misc]
             rows=_copy_metadata_dict(self.cols, "row"),
             cols=_copy_metadata_dict(self.rows, "col"),
             xindex=_copy_xindex(self.xindex),
+            xunit=self.xunit,
             name=f"{self.name}.T" if self.name else "",
             epoch=self.epoch,
             attrs=deepcopy(self.attrs),
@@ -635,6 +638,7 @@ class SeriesMatrix(  # type: ignore[misc]
             rows=_copy_metadata_dict(self.rows, "row") if same_layout else None,
             cols=_copy_metadata_dict(self.cols, "col") if same_layout else None,
             xindex=_copy_xindex(self.xindex),
+            xunit=self.xunit,
             name=self.name,
             epoch=self.epoch,
             attrs=deepcopy(self.attrs),
@@ -745,6 +749,7 @@ class SeriesMatrix(  # type: ignore[misc]
         return self.__class__(
             broadcast,
             xindex=_copy_xindex(self.xindex),
+            xunit=self.xunit,
             meta=MetaDataMatrix(
                 meta_array,
                 row_keys=deepcopy(getattr(self.meta, "row_keys", None)),
@@ -902,6 +907,7 @@ class SeriesMatrix(  # type: ignore[misc]
         return self.__class__(
             result_values,
             xindex=_copy_xindex(self.xindex),
+            xunit=self.xunit,
             meta=result_meta_matrix,
             units=result_meta_matrix.units,
             rows=_copy_metadata_dict(rows, "row") if rows else rows,

@@ -311,6 +311,50 @@ def test_demodulate_preserves_exact_time_authority(exp: bool, deg: bool) -> None
         )
 
 
+@pytest.mark.parametrize(
+    "method",
+    [
+        "hilbert",
+        "instantaneous_phase",
+        "radian",
+        "degree",
+        "instantaneous_frequency",
+        "mix_down",
+    ],
+)
+def test_same_axis_signal_methods_preserve_exact_time_authority(method: str) -> None:
+    epoch_ns = 1_234_567_890_123_456_789
+    series = TimeSeries(np.sin(np.arange(64) * 0.2), t0_ns=epoch_ns, dt=0.125)
+
+    result = (
+        getattr(series, method)(f0=1.25)
+        if method == "mix_down"
+        else getattr(series, method)()
+    )
+
+    _assert_exact_time_authority(
+        result,
+        epoch_ns=epoch_ns,
+        dt_ns=125_000_000,
+    )
+
+
+@pytest.mark.parametrize("output", ["complex", "amp_phase", "iq"])
+def test_lock_in_preserves_exact_time_authority(output: str) -> None:
+    epoch_ns = 1_234_567_890_123_456_789
+    series = TimeSeries(np.sin(np.arange(64) * 0.2), t0_ns=epoch_ns, dt=0.125)
+
+    result = series.lock_in(f0=1.25, stride=2, output=output, deg=False)
+    outputs = (result,) if not isinstance(result, tuple) else result
+
+    for output_series in outputs:
+        _assert_exact_time_authority(
+            output_series,
+            epoch_ns=epoch_ns,
+            dt_ns=2_000_000_000,
+        )
+
+
 def test_rms_signature_keeps_only_keyword_nan_extension() -> None:
     _assert_parameter_layout(
         TimeSeries.rms,

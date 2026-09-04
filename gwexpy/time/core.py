@@ -91,14 +91,12 @@ def _is_date_component_sequence(obj):
         # a numeric vector.
         if len(values) >= 3 and abs(float(values[2])) > 366:
             return False
-        if len(values) >= 4 and abs(float(values[3])) > 24:
-            return False
-        if len(values) >= 5 and abs(float(values[4])) > 60:
-            return False
-        if len(values) >= 6 and abs(float(values[5])) > 60:
-            return False
-        if len(values) >= 7 and abs(float(values[6])) > 1_000_000:
-            return False
+        # Once the year, month-like component, and day-like component identify
+        # a date-shaped call, retain GWpy's validation for all later
+        # components.  Do not reject hour/minute/second/microsecond values here:
+        # values such as ``(2017, 1, 1, 25)`` must reach ``datetime`` and raise
+        # the same ``ValueError`` as GWpy instead of falling back to a GPS
+        # vector conversion.
     except (OverflowError, TypeError, ValueError):
         return False
     return True

@@ -69,6 +69,14 @@ def test_to_gps_date_component_sequences_match_gwpy(value):
         pytest.param([2017, 13, 1], ValueError, id="list-invalid-month"),
         pytest.param((2017, 2, 29), ValueError, id="invalid-day"),
         pytest.param((2017, 1, 32), ValueError, id="out-of-range-day"),
+        pytest.param((2017, 1, 1, 25), ValueError, id="out-of-range-hour"),
+        pytest.param((2017, 1, 1, 1, 61), ValueError, id="out-of-range-minute"),
+        pytest.param((2017, 1, 1, 1, 1, 61), ValueError, id="out-of-range-second"),
+        pytest.param(
+            (2017, 1, 1, 1, 1, 1, 1_000_001),
+            ValueError,
+            id="out-of-range-microsecond",
+        ),
         pytest.param((2017.0, 1, 1), TypeError, id="float-component"),
         pytest.param([2017.0, 1, 1], TypeError, id="list-float-component"),
     ],
@@ -131,6 +139,22 @@ def test_numeric_like_date_components_preserve_gwpy_failure(
             gwpy_function(value)
         with pytest.raises(error):
             gwexpy_function(value)
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        (2017, 1, 1, 25),
+        (2017, 1, 1, 1, 61),
+        (2017, 1, 1, 1, 1, 61),
+        (2017, 1, 1, 1, 1, 1, 1_000_001),
+    ],
+)
+def test_tconvert_invalid_date_components_preserve_gwpy_failure(value) -> None:
+    with pytest.raises(ValueError):
+        gwpy_time.tconvert(value)
+    with pytest.raises(ValueError):
+        gwexpy_time.tconvert(value)
 
 
 @pytest.mark.parametrize(

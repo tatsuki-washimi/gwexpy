@@ -128,25 +128,43 @@ contracts:
 
 from_gps_differential_evidence:
   parent_issue: 704
-  terminal_application: deferred-to-phase4
+  terminal_application: phase3-differential-complete
+  terminal_state_rule: >-
+    Each fixture below is terminal: no-finding means both installed GWpy
+    oracles and GWexpy agree on the observable result; fixed means GWexpy
+    deliberately restores the GWpy scalar contract; GWpy-fails means the
+    installed parent fails and the GWexpy extension outcome is recorded
+    separately rather than being treated as a parent success.
   evidence_source:
     - docs/developers/plans/manifests/audit-manifest-v0.2.3-phase2.yaml
     - tests/time/test_gwpy_phase2_compat.py
+    - tests/time/test_time_contracts.py
+  differential_fixture_tests:
+    - tests/time/test_gwpy_phase2_compat.py::test_from_gps_scalar_matches_gwpy_rounding
+    - tests/time/test_gwpy_phase2_compat.py::test_from_gps_vector_maps_the_gwpy_scalar_route
+    - tests/time/test_gwpy_phase2_compat.py::test_from_gps_empty_vectors_preserve_rank_and_object_dtype
+    - tests/time/test_gwpy_phase2_compat.py::test_from_gps_multidimensional_vectors_map_scalar_route
+    - tests/time/test_gwpy_phase2_compat.py::test_from_gps_nonfinite_vectors_preserve_gwpy_failure_class
+    - tests/time/test_gwpy_phase2_compat.py::test_from_gps_leap_second_preserves_gwpy_failure_class_for_scalar_and_vector
+    - tests/time/test_time_contracts.py::test_from_gps_scalar_and_vectors_record_timezone_and_type_contracts
+    - tests/time/test_time_contracts.py::test_from_gps_scalar_vector_and_astropy_routes_have_utc_parity
+    - tests/time/test_time_contracts.py::test_from_gps_half_microsecond_rounding_has_route_parity
+    - tests/time/test_time_contracts.py::test_from_gps_leap_second_neighbors_and_unrepresentable_instant
   entries:
     ordinary_integer:
-      proposed_terminal_state: no-finding
+      terminal_state: no-finding
     numeric_string:
-      proposed_terminal_state: no-finding
+      terminal_state: no-finding
     scientific_numeric_string:
-      proposed_terminal_state: no-finding
+      terminal_state: no-finding
     ordinary_fractional_gps:
-      proposed_terminal_state: no-finding
+      terminal_state: no-finding
     half_microsecond_float:
-      proposed_terminal_state: fixed
+      terminal_state: fixed
       issue: 704
       pre_fix: rounded to 125299 microseconds instead of the parent 125298
     LIGOTimeGPS_like:
-      proposed_terminal_state: fixed
+      terminal_state: fixed
       issue: 704
       boundaries:
         - ordinary nanoseconds
@@ -154,14 +172,14 @@ from_gps_differential_evidence:
         - 1500 nanoseconds
       pre_fix: rejected by the Astropy scalar route while the parent succeeded
     exact_leap_second_1167264017:
-      proposed_terminal_state: GWpy-fails
+      terminal_state: GWpy-fails
       exception: ValueError
     ndarray_vectorization:
-      proposed_terminal_state: GWpy-fails
+      terminal_state: GWpy-fails
       exception: TypeError
       gwexpy_extension_outcome: maps the parent scalar route element by element
     astropy_time_input:
-      proposed_terminal_state: GWpy-fails
+      terminal_state: GWpy-fails
       exception: TypeError
       gwexpy_extension_outcome: successful vector conversion
 

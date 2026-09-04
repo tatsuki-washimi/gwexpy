@@ -63,6 +63,7 @@ class SeriesMatrixStructureMixin:
             rows=new_rows,
             cols=new_cols,
             xindex=new_xindex,
+            xunit=getattr(self, "xunit", None),
             name=self.name,
             epoch=self.epoch,
             attrs=deepcopy(self.attrs),
@@ -122,6 +123,7 @@ class SeriesMatrixStructureMixin:
             rows=new_rows,
             cols=new_cols,
             meta=new_meta,
+            xunit=getattr(self, "xunit", None),
             name=self.name,
             epoch=self.epoch,
             attrs=deepcopy(self.attrs),
@@ -134,6 +136,7 @@ class SeriesMatrixStructureMixin:
         return matrix_cls(
             self.value.real,
             xindex=self.xindex,
+            xunit=getattr(self, "xunit", None),
             rows=self.rows,
             cols=self.cols,
             meta=self.meta,
@@ -153,6 +156,7 @@ class SeriesMatrixStructureMixin:
         return matrix_cls(
             self.value.imag,
             xindex=self.xindex,
+            xunit=getattr(self, "xunit", None),
             rows=self.rows,
             cols=self.cols,
             meta=self.meta,
@@ -171,6 +175,7 @@ class SeriesMatrixStructureMixin:
         return matrix_cls(
             np.conjugate(self.value),
             xindex=self.xindex,
+            xunit=getattr(self, "xunit", None),
             rows=self.rows,
             cols=self.cols,
             meta=self.meta,
@@ -194,6 +199,7 @@ class SeriesMatrixStructureMixin:
             return matrix_cls(
                 new_val,
                 xindex=self.xindex,
+                xunit=getattr(self, "xunit", None),
                 rows=self.cols,
                 cols=self.rows,
                 meta=new_meta,
@@ -244,6 +250,7 @@ class SeriesMatrixStructureMixin:
         return matrix_cls(
             new_val,
             xindex=self.xindex,
+            xunit=getattr(self, "xunit", None),
             meta=MetaDataMatrix(new_meta),
             name=self.name,
             epoch=self.epoch,

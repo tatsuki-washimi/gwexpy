@@ -325,6 +325,7 @@ class SeriesMatrixCoreMixin:
         return {
             "data": data,
             "xindex": xindex,
+            "xunit": getattr(self, "xunit", None),
             "rows": deepcopy(getattr(self, "rows", None)),
             "cols": deepcopy(getattr(self, "cols", None)),
             "meta": deepcopy(getattr(self, "meta", None)),

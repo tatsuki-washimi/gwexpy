@@ -729,7 +729,13 @@ class SeriesMatrixMathMixin:
             series_cls = _Series
 
         name = f"trace({self.name})" if getattr(self, "name", "") else "trace"
-        return series_cls(summed, xindex=self.xindex, unit=ref_unit, name=name)
+        return series_cls(
+            summed,
+            xindex=self.xindex,
+            xunit=getattr(self, "xunit", None),
+            unit=ref_unit,
+            name=name,
+        )
 
     def diagonal(self, offset=0, axis1=0, axis2=1, **kwargs):
         """Extract diagonal elements from the matrix."""
@@ -758,6 +764,7 @@ class SeriesMatrixMathMixin:
                 series_cls(
                     self._value[i, i],
                     xindex=self.xindex,
+                    xunit=getattr(self, "xunit", None),
                     unit=meta.unit,
                     name=meta.name,
                     channel=meta.channel,
@@ -783,6 +790,7 @@ class SeriesMatrixMathMixin:
             return matrix_cls(
                 values,
                 xindex=self.xindex,
+                xunit=getattr(self, "xunit", None),
                 rows=rows_dict,
                 cols=cols_dict,
                 meta=MetaDataMatrix(meta_arr),
@@ -799,6 +807,7 @@ class SeriesMatrixMathMixin:
             return matrix_cls(
                 values,
                 xindex=self.xindex,
+                xunit=getattr(self, "xunit", None),
                 rows=self.rows,
                 cols=self.cols,
                 meta=self.meta,
@@ -835,7 +844,13 @@ class SeriesMatrixMathMixin:
             series_cls = _Series
 
         name = f"det({self.name})" if getattr(self, "name", "") else "det"
-        return series_cls(det_vals, xindex=self.xindex, unit=result_unit, name=name)
+        return series_cls(
+            det_vals,
+            xindex=self.xindex,
+            xunit=getattr(self, "xunit", None),
+            unit=result_unit,
+            name=name,
+        )
 
     def inv(self, swap_rowcol: bool = True):
         """Compute the matrix inverse at each sample point."""
@@ -888,6 +903,7 @@ class SeriesMatrixMathMixin:
         return matrix_cls(
             inv_vals,
             xindex=self.xindex,
+            xunit=getattr(self, "xunit", None),
             rows=rows_out,
             cols=cols_out,
             meta=meta_matrix,
@@ -989,6 +1005,7 @@ class SeriesMatrixMathMixin:
         return matrix_cls(
             result_vals,
             xindex=self.xindex,
+            xunit=getattr(self, "xunit", None),
             rows=rows_out,
             cols=cols_out,
             meta=MetaDataMatrix(meta_arr),
@@ -1036,6 +1053,7 @@ class SeriesMatrixMathMixin:
         return matrix_cls(
             vals,
             xindex=self.xindex,
+            xunit=getattr(self, "xunit", None),
             rows=self.rows,
             cols=self.cols,
             meta=MetaDataMatrix(meta_arr),
