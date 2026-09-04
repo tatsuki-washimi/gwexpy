@@ -51,7 +51,7 @@ current_candidate:
     - stale_numeric_swapaxes_transpose_metadata
     pending_reapproval:
       - signal_dimensionless_raw_quantity_float32_underflow
-    superseded_runtime_candidate: 58559c742e4e2e7a483e72f132f3a84ff5aa626b
+    superseded_runtime_candidate: 5cb05b2bc89e9e36ec7da7b5f0260a02fbb02260
     other_contracts: excluded
 inventory_evidence:
   historical_approved_candidate:
@@ -96,7 +96,7 @@ approval is bound only to
 `0a3d09a117827113b02e4a2ce73bccd3b1ba95d2` and exactly the four unchanged
 parent-parity risks listed below. The signal-methods risk is invalidated by the
 subsequent internal-reconstruction follow-up and is pending reapproval for
-runtime candidate `58559c742e4e2e7a483e72f132f3a84ff5aa626b` (and its exact
+runtime candidate `5cb05b2bc89e9e36ec7da7b5f0260a02fbb02260` (and its exact
 replacement source SHA). It does not approve any other contract. The intervening
 documentation-only correction at
 `5d27c4ae8a1341e79aadf4751449784b2f575455` and this recording change do not
