@@ -418,7 +418,12 @@ class WhitenTransform(Transform):
             mat, original = _to_matrix_from_collection(x, align=self.align)
             return mat, original
         if isinstance(x, TimeSeries):
-            mat = TimeSeriesMatrix(x.value[None, None, :], t0=x.t0, dt=x.dt)
+            mat = TimeSeriesMatrix(
+                x.value[None, None, :],
+                x0=x.x0,
+                dt=x.dt,
+                xunit=x.xunit,
+            )
             return mat, None
         raise TypeError(f"Unsupported type for whitening: {type(x)}")
 
@@ -467,7 +472,9 @@ class WhitenTransform(Transform):
         X_centered = X - model.mean
         X_w = X_centered @ model.W.T
         new_val = X_w.T[:, None, :]
-        new_mat = TimeSeriesMatrix(new_val, t0=mat_data.t0, dt=mat_data.dt)
+        new_mat = TimeSeriesMatrix(
+            new_val, x0=mat_data.x0, dt=mat_data.dt, xunit=mat_data.xunit
+        )
         new_mat.meta.units = np.full(
             new_mat.meta.shape, u.dimensionless_unscaled, dtype=object
         )
@@ -492,7 +499,9 @@ class WhitenTransform(Transform):
         X_w = mat_data.value.reshape(-1, mat_data.shape[-1]).T
         X_rec = self.model.inverse_transform(X_w)
         X_rec = X_rec.T[:, None, :]
-        new_mat = TimeSeriesMatrix(X_rec, t0=mat_data.t0, dt=mat_data.dt)
+        new_mat = TimeSeriesMatrix(
+            X_rec, x0=mat_data.x0, dt=mat_data.dt, xunit=mat_data.xunit
+        )
         return _restore_collection(new_mat, original)
 
 

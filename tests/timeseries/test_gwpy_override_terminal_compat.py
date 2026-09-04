@@ -17,11 +17,22 @@ from typing import Any
 import numpy as np
 import pytest
 from astropy import units as u
+from astropy.time import Time
 from gwpy.time import LIGOTimeGPS
 from gwpy.timeseries import TimeSeries as GWpyTimeSeries
 from gwpy.timeseries import TimeSeriesDict as GWpyTimeSeriesDict
 
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+
+
+class UTCDateTime:
+    """Float-compatible stand-in that exercises the ObsPy parent route."""
+
+    __module__ = "obspy.core.utcdatetime"
+    datetime = datetime(2017, 1, 1, tzinfo=timezone.utc)
+
+    def __float__(self) -> float:
+        return 1002.0
 
 
 def _exception_class(call: Callable[[], Any]) -> type[BaseException] | None:
@@ -336,6 +347,8 @@ def test_timeseries_crop_preserves_private_exact_time_authority() -> None:
     [
         pytest.param(np.array(1000.5), id="scalar-array"),
         pytest.param(np.array([1000.5, 1001.5]), id="vector-array"),
+        pytest.param([1000.5], id="singleton-list"),
+        pytest.param((1000.5,), id="singleton-tuple"),
         pytest.param(1000.5 + 1j, id="complex"),
     ],
 )
@@ -355,6 +368,94 @@ def test_timeseries_crop_nonextension_bound_outcome_matches_gwpy(
 
 def _gps_datetime(second: int) -> datetime:
     return datetime(1980, 1, 6, 0, 0, second, tzinfo=timezone.utc)
+
+
+@pytest.mark.parametrize("wrapped", [False, True], ids=["scalar", "singleton-list"])
+def test_timeseries_crop_float_compatible_utcdatetime_matches_gwpy(
+    wrapped: bool,
+) -> None:
+    actual_input = _series(TimeSeries, np.arange(8), t0=1000, dt=1)
+    expected_input = _series(GWpyTimeSeries, np.arange(8), t0=1000, dt=1)
+    scalar = UTCDateTime()
+    bound = [scalar] if wrapped else scalar
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        actual_error = _exception_class(lambda: actual_input.crop(bound))
+        expected_error = _exception_class(lambda: expected_input.crop(bound))
+
+    assert actual_error is expected_error
+    if expected_error is None:
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            actual = actual_input.crop(bound)
+            expected = expected_input.crop(bound)
+        _assert_series_equal(actual, expected)
+
+
+def test_timeseries_crop_one_element_astropy_time_array_is_explicit_extension() -> None:
+    actual = TimeSeries(np.arange(5.0), t0_ns=0, dt=1_000_000_000, xunit=u.ns)
+    expected = GWpyTimeSeries(np.arange(5.0), t0=0, dt=1_000_000_000, xunit=u.ns)
+    start = Time([_gps_datetime(1)])
+    end = Time([_gps_datetime(3)])
+
+    assert _exception_class(lambda: expected.crop(start, end)) is ValueError
+    result = actual.crop(start, end)
+
+    np.testing.assert_array_equal(result.value, [1.0, 2.0])
+    assert result.xunit == u.ns
+    assert result.t0_gps_ns == 1_000_000_000
+
+
+def test_timeseries_crop_multi_element_astropy_time_array_matches_gwpy() -> None:
+    actual_input = _series(TimeSeries, np.arange(8), t0=0, dt=1)
+    expected_input = _series(GWpyTimeSeries, np.arange(8), t0=0, dt=1)
+    bound = Time([_gps_datetime(1), _gps_datetime(2)])
+
+    actual_error = _exception_class(lambda: actual_input.crop(bound))
+    expected_error = _exception_class(lambda: expected_input.crop(bound))
+
+    assert actual_error is expected_error
+
+
+@pytest.mark.parametrize("sequence_type", [list, tuple], ids=["list", "tuple"])
+def test_timeseries_crop_singleton_datetime_sequence_is_explicit_extension(
+    sequence_type: Callable[[list[datetime]], Any],
+) -> None:
+    actual = TimeSeries(np.arange(5.0), t0_ns=0, dt=1_000_000_000, xunit=u.ns)
+    expected = GWpyTimeSeries(np.arange(5.0), t0=0, dt=1_000_000_000, xunit=u.ns)
+    start = sequence_type([_gps_datetime(1)])
+    end = sequence_type([_gps_datetime(3)])
+
+    assert _exception_class(lambda: expected.crop(start, end)) is TypeError
+    result = actual.crop(start, end)
+
+    np.testing.assert_array_equal(result.value, [1.0, 2.0])
+    assert result.xunit == u.ns
+    assert result.t0_gps_ns == 1_000_000_000
+
+
+def test_timeseries_crop_self_referential_singleton_list_matches_gwpy() -> None:
+    actual_input = _series(TimeSeries, np.arange(8), t0=1000, dt=1)
+    expected_input = _series(GWpyTimeSeries, np.arange(8), t0=1000, dt=1)
+    bound: list[Any] = []
+    bound.append(bound)
+
+    actual_error = _exception_class(lambda: actual_input.crop(bound))
+    expected_error = _exception_class(lambda: expected_input.crop(bound))
+
+    assert actual_error is expected_error
+
+
+def test_timeseries_crop_nested_singleton_datetime_list_matches_gwpy() -> None:
+    actual_input = _series(TimeSeries, np.arange(8), t0=0, dt=1)
+    expected_input = _series(GWpyTimeSeries, np.arange(8), t0=0, dt=1)
+    bound = [[_gps_datetime(1)]]
+
+    actual_error = _exception_class(lambda: actual_input.crop(bound))
+    expected_error = _exception_class(lambda: expected_input.crop(bound))
+
+    assert actual_error is expected_error
 
 
 def test_timeseries_crop_datetime_extension_converts_to_axis_unit() -> None:

@@ -152,7 +152,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             self.__class__(
                 data,
                 channel=self.channel,
-                t0=self.t0,
+                x0=self.x0,
                 name=name,
                 sample_rate=1.0 / stride_s,
             ),

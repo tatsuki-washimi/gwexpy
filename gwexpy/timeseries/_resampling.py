@@ -445,7 +445,7 @@ def _construct_result(
 
     return ts.__class__(
         new_values,
-        t0=u.Quantity(new_times_val[0], time_unit),
+        x0=u.Quantity(new_times_val[0], time_unit),
         dt=final_dt,
         unit=ts.unit,
         name=ts.name,
@@ -539,7 +539,7 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
             safe_t0 = u.Quantity(grid_start, safe_unit)
             return self.__class__(
                 [],
-                t0=safe_t0,
+                x0=safe_t0,
                 dt=target_dt,
                 channel=self.channel,
                 name=self.name,
@@ -751,12 +751,26 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
 
         grid_start = base_val + k * bin_dt_val
 
+        # Dimensionless axes are calculated using the same numeric values as
+        # time axes, but their public coordinate must remain dimensionless.
+        # Keeping this separate from ``time_unit`` (which is normalised to
+        # seconds above for the calculation) avoids constructing an x-axis
+        # Quantity that cannot be converted back to the source axis unit.
+        coordinate_unit = u.dimensionless_unscaled if is_dimensionless else time_unit
+
         # Create bin edges
         duration = stop_time_val - grid_start
         n_bins = int(np.ceil(duration / bin_dt_val))
 
         if n_bins <= 0:
-            return self.__class__([], dt=bin_dt, unit=self.unit, name=self.name)
+            return self.__class__(
+                [],
+                x0=u.Quantity(grid_start, coordinate_unit),
+                dt=bin_dt,
+                unit=self.unit,
+                name=self.name,
+                channel=self.channel,
+            )
 
         edges = grid_start + np.arange(n_bins + 1) * bin_dt_val
 
@@ -888,11 +902,11 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
 
         # 4. Result Times
         if label == "left":
-            final_t0 = u.Quantity(edges[0], time_unit)
+            final_t0 = u.Quantity(edges[0], coordinate_unit)
         elif label == "right":
-            final_t0 = u.Quantity(edges[1], time_unit)
+            final_t0 = u.Quantity(edges[1], coordinate_unit)
         else:
-            final_t0 = u.Quantity(edges[0] + bin_dt_val / 2, time_unit)
+            final_t0 = u.Quantity(edges[0] + bin_dt_val / 2, coordinate_unit)
 
         out_unit = self.unit
         if agg == "count":
@@ -908,7 +922,7 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
 
         return self.__class__(
             out_data,
-            t0=final_t0,
+            x0=final_t0,
             dt=final_dt,
             unit=out_unit,
             name=self.name,

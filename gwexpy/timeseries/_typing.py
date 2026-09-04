@@ -16,6 +16,7 @@ if typing.TYPE_CHECKING:
         value: npt.NDArray[Any]
         times: Any
         t0: Any
+        x0: Any
         dt: u.Quantity | None
         sample_rate: Any
         span: Any

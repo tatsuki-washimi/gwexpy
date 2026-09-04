@@ -1,0 +1,225 @@
+schema: gwexpy-v023-reconstruction-authority-v1
+release: v0.2.3
+purpose: >-
+  Classify every reviewed internal TimeSeries/TimeSeriesMatrix reconstruction
+  touched by the constructor parity follow-up, and make the authority used by
+  each call site auditable.
+status: classification-complete-focused-green-pending-runtime-freeze
+implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
+supersedes_runtime_candidate: 8200a30a9e131cb357b17f0b64f5d6de995a2a26
+runtime_candidate: pending-next-source-sha
+oracles:
+  - gwpy-4.0.1
+  - gwpy-4.0.2
+comparison_contract:
+  exact:
+    - values
+    - nan_mask
+    - posinf_mask
+    - neginf_mask
+    - shape
+    - dtype
+    - x0_or_t0
+    - dx_or_dt
+    - materialized_axis
+    - axis_unit
+    - data_unit
+  exception_message_exact: false
+  parent_exception_retry: forbidden
+  materialized_axis_reconstruction: forbidden
+
+authority_rules:
+  axis-coordinate:
+    authority: x0/dx plus source xunit
+    description: >-
+      Use for an output whose coordinate is the source sample axis. Preserve
+      the source axis unit explicitly, including for matrix constructors.
+  absolute-time:
+    authority: t0/dt or epoch
+    description: >-
+      Use only when the output contract is an absolute GPS-time axis or an
+      external file supplies an absolute epoch.
+  parent-result-wrap:
+    authority: parent result x0/dx or t0/dt
+    description: >-
+      Copy the parent's existing authority directly; never infer it from a
+      materialized large-epoch coordinate array.
+  unrelated:
+    authority: individual API contract
+    description: >-
+      Logging, display, local index arithmetic, and explicit external-file
+      epoch normalization are outside this constructor follow-up.
+
+entries:
+  - id: resampling.asfreq.normal
+    source: gwexpy/timeseries/_resampling.py:_construct_result
+    classification: axis-coordinate
+    action: use x0 and source time_unit
+    evidence:
+      - tests/timeseries/test_resampling.py::test_asfreq_nonsecond_axis_preserves_x0_and_values
+      - tests/timeseries/test_reported_fixes.py::test_align_converts_to_gps_seconds
+  - id: resampling.asfreq.empty
+    source: gwexpy/timeseries/_resampling.py:TimeSeriesResamplingMixin.asfreq
+    classification: axis-coordinate
+    action: use x0 for the empty grid boundary
+    evidence:
+      - tests/timeseries/test_resampling.py::test_asfreq_empty_nonsecond_axis_preserves_grid_x0
+  - id: resampling.time_bin.normal
+    source: gwexpy/timeseries/_resampling.py:TimeSeriesResamplingMixin._resample_time_bin
+    classification: axis-coordinate
+    action: use x0 and preserve coordinate_unit
+    evidence:
+      - tests/timeseries/test_resampling.py::test_resample_time_bin_preserves_nonsecond_axis_authority
+  - id: resampling.time_bin.empty
+    source: gwexpy/timeseries/_resampling.py:TimeSeriesResamplingMixin._resample_time_bin
+    classification: axis-coordinate
+    action: use x0 for the empty grid boundary
+    evidence:
+      - tests/timeseries/test_resampling.py::test_resample_time_bin_empty_preserves_nonsecond_axis_authority
+  - id: signal.hilbert
+    source: gwexpy/timeseries/_signal.py:TimeSeriesSignalMixin.hilbert
+    classification: axis-coordinate
+    action: use self.x0/self.dt
+    evidence:
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_signal_reconstruction_preserves_nonsecond_axis
+  - id: signal.phase-family
+    source: gwexpy/timeseries/_signal.py:instantaneous_phase,radian,degree,instantaneous_frequency
+    classification: axis-coordinate
+    action: use self.x0/self.dt
+    evidence:
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_signal_reconstruction_preserves_nonsecond_axis
+  - id: signal.demodulate-wrap
+    source: gwexpy/timeseries/_signal.py:TimeSeriesSignalMixin.demodulate
+    classification: parent-result-wrap
+    action: use outc.x0/outc.dt
+    evidence:
+      - tests/timeseries/test_gwpy_audit_signal_compat.py
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_signal_reconstruction_preserves_nonsecond_axis
+  - id: signal.rms-extension
+    source: gwexpy/timeseries/_statistics.py:StatisticsMixin.rms
+    classification: axis-coordinate
+    action: use self.x0 with the output cadence unit
+    evidence:
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_rms_extension_preserves_nonsecond_axis_authority
+  - id: spectral.emd
+    source: gwexpy/timeseries/_spectral_special.py:TimeSeriesSpectralSpecialMixin.emd
+    classification: axis-coordinate
+    action: use self.x0/self.dt
+    evidence:
+      - tests/timeseries/test_hht.py
+      - tests/timeseries/test_hht_extended.py
+  - id: spectral.hilbert-analysis
+    source: gwexpy/timeseries/_spectral_special.py:TimeSeriesSpectralSpecialMixin.hilbert_analysis
+    classification: axis-coordinate
+    action: use self.x0/self.dt
+    evidence:
+      - tests/timeseries/test_hht.py
+      - tests/timeseries/test_hht_extended.py
+  - id: rolling.timeseries
+    source: gwexpy/timeseries/rolling.py:_apply_timeseries_op
+    classification: axis-coordinate
+    action: use ts.x0/ts.dt
+    evidence:
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_rolling_reconstruction_preserves_nonsecond_axis
+      - tests/timeseries/test_collections_batch.py
+  - id: preprocess.impute
+    source: gwexpy/timeseries/preprocess.py:impute_timeseries
+    classification: axis-coordinate
+    action: use ts_obj.x0/ts_obj.dt
+    evidence:
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py
+      - tests/timeseries/test_decomposition.py
+  - id: preprocess.standardize-series
+    source: gwexpy/timeseries/preprocess.py:standardize_timeseries
+    classification: axis-coordinate
+    action: use ts.x0/ts.dt
+    evidence:
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_standardize_timeseries_integer_reconstruction_preserves_axis
+  - id: preprocess.standardize-matrix
+    source: gwexpy/timeseries/preprocess.py:standardize_matrix
+    classification: axis-coordinate
+    action: use matrix.x0/matrix.dt/matrix.xunit
+    evidence:
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_standardize_matrix_integer_reconstruction_preserves_axis
+  - id: preprocess.whiten-matrix
+    source: gwexpy/timeseries/preprocess.py:whiten_matrix
+    classification: axis-coordinate
+    action: use matrix.x0/matrix.dt/matrix.xunit
+    evidence:
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py
+      - tests/timeseries/test_matrix_analysis.py
+  - id: decomposition.scaler
+    source: gwexpy/timeseries/decomposition.py:_apply_scaler
+    classification: axis-coordinate
+    action: use matrix.x0/matrix.dt/matrix.xunit
+    evidence:
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_decomposition_scaler_reconstruction_preserves_axis
+  - id: decomposition.pca
+    source: gwexpy/timeseries/decomposition.py:pca_transform,pca_inverse_transform
+    classification: axis-coordinate
+    action: use x0/dt/xunit from the source matrix
+    evidence:
+      - tests/timeseries/test_decomposition.py
+  - id: decomposition.ica
+    source: gwexpy/timeseries/decomposition.py:ica_transform,ica_inverse_transform
+    classification: axis-coordinate
+    action: use x0/dt/xunit from the source matrix
+    evidence:
+      - tests/timeseries/test_decomposition.py
+  - id: pipeline.whiten
+    source: gwexpy/timeseries/pipeline.py:WhitenTransform
+    classification: axis-coordinate
+    action: use x0/dt/xunit for matrix conversion and reconstruction
+    evidence:
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_whiten_transform_matrix_conversion_preserves_axis
+      - tests/timeseries/test_pipeline.py
+  - id: matrix.analysis-correlation
+    source: gwexpy/timeseries/matrix_analysis.py:_calc_correlation_direct
+    classification: parent-result-wrap
+    action: prefer source x0 when wrapping a GWpy series
+    evidence:
+      - tests/timeseries/test_matrix_analysis.py
+  - id: matrix.copy
+    source: gwexpy/types/seriesmatrix_base.py:SeriesMatrix.copy
+    classification: parent-result-wrap
+    action: preserve copied xindex and xunit explicitly
+    evidence:
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_timeseriesmatrix_copy_preserves_nonsecond_axis
+  - id: io.netcdf-matrix
+    source: gwexpy/timeseries/io/netcdf4_.py:write_timeseriesmatrix_netcdf4
+    classification: axis-coordinate
+    action: use tsm.x0/tsm.dt/tsm.xunit while materializing cells
+    evidence:
+      - tests/timeseries/test_collections_provenance.py
+      - tests/timeseries/test_interop_p2.py
+  - id: io.zarr-matrix
+    source: gwexpy/timeseries/io/zarr_.py:read_timeseriesmatrix_zarr
+    classification: axis-coordinate
+    action: use ts.x0/ts.dt/ts.xunit while assembling a matrix
+    evidence:
+      - tests/timeseries/test_interop_p2.py
+  - id: frequencyseries.ifft-wrap
+    source: gwexpy/frequencyseries/frequencyseries.py:FrequencySeries.ifft
+    classification: parent-result-wrap
+    action: use the parent result x0/dt in GWpy mode
+    evidence:
+      - tests/timeseries/test_fft.py
+      - tests/timeseries/test_exact_gps_epoch.py
+  - id: arima.result
+    source: gwexpy/timeseries/arima.py:ArimaResult.predict,forecast,residuals
+    classification: axis-coordinate
+    action: use stored source axis origin as x0
+    evidence:
+      - tests/timeseries/test_interop_p2.py
+  - id: external-readers
+    source: gwexpy/timeseries/io/* and gwexpy/interop/*
+    classification: absolute-time
+    action: retain explicit file/GPS epoch t0 route; no change in this follow-up
+    evidence:
+      - docs/developers/plans/manifests/audit-manifest-v0.2.3-io-terminal.yaml
+  - id: local-axis-arithmetic
+    source: gwexpy/timeseries/preprocess.py,matrix_analysis.py,utils.py
+    classification: unrelated
+    action: retain local conversion/index arithmetic; not a constructor route
+    evidence:
+      - docs/developers/plans/manifests/audit-manifest-v0.2.3-constructor-terminal.yaml

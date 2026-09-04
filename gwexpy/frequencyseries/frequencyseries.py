@@ -750,7 +750,7 @@ class FrequencySeries(
             ts = super().ifft(**kwargs)
             return TimeSeries(
                 ts.value,
-                t0=ts.t0,
+                x0=ts.x0,
                 dt=ts.dt,
                 unit=ts.unit,
                 name=ts.name,

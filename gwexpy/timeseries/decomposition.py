@@ -204,7 +204,7 @@ def _apply_scaler(matrix, preprocessing):
     val = matrix.value.copy()
     val = (val - scaler["mean"]) / scaler["scale"]
 
-    new_mat = matrix.__class__(val, t0=matrix.t0, dt=matrix.dt)
+    new_mat = matrix.__class__(val, x0=matrix.x0, dt=matrix.dt, xunit=matrix.xunit)
     if hasattr(new_mat, "channel_names"):
         new_mat.channel_names = getattr(matrix, "channel_names", None)
     return new_mat
@@ -355,8 +355,9 @@ def pca_transform(pca_res, matrix, n_components=None):
 
     new_mat = matrix.__class__(
         scores_new,
-        t0=matrix.t0,
+        x0=matrix.x0,
         dt=matrix.dt,
+        xunit=matrix.xunit,
     )
     if hasattr(new_mat, "channel_names"):
         new_mat.channel_names = labels
@@ -430,7 +431,10 @@ def pca_inverse_transform(pca_res, scores_matrix):
     # We reconstruct original channels
     # We assume we can get original t0/dt from input stats or scores matrix
     new_mat = scores_matrix.__class__(
-        X_rec_3d, t0=scores_matrix.t0, dt=scores_matrix.dt
+        X_rec_3d,
+        x0=scores_matrix.x0,
+        dt=scores_matrix.dt,
+        xunit=scores_matrix.xunit,
     )
     if pca_res.channel_labels:
         if hasattr(new_mat, "channel_names"):
@@ -615,7 +619,9 @@ def ica_transform(ica_res, matrix):
     # Output (components, 1, samples)
     sources_new = sources.T[:, None, :]
 
-    new_mat = matrix.__class__(sources_new, t0=matrix.t0, dt=matrix.dt)
+    new_mat = matrix.__class__(
+        sources_new, x0=matrix.x0, dt=matrix.dt, xunit=matrix.xunit
+    )
     if hasattr(new_mat, "channel_names"):
         new_mat.channel_names = labels
     return new_mat
@@ -700,7 +706,9 @@ def ica_inverse_transform(ica_res, sources):
 
     rec_final = _inverse_scaler(rec_3d, ica_res.preprocessing)
 
-    new_mat = sources.__class__(rec_final, t0=sources.t0, dt=sources.dt)
+    new_mat = sources.__class__(
+        rec_final, x0=sources.x0, dt=sources.dt, xunit=sources.xunit
+    )
     if ica_res.channel_labels:
         if hasattr(new_mat, "channel_names"):
             new_mat.channel_names = ica_res.channel_labels

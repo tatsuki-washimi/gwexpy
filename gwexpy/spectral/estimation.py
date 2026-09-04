@@ -147,6 +147,13 @@ def estimate_psd(
     if np.isnan(data).any():
         raise ValueError("estimate_psd does not allow NaN samples.")
 
+    # Welch's PSD is defined for a regularly sampled time axis.  Let the
+    # public helper report that contract explicitly instead of forwarding an
+    # irregular series to GWpy, where the eventual failure may be an
+    # unrelated ``AttributeError`` while looking up ``sample_rate``.
+    if hasattr(timeseries, "is_regular") and not timeseries.is_regular:
+        raise ValueError("estimate_psd requires a regularly sampled TimeSeries.")
+
     def _to_seconds(value):
         if value is None:
             return None

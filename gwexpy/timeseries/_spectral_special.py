@@ -1233,7 +1233,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
             key = f"IMF{i + 1}"
             out_dict[key] = self.__class__(
                 imfs_array[i],
-                t0=self.t0,
+                x0=self.x0,
                 dt=self.dt,
                 unit=self.unit,
                 name=f"{self.name}_{key}" if self.name else key,
@@ -1246,7 +1246,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
                 key = "residual"
                 out_dict[key] = self.__class__(
                     residual,
-                    t0=self.t0,
+                    x0=self.x0,
                     dt=self.dt,
                     unit=self.unit,
                     name=f"{self.name}_{key}" if self.name else key,
@@ -1338,7 +1338,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
 
         amplitude = self.__class__(
             amp,
-            t0=self.t0,
+            x0=self.x0,
             dt=self.dt,
             unit=self.unit,
             name=f"{self.name}_IA" if self.name else "IA",
@@ -1349,7 +1349,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
             pha = np.unwrap(pha)
         phase = self.__class__(
             pha,
-            t0=self.t0,
+            x0=self.x0,
             dt=self.dt,
             unit="rad",
             name=f"{self.name}_Phase" if self.name else "Phase",
@@ -1387,7 +1387,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
 
         frequency = self.__class__(
             freq_val,
-            t0=self.t0,
+            x0=self.x0,
             dt=self.dt,
             unit="Hz",
             name=f"{self.name}_IF" if self.name else "IF",

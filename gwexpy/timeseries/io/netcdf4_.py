@@ -648,8 +648,9 @@ def write_timeseriesmatrix_netcdf4(tsm, target, **kwargs):
             cell_data = np.asarray(tsm[i, j])
             ts = TimeSeries(
                 cell_data,
-                t0=tsm.t0,
+                x0=tsm.x0,
                 dt=tsm.dt,
+                xunit=tsm.xunit,
                 unit=tsm.unit if hasattr(tsm, "unit") else None,
             )
             tsd[(rk, ck)] = ts

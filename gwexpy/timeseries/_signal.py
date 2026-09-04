@@ -178,7 +178,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         # 7. Wrap
         return self.__class__(
             analytic,
-            t0=self.t0,
+            x0=self.x0,
             dt=self.dt,
             unit=self.unit,
             channel=self.channel,
@@ -255,7 +255,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             phi = np.unwrap(phi, period=period)
 
         out = self.__class__(
-            phi, t0=self.t0, dt=self.dt, channel=self.channel, name=self.name
+            phi, x0=self.x0, dt=self.dt, channel=self.channel, name=self.name
         )
 
         # Override unit
@@ -288,7 +288,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             phi = np.unwrap(phi)
 
         out = self.__class__(
-            phi, t0=self.t0, dt=self.dt, channel=self.channel, name=self.name
+            phi, x0=self.x0, dt=self.dt, channel=self.channel, name=self.name
         )
         out.override_unit("rad")
         return out
@@ -319,7 +319,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             phi = np.unwrap(phi, period=360.0)
 
         out = self.__class__(
-            phi, t0=self.t0, dt=self.dt, channel=self.channel, name=self.name
+            phi, x0=self.x0, dt=self.dt, channel=self.channel, name=self.name
         )
         out.override_unit("deg")
         return out
@@ -427,7 +427,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
                 f_inst = f_smooth
 
         out = self.__class__(
-            f_inst, t0=self.t0, dt=self.dt, channel=self.channel, name=self.name
+            f_inst, x0=self.x0, dt=self.dt, channel=self.channel, name=self.name
         )
         out.override_unit("Hz")
         return out
@@ -1144,7 +1144,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             mag = outc.abs()
             ph = self.__class__(
                 np.angle(outc.value, deg=deg),
-                t0=outc.t0,
+                x0=outc.x0,
                 dt=outc.dt,
                 channel=self.channel,
                 name=self.name,
@@ -1154,7 +1154,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         else:  # output == "iq"
             i = self.__class__(
                 outc.value.real,
-                t0=outc.t0,
+                x0=outc.x0,
                 dt=outc.dt,
                 channel=self.channel,
                 name=self.name,
@@ -1162,7 +1162,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             )
             q = self.__class__(
                 outc.value.imag,
-                t0=outc.t0,
+                x0=outc.x0,
                 dt=outc.dt,
                 channel=self.channel,
                 name=self.name,

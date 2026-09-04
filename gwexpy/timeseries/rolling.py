@@ -154,7 +154,7 @@ def _apply_timeseries_op(
     )
     return ts.__class__(
         vals,
-        t0=ts.t0,
+        x0=ts.x0,
         dt=ts.dt,
         unit=ts.unit,
         name=ts.name,

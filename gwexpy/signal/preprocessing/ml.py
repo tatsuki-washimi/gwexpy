@@ -345,9 +345,17 @@ class MLPreprocessor:
     def _reconstruct_timeseries_matrix(self, val, original, unit=None):
         """Reconstruct TimeSeriesMatrix from ndarray."""
         if unit is not None:
-            new_mat = original.__class__(val, t0=original.t0, dt=original.dt, unit=unit)
+            new_mat = original.__class__(
+                val,
+                x0=original.x0,
+                dt=original.dt,
+                xunit=original.xunit,
+                unit=unit,
+            )
         else:
-            new_mat = original.__class__(val, t0=original.t0, dt=original.dt)
+            new_mat = original.__class__(
+                val, x0=original.x0, dt=original.dt, xunit=original.xunit
+            )
 
         # Preserve metadata
         if hasattr(original, "channel_names"):
@@ -358,9 +366,17 @@ class MLPreprocessor:
     def _reconstruct_timeseries(self, val, original, unit=None):
         """Reconstruct TimeSeries from ndarray."""
         if unit is not None:
-            new_ts = original.__class__(val, t0=original.t0, dt=original.dt, unit=unit)
+            new_ts = original.__class__(
+                val,
+                x0=original.x0,
+                dt=original.dt,
+                xunit=original.xunit,
+                unit=unit,
+            )
         else:
-            new_ts = original.__class__(val, t0=original.t0, dt=original.dt)
+            new_ts = original.__class__(
+                val, x0=original.x0, dt=original.dt, xunit=original.xunit
+            )
 
         # Preserve metadata
         if hasattr(original, "name"):

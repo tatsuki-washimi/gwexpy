@@ -34,7 +34,8 @@ def _calc_correlation_direct(ts, target, meth):
             from .timeseries import TimeSeries as GWExTimeSeries
 
             sr = getattr(ts, "sample_rate", None)
-            ts = GWExTimeSeries(ts.value, t0=ts.t0, sample_rate=sr, name=ts.name)
+            x0 = getattr(ts, "x0", getattr(ts, "t0", None))
+            ts = GWExTimeSeries(ts.value, x0=x0, sample_rate=sr, name=ts.name)
         return ts.correlation(target, method=meth)
     except (AttributeError, TypeError, ValueError):
         logger.debug(

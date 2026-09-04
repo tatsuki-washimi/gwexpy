@@ -70,7 +70,35 @@ def _is_date_component_sequence(obj):
         return False
     if values.dtype.kind == "c":
         return True
-    return _is_numeric_array(values)
+    if not _is_numeric_array(values):
+        return False
+
+    # A list/tuple with three or more numeric values is ambiguous: GWpy
+    # interprets it as ``datetime.datetime(*value)``, while GWexpy also
+    # accepts numeric vectors as an extension.  Route only date-shaped values
+    # to GWpy.  In particular, GPS vectors such as ``[0., 1., 2., 3.]`` (the
+    # form emitted by some dataframe adapters) must not be mistaken for a
+    # year/month/day tuple.  Keep a broad component bound so invalid dates such
+    # as ``(2017, 13, 1)`` still reach GWpy and retain its failure semantics.
+    try:
+        year = float(values[0])
+        if not np.isfinite(year) or not 1 <= year <= 9999:
+            return False
+        if len(values) >= 2 and abs(float(values[1])) > 31:
+            return False
+        if len(values) >= 3 and abs(float(values[2])) > 31:
+            return False
+        if len(values) >= 4 and abs(float(values[3])) > 24:
+            return False
+        if len(values) >= 5 and abs(float(values[4])) > 60:
+            return False
+        if len(values) >= 6 and abs(float(values[5])) > 60:
+            return False
+        if len(values) >= 7 and abs(float(values[6])) > 1_000_000:
+            return False
+    except (OverflowError, TypeError, ValueError):
+        return False
+    return True
 
 
 _VALID_DTYPES = frozenset({None, float, "float", "quantity"})

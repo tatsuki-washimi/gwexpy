@@ -534,6 +534,7 @@ class SeriesMatrix(  # type: ignore[misc]
             rows=_copy_metadata_dict(self.rows, "row"),
             cols=_copy_metadata_dict(self.cols, "col"),
             xindex=_copy_xindex(self.xindex),
+            xunit=self.xunit,
             name=self.name,
             epoch=self.epoch,
             attrs=deepcopy(self.attrs),

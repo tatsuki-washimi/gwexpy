@@ -1003,7 +1003,7 @@ def impute_timeseries(
             else:
                 new_ts = ts_obj.__class__(
                     val,
-                    t0=ts_obj.t0,
+                    x0=ts_obj.x0,
                     dt=ts_obj.dt,
                     name=ts_obj.name,
                     unit=ts_obj.unit,
@@ -1112,7 +1112,7 @@ def standardize_timeseries(
         val_float = ts.value.astype("float64")
         new_ts = ts.__class__(
             val_float,
-            t0=ts.t0,
+            x0=ts.x0,
             dt=ts.dt,
             name=ts.name,
             unit=u.dimensionless_unscaled,
@@ -1256,7 +1256,9 @@ def standardize_matrix(
     # Create new matrix with same metadata
     if np.issubdtype(matrix.value.dtype, np.integer):
         val_float = matrix.value.astype("float64")
-        new_mat = matrix.__class__(val_float, t0=matrix.t0, dt=matrix.dt)
+        new_mat = matrix.__class__(
+            val_float, x0=matrix.x0, dt=matrix.dt, xunit=matrix.xunit
+        )
         if hasattr(matrix, "channel_names"):
             try:
                 channel_names = getattr(matrix, "channel_names")
@@ -1426,7 +1428,7 @@ def whiten_matrix(
     if method == "pca":
         # PCA always produces flattened output: (features, 1, time)
         new_data = X_whitened.T[:, None, :]  # (output_features, 1, time)
-        new_mat = cls(new_data, t0=matrix.t0, dt=matrix.dt)
+        new_mat = cls(new_data, x0=matrix.x0, dt=matrix.dt, xunit=matrix.xunit)
     else:  # zca
         if n_components is None:
             # ZCA with full components: reshape to original shape
@@ -1436,7 +1438,7 @@ def whiten_matrix(
         else:
             # ZCA with dimensionality reduction: flattened output
             new_data = X_whitened.T[:, None, :]  # (n_components, 1, time)
-            new_mat = cls(new_data, t0=matrix.t0, dt=matrix.dt)
+            new_mat = cls(new_data, x0=matrix.x0, dt=matrix.dt, xunit=matrix.xunit)
 
     # TimeSeriesMatrix stores units per matrix element rather than through a
     # scalar ``unit`` property.

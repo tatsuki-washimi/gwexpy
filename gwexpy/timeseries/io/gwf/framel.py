@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from importlib import import_module
+import importlib
 from types import ModuleType
 from typing import Any
 
@@ -22,6 +22,18 @@ __all__ = (
 )  # noqa: F822
 _module: ModuleType | None = None
 _DIRECTORY = tuple(sorted(__all__))
+
+
+def import_module(name: str, package: str | None = None) -> ModuleType:
+    """Resolve an optional backend at call time.
+
+    Keeping this small indirection (rather than binding
+    ``importlib.import_module`` at module import) is important for two reasons:
+    tests can still replace ``proxy.import_module`` to model a missing
+    backend, and temporary import guards do not leak into this lazy proxy after
+    their fixture has been torn down.
+    """
+    return importlib.import_module(name, package)
 
 
 def _load() -> ModuleType:

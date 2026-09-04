@@ -437,8 +437,9 @@ def read_timeseriesmatrix_zarr(
             key, ts = next(iter(tsd.items()))
             matrix = TimeSeriesMatrix(
                 np.asarray(ts.value, dtype=np.float64)[np.newaxis, np.newaxis, :],
-                t0=ts.t0,
+                x0=ts.x0,
                 dt=ts.dt,
+                xunit=ts.xunit,
                 unit=ts.unit,
                 channel_names=[key],
             )

@@ -163,6 +163,19 @@ def test_to_gps_explicit_vector_extensions_remain(value, expected):
     np.testing.assert_array_equal(result, expected)
 
 
+@pytest.mark.parametrize(
+    "value",
+    [
+        pytest.param([0.0, 1.0, 2.0, 3.0], id="small-gps-vector"),
+        pytest.param([1000.0, 2000.0, 3000.0], id="large-gps-vector"),
+    ],
+)
+def test_to_gps_numeric_vectors_are_not_date_components(value):
+    result = gwexpy_time.to_gps(value)
+    assert isinstance(result, np.ndarray)
+    np.testing.assert_array_equal(result, np.asarray(value))
+
+
 def test_nested_numeric_sequences_match_equivalent_ndarray_extensions():
     values = np.array(
         [

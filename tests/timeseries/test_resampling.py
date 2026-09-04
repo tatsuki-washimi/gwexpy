@@ -421,6 +421,26 @@ def test_asfreq_basic():
     assert len(result) == len(ts)
 
 
+def test_asfreq_nonsecond_axis_preserves_x0_and_values():
+    source = TimeSeries([10.0, 20.0, 30.0], x0=1 * u.min, dt=1 * u.min)
+
+    result = source.asfreq(1 * u.min)
+
+    assert result.x0 == source.x0
+    assert result.xunit == source.xunit
+    np.testing.assert_array_equal(result.value, source.value)
+
+
+def test_asfreq_empty_nonsecond_axis_preserves_grid_x0():
+    source = TimeSeries([10.0, 20.0, 30.0], x0=1 * u.min, dt=1 * u.min)
+
+    result = source.asfreq(5 * u.min, origin="gps0")
+
+    assert result.x0 == 5 * u.min
+    assert result.xunit == source.xunit
+    np.testing.assert_array_equal(result.value, [])
+
+
 def test_asfreq_upsampling_ffill():
     ts = _make_ts([0.0, 1.0, 2.0], dt=1.0)
     result = ts.asfreq(0.5 * u.s, method="ffill")
@@ -627,6 +647,39 @@ def test_resample_quantity_time_rule():
     ts = TimeSeries(data, dt=0.01 * u.s, t0=0.0 * u.s, unit=u.m)
     result = ts.resample(0.1 * u.s)
     assert isinstance(result, TimeSeries)
+
+
+def test_resample_time_bin_preserves_nonsecond_axis_authority():
+    source = TimeSeries(
+        np.array([1.0, 2.0, 3.0, 4.0]),
+        x0=1 * u.min,
+        dt=1 * u.min,
+        unit=u.V,
+    )
+
+    result = source.resample(2 * u.min)
+
+    np.testing.assert_allclose(result.value, [1.5, 3.5])
+    assert result.x0 == 1 * u.min
+    assert result.t0 == 1 * u.min
+    assert result.dt == 2 * u.min
+    np.testing.assert_allclose(result.times.to_value(u.min), [1.0, 3.0])
+
+
+def test_resample_time_bin_empty_preserves_nonsecond_axis_authority():
+    source = TimeSeries(
+        np.array([1.0]),
+        x0=1 * u.min,
+        dt=1 * u.min,
+        unit=u.V,
+    )
+
+    result = source.resample(2 * u.min, align="ceil", offset=1.5 * u.min)
+
+    assert result.size == 0
+    assert result.x0 == 2.5 * u.min
+    assert result.dt == 2 * u.min
+    assert result.unit == u.V
 
 
 def test_resample_time_bin_closed_right_assigns_boundary_to_previous_bin():

@@ -108,7 +108,7 @@ class ArimaResult:
             pred = [pred]
 
         return TimeSeries(
-            pred, t0=new_t0, dt=self.dt, unit=self.unit, name=f"{self.name}_pred"
+            pred, x0=new_t0, dt=self.dt, unit=self.unit, name=f"{self.name}_pred"
         )
 
     def forecast(
@@ -175,17 +175,17 @@ class ArimaResult:
 
         forecast_ts = TimeSeries(
             point,
-            t0=forecast_t0,
+            x0=forecast_t0,
             dt=self.dt,
             unit=self.unit,
             name=f"{self.name}_forecast",
         )
 
         lower = TimeSeries(
-            conf[:, 0], t0=forecast_t0, dt=self.dt, unit=self.unit, name="lower_ci"
+            conf[:, 0], x0=forecast_t0, dt=self.dt, unit=self.unit, name="lower_ci"
         )
         upper = TimeSeries(
-            conf[:, 1], t0=forecast_t0, dt=self.dt, unit=self.unit, name="upper_ci"
+            conf[:, 1], x0=forecast_t0, dt=self.dt, unit=self.unit, name="upper_ci"
         )
 
         return forecast_ts, {"lower": lower, "upper": upper}
@@ -196,7 +196,7 @@ class ArimaResult:
 
         return TimeSeries(
             self.res.resid,
-            t0=self.t0,
+            x0=self.t0,
             dt=self.dt,
             unit=self.unit,
             name=f"{self.name}_resid",

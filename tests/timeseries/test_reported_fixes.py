@@ -28,8 +28,8 @@ def test_align_mixed_dimensionless_unit():
 def test_align_converts_to_gps_seconds():
     # Test case: inputs are in minutes, output aligns to GPS seconds
     min_unit = u.min
-    ts1 = TimeSeries([1, 2, 3], dt=1 * min_unit, t0=0 * min_unit)
-    ts2 = TimeSeries([10, 20, 30], dt=1 * min_unit, t0=1 * min_unit)
+    ts1 = TimeSeries([1, 2, 3], dt=1 * min_unit, x0=0 * min_unit)
+    ts2 = TimeSeries([10, 20, 30], dt=1 * min_unit, x0=1 * min_unit)
 
     values, times, meta = align_timeseries_collection([ts1, ts2])
 
@@ -37,6 +37,9 @@ def test_align_converts_to_gps_seconds():
     assert meta["dt"].unit == u.s
     assert times.unit == u.s
     assert meta["t0"].unit == u.s
+    np.testing.assert_array_equal(values, [[2.0, 10.0], [3.0, 20.0]])
+    np.testing.assert_array_equal(times.to_value(u.s), [60.0, 120.0])
+    assert not np.isnan(values).any()
 
 
 def test_crop_with_array_to_gps():

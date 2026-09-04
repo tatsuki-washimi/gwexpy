@@ -45,25 +45,35 @@ def _crop_bound_to_float(value: Any | None) -> float | None:
     return float(result)
 
 
-def _is_gwexpy_only_crop_bound(value: object) -> bool:
-    """Return whether a crop bound uses an explicit GWexpy time extension."""
-    if isinstance(value, (date, Time)):
+def _is_gwexpy_only_crop_scalar(value: object) -> bool:
+    """Return whether a scalar uses an explicit GWexpy time extension."""
+    if isinstance(value, date):
         return True
+    if isinstance(value, Time):
+        return value.isscalar
     if isinstance(value, str):
         try:
             float(value)
         except ValueError:
             return True
         return False
-    if isinstance(value, (tuple, list)) and 3 <= len(value) <= 7:
-        return all(
-            isinstance(item, (int, float, np.number))
-            and not isinstance(item, (bool, np.bool_))
-            for item in value
-        )
-    value_type = type(value)
-    return value_type.__name__ == "UTCDateTime" and value_type.__module__.startswith(
-        "obspy."
+    return False
+
+
+def _is_gwexpy_only_crop_bound(value: object) -> bool:
+    """Return whether a crop bound uses an explicit GWexpy time extension."""
+    if isinstance(value, Time):
+        return value.isscalar or value.size == 1
+    if _is_gwexpy_only_crop_scalar(value):
+        return True
+    if not isinstance(value, (tuple, list)):
+        return False
+    if len(value) == 1:
+        return _is_gwexpy_only_crop_scalar(value[0])
+    return 3 <= len(value) <= 7 and all(
+        isinstance(item, (int, float, np.number))
+        and not isinstance(item, (bool, np.bool_))
+        for item in value
     )
 
 
