@@ -7,7 +7,7 @@ purpose: >-
 status: classification-complete-focused-green-runtime-frozen-review-pending
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 supersedes_runtime_candidate: 8200a30a9e131cb357b17f0b64f5d6de995a2a26
-runtime_candidate: 77b0faca9f7e4e77acb21a0298385a7b5fbd45ba
+runtime_candidate: 58559c742e4e2e7a483e72f132f3a84ff5aa626b
 oracles:
   - gwpy-4.0.1
   - gwpy-4.0.2
@@ -57,6 +57,7 @@ entries:
     action: use x0 and source time_unit
     evidence:
       - tests/timeseries/test_resampling.py::test_asfreq_nonsecond_axis_preserves_x0_and_values
+      - tests/timeseries/test_resampling.py::test_asfreq_cross_unit_preserves_source_axis_authority
       - tests/timeseries/test_reported_fixes.py::test_align_converts_to_gps_seconds
   - id: resampling.asfreq.empty
     source: gwexpy/timeseries/_resampling.py:TimeSeriesResamplingMixin.asfreq
@@ -64,18 +65,23 @@ entries:
     action: use x0 for the empty grid boundary
     evidence:
       - tests/timeseries/test_resampling.py::test_asfreq_empty_nonsecond_axis_preserves_grid_x0
+      - tests/timeseries/test_resampling.py::test_asfreq_empty_cross_unit_preserves_source_axis_authority
+      - tests/timeseries/test_resampling.py::test_asfreq_empty_dimensionless_axis_remains_dimensionless
   - id: resampling.time_bin.normal
     source: gwexpy/timeseries/_resampling.py:TimeSeriesResamplingMixin._resample_time_bin
     classification: axis-coordinate
     action: use x0 and preserve coordinate_unit
     evidence:
       - tests/timeseries/test_resampling.py::test_resample_time_bin_preserves_nonsecond_axis_authority
+      - tests/timeseries/test_resampling.py::test_resample_time_bin_cross_unit_preserves_source_axis_authority
+      - tests/timeseries/test_resampling.py::test_resample_time_bin_dimensionless_axis_remains_dimensionless
   - id: resampling.time_bin.empty
     source: gwexpy/timeseries/_resampling.py:TimeSeriesResamplingMixin._resample_time_bin
     classification: axis-coordinate
     action: use x0 for the empty grid boundary
     evidence:
       - tests/timeseries/test_resampling.py::test_resample_time_bin_empty_preserves_nonsecond_axis_authority
+      - tests/timeseries/test_resampling.py::test_resample_time_bin_empty_cross_unit_preserves_source_axis_authority
   - id: signal.hilbert
     source: gwexpy/timeseries/_signal.py:TimeSeriesSignalMixin.hilbert
     classification: axis-coordinate
@@ -97,6 +103,9 @@ entries:
     evidence:
       - tests/timeseries/test_gwpy_audit_signal_compat.py::test_same_axis_signal_methods_preserve_exact_time_authority
       - tests/timeseries/test_gwpy_audit_signal_compat.py::test_lock_in_preserves_exact_time_authority
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_mix_down_preserves_nonsecond_axis_and_data
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_baseband_preserves_nonsecond_axis_after_mix_down
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_lock_in_bandwidth_preserves_nonsecond_axis_after_mix_down
   - id: signal.demodulate-wrap
     source: gwexpy/timeseries/_signal.py:TimeSeriesSignalMixin.demodulate
     classification: parent-result-wrap
@@ -104,6 +113,19 @@ entries:
     evidence:
       - tests/timeseries/test_gwpy_audit_signal_compat.py
       - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_signal_reconstruction_preserves_nonsecond_axis
+  - id: signal.phase-epoch-model
+    source: gwexpy/timeseries/_signal.py:TimeSeriesSignalMixin._build_phase_series
+    classification: absolute-time
+    action: convert physical axis coordinates to seconds only for phase_epoch arithmetic
+    evidence:
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_phase_epoch_on_nonsecond_axis_uses_absolute_seconds
+  - id: signal.smooth
+    source: gwexpy/timeseries/timeseries.py:TimeSeries._get_meta_for_constructor
+    classification: axis-coordinate
+    action: preserve x0/dt/xunit for non-second and dimensionless reconstruction; retain t0_ns for exact epochs
+    evidence:
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_smooth_preserves_nonsecond_axis_authority
+      - tests/timeseries/test_exact_gps_epoch.py::test_exact_epoch_metadata_reconstructs_smooth_and_resample_outputs
   - id: signal.rms-extension
     source: gwexpy/timeseries/_statistics.py:StatisticsMixin.rms
     classification: axis-coordinate
@@ -200,6 +222,7 @@ entries:
     action: preserve source x0/dx and xunit through matrix reconstruction and ufunc paths
     evidence:
       - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_timeseriesmatrix_reconstruction_preserves_nonsecond_axis
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_timeseriesmatrix_crop_uses_nonsecond_axis_bounds
   - id: io.netcdf-matrix
     source: gwexpy/timeseries/io/netcdf4_.py:write_timeseriesmatrix_netcdf4
     classification: axis-coordinate
