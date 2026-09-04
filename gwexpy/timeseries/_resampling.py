@@ -429,24 +429,24 @@ def _construct_result(
     ts: TimeSeriesResamplingMixin,
     new_values: np.ndarray,
     new_times_val: np.ndarray,
-    target_dt: u.Quantity,
-    time_unit: u.Unit,
-    is_dimless: bool,
-    copy: bool,
+    target_dt_in_time_unit: u.Quantity,
+    unit_is_dimensionless: bool,
+    coordinate_unit: u.Unit,
 ) -> TimeSeriesResamplingMixin:
     """Construct the result TimeSeries from reindexed data."""
-    # Convert dt back to original time unit to avoid plotting unit mismatch
-    final_dt = target_dt
-    if time_unit is not None and not is_dimless:
-        try:
-            final_dt = target_dt.to(time_unit)
-        except (ValueError, u.UnitConversionError):
-            pass
+    # ``time_unit`` is the calculation unit.  The public result must retain
+    # the source axis unit, including for dimensionless axes and cross-unit
+    # target rules.
+    if unit_is_dimensionless:
+        final_dt = u.Quantity(target_dt_in_time_unit.value, coordinate_unit)
+    else:
+        final_dt = target_dt_in_time_unit.to(coordinate_unit)
 
     return ts.__class__(
         new_values,
-        x0=u.Quantity(new_times_val[0], time_unit),
+        x0=u.Quantity(new_times_val[0], coordinate_unit),
         dt=final_dt,
+        xunit=coordinate_unit,
         unit=ts.unit,
         name=ts.name,
         channel=ts.channel,
@@ -510,11 +510,14 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
         target_dt = _parse_rule_to_dt(rule)
 
         # 2. Validate rule unit compatibility
-        _is_time, is_dimless = _validate_time_unit(target_dt)
+        _validate_time_unit(target_dt)
 
         # 3. Extract old times and determine time unit
         old_times_q, old_times_val, time_unit, unit_is_dimensionless = (
             _extract_old_times(self)
+        )
+        coordinate_unit = (
+            u.dimensionless_unscaled if unit_is_dimensionless else old_times_q.unit
         )
 
         # 4. Normalize target dt and compute start/stop
@@ -535,12 +538,15 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
 
         # 7. Handle empty grid
         if len(new_times_val) == 0:
-            safe_unit = time_unit if time_unit is not None else u.dimensionless_unscaled
-            safe_t0 = u.Quantity(grid_start, safe_unit)
+            if unit_is_dimensionless:
+                final_dt = u.Quantity(target_dt_in_time_unit.value, coordinate_unit)
+            else:
+                final_dt = target_dt_in_time_unit.to(coordinate_unit)
             return self.__class__(
                 [],
-                x0=safe_t0,
-                dt=target_dt,
+                x0=u.Quantity(grid_start, coordinate_unit),
+                dt=final_dt,
+                xunit=coordinate_unit,
                 channel=self.channel,
                 name=self.name,
                 unit=self.unit,
@@ -566,7 +572,12 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
         return cast(
             TimeSeriesResamplingMixin,
             _construct_result(
-                self, new_data, new_times_val, target_dt, time_unit, is_dimless, copy
+                self,
+                new_data,
+                new_times_val,
+                target_dt_in_time_unit,
+                unit_is_dimensionless,
+                coordinate_unit,
             ),
         )
 
@@ -763,10 +774,15 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
         n_bins = int(np.ceil(duration / bin_dt_val))
 
         if n_bins <= 0:
+            if is_dimensionless:
+                final_dt = u.Quantity(bin_dt_val, coordinate_unit)
+            else:
+                final_dt = bin_dt.to(coordinate_unit)
             return self.__class__(
                 [],
                 x0=u.Quantity(grid_start, coordinate_unit),
-                dt=bin_dt,
+                dt=final_dt,
+                xunit=coordinate_unit,
                 unit=self.unit,
                 name=self.name,
                 channel=self.channel,
@@ -912,18 +928,19 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
         if agg == "count":
             out_unit = u.dimensionless_unscaled
 
-        # Convert dt back to original time unit to avoid plotting unit mismatch
-        final_dt = bin_dt
-        if time_unit is not None and not is_dimensionless:
-            try:
-                final_dt = bin_dt.to(time_unit)
-            except (ValueError, u.UnitConversionError):
-                pass
+        # Convert the calculation cadence back to the source public axis
+        # unit.  A dimensionless source axis keeps a dimensionless numeric
+        # cadence even when the rule was expressed in seconds.
+        if is_dimensionless:
+            final_dt = u.Quantity(bin_dt_val, coordinate_unit)
+        else:
+            final_dt = bin_dt.to(coordinate_unit)
 
         return self.__class__(
             out_data,
             x0=final_t0,
             dt=final_dt,
+            xunit=coordinate_unit,
             unit=out_unit,
             name=self.name,
             channel=self.channel,

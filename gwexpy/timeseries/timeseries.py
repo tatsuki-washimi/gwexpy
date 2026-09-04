@@ -313,14 +313,28 @@ class TimeSeries(
     def _get_meta_for_constructor(self) -> dict[str, Any]:
         """Reconstruct the object for SignalAnalysisMixin."""
         exact_t0_ns = getattr(self, "_gwex_t0_gps_ns", None)
+        dt = self.dt
+        xunit = getattr(self, "xunit", None)
+
         if exact_t0_ns is not None:
             return {
                 "t0_ns": exact_t0_ns,
-                "dt": self.dt,
+                "dt": dt,
+                "xunit": xunit,
+            }
+        # ``t0`` is the GWpy absolute-time alias.  For a non-second or
+        # dimensionless axis, passing it back through the constructor changes
+        # the coordinate interpretation (for example ``1 min`` becomes
+        # ``60 min``).  Preserve the axis-coordinate authority explicitly.
+        if dt is not None and xunit is not None and u.Unit(xunit) != u.s:
+            return {
+                "x0": self.x0,
+                "dt": dt,
+                "xunit": xunit,
             }
         return {
             "t0": self.t0,
-            "dt": self.dt,
+            "dt": dt,
         }
 
     def __new__(

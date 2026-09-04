@@ -23,6 +23,17 @@ def _series() -> TimeSeries:
     )
 
 
+def _long_series() -> TimeSeries:
+    return TimeSeries(
+        np.linspace(1.0, 2.0, 128),
+        x0=1 * u.min,
+        dt=1 * u.min,
+        unit=u.V,
+        xunit=u.min,
+        name="nonsecond-axis-long",
+    )
+
+
 def _assert_axis(result, source, *, expected_dt=None, expected_unit=None) -> None:
     assert result.x0 == source.x0
     assert result.xunit == source.xunit
@@ -71,6 +82,66 @@ def test_rms_extension_preserves_nonsecond_axis_authority() -> None:
     assert result.value.shape == (16,)
 
 
+def test_mix_down_preserves_nonsecond_axis_and_data() -> None:
+    source = _series()
+    phase = np.linspace(0.0, 1.0, source.size)
+
+    result = source.mix_down(phase=phase)
+
+    _assert_axis(result, source)
+    np.testing.assert_allclose(
+        result.value,
+        source.value * np.exp(-1j * phase),
+        rtol=0,
+        atol=0,
+    )
+
+
+def test_baseband_preserves_nonsecond_axis_after_mix_down() -> None:
+    source = _long_series()
+
+    result = source.baseband(phase=np.zeros(source.size), lowpass=0.001)
+
+    _assert_axis(result, source)
+    assert result.value.shape == source.value.shape
+    assert np.array_equal(np.isnan(result.value), np.isnan(source.value))
+
+
+def test_lock_in_bandwidth_preserves_nonsecond_axis_after_mix_down() -> None:
+    source = _long_series()
+
+    result = source.lock_in(
+        phase=np.zeros(source.size), bandwidth=0.001, output="complex"
+    )
+
+    _assert_axis(result, source)
+    assert result.value.shape == source.value.shape
+    assert np.array_equal(np.isnan(result.value), np.isnan(source.value))
+
+
+def test_phase_epoch_on_nonsecond_axis_uses_absolute_seconds() -> None:
+    source = _series()
+
+    phase = source._build_phase_series(f0=0.1, phase_epoch=60.0)
+    expected_t_rel = np.arange(source.size, dtype=float) * 60.0
+
+    np.testing.assert_allclose(
+        phase,
+        2 * np.pi * 0.1 * expected_t_rel,
+        rtol=0,
+        atol=1e-12,
+    )
+
+
+def test_smooth_preserves_nonsecond_axis_authority() -> None:
+    source = _series()
+
+    result = source.smooth(3)
+
+    _assert_axis(result, source)
+    assert result.value.shape == source.value.shape
+
+
 def test_rolling_reconstruction_preserves_nonsecond_axis() -> None:
     source = _series()
 
@@ -116,6 +187,18 @@ def test_timeseriesmatrix_copy_preserves_nonsecond_axis() -> None:
     np.testing.assert_allclose(
         result.times.to_value(u.min), source.times.to_value(u.min)
     )
+
+
+def test_timeseriesmatrix_crop_uses_nonsecond_axis_bounds() -> None:
+    source = _matrix()
+
+    result = source.crop(1 * u.min, 3 * u.min)
+
+    assert result.shape == (1, 1, 2)
+    np.testing.assert_array_equal(result.value, source.value[..., :2])
+    assert result.x0 == 1 * u.min
+    assert result.dx == 1 * u.min
+    assert result.xunit == u.min
 
 
 @pytest.mark.parametrize(

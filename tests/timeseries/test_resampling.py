@@ -431,6 +431,19 @@ def test_asfreq_nonsecond_axis_preserves_x0_and_values():
     np.testing.assert_array_equal(result.value, source.value)
 
 
+def test_asfreq_cross_unit_preserves_source_axis_authority():
+    source = TimeSeries([10.0, 20.0, 30.0], x0=1 * u.min, dt=1 * u.min, xunit=u.min)
+
+    result = source.asfreq(30 * u.s)
+
+    assert result.x0 == 1 * u.min
+    assert result.dt == 0.5 * u.min
+    assert result.xunit == u.min
+    np.testing.assert_array_equal(
+        result.value, [10.0, np.nan, 20.0, np.nan, 30.0, np.nan]
+    )
+
+
 def test_asfreq_empty_nonsecond_axis_preserves_grid_x0():
     source = TimeSeries([10.0, 20.0, 30.0], x0=1 * u.min, dt=1 * u.min)
 
@@ -439,6 +452,49 @@ def test_asfreq_empty_nonsecond_axis_preserves_grid_x0():
     assert result.x0 == 5 * u.min
     assert result.xunit == source.xunit
     np.testing.assert_array_equal(result.value, [])
+
+
+def test_asfreq_empty_cross_unit_preserves_source_axis_authority():
+    source = TimeSeries([10.0, 20.0, 30.0], x0=1 * u.min, dt=1 * u.min, xunit=u.min)
+
+    result = source.asfreq(300 * u.s, origin="gps0")
+
+    assert result.size == 0
+    assert result.x0 == 5 * u.min
+    assert result.dt == 5 * u.min
+    assert result.xunit == u.min
+
+
+def test_asfreq_dimensionless_axis_remains_dimensionless():
+    source = TimeSeries(
+        [10.0, 20.0, 30.0],
+        x0=1 * u.dimensionless_unscaled,
+        dt=1 * u.dimensionless_unscaled,
+        xunit=u.dimensionless_unscaled,
+    )
+
+    result = source.asfreq(2 * u.s)
+
+    assert result.xunit == u.dimensionless_unscaled
+    assert result.x0 == 1 * u.dimensionless_unscaled
+    assert result.dt == 2 * u.dimensionless_unscaled
+    np.testing.assert_array_equal(result.value, [10.0, 30.0])
+
+
+def test_asfreq_empty_dimensionless_axis_remains_dimensionless():
+    source = TimeSeries(
+        [10.0, 20.0, 30.0],
+        x0=1 * u.dimensionless_unscaled,
+        dt=1 * u.dimensionless_unscaled,
+        xunit=u.dimensionless_unscaled,
+    )
+
+    result = source.asfreq(5 * u.s, origin="gps0")
+
+    assert result.size == 0
+    assert result.xunit == u.dimensionless_unscaled
+    assert result.x0 == 5 * u.dimensionless_unscaled
+    assert result.dt == 5 * u.dimensionless_unscaled
 
 
 def test_asfreq_upsampling_ffill():
@@ -680,6 +736,52 @@ def test_resample_time_bin_empty_preserves_nonsecond_axis_authority():
     assert result.x0 == 2.5 * u.min
     assert result.dt == 2 * u.min
     assert result.unit == u.V
+
+
+def test_resample_time_bin_cross_unit_preserves_source_axis_authority():
+    source = TimeSeries(
+        np.array([1.0, 2.0, 3.0, 4.0]),
+        x0=1 * u.min,
+        dt=1 * u.min,
+        xunit=u.min,
+    )
+
+    result = source.resample(120 * u.s)
+
+    assert result.x0 == 1 * u.min
+    assert result.dt == 2 * u.min
+    assert result.xunit == u.min
+
+
+def test_resample_time_bin_empty_cross_unit_preserves_source_axis_authority():
+    source = TimeSeries(
+        np.array([1.0]),
+        x0=1 * u.min,
+        dt=1 * u.min,
+        xunit=u.min,
+    )
+
+    result = source.resample(120 * u.s, align="ceil", offset=90 * u.s)
+
+    assert result.size == 0
+    assert result.x0 == 2.5 * u.min
+    assert result.dt == 2 * u.min
+    assert result.xunit == u.min
+
+
+def test_resample_time_bin_dimensionless_axis_remains_dimensionless():
+    source = TimeSeries(
+        [1.0, 2.0, 3.0],
+        x0=1 * u.dimensionless_unscaled,
+        dt=1 * u.dimensionless_unscaled,
+        xunit=u.dimensionless_unscaled,
+    )
+
+    result = source.resample(2 * u.s)
+
+    assert result.xunit == u.dimensionless_unscaled
+    assert result.x0 == 1 * u.dimensionless_unscaled
+    assert result.dt == 2 * u.dimensionless_unscaled
 
 
 def test_resample_time_bin_closed_right_assigns_boundary_to_previous_bin():

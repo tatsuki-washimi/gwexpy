@@ -502,21 +502,42 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             if phase_epoch is None:
                 t_rel = dt_val * np.arange(self.size)
             else:
-                t0_abs = float(self.times.value[0])
-                t0_rel = t0_abs - float(phase_epoch)
+                times_q = self.times
+                times_unit = getattr(times_q, "unit", None)
+                if getattr(times_unit, "is_equivalent", lambda _unit: False)(u.s):
+                    times_abs = np.asarray(times_q.to_value(u.s), dtype=float)
+                else:
+                    times_abs = np.asarray(times_q.value, dtype=float)
+                if isinstance(phase_epoch, u.Quantity):
+                    phase_epoch_value = float(phase_epoch.to_value(u.s))
+                else:
+                    phase_epoch_value = float(phase_epoch)
+                t0_abs = float(times_abs[0])
+                t0_rel = t0_abs - phase_epoch_value
                 t_rel = t0_rel + dt_val * np.arange(self.size)
         else:
             if self.times is None:
                 raise ValueError(
                     "TimeSeries requires times or dt to build phase model."
                 )
-            times_val = self.times.value if hasattr(self.times, "value") else self.times
-            times_val = np.asarray(times_val, dtype=float)
+            times_q = self.times
+            times_unit = getattr(times_q, "unit", None)
+            if phase_epoch is not None and getattr(
+                times_unit, "is_equivalent", lambda _unit: False
+            )(u.s):
+                times_val = np.asarray(times_q.to_value(u.s), dtype=float)
+            else:
+                times_val = times_q.value if hasattr(times_q, "value") else times_q
+                times_val = np.asarray(times_val, dtype=float)
 
             if phase_epoch is None:
                 t_rel = times_val - times_val[0]
             else:
-                t_rel = times_val - float(phase_epoch)
+                if isinstance(phase_epoch, u.Quantity):
+                    phase_epoch_value = float(phase_epoch.to_value(u.s))
+                else:
+                    phase_epoch_value = float(phase_epoch)
+                t_rel = times_val - phase_epoch_value
 
         # Calculate phase
         cycles = f0 * t_rel
@@ -556,17 +577,20 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         if singlesided:
             y *= 2.0
 
-        # Prepare constructor args
+        # Prepare constructor args.  ``t0`` is an absolute-time alias in the
+        # GWpy-compatible constructor; use the source axis authority directly
+        # so non-second coordinate units (for example minutes) are not
+        # reinterpreted as seconds.
         kwargs = {"unit": self.unit, "channel": self.channel, "name": self.name}
 
         # Check regularity for constructor
         try:
             if self.dt is not None:
-                kwargs["t0"] = self.t0
+                kwargs["x0"] = self.x0
                 kwargs["dt"] = self.dt
+                kwargs["xunit"] = self.xunit
             else:
-                kwargs["t0"] = self.t0
-                kwargs["sample_rate"] = self.sample_rate
+                kwargs["times"] = self.times
         except (AttributeError, ValueError):
             kwargs["times"] = self.times
 

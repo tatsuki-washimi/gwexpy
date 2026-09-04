@@ -198,7 +198,19 @@ def test_date_component_epoch_uses_scalar_gwpy_date_parsing(
     assert series.t0.to_value(u.s) == pytest.approx(expected_gps, abs=1e-7)
 
 
-@pytest.mark.parametrize("epoch", [(2017, 13, 1), [2017, 13, 1]])
+@pytest.mark.parametrize(
+    "epoch",
+    [
+        (2017, 13, 1),
+        [2017, 13, 1],
+        (2017, 32, 1),
+        [2017, 32, 1],
+        (2017, 100, 1),
+        [2017, 100, 1],
+        (2017, 1, 400),
+        [2017, 1, 400],
+    ],
+)
 def test_invalid_date_component_epoch_preserves_scalar_parser_error(
     epoch: object,
 ) -> None:

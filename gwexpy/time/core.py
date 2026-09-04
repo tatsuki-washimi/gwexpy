@@ -84,13 +84,18 @@ def _is_date_component_sequence(obj):
         year = float(values[0])
         if not np.isfinite(year) or not 1 <= year <= 9999:
             return False
-        if len(values) >= 2 and abs(float(values[1])) > 31:
-            return False
-        # Day-of-month is at most 31, but allow the full day-of-year range so
-        # invalid calendar dates still reach GWpy instead of silently becoming
-        # a numeric vector.
-        if len(values) >= 3 and abs(float(values[2])) > 366:
-            return False
+        if len(values) >= 3:
+            # A sequence with a plausible year and at least one
+            # month/day-like component is date-shaped, even when that
+            # component is invalid.  This deliberately sends values such as
+            # ``(2017, 100, 1)`` and ``(2017, 1, 400)`` to GWpy so its
+            # ``ValueError`` is preserved.  Keep the explicit numeric-vector
+            # extension for an unambiguously large triple such as
+            # ``[1000, 2000, 3000]``.
+            month_like = abs(float(values[1]))
+            day_like = abs(float(values[2]))
+            if month_like > 366 and day_like > 366:
+                return False
         # Once the year, month-like component, and day-like component identify
         # a date-shaped call, retain GWpy's validation for all later
         # components.  Do not reject hour/minute/second/microsecond values here:

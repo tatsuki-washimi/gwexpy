@@ -579,17 +579,38 @@ class TimeSeriesMatrixAnalysisMixin:
         """
         from copy import deepcopy
 
-        from gwexpy.timeseries._core import _crop_bound_to_float, _regular_crop_slice
+        from gwexpy.timeseries._core import (
+            _crop_bound_to_axis,
+            _is_gwexpy_only_crop_bound,
+            _regular_crop_slice,
+        )
 
-        start_float = _crop_bound_to_float(start)
-        end_float = _crop_bound_to_float(end)
-        dt = self.dt
-        t0 = self.t0
+        axis_unit = getattr(self, "xunit", None) or u.s
+
+        def _bound_to_axis(value: Any) -> float | None:
+            if value is None:
+                return None
+            if isinstance(value, u.Quantity):
+                return float(value.to_value(axis_unit))
+            if isinstance(value, (int, float, np.integer, np.floating)):
+                return float(value)
+            if _is_gwexpy_only_crop_bound(value):
+                return _crop_bound_to_axis(value, axis_unit)
+            # Preserve the existing absolute-time extension for strings and
+            # other scalar adapters, but express it in the matrix axis unit.
+            return _crop_bound_to_axis(value, axis_unit)
+
+        start_float = _bound_to_axis(start)
+        end_float = _bound_to_axis(end)
+        dt = self.dx
+        t0 = self.x0
+        t0_value = float(t0.to_value(axis_unit))
+        dt_value = float(dt.to_value(axis_unit))
         sample_slice = _regular_crop_slice(
             start_float,
             end_float,
-            t0=float(t0.value),
-            dt=float(dt.value),
+            t0=t0_value,
+            dt=dt_value,
             size=self.shape[-1],
         )
         result = self[..., sample_slice]
