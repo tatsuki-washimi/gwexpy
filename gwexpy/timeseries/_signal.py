@@ -588,7 +588,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             if self.dt is not None:
                 kwargs["x0"] = self.x0
                 kwargs["dt"] = self.dt
-                kwargs["xunit"] = self.xunit
+                kwargs["xunit"] = getattr(self, "xunit", None)
             else:
                 kwargs["times"] = self.times
         except (AttributeError, ValueError):
