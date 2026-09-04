@@ -15,7 +15,7 @@ POLICY_TITLE = "GWpy Behavioral Compatibility Policy"
 SAFETY_EXCEPTION = "non_intersecting_window_safety"
 V023_HISTORICAL_SIGNOFF_CANDIDATE = "c7b79db7fee2e646069679a0efe3d65c7ed4e562"
 V023_CURRENT_SIGNOFF_CANDIDATE = "0a3d09a117827113b02e4a2ce73bccd3b1ba95d2"
-V023_RUNTIME_CANDIDATE = "431bde639da6cbb5bdc988064892c2d4b536ca7d"
+V023_RUNTIME_CANDIDATE = "d55717e9aed9ef5c22bb5d8ed0df95e19a313545"
 V023_SIGNOFF_REPORT = (
     "docs/developers/reports/"
     "report_v0.2.3_human_scientific_data_model_signoff_20260903.md"

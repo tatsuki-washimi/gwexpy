@@ -5,7 +5,7 @@
 This maintenance-release candidate implements GWpy 4.0.1/4.0.2 compatibility
 fixes across the audited GWpy-derived API surface. Automated differential
 evidence is green for runtime candidate
-`431bde639da6cbb5bdc988064892c2d4b536ca7d`. The current-candidate human
+`d55717e9aed9ef5c22bb5d8ed0df95e19a313545`. The current-candidate human
 scientific/data-model sign-off is approved-with-signal-pending: the release
 owner's 2026-09-04 record retains four unchanged parent-parity risks from
 candidate `0a3d09a117827113b02e4a2ce73bccd3b1ba95d2`, while the signal-methods
