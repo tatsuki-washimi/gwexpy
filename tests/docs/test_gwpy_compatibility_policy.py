@@ -14,7 +14,9 @@ POLICY_RELATIVE_PATH = "explanation/gwpy_compatibility_policy.md"
 POLICY_TITLE = "GWpy Behavioral Compatibility Policy"
 SAFETY_EXCEPTION = "non_intersecting_window_safety"
 V023_HISTORICAL_SIGNOFF_CANDIDATE = "c7b79db7fee2e646069679a0efe3d65c7ed4e562"
-V023_CURRENT_SIGNOFF_CANDIDATE = "0a3d09a117827113b02e4a2ce73bccd3b1ba95d2"
+V023_CURRENT_SIGNOFF_CANDIDATE = "d55717e9aed9ef5c22bb5d8ed0df95e19a313545"
+V023_CURRENT_SIGNOFF_SOURCE = "ff47d66ce985c295193a8d8cd1acef3ddd61add1"
+V023_PREVIOUS_SIGNOFF_CANDIDATE = "0a3d09a117827113b02e4a2ce73bccd3b1ba95d2"
 V023_RUNTIME_CANDIDATE = "d55717e9aed9ef5c22bb5d8ed0df95e19a313545"
 V023_SIGNOFF_REPORT = (
     "docs/developers/reports/"
@@ -27,7 +29,7 @@ V023_LATER_RELEASE_GATES = [
     "candidate-wide QA",
     "19-cell qualification",
 ]
-V023_REMAINING_RELEASE_GATES = V023_LATER_RELEASE_GATES
+V023_REMAINING_RELEASE_GATES = ["19-cell qualification"]
 V023_ACCEPTED_PARENT_PARITY_RISKS = [
     "mixed_unit_csd_v2_per_hz_label",
     "public_rayleigh_parent_segments_private_corrected_route_finite_mc_limits",
@@ -38,6 +40,8 @@ V023_ACCEPTED_PARENT_PARITY_RISKS = [
 V023_CURRENT_ACCEPTED_PARENT_PARITY_RISKS = [
     "mixed_unit_csd_v2_per_hz_label",
     "public_rayleigh_parent_segments_private_corrected_route_finite_mc_limits",
+    "signal_dimensionless_raw_quantity_float32_underflow",
+    "signal_irregular_nonsecond_axis_reconstruction_authority",
     "stale_array2d_plane2d_min_max_indices",
     "stale_numeric_swapaxes_transpose_metadata",
 ]
@@ -79,7 +83,7 @@ def _markdown_front_matter(relative_path: str) -> dict[str, object]:
 def _expected_v023_signoff_block() -> dict[str, object]:
     return {
         "schema": V023_SIGNOFF_SCHEMA,
-        "status": "approved-with-signal-pending",
+        "status": "approved",
         "historical_approval": {
             "status": "approved",
             "date": "2026-09-03",
@@ -88,15 +92,13 @@ def _expected_v023_signoff_block() -> dict[str, object]:
         },
         "current_candidate": {
             "sha": V023_CURRENT_SIGNOFF_CANDIDATE,
-            "status": "approved-except-signal-pending",
+            "status": "approved",
             "date": "2026-09-04",
             "approver_role": "release owner",
             "approval_scope": {
                 "accepted_parent_parity_risks": V023_CURRENT_ACCEPTED_PARENT_PARITY_RISKS,
-                "pending_reapproval": [
-                    "signal_dimensionless_raw_quantity_float32_underflow",
-                ],
-                "superseded_runtime_candidate": V023_RUNTIME_CANDIDATE,
+                "evidence_source_sha": V023_CURRENT_SIGNOFF_SOURCE,
+                "supersedes_runtime_candidate": V023_PREVIOUS_SIGNOFF_CANDIDATE,
                 "other_contracts": "excluded",
             },
         },
@@ -312,17 +314,16 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
     assert "親 reader が正常終了した後だけ" in plan
     assert "compatibility_exception" in plan
     assert "8bfe36f9684989188c2f32e65ba429fe8bdfaf29" in plan
-    assert "Human scientific/data-model sign-off was **APPROVED**" in plan
+    assert "Human scientific/data-model sign-off was reapproved" in plan
     assert V023_HISTORICAL_SIGNOFF_CANDIDATE in plan
     assert V023_CURRENT_SIGNOFF_CANDIDATE in plan
     assert V023_SIGNOFF_REPORT in plan
     assert "historical approval" in plan
-    assert "covered only the five" in plan
+    assert "four unchanged" in plan
     assert "parent-parity risks" in plan
     assert "release identity only" in plan
-    assert "does not rebind" in plan
-    assert "does not broaden" in plan
-    assert "pending reapproval" in plan
+    assert "other contracts remain" in plan
+    assert "reapproved" in plan
     for remaining_gate in V023_REMAINING_RELEASE_GATES:
         assert remaining_gate in plan
 
@@ -380,7 +381,7 @@ def test_v023_plan_records_the_approved_safety_exception() -> None:
         "current_candidate": {
             "sha": V023_CURRENT_SIGNOFF_CANDIDATE,
             "status": "approved",
-            "date": "2026-09-03",
+            "date": "2026-09-04",
             "approver_role": "release owner",
             "approval_scope": {
                 "accepted_parent_parity_risks": V023_ACCEPTED_PARENT_PARITY_RISKS,
@@ -462,7 +463,7 @@ def test_v023_aggregate_human_signoff_preserves_history_and_approves_current_ris
     signoff = _markdown_front_matter(V023_SIGNOFF_REPORT)
 
     assert signoff["schema"] == V023_SIGNOFF_SCHEMA
-    assert signoff["status"] == "approved-with-signal-pending"
+    assert signoff["status"] == "approved"
     historical = signoff["historical_approval"]
     assert historical["status"] == "approved"
     assert historical["date"] == "2026-09-03"
@@ -526,15 +527,13 @@ def test_v023_aggregate_human_signoff_preserves_history_and_approves_current_ris
     ]
     assert signoff["current_candidate"] == {
         "sha": V023_CURRENT_SIGNOFF_CANDIDATE,
-        "status": "approved-except-signal-pending",
+        "status": "approved",
         "date": "2026-09-04",
         "approver_role": "release owner",
         "approval_scope": {
             "accepted_parent_parity_risks": V023_CURRENT_ACCEPTED_PARENT_PARITY_RISKS,
-            "pending_reapproval": [
-                "signal_dimensionless_raw_quantity_float32_underflow",
-            ],
-            "superseded_runtime_candidate": V023_RUNTIME_CANDIDATE,
+            "evidence_source_sha": V023_CURRENT_SIGNOFF_SOURCE,
+            "supersedes_runtime_candidate": V023_PREVIOUS_SIGNOFF_CANDIDATE,
             "other_contracts": "excluded",
         },
     }
@@ -552,15 +551,15 @@ def test_v023_aggregate_human_signoff_preserves_history_and_approves_current_ris
 
     report = " ".join(_read(V023_SIGNOFF_REPORT).split())
     assert "historical approval is bound only to" in report
-    assert "current approval is bound only to" in report
+    assert "reapproved the human scientific/data-model" in report
     assert V023_HISTORICAL_SIGNOFF_CANDIDATE in report
     assert V023_CURRENT_SIGNOFF_CANDIDATE in report
-    assert "exactly the four unchanged" in report
+    assert "four unchanged" in report
     assert "does not approve any other contract" in report
     assert "release identity only" in report
-    assert "does not rebind" in report
+    assert V023_CURRENT_SIGNOFF_SOURCE in report
     assert "does not broaden" in report
-    assert "pending reapproval" in report
+    assert "signal-related internal reconstruction authority" in report
     assert "#611" in report
     assert "previously approved" in report
     assert "is not reapproved" in report
@@ -600,7 +599,9 @@ def test_v023_human_review_records_distinguish_historical_and_current_approval()
         manifest_text = _read(f"docs/developers/plans/manifests/{filename}")
         manifest = yaml.safe_load(manifest_text)
         assert manifest["status"] == expected_status
-        assert "pending_reapproval" in manifest_text, filename
+        assert (
+            "signal_irregular_nonsecond_axis_reconstruction_authority" in manifest_text
+        ), filename
         assert manifest["human_scientific_data_model_signoff"] == (
             _expected_v023_signoff_block()
         )
@@ -674,7 +675,7 @@ def test_v023_human_review_records_distinguish_historical_and_current_approval()
         assert V023_CURRENT_SIGNOFF_CANDIDATE in disclosure
         assert "historical approval" in disclosure
         assert "exactly five disclosed parent-parity risks" in disclosure
-        assert "strictly limited to the four unchanged" in disclosure
+        assert "strictly limited to the six approved" in disclosure
         assert "does not approve other contracts" in disclosure
         assert "release remains **HOLD**" in disclosure
         assert "same-candidate scientific/data-model review" in disclosure
@@ -682,7 +683,7 @@ def test_v023_human_review_records_distinguish_historical_and_current_approval()
         assert "candidate-wide QA" in disclosure
         assert "19-cell qualification" in disclosure
         assert "requires reapproval" in disclosure
-        assert "pending reapproval" in disclosure
+        assert "signal-related internal reconstruction authority" in disclosure
         assert (
             "stale axis metadata on specific Array2D/Plane2D reductions and "
             "numeric array permutations" in disclosure

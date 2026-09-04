@@ -1,6 +1,6 @@
 ---
 schema: gwexpy-v023-human-scientific-data-model-signoff-v1
-status: approved-with-signal-pending
+status: approved
 historical_approval:
   status: approved
   date: "2026-09-03"
@@ -39,19 +39,20 @@ historical_approval:
     - bifrequencymap_axes
     - scalarfield_diff_comparison
 current_candidate:
-  sha: 0a3d09a117827113b02e4a2ce73bccd3b1ba95d2
-  status: approved-except-signal-pending
+  sha: d55717e9aed9ef5c22bb5d8ed0df95e19a313545
+  status: approved
   date: "2026-09-04"
   approver_role: release owner
   approval_scope:
     accepted_parent_parity_risks:
-    - mixed_unit_csd_v2_per_hz_label
-    - public_rayleigh_parent_segments_private_corrected_route_finite_mc_limits
-    - stale_array2d_plane2d_min_max_indices
-    - stale_numeric_swapaxes_transpose_metadata
-    pending_reapproval:
+      - mixed_unit_csd_v2_per_hz_label
+      - public_rayleigh_parent_segments_private_corrected_route_finite_mc_limits
       - signal_dimensionless_raw_quantity_float32_underflow
-    superseded_runtime_candidate: d55717e9aed9ef5c22bb5d8ed0df95e19a313545
+      - signal_irregular_nonsecond_axis_reconstruction_authority
+      - stale_array2d_plane2d_min_max_indices
+      - stale_numeric_swapaxes_transpose_metadata
+    evidence_source_sha: ff47d66ce985c295193a8d8cd1acef3ddd61add1
+    supersedes_runtime_candidate: 0a3d09a117827113b02e4a2ce73bccd3b1ba95d2
     other_contracts: excluded
 inventory_evidence:
   historical_approved_candidate:
@@ -60,7 +61,7 @@ inventory_evidence:
     evidence_selectors: 59
     executed_cases_per_oracle: 384
   current_candidate:
-    sha: 0a3d09a117827113b02e4a2ce73bccd3b1ba95d2
+    sha: d55717e9aed9ef5c22bb5d8ed0df95e19a313545
     logical_members: 575
     evidence_selectors: 62
     executed_cases_per_oracle: 396
@@ -70,9 +71,6 @@ non_intersecting_window_safety:
 release_decision:
   status: HOLD
   remaining_gates:
-    - same-candidate scientific/data-model review
-    - same-candidate release-security review
-    - candidate-wide QA
     - 19-cell qualification
 invalidation_rule: >-
   Any later runtime/data-model semantic change invalidates this sign-off and
@@ -88,30 +86,27 @@ approval on 2026-09-03. This historical approval is bound only to commit
 `c7b79db7fee2e646069679a0efe3d65c7ed4e562` on branch
 `fix/v023-gwpy-behavioral-compat`.
 
-Candidate `0a3d09a117827113b02e4a2ce73bccd3b1ba95d2` restores native HDF5
-auto-identification and is therefore a later runtime/data-model semantic
-change. On 2026-09-03, the release owner reapproved the human
-scientific/data-model sign-off for that exact runtime candidate. The current
-approval is bound only to
-`0a3d09a117827113b02e4a2ce73bccd3b1ba95d2` and exactly the four unchanged
-parent-parity risks listed below. The signal-methods risk is invalidated by the
-subsequent internal-reconstruction follow-up and is pending reapproval for
-runtime candidate `d55717e9aed9ef5c22bb5d8ed0df95e19a313545` (and its exact
-replacement source SHA). It does not approve any other contract. The intervening
-documentation-only correction at
-`5d27c4ae8a1341e79aadf4751449784b2f575455` and this recording change do not
-alter or rebind the runtime candidate.
+Candidate `0a3d09a117827113b02e4a2ce73bccd3b1ba95d2` restored native HDF5
+auto-identification and remains the immediately preceding approval record.
+On 2026-09-04, the release owner reapproved the human scientific/data-model
+sign-off for runtime candidate
+`d55717e9aed9ef5c22bb5d8ed0df95e19a313545`. The reapproval covers the four
+unchanged parent-parity risks, the dimensionless/raw-Quantity/float32 signal
+contract, and the signal-related internal reconstruction authority for
+non-second irregular axes (`mix_down`, `smooth`, `phase_epoch`, and `asfreq`).
+The evidence and review source for this record is
+`ff47d66ce985c295193a8d8cd1acef3ddd61add1`. The approval does not approve any
+other contract.
+The intervening documentation-only correction at
+`5d27c4ae8a1341e79aadf4751449784b2f575455` does not alter runtime behavior.
 
 Setting `gwexpy/_version.py` to `0.2.3` and synchronizing its citation metadata
-is release identity only. It is not a runtime/data-model semantic change, does
-not rebind the current approval from
-`0a3d09a117827113b02e4a2ce73bccd3b1ba95d2`, and does not broaden the approval
-beyond the four currently accepted parent-parity risks; the signal risk remains
-pending reapproval. The global decision remains **HOLD**, with all four later
-gates still pending.
+is release identity only. It is not a runtime/data-model semantic change and
+does not broaden this approval beyond the listed contracts. The global decision
+remains **HOLD** until the 19-cell qualification and final release gate finish.
 
 The historical c7 inventory evidence covered 575 logical members with 59
-selectors and 384 executed cases per oracle. The current 0a3d inventory still
+selectors and 384 executed cases per oracle. The current d557 inventory still
 has 575 logical members, but its HDF5 evidence expands the executable closure
 to 62 selectors and 396 executed cases per oracle. The generated inventory's
 1,150 case rows remain a separate logical version-row count.
@@ -138,8 +133,7 @@ reapproval:
 ## Accepted parent-parity risks
 
 Exactly five parent-parity risks were accepted for the historical c7 candidate.
-The current-candidate approval is strictly limited to the four unchanged risks
-below; the signal risk remains historical evidence only until reapproval:
+The current-candidate approval is strictly limited to the six listed risk groups:
 
 1. The mixed-unit CSD `V²/Hz` label is retained because the public default
    follows the parent result and unit.
@@ -149,10 +143,11 @@ below; the signal risk remains historical evidence only until reapproval:
 3. Array2D/Plane2D `min`/`max` retain stale indices where GWpy does so.
 4. Numeric `swapaxes`/`transpose` retain stale metadata where GWpy does so.
 
-The signal-methods risk (dimensionless signal outputs, raw-magnitude frequency
-`Quantity` handling, and float32 RMS underflow) is explicitly pending
-reapproval after the constructor-wave reconstruction changes. No signal
-semantic approval is inferred from the current candidate record.
+5. The signal-methods contract retains dimensionless signal outputs,
+   raw-magnitude frequency `Quantity` handling, and float32 RMS underflow.
+6. Signal-related internal reconstruction uses the axis authority for
+   non-second irregular axes, including `mix_down`, `smooth`, `phase_epoch`,
+   and `asfreq` paths, without reinterpreting materialized coordinates.
 
 These historical and current-candidate approvals preserve observable parent
 behavior; they are not authority to introduce additional default divergence.
@@ -169,13 +164,9 @@ authoritative.
 
 ## Release gate
 
-This human sign-off does not make the release GO. The global release decision
-remains **HOLD** until all of the following complete against the current
-candidate:
-
-- same-candidate scientific/data-model review;
-- same-candidate release-security review;
-- candidate-wide QA; and
-- 19-cell qualification.
+This human sign-off does not make the release GO. The same-candidate reviews
+and candidate-wide QA are recorded as complete for the current candidate. The
+global release decision remains **HOLD** until the 19-cell qualification and
+final release gate complete.
 
 No push, tag, publication, or release action is authorized by this record.

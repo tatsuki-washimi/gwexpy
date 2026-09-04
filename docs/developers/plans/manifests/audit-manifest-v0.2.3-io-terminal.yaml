@@ -521,9 +521,9 @@ human_data_model_signoff:
       status: approved
       candidate_sha: c7b79db7fee2e646069679a0efe3d65c7ed4e562
     current_candidate:
-      sha: 0a3d09a117827113b02e4a2ce73bccd3b1ba95d2
+      sha: d55717e9aed9ef5c22bb5d8ed0df95e19a313545
       status: approved
-      date: "2026-09-03"
+      date: "2026-09-04"
       approver_role: release owner
       approval_scope:
         accepted_parent_parity_risks:
@@ -535,9 +535,6 @@ human_data_model_signoff:
         other_contracts: excluded
   global_release_gate: hold
   global_release_pending_reasons:
-    - same-candidate scientific/data-model review
-    - same-candidate release-security review
-    - candidate-wide QA
     - 19-cell qualification
   scope: >-
     For a non-nanosecond HDF5 series whose requested end precedes the stored

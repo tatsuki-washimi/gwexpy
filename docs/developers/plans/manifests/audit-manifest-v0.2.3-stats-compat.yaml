@@ -387,26 +387,27 @@ changed_files:
 
 human_scientific_data_model_signoff:
   schema: gwexpy-v023-human-scientific-data-model-signoff-v1
-  status: approved-with-signal-pending
+  status: approved
   historical_approval:
     status: approved
     date: "2026-09-03"
     approver_role: release owner
     candidate_sha: c7b79db7fee2e646069679a0efe3d65c7ed4e562
   current_candidate:
-    sha: 0a3d09a117827113b02e4a2ce73bccd3b1ba95d2
-    status: approved-except-signal-pending
+    sha: d55717e9aed9ef5c22bb5d8ed0df95e19a313545
+    status: approved
     date: "2026-09-04"
     approver_role: release owner
     approval_scope:
       accepted_parent_parity_risks:
         - mixed_unit_csd_v2_per_hz_label
         - public_rayleigh_parent_segments_private_corrected_route_finite_mc_limits
+        - signal_dimensionless_raw_quantity_float32_underflow
+        - signal_irregular_nonsecond_axis_reconstruction_authority
         - stale_array2d_plane2d_min_max_indices
         - stale_numeric_swapaxes_transpose_metadata
-      pending_reapproval:
-        - signal_dimensionless_raw_quantity_float32_underflow
-      superseded_runtime_candidate: d55717e9aed9ef5c22bb5d8ed0df95e19a313545
+      evidence_source_sha: ff47d66ce985c295193a8d8cd1acef3ddd61add1
+      supersedes_runtime_candidate: 0a3d09a117827113b02e4a2ce73bccd3b1ba95d2
       other_contracts: excluded
   aggregate_report: docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md
   non_intersecting_window_safety:
@@ -414,9 +415,6 @@ human_scientific_data_model_signoff:
     status: approved-separately-unchanged
   global_release_gate: hold
   remaining_gates:
-    - same-candidate scientific/data-model review
-    - same-candidate release-security review
-    - candidate-wide QA
     - 19-cell qualification
   invalidation_rule: >-
     Any later runtime/data-model semantic change invalidates this sign-off and
