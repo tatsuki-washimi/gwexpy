@@ -5,11 +5,14 @@
 This maintenance-release candidate implements GWpy 4.0.1/4.0.2 compatibility
 fixes across the audited GWpy-derived API surface. Automated differential
 evidence is green for runtime candidate
-`0a3d09a117827113b02e4a2ce73bccd3b1ba95d2`. The current-candidate human
-scientific/data-model sign-off is approved on 2026-09-03 by the release owner,
-strictly limited to exactly five disclosed parent-parity risks. It does not
+`431bde639da6cbb5bdc988064892c2d4b536ca7d`. The current-candidate human
+scientific/data-model sign-off is approved-with-signal-pending: the release
+owner's 2026-09-04 record retains four unchanged parent-parity risks from
+candidate `0a3d09a117827113b02e4a2ce73bccd3b1ba95d2`, while the signal-methods
+risk requires reapproval against the runtime candidate above. It does not
 approve other contracts. The historical approval remains bound only to
-candidate `c7b79db7fee2e646069679a0efe3d65c7ed4e562`; see the
+candidate `c7b79db7fee2e646069679a0efe3d65c7ed4e562` and exactly five disclosed
+parent-parity risks; see the
 [aggregate sign-off report](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md).
 The candidate adds no public API or dependency.
 
@@ -77,18 +80,21 @@ generated inventory's 1,150 case rows are a separate logical version-row count.
   human approval and release-note gates remain satisfied, and the current
   reapproval does not reapprove it. Its scope remains limited to the fully
   disjoint read-window subcase.
-- The current-candidate human scientific/data-model approval is strictly
-  limited to exactly five disclosed parent-parity risk groups and does not
-  approve other contracts. The historical c7 approval of the same five risks
-  remains recorded separately:
+- The current-candidate human scientific/data-model approval is
+  approved-with-signal-pending and strictly limited to the four unchanged
+  parent-parity risk groups below; the signal-methods group remains pending
+  reapproval against the later runtime candidate. It does not approve other
+  contracts. The historical c7 approval of exactly five risks remains recorded
+  separately:
 
   1. the mixed-unit CSD `V²/Hz` label;
   2. public Rayleigh parent segment selection with a private corrected route
      and known finite-Monte-Carlo limitations;
-  3. dimensionless signal outputs, raw-magnitude frequency `Quantity` handling,
-     and float32 RMS underflow;
-  4. stale Array2D/Plane2D `min`/`max` indices; and
-  5. stale numeric `swapaxes`/`transpose` metadata.
+  3. stale Array2D/Plane2D `min`/`max` indices; and
+  4. stale numeric `swapaxes`/`transpose` metadata.
+
+  The historical-only signal group covers dimensionless signal outputs,
+  raw-magnitude frequency `Quantity` handling, and float32 RMS underflow.
 
   The final two groups retain the previously disclosed stale axis metadata on
   specific Array2D/Plane2D reductions and numeric array permutations.

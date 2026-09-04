@@ -15,6 +15,7 @@ POLICY_TITLE = "GWpy Behavioral Compatibility Policy"
 SAFETY_EXCEPTION = "non_intersecting_window_safety"
 V023_HISTORICAL_SIGNOFF_CANDIDATE = "c7b79db7fee2e646069679a0efe3d65c7ed4e562"
 V023_CURRENT_SIGNOFF_CANDIDATE = "0a3d09a117827113b02e4a2ce73bccd3b1ba95d2"
+V023_RUNTIME_CANDIDATE = "431bde639da6cbb5bdc988064892c2d4b536ca7d"
 V023_SIGNOFF_REPORT = (
     "docs/developers/reports/"
     "report_v0.2.3_human_scientific_data_model_signoff_20260903.md"
@@ -31,6 +32,12 @@ V023_ACCEPTED_PARENT_PARITY_RISKS = [
     "mixed_unit_csd_v2_per_hz_label",
     "public_rayleigh_parent_segments_private_corrected_route_finite_mc_limits",
     "signal_dimensionless_raw_quantity_float32_underflow",
+    "stale_array2d_plane2d_min_max_indices",
+    "stale_numeric_swapaxes_transpose_metadata",
+]
+V023_CURRENT_ACCEPTED_PARENT_PARITY_RISKS = [
+    "mixed_unit_csd_v2_per_hz_label",
+    "public_rayleigh_parent_segments_private_corrected_route_finite_mc_limits",
     "stale_array2d_plane2d_min_max_indices",
     "stale_numeric_swapaxes_transpose_metadata",
 ]
@@ -72,7 +79,7 @@ def _markdown_front_matter(relative_path: str) -> dict[str, object]:
 def _expected_v023_signoff_block() -> dict[str, object]:
     return {
         "schema": V023_SIGNOFF_SCHEMA,
-        "status": "approved",
+        "status": "approved-with-signal-pending",
         "historical_approval": {
             "status": "approved",
             "date": "2026-09-03",
@@ -81,11 +88,15 @@ def _expected_v023_signoff_block() -> dict[str, object]:
         },
         "current_candidate": {
             "sha": V023_CURRENT_SIGNOFF_CANDIDATE,
-            "status": "approved",
-            "date": "2026-09-03",
+            "status": "approved-except-signal-pending",
+            "date": "2026-09-04",
             "approver_role": "release owner",
             "approval_scope": {
-                "accepted_parent_parity_risks": V023_ACCEPTED_PARENT_PARITY_RISKS,
+                "accepted_parent_parity_risks": V023_CURRENT_ACCEPTED_PARENT_PARITY_RISKS,
+                "pending_reapproval": [
+                    "signal_dimensionless_raw_quantity_float32_underflow",
+                ],
+                "superseded_runtime_candidate": V023_RUNTIME_CANDIDATE,
                 "other_contracts": "excluded",
             },
         },
@@ -451,7 +462,7 @@ def test_v023_aggregate_human_signoff_preserves_history_and_approves_current_ris
     signoff = _markdown_front_matter(V023_SIGNOFF_REPORT)
 
     assert signoff["schema"] == V023_SIGNOFF_SCHEMA
-    assert signoff["status"] == "approved"
+    assert signoff["status"] == "approved-with-signal-pending"
     historical = signoff["historical_approval"]
     assert historical["status"] == "approved"
     assert historical["date"] == "2026-09-03"
@@ -515,11 +526,15 @@ def test_v023_aggregate_human_signoff_preserves_history_and_approves_current_ris
     ]
     assert signoff["current_candidate"] == {
         "sha": V023_CURRENT_SIGNOFF_CANDIDATE,
-        "status": "approved",
-        "date": "2026-09-03",
+        "status": "approved-except-signal-pending",
+        "date": "2026-09-04",
         "approver_role": "release owner",
         "approval_scope": {
-            "accepted_parent_parity_risks": V023_ACCEPTED_PARENT_PARITY_RISKS,
+            "accepted_parent_parity_risks": V023_CURRENT_ACCEPTED_PARENT_PARITY_RISKS,
+            "pending_reapproval": [
+                "signal_dimensionless_raw_quantity_float32_underflow",
+            ],
+            "superseded_runtime_candidate": V023_RUNTIME_CANDIDATE,
             "other_contracts": "excluded",
         },
     }
@@ -540,12 +555,12 @@ def test_v023_aggregate_human_signoff_preserves_history_and_approves_current_ris
     assert "current approval is bound only to" in report
     assert V023_HISTORICAL_SIGNOFF_CANDIDATE in report
     assert V023_CURRENT_SIGNOFF_CANDIDATE in report
-    assert "exactly the five parent-parity risks" in report
+    assert "exactly the four unchanged" in report
     assert "does not approve any other contract" in report
     assert "release identity only" in report
     assert "does not rebind" in report
     assert "does not broaden" in report
-    assert "pending reapproval" not in report
+    assert "pending reapproval" in report
     assert "#611" in report
     assert "previously approved" in report
     assert "is not reapproved" in report
@@ -585,7 +600,7 @@ def test_v023_human_review_records_distinguish_historical_and_current_approval()
         manifest_text = _read(f"docs/developers/plans/manifests/{filename}")
         manifest = yaml.safe_load(manifest_text)
         assert manifest["status"] == expected_status
-        assert "pending-reapproval" not in manifest_text, filename
+        assert "pending_reapproval" in manifest_text, filename
         assert manifest["human_scientific_data_model_signoff"] == (
             _expected_v023_signoff_block()
         )
@@ -658,7 +673,8 @@ def test_v023_human_review_records_distinguish_historical_and_current_approval()
         assert V023_HISTORICAL_SIGNOFF_CANDIDATE in disclosure
         assert V023_CURRENT_SIGNOFF_CANDIDATE in disclosure
         assert "historical approval" in disclosure
-        assert "strictly limited to exactly five" in disclosure
+        assert "exactly five disclosed parent-parity risks" in disclosure
+        assert "strictly limited to the four unchanged" in disclosure
         assert "does not approve other contracts" in disclosure
         assert "release remains **HOLD**" in disclosure
         assert "same-candidate scientific/data-model review" in disclosure
@@ -666,7 +682,7 @@ def test_v023_human_review_records_distinguish_historical_and_current_approval()
         assert "candidate-wide QA" in disclosure
         assert "19-cell qualification" in disclosure
         assert "requires reapproval" in disclosure
-        assert "pending reapproval" not in disclosure
+        assert "pending reapproval" in disclosure
         assert (
             "stale axis metadata on specific Array2D/Plane2D reductions and "
             "numeric array permutations" in disclosure
