@@ -70,8 +70,11 @@ def test_to_gps_date_component_sequences_match_gwpy(value):
         pytest.param((2017, 2, 29), ValueError, id="invalid-day"),
         pytest.param((2017, 1, 32), ValueError, id="out-of-range-day"),
         pytest.param((2017, 32, 1), ValueError, id="out-of-range-month-wide"),
+        pytest.param([2017, 32, 1], ValueError, id="list-out-of-range-month-wide"),
         pytest.param((2017, 100, 1), ValueError, id="out-of-range-month-large"),
+        pytest.param([2017, 100, 1], ValueError, id="list-out-of-range-month-large"),
         pytest.param((2017, 1, 400), ValueError, id="out-of-range-day-large"),
+        pytest.param([2017, 1, 400], ValueError, id="list-out-of-range-day-large"),
         pytest.param((2017, 1, 1, 25), ValueError, id="out-of-range-hour"),
         pytest.param((2017, 1, 1, 1, 61), ValueError, id="out-of-range-minute"),
         pytest.param((2017, 1, 1, 1, 1, 61), ValueError, id="out-of-range-second"),
@@ -281,6 +284,10 @@ def test_tconvert_positional_date_components_match_gwpy():
         (2017, 32, 1),
         (2017, 100, 1),
         (2017, 1, 400),
+        [2017, 13, 1],
+        [2017, 32, 1],
+        [2017, 100, 1],
+        [2017, 1, 400],
     ],
 )
 def test_tconvert_invalid_date_components_do_not_fall_back_to_vector(value):
