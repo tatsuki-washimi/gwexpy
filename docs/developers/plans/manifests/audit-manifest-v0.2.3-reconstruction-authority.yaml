@@ -4,10 +4,10 @@ purpose: >-
   Classify every reviewed internal TimeSeries/TimeSeriesMatrix reconstruction
   touched by the constructor parity follow-up, and make the authority used by
   each call site auditable.
-status: classification-complete-focused-green-pending-runtime-freeze
+status: classification-complete-focused-green-runtime-frozen-review-pending
 implementation_base: a8085b71446d3ef3417a7e5b5ac8efb156368eac
 supersedes_runtime_candidate: 8200a30a9e131cb357b17f0b64f5d6de995a2a26
-runtime_candidate: cae1607fbfb4378859277a5e2b795052463b81da
+runtime_candidate: 77b0faca9f7e4e77acb21a0298385a7b5fbd45ba
 oracles:
   - gwpy-4.0.1
   - gwpy-4.0.2
@@ -82,12 +82,21 @@ entries:
     action: use self.x0/self.dt
     evidence:
       - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_signal_reconstruction_preserves_nonsecond_axis
+      - tests/timeseries/test_gwpy_audit_signal_compat.py::test_same_axis_signal_methods_preserve_exact_time_authority
   - id: signal.phase-family
     source: gwexpy/timeseries/_signal.py:instantaneous_phase,radian,degree,instantaneous_frequency
     classification: axis-coordinate
     action: use self.x0/self.dt
     evidence:
       - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_signal_reconstruction_preserves_nonsecond_axis
+      - tests/timeseries/test_gwpy_audit_signal_compat.py::test_same_axis_signal_methods_preserve_exact_time_authority
+  - id: signal.mix-down-lock-in
+    source: gwexpy/timeseries/_signal.py:TimeSeriesSignalMixin.mix_down,lock_in
+    classification: parent-result-wrap
+    action: preserve the parent result exact t0/dt authority for same-axis outputs
+    evidence:
+      - tests/timeseries/test_gwpy_audit_signal_compat.py::test_same_axis_signal_methods_preserve_exact_time_authority
+      - tests/timeseries/test_gwpy_audit_signal_compat.py::test_lock_in_preserves_exact_time_authority
   - id: signal.demodulate-wrap
     source: gwexpy/timeseries/_signal.py:TimeSeriesSignalMixin.demodulate
     classification: parent-result-wrap
@@ -185,6 +194,12 @@ entries:
     action: preserve copied xindex and xunit explicitly
     evidence:
       - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_timeseriesmatrix_copy_preserves_nonsecond_axis
+  - id: matrix.same-axis-reconstruction
+    source: gwexpy/types/seriesmatrix_base.py,series_matrix_structure.py,series_matrix_math.py
+    classification: axis-coordinate
+    action: preserve source x0/dx and xunit through matrix reconstruction and ufunc paths
+    evidence:
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_timeseriesmatrix_reconstruction_preserves_nonsecond_axis
   - id: io.netcdf-matrix
     source: gwexpy/timeseries/io/netcdf4_.py:write_timeseriesmatrix_netcdf4
     classification: axis-coordinate
