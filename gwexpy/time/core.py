@@ -86,7 +86,10 @@ def _is_date_component_sequence(obj):
             return False
         if len(values) >= 2 and abs(float(values[1])) > 31:
             return False
-        if len(values) >= 3 and abs(float(values[2])) > 31:
+        # Day-of-month is at most 31, but allow the full day-of-year range so
+        # invalid calendar dates still reach GWpy instead of silently becoming
+        # a numeric vector.
+        if len(values) >= 3 and abs(float(values[2])) > 366:
             return False
         if len(values) >= 4 and abs(float(values[3])) > 24:
             return False

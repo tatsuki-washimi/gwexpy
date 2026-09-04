@@ -68,6 +68,7 @@ def test_to_gps_date_component_sequences_match_gwpy(value):
         pytest.param((2017, 13, 1), ValueError, id="tuple-invalid-month"),
         pytest.param([2017, 13, 1], ValueError, id="list-invalid-month"),
         pytest.param((2017, 2, 29), ValueError, id="invalid-day"),
+        pytest.param((2017, 1, 32), ValueError, id="out-of-range-day"),
         pytest.param((2017.0, 1, 1), TypeError, id="float-component"),
         pytest.param([2017.0, 1, 1], TypeError, id="list-float-component"),
     ],
