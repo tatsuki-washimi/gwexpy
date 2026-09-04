@@ -133,6 +133,21 @@ def test_phase_epoch_on_nonsecond_axis_uses_absolute_seconds() -> None:
     )
 
 
+def test_irregular_nonsecond_axis_phase_without_epoch_uses_seconds() -> None:
+    times = np.array([1.0, 1.1, 1.5, 1.6]) * u.min
+    source = TimeSeries(np.ones(times.size), times=times, unit=u.V)
+
+    phase = source._build_phase_series(f0=0.1)
+    expected_t_rel = times.to_value(u.s) - times.to_value(u.s)[0]
+
+    np.testing.assert_allclose(
+        phase,
+        2 * np.pi * 0.1 * expected_t_rel,
+        rtol=0,
+        atol=1e-12,
+    )
+
+
 def test_smooth_preserves_nonsecond_axis_authority() -> None:
     source = _series()
 

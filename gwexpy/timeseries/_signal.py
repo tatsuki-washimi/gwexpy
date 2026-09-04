@@ -522,9 +522,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
                 )
             times_q = self.times
             times_unit = getattr(times_q, "unit", None)
-            if phase_epoch is not None and getattr(
-                times_unit, "is_equivalent", lambda _unit: False
-            )(u.s):
+            if getattr(times_unit, "is_equivalent", lambda _unit: False)(u.s):
                 times_val = np.asarray(times_q.to_value(u.s), dtype=float)
             else:
                 times_val = times_q.value if hasattr(times_q, "value") else times_q

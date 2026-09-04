@@ -96,15 +96,20 @@ entries:
     evidence:
       - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_signal_reconstruction_preserves_nonsecond_axis
       - tests/timeseries/test_gwpy_audit_signal_compat.py::test_same_axis_signal_methods_preserve_exact_time_authority
-  - id: signal.mix-down-lock-in
-    source: gwexpy/timeseries/_signal.py:TimeSeriesSignalMixin.mix_down,lock_in
+  - id: signal.mix-down
+    source: gwexpy/timeseries/_signal.py:TimeSeriesSignalMixin.mix_down
+    classification: axis-coordinate
+    action: preserve source x0/dt/xunit for same-axis outputs
+    evidence:
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_mix_down_preserves_nonsecond_axis_and_data
+      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_baseband_preserves_nonsecond_axis_after_mix_down
+  - id: signal.lock-in
+    source: gwexpy/timeseries/_signal.py:TimeSeriesSignalMixin.lock_in
     classification: parent-result-wrap
-    action: preserve the parent result exact t0/dt authority for same-axis outputs
+    action: preserve the parent result x0/dx or t0/dt authority for formatted outputs
     evidence:
       - tests/timeseries/test_gwpy_audit_signal_compat.py::test_same_axis_signal_methods_preserve_exact_time_authority
       - tests/timeseries/test_gwpy_audit_signal_compat.py::test_lock_in_preserves_exact_time_authority
-      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_mix_down_preserves_nonsecond_axis_and_data
-      - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_baseband_preserves_nonsecond_axis_after_mix_down
       - tests/timeseries/test_nonsecond_axis_reconstruction.py::test_lock_in_bandwidth_preserves_nonsecond_axis_after_mix_down
   - id: signal.demodulate-wrap
     source: gwexpy/timeseries/_signal.py:TimeSeriesSignalMixin.demodulate
