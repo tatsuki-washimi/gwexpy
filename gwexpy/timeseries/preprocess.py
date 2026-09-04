@@ -551,7 +551,16 @@ def _align_series_to_grid(
 
         # Calculate offset of ts_aligned.t0 relative to common_t0
         # Both are on the grid defined by common_t0 and target_dt.
-        if hasattr(ts_aligned.t0, "to"):
+        aligned_t0_unit = getattr(ts_aligned.t0, "unit", None)
+        if (
+            aligned_t0_unit is not None
+            and getattr(aligned_t0_unit, "physical_type", None) == "dimensionless"
+        ):
+            # A dimensionless source is interpreted numerically as seconds
+            # for a mixed time-based alignment, while its public asfreq result
+            # intentionally retains the dimensionless axis unit.
+            t0_aligned_s = float(ts_aligned.t0.value)
+        elif hasattr(ts_aligned.t0, "to"):
             t0_aligned_s = ts_aligned.t0.to(common_time_unit).value
         else:
             t0_aligned_s = float(ts_aligned.t0)
