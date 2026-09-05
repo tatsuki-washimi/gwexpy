@@ -36,6 +36,16 @@ The head-only failure is `test_v023_review_lanes_cover_every_fixed_base_candidat
 
 The earlier full local result (12,867 passed / 7 failed) and subsequent targeted results remain historical evidence; they are not relabelled as a successful final full-suite run.
 
+## CI results at eed7b1ed8 and timeout correction
+
+Actionlint and both GWpy compatibility jobs passed at `eed7b1ed8`. Downloaded compatibility artifacts identify that exact source SHA and reproduce every result in the table above.
+
+During this follow-up, main advanced through separate ancillary-CI/statistics/signature fixes (`5013e5d8`, `3188a00a`) and refreshed release evidence (`3ade51de`). PR Fast and Docs tested merge `8b167074fed82fcbe4ce1b415e9d51c0a2946967`, with parents main `3ade51de` and PR head `eed7b1ed8`. PR Fast reported **10,887 passed / 1 failed / 398 skipped / 28 deselected / 7 xfailed**. Its sole failure is the release-review scope gate. The previous 109 failures are historical base/head evidence, not current merge-test failures or fixes made by this Docs PR.
+
+Public Docs CI passed EN/JA builds, introductory examples on development and base-only GWexpy 0.2.2, and rendered-entry checks. Its downloaded artifact identifies the clean merge SHA, successful execution records for all 59 canonical notebooks and 24 case studies in both languages, all six home-page audience routes and the expected build banner. Both PNGs are 45,714 bytes; the retained Python/XML downloads match the checked-out sources byte-for-byte. These are CI artifacts, not a production readback.
+
+The legacy Docs job exceeded its 45-minute limit. Notebook checks passed in **28m27s**, and source preparation passed in **14m12s**; the final strict Sphinx build was cancelled after 14 seconds. GitHub's check annotation explicitly reports the job time limit. The job now has a **60-minute** limit, matching the existing public Docs job and leaving room for installation and HTML generation. Notebook selectors, error propagation and the strict Sphinx command are unchanged. See `ci-eed7b1ed8.json` for the run identifiers, commands, timing and artifact observations. Results for the subsequent head are recorded in the PR body after its CI completes.
+
 ## Physics review correspondence
 
 This is an automated source/evidence consistency review, **not human physics approval**. The existing two regression tests were reused; no replacement test suite or new scientific method was introduced.
@@ -56,4 +66,4 @@ Three historical GitHub beta-release/compare URLs remain 404, with no matching v
 
 ## Completion state
 
-Local validation, final-head CI, human review, merge and deployed-site readback are separate gates. The two reported CI failures have concrete fixes and local evidence. The PR remains Draft while the additional PR Fast/release-review blockers and human physics approval remain unresolved. No merge, public deployment or deployed-final-SHA success is claimed.
+Local validation, final-head CI, human review, merge and deployed-site readback are separate gates. The two reported CI failures passed at `eed7b1ed8`; the later legacy-Docs timeout has the bounded correction above. The PR remains Draft pending verification of that correction, the release-review scope binding and human physics approval. No merge, public deployment or deployed-final-SHA success is claimed.

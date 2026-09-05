@@ -40,7 +40,9 @@ jobs:
   docs-pr:
     name: Docs build and smoke checks
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # PR #713 measured 28m27s for notebook checks and 14m12s for source
+    # preparation alone; leave time for the strict Sphinx build as well.
+    timeout-minutes: 60
     defaults:
       run:
         shell: bash -leo pipefail {0}
