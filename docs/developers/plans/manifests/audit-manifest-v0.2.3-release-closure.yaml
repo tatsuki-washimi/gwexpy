@@ -1,0 +1,194 @@
+schema: gwexpy-v023-release-closure-v1
+version: 0.2.3
+status: closure-complete
+recorded_at_utc: "2026-09-06T00:00:00Z"
+release:
+  version: 0.2.3
+  source_sha: 75d3d1a89ebc8942af1f3228152fea99d2d3420e
+  reviewed_source_sha: 235163a336752ced188a3fcde7190d0da3bedac3
+  runtime_tree: 88c9de982f4b284afbb5845c13cecb2d90d938dc
+  tag: v0.2.3
+  tag_object_sha: b79ad05ca51527a048dd18e5c3cf84bc9e57487a
+  tagger_utc: "2026-09-05T12:59:24Z"
+  github_release_id: 383250425
+  github_release_url: https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3
+  github_release_published_at: "2026-09-05T13:11:33Z"
+  github_release_draft: false
+  github_release_prerelease: false
+  publication_date_utc: "2026-09-05"
+publication:
+  workflow: .github/workflows/publish-release.yml
+  workflow_run_id: 33967606952
+  event: push
+  conclusion: success
+  qualification_cells: 19/19
+  smoke_cells: 4/4
+  aggregates_verified: 2
+  artifact_archives_verified: 27
+  unexpected_skips: 0
+  same_payload_verification: pass
+  baseline_sha256: 6a19168dab95b582e65b612ac7bc5ad2853b7df723b8d4cae73e6edf32802430
+  integration_retention:
+    artifact_id: 9969972784
+    api_digest: sha256:e5286ea4a1bdd2a2087280e40122904e785b8aa17fcda3fb52c0b8d3c2862f6c
+    archive_sha256_verified: true
+    bytes: 722
+    created_at: "2026-09-05T13:03:19Z"
+    expires_at: "2026-12-04T12:59:53Z"
+    retention_contract_scope: integration aggregate only (90 days minus 5 minutes)
+  pypi:
+    url: https://pypi.org/project/gwexpy/0.2.3/
+    sdist_sha256: a5e752c6a53b5c6cabf41de309ca3077534f068384425deff3b1bccc461377b2
+    wheel_sha256: e73da65cff769615fc78e264f6f17730573472a8587031444ccef237294e1e9c
+    public_download_byte_identity: pass
+    fresh_install_smoke: pass
+    trusted_publisher:
+      repository: tatsuki-washimi/gwexpy
+      workflow: publish-release.yml
+      environment: pypi
+      owner_readback: pass (owner-provided Manage current publishers screenshot)
+      legacy_release_workflow_displayed: false
+  github_release:
+    id: 383250425
+    url: https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3
+    published_at: "2026-09-05T13:11:33Z"
+    draft: false
+    prerelease: false
+    assets: 0
+    notes_source: release_notes/v0.2.3.md
+  zenodo:
+    record_id: 22344992
+    url: https://zenodo.org/records/22344992
+    doi: 10.5281/zenodo.22344992
+    concept_doi: 10.5281/zenodo.19059422
+    version: 0.2.3
+    publication_date: "2026-09-05"
+    resource_type: software
+    access_right: open
+    archive_sha256: da0dccef59f899539f22a719e0866e1db4a08313c555be0e5e75a4f8bdd664e0
+    archive_md5: 4e0bea05b5a43d35b2b55aa11b01416e
+    files_compared: 2477
+    comparison: all archive paths and file bytes equal git archive v0.2.3
+  conda_forge:
+    feedstock: conda-forge/gwexpy-feedstock
+    url: https://anaconda.org/conda-forge/gwexpy
+    state: complete
+    pull_request:
+      number: 13
+      url: https://github.com/conda-forge/gwexpy-feedstock/pull/13
+      merge_commit: 594522129692ea435b3628c302f16e344774c5fc
+      merged_at: "2026-09-05T13:19:05Z"
+    recipe:
+      version: 0.2.3
+      source_url: https://pypi.org/packages/source/g/gwexpy/gwexpy-0.2.3.tar.gz
+      source_sha256: a5e752c6a53b5c6cabf41de309ca3077534f068384425deff3b1bccc461377b2
+      build_number: 0
+    ci:
+      package_build: pass
+      linter: pass
+    channel_package:
+      basename: noarch/gwexpy-0.2.3-pyhc364b38_0.conda
+      version: 0.2.3
+      build: pyhc364b38_0
+      build_number: 0
+      sha256: 4723b718fb80fd9676ba085bd74ea4ca08db864df89e9539ee1da5877d67bbf6
+      md5: 671b1fe41659c23e234cf871cf77ee6f
+      uploaded_at: "2026-09-05T13:20:58.538000Z"
+      labels: [main]
+    fresh_install_smoke: pass
+documentation:
+  public_languages: [en, ja]
+  canonical_changelog: docs_redesign/about/changelog.md
+  legacy_changelogs:
+    - docs/web/en/user_guide/changelog.md
+    - docs/web/ja/user_guide/changelog.md
+  release_note: release_notes/v0.2.3.md
+  roadmap_records:
+    - ROADMAP.md
+    - docs/web/en/user_guide/roadmap.md
+    - docs/web/ja/user_guide/roadmap.md
+    - docs_redesign/explanation/roadmap.md
+    - docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po
+  activity_source_ref: v0.2.3
+  activity_source_sha: 75d3d1a89ebc8942af1f3228152fea99d2d3420e
+  activity_non_merge_commits: 1866
+  activity_artifacts:
+    - path: docs_redesign/_static/images/development-activity-v0.2.3.svg
+      sha256: 9879b6f296b44aa7d7cd2dd47963bb6c4cae8455aea98de2799058a4a7911926
+    - path: docs_redesign/_static/images/development-activity-v0.2.3-ja.svg
+      sha256: 714eaac8148138e95cedf15a5bb9176bd52fb5bf4ebc4bfa557cf0ec542c279d
+    - path: docs_redesign/_static/downloads/development-activity-v0.2.3-weekly.csv
+      sha256: 612292f6e17e1aadf13642646873ea68f75b34f182966416c32d5fb8bc910885
+  deployment:
+    source_commit: 23f7030f0ab08834dcd1bceeb5395f730f76b354
+    pages_workflow_run_id: 33969465299
+    gh_pages_commit: 1bfae37429449efc9027ca287c85ff2fd4c89e7a
+    live_readback: pass
+issues:
+  closed:
+    - 639
+    - 698
+    - 699
+    - 700
+    - 701
+    - 702
+    - 703
+    - 704
+    - 705
+    - 706
+    - 707
+    - 709
+    - 710
+    - 711
+  deferred:
+    - 634
+    - 688
+  separate:
+    - 611
+    - 713
+  # 709-711 were found after the initial #704 checklist but fixed before the tag.
+  additional_findings_fixed_before_tag: [709, 710, 711]
+  milestone:
+    exists: false
+    action: none
+  compatibility_audit:
+    issue: 639
+    audited_logical_members: 575
+    frozen_cases: 1150
+    counterpart_present_per_version: 134
+    counterpart_absent_per_version: 441
+    fixed: 224
+    no_finding: 44
+    gwpy_fails: 0
+    gwexpy_only: 882
+    differential_required: 0
+    unreviewed: 0
+    scope_classification:
+      audited_complete: all frozen inventory members and selectors
+      parity_or_explicit_exception: fixed, no-finding, and documented parent/private-route boundaries
+      gwexpy_only: counterpart-absent members excluded from GWpy parity scope
+      unfinished: none within the frozen inventory
+scope:
+  runtime_code_changed: false
+  public_api_changed: false
+  dependencies_changed: false
+  scientific_semantics_changed: false
+  released_source_changed: false
+  release_tag_changed: false
+  release_payload_rebuilt: false
+  historical_evidence_changed: false
+  docs_and_bookkeeping_only: true
+verification:
+  authoritative_readback:
+    tag_and_release: pass
+    main_and_maint_02: both at 23f7030f0ab08834dcd1bceeb5395f730f76b354 after publication
+    pypi: pass
+    conda_forge: pass
+    zenodo: pass
+    version_metadata: pass
+  evidence_integrity:
+    historical_reports_preserved: true
+    final_publication_source_explicit: true
+    candidate_and_final_sources_distinguished: true
+    human_and_automated_reviews_distinguished: true
+  closure_record: docs/developers/reports/report_v0.2.3_release_closure_20260906.md

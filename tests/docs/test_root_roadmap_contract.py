@@ -347,6 +347,21 @@ def test_v020_section_records_the_released_outcome_and_ledger() -> None:
     assert not STATUS_RE.findall(section)
 
 
+def test_v023_section_records_the_published_outcome_and_closure_manifest() -> None:
+    """The roadmap binds the published v0.2.3 release to its closure record."""
+    section = _level_two_section(ROADMAP, "v0.2.3")
+
+    assert section, "ROADMAP.md must contain a v0.2.3 release section"
+    assert "released 2026-09-05" in section
+    assert "75d3d1a89ebc8942af1f3228152fea99d2d3420e" in section
+    assert "10.5281/zenodo.22344992" in section
+    assert "v0.2.3 closure manifest" in section
+    assert "19/19" in section
+    assert "4/4" in section
+    assert "No next-minor theme is committed" in section
+    assert not STATUS_RE.findall(section)
+
+
 def test_release_scope_authority_is_not_duplicated_in_design() -> None:
     """ROADMAP owns release scope while the design owns taxonomy and triage."""
     assert "canonical source of\n*inclusion criteria*" in ROADMAP
@@ -438,7 +453,7 @@ def test_future_theme_headings_do_not_assign_specific_versions() -> None:
 
 def test_release_headings_do_not_preassign_future_minors() -> None:
     """Only currently recognized release sections may use v0.x.y headings."""
-    allowed = {"v0.1.13", "v0.1.14", "v0.2.0"}
+    allowed = {"v0.1.13", "v0.1.14", "v0.2.0", "v0.2.3"}
     actual = {match.casefold() for match in RELEASE_HEADING_RE.findall(ROADMAP)}
 
     assert actual <= allowed, f"Unexpected release headings: {sorted(actual - allowed)}"
@@ -500,7 +515,7 @@ def test_v0114_deferred_issues_are_recorded_in_its_changelog() -> None:
 
 def test_required_release_headings_are_present() -> None:
     """Required release sections must not disappear via an empty-subset pass."""
-    required = {"v0.1.13", "v0.1.14", "v0.2.0"}
+    required = {"v0.1.13", "v0.1.14", "v0.2.0", "v0.2.3"}
     actual = {match.casefold() for match in RELEASE_HEADING_RE.findall(ROADMAP)}
 
     assert required <= actual, (
