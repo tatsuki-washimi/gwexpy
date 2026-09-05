@@ -7,7 +7,7 @@ review_evidence_json: |
         "role": "reviewer",
         "model": "gpt-6-astra",
         "effort": "xhigh",
-        "reviewed_commit": "dadbc68bb27ce404328d523efb1cd66586a4d9b3",
+        "reviewed_commit": "2acc8b046c6ab44674c192106d479090fde87b9a",
         "scope_paths": [
           "docs/developers/plans/20260902_v0.2.3_gwpy_behavioral_compatibility.md",
           "docs/developers/plans/manifests/audit-manifest-v0.2.3-stats-compat.yaml",
@@ -18,10 +18,10 @@ review_evidence_json: |
           "tests/fields",
           "tests/types"
         ],
-        "scope_digest": "2019cbfaafc99d1b2585f4a77ba60724e5841f40aa229143d38b3e236e19ccd9",
+        "scope_digest": "2461599adb482a0a3945c548ee5d212262d640362751d59984c8c4b8e268518f",
         "verdict": "APPROVED",
-        "timestamp_utc": "2026-09-05T06:49:30Z",
-        "raw_report_sha256": "ce24027a68a17af78a783bb43063e52ce2f7d858708e81bdbce25174d77b3a45",
+        "timestamp_utc": "2026-09-05T11:55:10Z",
+        "raw_report_sha256": "eed6e52aa25ad206be7b35445852bbfad45f3daef4f50cdd2a890588e22e6d06",
         "finding_ids": []
       },
       {
@@ -29,9 +29,10 @@ review_evidence_json: |
         "role": "reviewer",
         "model": "gpt-6-astra",
         "effort": "xhigh",
-        "reviewed_commit": "dadbc68bb27ce404328d523efb1cd66586a4d9b3",
+        "reviewed_commit": "2acc8b046c6ab44674c192106d479090fde87b9a",
         "scope_paths": [
           ".gitattributes",
+          ".github/workflows/pr-fast.yml",
           ".github/workflows/publish-release.yml",
           ".zenodo.json",
           "CHANGELOG.md",
@@ -53,10 +54,10 @@ review_evidence_json: |
           "tests/test_release_contracts.py",
           "tests/test_validate_release_script.py"
         ],
-        "scope_digest": "47eead4aefb8433eb07a0453c17821772c04d75d07157dec7e686f39cae5199a",
+        "scope_digest": "f323fd57f36014125e5faef8636b8332091ce9809ff5a958d5c4ec4e60990f25",
         "verdict": "APPROVED",
-        "timestamp_utc": "2026-09-05T06:52:50Z",
-        "raw_report_sha256": "4c08cabbde3e767d1a1dffc040c4737ff0b4b662fd36b707bd3014d52b37e4a9",
+        "timestamp_utc": "2026-09-05T11:56:03Z",
+        "raw_report_sha256": "323577a0f8e7236ce5349c5d803b66938b3df643cd165302cc83773d0427ab22",
         "finding_ids": []
       },
       {
@@ -64,7 +65,7 @@ review_evidence_json: |
         "role": "reviewer",
         "model": "gpt-6-astra",
         "effort": "xhigh",
-        "reviewed_commit": "dadbc68bb27ce404328d523efb1cd66586a4d9b3",
+        "reviewed_commit": "2acc8b046c6ab44674c192106d479090fde87b9a",
         "scope_paths": [
           ".agent/AGENTS.md",
           ".clinerules",
@@ -76,6 +77,7 @@ review_evidence_json: |
           "docs/developers/contracts/public_io_contract.md",
           "docs/developers/plans/20260902_v0.2.3_gwpy_behavioral_compatibility.md",
           "docs/developers/plans/manifests",
+          "docs/developers/plans/notes/development-activity-visualization-handover.md",
           "docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md",
           "docs/web/en",
           "docs/web/ja",
@@ -91,6 +93,7 @@ review_evidence_json: |
           "gwexpy/timeseries",
           "release_notes",
           "scripts/audit_gwpy_overrides.py",
+          "scripts/generate_development_activity.py",
           "tests/frequencyseries",
           "tests/io/test_csv_txt_contract.py",
           "tests/io/test_gwpy_csv_phase4_compat.py",
@@ -105,16 +108,17 @@ review_evidence_json: |
           "tests/plot",
           "tests/spectrogram",
           "tests/test_compatibility_fixes.py",
+          "tests/test_generate_development_activity.py",
           "tests/test_gwpy_constructor_terminal_compat.py",
           "tests/test_gwpy_override_inventory.py",
           "tests/test_import_order.py",
           "tests/time",
           "tests/timeseries"
         ],
-        "scope_digest": "6c37ca6869fafceb323ea6230b71dd748145d8d9d8d3c403321fa85ba33d6dae",
+        "scope_digest": "51aa3d6bb1da21a3b0899eee948dd6f0e5197acad3c803b6a698af0275cbb5e0",
         "verdict": "APPROVED",
-        "timestamp_utc": "2026-09-05T06:48:35Z",
-        "raw_report_sha256": "eb26f2ac9f58e093c6b7396afbbd0302f59c9bdb4915047f60e101f754711043",
+        "timestamp_utc": "2026-09-05T11:55:34Z",
+        "raw_report_sha256": "f329b3c8fe24a25458b01b1d442383c4a805efb8bd08ae0885dd7330fa1db5c9",
         "finding_ids": []
       }
     ]

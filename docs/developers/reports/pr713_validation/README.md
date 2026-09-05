@@ -46,6 +46,14 @@ Public Docs CI passed EN/JA builds, introductory examples on development and bas
 
 The legacy Docs job exceeded its 45-minute limit. Notebook checks passed in **28m27s**, and source preparation passed in **14m12s**; the final strict Sphinx build was cancelled after 14 seconds. GitHub's check annotation explicitly reports the job time limit. The job now has a **60-minute** limit, matching the existing public Docs job and leaving room for installation and HTML generation. Notebook selectors, error propagation and the strict Sphinx command are unchanged. See `ci-eed7b1ed8.json` for the run identifiers, commands, timing and artifact observations. Results for the subsequent head are recorded in the PR body after its CI completes.
 
+## Integration of main at 3f4a03ec
+
+The next merge incorporates `3f4a03ec4e006bfe85cda0dbb760ef6625167809`, including the refreshed Japanese release history and source-bound review evidence. The only conflict was in `docs_redesign/conf.py`: the main hook choosing the Japanese activity SVG and the PR hooks producing build/notebook/case metadata are all retained. A direct callback check verified their registration and behavior. An explicit `html_sidebars` annotation also makes the changed configuration pass mypy with the local docutils stubs installed.
+
+The merged library, inventory, extractor, release contract and approval container match main byte-for-byte. Canonical/public notebook execution sources are unchanged from `b16cc3e9b`. The imported approval container still identifies its reviewed source `2acc8b04`; it is not represented as an approval of this PR candidate.
+
+Precommit integration checks reported 275 passed / 1 known review-scope failure / 4 skipped; the focused configuration/release-facts rerun passed 20 tests. Ruff, mypy and the diff whitespace check relative to the incorporated main passed. The incoming generated SVGs retain main's original bytes, including their whitespace. Commands and limitations are retained in `integration-3f4a03ec.json`. The exact committed candidate, CI outcomes and proposed review-scope digest are recorded in the PR body. No approval verdict is created by this integration.
+
 ## Physics review correspondence
 
 This is an automated source/evidence consistency review, **not human physics approval**. The existing two regression tests were reused; no replacement test suite or new scientific method was introduced.
@@ -66,4 +74,4 @@ Three historical GitHub beta-release/compare URLs remain 404, with no matching v
 
 ## Completion state
 
-Local validation, final-head CI, human review, merge and deployed-site readback are separate gates. The two reported CI failures passed at `eed7b1ed8`; the later legacy-Docs timeout has the bounded correction above. The PR remains Draft pending verification of that correction, the release-review scope binding and human physics approval. No merge, public deployment or deployed-final-SHA success is claimed.
+Local validation, final-head CI, human review, merge and deployed-site readback are separate gates. The two reported CI failures passed at `eed7b1ed8`; the later legacy-Docs timeout has the bounded correction above. Both Docs jobs passed at `b16cc3e9b`. The PR remains Draft pending verification of the subsequent main integration, the release-review scope binding and human physics approval on the final source. No merge, public deployment or deployed-final-SHA success is claimed.

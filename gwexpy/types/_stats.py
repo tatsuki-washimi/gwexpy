@@ -201,7 +201,7 @@ class StatisticalMethodsMixin:
         unit = result.unit
 
         if not surviving_axes:
-            return Quantity(values, unit=unit, copy=False)
+            return Quantity(values, unit=unit)
 
         if len(surviving_axes) == 1:
             from .series import Series

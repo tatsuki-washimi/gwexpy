@@ -312,7 +312,7 @@ html_context = {
 }
 
 # Sidebar: keep the left sidebar clean (navigation only).
-html_sidebars = {
+html_sidebars: dict[str, list[str]] = {
     "index": [],  # Homepage: no left sidebar for a clean hero.
 }
 
@@ -443,6 +443,15 @@ def setup(app):
             )
 
     app.connect("html-page-context", _case_information)
+
+    def _localize_changelog_activity(app, docname, source):
+        if app.config.language == "ja" and docname == "about/changelog":
+            source[0] = source[0].replace(
+                "/_static/images/development-activity-v0.2.3-candidate.svg",
+                "/_static/images/development-activity-v0.2.3-candidate-ja.svg",
+            )
+
+    app.connect("source-read", _localize_changelog_activity)
 
     def _format_api_docstring(app, what, name, obj, options, lines):
         import re

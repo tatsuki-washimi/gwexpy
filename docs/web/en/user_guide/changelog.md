@@ -2,6 +2,33 @@
 
 Notable changes to the GWexpy project.
 
+## [0.2.3] - 2026-09-05
+
+This maintenance-release candidate fixes compatibility with GWpy 4.0.1 and
+4.0.2 without adding a public API or dependency.
+
+### Fixes and compatibility
+
+- Scalar statistics on NumPy 2 now return a zero-dimensional `Quantity`
+  instead of failing during result construction. The fix also applies to
+  inherited `ScalarField` reductions and preserves values, dtype, units,
+  reduction-axis rules, and output-buffer semantics.
+- HDF5 collection append and native `.h5` / `.hdf5` auto-identification
+  follow GWpy. For a completely disjoint HDF5 read window, the separately
+  approved #611 safety exception returns an empty entry instead of samples
+  outside the requested interval; partial overlap retains GWpy behavior.
+- Constructors, time conversion, spectral and signal methods, plotting,
+  CSV, and specialized arrays have explicit compatibility checks. Existing
+  parent-parity risks remain documented.
+
+### Documentation and release status
+
+The [full changelog](https://tatsuki-washimi.github.io/gwexpy/docs/about/changelog.html)
+includes the current development-history plot and weekly CSV.
+The candidate remains unpublished pending the final release gate.
+The [compatibility policy](https://tatsuki-washimi.github.io/gwexpy/docs/explanation/gwpy_compatibility_policy.html)
+describes the limited #611 exception and the retained compatibility risks.
+
 ## [0.2.2] - 2026-09-01
 
 GWexpy 0.2.2 restores GWpy-compatible default sample selection for

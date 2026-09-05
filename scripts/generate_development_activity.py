@@ -33,6 +33,13 @@ CATEGORY_LABELS = {
     "documentation_examples": "Documentation & examples",
     "release_maintenance": "Release & maintenance",
 }
+CATEGORY_LABELS_JA = {
+    "product_development": "機能開発",
+    "fixes_hardening": "不具合修正と堅牢化",
+    "tests_qa": "テストと品質検証",
+    "documentation_examples": "文書と使用例",
+    "release_maintenance": "リリースと保守",
+}
 CATEGORY_COLORS = {
     "product_development": "#0072B2",
     "fixes_hardening": "#D55E00",
@@ -687,11 +694,17 @@ def write_svg(
     target_ref: str,
     target_sha: str,
     csv_sha256: str,
+    language: str = "en",
 ) -> None:
     """Render stacked weekly commit and edited-line panels as SVG."""
     import matplotlib.dates as mdates
     import matplotlib.pyplot as plt
+    from matplotlib.text import Text
 
+    if language not in {"en", "ja"}:
+        raise ValueError("language must be en or ja")
+    japanese = language == "ja"
+    category_labels = CATEGORY_LABELS_JA if japanese else CATEGORY_LABELS
     if not rows or not commits:
         raise ValueError("cannot plot an empty Git history")
     _prepare_output(path)
@@ -730,12 +743,22 @@ def write_svg(
                 color=CATEGORY_COLORS[category],
                 edgecolor="#333333",
                 linewidth=0.35,
-                label=CATEGORY_LABELS[category] if panel == 0 else None,
+                label=category_labels[category] if panel == 0 else None,
                 zorder=2,
             )
-    axes[0].set_ylabel("Commits per week\n(log total; proportional stack)")
-    axes[1].set_ylabel("Edited source lines per week\n(log total; proportional stack)")
-    axes[1].set_xlabel("Week starting Monday (UTC)")
+    axes[0].set_ylabel(
+        "週ごとのコミット数\n（総数を対数表示、内訳は構成比）"
+        if japanese
+        else "Commits per week\n(log total; proportional stack)"
+    )
+    axes[1].set_ylabel(
+        "週ごとのソース編集行数\n（総数を対数表示、内訳は構成比）"
+        if japanese
+        else "Edited source lines per week\n(log total; proportional stack)"
+    )
+    axes[1].set_xlabel(
+        "月曜日始まりの週（UTC）" if japanese else "Week starting Monday (UTC)"
+    )
     for axis, (_heights, _bottoms, totals) in zip(axes, panel_geometry, strict=True):
         max_total = max(totals)
         tick_positions, tick_labels = log_total_ticks(max_total)
@@ -751,6 +774,18 @@ def write_svg(
     ordered_tags = sorted(
         tags, key=lambda tag: (tag.author_date, tag.version, tag.name)
     )
+    # Keep adjacent release names readable without moving their date markers.
+    label_offsets: dict[str, float] = {}
+    clusters: list[list[ReleaseTag]] = []
+    for tag in ordered_tags:
+        if tag.name == "v0.1.3":
+            continue
+        if not clusters or (tag.author_date - clusters[-1][-1].author_date).days > 2:
+            clusters.append([])
+        clusters[-1].append(tag)
+    for cluster in clusters:
+        for index, tag in enumerate(cluster):
+            label_offsets[tag.name] = 9.0 * (index - (len(cluster) - 1) / 2)
     for tag in ordered_tags:
         marker_date = tag.author_date.date()
         for axis in axes:
@@ -773,6 +808,13 @@ def write_svg(
                 labels[tag.name],
                 (mdates.date2num(marker_date), 1.17 if is_special_label else 1.025),
                 xycoords=axes[0].get_xaxis_transform(),
+                xytext=(label_offsets.get(tag.name, 0.0), 0),
+                textcoords="offset points",
+                arrowprops=(
+                    {"arrowstyle": "-", "color": "#555555", "linewidth": 0.5}
+                    if label_offsets.get(tag.name, 0.0)
+                    else None
+                ),
                 rotation=0 if is_special_label else 90,
                 va="bottom",
                 ha="center",
@@ -789,11 +831,15 @@ def write_svg(
         ncol=len(CATEGORIES),
         frameon=False,
     )
-    figure.suptitle("GWexpy development activity", fontsize=15, y=0.975)
+    title = "GWexpy の開発活動" if japanese else "GWexpy development activity"
+    figure.suptitle(title, fontsize=15, y=0.975)
+    if japanese:
+        for text in figure.findobj(Text):
+            text.set_fontfamily(["Noto Sans CJK JP", "sans-serif"])
     covered_start = min(commit.author_date for commit in commits).date().isoformat()
     covered_end = max(commit.author_date for commit in commits).date().isoformat()
     metadata = {
-        "Title": f"GWexpy development activity — {target_ref} @ {target_sha}",
+        "Title": f"{title} — {target_ref} @ {target_sha}",
         "Description": (
             f"Target ref: {target_ref}; resolved SHA: {target_sha}; covered period: "
             f"{covered_start} to {covered_end}; canonical CSV SHA-256: {csv_sha256}"
@@ -863,6 +909,7 @@ def generate_outputs(
     csv_output: Path,
     audit_output: Path,
     overrides: dict[str, str] | None = None,
+    language: str = "en",
 ) -> tuple[str, int, str]:
     """Generate all artifacts in sibling temporary files, then replace outputs."""
     destinations = (svg_output, csv_output, audit_output)
@@ -885,6 +932,7 @@ def generate_outputs(
             target_ref,
             target_sha,
             csv_sha256,
+            language=language,
         )
         for temporary_path, destination in zip(
             temporary_paths, destinations, strict=True
@@ -903,6 +951,12 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--csv-output", required=True, type=Path)
     parser.add_argument("--audit-output", required=True, type=Path)
     parser.add_argument("--overrides", type=Path, help="JSON SHA-to-category mapping")
+    parser.add_argument(
+        "--language",
+        choices=("en", "ja"),
+        default="en",
+        help="SVG label language; CSV data remain canonical",
+    )
     return parser
 
 
@@ -918,6 +972,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         args.csv_output,
         args.audit_output,
         overrides,
+        language=args.language,
     )
     print(
         f"Analyzed {commit_count} non-merge commits at {target_sha}; "

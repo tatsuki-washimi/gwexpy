@@ -1,0 +1,73 @@
+{
+  "status": "INTEGRATED_PENDING_CANDIDATE_CI_AND_HUMAN_REVIEW",
+  "previous_head": "b16cc3e9bb12440a07bc1ef9c693d21c9de66436",
+  "merged_main": "3f4a03ec4e006bfe85cda0dbb760ef6625167809",
+  "conflicts": [
+    "docs_redesign/conf.py"
+  ],
+  "resolution": [
+    "Retained the main source-read hook selecting the Japanese candidate activity SVG.",
+    "Retained PR build-finished identity and notebook execution metadata output.",
+    "Retained PR html-page-context case-study metadata output.",
+    "Added an explicit html_sidebars type annotation for the changed-file mypy check."
+  ],
+  "unchanged_from_main": [
+    "gwexpy",
+    "scripts/audit_gwpy_overrides.py",
+    "docs/developers/plans/manifests/audit-manifest-v0.2.3-gwpy-overrides.json",
+    "scripts/ci/release_contracts.json",
+    "docs/developers/plans/manifests/audit-manifest-v0.2.3-release-readiness.yaml"
+  ],
+  "notebook_code_unchanged_from_previous_head": true,
+  "precommit_checks": [
+    {
+      "command": "conda run --no-capture-output -n gwexpy pytest tests/docs tests/test_generate_development_activity.py tests/test_release_contracts.py tests/io/test_io_docs_contract_sync.py -q",
+      "passed": 275,
+      "failed": 1,
+      "skipped": 4,
+      "seconds": 4.65,
+      "failure": "tests/test_release_contracts.py::test_v023_review_lanes_cover_every_fixed_base_candidate_change",
+      "note": "Run in the merged worktree before committing; the governance test still resolved candidate HEAD to b16cc3e9b. Final candidate evidence comes from the subsequent CI."
+    },
+    {
+      "command": "conda run --no-capture-output -n gwexpy pytest tests/docs/test_docs_conf_runtime.py tests/docs/test_docs_redesign_release_facts.py -q",
+      "passed": 20,
+      "seconds": 0.91
+    },
+    {
+      "command": "conda run --no-capture-output -n gwexpy ruff check docs_redesign/conf.py",
+      "result": "passed"
+    },
+    {
+      "command": "conda run --no-capture-output -n gwexpy mypy docs_redesign/conf.py",
+      "result": "passed",
+      "initial_errors": "html_sidebars needed an annotation; local docutils stubs were absent. Installed types-docutils 0.23.0.20260827 in the conda development environment."
+    },
+    {
+      "command": "git diff --check --cached origin/main",
+      "result": "passed",
+      "note": "The full incoming-main diff reports whitespace in its two generated candidate SVGs; those reviewed SVG bytes are preserved."
+    },
+    {
+      "result": "passed",
+      "checks": [
+        "all three callbacks registered",
+        "Japanese activity SVG selected",
+        "English activity SVG retained",
+        "case execution context retained",
+        "build SHA and notebook execution metadata retained"
+      ]
+    }
+  ],
+  "existing_main_approvals": {
+    "reviewed_commit": "2acc8b046c6ab44674c192106d479090fde87b9a",
+    "retained_byte_for_byte": true,
+    "applied_to_new_pr_candidate": false
+  },
+  "scope_proposal": "docs/developers/reports/pr713_validation/review-scope-proposal.json",
+  "source_bound_approval_created": false,
+  "human_physics_approval": false,
+  "merge_to_main": false,
+  "production_readback": false,
+  "final_candidate_and_ci": "Recorded in PR #713 after the merge commit is created and its CI completes."
+}

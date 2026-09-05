@@ -124,7 +124,9 @@ PRISTINE_ORACLE_RULE = (
 UPSTREAM_DEPENDENCY_PROVENANCE = (
     "GWpy providers retain package-relative source/line; inherited "
     "NumPy/Astropy providers retain normalized provider, member, kind, "
-    "descriptor, and signature without source path or resolved version."
+    "descriptor, and signature without source path or resolved version. "
+    "Matplotlib UNSET is normalized by singleton identity; five NumPy ndarray "
+    "C descriptors bind exact reviewed unavailable/available signature variants."
 )
 EVIDENCE_TIMEOUT_SECONDS = 300
 ORACLE_TIMEOUT_SECONDS = 120
@@ -1024,6 +1026,19 @@ def _stable_atom(value: Any) -> dict[str, Any]:
         return {"kind": "float", "value": token}
     if value is None or isinstance(value, (bool, int, float, str)):
         return {"kind": "literal", "value": value}
+    # Matplotlib 3.11 moved the singleton used in generated Artist.set
+    # signatures. Its module location is not a change to the default value.
+    sentinel_names = {
+        "matplotlib.artist": "_UNSET",
+        "matplotlib._api": "UNSET",
+    }
+    sentinel_module = type(value).__module__
+    if type(value).__name__ == "_Unset" and sentinel_module in sentinel_names:
+        sentinel_owner = sys.modules.get(sentinel_module)
+        if sentinel_owner is not None and value is vars(sentinel_owner).get(
+            sentinel_names[sentinel_module]
+        ):
+            return {"kind": "sentinel", "name": "matplotlib.UNSET"}
     if isinstance(value, bytes):
         return {"kind": "bytes", "hex": value.hex()}
     if isinstance(value, tuple):
@@ -1542,6 +1557,68 @@ def _oracle_source(raw: Any, provider: type[Any]) -> dict[str, Any] | None:
     return {"path": relative, "line": line} if relative is not None else None
 
 
+def _oracle_callable_signature(raw: Any, provider: type[Any]) -> dict[str, Any]:
+    """Bind the two reviewed inspection forms of five NumPy C descriptors."""
+
+    observed = normalize_signature(raw)
+    if _fqname(provider) != "numpy.ndarray":
+        return observed
+    import numpy as np
+
+    name = getattr(raw, "__name__", None)
+    if (
+        provider is not np.ndarray
+        or not isinstance(name, str)
+        or raw is not vars(np.ndarray).get(name)
+    ):
+        return observed
+    empty = inspect.Parameter.empty
+    positional = "POSITIONAL_ONLY"
+    keyword = "POSITIONAL_OR_KEYWORD"
+    reduction = [
+        ("axis", keyword, None),
+        ("out", keyword, None),
+        ("kwargs", "VAR_KEYWORD", empty),
+    ]
+    parameters: dict[str, list[tuple[str, str, Any]]] = {
+        "max": reduction,
+        "min": reduction,
+        "swapaxes": [("axis1", positional, empty), ("axis2", positional, empty)],
+        "transpose": [("axes", "VAR_POSITIONAL", empty)],
+        "diagonal": [
+            ("offset", keyword, 0),
+            ("axis1", keyword, 0),
+            ("axis2", keyword, 1),
+        ],
+    }
+    if name not in parameters:
+        return observed
+    reviewed = {
+        "available": True,
+        "parameters": [
+            {
+                "annotation": {"kind": "empty"},
+                "default": _stable_atom(default),
+                "kind": parameter_kind,
+                "name": parameter_name,
+            }
+            for parameter_name, parameter_kind, default in [
+                ("self", positional, empty),
+                *parameters[name],
+            ]
+        ],
+        "return_annotation": {"kind": "empty"},
+    }
+    # NumPy 1 lacks these text signatures; recent NumPy 2 exposes them.
+    # Retain both exact reviewed forms, and reject any different observation.
+    variants = [{"available": False, "error": "ValueError"}, reviewed]
+    if canonical_compact_json(observed) not in {
+        canonical_compact_json(variant) for variant in variants
+    }:
+        raise InventoryError(f"unreviewed NumPy descriptor signature: {name}")
+    return {"kind": "reviewed-native-signature", "variants": variants}
+
+
 def _oracle_descriptor(raw: Any, kind: str, provider: type[Any]) -> dict[str, Any]:
     if kind in {"property", "unified-read-write"}:
         accessors = []
@@ -1564,7 +1641,7 @@ def _oracle_descriptor(raw: Any, kind: str, provider: type[Any]) -> dict[str, An
         if callable(raw):
             raw_call = _raw_type_call(raw)
             details["call"] = {
-                "signature": normalize_signature(raw),
+                "signature": _oracle_callable_signature(raw, provider),
                 "source": _oracle_source(raw, provider)
                 or (
                     _oracle_source(raw_call, provider) if raw_call is not None else None

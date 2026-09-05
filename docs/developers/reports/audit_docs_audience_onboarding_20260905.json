@@ -3,7 +3,7 @@
   "date": "2026-09-05",
   "task": "Approved Docs audience onboarding implementation",
   "branch": "docs/audience-onboarding",
-  "base_revision": "547332db31120365ca099bf8dc52c71eff5865db",
+  "base_revision": "3f4a03ec4e006bfe85cda0dbb760ef6625167809",
   "skills": [
     "analyze_external",
     "setup_plan",
@@ -34,7 +34,8 @@
     "Built and inspected English/Japanese HTML and recorded external linkcheck failures separately.",
     "Merged updated main after PR conflict detection; preserved upstream API presentation hooks and release records, and retained the stronger canonical/public notebook unit, averaging and conjugation fixes.",
     "Rebuilt both languages after conflict resolution; both passed with two existing duplicate API index warnings, and the rendered entry-path checker passed again.",
-    "Diagnosed the legacy Docs 45-minute timeout after successful notebook validation and source preparation; increased only that job limit to 60 minutes and retained strict HTML validation."
+    "Diagnosed the legacy Docs 45-minute timeout after successful notebook validation and source preparation; increased only that job limit to 60 minutes and retained strict HTML validation.",
+    "Integrated main@3f4a03ec after renewed PR conflict detection, combined the Japanese activity SVG hook with PR build/case evidence hooks, and preserved the newly approved upstream review container byte-for-byte."
   ],
   "environment": {
     "python": "3.11.14",
@@ -291,6 +292,7 @@
     "docs/developers/reports/pr713_validation/compat-4.0.2-proxy.txt",
     "docs/developers/reports/pr713_validation/compat-4.0.2-timeseries.txt",
     "docs/developers/reports/pr713_validation/external-links.json",
+    "docs/developers/reports/pr713_validation/integration-3f4a03ec.json",
     "docs/developers/reports/pr713_validation/review-scope-proposal.json",
     "docs/developers/reports/report_docs_audience_onboarding_20260905.md",
     "docs/web/en/user_guide/tutorials/advanced_bruco.ipynb",
@@ -489,9 +491,9 @@
       "gwpy_4_0_2": "inventory 396 passed; focused 11 passed; proxy 87 passed/1 skipped; timeseries 3158 passed/147 skipped/3 xfailed"
     },
     "remaining": [
-      "CI verification after timeout correction",
+      "CI verification of the final main integration candidate",
       "release review scope/approval binding for additional Docs paths",
-      "human physics approval",
+      "human physics approval on the final source",
       "merge and production readback"
     ],
     "release_approvals_unchanged": true,
@@ -501,6 +503,8 @@
       "command": "rtk proxy env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 MPLBACKEND=Agg QT_QPA_PLATFORM=offscreen conda run --no-capture-output -n gwexpy pytest tests/docs/test_public_docs_pipeline.py tests/docs/test_gwpy4_proxy_workflow.py -q",
       "result": "15 passed in 1.52s",
       "git_diff_check": "passed"
-    }
-  }
+    },
+    "final_main_integration": "docs/developers/reports/pr713_validation/integration-3f4a03ec.json"
+  },
+  "previous_base_revision": "547332db31120365ca099bf8dc52c71eff5865db"
 }
