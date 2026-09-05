@@ -103,7 +103,7 @@ consistency, Markdown link checks, Ruff, and strict English/Japanese docs
 builds. `git diff` is checked to confirm that no `gwexpy/` runtime source was
 modified.
 
-The executed results are 190 docs tests passed with 4 skips, 388 release and
+The executed results are 205 docs tests passed with 4 skips, 388 release and
 governance tests passed, and 31 closure-contract tests passed. Ruff check and
 format checks, release metadata, and JA/EN heading synchronization passed.
 The docs_redesign strict EN/JA builds passed with notebook execution disabled;
