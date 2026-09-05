@@ -135,17 +135,37 @@ rst_prolog = r"""
 
 # Optional third-party backends that need not be installed to build the docs.
 autodoc_mock_imports = [
-    "mictools", "dcor", "hurst", "specutils", "pyspeckit", "obspy",
-    "mth5", "mtpy", "librosa", "pydub", "mne", "neo", "elephant",
-    "cupy", "pygmt", "PyQt5", "qtpy", "pyqtgraph",
+    "mictools",
+    "dcor",
+    "hurst",
+    "specutils",
+    "pyspeckit",
+    "obspy",
+    "mth5",
+    "mtpy",
+    "librosa",
+    "pydub",
+    "mne",
+    "neo",
+    "elephant",
+    "cupy",
+    "pygmt",
+    "PyQt5",
+    "qtpy",
+    "pyqtgraph",
 ]
 
 # Keep the build signal meaningful: silence external cross-reference noise
 # (offline intersphinx, upstream GWpy docstrings) but keep broken internal
 # references visible.
 suppress_warnings = [
-    "ref.ref", "ref.obj", "ref.meth", "ref.func", "ref.class",
-    "ref.footnote", "intersphinx.broken_domain",
+    "ref.ref",
+    "ref.obj",
+    "ref.meth",
+    "ref.func",
+    "ref.class",
+    "ref.footnote",
+    "intersphinx.broken_domain",
 ]
 
 templates_path = ["_templates"]
@@ -332,6 +352,15 @@ def setup(app):
             block.children[:] = [nodes.Text(text)]
 
     app.connect("doctree-resolved", _localize_changelog_mermaid)
+
+    def _localize_changelog_activity(app, docname, source):
+        if app.config.language == "ja" and docname == "about/changelog":
+            source[0] = source[0].replace(
+                "/_static/images/development-activity-v0.2.3-candidate.svg",
+                "/_static/images/development-activity-v0.2.3-candidate-ja.svg",
+            )
+
+    app.connect("source-read", _localize_changelog_activity)
 
     def _format_api_docstring(app, what, name, obj, options, lines):
         import re

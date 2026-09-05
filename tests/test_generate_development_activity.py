@@ -249,8 +249,9 @@ def test_log_total_ticks_show_raw_values() -> None:
     assert activity.log_total_ticks(0) == ([0.0], ["0"])
 
 
+@pytest.mark.parametrize("language", ["en", "ja"])
 def test_svg_uses_contiguous_week_bins_without_hatching(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, language: str
 ) -> None:
     from matplotlib.axes import Axes
 
@@ -310,12 +311,26 @@ def test_svg_uses_contiguous_week_bins_without_hatching(
         "v0.1.0",
         commit.sha,
         "b" * 64,
+        language=language,
     )
 
     assert bar_widths == [7.0] * (2 * len(activity.CATEGORIES))
     assert hatches == [None] * (2 * len(activity.CATEGORIES))
     assert annotation_rotations == [90.0, 0.0]
     assert annotation_heights == [1.025, 1.17]
+    svg = (tmp_path / "activity.svg").read_text(encoding="utf-8")
+    if language == "ja":
+        for label in (
+            "GWexpy の開発活動",
+            "週ごとのコミット数",
+            "週ごとのソース編集行数",
+            "月曜日始まりの週（UTC）",
+            *activity.CATEGORY_LABELS_JA.values(),
+        ):
+            assert label in svg
+        assert "Commits per week" not in svg
+    else:
+        assert "Commits per week" in svg
 
 
 def test_tag_labels_show_every_release_and_keep_gwadw_context() -> None:

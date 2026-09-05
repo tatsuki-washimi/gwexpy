@@ -7,6 +7,7 @@ from pathlib import Path
 
 import yaml
 from babel.messages import pofile
+from markdown_it import MarkdownIt
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RELEASE_VERSION = "0.2.2"
@@ -21,6 +22,10 @@ RELEASE_DOI_URL = "https://doi.org/10.5281/zenodo.22228340"
 ACTIVITY_RELEASE_VERSION = "0.2.2"
 ACTIVITY_RELEASE_SHA = "2503743cf654606a5baa83c7b7e7c8b8e1e06596"
 ACTIVITY_CSV_SHA256 = "cd72102029af78b05dcb002051365092f128df341125164e4ba7c8a96d4203e3"
+CANDIDATE_ACTIVITY_SHA = "3ade51de26c9adf21c4a7ad076837967e61c8038"
+CANDIDATE_ACTIVITY_CSV_SHA256 = (
+    "0a0453910f6944e53312b9e36f811e40e608698f2b75eee8171d1a26b64abdd8"
+)
 RELEASE_CLOSURE_MANIFEST = (
     REPO_ROOT
     / "docs/developers/plans/manifests/audit-manifest-v0.2.2-release-closure.yaml"
@@ -37,8 +42,8 @@ flowchart LR
 """
 
 
-def test_released_changelog_publishes_the_v022_activity_snapshot() -> None:
-    """Keep the public changelog tied to the immutable v0.2.2 release."""
+def test_changelog_preserves_the_historical_v022_activity_snapshot() -> None:
+    """Keep the earlier published snapshot and its provenance available."""
     changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     source = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
         encoding="utf-8"
@@ -71,6 +76,29 @@ def test_released_changelog_publishes_the_v022_activity_snapshot() -> None:
     assert f"`v{ACTIVITY_RELEASE_VERSION}`" in handover
     assert f"(`{ACTIVITY_RELEASE_SHA}`)" in handover
     assert f"`{ACTIVITY_CSV_SHA256}`" in handover
+
+
+def test_candidate_activity_uses_the_same_data_in_both_languages() -> None:
+    static = REPO_ROOT / "docs_redesign/_static"
+    data = static / "downloads/development-activity-v0.2.3-candidate-weekly.csv"
+    assert (
+        hashlib.sha256(data.read_bytes()).hexdigest() == CANDIDATE_ACTIVITY_CSV_SHA256
+    )
+    for suffix in ("", "-ja"):
+        svg = (
+            static / f"images/development-activity-v0.2.3-candidate{suffix}.svg"
+        ).read_text(encoding="utf-8")
+        assert f"resolved SHA: {CANDIDATE_ACTIVITY_SHA}" in svg
+        assert f"canonical CSV SHA-256: {CANDIDATE_ACTIVITY_CSV_SHA256}" in svg
+        if suffix:
+            assert "週ごとのコミット数" in svg
+            assert "月曜日始まりの週（UTC）" in svg
+            assert "Commits per week" not in svg
+    source = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
+        encoding="utf-8"
+    )
+    assert "The candidate has not been tagged or published." in source
+    assert CANDIDATE_ACTIVITY_SHA in source
 
 
 def test_v022_activity_snapshot_has_japanese_public_copy() -> None:
@@ -301,6 +329,25 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
         release_message = catalogue.get(release)
         assert release_message is not None
         assert release_message.string == release
+
+    # Inspect the current source, so a missing entry cannot pass merely because
+    # all of the older entries already in the catalogue have translations.
+    current_release = (
+        (REPO_ROOT / "CHANGELOG.md")
+        .read_text(encoding="utf-8")
+        .split("## [0.2.3] - ", 1)[1]
+        .split("## [0.2.2]", 1)[0]
+    )
+    for token in MarkdownIt().parse(current_release):
+        if token.type != "inline":
+            continue
+        message_id = " ".join(token.content.split())
+        if message_id == CANDIDATE_RELEASE_DATE:
+            continue
+        message = catalogue.get(message_id)
+        assert message is not None, message_id
+        assert message.string and "fuzzy" not in message.flags, message_id
+        assert re.search(r"[\u3040-\u30ff\u4e00-\u9fff]", message.string), message_id
 
 
 def test_noise_tutorial_declares_the_packaged_gwinc_dependency() -> None:

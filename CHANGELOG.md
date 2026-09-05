@@ -18,6 +18,11 @@ parent-parity risks; see the
 This approval does not cover later source revisions.
 The candidate adds no public API or dependency.
 
+The release owner separately approved the scalar reconstruction delta on
+2026-09-05 for runtime tree `88c9de982f4b284afbb5845c13cecb2d90d938dc`,
+including the inherited `ScalarField` reductions. This limited approval
+preserves the earlier exception scopes and does not authorize publication.
+
 The current follow-up fixes scalar reduction allocation on NumPy 2 and
 updates CI provisioning and audit provenance. Each new source requires
 same-candidate scientific/data-model review, same-candidate release-security

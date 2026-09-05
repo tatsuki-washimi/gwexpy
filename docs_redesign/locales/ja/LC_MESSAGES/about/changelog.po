@@ -3366,3 +3366,123 @@ msgstr "片側スペクトルにおける IFFT の振幅スケーリングを修
 
 #~ msgid "Unreleased"
 #~ msgstr "未リリース"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "Weekly GWexpy development activity through the v0.2.3 candidate snapshot of 2026-09-05, showing non-merge commits and edited source lines by category."
+msgstr "2026-09-05 時点の v0.2.3 候補までの GWexpy の週次開発活動。カテゴリ別に、マージを除くコミット数とソースコードの編集行数を示します。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "Weekly activity through the v0.2.3 candidate snapshot of 2026-09-05. The stacked bars group non-merge commits and edited source lines by category; release markers identify existing stable tags. The candidate has not been tagged or published."
+msgstr "2026-09-05 時点の v0.2.3 候補までの週次活動です。積み上げ棒はカテゴリ別のコミット数（マージを除く）とソースコードの編集行数を示し、リリースマーカーは既存の安定版タグを示します。この候補にはまだタグを付けておらず、公開もしていません。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "[Download the weekly CSV data](/_static/downloads/development-activity-v0.2.3-candidate-weekly.csv)"
+msgstr "[週次 CSV データをダウンロード](/_static/downloads/development-activity-v0.2.3-candidate-weekly.csv)"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "The snapshot ends at commit `3ade51de26c9adf21c4a7ad076837967e61c8038`. Both language versions use the same weekly data. Bar heights show the logarithm of each weekly total, while the coloured segments show category proportions; edited lines are additions plus deletions, excluding generated files and binary changes."
+msgstr "集計対象はコミット `3ade51de26c9adf21c4a7ad076837967e61c8038` までです。日英の図には同じ週次データを使用しています。棒の高さは週ごとの合計を対数で表し、色分けした部分はカテゴリごとの構成比を示します。編集行数は追加行数と削除行数の合計で、生成ファイルとバイナリの変更は除外しています。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "The earlier v0.2.2 snapshot remains available as an [SVG](/_static/images/development-activity-v0.2.2.svg) and [weekly CSV](/_static/downloads/development-activity-v0.2.2-weekly.csv)."
+msgstr "以前の v0.2.2 時点の集計も、[SVG](/_static/images/development-activity-v0.2.2.svg) と[週次 CSV](/_static/downloads/development-activity-v0.2.2-weekly.csv) で確認できます。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "This maintenance-release candidate implements GWpy 4.0.1/4.0.2 compatibility fixes across the audited GWpy-derived API surface. Historical automated differential evidence is recorded for runtime candidate `d55717e9aed9ef5c22bb5d8ed0df95e19a313545`, with review and evidence source `ff47d66ce985c295193a8d8cd1acef3ddd61add1`. That runtime's human scientific/data-model sign-off is approved: the release owner reapproved the four unchanged parent-parity risks, signal methods, and signal-related internal reconstruction authority for non-second irregular axes on 2026-09-04. The approval is strictly limited to the six approved risk groups and excludes other contracts. The historical approval remains bound only to candidate `c7b79db7fee2e646069679a0efe3d65c7ed4e562` and exactly five disclosed parent-parity risks; see the [aggregate sign-off report](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md). This approval does not cover later source revisions. The candidate adds no public API or dependency."
+msgstr "このメンテナンスリリース候補では、監査対象の GWpy 派生 API 全体について、GWpy 4.0.1/4.0.2 との互換性を修正しています。過去の自動差分検証の証跡は、実行時コードの候補 `d55717e9aed9ef5c22bb5d8ed0df95e19a313545` と、レビューおよび証跡の対象ソース `ff47d66ce985c295193a8d8cd1acef3ddd61add1` に記録されています。その実行時コードには、人間による科学計算とデータモデルの承認があります。リリース責任者は2026-09-04に、変更していない4件の GWpy との一致に伴うリスク、信号処理メソッド、非秒単位の不規則軸に関する信号処理内部の再構築時の基準情報を再承認しました。この承認は6つのリスク群に限定され、他の契約は対象外です。過去の承認は候補 `c7b79db7fee2e646069679a0efe3d65c7ed4e562` と、開示済みの5件のリスクだけに結び付いています。[承認の集約記録](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md)を参照してください。この承認は後続のソース改訂を対象に含みません。この候補で公開 API や依存パッケージを追加していません。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "The release owner separately approved the scalar reconstruction delta on 2026-09-05 for runtime tree `88c9de982f4b284afbb5845c13cecb2d90d938dc`, including the inherited `ScalarField` reductions. This limited approval preserves the earlier exception scopes and does not authorize publication."
+msgstr "リリース責任者は2026-09-05に、実行時コードのツリー `88c9de982f4b284afbb5845c13cecb2d90d938dc` に対し、`ScalarField` が継承する縮約を含むスカラー再構築の差分を別途承認しました。この限定承認は既存の例外の範囲を保持し、公開そのものを許可するものではありません。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "The current follow-up fixes scalar reduction allocation on NumPy 2 and updates CI provisioning and audit provenance. Each new source requires same-candidate scientific/data-model review, same-candidate release-security review, candidate-wide QA, and fresh 19-cell qualification. The release remains **HOLD** pending the final release gate. Any later runtime/data-model semantic change invalidates an aggregate sign-off and requires reapproval. Documentation-only recording commits do not alter the runtime candidate."
+msgstr "今回の追加修正では、NumPy 2 におけるスカラー縮約結果のメモリ確保を修正し、CI 環境の準備と監査証跡の対応付けを更新しています。ソースを更新するたびに、同一候補に対する科学計算とデータモデルのレビュー、リリースのセキュリティレビュー、候補全体の品質検証、および19構成のリリース適格性検証を新たに行う必要があります。公開は最終判定を待つ **保留（HOLD）** 状態です。以後に実行時コードやデータモデルの意味を変更した場合、集約した承認は無効となり、再承認が必要です。文書への記録だけを変更するコミットは実行時コードの候補を変更しません。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "The current inventory evidence covers 575 logical members with 62 selectors and 396 executed cases per oracle. The historical c7 approval covered the same 575 logical members with 59 selectors and 384 executed cases per oracle; the generated inventory's 1,150 case rows are a separate logical version-row count."
+msgstr "現在の一覧証跡は、575個の論理メンバー、62個のテスト選択指定、比較先の GWpy バージョンごとに396件の実行済みケースを対象としています。過去の c7 の承認も同じ575個の論理メンバーを対象としていますが、テスト選択指定は59個、実行ケースはバージョンごとに384件でした。生成した一覧の1,150行は、論理メンバーとバージョンの組み合わせを数えた別の件数です。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "Implemented with automated evidence"
+msgstr "自動検証の証跡を伴う実装"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "**Scalar statistics on NumPy 2**: reductions of `Array3D`, `Array4D`, and `ScalarField` can allocate their zero-dimensional `Quantity` result instead of failing under strict `copy=False` semantics. Values, units, and reduction axis rules are preserved."
+msgstr "**NumPy 2 のスカラー統計量**：`Array3D`、`Array4D`、`ScalarField` の縮約では、厳格な `copy=False` の制約で失敗する代わりに、0次元の `Quantity` 結果に必要なメモリを確保できます。値、単位、縮約軸の規則は保持します。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "**HDF5 collections**: appending a `TimeSeriesDict` no longer opens an unspecified target in truncating mode. Native `names=`, `group=`, append, duplicate-name, legacy-manifest, and link-safety outcomes now follow the installed GWpy oracle while private exact-time sidecars remain additive."
+msgstr "**HDF5 コレクション**：`TimeSeriesDict` への追記時に、対象を指定せず既存内容を切り捨てるモードで開く問題を修正しました。通常の `names=`、`group=`、追記、名前の重複、旧形式のマニフェスト、リンクの安全性に関する結果は、インストール済み GWpy を比較基準として一致させています。非公開の厳密な時刻情報を記録する付随データは、引き続き追加情報として保持します。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "**Native HDF5 auto-identification**: `TimeSeries` and `TimeSeriesDict` now match GWpy for native `.h5` / `.hdf5` auto-read and auto-write. Structural NDScope detection retains precedence over the lower-priority generic HDF5 route; other ambiguous and GWexpy-only class families remain explicit."
+msgstr "**通常の HDF5 の自動識別**：`TimeSeries` と `TimeSeriesDict` は、通常の `.h5` / `.hdf5` の自動読み書きで GWpy と一致するようになりました。構造に基づく NDScope の識別は、優先順位の低い汎用 HDF5 経路より先に行います。他の曖昧なクラス群や GWexpy 独自のクラス群では、引き続き形式を明示します。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "**HDF5 window safety (#611)**: GWpy 4.0.x can return samples outside the requested interval for a completely non-intersecting HDF5 collection window because negative stop indices wrap. GWexpy now returns a zero-length series only for that fully disjoint entry after the parent reader succeeds. Mixed collections retain their keys and order, and only disjoint entries become empty. Partial overlap, `pad=`, parent reader errors, and caller-owned source handling retain GWpy semantics. A safety-created empty retains the series class, dtype, unit, name/channel, and cadence; its public `t0`/`span` collapse to the stored series start boundary. It does not inherit private exact-time authority from the source."
+msgstr "**HDF5 の読み取り区間の安全性（#611）**：GWpy 4.0.x では、HDF5 コレクションのデータと要求区間が完全に交わらない場合、負の終了インデックスが末尾から解釈され、指定区間外のサンプルを返すことがあります。GWexpy は親の読み取り処理が成功した後、完全に交わらない要素だけを長さ0の系列にします。複数の状態が混在するコレクションでもキーと順序を保持し、交わらない要素だけを空にします。部分的な重なり、`pad=`、親の読み取りエラー、呼び出し元が所有するソースの扱いは GWpy の意味を保持します。安全処理で作った空の系列は、クラス、dtype、単位、名前とチャンネル、サンプリング間隔を保持します。公開属性の `t0` と `span` は保存された系列の開始境界に一致し、元データの非公開の厳密な時刻基準は継承しません。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "**Constructors and time axes (historically approved for c7)**: GWpy-supported `t0` and `epoch` inputs now take the parent route without exception-driven retries. Positional and keyword forms bind consistently, while the existing exact `t0_ns` authority remains separate. Copy, slice, crop, append, and supported time-axis mutations preserve or invalidate private exact state according to the resulting cadence."
+msgstr "**コンストラクターと時間軸（過去の c7 候補で承認）**：GWpy が対応する `t0` と `epoch` の入力は、例外を捕捉して再試行する処理を介さず、親の処理を通ります。位置引数とキーワード引数を一貫して対応付け、既存の厳密な `t0_ns` の基準情報は別に保持します。コピー、スライス、切り出し、追記、対応する時間軸変更では、結果のサンプリング間隔に応じて非公開の厳密な状態を保持または無効化します。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "**Time and frequency conversion (historically approved for c7)**: scalar and date-component `to_gps()` and `tconvert()` calls, `from_gps()` inputs, and `FrequencySeries.ifft()` timing metadata now match the active GWpy oracle. Invalid date-shaped values fail instead of falling back to vector interpretation."
+msgstr "**時刻と周波数の変換（過去の c7 候補で承認）**：スカラー入力と年月日などの成分入力による `to_gps()` と `tconvert()`、`from_gps()` の入力、および `FrequencySeries.ifft()` の時刻メタデータは、比較対象の GWpy と一致します。不正な日付形式の値は、ベクトルとして解釈し直すことなく失敗します。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "**Spectral, signal, and statistics routes (historically approved for c7)**: default CSD, Rayleigh, heterodyne, demodulate, RMS, resampling, reductions, and axis-result types now follow GWpy values, units, shapes, metadata, and exception classes."
+msgstr "**スペクトル処理、信号処理、統計処理（過去の c7 候補で承認）**：既定の CSD、Rayleigh、ヘテロダイン、復調、RMS、再サンプリング、縮約、軸に応じた結果型は、GWpy の値、単位、形状、メタデータ、例外クラスに従います。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "**Plotting, CSV, and collections**: plot methods accept the complete GWpy positional layouts and preserve Python-compatible duplicate-argument failures. Plain CSV uses the native GWpy route; existing enhanced-only arguments remain explicit opt-ins. Collection crop, prepend, and the historical `filterba()` shim preserve their established call contracts."
+msgstr "**描画、CSV、コレクション**：描画メソッドは GWpy の位置引数の並びをすべて受け付け、引数を重複指定した場合は Python と整合するエラーになります。通常の CSV は GWpy の標準経路を使い、既存の拡張専用引数は明示的に指定する方式を維持します。コレクションの切り出し、先頭への追加、旧来の `filterba()` 互換処理は、既存の呼び出し契約を保持します。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "**Specialized arrays and fields (historically approved for c7)**: inherited constructor binding, transposition, BifrequencyMap plotting, ScalarField finite differences, unit conversion, grid validation, and percentage comparisons now have explicit GWpy or fail-closed data-model contracts."
+msgstr "**特殊配列とフィールド（過去の c7 候補で承認）**：継承したコンストラクターの引数対応付け、転置、BifrequencyMap の描画、ScalarField の有限差分、単位変換、格子の検証、百分率による比較について、GWpy との互換性、または不正な入力を拒否するデータモデルの契約を明示しています。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "Compatibility notes"
+msgstr "互換性に関する注意"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "`non_intersecting_window_safety` is the sole approved default divergence from GWpy in this release. It prevents an upstream negative-index wrap from selecting data outside a completely disjoint requested HDF5 window. See the [GWpy behavioral compatibility policy](https://tatsuki-washimi.github.io/gwexpy/docs/explanation/gwpy_compatibility_policy.html)."
+msgstr "`non_intersecting_window_safety` は、このリリースで承認された GWpy の既定挙動からの唯一の相違です。HDF5 の要求区間がデータと完全に交わらないとき、上流の負のインデックスの解釈によって指定区間外のデータが選ばれることを防ぎます。[GWpy の挙動互換性ポリシー](https://tatsuki-washimi.github.io/gwexpy/docs/ja/explanation/gwpy_compatibility_policy.html)を参照してください。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "The #611 safety exception is `approved-separately-unchanged`; its independent human approval and release-note gates remain satisfied, and the current reapproval does not reapprove it. Its scope remains limited to the fully disjoint read-window subcase."
+msgstr "#611 の安全例外は「個別に承認済みで変更なし」（`approved-separately-unchanged`）です。独立した人間承認とリリースノートの確認条件は引き続き満たしており、今回の再承認で承認し直すものではありません。対象は、読み取り区間が完全に交わらない場合に限定されます。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "The recorded human scientific/data-model approval is approved for runtime candidate `d55717e9aed9ef5c22bb5d8ed0df95e19a313545` and strictly limited to the six approved parent-parity and signal risk groups below. It does not approve other contracts. The historical c7 approval of exactly five risks remains recorded separately:"
+msgstr "記録済みの科学計算とデータモデルに対する人間承認は、実行時コードの候補 `d55717e9aed9ef5c22bb5d8ed0df95e19a313545` に対するものであり、以下の GWpy との一致および信号処理に関する6つのリスク群に厳密に限定されます。他の契約を承認するものではありません。過去の c7 候補に対する5件のリスクの承認は、別途記録しています。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "the mixed-unit CSD `V²/Hz` label;"
+msgstr "異なる単位を組み合わせた CSD の `V²/Hz` 表記。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "public Rayleigh parent segment selection with a private corrected route and known finite-Monte-Carlo limitations;"
+msgstr "公開 Rayleigh 処理における親のセグメント選択、非公開の補正経路、および既知の有限回モンテカルロ計算の制限。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "stale Array2D/Plane2D `min`/`max` indices; and"
+msgstr "Array2D/Plane2D の `min`/`max` で更新されないインデックス。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "stale numeric `swapaxes`/`transpose` metadata."
+msgstr "数値配列の `swapaxes`/`transpose` で更新されないメタデータ。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "The current signal group covers dimensionless signal outputs, raw-magnitude frequency `Quantity` handling, float32 RMS underflow, and signal-related internal reconstruction authority for non-second irregular axes."
+msgstr "現在の信号処理のリスク群は、無次元の信号出力、周波数 `Quantity` の数値をそのまま扱う処理、float32 の RMS のアンダーフロー、および非秒単位の不規則軸に関する信号処理内部の再構築時の基準情報を対象としています。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "The final two groups retain the previously disclosed stale axis metadata on specific Array2D/Plane2D reductions and numeric array permutations. Corrected or metadata-aware GWexpy-only routes remain explicit where already available."
+msgstr "最後の2群では、特定の Array2D/Plane2D の縮約と数値配列の軸の並べ替えについて、既に開示している未更新の軸メタデータを保持します。補正を行う経路やメタデータを考慮する GWexpy 独自の経路が既にある場合は、引き続き明示的に選択します。"
+
+#: about/changelog.md ../../CHANGELOG.md
+msgid "Added `tests/timeseries/test_rms_compat.py` pinning gwpy-compatible `TimeSeries.rms(stride)` behaviour (gwpy reference parity, positional-int regression for #451, trailing-window drop, NaN-per-window propagation) and the gwexpy enhancements (time/dimensionless `Quantity` stride, unit preservation, and `ValueError` for sub-sample/zero/negative/irregular strides). Re-pointed `test_stats_mixin.py::test_rms_with_unit` onto `Series`."
+msgstr "`tests/timeseries/test_rms_compat.py` を追加し、GWpy と互換な `TimeSeries.rms(stride)` の挙動（GWpy との一致、#451 の整数の位置引数に関する回帰、末尾の不完全な区間の除外、区間ごとの NaN 伝播）と、GWexpy の拡張（時間または無次元の `Quantity` による stride、単位の保持、1サンプル未満、ゼロ、負、不規則な stride に対する `ValueError`）を固定しました。`test_stats_mixin.py::test_rms_with_unit` の対象を `Series` に変更しました。"

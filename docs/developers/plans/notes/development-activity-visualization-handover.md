@@ -63,7 +63,32 @@ aggregate Git history during a Sphinx build. The commit SHA, target tag, time
 range, and weekly CSV SHA-256 are embedded in the SVG so the checked-in
 visualisation remains auditable.
 
-## Verified local checks
+## v0.2.3 candidate snapshot (2026-09-05)
+
+The current public figure now covers candidate commit
+`3ade51de26c9adf21c4a7ad076837967e61c8038`, with 1,862 non-merge commits.
+This is an immutable commit snapshot before the documentation refresh,
+not a v0.2.3 release tag. The plot marks only reachable existing stable tags.
+The earlier v0.2.2 assets and publication facts remain historical records.
+
+The new assets are `development-activity-v0.2.3-candidate.svg`,
+`development-activity-v0.2.3-candidate-ja.svg`, and
+`development-activity-v0.2.3-candidate-weekly.csv` under
+`docs_redesign/_static/images/` and `docs_redesign/_static/downloads/`.
+The canonical weekly CSV SHA-256 is
+`0a0453910f6944e53312b9e36f811e40e608698f2b75eee8171d1a26b64abdd8`.
+Both plots use byte-identical CSV data; `--language ja` changes only SVG
+labels. Japanese labels use Noto Sans CJK JP. The Japanese changelog selects
+the Japanese SVG during `source-read`, before Sphinx collects images.
+
+Regenerate each language with `scripts/generate_development_activity.py
+--ref 3ade51de26c9adf21c4a7ad076837967e61c8038 --language en` (or `ja`),
+with distinct `--svg-output`, `--csv-output`, and `--audit-output` paths.
+The per-commit audit is retained in external release evidence. No history
+aggregation is performed during Sphinx builds, and no tag is manufactured
+for the candidate marker.
+
+## Historical local checks
 
 The implementation was checked with Python 3.13 in the `gwexpy` Conda
 environment:
