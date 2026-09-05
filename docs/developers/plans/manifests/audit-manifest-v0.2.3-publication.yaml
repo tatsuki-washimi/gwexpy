@@ -1,0 +1,116 @@
+schema: gwexpy-v023-publication-record-v1
+recorded_at_utc: '2026-09-05T13:37:16.680092+00:00'
+version: 0.2.3
+status: published
+release:
+  reviewed_source_sha: 235163a336752ced188a3fcde7190d0da3bedac3
+  source_sha: 75d3d1a89ebc8942af1f3228152fea99d2d3420e
+  runtime_tree: 88c9de982f4b284afbb5845c13cecb2d90d938dc
+  tag: v0.2.3
+  tag_object_sha: b79ad05ca51527a048dd18e5c3cf84bc9e57487a
+  publication_date_utc: '2026-09-05'
+  owner_release_go: Explicit instruction to release v0.2.3 to Zenodo, PyPI, and conda-forge
+    on 2026-09-05
+qualification:
+  run_id: 33967606952
+  url: https://github.com/tatsuki-washimi/gwexpy/actions/runs/33967606952
+  event: push
+  conclusion: success
+  qualification_cells: 19/19
+  smoke_cells: 4/4
+  aggregates_verified: 2
+  artifact_archives_verified: 27
+  unexpected_skips: 0
+  baseline_sha256: 6a19168dab95b582e65b612ac7bc5ad2853b7df723b8d4cae73e6edf32802430
+  integration_retention:
+    id: 9969972784
+    name: v023-integration-evidence-75d3d1a89ebc8942af1f3228152fea99d2d3420e
+    api_digest: sha256:e5286ea4a1bdd2a2087280e40122904e785b8aa17fcda3fb52c0b8d3c2862f6c
+    archive_sha256_verified: true
+    bytes: 722
+    created_at: '2026-09-05T13:03:19Z'
+    expires_at: '2026-12-04T12:59:53Z'
+    effective_retention_seconds: 7775794.0
+  retention_contract_scope: 90 days minus 5 minutes applies to the integration aggregate
+    only
+pypi:
+  url: https://pypi.org/project/gwexpy/0.2.3/
+  payload:
+    sdist:
+      name: gwexpy-0.2.3.tar.gz
+      sha256: a5e752c6a53b5c6cabf41de309ca3077534f068384425deff3b1bccc461377b2
+    wheel:
+      name: gwexpy-0.2.3-py3-none-any.whl
+      sha256: e73da65cff769615fc78e264f6f17730573472a8587031444ccef237294e1e9c
+  public_download_byte_identity: PASS
+  trusted_publisher_readback:
+    repository: tatsuki-washimi/gwexpy
+    workflow: publish-release.yml
+    environment: pypi
+  fresh_install_smoke: PASS
+github_release:
+  id: 383250425
+  url: https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3
+  published_at: '2026-09-05T13:11:33Z'
+zenodo:
+  result: PASS
+  doi: 10.5281/zenodo.22344992
+  record_id: 22344992
+  source_sha: 75d3d1a89ebc8942af1f3228152fea99d2d3420e
+  archive_sha256: da0dccef59f899539f22a719e0866e1db4a08313c555be0e5e75a4f8bdd664e0
+  archive_md5: 4e0bea05b5a43d35b2b55aa11b01416e
+  files_compared: 2477
+  comparison: All archive paths and file bytes equal git archive v0.2.3
+  publication_date: '2026-09-05'
+conda_forge:
+  url: https://anaconda.org/conda-forge/gwexpy
+  pull_request: https://github.com/conda-forge/gwexpy-feedstock/pull/13
+  merge_commit: 594522129692ea435b3628c302f16e344774c5fc
+  merged_at: '2026-09-05T13:19:05Z'
+  build: PASS
+  linter: PASS
+  source_sdist_sha256: a5e752c6a53b5c6cabf41de309ca3077534f068384425deff3b1bccc461377b2
+  channel_package:
+    basename: noarch/gwexpy-0.2.3-pyhc364b38_0.conda
+    version: 0.2.3
+    build_number: 0
+    sha256: 4723b718fb80fd9676ba085bd74ea4ca08db864df89e9539ee1da5877d67bbf6
+    uploaded_at: '2026-09-05 13:20:58.538000+00:00'
+    labels:
+    - main
+  api_download_sha256: PASS
+documentation:
+  languages:
+  - en
+  - ja
+  activity_ref: v0.2.3
+  activity_sha: 75d3d1a89ebc8942af1f3228152fea99d2d3420e
+  non_merge_commits: 1866
+  artifacts:
+  - path: docs_redesign/_static/images/development-activity-v0.2.3.svg
+    sha256: 9879b6f296b44aa7d7cd2dd47963bb6c4cae8455aea98de2799058a4a7911926
+  - path: docs_redesign/_static/images/development-activity-v0.2.3-ja.svg
+    sha256: 714eaac8148138e95cedf15a5bb9176bd52fb5bf4ebc4bfa557cf0ec542c279d
+  - path: docs_redesign/_static/downloads/development-activity-v0.2.3-weekly.csv
+    sha256: 612292f6e17e1aadf13642646873ea68f75b34f182966416c32d5fb8bc910885
+  scope: Post-publication documentation update; tag, published source and payload
+    remain immutable
+  deployment_evidence: Recorded externally after this documentation commit is deployed
+scope:
+  runtime_changed: false
+  published_tag_changed: false
+  payload_rebuilt: false
+  human_scientific_approval_scope_changed: false
+  historical_reviews_changed: false
+skills:
+- prep_release
+- manage_docs
+- gwexpy_conda_jobs
+validation:
+  docs_contract_tests: 186 passed, 4 skipped in 1.58s
+  ruff: PASS
+  mypy_runtime: 396 files PASS
+  supplemental_test_module_typing: 11 existing errors; same diagnostics independently
+    reproduced at published tag; no new errors
+  strict_sphinx: EN and JA PASS, zero warnings; notebook source and runtime cache
+    provenance verified

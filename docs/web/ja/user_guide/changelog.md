@@ -4,7 +4,7 @@ GWexpy の主な変更履歴を記載します。
 
 ## [0.2.3] - 2026-09-05
 
-GWpy 4.0.1 および 4.0.2 との互換性を修正したメンテナンスリリースの候補です。
+GWpy 4.0.1 および 4.0.2 との互換性を修正したメンテナンスリリースです。
 公開 API や依存パッケージの追加はありません。
 
 ### 修正と互換性
@@ -22,7 +22,7 @@ GWpy 4.0.1 および 4.0.2 との互換性を修正したメンテナンスリ�
 
 [更新履歴の全文](https://tatsuki-washimi.github.io/gwexpy/docs/ja/about/changelog.html)には、
 最新の開発履歴の図と週次 CSV を掲載しています。
-候補は最終リリース判定を待っており、まだ公開していません。
+2026-09-05（UTC）に公開しました：[PyPI 0.2.3](https://pypi.org/project/gwexpy/0.2.3/)、[conda-forge](https://anaconda.org/conda-forge/gwexpy)、[GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3)、[Zenodo DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992)。
 [互換性ポリシー](https://tatsuki-washimi.github.io/gwexpy/docs/ja/explanation/gwpy_compatibility_policy.html)に、
 #611 の限定的な例外と、保持している互換性上のリスクを説明しています。
 
