@@ -1,6 +1,6 @@
 # v0.2.3 release closure report
 
-Date: 2026-09-06 (UTC)
+Date: 2026-09-06 (JST; 2026-09-05 UTC)
 
 This report closes the bookkeeping cycle for the already published GWexpy
 v0.2.3 release. It records the authoritative release identity and the state

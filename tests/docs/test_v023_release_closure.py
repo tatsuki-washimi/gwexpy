@@ -118,6 +118,7 @@ def test_v023_closure_report_states_the_runtime_boundary() -> None:
     report = REPORT_PATH.read_text(encoding="utf-8")
 
     assert RELEASE_SOURCE in report
+    assert "Date: 2026-09-06 (JST; 2026-09-05 UTC)" in report
     assert "19/19 qualification" in report
     assert "4/4 smoke" in report
     assert "#634" in report and "#688" in report
