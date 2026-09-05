@@ -170,17 +170,21 @@ jobs:
         run: |
           # gh-pages publication is asynchronous. Read the expected commit back
           # from Pages, including the actual figure, before reporting success.
-          for attempt in $(seq 1 18); do
-            echo "Pages readback attempt ${attempt}/18"
-            if python scripts/check_public_docs.py \
-              --url "${GWEXPY_DOCS_LANG_BASEURL}" --expected-revision "${GITHUB_SHA}" \
-              2>&1 | tee -a "${{ steps.prepare_docs_redesign.outputs.docs_src }}/_build/deploy-readback.log"; then
-              exit 0
-            fi
-            sleep 20
-          done
-          echo "Pages did not serve the expected EN/JA build within the verification window"
-          exit 1
+          # Returning from a function avoids login-shell logout hooks on exit.
+          verify_publication() {
+            for attempt in $(seq 1 18); do
+              echo "Pages readback attempt ${attempt}/18"
+              if python scripts/check_public_docs.py \
+                --url "${GWEXPY_DOCS_LANG_BASEURL}" --expected-revision "${GITHUB_SHA}" \
+                2>&1 | tee -a "${{ steps.prepare_docs_redesign.outputs.docs_src }}/_build/deploy-readback.log"; then
+                return 0
+              fi
+              sleep 20
+            done
+            echo "Pages did not serve the expected EN/JA build within the verification window"
+            return 1
+          }
+          verify_publication
 
       - name: Retain documentation diagnostics
         if: failure()
