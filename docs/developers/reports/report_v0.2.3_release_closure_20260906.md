@@ -74,7 +74,10 @@ The public docs deployment readback remains tied to source-only post-release
 commit `23f7030f0ab08834dcd1bceeb5395f730f76b354`, Pages run `33969465299`,
 and gh-pages commit `1bfae37429449efc9027ca287c85ff2fd4c89e7a`. Since that
 deployment, `main` advanced to `941a377a0305336b66231d8ec8a42c14b364b244`
-through the separate Docs redesign PR #713; `maint/0.2` remains at `23f703...`.
+through the separate Docs redesign PR #713. PR #715 subsequently advanced
+`main` to `1ff2cb99cc5a6013417cd5e3d147e1d21631e9e7` with a Docs Pages
+readback exit-status fix; that workflow-only change is also separate from this
+closure. `maint/0.2` remains at `23f703...`.
 The plot and CSV assets are tied to tag `v0.2.3`; the Japanese plot contains
 Japanese labels.
 

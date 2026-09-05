@@ -68,6 +68,9 @@ def test_v023_closure_manifest_binds_immutable_release_and_distributions() -> No
     }
     assert manifest["publication"]["zenodo"]["doi"] == "10.5281/zenodo.22344992"
     assert manifest["publication"]["zenodo"]["record_id"] == 22344992
+    assert manifest["verification"]["authoritative_readback"]["current_main"] == (
+        "1ff2cb99cc5a6013417cd5e3d147e1d21631e9e7 (PR #715 Docs Pages readback fix; current readback)"
+    )
 
 
 def test_v023_closure_manifest_records_issue_and_scope_boundary() -> None:
@@ -122,3 +125,4 @@ def test_v023_closure_report_states_the_runtime_boundary() -> None:
         "No runtime, public API, dependency, or scientific-semantic changes." in report
     )
     assert "No new runtime or correctness defect was found." in report
+    assert "PR #715" in report
