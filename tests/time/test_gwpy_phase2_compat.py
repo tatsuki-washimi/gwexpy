@@ -97,39 +97,36 @@ def test_to_gps_invalid_date_components_preserve_gwpy_failure(value, error):
 @pytest.mark.parametrize("function_name", ["to_gps", "tconvert"])
 @pytest.mark.parametrize("container", [tuple, list])
 @pytest.mark.parametrize(
-    ("components", "error"),
+    "components",
     [
         pytest.param(
             [Decimal("2017"), Decimal("1"), Decimal("1")],
-            TypeError,
             id="decimal",
         ),
         pytest.param(
             [Fraction(2017, 1), Fraction(1, 1), Fraction(1, 1)],
-            TypeError,
             id="fraction",
         ),
-        pytest.param([True, True, True], OverflowError, id="bool"),
+        pytest.param([True, True, True], id="bool"),
         pytest.param(
             [np.bool_(True), np.bool_(True), np.bool_(True)],
-            OverflowError,
             id="numpy-bool",
         ),
-        pytest.param([2017 + 0j, 1 + 0j, 1 + 0j], TypeError, id="complex"),
-        pytest.param(["2017", "1", "1"], TypeError, id="numeric-strings"),
+        pytest.param([2017 + 0j, 1 + 0j, 1 + 0j], id="complex"),
+        pytest.param(["2017", "1", "1"], id="numeric-strings"),
     ],
 )
 def test_numeric_like_date_components_preserve_gwpy_failure(
     function_name,
     container,
     components,
-    error,
 ):
     value = container(components)
     gwpy_function = getattr(gwpy_time, function_name)
     gwexpy_function = getattr(gwexpy_time, function_name)
 
-    # Year 1 reaches ERFA before LAL rejects its negative GPS representation.
+    # NumPy's boolean handling and the optional GPS backend affect the parent
+    # outcome. Compare against the installed GWpy rather than one environment.
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", message='ERFA function ".*dubious year')
         warnings.filterwarnings(
@@ -141,10 +138,14 @@ def test_numeric_like_date_components_preserve_gwpy_failure(
             "ignore",
             message="Casting complex values to real discards the imaginary part",
         )
-        with pytest.raises(error):
-            gwpy_function(value)
-        with pytest.raises(error):
-            gwexpy_function(value)
+        try:
+            expected = gwpy_function(value)
+        except (TypeError, ValueError, OverflowError) as error:
+            with pytest.raises(type(error)) as actual_error:
+                gwexpy_function(value)
+            assert type(actual_error.value) is type(error)
+        else:
+            _assert_same_scalar(gwexpy_function(value), expected)
 
 
 @pytest.mark.parametrize(
@@ -425,10 +426,11 @@ def test_from_gps_multidimensional_vectors_map_scalar_route():
 
 def test_from_gps_nonfinite_vectors_preserve_gwpy_failure_class():
     for value in (np.nan, np.inf, -np.inf):
-        with pytest.raises(RuntimeError):
+        with pytest.raises((RuntimeError, ValueError, OverflowError)) as expected:
             gwpy_time.from_gps(value)
-        with pytest.raises(RuntimeError):
+        with pytest.raises(type(expected.value)) as actual:
             gwexpy_time.from_gps(np.array([1167264018.0, value]))
+        assert type(actual.value) is type(expected.value)
 
 
 def test_from_gps_leap_second_preserves_gwpy_failure_class_for_scalar_and_vector():

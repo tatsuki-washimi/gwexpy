@@ -68,6 +68,15 @@ text) and emits a single allowlisted aggregate artifact whose name is selected f
 Repository retention policy may cap the configured duration, and run/artifact
 deletion or expiry invalidates the evidence.
 
+The measured `90 days - 5 minutes` threshold above applies to the integration
+aggregate. All release artifact uploads request `retention-days: 90`, but the
+current contract specifies no corresponding measured minimum for the payload,
+sidecars, individual cell reports, or qualification aggregate. Record each
+artifact's actual API timestamps and expiry separately; do not claim that the
+integration threshold was verified for every artifact. The source validator
+and evidence collectors do not read GitHub artifact expiry, so this acceptance
+check is an external API readback before publication.
+
 For v0.2.2, the historical same-build qualification also used a 19-cell
 matrix. Every cell verified `distribution-sha256.json` before installation
 and emitted its source SHA, version, and wheel/sdist digests. The historical

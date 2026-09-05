@@ -3,10 +3,10 @@
 ## [0.2.3] - 2026-09-05
 
 This maintenance-release candidate implements GWpy 4.0.1/4.0.2 compatibility
-fixes across the audited GWpy-derived API surface. Automated differential
-evidence is green for runtime candidate
+fixes across the audited GWpy-derived API surface. Historical automated
+differential evidence is recorded for runtime candidate
 `d55717e9aed9ef5c22bb5d8ed0df95e19a313545`, with review and evidence source
-`ff47d66ce985c295193a8d8cd1acef3ddd61add1`. The current-candidate human
+`ff47d66ce985c295193a8d8cd1acef3ddd61add1`. That runtime's human
 scientific/data-model sign-off is approved: the release owner reapproved the
 four unchanged parent-parity risks, signal methods, and signal-related internal
 reconstruction authority for non-second irregular axes on 2026-09-04. The
@@ -15,14 +15,17 @@ contracts. The historical approval remains bound only to candidate
 `c7b79db7fee2e646069679a0efe3d65c7ed4e562` and exactly five disclosed
 parent-parity risks; see the
 [aggregate sign-off report](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md).
+This approval does not cover later source revisions.
 The candidate adds no public API or dependency.
 
-The same-candidate scientific/data-model review and same-candidate
-release-security review, together with candidate-wide QA, are complete. The
-release remains **HOLD** pending 19-cell
-qualification and the final release gate. Any later runtime/data-model
-semantic change invalidates an aggregate sign-off and requires reapproval.
-Documentation-only recording commits do not alter the runtime candidate.
+The current follow-up fixes scalar reduction allocation on NumPy 2 and
+updates CI provisioning and audit provenance. Each new source requires
+same-candidate scientific/data-model review, same-candidate release-security
+review, candidate-wide QA, and fresh 19-cell qualification. The
+release remains **HOLD** pending the final release gate. Any later
+runtime/data-model semantic change invalidates an aggregate sign-off and
+requires reapproval. Documentation-only recording commits do not alter the
+runtime candidate.
 
 The current inventory evidence covers 575 logical members with 62 selectors
 and 396 executed cases per oracle. The historical c7 approval covered the same
@@ -30,6 +33,11 @@ and 396 executed cases per oracle. The historical c7 approval covered the same
 generated inventory's 1,150 case rows are a separate logical version-row count.
 
 ### Implemented with automated evidence
+
+- **Scalar statistics on NumPy 2**: reductions of `Array3D`, `Array4D`, and
+  `ScalarField` can allocate their zero-dimensional `Quantity` result instead
+  of failing under strict `copy=False` semantics. Values, units, and reduction
+  axis rules are preserved.
 
 - **HDF5 collections**: appending a `TimeSeriesDict` no longer opens an
   unspecified target in truncating mode. Native `names=`, `group=`, append,
@@ -82,7 +90,7 @@ generated inventory's 1,150 case rows are a separate logical version-row count.
   human approval and release-note gates remain satisfied, and the current
   reapproval does not reapprove it. Its scope remains limited to the fully
   disjoint read-window subcase.
-- The current-candidate human scientific/data-model approval is approved for
+- The recorded human scientific/data-model approval is approved for
   runtime candidate `d55717e9aed9ef5c22bb5d8ed0df95e19a313545` and strictly
   limited to the six approved parent-parity and signal risk groups below. It
   does not approve other contracts. The historical c7 approval of exactly five

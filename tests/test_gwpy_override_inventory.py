@@ -36,7 +36,9 @@ IMPLEMENTATION_BASE = "a8085b71446d3ef3417a7e5b5ac8efb156368eac"
 UPSTREAM_DEPENDENCY_PROVENANCE = (
     "GWpy providers retain package-relative source/line; inherited "
     "NumPy/Astropy providers retain normalized provider, member, kind, "
-    "descriptor, and signature without source path or resolved version."
+    "descriptor, and signature without source path or resolved version. "
+    "Matplotlib UNSET is normalized by singleton identity; five NumPy ndarray "
+    "C descriptors bind exact reviewed unavailable/available signature variants."
 )
 CASE_KEYS = {
     "case_key",
@@ -2286,12 +2288,75 @@ def test_callable_numpy_generic_descriptor_records_stable_call_evidence() -> Non
     assert audit.raw_binding_kind(raw) == "generic-descriptor"
     descriptor = audit._oracle_descriptor(raw, "generic-descriptor", np.ndarray)
     assert descriptor["accessors"] == ["get"]
+    expected_signature = {
+        "available": True,
+        "parameters": [
+            {
+                "annotation": {"kind": "empty"},
+                "default": {"kind": "empty"},
+                "kind": "POSITIONAL_ONLY",
+                "name": name,
+            }
+            for name in ("self", "axis1", "axis2")
+        ],
+        "return_annotation": {"kind": "empty"},
+    }
     assert descriptor["details"] == {
         "call": {
-            "signature": {"available": False, "error": "ValueError"},
+            "signature": {
+                "kind": "reviewed-native-signature",
+                "variants": [
+                    {"available": False, "error": "ValueError"},
+                    expected_signature,
+                ],
+            },
             "source": None,
         }
     }
+
+
+@pytest.mark.parametrize("member", ["max", "min", "swapaxes", "transpose", "diagonal"])
+@pytest.mark.parametrize("mutation", ["error", "parameter-name", "default"])
+def test_numpy_signature_normalization_rejects_unreviewed_drift(
+    monkeypatch: pytest.MonkeyPatch, member: str, mutation: str
+) -> None:
+    import numpy as np
+
+    audit = _load_audit_module()
+    raw = vars(np.ndarray)[member]
+    signature = copy.deepcopy(
+        audit._oracle_descriptor(raw, "generic-descriptor", np.ndarray)["details"][
+            "call"
+        ]["signature"]["variants"][1]
+    )
+    if mutation == "error":
+        signature = {"available": False, "error": "TypeError"}
+    elif mutation == "parameter-name":
+        signature["parameters"][0]["name"] = "unexpected_receiver"
+    else:
+        signature["parameters"][1]["default"] = {"kind": "literal", "value": 123}
+    monkeypatch.setattr(audit, "normalize_signature", lambda value: signature)
+    with pytest.raises(
+        audit.InventoryError, match="unreviewed NumPy descriptor signature"
+    ):
+        audit._oracle_descriptor(
+            vars(np.ndarray)[member], "generic-descriptor", np.ndarray
+        )
+
+
+def test_matplotlib_unset_sentinel_has_version_independent_identity() -> None:
+    import matplotlib.artist as artist
+
+    audit = _load_audit_module()
+    sentinel = getattr(artist, "_UNSET", None)
+    if sentinel is None:
+        from matplotlib import _api
+
+        sentinel = getattr(_api, "UNSET")
+    expected = {"kind": "sentinel", "name": "matplotlib.UNSET"}
+    assert audit._stable_atom(sentinel) == expected
+    # Only the actual singleton is equivalent, not every instance of its type.
+    assert audit._stable_atom(type(sentinel)()) != expected
 
 
 def test_callable_generic_descriptor_projection_never_invokes_get() -> None:
@@ -2438,3 +2503,16 @@ def test_workflow_installs_inventory_fitting_import_dependency() -> None:
         for token in shlex.split(line)
     }
     assert required_inventory_imports <= installed_tokens
+
+
+def test_pr_fast_installs_inventory_lal_import_dependency() -> None:
+    workflow = yaml.load(
+        (ROOT / ".github/workflows/pr-fast.yml").read_text(encoding="utf-8"),
+        Loader=yaml.BaseLoader,
+    )
+    provision = next(
+        step
+        for step in workflow["jobs"]["validate"]["steps"]
+        if step.get("uses") == "./.github/actions/setup-gwexpy"
+    )
+    assert "lalsuite" in shlex.split(provision["with"]["extras"])

@@ -705,9 +705,12 @@ def test_v023_disclosure_keeps_data_model_compound_intact() -> None:
         assert "data-\nmodel" not in disclosure
         assert "data- model" not in normalized
         assert (
-            "current-candidate human scientific/data-model sign-off is approved"
+            "That runtime's human scientific/data-model sign-off is approved"
             in normalized
         )
+        assert "This approval does not cover later source revisions." in normalized
+        assert "Each new source requires" in normalized
+        assert "fresh 19-cell qualification" in normalized
 
 
 def test_release_review_scopes_bind_the_policy_to_lanes_a_and_b() -> None:
