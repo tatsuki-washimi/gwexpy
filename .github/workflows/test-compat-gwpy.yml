@@ -89,15 +89,20 @@ jobs:
       - name: Provision compatibility environment
         run: |
           python -m pip install --upgrade pip
-          python -m pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas matplotlib h5py "gwpy==$GWPY_VERSION"
+          # The reviewed inventory records Matplotlib-generated set() signatures.
+          # Matplotlib 3.11 moves the _Unset sentinel and changes that evidence
+          # even on the unchanged base; keep the reference environment explicit.
+          python -m pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas "matplotlib==3.10.8" h5py "gwpy==$GWPY_VERSION"
           python -m pip install lalsuite
           python -m pip install pytest pytest-forked PyYAML iminuit
           python -m pip install -e . --no-deps
 
       - name: Record compatibility versions
         run: |
-          python - <<'PY'
+          mkdir -p "${RUNNER_TEMP}/gwpy-compat-evidence"
+          python - <<'PY' | tee "${RUNNER_TEMP}/gwpy-compat-evidence/versions.txt"
           import os
+          import sys
           from importlib.metadata import version
 
           expected_gwpy = os.environ["GWPY_VERSION"]
@@ -108,7 +113,11 @@ jobs:
               )
 
           print("gwpy=" + actual_gwpy)
+          print("python=" + sys.version)
+          print("source_sha=" + os.environ["EXPECTED_SOURCE_SHA"])
           print("lalsuite=" + version("lalsuite"))
+          for package in ("numpy", "scipy", "astropy", "pandas", "matplotlib", "iminuit"):
+              print(package + "=" + version(package))
           PY
 
       - name: Check GWpy override inventory
@@ -116,17 +125,32 @@ jobs:
         run: |
           python scripts/audit_gwpy_overrides.py --check --require-terminal --execute-evidence \
             --manifest docs/developers/plans/manifests/audit-manifest-v0.2.3-gwpy-overrides.json \
-            --oracle-python "$GWPY_VERSION=@current"
+            --oracle-python "$GWPY_VERSION=@current" \
+            2>&1 | tee "${RUNNER_TEMP}/gwpy-compat-evidence/inventory.log"
 
       - name: Run focused compatibility tests
         run: |
-          pytest -q \
+          pytest -q --junitxml="${RUNNER_TEMP}/gwpy-compat-evidence/focused.xml" \
             tests/timeseries/test_transfer_function_compat.py \
             tests/timeseries/test_collections_spectral_compat.py \
-            tests/timeseries/test_fft_param_compat.py
+            tests/timeseries/test_fft_param_compat.py \
+            2>&1 | tee "${RUNNER_TEMP}/gwpy-compat-evidence/focused.log"
 
       - name: Run GWpy 4 proxy compatibility tests
-        run: pytest -q tests/test_gwpy4_proxy_contract.py tests/table/test_table.py tests/interop/test_interop_lal.py
+        run: |
+          pytest -q --junitxml="${RUNNER_TEMP}/gwpy-compat-evidence/proxy.xml" \
+            tests/test_gwpy4_proxy_contract.py tests/table/test_table.py tests/interop/test_interop_lal.py \
+            2>&1 | tee "${RUNNER_TEMP}/gwpy-compat-evidence/proxy.log"
 
       - name: Run full timeseries suite
-        run: pytest -q tests/timeseries
+        run: |
+          pytest -q --junitxml="${RUNNER_TEMP}/gwpy-compat-evidence/timeseries.xml" tests/timeseries \
+            2>&1 | tee "${RUNNER_TEMP}/gwpy-compat-evidence/timeseries.log"
+
+      - name: Retain compatibility evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: gwpy-compat-evidence-${{ matrix.gwpy }}
+          path: ${{ runner.temp }}/gwpy-compat-evidence/
+          retention-days: 14

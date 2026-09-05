@@ -17,7 +17,9 @@
     "agent-output-report",
     "docs-ja",
     "finalize_work",
-    "superpowers:finishing-a-development-branch"
+    "superpowers:finishing-a-development-branch",
+    "triage_ci",
+    "superpowers:receiving-code-review"
   ],
   "actions": [
     "Inspected the approved discussion, published documentation and failed noise-budget build.",
@@ -272,8 +274,27 @@
     ".github/workflows/docs-pages.yml",
     ".github/workflows/docs-pr.yml",
     ".github/workflows/docs-redesign-preview.yml",
+    ".github/workflows/pr-fast.yml",
+    ".github/workflows/test-compat-gwpy.yml",
+    "CHANGELOG.md",
+    "RELEASING.md",
     "docs/NOTEBOOK_POLICY.md",
+    "docs/developers/plans/20260902_v0.2.3_gwpy_behavioral_compatibility.md",
+    "docs/developers/plans/manifests/audit-manifest-v0.2.3-gwpy-overrides.json",
+    "docs/developers/plans/manifests/audit-manifest-v0.2.3-release-readiness.yaml",
     "docs/developers/reports/audit_docs_audience_onboarding_20260905.json",
+    "docs/developers/reports/pr713_validation/README.md",
+    "docs/developers/reports/pr713_validation/comparison.json",
+    "docs/developers/reports/pr713_validation/compat-4.0.1-focused.txt",
+    "docs/developers/reports/pr713_validation/compat-4.0.1-inventory.txt",
+    "docs/developers/reports/pr713_validation/compat-4.0.1-proxy.txt",
+    "docs/developers/reports/pr713_validation/compat-4.0.1-timeseries.txt",
+    "docs/developers/reports/pr713_validation/compat-4.0.2-focused.txt",
+    "docs/developers/reports/pr713_validation/compat-4.0.2-inventory.txt",
+    "docs/developers/reports/pr713_validation/compat-4.0.2-proxy.txt",
+    "docs/developers/reports/pr713_validation/compat-4.0.2-timeseries.txt",
+    "docs/developers/reports/pr713_validation/external-links.json",
+    "docs/developers/reports/pr713_validation/review-scope-proposal.json",
     "docs/developers/reports/report_docs_audience_onboarding_20260905.md",
     "docs/web/en/user_guide/tutorials/advanced_bruco.ipynb",
     "docs/web/en/user_guide/tutorials/advanced_correlation.ipynb",
@@ -339,6 +360,7 @@
     "docs_redesign/_templates/case-status.html",
     "docs_redesign/_templates/layout.html",
     "docs_redesign/_templates/search.html",
+    "docs_redesign/about/citation.md",
     "docs_redesign/about/developer.md",
     "docs_redesign/about/documentation_version.md",
     "docs_redesign/about/index.md",
@@ -395,6 +417,7 @@
     "docs_redesign/how-to/spectral/time_frequency_analysis_comparison.ipynb",
     "docs_redesign/how-to/viz/intro_mapplotting.ipynb",
     "docs_redesign/index.md",
+    "docs_redesign/locales/ja/LC_MESSAGES/about/citation.po",
     "docs_redesign/locales/ja/LC_MESSAGES/about/developer.po",
     "docs_redesign/locales/ja/LC_MESSAGES/about/documentation_version.po",
     "docs_redesign/locales/ja/LC_MESSAGES/about/index.po",
@@ -436,15 +459,50 @@
     "docs_redesign/tutorials/matrix_timeseries.ipynb",
     "docs_redesign/tutorials/quickstart.md",
     "docs_redesign/tutorials/scientific_python.md",
+    "gwexpy/types/_stats.py",
+    "release_notes/v0.2.3.md",
+    "scripts/audit_gwpy_overrides.py",
     "scripts/check_public_docs.py",
+    "scripts/ci/release_contracts.json",
     "scripts/prepare_public_docs.py",
     "scripts/verify_public_examples.py",
     "tests/docs/test_docs_conf_runtime.py",
     "tests/docs/test_docs_redesign_public_content.py",
+    "tests/docs/test_gwpy4_proxy_workflow.py",
+    "tests/docs/test_gwpy_compatibility_policy.py",
     "tests/docs/test_public_docs_pipeline.py",
     "tests/docs/test_tutorial_notebook_quality.py",
     "tests/docs/test_v0113_public_release_facts.py",
-    "tests/io/test_io_docs_contract_sync.py"
+    "tests/io/test_io_docs_contract_sync.py",
+    "tests/test_gwpy_override_inventory.py",
+    "tests/time/test_gwpy_phase2_compat.py"
   ],
-  "initial_base_revision": "d433b2ecb6e938d86c30615d54c7f20fcf97cde7"
+  "initial_base_revision": "d433b2ecb6e938d86c30615d54c7f20fcf97cde7",
+  "followup": {
+    "report": "docs/developers/reports/pr713_validation/README.md",
+    "evidence": "docs/developers/reports/pr713_validation/comparison.json",
+    "reported_head": "dd8fecdf8618f39a3cca1e86f7a3d361bf25355a",
+    "fixes": [
+      "SC2034 attempt logging",
+      "Matplotlib 3.10.8 reference environment for immutable override inventory",
+      "successful Docs and compatibility CI evidence artifacts",
+      "six audience routes and exact downloads in deployed readback",
+      "current GWpy citation URL"
+    ],
+    "local_validation": {
+      "actionlint": "1.7.12 with ShellCheck 0.11.0: passed",
+      "changed_gate_tests": "25 passed",
+      "ruff": "passed",
+      "mypy": "passed",
+      "gwpy_4_0_1": "inventory 396 passed; focused 11 passed; proxy 87 passed/1 skipped; timeseries 3158 passed/147 skipped/3 xfailed",
+      "gwpy_4_0_2": "inventory 396 passed; focused 11 passed; proxy 87 passed/1 skipped; timeseries 3158 passed/147 skipped/3 xfailed"
+    },
+    "remaining": [
+      "109 existing PR Fast failures reproduced at base and head",
+      "release review scope/approval binding for additional Docs paths",
+      "human physics approval",
+      "merge and production readback"
+    ],
+    "release_approvals_unchanged": true
+  }
 }

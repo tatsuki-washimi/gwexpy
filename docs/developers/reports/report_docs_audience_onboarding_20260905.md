@@ -53,3 +53,7 @@ Main advanced to `547332db3` while the implementation was in progress. The merge
 ## Remaining external actions
 
 Production publication requires this change to reach the main-branch Pages workflow after human review. The new post-publication readback gate must run against that deployed commit; local build success alone is not recorded as a completed deployment. The 30-second route-selection and 10–15-minute learning targets remain usability goals, not measured user-study results.
+
+## PR review follow-up
+
+The subsequent CI/base comparison and physics consistency review are recorded in [the PR #713 verification follow-up](pr713_validation/README.md). It distinguishes the corrected Actionlint/Matplotlib inventory failures from the additional, preexisting PR Fast failures and the pending release-review binding. Existing release approvals are unchanged.

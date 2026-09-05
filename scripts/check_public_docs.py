@@ -33,6 +33,15 @@ ENTRY_PAGES = (
     "how-to/case-studies/index.html",
 )
 
+AUDIENCE_ROUTES = (
+    "tutorials/first_analysis.html",
+    "tutorials/first_analysis.html#for-gw-experimentalists",
+    "tutorials/commissioner.html",
+    "tutorials/scientific_python.html",
+    "explanation/gwexpy_for_gwpy_users.html",
+    "how-to/index.html",
+)
+
 
 LEGACY_ANCHORS = {
     "tutorials/intro_timeseries.html": (
@@ -173,7 +182,7 @@ def check(root: Path, expected_revision: str | None = None) -> list[str]:
 
 
 def check_remote(base_url: str, expected_revision: str) -> list[str]:
-    """Read back deployed identity and the introductory figure in both languages."""
+    """Read back identity, audience routes, figure, and downloads in both languages."""
     errors = []
     for language in ("", "ja/"):
         prefix = base_url.rstrip("/") + "/" + language
@@ -192,16 +201,36 @@ def check_remote(base_url: str, expected_revision: str) -> list[str]:
                 errors.append(
                     f"{prefix}: deployed revision is not the clean expected commit"
                 )
-            for name in ("index.html", "tutorials/quickstart.html"):
+            pages = dict.fromkeys(
+                ("index.html", "tutorials/quickstart.html")
+                + tuple(urlsplit(route).path for route in AUDIENCE_ROUTES)
+            )
+            for name in pages:
                 page = fetch(name).decode("utf-8")
                 if (
                     "gwexpy-build-status" not in page
                     or expected_revision[:8] not in page
                 ):
                     errors.append(f"{prefix}{name}: missing expected build identity")
+                parsed = Links()
+                parsed.feed(page)
+                if name == "index.html":
+                    for route in AUDIENCE_ROUTES:
+                        if route not in parsed.links:
+                            errors.append(f"{prefix}: missing audience route {route}")
+                for route in AUDIENCE_ROUTES:
+                    target = urlsplit(route)
+                    if target.path == name and target.fragment:
+                        if target.fragment not in parsed.ids:
+                            errors.append(f"{prefix}{route}: missing audience anchor")
             figure = fetch("_static/images/quickstart-asd.png")
             if not figure.startswith(b"\x89PNG\r\n\x1a\n") or len(figure) < 1000:
                 errors.append(f"{prefix}: missing Quickstart figure")
+            source = Path(__file__).resolve().parents[1] / "docs_redesign"
+            for filename in ("quickstart.py", "commissioner.py", "commissioner.xml"):
+                path = "_static/downloads/" + filename
+                if fetch(path) != (source / path).read_bytes():
+                    errors.append(f"{prefix}{path}: download differs from source")
         except (URLError, TimeoutError, ValueError) as exc:
             errors.append(f"{prefix}: {exc}")
     return errors

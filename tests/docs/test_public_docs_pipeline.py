@@ -13,7 +13,7 @@ import numpy as np
 import pytest
 from astropy import units as u
 
-from scripts.check_public_docs import check_remote
+from scripts.check_public_docs import AUDIENCE_ROUTES, check_remote
 from scripts.prepare_public_docs import canonicalize, code_cells, prepare
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -135,13 +135,11 @@ def test_preparation_preserves_changelog_and_records_source_commit(tmp_path) -> 
 
 
 @pytest.mark.parametrize(
-    "stale,broken_figure", [(False, False), (True, False), (False, True)]
+    "defect", [None, "revision", "figure", "route", "anchor", "download"]
 )
-def test_deployment_readback_rejects_stale_commits_and_missing_figures(
-    monkeypatch,
-    stale,
-    broken_figure,
-) -> None:
+def test_deployment_readback_rejects_stale_or_incomplete_publication(
+    monkeypatch, defect
+):
     revision = "a" * 40
     requests = []
 
@@ -149,20 +147,36 @@ def test_deployment_readback_rejects_stale_commits_and_missing_figures(
         requests.append(request.full_url)
         if "build-info.json" in request.full_url:
             data = json.dumps(
-                {"source_revision": "b" * 40 if stale else revision, "dirty": False}
+                {
+                    "source_revision": "b" * 40 if defect == "revision" else revision,
+                    "dirty": False,
+                }
             ).encode()
         elif ".png" in request.full_url:
             data = (
-                b"not an image" if broken_figure else b"\x89PNG\r\n\x1a\n" + b"0" * 1200
+                b"not an image"
+                if defect == "figure"
+                else b"\x89PNG\r\n\x1a\n" + b"0" * 1200
             )
+        elif "/downloads/" in request.full_url:
+            filename = request.full_url.split("?", 1)[0].rsplit("/", 1)[1]
+            data = (DOCS / "_static/downloads" / filename).read_bytes()
+            if defect == "download":
+                data = b"stale download"
         else:
-            data = f"<aside class='gwexpy-build-status'>{revision[:8]}</aside>".encode()
+            page = f"<aside class='gwexpy-build-status'>{revision[:8]}</aside>"
+            routes = AUDIENCE_ROUTES[:-1] if defect == "route" else AUDIENCE_ROUTES
+            page += "".join(f'<a href="{route}">route</a>' for route in routes)
+            if defect != "anchor":
+                page += '<div id="for-gw-experimentalists"></div>'
+            data = page.encode()
         return io.BytesIO(data)
 
     monkeypatch.setattr("scripts.check_public_docs.urlopen", response)
     errors = check_remote("https://docs.example.test/", revision)
-    assert bool(errors) == (stale or broken_figure)
+    assert bool(errors) == (defect is not None)
     assert any("/ja/build-info.json" in request for request in requests)
+    assert any("/ja/_static/downloads/commissioner.xml" in item for item in requests)
 
 
 def _lesson_cell(relative: str, marker: str) -> str:

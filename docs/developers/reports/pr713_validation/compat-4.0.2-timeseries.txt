@@ -1,0 +1,118 @@
+............................................s........................... [  2%]
+........................................................................ [  4%]
+........................................................................ [  6%]
+........................................................................ [  8%]
+........................................................................ [ 10%]
+.ssss................................................................... [ 13%]
+........................................................................ [ 15%]
+........................................................................ [ 17%]
+........................................................................ [ 19%]
+........................................................................ [ 21%]
+........................................................................ [ 23%]
+........................................................................ [ 26%]
+........................................................................ [ 28%]
+........................................................................ [ 30%]
+........................................................................ [ 32%]
+........................................................................ [ 34%]
+........................................................................ [ 37%]
+........................................................................ [ 39%]
+........................................................................ [ 41%]
+........................................................................ [ 43%]
+...............ssssss.sss.ssssss........................................ [ 45%]
+.......sssss.ss.s.ss.................................................... [ 47%]
+..............s......................................................... [ 50%]
+..........s.....................................ssssssss..ss............ [ 52%]
+......ss....................................ss.......................... [ 54%]
+....x.x................................................................. [ 56%]
+.................................sssssssssss.ss..sssssssssss.ss..s...... [ 58%]
+.......s..........s..................................................... [ 60%]
+.....x.................................................................. [ 63%]
+........................................................................ [ 65%]
+........................................................................ [ 67%]
+............s........................................................... [ 69%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 76%]
+........................................................................ [ 78%]
+........................................................................ [ 80%]
+........................................................................ [ 82%]
+........................................................................ [ 84%]
+....................................................................s... [ 87%]
+.sss................................................................s.ss [ 89%]
+sssssss......s.........ss...ss..ss..ss..ss..ss..ss..ss..............ssss [ 91%]
+sss.s..........ssss.............sss......sss......sss......sss.......... [ 93%]
+.................................sss......ssssss........sss..s.......... [ 95%]
+.........s.............................................................. [ 97%]
+............................s.........................s.............     [100%]
+=============================== warnings summary ===============================
+../../../../../../..<compat-env>/lib/python3.11/site-packages/_pytest/python.py:124
+  <compat-env>/lib/python3.11/site-packages/_pytest/python.py:124: PytestRemovedIn10Warning: Passing a non-Collection iterable to parametrize is deprecated.
+  Test: tests/timeseries/test_timeseries.py::TestTimeSeries::test_psd_deprecated, argvalues type: chain
+  Please convert to a list or tuple.
+  See https://docs.pytest.org/en/stable/deprecations.html#parametrize-iterators
+    metafunc.parametrize(*marker.args, **marker.kwargs, _param_mark=marker)
+
+tests/timeseries/test_crop_timing_contract.py::test_crop_floor_rule_clamps_off_grid_and_outside_bounds[series]
+  <worktree>/gwexpy/timeseries/_core.py:151: UserWarning: TimeSeries.crop given start smaller than current start, crop will begin when the Series actually starts.
+    return super().crop(start=start, end=end, copy=copy)
+
+tests/timeseries/test_crop_timing_contract.py::test_crop_floor_rule_clamps_off_grid_and_outside_bounds[series]
+  <worktree>/gwexpy/timeseries/_core.py:151: UserWarning: TimeSeries.crop given end larger than current end, crop will begin when the Series actually ends.
+    return super().crop(start=start, end=end, copy=copy)
+
+tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_crop_nonextension_bound_outcome_matches_gwpy[singleton-list]
+tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_crop_nonextension_bound_outcome_matches_gwpy[singleton-list]
+tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_crop_nonextension_bound_outcome_matches_gwpy[singleton-list]
+tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_crop_nonextension_bound_outcome_matches_gwpy[singleton-list]
+tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_crop_nonextension_bound_outcome_matches_gwpy[singleton-tuple]
+tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_crop_nonextension_bound_outcome_matches_gwpy[singleton-tuple]
+tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_crop_nonextension_bound_outcome_matches_gwpy[singleton-tuple]
+tests/timeseries/test_gwpy_override_terminal_compat.py::test_timeseries_crop_nonextension_bound_outcome_matches_gwpy[singleton-tuple]
+  <compat-env>/lib/python3.11/site-packages/gwpy/types/series.py:1322: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    idx0 = floor((xtype(start) - x0) / self.dx.value)
+
+tests/timeseries/test_improvements_v2.py: 1 warning
+tests/timeseries/test_matrix_analysis.py: 3 warnings
+tests/timeseries/test_matrix_coherence_ranking.py: 5 warnings
+tests/timeseries/test_matrix_spectral.py: 7 warnings
+tests/timeseries/test_paper_repro_paths.py: 1 warning
+tests/timeseries/test_pipeline.py: 4 warnings
+tests/timeseries/test_preprocessing_pipeline_contracts.py: 2 warnings
+tests/timeseries/test_timeseries_fallbacks.py: 1 warning
+tests/timeseries/test_timeseries_matrix_slice.py: 5 warnings
+tests/timeseries/test_tsm_lockin.py: 3 warnings
+tests/timeseries/test_vectorized_containers.py: 1 warning
+  <compat-env>/lib/python3.11/site-packages/gwpy/timeseries/core.py:263: UserWarning: xindex was given to TimeSeries(), x0 will be ignored
+    new = super().__new__(
+
+tests/timeseries/test_timeseries.py::TestTimeSeries::test_read_write_gwf_name_error[None]
+tests/timeseries/test_timeseries.py::TestTimeSeries::test_transfer_function
+  <compat-env>/lib/python3.11/site-packages/_pytest/fixtures.py:1313: PytestRemovedIn10Warning: Class-scoped fixture defined as instance method is deprecated.
+  Instance attributes set in this fixture will NOT be visible to test methods,
+  as each test gets a new instance while the fixture runs only once per class.
+  Use @classmethod decorator and set attributes on cls instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#class-scoped-fixture-as-instance-method
+    fixturefunc = resolve_fixture_function(fixturedef, request)
+
+tests/timeseries/test_timeseries_extensions.py::TestTimeSeriesExtensions::test_transfer_function_steady_zero_series_nan
+  <compat-env>/lib/python3.11/site-packages/astropy/units/quantity.py:671: RuntimeWarning: invalid value encountered in divide
+    result = super().__array_ufunc__(function, method, *arrays, **kwargs)
+
+tests/timeseries/test_timeseries_extensions.py::TestTimeSeriesExtensions::test_transfer_function_transient_complex_phase_inf
+  <compat-env>/lib/python3.11/site-packages/numpy/fft/_pocketfft.py:70: ComplexWarning: Casting complex values to real discards the imaginary part
+    r = pfi.execute(a, is_real, is_forward, fct)
+
+tests/timeseries/test_timeseries_matrix_slice.py::test_auto_coherence_returns_frequency_series_matrix
+  <compat-env>/lib/python3.11/site-packages/gwpy/signal/spectral/_ui.py:356: UserWarning: Sampling frequencies are unequal. Higher frequency series will be downsampled before coherence is calculated
+    return method_func(
+
+tests/timeseries/test_timeseries_matrix_slice.py::test_auto_coherence_returns_frequency_series_matrix
+  <worktree>/gwexpy/timeseries/_resampling.py:624: UserWarning: resample() rate matches current sample_rate (100.0 Hz), returning input data unmodified; please double-check your parameters
+    result = BaseTimeSeries.resample(
+
+tests/timeseries/test_transfer_function_compat.py::test_transfer_function_positional_mode_and_keyword_mode_conflict
+  <worktree>/tests/timeseries/test_transfer_function_compat.py:51: DeprecationWarning: Passing transfer_function mode as a positional argument is deprecated. Use mode='steady' or mode='transient' keyword instead.
+    a.transfer_function(b, "steady", mode="transient")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+3158 passed, 147 skipped, 3 xfailed, 51 warnings in 183.43s (0:03:03)

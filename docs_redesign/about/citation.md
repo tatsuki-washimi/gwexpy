@@ -30,5 +30,5 @@ rather than the mutable `main` branch.
 
 GWexpy builds on the following software. Cite the specific versions used in your work according to their own guidance:
 
-* **GWpy**: use the [GWpy citation guide](https://gwpy.github.io/docs/stable/citing.html) to select the DOI for the version used.
+* **GWpy**: use the [GWpy citation guide](https://gwpy.readthedocs.io/en/stable/citing/) to select the DOI for the version used.
 * **Astropy**: follow [Astropy's acknowledgment and citation guidance](https://www.astropy.org/acknowledging.html), which lists the project papers and version-specific BibTeX metadata.
