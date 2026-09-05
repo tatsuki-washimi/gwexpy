@@ -96,8 +96,27 @@ def test_candidate_activity_uses_the_same_data_in_both_languages() -> None:
     source = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
         encoding="utf-8"
     )
-    assert "The candidate has not been tagged or published." in source
+    assert "The candidate has not been tagged or published." not in source
     assert CANDIDATE_ACTIVITY_SHA in source
+
+    # The main figure now covers the published tag; preserve the earlier
+    # candidate assets as a separate, immutable historical snapshot.
+    published_sha = "75d3d1a89ebc8942af1f3228152fea99d2d3420e"
+    published_csv = static / "downloads/development-activity-v0.2.3-weekly.csv"
+    digest = hashlib.sha256(published_csv.read_bytes()).hexdigest()
+    assert digest == "612292f6e17e1aadf13642646873ea68f75b34f182966416c32d5fb8bc910885"
+    for suffix in ("", "-ja"):
+        svg = (static / f"images/development-activity-v0.2.3{suffix}.svg").read_text(
+            encoding="utf-8"
+        )
+        assert f"Target ref: v0.2.3; resolved SHA: {published_sha}" in svg
+        assert f"canonical CSV SHA-256: {digest}" in svg
+        if suffix:
+            assert "週ごとのコミット数" in svg
+            assert "Commits per week" not in svg
+    assert published_sha in source
+    assert "https://doi.org/10.5281/zenodo.22344992" in source
+    assert "https://pypi.org/project/gwexpy/0.2.3/" in source
 
 
 def test_v022_activity_snapshot_has_japanese_public_copy() -> None:
@@ -123,8 +142,8 @@ def test_v022_activity_snapshot_has_japanese_public_copy() -> None:
         assert message.string == translation
 
 
-def test_published_v022_facts_and_v023_candidate_metadata_are_distinct() -> None:
-    """Preserve v0.2.2 history while staging v0.2.3 release identity."""
+def test_published_v022_and_v023_metadata_remain_distinct() -> None:
+    """Preserve v0.2.2 history alongside v0.2.3 release identity."""
     changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     citation = (REPO_ROOT / "CITATION.cff").read_text(encoding="utf-8")
     zenodo = json.loads((REPO_ROOT / ".zenodo.json").read_text(encoding="utf-8"))
@@ -340,9 +359,7 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
     # This release uses headings, paragraphs and list items. Split those
     # blocks without requiring a docs-only Markdown parser in the PR gate.
     # Unrecognized markup fails the catalogue lookup instead of being skipped.
-    blocks = re.split(
-        r"\n\s*\n|\n(?=\s*(?:#{1,6}|[-+*]|\d+\.)\s)", current_release
-    )
+    blocks = re.split(r"\n\s*\n|\n(?=\s*(?:#{1,6}|[-+*]|\d+\.)\s)", current_release)
     for block in blocks:
         content = re.sub(r"^\s*(?:#{1,6}|[-+*]|\d+\.)\s+", "", block)
         message_id = " ".join(content.split())

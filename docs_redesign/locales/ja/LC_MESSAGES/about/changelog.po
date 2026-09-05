@@ -3486,3 +3486,35 @@ msgstr "最後の2群では、特定の Array2D/Plane2D の縮約と数値配列
 #: about/changelog.md ../../CHANGELOG.md
 msgid "Added `tests/timeseries/test_rms_compat.py` pinning gwpy-compatible `TimeSeries.rms(stride)` behaviour (gwpy reference parity, positional-int regression for #451, trailing-window drop, NaN-per-window propagation) and the gwexpy enhancements (time/dimensionless `Quantity` stride, unit preservation, and `ValueError` for sub-sample/zero/negative/irregular strides). Re-pointed `test_stats_mixin.py::test_rms_with_unit` onto `Series`."
 msgstr "`tests/timeseries/test_rms_compat.py` を追加し、GWpy と互換な `TimeSeries.rms(stride)` の挙動（GWpy との一致、#451 の整数の位置引数に関する回帰、末尾の不完全な区間の除外、区間ごとの NaN 伝播）と、GWexpy の拡張（時間または無次元の `Quantity` による stride、単位の保持、1サンプル未満、ゼロ、負、不規則な stride に対する `ValueError`）を固定しました。`test_stats_mixin.py::test_rms_with_unit` の対象を `Series` に変更しました。"
+
+#: post-publication v0.2.3
+msgid "Published on 2026-09-05 UTC: [PyPI 0.2.3](https://pypi.org/project/gwexpy/0.2.3/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3), and [Zenodo DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992)."
+msgstr "2026-09-05（UTC）に公開しました：[PyPI 0.2.3](https://pypi.org/project/gwexpy/0.2.3/)、[conda-forge](https://anaconda.org/conda-forge/gwexpy)、[GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3)、[Zenodo DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992)。"
+
+#: post-publication v0.2.3
+msgid "Weekly GWexpy development activity through v0.2.3, showing non-merge commits and edited source lines by category."
+msgstr "v0.2.3 までの GWexpy の週次開発活動。カテゴリ別に、マージを除くコミット数と編集されたソース行数を示します。"
+
+#: post-publication v0.2.3
+msgid "Weekly activity through the immutable v0.2.3 release tag. The stacked bars group non-merge commits and edited source lines by category; release markers identify reachable stable tags, including v0.2.3."
+msgstr "不変の v0.2.3 リリースタグまでの週次活動です。積み上げ棒はカテゴリ別にマージを除くコミット数と編集されたソース行数を示し、リリースマーカーは v0.2.3 を含む到達可能な安定タグを示します。"
+
+#: post-publication v0.2.3
+msgid "The snapshot ends at commit `75d3d1a89ebc8942af1f3228152fea99d2d3420e`. Both language versions use the same weekly data. Bar heights show the logarithm of each weekly total, while the coloured segments show category proportions; edited lines are additions plus deletions, excluding generated files and binary changes."
+msgstr "このスナップショットの終点はコミット `75d3d1a89ebc8942af1f3228152fea99d2d3420e` です。日英の図は同じ週次データを使用します。棒の高さは週次合計の対数、色分けした部分はカテゴリの割合を表します。編集行数は追加行数と削除行数の合計で、生成ファイルとバイナリの変更を除きます。"
+
+#: post-publication v0.2.3
+msgid "The pre-publication candidate snapshot at `3ade51de26c9adf21c4a7ad076837967e61c8038` remains available as an [SVG](/_static/images/development-activity-v0.2.3-candidate.svg) and [weekly CSV](/_static/downloads/development-activity-v0.2.3-candidate-weekly.csv)."
+msgstr "公開前の候補 `3ade51de26c9adf21c4a7ad076837967e61c8038` のスナップショットも、[SVG](/_static/images/development-activity-v0.2.3-candidate-ja.svg) と[週次 CSV](/_static/downloads/development-activity-v0.2.3-candidate-weekly.csv) から参照できます。"
+
+#: post-publication v0.2.3
+msgid "[Download the weekly CSV data](/_static/downloads/development-activity-v0.2.3-weekly.csv)"
+msgstr "[週次 CSV データをダウンロード](/_static/downloads/development-activity-v0.2.3-weekly.csv)"
+
+#: post-publication v0.2.3
+msgid "This maintenance release implements GWpy 4.0.1/4.0.2 compatibility fixes across the audited GWpy-derived API surface. Historical automated differential evidence is recorded for runtime candidate `d55717e9aed9ef5c22bb5d8ed0df95e19a313545`, with review and evidence source `ff47d66ce985c295193a8d8cd1acef3ddd61add1`. That runtime's human scientific/data-model sign-off is approved: the release owner reapproved the four unchanged parent-parity risks, signal methods, and signal-related internal reconstruction authority for non-second irregular axes on 2026-09-04. The approval is strictly limited to the six approved risk groups and excludes other contracts. The historical approval remains bound only to candidate `c7b79db7fee2e646069679a0efe3d65c7ed4e562` and exactly five disclosed parent-parity risks; see the [aggregate sign-off report](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md). This approval does not cover later source revisions. This release adds no public API or dependency."
+msgstr "このメンテナンスリリースでは、監査対象の GWpy 派生 API 全体について、GWpy 4.0.1/4.0.2 との互換性を修正しています。過去の自動差分検証の証跡は、実行時コードの候補 `d55717e9aed9ef5c22bb5d8ed0df95e19a313545` と、レビューおよび証跡の対象ソース `ff47d66ce985c295193a8d8cd1acef3ddd61add1` に記録されています。その実行時コードには、人間による科学計算とデータモデルの承認があります。リリース責任者は2026-09-04に、変更していない4件の GWpy との一致に伴うリスク、信号処理メソッド、非秒単位の不規則軸に関する信号処理内部の再構築時の基準情報を再承認しました。この承認は6つのリスク群に限定され、他の契約は対象外です。過去の承認は候補 `c7b79db7fee2e646069679a0efe3d65c7ed4e562` と、開示済みの5件のリスクだけに結び付いています。[承認の集約記録](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md)を参照してください。この承認は後続のソース改訂を対象に含みません。このリリースで公開 API や依存パッケージを追加していません。"
+
+#: post-publication v0.2.3
+msgid "The current follow-up fixes scalar reduction allocation on NumPy 2 and updates CI provisioning and audit provenance. Each new source requires same-candidate scientific/data-model review, same-candidate release-security review, candidate-wide QA, and fresh 19-cell qualification. The release owner authorized publication on 2026-09-05 after the final release gate passed for source `75d3d1a89ebc8942af1f3228152fea99d2d3420e`. Any later runtime/data-model semantic change invalidates an aggregate sign-off and requires reapproval. Documentation-only recording commits do not alter the runtime candidate."
+msgstr "今回の追加修正では、NumPy 2 におけるスカラー縮約結果のメモリ確保を修正し、CI 環境の準備と監査証跡の対応付けを更新しています。ソースを更新するたびに、同一候補に対する科学計算とデータモデルのレビュー、リリースのセキュリティレビュー、候補全体の品質検証、および19構成のリリース適格性検証を新たに行う必要があります。ソース `75d3d1a89ebc8942af1f3228152fea99d2d3420e` の最終判定が合格となり、リリース責任者は2026-09-05に公開を承認しました。以後に実行時コードやデータモデルの意味を変更した場合、集約した承認は無効となり、再承認が必要です。文書への記録だけを変更するコミットは実行時コードの候補を変更しません。"

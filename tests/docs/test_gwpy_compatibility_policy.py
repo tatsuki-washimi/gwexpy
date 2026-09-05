@@ -677,7 +677,9 @@ def test_v023_human_review_records_distinguish_historical_and_current_approval()
         assert "exactly five disclosed parent-parity risks" in disclosure
         assert "strictly limited to the six approved" in disclosure
         assert "does not approve other contracts" in disclosure
-        assert "release remains **HOLD**" in disclosure
+        assert "release owner authorized publication on 2026-09-05" in disclosure
+        assert "75d3d1a89ebc8942af1f3228152fea99d2d3420e" in disclosure
+        assert "release remains **HOLD**" not in disclosure
         assert "same-candidate scientific/data-model review" in disclosure
         assert "same-candidate release-security review" in disclosure
         assert "candidate-wide QA" in disclosure

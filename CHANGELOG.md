@@ -2,7 +2,9 @@
 
 ## [0.2.3] - 2026-09-05
 
-This maintenance-release candidate implements GWpy 4.0.1/4.0.2 compatibility
+Published on 2026-09-05 UTC: [PyPI 0.2.3](https://pypi.org/project/gwexpy/0.2.3/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3), and [Zenodo DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992).
+
+This maintenance release implements GWpy 4.0.1/4.0.2 compatibility
 fixes across the audited GWpy-derived API surface. Historical automated
 differential evidence is recorded for runtime candidate
 `d55717e9aed9ef5c22bb5d8ed0df95e19a313545`, with review and evidence source
@@ -16,7 +18,7 @@ contracts. The historical approval remains bound only to candidate
 parent-parity risks; see the
 [aggregate sign-off report](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md).
 This approval does not cover later source revisions.
-The candidate adds no public API or dependency.
+This release adds no public API or dependency.
 
 The release owner separately approved the scalar reconstruction delta on
 2026-09-05 for runtime tree `88c9de982f4b284afbb5845c13cecb2d90d938dc`,
@@ -27,7 +29,8 @@ The current follow-up fixes scalar reduction allocation on NumPy 2 and
 updates CI provisioning and audit provenance. Each new source requires
 same-candidate scientific/data-model review, same-candidate release-security
 review, candidate-wide QA, and fresh 19-cell qualification. The
-release remains **HOLD** pending the final release gate. Any later
+release owner authorized publication on 2026-09-05 after the final release gate
+passed for source `75d3d1a89ebc8942af1f3228152fea99d2d3420e`. Any later
 runtime/data-model semantic change invalidates an aggregate sign-off and
 requires reapproval. Documentation-only recording commits do not alter the
 runtime candidate.
