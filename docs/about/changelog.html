@@ -462,10 +462,10 @@
 <section id="id1">
 <h2>[0.2.3] - 2026-09-05<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
 <p>This maintenance-release candidate implements GWpy 4.0.1/4.0.2 compatibility
-fixes across the audited GWpy-derived API surface. Automated differential
-evidence is green for runtime candidate
+fixes across the audited GWpy-derived API surface. Historical automated
+differential evidence is recorded for runtime candidate
 <code class="docutils literal notranslate"><span class="pre">d55717e9aed9ef5c22bb5d8ed0df95e19a313545</span></code>, with review and evidence source
-<code class="docutils literal notranslate"><span class="pre">ff47d66ce985c295193a8d8cd1acef3ddd61add1</span></code>. The current-candidate human
+<code class="docutils literal notranslate"><span class="pre">ff47d66ce985c295193a8d8cd1acef3ddd61add1</span></code>. That runtime’s human
 scientific/data-model sign-off is approved: the release owner reapproved the
 four unchanged parent-parity risks, signal methods, and signal-related internal
 reconstruction authority for non-second irregular axes on 2026-09-04. The
@@ -474,13 +474,16 @@ contracts. The historical approval remains bound only to candidate
 <code class="docutils literal notranslate"><span class="pre">c7b79db7fee2e646069679a0efe3d65c7ed4e562</span></code> and exactly five disclosed
 parent-parity risks; see the
 <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md">aggregate sign-off report</a>.
+This approval does not cover later source revisions.
 The candidate adds no public API or dependency.</p>
-<p>The same-candidate scientific/data-model review and same-candidate
-release-security review, together with candidate-wide QA, are complete. The
-release remains <strong>HOLD</strong> pending 19-cell
-qualification and the final release gate. Any later runtime/data-model
-semantic change invalidates an aggregate sign-off and requires reapproval.
-Documentation-only recording commits do not alter the runtime candidate.</p>
+<p>The current follow-up fixes scalar reduction allocation on NumPy 2 and
+updates CI provisioning and audit provenance. Each new source requires
+same-candidate scientific/data-model review, same-candidate release-security
+review, candidate-wide QA, and fresh 19-cell qualification. The
+release remains <strong>HOLD</strong> pending the final release gate. Any later
+runtime/data-model semantic change invalidates an aggregate sign-off and
+requires reapproval. Documentation-only recording commits do not alter the
+runtime candidate.</p>
 <p>The current inventory evidence covers 575 logical members with 62 selectors
 and 396 executed cases per oracle. The historical c7 approval covered the same
 575 logical members with 59 selectors and 384 executed cases per oracle; the
@@ -488,6 +491,10 @@ generated inventory’s 1,150 case rows are a separate logical version-row count
 <section id="implemented-with-automated-evidence">
 <h3>Implemented with automated evidence<a class="headerlink" href="#implemented-with-automated-evidence" title="Link to this heading">#</a></h3>
 <ul class="simple">
+<li><p><strong>Scalar statistics on NumPy 2</strong>: reductions of <code class="docutils literal notranslate"><span class="pre">Array3D</span></code>, <code class="docutils literal notranslate"><span class="pre">Array4D</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> can allocate their zero-dimensional <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> result instead
+of failing under strict <code class="docutils literal notranslate"><span class="pre">copy=False</span></code> semantics. Values, units, and reduction
+axis rules are preserved.</p></li>
 <li><p><strong>HDF5 collections</strong>: appending a <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> no longer opens an
 unspecified target in truncating mode. Native <code class="docutils literal notranslate"><span class="pre">names=</span></code>, <code class="docutils literal notranslate"><span class="pre">group=</span></code>, append,
 duplicate-name, legacy-manifest, and link-safety outcomes now follow the
@@ -541,7 +548,7 @@ selecting data outside a completely disjoint requested HDF5 window. See the
 human approval and release-note gates remain satisfied, and the current
 reapproval does not reapprove it. Its scope remains limited to the fully
 disjoint read-window subcase.</p></li>
-<li><p>The current-candidate human scientific/data-model approval is approved for
+<li><p>The recorded human scientific/data-model approval is approved for
 runtime candidate <code class="docutils literal notranslate"><span class="pre">d55717e9aed9ef5c22bb5d8ed0df95e19a313545</span></code> and strictly
 limited to the six approved parent-parity and signal risk groups below. It
 does not approve other contracts. The historical c7 approval of exactly five
