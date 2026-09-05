@@ -450,13 +450,15 @@
 <section id="weekly-development-activity">
 <h2>Weekly development activity<a class="headerlink" href="#weekly-development-activity" title="Link to this heading">#</a></h2>
 <figure class="align-default" id="id60">
-<a class="reference internal image-reference" href="../_images/development-activity-v0.2.2.svg"><img alt="Weekly GWexpy development activity through v0.2.2, showing non-merge commits and edited source lines by category." src="../_images/development-activity-v0.2.2.svg" style="width: 100%;" />
+<a class="reference internal image-reference" href="../_images/development-activity-v0.2.3-candidate.svg"><img alt="Weekly GWexpy development activity through the v0.2.3 candidate snapshot of 2026-09-05, showing non-merge commits and edited source lines by category." src="../_images/development-activity-v0.2.3-candidate.svg" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Weekly activity through the immutable v0.2.2 release tag. The stacked bars group non-merge commits and edited source lines by category; release markers identify reachable stable tags.</span><a class="headerlink" href="#id60" title="Link to this image">#</a></p>
+<p><span class="caption-text">Weekly activity through the v0.2.3 candidate snapshot of 2026-09-05. The stacked bars group non-merge commits and edited source lines by category; release markers identify existing stable tags. The candidate has not been tagged or published.</span><a class="headerlink" href="#id60" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<p><a class="reference download internal" download="" href="../_downloads/5fdeeb6311e78e0ddfbe1e5691399d95/development-activity-v0.2.2-weekly.csv"><span class="xref download myst">Download the weekly CSV data</span></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/18eadfb4251a1e0eac9f082506ef6a49/development-activity-v0.2.3-candidate-weekly.csv"><span class="xref download myst">Download the weekly CSV data</span></a></p>
+<p>The snapshot ends at commit <code class="docutils literal notranslate"><span class="pre">3ade51de26c9adf21c4a7ad076837967e61c8038</span></code>. Both language versions use the same weekly data. Bar heights show the logarithm of each weekly total, while the coloured segments show category proportions; edited lines are additions plus deletions, excluding generated files and binary changes.</p>
+<p>The earlier v0.2.2 snapshot remains available as an <a class="reference download internal" download="" href="../_downloads/9cc648b14f220b2338b95a9185bd3f61/development-activity-v0.2.2.svg"><span class="xref download myst">SVG</span></a> and <a class="reference download internal" download="" href="../_downloads/5fdeeb6311e78e0ddfbe1e5691399d95/development-activity-v0.2.2-weekly.csv"><span class="xref download myst">weekly CSV</span></a>.</p>
 <p>The v0.2.2 release is available from <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2">GitHub Releases</a> and archived under <a class="reference external" href="https://doi.org/10.5281/zenodo.22228340">Zenodo DOI 10.5281/zenodo.22228340</a>.</p>
 </section>
 <section id="id1">
@@ -476,6 +478,10 @@ parent-parity risks; see the
 <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md">aggregate sign-off report</a>.
 This approval does not cover later source revisions.
 The candidate adds no public API or dependency.</p>
+<p>The release owner separately approved the scalar reconstruction delta on
+2026-09-05 for runtime tree <code class="docutils literal notranslate"><span class="pre">88c9de982f4b284afbb5845c13cecb2d90d938dc</span></code>,
+including the inherited <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> reductions. This limited approval
+preserves the earlier exception scopes and does not authorize publication.</p>
 <p>The current follow-up fixes scalar reduction allocation on NumPy 2 and
 updates CI provisioning and audit provenance. Each new source requires
 same-candidate scientific/data-model review, same-candidate release-security

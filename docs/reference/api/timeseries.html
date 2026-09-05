@@ -1099,7 +1099,7 @@ covering the full duration.</p></li>
 <li><p><strong>overlap</strong> (<cite>float</cite>, optional) – Number of seconds of overlap between FFTs, defaults to the
 recommended overlap for the given window (if given), or 0.</p></li>
 <li><p><strong>window</strong> (<cite>str</cite>, <cite>numpy.ndarray</cite>, optional) – Window function to apply to timeseries prior to FFT,
-see <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code> for details on acceptable
+see <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.get_window.html#scipy.signal.get_window" title="(in SciPy v1.18.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code></a> for details on acceptable
 formats.</p></li>
 <li><p><strong>kwargs</strong> – Any other keyword arguments accepted by
 <a class="reference external" href="https://matplotlib.org/stable/api/mlab_api.html#matplotlib.mlab.cohere" title="(in Matplotlib v3.11.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.mlab.cohere()</span></code></a> except <code class="docutils literal notranslate"><span class="pre">NFFT</span></code>, <code class="docutils literal notranslate"><span class="pre">window</span></code>,
@@ -1144,7 +1144,7 @@ for power spectra.</p>
 <li><p><strong>overlap</strong> (<cite>float</cite>, optional) – Number of seconds of overlap between FFTs, defaults to the
 recommended overlap for the given window (if given), or 0.</p></li>
 <li><p><strong>window</strong> (<cite>str</cite>, <cite>numpy.ndarray</cite>, optional) – Window function to apply to timeseries prior to FFT,
-see <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code> for details on acceptable
+see <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.get_window.html#scipy.signal.get_window" title="(in SciPy v1.18.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code></a> for details on acceptable
 formats.</p></li>
 </ul>
 </dd>
@@ -1479,7 +1479,7 @@ One of max or min must be given.</p>
 <li><p><strong>overlap</strong> (<cite>float</cite>, optional) – Number of seconds of overlap between FFTs, defaults to the
 recommended overlap for the given window (if given), or 0.</p></li>
 <li><p><strong>window</strong> (<cite>str</cite>, <cite>numpy.ndarray</cite>, optional) – Window function to apply to timeseries prior to FFT,
-see <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code> for details on acceptable
+see <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.get_window.html#scipy.signal.get_window" title="(in SciPy v1.18.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code></a> for details on acceptable
 formats.</p></li>
 <li><p><strong>nproc</strong> (<cite>int</cite>) – Number of parallel processes to use when calculating
 individual coherence spectra.</p></li>
@@ -1546,7 +1546,7 @@ input time-series.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>fir</strong> (<cite>numpy.ndarray</cite>) – The time domain filter to convolve with.</p></li>
 <li><p><strong>window</strong> (<cite>str</cite>, optional) – Window function to apply to boundaries, default: <code class="docutils literal notranslate"><span class="pre">'hann'</span></code>
-see <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code> for details on acceptable formats.</p></li>
+see <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.get_window.html#scipy.signal.get_window" title="(in SciPy v1.18.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code></a> for details on acceptable formats.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1559,7 +1559,7 @@ see <code class="xref py py-func docutils literal notranslate"><span class="pre"
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code></dt><dd><p>For details on the convolution scheme used here.</p>
+<dt><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.fftconvolve.html#scipy.signal.fftconvolve" title="(in SciPy v1.18.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code></a></dt><dd><p>For details on the convolution scheme used here.</p>
 </dd>
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeries.filter</span></code></dt><dd><p>For an alternative method designed for short filters.</p>
 </dd>
@@ -1585,7 +1585,7 @@ these segments will be windowed before convolving.</p>
 <li><p><strong>mfilter</strong> (<cite>TimeSeries</cite>) – the time domain signal to correlate with</p></li>
 <li><p><strong>window</strong> (<cite>str</cite>, optional) – window function to apply to timeseries prior to FFT,
 default: <code class="docutils literal notranslate"><span class="pre">'hann'</span></code>
-see <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code> for details on acceptable
+see <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.get_window.html#scipy.signal.get_window" title="(in SciPy v1.18.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code></a> for details on acceptable
 formats</p></li>
 <li><p><strong>detrend</strong> (<cite>str</cite>, optional) – type of detrending to do before FFT (see <cite>~TimeSeries.detrend</cite>
 for more details), default: <code class="docutils literal notranslate"><span class="pre">'linear'</span></code></p></li>
@@ -1676,7 +1676,7 @@ the expected mean.</p>
 <li><p><strong>overlap</strong> (<cite>float</cite>, optional) – Number of seconds of overlap between FFTs, defaults to the
 recommended overlap for the given window (if given), or 0.</p></li>
 <li><p><strong>window</strong> (<cite>str</cite>, <cite>numpy.ndarray</cite>, optional) – Window function to apply to timeseries prior to FFT,
-see <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code> for details on acceptable
+see <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.get_window.html#scipy.signal.get_window" title="(in SciPy v1.18.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code></a> for details on acceptable
 formats.</p></li>
 <li><p><strong>nproc</strong> (<cite>int</cite>) – Maximum number of independent frame reading processes, default
 is set to single-process file reading.</p></li>
@@ -2047,7 +2047,7 @@ recover the full amplitude of real signals, matching GWpy.</p>
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">detrend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detrend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'constant'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'linear'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'constant'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span></dt>
 <dd><p>Remove the trend from this <cite>TimeSeries</cite>.</p>
-<p>This method just wraps <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.detrend()</span></code> to return
+<p>This method just wraps <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.detrend.html#scipy.signal.detrend" title="(in SciPy v1.18.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.detrend()</span></code></a> to return
 an object of the same type as the input.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2063,7 +2063,7 @@ an object of the same type as the input.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.detrend</span></code></dt><dd><p>for details on the options for the <cite>detrend</cite> argument, and how the operation is done</p>
+<dt><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.detrend.html#scipy.signal.detrend" title="(in SciPy v1.18.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.detrend</span></code></a></dt><dd><p>for details on the options for the <cite>detrend</cite> argument, and how the operation is done</p>
 </dd>
 </dl>
 </div>
@@ -2467,7 +2467,7 @@ in different formats.</p>
 <li><p><strong>overlap</strong> (<cite>float</cite>, optional) – Number of seconds of overlap between FFTs, defaults to the
 recommended overlap for the given window (if given), or 0.</p></li>
 <li><p><strong>window</strong> (<cite>str</cite>, <cite>numpy.ndarray</cite>, optional) – Window function to apply to timeseries prior to FFT,
-see <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code> for details on acceptable
+see <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.get_window.html#scipy.signal.get_window" title="(in SciPy v1.18.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code></a> for details on acceptable
 formats.</p></li>
 <li><p><strong>kwargs</strong> – Other keyword arguments are passed to the
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">scipy.signal.spectrogram()</span></code> method.</p></li>
@@ -2552,19 +2552,19 @@ This matches the LIGO GDS <strong>‘n’ plane</strong> convention
 <p class="admonition-title">Notes</p>
 <p>IIR filters are converted into digital cascading second-order sections
 before being applied to the data.</p>
-<p>FIR filters are passed directly to <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.lfilter()</span></code> or
-<code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.filtfilt()</span></code> without any conversions.</p>
+<p>FIR filters are passed directly to <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.lfilter.html#scipy.signal.lfilter" title="(in SciPy v1.18.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.lfilter()</span></code></a> or
+<a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.filtfilt.html#scipy.signal.filtfilt" title="(in SciPy v1.18.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.filtfilt()</span></code></a> without any conversions.</p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.sosfilt</span></code></dt><dd><p>For details on filtering with second-order sections.</p>
+<dt><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.sosfilt.html#scipy.signal.sosfilt" title="(in SciPy v1.18.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.sosfilt</span></code></a></dt><dd><p>For details on filtering with second-order sections.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.sosfiltfilt</span></code></dt><dd><p>For details on forward-backward filtering with second-order sections</p>
+<dt><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.sosfiltfilt.html#scipy.signal.sosfiltfilt" title="(in SciPy v1.18.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.sosfiltfilt</span></code></a></dt><dd><p>For details on forward-backward filtering with second-order sections</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.lfilter</span></code></dt><dd><p>For details on filtering (without SOS).</p>
+<dt><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.lfilter.html#scipy.signal.lfilter" title="(in SciPy v1.18.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.lfilter</span></code></a></dt><dd><p>For details on filtering (without SOS).</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.filtfilt</span></code></dt><dd><p>For details on forward-backward filtering (without SOS).</p>
+<dt><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.filtfilt.html#scipy.signal.filtfilt" title="(in SciPy v1.18.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.filtfilt</span></code></a></dt><dd><p>For details on forward-backward filtering (without SOS).</p>
 </dd>
 </dl>
 </div>
@@ -4611,7 +4611,7 @@ will be used to define the deadtime for masking.</p>
 </dd>
 <dt><a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.DataQualityFlag/#gwpy.segments.DataQualityFlag.fetch_open_data" title="(in GWpy v4.0.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwpy.segments.DataQualityFlag.fetch_open_data</span></code></a></dt><dd><p>For the method to query data-quality flags from the GWOSC database.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.windows.tukey</span></code></dt><dd><p>For the Tukey (tapered cosine) window used for tapering.</p>
+<dt><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.windows.tukey.html#scipy.signal.windows.tukey" title="(in SciPy v1.18.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.windows.tukey</span></code></a></dt><dd><p>For the Tukey (tapered cosine) window used for tapering.</p>
 </dd>
 </dl>
 </div>
@@ -5226,7 +5226,7 @@ covering the full duration.</p></li>
 <li><p><strong>overlap</strong> (<cite>float</cite>, optional) – Number of seconds of overlap between FFTs, passing <cite>None</cite> will
 choose based on the window method, default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
 <li><p><strong>window</strong> (<cite>str</cite>, <cite>numpy.ndarray</cite>, optional) – Window function to apply to timeseries prior to FFT,
-see <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code> for details on acceptable
+see <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.get_window.html#scipy.signal.get_window" title="(in SciPy v1.18.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code></a> for details on acceptable
 formats.</p></li>
 </ul>
 </dd>
@@ -6050,7 +6050,7 @@ see <em>Notes</em> for more details.</p></li>
 <li><p><strong>overlap</strong> (<cite>float</cite>, optional) – Number of seconds of overlap between FFTs, defaults to the
 recommended overlap for the given window (if given), or 0.</p></li>
 <li><p><strong>window</strong> (<cite>str</cite>, <cite>numpy.ndarray</cite>, optional) – Window function to apply to timeseries prior to FFT,
-see <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code> for details on acceptable
+see <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.get_window.html#scipy.signal.get_window" title="(in SciPy v1.18.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code></a> for details on acceptable
 formats.</p></li>
 <li><p><strong>nproc</strong> (<cite>int</cite>) – Maximum number of independent frame reading processes, default
 is set to single-process file reading.</p></li>
@@ -6394,8 +6394,8 @@ stationary point (local maximum or minimum) on the specified side
 of the input. However, the method will never taper more than half
 the full width of the <cite>TimeSeries</cite>, and will fail if there are no
 stationary points.</p>
-<p>See <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.windows.tukey()</span></code> for the Tukey (tapered cosine)
-window used for tapering, and see <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code>
+<p>See <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.windows.tukey.html#scipy.signal.windows.tukey" title="(in SciPy v1.18.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.windows.tukey()</span></code></a> for the Tukey (tapered cosine)
+window used for tapering, and see <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.get_window.html#scipy.signal.get_window" title="(in SciPy v1.18.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code></a>
 for other common window formats.</p>
 </div>
 </dd></dl>
@@ -7270,7 +7270,7 @@ contiguous last axis, even if the rest of the axes are not C-contiguous:</p>
 recommended overlap for the given window (if given), or 0.</p></li>
 <li><p><strong>method</strong> (<cite>str</cite>, optional) – FFT-averaging method (default: <code class="docutils literal notranslate"><span class="pre">'median'</span></code>).</p></li>
 <li><p><strong>window</strong> (<cite>str</cite>, <cite>numpy.ndarray</cite>, optional) – Window function to apply to timeseries prior to FFT,
-see <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code> for details on acceptable
+see <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.get_window.html#scipy.signal.get_window" title="(in SciPy v1.18.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code></a> for details on acceptable
 formats.</p></li>
 <li><p><strong>detrend</strong> (<cite>str</cite>, optional) – Type of detrending to do before FFT (see <cite>~TimeSeries.detrend</cite>
 for more details).</p></li>

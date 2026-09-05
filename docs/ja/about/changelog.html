@@ -451,123 +451,51 @@
 <section id="weekly-development-activity">
 <h2>週次開発活動<a class="headerlink" href="#weekly-development-activity" title="Link to this heading">#</a></h2>
 <figure class="align-default" id="id60">
-<a class="reference internal image-reference" href="../_images/development-activity-v0.2.2.svg"><img alt="v0.2.2 までの GWexpy の週次開発活動。カテゴリ別のマージコミットを除くコミット数と編集されたソース行数を示します。" src="../_images/development-activity-v0.2.2.svg" style="width: 100%;" />
+<a class="reference internal image-reference" href="../_images/development-activity-v0.2.3-candidate-ja.svg"><img alt="2026-09-05 時点の v0.2.3 候補までの GWexpy の週次開発活動。カテゴリ別に、マージを除くコミット数とソースコードの編集行数を示します。" src="../_images/development-activity-v0.2.3-candidate-ja.svg" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">不変の v0.2.2 リリースタグまでの週次活動です。積み上げ棒はカテゴリ別にマージコミットを除くコミット数と編集されたソース行数を示し、リリースマーカーは到達可能な安定タグを示します。</span><a class="headerlink" href="#id60" title="Link to this image">#</a></p>
+<p><span class="caption-text">2026-09-05 時点の v0.2.3 候補までの週次活動です。積み上げ棒はカテゴリ別のコミット数（マージを除く）とソースコードの編集行数を示し、リリースマーカーは既存の安定版タグを示します。この候補にはまだタグを付けておらず、公開もしていません。</span><a class="headerlink" href="#id60" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<p><a class="reference download internal" download="" href="../_downloads/5fdeeb6311e78e0ddfbe1e5691399d95/development-activity-v0.2.2-weekly.csv"><span class="xref download myst">週次 CSV データをダウンロード</span></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/18eadfb4251a1e0eac9f082506ef6a49/development-activity-v0.2.3-candidate-weekly.csv"><span class="xref download myst">週次 CSV データをダウンロード</span></a></p>
+<p>集計対象はコミット <code class="docutils literal notranslate"><span class="pre">3ade51de26c9adf21c4a7ad076837967e61c8038</span></code> までです。日英の図には同じ週次データを使用しています。棒の高さは週ごとの合計を対数で表し、色分けした部分はカテゴリごとの構成比を示します。編集行数は追加行数と削除行数の合計で、生成ファイルとバイナリの変更は除外しています。</p>
+<p>以前の v0.2.2 時点の集計も、<a class="reference download internal" download="" href="../_downloads/9cc648b14f220b2338b95a9185bd3f61/development-activity-v0.2.2.svg"><span class="xref download myst">SVG</span></a> と<a class="reference download internal" download="" href="../_downloads/5fdeeb6311e78e0ddfbe1e5691399d95/development-activity-v0.2.2-weekly.csv"><span class="xref download myst">週次 CSV</span></a> で確認できます。</p>
 <p>v0.2.2 リリースは <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2">GitHub Releases</a> から取得でき、<a class="reference external" href="https://doi.org/10.5281/zenodo.22228340">Zenodo DOI 10.5281/zenodo.22228340</a> でアーカイブされています。</p>
 </section>
 <section id="id1">
 <h2>[0.2.3] - 2026-09-05<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
-<p>This maintenance-release candidate implements GWpy 4.0.1/4.0.2 compatibility
-fixes across the audited GWpy-derived API surface. Historical automated
-differential evidence is recorded for runtime candidate
-<code class="docutils literal notranslate"><span class="pre">d55717e9aed9ef5c22bb5d8ed0df95e19a313545</span></code>, with review and evidence source
-<code class="docutils literal notranslate"><span class="pre">ff47d66ce985c295193a8d8cd1acef3ddd61add1</span></code>. That runtime's human
-scientific/data-model sign-off is approved: the release owner reapproved the
-four unchanged parent-parity risks, signal methods, and signal-related internal
-reconstruction authority for non-second irregular axes on 2026-09-04. The
-approval is strictly limited to the six approved risk groups and excludes other
-contracts. The historical approval remains bound only to candidate
-<code class="docutils literal notranslate"><span class="pre">c7b79db7fee2e646069679a0efe3d65c7ed4e562</span></code> and exactly five disclosed
-parent-parity risks; see the
-<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md">aggregate sign-off report</a>.
-This approval does not cover later source revisions.
-The candidate adds no public API or dependency.</p>
-<p>The current follow-up fixes scalar reduction allocation on NumPy 2 and
-updates CI provisioning and audit provenance. Each new source requires
-same-candidate scientific/data-model review, same-candidate release-security
-review, candidate-wide QA, and fresh 19-cell qualification. The
-release remains <strong>HOLD</strong> pending the final release gate. Any later
-runtime/data-model semantic change invalidates an aggregate sign-off and
-requires reapproval. Documentation-only recording commits do not alter the
-runtime candidate.</p>
-<p>The current inventory evidence covers 575 logical members with 62 selectors
-and 396 executed cases per oracle. The historical c7 approval covered the same
-575 logical members with 59 selectors and 384 executed cases per oracle; the
-generated inventory's 1,150 case rows are a separate logical version-row count.</p>
+<p>このメンテナンスリリース候補では、監査対象の GWpy 派生 API 全体について、GWpy 4.0.1/4.0.2 との互換性を修正しています。過去の自動差分検証の証跡は、実行時コードの候補 <code class="docutils literal notranslate"><span class="pre">d55717e9aed9ef5c22bb5d8ed0df95e19a313545</span></code> と、レビューおよび証跡の対象ソース <code class="docutils literal notranslate"><span class="pre">ff47d66ce985c295193a8d8cd1acef3ddd61add1</span></code> に記録されています。その実行時コードには、人間による科学計算とデータモデルの承認があります。リリース責任者は2026-09-04に、変更していない4件の GWpy との一致に伴うリスク、信号処理メソッド、非秒単位の不規則軸に関する信号処理内部の再構築時の基準情報を再承認しました。この承認は6つのリスク群に限定され、他の契約は対象外です。過去の承認は候補 <code class="docutils literal notranslate"><span class="pre">c7b79db7fee2e646069679a0efe3d65c7ed4e562</span></code> と、開示済みの5件のリスクだけに結び付いています。<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md">承認の集約記録</a>を参照してください。この承認は後続のソース改訂を対象に含みません。この候補で公開 API や依存パッケージを追加していません。</p>
+<p>リリース責任者は2026-09-05に、実行時コードのツリー <code class="docutils literal notranslate"><span class="pre">88c9de982f4b284afbb5845c13cecb2d90d938dc</span></code> に対し、<code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> が継承する縮約を含むスカラー再構築の差分を別途承認しました。この限定承認は既存の例外の範囲を保持し、公開そのものを許可するものではありません。</p>
+<p>今回の追加修正では、NumPy 2 におけるスカラー縮約結果のメモリ確保を修正し、CI 環境の準備と監査証跡の対応付けを更新しています。ソースを更新するたびに、同一候補に対する科学計算とデータモデルのレビュー、リリースのセキュリティレビュー、候補全体の品質検証、および19構成のリリース適格性検証を新たに行う必要があります。公開は最終判定を待つ <strong>保留（HOLD）</strong> 状態です。以後に実行時コードやデータモデルの意味を変更した場合、集約した承認は無効となり、再承認が必要です。文書への記録だけを変更するコミットは実行時コードの候補を変更しません。</p>
+<p>現在の一覧証跡は、575個の論理メンバー、62個のテスト選択指定、比較先の GWpy バージョンごとに396件の実行済みケースを対象としています。過去の c7 の承認も同じ575個の論理メンバーを対象としていますが、テスト選択指定は59個、実行ケースはバージョンごとに384件でした。生成した一覧の1,150行は、論理メンバーとバージョンの組み合わせを数えた別の件数です。</p>
 <section id="implemented-with-automated-evidence">
-<h3>Implemented with automated evidence<a class="headerlink" href="#implemented-with-automated-evidence" title="Link to this heading">#</a></h3>
+<h3>自動検証の証跡を伴う実装<a class="headerlink" href="#implemented-with-automated-evidence" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p><strong>Scalar statistics on NumPy 2</strong>: reductions of <code class="docutils literal notranslate"><span class="pre">Array3D</span></code>, <code class="docutils literal notranslate"><span class="pre">Array4D</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> can allocate their zero-dimensional <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> result instead
-of failing under strict <code class="docutils literal notranslate"><span class="pre">copy=False</span></code> semantics. Values, units, and reduction
-axis rules are preserved.</p></li>
-<li><p><strong>HDF5 collections</strong>: appending a <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> no longer opens an
-unspecified target in truncating mode. Native <code class="docutils literal notranslate"><span class="pre">names=</span></code>, <code class="docutils literal notranslate"><span class="pre">group=</span></code>, append,
-duplicate-name, legacy-manifest, and link-safety outcomes now follow the
-installed GWpy oracle while private exact-time sidecars remain additive.</p></li>
-<li><p><strong>Native HDF5 auto-identification</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> and <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> now
-match GWpy for native <code class="docutils literal notranslate"><span class="pre">.h5</span></code> / <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code> auto-read and auto-write. Structural
-NDScope detection retains precedence over the lower-priority generic HDF5
-route; other ambiguous and GWexpy-only class families remain explicit.</p></li>
-<li><p><strong>HDF5 window safety (#611)</strong>: GWpy 4.0.x can return samples outside the
-requested interval for a completely non-intersecting HDF5 collection
-window because negative stop indices wrap. GWexpy now returns a zero-length
-series only for that fully disjoint entry after the parent reader succeeds.
-Mixed collections retain their keys and order, and only disjoint entries
-become empty. Partial overlap, <code class="docutils literal notranslate"><span class="pre">pad=</span></code>, parent reader errors, and
-caller-owned source handling retain GWpy semantics. A safety-created empty
-retains the series class, dtype, unit, name/channel, and cadence; its public
-<code class="docutils literal notranslate"><span class="pre">t0</span></code>/<code class="docutils literal notranslate"><span class="pre">span</span></code> collapse to the stored series start boundary. It does not inherit
-private exact-time authority from the source.</p></li>
-<li><p><strong>Constructors and time axes (historically approved for c7)</strong>: GWpy-supported <code class="docutils literal notranslate"><span class="pre">t0</span></code> and <code class="docutils literal notranslate"><span class="pre">epoch</span></code> inputs now
-take the parent route without exception-driven retries. Positional and
-keyword forms bind consistently, while the existing exact <code class="docutils literal notranslate"><span class="pre">t0_ns</span></code>
-authority remains separate. Copy, slice, crop, append, and supported
-time-axis mutations preserve or invalidate private exact state according to
-the resulting cadence.</p></li>
-<li><p><strong>Time and frequency conversion (historically approved for c7)</strong>: scalar and date-component <code class="docutils literal notranslate"><span class="pre">to_gps()</span></code> and
-<code class="docutils literal notranslate"><span class="pre">tconvert()</span></code> calls, <code class="docutils literal notranslate"><span class="pre">from_gps()</span></code> inputs, and <code class="docutils literal notranslate"><span class="pre">FrequencySeries.ifft()</span></code> timing
-metadata now match the active GWpy oracle. Invalid date-shaped values fail
-instead of falling back to vector interpretation.</p></li>
-<li><p><strong>Spectral, signal, and statistics routes (historically approved for c7)</strong>: default CSD, Rayleigh,
-heterodyne, demodulate, RMS, resampling, reductions, and axis-result types
-now follow GWpy values, units, shapes, metadata, and exception classes.</p></li>
-<li><p><strong>Plotting, CSV, and collections</strong>: plot methods accept the complete GWpy
-positional layouts and preserve Python-compatible duplicate-argument
-failures. Plain CSV uses the native GWpy route; existing enhanced-only
-arguments remain explicit opt-ins. Collection crop, prepend, and the
-historical <code class="docutils literal notranslate"><span class="pre">filterba()</span></code> shim preserve their established call contracts.</p></li>
-<li><p><strong>Specialized arrays and fields (historically approved for c7)</strong>: inherited constructor binding,
-transposition, BifrequencyMap plotting, ScalarField finite differences,
-unit conversion, grid validation, and percentage comparisons now have
-explicit GWpy or fail-closed data-model contracts.</p></li>
+<li><p><strong>NumPy 2 のスカラー統計量</strong>：<code class="docutils literal notranslate"><span class="pre">Array3D</span></code>、<code class="docutils literal notranslate"><span class="pre">Array4D</span></code>、<code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> の縮約では、厳格な <code class="docutils literal notranslate"><span class="pre">copy=False</span></code> の制約で失敗する代わりに、0次元の <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> 結果に必要なメモリを確保できます。値、単位、縮約軸の規則は保持します。</p></li>
+<li><p><strong>HDF5 コレクション</strong>：<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> への追記時に、対象を指定せず既存内容を切り捨てるモードで開く問題を修正しました。通常の <code class="docutils literal notranslate"><span class="pre">names=</span></code>、<code class="docutils literal notranslate"><span class="pre">group=</span></code>、追記、名前の重複、旧形式のマニフェスト、リンクの安全性に関する結果は、インストール済み GWpy を比較基準として一致させています。非公開の厳密な時刻情報を記録する付随データは、引き続き追加情報として保持します。</p></li>
+<li><p><strong>通常の HDF5 の自動識別</strong>：<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> と <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> は、通常の <code class="docutils literal notranslate"><span class="pre">.h5</span></code> / <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code> の自動読み書きで GWpy と一致するようになりました。構造に基づく NDScope の識別は、優先順位の低い汎用 HDF5 経路より先に行います。他の曖昧なクラス群や GWexpy 独自のクラス群では、引き続き形式を明示します。</p></li>
+<li><p><strong>HDF5 の読み取り区間の安全性（#611）</strong>：GWpy 4.0.x では、HDF5 コレクションのデータと要求区間が完全に交わらない場合、負の終了インデックスが末尾から解釈され、指定区間外のサンプルを返すことがあります。GWexpy は親の読み取り処理が成功した後、完全に交わらない要素だけを長さ0の系列にします。複数の状態が混在するコレクションでもキーと順序を保持し、交わらない要素だけを空にします。部分的な重なり、<code class="docutils literal notranslate"><span class="pre">pad=</span></code>、親の読み取りエラー、呼び出し元が所有するソースの扱いは GWpy の意味を保持します。安全処理で作った空の系列は、クラス、dtype、単位、名前とチャンネル、サンプリング間隔を保持します。公開属性の <code class="docutils literal notranslate"><span class="pre">t0</span></code> と <code class="docutils literal notranslate"><span class="pre">span</span></code> は保存された系列の開始境界に一致し、元データの非公開の厳密な時刻基準は継承しません。</p></li>
+<li><p><strong>コンストラクターと時間軸（過去の c7 候補で承認）</strong>：GWpy が対応する <code class="docutils literal notranslate"><span class="pre">t0</span></code> と <code class="docutils literal notranslate"><span class="pre">epoch</span></code> の入力は、例外を捕捉して再試行する処理を介さず、親の処理を通ります。位置引数とキーワード引数を一貫して対応付け、既存の厳密な <code class="docutils literal notranslate"><span class="pre">t0_ns</span></code> の基準情報は別に保持します。コピー、スライス、切り出し、追記、対応する時間軸変更では、結果のサンプリング間隔に応じて非公開の厳密な状態を保持または無効化します。</p></li>
+<li><p><strong>時刻と周波数の変換（過去の c7 候補で承認）</strong>：スカラー入力と年月日などの成分入力による <code class="docutils literal notranslate"><span class="pre">to_gps()</span></code> と <code class="docutils literal notranslate"><span class="pre">tconvert()</span></code>、<code class="docutils literal notranslate"><span class="pre">from_gps()</span></code> の入力、および <code class="docutils literal notranslate"><span class="pre">FrequencySeries.ifft()</span></code> の時刻メタデータは、比較対象の GWpy と一致します。不正な日付形式の値は、ベクトルとして解釈し直すことなく失敗します。</p></li>
+<li><p><strong>スペクトル処理、信号処理、統計処理（過去の c7 候補で承認）</strong>：既定の CSD、Rayleigh、ヘテロダイン、復調、RMS、再サンプリング、縮約、軸に応じた結果型は、GWpy の値、単位、形状、メタデータ、例外クラスに従います。</p></li>
+<li><p><strong>描画、CSV、コレクション</strong>：描画メソッドは GWpy の位置引数の並びをすべて受け付け、引数を重複指定した場合は Python と整合するエラーになります。通常の CSV は GWpy の標準経路を使い、既存の拡張専用引数は明示的に指定する方式を維持します。コレクションの切り出し、先頭への追加、旧来の <code class="docutils literal notranslate"><span class="pre">filterba()</span></code> 互換処理は、既存の呼び出し契約を保持します。</p></li>
+<li><p><strong>特殊配列とフィールド（過去の c7 候補で承認）</strong>：継承したコンストラクターの引数対応付け、転置、BifrequencyMap の描画、ScalarField の有限差分、単位変換、格子の検証、百分率による比較について、GWpy との互換性、または不正な入力を拒否するデータモデルの契約を明示しています。</p></li>
 </ul>
 </section>
 <section id="compatibility-notes">
-<h3>Compatibility notes<a class="headerlink" href="#compatibility-notes" title="Link to this heading">#</a></h3>
+<h3>互換性に関する注意<a class="headerlink" href="#compatibility-notes" title="Link to this heading">#</a></h3>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">non_intersecting_window_safety</span></code> is the sole approved default divergence
-from GWpy in this release. It prevents an upstream negative-index wrap from
-selecting data outside a completely disjoint requested HDF5 window. See the
-<a class="reference external" href="https://tatsuki-washimi.github.io/gwexpy/docs/explanation/gwpy_compatibility_policy.html">GWpy behavioral compatibility policy</a>.</p></li>
-<li><p>The #611 safety exception is <code class="docutils literal notranslate"><span class="pre">approved-separately-unchanged</span></code>; its independent
-human approval and release-note gates remain satisfied, and the current
-reapproval does not reapprove it. Its scope remains limited to the fully
-disjoint read-window subcase.</p></li>
-<li><p>The recorded human scientific/data-model approval is approved for
-runtime candidate <code class="docutils literal notranslate"><span class="pre">d55717e9aed9ef5c22bb5d8ed0df95e19a313545</span></code> and strictly
-limited to the six approved parent-parity and signal risk groups below. It
-does not approve other contracts. The historical c7 approval of exactly five
-risks remains recorded separately:</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">non_intersecting_window_safety</span></code> は、このリリースで承認された GWpy の既定挙動からの唯一の相違です。HDF5 の要求区間がデータと完全に交わらないとき、上流の負のインデックスの解釈によって指定区間外のデータが選ばれることを防ぎます。<a class="reference external" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/explanation/gwpy_compatibility_policy.html">GWpy の挙動互換性ポリシー</a>を参照してください。</p></li>
+<li><p>#611 の安全例外は「個別に承認済みで変更なし」（<code class="docutils literal notranslate"><span class="pre">approved-separately-unchanged</span></code>）です。独立した人間承認とリリースノートの確認条件は引き続き満たしており、今回の再承認で承認し直すものではありません。対象は、読み取り区間が完全に交わらない場合に限定されます。</p></li>
+<li><p>記録済みの科学計算とデータモデルに対する人間承認は、実行時コードの候補 <code class="docutils literal notranslate"><span class="pre">d55717e9aed9ef5c22bb5d8ed0df95e19a313545</span></code> に対するものであり、以下の GWpy との一致および信号処理に関する6つのリスク群に厳密に限定されます。他の契約を承認するものではありません。過去の c7 候補に対する5件のリスクの承認は、別途記録しています。</p>
 <ol class="arabic simple">
-<li><p>the mixed-unit CSD <code class="docutils literal notranslate"><span class="pre">V²/Hz</span></code> label;</p></li>
-<li><p>public Rayleigh parent segment selection with a private corrected route
-and known finite-Monte-Carlo limitations;</p></li>
-<li><p>stale Array2D/Plane2D <code class="docutils literal notranslate"><span class="pre">min</span></code>/<code class="docutils literal notranslate"><span class="pre">max</span></code> indices; and</p></li>
-<li><p>stale numeric <code class="docutils literal notranslate"><span class="pre">swapaxes</span></code>/<code class="docutils literal notranslate"><span class="pre">transpose</span></code> metadata.</p></li>
+<li><p>異なる単位を組み合わせた CSD の <code class="docutils literal notranslate"><span class="pre">V²/Hz</span></code> 表記。</p></li>
+<li><p>公開 Rayleigh 処理における親のセグメント選択、非公開の補正経路、および既知の有限回モンテカルロ計算の制限。</p></li>
+<li><p>Array2D/Plane2D の <code class="docutils literal notranslate"><span class="pre">min</span></code>/<code class="docutils literal notranslate"><span class="pre">max</span></code> で更新されないインデックス。</p></li>
+<li><p>数値配列の <code class="docutils literal notranslate"><span class="pre">swapaxes</span></code>/<code class="docutils literal notranslate"><span class="pre">transpose</span></code> で更新されないメタデータ。</p></li>
 </ol>
-<p>The current signal group covers dimensionless signal outputs, raw-magnitude
-frequency <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> handling, float32 RMS underflow, and signal-related
-internal reconstruction authority for non-second irregular axes.</p>
-<p>The final two groups retain the previously disclosed stale axis metadata on
-specific Array2D/Plane2D reductions and numeric array permutations.
-Corrected or metadata-aware GWexpy-only routes remain explicit where already
-available.</p>
+<p>現在の信号処理のリスク群は、無次元の信号出力、周波数 <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> の数値をそのまま扱う処理、float32 の RMS のアンダーフロー、および非秒単位の不規則軸に関する信号処理内部の再構築時の基準情報を対象としています。</p>
+<p>最後の2群では、特定の Array2D/Plane2D の縮約と数値配列の軸の並べ替えについて、既に開示している未更新の軸メタデータを保持します。補正を行う経路やメタデータを考慮する GWexpy 独自の経路が既にある場合は、引き続き明示的に選択します。</p>
 </li>
 </ul>
 </section>
@@ -1084,12 +1012,7 @@ available.</p>
 <section id="id31">
 <h3>テスト<a class="headerlink" href="#id31" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">tests/timeseries/test_rms_compat.py</span></code> pinning gwpy-compatible
-<code class="docutils literal notranslate"><span class="pre">TimeSeries.rms(stride)</span></code> behaviour (gwpy reference parity, positional-int
-regression for #451, trailing-window drop, NaN-per-window propagation) and
-the gwexpy enhancements (time/dimensionless <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> stride, unit
-preservation, and <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> for sub-sample/zero/negative/irregular
-strides). Re-pointed <code class="docutils literal notranslate"><span class="pre">test_stats_mixin.py::test_rms_with_unit</span></code> onto <code class="docutils literal notranslate"><span class="pre">Series</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/timeseries/test_rms_compat.py</span></code> を追加し、GWpy と互換な <code class="docutils literal notranslate"><span class="pre">TimeSeries.rms(stride)</span></code> の挙動（GWpy との一致、#451 の整数の位置引数に関する回帰、末尾の不完全な区間の除外、区間ごとの NaN 伝播）と、GWexpy の拡張（時間または無次元の <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> による stride、単位の保持、1サンプル未満、ゼロ、負、不規則な stride に対する <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>）を固定しました。<code class="docutils literal notranslate"><span class="pre">test_stats_mixin.py::test_rms_with_unit</span></code> の対象を <code class="docutils literal notranslate"><span class="pre">Series</span></code> に変更しました。</p></li>
 <li><p>コンテナが混在する引数順、単一の 2D/3D/4D 行列、および <code class="docutils literal notranslate"><span class="pre">_expand_args</span></code> の展開数との一致を対象とするプロット形状テストを追加しました。</p></li>
 <li><p>マージ、空白のパディング、重複エラー、空リストの拒否、単一ファイル専用であることを示す明確なエラーを対象とするマルチソースリーダーのテストを追加しました。</p></li>
 <li><p>pickle 化時の attrs 警告と、派生行列における attrs の独立性を対象とする回帰テストを追加しました。</p></li>
@@ -1560,8 +1483,8 @@ strides). Re-pointed <code class="docutils literal notranslate"><span class="pre
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#weekly-development-activity">週次開発活動</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">[0.2.3] - 2026-09-05</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implemented-with-automated-evidence">Implemented with automated evidence</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compatibility-notes">Compatibility notes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implemented-with-automated-evidence">自動検証の証跡を伴う実装</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compatibility-notes">互換性に関する注意</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">[0.2.2] - 2026-09-01</a><ul class="pst-show_toc_level nav section-nav flex-column">
