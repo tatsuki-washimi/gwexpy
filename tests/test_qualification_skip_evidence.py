@@ -132,20 +132,29 @@ def test_repository_baseline_is_canonical_complete_and_initially_empty() -> None
     assert loaded.sha256 == hashlib.sha256(raw).hexdigest() == BASELINE_SHA256
 
 
-def test_repository_baseline_survives_crlf_checkout(tmp_path: Path) -> None:
+@pytest.mark.parametrize(
+    ("autocrlf", "eol", "attributes_newline"),
+    [("false", "lf", b"\n"), ("true", "crlf", b"\r\n")],
+    ids=["lf", "crlf"],
+)
+def test_repository_baseline_survives_crlf_checkout(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    autocrlf: str,
+    eol: str,
+    attributes_newline: bytes,
+) -> None:
     source_attributes = ROOT / ".gitattributes"
     assert source_attributes.is_file()
 
     repository = tmp_path / "repository"
     repository.mkdir()
-    shutil.copyfile(source_attributes, repository / ".gitattributes")
-
-    baseline = (
-        repository
-        / "scripts"
-        / "ci"
-        / "v023_qualification_expected_skips.json"
+    attributes = repository / ".gitattributes"
+    attributes.write_bytes(
+        source_attributes.read_text(encoding="utf-8").encode("utf-8")
     )
+
+    baseline = repository / "scripts" / "ci" / "v023_qualification_expected_skips.json"
     baseline.parent.mkdir(parents=True)
     shutil.copyfile(BASELINE, baseline)
 
@@ -153,8 +162,8 @@ def test_repository_baseline_survives_crlf_checkout(tmp_path: Path) -> None:
         ["init", "-q", "-b", "main"],
         ["config", "user.email", "test@example.invalid"],
         ["config", "user.name", "Qualification test"],
-        ["config", "core.autocrlf", "true"],
-        ["config", "core.eol", "crlf"],
+        ["config", "core.autocrlf", autocrlf],
+        ["config", "core.eol", eol],
     ):
         subprocess.run(
             ["git", *args],
@@ -175,6 +184,7 @@ def test_repository_baseline_survives_crlf_checkout(tmp_path: Path) -> None:
         capture_output=True,
     )
 
+    attributes.unlink()
     baseline.unlink()
     subprocess.run(
         ["git", "checkout", "--", "."],
@@ -183,12 +193,34 @@ def test_repository_baseline_survives_crlf_checkout(tmp_path: Path) -> None:
         capture_output=True,
     )
 
+    assert attributes.read_bytes() == (
+        b"scripts/ci/v023_qualification_expected_skips.json text eol=lf"
+        + attributes_newline
+    )
+    # Exercise the actual workflow contract against both checkout conditions.
+    spec = importlib.util.spec_from_file_location(
+        "release_workflow_contract", ROOT / "tests" / "test_publish_release_workflow.py"
+    )
+    assert spec and spec.loader
+    workflow_contract = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(workflow_contract)
+    monkeypatch.setattr(
+        workflow_contract,
+        "WORKFLOW",
+        repository / ".github" / "workflows" / "publish-release.yml",
+    )
+    workflow_contract.test_v023_expected_skip_baseline_declares_lf_checkout_contract()
+
     raw = baseline.read_bytes()
     assert raw == BASELINE.read_bytes()
     assert b"\r\n" not in raw
     assert hashlib.sha256(raw).hexdigest() == BASELINE_SHA256
     evidence = load_module()
     assert evidence.load_expected_skips(baseline).sha256 == BASELINE_SHA256
+
+    baseline.write_bytes(raw.replace(b"\n", b"\r\n"))
+    with pytest.raises(evidence.QualificationEvidenceError, match="canonical"):
+        evidence.load_expected_skips(baseline)
 
 
 def test_version_contract_preserves_v022_and_adds_v023() -> None:
@@ -214,7 +246,7 @@ def test_record_v023_accepts_reviewed_optional_skip_and_records_baseline_sha(
     evidence = load_module()
     skip = ["tests.optional", "test_backend", "optional backend is unavailable"]
     baseline = write_baseline(tmp_path / "baseline.json", {EXPECTED_CELLS[0]: [skip]})
-    junit = write_junit(tmp_path / "pytest.xml", [tuple(skip)])
+    junit = write_junit(tmp_path / "pytest.xml", [(skip[0], skip[1], skip[2])])
     payload = write_payload(tmp_path / "payload.json")
     report = tmp_path / "qualification.json"
     baseline_before = baseline.read_bytes()
