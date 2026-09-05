@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=2d0c2261" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -381,13 +381,16 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="セクションナビゲーション">
   <p class="bd-links__title" role="heading" aria-level="1">セクションナビゲーション</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">ここから始める</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">最初のレッスン</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">はじめに</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">インストールガイド (Installation)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">クイックスタート (Quickstart)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="first_analysis.html">最初の解析</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commissioner.html">Commissioner：GUI から保存可能な解析へ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scientific_python.html">科学技術計算の Python から GWexpy へ</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">基本レッスン</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">基礎レッスン</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="intro_timeseries.html">TimeSeries: 基本</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro_frequencyseries.html">FrequencySeries: 基本</a></li>
@@ -451,6 +454,15 @@
 </div>
               
               
+  <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
+  <span>開発版ドキュメント · 0.2.3</span>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/941a377a0305336b66231d8ec8a42c14b364b244">941a377a</a>
+  · 入門例の検証対象 0.2.2
+  · <a href="../about/documentation_version.html">版情報</a>
+  · <a href="../about/known_limitations.html">既知の制限</a>
+</div>
+  
+  
               
                 
 <div id="searchbox"></div>
@@ -471,8 +483,6 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -679,7 +689,7 @@
 <span class="p">]:</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">_</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -756,9 +766,7 @@ tsm[:,0] -&gt; &lt;class &#39;gwexpy.timeseries.matrix.TimeSeriesMatrix&#39;&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>cropped &lt;class &#39;gwexpy.timeseries.matrix.TimeSeriesMatrix&#39;&gt; (2, 2, 256) span (&lt;Quantity 1. s&gt;, &lt;Quantity 2. s&gt;)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>diffed (2, 2, 1023) dt 0.00390625 s
+diffed (2, 2, 1023) dt 0.00390625 s
 padded (2, 2, 1124) t0 -0.1953125 s
 </pre></div>
 </div>
@@ -956,7 +964,7 @@ asd (2, 2, 129) unit V / Hz(1/2)
 
 <span class="k">try</span><span class="p">:</span>
     <span class="n">_</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">coherence</span><span class="p">(</span><span class="n">tsm</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;shape mismatch -&gt;&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1137,6 +1145,7 @@ c1   col1
 
                 </article>
               
+
               
               
               

@@ -1,0 +1,804 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Commissioner: from GUI to a saved analysis &#8212; GWexpy</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../_static/documentation_options.js?v=6808a718"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=ccdb6887"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/commissioner';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/tutorials/commissioner.html" />
+    <link rel="icon" href="../_static/favicon.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="From scientific Python to GWexpy" href="scientific_python.html" />
+    <link rel="prev" title="Your first analysis" href="first_analysis.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  <link rel="alternate" hreflang="en" href="https://tatsuki-washimi.github.io/gwexpy/docs/tutorials/commissioner.html" />
+  <link rel="alternate" hreflang="ja" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/tutorials/commissioner.html" />
+  <link rel="alternate" hreflang="x-default" href="https://tatsuki-washimi.github.io/gwexpy/docs/tutorials/commissioner.html" />
+
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/logo.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">GWexpy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how-to/index.html">
+    How-to guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../reference/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../explanation/index.html">
+    Explanation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item"><div class="navbar-item language-switcher">
+    <span class="active">EN / </span>
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/tutorials/commissioner.html" title="日本語">
+      <i class="fa-solid fa-language"></i> 日本語</a>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how-to/index.html">
+    How-to guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../reference/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../explanation/index.html">
+    Explanation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item"><div class="navbar-item language-switcher">
+    <span class="active">EN / </span>
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/tutorials/commissioner.html" title="日本語">
+      <i class="fa-solid fa-language"></i> 日本語</a>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Start here</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Start Here</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="first_analysis.html">Your first analysis</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Commissioner: from GUI to a saved analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scientific_python.html">From scientific Python to GWexpy</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Core lessons</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="intro_timeseries.html">TimeSeries: Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_frequencyseries.html">FrequencySeries: Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_spectrogram.html">Spectrogram: Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_plotting.html">Plotting: Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_fitting.html">Fitting: Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro_noise.html">Noise Generation: Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="matrix_timeseries.html">TimeSeriesMatrix: Matrix Basics</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Commissioner: from GUI to a saved analysis</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+  <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
+  <span>Development documentation · 0.2.3</span>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/941a377a0305336b66231d8ec8a42c14b364b244">941a377a</a>
+  · Intro examples tested with 0.2.2
+  · <a href="../about/documentation_version.html">Version details</a>
+  · <a href="../about/known_limitations.html">Known limitations</a>
+</div>
+  
+  
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="commissioner-from-gui-to-a-saved-analysis">
+<h1>Commissioner: from GUI to a saved analysis<a class="headerlink" href="#commissioner-from-gui-to-a-saved-analysis" title="Link to this heading">#</a></h1>
+<p>Reproduce a familiar commissioning workflow in Python: load channels, select a time span, compare ASD and coherence, and save figures with the analysis settings.
+This lesson is for users of DiagGUI, ndscope, or Virgo dataDisplay who already choose channels and spectral settings in a GUI.
+No Python expertise is assumed beyond following the commands below; <a class="reference internal" href="first_analysis.html#names-functions-and-channels"><span class="std std-ref">First analysis</span></a> explains the syntax if needed.</p>
+<p>Prerequisites: <a class="reference internal" href="installation.html"><span class="std std-doc">GWexpy installed</span></a>.
+The main example uses synthetic data and core dependencies, including HDF5 support; it requires no detector connection.
+Study goal: 20–30 minutes. Script runtime goal: seconds on a laptop, depending on the environment.</p>
+<section id="map-gui-choices-to-code">
+<h2>Map GUI choices to code<a class="headerlink" href="#map-gui-choices-to-code" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>GUI action or setting</p></th>
+<th class="head"><p>Script equivalent</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Select channels</p></td>
+<td><p>Keys in a <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Load an ndscope recording</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(path,</span> <span class="pre">format=&quot;hdf.ndscope&quot;)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Choose a time interval</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">channels.copy().crop(start,</span> <span class="pre">end)</span></code>, with GPS seconds for recorded GW data</p></td>
+</tr>
+<tr class="row-odd"><td><p>Choose an ASD FFT length and overlap</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">channels.asd(fftlength=2,</span> <span class="pre">overlap=1,</span> <span class="pre">window=&quot;hann&quot;,</span> <span class="pre">method=&quot;welch&quot;)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Choose a reference channel</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sensor.coherence(reference,</span> <span class="pre">fftlength=2,</span> <span class="pre">overlap=1,</span> <span class="pre">window=&quot;hann&quot;)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Save traces as a figure</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">plot.savefig(&quot;asd.png&quot;)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Record the analysis setup</p></td>
+<td><p>A JSON file of channel names, times, and spectral settings</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Virgo dataDisplay is included as a familiar workflow background.
+This tutorial demonstrates the explicit ndscope and DiagGUI formats below; it does not define a direct dataDisplay reader.</p>
+</section>
+<section id="run-a-complete-local-workflow">
+<h2>Run a complete local workflow<a class="headerlink" href="#run-a-complete-local-workflow" title="Link to this heading">#</a></h2>
+<p>Download <a class="reference download internal" download="" href="../_downloads/02917eba96349e1bca960e88c76ccfcb/commissioner.py"><code class="xref download docutils literal notranslate"><span class="pre">commissioner.py</span></code></a> into a working folder.
+In a terminal, activate the environment from the installation guide and run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>commissioner.py
+</pre></div>
+</div>
+<p>The script creates <code class="docutils literal notranslate"><span class="pre">commissioner-output/</span></code> with <code class="docutils literal notranslate"><span class="pre">channels.hdf5</span></code>, <code class="docutils literal notranslate"><span class="pre">asd.png</span></code>, <code class="docutils literal notranslate"><span class="pre">coherence.png</span></code>, and <code class="docutils literal notranslate"><span class="pre">analysis-parameters.json</span></code>.
+Rerunning it replaces these tutorial outputs.
+Open the PNG files in an image viewer and the JSON file in a text editor.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Save synthetic ndscope data, analyze a segment, and record the settings.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">importlib.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">version</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">gaussian</span><span class="p">,</span> <span class="n">sine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="c1"># settings-begin</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;commissioner-output&quot;</span><span class="p">)</span>
+<span class="n">output</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;sample_rate_hz&quot;</span><span class="p">:</span> <span class="mi">512</span><span class="p">,</span>
+    <span class="s2">&quot;t0_gps_s&quot;</span><span class="p">:</span> <span class="mi">1400000000</span><span class="p">,</span>
+    <span class="s2">&quot;duration_s&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
+    <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;V&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tone_hz&quot;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+    <span class="s2">&quot;noise_std_v&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;X1:REFERENCE&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span> <span class="s2">&quot;X1:SENSOR&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">},</span>
+    <span class="s2">&quot;noise_seeds&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;X1:REFERENCE&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;X1:SENSOR&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">},</span>
+    <span class="s2">&quot;crop_offset_s&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">28</span><span class="p">],</span>
+    <span class="s2">&quot;fftlength_s&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">&quot;overlap_s&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;window&quot;</span><span class="p">:</span> <span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;asd_method&quot;</span><span class="p">:</span> <span class="s2">&quot;welch&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;reference_channel&quot;</span><span class="p">:</span> <span class="s2">&quot;X1:REFERENCE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sensor_channel&quot;</span><span class="p">:</span> <span class="s2">&quot;X1:SENSOR&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="c1"># settings-end</span>
+
+<span class="c1"># data-begin</span>
+<span class="n">settings</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">duration</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;duration_s&quot;</span><span class="p">],</span>
+    <span class="n">sample_rate</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;sample_rate_hz&quot;</span><span class="p">],</span>
+    <span class="n">t0</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;t0_gps_s&quot;</span><span class="p">],</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">tone</span> <span class="o">=</span> <span class="n">sine</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;tone_hz&quot;</span><span class="p">],</span> <span class="o">**</span><span class="n">settings</span><span class="p">)</span>
+<span class="n">channels</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">tone</span>
+        <span class="o">+</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">std</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;noise_std_v&quot;</span><span class="p">][</span><span class="n">name</span><span class="p">],</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">seed</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;noise_seeds&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+<span class="n">data_path</span> <span class="o">=</span> <span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;channels.hdf5&quot;</span>
+<span class="n">channels</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf.ndscope&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">loaded</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf.ndscope&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loaded channels:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">loaded</span><span class="p">))</span>
+<span class="c1"># data-end</span>
+
+<span class="c1"># analysis-begin</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;t0_gps_s&quot;</span><span class="p">]</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;crop_offset_s&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">end</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">+</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;crop_offset_s&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">segment</span> <span class="o">=</span> <span class="n">loaded</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+<span class="n">spectral_settings</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">fftlength</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;fftlength_s&quot;</span><span class="p">],</span>
+    <span class="n">overlap</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;overlap_s&quot;</span><span class="p">],</span>
+    <span class="n">window</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;window&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">spectra</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;asd_method&quot;</span><span class="p">],</span> <span class="o">**</span><span class="n">spectral_settings</span><span class="p">)</span>
+<span class="n">asd_plot</span> <span class="o">=</span> <span class="n">spectra</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="n">ylabel</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;ASD [V/$\sqrt{\mathrm</span><span class="si">{Hz}</span><span class="s2">}$]&quot;</span><span class="p">)</span>
+<span class="n">asd_plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">asd_plot</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;asd.png&quot;</span><span class="p">)</span>
+
+<span class="n">reference</span> <span class="o">=</span> <span class="n">segment</span><span class="p">[</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;reference_channel&quot;</span><span class="p">]]</span>
+<span class="n">sensor</span> <span class="o">=</span> <span class="n">segment</span><span class="p">[</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;sensor_channel&quot;</span><span class="p">]]</span>
+<span class="n">coherence</span> <span class="o">=</span> <span class="n">sensor</span><span class="o">.</span><span class="n">coherence</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="o">**</span><span class="n">spectral_settings</span><span class="p">)</span>
+<span class="n">coherence_plot</span> <span class="o">=</span> <span class="n">coherence</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">yscale</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Magnitude-squared coherence&quot;</span>
+<span class="p">)</span>
+<span class="n">coherence_plot</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;coherence.png&quot;</span><span class="p">)</span>
+<span class="c1"># analysis-end</span>
+
+<span class="c1"># save-begin</span>
+<span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;crop_start_gps_s&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">start</span>
+<span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;crop_end_gps_s&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">end</span>
+<span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;input_file&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+<span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;versions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">package</span><span class="p">:</span> <span class="n">version</span><span class="p">(</span><span class="n">package</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">package</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;gwexpy&quot;</span><span class="p">,</span> <span class="s2">&quot;gwpy&quot;</span><span class="p">,</span> <span class="s2">&quot;numpy&quot;</span><span class="p">,</span> <span class="s2">&quot;scipy&quot;</span><span class="p">,</span> <span class="s2">&quot;astropy&quot;</span><span class="p">,</span> <span class="s2">&quot;h5py&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;versions&quot;</span><span class="p">][</span><span class="s2">&quot;python&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_version</span><span class="p">()</span>
+<span class="p">(</span><span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;analysis-parameters.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved data, figures, and analysis-parameters.json in&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+<span class="c1"># save-end</span>
+</pre></div>
+</div>
+</section>
+<section id="inspect-the-saved-data-and-time-selection">
+<h2>Inspect the saved data and time selection<a class="headerlink" href="#inspect-the-saved-data-and-time-selection" title="Link to this heading">#</a></h2>
+<p>The script makes two 32-second voltage channels sampled at 512 Hz and beginning at GPS 1400000000.
+Both contain a 40 Hz sine wave plus independently seeded Gaussian noise.
+The channel labels are synthetic examples.</p>
+<p><code class="docutils literal notranslate"><span class="pre">channels.write(...,</span> <span class="pre">format=&quot;hdf.ndscope&quot;)</span></code> creates an ndscope-format HDF5 file.
+<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;hdf.ndscope&quot;)</span></code> loads the channel values and their metadata.
+The printed list contains <code class="docutils literal notranslate"><span class="pre">X1:REFERENCE</span></code> and <code class="docutils literal notranslate"><span class="pre">X1:SENSOR</span></code>.
+These public calls load their required I/O handler on demand.</p>
+<p>The crop selects offsets 4 through 28 seconds relative to the start: GPS 1400000004 up to, but excluding, GPS 1400000028.
+The resulting 24-second segment is shared by both channels.
+The script copies the collection before cropping because <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.crop()</span></code> updates its collection.
+For your own recording, inspect channel names, start times, sample rates, and units before choosing the interval and reference.</p>
+</section>
+<section id="interpret-the-two-figures">
+<h2>Interpret the two figures<a class="headerlink" href="#interpret-the-two-figures" title="Link to this heading">#</a></h2>
+<p>The ASD figure shows a line near 40 Hz in both channels and a higher broadband floor in <code class="docutils literal notranslate"><span class="pre">X1:SENSOR</span></code>.
+Its unit is V per square root Hz.
+The script uses a Hann window, 2-second FFT segments, 1-second overlap, and Welch averaging; the frequency-bin spacing is 0.5 Hz.</p>
+<p>The second figure shows magnitude-squared coherence, a dimensionless measure between zero and one of linear association at each frequency.
+Coherence should rise near the shared 40 Hz tone.
+Away from that tone, the independent noise produces a smaller, fluctuating estimate; finite averaging does not give exactly zero.
+A high value identifies shared spectral content, but does not by itself establish the direction of a physical coupling.</p>
+<p><code class="docutils literal notranslate"><span class="pre">analysis-parameters.json</span></code> records the source file, channel choices, absolute crop bounds, FFT settings, the seeds used for the synthetic data, and the Python and package versions.
+Keep this file with the figures so that the calculation can be repeated.</p>
+</section>
+<section id="read-a-diaggui-time-series-export">
+<h2>Read a DiagGUI time-series export<a class="headerlink" href="#read-a-diaggui-time-series-export" title="Link to this heading">#</a></h2>
+<p>Install the optional <code class="docutils literal notranslate"><span class="pre">dttxml</span></code> dependency for this section in the same environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>dttxml
+</pre></div>
+</div>
+<p>Download the small synthetic <a class="reference download internal" download="" href="../_downloads/19142f2a2e20bd34124faaf658a6b792/commissioner.xml"><code class="xref download docutils literal notranslate"><span class="pre">commissioner.xml</span></code></a> sample into your working folder.
+Save the following code as <code class="docutils literal notranslate"><span class="pre">read_diaggui.py</span></code> alongside it and run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">read_diaggui.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">diaggui</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
+    <span class="s2">&quot;commissioner.xml&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;xml.diaggui&quot;</span><span class="p">,</span> <span class="n">products</span><span class="o">=</span><span class="s2">&quot;TS&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">diaggui</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">diaggui</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">diaggui</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;diaggui-timeseries.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">products=&quot;TS&quot;</span></code> selects saved time-series data.
+The synthetic sample contains four voltage samples at 4 Hz under <code class="docutils literal notranslate"><span class="pre">TEST:SYNTHETIC_INPUT</span></code>.
+The example passes <code class="docutils literal notranslate"><span class="pre">unit=&quot;V&quot;</span></code> explicitly because this time-series adapter does not recover the physical unit from the XML; this unit is a known calibration assumption for the supplied sample.
+For your own export, supply the unit justified by its calibration.
+DiagGUI can also save frequency-domain products; those are separate spectra and use the corresponding frequency-series readers.
+An export must contain time-series data for this example.
+See <a class="reference internal" href="../reference/io_capabilities.html"><span class="std std-doc">I/O formats</span></a> for the product-specific entry points when loading your own saved spectral results.</p>
+</section>
+<section id="further-reading">
+<h2>Further reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="first_analysis.html"><span class="std std-doc">First analysis</span></a>: Python syntax and plot interpretation.</p></li>
+<li><p><a class="reference internal" href="matrix_timeseries.html"><span class="std std-doc">TimeSeriesMatrix basics</span></a>: work with a larger aligned channel set.</p></li>
+<li><p><a class="reference internal" href="../how-to/case-studies/index.html"><span class="std std-doc">Case studies</span></a>: adapt a complete analysis to a measurement.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="first_analysis.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Your first analysis</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="scientific_python.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">From scientific Python to GWexpy</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#map-gui-choices-to-code">Map GUI choices to code</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-a-complete-local-workflow">Run a complete local workflow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspect-the-saved-data-and-time-selection">Inspect the saved data and time selection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interpret-the-two-figures">Interpret the two figures</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read-a-diaggui-time-series-export">Read a DiagGUI time-series export</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further reading</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/tutorials/commissioner.md">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, GWexpy Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -5,6 +5,12 @@ real-world analysis you can adapt to your own data. For feature-by-feature
 lessons, start with the [tutorials](../../tutorials/index.md) and the
 [technique recipes](../index.md).
 
+Each case shows its audience, additional dependencies, synthetic-data recipe,
+execution duration measured during the documentation build, and the package
+version used. A successful execution verifies that the code ran; it does not
+replace a physics review or validate the method for your experiment. Optional
+integration sections may be skipped when their dependency is unavailable.
+
 ## Featured
 
 ::::{grid} 1 2 2 3

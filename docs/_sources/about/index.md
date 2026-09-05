@@ -26,11 +26,24 @@ How to cite GWexpy in your research.
 Release notes and version history.
 :::
 
-:::{grid-item-card} {octicon}`git-pull-request;1.5em;sd-mr-1` Contributing
-:link: https://github.com/tatsuki-washimi/gwexpy
-:link-type: url
+:::{grid-item-card} {octicon}`git-pull-request;1.5em;sd-mr-1` Developer guide
+:link: developer
+:link-type: doc
 
 Issues and pull requests are welcome on GitHub.
+:::
+:::{grid-item-card} Known limitations
+:link: known_limitations
+:link-type: doc
+
+Supported boundaries and alternatives for the released package.
+:::
+
+:::{grid-item-card} Documentation version
+:link: documentation_version
+:link-type: doc
+
+Compare the source revision and tested release with your environment.
 :::
 ::::
 
@@ -43,12 +56,7 @@ for the full workflow, coding conventions, and test expectations, and the
 [Code of Conduct](https://github.com/tatsuki-washimi/gwexpy/blob/main/CODE_OF_CONDUCT.md)
 for community expectations.
 
-To build this documentation site locally, run `sphinx-build -b html . _build/html`
-from the `docs_redesign/` directory. The Japanese translation is delivered via
-`gettext` catalogs under `docs_redesign/locales/`; to update them after an
-English source change, run `sphinx-build -b gettext . _build/gettext` followed
-by `sphinx-intl update -p _build/gettext -l ja`, then translate any new empty
-entries in the resulting `.po` files.
+See the [Developer guide](developer.md) for documentation builds and internal design resources.
 
 ```{toctree}
 :hidden:
@@ -57,4 +65,6 @@ license
 citation
 changelog
 known_limitations
+documentation_version
+developer
 ```

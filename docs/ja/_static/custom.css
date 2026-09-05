@@ -107,3 +107,7 @@ article.bd-article h3 {
 div.highlight {
   border-radius: 8px;
 }
+
+/* Build identity stays readable on narrow screens without crowding the navbar. */
+.gwexpy-build-status { font-size: .8rem; padding: .6rem 1rem; border-bottom: 1px solid var(--pst-color-border); overflow-wrap: anywhere; }
+.gwexpy-build-status a { white-space: nowrap; }

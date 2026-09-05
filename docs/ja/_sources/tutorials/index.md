@@ -1,100 +1,51 @@
 # Tutorials
 
-Learning-oriented lessons. If you are new to GWexpy, start here and work
-through the pages in order. Each tutorial is a guided, hands-on lesson that
-builds a complete result.
+Choose a lesson by the result you want to produce.
+[Start Here](getting_started.md) recommends an entry point for six backgrounds, including readers new to Python.
+Study times are planning goals, excluding installation.
 
 ## Start here
 
-::::{grid} 1 1 2 2
-:gutter: 3
+| Lesson | Prerequisites | What you will produce | Study goal |
+| --- | --- | --- | --- |
+| [Installation](installation.md) | A computer with Python or Conda | An environment that can import GWexpy | Follow the setup steps |
+| [Quickstart](quickstart.md) | GWexpy installed; able to run a terminal command | A saved ASD comparison of two synthetic channels | 5 minutes |
+| [First analysis](first_analysis.md) | GWexpy installed; no Python or spectral-analysis knowledge assumed | Time-series and ASD figures, with the code and axes explained | 20–30 minutes |
+| [Commissioner workflow](commissioner.md) | Familiar with channels, time spans, and GUI spectral settings | A saved-data analysis with ASD, coherence, and recorded settings | 20–30 minutes |
+| [Scientific Python to GWexpy](scientific_python.md) | NumPy arrays, dictionaries, and basic plotting | Arrays carrying time and unit metadata; spectra computed for a collection | 10–15 minutes |
 
-:::{grid-item-card} {octicon}`download;1.5em;sd-mr-1` Installation
-:link: installation
-:link-type: doc
-
-Get GWexpy and its dependencies installed.
-:::
-
-:::{grid-item-card} {octicon}`rocket;1.5em;sd-mr-1` Quickstart
-:link: quickstart
-:link-type: doc
-
-The shortest path from import to a first result.
-:::
-
-:::{grid-item-card} {octicon}`book;1.5em;sd-mr-1` Getting started
-:link: getting_started
-:link-type: doc
-
-A fuller orientation to the core concepts and workflow.
-:::
-::::
+GW experimentalists can start at [familiar concepts in Python](first_analysis.md#familiar-concepts-in-python).
+GWpy users can use the [migration guide](../explanation/gwexpy_for_gwpy_users.md).
+Returning GWexpy users can browse [task recipes](../how-to/index.md).
 
 ## Core lessons
 
-Work through these in order to learn the primary containers and operations.
+These notebooks extend the first analysis to another container or technique.
+Open a notebook in Jupyter and run its cells from top to bottom.
+Use the installation instructions for any additional packages named by a lesson.
 
-::::{grid} 1 2 2 3
-:gutter: 3
+| Lesson | Prerequisites | Learning outcome |
+| --- | --- | --- |
+| [TimeSeries basics](intro_timeseries.ipynb) | First analysis or equivalent Python experience | Filter a channel, compute spectra, and use time-series operations |
+| [FrequencySeries basics](intro_frequencyseries.ipynb) | TimeSeries and frequency-domain concepts | Work with spectra and transfer functions |
+| [Spectrogram basics](intro_spectrogram.ipynb) | TimeSeries and ASD | Build and interpret a time-frequency representation |
+| [Plotting basics](intro_plotting.ipynb) | A TimeSeries or spectrum to plot | Customize axes, labels, and saved figures |
+| [Fitting basics](intro_fitting.ipynb) | Arrays, plotting, and a model to fit | Fit a model and inspect its parameters |
+| [Noise generation basics](intro_noise.ipynb) | TimeSeries and ASD | Generate synthetic waveforms and noise with specified parameters |
+| [TimeSeriesMatrix basics](matrix_timeseries.ipynb) | TimeSeriesDict and multi-channel analysis | Organize aligned channels in a matrix container |
 
-:::{grid-item-card} {octicon}`pulse;1.5em;sd-mr-1` TimeSeries basics
-:link: intro_timeseries
-:link-type: doc
-
-Signal processing, spectral analysis and interoperability on a time series.
-:::
-
-:::{grid-item-card} {octicon}`graph;1.5em;sd-mr-1` FrequencySeries basics
-:link: intro_frequencyseries
-:link-type: doc
-
-Work in the frequency domain with spectra and transfer functions.
-:::
-
-:::{grid-item-card} {octicon}`pulse;1.5em;sd-mr-1` Spectrogram basics
-:link: intro_spectrogram
-:link-type: doc
-
-Build and read time-frequency representations.
-:::
-
-:::{grid-item-card} {octicon}`paintbrush;1.5em;sd-mr-1` Plotting basics
-:link: intro_plotting
-:link-type: doc
-
-Make and customize publication-ready figures.
-:::
-
-:::{grid-item-card} {octicon}`beaker;1.5em;sd-mr-1` Fitting basics
-:link: intro_fitting
-:link-type: doc
-
-Fit models to data with iminuit-backed helpers.
-:::
-
-:::{grid-item-card} {octicon}`broadcast;1.5em;sd-mr-1` Noise generation basics
-:link: intro_noise
-:link-type: doc
-
-Synthesize colored and physically motivated noise for tests.
-:::
-
-:::{grid-item-card} {octicon}`stack;1.5em;sd-mr-1` TimeSeriesMatrix basics
-:link: matrix_timeseries
-:link-type: doc
-
-Handle multi-channel data with the matrix container.
-:::
-::::
+After a lesson, adapt a [case study](../how-to/case-studies/index.md) or consult the [API reference](../reference/index.md) for parameter details.
 
 ```{toctree}
 :hidden:
 :caption: Start here
 
+getting_started
 installation
 quickstart
-getting_started
+first_analysis
+commissioner
+scientific_python
 ```
 
 ```{toctree}

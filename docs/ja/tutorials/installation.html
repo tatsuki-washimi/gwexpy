@@ -35,7 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=2d0c2261" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -56,8 +56,8 @@
     <link rel="icon" href="../_static/favicon.svg"/>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
-    <link rel="next" title="クイックスタート (Quickstart)" href="quickstart.html" />
-    <link rel="prev" title="チュートリアル" href="index.html" />
+    <link rel="next" title="クイックスタート" href="quickstart.html" />
+    <link rel="prev" title="はじめに" href="getting_started.html" />
   
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="ja"/>
@@ -382,13 +382,16 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="セクションナビゲーション">
   <p class="bd-links__title" role="heading" aria-level="1">セクションナビゲーション</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">ここから始める</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">最初のレッスン</span></p>
 <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">はじめに</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">インストールガイド (Installation)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">クイックスタート (Quickstart)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="first_analysis.html">最初の解析</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commissioner.html">Commissioner：GUI から保存可能な解析へ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scientific_python.html">科学技術計算の Python から GWexpy へ</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">基本レッスン</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">基礎レッスン</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="intro_timeseries.html">TimeSeries: 基本</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro_frequencyseries.html">FrequencySeries: 基本</a></li>
@@ -452,6 +455,15 @@
 </div>
               
               
+  <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
+  <span>開発版ドキュメント · 0.2.3</span>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/941a377a0305336b66231d8ec8a42c14b364b244">941a377a</a>
+  · 入門例の検証対象 0.2.2
+  · <a href="../about/documentation_version.html">版情報</a>
+  · <a href="../about/known_limitations.html">既知の制限</a>
+</div>
+  
+  
               
                 
 <div id="searchbox"></div>
@@ -461,7 +473,7 @@
 <h1>インストールガイド (Installation)<a class="headerlink" href="#installation-guide" title="Link to this heading">#</a></h1>
 <div class="admonition note">
 <p class="admonition-title">注釈</p>
-<p>GWexpy v0.2.0 は <a class="reference external" href="https://pypi.org/project/gwexpy/">PyPI</a> と <a class="reference external" href="https://anaconda.org/conda-forge/gwexpy">conda-forge</a> の両方から利用できます。利用可能なバージョンは PyPI、conda-forge、または <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/releases">リリースページ</a> で確認してください。</p>
+<p>GWexpy 0.2.2 は <a class="reference external" href="https://pypi.org/project/gwexpy/">PyPI</a> と <a class="reference external" href="https://anaconda.org/conda-forge/gwexpy">conda-forge</a> の両方から入手できます。公開されているバージョンは、PyPI、conda-forge、または<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/releases">リリースページ</a>で確認してください。</p>
 </div>
 <p>GWexpy は <strong>Python 3.11 以上</strong>をサポートしています。解析の目的に合わせて、いくつかのインストールオプション（extras）を選択できます。</p>
 <section id="install-commands">
@@ -642,6 +654,7 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 
                 </article>
               
+
               
               
               
@@ -650,12 +663,12 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="index.html"
+       href="getting_started.html"
        title="前のページ">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">前へ</p>
-        <p class="prev-next-title">チュートリアル</p>
+        <p class="prev-next-title">はじめに</p>
       </div>
     </a>
     <a class="right-next"
@@ -663,7 +676,7 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
        title="次ページ">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">次へ</p>
-        <p class="prev-next-title">クイックスタート (Quickstart)</p>
+        <p class="prev-next-title">クイックスタート</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

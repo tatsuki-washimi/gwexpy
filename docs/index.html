@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=2d0c2261" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -391,6 +391,15 @@
               <div class="bd-header-article d-print-none"></div>
               
               
+  <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
+  <span>Development documentation · 0.2.3</span>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/941a377a0305336b66231d8ec8a42c14b364b244">941a377a</a>
+  · Intro examples tested with 0.2.2
+  · <a href="about/documentation_version.html">Version details</a>
+  · <a href="about/known_limitations.html">Known limitations</a>
+</div>
+  
+  
               
                 
 <div id="searchbox"></div>
@@ -398,37 +407,111 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="gwexpy">
 <h1 class="sd-d-none">GWexpy<a class="headerlink" href="#gwexpy" title="Link to this heading">#</a></h1>
-<div class="sd-text-center sd-my-5 docutils">
-<a class="sd-mb-4 sd-shadow-lg sd-rounded-3 reference internal image-reference" href="_images/hero_plot.png"><img alt="GWexpy multi-dimensional spectral analysis" class="sd-mb-4 sd-shadow-lg sd-rounded-3" src="_images/hero_plot.png" style="width: 640px;" />
-</a>
+<div class="sd-text-center sd-my-3 docutils">
 <div class="sd-fs-1 sd-font-weight-bolder docutils">
 <p>GWexpy</p>
 </div>
-<p class="rubric">Multi-dimensional time- and frequency-series analysis for gravitational-wave science.</p>
-<p>GWexpy extends <a class="reference external" href="https://gwpy.github.io/">GWpy</a> with matrix and field containers,
-integrated noise-budget and modelling tools, and broad detector interoperability.</p>
-<p>For corresponding GWpy APIs, default finite numerical results, sample
-selection, axis information, and successful completion remain GWpy-compatible.
-Intentional divergence from these guarantees requires explicit user opt-in, except for a
-named, human-approved safety exception satisfying all policy gates. See the
-<a class="reference internal" href="explanation/gwpy_compatibility_policy.html"><span class="doc std std-doc">GWpy compatibility policy</span></a>.</p>
-<p><a class="sd-btn sd-btn-primary sd-shadow-sm sd-px-4 sd-fs-5 reference internal" href="tutorials/index.html"><span class="doc std std-doc">Get started →</span></a></p>
+<p class="rubric">Analyze experimental data with units, timestamps, and channel names.</p>
+<p>Compare multiple channels and save figures with the code and settings needed to reproduce them.
+GWexpy extends <a class="reference external" href="https://gwpy.github.io/">GWpy</a> with matrix and field containers,
+noise generation, fitting, and connections to scientific Python libraries.</p>
+<p><a class="sd-btn sd-btn-primary sd-shadow-sm sd-px-4 sd-fs-5 reference internal" href="tutorials/getting_started.html"><span class="doc std std-doc">Start Here →</span></a></p>
 </div>
-<hr class="docutils" />
-<section id="find-your-path">
-<h2>Find your path<a class="headerlink" href="#find-your-path" title="Link to this heading">#</a></h2>
-<p>The documentation follows the <a class="reference external" href="https://diataxis.fr/">Diátaxis</a> framework.</p>
+<section id="start-from-your-background">
+<h2>Start from your background<a class="headerlink" href="#start-from-your-background" title="Link to this heading">#</a></h2>
+<p>Choose a route that uses what you already know. Each first lesson states its prerequisites and the result you will produce.</p>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-3 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Beginner</div>
+<p class="sd-card-text">New to Python or signal analysis? Run a script, understand its variables, and read your first time-series and ASD plots.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="tutorials/first_analysis.html"><span class="doc">Your first analysis</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+GW Experimentalist</div>
+<p class="sd-card-text">Know channels, sampling, and spectra? Map familiar experimental concepts to Python objects, then analyze a pair of channels.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="tutorials/first_analysis.html#for-gw-experimentalists"><span class="std std-ref">Familiar concepts in Python</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Commissioner (DiagGUI · ndscope · Virgo dataDisplay)</div>
+<p class="sd-card-text">Bring an interactive analysis workflow into a reproducible script: read channels, select a time span, plot ASD and coherence, and save the settings.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="tutorials/commissioner.html"><span class="doc">Commissioner: from GUI to a saved analysis</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Scientific Python User</div>
+<p class="sd-card-text">Start with NumPy arrays and dictionaries. Attach sampling, start time, and units, then calculate spectra for all channels together.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="tutorials/scientific_python.html"><span class="doc">From scientific Python to GWexpy</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+GWpy User</div>
+<p class="sd-card-text">Use familiar GWpy concepts and explore the added containers, analysis methods, and I/O through concrete migration examples.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="explanation/gwexpy_for_gwpy_users.html"><span class="doc">GWexpy for GWpy Users</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+GWexpy User</div>
+<p class="sd-card-text">Go directly to a task recipe, a case study, or the API reference for your next analysis.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="how-to/index.html"><span class="doc">How-to guides</span></a></div>
+</div>
+</div>
+</div>
+</section>
+<section id="try-a-multi-channel-asd">
+<span id="install-and-try-it"></span><h2>Try a multi-channel ASD<a class="headerlink" href="#try-a-multi-channel-asd" title="Link to this heading">#</a></h2>
+<p>After <a class="reference internal" href="tutorials/installation.html"><span class="std std-doc">installation</span></a>, this complete example generates two synthetic channels and saves <code class="docutils literal notranslate"><span class="pre">asd.png</span></code>. It needs no data download or optional packages.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">gaussian</span><span class="p">,</span> <span class="n">sine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">settings</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
+<span class="n">tone</span> <span class="o">=</span> <span class="n">sine</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="p">)</span>
+<span class="n">channels</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;Sensor A&quot;</span><span class="p">:</span> <span class="n">tone</span> <span class="o">+</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">std</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="p">),</span>
+        <span class="s2">&quot;Sensor B&quot;</span><span class="p">:</span> <span class="n">tone</span> <span class="o">+</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">std</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+<span class="n">spectra</span> <span class="o">=</span> <span class="n">channels</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;welch&quot;</span><span class="p">)</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">spectra</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="n">ylabel</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;ASD [V/$\sqrt{\mathrm</span><span class="si">{Hz}</span><span class="s2">}$]&quot;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;asd.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="tutorials/quickstart.html"><span class="std std-doc">Run the example and see the expected figure</span></a>.</p>
+</section>
+<section id="browse-the-documentation">
+<span id="find-your-path"></span><h2>Browse the documentation<a class="headerlink" href="#browse-the-documentation" title="Link to this heading">#</a></h2>
+<p>The documentation follows <a class="reference external" href="https://diataxis.fr/">Diátaxis</a>: lessons for learning, recipes for tasks, reference for lookup, and explanation for context.</p>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-mortar-board sd-mr-1" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.292 2.06v-.001l11.25 4.75a.749.749 0 0 1 0 1.382L19 10.108V15a.75.75 0 0 1-.11.391h-.001a2.84 2.84 0 0 1-.392.482c-.249.256-.625.58-1.163.896-1.08.638-2.776 1.23-5.334 1.23-.673 0-1.286-.041-1.846-.113a.75.75 0 0 1 .192-1.487c.492.063 1.042.1 1.654.1 2.317 0 3.746-.533 4.572-1.021.31-.178.596-.397.849-.65l.079-.085V10.74l-5.208 2.2a.75.75 0 0 1-.584 0L5.75 10.424v3.17c.502.129.96.391 1.327.758.579.578.923 1.41.923 2.428v4.5a.761.761 0 0 1-.345.634 2.157 2.157 0 0 1-.21.117 3.923 3.923 0 0 1-.52.213A6.121 6.121 0 0 1 5 22.532a6.092 6.092 0 0 1-1.925-.288 4.065 4.065 0 0 1-.52-.213 1.816 1.816 0 0 1-.22-.124.757.757 0 0 1-.335-.624v-4.5c0-1.02.344-1.85.923-2.43a2.904 2.904 0 0 1 1.327-.757V9.793L.458 8.19a.75.75 0 0 1 0-1.38l11.25-4.75a.75.75 0 0 1 .584 0ZM12 11.436 21.322 7.5 12 3.564 2.678 7.5ZM5 15c-.377 0-.745.141-1.017.413-.265.265-.483.7-.483 1.368v4.022c.299.105.797.228 1.5.228s1.201-.123 1.5-.228V16.78c0-.669-.218-1.103-.483-1.368A1.433 1.433 0 0 0 5 15Z"></path></svg> Tutorials</div>
-<p class="sd-card-text">Learning-oriented lessons that take you from zero to a working analysis.</p>
-</div>
-<div class="sd-card-footer docutils">
-<p class="sd-card-text">Start learning →</p>
+Tutorials</div>
+<p class="sd-card-text">Follow a guided lesson and produce a working analysis.</p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="tutorials/index.html"><span class="doc">Tutorials</span></a></div>
 </div>
@@ -436,11 +519,8 @@ named, human-approved safety exception satisfying all policy gates. See the
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-tools sd-mr-1" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.875 2.292a.114.114 0 0 0-.032.018A7.239 7.239 0 0 0 4.75 8.25a7.248 7.248 0 0 0 3.654 6.297c.57.327.982.955.941 1.682v.002l-.317 6.058a.75.75 0 1 1-1.498-.078l.317-6.062v-.004c.006-.09-.047-.215-.188-.296A8.749 8.749 0 0 1 3.25 8.25a8.738 8.738 0 0 1 3.732-7.169 1.547 1.547 0 0 1 1.709-.064c.484.292.809.835.809 1.46v4.714a.25.25 0 0 0 .119.213l2.25 1.385c.08.05.182.05.262 0l2.25-1.385a.25.25 0 0 0 .119-.213V2.478c0-.626.325-1.169.81-1.461a1.547 1.547 0 0 1 1.708.064 8.741 8.741 0 0 1 3.732 7.17 8.747 8.747 0 0 1-4.41 7.598c-.14.081-.193.206-.188.296v.004l.318 6.062a.75.75 0 1 1-1.498.078l-.317-6.058v-.002c-.041-.727.37-1.355.94-1.682A7.247 7.247 0 0 0 19.25 8.25a7.239 7.239 0 0 0-3.093-5.94.114.114 0 0 0-.032-.018l-.01-.001c-.003 0-.014 0-.031.01-.036.022-.084.079-.084.177V7.19c0 .608-.315 1.172-.833 1.49l-2.25 1.385a1.75 1.75 0 0 1-1.834 0l-2.25-1.384A1.752 1.752 0 0 1 8 7.192V2.477c0-.098-.048-.155-.084-.176a.068.068 0 0 0-.031-.011l-.01.001Z"></path></svg> How-to guides</div>
-<p class="sd-card-text">Goal-oriented recipes and real-world case studies for specific problems.</p>
-</div>
-<div class="sd-card-footer docutils">
-<p class="sd-card-text">Solve a problem →</p>
+How-to guides</div>
+<p class="sd-card-text">Solve a specific analysis problem or adapt a case study.</p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="how-to/index.html"><span class="doc">How-to guides</span></a></div>
 </div>
@@ -448,11 +528,8 @@ named, human-approved safety exception satisfying all policy gates. See the
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-book sd-mr-1" viewBox="0 0 24 24" aria-hidden="true"><path d="M0 3.75A.75.75 0 0 1 .75 3h7.497c1.566 0 2.945.8 3.751 2.014A4.495 4.495 0 0 1 15.75 3h7.5a.75.75 0 0 1 .75.75v15.063a.752.752 0 0 1-.755.75l-7.682-.052a3 3 0 0 0-2.142.878l-.89.891a.75.75 0 0 1-1.061 0l-.902-.901a2.996 2.996 0 0 0-2.121-.879H.75a.75.75 0 0 1-.75-.75Zm12.75 15.232a4.503 4.503 0 0 1 2.823-.971l6.927.047V4.5h-6.75a3 3 0 0 0-3 3ZM11.247 7.497a3 3 0 0 0-3-2.997H1.5V18h6.947c1.018 0 2.006.346 2.803.98Z"></path></svg> Reference</div>
-<p class="sd-card-text">Technical description of the containers, analysis API, and I/O formats.</p>
-</div>
-<div class="sd-card-footer docutils">
-<p class="sd-card-text">Look up the API →</p>
+Reference</div>
+<p class="sd-card-text">Look up containers, methods, parameters, and supported file formats.</p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="reference/index.html"><span class="doc">Reference</span></a></div>
 </div>
@@ -460,73 +537,19 @@ named, human-approved safety exception satisfying all policy gates. See the
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-light-bulb sd-mr-1" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c-3.81 0-6.5 2.743-6.5 6.119 0 1.536.632 2.572 1.425 3.56.172.215.347.422.527.635l.096.112c.21.25.427.508.63.774.404.531.783 1.128.995 1.834a.75.75 0 0 1-1.436.432c-.138-.46-.397-.89-.753-1.357a18.111 18.111 0 0 0-.582-.714l-.092-.11c-.18-.212-.37-.436-.555-.667C4.87 12.016 4 10.651 4 8.618 4 4.363 7.415 1 12 1s8 3.362 8 7.619c0 2.032-.87 3.397-1.755 4.5-.185.23-.375.454-.555.667l-.092.109c-.21.248-.405.481-.582.714-.356.467-.615.898-.753 1.357a.751.751 0 0 1-1.437-.432c.213-.706.592-1.303.997-1.834.202-.266.419-.524.63-.774l.095-.112c.18-.213.355-.42.527-.634.793-.99 1.425-2.025 1.425-3.561C18.5 5.243 15.81 2.5 12 2.5ZM8.75 18h6.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1 0-1.5Zm.75 3.75a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 0 1.5h-3.5a.75.75 0 0 1-.75-.75Z"></path></svg> Explanation</div>
-<p class="sd-card-text">Discussion of the architecture and the ideas behind the design.</p>
-</div>
-<div class="sd-card-footer docutils">
-<p class="sd-card-text">Understand the design →</p>
+Explanation</div>
+<p class="sd-card-text">Understand the data model, analysis conventions, and design decisions.</p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="explanation/index.html"><span class="doc">Explanation</span></a></div>
 </div>
 </div>
 </div>
-</section>
-<hr class="docutils" />
-<section id="highlights">
-<h2>Highlights<a class="headerlink" href="#highlights" title="Link to this heading">#</a></h2>
-<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
-<div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-3 sd-row-cols-lg-3 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
-<div class="sd-col sd-d-flex-row docutils">
-<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
-<div class="sd-card-body docutils">
-<div class="sd-card-title sd-font-weight-bold docutils">
-Multidimensional fields</div>
-<p class="sd-card-text">Work natively with <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>, <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">Scalar</span></code>/<code class="docutils literal notranslate"><span class="pre">Vector</span></code>/<code class="docutils literal notranslate"><span class="pre">TensorField</span></code> containers.</p>
-</div>
-<a class="sd-stretched-link sd-hide-link-text reference internal" href="how-to/containers/index.html"><span class="doc">Containers &amp; matrices</span></a></div>
-</div>
-<div class="sd-col sd-d-flex-row docutils">
-<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
-<div class="sd-card-body docutils">
-<div class="sd-card-title sd-font-weight-bold docutils">
-Integrated analysis</div>
-<p class="sd-card-text">BrUCo noise budgets, ARIMA modelling, and fitting / MCMC pipelines in one place.</p>
-</div>
-<a class="sd-stretched-link sd-hide-link-text reference internal" href="how-to/case-studies/index.html"><span class="doc">Case studies</span></a></div>
-</div>
-<div class="sd-col sd-d-flex-row docutils">
-<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
-<div class="sd-card-body docutils">
-<div class="sd-card-title sd-font-weight-bold docutils">
-Broad interop</div>
-<p class="sd-card-text">~50 interoperability modules for converting data to and from external scientific libraries.</p>
-</div>
-<a class="sd-stretched-link sd-hide-link-text reference internal" href="how-to/interop.html"><span class="doc">Interop / Conversion Guide</span></a></div>
-</div>
-</div>
-</div>
-</section>
-<hr class="docutils" />
-<section id="install-and-try-it">
-<h2>Install and try it<a class="headerlink" href="#install-and-try-it" title="Link to this heading">#</a></h2>
-<p>GWexpy v0.2.0 is available from both PyPI and conda-forge.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>gwexpy
-<span class="c1"># or</span>
-conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>gwexpy
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrix</span>
-
-<span class="c1"># Load a multi-channel segment and project it to the frequency domain</span>
-<span class="n">tsm</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.gwf&quot;</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;X1:CH1&quot;</span><span class="p">,</span> <span class="s2">&quot;X1:CH2&quot;</span><span class="p">])</span>
-<span class="n">fsm</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">fft</span><span class="p">()</span>
-
-<span class="c1"># Coherence of each channel against a reference channel</span>
-<span class="n">ref</span> <span class="o">=</span> <span class="n">tsm</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># X1:CH1 as a TimeSeries</span>
-<span class="n">coh</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">coherence</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-</pre></div>
-</div>
+<p>For corresponding GWpy APIs, default finite numerical results, sample
+selection, axis information, and successful completion remain GWpy-compatible.
+Intentional divergence from these guarantees requires explicit user opt-in, except for a
+named, human-approved safety exception satisfying all policy gates. See the
+<a class="reference internal" href="explanation/gwpy_compatibility_policy.html"><span class="doc std std-doc">GWpy compatibility policy</span></a>.</p>
+<p id="highlights">For contribution, testing, and release information, use the <a class="reference internal" href="about/developer.html"><span class="std std-doc">Developer guide</span></a>.</p>
 <div class="toctree-wrapper compound">
 </div>
 </section>
@@ -535,6 +558,7 @@ conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> <
 
                 </article>
               
+
               
               
               
@@ -570,9 +594,9 @@ conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> <
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#find-your-path">Find your path</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#highlights">Highlights</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-and-try-it">Install and try it</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#start-from-your-background">Start from your background</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#try-a-multi-channel-asd">Try a multi-channel ASD</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#browse-the-documentation">Browse the documentation</a></li>
 </ul>
   </nav></div>
 

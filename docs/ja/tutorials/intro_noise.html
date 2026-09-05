@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=2d0c2261" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -381,13 +381,16 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="セクションナビゲーション">
   <p class="bd-links__title" role="heading" aria-level="1">セクションナビゲーション</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">ここから始める</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">最初のレッスン</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">はじめに</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">インストールガイド (Installation)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">クイックスタート (Quickstart)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="first_analysis.html">最初の解析</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commissioner.html">Commissioner：GUI から保存可能な解析へ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scientific_python.html">科学技術計算の Python から GWexpy へ</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">基本レッスン</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">基礎レッスン</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="intro_timeseries.html">TimeSeries: 基本</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro_frequencyseries.html">FrequencySeries: 基本</a></li>
@@ -451,6 +454,15 @@
 </div>
               
               
+  <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
+  <span>開発版ドキュメント · 0.2.3</span>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/941a377a0305336b66231d8ec8a42c14b364b244">941a377a</a>
+  · 入門例の検証対象 0.2.2
+  · <a href="../about/documentation_version.html">版情報</a>
+  · <a href="../about/known_limitations.html">既知の制限</a>
+</div>
+  
+  
               
                 
 <div id="searchbox"></div>
@@ -461,9 +473,35 @@
 <p><strong>目的</strong>: <strong>GWexpy</strong> を使用して重力波データのノイズを生成・操作・モデル化する方法を学びます。</p>
 <p><strong>前提条件</strong>:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">gwinc</span></code> (optional, for detector models)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwinc</span></code>（オプション、検出器モデル用）</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">obspy</span></code>（オプション、地震モデル用）</p></li>
 </ul>
+<section id="from-an-asd-model-to-a-measured-spectrum">
+<h2>ASD モデルから測定スペクトルへ<a class="headerlink" href="#from-an-asd-model-to-a-measured-spectrum" title="Link to this heading">#</a></h2>
+<p>最初の例は基本インストールだけで実行できます。モデルが表すのは片側の電圧 ASD で、サンプル値の標準偏差ではありません。シードを固定することで、生成波形を再現できます。Welch 法の平均化による推定には有限の統計的ばらつきがあり、各ビンがモデル値に一致する必要はありません。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise</span><span class="w"> </span><span class="kn">import</span> <span class="n">asd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_asd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">asd</span><span class="o">.</span><span class="n">white_noise</span><span class="p">(</span><span class="mf">0.01</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">V</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">waveform</span> <span class="o">=</span> <span class="n">from_asd</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">measured</span> <span class="o">=</span> <span class="n">waveform</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;welch&quot;</span><span class="p">)</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">measured</span><span class="p">,</span> <span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s2">&quot;ASD model&quot;</span><span class="p">,</span> <span class="s2">&quot;Welch estimate&quot;</span><span class="p">])</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;noise-model-comparison.png&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">measured</span><span class="o">.</span><span class="n">unit</span><span class="o">.</span><span class="n">is_equivalent</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/413a56f7d402ce458ba312b3e7edb007d2e548eb78f8759cb6807e2ed9033ac6.png" src="../_images/413a56f7d402ce458ba312b3e7edb007d2e548eb78f8759cb6807e2ed9033ac6.png" />
+</div>
+</div>
+</section>
 <section id="generating-asd-amplitude-spectral-density">
 <h2>1. ASD（振幅スペクトル密度）の生成<a class="headerlink" href="#generating-asd-amplitude-spectral-density" title="Link to this heading">#</a></h2>
 <p>GWexpy は、理論的なべき乗則から検出器固有モデルまで、ASD を生成するいくつかの方法を提供します。</p>
@@ -471,8 +509,6 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -520,7 +556,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/fd1fb63636d0fd7329ff8f88fe6524840fdf6acbaa274fceddf82a685ef89580.png" src="../_images/fd1fb63636d0fd7329ff8f88fe6524840fdf6acbaa274fceddf82a685ef89580.png" />
+<img alt="../_images/1fe30aa7ff74f662e27aff488e1489cfa7f52ccbf01b1271f291aaa710a9f72f.png" src="../_images/1fe30aa7ff74f662e27aff488e1489cfa7f52ccbf01b1271f291aaa710a9f72f.png" />
 </div>
 </div>
 </section>
@@ -569,7 +605,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/38e08736a1e9f359b5f02e808823d5f3f9cadd5e8e474743688ef0d6b108e8c7.png" src="../_images/38e08736a1e9f359b5f02e808823d5f3f9cadd5e8e474743688ef0d6b108e8c7.png" />
+<img alt="../_images/9486b4c2ed45b185de62eb158a65bc411232fe8337c7d3d13c32ec7204f044b3.png" src="../_images/9486b4c2ed45b185de62eb158a65bc411232fe8337c7d3d13c32ec7204f044b3.png" />
 </div>
 </div>
 </section>
@@ -639,6 +675,7 @@
 
                 </article>
               
+
               
               
               
@@ -683,6 +720,7 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#from-an-asd-model-to-a-measured-spectrum">ASD モデルから測定スペクトルへ</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-asd-amplitude-spectral-density">1. ASD（振幅スペクトル密度）の生成</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-time-domain-noise">2. 時間領域ノイズの生成</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#spectral-lines-and-masking">3. スペクトル線とマスキング</a></li>

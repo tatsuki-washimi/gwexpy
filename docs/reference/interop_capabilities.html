@@ -1,0 +1,1314 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Find the right GWexpy interop path for converting objects to and from storage containers, analysis libraries, ML backends, and domain-specific tools." name="description" />
+
+    <title>Interop / Conversion Guide &#8212; GWexpy</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../_static/documentation_options.js?v=6808a718"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=ccdb6887"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/interop_capabilities';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/reference/interop_capabilities.html" />
+    <link rel="icon" href="../_static/favicon.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Plotting" href="api/plot.html" />
+    <link rel="prev" title="File I/O Supported Formats Guide" href="io_capabilities.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  <link rel="alternate" hreflang="en" href="https://tatsuki-washimi.github.io/gwexpy/docs/reference/interop_capabilities.html" />
+  <link rel="alternate" hreflang="ja" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/reference/interop_capabilities.html" />
+  <link rel="alternate" hreflang="x-default" href="https://tatsuki-washimi.github.io/gwexpy/docs/reference/interop_capabilities.html" />
+
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/logo.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">GWexpy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how-to/index.html">
+    How-to guides
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../explanation/index.html">
+    Explanation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item"><div class="navbar-item language-switcher">
+    <span class="active">EN / </span>
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/reference/interop_capabilities.html" title="日本語">
+      <i class="fa-solid fa-language"></i> 日本語</a>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how-to/index.html">
+    How-to guides
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../explanation/index.html">
+    Explanation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item"><div class="navbar-item language-switcher">
+    <span class="active">EN / </span>
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/reference/interop_capabilities.html" title="日本語">
+      <i class="fa-solid fa-language"></i> 日本語</a>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Containers</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/timeseries.html">Time Series</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.timeseries.TimeSeries.html">gwexpy.timeseries.TimeSeries</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/frequencyseries.html">Frequency Series</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.frequencyseries.FrequencySeries.html">gwexpy.frequencyseries.FrequencySeries</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/spectrogram.html">Spectrogram</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.spectrogram.Spectrogram.html">gwexpy.spectrogram.Spectrogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/matrix.html">Matrix Containers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.timeseries.TimeSeriesMatrix.html">gwexpy.timeseries.TimeSeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.frequencyseries.FrequencySeriesMatrix.html">gwexpy.frequencyseries.FrequencySeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.spectrogram.SpectrogramMatrix.html">gwexpy.spectrogram.SpectrogramMatrix</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="api/fields.html">Fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/types.html">Types</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/table.html">Table</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.table.SegmentTable.html">gwexpy.table.SegmentTable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.table.SegmentCell.html">gwexpy.table.SegmentCell</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/histogram.html">Histogram (gwexpy.histogram)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.histogram.Histogram.html">gwexpy.histogram.Histogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.histogram.HistogramDict.html">gwexpy.histogram.HistogramDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.histogram.HistogramList.html">gwexpy.histogram.HistogramList</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Analysis &amp; signal processing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="api/spectral.html">Spectral</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/signal.html">Signal Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/analysis.html">Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/fitting.html">Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/noise.html">Noise</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/segments.html">Segments</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.segments.DataQualityFlag.html">gwexpy.segments.DataQualityFlag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.segments.DataQualityDict.html">gwexpy.segments.DataQualityDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.segments.Segment.html">gwexpy.segments.Segment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.segments.SegmentList.html">gwexpy.segments.SegmentList</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="api/detector.html">Detector Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/astro.html">Astrophysics Utilities</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Interoperability &amp; I/O</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/interop.html">Interoperability (gwexpy.interop)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.hdf5_.html">gwexpy.interop.hdf5_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.frequency.html">gwexpy.interop.frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.json_.html">gwexpy.interop.json_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.sqlite_.html">gwexpy.interop.sqlite_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.zarr_.html">gwexpy.interop.zarr_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.netcdf4_.html">gwexpy.interop.netcdf4_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.pandas_.html">gwexpy.interop.pandas_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.polars_.html">gwexpy.interop.polars_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.xarray_.html">gwexpy.interop.xarray_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.astropy_.html">gwexpy.interop.astropy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.dask_.html">gwexpy.interop.dask_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.torch_.html">gwexpy.interop.torch_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.torch_dataset.html">gwexpy.interop.torch_dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.tensorflow_.html">gwexpy.interop.tensorflow_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.jax_.html">gwexpy.interop.jax_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.cupy_.html">gwexpy.interop.cupy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.finesse_.html">gwexpy.interop.finesse_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.control_.html">gwexpy.interop.control_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.simpeg_.html">gwexpy.interop.simpeg_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.mt_.html">gwexpy.interop.mt_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.mne_.html">gwexpy.interop.mne_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.neo_.html">gwexpy.interop.neo_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.quantities_.html">gwexpy.interop.quantities_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.pyroomacoustics_.html">gwexpy.interop.pyroomacoustics_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.pydub_.html">gwexpy.interop.pydub_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.specutils_.html">gwexpy.interop.specutils_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.pyspeckit_.html">gwexpy.interop.pyspeckit_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.pyspice_.html">gwexpy.interop.pyspice_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.skrf_.html">gwexpy.interop.skrf_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.pyoma_.html">gwexpy.interop.pyoma_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.multitaper_.html">gwexpy.interop.multitaper_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.sdypy_.html">gwexpy.interop.sdypy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.sdynpy_.html">gwexpy.interop.sdynpy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.meep_.html">gwexpy.interop.meep_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.openems_.html">gwexpy.interop.openems_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.emg3d_.html">gwexpy.interop.emg3d_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.meshio_.html">gwexpy.interop.meshio_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.metpy_.html">gwexpy.interop.metpy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.wrf_.html">gwexpy.interop.wrf_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.harmonica_.html">gwexpy.interop.harmonica_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.exudyn_.html">gwexpy.interop.exudyn_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.opensees_.html">gwexpy.interop.opensees_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.obspy_.html">gwexpy.interop.obspy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.lal_.html">gwexpy.interop.lal_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.gwinc_.html">gwexpy.interop.gwinc_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.pycbc_.html">gwexpy.interop.pycbc_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.root_.html">gwexpy.interop.root_</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="api/io.html">I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io_capabilities.html">File I/O Supported Formats Guide</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Interop / Conversion Guide</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Plotting &amp; tools</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="api/plot.html">Plotting</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/time.html">Time (gwexpy.time)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.time.Time.html">gwexpy.time.Time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.time.LIGOTimeGPS.html">gwexpy.time.LIGOTimeGPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.time.to_gps.html">gwexpy.time.to_gps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.time.from_gps.html">gwexpy.time.from_gps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.time.tconvert.html">gwexpy.time.tconvert</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">GWpy differences</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="gwpy_added_api.html">GWpy Difference API Index</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Interop / Conversion Guide</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+  <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
+  <span>Development documentation · 0.2.3</span>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/941a377a0305336b66231d8ec8a42c14b364b244">941a377a</a>
+  · Intro examples tested with 0.2.2
+  · <a href="../about/documentation_version.html">Version details</a>
+  · <a href="../about/known_limitations.html">Known limitations</a>
+</div>
+  
+  
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="interop-conversion-guide">
+<h1>Interop / Conversion Guide<a class="headerlink" href="#interop-conversion-guide" title="Link to this heading">#</a></h1>
+<p>This page is the dedicated <strong>interop guide</strong> for <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>.
+Here, interop means <strong>conversion and bridging</strong> centered on <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> APIs.</p>
+<p>This page covers:</p>
+<ul class="simple">
+<li><p>object conversion via <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code></p></li>
+<li><p>bridges to external libraries and external data models</p></li>
+<li><p>object-level file-bridge helpers</p></li>
+<li><p>asymmetric conversion APIs</p></li>
+<li><p>conversions that apply only to some classes</p></li>
+</ul>
+<p>This page does not cover:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Class.read(...,</span> <span class="pre">format=...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obj.write(...,</span> <span class="pre">format=...)</span></code></p></li>
+<li><p>the choice of local file formats themselves</p></li>
+</ul>
+<p>For local file formats and direct <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> / <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> paths, see the <a class="reference internal" href="io_capabilities.html"><span class="std std-doc">File I/O Supported Formats Guide</span></a>.</p>
+<section id="direct-i-o-names">
+<h2>Direct I/O Names<a class="headerlink" href="#direct-i-o-names" title="Link to this heading">#</a></h2>
+<p>These are the canonical direct-I/O format names used by <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>.
+Legacy aliases remain supported during the transition, but new examples should prefer the canonical spellings below.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Canonical name</p></th>
+<th class="head"><p>Legacy aliases</p></th>
+<th class="head"><p>Typical direct-I/O entry points</p></th>
+<th class="head"><p>External package / schema</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mseed</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">miniseed</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;mseed&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;mseed&quot;)</span></code></p></td>
+<td><p>ObsPy</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">nc</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">netcdf4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code></p></td>
+<td><p><a class="reference external" href="https://unidata.github.io/netcdf4-python/">netCDF4</a>, <a class="reference external" href="https://docs.xarray.dev/">xarray</a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hdf.ndscope</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ndscope-hdf5</span></code>, <code class="docutils literal notranslate"><span class="pre">ndscope_hdf5</span></code>, <code class="docutils literal notranslate"><span class="pre">ndscopehdf5</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;hdf.ndscope&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;hdf.ndscope&quot;)</span></code></p></td>
+<td><p>ndscope HDF5 schema</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">xml.diaggui</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dttxml</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;xml.diaggui&quot;,</span> <span class="pre">products=&quot;...&quot;)</span></code></p></td>
+<td><p>DiagGUI / DTT XML</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="jump-links">
+<h2>Jump Links<a class="headerlink" href="#jump-links" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="#interop-en-how-to-read">How to Read This Page</a></p></li>
+<li><p><a class="reference internal" href="#interop-en-status-labels">Status Labels</a></p></li>
+<li><p><a class="reference internal" href="#interop-en-foundation-layer">S. Foundation Layer</a></p></li>
+<li><p><a class="reference internal" href="#interop-en-storage-conversion">A. Storage Formats and Container Conversion</a></p></li>
+<li><p><a class="reference internal" href="#interop-en-analysis-conversion">B. Analysis Library and Object Conversion</a></p></li>
+<li><p><a class="reference internal" href="#interop-en-ml-conversion">C. Scientific Computing, Signal Processing, Machine Learning, and Array Backends</a></p></li>
+<li><p><a class="reference internal" href="#interop-en-domain-conversion">D. Physics and Domain-Specific Libraries</a></p></li>
+</ul>
+</section>
+<section id="how-to-read-this-page">
+<span id="interop-en-how-to-read"></span><h2>How to Read This Page<a class="headerlink" href="#how-to-read-this-page" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>If you want to convert a live object to a <strong>storage format or container</strong>, start with A.</p></li>
+<li><p>If you want to convert to <strong>analysis objects</strong> such as pandas, xarray, astropy, or dask, start with B.</p></li>
+<li><p>If you want to hand data to <strong>PyTorch, TensorFlow, JAX, or CuPy</strong>, start with C.</p></li>
+<li><p>If you want to connect to <strong>ROOT, ObsPy, LAL, PyCBC</strong>, or other domain-specific libraries, start with D.</p></li>
+<li><p>If you want to move <strong>Field</strong> objects into xarray, NetCDF4, or Zarr workflows via <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code>, treat that as interop, not as direct I/O.</p></li>
+</ul>
+</section>
+<section id="s-foundation-layer">
+<span id="interop-en-foundation-layer"></span><h2>S. Foundation Layer<a class="headerlink" href="#s-foundation-layer" title="Link to this heading">#</a></h2>
+<p>This layer names the libraries that provide the numerical and gravitational-wave context for the rest of the page. It is not a ranking by usage statistics.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Library</p></th>
+<th class="head"><p>Role in the GWexpy ecosystem</p></th>
+<th class="head"><p>Interop note</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://gwpy.github.io/">GWpy</a></p></td>
+<td><p>Base time-series and frequency-series ecosystem</p></td>
+<td><p>GWexpy extends its object model rather than treating it as an optional conversion target.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/">NumPy</a> / <a class="reference external" href="https://scipy.org/">SciPy</a></p></td>
+<td><p>Array representation and numerical routines</p></td>
+<td><p>Foundation for many public APIs; no dedicated round-trip row is implied.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.astropy.org/">Astropy</a></p></td>
+<td><p>Units, time, and astronomy-oriented object conventions</p></td>
+<td><p>The explicit <code class="docutils literal notranslate"><span class="pre">to_astropy_timeseries()</span></code> and <code class="docutils literal notranslate"><span class="pre">from_astropy_timeseries()</span></code> bridge is listed in B.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://lscsoft.docs.ligo.org/lalsuite/">LALSuite</a></p></td>
+<td><p>Gravitational-wave time and frequency series conventions</p></td>
+<td><p>The explicit LAL conversion APIs are listed in D.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="status-labels">
+<span id="interop-en-status-labels"></span><h2>Status Labels<a class="headerlink" href="#status-labels" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Public</span></code>: implemented and reachable from <code class="docutils literal notranslate"><span class="pre">reference/api/interop</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Implemented</span></code>: implemented, but the page still needs concrete navigation or reference polish</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Implemented,</span> <span class="pre">some</span> <span class="pre">paths</span> <span class="pre">still</span> <span class="pre">in</span> <span class="pre">progress</span></code>: the main route works, but some conversion paths are still incomplete</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">In</span> <span class="pre">progress</span></code>: the implementation or the public presentation is not finished yet</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Planned</span></code>: explicitly in scope, but not implemented yet</p></li>
+</ul>
+</section>
+<section id="optional-dependency-policy">
+<h2>Optional Dependency Policy<a class="headerlink" href="#optional-dependency-policy" title="Link to this heading">#</a></h2>
+<p>Interop bridges import optional runtime backends lazily. If a runtime backend is
+missing, the bridge raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> with installation guidance instead of
+importing the backend at <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">gwexpy</span></code> time.</p>
+<p>Some import-only adapters consume objects or dictionaries that were produced by
+external packages, but do not import those producer packages themselves. For
+example, <code class="docutils literal notranslate"><span class="pre">from_pyoma_results()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_mtspec()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_mtspec_array()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">from_uff_dataset55()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_uff_dataset58()</span></code>, the <code class="docutils literal notranslate"><span class="pre">from_sdynpy_*()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">from_metpy_dataarray()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_wrf_variable()</span></code>, and <code class="docutils literal notranslate"><span class="pre">from_harmonica_grid()</span></code>
+helpers accept caller-supplied pyOMA, multitaper, mtspec, pyuff, SDynPy-style,
+MetPy-enhanced, wrf-python, or Harmonica objects. Install those packages when
+you need to create the source objects, not because the adapter imports them
+directly.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Policy</p></th>
+<th class="head"><p>Dependencies</p></th>
+<th class="head"><p>Install guidance</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Declared GWexpy extras</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">zarr</span></code>, <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code>, <code class="docutils literal notranslate"><span class="pre">xarray</span></code>, <code class="docutils literal notranslate"><span class="pre">obspy</span></code>, <code class="docutils literal notranslate"><span class="pre">mth5</span></code>, <code class="docutils literal notranslate"><span class="pre">lalsuite</span></code>, <code class="docutils literal notranslate"><span class="pre">gwinc</span></code>, <code class="docutils literal notranslate"><span class="pre">control</span></code>, <code class="docutils literal notranslate"><span class="pre">pydub</span></code></p></td>
+<td><p>Install the matching extra from PyPI as described in the <a class="reference internal" href="../tutorials/installation.html"><span class="std std-doc">Installation Guide</span></a>, for example <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;gwexpy[control]&quot;</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Bare package installs</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ROOT</span></code>, <code class="docutils literal notranslate"><span class="pre">polars</span></code>, <code class="docutils literal notranslate"><span class="pre">dask</span></code>, <code class="docutils literal notranslate"><span class="pre">torch</span></code>, <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code>, <code class="docutils literal notranslate"><span class="pre">jax</span></code>, <code class="docutils literal notranslate"><span class="pre">cupy</span></code>, <code class="docutils literal notranslate"><span class="pre">pycbc</span></code>, <code class="docutils literal notranslate"><span class="pre">finesse</span></code>, <code class="docutils literal notranslate"><span class="pre">simpeg</span></code>, <code class="docutils literal notranslate"><span class="pre">mne</span></code>, <code class="docutils literal notranslate"><span class="pre">neo</span></code>, <code class="docutils literal notranslate"><span class="pre">quantities</span></code>, <code class="docutils literal notranslate"><span class="pre">pyroomacoustics</span></code>, <code class="docutils literal notranslate"><span class="pre">specutils</span></code>, <code class="docutils literal notranslate"><span class="pre">pyspeckit</span></code>, <code class="docutils literal notranslate"><span class="pre">PySpice</span></code>, <code class="docutils literal notranslate"><span class="pre">skrf</span></code>, <code class="docutils literal notranslate"><span class="pre">pyOMA</span></code>, <code class="docutils literal notranslate"><span class="pre">multitaper</span></code>, <code class="docutils literal notranslate"><span class="pre">mtspec</span></code>, <code class="docutils literal notranslate"><span class="pre">pyuff</span></code>, <code class="docutils literal notranslate"><span class="pre">sdynpy</span></code>, <code class="docutils literal notranslate"><span class="pre">metpy</span></code>, <code class="docutils literal notranslate"><span class="pre">wrf-python</span></code>, <code class="docutils literal notranslate"><span class="pre">harmonica</span></code>, <code class="docutils literal notranslate"><span class="pre">emg3d</span></code>, <code class="docutils literal notranslate"><span class="pre">meshio</span></code></p></td>
+<td><p>Install the named backend directly when the bridge imports it or when you need it to create accepted source objects.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy[all]</span></code> installs the declared GWexpy extras as a convenience bundle. It
+does not install every public interop backend; entries in the bare package row
+still require direct backend installs when the bridge imports the backend or
+when you need to create accepted source objects.</p>
+<p>The xarray-backed interop bridges list the <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code> extra because GWexpy does
+not currently publish a standalone <code class="docutils literal notranslate"><span class="pre">xarray</span></code> extra. If you only need in-memory
+xarray conversion and want to avoid installing <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code>, install <code class="docutils literal notranslate"><span class="pre">xarray</span></code>
+directly.</p>
+</section>
+<section id="a-storage-formats-and-container-conversion">
+<span id="interop-en-storage-conversion"></span><h2>A. Storage Formats and Container Conversion<a class="headerlink" href="#a-storage-formats-and-container-conversion" title="Link to this heading">#</a></h2>
+<p>This section is for conversions where the target is a <strong>file format, container, or storage representation</strong>.
+Use it when the question is “what storage representation do I bridge to?”</p>
+<ul class="simple">
+<li><p>Purpose: identify object-level bridges whose target is a storage representation</p></li>
+<li><p>Input: a <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> object plus a destination container or storage backend</p></li>
+<li><p>Output: a converted object, container, or storage-facing representation via <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code></p></li>
+</ul>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Target</p></th>
+<th class="head"><p>API / Entry</p></th>
+<th class="head"><p>Status</p></th>
+<th class="head"><p>Notes</p></th>
+<th class="head"><p>Details</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.hdfgroup.org/solutions/hdf5/">HDF5</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_hdf5()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_hdf5()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>object-level conversion</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.hdf5_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>HDF5 FrequencySeries</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_hdf5_frequencyseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_hdf5_frequencyseries()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>FrequencySeries HDF5 helpers</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.frequency.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>JSON</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_json()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_json()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>JSON string conversion</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.json_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Python dict</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_dict()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_dict()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>dict conversion</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.sqlite.org/index.html">SQLite</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_sqlite()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_sqlite()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>object-level bridge</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.sqlite_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://zarr.readthedocs.io/en/stable/">Zarr</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_zarr()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_zarr()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>array/store bridge</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.zarr_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://unidata.github.io/netcdf4-python/">NetCDF4</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_netcdf4()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_netcdf4()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>object-level bridge</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.netcdf4_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="b-analysis-library-and-object-conversion">
+<span id="interop-en-analysis-conversion"></span><h2>B. Analysis Library and Object Conversion<a class="headerlink" href="#b-analysis-library-and-object-conversion" title="Link to this heading">#</a></h2>
+<p>This section is for conversions where the target is a <strong>Python object model</strong> rather than a storage format.
+Use it when the question is “which analysis-library object do I bridge to?”</p>
+<ul class="simple">
+<li><p>Purpose: pick the correct bridge into analysis-oriented Python objects</p></li>
+<li><p>Input: a <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> object or an external analysis object such as pandas, xarray, or astropy</p></li>
+<li><p>Output: an analysis-library object or a reconstructed <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> object</p></li>
+</ul>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Target</p></th>
+<th class="head"><p>API / Entry</p></th>
+<th class="head"><p>Status</p></th>
+<th class="head"><p>Notes</p></th>
+<th class="head"><p>Details</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>NumPy</p></td>
+<td><p>no dedicated <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> API</p></td>
+<td><p>Implemented as infrastructure</p></td>
+<td><p>widely used as the internal array basis</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://pandas.pydata.org/">pandas</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_pandas_series()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pandas_series()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_pandas_dataframe()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pandas_dataframe()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>Series / DataFrame</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.pandas_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>pandas FrequencySeries</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_pandas_frequencyseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pandas_frequencyseries()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>FrequencySeries ⇔ pandas.Series</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.frequency.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://pola.rs/">polars</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_polars_series()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_polars_series()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_polars_dataframe()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_polars_dataframe()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_polars_frequencyseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_polars_dict()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_polars_dict()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>Series / DataFrame / dict / FrequencySeries</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.polars_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://docs.xarray.dev/">xarray</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_xarray()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_xarray()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>DataArray / Dataset</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.xarray_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://docs.xarray.dev/">xarray</a> Field</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_xarray_field()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_xarray_field()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>ScalarField / VectorField</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.xarray_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>xarray FrequencySeries</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_xarray_frequencyseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_xarray_frequencyseries()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>FrequencySeries ⇔ xarray.DataArray</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.frequency.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://www.astropy.org/">astropy</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_astropy_timeseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_astropy_timeseries()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">astropy.timeseries.TimeSeries</span></code></p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.astropy_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.dask.org/">dask</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_dask()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_dask()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>dask array bridge</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.dask_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="c-scientific-computing-signal-processing-machine-learning-and-array-backends">
+<span id="interop-en-ml-conversion"></span><h2>C. Scientific Computing, Signal Processing, Machine Learning, and Array Backends<a class="headerlink" href="#c-scientific-computing-signal-processing-machine-learning-and-array-backends" title="Link to this heading">#</a></h2>
+<p>This section is for accelerated computing and ML-oriented bridges.
+Check whether only the array payload moves, or whether metadata can also be reconstructed.</p>
+<ul class="simple">
+<li><p>Purpose: decide whether an ML or accelerated-array bridge matches your workflow</p></li>
+<li><p>Input: a <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> object and an ML / GPU / array backend target</p></li>
+<li><p>Output: tensors or accelerated arrays, and in some cases a route back into <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code></p></li>
+</ul>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Target</p></th>
+<th class="head"><p>API / Entry</p></th>
+<th class="head"><p>Status</p></th>
+<th class="head"><p>Notes</p></th>
+<th class="head"><p>Details</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://pytorch.org/">PyTorch</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_torch()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_torch()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>tensor conversion</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.torch_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://pytorch.org/">PyTorch</a> Dataset</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesWindowDataset</span></code>, <code class="docutils literal notranslate"><span class="pre">to_torch_dataset()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_torch_dataloader()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>windowed dataset for training</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.torch_dataset.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.tensorflow.org/">TensorFlow</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_tf()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_tf()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>tensor conversion</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.tensorflow_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://jax.readthedocs.io/en/latest/">JAX</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_jax()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_jax()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>JAX array conversion</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.jax_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://cupy.dev/">CuPy</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_cupy()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_cupy()</span></code>, <code class="docutils literal notranslate"><span class="pre">is_cupy_available()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>GPU array conversion</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.cupy_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://librosa.org/doc/latest/index.html">librosa</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_librosa()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>audio-feature export; it sits between analysis objects and ML workflows, and is grouped here primarily for the latter</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.pydub_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://pyroomacoustics.readthedocs.io/en/stable/">pyroomacoustics</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_pyroomacoustics_source()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_pyroomacoustics_stft()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_rir()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_mic_signals()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_source()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_stft()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_field()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>room-acoustics simulation and array-processing workflows</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.pyroomacoustics_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="d-physics-and-domain-specific-libraries">
+<span id="interop-en-domain-conversion"></span><h2>D. Physics and Domain-Specific Libraries<a class="headerlink" href="#d-physics-and-domain-specific-libraries" title="Link to this heading">#</a></h2>
+<p>This section is for domain-specific libraries and specialized objects.
+Read the status carefully: some targets are full round-trips, some are mainly import paths, and some are still being organized publicly. The material-science and life-science entries are not lower-value domains: they provide routes for future method transfer and for research such as material thermal-noise studies.</p>
+<ul class="simple">
+<li><p>Purpose: find bridges into domain-specific tools without confusing them with direct file I/O</p></li>
+<li><p>Input: a <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> object or a domain-library object such as ObsPy, ROOT, LAL, or PyCBC</p></li>
+<li><p>Output: a target-library object, imported data, or a partial round-trip depending on status</p></li>
+</ul>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Target</p></th>
+<th class="head"><p>API / Entry</p></th>
+<th class="head"><p>Status</p></th>
+<th class="head"><p>Notes</p></th>
+<th class="head"><p>Details</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://root.cern/">ROOT</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_tgraph()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_th1d()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_th2d()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_tmultigraph()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_root()</span></code>, <code class="docutils literal notranslate"><span class="pre">write_root_file()</span></code></p></td>
+<td><p>Implemented, some paths still in progress</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TH1</span> <span class="pre">-&gt;</span> <span class="pre">non-Histogram</span></code> is incomplete</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.root_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://docs.obspy.org/">ObsPy</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_obspy()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_obspy()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_obspy_trace()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_obspy_trace()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>seismic bridge</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.obspy_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://lscsoft.docs.ligo.org/lalsuite/">LALSuite</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_lal_timeseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_lal_timeseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_lal_frequencyseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_lal_frequencyseries()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>GW time / frequency series</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.lal_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://pycbc.org/">PyCBC</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_pycbc_timeseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pycbc_timeseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_pycbc_frequencyseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pycbc_frequencyseries()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>GW time / frequency series</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.pycbc_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://git.ligo.org/gwinc/pygwinc">GWINC</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_gwinc_budget()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>budget import</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.gwinc_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://finesse.ifosim.org/">Finesse</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_finesse_frequency_response()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_finesse_noise()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>optics / response</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.finesse_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://python-control.readthedocs.io/en/latest/">python-control</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_control_frd()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_control_frd()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_control_response()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>FRD / response. Requires the <code class="docutils literal notranslate"><span class="pre">control</span></code> extra, for example <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;gwexpy[control]&quot;</span></code>. FRD conversion is available from <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> / <code class="docutils literal notranslate"><span class="pre">FrequencySeriesDict</span></code>; time-response import is available via <code class="docutils literal notranslate"><span class="pre">TimeSeries.from_control()</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.from_control()</span></code>.</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.control_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://simpeg.xyz/">SimPEG</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_simpeg()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_simpeg()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>geophysics</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.simpeg_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://mth5.readthedocs.io/en/latest/">MTH5</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_mth5()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_mth5()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>magnetotellurics</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.mt_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>MTpy</p></td>
+<td><p>dedicated <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> API still in progress</p></td>
+<td><p>In progress</p></td>
+<td><p>MTH5-adjacent organization is incomplete</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://mne.tools/stable/index.html">MNE-Python</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_mne()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_mne()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_mne_rawarray()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_mne_raw()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>EEG / biosignal</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.mne_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://neo.readthedocs.io/en/latest/">Neo</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_neo()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_neo()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>electrophysiology</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.neo_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Elephant</p></td>
+<td><p>dedicated <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> API still in progress</p></td>
+<td><p>In progress</p></td>
+<td><p>organization with <code class="docutils literal notranslate"><span class="pre">Neo</span></code> and <code class="docutils literal notranslate"><span class="pre">quantities</span></code> is incomplete</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://python-quantities.readthedocs.io/en/latest/">quantities</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_quantity()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_quantity()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>quantity bridge</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.quantities_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.pydub.com/">pydub</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_pydub()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pydub()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>audio object bridge</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.pydub_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://specutils.readthedocs.io/en/stable/">specutils</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_specutils()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_specutils()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>astronomy spectra</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.specutils_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://pyspeckit.readthedocs.io/en/latest/">pyspeckit</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_pyspeckit()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyspeckit()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>spectral analysis</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.pyspeckit_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>PySpice</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_pyspice_transient()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyspice_ac()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyspice_noise()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyspice_distortion()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>mainly import</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.pyspice_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://scikit-rf.readthedocs.io/en/latest/">scikit-rf</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_skrf_network()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_skrf_network()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_skrf_impulse_response()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_skrf_step_response()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>RF network analysis</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.skrf_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://py-oma.readthedocs.io/en/latest/">pyOMA</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_pyoma_results()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>mainly import</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.pyoma_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>multitaper</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_mtspec()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>mainly import</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.multitaper_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>mtspec</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_mtspec_array()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>mainly import</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.multitaper_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>pySDy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_uff_dataset55()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_uff_dataset58()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>mainly import</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.sdypy_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>SDynPy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_sdynpy_frf()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_sdynpy_shape()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_sdynpy_timehistory()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>mainly import</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.sdynpy_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Meep</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_meep_hdf5()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>mainly import</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.meep_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>openEMS</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_openems_hdf5()</span></code>, <code class="docutils literal notranslate"><span class="pre">DUMP_TYPE_MAP</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>mainly import</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.openems_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>emg3d</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_emg3d_field()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_emg3d_field()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_emg3d_h5()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>EM field import/export</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.emg3d_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>meshio</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_meshio()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_fenics_xdmf()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_fenics_vtk()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>mainly import</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.meshio_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>MetPy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_metpy_dataarray()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>mainly import</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.metpy_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>WRF</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_wrf_variable()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>mainly import</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.wrf_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Harmonica</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_harmonica_grid()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>mainly import</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.harmonica_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Exudyn</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_exudyn_sensor()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>mainly import</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.exudyn_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>OpenSees</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_opensees_recorder()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>mainly import</p></td>
+<td><p><a class="reference internal" href="api/gwexpy.interop.opensees_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="related-pages">
+<h2>Related Pages<a class="headerlink" href="#related-pages" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../how-to/interop/intro_interop.html"><span class="std std-doc">Interop tutorial</span></a></p></li>
+<li><p><a class="reference internal" href="api/interop.html"><span class="doc std std-doc">Interop API reference</span></a></p></li>
+<li><p><a class="reference internal" href="io_capabilities.html"><span class="std std-doc">File I/O Supported Formats Guide</span></a></p></li>
+<li><p><a class="reference internal" href="../explanation/ecosystem.html"><span class="doc std std-doc">Where GWexpy Sits in the GW Python Ecosystem</span></a> for why a given
+library is bridged, referenced only, or left out of scope</p></li>
+</ul>
+</section>
+<section id="next-to-read">
+<h2>Next to Read<a class="headerlink" href="#next-to-read" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="io_capabilities.html"><span class="std std-doc">File I/O Supported Formats Guide</span></a> if your real question is about <code class="docutils literal notranslate"><span class="pre">Class.read(...,</span> <span class="pre">format=...)</span></code> or <code class="docutils literal notranslate"><span class="pre">obj.write(...)</span></code></p></li>
+<li><p><a class="reference internal" href="../how-to/time_utilities.html"><span class="std std-doc">GPS Time Utility Functions</span></a> if conversion workflows depend on GPS or timezone handling</p></li>
+<li><p><a class="reference internal" href="../how-to/interop/intro_interop.html"><span class="std std-doc">Interop tutorial</span></a> for worked examples before dropping into the API reference</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="io_capabilities.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">File I/O Supported Formats Guide</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="api/plot.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Plotting</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-i-o-names">Direct I/O Names</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jump-links">Jump Links</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-read-this-page">How to Read This Page</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#s-foundation-layer">S. Foundation Layer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#status-labels">Status Labels</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-dependency-policy">Optional Dependency Policy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-storage-formats-and-container-conversion">A. Storage Formats and Container Conversion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#b-analysis-library-and-object-conversion">B. Analysis Library and Object Conversion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c-scientific-computing-signal-processing-machine-learning-and-array-backends">C. Scientific Computing, Signal Processing, Machine Learning, and Array Backends</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#d-physics-and-domain-specific-libraries">D. Physics and Domain-Specific Libraries</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#related-pages">Related Pages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-to-read">Next to Read</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/reference/interop_capabilities.md">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, GWexpy Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

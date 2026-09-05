@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content="Current user-visible limitations, fail-closed boundaries, and safe alternatives in GWexpy v0.2.0." name="description" />
+<meta content="Current user-visible limitations, fail-closed boundaries, and safe alternatives in the released GWexpy series." name="description" />
 
     <title>Known Limitations &#8212; GWexpy</title>
   
@@ -35,7 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=2d0c2261" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -55,6 +55,7 @@
     <link rel="icon" href="../_static/favicon.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Documentation version" href="documentation_version.html" />
     <link rel="prev" title="Changelog" href="changelog.html" />
   
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -385,6 +386,8 @@
 <li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Known Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation_version.html">Documentation version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html">Developer guide</a></li>
 </ul>
 </div>
 </nav></div>
@@ -440,6 +443,15 @@
 </div>
               
               
+  <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
+  <span>Development documentation · 0.2.3</span>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/941a377a0305336b66231d8ec8a42c14b364b244">941a377a</a>
+  · Intro examples tested with 0.2.2
+  · <a href="documentation_version.html">Version details</a>
+  · <a href="#">Known limitations</a>
+</div>
+  
+  
               
                 
 <div id="searchbox"></div>
@@ -447,8 +459,7 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="known-limitations">
 <h1>Known Limitations<a class="headerlink" href="#known-limitations" title="Link to this heading">#</a></h1>
-<p>This page records the high-impact user-visible limitations of the current stable
-GWexpy v0.2.0 release. It is a curated compatibility guide, not a complete issue
+<p>This page records the high-impact user-visible limitations of the released GWexpy 0.2.2 series. The boundaries introduced in v0.2.0 below remain applicable unless a later release note explicitly supersedes them. It is a curated compatibility guide, not a complete issue
 backlog and not a promise that a limitation will be removed in the next release.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
@@ -460,6 +471,20 @@ supported contract is to fail explicitly rather than silently downgrade to a bar
 <p>For format-specific and adapter-specific coverage that is not listed here, see
 <a class="reference internal" href="../how-to/io_formats.html"><span class="std std-doc">I/O formats</span></a> and
 <a class="reference internal" href="../how-to/interop.html"><span class="std std-doc">interoperability</span></a>.</p>
+<section id="development-documentation-and-compatibility">
+<h2>Development documentation and compatibility<a class="headerlink" href="#development-documentation-and-compatibility" title="Link to this heading">#</a></h2>
+<p>The development API pages can describe changes after 0.2.2.
+Read the <a class="reference internal" href="documentation_version.html"><span class="std std-doc">documentation version</span></a> and
+<a class="reference internal" href="../explanation/gwpy_compatibility_policy.html"><span class="std std-doc">GWpy compatibility policy</span></a> when
+comparing them with an installed release. Successful inherited GWpy operations
+retain the parent contract; the fail-closed descriptions below apply to their
+specific documented boundaries, not as a general override of GWpy behavior.</p>
+<p>The current development compatibility notes include inherited mixed-channel CSD
+unit labels and dimensionless signal outputs. For physically calibrated noise
+projection, see the explicit output/input units in the
+<a class="reference internal" href="../how-to/case-studies/case_noise_budget.html"><span class="std std-doc">noise-budget example</span></a>.
+The <a class="reference internal" href="changelog.html"><span class="std std-doc">changelog</span></a> records the scope and approval of these differences.</p>
+</section>
 <section id="exact-time-axis-precision">
 <h2>Exact time-axis precision<a class="headerlink" href="#exact-time-axis-precision" title="Link to this heading">#</a></h2>
 <p>GWexpy v0.2.0 preserves exact integer GPS-nanosecond origins on the supported
@@ -467,7 +492,9 @@ constructor, copy/slice, persistence, and interoperability paths covered by the
 release contract. It does not yet define a complete exact rational time-axis
 authority for every cadence and operation. Cadences such as 1024 Hz or 4096 Hz
 have fractional-nanosecond sample steps, while GWpy-compatible <code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">dt</span></code>, <code class="docutils literal notranslate"><span class="pre">times</span></code>,
-and <code class="docutils literal notranslate"><span class="pre">xindex</span></code> remain binary64 projections.</p>
+and <code class="docutils literal notranslate"><span class="pre">xindex</span></code> remain binary64 projections. Since v0.2.2, slicing and cropping on
+such cadences can discard derived private exact authority while preserving the
+successful parent operation and its public time axis.</p>
 <p>If one-nanosecond distinctions or exact rational sample boundaries are scientifically
 significant, do not use the floating-point time axis as the sole authority across
 unsupported transformations or persistence boundaries. Track
@@ -566,6 +593,7 @@ APIs remain minor-release work.</p>
 
                 </article>
               
+
               
               
               
@@ -581,6 +609,15 @@ APIs remain minor-release work.</p>
         <p class="prev-next-subtitle">previous</p>
         <p class="prev-next-title">Changelog</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="documentation_version.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Documentation version</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -601,6 +638,7 @@ APIs remain minor-release work.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#development-documentation-and-compatibility">Development documentation and compatibility</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exact-time-axis-precision">Exact time-axis precision</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#seriesmatrix-direct-numpy-ufuncs">SeriesMatrix direct NumPy ufuncs</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#histogram-arithmetic">Histogram arithmetic</a></li>

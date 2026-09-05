@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content="Current user-visible limitations, fail-closed boundaries, and safe alternatives in GWexpy v0.2.0." name="description" translated="False" />
+<meta content="リリース済み GWexpy 系列の利用者に影響する制限、安全のために処理を拒否する境界、代替手段。" name="description" translated="True" />
 
     <title>既知の制約 &#8212; GWexpy</title>
   
@@ -35,7 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=2d0c2261" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -56,6 +56,7 @@
     <link rel="icon" href="../_static/favicon.svg"/>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="ドキュメントのバージョン" href="documentation_version.html" />
     <link rel="prev" title="更新履歴" href="changelog.html" />
   
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -386,6 +387,8 @@
 <li class="toctree-l1"><a class="reference internal" href="citation.html">引用方法 (Citation)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">更新履歴</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">既知の制約</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation_version.html">ドキュメントのバージョン</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html">開発者ガイド</a></li>
 </ul>
 </div>
 </nav></div>
@@ -441,6 +444,15 @@
 </div>
               
               
+  <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
+  <span>開発版ドキュメント · 0.2.3</span>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/941a377a0305336b66231d8ec8a42c14b364b244">941a377a</a>
+  · 入門例の検証対象 0.2.2
+  · <a href="documentation_version.html">版情報</a>
+  · <a href="#">既知の制限</a>
+</div>
+  
+  
               
                 
 <div id="searchbox"></div>
@@ -448,15 +460,20 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="known-limitations">
 <h1>既知の制約<a class="headerlink" href="#known-limitations" title="Link to this heading">#</a></h1>
-<p>このページでは、現在の安定版 GWexpy v0.2.0 における、ユーザーから見える影響の大きい制約をまとめます。完全な issue バックログではなく、互換性と挙動を確認するための要約です。また、ここに記載した制約が次のリリースで解消されることを約束するものではありません。</p>
+<p>このページは、リリース済み GWexpy 0.2.2 系列で利用者への影響が大きい制限を記録しています。以下に示す v0.2.0 で導入された境界は、後のリリースノートで明示的に更新されない限り引き続き適用されます。互換性に関する主な注意点をまとめたもので、すべての未解決 Issue を列挙したものではなく、次のリリースで制限が解消されることを約束するものでもありません。</p>
 <div class="admonition important">
 <p class="admonition-title">重要</p>
 <p>物理的に安全でメタデータを保持する結果を定義できない場合、GWexpy の契約は、裸の <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> や <code class="docutils literal notranslate"><span class="pre">astropy.units.Quantity</span></code>、意味の曖昧な時刻へ黙って退行するのではなく、明示的に失敗することです。そのため、以下に示す <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> や <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> は、意図した安全境界である場合があります。</p>
 </div>
 <p>ここに列挙していないフォーマット別・アダプター別の対応範囲は、<a class="reference internal" href="../how-to/io_formats.html"><span class="std std-doc">I/O formats</span></a> と <a class="reference internal" href="../how-to/interop.html"><span class="std std-doc">interoperability</span></a> を参照してください。</p>
+<section id="development-documentation-and-compatibility">
+<h2>開発版ドキュメントと互換性<a class="headerlink" href="#development-documentation-and-compatibility" title="Link to this heading">#</a></h2>
+<p>開発版の API ページには、0.2.2 より後の変更が含まれる場合があります。インストール済みのリリースと比較する場合は、<a class="reference internal" href="documentation_version.html"><span class="std std-doc">ドキュメントのバージョン</span></a>と <a class="reference internal" href="../explanation/gwpy_compatibility_policy.html"><span class="std std-doc">GWpy 互換性ポリシー</span></a>を参照してください。GWpy から継承した操作が成功する場合は、親の仕様を保持します。以下の処理を拒否する制限は、文書化された個別の境界に適用されるもので、GWpy の挙動を全般的に変更するものではありません。</p>
+<p>現在の開発版の互換性に関する注意点には、継承した異種チャンネル間 CSD の単位ラベルと、無次元の信号出力が含まれます。物理的に校正したノイズ寄与の推定については、<a class="reference internal" href="../how-to/case-studies/case_noise_budget.html"><span class="std std-doc">ノイズバジェットの例</span></a>で出力/入力の単位を明示する方法を参照してください。これらの差異の範囲と承認は、<a class="reference internal" href="changelog.html"><span class="std std-doc">変更履歴</span></a>に記録しています。</p>
+</section>
 <section id="exact-time-axis-precision">
 <h2>時刻軸の厳密精度<a class="headerlink" href="#exact-time-axis-precision" title="Link to this heading">#</a></h2>
-<p>GWexpy v0.2.0 は、リリース契約で対象とした constructor、copy/slice、永続化、相互運用の対応経路において、整数 GPS ナノ秒の原点を厳密に保持します。一方、すべての cadence と演算について完全な有理数時刻軸を権威的表現として定義しているわけではありません。1024 Hz や 4096 Hz ではサンプル間隔がナノ秒の整数にならず、GWpy 互換の <code class="docutils literal notranslate"><span class="pre">t0</span></code>、<code class="docutils literal notranslate"><span class="pre">dt</span></code>、<code class="docutils literal notranslate"><span class="pre">times</span></code>、<code class="docutils literal notranslate"><span class="pre">xindex</span></code> は引き続き binary64 の射影です。</p>
+<p>GWexpy v0.2.0 は、リリースの仕様で対象としているコンストラクタ、コピーとスライス、永続化、相互運用の経路で、整数の GPS ナノ秒による正確な開始時刻を保持します。ただし、すべてのサンプリング間隔と操作について、正確な有理数による時間軸を完全に定義しているわけではありません。1024 Hz や 4096 Hz などのサンプル間隔はナノ秒未満の端数を持ちますが、GWpy 互換の <code class="docutils literal notranslate"><span class="pre">t0</span></code>、<code class="docutils literal notranslate"><span class="pre">dt</span></code>、<code class="docutils literal notranslate"><span class="pre">times</span></code>、<code class="docutils literal notranslate"><span class="pre">xindex</span></code> は binary64 による近似値です。v0.2.2 以降では、このようなサンプリング間隔でのスライスや切り出しで、派生した内部の厳密時刻情報を破棄する場合があります。その場合も、親で成功する操作と、その公開時間軸を保持します。</p>
 <p>1 ナノ秒の差や厳密な有理数サンプル境界が科学的に重要な場合、未対応の変換や永続化境界をまたいで浮動小数点時刻軸だけを権威的情報として使用しないでください。<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/688">#688</a> で追跡しています。</p>
 </section>
 <section id="seriesmatrix-direct-numpy-ufuncs">
@@ -510,6 +527,7 @@
 
                 </article>
               
+
               
               
               
@@ -525,6 +543,15 @@
         <p class="prev-next-subtitle">前へ</p>
         <p class="prev-next-title">更新履歴</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="documentation_version.html"
+       title="次ページ">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">次へ</p>
+        <p class="prev-next-title">ドキュメントのバージョン</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -545,6 +572,7 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#development-documentation-and-compatibility">開発版ドキュメントと互換性</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exact-time-axis-precision">時刻軸の厳密精度</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#seriesmatrix-direct-numpy-ufuncs">SeriesMatrix の直接 NumPy ufunc</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#histogram-arithmetic">Histogram の算術演算</a></li>

@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=2d0c2261" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -383,8 +383,8 @@
   <p class="bd-links__title" role="heading" aria-level="1">セクションナビゲーション</p>
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">データとフォーマット</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../interop.html">Interop / 変換ガイド</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1"><a class="reference internal" href="../io_formats.html">データの読み書き</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../interop.html">科学計算用 Python オブジェクトの変換</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../interop/intro_interop.html">相互運用: 基本</a></li>
 </ul>
 </details></li>
@@ -536,6 +536,15 @@
 </div>
               
               
+  <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
+  <span>開発版ドキュメント · 0.2.3</span>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/941a377a0305336b66231d8ec8a42c14b364b244">941a377a</a>
+  · 入門例の検証対象 0.2.2
+  · <a href="../../about/documentation_version.html">版情報</a>
+  · <a href="../../about/known_limitations.html">既知の制限</a>
+</div>
+  
+  
               
                 
 <div id="searchbox"></div>
@@ -554,8 +563,6 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -588,7 +595,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/1ce2fc3b46295933d0cdc8e7ac315bc6370bf1d60dbfd36bbf1af4d464f74a53.png" src="../../_images/1ce2fc3b46295933d0cdc8e7ac315bc6370bf1d60dbfd36bbf1af4d464f74a53.png" />
+<img alt="../../_images/8416cb66e21e40b2ddaafd58d8512cbed1d6d2763fc44af31ec02f4caacddf51.png" src="../../_images/8416cb66e21e40b2ddaafd58d8512cbed1d6d2763fc44af31ec02f4caacddf51.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -600,8 +607,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/bba033b4557c6559e9e2edd7fd7be5fad5e87f6d525367f273c8f93133571b4b.png" src="../../_images/bba033b4557c6559e9e2edd7fd7be5fad5e87f6d525367f273c8f93133571b4b.png" />
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;gwexpy.plot.pairplot.PairPlot at 0x7f408e528bd0&gt;
+<img alt="../../_images/f369e641a5a0321384959bdeb6a1df1552553f6a40076b0c356953949e123a5f.png" src="../../_images/f369e641a5a0321384959bdeb6a1df1552553f6a40076b0c356953949e123a5f.png" />
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;gwexpy.plot.pairplot.PairPlot at 0x7f65bc951c10&gt;
 </pre></div>
 </div>
 </div>
@@ -627,8 +634,8 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Correlation A vs B (linear):
-  Pearson: 0.986
-  Kendall: 0.895
+  Pearson: 0.985
+  Kendall: 0.893
 </pre></div>
 </div>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>**Note**:   MIC:     (minepy not available)
@@ -728,11 +735,11 @@
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computing Pearson vector (Top 5)...
    row  col channel     score
-0    5    0  AUX-05  0.952832
-1   10    0  AUX-10  0.093500
-2   19    0  AUX-19 -0.065990
-3   11    0  AUX-11  0.062390
-4    4    0  AUX-04  0.057292
+0    5    0  AUX-05  0.951586
+1   10    0  AUX-10 -0.053230
+2    0    0  AUX-00 -0.045536
+3   16    0  AUX-16  0.044063
+4    6    0  AUX-06 -0.039632
 </pre></div>
 </div>
 </div>
@@ -752,7 +759,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/64d6fff7e5efd0a3853d2c5fc01e30c6f182dd15ac5c0b3ce75e22b38a3bdf8c.png" src="../../_images/64d6fff7e5efd0a3853d2c5fc01e30c6f182dd15ac5c0b3ce75e22b38a3bdf8c.png" />
+<img alt="../../_images/4dab215ea0a1865355d5f06fa0ffd604d2784a40180a537b36eed874c8a8e6a2.png" src="../../_images/4dab215ea0a1865355d5f06fa0ffd604d2784a40180a537b36eed874c8a8e6a2.png" />
 </div>
 </div>
 </section>
@@ -782,7 +789,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>corr(x,y): 0.9809075921667307
-partial corr(x,y|z): 0.004410452860247921
+partial corr(x,y|z): 0.004410452860247914
 </pre></div>
 </div>
 </div>
@@ -885,7 +892,7 @@ Graph built successfully.
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>fastMI(x,y): 0.08925170168547956
-fastMI(x,z): 0.11320579203180094
+fastMI(x,z): 0.11320579203180092
 </pre></div>
 </div>
 </div>
@@ -905,7 +912,7 @@ fastMI(x,z): 0.11320579203180094
     <span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Association Graph&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Graph plot skipped:&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1059,6 +1066,10 @@ Granger Causality Y -&gt; X (p-value): 0.0907
 Mutual Information (x, z): 0.0000 nats
 </pre></div>
 </div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/gwexpy/gwexpy/gwexpy/timeseries/_resampling.py:624: UserWarning: resample() rate matches current sample_rate (1.0 Hz), returning input data unmodified; please double-check your parameters
+  result = BaseTimeSeries.resample(
+</pre></div>
+</div>
 </div>
 </div>
 </section>
@@ -1067,6 +1078,7 @@ Mutual Information (x, z): 0.0000 nats
 
                 </article>
               
+
               
               
               

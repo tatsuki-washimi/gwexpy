@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=2d0c2261" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -49,6 +49,8 @@
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/case-studies/case_wiener_filter';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/case-studies/case_wiener_filter.html" />
@@ -383,8 +385,8 @@
   <p class="bd-links__title" role="heading" aria-level="1">セクションナビゲーション</p>
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">データとフォーマット</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../interop.html">Interop / 変換ガイド</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1"><a class="reference internal" href="../io_formats.html">データの読み書き</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../interop.html">科学計算用 Python オブジェクトの変換</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../interop/intro_interop.html">相互運用: 基本</a></li>
 </ul>
 </details></li>
@@ -536,6 +538,32 @@
 </div>
               
               
+  <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
+  <span>開発版ドキュメント · 0.2.3</span>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/941a377a0305336b66231d8ec8a42c14b364b244">941a377a</a>
+  · 入門例の検証対象 0.2.2
+  · <a href="../../about/documentation_version.html">版情報</a>
+  · <a href="../../about/known_limitations.html">既知の制限</a>
+</div>
+  <aside class="admonition note gwexpy-case-status">
+  <p class="admonition-title">この実例の条件</p>
+  <dl>
+    <dt>対象読者</dt><dd>Commissioner / 重力波実験者</dd>
+    <dt>前提レベル</dt>
+    <dd>中級</dd>
+    <dt>依存パッケージ</dt><dd>gwinc</dd>
+    <dt>データ</dt>
+    <dd>本文のコードで生成する合成データ</dd>
+    <dt>実行確認</dt>
+    <dd>
+      成功 · 6.7 s · GWexpy 0.2.3
+      (ビルド環境での実測。キャッシュ利用時は元の実行時間。任意セクションの省略は本文に表示。)
+    </dd>
+    <dt>検証の種類</dt>
+    <dd>説明用の実例。実行成功は物理モデルの独立したレビューを意味しません。</dd>
+  </dl>
+</aside>
+  
               
                 
 <div id="searchbox"></div>
@@ -549,7 +577,6 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesDict</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesDict</span>
@@ -567,15 +594,11 @@
 <span class="n">b_low</span><span class="p">,</span> <span class="n">a_low</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">butter</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">btype</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">)</span>
 <span class="n">s1</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">lfilter</span><span class="p">(</span><span class="n">b_low</span><span class="p">,</span> <span class="n">a_low</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
 <span class="n">b_band</span><span class="p">,</span> <span class="n">a_band</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">iirpeak</span><span class="p">(</span><span class="mf">120.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">fs</span><span class="p">)</span>
-<span class="n">s2</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">lfilter</span><span class="p">(</span><span class="n">b_band</span><span class="p">,</span> <span class="n">a_band</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
-    <span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">n</span>
-<span class="p">)</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">lfilter</span><span class="p">(</span><span class="n">b_band</span><span class="p">,</span> <span class="n">a_band</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 <span class="n">aux1_val</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">s1</span> <span class="o">+</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">s2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 <span class="n">aux2_val</span> <span class="o">=</span> <span class="mf">0.6</span> <span class="o">*</span> <span class="n">s1</span> <span class="o">+</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">s2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 
-<span class="n">asd_main</span> <span class="o">=</span> <span class="n">from_pygwinc</span><span class="p">(</span>
-    <span class="s2">&quot;aLIGO&quot;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="n">fs</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">duration</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="s2">&quot;strain&quot;</span>
-<span class="p">)</span>
+<span class="n">asd_main</span> <span class="o">=</span> <span class="n">from_pygwinc</span><span class="p">(</span><span class="s2">&quot;aLIGO&quot;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="n">fs</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">duration</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="s2">&quot;strain&quot;</span><span class="p">)</span>
 <span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">()</span>
 <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">from_asd</span><span class="p">(</span><span class="n">asd_main</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span><span class="o">.</span><span class="n">highpass</span><span class="p">(</span><span class="mf">5.0</span><span class="p">)</span>
 <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;AUX1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">aux1_val</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
@@ -591,30 +614,33 @@
 <section id="estimate-the-multichannel-correlation-matrices">
 <h2>1. 相互相関行列を推定する<a class="headerlink" href="#estimate-the-multichannel-correlation-matrices" title="Link to this heading">#</a></h2>
 <p>重要なのは witness 同士が独立ではないことです。<code class="docutils literal notranslate"><span class="pre">Cxx</span></code> が witness 間相関、<code class="docutils literal notranslate"><span class="pre">Cyx</span></code> が target と witness の相関を表します。</p>
+<p>この例では <span class="math notranslate nohighlight">\(C_{ij}=\langle X_i^*X_j\rangle\)</span> という規約を使うため、補助チャンネルから MAIN への変換を表す行ベクトルのフィルタは <span class="math notranslate nohighlight">\(H=(C_{yx}C_{xx}^{-1})^*\)</span> となります。行列のすべての要素に同一の Hann 窓、オーバーラップ、算術平均を使います。継承したスペクトルのメタデータは異なるチャンネル間の単位を推論しないため、数値的な伝達関数の推定値に MAIN/補助チャンネルの単位を明示的に付与します。</p>
+<p>FFT と逆 FFT は既存の正規化を使用し、サンプルレートによる補正や係数 2 の追加補正は行いません。この合成例の補助チャンネル行列は非特異です。冗長な測定補助チャンネルに適用する場合は、条件数を確認し、根拠のある正則化を選択してください。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">aux_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;AUX1&quot;</span><span class="p">,</span> <span class="s2">&quot;AUX2&quot;</span><span class="p">]</span>
 <span class="n">aux_tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">tsd</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">aux_names</span><span class="p">})</span>
 
-<span class="c1"># Window-averaged CSD matrices stabilize the statistics before we invert the witness correlation matrix.</span>
-<span class="n">cxx</span> <span class="o">=</span> <span class="n">aux_tsd</span><span class="o">.</span><span class="n">csd_matrix</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">8.0</span><span class="p">)</span>
-<span class="n">cyx</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">({</span><span class="s2">&quot;MAIN&quot;</span><span class="p">:</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]})</span><span class="o">.</span><span class="n">csd_matrix</span><span class="p">(</span><span class="n">other</span><span class="o">=</span><span class="n">aux_tsd</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mf">8.0</span><span class="p">)</span>
+<span class="c1"># Use the same mean averaging for diagonal PSDs and off-diagonal CSDs.</span>
+<span class="n">spectral_options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">8.0</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+<span class="n">cxx</span> <span class="o">=</span> <span class="n">aux_tsd</span><span class="o">.</span><span class="n">csd_matrix</span><span class="p">(</span><span class="o">**</span><span class="n">spectral_options</span><span class="p">)</span>
+<span class="n">cyx</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">({</span><span class="s2">&quot;MAIN&quot;</span><span class="p">:</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]})</span><span class="o">.</span><span class="n">csd_matrix</span><span class="p">(</span>
+    <span class="n">other</span><span class="o">=</span><span class="n">aux_tsd</span><span class="p">,</span> <span class="o">**</span><span class="n">spectral_options</span>
+<span class="p">)</span>
 
-<span class="c1"># GWpy-compatible CSD labels retain the first channel&#39;s squared unit.</span>
-<span class="c1"># Label each raw cross spectrum with its physical output/witness units</span>
-<span class="c1"># for this projection, without rescaling the numerical CSD values.</span>
-<span class="k">for</span> <span class="n">column</span><span class="p">,</span> <span class="n">witness</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">aux_names</span><span class="p">):</span>
-    <span class="n">cyx</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span> <span class="o">*</span> <span class="n">tsd</span><span class="p">[</span><span class="n">witness</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span>
-
-<span class="c1"># H = Cyx @ Cxx^-1 is the multichannel Wiener solution: it predicts the coherent part of MAIN from the witness set.</span>
-<span class="n">H_lowres</span> <span class="o">=</span> <span class="n">cyx</span> <span class="o">@</span> <span class="n">cxx</span><span class="o">.</span><span class="n">inv</span><span class="p">()</span>
+<span class="c1"># Cij = &lt;conj(X_i) X_j&gt;; conjugate to map witnesses to MAIN.</span>
+<span class="n">H_lowres</span> <span class="o">=</span> <span class="p">(</span><span class="n">cyx</span> <span class="o">@</span> <span class="n">cxx</span><span class="o">.</span><span class="n">inv</span><span class="p">())</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span>
+<span class="c1"># Attach the physical output/input units to the numerical transfer estimates.</span>
+<span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">aux_names</span><span class="p">):</span>
+    <span class="n">H_lowres</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span> <span class="o">/</span> <span class="n">tsd</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">H_lowres</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
 <span class="n">H_lowres</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Estimated MIMO Coupling (H)&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/524635448edcd96b608a0a44725d21f7807c2fd0abffa8b516a860d335e08426.png" src="../../_images/524635448edcd96b608a0a44725d21f7807c2fd0abffa8b516a860d335e08426.png" />
+<img alt="../../_images/f29a105554439f8093e4f268c84e5e77105f61e748a9338c5884287f992f97b6.png" src="../../_images/f29a105554439f8093e4f268c84e5e77105f61e748a9338c5884287f992f97b6.png" />
 </div>
 </div>
 </section>
@@ -629,9 +655,12 @@
 
 <span class="c1"># Projection estimates the part of MAIN that can be reconstructed from the witnesses.</span>
 <span class="n">Y_proj</span> <span class="o">=</span> <span class="p">(</span><span class="n">H</span> <span class="o">@</span> <span class="n">X_mat</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-<span class="k">assert</span> <span class="n">Y_proj</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span>
-<span class="n">cleaned_ts</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Y_proj</span><span class="o">.</span><span class="n">ifft</span><span class="p">()</span><span class="o">.</span><span class="n">bandpass</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">130</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
-<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">cleaned_ts</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="n">projected_ts</span> <span class="o">=</span> <span class="n">Y_proj</span><span class="o">.</span><span class="n">ifft</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">projected_ts</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span>
+<span class="k">assert</span> <span class="n">projected_ts</span><span class="o">.</span><span class="n">dt</span> <span class="o">==</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span>
+<span class="k">assert</span> <span class="n">projected_ts</span><span class="o">.</span><span class="n">t0</span> <span class="o">==</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">t0</span>
+<span class="k">assert</span> <span class="n">projected_ts</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">size</span>
+<span class="n">cleaned_ts</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">projected_ts</span><span class="o">.</span><span class="n">bandpass</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">130</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
 
 <span class="n">asd_raw</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">4.0</span><span class="p">)</span>
 <span class="n">asd_cleaned</span> <span class="o">=</span> <span class="n">cleaned_ts</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">4.0</span><span class="p">)</span>
@@ -647,7 +676,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/70db36c43a0ec532b7fd6371baa24188d4bf48e67855ea16ad8586fed13a93a8.png" src="../../_images/70db36c43a0ec532b7fd6371baa24188d4bf48e67855ea16ad8586fed13a93a8.png" />
+<img alt="../../_images/dfa39892ba9b4f004e9e0be84ac10341c0887bfa8295c67c05b1889aa6bb1900.png" src="../../_images/dfa39892ba9b4f004e9e0be84ac10341c0887bfa8295c67c05b1889aa6bb1900.png" />
 </div>
 </div>
 </section>
@@ -656,6 +685,7 @@
 
                 </article>
               
+
               
               
               

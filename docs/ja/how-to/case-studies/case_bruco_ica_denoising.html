@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=2d0c2261" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -383,8 +383,8 @@
   <p class="bd-links__title" role="heading" aria-level="1">セクションナビゲーション</p>
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">データとフォーマット</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../interop.html">Interop / 変換ガイド</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1"><a class="reference internal" href="../io_formats.html">データの読み書き</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../interop.html">科学計算用 Python オブジェクトの変換</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../interop/intro_interop.html">相互運用: 基本</a></li>
 </ul>
 </details></li>
@@ -536,6 +536,32 @@
 </div>
               
               
+  <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
+  <span>開発版ドキュメント · 0.2.3</span>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/941a377a0305336b66231d8ec8a42c14b364b244">941a377a</a>
+  · 入門例の検証対象 0.2.2
+  · <a href="../../about/documentation_version.html">版情報</a>
+  · <a href="../../about/known_limitations.html">既知の制限</a>
+</div>
+  <aside class="admonition note gwexpy-case-status">
+  <p class="admonition-title">この実例の条件</p>
+  <dl>
+    <dt>対象読者</dt><dd>Commissioner / 重力波実験者</dd>
+    <dt>前提レベル</dt>
+    <dd>中級</dd>
+    <dt>依存パッケージ</dt><dd>scikit-learn</dd>
+    <dt>データ</dt>
+    <dd>本文のコードで生成する合成データ</dd>
+    <dt>実行確認</dt>
+    <dd>
+      成功 · 6.3 s · GWexpy 0.2.3
+      (ビルド環境での実測。キャッシュ利用時は元の実行時間。任意セクションの省略は本文に表示。)
+    </dd>
+    <dt>検証の種類</dt>
+    <dd>説明用の実例。実行成功は物理モデルの独立したレビューを意味しません。</dd>
+  </dl>
+</aside>
+  
               
                 
 <div id="searchbox"></div>
@@ -562,12 +588,9 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
 
     <span class="c1"># ruff: noqa: I001</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -692,6 +715,22 @@ Aux channels: [&#39;K1:PEM-ACC_PSL_TABLE_PSL1_Y&#39;, &#39;K1:PEM-ACC_PSL_TABLE_
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/micromamba/envs/gwexpy/lib/python3.11/site-packages/gwpy/timeseries/core.py:263: UserWarning: xindex was given to TimeSeries(), x0 will be ignored
+  new = super().__new__(
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/micromamba/envs/gwexpy/lib/python3.11/site-packages/gwpy/timeseries/core.py:263: UserWarning: xindex was given to TimeSeries(), x0 will be ignored
+  new = super().__new__(
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/micromamba/envs/gwexpy/lib/python3.11/site-packages/gwpy/timeseries/core.py:263: UserWarning: xindex was given to TimeSeries(), x0 will be ignored
+  new = super().__new__(
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/micromamba/envs/gwexpy/lib/python3.11/site-packages/gwpy/timeseries/core.py:263: UserWarning: xindex was given to TimeSeries(), x0 will be ignored
+  new = super().__new__(
+</pre></div>
+</div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Bruco scan complete.
 Result type: &lt;class &#39;gwexpy.analysis.bruco.BrucoResult&#39;&gt;
 </pre></div>
@@ -887,7 +926,6 @@ TimeSeriesMatrix shape: (3, 1, 32768)  (n_channels × 1 × n_samples)
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
 
     <span class="c1"># Run ICA</span>
     <span class="n">n_components</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span>
@@ -919,11 +957,15 @@ TimeSeriesMatrix shape: (3, 1, 32768)  (n_channels × 1 × n_samples)
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/micromamba/envs/gwexpy/lib/python3.11/site-packages/sklearn/decomposition/_fastica.py:132: ConvergenceWarning: FastICA did not converge. Consider increasing tolerance or the maximum number of iterations.
+  warnings.warn(
+</pre></div>
+</div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ICA stopped after 200 iterations
 Mixing matrix A shape: (3, 3)
 </pre></div>
 </div>
-<img alt="../../_images/5a5cc9a7432a4ca5d7b473afc6349f879cda2a83343bfafb9b97da832829da1a.png" src="../../_images/5a5cc9a7432a4ca5d7b473afc6349f879cda2a83343bfafb9b97da832829da1a.png" />
+<img alt="../../_images/33aeacbc474a32c1ce529a99a64bb52b934c29bb1f3ff8980c730b7e24048ad8.png" src="../../_images/33aeacbc474a32c1ce529a99a64bb52b934c29bb1f3ff8980c730b7e24048ad8.png" />
 </div>
 </div>
 </section>
@@ -969,7 +1011,7 @@ Mixing matrix A shape: (3, 3)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Dominant noise component: #1  (ASD at 116.0 Hz = 1.5692)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Dominant noise component: #2  (ASD at 116.0 Hz = 1.5687)
 </pre></div>
 </div>
 </div>
@@ -1001,8 +1043,8 @@ Mixing matrix A shape: (3, 3)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e34a422fa5e6e71c0f102510e3002556be5c3374873013ddaedc09af455a5b46.png" src="../../_images/e34a422fa5e6e71c0f102510e3002556be5c3374873013ddaedc09af455a5b46.png" />
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Suppression factor at 116.0 Hz: 2.78×
+<img alt="../../_images/c95351fc1fca101d94123560b43004f2b6a8352827c65c9aa0f3591ce8227905.png" src="../../_images/c95351fc1fca101d94123560b43004f2b6a8352827c65c9aa0f3591ce8227905.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Suppression factor at 116.0 Hz: 2.83×
 </pre></div>
 </div>
 </div>
@@ -1056,6 +1098,7 @@ Mixing matrix A shape: (3, 3)
 
                 </article>
               
+
               
               
               

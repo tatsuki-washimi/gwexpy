@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=2d0c2261" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -451,6 +451,15 @@
 </div>
               
               
+  <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
+  <span>開発版ドキュメント · 0.2.3</span>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/941a377a0305336b66231d8ec8a42c14b364b244">941a377a</a>
+  · 入門例の検証対象 0.2.2
+  · <a href="../about/documentation_version.html">版情報</a>
+  · <a href="../about/known_limitations.html">既知の制限</a>
+</div>
+  
+  
               
                 
 <div id="searchbox"></div>
@@ -461,6 +470,7 @@
 <p>このページは <strong>GWpy から GWexpy へ移行するための入口</strong> です。完全な API カタログを目指すものではありません。目的は、何がそのまま使えて、価値の高い差分がどこから始まるのかを手早く把握することです。</p>
 <p><strong>追加 API を差分観点で引ける一覧</strong> が欲しい場合は <a class="reference internal" href="../reference/gwpy_added_api.html"><span class="std std-doc">GWpy 差分 API 一覧</span></a> を参照してください。GWpy 互換性に関係なく全 API を見たい場合は <a class="reference internal" href="../reference/index.html"><span class="std std-doc">API リファレンス</span></a> を使ってください。</p>
 <p>プロジェクト横断の <a class="reference internal" href="gwpy_compatibility_policy.html"><span class="std std-doc">GWpy 互換性ポリシー</span></a>は、対応する GWpy APIについて、既定の有限数値結果、sample 選択、軸情報、正常終了の維持を要求します。意図的に異なる数値挙動が必要な場合は、GWexpy 固有 API または明示的な opt-in optionを使用してください。このpolicyで唯一の名前付き・human-approvedの安全例外 <code class="docutils literal notranslate"><span class="pre">non_intersecting_window_safety</span></code> は、完全非交差の HDF5 read windowだけを対象とし、すべてのpolicy gateを満たさなければなりません。より広い差異は許可しません。</p>
+<p><a class="reference internal" href="../about/documentation_version.html"><span class="std std-doc">ドキュメントの版</span></a>とインストール済みパッケージを照合し、移行前に<a class="reference internal" href="../about/known_limitations.html"><span class="std std-doc">既知の制限</span></a>を確認してください。以下の例は、既存の <code class="docutils literal notranslate"><span class="pre">cache</span></code> や <code class="docutils literal notranslate"><span class="pre">channels</span></code> などの入力を前提にしています。外部データなしで完走できる合成データの例は、<a class="reference internal" href="../tutorials/quickstart.html"><span class="std std-doc">Quickstart</span></a>で実行できます。</p>
 <section id="what-to-lock-in-first">
 <h2>まず最初に押さえること<a class="headerlink" href="#what-to-lock-in-first" title="Link to this heading">#</a></h2>
 <ul class="simple">
@@ -468,7 +478,7 @@
 <li><p><strong>最も大きく変わるのは多チャンネル処理です。</strong> <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> を手動でループする代わりに、<code class="docutils literal notranslate"><span class="pre">to_matrix()</span></code> で変換し、チャンネル群をバッチ解析コンテナとして扱えます。</p></li>
 <li><p><strong>Field API は GWexpy 独自の拡張です。</strong> <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> や <code class="docutils literal notranslate"><span class="pre">FieldList</span></code> / <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code> は、空間的にインデックス付けされたデータや、複数フィールドにまたがるバッチ操作を扱います。これらは GWpy が標準層として提供していないものです。</p></li>
 <li><p><strong>一部の外部ライブラリ呼び出しは、データオブジェクト自身のメソッドになります。</strong> 代表例は <code class="docutils literal notranslate"><span class="pre">.find_peaks()</span></code>、<code class="docutils literal notranslate"><span class="pre">.fit()</span></code>、<code class="docutils literal notranslate"><span class="pre">.hht()</span></code>、<code class="docutils literal notranslate"><span class="pre">.arima()</span></code> です。</p></li>
-<li><p><strong>直接 I/O と相互運用には専用ガイドがあります。</strong> <code class="docutils literal notranslate"><span class="pre">read(...,</span> <span class="pre">format=...)</span></code> / <code class="docutils literal notranslate"><span class="pre">write(...,</span> <span class="pre">format=...)</span></code> は <a class="reference internal" href="../how-to/io_formats.html"><span class="std std-doc">ファイル I/O 対応フォーマットガイド</span></a> を、<code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> 変換は <a class="reference internal" href="../how-to/interop.html"><span class="std std-doc">Interop / 変換ガイド</span></a> を、それぞれ一次情報源として参照してください。</p></li>
+<li><p><strong>直接 I/O と相互運用には専用ガイドがあります。</strong> <code class="docutils literal notranslate"><span class="pre">read(...,</span> <span class="pre">format=...)</span></code> / <code class="docutils literal notranslate"><span class="pre">write(...,</span> <span class="pre">format=...)</span></code> は <a class="reference internal" href="../reference/io_capabilities.html"><span class="std std-doc">ファイル I/O 対応フォーマットガイド</span></a> を、<code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> 変換は <a class="reference internal" href="../reference/interop_capabilities.html"><span class="std std-doc">Interop / 変換ガイド</span></a> を、それぞれ一次情報源として参照してください。</p></li>
 </ul>
 </section>
 <section id="where-migration-usually-pays-off-first">
@@ -753,7 +763,7 @@
 </ul>
 <p>関連ページ:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../how-to/interop.html"><span class="std std-doc">Interop / 変換ガイド</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/interop_capabilities.html"><span class="std std-doc">Interop / 変換ガイド</span></a></p></li>
 <li><p><a class="reference internal" href="../reference/api/gwexpy.interop.control_.html"><span class="doc std std-doc">python-control API リファレンス</span></a></p></li>
 <li><p><a class="reference internal" href="../how-to/case-studies/case_active_damping.html"><span class="doc std std-doc">アクティブ制振チュートリアル</span></a></p></li>
 <li><p><a class="reference internal" href="../tutorials/intro_frequencyseries.html"><span class="doc std std-doc">周波数系列チュートリアル</span></a></p></li>
@@ -769,8 +779,8 @@
 <h2>I/O と外部ライブラリ連携は別ページを見る<a class="headerlink" href="#treat-direct-i-o-and-external-library-conversion-as-separate-guides" title="Link to this heading">#</a></h2>
 <p>このページは、I/O フォーマット一覧や外部ライブラリ変換一覧をあえて重複して掲載しません。一次情報源としては以下の専用ガイドを使ってください：</p>
 <ul class="simple">
-<li><p>直接 I/O: <a class="reference internal" href="../how-to/io_formats.html"><span class="std std-doc">ファイル I/O 対応フォーマットガイド</span></a></p></li>
-<li><p>外部ライブラリ変換: <a class="reference internal" href="../how-to/interop.html"><span class="std std-doc">Interop / 変換ガイド</span></a></p></li>
+<li><p>直接 I/O: <a class="reference internal" href="../reference/io_capabilities.html"><span class="std std-doc">ファイル I/O 対応フォーマットガイド</span></a></p></li>
+<li><p>外部ライブラリ変換: <a class="reference internal" href="../reference/interop_capabilities.html"><span class="std std-doc">Interop / 変換ガイド</span></a></p></li>
 </ul>
 </section>
 <section id="next-steps">
@@ -779,8 +789,8 @@
 <li><p><a class="reference internal" href="../reference/gwpy_added_api.html"><span class="std std-doc">GWpy 差分 API 一覧</span></a> - 追加 API を差分観点で引く</p></li>
 <li><p><a class="reference internal" href="../how-to/containers/field_scalar_intro.html"><span class="doc std std-doc">Field API 入門</span></a> - <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>・<code class="docutils literal notranslate"><span class="pre">FieldList</span></code>・<code class="docutils literal notranslate"><span class="pre">FieldDict</span></code> の関係を理解する</p></li>
 <li><p><a class="reference internal" href="../tutorials/index.html"><span class="std std-doc">チュートリアル一覧</span></a> - 移行レシピから実例へ進む</p></li>
-<li><p><a class="reference internal" href="../how-to/io_formats.html"><span class="std std-doc">ファイル I/O 対応フォーマットガイド</span></a> - 対応する読み書きフォーマットを確認する</p></li>
-<li><p><a class="reference internal" href="../how-to/interop.html"><span class="std std-doc">Interop / 変換ガイド</span></a> - 外部ライブラリへの橋渡しを確認する</p></li>
+<li><p><a class="reference internal" href="../reference/io_capabilities.html"><span class="std std-doc">ファイル I/O 対応フォーマットガイド</span></a> - 対応する読み書きフォーマットを確認する</p></li>
+<li><p><a class="reference internal" href="../reference/interop_capabilities.html"><span class="std std-doc">Interop / 変換ガイド</span></a> - 外部ライブラリへの橋渡しを確認する</p></li>
 <li><p><a class="reference internal" href="../reference/index.html"><span class="std std-doc">API リファレンス</span></a> - 全 API を確認する</p></li>
 </ul>
 </section>
@@ -789,6 +799,7 @@
 
                 </article>
               
+
               
               
               

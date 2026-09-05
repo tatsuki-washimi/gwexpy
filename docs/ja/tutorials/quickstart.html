@@ -7,9 +7,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content="GWexpy を最短で始めるための導入ガイドです。pip インストールコマンド、4 行の最小例、次に読むチュートリアルや移行ガイドへの入口をまとめています。" name="description" translated="True" />
+<meta content="GWexpy で再現可能な 2 つの合成チャンネルを生成し、振幅スペクトル密度を計算して最初の解析図を保存します。" name="description" translated="True" />
 
-    <title>クイックスタート (Quickstart) &#8212; GWexpy</title>
+    <title>クイックスタート &#8212; GWexpy</title>
   
   
   
@@ -35,7 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=2d0c2261" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=27e7dca1" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -56,7 +56,7 @@
     <link rel="icon" href="../_static/favicon.svg"/>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
-    <link rel="next" title="はじめに (Getting Started)" href="getting_started.html" />
+    <link rel="next" title="最初の解析" href="first_analysis.html" />
     <link rel="prev" title="インストールガイド (Installation)" href="installation.html" />
   
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -382,13 +382,16 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="セクションナビゲーション">
   <p class="bd-links__title" role="heading" aria-level="1">セクションナビゲーション</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">ここから始める</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">最初のレッスン</span></p>
 <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">はじめに</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">インストールガイド (Installation)</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">クイックスタート (Quickstart)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">クイックスタート</a></li>
+<li class="toctree-l1"><a class="reference internal" href="first_analysis.html">最初の解析</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commissioner.html">Commissioner：GUI から保存可能な解析へ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scientific_python.html">科学技術計算の Python から GWexpy へ</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">基本レッスン</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">基礎レッスン</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="intro_timeseries.html">TimeSeries: 基本</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro_frequencyseries.html">FrequencySeries: 基本</a></li>
@@ -440,7 +443,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">チュートリアル</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">クイックスタート (Quickstart)</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">クイックスタート</span></li>
   </ul>
 </nav>
 </div>
@@ -452,99 +455,107 @@
 </div>
               
               
+  <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
+  <span>開発版ドキュメント · 0.2.3</span>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/941a377a0305336b66231d8ec8a42c14b364b244">941a377a</a>
+  · 入門例の検証対象 0.2.2
+  · <a href="../about/documentation_version.html">版情報</a>
+  · <a href="../about/known_limitations.html">既知の制限</a>
+</div>
+  
+  
               
                 
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="quickstart">
-<h1>クイックスタート (Quickstart)<a class="headerlink" href="#quickstart" title="Link to this heading">#</a></h1>
-<p>GWexpy を使って、最初の解析図を最短で作成しましょう。</p>
-<section id="quick-install">
-<span id="en-quickstart-install-command"></span><h2>クイックインストール (Quick Install)<a class="headerlink" href="#quick-install" title="Link to this heading">#</a></h2>
-<p>GWexpy は PyPI で公開されており、<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code> だけで始められます:</p>
-<ul class="simple">
-<li><p>目的: 現行リリースを最短でインストールする</p></li>
-<li><p>入力: Python 3.11 以上と <code class="docutils literal notranslate"><span class="pre">pip</span></code></p></li>
-<li><p>出力: 最初のサンプルを実行できる GWexpy 環境</p></li>
-</ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>gwexpy
+<h1>クイックスタート<a class="headerlink" href="#quickstart" title="Link to this heading">#</a></h1>
+<p>2 つの合成チャンネルを作り、振幅スペクトル密度（ASD）を計算して <code class="docutils literal notranslate"><span class="pre">asd.png</span></code> に保存します。
+前提条件は Python 3.11 以降と GWexpy のインストールです。
+検出器のファイルや追加パッケージは必要ありません。
+学習時間の目安はインストール後約 5 分です。
+スクリプトはノート PC で数秒程度の実行を目標としていますが、実測値ではありません。</p>
+<section id="install-gwexpy">
+<span id="quick-install"></span><span id="en-quickstart-install-command"></span><h2>GWexpy をインストールする<a class="headerlink" href="#install-gwexpy" title="Link to this heading">#</a></h2>
+<p>使用する Python 環境を有効にしたターミナルで、次を実行します。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>gwexpy
 </pre></div>
 </div>
-<p>未リリースの最新開発版を使いたい場合は、GitHub のソースリポジトリからインストールしてください: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">git+https://github.com/tatsuki-washimi/gwexpy.git</span></code></p>
-<p>Conda 管理の環境で始めたい場合、NDS2 / FrameLIB などの GW 系バイナリ依存が必要な場合、<code class="docutils literal notranslate"><span class="pre">pygmt</span></code> などの追加ツールを使いたい場合は、後から場当たり的に足さず <a class="reference internal" href="installation.html"><span class="std std-doc">インストールガイド</span></a> の Conda 前提手順から始めてください。</p>
+<p>環境の作成と Conda の手順は<a class="reference internal" href="installation.html"><span class="std std-doc">インストール</span></a>を参照してください。</p>
 </section>
-<section id="line-quickstart">
-<span id="en-quick-demo"></span><h2>4行で最初の図を出す (4-line Quickstart)<a class="headerlink" href="#line-quickstart" title="Link to this heading">#</a></h2>
-<p>GWexpy の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> は NumPy 配列から直接作成でき、標準的なプロット機能を備えています。</p>
-<ul class="simple">
-<li><p>目的: ランダムな時系列から最初のプロットを 1 枚表示する</p></li>
-<li><p>入力: 4096 サンプルの NumPy 配列、サンプルレート 4096 Hz、開始時刻 <code class="docutils literal notranslate"><span class="pre">t0=0</span></code></p></li>
-<li><p>出力: <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> オブジェクトと描画ウィンドウ</p></li>
-</ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
-
-<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4096</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mf">4096.0</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">ts</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<section id="run-the-complete-example">
+<span id="multi-channel-analysis-example"></span><span id="line-quickstart"></span><span id="en-quick-demo"></span><h2>例を通して実行する<a class="headerlink" href="#run-the-complete-example" title="Link to this heading">#</a></h2>
+<p><a class="reference download internal" download="" href="../_downloads/93e7667a09b28723319a6212fab6aff8/quickstart.py"><code class="xref download docutils literal notranslate"><span class="pre">quickstart.py</span></code></a> を作業フォルダにダウンロードし、そのフォルダで次のコマンドを実行します。
+ターミナルのコマンドが Python を起動し、ダウンロードしたファイル内の Python 文を順に実行します。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>quickstart.py
 </pre></div>
 </div>
-</section>
-<section id="min-hands-on-interactive-tutorial">
-<h2>30分で学べるハンズオン (Interactive Tutorial)<a class="headerlink" href="#min-hands-on-interactive-tutorial" title="Link to this heading">#</a></h2>
-<p>より実践的なワークフローを学びたい場合は、以下のレッスンを推奨します。</p>
-<section id="gwexpy-basic-hands-on">
-<h3>🧪 GWexpy 基本ハンズオン<a class="headerlink" href="#gwexpy-basic-hands-on" title="Link to this heading">#</a></h3>
-<p><a class="reference internal" href="intro_timeseries.html"><span class="std std-doc">TimeSeries の基本レッスン</span></a></p>
-<p>データの読み込みから、周波数解析（ASD/CSD）、Matrix API によるマルチチャンネル操作までを一通り体験します。</p>
-</section>
-</section>
-<section id="core-concepts">
-<h2>主要概念 (Core Concepts)<a class="headerlink" href="#core-concepts" title="Link to this heading">#</a></h2>
-<p>GWexpy を使いこなすための 2 つの重要な柱です。</p>
-<ul class="simple">
-<li><p><strong>TimeSeries / FrequencySeries</strong>: 単一チャンネルのデータを扱う基本クラスです。GWpy との高い互換性により、既存コードをほぼそのまま実行できます。</p></li>
-<li><p><strong>TimeSeriesMatrix / ScalarField</strong>: 多チャンネル（行列形式）や多次元のフィールド状データを扱う新しい API です。100 チャンネルを超える大規模解析も、1 行のコードで安全に扱えます。</p></li>
-</ul>
-</section>
-<section id="multi-channel-analysis-example">
-<h2>複数チャンネルの解析例<a class="headerlink" href="#multi-channel-analysis-example" title="Link to this heading">#</a></h2>
-<p>複数チャンネル間のクロススペクトル密度（CSD）を計算する最小例です。</p>
-<ul class="simple">
-<li><p>目的: 2 チャンネルの <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> からクロススペクトル密度を計算する</p></li>
-<li><p>入力: 2 チャンネルの <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> と <code class="docutils literal notranslate"><span class="pre">fftlength=1</span></code></p></li>
-<li><p>出力: <code class="docutils literal notranslate"><span class="pre">csd</span></code> オブジェクトと CSD プロット</p></li>
-</ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesDict</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Generate two synthetic channels and save their ASDs to asd.png.&quot;&quot;&quot;</span>
 
-<span class="c1"># Create data</span>
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">({</span>
-    <span class="s2">&quot;H1:STRAIN&quot;</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4096</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
-    <span class="s2">&quot;L1:STRAIN&quot;</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4096</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
-<span class="p">})</span>
+<span class="c1"># quickstart-begin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">gaussian</span><span class="p">,</span> <span class="n">sine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
 
-<span class="c1"># Calculate Cross Spectral Density (CSD) between the two channels</span>
-<span class="n">csd</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;H1:STRAIN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">csd</span><span class="p">(</span><span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;L1:STRAIN&quot;</span><span class="p">],</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">csd</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">settings</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
+<span class="n">tone</span> <span class="o">=</span> <span class="n">sine</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="p">)</span>
+<span class="n">channels</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;Sensor A&quot;</span><span class="p">:</span> <span class="n">tone</span> <span class="o">+</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">std</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="p">),</span>
+        <span class="s2">&quot;Sensor B&quot;</span><span class="p">:</span> <span class="n">tone</span> <span class="o">+</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">std</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+<span class="n">spectra</span> <span class="o">=</span> <span class="n">channels</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;welch&quot;</span><span class="p">)</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">spectra</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="n">ylabel</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;ASD [V/$\sqrt{\mathrm</span><span class="si">{Hz}</span><span class="s2">}$]&quot;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;asd.png&quot;</span><span class="p">)</span>
+<span class="c1"># quickstart-end</span>
 </pre></div>
 </div>
-<p>ここでは <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> から対象の 2 チャンネルを取り出し、チャンネル間のクロススペクトル密度を <code class="docutils literal notranslate"><span class="pre">csd</span></code> として得ています。</p>
+<p><code class="docutils literal notranslate"><span class="pre">sine</span></code> と <code class="docutils literal notranslate"><span class="pre">gaussian</span></code> は、長さ 16 秒、サンプルレート 512 Hz、開始時刻、単位 V が共通の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を生成します。
+明示したシードにより、どちらのノイズ列も再現できます。
+<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> は名前を付けた 2 チャンネルをまとめ、<code class="docutils literal notranslate"><span class="pre">.asd()</span></code> は同じスペクトル設定を各チャンネルに適用します。
+最後の行はコマンドを実行したフォルダに図を保存します。
+画像ビューアで <code class="docutils literal notranslate"><span class="pre">asd.png</span></code> を開いてください。</p>
 </section>
-<section id="need-help">
-<h2>困ったときは<a class="headerlink" href="#need-help" title="Link to this heading">#</a></h2>
-<p>実行時にエラーが発生したり、プロットが表示されない場合は、<a class="reference internal" href="../how-to/troubleshooting.html"><span class="std std-doc">トラブルシューティングガイド</span></a> を確認してください。原因が環境構築にある場合は、<a class="reference internal" href="installation.html"><span class="std std-doc">インストールガイド</span></a> の Conda 前提手順に戻るのが最短です。</p>
+<section id="read-the-result">
+<h2>結果を読み取る<a class="headerlink" href="#read-the-result" title="Link to this heading">#</a></h2>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../_images/quickstart-asd.png"><img alt="40 Hz 付近に共通のピークを持ち、ノイズフロアが異なる 2 つの電圧 ASD。" src="../_images/quickstart-asd.png" style="width: 720px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">ダウンロードした例の期待される出力です。
+両チャンネルに 40 Hz の線があり、Sensor B の広帯域ノイズフロアが高くなります。</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p id="core-concepts">横軸は周波数（Hz）、縦軸は振幅スペクトル密度（V/√Hz）です。
+ASD は変動の振幅が周波数にどのように分布するかを示します。
+両チャンネルに同じ 40 Hz の正弦波が含まれ、Sensor B のガウスノイズが大きくなっています。
+ピークの高さはスペクトル設定にも依存し、正弦波の振幅を V 単位で直接示す値ではありません。</p>
+<p><code class="docutils literal notranslate"><span class="pre">fftlength=2</span></code> は長さ 2 秒の区間を使い、周波数ビンの間隔は 0.5 Hz になります。
+<code class="docutils literal notranslate"><span class="pre">overlap=1</span></code> は隣り合う区間を 1 秒ずつ重ねます。
+この例では、解析条件が分かるように Hann 窓と Welch 平均を明示しています。</p>
+</section>
+<section id="change-one-parameter">
+<span id="gwexpy-basic-hands-on"></span><span id="min-hands-on-interactive-tutorial"></span><h2>パラメータを 1 つ変える<a class="headerlink" href="#change-one-parameter" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">frequency=40</span></code> を <code class="docutils literal notranslate"><span class="pre">frequency=70</span></code> に変えてスクリプトを再実行します。
+2 つのピークが 70 Hz に移るはずです。
+40 Hz に戻してから、片方のノイズの標準偏差（<code class="docutils literal notranslate"><span class="pre">std</span></code>）を変え、広帯域のフロアがどう変わるか確認します。</p>
+</section>
+<section id="if-the-script-does-not-run">
+<span id="need-help"></span><h2>スクリプトが動かない場合<a class="headerlink" href="#if-the-script-does-not-run" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ModuleNotFoundError:</span> <span class="pre">No</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">'gwexpy'</span></code> は、スクリプトを実行している Python が GWexpy を見つけられないことを示します。
+インストールした環境を有効にし、<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">quickstart.py</span></code> を再実行してください。
+その他の症状は<a class="reference internal" href="../how-to/troubleshooting.html"><span class="std std-doc">トラブルシューティング</span></a>を参照してください。</p>
 <p><a id="next-to-read"></a>
 <a id="next-steps"></a></p>
 </section>
-<section id="next-to-read">
-<h2>次に読む<a class="headerlink" href="#next-to-read" title="Link to this heading">#</a></h2>
+<section id="further-reading">
+<h2>さらに読む<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="installation.html"><span class="std std-doc">インストールガイド</span></a> - 環境の構築</p></li>
-<li><p><a class="reference internal" href="../how-to/troubleshooting.html"><span class="std std-doc">トラブルシューティングガイド</span></a> - 症状から解決策を逆引きする。</p></li>
-<li><p><a class="reference internal" href="getting_started.html"><span class="std std-doc">はじめに</span></a> - 体系的な学習ロードマップ</p></li>
-<li><p><a class="reference internal" href="../explanation/prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a> - FFT・GPS 時刻・互換性の前提を先に確認する。</p></li>
-<li><p><a class="reference internal" href="../explanation/gwexpy_for_gwpy_users.html"><span class="std std-doc">GWpy ユーザーのための GWexpy</span></a> - 既存ユーザー向けの差分ガイド。</p></li>
+<li><p><a class="reference internal" href="first_analysis.html"><span class="std std-doc">最初の解析</span></a>：Python の変数、描画、ASD を順に学びます。</p></li>
+<li><p><a class="reference internal" href="getting_started.html"><span class="std std-doc">はじめに</span></a>：経験に合った次のレッスンを選びます。</p></li>
+<li><p><a class="reference internal" href="intro_timeseries.html"><span class="std std-doc">TimeSeries の基礎</span></a>：時間領域と周波数領域の操作へ進みます。</p></li>
 </ul>
 </section>
 </section>
@@ -552,6 +563,7 @@
 
                 </article>
               
+
               
               
               
@@ -569,11 +581,11 @@
       </div>
     </a>
     <a class="right-next"
-       href="getting_started.html"
+       href="first_analysis.html"
        title="次ページ">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">次へ</p>
-        <p class="prev-next-title">はじめに (Getting Started)</p>
+        <p class="prev-next-title">最初の解析</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -596,16 +608,12 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-install">クイックインストール (Quick Install)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#line-quickstart">4行で最初の図を出す (4-line Quickstart)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#min-hands-on-interactive-tutorial">30分で学べるハンズオン (Interactive Tutorial)</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy-basic-hands-on">🧪 GWexpy 基本ハンズオン</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core-concepts">主要概念 (Core Concepts)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-channel-analysis-example">複数チャンネルの解析例</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#need-help">困ったときは</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-to-read">次に読む</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-gwexpy">GWexpy をインストールする</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-complete-example">例を通して実行する</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read-the-result">結果を読み取る</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#change-one-parameter">パラメータを 1 つ変える</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#if-the-script-does-not-run">スクリプトが動かない場合</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">さらに読む</a></li>
 </ul>
   </nav></div>
 
