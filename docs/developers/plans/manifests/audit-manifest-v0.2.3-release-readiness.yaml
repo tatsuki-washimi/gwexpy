@@ -5,9 +5,9 @@ review_evidence_json: |
       {
         "lane": "data-model",
         "role": "reviewer",
-        "model": "gpt-5.6-terra",
-        "effort": "high",
-        "reviewed_commit": "c7c9f0dbcc62c089db639e59c18adac3c0557878",
+        "model": "gpt-6-astra",
+        "effort": "xhigh",
+        "reviewed_commit": "dadbc68bb27ce404328d523efb1cd66586a4d9b3",
         "scope_paths": [
           "docs/developers/plans/20260902_v0.2.3_gwpy_behavioral_compatibility.md",
           "docs/developers/plans/manifests/audit-manifest-v0.2.3-stats-compat.yaml",
@@ -18,19 +18,20 @@ review_evidence_json: |
           "tests/fields",
           "tests/types"
         ],
-        "scope_digest": "4e2eb5430769dd58037f14651d0379aeaa4791e946d081040b44aa58380bf2f9",
+        "scope_digest": "2019cbfaafc99d1b2585f4a77ba60724e5841f40aa229143d38b3e236e19ccd9",
         "verdict": "APPROVED",
-        "timestamp_utc": "2026-09-04T07:48:31Z",
-        "raw_report_sha256": "7706978238835f3389c5643e2d4896467178b16b7396d1b0d9c7d222242eb461",
+        "timestamp_utc": "2026-09-05T06:49:30Z",
+        "raw_report_sha256": "ce24027a68a17af78a783bb43063e52ce2f7d858708e81bdbce25174d77b3a45",
         "finding_ids": []
       },
       {
         "lane": "release-security",
         "role": "reviewer",
-        "model": "gpt-5.6-terra",
-        "effort": "high",
-        "reviewed_commit": "c7c9f0dbcc62c089db639e59c18adac3c0557878",
+        "model": "gpt-6-astra",
+        "effort": "xhigh",
+        "reviewed_commit": "dadbc68bb27ce404328d523efb1cd66586a4d9b3",
         "scope_paths": [
+          ".gitattributes",
           ".github/workflows/publish-release.yml",
           ".zenodo.json",
           "CHANGELOG.md",
@@ -52,18 +53,18 @@ review_evidence_json: |
           "tests/test_release_contracts.py",
           "tests/test_validate_release_script.py"
         ],
-        "scope_digest": "85c72074423192c86f1d8203eb1da3bfcbc91582d4173d26a2fbca3c35da3124",
+        "scope_digest": "47eead4aefb8433eb07a0453c17821772c04d75d07157dec7e686f39cae5199a",
         "verdict": "APPROVED",
-        "timestamp_utc": "2026-09-04T07:48:31Z",
-        "raw_report_sha256": "c0ec18949688c2c1afa4709779725e64f91e172ccd5160bceff378b57ac3adc3",
+        "timestamp_utc": "2026-09-05T06:52:50Z",
+        "raw_report_sha256": "4c08cabbde3e767d1a1dffc040c4737ff0b4b662fd36b707bd3014d52b37e4a9",
         "finding_ids": []
       },
       {
         "lane": "scientific-compatibility",
         "role": "reviewer",
-        "model": "gpt-5.6-terra",
-        "effort": "high",
-        "reviewed_commit": "c7c9f0dbcc62c089db639e59c18adac3c0557878",
+        "model": "gpt-6-astra",
+        "effort": "xhigh",
+        "reviewed_commit": "dadbc68bb27ce404328d523efb1cd66586a4d9b3",
         "scope_paths": [
           ".agent/AGENTS.md",
           ".clinerules",
@@ -110,10 +111,10 @@ review_evidence_json: |
           "tests/time",
           "tests/timeseries"
         ],
-        "scope_digest": "9e146a8ed8e2e90d46fd4e515995a1945f983520afb08238c0825ce1837f76ce",
+        "scope_digest": "6c37ca6869fafceb323ea6230b71dd748145d8d9d8d3c403321fa85ba33d6dae",
         "verdict": "APPROVED",
-        "timestamp_utc": "2026-09-04T07:48:31Z",
-        "raw_report_sha256": "04a3d3d5d002bc93d25399623da8972e5c8a3423a0edad811ffc6303f07b31b3",
+        "timestamp_utc": "2026-09-05T06:48:35Z",
+        "raw_report_sha256": "eb26f2ac9f58e093c6b7396afbbd0302f59c9bdb4915047f60e101f754711043",
         "finding_ids": []
       }
     ]

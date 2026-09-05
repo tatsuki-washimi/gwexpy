@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.2.3] - 2026-09-04
+## [0.2.3] - 2026-09-05
 
 This maintenance-release candidate implements GWpy 4.0.1/4.0.2 compatibility
 fixes across the audited GWpy-derived API surface. Automated differential

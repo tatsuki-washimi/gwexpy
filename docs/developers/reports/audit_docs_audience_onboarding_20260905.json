@@ -3,7 +3,7 @@
   "date": "2026-09-05",
   "task": "Approved Docs audience onboarding implementation",
   "branch": "docs/audience-onboarding",
-  "base_revision": "d433b2ecb6e938d86c30615d54c7f20fcf97cde7",
+  "base_revision": "547332db31120365ca099bf8dc52c71eff5865db",
   "skills": [
     "analyze_external",
     "setup_plan",
@@ -28,7 +28,9 @@
     "Added source preparation, executable-example validation, rendered/deployed HTML checks and CI failure artifacts.",
     "Completed independent specification, implementation quality, Japanese and numerical reviews; corrected review findings.",
     "Ran full tests, fixed seven stale documentation-test references, and reran every affected docs/I/O contract test.",
-    "Built and inspected English/Japanese HTML and recorded external linkcheck failures separately."
+    "Built and inspected English/Japanese HTML and recorded external linkcheck failures separately.",
+    "Merged updated main after PR conflict detection; preserved upstream API presentation hooks and release records, and retained the stronger canonical/public notebook unit, averaging and conjugation fixes.",
+    "Rebuilt both languages after conflict resolution; both passed with two existing duplicate API index warnings, and the rendered entry-path checker passed again."
   ],
   "environment": {
     "python": "3.11.14",
@@ -111,14 +113,16 @@
       "status": "passed",
       "notebooks_successful": 59,
       "log": "/tmp/gwexpy-docs-onboarding/verified-en.log",
-      "explanation": "All notebook sources executed successfully; final build reused valid execution cache. Earlier clean rendering emitted existing API warnings; final incremental render had none."
+      "explanation": "Post-merge build passed using the 59 matching successful notebook executions; two existing duplicate API object-index warnings remain.",
+      "warnings": 2
     },
     {
       "command": "rtk proxy conda run --no-capture-output -n gwexpy python -m sphinx -b html -D language=ja -d /tmp/gwexpy-docs-onboarding/verified/docs_redesign/_build/doctrees_ja /tmp/gwexpy-docs-onboarding/verified/docs_redesign /tmp/gwexpy-docs-onboarding/verified/docs_redesign/_build/html/ja",
       "status": "passed",
       "notebooks_successful": 59,
       "log": "/tmp/gwexpy-docs-onboarding/verified-ja.log",
-      "explanation": "Uses successful executions for the same 59 sources. Final incremental render had one external intersphinx connection warning."
+      "explanation": "Post-merge build passed using the 59 matching successful notebook executions; two existing duplicate API object-index warnings remain.",
+      "warnings": 2
     },
     {
       "command": "rtk proxy conda run --no-capture-output -n gwexpy python scripts/check_public_docs.py /tmp/gwexpy-docs-onboarding/verified/docs_redesign/_build/html",
@@ -192,6 +196,14 @@
       },
       "log": "/tmp/gwexpy-docs-onboarding/linkcheck.log",
       "explanation": "Existing external destinations failed; rewritten local navigation and retained fragments passed the separate rendered checker."
+    },
+    {
+      "command": "rtk proxy env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 QT_QPA_PLATFORM=offscreen MPLBACKEND=Agg conda run --no-capture-output -n gwexpy pytest tests/docs tests/io/test_io_docs_contract_sync.py tests/test_check_release_metadata_script.py tests/test_publish_release_workflow.py tests/test_qualification_skip_evidence.py -q",
+      "status": "passed",
+      "passed": 305,
+      "skipped": 4,
+      "seconds": 7.37,
+      "explanation": "Post-merge check includes every affected docs/I/O test and the upstream release-test changes."
     }
   ],
   "external_link_failures": [
@@ -433,5 +445,6 @@
     "tests/docs/test_tutorial_notebook_quality.py",
     "tests/docs/test_v0113_public_release_facts.py",
     "tests/io/test_io_docs_contract_sync.py"
-  ]
+  ],
+  "initial_base_revision": "d433b2ecb6e938d86c30615d54c7f20fcf97cde7"
 }

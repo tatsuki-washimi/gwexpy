@@ -169,6 +169,9 @@ autodoc_default_options = {
 napoleon_numpy_docstring = True
 napoleon_google_docstring = True
 napoleon_use_admonition_for_notes = True
+# Render the Attributes section as instance-variable fields; autodoc separately
+# indexes the actual dataclass/property members on the same API page.
+napoleon_use_ivar = True
 
 # Custom roles / substitutions used in gwexpy and upstream GWpy docstrings.
 rst_prolog = r"""
@@ -177,6 +180,10 @@ rst_prolog = r"""
 .. role:: doi(code)
 .. |lal.LIGOTimeGPS| replace:: ``lal.LIGOTimeGPS``
 .. _lal.ligotimegps: https://docs.ligo.org/lscsoft/lalsuite/lal/group___x_l_a_l_time__c.html
+.. |lalframe| replace:: LALFrame
+.. _lalframe: https://docs.ligo.org/lscsoft/lalsuite/lalframe/
+.. |nds2| replace:: NDS2
+.. _nds2: https://nds.ligo.org/
 """
 
 # Optional third-party backends that need not be installed to build the docs.
@@ -318,8 +325,13 @@ html_sidebars = {
 # A msgstr is always inline Markdown, never a notebook, so for notebook docs we
 # re-parse it with the plain MyST Markdown parser instead.
 def setup(app):
-    """Register localization, build identity, and execution evidence hooks."""
+    """Register localization, API presentation, and build evidence hooks."""
+    from pygments.lexers.special import TextLexer
+    from sphinx.ext.autodoc import ClassDocumenter
     from sphinx.transforms import i18n as _i18n
+
+    # Historical release notes preserve Mermaid source as a literal record.
+    app.add_lexer("mermaid", TextLexer)
 
     _orig_publish_msgstr = _i18n.publish_msgstr
 
@@ -372,6 +384,15 @@ def setup(app):
 
     app.connect("config-inited", _localize_theme_option_strings)
 
+    class _AliasClassDocumenter(ClassDocumenter):
+        def add_line(self, line, source, *lineno):
+            """Separate the RST role from Sphinx's Japanese alias suffix."""
+            if self.config.language == "ja" and line.endswith("`の別名です。"):
+                line = line.removesuffix("の別名です。") + r"\ の別名です。"
+            super().add_line(line, source, *lineno)
+
+    app.add_autodocumenter(_AliasClassDocumenter, override=True)
+
     def _localize_changelog_mermaid(app, doctree, docname):
         if app.config.language != "ja" or docname != "about/changelog":
             return
@@ -422,5 +443,38 @@ def setup(app):
             )
 
     app.connect("html-page-context", _case_information)
+
+    def _format_api_docstring(app, what, name, obj, options, lines):
+        import re
+
+        # Resolve legacy tutorial links in the current documentation layout.
+        tutorial_paths = {
+            "case_transfer_function": "/how-to/case-studies/case_transfer_function",
+            "case_bootstrap_gls_fitting": "/how-to/case-studies/case_bootstrap_gls_fitting",
+            "advanced_hht": "/how-to/spectral/advanced_hht",
+        }
+        for index, line in enumerate(lines):
+            for tutorial, path in tutorial_paths.items():
+                line = line.replace("../../../user_guide/tutorials/" + tutorial, path)
+            if name == "gwexpy.analysis.response.ResponseFunctionResult":
+                line = re.sub(
+                    r"(?<![\w.])SegmentTable(?![\w.])",
+                    "gwexpy.table.SegmentTable",
+                    line,
+                )
+            lines[index] = line
+
+        # Keep the approved runtime tree unchanged while making this existing
+        # bullet list valid reStructuredText in the generated API reference.
+        if (
+            getattr(obj, "__module__", None) == "gwexpy.timeseries._signal"
+            and getattr(obj, "__name__", None) == "lock_in"
+        ):
+            for index in range(len(lines) - 1, -1, -1):
+                if lines[index].strip() == "**Edge Handling**":
+                    if index + 1 < len(lines) and lines[index + 1].strip():
+                        lines.insert(index + 1, "")
+
+    app.connect("autodoc-process-docstring", _format_api_docstring)
 
     return {"parallel_read_safe": True, "parallel_write_safe": True}

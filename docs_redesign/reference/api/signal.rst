@@ -9,6 +9,11 @@ Filters, window functions, Q-transform, and spectral estimation utilities.
    :members:
    :undoc-members:
    :show-inheritance:
+   :exclude-members: WhiteningModel, StandardizationModel
+
+The preprocessing models :class:`~gwexpy.signal.preprocessing.WhiteningModel`
+and :class:`~gwexpy.signal.preprocessing.StandardizationModel` are documented
+in :doc:`preprocessing`.
 
 Filter Design
 -------------

@@ -467,6 +467,34 @@ def test_qualification_evidence_switch_is_fail_closed_and_versioned():
     )
 
 
+def test_v023_expected_skip_baseline_declares_lf_checkout_contract():
+    repository = WORKFLOW.parents[2]
+    attributes = repository / ".gitattributes"
+    declarations = attributes.read_text(encoding="utf-8").splitlines()
+
+    assert (
+        "scripts/ci/v023_qualification_expected_skips.json text eol=lf" in declarations
+    )
+
+    result = subprocess.run(
+        [
+            "git",
+            "check-attr",
+            "text",
+            "eol",
+            "--",
+            "scripts/ci/v023_qualification_expected_skips.json",
+        ],
+        cwd=repository,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    lines = result.stdout.splitlines()
+    assert "scripts/ci/v023_qualification_expected_skips.json: text: set" in lines
+    assert "scripts/ci/v023_qualification_expected_skips.json: eol: lf" in lines
+
+
 def test_v022_historical_evidence_does_not_require_v023_candidate_files():
     import yaml
 

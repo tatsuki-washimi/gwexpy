@@ -35,7 +35,7 @@ See [the audit manifest](audit_docs_audience_onboarding_20260905.json) for comma
 
 - Ruff passed for the library, tests, modified configuration and new scripts. Mypy passed for 396 library files and the three new scripts.
 - The full suite initially reported 12,867 passed, 7 failed, 307 skipped and 6 expected failures. All seven failures referenced moved documentation catalogues or the replaced hard-coded installation version. After updating those references, the final affected docs/I/O contract run passed all 208 tests, with 4 skips, including the new numerical regression tests. The full suite was not repeated as one invocation after these fixes.
-- All 59 prepared notebooks executed successfully; both language builds include those successful executions. The final render reused the matching execution cache. Clean rendering still exposes existing API documentation warnings; the final incremental EN render had no warnings and JA had one external intersphinx connection warning. The legacy docs strict HTML build passed.
+- All 59 prepared notebooks executed successfully; both language builds include those successful executions. The final render reused the matching execution cache. The final post-merge EN and JA renders each emitted two existing duplicate API object-index warnings. The legacy docs strict HTML build passed.
 - The rendered checker passed 19 entry pages per language, retained legacy fragments, local links, language counterparts, the shared PNG and execution metadata for all 24 case studies.
 - The introductory examples passed with both the development environment and an isolated base-dependency GWexpy 0.2.2 installation. The optional XML sample passed where `dttxml` was installed; it was explicitly skipped in the base-only environment.
 - Desktop (1440 px) and mobile (390 px) browser checks passed for both languages, including all six routes and the literal Commissioner name, with no horizontal overflow. Terminology, documentation synchronization and forbidden-artifact checks passed.
@@ -45,6 +45,10 @@ External linkcheck is **not clean**: 238 working links, 14 redirects, 126 unchec
 The main verification environment uses Python 3.11.14, GWexpy 0.2.3, GWpy 4.0.2, NumPy 1.26.4, SciPy 1.12.0, Astropy 6.1.7, Matplotlib 3.10.8, Sphinx 8.2.3, and MyST-NB 1.4.0. Clean release testing installs GWexpy 0.2.2 in an independent venv.
 
 BLAS thread counts are set to one for docs jobs to prevent small seasonal-model fits from oversubscribing large machines. `python -m sphinx` binds Sphinx to the selected environment; a user-level `sphinx-build` executable can otherwise select a different Python.
+
+## Integration with updated main
+
+Main advanced to `547332db3` while the implementation was in progress. The merge preserves its API documentation presentation hooks, release records and line-ending qualification changes. In the three overlapping notebooks, the canonical/public fixes in this branch retain native-unit correctness and additionally test matching spectral averaging and complex conjugation. No runtime files differ from the updated main branch. The post-merge docs, I/O contract and affected release test run passed **305 tests**, with **4 skips**. Both language builds and the rendered entry-path checks passed again after the merge.
 
 ## Remaining external actions
 
