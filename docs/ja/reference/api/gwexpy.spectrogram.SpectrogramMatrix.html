@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=51b0fd3c"></script>
+    <script src="../../_static/documentation_options.js?v=ea4c7f21"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -765,16 +765,16 @@ preserved per-element in the <cite>meta</cite> attribute.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">kurtosis</span></code>([axis, fisher, nan_policy])</p></td>
 <td><p>Compute the kurtosis (Fisher or Pearson) of the data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max</span></code>([axis, out, keepdims, initial, where])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max</span></code>([axis, out, keepdims, initial, where, ...])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean</span></code>([axis, dtype, out, keepdims, where])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean</span></code>([axis, dtype, out, keepdims, where, ...])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">median</span></code>([axis, out, overwrite_input, keepdims])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">median</span></code>([axis])</p></td>
 <td><p>Compute the median.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">min</span></code>([axis, out, keepdims, initial, where])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">min</span></code>([axis, out, keepdims, initial, where, ...])</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nonzero</span></code>()</p></td>
@@ -861,7 +861,7 @@ preserved per-element in the <cite>meta</cite> attribute.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">squeeze</span></code>([axis])</p></td>
 <td><p>Remove axes of length one from <cite>a</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">std</span></code>([axis, dtype, out, ddof, keepdims, where])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">std</span></code>([axis, dtype, out, ddof, keepdims, ...])</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">step</span></code>([where])</p></td>
@@ -942,7 +942,7 @@ preserved per-element in the <cite>meta</cite> attribute.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_at</span></code>(x)</p></td>
 <td><p>Get the matrix values at a specific x-axis location.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">var</span></code>([axis, dtype, out, ddof, keepdims, where])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">var</span></code>([axis, dtype, out, ddof, keepdims, ...])</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">view</span></code>([dtype][, type])</p></td>
@@ -1083,19 +1083,19 @@ preserved per-element in the <cite>meta</cite> attribute.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.series_class">
 <span class="sig-name descname"><span class="pre">series_class</span></span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.series_class" title="Link to this definition">#</a></dt>
-<dd><p>:py:class:<a href="#id1"><span class="problematic" id="id2">`</span></a>~gwexpy.spectrogram.spectrogram.Spectrogram`の別名です。</p>
+<dd><p><a class="reference internal" href="gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.spectrogram.Spectrogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Spectrogram</span></code></a>の別名です。</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.dict_class">
 <span class="sig-name descname"><span class="pre">dict_class</span></span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.dict_class" title="Link to this definition">#</a></dt>
-<dd><p>:py:class:<a href="#id3"><span class="problematic" id="id4">`</span></a>~gwexpy.spectrogram.collections.SpectrogramDict`の別名です。</p>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectrogramDict</span></code>の別名です。</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.list_class">
 <span class="sig-name descname"><span class="pre">list_class</span></span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.list_class" title="Link to this definition">#</a></dt>
-<dd><p>:py:class:<a href="#id5"><span class="problematic" id="id6">`</span></a>~gwexpy.spectrogram.collections.SpectrogramList`の別名です。</p>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectrogramList</span></code>の別名です。</p>
 </dd></dl>
 
 <dl class="py method">

@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../_static/documentation_options.js?v=51b0fd3c"></script>
+    <script src="../_static/documentation_options.js?v=ea4c7f21"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -555,7 +555,7 @@
 <ul class="simple">
 <li><p><strong>まず保存形式を選ぶ</strong>なら、GW 系データは <strong>HDF5</strong>、観測網の既存資産は <strong>MiniSEED / SAC / WIN / ATS</strong>、汎用交換は <strong>CSV / NetCDF4 / Zarr</strong>、ロガー固有データは <strong>GBD / TDMS / SDB / WAV / Audio</strong> を起点に考えると整理しやすいです。<strong>MTH5</strong> については、現時点の public direct-I/O は <strong><code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code> の単一路だけ</strong> で、汎用の standalone <strong><code class="docutils literal notranslate"><span class="pre">format=&quot;mth5&quot;</span></code></strong> はまだ公開していません。</p></li>
 <li><p><strong>自動判別でよい</strong>のは、拡張子から reader が一意に決まる場合です。</p></li>
-<li><p>汎用 <strong>HDF5</strong> は <strong><code class="docutils literal notranslate"><span class="pre">format=&quot;hdf5&quot;</span></code> を明示</strong>してください。<code class="docutils literal notranslate"><span class="pre">.h5</span></code> / <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code> は複数の HDF5 系経路で共有されており、クラスによって自動判別の挙動が揃っていません。</p></li>
+<li><p>GWpy-backed の <strong><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></strong> と <strong><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code></strong> は、<code class="docutils literal notranslate"><span class="pre">.h5</span></code> / <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code> の native HDF5 を自動判別します。構造が NDScope に一致するファイルは、汎用の native 経路より先に選択されます。その他の曖昧な HDF5 ファミリ、または GWexpy-only のクラスでは <strong><code class="docutils literal notranslate"><span class="pre">format=&quot;hdf5&quot;</span></code> を明示</strong>してください。</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">format=</span></code> を明示する</strong>のは、<code class="docutils literal notranslate"><span class="pre">.xml</span></code> のように経路が複数ありうる場合、独自拡張子を使っている場合、または実験データで自動判別が不安な場合です。</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">timezone</span></code> を必ず指定する</strong>のは、ファイル内に UTC/GPS がなくローカル時刻だけを持つ形式です。現時点でユーザーが明示必須なのは <strong>GBD</strong> です。</p></li>
 <li><p><strong>Read only / Write only に注意する</strong>: 表の <code class="docutils literal notranslate"><span class="pre">○</span> <span class="pre">/</span> <span class="pre">×</span></code> は「読めるが書けない」「書けるが読めない」を意味します。</p></li>
@@ -792,9 +792,9 @@
 </tr>
 <tr class="row-odd"><td><p><strong>HDF5</strong> (<code class="docutils literal notranslate"><span class="pre">.h5</span></code>, <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
-<td><p>各クラスの <code class="docutils literal notranslate"><span class="pre">.read(...,</span> <span class="pre">format=&quot;hdf5&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;hdf5&quot;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code>。その他のクラスは <code class="docutils literal notranslate"><span class="pre">format=&quot;hdf5&quot;</span></code> を使用</p></td>
 <td><p>長期保存、メタデータ保持</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">format=&quot;hdf5&quot;</span></code> の明示を推奨</p></td>
+<td><p>native time-series HDF5 は自動判別。その他のファミリは明示を推奨</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>hdf.ndscope</strong> (<code class="docutils literal notranslate"><span class="pre">.h5</span></code>, <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
@@ -831,7 +831,7 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.h5&quot;</span><span class="p">)</span>  <span class="c1"># native HDF5 auto-identification</span>
 <span class="n">frame</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.gwf&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;gwf&quot;</span><span class="p">)</span>
 <span class="n">merged</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">([</span><span class="s2">&quot;part0.gwf&quot;</span><span class="p">,</span> <span class="s2">&quot;part1.gwf&quot;</span><span class="p">],</span> <span class="s2">&quot;H1:STRAIN&quot;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">))</span>
 <span class="n">dtt</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;diag.xml&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;xml.diaggui&quot;</span><span class="p">,</span> <span class="n">products</span><span class="o">=</span><span class="s2">&quot;TS&quot;</span><span class="p">)</span>

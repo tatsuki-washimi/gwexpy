@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=51b0fd3c"></script>
+    <script src="../../_static/documentation_options.js?v=ea4c7f21"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -622,8 +622,8 @@ and ROOT (TGraph/TH1).</p>
 <p>Key methods:</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code>(**kwargs)</p></td>
-<td><p>Plot this object using <a class="reference internal" href="plot.html#gwexpy.plot.Plot" title="gwexpy.plot.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">gwexpy.plot.Plot</span></code></a>.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries.plot" title="gwexpy.frequencyseries.FrequencySeries.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a>([method, xscale])</p></td>
+<td><p>Plot the data for this <cite>FrequencySeries</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries.ifft" title="gwexpy.frequencyseries.FrequencySeries.ifft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ifft</span></code></a>(*[, mode, trim, original_n, pad_left, ...])</p></td>
 <td><p>Inverse FFT returning a gwexpy TimeSeries, supporting transient round-trip.</p></td>
@@ -686,6 +686,12 @@ and ROOT (TGraph/TH1).</p>
 </tbody>
 </table>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'plot'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xscale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'log'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="plot.html#gwexpy.plot.Plot" title="gwexpy.plot.Plot"><span class="pre">Plot</span></a></span></span></dt>
+<dd><p>Plot the data for this <cite>FrequencySeries</cite>.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py">
 <em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
@@ -756,6 +762,7 @@ See below for list of acceptable formats.</p></li>
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Write a <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> through the registered I/O handlers.</p>
+<p>Registry-generated format documentation follows.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -896,8 +903,9 @@ If <cite>False</cite>, treat data as power (10 * log10).</p></li>
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">filterba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
-<dd><p>Apply a [b, a] filter to this FrequencySeries.</p>
-<p>Inherited from gwpy.</p>
+<dd><p>Apply a legacy filter definition to this FrequencySeries.</p>
+<p>This preserves the call shape from GWpy 3.0.14; GWpy 4 no longer
+provides <code class="docutils literal notranslate"><span class="pre">filterba</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1555,7 +1563,7 @@ return a <a class="reference internal" href="gwexpy.frequencyseries.FrequencySer
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">DictClass</span></span></dt>
-<dd><p>:py:class:<a href="#id1"><span class="problematic" id="id2">`</span></a>~gwexpy.frequencyseries.collections.FrequencySeriesDict`の別名です。</p>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeriesDict</span></code>の別名です。</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -2495,28 +2503,13 @@ errors, and plotting methods.</p>
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">flags</span></span></dt>
 <dd><p>Information about the memory layout of the array.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeries.C_CONTIGUOUS">
-<span class="sig-name descname"><span class="pre">C_CONTIGUOUS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeries.C_CONTIGUOUS" title="Link to this definition">#</a></dt>
-<dd><p>The data is in a single, C-style contiguous segment.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeries.F_CONTIGUOUS">
-<span class="sig-name descname"><span class="pre">F_CONTIGUOUS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeries.F_CONTIGUOUS" title="Link to this definition">#</a></dt>
-<dd><p>The data is in a single, Fortran-style contiguous segment.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeries.OWNDATA">
-<span class="sig-name descname"><span class="pre">OWNDATA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">O</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeries.OWNDATA" title="Link to this definition">#</a></dt>
-<dd><p>The array owns the memory it uses or borrows it from another object.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeries.WRITEABLE">
-<span class="sig-name descname"><span class="pre">WRITEABLE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeries.WRITEABLE" title="Link to this definition">#</a></dt>
-<dd><p>The data area can be written to.  Setting this to False locks
+<dl class="field-list simple">
+<dt class="field-odd">変数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>C</strong><strong>)</strong> (<em>C_CONTIGUOUS</em>) -- The data is in a single, C-style contiguous segment.</p></li>
+<li><p><strong>(</strong><strong>F</strong><strong>)</strong> (<em>F_CONTIGUOUS</em>) -- The data is in a single, Fortran-style contiguous segment.</p></li>
+<li><p><strong>(</strong><strong>O</strong><strong>)</strong> (<em>OWNDATA</em>) -- The array owns the memory it uses or borrows it from another object.</p></li>
+<li><p><strong>(</strong><strong>W</strong><strong>)</strong> (<em>WRITEABLE</em>) -- The data area can be written to.  Setting this to False locks
 the data, making it read-only.  A view (slice, etc.) inherits WRITEABLE
 from its base array at creation time, but a view of a writeable
 array may be subsequently locked while the base array remains writeable.
@@ -2525,53 +2518,19 @@ be made writeable.  However, currently, locking a base object does not
 lock any views that already reference it, so under that circumstance it
 is possible to alter the contents of a locked array via a previously
 created writeable view onto it.)  Attempting to change a non-writeable
-array raises a RuntimeError exception.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeries.ALIGNED">
-<span class="sig-name descname"><span class="pre">ALIGNED</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeries.ALIGNED" title="Link to this definition">#</a></dt>
-<dd><p>The data and all elements are aligned appropriately for the hardware.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeries.WRITEBACKIFCOPY">
-<span class="sig-name descname"><span class="pre">WRITEBACKIFCOPY</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeries.WRITEBACKIFCOPY" title="Link to this definition">#</a></dt>
-<dd><p>This array is a copy of some other array. The C-API function
+array raises a RuntimeError exception.</p></li>
+<li><p><strong>(</strong><strong>A</strong><strong>)</strong> (<em>ALIGNED</em>) -- The data and all elements are aligned appropriately for the hardware.</p></li>
+<li><p><strong>(</strong><strong>X</strong><strong>)</strong> (<em>WRITEBACKIFCOPY</em>) -- This array is a copy of some other array. The C-API function
 PyArray_ResolveWritebackIfCopy must be called before deallocating
-to the base array will be updated with the contents of this array.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeries.FNC">
-<span class="sig-name descname"><span class="pre">FNC</span></span><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeries.FNC" title="Link to this definition">#</a></dt>
-<dd><p>F_CONTIGUOUS and not C_CONTIGUOUS.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeries.FORC">
-<span class="sig-name descname"><span class="pre">FORC</span></span><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeries.FORC" title="Link to this definition">#</a></dt>
-<dd><p>F_CONTIGUOUS or C_CONTIGUOUS (one-segment test).</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeries.BEHAVED">
-<span class="sig-name descname"><span class="pre">BEHAVED</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeries.BEHAVED" title="Link to this definition">#</a></dt>
-<dd><p>ALIGNED and WRITEABLE.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeries.CARRAY">
-<span class="sig-name descname"><span class="pre">CARRAY</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">CA</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeries.CARRAY" title="Link to this definition">#</a></dt>
-<dd><p>BEHAVED and C_CONTIGUOUS.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.frequencyseries.FrequencySeries.FARRAY">
-<span class="sig-name descname"><span class="pre">FARRAY</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">FA</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.frequencyseries.FrequencySeries.FARRAY" title="Link to this definition">#</a></dt>
-<dd><p>BEHAVED and F_CONTIGUOUS and not C_CONTIGUOUS.</p>
-</dd></dl>
-
+to the base array will be updated with the contents of this array.</p></li>
+<li><p><strong>FNC</strong> -- F_CONTIGUOUS and not C_CONTIGUOUS.</p></li>
+<li><p><strong>FORC</strong> -- F_CONTIGUOUS or C_CONTIGUOUS (one-segment test).</p></li>
+<li><p><strong>(</strong><strong>B</strong><strong>)</strong> (<em>BEHAVED</em>) -- ALIGNED and WRITEABLE.</p></li>
+<li><p><strong>(</strong><strong>CA</strong><strong>)</strong> (<em>CARRAY</em>) -- BEHAVED and C_CONTIGUOUS.</p></li>
+<li><p><strong>(</strong><strong>FA</strong><strong>)</strong> (<em>FARRAY</em>) -- BEHAVED and F_CONTIGUOUS and not C_CONTIGUOUS.</p></li>
+</ul>
+</dd>
+</dl>
 <div class="admonition- admonition">
 <p class="admonition-title">メモ</p>
 <p>The <cite>flags</cite> object can be accessed dictionary-like (as in <code class="docutils literal notranslate"><span class="pre">a.flags['WRITEABLE']</span></code>),
@@ -3007,29 +2966,27 @@ if the array is of higher dimension.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial=&lt;no</span> <span class="pre">value&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where=&lt;no</span> <span class="pre">value&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_nan=False</span></span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">median</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<span class="sig-name descname"><span class="pre">median</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Compute the median.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> or </em><em>None</em><em>, </em><em>optional</em>) -- Axis along which to compute the median. If None, compute over the
 flattened array.</p></li>
-<li><p><strong>out</strong> (<em>ndarray</em><em>, </em><em>optional</em>) -- Output array.</p></li>
-<li><p><strong>overwrite_input</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- If True, allow the input array to be modified by the calculation.</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- If True, the reduced axes are left in the result as dimensions with
-size one.</p></li>
-<li><p><strong>ignore_nan</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- If True (default), use <code class="docutils literal notranslate"><span class="pre">numpy.nanmedian</span></code> and ignore NaNs.</p></li>
-<li><p><strong>**kwargs</strong> -- Passed to the underlying NumPy implementation.</p></li>
+<li><p><strong>ignore_nan</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- If True, use <code class="docutils literal notranslate"><span class="pre">numpy.nanmedian</span></code> and ignore NaNs. The default is
+False, matching GWpy and NumPy NaN propagation.</p></li>
+<li><p><strong>**kwargs</strong> -- Passed to the GWpy implementation, or to <code class="docutils literal notranslate"><span class="pre">numpy.nanmedian</span></code> when
+<code class="docutils literal notranslate"><span class="pre">ignore_nan=True</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">戻り値<span class="colon">:</span></dt>
@@ -3044,7 +3001,7 @@ returned with the same unit where applicable.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial=&lt;no</span> <span class="pre">value&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where=&lt;no</span> <span class="pre">value&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_nan=False</span></span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -3232,12 +3189,6 @@ they come up in the dtype, to break ties.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span></dt>
-<dd><p>Plot this object using <a class="reference internal" href="plot.html#gwexpy.plot.Plot" title="gwexpy.plot.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">gwexpy.plot.Plot</span></code></a>.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">prepend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QuantityLike</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'raise'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ignore'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pad'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span></dt>
 <dd><p>Connect another series onto the start of the current one.</p>
 <dl class="field-list simple">
@@ -3419,14 +3370,14 @@ do not use this array as a buffer for another Python object and then
 reallocate the memory.</p>
 <p>On Python 3.13 and older, the check allows objects with exactly one
 reference to be reallocated in-place. On Python 3.14 and newer, the array
-must be uniquely referenced. See <a class="footnote-reference brackets" href="#id4" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> for more details.</p>
+must be uniquely referenced. See <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> for more details.</p>
 <p>If you are sure that you have not shared the memory for this array with
 another Python object, then you may safely set <cite>refcheck</cite> to False.</p>
 </div>
 <p class="rubric">参照</p>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id4" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">1</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="id2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>Python 3.14 What's New, <a class="reference external" href="https://docs.python.org/3/whatsnew/3.14.html#whatsnew314-refcount">https://docs.python.org/3/whatsnew/3.14.html#whatsnew314-refcount</a></p>
 </aside>
 </aside>
@@ -3864,7 +3815,7 @@ structured array:</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -3872,14 +3823,14 @@ structured array:</p>
 <span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="plot.html#gwexpy.plot.Plot" title="gwexpy.plot.Plot"><span class="pre">Plot</span></a></span></span></dt>
 <dd><p>Create a step plot of this series.</p>
 <dl class="simple">
-<dt>kwargs</dt><dd><p>All keyword arguments are passed to the <code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code> method.
+<dt>kwargs</dt><dd><p>All keyword arguments are passed to the <a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries.plot" title="gwexpy.frequencyseries.FrequencySeries.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a> method.
 of this series.</p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">参考</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></dt><dd><p>For details of the plotting.</p>
+<dt><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries.plot" title="gwexpy.frequencyseries.FrequencySeries.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a></dt><dd><p>For details of the plotting.</p>
 </dd>
 </dl>
 </div>
@@ -4330,7 +4281,7 @@ to the end of this 'buffer'.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -4638,15 +4589,22 @@ to perform an integration rather than a simple sum.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">crop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">BifrequencyMap</span></span></span></dt>
-<dd><p>Crop this BifrequencyMap to a specific frequency range.</p>
+<span class="sig-name descname"><span class="pre">crop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*legacy_axes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low=&lt;object</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high=&lt;object</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low2=&lt;object</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high2=&lt;object</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">BifrequencyMap</span></span></span></dt>
+<dd><p>Crop this map using the GWpy first-axis contract by default.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>low</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>u.Quantity</em><em>, </em><em>optional</em>) -- Lower bound for frequency1 (X/cols).</p></li>
-<li><p><strong>high</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>u.Quantity</em><em>, </em><em>optional</em>) -- Upper bound for frequency1 (X/cols).</p></li>
-<li><p><strong>low2</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>u.Quantity</em><em>, </em><em>optional</em>) -- Lower bound for frequency2 (Y/rows). If None, uses <cite>low</cite>.</p></li>
-<li><p><strong>high2</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>u.Quantity</em><em>, </em><em>optional</em>) -- Upper bound for frequency2 (Y/rows). If None, uses <cite>high</cite>.</p></li>
+<li><p><strong>start</strong> (float, <cite>~astropy.units.Quantity</cite>, optional) -- Bounds on the GWpy <code class="docutils literal notranslate"><span class="pre">xindex</span></code> (<code class="docutils literal notranslate"><span class="pre">frequency2</span></code>) axis.</p></li>
+<li><p><strong>end</strong> (float, <cite>~astropy.units.Quantity</cite>, optional) -- Bounds on the GWpy <code class="docutils literal notranslate"><span class="pre">xindex</span></code> (<code class="docutils literal notranslate"><span class="pre">frequency2</span></code>) axis.</p></li>
+<li><p><strong>*legacy_axes</strong> -- Optional <code class="docutils literal notranslate"><span class="pre">low2,</span> <span class="pre">high2</span></code> positional bounds for the explicit
+legacy two-axis route.</p></li>
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- Copy the selected data instead of returning a view.</p></li>
+<li><p><strong>low</strong> (float, <cite>~astropy.units.Quantity</cite>, optional) -- Backwards-compatible aliases for <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code>.</p></li>
+<li><p><strong>high</strong> (float, <cite>~astropy.units.Quantity</cite>, optional) -- Backwards-compatible aliases for <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code>.</p></li>
+<li><p><strong>low2</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>u.Quantity</em><em>, </em><em>optional</em>) -- Explicitly select the legacy two-axis crop and set the lower
+bound for frequency2 (rows).</p></li>
+<li><p><strong>high2</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>u.Quantity</em><em>, </em><em>optional</em>) -- Explicitly select the legacy two-axis crop and set the upper
+bound for frequency2 (rows).</p></li>
 </ul>
 </dd>
 <dt class="field-even">戻り値<span class="colon">:</span></dt>
@@ -4660,29 +4618,31 @@ to perform an integration rather than a simple sum.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">diagonal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">absolute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
-<dd><p>Calculate statistics along the diagonal axis <cite>(f2 - f1)</cite>.</p>
+<span class="sig-name descname"><span class="pre">diagonal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis1=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis2=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method=&lt;object</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins=&lt;object</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">absolute=&lt;object</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Return a GWpy diagonal or an explicit binned projection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) -- Statistical method to use.
+<li><p><strong>offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) -- Standard NumPy/GWpy diagonal selection parameters.</p></li>
+<li><p><strong>axis1</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) -- Standard NumPy/GWpy diagonal selection parameters.</p></li>
+<li><p><strong>axis2</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) -- Standard NumPy/GWpy diagonal selection parameters.</p></li>
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>keyword-only</em><em>, </em><em>optional</em>) -- Statistical method to use.
 Supported: 'mean', 'median', 'max', 'min', 'std', 'rms', 'percentile'.
-Default is 'mean'.
 All methods ignore NaNs in the data by default.</p></li>
-<li><p><strong>bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> or </em><em>array-like</em><em>, </em><em>optional</em>) -- Number of bins or bin edges for the diagonal axis.
+<li><p><strong>bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> or </em><em>array-like</em><em>, </em><em>keyword-only</em><em>, </em><em>optional</em>) -- Number of bins or bin edges for the diagonal axis.
 If None (default), it is automatically determined based on the resolution
 of frequency axes (max(df1, df2)).</p></li>
-<li><p><strong>absolute</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- If True, calculates statistics along the absolute difference <code class="docutils literal notranslate"><span class="pre">abs(f2</span> <span class="pre">-</span> <span class="pre">f1)</span></code>.
-Default is False.</p></li>
+<li><p><strong>absolute</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>keyword-only</em><em>, </em><em>optional</em>) -- If True, calculates statistics along the absolute difference <code class="docutils literal notranslate"><span class="pre">abs(f2</span> <span class="pre">-</span> <span class="pre">f1)</span></code>.</p></li>
 <li><p><strong>**kwargs</strong> -- Additional arguments passed to the statistical function.
 For 'percentile', use <cite>percentile=...</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">戻り値<span class="colon">:</span></dt>
-<dd class="field-even"><p>The result of the diagonal projection.</p>
+<dd class="field-even"><p>The ordinary diagonal view, or an explicitly requested binned
+projection.</p>
 </dd>
 <dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
+<dd class="field-odd"><p>BifrequencyMap or <a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -4916,19 +4876,19 @@ or multi-channel Power Spectral Densities (PSDs).</p>
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">dict_class</span></span></dt>
-<dd><p>:py:class:<a href="#id5"><span class="problematic" id="id6">`</span></a>~gwexpy.frequencyseries.collections.FrequencySeriesDict`の別名です。</p>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeriesDict</span></code>の別名です。</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">list_class</span></span></dt>
-<dd><p>:py:class:<a href="#id7"><span class="problematic" id="id8">`</span></a>~gwexpy.frequencyseries.collections.FrequencySeriesList`の別名です。</p>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeriesList</span></code>の別名です。</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">series_class</span></span></dt>
-<dd><p>:py:class:<a href="#id9"><span class="problematic" id="id10">`</span></a>~gwexpy.frequencyseries.frequencyseries.FrequencySeries`の別名です。</p>
+<dd><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeries</span></code></a>の別名です。</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -4952,7 +4912,7 @@ intentionally out-of-scope for this MVP.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">EntryClass</span></span></dt>
-<dd><p>:py:class:<a href="#id11"><span class="problematic" id="id12">`</span></a>~gwexpy.frequencyseries.frequencyseries.FrequencySeries`の別名です。</p>
+<dd><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeries</span></code></a>の別名です。</p>
 </dd></dl>
 
 <dl class="py method">
@@ -5100,7 +5060,7 @@ conversion via <cite>to_matrix()</cite>.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">EntryClass</span></span></dt>
-<dd><p>:py:class:<a href="#id13"><span class="problematic" id="id14">`</span></a>~gwexpy.frequencyseries.frequencyseries.FrequencySeries`の別名です。</p>
+<dd><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeries</span></code></a>の別名です。</p>
 </dd></dl>
 
 <dl class="py method">
@@ -5370,7 +5330,7 @@ conversion via <cite>to_matrix()</cite>.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">EntryClass</span></span></dt>
-<dd><p>:py:class:<a href="#id15"><span class="problematic" id="id16">`</span></a>~gwexpy.frequencyseries.frequencyseries.FrequencySeries`の別名です。</p>
+<dd><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeries</span></code></a>の別名です。</p>
 </dd></dl>
 
 <dl class="py method">
@@ -5497,7 +5457,7 @@ processing methods that operate on all entries at once.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">EntryClass</span></span></dt>
-<dd><p>:py:class:<a href="#id17"><span class="problematic" id="id18">`</span></a>~gwexpy.frequencyseries.frequencyseries.FrequencySeries`の別名です。</p>
+<dd><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeries</span></code></a>の別名です。</p>
 </dd></dl>
 
 <dl class="py method">
@@ -5716,20 +5676,7 @@ processing methods that operate on all entries at once.</p>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#frequencyseries-class">FrequencySeries Class</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeries.C_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.C_CONTIGUOUS</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeries.F_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.F_CONTIGUOUS</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeries.OWNDATA"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.OWNDATA</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeries.WRITEABLE"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.WRITEABLE</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeries.ALIGNED"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.ALIGNED</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeries.WRITEBACKIFCOPY"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.WRITEBACKIFCOPY</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeries.FNC"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.FNC</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeries.FORC"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.FORC</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeries.BEHAVED"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.BEHAVED</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeries.CARRAY"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.CARRAY</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.frequencyseries.FrequencySeries.FARRAY"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.FARRAY</span></code></a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#frequencyseries-class">FrequencySeries Class</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a></li>
 </ul>
   </nav></div>

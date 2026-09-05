@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../_static/documentation_options.js?v=d3f42505"></script>
+    <script src="../_static/documentation_options.js?v=6808a718"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -463,10 +463,11 @@ an existing GWpy API.</p>
 finite numerical results, replacing the corresponding GWpy import with GWexpy
 under default options must preserve numerical values, shape and selected
 samples, axis information, and successful completion. Any intentional
-numerical divergence requires an explicit user opt-in through a GWexpy-specific
-API or option. Internal implementations may differ only when scientific
-behavior is preserved and no material performance or resource regression is
-introduced.</p>
+divergence from these guarantees requires an explicit user opt-in through a
+GWexpy-specific API or option, unless it is a named, human-approved safety
+exception that meets every gate below. Internal implementations may differ only
+when scientific behavior is preserved and no material performance or resource
+regression is introduced.</p>
 <section id="what-must-match">
 <h2>What must match<a class="headerlink" href="#what-must-match" title="Link to this heading">#</a></h2>
 <p>Apply this policy when all of the following are true:</p>
@@ -499,7 +500,33 @@ introduced.</p>
 </table>
 </div>
 <p>A difference in any required comparison is a release blocker unless the user
-selected an explicit GWexpy-only API or option.</p>
+selected an explicit GWexpy-only API or option or the difference is a named,
+human-approved safety exception satisfying every requirement below.</p>
+</section>
+<section id="named-safety-exceptions">
+<h2>Named safety exceptions<a class="headerlink" href="#named-safety-exceptions" title="Link to this heading">#</a></h2>
+<p>A safety exception is not a general license to improve, reinterpret, or replace
+GWpy behavior. It is allowed only for a narrowly identified subcase where the
+normal GWpy result is demonstrably unsafe or outside the requested
+sample-selection domain. Every safety exception must have all of the following:</p>
+<ol class="arabic simple">
+<li><p>A stable name recorded as an inventory marker on only the affected cases.</p></li>
+<li><p>Direct dual-oracle evidence against every supported GWpy oracle.</p></li>
+<li><p>Human scientific/data-model approval of the deliberate divergence.</p></li>
+<li><p>Release-note disclosure that identifies the before/after behavior.</p></li>
+<li><p>Scope narrower than the whole public API, with parent errors and all other
+results preserved.</p></li>
+</ol>
+<p>The only approved exception is
+<code class="docutils literal notranslate"><span class="pre">non_intersecting_window_safety</span></code>. It applies after a successful parent HDF5
+<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read()</span></code> call when an explicit read window is mathematically
+completely disjoint from a returned series and GWpy selected only samples
+outside the requested sample-selection domain. GWexpy returns a zero-length
+entry for that disjoint key. It does not reinterpret parent errors, modify a
+partial overlap, override <code class="docutils literal notranslate"><span class="pre">pad=</span></code>, remove collection keys, or change any other
+result.</p>
+<p>An unexplained divergence, an unmarked divergence, or a proposed extension of
+this exception beyond that subcase remains a release blocker.</p>
 </section>
 <section id="where-extension-is-allowed">
 <h2>Where extension is allowed<a class="headerlink" href="#where-extension-is-allowed" title="Link to this heading">#</a></h2>
@@ -527,7 +554,8 @@ explicitly accept and document the trade-off.</p>
 <li><p>Does GWpy return a normal finite result for the case under review?</p></li>
 <li><p>Do GWpy and GWexpy defaults match in values, shape and selected samples,
 axes, and completion behavior?</p></li>
-<li><p>If they differ, is the difference behind an explicit GWexpy-only opt-in?</p></li>
+<li><p>If they differ, is the difference behind an explicit GWexpy-only opt-in or a
+named, human-approved safety exception satisfying every gate above?</p></li>
 <li><p>If the change is internal, is proportionate performance and resource
 evidence attached?</p></li>
 </ol>
@@ -583,6 +611,7 @@ evidence attached?</p></li>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-must-match">What must match</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#named-safety-exceptions">Named safety exceptions</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-extension-is-allowed">Where extension is allowed</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#internal-changes-and-resource-use">Internal changes and resource use</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#review-checklist">Review checklist</a></li>

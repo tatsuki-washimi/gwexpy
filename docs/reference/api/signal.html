@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=d3f42505"></script>
+    <script src="../../_static/documentation_options.js?v=6808a718"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -566,39 +566,7 @@
   <section id="signal-processing">
 <h1>Signal Processing<a class="headerlink" href="#signal-processing" title="Link to this heading">#</a></h1>
 <p>Filters, window functions, Q-transform, and spectral estimation utilities.</p>
-<dl class="py class" id="module-gwexpy.signal">
-<dt class="sig sig-object py" id="gwexpy.signal.WhiteningModel">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.signal.</span></span><span class="sig-name descname"><span class="pre">WhiteningModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.signal.WhiteningModel" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Model resulting from whitening transformation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>mean</strong> (<em>ndarray</em>) – Mean of the original data.</p></li>
-<li><p><strong>W</strong> (<em>ndarray</em>) – Whitening matrix.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.signal.WhiteningModel.inverse_transform">
-<span class="sig-name descname"><span class="pre">inverse_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_w</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.signal.WhiteningModel.inverse_transform" title="Link to this definition">#</a></dt>
-<dd><p>Project whitened data back to original space.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X_w</strong> (<em>ndarray</em><em> or </em><em>array-like</em>) – Whitened data with shape (n_samples, n_components).</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>X_rec</strong> – Reconstructed data.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
+<dl class="py function" id="module-gwexpy.signal">
 <dt class="sig sig-object py" id="gwexpy.signal.whiten">
 <span class="sig-prename descclassname"><span class="pre">gwexpy.signal.</span></span><span class="sig-name descname"><span class="pre">whiten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.signal.whiten" title="Link to this definition">#</a></dt>
 <dd><p>Whiten an array using PCA or ZCA whitening.</p>
@@ -645,39 +613,6 @@ matrix (assuming sufficient samples). The difference is in the rotation:</p>
 <p>The inverse_transform method uses the pseudo-inverse of the whitening matrix
 to project back to the original space.</p>
 </div>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="gwexpy.signal.StandardizationModel">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.signal.</span></span><span class="sig-name descname"><span class="pre">StandardizationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.signal.StandardizationModel" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Model resulting from standardization transformation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>mean</strong> (<em>ndarray</em>) – Mean of the original data.</p></li>
-<li><p><strong>scale</strong> (<em>ndarray</em>) – Scale (std or MAD) of the original data.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Axis along which standardization was performed.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="gwexpy.signal.StandardizationModel.inverse_transform">
-<span class="sig-name descname"><span class="pre">inverse_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_std</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.signal.StandardizationModel.inverse_transform" title="Link to this definition">#</a></dt>
-<dd><p>Undo standardization: X = X_std * scale + mean.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X_std</strong> (<em>ndarray</em><em> or </em><em>array-like</em>) – Standardized data.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>X</strong> – Original-scale data.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py function">
@@ -772,6 +707,9 @@ restored to NaN (forward direction).</p></li>
 </div>
 </dd></dl>
 
+<p>The preprocessing models <a class="reference internal" href="preprocessing.html#gwexpy.signal.preprocessing.WhiteningModel" title="gwexpy.signal.preprocessing.WhiteningModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">WhiteningModel</span></code></a>
+and <a class="reference internal" href="preprocessing.html#gwexpy.signal.preprocessing.StandardizationModel" title="gwexpy.signal.preprocessing.StandardizationModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardizationModel</span></code></a> are documented
+in <a class="reference internal" href="preprocessing.html"><span class="doc">Preprocessing</span></a>.</p>
 <section id="module-gwexpy.signal.filter_design">
 <span id="filter-design"></span><h2>Filter Design<a class="headerlink" href="#module-gwexpy.signal.filter_design" title="Link to this heading">#</a></h2>
 <dl class="py function">
@@ -1846,15 +1784,7 @@ compact binaries”. Classical and Quantum Gravity 27 (8).
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.signal.WhiteningModel"><code class="docutils literal notranslate"><span class="pre">WhiteningModel</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.signal.WhiteningModel.inverse_transform"><code class="docutils literal notranslate"><span class="pre">WhiteningModel.inverse_transform()</span></code></a></li>
-</ul>
-</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.signal.whiten"><code class="docutils literal notranslate"><span class="pre">whiten()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.signal.StandardizationModel"><code class="docutils literal notranslate"><span class="pre">StandardizationModel</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.signal.StandardizationModel.inverse_transform"><code class="docutils literal notranslate"><span class="pre">StandardizationModel.inverse_transform()</span></code></a></li>
-</ul>
-</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.signal.standardize"><code class="docutils literal notranslate"><span class="pre">standardize()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.signal.impute"><code class="docutils literal notranslate"><span class="pre">impute()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-gwexpy.signal.filter_design">Filter Design</a><ul class="pst-show_toc_level nav section-nav flex-column">

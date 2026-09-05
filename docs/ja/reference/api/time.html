@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=51b0fd3c"></script>
+    <script src="../../_static/documentation_options.js?v=ea4c7f21"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -590,17 +590,20 @@ and a numpy.ndarray of datetime objects for array-like inputs.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">gwexpy.time.</span></span><span class="sig-name descname"><span class="pre">tconvert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'now'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<span class="sig-prename descclassname"><span class="pre">gwexpy.time.</span></span><span class="sig-name descname"><span class="pre">tconvert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gpsordate:</span> <span class="pre">SupportsToGps</span> <span class="pre">=</span> <span class="pre">'now'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t=&lt;omitted&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Convert a time between GPS seconds and UTC datetime.</p>
-<p>This function automatically detects the type of the input <cite>t</cite>. If <cite>t</cite> is
+<p>This function automatically detects the type of the input. If it is
 numeric (or an array of numbers), it is assumed to be a GPS time and is
-converted to a datetime (like <cite>from_gps</cite>). If <cite>t</cite> is a string, datetime,
-or an array of those types, it is converted to GPS seconds (like <cite>to_gps</cite>).</p>
+converted to a datetime (like <cite>from_gps</cite>). If the input is a string,
+datetime, or an array of those types, it is converted to GPS seconds
+(like <cite>to_gps</cite>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>t</strong> (<em>numeric</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><em>datetime.datetime</em></a><em>, </em><em>array-like</em><em>, </em><em>optional</em>) -- The input time(s) to convert. Defaults to &quot;now&quot;.</p></li>
+<li><p><strong>gpsordate</strong> (<em>numeric</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><em>datetime.datetime</em></a><em>, </em><em>array-like</em><em>, </em><em>optional</em>) -- The input time(s) to convert. Defaults to &quot;now&quot;.</p></li>
 <li><p><strong>*args</strong> -- Additional positional arguments passed to the underlying converter.</p></li>
+<li><p><strong>t</strong> (<em>numeric</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><em>datetime.datetime</em></a><em>, </em><em>array-like</em><em>, </em><em>optional</em>) -- GWexpy compatibility alias for <code class="docutils literal notranslate"><span class="pre">gpsordate</span></code>. Supplying both names is
+an error.</p></li>
 <li><p><strong>**kwargs</strong> -- Additional keyword arguments passed to the underlying converter.</p></li>
 </ul>
 </dd>
@@ -1110,7 +1113,7 @@ handle the leap second.</p></li>
 <tr class="row-even"><td><p><a class="reference internal" href="gwexpy.time.from_gps.html#gwexpy.time.from_gps" title="gwexpy.time.from_gps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_gps</span></code></a>(gps, *args, **kwargs)</p></td>
 <td><p>Convert a given GPS time or array of GPS times to datetime objects.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.time.tconvert.html#gwexpy.time.tconvert" title="gwexpy.time.tconvert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tconvert</span></code></a>([t])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.time.tconvert.html#gwexpy.time.tconvert" title="gwexpy.time.tconvert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tconvert</span></code></a>([gpsordate, t])</p></td>
 <td><p>Convert a time between GPS seconds and UTC datetime.</p></td>
 </tr>
 </tbody>

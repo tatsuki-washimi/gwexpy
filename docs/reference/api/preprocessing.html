@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=d3f42505"></script>
+    <script src="../../_static/documentation_options.js?v=6808a718"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -796,51 +796,15 @@ If 0.0, no splitting is performed.</p></li>
 <li><p><strong>standardization_method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Standardization method (‘zscore’ or ‘robust’, default: ‘zscore’).</p></li>
 </ul>
 </dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.signal.preprocessing.MLPreprocessor.X_scaler_">
-<span class="sig-name descname"><span class="pre">X_scaler_</span></span><a class="headerlink" href="#gwexpy.signal.preprocessing.MLPreprocessor.X_scaler_" title="Link to this definition">#</a></dt>
-<dd><p>Standardization model for reference channels (set after fit).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#gwexpy.signal.preprocessing.StandardizationModel" title="gwexpy.signal.preprocessing.StandardizationModel">StandardizationModel</a> or None</p>
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>X_scaler</strong> (<a class="reference internal" href="#gwexpy.signal.preprocessing.StandardizationModel" title="gwexpy.signal.preprocessing.StandardizationModel"><em>StandardizationModel</em></a><em> or </em><em>None</em>) – Standardization model for reference channels (set after fit).</p></li>
+<li><p><strong>y_scaler</strong> (<a class="reference internal" href="#gwexpy.signal.preprocessing.StandardizationModel" title="gwexpy.signal.preprocessing.StandardizationModel"><em>StandardizationModel</em></a><em> or </em><em>None</em>) – Standardization model for target channel (set after fit).</p></li>
+<li><p><strong>filter_coeffs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><em>np.ndarray</em><em>] or </em><em>None</em>) – Band-pass filter coefficients (SOS format, set after fit).</p></li>
+<li><p><strong>is_fitted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Flag indicating if fit is complete.</p></li>
+</ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.signal.preprocessing.MLPreprocessor.y_scaler_">
-<span class="sig-name descname"><span class="pre">y_scaler_</span></span><a class="headerlink" href="#gwexpy.signal.preprocessing.MLPreprocessor.y_scaler_" title="Link to this definition">#</a></dt>
-<dd><p>Standardization model for target channel (set after fit).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#gwexpy.signal.preprocessing.StandardizationModel" title="gwexpy.signal.preprocessing.StandardizationModel">StandardizationModel</a> or None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.signal.preprocessing.MLPreprocessor.filter_coeffs_">
-<span class="sig-name descname"><span class="pre">filter_coeffs_</span></span><a class="headerlink" href="#gwexpy.signal.preprocessing.MLPreprocessor.filter_coeffs_" title="Link to this definition">#</a></dt>
-<dd><p>Band-pass filter coefficients (SOS format, set after fit).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[np.ndarray] or None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.signal.preprocessing.MLPreprocessor.is_fitted_">
-<span class="sig-name descname"><span class="pre">is_fitted_</span></span><a class="headerlink" href="#gwexpy.signal.preprocessing.MLPreprocessor.is_fitted_" title="Link to this definition">#</a></dt>
-<dd><p>Flag indicating if fit is complete.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
-</dd>
-</dl>
-</dd></dl>
-
 <p class="rubric">Examples</p>
 <p>Basic usage:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrix</span><span class="p">,</span> <span class="n">TimeSeries</span>
@@ -1005,10 +969,6 @@ If None, return only X.</p></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.signal.preprocessing.standardize"><code class="docutils literal notranslate"><span class="pre">standardize()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.signal.preprocessing.impute"><code class="docutils literal notranslate"><span class="pre">impute()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.signal.preprocessing.MLPreprocessor"><code class="docutils literal notranslate"><span class="pre">MLPreprocessor</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.signal.preprocessing.MLPreprocessor.X_scaler_"><code class="docutils literal notranslate"><span class="pre">MLPreprocessor.X_scaler_</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.signal.preprocessing.MLPreprocessor.y_scaler_"><code class="docutils literal notranslate"><span class="pre">MLPreprocessor.y_scaler_</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.signal.preprocessing.MLPreprocessor.filter_coeffs_"><code class="docutils literal notranslate"><span class="pre">MLPreprocessor.filter_coeffs_</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.signal.preprocessing.MLPreprocessor.is_fitted_"><code class="docutils literal notranslate"><span class="pre">MLPreprocessor.is_fitted_</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.signal.preprocessing.MLPreprocessor.fit"><code class="docutils literal notranslate"><span class="pre">MLPreprocessor.fit()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.signal.preprocessing.MLPreprocessor.split"><code class="docutils literal notranslate"><span class="pre">MLPreprocessor.split()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.signal.preprocessing.MLPreprocessor.transform"><code class="docutils literal notranslate"><span class="pre">MLPreprocessor.transform()</span></code></a></li>

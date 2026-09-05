@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=51b0fd3c"></script>
+    <script src="../../_static/documentation_options.js?v=ea4c7f21"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -696,6 +696,12 @@
 <span class="n">tf_mag</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;AUX_MAG&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">transfer_function</span><span class="p">(</span><span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">],</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 <span class="n">tf_elec</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;AUX_ELEC&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">transfer_function</span><span class="p">(</span><span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">],</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 
+<span class="c1"># GWpy-compatible steady transfer functions retain dimensionless labels.</span>
+<span class="c1"># For this projection, explicitly label the raw output/input sample ratio;</span>
+<span class="c1"># override_unit changes metadata without rescaling the numerical estimator.</span>
+<span class="k">for</span> <span class="n">witness</span><span class="p">,</span> <span class="n">transfer</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">aux_names</span><span class="p">,</span> <span class="p">(</span><span class="n">tf_seis</span><span class="p">,</span> <span class="n">tf_mag</span><span class="p">,</span> <span class="n">tf_elec</span><span class="p">)):</span>
+    <span class="n">transfer</span><span class="o">.</span><span class="n">override_unit</span><span class="p">(</span><span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span> <span class="o">/</span> <span class="n">tsd</span><span class="p">[</span><span class="n">witness</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">tf_seis</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;TF: SEIS -&gt; MAIN&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">tf_mag</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;TF: MAG -&gt; MAIN&quot;</span><span class="p">)</span>
@@ -728,6 +734,8 @@
 
 <span class="c1"># Sum the projected components in quadrature because approximately independent noise families add in power, not linearly in amplitude.</span>
 <span class="n">total_proj</span> <span class="o">=</span> <span class="p">(</span><span class="n">proj_seis</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">proj_mag</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">proj_elec</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+<span class="k">assert</span> <span class="n">total_proj</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="n">asd_dict</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span>
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">total_proj</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 
 <span class="c1"># Plot the combined projection to compare the explained budget against the observed main spectrum.</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>

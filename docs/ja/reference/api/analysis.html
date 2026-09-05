@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=51b0fd3c"></script>
+    <script src="../../_static/documentation_options.js?v=ea4c7f21"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -701,171 +701,27 @@ Values outside the range are set to NaN.</p></li>
 <p>This object stores all Amplitude Spectral Densities (ASDs), the resulting
 Coupling Function (CF), and metadata needed to reproduce and visualize the
 injection analysis for a given witness-target pair.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.cf">
-<span class="sig-name descname"><span class="pre">cf</span></span><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.cf" title="Link to this definition">#</a></dt>
-<dd><p>The measured Coupling Function (CF) magnitude spectrum.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
+<dt class="field-odd">変数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cf</strong> (<a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) -- The measured Coupling Function (CF) magnitude spectrum.</p></li>
+<li><p><strong>cf_ul</strong> (<a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a><em> or </em><em>None</em>) -- The upper limit of the Coupling Function magnitude, if applicable.</p></li>
+<li><p><strong>psd_witness_inj</strong> (<a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) -- The Power Spectral Density (PSD) of the witness channel during injection.</p></li>
+<li><p><strong>psd_witness_bkg</strong> (<a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) -- The background PSD of the witness channel.</p></li>
+<li><p><strong>psd_target_inj</strong> (<a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) -- The PSD of the target channel during injection.</p></li>
+<li><p><strong>psd_target_bkg</strong> (<a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) -- The background PSD of the target channel.</p></li>
+<li><p><strong>valid_mask</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>numpy.ndarray</em></a>) -- Boolean array indicating where the CF measurement is considered valid.</p></li>
+<li><p><strong>witness_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) -- Name of the witness channel.</p></li>
+<li><p><strong>target_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) -- Name of the target channel.</p></li>
+<li><p><strong>ts_witness_bkg</strong> (<a class="reference internal" href="gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><em>TimeSeries</em></a><em> or </em><em>None</em>) -- The original background TimeSeries for the witness channel.</p></li>
+<li><p><strong>ts_target_bkg</strong> (<a class="reference internal" href="gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><em>TimeSeries</em></a><em> or </em><em>None</em>) -- The original background TimeSeries for the target channel.</p></li>
+<li><p><strong>ts_witness_inj</strong> (<a class="reference internal" href="gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><em>TimeSeries</em></a><em> or </em><em>None</em>) -- The original injection TimeSeries for the witness channel.</p></li>
+<li><p><strong>ts_target_inj</strong> (<a class="reference internal" href="gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><em>TimeSeries</em></a><em> or </em><em>None</em>) -- The original injection TimeSeries for the target channel.</p></li>
+<li><p><strong>fftlength</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> or </em><em>None</em>) -- The FFT length (in seconds) used to compute the spectra.</p></li>
+<li><p><strong>overlap</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> or </em><em>None</em>) -- The overlap duration (in seconds) used to compute the spectra.</p></li>
+</ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.cf_ul">
-<span class="sig-name descname"><span class="pre">cf_ul</span></span><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.cf_ul" title="Link to this definition">#</a></dt>
-<dd><p>The upper limit of the Coupling Function magnitude, if applicable.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a> or None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.psd_witness_inj">
-<span class="sig-name descname"><span class="pre">psd_witness_inj</span></span><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.psd_witness_inj" title="Link to this definition">#</a></dt>
-<dd><p>The Power Spectral Density (PSD) of the witness channel during injection.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.psd_witness_bkg">
-<span class="sig-name descname"><span class="pre">psd_witness_bkg</span></span><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.psd_witness_bkg" title="Link to this definition">#</a></dt>
-<dd><p>The background PSD of the witness channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.psd_target_inj">
-<span class="sig-name descname"><span class="pre">psd_target_inj</span></span><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.psd_target_inj" title="Link to this definition">#</a></dt>
-<dd><p>The PSD of the target channel during injection.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.psd_target_bkg">
-<span class="sig-name descname"><span class="pre">psd_target_bkg</span></span><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.psd_target_bkg" title="Link to this definition">#</a></dt>
-<dd><p>The background PSD of the target channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.valid_mask">
-<span class="sig-name descname"><span class="pre">valid_mask</span></span><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.valid_mask" title="Link to this definition">#</a></dt>
-<dd><p>Boolean array indicating where the CF measurement is considered valid.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)">numpy.ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.witness_name">
-<span class="sig-name descname"><span class="pre">witness_name</span></span><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.witness_name" title="Link to this definition">#</a></dt>
-<dd><p>Name of the witness channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.target_name">
-<span class="sig-name descname"><span class="pre">target_name</span></span><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.target_name" title="Link to this definition">#</a></dt>
-<dd><p>Name of the target channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.ts_witness_bkg">
-<span class="sig-name descname"><span class="pre">ts_witness_bkg</span></span><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.ts_witness_bkg" title="Link to this definition">#</a></dt>
-<dd><p>The original background TimeSeries for the witness channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries">TimeSeries</a> or None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.ts_target_bkg">
-<span class="sig-name descname"><span class="pre">ts_target_bkg</span></span><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.ts_target_bkg" title="Link to this definition">#</a></dt>
-<dd><p>The original background TimeSeries for the target channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries">TimeSeries</a> or None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.ts_witness_inj">
-<span class="sig-name descname"><span class="pre">ts_witness_inj</span></span><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.ts_witness_inj" title="Link to this definition">#</a></dt>
-<dd><p>The original injection TimeSeries for the witness channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries">TimeSeries</a> or None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.ts_target_inj">
-<span class="sig-name descname"><span class="pre">ts_target_inj</span></span><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.ts_target_inj" title="Link to this definition">#</a></dt>
-<dd><p>The original injection TimeSeries for the target channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries">TimeSeries</a> or None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.fftlength">
-<span class="sig-name descname"><span class="pre">fftlength</span></span><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.fftlength" title="Link to this definition">#</a></dt>
-<dd><p>The FFT length (in seconds) used to compute the spectra.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a> or None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.overlap">
-<span class="sig-name descname"><span class="pre">overlap</span></span><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.overlap" title="Link to this definition">#</a></dt>
-<dd><p>The overlap duration (in seconds) used to compute the spectra.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a> or None</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.frequencies">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">frequencies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">IndexLike</span></em><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.frequencies" title="Link to this definition">#</a></dt>
@@ -919,7 +775,7 @@ with 50th, 90th, and 99th percentile lines.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.analysis.coupling.CouplingResult.plot_cf">
-<span class="sig-name descname"><span class="pre">plot_cf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="plot.html#gwexpy.plot.Plot" title="gwexpy.plot.Plot"><span class="pre">Plot</span></a></span></span><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.plot_cf" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">plot_cf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="plot.html#gwexpy.plot.Plot" title="gwexpy.plot.Plot"><span class="pre">Plot</span></a></span></span><a class="headerlink" href="#gwexpy.analysis.coupling.CouplingResult.plot_cf" title="Link to this definition">#</a></dt>
 <dd><p>Plot the Coupling Function and its Upper Limit.</p>
 </dd></dl>
 
@@ -1254,171 +1110,27 @@ Works as part of the time-window API when used with <code class="docutils litera
 <p>This object stores all Amplitude Spectral Densities (ASDs), the resulting
 Coupling Function (CF), and metadata needed to reproduce and visualize the
 injection analysis for a given witness-target pair.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling_result.CouplingResult.cf">
-<span class="sig-name descname"><span class="pre">cf</span></span><a class="headerlink" href="#gwexpy.analysis.coupling_result.CouplingResult.cf" title="Link to this definition">#</a></dt>
-<dd><p>The measured Coupling Function (CF) magnitude spectrum.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
+<dt class="field-odd">変数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cf</strong> (<a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) -- The measured Coupling Function (CF) magnitude spectrum.</p></li>
+<li><p><strong>cf_ul</strong> (<a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a><em> or </em><em>None</em>) -- The upper limit of the Coupling Function magnitude, if applicable.</p></li>
+<li><p><strong>psd_witness_inj</strong> (<a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) -- The Power Spectral Density (PSD) of the witness channel during injection.</p></li>
+<li><p><strong>psd_witness_bkg</strong> (<a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) -- The background PSD of the witness channel.</p></li>
+<li><p><strong>psd_target_inj</strong> (<a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) -- The PSD of the target channel during injection.</p></li>
+<li><p><strong>psd_target_bkg</strong> (<a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) -- The background PSD of the target channel.</p></li>
+<li><p><strong>valid_mask</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>numpy.ndarray</em></a>) -- Boolean array indicating where the CF measurement is considered valid.</p></li>
+<li><p><strong>witness_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) -- Name of the witness channel.</p></li>
+<li><p><strong>target_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) -- Name of the target channel.</p></li>
+<li><p><strong>ts_witness_bkg</strong> (<a class="reference internal" href="gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><em>TimeSeries</em></a><em> or </em><em>None</em>) -- The original background TimeSeries for the witness channel.</p></li>
+<li><p><strong>ts_target_bkg</strong> (<a class="reference internal" href="gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><em>TimeSeries</em></a><em> or </em><em>None</em>) -- The original background TimeSeries for the target channel.</p></li>
+<li><p><strong>ts_witness_inj</strong> (<a class="reference internal" href="gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><em>TimeSeries</em></a><em> or </em><em>None</em>) -- The original injection TimeSeries for the witness channel.</p></li>
+<li><p><strong>ts_target_inj</strong> (<a class="reference internal" href="gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries"><em>TimeSeries</em></a><em> or </em><em>None</em>) -- The original injection TimeSeries for the target channel.</p></li>
+<li><p><strong>fftlength</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> or </em><em>None</em>) -- The FFT length (in seconds) used to compute the spectra.</p></li>
+<li><p><strong>overlap</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> or </em><em>None</em>) -- The overlap duration (in seconds) used to compute the spectra.</p></li>
+</ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling_result.CouplingResult.cf_ul">
-<span class="sig-name descname"><span class="pre">cf_ul</span></span><a class="headerlink" href="#gwexpy.analysis.coupling_result.CouplingResult.cf_ul" title="Link to this definition">#</a></dt>
-<dd><p>The upper limit of the Coupling Function magnitude, if applicable.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a> or None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling_result.CouplingResult.psd_witness_inj">
-<span class="sig-name descname"><span class="pre">psd_witness_inj</span></span><a class="headerlink" href="#gwexpy.analysis.coupling_result.CouplingResult.psd_witness_inj" title="Link to this definition">#</a></dt>
-<dd><p>The Power Spectral Density (PSD) of the witness channel during injection.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling_result.CouplingResult.psd_witness_bkg">
-<span class="sig-name descname"><span class="pre">psd_witness_bkg</span></span><a class="headerlink" href="#gwexpy.analysis.coupling_result.CouplingResult.psd_witness_bkg" title="Link to this definition">#</a></dt>
-<dd><p>The background PSD of the witness channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling_result.CouplingResult.psd_target_inj">
-<span class="sig-name descname"><span class="pre">psd_target_inj</span></span><a class="headerlink" href="#gwexpy.analysis.coupling_result.CouplingResult.psd_target_inj" title="Link to this definition">#</a></dt>
-<dd><p>The PSD of the target channel during injection.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling_result.CouplingResult.psd_target_bkg">
-<span class="sig-name descname"><span class="pre">psd_target_bkg</span></span><a class="headerlink" href="#gwexpy.analysis.coupling_result.CouplingResult.psd_target_bkg" title="Link to this definition">#</a></dt>
-<dd><p>The background PSD of the target channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling_result.CouplingResult.valid_mask">
-<span class="sig-name descname"><span class="pre">valid_mask</span></span><a class="headerlink" href="#gwexpy.analysis.coupling_result.CouplingResult.valid_mask" title="Link to this definition">#</a></dt>
-<dd><p>Boolean array indicating where the CF measurement is considered valid.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)">numpy.ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling_result.CouplingResult.witness_name">
-<span class="sig-name descname"><span class="pre">witness_name</span></span><a class="headerlink" href="#gwexpy.analysis.coupling_result.CouplingResult.witness_name" title="Link to this definition">#</a></dt>
-<dd><p>Name of the witness channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling_result.CouplingResult.target_name">
-<span class="sig-name descname"><span class="pre">target_name</span></span><a class="headerlink" href="#gwexpy.analysis.coupling_result.CouplingResult.target_name" title="Link to this definition">#</a></dt>
-<dd><p>Name of the target channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling_result.CouplingResult.ts_witness_bkg">
-<span class="sig-name descname"><span class="pre">ts_witness_bkg</span></span><a class="headerlink" href="#gwexpy.analysis.coupling_result.CouplingResult.ts_witness_bkg" title="Link to this definition">#</a></dt>
-<dd><p>The original background TimeSeries for the witness channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries">TimeSeries</a> or None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling_result.CouplingResult.ts_target_bkg">
-<span class="sig-name descname"><span class="pre">ts_target_bkg</span></span><a class="headerlink" href="#gwexpy.analysis.coupling_result.CouplingResult.ts_target_bkg" title="Link to this definition">#</a></dt>
-<dd><p>The original background TimeSeries for the target channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries">TimeSeries</a> or None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling_result.CouplingResult.ts_witness_inj">
-<span class="sig-name descname"><span class="pre">ts_witness_inj</span></span><a class="headerlink" href="#gwexpy.analysis.coupling_result.CouplingResult.ts_witness_inj" title="Link to this definition">#</a></dt>
-<dd><p>The original injection TimeSeries for the witness channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries">TimeSeries</a> or None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling_result.CouplingResult.ts_target_inj">
-<span class="sig-name descname"><span class="pre">ts_target_inj</span></span><a class="headerlink" href="#gwexpy.analysis.coupling_result.CouplingResult.ts_target_inj" title="Link to this definition">#</a></dt>
-<dd><p>The original injection TimeSeries for the target channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.timeseries.TimeSeries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.TimeSeries">TimeSeries</a> or None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling_result.CouplingResult.fftlength">
-<span class="sig-name descname"><span class="pre">fftlength</span></span><a class="headerlink" href="#gwexpy.analysis.coupling_result.CouplingResult.fftlength" title="Link to this definition">#</a></dt>
-<dd><p>The FFT length (in seconds) used to compute the spectra.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a> or None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.coupling_result.CouplingResult.overlap">
-<span class="sig-name descname"><span class="pre">overlap</span></span><a class="headerlink" href="#gwexpy.analysis.coupling_result.CouplingResult.overlap" title="Link to this definition">#</a></dt>
-<dd><p>The overlap duration (in seconds) used to compute the spectra.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a> or None</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="gwexpy.analysis.coupling_result.CouplingResult.frequencies">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">frequencies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">IndexLike</span></em><a class="headerlink" href="#gwexpy.analysis.coupling_result.CouplingResult.frequencies" title="Link to this definition">#</a></dt>
@@ -1427,7 +1139,7 @@ injection analysis for a given witness-target pair.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.analysis.coupling_result.CouplingResult.plot_cf">
-<span class="sig-name descname"><span class="pre">plot_cf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="plot.html#gwexpy.plot.Plot" title="gwexpy.plot.Plot"><span class="pre">Plot</span></a></span></span><a class="headerlink" href="#gwexpy.analysis.coupling_result.CouplingResult.plot_cf" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">plot_cf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="plot.html#gwexpy.plot.Plot" title="gwexpy.plot.Plot"><span class="pre">Plot</span></a></span></span><a class="headerlink" href="#gwexpy.analysis.coupling_result.CouplingResult.plot_cf" title="Link to this definition">#</a></dt>
 <dd><p>Plot the Coupling Function and its Upper Limit.</p>
 </dd></dl>
 
@@ -1642,136 +1354,62 @@ by calculating averaged ASDs for each stable frequency step.</p>
 <dd><p>ベースクラス: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Result object for Stepped Sine Response Function Analysis.</p>
 <p>Stores the full spectral data for all injection steps efficiently.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.response.ResponseFunctionResult.spectrogram_inj">
-<span class="sig-name descname"><span class="pre">spectrogram_inj</span></span><a class="headerlink" href="#gwexpy.analysis.response.ResponseFunctionResult.spectrogram_inj" title="Link to this definition">#</a></dt>
-<dd><p>The measured target-channel ASD spectrogram during the injection steps.
+<dl class="field-list simple">
+<dt class="field-odd">変数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spectrogram_inj</strong> (<a class="reference internal" href="gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.Spectrogram"><em>Spectrogram</em></a>) -- The measured target-channel ASD spectrogram during the injection steps.
 Its frequency axis is the target ASD axis and can include bins above the
 witness Nyquist frequency; those high-frequency bins are raw target ASD
-values, not coupling-factor estimates.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.Spectrogram">Spectrogram</a></p>
+values, not coupling-factor estimates.</p></li>
+<li><p><strong>spectrogram_bkg</strong> (<a class="reference internal" href="gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.Spectrogram"><em>Spectrogram</em></a>) -- The target-channel background ASD spectrogram for the injection steps,
+on the same target frequency axis as <code class="docutils literal notranslate"><span class="pre">spectrogram_inj</span></code>.</p></li>
+<li><p><strong>injected_freqs</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>numpy.ndarray</em></a>) -- Array of injected frequencies [Hz] corresponding to each step.</p></li>
+<li><p><strong>step_times</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>numpy.ndarray</em></a>) -- Array of GPS start times corresponding to each step.</p></li>
+<li><p><strong>coupling_factors</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>numpy.ndarray</em></a>) -- Representative coupling factors evaluated at each injection frequency.</p></li>
+<li><p><strong>witness_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) -- Name of the witness channel.</p></li>
+<li><p><strong>target_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) -- Name of the target channel.</p></li>
+<li><p><strong>table</strong> (<a class="reference internal" href="gwexpy.table.SegmentTable.html#gwexpy.table.SegmentTable" title="gwexpy.table.SegmentTable"><em>gwexpy.table.SegmentTable</em></a><em>, </em><em>optional</em>) -- Underlying segment table containing detailed analysis information.</p></li>
+</ul>
 </dd>
 </dl>
-</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gwexpy.analysis.response.ResponseFunctionResult.spectrogram_inj">
+<span class="sig-name descname"><span class="pre">spectrogram_inj</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.spectrogram.Spectrogram"><span class="pre">Spectrogram</span></a></em><a class="headerlink" href="#gwexpy.analysis.response.ResponseFunctionResult.spectrogram_inj" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gwexpy.analysis.response.ResponseFunctionResult.spectrogram_bkg">
-<span class="sig-name descname"><span class="pre">spectrogram_bkg</span></span><a class="headerlink" href="#gwexpy.analysis.response.ResponseFunctionResult.spectrogram_bkg" title="Link to this definition">#</a></dt>
-<dd><p>The target-channel background ASD spectrogram for the injection steps,
-on the same target frequency axis as <code class="docutils literal notranslate"><span class="pre">spectrogram_inj</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.Spectrogram">Spectrogram</a></p>
-</dd>
-</dl>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">spectrogram_bkg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.spectrogram.Spectrogram"><span class="pre">Spectrogram</span></a></em><a class="headerlink" href="#gwexpy.analysis.response.ResponseFunctionResult.spectrogram_bkg" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gwexpy.analysis.response.ResponseFunctionResult.injected_freqs">
-<span class="sig-name descname"><span class="pre">injected_freqs</span></span><a class="headerlink" href="#gwexpy.analysis.response.ResponseFunctionResult.injected_freqs" title="Link to this definition">#</a></dt>
-<dd><p>Array of injected frequencies [Hz] corresponding to each step.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)">numpy.ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">injected_freqs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a></em><a class="headerlink" href="#gwexpy.analysis.response.ResponseFunctionResult.injected_freqs" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gwexpy.analysis.response.ResponseFunctionResult.step_times">
-<span class="sig-name descname"><span class="pre">step_times</span></span><a class="headerlink" href="#gwexpy.analysis.response.ResponseFunctionResult.step_times" title="Link to this definition">#</a></dt>
-<dd><p>Array of GPS start times corresponding to each step.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)">numpy.ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">step_times</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a></em><a class="headerlink" href="#gwexpy.analysis.response.ResponseFunctionResult.step_times" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gwexpy.analysis.response.ResponseFunctionResult.coupling_factors">
-<span class="sig-name descname"><span class="pre">coupling_factors</span></span><a class="headerlink" href="#gwexpy.analysis.response.ResponseFunctionResult.coupling_factors" title="Link to this definition">#</a></dt>
-<dd><p>Representative coupling factors evaluated at each injection frequency.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)">numpy.ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">coupling_factors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a></em><a class="headerlink" href="#gwexpy.analysis.response.ResponseFunctionResult.coupling_factors" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gwexpy.analysis.response.ResponseFunctionResult.witness_name">
-<span class="sig-name descname"><span class="pre">witness_name</span></span><a class="headerlink" href="#gwexpy.analysis.response.ResponseFunctionResult.witness_name" title="Link to this definition">#</a></dt>
-<dd><p>Name of the witness channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">witness_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#gwexpy.analysis.response.ResponseFunctionResult.witness_name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gwexpy.analysis.response.ResponseFunctionResult.target_name">
-<span class="sig-name descname"><span class="pre">target_name</span></span><a class="headerlink" href="#gwexpy.analysis.response.ResponseFunctionResult.target_name" title="Link to this definition">#</a></dt>
-<dd><p>Name of the target channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">target_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#gwexpy.analysis.response.ResponseFunctionResult.target_name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gwexpy.analysis.response.ResponseFunctionResult.table">
-<span class="sig-name descname"><span class="pre">table</span></span><a class="headerlink" href="#gwexpy.analysis.response.ResponseFunctionResult.table" title="Link to this definition">#</a></dt>
-<dd><p>Underlying segment table containing detailed analysis information.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.table.SegmentTable.html#gwexpy.table.SegmentTable" title="gwexpy.table.SegmentTable">SegmentTable</a>, optional</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">spectrogram_inj</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.spectrogram.Spectrogram"><span class="pre">Spectrogram</span></a></em><a class="headerlink" href="#id0" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">spectrogram_bkg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.spectrogram.Spectrogram"><span class="pre">Spectrogram</span></a></em><a class="headerlink" href="#id1" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id2">
-<span class="sig-name descname"><span class="pre">injected_freqs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a></em><a class="headerlink" href="#id2" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">step_times</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a></em><a class="headerlink" href="#id3" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id4">
-<span class="sig-name descname"><span class="pre">coupling_factors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a></em><a class="headerlink" href="#id4" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">witness_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#id5" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id6">
-<span class="sig-name descname"><span class="pre">target_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#id6" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id7">
-<span class="sig-name descname"><span class="pre">table</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="table.html#gwexpy.table.segment_table.SegmentTable" title="gwexpy.table.segment_table.SegmentTable"><span class="pre">SegmentTable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id7" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">table</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="table.html#gwexpy.table.segment_table.SegmentTable" title="gwexpy.table.segment_table.SegmentTable"><span class="pre">SegmentTable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#gwexpy.analysis.response.ResponseFunctionResult.table" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2002,8 +1640,8 @@ to calculate the distribution of PSDs across segments.</p></li>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.analysis.threshold.</span></span><span class="sig-name descname"><span class="pre">SigmaThreshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.analysis.threshold.SigmaThreshold" title="Link to this definition">#</a></dt>
 <dd><p>ベースクラス: <a class="reference internal" href="#gwexpy.analysis.threshold.ThresholdStrategy" title="gwexpy.analysis.threshold.ThresholdStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThresholdStrategy</span></code></a></p>
 <p>Checks if P_inj &gt; P_bkg + sigma * std_error.</p>
-<section id="id8">
-<h2>Statistical Assumptions<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<section id="id1">
+<h2>Statistical Assumptions<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Background Power Spectral Density (PSD) at each bin approximately follows
 a Gaussian distribution (valid when n_avg is sufficiently large).</p></li>
@@ -2012,8 +1650,8 @@ a Gaussian distribution (valid when n_avg is sufficiently large).</p></li>
 <li><p>Assumes standard deviation of the noise reduces as <cite>1 / sqrt(n_avg)</cite>.</p></li>
 </ul>
 </section>
-<section id="id9">
-<h2>Meaning of Threshold<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<section id="id2">
+<h2>Meaning of Threshold<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">threshold</span> <span class="pre">=</span> <span class="pre">mean</span> <span class="pre">+</span> <span class="pre">sigma</span> <span class="pre">*</span> <span class="pre">(mean</span> <span class="pre">/</span> <span class="pre">sqrt(n_avg))</span></code></p></li>
 <li><p>This is a <strong>statistical significance test</strong>, NOT a physical upper limit.</p></li>
@@ -2021,8 +1659,8 @@ a Gaussian distribution (valid when n_avg is sufficiently large).</p></li>
 distinguishable from background variance.</p></li>
 </ul>
 </section>
-<section id="id10">
-<h2>Gaussian Approximation Validity<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<section id="id3">
+<h2>Gaussian Approximation Validity<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
 <p>Welch PSD estimates follow a χ² distribution with 2K degrees of freedom
 (K = n_avg). The Gaussian approximation is valid when K ≥ 10 (approximately).</p>
 <p>For K &lt; 10, consider:
@@ -2097,52 +1735,28 @@ The value 2.6 is recommended in Appendix B.1 to set reduced χ² ≈ 1.</p></li>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.analysis.stats.</span></span><span class="sig-name descname"><span class="pre">SpectralStats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_avg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.analysis.stats.SpectralStats" title="Link to this definition">#</a></dt>
 <dd><p>ベースクラス: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Spectral statistics container (mean, sigma, n_avg).</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gwexpy.analysis.stats.SpectralStats.mean">
-<span class="sig-name descname"><span class="pre">mean</span></span><a class="headerlink" href="#gwexpy.analysis.stats.SpectralStats.mean" title="Link to this definition">#</a></dt>
-<dd><p>Mean ASD or PSD.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
+<dt class="field-odd">変数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean</strong> (<a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) -- Mean ASD or PSD.</p></li>
+<li><p><strong>sigma</strong> (<a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) -- Standard deviation of the ASD or PSD.</p></li>
+<li><p><strong>n_avg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) -- Number of samples used for averaging.</p></li>
+</ul>
 </dd>
 </dl>
-</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gwexpy.analysis.stats.SpectralStats.mean">
+<span class="sig-name descname"><span class="pre">mean</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></em><a class="headerlink" href="#gwexpy.analysis.stats.SpectralStats.mean" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gwexpy.analysis.stats.SpectralStats.sigma">
-<span class="sig-name descname"><span class="pre">sigma</span></span><a class="headerlink" href="#gwexpy.analysis.stats.SpectralStats.sigma" title="Link to this definition">#</a></dt>
-<dd><p>Standard deviation of the ASD or PSD.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
-</dd>
-</dl>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">sigma</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></em><a class="headerlink" href="#gwexpy.analysis.stats.SpectralStats.sigma" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gwexpy.analysis.stats.SpectralStats.n_avg">
-<span class="sig-name descname"><span class="pre">n_avg</span></span><a class="headerlink" href="#gwexpy.analysis.stats.SpectralStats.n_avg" title="Link to this definition">#</a></dt>
-<dd><p>Number of samples used for averaging.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id11">
-<span class="sig-name descname"><span class="pre">mean</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></em><a class="headerlink" href="#id11" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id12">
-<span class="sig-name descname"><span class="pre">sigma</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></em><a class="headerlink" href="#id12" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id13">
-<span class="sig-name descname"><span class="pre">n_avg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><a class="headerlink" href="#id13" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">n_avg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><a class="headerlink" href="#gwexpy.analysis.stats.SpectralStats.n_avg" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2230,74 +1844,16 @@ enough that nperseg &gt; 0 for the target sample rate).</p></li>
 normalize accordingly). Must be smaller than <cite>fftlength</cite>.</p></li>
 </ul>
 </dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">sample_rate</span></span></dt>
-<dd><p>Resolved sample rate in Hz (float).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
+<dt class="field-even">変数<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>sample_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) -- Resolved sample rate in Hz (float).</p></li>
+<li><p><strong>nperseg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) -- Number of samples per segment (rounded from fftlength * sample_rate).</p></li>
+<li><p><strong>noverlap</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) -- Number of overlap samples.</p></li>
+<li><p><strong>frequencies</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>numpy.ndarray</em></a>) -- Frequency bin centers (Hz) corresponding to the cached FFT/PSD.</p></li>
+<li><p><strong>_target_fft</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>numpy.ndarray</em></a>) -- Cached complex FFT for each segment of the target (used internally).</p></li>
+<li><p><strong>_target_psd</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>numpy.ndarray</em></a>) -- Cached PSD for the target (array of length n_freqs).</p></li>
+</ul>
 </dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">nperseg</span></span></dt>
-<dd><p>Number of samples per segment (rounded from fftlength * sample_rate).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">noverlap</span></span></dt>
-<dd><p>Number of overlap samples.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">frequencies</span></span></dt>
-<dd><p>Frequency bin centers (Hz) corresponding to the cached FFT/PSD.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)">numpy.ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">_target_fft</span></span></dt>
-<dd><p>Cached complex FFT for each segment of the target (used internally).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)">numpy.ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">_target_psd</span></span></dt>
-<dd><p>Cached PSD for the target (array of length n_freqs).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)">numpy.ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="field-list simple">
 <dt class="field-odd">例外<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> -- If <cite>fftlength</cite> is too small for the target sample rate or if <cite>noverlap</cite>
     is not smaller than <cite>nperseg</cite>.</p>
@@ -2360,106 +1916,20 @@ If a FrequencySeries is provided, its xindex is expected to match <cite>frequenc
 'auto' to let the engine estimate a block size from memory budget.</p></li>
 </ul>
 </dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">frequencies</span></span></dt>
-<dd><p>Frequency vector (Hz).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)">numpy.ndarray</a></p>
+<dt class="field-even">変数<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>frequencies</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>numpy.ndarray</em></a>) -- Frequency vector (Hz).</p></li>
+<li><p><strong>target_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) -- Target channel name.</p></li>
+<li><p><strong>target_spectrum</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>numpy.ndarray</em></a><em> or </em><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries"><em>FrequencySeries</em></a>) -- Target PSD used as reference for projections.</p></li>
+<li><p><strong>top_n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) -- Number of top channels recorded per frequency bin.</p></li>
+<li><p><strong>n_bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) -- Number of frequency bins (len(frequencies)).</p></li>
+<li><p><strong>block_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) -- Resolved block size used for batch Top-N updates.</p></li>
+<li><p><strong>top_coherence</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>numpy.ndarray</em></a>) -- Array of shape (n_bins, top_n) with stored coherence values (float).</p></li>
+<li><p><strong>top_channels</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>numpy.ndarray</em></a>) -- Object array of shape (n_bins, top_n) with witness channel names (str).</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) -- User-provided metadata for reporting.</p></li>
+</ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">target_name</span></span></dt>
-<dd><p>Target channel name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">target_spectrum</span></span></dt>
-<dd><p>Target PSD used as reference for projections.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)">numpy.ndarray</a> or <a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.FrequencySeries">FrequencySeries</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">top_n</span></span></dt>
-<dd><p>Number of top channels recorded per frequency bin.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">n_bins</span></span></dt>
-<dd><p>Number of frequency bins (len(frequencies)).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">block_size</span></span></dt>
-<dd><p>Resolved block size used for batch Top-N updates.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">top_coherence</span></span></dt>
-<dd><p>Array of shape (n_bins, top_n) with stored coherence values (float).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)">numpy.ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">top_channels</span></span></dt>
-<dd><p>Object array of shape (n_bins, top_n) with witness channel names (str).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)">numpy.ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">metadata</span></span></dt>
-<dd><p>User-provided metadata for reporting.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
-</dd>
-</dl>
-</dd></dl>
-
 <div class="admonition- admonition">
 <p class="admonition-title">メモ</p>
 <ul class="simple">
@@ -2722,51 +2192,15 @@ fetching, batching, and parallelized coherence computation.</p>
 self-coupling channels).</p></li>
 </ul>
 </dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">target</span></span></dt>
-<dd><p>The name of the target channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+<dt class="field-even">変数<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>target</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) -- The name of the target channel.</p></li>
+<li><p><strong>aux_channels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) -- The original list of auxiliary channels.</p></li>
+<li><p><strong>excluded</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><em>set</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) -- The set of excluded channel names.</p></li>
+<li><p><strong>channels_to_scan</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) -- The final sorted list of channels to be scanned (aux - excluded - target).</p></li>
+</ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">aux_channels</span></span></dt>
-<dd><p>The original list of auxiliary channels.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">excluded</span></span></dt>
-<dd><p>The set of excluded channel names.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)">set</a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">channels_to_scan</span></span></dt>
-<dd><p>The final sorted list of channels to be scanned (aux - excluded - target).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
 <p class="rubric">サンプル</p>
 <p>Prepare the scanner from an already curated channel list:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bruco</span>
@@ -2886,21 +2320,6 @@ generator yielding TimeSeries.</p></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult"><code class="docutils literal notranslate"><span class="pre">CouplingResult</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult.cf"><code class="docutils literal notranslate"><span class="pre">CouplingResult.cf</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult.cf_ul"><code class="docutils literal notranslate"><span class="pre">CouplingResult.cf_ul</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult.psd_witness_inj"><code class="docutils literal notranslate"><span class="pre">CouplingResult.psd_witness_inj</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult.psd_witness_bkg"><code class="docutils literal notranslate"><span class="pre">CouplingResult.psd_witness_bkg</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult.psd_target_inj"><code class="docutils literal notranslate"><span class="pre">CouplingResult.psd_target_inj</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult.psd_target_bkg"><code class="docutils literal notranslate"><span class="pre">CouplingResult.psd_target_bkg</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult.valid_mask"><code class="docutils literal notranslate"><span class="pre">CouplingResult.valid_mask</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult.witness_name"><code class="docutils literal notranslate"><span class="pre">CouplingResult.witness_name</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult.target_name"><code class="docutils literal notranslate"><span class="pre">CouplingResult.target_name</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult.ts_witness_bkg"><code class="docutils literal notranslate"><span class="pre">CouplingResult.ts_witness_bkg</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult.ts_target_bkg"><code class="docutils literal notranslate"><span class="pre">CouplingResult.ts_target_bkg</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult.ts_witness_inj"><code class="docutils literal notranslate"><span class="pre">CouplingResult.ts_witness_inj</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult.ts_target_inj"><code class="docutils literal notranslate"><span class="pre">CouplingResult.ts_target_inj</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult.fftlength"><code class="docutils literal notranslate"><span class="pre">CouplingResult.fftlength</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult.overlap"><code class="docutils literal notranslate"><span class="pre">CouplingResult.overlap</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult.frequencies"><code class="docutils literal notranslate"><span class="pre">CouplingResult.frequencies</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult.from_csv"><code class="docutils literal notranslate"><span class="pre">CouplingResult.from_csv()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.CouplingResult.from_txt"><code class="docutils literal notranslate"><span class="pre">CouplingResult.from_txt()</span></code></a></li>
@@ -2938,21 +2357,6 @@ generator yielding TimeSeries.</p></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.estimate_bkg_mem_bytes"><code class="docutils literal notranslate"><span class="pre">estimate_bkg_mem_bytes()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling.estimate_coupling"><code class="docutils literal notranslate"><span class="pre">estimate_coupling()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult"><code class="docutils literal notranslate"><span class="pre">CouplingResult</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult.cf"><code class="docutils literal notranslate"><span class="pre">CouplingResult.cf</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult.cf_ul"><code class="docutils literal notranslate"><span class="pre">CouplingResult.cf_ul</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult.psd_witness_inj"><code class="docutils literal notranslate"><span class="pre">CouplingResult.psd_witness_inj</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult.psd_witness_bkg"><code class="docutils literal notranslate"><span class="pre">CouplingResult.psd_witness_bkg</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult.psd_target_inj"><code class="docutils literal notranslate"><span class="pre">CouplingResult.psd_target_inj</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult.psd_target_bkg"><code class="docutils literal notranslate"><span class="pre">CouplingResult.psd_target_bkg</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult.valid_mask"><code class="docutils literal notranslate"><span class="pre">CouplingResult.valid_mask</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult.witness_name"><code class="docutils literal notranslate"><span class="pre">CouplingResult.witness_name</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult.target_name"><code class="docutils literal notranslate"><span class="pre">CouplingResult.target_name</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult.ts_witness_bkg"><code class="docutils literal notranslate"><span class="pre">CouplingResult.ts_witness_bkg</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult.ts_target_bkg"><code class="docutils literal notranslate"><span class="pre">CouplingResult.ts_target_bkg</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult.ts_witness_inj"><code class="docutils literal notranslate"><span class="pre">CouplingResult.ts_witness_inj</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult.ts_target_inj"><code class="docutils literal notranslate"><span class="pre">CouplingResult.ts_target_inj</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult.fftlength"><code class="docutils literal notranslate"><span class="pre">CouplingResult.fftlength</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult.overlap"><code class="docutils literal notranslate"><span class="pre">CouplingResult.overlap</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult.frequencies"><code class="docutils literal notranslate"><span class="pre">CouplingResult.frequencies</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult.plot_cf"><code class="docutils literal notranslate"><span class="pre">CouplingResult.plot_cf()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.coupling_result.CouplingResult.plot"><code class="docutils literal notranslate"><span class="pre">CouplingResult.plot()</span></code></a></li>
@@ -2981,14 +2385,6 @@ generator yielding TimeSeries.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.response.ResponseFunctionResult.witness_name"><code class="docutils literal notranslate"><span class="pre">ResponseFunctionResult.witness_name</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.response.ResponseFunctionResult.target_name"><code class="docutils literal notranslate"><span class="pre">ResponseFunctionResult.target_name</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.response.ResponseFunctionResult.table"><code class="docutils literal notranslate"><span class="pre">ResponseFunctionResult.table</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id0"><code class="docutils literal notranslate"><span class="pre">ResponseFunctionResult.spectrogram_inj</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1"><code class="docutils literal notranslate"><span class="pre">ResponseFunctionResult.spectrogram_bkg</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2"><code class="docutils literal notranslate"><span class="pre">ResponseFunctionResult.injected_freqs</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3"><code class="docutils literal notranslate"><span class="pre">ResponseFunctionResult.step_times</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4"><code class="docutils literal notranslate"><span class="pre">ResponseFunctionResult.coupling_factors</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5"><code class="docutils literal notranslate"><span class="pre">ResponseFunctionResult.witness_name</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6"><code class="docutils literal notranslate"><span class="pre">ResponseFunctionResult.target_name</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7"><code class="docutils literal notranslate"><span class="pre">ResponseFunctionResult.table</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.response.ResponseFunctionResult.plot"><code class="docutils literal notranslate"><span class="pre">ResponseFunctionResult.plot()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.response.ResponseFunctionResult.plot_map"><code class="docutils literal notranslate"><span class="pre">ResponseFunctionResult.plot_map()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.response.ResponseFunctionResult.plot_projection_summary"><code class="docutils literal notranslate"><span class="pre">ResponseFunctionResult.plot_projection_summary()</span></code></a></li>
@@ -3026,9 +2422,6 @@ generator yielding TimeSeries.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.stats.SpectralStats.mean"><code class="docutils literal notranslate"><span class="pre">SpectralStats.mean</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.stats.SpectralStats.sigma"><code class="docutils literal notranslate"><span class="pre">SpectralStats.sigma</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.stats.SpectralStats.n_avg"><code class="docutils literal notranslate"><span class="pre">SpectralStats.n_avg</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11"><code class="docutils literal notranslate"><span class="pre">SpectralStats.mean</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12"><code class="docutils literal notranslate"><span class="pre">SpectralStats.sigma</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13"><code class="docutils literal notranslate"><span class="pre">SpectralStats.n_avg</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.stats.SpectralStats.significance"><code class="docutils literal notranslate"><span class="pre">SpectralStats.significance()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.analysis.stats.SpectralStats.to_dict"><code class="docutils literal notranslate"><span class="pre">SpectralStats.to_dict()</span></code></a></li>
 </ul>

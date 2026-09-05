@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../_static/documentation_options.js?v=51b0fd3c"></script>
+    <script src="../_static/documentation_options.js?v=ea4c7f21"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -459,7 +459,7 @@
   <section class="tex2jax_ignore mathjax_ignore" id="gwpy-behavioral-compatibility-policy">
 <h1>GWpy 挙動互換性ポリシー<a class="headerlink" href="#gwpy-behavioral-compatibility-policy" title="Link to this heading">#</a></h1>
 <p>GWexpy は、既存の GWpy API が返す既定の科学的結果を暗黙に変えることなく GWpy を拡張します。</p>
-<p>既存の GWpy API に対応する API では、GWpy が有限の数値結果を正常に返す場合、対応する import を既定optionの GWexpy に置き換えても、数値、shapeと選択sample、軸情報、正常終了を維持しなければなりません。意図的な数値差異には、GWexpy 固有の API またはoptionによる明示的な user opt-in が必要です。内部実装を変更できるのは、科学的挙動を維持し、性能またはresourceに重大な退行を生じさせない場合だけです。</p>
+<p>既存の GWpy API に対応する API では、GWpy が有限の数値結果を正常に返す場合、対応する import を既定optionの GWexpy に置き換えても、数値、shapeと選択sample、軸情報、正常終了を維持しなければなりません。これらの保証から意図的に外れる場合は、GWexpy 固有の API またはoptionによる明示的な user opt-in が必要です。ただし、以下のすべてのgateを満たす名前付き・human-approvedの安全例外は除きます。内部実装を変更できるのは、科学的挙動を維持し、性能またはresourceに重大な退行を生じさせない場合だけです。</p>
 <section id="what-must-match">
 <h2>一致させる対象<a class="headerlink" href="#what-must-match" title="Link to this heading">#</a></h2>
 <p>次のすべてを満たす場合に、このポリシーを適用します。</p>
@@ -491,7 +491,20 @@
 </tbody>
 </table>
 </div>
-<p>必須比較のいずれかに差異がある場合、userが明示的な GWexpy 固有 API またはoptionを選んでいない限りrelease blockerです。</p>
+<p>必須比較のいずれかに差異がある場合、userが明示的な GWexpy 固有 API またはoptionを選んだ場合、または差異が以下のすべての要件を満たす名前付き・human-approvedの安全例外である場合を除き、release blockerです。</p>
+</section>
+<section id="named-safety-exceptions">
+<h2>名前付き安全例外<a class="headerlink" href="#named-safety-exceptions" title="Link to this heading">#</a></h2>
+<p>安全例外は、GWpy の挙動を改善、再解釈、置換する一般的な許可ではありません。通常の GWpy 結果が危険である、または要求されたsample-selection domainの外側にあることを実証できる、狭く特定されたsubcaseだけで許可されます。すべての安全例外は次の条件を満たさなければなりません。</p>
+<ol class="arabic simple">
+<li><p>影響を受けるcaseだけにinventory markerとして記録された安定した名前。</p></li>
+<li><p>サポート対象のすべての GWpy oracle に対する直接の dual-oracle evidence。</p></li>
+<li><p>意図的な差異に対するhuman scientific/data-model approval。</p></li>
+<li><p>変更前後の挙動を特定するrelease-note disclosure。</p></li>
+<li><p>public API 全体より狭いscopeであり、親のerrorとその他すべての結果を維持すること。</p></li>
+</ol>
+<p>承認済みの例外は <code class="docutils literal notranslate"><span class="pre">non_intersecting_window_safety</span></code> だけです。これは、親の HDF5 <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read()</span></code> が成功した後、明示的なread windowと返却seriesが数学的に完全非交差であり、GWpy が要求されたsample-selection domainの外側にあるsampleだけを選択した場合に適用します。GWexpy はその非交差keyにzero-length entryを返します。親のerrorを再解釈せず、部分交差を変更せず、<code class="docutils literal notranslate"><span class="pre">pad=</span></code>を上書きせず、collection keyを削除せず、その他の結果も変更しません。</p>
+<p>説明のない差異、markerのない差異、またはこの例外を当該subcaseより広げる提案は、引き続きrelease blockerです。</p>
 </section>
 <section id="where-extension-is-allowed">
 <h2>拡張が許される範囲<a class="headerlink" href="#where-extension-is-allowed" title="Link to this heading">#</a></h2>
@@ -509,7 +522,7 @@
 <li><p>これは既存の GWpy API か。</p></li>
 <li><p>review対象のcaseで GWpy は正常な有限結果を返すか。</p></li>
 <li><p>GWpy と GWexpy の既定挙動は、値、shapeと選択sample、軸、終了挙動で一致するか。</p></li>
-<li><p>差異がある場合、明示的な GWexpy 固有 opt-in の背後にあるか。</p></li>
+<li><p>差異がある場合、明示的な GWexpy 固有 opt-in の背後にあるか、または上記のすべてのgateを満たす名前付き・human-approvedの安全例外か。</p></li>
 <li><p>内部変更の場合、相応の性能・resource evidenceが添付されているか。</p></li>
 </ol>
 <p>step 4を満たさずstep 3に失敗した場合、review verdictは <strong>BLOCK</strong> です。</p>
@@ -564,6 +577,7 @@
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-must-match">一致させる対象</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#named-safety-exceptions">名前付き安全例外</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-extension-is-allowed">拡張が許される範囲</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#internal-changes-and-resource-use">内部変更とresource使用量</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#review-checklist">Review checklist</a></li>

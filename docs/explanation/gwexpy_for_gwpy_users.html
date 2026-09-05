@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../_static/documentation_options.js?v=d3f42505"></script>
+    <script src="../_static/documentation_options.js?v=6808a718"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -465,7 +465,10 @@ If you want the full API surface regardless of GWpy compatibility, use the <a cl
 requires corresponding GWpy APIs to preserve default finite numerical results,
 sample selection, axis information, and successful completion. Use
 GWexpy-specific APIs or explicit opt-in options when you intentionally want
-different numerical behavior.</p>
+different numerical behavior. The policy’s sole named, human-approved safety
+exception, <code class="docutils literal notranslate"><span class="pre">non_intersecting_window_safety</span></code>, covers a completely disjoint HDF5
+read window and must satisfy every policy gate; it does not authorize broader
+divergence.</p>
 <section id="what-to-lock-in-first">
 <h2>What to lock in first<a class="headerlink" href="#what-to-lock-in-first" title="Link to this heading">#</a></h2>
 <ul class="simple">

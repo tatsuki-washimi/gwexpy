@@ -10,7 +10,10 @@ The project-wide [GWpy compatibility policy](gwpy_compatibility_policy.md)
 requires corresponding GWpy APIs to preserve default finite numerical results,
 sample selection, axis information, and successful completion. Use
 GWexpy-specific APIs or explicit opt-in options when you intentionally want
-different numerical behavior.
+different numerical behavior. The policy's sole named, human-approved safety
+exception, `non_intersecting_window_safety`, covers a completely disjoint HDF5
+read window and must satisfy every policy gate; it does not authorize broader
+divergence.
 
 ## What to lock in first
 

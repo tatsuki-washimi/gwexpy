@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=d3f42505"></script>
+    <script src="../../_static/documentation_options.js?v=6808a718"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -695,7 +695,7 @@ Physically, the goal is not just to rank channels, but to test whether a witness
 Target data std: 5.08e-19
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7f83a393e850&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7f78de6d6610&gt;
 </pre></div>
 </div>
 <img alt="../../_images/db4057a7cf39862deba690453a0e9a9f9fad9d763d9c9149a03fb1c4a2cdd6ba.png" src="../../_images/db4057a7cf39862deba690453a0e9a9f9fad9d763d9c9149a03fb1c4a2cdd6ba.png" />
@@ -1056,6 +1056,11 @@ BNS range (after):  186.24 Mpc
 <span class="n">cxx</span> <span class="o">=</span> <span class="n">witnesses</span><span class="o">.</span><span class="n">csd_matrix</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">8.0</span><span class="p">)</span>
 <span class="n">cyx</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">({</span><span class="s2">&quot;TARGET&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">})</span><span class="o">.</span><span class="n">csd_matrix</span><span class="p">(</span><span class="n">other</span><span class="o">=</span><span class="n">witnesses</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mf">8.0</span><span class="p">)</span>
 
+<span class="c1"># GWpy-compatible CSD labels retain the first channel&#39;s squared unit.</span>
+<span class="c1"># Label the raw output/witness cross spectra without rescaling their values.</span>
+<span class="k">for</span> <span class="n">column</span><span class="p">,</span> <span class="n">witness</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">culprit_channels</span><span class="p">):</span>
+    <span class="n">cyx</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">unit</span> <span class="o">*</span> <span class="n">witnesses</span><span class="p">[</span><span class="n">witness</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span>
+
 <span class="c1"># Matrix operation H = Cyx @ Cxx^-1</span>
 <span class="n">H_lowres</span> <span class="o">=</span> <span class="n">cyx</span> <span class="o">@</span> <span class="n">cxx</span><span class="o">.</span><span class="n">inv</span><span class="p">()</span>
 
@@ -1078,10 +1083,12 @@ BNS range (after):  186.24 Mpc
 
 <span class="c1"># Projection and subtraction</span>
 <span class="n">Y_proj</span> <span class="o">=</span> <span class="p">(</span><span class="n">H</span> <span class="o">@</span> <span class="n">X_mat</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="k">assert</span> <span class="n">Y_proj</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="n">main_fft</span><span class="o">.</span><span class="n">unit</span>
 <span class="n">cleaned_fft</span> <span class="o">=</span> <span class="n">main_fft</span> <span class="o">-</span> <span class="n">Y_proj</span>
 
 <span class="c1"># To time domain</span>
 <span class="n">cleaned_ts</span> <span class="o">=</span> <span class="n">cleaned_fft</span><span class="o">.</span><span class="n">ifft</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">cleaned_ts</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1112,8 +1119,8 @@ BNS range (after):  186.24 Mpc
 </div>
 <div class="cell_output docutils container">
 <img alt="../../_images/990ddd4212de8105ed2d962b6593a57440030c128f8a20e991961e0a7d4960bc.png" src="../../_images/990ddd4212de8105ed2d962b6593a57440030c128f8a20e991961e0a7d4960bc.png" />
-<img alt="../../_images/123147cb1a5e37f77e6d2977de2c8aff305d51b68aaa5200758dc9bf89461e27.png" src="../../_images/123147cb1a5e37f77e6d2977de2c8aff305d51b68aaa5200758dc9bf89461e27.png" />
-<img alt="../../_images/226c501783c79ceaa202590e0ae1d937d8b98dc82dffa05d75054e22c82e8150.png" src="../../_images/226c501783c79ceaa202590e0ae1d937d8b98dc82dffa05d75054e22c82e8150.png" />
+<img alt="../../_images/fa78f0e9fcc20390a57d94d8c071f37400bb3ba7e6727f16a389faa247cd57e9.png" src="../../_images/fa78f0e9fcc20390a57d94d8c071f37400bb3ba7e6727f16a389faa247cd57e9.png" />
+<img alt="../../_images/b1642b58dec3d7d2a3f6ee05e8381d97126a2418fa2c33e2e42de84f2a5c7e4d.png" src="../../_images/b1642b58dec3d7d2a3f6ee05e8381d97126a2418fa2c33e2e42de84f2a5c7e4d.png" />
 </div>
 </div>
 </section>

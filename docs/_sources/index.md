@@ -23,7 +23,8 @@ integrated noise-budget and modelling tools, and broad detector interoperability
 
 For corresponding GWpy APIs, default finite numerical results, sample
 selection, axis information, and successful completion remain GWpy-compatible.
-Intentional numerical divergence requires explicit user opt-in. See the
+Intentional divergence from these guarantees requires explicit user opt-in, except for a
+named, human-approved safety exception satisfying all policy gates. See the
 [GWpy compatibility policy](explanation/gwpy_compatibility_policy).
 
 [Get started →](tutorials/index){.sd-btn .sd-btn-primary .sd-shadow-sm .sd-px-4 .sd-fs-5}

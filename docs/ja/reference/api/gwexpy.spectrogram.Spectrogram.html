@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=51b0fd3c"></script>
+    <script src="../../_static/documentation_options.js?v=ea4c7f21"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -604,8 +604,8 @@ supported pickle and HDF5 round-trips.</p>
 <p>Key methods:</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code>(**kwargs)</p></td>
-<td><p>Plot this object using <a class="reference internal" href="plot.html#gwexpy.plot.Plot" title="gwexpy.plot.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">gwexpy.plot.Plot</span></code></a>.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram.plot" title="gwexpy.spectrogram.Spectrogram.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a>([method, figsize, xscale])</p></td>
+<td><p>Plot the data for this <cite>Spectrogram</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram.imshow" title="gwexpy.spectrogram.Spectrogram.imshow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">imshow</span></code></a>(**kwargs)</p></td>
 <td><p>Plot using Matplotlib <code class="docutils literal notranslate"><span class="pre">imshow</span></code> (GWpy-compatible).</p></td>
@@ -843,8 +843,8 @@ supported pickle and HDF5 round-trips.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">phase</span></code>([unwrap, deg])</p></td>
 <td><p>Calculate the phase of the data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code>(**kwargs)</p></td>
-<td><p>Plot this object using <a class="reference internal" href="plot.html#gwexpy.plot.Plot" title="gwexpy.plot.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">gwexpy.plot.Plot</span></code></a>.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.spectrogram.Spectrogram.plot" title="gwexpy.spectrogram.Spectrogram.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a>([method, figsize, xscale])</p></td>
+<td><p>Plot the data for this <cite>Spectrogram</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepend</span></code>(other, *[, inplace, gap, pad, resize])</p></td>
 <td><p>Connect another series onto the start of the current one.</p></td>
@@ -1155,6 +1155,12 @@ supported pickle and HDF5 round-trips.</p>
 </tbody>
 </table>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pcolormesh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(12,</span> <span class="pre">6)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xscale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto-gps'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="plot.html#gwexpy.plot.Plot" title="gwexpy.plot.Plot"><span class="pre">Plot</span></a></span></span><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.plot" title="Link to this definition">#</a></dt>
+<dd><p>Plot the data for this <cite>Spectrogram</cite>.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.Spectrogram.provenance">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">provenance</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#gwexpy.spectrogram.Spectrogram.provenance" title="Link to this definition">#</a></dt>
@@ -1691,6 +1697,7 @@ the Spectrogram has no name, where <code class="docutils literal notranslate"><s
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.Spectrogram"><code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.Spectrogram.__init__"><code class="docutils literal notranslate"><span class="pre">Spectrogram.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.Spectrogram.plot"><code class="docutils literal notranslate"><span class="pre">Spectrogram.plot()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.Spectrogram.provenance"><code class="docutils literal notranslate"><span class="pre">Spectrogram.provenance</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.Spectrogram.bootstrap"><code class="docutils literal notranslate"><span class="pre">Spectrogram.bootstrap()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.Spectrogram.bootstrap_asd"><code class="docutils literal notranslate"><span class="pre">Spectrogram.bootstrap_asd()</span></code></a></li>
