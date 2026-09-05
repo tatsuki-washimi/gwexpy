@@ -17,6 +17,7 @@ CONTRACTS_PATH = ROOT / "scripts" / "ci" / "release_contracts.json"
 LOADER_PATH = ROOT / "scripts" / "ci" / "release_contract.py"
 REVIEW_VALIDATOR_PATH = ROOT / "scripts" / "ci" / "validate_release_review_evidence.py"
 V023_IMPLEMENTATION_BASE = "a8085b71446d3ef3417a7e5b5ac8efb156368eac"
+V023_RELEASE_SOURCE = "75d3d1a89ebc8942af1f3228152fea99d2d3420e"
 V023_PLAN = (
     ROOT
     / "docs"
@@ -90,6 +91,25 @@ def _candidate_revision() -> str:
             ):
                 return revision
     return "HEAD"
+
+
+def _v023_review_revision(candidate: str) -> str:
+    """Keep the v0.2.3 review-scope check bound to the immutable release.
+
+    Once the published source is an ancestor, later documentation and
+    bookkeeping commits are outside the historical candidate-bound review
+    scope.  Before publication (or without the tag source in a shallow
+    checkout), retain the normal PR-head behavior.
+    """
+    if not _git_commit_available(V023_RELEASE_SOURCE):
+        return candidate
+    result = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", V023_RELEASE_SOURCE, candidate],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+    )
+    return V023_RELEASE_SOURCE if result.returncode == 0 else candidate
 
 
 def _review_scope_covers(path: str, scope: set[str]) -> bool:
@@ -294,7 +314,7 @@ def test_v023_review_lanes_cover_every_fixed_base_candidate_change() -> None:
             "fixed v0.2.3 implementation base is unavailable; "
             "the authoritative review-scope gate requires fetch-depth: 0"
         )
-    candidate = _candidate_revision()
+    candidate = _v023_review_revision(_candidate_revision())
     changed_paths = _changed_paths_between(ROOT, V023_IMPLEMENTATION_BASE, candidate)
     contracts = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
     lanes = contracts["releases"]["v0.2.3"]["review_lanes"]

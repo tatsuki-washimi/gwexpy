@@ -11,6 +11,21 @@ It is intended as a lightweight overview rather than a release contract.
 
 The roadmap is public, but priorities can change based on research needs, maintenance cost, and upstream dependencies.
 
+## Current Release Baseline
+
+- [v0.2.3](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3) is the
+  current released maintenance baseline. It restores the audited GWpy 4.0.1 /
+  4.0.2 default behavior without adding a public API or dependency.
+- v0.2.0 established the container-arithmetic baseline: predictable units,
+  metadata propagation, and explicit failures instead of silent type downgrades.
+- Exact timing, interoperable persistence, deterministic provenance, and public
+  GWpy compatibility were established in v0.2.0 and are retained by v0.2.3.
+
+The v0.2.3 release is available on [PyPI](https://pypi.org/project/gwexpy/0.2.3/),
+[conda-forge](https://anaconda.org/conda-forge/gwexpy), and [Zenodo
+(DOI 10.5281/zenodo.22344992)](https://doi.org/10.5281/zenodo.22344992).
+No next-minor release theme is committed; future work remains directional.
+
 ## Near-Term Focus
 
 - Documentation quality improvements across navigation, accessibility, and search
