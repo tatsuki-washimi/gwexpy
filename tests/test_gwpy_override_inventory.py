@@ -2344,6 +2344,36 @@ def test_numpy_signature_normalization_rejects_unreviewed_drift(
         )
 
 
+@pytest.mark.parametrize("parameter", ["offset", "axis1", "axis2"])
+@pytest.mark.parametrize("replacement_type", [bool, float])
+def test_numpy_signature_normalization_rejects_equal_defaults_of_different_types(
+    monkeypatch: pytest.MonkeyPatch, parameter: str, replacement_type: type[Any]
+) -> None:
+    import numpy as np
+
+    audit = _load_audit_module()
+    raw = vars(np.ndarray)["diagonal"]
+    signature = copy.deepcopy(
+        audit._oracle_descriptor(raw, "generic-descriptor", np.ndarray)["details"][
+            "call"
+        ]["signature"]["variants"][1]
+    )
+    default = next(
+        item["default"] for item in signature["parameters"] if item["name"] == parameter
+    )
+    # Python equality conflates 0/False/0.0 and 1/True/1.0. The reviewed
+    # signature binds the exact serialized type as well as the value.
+    original = default["value"]
+    default["value"] = replacement_type(original)
+    assert default["value"] == original
+    assert type(default["value"]) is not type(original)
+    monkeypatch.setattr(audit, "normalize_signature", lambda value: signature)
+    with pytest.raises(
+        audit.InventoryError, match="unreviewed NumPy descriptor signature"
+    ):
+        audit._oracle_descriptor(raw, "generic-descriptor", np.ndarray)
+
+
 def test_matplotlib_unset_sentinel_has_version_independent_identity() -> None:
     import matplotlib.artist as artist
 

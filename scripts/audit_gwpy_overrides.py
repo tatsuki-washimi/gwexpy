@@ -1612,7 +1612,9 @@ def _oracle_callable_signature(raw: Any, provider: type[Any]) -> dict[str, Any]:
     # NumPy 1 lacks these text signatures; recent NumPy 2 exposes them.
     # Retain both exact reviewed forms, and reject any different observation.
     variants = [{"available": False, "error": "ValueError"}, reviewed]
-    if observed not in variants:
+    if canonical_compact_json(observed) not in {
+        canonical_compact_json(variant) for variant in variants
+    }:
         raise InventoryError(f"unreviewed NumPy descriptor signature: {name}")
     return {"kind": "reviewed-native-signature", "variants": variants}
 
