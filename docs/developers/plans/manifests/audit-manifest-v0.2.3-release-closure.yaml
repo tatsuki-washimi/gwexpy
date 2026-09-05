@@ -193,4 +193,21 @@ verification:
     final_publication_source_explicit: true
     candidate_and_final_sources_distinguished: true
     human_and_automated_reviews_distinguished: true
+  local_checks:
+    docs_tests: 190 passed, 4 skipped
+    release_governance_tests: 388 passed
+    closure_contract_tests: 31 passed
+    ruff_check: pass
+    ruff_format_check: pass
+    release_metadata_script: pass
+    ja_en_heading_sync: pass (existing JA-only/EN-only file warnings)
+    docs_redesign_sphinx_strict:
+      en: pass (nb_execution_mode=off)
+      ja: pass (nb_execution_mode=off)
+    legacy_sphinx_strict:
+      en: pass
+      ja: fail on the established 74 docutils inline-interpreted-text warnings;
+        base and current warning count/type match per the v0.2.0 baseline record
+    git_diff_check: pass
+    runtime_diff: empty
   closure_record: docs/developers/reports/report_v0.2.3_release_closure_20260906.md

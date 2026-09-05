@@ -103,6 +103,15 @@ consistency, Markdown link checks, Ruff, and strict English/Japanese docs
 builds. `git diff` is checked to confirm that no `gwexpy/` runtime source was
 modified.
 
+The executed results are 190 docs tests passed with 4 skips, 388 release and
+governance tests passed, and 31 closure-contract tests passed. Ruff check and
+format checks, release metadata, and JA/EN heading synchronization passed.
+The docs_redesign strict EN/JA builds passed with notebook execution disabled;
+legacy EN strict build passed. Legacy JA strict build reproduces the known 74
+docutils inline-interpreted-text warnings recorded as a matching base/current
+baseline in the v0.2.0 audit, so no unrelated warning cleanup was folded into
+this PR. The runtime diff is empty.
+
 The machine-readable counterpart is
 `docs/developers/plans/manifests/audit-manifest-v0.2.3-release-closure.yaml`.
 
