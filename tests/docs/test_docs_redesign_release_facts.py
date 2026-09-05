@@ -7,7 +7,6 @@ from pathlib import Path
 
 import yaml
 from babel.messages import pofile
-from markdown_it import MarkdownIt
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RELEASE_VERSION = "0.2.2"
@@ -338,11 +337,16 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
         .split("## [0.2.3] - ", 1)[1]
         .split("## [0.2.2]", 1)[0]
     )
-    for token in MarkdownIt().parse(current_release):
-        if token.type != "inline":
-            continue
-        message_id = " ".join(token.content.split())
-        if message_id == CANDIDATE_RELEASE_DATE:
+    # This release uses headings, paragraphs and list items. Split those
+    # blocks without requiring a docs-only Markdown parser in the PR gate.
+    # Unrecognized markup fails the catalogue lookup instead of being skipped.
+    blocks = re.split(
+        r"\n\s*\n|\n(?=\s*(?:#{1,6}|[-+*]|\d+\.)\s)", current_release
+    )
+    for block in blocks:
+        content = re.sub(r"^\s*(?:#{1,6}|[-+*]|\d+\.)\s+", "", block)
+        message_id = " ".join(content.split())
+        if not message_id or message_id == CANDIDATE_RELEASE_DATE:
             continue
         message = catalogue.get(message_id)
         assert message is not None, message_id
