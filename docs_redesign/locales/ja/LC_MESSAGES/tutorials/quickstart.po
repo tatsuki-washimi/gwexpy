@@ -1,235 +1,180 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2026, GWexpy Developers
-# This file is distributed under the same license as the GWexpy package.
+# Japanese translations for GWexpy.
+# Copyright (C) 2026 GWexpy Developers
+# This file is distributed under the same license as the GWexpy project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version:  GWexpy\n"
+"Project-Id-Version: GWexpy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 06:33+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2026-09-05 15:41+0900\n"
+"PO-Revision-Date: 2026-09-05 06:42+0000\n"
+"Last-Translator: GWexpy documentation contributors\n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: Japanese\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../tutorials/quickstart.md 95a864eee28642bdbd53cf487072e647
+#: ../../tutorials/quickstart.md
 msgid ""
-"Start GWexpy quickly with a pip install command, a 4-line first plot, and"
-" pointers to the next tutorials and migration guides."
-msgstr ""
-"GWexpy を最短で始めるための導入ガイドです。pip インストールコマンド、4 "
-"行の最小例、次に読むチュートリアルや移行ガイドへの入口をまとめています。"
+"Generate two reproducible synthetic channels with GWexpy, calculate their amplitude "
+"spectral densities, and save a first analysis figure."
+msgstr "GWexpy で再現可能な 2 つの合成チャンネルを生成し、振幅スペクトル密度を計算して最初の解析図を保存します。"
 
-#: ../../tutorials/quickstart.md:7 408b8a5eb9d54e3c82049cd846d9a9ac
+#: ../../tutorials/quickstart.md:7
 msgid "Quickstart"
-msgstr "クイックスタート (Quickstart)"
+msgstr "クイックスタート"
 
-#: ../../tutorials/quickstart.md:9 03620e98a9b74b97b9ea36b9c7278599
-msgid "Get your first analysis plot with GWexpy as quickly as possible."
-msgstr "GWexpy を使って、最初の解析図を最短で作成しましょう。"
-
-#: ../../tutorials/quickstart.md:12 a8a6e1540dd745198e53b4ddc534cee0
-msgid "Quick Install"
-msgstr "クイックインストール (Quick Install)"
-
-#: ../../tutorials/quickstart.md:14 b71cbd470c14430ca170e94a0ddad4d7
+#: ../../tutorials/quickstart.md:9
 msgid ""
-"GWexpy is published on PyPI, so a plain `pip install` is all you need to "
-"get started:"
-msgstr "GWexpy は PyPI で公開されており、`pip install` だけで始められます:"
-
-#: ../../tutorials/quickstart.md:16 b2c42c7a6e4f4fa7b42d86bec8fa692d
-msgid "Purpose: install the current release as quickly as possible"
-msgstr "目的: 現行リリースを最短でインストールする"
-
-#: ../../tutorials/quickstart.md:17 30c18b1da55a4848b247ad7e19674f82
-msgid "Input: Python 3.11+ with `pip`"
-msgstr "入力: Python 3.11 以上と `pip`"
-
-#: ../../tutorials/quickstart.md:18 121015940443476ea349fe09a49593ec
-msgid "Output: a local GWexpy installation ready for the first example"
-msgstr "出力: 最初のサンプルを実行できる GWexpy 環境"
-
-#: ../../tutorials/quickstart.md:24 24b43f5dfd8241a7b8acb68a9a830c67
-msgid ""
-"If you want the latest unreleased development version instead, install "
-"from the GitHub source repository: `pip install git+https://github.com"
-"/tatsuki-washimi/gwexpy.git`"
+"Create two synthetic channels, calculate their amplitude spectral densities (ASDs), "
+"and save `asd.png`. Prerequisites: Python 3.11 or later and GWexpy installed; no "
+"detector files or optional packages are needed. Study goal: about 5 minutes after "
+"installation. Script runtime goal: seconds on a laptop; this is not a benchmark."
 msgstr ""
-"未リリースの最新開発版を使いたい場合は、GitHub のソースリポジトリからインストールしてください: `pip install "
-"git+https://github.com/tatsuki-washimi/gwexpy.git`"
+"2 つの合成チャンネルを作り、振幅スペクトル密度（ASD）を計算して `asd.png` に保存します。\n"
+"前提条件は Python 3.11 以降と GWexpy のインストールです。\n"
+"検出器のファイルや追加パッケージは必要ありません。\n"
+"学習時間の目安はインストール後約 5 分です。\n"
+"スクリプトはノート PC で数秒程度の実行を目標としていますが、実測値ではありません。"
 
-#: ../../tutorials/quickstart.md:27 2b21a8cf36664499baca34967876eb28
+#: ../../tutorials/quickstart.md:15
+msgid "Install GWexpy"
+msgstr "GWexpy をインストールする"
+
+#: ../../tutorials/quickstart.md:17
+msgid "In a terminal with your chosen Python environment active, run:"
+msgstr "使用する Python 環境を有効にしたターミナルで、次を実行します。"
+
+#: ../../tutorials/quickstart.md:23
+msgid "For environment creation and Conda instructions, use [Installation](installation.md)."
+msgstr "環境の作成と Conda の手順は[インストール](installation.md)を参照してください。"
+
+#: ../../tutorials/quickstart.md:28
+msgid "Run the complete example"
+msgstr "例を通して実行する"
+
+#: ../../tutorials/quickstart.md:30
+#, python-brace-format
 msgid ""
-"If you need a Conda-managed environment, GW binary dependencies such as "
-"NDS2 / FrameLIB, or optional tools such as `pygmt`, start with the "
-"[Installation Guide](installation.md) instead of adding those packages ad"
-" hoc after this quick install."
+"Download {download}`quickstart.py <../_static/downloads/quickstart.py>` into a "
+"working folder and run the command below from that folder. A terminal command starts "
+"Python; the downloaded file contains the Python statements it will execute in order."
 msgstr ""
-"Conda 管理の環境で始めたい場合、NDS2 / FrameLIB などの GW 系バイナリ依存が必要な場合、`pygmt` "
-"などの追加ツールを使いたい場合は、後から場当たり的に足さず [インストールガイド](installation.md) の Conda "
-"前提手順から始めてください。"
+"{download}`quickstart.py <../_static/downloads/quickstart.py>` "
+"を作業フォルダにダウンロードし、そのフォルダで次のコマンドを実行します。\n"
+"ターミナルのコマンドが Python を起動し、ダウンロードしたファイル内の Python 文を順に実行します。"
 
-#: ../../tutorials/quickstart.md:30 a04e2aa60ddd430985999fdc664609c9
-msgid "4-line Quickstart"
-msgstr "4行で最初の図を出す (4-line Quickstart)"
-
-#: ../../tutorials/quickstart.md:32 470ceb27a9d44ecc9dc65a43c5461ba7
+#: ../../tutorials/quickstart.md:41
 msgid ""
-"GWexpy's `TimeSeries` can be created directly from NumPy arrays and "
-"features built-in plotting capabilities."
-msgstr "GWexpy の `TimeSeries` は NumPy 配列から直接作成でき、標準的なプロット機能を備えています。"
-
-#: ../../tutorials/quickstart.md:34 0174c0564cdc42f1ad88bbafcb4a9d50
-msgid "Purpose: display a first plot from a random time series"
-msgstr "目的: ランダムな時系列から最初のプロットを 1 枚表示する"
-
-#: ../../tutorials/quickstart.md:35 dfa7e1015c64450596dc1f3097366b2e
-msgid "Input: a 4096-sample NumPy array, sample rate 4096 Hz, and `t0=0`"
-msgstr "入力: 4096 サンプルの NumPy 配列、サンプルレート 4096 Hz、開始時刻 `t0=0`"
-
-#: ../../tutorials/quickstart.md:36 e8b4403ab51146b0887f1c9d54c59aab
-msgid "Output: a `TimeSeries` object and a rendered plot"
-msgstr "出力: `TimeSeries` オブジェクトと描画ウィンドウ"
-
-#: ../../tutorials/quickstart.md:46 2250350946ce4c67860fccc1aaacf500
-msgid "30-min Hands-on (Interactive Tutorial)"
-msgstr "30分で学べるハンズオン (Interactive Tutorial)"
-
-#: ../../tutorials/quickstart.md:48 43119feb0d7f448ca32821d2895e237f
-msgid "For a more practical workflow, we recommend the following lesson."
-msgstr "より実践的なワークフローを学びたい場合は、以下のレッスンを推奨します。"
-
-#: ../../tutorials/quickstart.md:50 3c7fa50e249a4bc99fa96841dde94530
-msgid "🧪 GWexpy Basic Hands-on"
-msgstr "🧪 GWexpy 基本ハンズオン"
-
-#: ../../tutorials/quickstart.md:52 003a46028635446d9b8134275bbf0c74
-msgid "[TimeSeries basics lesson](intro_timeseries.ipynb)"
-msgstr "[TimeSeries の基本レッスン](intro_timeseries.ipynb)"
-
-#: ../../tutorials/quickstart.md:54 d37b5cc9bca547e29c046988a13d8c9e
-msgid ""
-"Experience everything from loading data to frequency analysis (ASD/CSD) "
-"and multi-channel manipulation with the Matrix API."
-msgstr "データの読み込みから、周波数解析（ASD/CSD）、Matrix API によるマルチチャンネル操作までを一通り体験します。"
-
-#: ../../tutorials/quickstart.md:56 77735fbc69c74eeeba30ea2aba1b5274
-msgid "Core Concepts"
-msgstr "主要概念 (Core Concepts)"
-
-#: ../../tutorials/quickstart.md:58 38f9afa6d4c24c7d9006519c046e5e0b
-msgid "The two pillars to mastering GWexpy."
-msgstr "GWexpy を使いこなすための 2 つの重要な柱です。"
-
-#: ../../tutorials/quickstart.md:60 bb13ade3f10f44f39ec67a12e288ce29
-msgid ""
-"**TimeSeries / FrequencySeries**:  Basic classes for handling single-"
-"channel data. High compatibility with GWpy allows you to run existing "
-"code as is."
+"The `sine` and `gaussian` functions create `TimeSeries` objects with the same "
+"16-second duration, 512 Hz sample rate, start time, and volt unit. Explicit seeds "
+"make both noise sequences repeatable. `TimeSeriesDict` keeps the two named channels "
+"together, and `.asd()` applies the same spectral settings to each one. The final line"
+" saves the figure in the folder where the command runs; open `asd.png` with an image "
+"viewer."
 msgstr ""
-"**TimeSeries / FrequencySeries**: 単一チャンネルのデータを扱う基本クラスです。GWpy "
-"との高い互換性により、既存コードをほぼそのまま実行できます。"
+"`sine` と `gaussian` は、長さ 16 秒、サンプルレート 512 Hz、開始時刻、単位 V が共通の `TimeSeries` を生成します。\n"
+"明示したシードにより、どちらのノイズ列も再現できます。\n"
+"`TimeSeriesDict` は名前を付けた 2 チャンネルをまとめ、`.asd()` は同じスペクトル設定を各チャンネルに適用します。\n"
+"最後の行はコマンドを実行したフォルダに図を保存します。\n"
+"画像ビューアで `asd.png` を開いてください。"
 
-#: ../../tutorials/quickstart.md:62 122e54af1a0441a8ac478d1b054c42e6
+#: ../../tutorials/quickstart.md:46
+msgid "Read the result"
+msgstr "結果を読み取る"
+
+#: ../../tutorials/quickstart.md:48
 msgid ""
-"**TimeSeriesMatrix / ScalarField**: New APIs for handling multi-channel "
-"(matrix format) or multi-dimensional field-like data. Large-scale "
-"analysis with over 100 channels can be handled safely with a single line "
-"of code."
+"Two voltage amplitude spectral densities with a shared peak near 40 Hz and different "
+"noise floors."
+msgstr "40 Hz 付近に共通のピークを持ち、ノイズフロアが異なる 2 つの電圧 ASD。"
+
+#: ../../tutorials/quickstart.md:52
+msgid ""
+"Expected output from the downloadable example: a 40 Hz line in both channels and a "
+"higher broadband noise floor in Sensor B."
 msgstr ""
-"**TimeSeriesMatrix / ScalarField**: 多チャンネル（行列形式）や多次元のフィールド状データを扱う新しい API "
-"です。100 チャンネルを超える大規模解析も、1 行のコードで安全に扱えます。"
+"ダウンロードした例の期待される出力です。\n"
+"両チャンネルに 40 Hz の線があり、Sensor B の広帯域ノイズフロアが高くなります。"
 
-#: ../../tutorials/quickstart.md:65 ccfbe05244fa4c8b84545b049f258762
-msgid "Multi-channel Analysis Example"
-msgstr "複数チャンネルの解析例"
-
-#: ../../tutorials/quickstart.md:67 d11aec7bd7b34904a61c83035c2301ba
+#: ../../tutorials/quickstart.md:56
 msgid ""
-"Minimal example for calculating cross-spectral density (CSD) between two "
-"channels."
-msgstr "複数チャンネル間のクロススペクトル密度（CSD）を計算する最小例です。"
-
-#: ../../tutorials/quickstart.md:69 4ccde38fe705485b9edd59af9c3151ad
-msgid "Purpose: compute cross-spectral density from two `TimeSeries` channels"
-msgstr "目的: 2 チャンネルの `TimeSeries` からクロススペクトル密度を計算する"
-
-#: ../../tutorials/quickstart.md:70 5e422505f7bb45d89519a20461aa569a
-msgid "Input: a two-channel `TimeSeriesDict` and `fftlength=1`"
-msgstr "入力: 2 チャンネルの `TimeSeriesDict` と `fftlength=1`"
-
-#: ../../tutorials/quickstart.md:71 17198328762d42eebf4cb2d883bed8e4
-msgid "Output: a `csd` object and a plotted CSD result"
-msgstr "出力: `csd` オブジェクトと CSD プロット"
-
-#: ../../tutorials/quickstart.md:88 fb1b252fbe6148eb942f2714348b38f4
-msgid ""
-"This example selects the two channels from the `TimeSeriesDict` and "
-"stores the resulting cross-spectral density in `csd`."
+"The horizontal axis is frequency in hertz; the vertical axis is ASD in volts per "
+"square root hertz. An ASD shows how fluctuation amplitude is distributed over "
+"frequency. Both channels contain the same 40 Hz sine wave, while Sensor B has larger "
+"Gaussian noise. The peak height also depends on the spectral settings; it is not the "
+"sine wave's amplitude in volts."
 msgstr ""
-"ここでは `TimeSeriesDict` から対象の 2 チャンネルを取り出し、チャンネル間のクロススペクトル密度を `csd` "
-"として得ています。"
+"横軸は周波数（Hz）、縦軸は振幅スペクトル密度（V/√Hz）です。\n"
+"ASD は変動の振幅が周波数にどのように分布するかを示します。\n"
+"両チャンネルに同じ 40 Hz の正弦波が含まれ、Sensor B のガウスノイズが大きくなっています。\n"
+"ピークの高さはスペクトル設定にも依存し、正弦波の振幅を V 単位で直接示す値ではありません。"
 
-#: ../../tutorials/quickstart.md:90 92c4094fbaed4b91b9823d4b7e2de1e5
-msgid "Need Help?"
-msgstr "困ったときは"
-
-#: ../../tutorials/quickstart.md:92 c4b47f4fe95a46638dffea90732673d7
+#: ../../tutorials/quickstart.md:61
 msgid ""
-"If you encounter errors or plots do not appear, check the "
-"[Troubleshooting Guide](../how-to/troubleshooting.md). If the problem is "
-"really an environment setup issue, return to the [Installation "
-"Guide](installation.md) for the Conda-first workflow."
+"`fftlength=2` uses 2-second segments, giving a frequency-bin spacing of 0.5 Hz. "
+"`overlap=1` overlaps adjacent segments by 1 second. The example explicitly selects a "
+"Hann window and Welch averaging so the analysis choices are visible."
 msgstr ""
-"実行時にエラーが発生したり、プロットが表示されない場合は、[トラブルシューティングガイド](../how-"
-"to/troubleshooting.md) "
-"を確認してください。原因が環境構築にある場合は、[インストールガイド](installation.md) の Conda "
-"前提手順に戻るのが最短です。"
+"`fftlength=2` は長さ 2 秒の区間を使い、周波数ビンの間隔は 0.5 Hz になります。\n"
+"`overlap=1` は隣り合う区間を 1 秒ずつ重ねます。\n"
+"この例では、解析条件が分かるように Hann 窓と Welch 平均を明示しています。"
 
-#: ../../tutorials/quickstart.md:94 da2d084b7937440ea20d8b35f2e738a3
+#: ../../tutorials/quickstart.md:67
+msgid "Change one parameter"
+msgstr "パラメータを 1 つ変える"
+
+#: ../../tutorials/quickstart.md:69
+msgid ""
+"Change `frequency=40` to `frequency=70` and run the script again. The two peaks "
+"should move to 70 Hz. Then restore 40 Hz and try changing one noise standard "
+"deviation (`std`) to see how the broadband floor responds."
+msgstr ""
+"`frequency=40` を `frequency=70` に変えてスクリプトを再実行します。\n"
+"2 つのピークが 70 Hz に移るはずです。\n"
+"40 Hz に戻してから、片方のノイズの標準偏差（`std`）を変え、広帯域のフロアがどう変わるか確認します。"
+
+#: ../../tutorials/quickstart.md:73
+msgid "If the script does not run"
+msgstr "スクリプトが動かない場合"
+
+#: ../../tutorials/quickstart.md:75
+msgid ""
+"`ModuleNotFoundError: No module named 'gwexpy'` means the Python running the script "
+"cannot find GWexpy. Activate the environment used for installation, then rerun "
+"`python quickstart.py`. For other symptoms, use [Troubleshooting](../how-"
+"to/troubleshooting.md)."
+msgstr ""
+"`ModuleNotFoundError: No module named 'gwexpy'` は、スクリプトを実行している Python が GWexpy "
+"を見つけられないことを示します。\n"
+"インストールした環境を有効にし、`python quickstart.py` を再実行してください。\n"
+"その他の症状は[トラブルシューティング](../how-to/troubleshooting.md)を参照してください。"
+
+#: ../../tutorials/quickstart.md:79
 msgid "<a id=\"next-to-read\"></a> <a id=\"next-steps\"></a>"
 msgstr "<a id=\"next-to-read\"></a> <a id=\"next-steps\"></a>"
 
-#: ../../tutorials/quickstart.md:97 b1a9790bd7ba47eeb7ad143856b0869d
-msgid "Next to Read"
-msgstr "次に読む"
+#: ../../tutorials/quickstart.md:82
+msgid "Further reading"
+msgstr "さらに読む"
 
-#: ../../tutorials/quickstart.md:99 260bdbba8e374166ba673abdd45b5a43
-msgid "[Installation Guide](installation.md) - Setting up your environment."
-msgstr "[インストールガイド](installation.md) - 環境の構築"
-
-#: ../../tutorials/quickstart.md:100 8f8c19668c3d46e6b86ba1ee549bd1e9
+#: ../../tutorials/quickstart.md:84
 msgid ""
-"[Troubleshooting Guide](../how-to/troubleshooting.md) - Reverse-lookup "
-"fixes by symptom."
-msgstr "[トラブルシューティングガイド](../how-to/troubleshooting.md) - 症状から解決策を逆引きする。"
+"[First analysis](first_analysis.md): learn Python variables, plots, and ASD step by "
+"step."
+msgstr "[最初の解析](first_analysis.md)：Python の変数、描画、ASD を順に学びます。"
 
-#: ../../tutorials/quickstart.md:101 dbfbc6fbbbe34fc48448d2591689ab25
-msgid "[Getting Started](getting_started.md) - Systematic learning roadmap."
-msgstr "[はじめに](getting_started.md) - 体系的な学習ロードマップ"
+#: ../../tutorials/quickstart.md:85
+msgid "[Start Here](getting_started.md): choose the next lesson for your background."
+msgstr "[はじめに](getting_started.md)：経験に合った次のレッスンを選びます。"
 
-#: ../../tutorials/quickstart.md:102 e101ce48639e46bcb237cc9d5de62d97
+#: ../../tutorials/quickstart.md:86
 msgid ""
-"[Prerequisites and "
-"Conventions](../explanation/prerequisites_and_conventions.md) - Review "
-"FFT, GPS time, and compatibility assumptions first."
-msgstr ""
-"[前提条件と規約](../explanation/prerequisites_and_conventions.md) - FFT・GPS "
-"時刻・互換性の前提を先に確認する。"
-
-#: ../../tutorials/quickstart.md:103 8f39b077ded8436182930e96335353c1
-msgid ""
-"[GWexpy for GWpy Users](../explanation/gwexpy_for_gwpy_users.md) - "
-"Difference guide for existing users."
-msgstr ""
-"[GWpy ユーザーのための GWexpy](../explanation/gwexpy_for_gwpy_users.md) - "
-"既存ユーザー向けの差分ガイド。"
+"[TimeSeries basics](intro_timeseries.ipynb): continue with time-domain and frequency-"
+"domain operations."
+msgstr "[TimeSeries の基礎](intro_timeseries.ipynb)：時間領域と周波数領域の操作へ進みます。"
 

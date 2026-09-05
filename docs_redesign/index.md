@@ -4,22 +4,121 @@ sd_hide_title: true
 
 # GWexpy
 
-::::{div} sd-text-center sd-my-5
-:::{image} _static/images/hero_plot.png
-:alt: GWexpy multi-dimensional spectral analysis
-:width: 640px
-:class: sd-mb-4 sd-shadow-lg sd-rounded-3
-:::
+::::{div} sd-text-center sd-my-3
 
 :::{div} sd-fs-1 sd-font-weight-bolder
 GWexpy
 :::
 
-```{rubric} Multi-dimensional time- and frequency-series analysis for gravitational-wave science.
+```{rubric} Analyze experimental data with units, timestamps, and channel names.
 ```
 
+Compare multiple channels and save figures with the code and settings needed to reproduce them.
 GWexpy extends [GWpy](https://gwpy.github.io/) with matrix and field containers,
-integrated noise-budget and modelling tools, and broad detector interoperability.
+noise generation, fitting, and connections to scientific Python libraries.
+
+[Start Here →](tutorials/getting_started){.sd-btn .sd-btn-primary .sd-shadow-sm .sd-px-4 .sd-fs-5}
+::::
+
+## Start from your background
+
+Choose a route that uses what you already know. Each first lesson states its prerequisites and the result you will produce.
+
+::::{grid} 1 2 2 3
+:gutter: 3
+
+:::{grid-item-card} Beginner
+:link: tutorials/first_analysis
+:link-type: doc
+
+New to Python or signal analysis? Run a script, understand its variables, and read your first time-series and ASD plots.
+:::
+
+:::{grid-item-card} GW Experimentalist
+:link: for-gw-experimentalists
+:link-type: ref
+
+Know channels, sampling, and spectra? Map familiar experimental concepts to Python objects, then analyze a pair of channels.
+:::
+
+:::{grid-item-card} Commissioner (DiagGUI · ndscope · Virgo dataDisplay)
+:link: tutorials/commissioner
+:link-type: doc
+
+Bring an interactive analysis workflow into a reproducible script: read channels, select a time span, plot ASD and coherence, and save the settings.
+:::
+
+:::{grid-item-card} Scientific Python User
+:link: tutorials/scientific_python
+:link-type: doc
+
+Start with NumPy arrays and dictionaries. Attach sampling, start time, and units, then calculate spectra for all channels together.
+:::
+
+:::{grid-item-card} GWpy User
+:link: explanation/gwexpy_for_gwpy_users
+:link-type: doc
+
+Use familiar GWpy concepts and explore the added containers, analysis methods, and I/O through concrete migration examples.
+:::
+
+:::{grid-item-card} GWexpy User
+:link: how-to/index
+:link-type: doc
+
+Go directly to a task recipe, a case study, or the API reference for your next analysis.
+:::
+::::
+
+(install-and-try-it)=
+## Try a multi-channel ASD
+
+After [installation](tutorials/installation.md), this complete example generates two synthetic channels and saves `asd.png`. It needs no data download or optional packages.
+
+```{literalinclude} _static/downloads/quickstart.py
+:language: python
+:start-after: quickstart-begin
+:end-before: quickstart-end
+```
+
+[Run the example and see the expected figure](tutorials/quickstart.md).
+
+(find-your-path)=
+## Browse the documentation
+
+The documentation follows [Diátaxis](https://diataxis.fr/): lessons for learning, recipes for tasks, reference for lookup, and explanation for context.
+
+::::{grid} 1 2 2 2
+:gutter: 3
+
+:::{grid-item-card} Tutorials
+:link: tutorials/index
+:link-type: doc
+
+Follow a guided lesson and produce a working analysis.
+:::
+
+:::{grid-item-card} How-to guides
+:link: how-to/index
+:link-type: doc
+
+Solve a specific analysis problem or adapt a case study.
+:::
+
+:::{grid-item-card} Reference
+:link: reference/index
+:link-type: doc
+
+Look up containers, methods, parameters, and supported file formats.
+:::
+
+:::{grid-item-card} Explanation
+:link: explanation/index
+:link-type: doc
+
+Understand the data model, analysis conventions, and design decisions.
+:::
+::::
 
 For corresponding GWpy APIs, default finite numerical results, sample
 selection, axis information, and successful completion remain GWpy-compatible.
@@ -27,108 +126,8 @@ Intentional divergence from these guarantees requires explicit user opt-in, exce
 named, human-approved safety exception satisfying all policy gates. See the
 [GWpy compatibility policy](explanation/gwpy_compatibility_policy).
 
-[Get started →](tutorials/index){.sd-btn .sd-btn-primary .sd-shadow-sm .sd-px-4 .sd-fs-5}
-::::
-
----
-
-## Find your path
-
-The documentation follows the [Diátaxis](https://diataxis.fr/) framework.
-
-::::{grid} 1 2 2 2
-:gutter: 3
-
-:::{grid-item-card} {octicon}`mortar-board;1.5em;sd-mr-1` Tutorials
-:link: tutorials/index
-:link-type: doc
-
-Learning-oriented lessons that take you from zero to a working analysis.
-+++
-Start learning →
-:::
-
-:::{grid-item-card} {octicon}`tools;1.5em;sd-mr-1` How-to guides
-:link: how-to/index
-:link-type: doc
-
-Goal-oriented recipes and real-world case studies for specific problems.
-+++
-Solve a problem →
-:::
-
-:::{grid-item-card} {octicon}`book;1.5em;sd-mr-1` Reference
-:link: reference/index
-:link-type: doc
-
-Technical description of the containers, analysis API, and I/O formats.
-+++
-Look up the API →
-:::
-
-:::{grid-item-card} {octicon}`light-bulb;1.5em;sd-mr-1` Explanation
-:link: explanation/index
-:link-type: doc
-
-Discussion of the architecture and the ideas behind the design.
-+++
-Understand the design →
-:::
-::::
-
----
-
-## Highlights
-
-::::{grid} 1 1 3 3
-:gutter: 3
-
-:::{grid-item-card} Multidimensional fields
-:link: how-to/containers/index
-:link-type: doc
-
-Work natively with `TimeSeriesMatrix`, `FrequencySeriesMatrix`, and
-`Scalar`/`Vector`/`TensorField` containers.
-:::
-
-:::{grid-item-card} Integrated analysis
-:link: how-to/case-studies/index
-:link-type: doc
-
-BrUCo noise budgets, ARIMA modelling, and fitting / MCMC pipelines in one place.
-:::
-
-:::{grid-item-card} Broad interop
-:link: how-to/interop
-:link-type: doc
-
-~50 interoperability modules for converting data to and from external scientific libraries.
-:::
-::::
-
----
-
-## Install and try it
-
-GWexpy v0.2.0 is available from both PyPI and conda-forge.
-
-```bash
-pip install gwexpy
-# or
-conda install -c conda-forge gwexpy
-```
-
-```python
-from gwexpy.timeseries import TimeSeriesMatrix
-
-# Load a multi-channel segment and project it to the frequency domain
-tsm = TimeSeriesMatrix.read("data.gwf", channels=["X1:CH1", "X1:CH2"])
-fsm = tsm.fft()
-
-# Coherence of each channel against a reference channel
-ref = tsm[0, 0]  # X1:CH1 as a TimeSeries
-coh = tsm.coherence(ref, fftlength=4)
-```
+(highlights)=
+For contribution, testing, and release information, use the [Developer guide](about/developer.md).
 
 ```{toctree}
 :hidden:

@@ -1,0 +1,437 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-05",
+  "task": "Approved Docs audience onboarding implementation",
+  "branch": "docs/audience-onboarding",
+  "base_revision": "d433b2ecb6e938d86c30615d54c7f20fcf97cde7",
+  "skills": [
+    "analyze_external",
+    "setup_plan",
+    "web_docs_ia_overhaul",
+    "web_docs_release_gates",
+    "gwexpy_conda_jobs",
+    "verify_physics",
+    "superpowers:using-git-worktrees",
+    "superpowers:executing-plans",
+    "superpowers:subagent-driven-development",
+    "agent-output-report",
+    "docs-ja",
+    "finalize_work",
+    "superpowers:finishing-a-development-branch"
+  ],
+  "actions": [
+    "Inspected the approved discussion, published documentation and failed noise-budget build.",
+    "Created an isolated worktree based on origin/main, preserving the user's existing checkout.",
+    "Implemented six audience routes, deterministic executable onboarding, bilingual Reference catalogues, release/build identity and case-study execution information.",
+    "Reconciled 15 preexisting canonical/public notebook code differences before deriving 59 public execution sources.",
+    "Corrected notebook units, spectral averaging and conjugation, and removed global warning suppression and swallowed unexpected failures without modifying library runtime code.",
+    "Added source preparation, executable-example validation, rendered/deployed HTML checks and CI failure artifacts.",
+    "Completed independent specification, implementation quality, Japanese and numerical reviews; corrected review findings.",
+    "Ran full tests, fixed seven stale documentation-test references, and reran every affected docs/I/O contract test.",
+    "Built and inspected English/Japanese HTML and recorded external linkcheck failures separately."
+  ],
+  "environment": {
+    "python": "3.11.14",
+    "gwexpy": "0.2.3",
+    "gwpy": "4.0.2",
+    "numpy": "1.26.4",
+    "scipy": "1.12.0",
+    "astropy": "6.1.7",
+    "matplotlib": "3.10.8",
+    "sphinx": "8.2.3",
+    "myst-nb": "1.4.0",
+    "intro_release": "0.2.2",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "MPLBACKEND": "Agg",
+    "QT_QPA_PLATFORM": "offscreen"
+  },
+  "checks": [
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy ruff check gwexpy/ tests/",
+      "status": "passed"
+    },
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy ruff check scripts/prepare_public_docs.py scripts/check_public_docs.py scripts/verify_public_examples.py docs_redesign/conf.py",
+      "status": "passed"
+    },
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy mypy gwexpy/",
+      "status": "passed",
+      "files": 396
+    },
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy mypy scripts/prepare_public_docs.py scripts/check_public_docs.py scripts/verify_public_examples.py",
+      "status": "passed",
+      "files": 3
+    },
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy pytest tests -q",
+      "status": "initial_failures_resolved_by_targeted_rerun",
+      "passed": 12867,
+      "failed": 7,
+      "skipped": 307,
+      "xfailed": 6,
+      "seconds": 857.44,
+      "log": "/tmp/gwexpy-docs-onboarding/test-all.log",
+      "explanation": "All seven failures referenced moved catalogue paths or the replaced hard-coded installation version. Assertions were preserved at their new sources. The full suite was not rerun as a single invocation after these fixes."
+    },
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy pytest tests/docs tests/io/test_io_docs_contract_sync.py -q",
+      "status": "passed",
+      "passed": 208,
+      "skipped": 4,
+      "explanation": "Final affected-test rerun includes the new mixed-unit noise-budget and Wiener gain/phase regression tests."
+    },
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy python scripts/verify_public_examples.py /tmp/gwexpy-docs-onboarding/verified/docs_redesign",
+      "status": "passed",
+      "checks": [
+        "Quickstart PNG and ASD units",
+        "first-analysis executable blocks",
+        "NumPy/SciPy numerical parity",
+        "Commissioner ndscope HDF5 roundtrip and crop",
+        "coherence and saved analysis settings",
+        "optional synthetic DiagGUI XML"
+      ]
+    },
+    {
+      "command": "rtk proxy env -u PYTHONPATH /tmp/gwexpy-docs-onboarding/released-env/bin/python <worktree>/scripts/verify_public_examples.py <prepared-docs-source> --expected-version 0.2.2",
+      "status": "passed",
+      "explanation": "Independent venv with base GWexpy 0.2.2 dependencies, run outside checkout; optional dttxml skipped explicitly."
+    },
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy python scripts/prepare_public_docs.py /tmp/gwexpy-docs-onboarding/verified/docs_redesign",
+      "status": "passed",
+      "canonical_notebooks": 59
+    },
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy python -m sphinx -b html -D language=en -d /tmp/gwexpy-docs-onboarding/verified/docs_redesign/_build/doctrees_en /tmp/gwexpy-docs-onboarding/verified/docs_redesign /tmp/gwexpy-docs-onboarding/verified/docs_redesign/_build/html",
+      "status": "passed",
+      "notebooks_successful": 59,
+      "log": "/tmp/gwexpy-docs-onboarding/verified-en.log",
+      "explanation": "All notebook sources executed successfully; final build reused valid execution cache. Earlier clean rendering emitted existing API warnings; final incremental render had none."
+    },
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy python -m sphinx -b html -D language=ja -d /tmp/gwexpy-docs-onboarding/verified/docs_redesign/_build/doctrees_ja /tmp/gwexpy-docs-onboarding/verified/docs_redesign /tmp/gwexpy-docs-onboarding/verified/docs_redesign/_build/html/ja",
+      "status": "passed",
+      "notebooks_successful": 59,
+      "log": "/tmp/gwexpy-docs-onboarding/verified-ja.log",
+      "explanation": "Uses successful executions for the same 59 sources. Final incremental render had one external intersphinx connection warning."
+    },
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy python scripts/check_public_docs.py /tmp/gwexpy-docs-onboarding/verified/docs_redesign/_build/html",
+      "status": "passed",
+      "entry_pages_per_language": 19,
+      "case_studies": 24,
+      "checks": [
+        "local links",
+        "legacy EN/JA fragments",
+        "language counterparts",
+        "build identity",
+        "notebook execution metadata",
+        "Quickstart PNG"
+      ]
+    },
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy python -m sphinx -b html -W --keep-going -D nbsphinx_execute=never -D nbsphinx_allow_errors=0 docs /tmp/gwexpy-docs-onboarding/legacy-html",
+      "status": "passed",
+      "log": "/tmp/gwexpy-docs-onboarding/legacy-build.log"
+    },
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy python scripts/check_terms.py",
+      "status": "passed"
+    },
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy python scripts/check_docs_sync.py",
+      "status": "passed",
+      "pairs": 157,
+      "explanation": "Existing unmatched-page warnings: 3 Japanese-only and 4 English-only pages."
+    },
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy python scripts/check_forbidden_artifacts.py",
+      "status": "passed"
+    },
+    {
+      "command": "Playwright with local HTTP server and system Google Chrome",
+      "status": "passed",
+      "languages": [
+        "en",
+        "ja"
+      ],
+      "viewports": [
+        [
+          1440,
+          1000
+        ],
+        [
+          390,
+          844
+        ]
+      ],
+      "checks": [
+        "six audience cards",
+        "literal Commissioner name in Japanese",
+        "version banner",
+        "no horizontal overflow"
+      ],
+      "evidence": "/tmp/gwexpy-docs-onboarding/browser-check.json"
+    },
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy python -m sphinx -b linkcheck -D nb_execution_mode=off -D linkcheck_workers=20 -D linkcheck_retries=1 -d /tmp/gwexpy-docs-onboarding/verified/docs_redesign/_build/doctrees_links /tmp/gwexpy-docs-onboarding/verified/docs_redesign /tmp/gwexpy-docs-onboarding/verified/docs_redesign/_build/linkcheck",
+      "status": "external_failures",
+      "exit_code": 1,
+      "counts": {
+        "working": 238,
+        "unchecked": 126,
+        "redirected": 14,
+        "timeout": 13,
+        "broken": 7,
+        "ignored": 1
+      },
+      "log": "/tmp/gwexpy-docs-onboarding/linkcheck.log",
+      "explanation": "Existing external destinations failed; rewritten local navigation and retained fragments passed the separate rendered checker."
+    }
+  ],
+  "external_link_failures": [
+    {
+      "url": "https://git.ligo.org/pem/pemcoupling",
+      "status": 403
+    },
+    {
+      "url": "https://git.ligo.org/gwinc/pygwinc",
+      "status": 403
+    },
+    {
+      "url": "https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0b1...v0.1.0b2",
+      "status": 404
+    },
+    {
+      "url": "https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0b2...v0.1.0",
+      "status": 404
+    },
+    {
+      "url": "https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.1.0b1",
+      "status": 404
+    },
+    {
+      "url": "https://gwpy.github.io/docs/stable/citing.html",
+      "status": 404
+    },
+    {
+      "url": "https://syrte.obspm.fr/iauWGnfa/NFA_Glossary.html",
+      "status": "TLS certificate verification failed"
+    },
+    {
+      "domain": "docs.scipy.org",
+      "count": 13,
+      "status": "connect timeout"
+    }
+  ],
+  "physics": {
+    "human_review_required": true,
+    "required_label": "needs-physics-review",
+    "instruction": ".agent/AGENTS.md sections 5-6",
+    "runtime_or_public_api_modified": false,
+    "scope": [
+      "Attach native output/input units to tutorial transfer estimates",
+      "Use matched mean PSD/CSD averaging",
+      "Conjugate Wiener row coefficients for the documented CSD convention",
+      "Preserve epoch, cadence, shape and physical units",
+      "State independence and finite-estimation limitations"
+    ],
+    "automated_evidence": {
+      "known_gain_max_relative_error": 4.85e-12,
+      "known_waveform_relative_error": 3.16e-13,
+      "noisy_100_130_hz_correlation": 0.99675,
+      "band_rms_before": 6.52e-23,
+      "band_rms_after": 2.2e-23
+    },
+    "status": "Automated numerical checks passed; human physics approval remains pending."
+  },
+  "remaining": [
+    "Human physics review before merge",
+    "Main-branch Pages execution and deployed-commit readback after merge",
+    "Existing external broken/blocked links",
+    "Usability timing targets have not been measured in a user study"
+  ],
+  "files_changed": [
+    ".github/workflows/docs-pages.yml",
+    ".github/workflows/docs-pr.yml",
+    ".github/workflows/docs-redesign-preview.yml",
+    "docs/NOTEBOOK_POLICY.md",
+    "docs/developers/reports/audit_docs_audience_onboarding_20260905.json",
+    "docs/developers/reports/report_docs_audience_onboarding_20260905.md",
+    "docs/web/en/user_guide/tutorials/advanced_bruco.ipynb",
+    "docs/web/en/user_guide/tutorials/advanced_correlation.ipynb",
+    "docs/web/en/user_guide/tutorials/advanced_coupling.ipynb",
+    "docs/web/en/user_guide/tutorials/advanced_decomposition.ipynb",
+    "docs/web/en/user_guide/tutorials/advanced_field_analysis.ipynb",
+    "docs/web/en/user_guide/tutorials/advanced_fitting.ipynb",
+    "docs/web/en/user_guide/tutorials/advanced_hht.ipynb",
+    "docs/web/en/user_guide/tutorials/advanced_modal_analysis.ipynb",
+    "docs/web/en/user_guide/tutorials/advanced_peak_detection.ipynb",
+    "docs/web/en/user_guide/tutorials/advanced_peak_tracking.ipynb",
+    "docs/web/en/user_guide/tutorials/advanced_spectrogram_processing.ipynb",
+    "docs/web/en/user_guide/tutorials/case_active_damping.ipynb",
+    "docs/web/en/user_guide/tutorials/case_arima_burst_search.ipynb",
+    "docs/web/en/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb",
+    "docs/web/en/user_guide/tutorials/case_bruco_advanced.ipynb",
+    "docs/web/en/user_guide/tutorials/case_bruco_ica_denoising.ipynb",
+    "docs/web/en/user_guide/tutorials/case_calibration_pipeline.ipynb",
+    "docs/web/en/user_guide/tutorials/case_coupling_analysis.ipynb",
+    "docs/web/en/user_guide/tutorials/case_dttxml_calibration.ipynb",
+    "docs/web/en/user_guide/tutorials/case_finesse_optics.ipynb",
+    "docs/web/en/user_guide/tutorials/case_gbd_format.ipynb",
+    "docs/web/en/user_guide/tutorials/case_glitch_analysis.ipynb",
+    "docs/web/en/user_guide/tutorials/case_hdf5_provenance.ipynb",
+    "docs/web/en/user_guide/tutorials/case_ml_preprocessing.ipynb",
+    "docs/web/en/user_guide/tutorials/case_noise_budget.ipynb",
+    "docs/web/en/user_guide/tutorials/case_physics_validation.ipynb",
+    "docs/web/en/user_guide/tutorials/case_pycbc_search.ipynb",
+    "docs/web/en/user_guide/tutorials/case_schumann_resonance.ipynb",
+    "docs/web/en/user_guide/tutorials/case_segment_analysis.ipynb",
+    "docs/web/en/user_guide/tutorials/case_seismic_obspy.ipynb",
+    "docs/web/en/user_guide/tutorials/case_signal_extraction.ipynb",
+    "docs/web/en/user_guide/tutorials/case_transfer_function.ipynb",
+    "docs/web/en/user_guide/tutorials/case_violin_mode.ipynb",
+    "docs/web/en/user_guide/tutorials/case_wiener_filter.ipynb",
+    "docs/web/en/user_guide/tutorials/field_advanced_workflow.ipynb",
+    "docs/web/en/user_guide/tutorials/field_scalar_intro.ipynb",
+    "docs/web/en/user_guide/tutorials/intro_fitting.ipynb",
+    "docs/web/en/user_guide/tutorials/intro_frequencyseries.ipynb",
+    "docs/web/en/user_guide/tutorials/intro_histogram.ipynb",
+    "docs/web/en/user_guide/tutorials/intro_interop.ipynb",
+    "docs/web/en/user_guide/tutorials/intro_mapplotting.ipynb",
+    "docs/web/en/user_guide/tutorials/intro_noise.ipynb",
+    "docs/web/en/user_guide/tutorials/intro_plotting.ipynb",
+    "docs/web/en/user_guide/tutorials/intro_segment_table.ipynb",
+    "docs/web/en/user_guide/tutorials/intro_spectrogram.ipynb",
+    "docs/web/en/user_guide/tutorials/intro_table.ipynb",
+    "docs/web/en/user_guide/tutorials/intro_timeseries.ipynb",
+    "docs/web/en/user_guide/tutorials/matrix_frequencyseries.ipynb",
+    "docs/web/en/user_guide/tutorials/matrix_spectrogram.ipynb",
+    "docs/web/en/user_guide/tutorials/matrix_timeseries.ipynb",
+    "docs/web/en/user_guide/tutorials/rayleigh_gauch_tutorial.ipynb",
+    "docs/web/en/user_guide/tutorials/segment_asd_pipeline.ipynb",
+    "docs/web/en/user_guide/tutorials/segment_visualization.ipynb",
+    "docs/web/en/user_guide/tutorials/time_frequency_analysis_comparison.ipynb",
+    "docs_redesign/README.md",
+    "docs_redesign/_static/custom.css",
+    "docs_redesign/_static/downloads/commissioner.py",
+    "docs_redesign/_static/downloads/commissioner.xml",
+    "docs_redesign/_static/downloads/quickstart.py",
+    "docs_redesign/_static/images/quickstart-asd.png",
+    "docs_redesign/_templates/build-status.html",
+    "docs_redesign/_templates/case-status.html",
+    "docs_redesign/_templates/layout.html",
+    "docs_redesign/_templates/search.html",
+    "docs_redesign/about/developer.md",
+    "docs_redesign/about/documentation_version.md",
+    "docs_redesign/about/index.md",
+    "docs_redesign/about/known_limitations.md",
+    "docs_redesign/case_studies.json",
+    "docs_redesign/conf.py",
+    "docs_redesign/explanation/gwexpy_for_gwpy_users.md",
+    "docs_redesign/how-to/case-studies/case_active_damping.ipynb",
+    "docs_redesign/how-to/case-studies/case_arima_burst_search.ipynb",
+    "docs_redesign/how-to/case-studies/case_bootstrap_gls_fitting.ipynb",
+    "docs_redesign/how-to/case-studies/case_bruco_advanced.ipynb",
+    "docs_redesign/how-to/case-studies/case_bruco_ica_denoising.ipynb",
+    "docs_redesign/how-to/case-studies/case_calibration_pipeline.ipynb",
+    "docs_redesign/how-to/case-studies/case_dttxml_calibration.ipynb",
+    "docs_redesign/how-to/case-studies/case_finesse_optics.ipynb",
+    "docs_redesign/how-to/case-studies/case_gbd_format.ipynb",
+    "docs_redesign/how-to/case-studies/case_glitch_analysis.ipynb",
+    "docs_redesign/how-to/case-studies/case_hdf5_provenance.ipynb",
+    "docs_redesign/how-to/case-studies/case_ml_preprocessing.ipynb",
+    "docs_redesign/how-to/case-studies/case_noise_budget.ipynb",
+    "docs_redesign/how-to/case-studies/case_physics_validation.ipynb",
+    "docs_redesign/how-to/case-studies/case_pycbc_search.ipynb",
+    "docs_redesign/how-to/case-studies/case_schumann_resonance.ipynb",
+    "docs_redesign/how-to/case-studies/case_segment_analysis.ipynb",
+    "docs_redesign/how-to/case-studies/case_seismic_obspy.ipynb",
+    "docs_redesign/how-to/case-studies/case_transfer_function.ipynb",
+    "docs_redesign/how-to/case-studies/case_violin_mode.ipynb",
+    "docs_redesign/how-to/case-studies/case_wiener_filter.ipynb",
+    "docs_redesign/how-to/case-studies/index.md",
+    "docs_redesign/how-to/containers/field_advanced_workflow.ipynb",
+    "docs_redesign/how-to/containers/field_scalar_intro.ipynb",
+    "docs_redesign/how-to/containers/intro_histogram.ipynb",
+    "docs_redesign/how-to/containers/matrix_frequencyseries.ipynb",
+    "docs_redesign/how-to/containers/matrix_spectrogram.ipynb",
+    "docs_redesign/how-to/control/advanced_modal_analysis.ipynb",
+    "docs_redesign/how-to/coupling/advanced_bruco.ipynb",
+    "docs_redesign/how-to/coupling/advanced_coupling.ipynb",
+    "docs_redesign/how-to/coupling/advanced_field_analysis.ipynb",
+    "docs_redesign/how-to/fitting/advanced_correlation.ipynb",
+    "docs_redesign/how-to/fitting/advanced_decomposition.ipynb",
+    "docs_redesign/how-to/fitting/advanced_fitting.ipynb",
+    "docs_redesign/how-to/fitting/rayleigh_gauch_tutorial.ipynb",
+    "docs_redesign/how-to/interop.md",
+    "docs_redesign/how-to/interop/intro_interop.ipynb",
+    "docs_redesign/how-to/io_formats.md",
+    "docs_redesign/how-to/segments/intro_segment_table.ipynb",
+    "docs_redesign/how-to/segments/intro_table.ipynb",
+    "docs_redesign/how-to/segments/segment_asd_pipeline.ipynb",
+    "docs_redesign/how-to/segments/segment_visualization.ipynb",
+    "docs_redesign/how-to/spectral/advanced_hht.ipynb",
+    "docs_redesign/how-to/spectral/advanced_peak_detection.ipynb",
+    "docs_redesign/how-to/spectral/advanced_peak_tracking.ipynb",
+    "docs_redesign/how-to/spectral/advanced_spectrogram_processing.ipynb",
+    "docs_redesign/how-to/spectral/time_frequency_analysis_comparison.ipynb",
+    "docs_redesign/how-to/viz/intro_mapplotting.ipynb",
+    "docs_redesign/index.md",
+    "docs_redesign/locales/ja/LC_MESSAGES/about/developer.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/about/documentation_version.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/about/index.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/about/known_limitations.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/explanation/gwexpy_for_gwpy_users.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/how-to/case-studies/case_noise_budget.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/how-to/case-studies/case_wiener_filter.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/how-to/case-studies/index.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/how-to/interop.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/how-to/io_formats.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/index.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/reference/index.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/reference/interop_capabilities.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/reference/io_capabilities.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/tutorials/commissioner.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/tutorials/first_analysis.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/tutorials/getting_started.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/tutorials/index.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/tutorials/intro_noise.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/tutorials/intro_timeseries.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/tutorials/quickstart.po",
+    "docs_redesign/locales/ja/LC_MESSAGES/tutorials/scientific_python.po",
+    "docs_redesign/reference/index.md",
+    "docs_redesign/reference/interop_capabilities.md",
+    "docs_redesign/reference/io_capabilities.md",
+    "docs_redesign/release_status.json",
+    "docs_redesign/tutorials/commissioner.md",
+    "docs_redesign/tutorials/first_analysis.md",
+    "docs_redesign/tutorials/getting_started.md",
+    "docs_redesign/tutorials/index.md",
+    "docs_redesign/tutorials/installation.md",
+    "docs_redesign/tutorials/intro_fitting.ipynb",
+    "docs_redesign/tutorials/intro_frequencyseries.ipynb",
+    "docs_redesign/tutorials/intro_noise.ipynb",
+    "docs_redesign/tutorials/intro_plotting.ipynb",
+    "docs_redesign/tutorials/intro_spectrogram.ipynb",
+    "docs_redesign/tutorials/intro_timeseries.ipynb",
+    "docs_redesign/tutorials/matrix_timeseries.ipynb",
+    "docs_redesign/tutorials/quickstart.md",
+    "docs_redesign/tutorials/scientific_python.md",
+    "scripts/check_public_docs.py",
+    "scripts/prepare_public_docs.py",
+    "scripts/verify_public_examples.py",
+    "tests/docs/test_docs_conf_runtime.py",
+    "tests/docs/test_docs_redesign_public_content.py",
+    "tests/docs/test_public_docs_pipeline.py",
+    "tests/docs/test_tutorial_notebook_quality.py",
+    "tests/docs/test_v0113_public_release_facts.py",
+    "tests/io/test_io_docs_contract_sync.py"
+  ]
+}

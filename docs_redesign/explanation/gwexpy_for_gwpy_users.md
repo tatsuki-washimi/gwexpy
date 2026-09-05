@@ -15,6 +15,8 @@ exception, `non_intersecting_window_safety`, covers a completely disjoint HDF5
 read window and must satisfy every policy gate; it does not authorize broader
 divergence.
 
+Check the [documentation version](../about/documentation_version.md) against your installed package and read [Known limitations](../about/known_limitations.md) before migrating. The recipes below assume your existing inputs, such as `cache` and `channels`. For a complete synthetic example that needs no external data, run the [Quickstart](../tutorials/quickstart.md).
+
 ## What to lock in first
 
 - **Single-channel workflows are often still familiar.**
@@ -26,7 +28,7 @@ divergence.
 - **Some external-library calls move onto the data object itself.**
   Representative examples are `.find_peaks()`, `.fit()`, `.hht()`, and `.arima()`.
 - **Direct I/O and interop have their own guides.**
-  Treat [File I/O Supported Formats Guide](../how-to/io_formats.md) as the source of truth for `read(..., format=...)` / `write(..., format=...)`, and [Interop / Conversion Guide](../how-to/interop.md) as the source of truth for `to_*()` / `from_*()` conversions.
+  Treat [File I/O Supported Formats Guide](../reference/io_capabilities.md) as the source of truth for `read(..., format=...)` / `write(..., format=...)`, and [Interop / Conversion Guide](../reference/interop_capabilities.md) as the source of truth for `to_*()` / `from_*()` conversions.
 
 ## Where migration usually pays off first
 
@@ -294,7 +296,7 @@ This difference matters when:
 
 Related pages:
 
-- [Interop / Conversion Guide](../how-to/interop.md)
+- [Interop / Conversion Guide](../reference/interop_capabilities.md)
 - [python-control API Reference](../reference/api/gwexpy.interop.control_)
 - [Active Damping Tutorial](../how-to/case-studies/case_active_damping)
 - [Frequency Series Tutorial](../tutorials/intro_frequencyseries)
@@ -317,14 +319,14 @@ leaves out of scope, see
 This page intentionally does not duplicate the I/O-format list or the external-library conversion list.  
 Use the dedicated guides below as the source of truth:
 
-- Direct I/O: [File I/O Supported Formats Guide](../how-to/io_formats.md)
-- External-library conversion: [Interop / Conversion Guide](../how-to/interop.md)
+- Direct I/O: [File I/O Supported Formats Guide](../reference/io_capabilities.md)
+- External-library conversion: [Interop / Conversion Guide](../reference/interop_capabilities.md)
 
 ## Next Steps
 
 - [GWpy Difference API Index](../reference/gwpy_added_api.md) - look up added APIs from a difference-oriented view
 - [Field API Intro](../how-to/containers/field_scalar_intro) - see how `ScalarField`, `FieldList`, and `FieldDict` fit together
 - [Tutorial Index](../tutorials/index.md) - move from migration recipes into worked examples
-- [File I/O Supported Formats Guide](../how-to/io_formats.md) - check supported read/write formats
-- [Interop / Conversion Guide](../how-to/interop.md) - check bridges to external libraries
+- [File I/O Supported Formats Guide](../reference/io_capabilities.md) - check supported read/write formats
+- [Interop / Conversion Guide](../reference/interop_capabilities.md) - check bridges to external libraries
 - [API Reference](../reference/index.md) - inspect the full API surface

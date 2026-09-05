@@ -654,7 +654,6 @@ def test_advanced_arima_notebooks_are_tagged_ci_heavy():
         Path("en/user_guide/tutorials/case_transfer_function.ipynb"),
         Path("en/user_guide/tutorials/intro_interop.ipynb"),
         Path("en/user_guide/tutorials/intro_plotting.ipynb"),
-        Path("en/user_guide/tutorials/intro_timeseries.ipynb"),
         Path("en/user_guide/tutorials/matrix_frequencyseries.ipynb"),
         Path("en/user_guide/tutorials/matrix_spectrogram.ipynb"),
         Path("en/user_guide/tutorials/matrix_timeseries.ipynb"),
@@ -898,3 +897,8 @@ def test_calibration_notebook_formats_a_scalar_rms(path: Path):
 
     assert "ts_raw.rms().value" not in source
     assert "np.sqrt(np.mean(ts_raw.value**2))" in source
+
+
+def test_short_timeseries_lesson_is_lightweight():
+    nb = _read_tutorial_notebook(Path("en/user_guide/tutorials/intro_timeseries.ipynb"))
+    assert "ci-light" in nb["cells"][0]["metadata"]["tags"]

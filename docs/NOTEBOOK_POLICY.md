@@ -108,3 +108,14 @@ under the project policy.
 - [ ] 依存ライブラリが `docs/requirements.txt` または `pyproject.toml` に含まれているか？
 - [ ] `display-only` の場合、changed-notebook CI から除外してよい理由と retained output の必要性を確認したか？
 - [ ] 解析手順に物理的判断が含まれる場合、コードコメントが `notebook_physics_comment_rubric.md` を満たしているか？
+
+## Public redesigned site (September 2026)
+
+The public site uses `docs_redesign` and MyST-NB, not the legacy nbsphinx path
+above. Its executable notebook cells are derived from the canonical EN notebooks
+by `scripts/prepare_public_docs.py`. Public English narrative and gettext
+identities remain in `docs_redesign`; Japanese public prose uses its gettext
+catalogs. The preparation step rejects unmatched code-cell counts and records
+the canonical mapping. This preserves one authoritative execution source while
+keeping the two presentation systems distinct. Run both source and rendered-link
+checks when changing lesson structure.

@@ -45,7 +45,11 @@ def test_docs_redesign_executes_clean_notebooks_in_an_untracked_cache(monkeypatc
     spec.loader.exec_module(conf)
 
     assert conf.nb_execution_mode == "cache"
-    assert conf.nb_execution_cache_path == "_build/jupyter-cache"
+    cache = Path(conf.nb_execution_cache_path)
+    assert cache.parent == REDESIGN_CONF_PATH.parent / "_build/jupyter-cache"
+    assert len(cache.name) == 16
+    assert conf._execution_environment["python"]
+    assert conf._execution_environment["source_revision"]
     assert conf.nb_execution_timeout == 600
     assert conf.nb_execution_allow_errors is False
     assert conf.nb_execution_raise_on_error is True
@@ -137,7 +141,7 @@ def test_docs_redesign_pr_workflow_stages_the_canonical_changelog():
     prepare = steps_by_name["Prepare isolated docs_redesign source"]
 
     assert 'mkdir -p "${docs_root}"' in prepare["run"]
-    assert 'cp CHANGELOG.md "${docs_root}/CHANGELOG.md"' in prepare["run"]
+    assert 'python scripts/prepare_public_docs.py "${docs_src}"' in prepare["run"]
 
 
 def test_docs_pages_workflow_builds_docs_redesign_with_executed_notebook_outputs():
@@ -156,9 +160,9 @@ def test_docs_pages_workflow_builds_docs_redesign_with_executed_notebook_outputs
     en_build = steps_by_name["Build EN HTML"]
     ja_build = steps_by_name["Build JA HTML"]
 
-    assert 'rsync -a --delete --exclude "_build/" docs_redesign/' in prepare["run"]
+    assert 'python scripts/prepare_public_docs.py "${docs_src}"' in prepare["run"]
     assert 'mkdir -p "${docs_root}"' in prepare["run"]
-    assert 'cp CHANGELOG.md "${docs_root}/CHANGELOG.md"' in prepare["run"]
+    assert 'python scripts/prepare_public_docs.py "${docs_src}"' in prepare["run"]
     assert 'python -m pip install -e ".[all]"' in provision["run"]
     assert "prepare_docs_redesign.outputs.docs_src" in en_build["run"]
     assert "prepare_docs_redesign.outputs.docs_src" in ja_build["run"]
@@ -180,4 +184,4 @@ def test_docs_preview_workflow_rebuilds_when_the_canonical_changelog_changes():
     }
     prepare = steps_by_name["Prepare isolated docs_redesign source"]
     assert 'mkdir -p "${docs_root}"' in prepare["run"]
-    assert 'cp CHANGELOG.md "${docs_root}/CHANGELOG.md"' in prepare["run"]
+    assert 'python scripts/prepare_public_docs.py "${docs_src}"' in prepare["run"]

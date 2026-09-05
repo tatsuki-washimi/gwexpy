@@ -3,385 +3,153 @@
 # This file is distributed under the same license as the GWexpy package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GWexpy\n"
+"Project-Id-Version: GWexpy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-04 07:52+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: ja <LL@li.org>\n"
+"POT-Creation-Date: 2026-09-05 15:55+0900\n"
+"PO-Revision-Date: 2026-09-05 00:00+0000\n"
+"Last-Translator: GWexpy Developers\n"
 "Language: ja\n"
+"Language-Team: Japanese\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:10002
-#: 93464d0328f241a5878be1849ab86dd3
+#: ../docs_redesign/tutorials/intro_timeseries.ipynb:10002
+#: ea6c8a2cfabb4739998221b36040b9ca
 msgid "TimeSeries: Basics"
 msgstr "TimeSeries: 基本"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:10004
-#: de30897210bc48a093f7cc1160d09de8
+#: ../docs_redesign/tutorials/intro_timeseries.ipynb:10004
+#: 90e9f1dff3b34ba9b6a77d6246ff29e4
 msgid ""
-"This notebook introduces the new methods added to the `TimeSeries` class in "
-"`gwexpy`, an extension of `gwpy`, and explains how to use them."
+"Create a voltage signal, inspect its metadata, select an interval, and save "
+"a plot. Prerequisites: the [Quickstart](quickstart.md). No optional analysis"
+" packages or external data are needed. Allow about 15 minutes to read and "
+"run the lesson."
 msgstr ""
-"このノートブックでは、`gwpy` を拡張した `gwexpy` の `TimeSeries` "
-"クラスに追加された新しいメソッドとその使い方を解説します。"
+"電圧信号を作成し、メタデータを確認し、時間区間を選択してプロットを保存します。前提知識は[クイックスタート](quickstart.md)です。追加の解析パッケージや外部データは不要です。説明を読んで実行する所要時間の目安は約"
+" 15 分です。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:10006
-#: 7762155ec5f842c3af67bfea49c5f387
+#: ../docs_redesign/tutorials/intro_timeseries.ipynb:10008
+#: 5a33691ac70e46c397e2e3b505e9dcdc
+msgid "1. Create a signal"
+msgstr "1\\. 信号の作成"
+
+#: ../docs_redesign/tutorials/intro_timeseries.ipynb:10010
+#: 631995539e9c4f63a6710ef7d404ddfa
 msgid ""
-"`gwexpy` maintains high compatibility with GWpy while significantly "
-"enhancing signal processing, statistical analysis, and interoperability with"
-" other libraries."
-msgstr "`gwexpy` は GWpy との高い互換性を維持しつつ、信号処理、統計解析、他ライブラリとの相互運用性を大幅に強化しています。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:10008
-#: d317d69be9b7418ea2914d0b70f26ada
-msgid "Table of Contents"
-msgstr "目次"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:10009
-#: 3710598b55704983bd8fc33754b19c2d
-msgid "Environment Setup"
-msgstr "環境セットアップ"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:10010
-#: 46f60498df5543498f0e2148b5ba0476
-msgid "Signal Processing and Demodulation (Hilbert, Phase, Demodulation)"
-msgstr "信号処理と復調 (Hilbert, Phase, Demodulation)"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:10011
-#: 632a5bf4cef44b6d8eb17bd3043b9807
-msgid "Spectral Analysis and Correlation (FFT, Transfer Function, xcorr)"
-msgstr "スペクトル解析と相関 (FFT, Transfer Function, xcorr)"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:10012
-#: 593f9eddc0e04e65a908d38c43d35a1f
-msgid "Hilbert-Huang Transform (HHT)"
-msgstr "ヒルベルト・ファン変換 (HHT)"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:10013
-#: 96403c751961423597e92154f269dc25
-msgid ""
-"Statistics and Preprocessing (Impute, Standardize, ARIMA, Hurst, Rolling)"
-msgstr "統計・前処理 (Impute, Standardize, ARIMA, Hurst, Rolling)"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:10014
-#: 86285a1e4c9340da93674aafdf615fab
-msgid "Resampling and Reindexing (asfreq, resample)"
-msgstr "リサンプリングと再インデックス (asfreq, resample)"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:10015
-#: 4275d572580b4c19ac3f56180f6a715f
-msgid "Function Fitting (fit)"
-msgstr "関数によるフィッティング (fit)"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:10016
-#: 03d488faf07b4e9ba631b84997964237
-msgid "Interoperability (Pandas, Xarray, Torch, and more)"
-msgstr "相互運用性 (Pandas, Xarray, Torch, and more)"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:20002
-#: e30c26ca153e4bd9aa652feeb1a40156
-msgid "1. Environment Setup"
-msgstr "1\\. 環境セットアップ"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:20004
-#: 555f48520fd6453a8959b80f6251c275
-msgid ""
-"First, we import the necessary libraries and generate sample data for "
-"demonstration."
-msgstr "まずは必要なライブラリをインポートし、デモ用のサンプルデータを生成します。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:40002
-#: 48e77c0432324792800d73983d1f755a
-msgid "2. Signal Processing and Demodulation"
-msgstr "2\\. 信号処理と復調"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:40004
-#: 2b16700c34594411af22a2021db7f7ea
-msgid ""
-"`gwexpy` integrates Hilbert transforms, envelope calculations, instantaneous"
-" frequency computation, and demodulation functions like lock-in amplifiers."
-msgstr "`gwexpy` では、ヒルベルト変換や包絡線、瞬時周波数の計算、さらにロックインアンプのような復調機能が統合されています。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:50002
-#: 8bfe9d18901f4ab18127878458038e6d
-msgid "Hilbert Transform and Envelope"
-msgstr "ヒルベルト変換と包絡線"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:50004
-#: 58009e1aeb294adf82b521416ddf63a1
-msgid "Use `hilbert` and `envelope`."
-msgstr "`hilbert` と `envelope` を使用します。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:70002
-#: 06f368dc2bfc46639a175337d26a7d3e
-msgid "Instantaneous Phase and Instantaneous Frequency"
-msgstr "瞬時位相と瞬時周波数"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:70004
-#: 8af11f709b324502a6aa806f8404a337
-msgid ""
-"Use `instantaneous_phase` and `instantaneous_frequency`. You can specify "
-"phase unwrapping (`unwrap`) and degree units (`deg`)."
+"This is the same 40 Hz tone and seeded sensor noise used in the Quickstart. "
+"A `TimeSeries` keeps sample values together with their unit, start time, and"
+" cadence."
 msgstr ""
-"`instantaneous_phase` と `instantaneous_frequency` を使用します。位相のアンラップ (`unwrap`)"
-" や度の単位 (`deg`) も指定可能です。"
+"クイックスタートと同じ 40 Hz の正弦波と、乱数シードを固定したセンサーノイズを使います。`TimeSeries` "
+"はサンプル値に加えて、単位、開始時刻、サンプリング間隔を保持します。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:90002
-#: ffad0798a43541a88eecd34a7e533c2e
-msgid "Mixing and Demodulation (Mix-down, Baseband, Lock-in)"
-msgstr "混合と復調 (Mix-down, Baseband, Lock-in)"
+#: ../docs_redesign/tutorials/intro_timeseries.ipynb:30002
+#: 00ed2dababb04d4f8f11b34b8fa96426
+msgid "2. Inspect values and metadata"
+msgstr "2\\. 値とメタデータの確認"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:90004
-#: 8ac7eacbc66f43d1855f95ebc51c35d5
+#: ../docs_redesign/tutorials/intro_timeseries.ipynb:30004
+#: 61ee8dcd8f234af6bff050234768b1bb
 msgid ""
-"Functions for extracting specific frequency components or bringing them down"
-" to baseband."
-msgstr "特定の周波数成分を抽出したり、直流成分へ落とし込むための機能です。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:110002
-#: 7551327d6ee049c583e6f3a4fd9a8eb1
-msgid "3. Spectral Analysis and Correlation"
-msgstr "3\\. スペクトル解析と相関"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:110004
-#: cb6824e2592446d681774af90e243ed8
-msgid ""
-"While inheriting GWpy's functionality, `mode=\"transient\"` FFT for "
-"transient signals and transfer function calculation via direct FFT ratio "
-"have been added."
+"`value` contains an array of sample values; `unit`, `t0`, and `sample_rate` "
+"explain what those numbers mean. `dt` is the time between samples. Keep "
+"these attributes when exporting values to another tool."
 msgstr ""
-"GWpy の機能を継承しつつ、過渡信号向けの `mode=\"transient\"` FFT と、FFT 比を直接とる伝達関数計算が追加されています。"
+"`value` はサンプル値の配列を保持し、`unit`、`t0`、`sample_rate` はその値の意味を表します。`dt` "
+"はサンプル間の時間間隔です。別のツールへ値を出力する場合は、これらの属性も保持してください。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:120002
-#: 042a99803ded438fa244eb215fb239b0
-msgid "Extended FFT"
-msgstr "拡張された FFT"
+#: ../docs_redesign/tutorials/intro_timeseries.ipynb:50002
+#: 99a105e830144565babfc089c59d5e3c
+msgid "3. Select an interval"
+msgstr "3\\. 時間区間の選択"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:120004
-#: 1e3b134945534449be9f4de85f67f4ca
+#: ../docs_redesign/tutorials/intro_timeseries.ipynb:50004
+#: 628d937bc37a490a9121fbf21f8d03f4
 msgid ""
-"Using `mode=\"transient\"` enables zero-padding, adjustment to fast lengths,"
-" and individual left/right padding specifications."
-msgstr "`mode=\"transient\"` を使うと、ゼロパディング、高速長への調整、左右個別のパディング指定が可能になります。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:140002
-#: e7d5504cb5734bcdaf0385396e8554b7
-msgid "Transfer Function and Cross-Correlation (xcorr)"
-msgstr "伝達関数 (Transfer Function) と相互相関 (xcorr)"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:140004
-#: 2d2651df6e3f45a78e714d4b8264dcf6
-msgid ""
-"With `transfer_function`, you can choose not only the Welch method "
-"(`mode=\"steady\"`) but also direct FFT ratio (`mode=\"transient\"`)."
+"The interval starts at 2 seconds and ends just before 4 seconds. Assign the "
+"returned series to a new name so the full input remains available. For a "
+"`TimeSeriesDict`, use `channels.copy().crop(...)` to preserve the "
+"collection."
 msgstr ""
-"`transfer_function` では、Welch 法（`mode=\"steady\"`）だけでなく、FFT "
-"比を直接とる方法（`mode=\"transient\"`）も選択できます。"
+"区間は 2 秒から始まり、4 "
+"秒の直前までを含みます。元のデータ全体を保持するため、戻り値の時系列を別の名前に代入します。`TimeSeriesDict` "
+"のコレクションを保持する場合は、`channels.copy().crop(...)` を使ってください。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:160002
-#: 6da6fa710e95491d83dc6279b74233aa
-msgid "STLT (Short-Time Laplace Transform)"
-msgstr "STLT (Short-Time Laplace Transform)"
+#: ../docs_redesign/tutorials/intro_timeseries.ipynb:70002
+#: 18457997d28b471dba4f4c54d167fe66
+msgid "4. Plot and save"
+msgstr "4\\. プロットと保存"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:160004
-#: fdeb6caa29fe4d4fb6332cd087845334
+#: ../docs_redesign/tutorials/intro_timeseries.ipynb:70004
+#: f33cd72acbca4ae9a7b861fe31526691
 msgid ""
-"STLT (Short-Time Laplace Transform) is a transform for extracting local "
-"structures that change over time in a signal."
-msgstr "STLT（短時間ラプラス変換）は、信号の中で時間とともに変化する局所構造を抽出するための変換です。"
+"A short interval makes individual oscillations visible. The plot labels the "
+"sample unit, and `savefig` writes a figure that can be used in a log or "
+"slide."
+msgstr "短い区間を表示すると、一つ一つの振動を確認できます。プロットにはサンプルの単位が表示され、`savefig` でログやスライドに使える図を保存できます。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:160006
-#: bcb1f4817e93485e860680ed9dc72545
+#: ../docs_redesign/tutorials/intro_timeseries.ipynb:90002
+#: b254daa0454b4c8d934cdbffa0611507
+msgid "5. Estimate an ASD"
+msgstr "5\\. ASD の推定"
+
+#: ../docs_redesign/tutorials/intro_timeseries.ipynb:90004
+#: 7ec554b743a643a2b7ce04d47e8db0d4
 msgid ""
-"In `gwexpy`, the STLT result is a 3D transform with axes **(time × sigma × "
-"frequency)**, represented by `TimePlaneTransform` / `LaplaceGram`."
+"Use the full 16-second record for averaging. Two-second Hann-windowed "
+"segments with one-second overlap give 0.5 Hz frequency bins. ASD is "
+"expressed in V per square root Hz; it is not the amplitude of an individual "
+"sine wave."
 msgstr ""
-"`gwexpy` では、STLT の結果は **(時間 × シグマ × 周波数)** を軸とする 3 "
-"次元変換で、`TimePlaneTransform` / `LaplaceGram` として表現されます。"
+"平均化には 16 秒間のデータ全体を使います。Hann 窓を適用した 2 秒の区間を 1 秒ずつ重ねると、周波数ビン幅は 0.5 Hz "
+"になります。ASD の単位は V/√Hz で、個々の正弦波の振幅を表すものではありません。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:160008
-#: ab30905005c1476b9acc7e75317cb6e5
+#: ../docs_redesign/tutorials/intro_timeseries.ipynb:110022
+#: 62ac5a9eed1943159586b264628f5db3
+msgid "Next lessons"
+msgstr "次の学習"
+
+#: ../docs_redesign/tutorials/intro_timeseries.ipynb:110024
+#: 5008f058acf8408dbb8c3e5991c5e9ba
 msgid ""
-"Below is an example of calculating STLT using the `stlt` method and "
-"extracting a slice (`Plane2D`) at a specific time. This example also "
-"demonstrates specifying `frequencies` (Hz) to evaluate STLT at arbitrary "
-"frequency points."
+"[Commissioner](commissioner.md): read channels, compare ASD and coherence, "
+"and save conditions."
+msgstr "[Commissioner](commissioner.md)：チャンネルの読み込み、ASD とコヒーレンスの比較、解析条件の保存。"
+
+#: ../docs_redesign/tutorials/intro_timeseries.ipynb:110025
+#: dbc93822f5a94c58abb5ddbf7ab60054
+msgid ""
+"[Noise generation](intro_noise.ipynb): create a spectral model and compare "
+"it with measured noise."
+msgstr "[ノイズ生成](intro_noise.ipynb)：スペクトルモデルの作成と、測定したノイズとの比較。"
+
+#: ../docs_redesign/tutorials/intro_timeseries.ipynb:110026
+#: 33306fb10b894767b32543fe007e997a
+msgid ""
+"[Spectral analysis](../how-to/spectral/index.md): time-frequency methods and"
+" peak detection."
+msgstr "[スペクトル解析](../how-to/spectral/index.md)：時間周波数解析とピーク検出。"
+
+#: ../docs_redesign/tutorials/intro_timeseries.ipynb:110027
+#: 18dd3280a88c4deb8d98c00bfbd2f45d
+msgid ""
+"[Lock-in detection](../how-to/case-studies/case_lockin_detection.ipynb): "
+"demodulation with known references."
+msgstr "[ロックイン検出](../how-to/case-studies/case_lockin_detection.ipynb)：既知の参照信号を使った復調。"
+
+#: ../docs_redesign/tutorials/intro_timeseries.ipynb:110028
+#: 71b1eff284644d9d97ffeeed61d555f3
+msgid ""
+"[HHT](../how-to/spectral/advanced_hht.ipynb), [ARIMA](../how-"
+"to/fitting/advanced_arima.ipynb), and [interoperability](../how-"
+"to/interop/intro_interop.ipynb) cover the former advanced sections."
 msgstr ""
-"以下は、`stlt` メソッドで STLT を計算し、特定時刻のスライス（`Plane2D`）を取り出す例です。この例では、任意の周波数点で STLT "
-"を評価するための `frequencies`（Hz）指定もあわせて示します。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:180002
-#: ab26839c45684f1593e2167ff4909585
-msgid "4. Hilbert-Huang Transform (HHT)"
-msgstr "4\\. ヒルベルト・ファン変換 (HHT)"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:180004
-#: 66a75a37baf24838bf4e7e6c53546041
-msgid ""
-"Hilbert-Huang Transform (HHT) functionality for nonlinear and non-stationary"
-" signal analysis. Combines Empirical Mode Decomposition (EMD) and Hilbert "
-"spectral analysis."
-msgstr ""
-"非線形・非定常な信号解析のためのヒルベルト・ファン変換 (HHT) 機能です。経験的モード分解 (EMD) "
-"とヒルベルトスペクトル解析を組み合わせています。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:200002
-#: 1607ca4496004efe8700347d245589c9
-msgid "5. Statistics and Preprocessing"
-msgstr "5\\. 統計・前処理"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:200004
-#: 2bfff6927e7b42cfac74fdacd8943512
-msgid ""
-"Missing value imputation, standardization, ARIMA models, Hurst exponent, and"
-" rolling statistics are available as TimeSeries methods."
-msgstr "欠損値補完、標準化、ARIMA モデル、ハースト指数、ローリング統計量が TimeSeries のメソッドとして利用できます。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:220002
-#: 68858d013c134e6b8874283652a47a3a
-msgid "Peak Detection (Find Peaks)"
-msgstr "ピーク検出 (Find Peaks)"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:220004
-#: e7737abda31b4a7ba7dea7787f6a8e8d
-msgid "Wraps `scipy.signal.find_peaks` to detect peaks in time series data."
-msgstr "`scipy.signal.find_peaks` をラップして、時系列データのピークを検出します。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:240002
-#: 133b2687cec44c268db0d73f00e04a66
-msgid "ARIMA Model and Hurst Exponent"
-msgstr "ARIMA モデルとハースト指数"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:240004
-#: d855e6cf70d94fcaafff923b350c3d3c
-msgid ""
-"Note: These features require libraries such as `statsmodels` and `hurst`."
-msgstr "注意: これらの機能には `statsmodels` や `hurst` などのライブラリが必要です。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:260002
-#: 6adf8ccba47a4bdfa55fb9da89658683
-msgid "Rolling Statistics"
-msgstr "ローリング統計量 (Rolling Statistics)"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:260004
-#: 43a49441690541c39d0702c5092becab
-msgid ""
-"Similar to Pandas, `rolling_mean`, `std`, `median`, `min`, `max` are "
-"available."
-msgstr "Pandas と同様に、`rolling_mean`・`std`・`median`・`min`・`max` が利用できます。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:280002
-#: 9762d3dc25f84162979b1932958f0719
-msgid "6. Resampling and Reindexing"
-msgstr "6\\. リサンプリングと再インデックス"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:280004
-#: 42bb10bc87db4e87a84d1334ed02abbd
-msgid ""
-"The `asfreq` method allows assignment to a fixed grid, and the `resample` "
-"method enables \"time bin aggregation\"."
-msgstr "`asfreq` メソッドで固定グリッドへの割り当てが、`resample` メソッドで「時間ビンごとの集約」ができます。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:310002
-#: 53b0513d50a44d0283c821571e083ed2
-msgid "7. Function Fitting"
-msgstr "7\\. 関数によるフィッティング"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:310004
-#: 51bb6f127365467cbc535013f33e2e5a
-msgid ""
-"`gwexpy` provides powerful fitting functionality based on `iminuit`. To "
-"avoid polluting GWpy's original classes, the `.fit()` method is opt-in."
-msgstr ""
-"`gwexpy` は `iminuit` ベースの強力なフィッティング機能を提供します。GWpy 本来のクラスを汚染しないよう、`.fit()` "
-"メソッドはオプトイン方式です。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:330002
-#: 64758469d10146f1868b33c4c9713f39
-msgid "8. Interoperability"
-msgstr "8\\. 相互運用性"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:330004
-#: b905a6b1bcdd4d53b4ca15ec8c22f347
-msgid ""
-"Interconversion with major data science and machine learning libraries is "
-"very smooth."
-msgstr "主要なデータサイエンス・機械学習ライブラリとの相互変換が非常にスムーズに行えます。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:390002
-#: e5247b0cd3b14003a8a86fe62182e3a0
-msgid "Summary"
-msgstr "まとめ"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:390004
-#: ffb027da90de4b09862ac2723ac1f110
-msgid ""
-"In this tutorial, we have covered the key enhancements in "
-"`gwexpy.TimeSeries`:"
-msgstr "このチュートリアルでは、`gwexpy.TimeSeries` の主要な拡張機能について学びました："
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:390006
-#: 30ce9e067649473086747435ccf22a94
-msgid ""
-"**Signal Processing**: Hilbert transform, demodulation, and extended FFT "
-"modes."
-msgstr "**信号処理**: Hilbert変換、復調、拡張FFTモード。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:390007
-#: fbc9e0797f6d47bba19bf51c6abce3c6
-msgid ""
-"**Statistics**: Advanced correlation methods (MIC, Distance Correlation) and"
-" ARIMA modeling."
-msgstr "**統計**: 高度な相関手法 (MIC, Distance Correlation) と ARIMA モデリング。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:390008
-#: 937277555a1d4029becc76377ba66b55
-msgid "**Data Cleaning**: Missing value imputation and standardization."
-msgstr "**データクリーニング**: 欠損値補完と標準化。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:390009
-#: dee54213955044d19b3de4633cd16526
-msgid ""
-"**Interoperability**: Seamless conversion to/from Pandas, Xarray, PyTorch, "
-"TensorFlow, and ObsPy."
-msgstr "**相互運用性**: Pandas, Xarray, PyTorch, TensorFlow, ObsPy とのシームレスな変換。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:390011
-#: 724fcc526ec0425f88f8d3ac916703e9
-msgid "Next Steps"
-msgstr "次のステップ"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:390013
-#: 1420385d41ad476dafc6b40d10bc35e5
-msgid ""
-"**Multichannel Data**: Learn about "
-"[TimeSeriesMatrix](matrix_timeseries.ipynb) for handling many channels "
-"simultaneously."
-msgstr ""
-"**多チャンネルデータ**: [TimeSeriesMatrix](matrix_timeseries.ipynb) "
-"で多数のチャンネルを一括処理する方法を学ぶ。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:390014
-#: 85e973a182c2423c88561d38d41d2ec0
-msgid ""
-"**Spectral Analysis**: Explore "
-"[FrequencySeries](intro_frequencyseries.ipynb)."
-msgstr "**スペクトル解析**: [FrequencySeries](intro_frequencyseries.ipynb) を詳しく見る。"
-
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/intro_timeseries.ipynb:390015
-#: 0535c54ba0484cb2940a989f71935df8
-msgid ""
-"**4D Fields**: Check out [ScalarField](../how-"
-"to/containers/field_scalar_intro.ipynb) for spacetime analysis."
-msgstr ""
-"**4次元フィールド**: 時空間解析には [ScalarField](../how-"
-"to/containers/field_scalar_intro.ipynb) を参照してください。"
+"従来の応用節に相当する内容は、[HHT](../how-to/spectral/advanced_hht.ipynb)、[ARIMA](../how-"
+"to/fitting/advanced_arima.ipynb)、[相互運用](../how-"
+"to/interop/intro_interop.ipynb)で扱います。"

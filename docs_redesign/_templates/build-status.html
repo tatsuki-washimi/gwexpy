@@ -1,0 +1,7 @@
+<div class="gwexpy-build-status" role="note" aria-label="{{ 'ドキュメントの版情報' if language == 'ja' else 'Documentation build information' }}">
+  <span>{{ '開発版ドキュメント' if language == 'ja' else 'Development documentation' }} · {{ release }}</span>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/{{ source_revision }}">{{ source_revision[:8] }}</a>{% if source_dirty %} ({{ 'ローカル変更あり' if language == 'ja' else 'local changes' }}){% endif %}
+  · {{ '入門例の検証対象' if language == 'ja' else 'Intro examples tested with' }} {{ intro_examples_release }}
+  · <a href="{{ pathto('about/documentation_version') }}">{{ '版情報' if language == 'ja' else 'Version details' }}</a>
+  · <a href="{{ pathto('about/known_limitations') }}">{{ '既知の制限' if language == 'ja' else 'Known limitations' }}</a>
+</div>

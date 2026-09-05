@@ -1,0 +1,351 @@
+# Japanese translations for GWexpy.
+# Copyright (C) 2026 GWexpy Developers
+# This file is distributed under the same license as the GWexpy project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 15:41+0900\n"
+"PO-Revision-Date: 2026-09-05 06:42+0000\n"
+"Last-Translator: GWexpy documentation contributors\n"
+"Language: ja\n"
+"Language-Team: Japanese\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../tutorials/first_analysis.md:1
+msgid "Your first analysis"
+msgstr "最初の解析"
+
+#: ../../tutorials/first_analysis.md:3
+msgid ""
+"Run Python code that generates two signals, then save a plot of the signals and a "
+"plot of their amplitude spectral densities (ASDs). This lesson assumes no Python or "
+"spectral-analysis knowledge. First complete [Installation](installation.md). Study "
+"goal: 20–30 minutes; the small synthetic dataset is intended to run locally within "
+"seconds, depending on your environment."
+msgstr ""
+"Python コードで 2 つの信号を生成し、時間波形と振幅スペクトル密度（ASD）の図を保存します。\n"
+"Python やスペクトル解析の知識は前提にしていません。\n"
+"先に[インストール](installation.md)を済ませてください。\n"
+"学習時間の目安は 20〜30 分です。\n"
+"小さな合成データを手元の環境で数秒程度で処理することを想定していますが、環境によって異なります。"
+
+#: ../../tutorials/first_analysis.md:7
+msgid ""
+"If you already work with detector channels and spectra, jump to [familiar concepts in"
+" Python](#for-gw-experimentalists), then run the same example."
+msgstr "検出器のチャンネルやスペクトルを扱っている方は、[Python と実験概念の対応](#for-gw-experimentalists)から同じ例を実行できます。"
+
+#: ../../tutorials/first_analysis.md:9
+msgid "Run Python in a file"
+msgstr "Python ファイルを実行する"
+
+#: ../../tutorials/first_analysis.md:11
+#, python-brace-format
+msgid ""
+"A Python script is a text file whose name ends in `.py`. Python executes its "
+"statements from top to bottom. Download {download}`quickstart.py "
+"<../_static/downloads/quickstart.py>` and save it in a new working folder. Open a "
+"terminal in that folder, activate the environment from the installation guide, and "
+"run:"
+msgstr ""
+"Python スクリプトは、名前が `.py` で終わるテキストファイルです。\n"
+"Python はその文を上から順に実行します。\n"
+"{download}`quickstart.py <../_static/downloads/quickstart.py>` "
+"をダウンロードして、新しい作業フォルダに保存してください。\n"
+"そのフォルダでターミナルを開き、インストールガイドの環境を有効にして、次を実行します。"
+
+#: ../../tutorials/first_analysis.md:20
+msgid ""
+"This command belongs in the terminal. The lines in `quickstart.py` are Python code. "
+"When the command finishes, open `asd.png` from the same folder with an image viewer. "
+"The [Quickstart](quickstart.md#read-the-result) shows the expected figure."
+msgstr ""
+"このコマンドはターミナルに入力します。\n"
+"`quickstart.py` の中にある行は Python コードです。\n"
+"実行が終わったら、同じフォルダの `asd.png` を画像ビューアで開いてください。\n"
+"[クイックスタート](quickstart.md#read-the-result)で期待される図を確認できます。"
+
+#: ../../tutorials/first_analysis.md:24
+msgid ""
+"A notebook provides another way to run Python: paste the script into a code cell and "
+"run it. Run later cells in order, because they use names created by earlier cells. "
+"The saved figure goes into the notebook's working directory."
+msgstr ""
+"ノートブックでも Python を実行できます。\n"
+"スクリプトをコードセルに貼り付けて実行してください。\n"
+"後のセルは先のセルで作った名前を使うため、順番に実行します。\n"
+"図はノートブックの作業ディレクトリに保存されます。"
+
+#: ../../tutorials/first_analysis.md:28
+msgid "Names, functions, and channels"
+msgstr "名前、関数、チャンネル"
+
+#: ../../tutorials/first_analysis.md:30
+msgid "Read the downloaded script alongside this explanation:"
+msgstr "ダウンロードしたスクリプトを、この説明と並べて読んでください。"
+
+#: ../../tutorials/first_analysis.md:38
+msgid ""
+"A line beginning with `from ... import ...` makes library tools available by name. An"
+" assignment such as `tone = sine(...)` calls a function and stores the returned "
+"object under the name `tone`. Parentheses contain the function's inputs: "
+"`frequency=40` asks for a 40 Hz sine wave. A variable can hold a number, text, or an "
+"object containing both measured values and metadata."
+msgstr ""
+"`from ... import ...` で始まる行は、ライブラリの道具を名前で使えるようにします。\n"
+"`tone = sine(...)` のような代入は、関数を呼び出し、返されたオブジェクトを `tone` という名前で保存します。\n"
+"括弧の中は関数への入力で、`frequency=40` は 40 Hz の正弦波を指定します。\n"
+"変数には数値、文字列、測定値とメタデータを含むオブジェクトなどを保存できます。"
+
+#: ../../tutorials/first_analysis.md:43
+msgid ""
+"The `settings` variable is a dictionary: a collection of names and values. Here it "
+"records a 16-second duration, a 512 Hz sample rate, a start time of zero, and volts "
+"as the unit. `**settings` passes these named values into each signal generator. All "
+"generated channels therefore use the same time axis and unit."
+msgstr ""
+"`settings` は、名前と値を組にした辞書です。\n"
+"ここでは長さ 16 秒、サンプルレート 512 Hz、開始時刻 0、単位 V を記録します。\n"
+"`**settings` は、名前付きの各値を信号生成関数に渡します。\n"
+"これにより、生成する全チャンネルの時間軸と単位が揃います。"
+
+#: ../../tutorials/first_analysis.md:48
+msgid ""
+"`sine(...)` produces a repeating oscillation. `gaussian(...)` produces random noise. "
+"The `seed` fixes the random sequence so that rerunning the script reproduces the same"
+" samples. The `+` operator adds the sine and noise sample by sample, making each "
+"simulated sensor signal."
+msgstr ""
+"`sine(...)` は繰り返す振動、`gaussian(...)` はランダムなノイズを生成します。\n"
+"`seed` で乱数列を固定すると、再実行時も同じサンプルを生成できます。\n"
+"`+` 演算子は正弦波とノイズをサンプルごとに足し、模擬センサー信号を作ります。"
+
+#: ../../tutorials/first_analysis.md:52
+msgid ""
+"A `TimeSeries` contains one channel's values, sampling information, start time, and "
+"unit. A `TimeSeriesDict` groups channels under names: `channels[\"Sensor A\"]` "
+"selects one channel. `channels.asd(...)` calculates an ASD for every channel and "
+"returns a collection of spectra. A dot, as in `channels.asd`, selects an operation or"
+" attribute belonging to that object."
+msgstr ""
+"`TimeSeries` は 1 チャンネルの値、サンプリング情報、開始時刻、単位を持ちます。\n"
+"`TimeSeriesDict` は名前ごとにチャンネルをまとめ、`channels[\"Sensor A\"]` で 1 つを選択できます。\n"
+"`channels.asd(...)` は全チャンネルの ASD を計算し、スペクトルのコレクションを返します。\n"
+"`channels.asd` のドットは、そのオブジェクトが持つ操作や属性を選択します。"
+
+#: ../../tutorials/first_analysis.md:57
+msgid "Plot the signal against time"
+msgstr "時間に対する信号を描く"
+
+#: ../../tutorials/first_analysis.md:59
+msgid "Append this code to the end of `quickstart.py`, then run `python quickstart.py` again:"
+msgstr "次のコードを `quickstart.py` の末尾に追加し、`python quickstart.py` をもう一度実行します。"
+
+#: ../../tutorials/first_analysis.md:69
+msgid ""
+"Open `timeseries.png`. Its horizontal axis represents time and its vertical axis "
+"shows voltage. You should see an oscillation mixed with noise, with larger "
+"fluctuations in Sensor B. `.crop(0, 1)` selects the interval from zero up to, but not"
+" including, one second. `.crop()` updates the collection it acts on. Here `.copy()` "
+"first creates another collection, so `channels` keeps the complete data."
+msgstr ""
+"`timeseries.png` を開いてください。\n"
+"横軸は時間、縦軸は電圧です。\n"
+"振動にノイズが重なり、Sensor B の変動が大きくなるはずです。\n"
+"`.crop(0, 1)` は 0 秒以上 1 秒未満の区間を選びます。\n"
+"`.crop()` は対象のコレクションを更新します。\n"
+"ここでは先に `.copy()` で別のコレクションを作るため、`channels` に全データが残ります。"
+
+#: ../../tutorials/first_analysis.md:74
+msgid ""
+"The two `print(...)` statements display the sample rate and unit in the terminal. "
+"They should report 512 Hz and V. These values travel with the channel; they are not "
+"only labels on a figure."
+msgstr ""
+"2 つの `print(...)` 文は、ターミナルにサンプルレートと単位を表示します。\n"
+"512 Hz と V が表示されるはずです。\n"
+"これらは図のラベルだけでなく、チャンネル自体が保持している値です。"
+
+#: ../../tutorials/first_analysis.md:77
+msgid "Read the ASD axes"
+msgstr "ASD の軸を読む"
+
+#: ../../tutorials/first_analysis.md:79
+msgid ""
+"An ASD describes fluctuation amplitude per square root of frequency bandwidth. Its "
+"horizontal axis is frequency in hertz (cycles per second); its vertical axis is volts"
+" per square root hertz. A tall feature near 40 Hz indicates the oscillation that "
+"appears in both channels. The surrounding broadband floor comes from the noise. "
+"Sensor B uses a larger noise standard deviation and has a higher floor."
+msgstr ""
+"ASD は、周波数帯域幅の平方根あたりの変動振幅を表します。\n"
+"横軸は周波数（Hz、1 秒あたりの周期数）、縦軸は V/√Hz です。\n"
+"40 Hz 付近の高いピークは、両チャンネルにある振動を示します。\n"
+"周囲の広帯域フロアはノイズによるものです。\n"
+"Sensor B はノイズの標準偏差が大きいため、フロアが高くなります。"
+
+#: ../../tutorials/first_analysis.md:84
+msgid ""
+"The script uses logarithmic spectral axes: equal distances represent equal ratios. "
+"For example, moving from 10 Hz to 100 Hz spans the same distance as moving from 1 Hz "
+"to 10 Hz. The time-series figure answers when a fluctuation happened; the ASD "
+"identifies its frequency content."
+msgstr ""
+"スクリプトのスペクトル軸は対数目盛です。\n"
+"等しい距離が等しい比率を表します。\n"
+"例えば 10 Hz から 100 Hz までと、1 Hz から 10 Hz までの距離は同じです。\n"
+"時間波形の図は変動がいつ起きたかを示し、ASD はその周波数成分を示します。"
+
+#: ../../tutorials/first_analysis.md:88
+msgid ""
+"The ASD estimate uses 2-second segments (`fftlength=2`), a Hann window, Welch "
+"averaging, and 1 second of overlap. The segment length gives a frequency-bin spacing "
+"of 1 / 2 = 0.5 Hz. Windowing reduces spectral leakage from segment boundaries; "
+"overlap reuses samples between adjacent segments. The ASD peak height depends on "
+"these settings, so do not read it as the original sine amplitude in volts."
+msgstr ""
+"ASD の推定には長さ 2 秒の区間（`fftlength=2`）、Hann 窓、Welch 平均、1 秒のオーバーラップを使います。\n"
+"区間長から、周波数ビンの間隔は 1 / 2 = 0.5 Hz になります。\n"
+"窓関数は区間境界によるスペクトル漏れを減らし、オーバーラップは隣り合う区間でサンプルを再利用します。\n"
+"ASD のピークの高さはこれらの設定に依存するため、元の正弦波の V 単位の振幅として読まないでください。"
+
+#: ../../tutorials/first_analysis.md:94
+msgid "Familiar concepts in Python"
+msgstr "Python と実験概念の対応"
+
+#: ../../tutorials/first_analysis.md:96
+msgid ""
+"This table connects detector-analysis terms to the runnable script above. If Python "
+"is new, the short sections on [running a file](#run-python-in-a-file) and [names and "
+"functions](#names-functions-and-channels) explain the syntax needed here."
+msgstr ""
+"検出器の解析で使う用語と、上の実行可能なスクリプトを対応付けます。\n"
+"Python が初めての方は、[ファイルの実行](#run-python-in-a-file)と[名前と関数](#names-functions-and-"
+"channels)で必要な構文を確認できます。"
+
+#: ../../tutorials/first_analysis.md:32
+msgid "Experimental concept"
+msgstr "実験での概念"
+
+#: ../../tutorials/first_analysis.md:32
+msgid "Python representation in this lesson"
+msgstr "このレッスンの Python 表現"
+
+#: ../../tutorials/first_analysis.md:32
+msgid "One channel with sampled values"
+msgstr "サンプル値を持つ 1 チャンネル"
+
+#: ../../tutorials/first_analysis.md:32
+msgid "A `TimeSeries` returned by `sine` or `gaussian`"
+msgstr "`sine` または `gaussian` が返す `TimeSeries`"
+
+#: ../../tutorials/first_analysis.md:32
+msgid "Channel list"
+msgstr "チャンネル一覧"
+
+#: ../../tutorials/first_analysis.md:32
+msgid "`TimeSeriesDict` with keys `\"Sensor A\"` and `\"Sensor B\"`"
+msgstr "`\"Sensor A\"` と `\"Sensor B\"` をキーに持つ `TimeSeriesDict`"
+
+#: ../../tutorials/first_analysis.md:32
+msgid "Sample rate and segment start"
+msgstr "サンプルレートと区間開始時刻"
+
+#: ../../tutorials/first_analysis.md:32
+msgid "`sample_rate=512` and `t0=0`"
+msgstr "`sample_rate=512` と `t0=0`"
+
+#: ../../tutorials/first_analysis.md:32
+msgid "Engineering unit"
+msgstr "工学単位"
+
+#: ../../tutorials/first_analysis.md:32
+msgid "`unit=\"V\"` attached to every channel"
+msgstr "各チャンネルに付ける `unit=\"V\"`"
+
+#: ../../tutorials/first_analysis.md:32
+msgid "Time selection"
+msgstr "時間選択"
+
+#: ../../tutorials/first_analysis.md:32
+msgid "`channels.copy().crop(0, 1)`"
+msgstr "`channels.copy().crop(0, 1)`"
+
+#: ../../tutorials/first_analysis.md:32
+msgid "FFT length and overlap"
+msgstr "FFT 長とオーバーラップ"
+
+#: ../../tutorials/first_analysis.md:32
+msgid "`fftlength=2`, `overlap=1`, both in seconds"
+msgstr ""
+"`fftlength=2` と `overlap=1`。\n"
+"いずれも秒単位"
+
+#: ../../tutorials/first_analysis.md:32
+msgid "ASD traces"
+msgstr "ASD トレース"
+
+#: ../../tutorials/first_analysis.md:32
+msgid "`channels.asd(...).plot()`"
+msgstr "`channels.asd(...).plot()`"
+
+#: ../../tutorials/first_analysis.md:32
+msgid "Save plot"
+msgstr "図の保存"
+
+#: ../../tutorials/first_analysis.md:32
+msgid "`plot.savefig(\"asd.png\")`"
+msgstr "`plot.savefig(\"asd.png\")`"
+
+#: ../../tutorials/first_analysis.md:110
+msgid ""
+"Here `t0=0` is a convenient synthetic origin. For recorded GW data, `t0` usually "
+"represents a GPS timestamp in seconds. Crop bounds use the same coordinate as the "
+"channel's start time; for a channel starting at GPS `t0`, select its first second "
+"with `.crop(t0, t0 + 1)`."
+msgstr ""
+"ここでは合成データの便宜的な原点として `t0=0` を使います。\n"
+"記録した GW データでは、通常 `t0` は秒単位の GPS 時刻を表します。\n"
+"切出し範囲はチャンネルの開始時刻と同じ座標を使います。\n"
+"GPS 時刻 `t0` に始まるチャンネルの最初の 1 秒は、`.crop(t0, t0 + 1)` で選択できます。"
+
+#: ../../tutorials/first_analysis.md:114
+msgid "Try a controlled change"
+msgstr "条件を 1 つずつ変える"
+
+#: ../../tutorials/first_analysis.md:116
+msgid ""
+"Change the sine frequency from 40 Hz to 70 Hz, rerun the file, and inspect `asd.png`."
+" The shared spectral feature should move to 70 Hz. Restore 40 Hz, then change only "
+"Sensor B's `std` from 0.8 to 0.3. The two broadband floors should become comparable, "
+"while the independently seeded noise traces remain different."
+msgstr ""
+"正弦波の周波数を 40 Hz から 70 Hz に変え、ファイルを再実行して `asd.png` を確認します。\n"
+"共通のスペクトルのピークが 70 Hz に移るはずです。\n"
+"40 Hz に戻し、Sensor B の `std` だけを 0.8 から 0.3 に変えます。\n"
+"広帯域フロアは同程度になりますが、シードが独立しているためノイズの線は一致しません。"
+
+#: ../../tutorials/first_analysis.md:121
+msgid "Further reading"
+msgstr "さらに読む"
+
+#: ../../tutorials/first_analysis.md:123
+msgid ""
+"[Commissioner workflow](commissioner.md): read saved channels and compare their ASD "
+"and coherence."
+msgstr "[Commissionerのワークフロー](commissioner.md)：保存チャンネルを読み、ASD とコヒーレンスを比較します。"
+
+#: ../../tutorials/first_analysis.md:124
+msgid "[TimeSeries basics](intro_timeseries.ipynb): practice more time-series operations."
+msgstr "[TimeSeries の基礎](intro_timeseries.ipynb)：時系列の操作を練習します。"
+
+#: ../../tutorials/first_analysis.md:125
+msgid "[Start Here](getting_started.md): choose another route."
+msgstr "[はじめに](getting_started.md)：別の学習経路を選びます。"

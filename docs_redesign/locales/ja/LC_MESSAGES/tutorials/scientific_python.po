@@ -1,0 +1,176 @@
+# Japanese translations for GWexpy.
+# Copyright (C) 2026 GWexpy Developers
+# This file is distributed under the same license as the GWexpy project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 15:41+0900\n"
+"PO-Revision-Date: 2026-09-05 06:42+0000\n"
+"Last-Translator: GWexpy documentation contributors\n"
+"Language: ja\n"
+"Language-Team: Japanese\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../tutorials/scientific_python.md:1
+msgid "From scientific Python to GWexpy"
+msgstr "科学技術計算の Python から GWexpy へ"
+
+#: ../../tutorials/scientific_python.md:3
+msgid ""
+"Turn NumPy arrays into objects that carry sampling, start time, and units, then "
+"analyze a dictionary of channels with one collection method. Prerequisites: NumPy "
+"arrays, Python dictionaries, and basic plotting; no GWpy knowledge is assumed. First "
+"complete [Installation](installation.md). The examples use core dependencies and "
+"synthetic data. Study goal: 10–15 minutes. The small examples are intended to execute"
+" within seconds on a laptop, depending on the environment."
+msgstr ""
+"NumPy 配列にサンプリング、開始時刻、単位を持たせ、チャンネルの辞書をコレクションのメソッドでまとめて解析します。\n"
+"前提知識は NumPy 配列、Python の辞書、基本的な描画です。\n"
+"GWpy の知識は必要ありません。\n"
+"先に[インストール](installation.md)を済ませてください。\n"
+"例は標準の依存パッケージと合成データを使います。\n"
+"学習時間の目安は 10〜15 分です。\n"
+"小さな例をノート PC で数秒程度で実行することを想定していますが、環境によって異なります。"
+
+#: ../../tutorials/scientific_python.md:8
+msgid ""
+"Run the Python blocks below in order in a notebook, or place them in a single `.py` "
+"file and run it with Python. They save figures in the current working directory."
+msgstr ""
+"以下の Python ブロックをノートブックで順番に実行するか、1 つの `.py` ファイルにまとめて Python で実行します。\n"
+"図は現在の作業ディレクトリに保存されます。"
+
+#: ../../tutorials/scientific_python.md:11
+msgid "Before: an array and separate metadata"
+msgstr "Before：配列と別々のメタデータ"
+
+#: ../../tutorials/scientific_python.md:13
+msgid ""
+"A NumPy array stores samples. A spectral calculation also needs the sample rate, "
+"while plot labels and time selection need units and a time origin. Here those pieces "
+"are separate variables:"
+msgstr ""
+"NumPy 配列はサンプル値を保存します。\n"
+"スペクトルの計算にはサンプルレート、軸ラベルや時間選択には単位と時刻原点も必要です。\n"
+"ここでは、それぞれを別の変数に保存しています。"
+
+#: ../../tutorials/scientific_python.md:39
+msgid ""
+"`welch` returns a power spectral density; its square root is the ASD plotted here. "
+"The code labels the plot explicitly because `values` itself carries no unit."
+msgstr ""
+"`welch` はパワースペクトル密度を返し、その平方根が図に示す ASD です。\n"
+"`values` 自体は単位を持たないため、図のラベルを明示しています。"
+
+#: ../../tutorials/scientific_python.md:42
+msgid "After: a TimeSeries"
+msgstr "After：TimeSeries"
+
+#: ../../tutorials/scientific_python.md:44
+msgid "Wrap the same samples with the metadata needed to interpret them:"
+msgstr "同じサンプルを、その解釈に必要なメタデータとともに包みます。"
+
+#: ../../tutorials/scientific_python.md:59
+msgid ""
+"The input array is the same. `series` now stores `sample_rate`, `t0`, and `unit`, and"
+" the returned spectrum carries its frequency axis and ASD unit. The printed frequency"
+" spacing is 0.5 Hz and the spectral unit is V per square root Hz. GWexpy's "
+"`fftlength` and `overlap` are durations in seconds; the corresponding SciPy `nperseg`"
+" and `noverlap` above are sample counts."
+msgstr ""
+"入力配列は同じです。\n"
+"`series` は `sample_rate`、`t0`、`unit` を保持し、返されたスペクトルには周波数軸と ASD の単位が付いています。\n"
+"表示される周波数間隔は 0.5 Hz、スペクトルの単位は V/√Hz です。\n"
+"GWexpy の `fftlength` と `overlap` は秒単位の長さです。\n"
+"上の SciPy の `nperseg` と `noverlap` は、それに対応するサンプル数を指定します。"
+
+#: ../../tutorials/scientific_python.md:63
+msgid ""
+"`t0` gives the GPS timestamp of the first sample. For example, `series.crop(t0 + 2, "
+"t0 + 6)` selects four seconds beginning two seconds after that timestamp. The sample "
+"at the right boundary is excluded."
+msgstr ""
+"`t0` は最初のサンプルの GPS 時刻です。\n"
+"例えば `series.crop(t0 + 2, t0 + 6)` は、その時刻の 2 秒後から 4 秒間を選択します。\n"
+"右端の境界にあるサンプルは含みません。"
+
+#: ../../tutorials/scientific_python.md:67
+msgid "Before: a dictionary and a spectral loop"
+msgstr "Before：辞書とスペクトル計算のループ"
+
+#: ../../tutorials/scientific_python.md:69
+msgid ""
+"A multi-channel NumPy workflow often keeps arrays in a dictionary and repeats the "
+"spectral calculation:"
+msgstr "NumPy で複数チャンネルを扱う場合、配列を辞書に保存し、スペクトル計算を繰り返すことがあります。"
+
+#: ../../tutorials/scientific_python.md:87
+msgid "After: a TimeSeriesDict"
+msgstr "After：TimeSeriesDict"
+
+#: ../../tutorials/scientific_python.md:89
+msgid ""
+"Attach metadata once when constructing each channel, then apply the spectral settings"
+" to the collection:"
+msgstr "各チャンネルを作るときにメタデータを付け、スペクトル設定をコレクションに適用します。"
+
+#: ../../tutorials/scientific_python.md:103
+msgid ""
+"`channels[\"Sensor A\"]` selects a `TimeSeries`; `spectra[\"Sensor A\"]` selects its "
+"`FrequencySeries`. The ASD figure should show the shared 40 Hz tone and the higher "
+"noise floor in Sensor B. All channels in this example have the same sample rate, "
+"start time, duration, and unit. When wrapping real arrays, supply the actual metadata"
+" for each channel."
+msgstr ""
+"`channels[\"Sensor A\"]` は `TimeSeries`、`spectra[\"Sensor A\"]` はその `FrequencySeries`"
+" を選択します。\n"
+"ASD の図には共通の 40 Hz の線が現れ、Sensor B のノイズフロアが高くなるはずです。\n"
+"この例の全チャンネルはサンプルレート、開始時刻、長さ、単位が共通です。\n"
+"実際の配列を包む際は、各チャンネルの実際のメタデータを指定してください。"
+
+#: ../../tutorials/scientific_python.md:108
+msgid ""
+"`.value` exposes the sample array for a function that expects NumPy. Pass time and "
+"unit information separately when that external function needs it. For conversions to "
+"other scientific objects, use the [interoperability guide](../how-to/interop.md)."
+msgstr ""
+"`.value` は NumPy を受け取る関数に渡せるサンプル配列を返します。\n"
+"外部関数が時刻や単位を必要とする場合は、それらも別途渡してください。\n"
+"他の科学技術計算オブジェクトへの変換は[相互運用ガイド](../how-to/interop.md)を参照してください。"
+
+#: ../../tutorials/scientific_python.md:112
+msgid "Continue from the collection"
+msgstr "コレクションから次の解析へ"
+
+#: ../../tutorials/scientific_python.md:114
+msgid ""
+"Use [TimeSeries basics](intro_timeseries.ipynb) for creation, metadata, time selection, and plotting, or [TimeSeriesMatrix basics](matrix_timeseries.ipynb) when you want a "
+"matrix representation of aligned channels. For a file-based workflow with saved "
+"settings, follow [Commissioner workflow](commissioner.md)."
+msgstr ""
+"作成・メタデータ・時間区間の選択・描画は [TimeSeries の基礎](intro_timeseries.ipynb)、時間軸を揃えたチャンネルの行列表現は "
+"[TimeSeriesMatrix の基礎](matrix_timeseries.ipynb)へ進んでください。\n"
+"ファイルを使って設定を保存する解析は、[Commissionerのワークフロー](commissioner.md)で実行できます。"
+
+#: ../../tutorials/scientific_python.md:117
+msgid "Further reading"
+msgstr "さらに読む"
+
+#: ../../tutorials/scientific_python.md:119
+msgid "[Interoperability capabilities](../reference/interop_capabilities.md)"
+msgstr "[相互運用機能一覧](../reference/interop_capabilities.md)"
+
+#: ../../tutorials/scientific_python.md:120
+msgid "[API reference](../reference/index.md)"
+msgstr "[API リファレンス](../reference/index.md)"
+
+#: ../../tutorials/scientific_python.md:121
+msgid "[Start Here](getting_started.md)"
+msgstr "[はじめに](getting_started.md)"

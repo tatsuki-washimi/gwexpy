@@ -44,7 +44,7 @@ def test_verification_page_describes_current_redesign_ci() -> None:
 
 def test_interop_page_does_not_claim_an_unmeasured_priority_ranking() -> None:
     """Interop ordering is architectural guidance, not usage statistics."""
-    page = _read("how-to/interop.md")
+    page = _read("reference/interop_capabilities.md")
 
     assert "What to Prioritize First" not in page
     assert "not a ranking by usage statistics" in page
@@ -55,10 +55,10 @@ def test_interop_page_does_not_claim_an_unmeasured_priority_ranking() -> None:
 
 def test_interop_signal_processing_heading_preserves_legacy_anchor() -> None:
     """Keep the clarified category title without breaking the published anchor."""
-    page = _read("how-to/interop.md")
+    page = _read("reference/interop_capabilities.md")
     new_heading = "C. Scientific Computing, Signal Processing, Machine Learning, and Array Backends"
     old_heading = "C. Scientific Computing, Machine Learning, and Array Backends"
-    catalog_path = DOCS / "locales/ja/LC_MESSAGES/how-to/interop.po"
+    catalog_path = DOCS / "locales/ja/LC_MESSAGES/reference/interop_capabilities.po"
 
     assert f"## {new_heading}" in page
     assert f"## {old_heading}" not in page
@@ -120,7 +120,7 @@ def test_corrected_public_pages_have_complete_japanese_catalogs() -> None:
     """Do not expose the corrected claims as English fallbacks in Japanese HTML."""
     catalogs = (
         "explanation/verification_and_quality.po",
-        "how-to/interop.po",
+        "reference/interop_capabilities.po",
         "explanation/validated_algorithms.po",
         "explanation/numerical_stability.po",
         "about/citation.po",
@@ -142,8 +142,8 @@ def test_corrected_public_pages_have_complete_japanese_catalogs() -> None:
 
 
 def test_numeric_csv_time_scale_limitation_has_japanese_translation() -> None:
-    page = _read("how-to/io_formats.md")
-    catalog_path = DOCS / "locales/ja/LC_MESSAGES/how-to/io_formats.po"
+    page = _read("reference/io_capabilities.md")
+    catalog_path = DOCS / "locales/ja/LC_MESSAGES/reference/io_capabilities.po"
 
     assert CSV_TIME_SCALE_LIMITATION in " ".join(page.split())
     with catalog_path.open(encoding="utf-8") as stream:
@@ -159,8 +159,8 @@ def test_numeric_csv_time_scale_limitation_has_japanese_translation() -> None:
 
 
 def test_csv_cadence_contract_has_japanese_translation() -> None:
-    page = _read("how-to/io_formats.md")
-    catalog_path = DOCS / "locales/ja/LC_MESSAGES/how-to/io_formats.po"
+    page = _read("reference/io_capabilities.md")
+    catalog_path = DOCS / "locales/ja/LC_MESSAGES/reference/io_capabilities.po"
 
     assert CSV_CADENCE_CONTRACT in " ".join(page.split())
     with catalog_path.open(encoding="utf-8") as stream:

@@ -1,103 +1,86 @@
 ---
 myst:
   html_meta:
-    description: "Start GWexpy quickly with a pip install command, a 4-line first plot, and pointers to the next tutorials and migration guides."
+    description: "Generate two reproducible synthetic channels with GWexpy, calculate their amplitude spectral densities, and save a first analysis figure."
 ---
 
 # Quickstart
 
-Get your first analysis plot with GWexpy as quickly as possible.
+Create two synthetic channels, calculate their amplitude spectral densities (ASDs), and save `asd.png`.
+Prerequisites: Python 3.11 or later and GWexpy installed; no detector files or optional packages are needed.
+Study goal: about 5 minutes after installation. Script runtime goal: seconds on a laptop; this is not a benchmark.
 
 (en-quickstart-install-command)=
-## Quick Install
+(quick-install)=
+## Install GWexpy
 
-GWexpy is published on PyPI, so a plain `pip install` is all you need to get started:
-
-- Purpose: install the current release as quickly as possible
-- Input: Python 3.11+ with `pip`
-- Output: a local GWexpy installation ready for the first example
+In a terminal with your chosen Python environment active, run:
 
 ```bash
-pip install gwexpy
+python -m pip install gwexpy
 ```
 
-If you want the latest unreleased development version instead, install from the
-GitHub source repository: `pip install git+https://github.com/tatsuki-washimi/gwexpy.git`
-
-If you need a Conda-managed environment, GW binary dependencies such as NDS2 / FrameLIB, or optional tools such as `pygmt`, start with the [Installation Guide](installation.md) instead of adding those packages ad hoc after this quick install.
+For environment creation and Conda instructions, use [Installation](installation.md).
 
 (en-quick-demo)=
-## 4-line Quickstart
+(4-line-quickstart)=
+(multi-channel-analysis-example)=
+## Run the complete example
 
-GWexpy's `TimeSeries` can be created directly from NumPy arrays and features built-in plotting capabilities.
+Download {download}`quickstart.py <../_static/downloads/quickstart.py>` into a working folder and run the command below from that folder.
+A terminal command starts Python; the downloaded file contains the Python statements it will execute in order.
 
-- Purpose: display a first plot from a random time series
-- Input: a 4096-sample NumPy array, sample rate 4096 Hz, and `t0=0`
-- Output: a `TimeSeries` object and a rendered plot
-
-```python
-import numpy as np
-from gwexpy.timeseries import TimeSeries
-
-ts = TimeSeries(np.random.randn(4096), sample_rate=4096.0, t0=0)
-ts.plot().show()
+```bash
+python quickstart.py
 ```
 
-## 30-min Hands-on (Interactive Tutorial)
-
-For a more practical workflow, we recommend the following lesson.
-
-### 🧪 GWexpy Basic Hands-on
-
-[TimeSeries basics lesson](intro_timeseries.ipynb)
-
-Experience everything from loading data to frequency analysis (ASD/CSD) and multi-channel manipulation with the Matrix API.
-
-## Core Concepts
-
-The two pillars to mastering GWexpy.
-
-* **TimeSeries / FrequencySeries**: 
-  Basic classes for handling single-channel data. High compatibility with GWpy allows you to run existing code as is.
-* **TimeSeriesMatrix / ScalarField**:
-  New APIs for handling multi-channel (matrix format) or multi-dimensional field-like data. Large-scale analysis with over 100 channels can be handled safely with a single line of code.
-
-## Multi-channel Analysis Example
-
-Minimal example for calculating cross-spectral density (CSD) between two channels.
-
-- Purpose: compute cross-spectral density from two `TimeSeries` channels
-- Input: a two-channel `TimeSeriesDict` and `fftlength=1`
-- Output: a `csd` object and a plotted CSD result
-
-```python
-import numpy as np
-from gwexpy.timeseries import TimeSeries, TimeSeriesDict
-
-# Create data
-tsd = TimeSeriesDict({
-    "H1:STRAIN": TimeSeries(np.random.randn(4096 * 4), sample_rate=4096, t0=0),
-    "L1:STRAIN": TimeSeries(np.random.randn(4096 * 4), sample_rate=4096, t0=0),
-})
-
-# Calculate Cross Spectral Density (CSD) between the two channels
-csd = tsd["H1:STRAIN"].csd(tsd["L1:STRAIN"], fftlength=1)
-csd.plot().show()
+```{literalinclude} ../_static/downloads/quickstart.py
+:language: python
 ```
 
-This example selects the two channels from the `TimeSeriesDict` and stores the resulting cross-spectral density in `csd`.
+The `sine` and `gaussian` functions create `TimeSeries` objects with the same 16-second duration, 512 Hz sample rate, start time, and volt unit.
+Explicit seeds make both noise sequences repeatable.
+`TimeSeriesDict` keeps the two named channels together, and `.asd()` applies the same spectral settings to each one.
+The final line saves the figure in the folder where the command runs; open `asd.png` with an image viewer.
 
-## Need Help?
+## Read the result
 
-If you encounter errors or plots do not appear, check the [Troubleshooting Guide](../how-to/troubleshooting.md). If the problem is really an environment setup issue, return to the [Installation Guide](installation.md) for the Conda-first workflow.
+```{figure} ../_static/images/quickstart-asd.png
+:alt: Two voltage amplitude spectral densities with a shared peak near 40 Hz and different noise floors.
+:width: 720px
+
+Expected output from the downloadable example: a 40 Hz line in both channels and a higher broadband noise floor in Sensor B.
+```
+
+(core-concepts)=
+The horizontal axis is frequency in hertz; the vertical axis is ASD in volts per square root hertz.
+An ASD shows how fluctuation amplitude is distributed over frequency.
+Both channels contain the same 40 Hz sine wave, while Sensor B has larger Gaussian noise.
+The peak height also depends on the spectral settings; it is not the sine wave's amplitude in volts.
+
+`fftlength=2` uses 2-second segments, giving a frequency-bin spacing of 0.5 Hz.
+`overlap=1` overlaps adjacent segments by 1 second.
+The example explicitly selects a Hann window and Welch averaging so the analysis choices are visible.
+
+(30-min-hands-on-interactive-tutorial)=
+(gwexpy-basic-hands-on)=
+## Change one parameter
+
+Change `frequency=40` to `frequency=70` and run the script again.
+The two peaks should move to 70 Hz. Then restore 40 Hz and try changing one noise standard deviation (`std`) to see how the broadband floor responds.
+
+(need-help)=
+## If the script does not run
+
+`ModuleNotFoundError: No module named 'gwexpy'` means the Python running the script cannot find GWexpy.
+Activate the environment used for installation, then rerun `python quickstart.py`.
+For other symptoms, use [Troubleshooting](../how-to/troubleshooting.md).
 
 <a id="next-to-read"></a>
 <a id="next-steps"></a>
 
-## Next to Read
+## Further reading
 
-* [Installation Guide](installation.md) - Setting up your environment.
-* [Troubleshooting Guide](../how-to/troubleshooting.md) - Reverse-lookup fixes by symptom.
-* [Getting Started](getting_started.md) - Systematic learning roadmap.
-* [Prerequisites and Conventions](../explanation/prerequisites_and_conventions.md) - Review FFT, GPS time, and compatibility assumptions first.
-* [GWexpy for GWpy Users](../explanation/gwexpy_for_gwpy_users.md) - Difference guide for existing users.
+- [First analysis](first_analysis.md): learn Python variables, plots, and ASD step by step.
+- [Start Here](getting_started.md): choose the next lesson for your background.
+- [TimeSeries basics](intro_timeseries.ipynb): continue with time-domain and frequency-domain operations.

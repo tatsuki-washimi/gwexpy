@@ -2,7 +2,8 @@
 
 Technical, information-oriented description of the GWexpy API. These pages are
 generated directly from the package docstrings by `autosummary` and `autodoc`,
-so they always match the installed version.
+and describe the package used for this documentation build. Check the build information
+against `gwexpy.__version__` in your own environment.
 
 :::{note}
 API reference bodies are generated from the source docstrings, which are
@@ -10,6 +11,15 @@ written in English. This holds on the Japanese build of this site as well
 (only the surrounding navigation and page chrome are translated); translating
 the docstrings themselves is out of scope for now.
 :::
+
+## Public API and support
+
+Use documented public entry points. A generated member listing alone does not
+establish a supported contract. Experimental and implementation-only paths keep
+the status stated in their guide; pre-1.0 APIs are not universally stable.
+See [Known limitations](../about/known_limitations.md),
+[I/O capabilities](io_capabilities.md), and [Conversion capabilities](interop_capabilities.md)
+for supported classes, dependencies, and metadata boundaries.
 
 ## API by domain
 
@@ -36,7 +46,7 @@ preprocessing, and segments.
 :link: api/interop
 :link-type: doc
 
-`to_*()` / `from_*()` bridges to ~50 external libraries and data models.
+`to_*()` / `from_*()` bridges to external scientific libraries and data models.
 :::
 
 :::{grid-item-card} {octicon}`file-binary;1.5em;sd-mr-1` I/O
@@ -96,6 +106,8 @@ api/astro
 
 api/interop
 api/io
+io_capabilities
+interop_capabilities
 ```
 
 ```{toctree}
