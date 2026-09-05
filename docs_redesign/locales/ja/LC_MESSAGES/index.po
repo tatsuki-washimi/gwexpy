@@ -1,298 +1,199 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2026, GWexpy Developers
-# This file is distributed under the same license as the GWexpy package.
+# Japanese translations for GWexpy.
+# Copyright (C) 2026 GWexpy Developers
+# This file is distributed under the same license as the GWexpy project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GWexpy\n"
+"Project-Id-Version: GWexpy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-05 00:42+0000\n"
-"PO-Revision-Date: 2026-09-03 00:00+0900\n"
-"Last-Translator: GWexpy Developers\n"
-"Language-Team: ja <LL@li.org>\n"
+"POT-Creation-Date: 2026-09-05 15:41+0900\n"
+"PO-Revision-Date: 2026-09-05 06:42+0000\n"
+"Last-Translator: GWexpy documentation contributors\n"
 "Language: ja\n"
+"Language-Team: Japanese\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"Generated-By: Babel 2.18.0\n"
+"Generated-By: Babel 2.17.0\n"
 
-#: ../../index.md:123
+#: ../../index.md:131
 msgid "Documentation"
-msgstr "ドキュメント (Documentation)"
+msgstr "ドキュメント"
 
-#: ../../index.md:5 ../../index.md:16 27414bbdc6fd4ed6919b5bb4ecfbabd0
-#: f565f6a61fff41b68060313ac462d325
+#: ../../index.md:5 ../../index.md:16
 msgid "GWexpy"
 msgstr "GWexpy"
 
-#: ../../index.md:9 42b249286e6941bfa8156ae023cefb94
+#: ../../index.md:9
 msgid "GWexpy multi-dimensional spectral analysis"
-msgstr "GWexpy 多次元スペクトル解析"
+msgstr "GWexpy による多次元スペクトル解析"
 
-#: ../../index.md 519712ba8b4844c4a346e2c0af2756eb
-msgid ""
-"Multi-dimensional time- and frequency-series analysis for gravitational-wave"
-" science."
-msgstr "重力波科学のための多次元の時系列・周波数系列解析。"
-
-#: ../../index.md:22 9ca240847a0a4ac1aafec329c50f6a8e
-msgid ""
-"GWexpy extends [GWpy](https://gwpy.github.io/) with matrix and field "
-"containers, integrated noise-budget and modelling tools, and broad detector "
-"interoperability."
-msgstr ""
-"GWexpy は [GWpy](https://gwpy.github.io/) "
-"を拡張し、行列・場コンテナ、統合的なノイズバジェット・モデリングツール、幅広い検出器間の相互運用性を提供します。"
-
-#: ../../index.md:105
-msgid "GWexpy v0.2.0 is available from both PyPI and conda-forge."
-msgstr "GWexpy v0.2.0 は PyPI と conda-forge の両方から利用できます。"
-
-#: ../../index.md:25 e5e26ba4688a4491bf3921f7fc953fbb
+#: ../../index.md:26
 #, python-brace-format
+msgid "[Start Here →](tutorials/getting_started){.sd-btn .sd-btn-primary .sd-shadow-sm .sd-px-4 .sd-fs-5}"
+msgstr "[はじめに →](tutorials/getting_started){.sd-btn .sd-btn-primary .sd-shadow-sm .sd-px-4 .sd-fs-5}"
+
+#: ../../index.md:28
+msgid "Start from your background"
+msgstr "経験に合った入口を選ぶ"
+
+#: ../../index.md:30
 msgid ""
-"[Get started →](tutorials/index){.sd-btn .sd-btn-primary .sd-shadow-sm .sd-"
-"px-4 .sd-fs-5}"
+"Choose a route that uses what you already know. Each first lesson states its prerequisites and "
+"the result you will produce."
 msgstr ""
-"[はじめる →](tutorials/index){.sd-btn .sd-btn-primary .sd-shadow-sm .sd-px-4 "
-".sd-fs-5}"
+"すでに知っていることを生かせる学習経路を選んでください。\n"
+"各入門レッスンには、前提知識と得られる結果を示しています。"
 
-#: ../../index.md:29 8f435e21390b4ef7b0adc19707ea0595
-msgid "Find your path"
-msgstr "目的から探す"
+#: ../../index.md:35
+msgid "Beginner"
+msgstr "初心者"
 
-#: ../../index.md:31 0f683cff176e496895e77f7ff3bd2b9a
+#: ../../index.md:39
 msgid ""
-"The documentation follows the [Diátaxis](https://diataxis.fr/) framework."
-msgstr "このドキュメントは [Diátaxis](https://diataxis.fr/) フレームワークに従っています。"
-
-#: ../../index.md:36 7ead2060f41d40b5bc453109c556ba7a
-msgid ""
-"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
-"octicon-mortar-board sd-mr-1\" viewBox=\"0 0 24 24\" aria-"
-"hidden=\"true\"><path d=\"M12.292 2.06v-.001l11.25 4.75a.749.749 0 0 1 0 "
-"1.382L19 10.108V15a.75.75 0 0 1-.11.391h-.001a2.84 2.84 0 0 "
-"1-.392.482c-.249.256-.625.58-1.163.896-1.08.638-2.776 1.23-5.334 1.23-.673 "
-"0-1.286-.041-1.846-.113a.75.75 0 0 1 .192-1.487c.492.063 1.042.1 1.654.1 "
-"2.317 0 3.746-.533 "
-"4.572-1.021.31-.178.596-.397.849-.65l.079-.085V10.74l-5.208 2.2a.75.75 0 0 "
-"1-.584 0L5.75 10.424v3.17c.502.129.96.391 1.327.758.579.578.923 1.41.923 "
-"2.428v4.5a.761.761 0 0 1-.345.634 2.157 2.157 0 0 1-.21.117 3.923 3.923 0 0 "
-"1-.52.213A6.121 6.121 0 0 1 5 22.532a6.092 6.092 0 0 1-1.925-.288 4.065 "
-"4.065 0 0 1-.52-.213 1.816 1.816 0 0 1-.22-.124.757.757 0 0 "
-"1-.335-.624v-4.5c0-1.02.344-1.85.923-2.43a2.904 2.904 0 0 1 "
-"1.327-.757V9.793L.458 8.19a.75.75 0 0 1 0-1.38l11.25-4.75a.75.75 0 0 1 .584 "
-"0ZM12 11.436 21.322 7.5 12 3.564 2.678 7.5ZM5 15c-.377 "
-"0-.745.141-1.017.413-.265.265-.483.7-.483 1.368v4.022c.299.105.797.228 "
-"1.5.228s1.201-.123 1.5-.228V16.78c0-.669-.218-1.103-.483-1.368A1.433 1.433 0"
-" 0 0 5 15Z\"></path></svg> Tutorials"
+"New to Python or signal analysis? Run a script, understand its variables, and read your first "
+"time-series and ASD plots."
 msgstr ""
-"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
-"octicon-mortar-board sd-mr-1\" viewBox=\"0 0 24 24\" aria-"
-"hidden=\"true\"><path d=\"M12.292 2.06v-.001l11.25 4.75a.749.749 0 0 1 0 "
-"1.382L19 10.108V15a.75.75 0 0 1-.11.391h-.001a2.84 2.84 0 0 "
-"1-.392.482c-.249.256-.625.58-1.163.896-1.08.638-2.776 1.23-5.334 1.23-.673 "
-"0-1.286-.041-1.846-.113a.75.75 0 0 1 .192-1.487c.492.063 1.042.1 1.654.1 "
-"2.317 0 3.746-.533 "
-"4.572-1.021.31-.178.596-.397.849-.65l.079-.085V10.74l-5.208 2.2a.75.75 0 0 "
-"1-.584 0L5.75 10.424v3.17c.502.129.96.391 1.327.758.579.578.923 1.41.923 "
-"2.428v4.5a.761.761 0 0 1-.345.634 2.157 2.157 0 0 1-.21.117 3.923 3.923 0 0 "
-"1-.52.213A6.121 6.121 0 0 1 5 22.532a6.092 6.092 0 0 1-1.925-.288 4.065 "
-"4.065 0 0 1-.52-.213 1.816 1.816 0 0 1-.22-.124.757.757 0 0 "
-"1-.335-.624v-4.5c0-1.02.344-1.85.923-2.43a2.904 2.904 0 0 1 "
-"1.327-.757V9.793L.458 8.19a.75.75 0 0 1 0-1.38l11.25-4.75a.75.75 0 0 1 .584 "
-"0ZM12 11.436 21.322 7.5 12 3.564 2.678 7.5ZM5 15c-.377 "
-"0-.745.141-1.017.413-.265.265-.483.7-.483 1.368v4.022c.299.105.797.228 "
-"1.5.228s1.201-.123 1.5-.228V16.78c0-.669-.218-1.103-.483-1.368A1.433 1.433 0"
-" 0 0 5 15Z\"></path></svg> チュートリアル"
+"Python や信号解析を初めて使う方へ。\n"
+"スクリプトを実行し、変数を理解して、時間波形と ASD の図を読み取ります。"
 
-#: ../../index.md:40 190fb7d17c0c47548d515b398e20fcff
+#: ../../index.md:42
+msgid "GW Experimentalist"
+msgstr "重力波実験者"
+
+#: ../../index.md:46
 msgid ""
-"Learning-oriented lessons that take you from zero to a working analysis."
-msgstr "ゼロから実際に動く解析までを学べる、学習向けのレッスン。"
-
-#: ../../index.md:42 6bdd459f1a1c4718a613512505d9a2c0
-msgid "Start learning →"
-msgstr "学習を始める →"
-
-#: ../../index.md:45 c241ef8d78fe4cef8112298230d2ccd8
-msgid ""
-"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
-"octicon-tools sd-mr-1\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path "
-"d=\"M7.875 2.292a.114.114 0 0 0-.032.018A7.239 7.239 0 0 0 4.75 8.25a7.248 "
-"7.248 0 0 0 3.654 6.297c.57.327.982.955.941 1.682v.002l-.317 6.058a.75.75 0 "
-"1 1-1.498-.078l.317-6.062v-.004c.006-.09-.047-.215-.188-.296A8.749 8.749 0 0"
-" 1 3.25 8.25a8.738 8.738 0 0 1 3.732-7.169 1.547 1.547 0 0 1 "
-"1.709-.064c.484.292.809.835.809 1.46v4.714a.25.25 0 0 0 .119.213l2.25 "
-"1.385c.08.05.182.05.262 0l2.25-1.385a.25.25 0 0 0 "
-".119-.213V2.478c0-.626.325-1.169.81-1.461a1.547 1.547 0 0 1 1.708.064 8.741 "
-"8.741 0 0 1 3.732 7.17 8.747 8.747 0 0 1-4.41 "
-"7.598c-.14.081-.193.206-.188.296v.004l.318 6.062a.75.75 0 1 "
-"1-1.498.078l-.317-6.058v-.002c-.041-.727.37-1.355.94-1.682A7.247 7.247 0 0 0"
-" 19.25 8.25a7.239 7.239 0 0 0-3.093-5.94.114.114 0 0 "
-"0-.032-.018l-.01-.001c-.003 0-.014 "
-"0-.031.01-.036.022-.084.079-.084.177V7.19c0 .608-.315 1.172-.833 1.49l-2.25 "
-"1.385a1.75 1.75 0 0 1-1.834 0l-2.25-1.384A1.752 1.752 0 0 1 8 "
-"7.192V2.477c0-.098-.048-.155-.084-.176a.068.068 0 0 "
-"0-.031-.011l-.01.001Z\"></path></svg> How-to guides"
+"Know channels, sampling, and spectra? Map familiar experimental concepts to Python objects, then "
+"analyze a pair of channels."
 msgstr ""
-"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
-"octicon-tools sd-mr-1\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path "
-"d=\"M7.875 2.292a.114.114 0 0 0-.032.018A7.239 7.239 0 0 0 4.75 8.25a7.248 "
-"7.248 0 0 0 3.654 6.297c.57.327.982.955.941 1.682v.002l-.317 6.058a.75.75 0 "
-"1 1-1.498-.078l.317-6.062v-.004c.006-.09-.047-.215-.188-.296A8.749 8.749 0 0"
-" 1 3.25 8.25a8.738 8.738 0 0 1 3.732-7.169 1.547 1.547 0 0 1 "
-"1.709-.064c.484.292.809.835.809 1.46v4.714a.25.25 0 0 0 .119.213l2.25 "
-"1.385c.08.05.182.05.262 0l2.25-1.385a.25.25 0 0 0 "
-".119-.213V2.478c0-.626.325-1.169.81-1.461a1.547 1.547 0 0 1 1.708.064 8.741 "
-"8.741 0 0 1 3.732 7.17 8.747 8.747 0 0 1-4.41 "
-"7.598c-.14.081-.193.206-.188.296v.004l.318 6.062a.75.75 0 1 "
-"1-1.498.078l-.317-6.058v-.002c-.041-.727.37-1.355.94-1.682A7.247 7.247 0 0 0"
-" 19.25 8.25a7.239 7.239 0 0 0-3.093-5.94.114.114 0 0 "
-"0-.032-.018l-.01-.001c-.003 0-.014 "
-"0-.031.01-.036.022-.084.079-.084.177V7.19c0 .608-.315 1.172-.833 1.49l-2.25 "
-"1.385a1.75 1.75 0 0 1-1.834 0l-2.25-1.384A1.752 1.752 0 0 1 8 "
-"7.192V2.477c0-.098-.048-.155-.084-.176a.068.068 0 0 "
-"0-.031-.011l-.01.001Z\"></path></svg> ハウツーガイド"
+"チャンネル、サンプリング、スペクトルを知っている方へ。\n"
+"実験で使う概念を Python オブジェクトに対応付け、2 チャンネルを解析します。"
 
-#: ../../index.md:49 19236e9e65ed4753b9bfc77739fb07f6
+#: ../../index.md:49
+msgid "Commissioner (DiagGUI · ndscope · Virgo dataDisplay)"
+msgstr "Commissioner（DiagGUI / ndscope / Virgo dataDisplay）"
+
+#: ../../index.md:53
 msgid ""
-"Goal-oriented recipes and real-world case studies for specific problems."
-msgstr "特定の課題に対する目的志向のレシピと実例ベースのケーススタディ。"
-
-#: ../../index.md:51 e059747c8fff4cd88211be1c1bf67e69
-msgid "Solve a problem →"
-msgstr "課題を解決する →"
-
-#: ../../index.md:54 b11946791cd14016b9a161db4fd2981e
-msgid ""
-"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
-"octicon-book sd-mr-1\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path "
-"d=\"M0 3.75A.75.75 0 0 1 .75 3h7.497c1.566 0 2.945.8 3.751 2.014A4.495 4.495"
-" 0 0 1 15.75 3h7.5a.75.75 0 0 1 .75.75v15.063a.752.752 0 0 "
-"1-.755.75l-7.682-.052a3 3 0 0 0-2.142.878l-.89.891a.75.75 0 0 1-1.061 "
-"0l-.902-.901a2.996 2.996 0 0 0-2.121-.879H.75a.75.75 0 0 1-.75-.75Zm12.75 "
-"15.232a4.503 4.503 0 0 1 2.823-.971l6.927.047V4.5h-6.75a3 3 0 0 0-3 "
-"3ZM11.247 7.497a3 3 0 0 0-3-2.997H1.5V18h6.947c1.018 0 2.006.346 "
-"2.803.98Z\"></path></svg> Reference"
+"Bring an interactive analysis workflow into a reproducible script: read channels, select a time "
+"span, plot ASD and coherence, and save the settings."
 msgstr ""
-"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
-"octicon-book sd-mr-1\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path "
-"d=\"M0 3.75A.75.75 0 0 1 .75 3h7.497c1.566 0 2.945.8 3.751 2.014A4.495 4.495"
-" 0 0 1 15.75 3h7.5a.75.75 0 0 1 .75.75v15.063a.752.752 0 0 "
-"1-.755.75l-7.682-.052a3 3 0 0 0-2.142.878l-.89.891a.75.75 0 0 1-1.061 "
-"0l-.902-.901a2.996 2.996 0 0 0-2.121-.879H.75a.75.75 0 0 1-.75-.75Zm12.75 "
-"15.232a4.503 4.503 0 0 1 2.823-.971l6.927.047V4.5h-6.75a3 3 0 0 0-3 "
-"3ZM11.247 7.497a3 3 0 0 0-3-2.997H1.5V18h6.947c1.018 0 2.006.346 "
-"2.803.98Z\"></path></svg> リファレンス"
+"GUI で行っていた解析を再実行できるスクリプトにします。\n"
+"チャンネル読込、時間区間の選択、ASD とコヒーレンスの描画、設定の保存まで進めます。"
 
-#: ../../index.md:58 7b0f0f725bcf4c5990a3dbad42fa2323
+#: ../../index.md:56
+msgid "Scientific Python User"
+msgstr "科学技術計算の Python ユーザー"
+
+#: ../../index.md:60
 msgid ""
-"Technical description of the containers, analysis API, and I/O formats."
-msgstr "コンテナ、解析 API、入出力フォーマットの技術的な説明。"
-
-#: ../../index.md:60 3a125d54250147578961c2d8a2383130
-msgid "Look up the API →"
-msgstr "API を調べる →"
-
-#: ../../index.md:63 54615e40f5634281810218947f978567
-msgid ""
-"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
-"octicon-light-bulb sd-mr-1\" viewBox=\"0 0 24 24\" aria-"
-"hidden=\"true\"><path d=\"M12 2.5c-3.81 0-6.5 2.743-6.5 6.119 0 1.536.632 "
-"2.572 1.425 "
-"3.56.172.215.347.422.527.635l.096.112c.21.25.427.508.63.774.404.531.783 "
-"1.128.995 1.834a.75.75 0 0 1-1.436.432c-.138-.46-.397-.89-.753-1.357a18.111 "
-"18.111 0 0 0-.582-.714l-.092-.11c-.18-.212-.37-.436-.555-.667C4.87 12.016 4 "
-"10.651 4 8.618 4 4.363 7.415 1 12 1s8 3.362 8 7.619c0 2.032-.87 3.397-1.755 "
-"4.5-.185.23-.375.454-.555.667l-.092.109c-.21.248-.405.481-.582.714-.356.467-.615.898-.753"
-" 1.357a.751.751 0 0 "
-"1-1.437-.432c.213-.706.592-1.303.997-1.834.202-.266.419-.524.63-.774l.095-.112c.18-.213.355-.42.527-.634.793-.99"
-" 1.425-2.025 1.425-3.561C18.5 5.243 15.81 2.5 12 2.5ZM8.75 18h6.5a.75.75 0 0"
-" 1 0 1.5h-6.5a.75.75 0 0 1 0-1.5Zm.75 3.75a.75.75 0 0 1 .75-.75h3.5a.75.75 0"
-" 0 1 0 1.5h-3.5a.75.75 0 0 1-.75-.75Z\"></path></svg> Explanation"
+"Start with NumPy arrays and dictionaries. Attach sampling, start time, and units, then calculate "
+"spectra for all channels together."
 msgstr ""
-"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
-"octicon-light-bulb sd-mr-1\" viewBox=\"0 0 24 24\" aria-"
-"hidden=\"true\"><path d=\"M12 2.5c-3.81 0-6.5 2.743-6.5 6.119 0 1.536.632 "
-"2.572 1.425 "
-"3.56.172.215.347.422.527.635l.096.112c.21.25.427.508.63.774.404.531.783 "
-"1.128.995 1.834a.75.75 0 0 1-1.436.432c-.138-.46-.397-.89-.753-1.357a18.111 "
-"18.111 0 0 0-.582-.714l-.092-.11c-.18-.212-.37-.436-.555-.667C4.87 12.016 4 "
-"10.651 4 8.618 4 4.363 7.415 1 12 1s8 3.362 8 7.619c0 2.032-.87 3.397-1.755 "
-"4.5-.185.23-.375.454-.555.667l-.092.109c-.21.248-.405.481-.582.714-.356.467-.615.898-.753"
-" 1.357a.751.751 0 0 "
-"1-1.437-.432c.213-.706.592-1.303.997-1.834.202-.266.419-.524.63-.774l.095-.112c.18-.213.355-.42.527-.634.793-.99"
-" 1.425-2.025 1.425-3.561C18.5 5.243 15.81 2.5 12 2.5ZM8.75 18h6.5a.75.75 0 0"
-" 1 0 1.5h-6.5a.75.75 0 0 1 0-1.5Zm.75 3.75a.75.75 0 0 1 .75-.75h3.5a.75.75 0"
-" 0 1 0 1.5h-3.5a.75.75 0 0 1-.75-.75Z\"></path></svg> 解説"
+"NumPy 配列と辞書から始めます。\n"
+"サンプリング、開始時刻、単位を付け、全チャンネルのスペクトルをまとめて計算します。"
 
-#: ../../index.md:67 27b27b43d0da49389aec226b7f73d0be
-msgid "Discussion of the architecture and the ideas behind the design."
-msgstr "アーキテクチャと設計思想に関する解説。"
+#: ../../index.md:63
+msgid "GWpy User"
+msgstr "GWpy ユーザー"
 
-#: ../../index.md:69 7ddedf3d367946059511380125dc2745
-msgid "Understand the design →"
-msgstr "設計を理解する →"
-
-#: ../../index.md:75 a06ab949825e4697a4a1d8bbbb197529
-msgid "Highlights"
-msgstr "ハイライト"
-
-#: ../../index.md:80 12107a792024471cb08bc2270f544ae0
-msgid "Multidimensional fields"
-msgstr "多次元フィールド"
-
-#: ../../index.md:84 585e6013230143a184f8600dc3ddb4e6
+#: ../../index.md:67
 msgid ""
-"Work natively with `TimeSeriesMatrix`, `FrequencySeriesMatrix`, and "
-"`Scalar`/`Vector`/`TensorField` containers."
+"Use familiar GWpy concepts and explore the added containers, analysis methods, and I/O through "
+"concrete migration examples."
+msgstr "GWpy の知識を生かし、移行例を通じて追加コンテナ、解析メソッド、I/O を確認します。"
+
+#: ../../index.md:70
+msgid "GWexpy User"
+msgstr "GWexpy ユーザー"
+
+#: ../../index.md:74
+msgid "Go directly to a task recipe, a case study, or the API reference for your next analysis."
+msgstr "次の解析に必要な手順、ケーススタディ、API リファレンスへ直接進みます。"
+
+#: ../../index.md:79
+msgid "Try a multi-channel ASD"
+msgstr "複数チャンネルの ASD を試す"
+
+#: ../../index.md:81
+msgid ""
+"After [installation](tutorials/installation.md), this complete example generates two synthetic "
+"channels and saves `asd.png`. It needs no data download or optional packages."
 msgstr ""
-"`TimeSeriesMatrix`、`FrequencySeriesMatrix`、`Scalar`/`Vector`/`TensorField` "
-"の各コンテナをネイティブに扱えます。"
+"[インストール](tutorials/installation.md)後、この例を実行すると 2 つの合成チャンネルから `asd.png` を保存できます。\n"
+"データのダウンロードや追加パッケージは必要ありません。"
 
-#: ../../index.md:88 c10f189f8575489ba111c840daa56b98
-msgid "Integrated analysis"
-msgstr "統合された解析"
+#: ../../index.md:89
+msgid "[Run the example and see the expected figure](tutorials/quickstart.md)."
+msgstr "[例を実行し、期待される図を確認する](tutorials/quickstart.md)。"
 
-#: ../../index.md:92 426e1827d12948d68181e549617f7ff0
+#: ../../index.md:92
+msgid "Browse the documentation"
+msgstr "ドキュメントを探す"
+
+#: ../../index.md:94
 msgid ""
-"BrUCo noise budgets, ARIMA modelling, and fitting / MCMC pipelines in one "
-"place."
-msgstr "BrUCo ノイズバジェット、ARIMA モデリング、フィッティング／MCMC パイプラインを一か所で。"
+"The documentation follows [Diátaxis](https://diataxis.fr/): lessons for learning, recipes for "
+"tasks, reference for lookup, and explanation for context."
+msgstr "ドキュメントは [Diátaxis](https://diataxis.fr/) に沿って、学習用レッスン、作業別手順、仕様を調べるリファレンス、背景を理解する解説に分かれています。"
 
-#: ../../index.md:95 d6447893bb864a6ba54285686f489a17
-msgid "Broad interop"
-msgstr "幅広い相互運用"
+#: ../../index.md:99
+msgid "Tutorials"
+msgstr "チュートリアル"
 
-#: ../../index.md:99 081201ae8338456d9fbb6944c7841f14
+#: ../../index.md:103
+msgid "Follow a guided lesson and produce a working analysis."
+msgstr "手順に沿って学び、動く解析を作ります。"
+
+#: ../../index.md:106
+msgid "How-to guides"
+msgstr "ハウツーガイド"
+
+#: ../../index.md:110
+msgid "Solve a specific analysis problem or adapt a case study."
+msgstr "具体的な解析課題を解決し、ケーススタディを応用します。"
+
+#: ../../index.md:113
+msgid "Reference"
+msgstr "リファレンス"
+
+#: ../../index.md:117
+msgid "Look up containers, methods, parameters, and supported file formats."
+msgstr "コンテナ、メソッド、パラメータ、対応ファイル形式を調べます。"
+
+#: ../../index.md:120
+msgid "Explanation"
+msgstr "解説"
+
+#: ../../index.md:124
+msgid "Understand the data model, analysis conventions, and design decisions."
+msgstr "データモデル、解析上の規約、設計判断を理解します。"
+
+#: ../../index.md:129
+msgid "For contribution, testing, and release information, use the [Developer guide](about/developer.md)."
+msgstr "開発への参加、テスト、リリースについては[開発者ガイド](about/developer.md)を参照してください。"
+
+#: ../../index.md:128
 msgid ""
-"~50 interoperability modules for converting data to and from external "
-"scientific libraries."
-msgstr "外部の科学計算ライブラリとの相互変換を担う約50の相互運用モジュール。"
-
-#: ../../index.md:105 decdb60be9754abdb44fe4041aad8b58
-msgid "Install and try it"
-msgstr "インストールして試す"
-
-#~ msgid ""
-#~ "~50 interoperability modules and multi-format I/O across GW data ecosystems."
-#~ msgstr "GW データエコシステム全体にわたる約 50 の相互運用モジュールとマルチフォーマット入出力。"
-
-msgid ""
-"For corresponding GWpy APIs, default finite numerical results, sample "
-"selection, axis information, and successful completion remain GWpy-"
-"compatible. Intentional divergence from these guarantees requires explicit "
-"user opt-in, "
-"except for a named, human-approved safety exception satisfying all policy "
-"gates. See the [GWpy compatibility "
+"For corresponding GWpy APIs, default finite numerical results, sample selection, axis "
+"information, and successful completion remain GWpy-compatible. Intentional divergence from these "
+"guarantees requires explicit user opt-in, except for a named, human-approved safety exception "
+"satisfying all policy gates. See the [GWpy compatibility "
 "policy](explanation/gwpy_compatibility_policy)."
 msgstr ""
-"対応する GWpy API では、既定の有限数値結果、sample 選択、軸情報、正常終了を "
-"GWpy と互換に保ちます。これらの保証から意図的に外れる場合は明示的な user opt-in "
-"が必要ですが、"
-"全policy gateを満たす名前付き・human-approvedの安全例外は除きます。"
-"[GWpy 互換性ポリシー](explanation/gwpy_compatibility_policy)を参照してください。"
+"対応する GWpy API では、既定の有限数値結果、sample 選択、軸情報、正常終了を GWpy と互換に保ちます。これらの保証から意図的に外れる場合は明示的な user opt-in "
+"が必要ですが、全policy gateを満たす名前付き・human-approvedの安全例外は除きます。[GWpy "
+"互換性ポリシー](explanation/gwpy_compatibility_policy)を参照してください。"
+
+msgid "Analyze experimental data with units, timestamps, and channel names."
+msgstr "単位・時刻・チャンネル名とともに、実験データを解析する。"
+
+msgid ""
+"Compare multiple channels and save figures with the code and settings needed to reproduce them. "
+"GWexpy extends [GWpy](https://gwpy.github.io/) with matrix and field containers, noise "
+"generation, fitting, and connections to scientific Python libraries."
+msgstr ""
+"複数チャンネルを比較し、図とともに再実行に必要なコードや解析条件を保存できます。GWexpy は [GWpy](https://gwpy.github.io/) "
+"を拡張し、行列と場のコンテナ、ノイズ生成、フィッティング、科学技術計算ライブラリとの連携を提供します。"

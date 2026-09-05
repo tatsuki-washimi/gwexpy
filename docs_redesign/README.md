@@ -2,35 +2,29 @@
 orphan: true
 ---
 
-# docs_redesign — website source notes
+# Public documentation source
 
-This tree is the **B1 (pydata + Diátaxis) redesign** source for the published
-website. The deployment workflow builds it into the existing `/docs/` site path.
+`docs_redesign` is the published PyData/MyST-NB site, built in English and Japanese
+under `/docs/` and `/docs/ja/`.
 
-## Notebook single-source contract
+Notebook execution cells are authoritative in `docs/web/en/user_guide/tutorials`.
+English public narrative and cell identities live in this tree; Japanese public
+prose uses gettext catalogs. The legacy bilingual markdown cells remain in the
+canonical tree for the legacy docs. `scripts/prepare_public_docs.py` copies this
+tree outside the checkout, replaces every execution cell from its canonical
+notebook, and records the source mapping and Git revision. Structural changes
+must update the matching lesson cell slots together; count mismatches fail.
 
-The notebooks under `tutorials/`, `how-to/<topic>/`, and `how-to/case-studies/`
-were **derived** from the canonical notebooks at
-`docs/web/en/user_guide/tutorials/*.ipynb`.
+The September 2026 reconciliation incorporated the fifteen published code-cell
+differences into the canonical notebooks before enabling this derivation.
+Do not repair a public execution cell without repairing its canonical source.
 
-- **Canonical source of truth:** `docs/web/en/...` (per `docs/NOTEBOOK_POLICY.md`).
-  These were **not modified** by the redesign.
-- **Derived here:** EN-only copies (the paired `lang-ja` markdown cells were
-  stripped), with Colab bootstrap removed and links rewritten to the new layout.
-  Treat the copies in this tree as **disposable prototype artifacts**.
-- **Japanese recovery (P4):** Japanese prose is recovered from the canonical
-  `lang-ja` cells when this tree is gettext-enabled; the EN-only copies here are
-  *not* the JA recovery source. At cutover (P5) the canonical→derived transform
-  should move to a build-time step rather than committed copies.
+MyST-NB executes prepared notebooks into an untracked cache, with a 600-second
+per-cell timeout and errors raised. Full tracebacks are retained on failure.
+Committed notebooks stay free of outputs and execution counts. The case-study
+header reports measured execution time and package version separately from
+physical validation. `release_status.json` records the released package and
+release against which the introductory scripts are tested; it is not inferred
+from the development package's version number.
 
-## Rendering
-
-`nb_execution_mode = "cache"`: notebooks execute into an untracked build cache.
-The rendered site therefore includes plots and other outputs, while committed
-notebooks remain clean source with outputs and execution counts stripped. The
-publish workflows build from an isolated temporary copy of this tree, so no
-executed notebook is ever written back to the checkout.
-
-Notebook execution is fail-closed and has a 180-second per-cell limit, which
-accommodates fitting and file-I/O examples without silently publishing a page
-whose output failed to generate.
+Run `python scripts/verify_public_examples.py <prepared-docs-source>` after preparation to execute the Markdown lessons and regenerate the shared Quickstart figure from its downloadable source.

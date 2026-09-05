@@ -3,29 +3,28 @@
 # This file is distributed under the same license as the GWexpy package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GWexpy\n"
+"Project-Id-Version: GWexpy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-28 19:29+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: ja <LL@li.org>\n"
+"POT-Creation-Date: 2026-09-05 15:55+0900\n"
+"PO-Revision-Date: 2026-09-05 00:00+0000\n"
+"Last-Translator: GWexpy Developers\n"
 "Language: ja\n"
+"Language-Team: Japanese\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../how-to/case-studies/case_wiener_filter.ipynb:10002
-#: fa5ef89f4da4410c85fed37c32f799e0
+#: ../docs_redesign/how-to/case-studies/case_wiener_filter.ipynb:10002
+#: a1b2c7534ae143958b882f755eaa7b2b
 msgid "Wiener Filtering: Coherent Noise Subtraction"
 msgstr "ウィーナーフィルタ: コヒーレント雑音の差し引き"
 
-#: ../../how-to/case-studies/case_wiener_filter.ipynb:20002
-#: 538138e658954b73b7a646166620add8
+#: ../docs_redesign/how-to/case-studies/case_wiener_filter.ipynb:20002
+#: 2ce1781a14194a2293107bf69ffade12
 msgid ""
 "A multichannel Wiener filter is useful when several witness sensors contain "
 "**overlapping views of the same physical noise sources**. Treating those "
@@ -35,21 +34,20 @@ msgstr ""
 "複数の witness センサーが **同じ物理ノイズ源を重なって見ている** とき、各 witness "
 "を独立に引くと二重差し引きが起きることがあります。"
 
-#: ../../how-to/case-studies/case_wiener_filter.ipynb:20004
-#: edb3200823df4deb9fdd70ca274e5148
+#: ../docs_redesign/how-to/case-studies/case_wiener_filter.ipynb:20004
+#: 6454234725cf43f78d2863b460de133e
 msgid ""
 "This compact public case study promotes the legacy MIMO notebook and focuses"
 " on the core matrix workflow."
-msgstr ""
-"この notebook は legacy の MIMO 例を公開 docs 向けに整理し、多入力ウィーナーフィルタ行列の物理的意味に絞っています。"
+msgstr "この notebook は legacy の MIMO 例を公開 docs 向けに整理し、多入力ウィーナーフィルタ行列の物理的意味に絞っています。"
 
-#: ../../how-to/case-studies/case_wiener_filter.ipynb:40002
-#: 829388d53fe8483b9446621c00c4d456
+#: ../docs_redesign/how-to/case-studies/case_wiener_filter.ipynb:40002
+#: 8067dd8b2e924419b5182c07f68d81fa
 msgid "1. Estimate the multichannel correlation matrices"
 msgstr "1\\. 相互相関行列を推定する"
 
-#: ../../how-to/case-studies/case_wiener_filter.ipynb:40004
-#: 0328e1f07e3b434f8d76f479d6bec21d
+#: ../docs_redesign/how-to/case-studies/case_wiener_filter.ipynb:40004
+#: ddc338f8e8f24423ad76eff6a09afe1d
 msgid ""
 "The key point is that the witnesses are not independent. The `Cxx` matrix "
 "captures witness-to-witness correlation, and `Cyx` captures how the target "
@@ -58,13 +56,40 @@ msgstr ""
 "重要なのは witness 同士が独立ではないことです。`Cxx` が witness 間相関、`Cyx` が target と witness "
 "の相関を表します。"
 
-#: ../../how-to/case-studies/case_wiener_filter.ipynb:60002
-#: d97b14930a324d48939554dbae1e8a7f
+#: ../docs_redesign/how-to/case-studies/case_wiener_filter.ipynb:40006
+#: 914d9a205c7f48dda1e7c1f45f7cce17
+#, python-brace-format
+msgid ""
+"This example uses the convention $C_{ij}=\\langle X_i^*X_j\\rangle$, so the "
+"row filter mapping witnesses to MAIN is $H=(C_{yx}C_{xx}^{-1})^*$. We use "
+"identical Hann windows, overlap, and mean averaging for every matrix entry. "
+"The numerical transfer estimates are assigned MAIN/witness units explicitly "
+"because the inherited spectral metadata does not infer these mixed-channel "
+"units."
+msgstr ""
+"この例では $C_{ij}=\\langle X_i^*X_j\\rangle$ という規約を使うため、補助チャンネルから MAIN "
+"への変換を表す行ベクトルのフィルタは $H=(C_{yx}C_{xx}^{-1})^*$ となります。行列のすべての要素に同一の Hann "
+"窓、オーバーラップ、算術平均を使います。継承したスペクトルのメタデータは異なるチャンネル間の単位を推論しないため、数値的な伝達関数の推定値に "
+"MAIN/補助チャンネルの単位を明示的に付与します。"
+
+#: ../docs_redesign/how-to/case-studies/case_wiener_filter.ipynb:40008
+#: e320143d40b341d8ac89e5e27dd30562
+msgid ""
+"The FFT and inverse FFT use their existing normalization; no extra sample-"
+"rate or factor-of-two correction is applied. This synthetic example has a "
+"nonsingular witness matrix. Check conditioning and choose a justified "
+"regularization before applying it to redundant measured witnesses."
+msgstr ""
+"FFT と逆 FFT は既存の正規化を使用し、サンプルレートによる補正や係数 2 "
+"の追加補正は行いません。この合成例の補助チャンネル行列は非特異です。冗長な測定補助チャンネルに適用する場合は、条件数を確認し、根拠のある正則化を選択してください。"
+
+#: ../docs_redesign/how-to/case-studies/case_wiener_filter.ipynb:60002
+#: 410a8930cd6d4ae298f40902ac773059
 msgid "2. Project and subtract the coherent noise"
 msgstr "2\\. 予測して差し引く"
 
-#: ../../how-to/case-studies/case_wiener_filter.ipynb:60004
-#: b6715d698d9544c09fcf4299ec2ec14f
+#: ../docs_redesign/how-to/case-studies/case_wiener_filter.ipynb:60004
+#: bfb75685e6344f9c9cc161961cc561a0
 msgid ""
 "Only the coherent, witness-predictable part should be removed. Irreducible "
 "target noise should remain."

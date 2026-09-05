@@ -1,0 +1,127 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 15:55+0900\n"
+"PO-Revision-Date: 2026-09-05 00:00+0000\n"
+"Last-Translator: GWexpy Developers\n"
+"Language: ja\n"
+"Language-Team: Japanese\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../docs_redesign/about/developer.md:1 0cd12e6e47004bad8898873bc683456c
+msgid "Developer guide"
+msgstr "開発者ガイド"
+
+#: ../docs_redesign/about/developer.md:3 46f2b686376845b9993b7a8c0554eb80
+msgid ""
+"Start here to change GWexpy or its documentation. For an analysis workflow, "
+"use [Start Here](../tutorials/getting_started.md)."
+msgstr ""
+"GWexpy "
+"本体やドキュメントを変更する場合は、このページから始めてください。解析の手順を探す場合は、[はじめに](../tutorials/getting_started.md)を参照してください。"
+
+#: ../docs_redesign/about/developer.md 5567c40f21584330a556ac567ac68465
+msgid "Task"
+msgstr "作業"
+
+#: ../docs_redesign/about/developer.md 519dafb76e2244c1a422809a2ffd6f00
+msgid "Source of guidance"
+msgstr "参照先"
+
+#: ../docs_redesign/about/developer.md 80ca5d0556114e26ba860ccdd16f231e
+msgid "Set up a checkout and submit a change"
+msgstr "作業用チェックアウトの準備と変更の提出"
+
+#: ../docs_redesign/about/developer.md 6844584525314bbbb04a27cd95686e82
+msgid ""
+"[Contributing](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/CONTRIBUTING.md)"
+msgstr "[貢献ガイド](https://github.com/tatsuki-washimi/gwexpy/blob/main/CONTRIBUTING.md)"
+
+#: ../docs_redesign/about/developer.md 208422afb13d4e35a8cf92fe0d8c74e8
+msgid "Understand containers and processing layers"
+msgstr "コンテナと処理層の理解"
+
+#: ../docs_redesign/about/developer.md e4998e818e504b129e5ad71cc0590cda
+msgid "[Architecture](../explanation/architecture.md)"
+msgstr "[アーキテクチャ](../explanation/architecture.md)"
+
+#: ../docs_redesign/about/developer.md 97e32068b6d24fada048db850354df6d
+msgid "Review numerical and metadata behavior"
+msgstr "数値計算とメタデータの挙動の確認"
+
+#: ../docs_redesign/about/developer.md 8baa4dd23c4a44c3b7c519391e58f664
+msgid "[GWpy compatibility policy](../explanation/gwpy_compatibility_policy.md)"
+msgstr "[GWpy 互換性ポリシー](../explanation/gwpy_compatibility_policy.md)"
+
+#: ../docs_redesign/about/developer.md 1d99a022896d4ac19410cedb573e05df
+msgid "Run validation"
+msgstr "検証の実行"
+
+#: ../docs_redesign/about/developer.md 2c2efb348c9e4d759d6af8731b45c68b
+msgid "[Verification and quality](../explanation/verification_and_quality.md)"
+msgstr "[検証と品質](../explanation/verification_and_quality.md)"
+
+#: ../docs_redesign/about/developer.md 952a910d10d34ca38ceec69df3ab7610
+msgid "Find internal contracts and design decisions"
+msgstr "内部仕様と設計判断の確認"
+
+#: ../docs_redesign/about/developer.md a22cfd3437f545dbb33fe48c63fbc14c
+msgid ""
+"[Developer sources](https://github.com/tatsuki-"
+"washimi/gwexpy/tree/main/docs/developers)"
+msgstr ""
+"[開発者向け資料](https://github.com/tatsuki-"
+"washimi/gwexpy/tree/main/docs/developers)"
+
+#: ../docs_redesign/about/developer.md:14 d94041cef7a144bb8bd8baec14657833
+msgid "Build the public documentation"
+msgstr "公開ドキュメントのビルド"
+
+#: ../docs_redesign/about/developer.md:16 4cac1ca5c82d49d6808479161c98c450
+msgid ""
+"Use the project's `gwexpy` Conda environment with the documentation "
+"dependencies. From a source checkout, prepare a fresh temporary directory "
+"outside the repository:"
+msgstr ""
+"ドキュメント用の依存パッケージを導入した、プロジェクトの `gwexpy` Conda "
+"環境を使います。ソースのチェックアウトから、リポジトリ外の新しい一時ディレクトリを準備してください。"
+
+#: ../docs_redesign/about/developer.md:26 c28f8b6696f346a7a3ae25894f34a20b
+msgid ""
+"Use a new output directory on subsequent runs. Preparation reads canonical "
+"notebook code and keeps execution output outside the checkout. English "
+"public prose and Japanese gettext catalogs are maintained together. When "
+"changing a notebook's executable cells, edit its canonical source and run "
+"the preparation step; the public notebook supplies the narrative and "
+"translation identities."
+msgstr ""
+"再実行する場合は、新しい出力ディレクトリを指定してください。準備処理は正本のノートブックからコードを読み取り、実行結果をチェックアウトの外に保存します。公開ページの英語本文と日本語"
+" gettext "
+"カタログは併せて管理します。ノートブックの実行セルを変更する場合は、正本を編集してから準備処理を実行してください。公開用ノートブックは説明文と翻訳対象の識別情報を保持します。"
+
+#: ../docs_redesign/about/developer.md:32 f506fabb93b84916ad8361b77ac35f11
+msgid "Studio"
+msgstr "Studio"
+
+#: ../docs_redesign/about/developer.md:34 b3a4a436105b41b8a72bbde8467ea5b6
+msgid ""
+"GWexpy Studio is a separate interface under development. It is not required "
+"to complete these tutorials. A Studio learning path will be added after its "
+"distribution and basic workflows can be reproduced. Until then, the "
+"downloadable Python examples are the supported entry to the learning "
+"material."
+msgstr ""
+"GWexpy Studio "
+"は開発中の別インターフェースです。これらのチュートリアルを完了するために必要なものではありません。配布方法と基本的な操作手順を再現できる段階で、Studio"
+" 用の学習コースを追加します。それまでは、ダウンロード可能な Python の例を学習教材の入口として提供します。"

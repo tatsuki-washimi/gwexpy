@@ -14,3 +14,9 @@
   <meta name="robots" content="noindex, nofollow" />
   {%- endif %}
 {% endblock %}
+
+{% block docs_body %}
+  {% include "build-status.html" %}
+  {% if case_details %}{% include "case-status.html" %}{% endif %}
+  {{ super() }}
+{% endblock %}

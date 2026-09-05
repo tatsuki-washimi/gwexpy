@@ -1,0 +1,1952 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 15:59+0900\n"
+"PO-Revision-Date: 2026-09-05 00:00+0000\n"
+"Last-Translator: GWexpy Developers\n"
+"Language: ja\n"
+"Language-Team: Japanese\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../docs_redesign/reference/io_capabilities.md d26d82aaac72427cab872ceac33a167f
+msgid ""
+"Choose the right direct file or network I/O path in GWexpy, including "
+"supported formats, read/write limits, fetch routes, and when to set format= "
+"explicitly."
+msgstr ""
+"サポート形式、読み書きの制限、取得経路、`format=` を明示すべき場面を含め、GWexpy における適切な直接ファイル／ネットワーク I/O "
+"経路を選びましょう。"
+
+#: ../docs_redesign/reference/io_capabilities.md:7
+#: c0c09b15c204443aa08dd7ec6b941b9c
+msgid "<a id=\"io-formats-en-top\"></a>"
+msgstr "<a id=\"io-formats-en-top\"></a>"
+
+#: ../docs_redesign/reference/io_capabilities.md:9
+#: 23da8a15fdfc4a9ea98c29a3da1fe168
+msgid "File I/O Supported Formats Guide"
+msgstr "ファイル I/O 対応フォーマットガイド"
+
+#: ../docs_redesign/reference/io_capabilities.md:11
+#: 876571f285494b11a7cabd89b950e781
+msgid ""
+"This is the end-user I/O guide for `gwexpy`. This page only covers the "
+"public `.read()` / `.write()` / `fetch()` style APIs that users call "
+"directly to read, write, or fetch data."
+msgstr ""
+"gwexpy の利用者向け I/O ガイドです。 このページでは、ユーザーが直接使う `.read()` / `.write()` / "
+"`fetch()` 系 API による読み書き・取得だけを扱います。"
+
+#: ../docs_redesign/reference/io_capabilities.md:14
+#: 63fbc574300b4f46a712bc8e15385dc2
+msgid ""
+"It does **not** cover `to_*()` / `from_*()` conversions or object bridges to"
+" xarray, ROOT objects, or Zarr arrays. If the question is \"how do I convert"
+" this object into another library or container?\", that belongs to interop "
+"instead. For those topics, see the [interop tutorial](../how-"
+"to/interop/intro_interop.ipynb) and the [interop API "
+"reference](../reference/api/interop)."
+msgstr ""
+"このページは `to_*()` / `from_*()` の変換や、xarray・ROOT オブジェクト・Zarr "
+"配列へのオブジェクトブリッジは**扱いません**。「このオブジェクトを別のライブラリやコンテナに変換するには？」という問いであれば、それは "
+"interop に属します。それらの話題については [interop チュートリアル](../how-"
+"to/interop/intro_interop.ipynb) と [interop API "
+"リファレンス](../reference/api/interop) を参照してください。"
+
+#: ../docs_redesign/reference/io_capabilities.md:17
+#: c20badf5c1e949f4a0de5836b4358242
+msgid "**Security Warning: Pickle Files**"
+msgstr "**セキュリティ警告: Pickle 形式の取り扱い**"
+
+#: ../docs_redesign/reference/io_capabilities.md:19
+#: 7ab25e780a4b4baaa20a20cc9781f227
+msgid ""
+"**Pickle** (:term:`Pickle`) is convenient, but reading Pickle files from "
+"untrusted sources is dangerous. A malicious Pickle file can execute "
+"arbitrary code on your system."
+msgstr ""
+"**Pickle** (:term:`Pickle`) は便利ですが、信頼できないソースから受け取った Pickle "
+"ファイルを読み込むことは危険です。悪意のあるファイルにより、実行環境で任意のコードが実行される可能性があります。"
+
+#: ../docs_redesign/reference/io_capabilities.md:21
+#: c8b5f714d1bc4f788f311df691a7fa52
+msgid ""
+"For data sharing and long-term storage, prefer structured formats such as "
+"**HDF5**, **GWF**, or **Zarr**."
+msgstr "共同研究者との共有や長期保存には、**HDF5**、**GWF**、**Zarr** のような構造化された形式を優先してください。"
+
+#: ../docs_redesign/reference/io_capabilities.md:24
+#: a2b03ee71a14438c95bfd435d03cfd43
+msgid "First: Decision Rules"
+msgstr "まず最初に: 判断ルール"
+
+#: ../docs_redesign/reference/io_capabilities.md:26
+#: 5f1c1be6eaf34d78979c4ee2b19acb45
+msgid ""
+"If you need a **default GW storage format**, start with **HDF5**. For "
+"existing seismic or geophysical assets, start with **MiniSEED / SAC / WIN / "
+"ATS**. For general interchange, start with **CSV / NetCDF4 / Zarr**. For "
+"logger- or device-specific data, start with **GBD / TDMS / SDB / WAV / "
+"Audio**. For **MTH5**, the current public direct-I/O story is only the "
+"single **`ats.mth5`** path. A generic standalone **`format=\"mth5\"`** route"
+" is not published yet."
+msgstr ""
+"**まず保存形式を選ぶ**なら、GW 系データは **HDF5**、観測網の既存資産は **MiniSEED / SAC / WIN / "
+"ATS**、汎用交換は **CSV / NetCDF4 / Zarr**、ロガー固有データは **GBD / TDMS / SDB / WAV / "
+"Audio** を起点に考えると整理しやすいです。**MTH5** については、現時点の public direct-I/O は "
+"**`ats.mth5` の単一路だけ** で、汎用の standalone **`format=\"mth5\"`** はまだ公開していません。"
+
+#: ../docs_redesign/reference/io_capabilities.md:27
+#: 36a559ae3a3c4942a1ce8629e87df57f
+msgid "**Auto-detect is fine** when the extension uniquely selects one reader."
+msgstr "**自動判別でよい**のは、拡張子から reader が一意に決まる場合です。"
+
+#: ../docs_redesign/reference/io_capabilities.md:28
+#: 3c64d2fb54c44f35bdfd09628f26f24a
+msgid ""
+"GWpy-backed **`TimeSeries`** and **`TimeSeriesDict`** auto-identify native "
+"HDF5 for `.h5` / `.hdf5`; structurally identified NDScope files take "
+"precedence. Set **`format=\"hdf5\"` explicitly** for other ambiguous or "
+"GWexpy-only HDF5 class families."
+msgstr ""
+"GWpy-backed の **`TimeSeries`** と **`TimeSeriesDict`** は、`.h5` / `.hdf5` の "
+"native HDF5 を自動判別します。構造が NDScope に一致するファイルは、汎用の native 経路より先に選択されます。その他の曖昧な "
+"HDF5 ファミリ、または GWexpy-only のクラスでは **`format=\"hdf5\"` を明示**してください。"
+
+#: ../docs_redesign/reference/io_capabilities.md:29
+#: 2d1ca52096ef4a6b879f884dfb5cd999
+msgid ""
+"**Set `format=` explicitly** for ambiguous extensions such as `.xml`, for "
+"custom lab extensions, or whenever auto-detection is unclear."
+msgstr ""
+"**`format=` を明示する**のは、`.xml` "
+"のように経路が複数ありうる場合、独自拡張子を使っている場合、または実験データで自動判別が不安な場合です。"
+
+#: ../docs_redesign/reference/io_capabilities.md:30
+#: d1c8df1319174350b15fa02882098ead
+msgid ""
+"**Pass `timezone` explicitly** when the file stores local wall-clock time "
+"without embedded UTC/GPS. In the current user-facing guide, **GBD** is the "
+"main required case."
+msgstr ""
+"**`timezone` を必ず指定する**のは、ファイル内に UTC/GPS がなくローカル時刻だけを持つ形式です。現時点でユーザーが明示必須なのは "
+"**GBD** です。"
+
+#: ../docs_redesign/reference/io_capabilities.md:31
+#: 8204a60cbe584b4b94174b0c174ea1b1
+msgid ""
+"**Read-only / write-only matters**: `○ / ×` means a format can be read but "
+"not written."
+msgstr "**読み込み・書き込みの対応を確認する**：表の `○ / ×` は「読み込み可能、書き込み不可」を意味します。"
+
+#: ../docs_redesign/reference/io_capabilities.md:32
+#: d79fd11f7b084398aa759887e8e07097
+msgid ""
+"For richer direct-I/O objects beyond plain Series, start with **HDF5** for "
+"`Spectrogram`, `Histogram`, and `EventTable`. Field-class direct `.read()` /"
+" `.write()` is still under audit and is not published as a stable contract "
+"on this page."
+msgstr ""
+"Series 以外の direct I/O では、まず **HDF5** の `Spectrogram` / `Histogram` / "
+"`EventTable` を基準に考えてください。Field 系の direct `.read()` / `.write()` "
+"はまだ監査中で、このページでは安定契約として公開していません。"
+
+#: ../docs_redesign/reference/io_capabilities.md:34
+#: 68112ee0a5fc4dc5b9af0329fb3c50db
+msgid "Jump Links"
+msgstr "ジャンプリンク"
+
+#: ../docs_redesign/reference/io_capabilities.md:36
+#: 3bccf90dc6a142c5af2e3968f536d604
+msgid "<a href=\"#io-formats-en-quick\">Quick Selection Table</a>"
+msgstr "<a href=\"#io-formats-en-quick\">クイック判定表</a>"
+
+#: ../docs_redesign/reference/io_capabilities.md:37
+#: ffa6d6e8978a4e5e951ab471d46b6c54
+msgid ""
+"<a href=\"#io-formats-en-basic\">Basic `.read()` / `.write()` / `fetch()` "
+"Usage</a>"
+msgstr "<a href=\"#io-formats-en-basic\">`.read()` / `.write()` / `fetch()` の基本</a>"
+
+#: ../docs_redesign/reference/io_capabilities.md:38
+#: af866250e32a495297fa9d01dcc64fcd
+msgid "<a href=\"#io-formats-en-a\">A. GW Standards</a>"
+msgstr "<a href=\"#io-formats-en-a\">A. GW標準</a>"
+
+#: ../docs_redesign/reference/io_capabilities.md:39
+#: 4902ec28dcd7421f985a79a308aff7c4
+msgid "<a href=\"#io-formats-en-b\">B. Seismic and Geophysical Observation</a>"
+msgstr "<a href=\"#io-formats-en-b\">B. 地震・地球物理観測</a>"
+
+#: ../docs_redesign/reference/io_capabilities.md:40
+#: 14335866cafb4251866ce44b75966652
+msgid "<a href=\"#io-formats-en-c\">C. General Analysis and Exchange</a>"
+msgstr "<a href=\"#io-formats-en-c\">C. 汎用・解析用</a>"
+
+#: ../docs_redesign/reference/io_capabilities.md:41
+#: a4dc4bc29da44b70a41df484352a93cb
+msgid "<a href=\"#io-formats-en-d\">D. Loggers and Instrument Formats</a>"
+msgstr "<a href=\"#io-formats-en-d\">D. 計測機器・ロガー</a>"
+
+#: ../docs_redesign/reference/io_capabilities.md:42
+#: e4fc3570f7854b90a9cad53bef8c7121
+msgid "<a href=\"#io-formats-en-dev\">Developer Notes</a>"
+msgstr "<a href=\"#io-formats-en-dev\">開発者向け補足</a>"
+
+#: ../docs_redesign/reference/io_capabilities.md:44
+#: 56899b3c82614e2aa8a0be4cb0175b30
+msgid "<a id=\"io-formats-en-quick\"></a>"
+msgstr "<a id=\"io-formats-en-quick\"></a>"
+
+#: ../docs_redesign/reference/io_capabilities.md:46
+#: 50d07a95d69b404f901571fd14b7c522
+msgid "Quick Selection Table"
+msgstr "クイック判定表"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: a68998c9a40a46c3bbbe051e21af7ab0
+msgid "Group"
+msgstr "グループ"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 677df91eb8774c8aa64609e9130fb51d
+msgid "Start here when..."
+msgstr "まず見る場面"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 5ffa3e3673a242548f99315f4dbc4a69
+msgid "First format"
+msgstr "最初の形式"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 642bbc596bcc4cc2b635b392a0516965
+msgid "Formats covered here"
+msgstr "このページで扱う形式"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 1da64085890f49a1b6352967b6122640
+msgid "**A. GW Standards**"
+msgstr "**A. GW標準**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 9a2f26999974476aa503dcdb359c026a
+msgid "You want standard GW storage, exchange, or acquisition paths"
+msgstr "GW 系の標準保存、共有、取得経路を使いたい"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 55d78ffaecc74e3dae4549c1d45e41a0 912f10f3f1a84e0f846f9781d652f202
+msgid "**HDF5**"
+msgstr "**HDF5**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 2cf0d1c0425844709b4980accac7285e
+msgid "GWF, HDF5, hdf.ndscope, xml.diaggui, NDS2, GWOSC"
+msgstr "GWF, HDF5, hdf.ndscope, xml.diaggui, NDS2, GWOSC"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 7bb173308f3c4a448e2aa72402baf184
+msgid "**B. Seismic and Geophysical Observation**"
+msgstr "**B. 地震・地球物理観測**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 8387d5c022094315972e93628838ff57
+msgid "You need to read existing seismic or EM observation data"
+msgstr "既存の地震・電磁気観測フォーマットを読む"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: bfc83043e93a4e2da7132f3a96bbb311
+msgid "**mseed**"
+msgstr "**mseed**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 173900b15aa14f9aaa88802ebd5ede38
+msgid ""
+"mseed, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5 (MTH5 standalone is "
+"status-only here)"
+msgstr "mseed, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5（MTH5 standalone は状況注記のみ）"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 6dfb11c0734241a3abc649f261c57261
+msgid "**C. General Analysis and Exchange**"
+msgstr "**C. 汎用・解析用**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: f387398384e94edcb7bc44353dd171b0
+msgid "You need general-purpose storage or external analysis exchange"
+msgstr "汎用保存、外部解析、交換をしたい"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: c24687be70284ac7bed5d567c030353d
+msgid "**CSV / TXT** or **Zarr**"
+msgstr "**CSV / TXT** または **Zarr**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 3e3e314b5b5a48ab93d9498a6c09f2f3
+msgid "CSV / TXT, NetCDF4, Zarr, ROOT"
+msgstr "CSV / TXT, NetCDF4, Zarr, ROOT"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: b86bb12921db4ccc91a2c068ffa80b66
+msgid "**D. Loggers and Instrument Formats**"
+msgstr "**D. 計測機器・ロガー**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: dbfc64c5a88e42bea2787fe69fe91150
+msgid "You are working with device- or logger-specific time series"
+msgstr "ロガーや機材固有の時系列を読む"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 8a8bf754056a48a69297a0199b1ee6f6
+msgid "**GBD** or **TDMS**"
+msgstr "**GBD** または **TDMS**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 242b9f8d113d4c97af7bdaac10219450
+msgid "GBD, TDMS, SDB, WAV, MP3, FLAC, OGG, M4A"
+msgstr "GBD、TDMS、SDB、WAV、MP3、FLAC、OGG、M4A"
+
+#: ../docs_redesign/reference/io_capabilities.md:55
+#: 53bd93b4d8bf4d73a08e6bdcb532559c
+msgid ""
+"**Note**: `NDS2` and `GWOSC` are not file formats. They are included in **A."
+" GW Standards** because they are common GW data entry points. In the tables "
+"below, they are labeled as `network path`."
+msgstr ""
+"**注**：`NDS2` と `GWOSC` はファイル形式ではありません。一般的な GW データの入口であるため、**A. GW "
+"Standards** に含めています。以下の表では `network path` として表示されます。"
+
+#: ../docs_redesign/reference/io_capabilities.md:57
+#: 3b4d7daba8ba449ca788df9d3e21279e
+msgid "<a id=\"io-formats-en-basic\"></a>"
+msgstr "<a id=\"io-formats-en-basic\"></a>"
+
+#: ../docs_redesign/reference/io_capabilities.md:59
+#: 9b3bcb859cf244bfa79ce3d4bc234844
+msgid "Basic `.read()` / `.write()` / `fetch()` Usage"
+msgstr "`.read()` / `.write()` / `fetch()` の基本"
+
+#: ../docs_redesign/reference/io_capabilities.md:61
+#: 85b0098731ea47ad98654c77d002733b
+msgid ""
+"Purpose: show the baseline direct-I/O entry points before format-specific "
+"details"
+msgstr "目的: 形式ごとの細かい違いを見る前に、direct I/O の基本入口を確認する"
+
+#: ../docs_redesign/reference/io_capabilities.md:62
+#: 8a187e54401c444db10ce03bd48aa14d
+msgid ""
+"Input: file paths, an explicit `format=` when needed, or a detector/network "
+"query"
+msgstr "入力: ファイルパス、必要に応じた `format=`、またはネットワーク取得の問い合わせ"
+
+#: ../docs_redesign/reference/io_capabilities.md:63
+#: 8505a73e4fc44a1ca92140043670add1
+msgid "Output: `TimeSeries`, `TimeSeriesDict`, or other direct-I/O return objects"
+msgstr "出力: `TimeSeries`、`TimeSeriesDict` などの direct I/O の返り値"
+
+#: ../docs_redesign/reference/io_capabilities.md:82
+#: 6d196a42f707499b99c8b387da011d33
+msgid "`.read()` / `.write()` uses the gwpy-style I/O registry."
+msgstr "`.read()` / `.write()` は gwpy の I/O レジストリを利用します。"
+
+#: ../docs_redesign/reference/io_capabilities.md:83
+#: 2691ed7210c54996a986b12508fc8656
+msgid ""
+"`.xml` is ambiguous, so **use `format=\"xml.diaggui\"` explicitly** for "
+"DiagGUI XML data."
+msgstr "`.xml` は用途が曖昧なので、**DiagGUI XML では `format=\"xml.diaggui\"` を明示**してください。"
+
+#: ../docs_redesign/reference/io_capabilities.md:84
+#: 03b55e027bb34df88eee9742a7f303b1
+msgid ""
+"`NDS2` and `GWOSC` are not file readers, so they use `fetch()` / "
+"`fetch_open_data()` instead of `.read()`."
+msgstr ""
+"`NDS2` と `GWOSC` はファイルではないため、`.read()` ではなく `fetch()` / `fetch_open_data()` "
+"を使います。"
+
+#: ../docs_redesign/reference/io_capabilities.md:87
+#: d8cc418ea62e487196d991cf02f5a2dc
+msgid "Supported Classes at a Glance"
+msgstr "対応クラスの早見表"
+
+#: ../docs_redesign/reference/io_capabilities.md:89
+#: fe8e50b57a2c4658ace8f8522052920c
+msgid ""
+"If the main question is whether a format is for a single channel or multiple"
+" channels, use this table first."
+msgstr "「単一チャネルなのか、複数チャネルなのか」で入口を迷いやすい形式を先に整理すると、次のようになります。"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 4773a59ad1a842fb909463ee29ed2e3c
+msgid "Format / Family"
+msgstr "形式 / 系統"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: bf79de36007a43539b55da15e696f066
+msgid "Single"
+msgstr "単一"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: b624ac591ea846d795a6b0f58af94e57
+msgid "Multi"
+msgstr "複数"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: d6dac39bd163459fa7334283551d56f8
+msgid "Other classes"
+msgstr "そのほかの対応"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 61d86e24e73c4c3fa7668b7eaaaabdcd
+msgid "**GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / SDB / WAV / Audio**"
+msgstr "**GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / SDB / WAV / Audio**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 034998434ad74cf5afc0fa572cad01a9 2fba5ff5b8644b6f9214f03f0faba4ba
+#: 3c1f3a317490437f95deae751577923d 6c46dd6dfaf04a4eb9439987e725a8d8
+#: d01da3010f7b4d8cb51f8a3669d1aff4 f5332ae9a1114242a31d49368a563c42
+msgid "`TimeSeries`"
+msgstr "`TimeSeries`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 0675b4938f0946a18963ecf4d4ccbd29 2466e537cf9c4511835e35e227f998e8
+#: 41706f21bd144349986a0b2f67792732 4dcfc657a3194c0c80be6b88fed9efec
+#: 92d9ed0853174d6fa6193ce03260fda5
+msgid "`TimeSeriesDict`"
+msgstr "`TimeSeriesDict`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: d813f18180f24fc8b7e5947085edfd86
+msgid "Baseline end-user direct I/O pattern"
+msgstr "end-user 向け direct I/O の基本形"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 4ce64917ed7e44f1838b8e681d6baea7
+msgid "**CSV**"
+msgstr "**CSV**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 78c731d70069405ebe2fec605d2af374
+msgid "`TimeSeriesDict` also supports manifest-backed collection directories"
+msgstr "`TimeSeriesDict` は manifest 付き collection directory にも対応"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: bc76a254f1934c6b84507bec96cbdf29
+msgid "**TXT**"
+msgstr "**TXT**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: ac2f73502fab441a83b8b7e0f1f61b90 e86d24d26df84f1689932998b8830fce
+msgid "Multi-channel direct I/O uses collection directories"
+msgstr "複数チャネルの direct I/O は collection directory を使う"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: f6ea8b539308433a881c6aecd570be95
+msgid "**nc / Zarr / GBD / TDMS**"
+msgstr "**nc / Zarr / GBD / TDMS**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 80d5aff211224628bb0c1050afd2c663
+msgid "`TimeSeriesDict`, `TimeSeriesMatrix`"
+msgstr "`TimeSeriesDict`, `TimeSeriesMatrix`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 620bd4a835a249b0b6d18c40be8deaff
+msgid "Includes matrix-style direct I/O"
+msgstr "行列系まで含む direct I/O"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 4052ab98bad14d109f4fc090fdbdfa9d
+msgid "`TimeSeries`, `FrequencySeries`, and related classes"
+msgstr "`TimeSeries`, `FrequencySeries` など"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 3bb7bf6397284824b582effb47de3d25
+msgid "`TimeSeriesDict` and related collections"
+msgstr "`TimeSeriesDict` など"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 37f54b2effef4075b4a97687d0ca1c53
+msgid "Also covers `Spectrogram`, `Histogram`, and `EventTable`"
+msgstr "`Spectrogram`, `Histogram`, `EventTable` を含む主保存先"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 51d0ba1fe3ce467582b43a9e67b45fc5
+msgid "**hdf.ndscope**"
+msgstr "**hdf.ndscope**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 23a5278ac74947e98fe9c5d345f23878 87b3a8a9c09845f1bdb43e6ba2a8df21
+#: e60f267b68f24ac6b9a7d1e8b011138c f0d4fac2082e492fa3e6558ecd76776f
+#: fcce0ddb0a8f457aa58e61e53abfc4a3
+msgid "-"
+msgstr "-"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: f0910a8205604c9caf6ac58e3aa28e9f
+msgid ""
+"ndscope-compatible schema; aliases: `ndscope-hdf5`, `ndscope_hdf5`, "
+"`ndscopehdf5`"
+msgstr "ndscope 互換スキーマ。alias: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 858cdecf69b54a368fdfa4be56f359f2
+msgid "**xml.diaggui**"
+msgstr "**xml.diaggui**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 3fc997b29e814de096a0edfe2bf63c44
+msgid "Requires `products`; legacy alias: `dttxml`"
+msgstr "`products` 必須。旧 alias: `dttxml`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 2802468d8b964f2c937e2b57dea8d05b
+msgid "**NDS2 / GWOSC**"
+msgstr "**NDS2 / GWOSC**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 39b96137f7bd4670be243b4b367ce77c
+msgid "Use `fetch()` / `fetch_open_data()`"
+msgstr "`fetch()` / `fetch_open_data()` を使う"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 1df29945c71d4b36bde8da15a5ad101d 3999c96896ea4954a273fe93fc32bd3a
+msgid "**ATS.MTH5**"
+msgstr "**ATS.MTH5**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 0e34b092bc6f430b99266798ec9ce958
+msgid "Partial single-path support"
+msgstr "一部対応の単一路"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 8e93fc3483b74b27bcc62d09568b33a3
+msgid "**ROOT**"
+msgstr "**ROOT**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 555af848a7164b8f8d110c9b6dc77018
+msgid "`EventTable`"
+msgstr "`EventTable`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 03cbfedb69154f6bba3a6719189058f0
+msgid "Direct I/O is limited to EventTable"
+msgstr "EventTable の直 I/O のみ"
+
+#: ../docs_redesign/reference/io_capabilities.md:104
+#: b9ac9c4501ac4bac8acd28790c941150
+msgid ""
+"If you are unsure, start by thinking in terms of `TimeSeries` and "
+"`TimeSeriesDict`."
+msgstr "**まず迷ったら** `TimeSeries` と `TimeSeriesDict` を基準に考えてください。"
+
+#: ../docs_redesign/reference/io_capabilities.md:105
+#: 901a6e26573244b08e9d3994ee75f371
+msgid "`TimeSeriesMatrix` mainly matters for `NetCDF4`, `Zarr`, `GBD`, and `TDMS`."
+msgstr "**`TimeSeriesMatrix` が出てくるのは主に** `NetCDF4`, `Zarr`, `GBD`, `TDMS` です。"
+
+#: ../docs_redesign/reference/io_capabilities.md:106
+#: f1a8afa57b7c4bf6b1bc5f93d946edbe
+msgid ""
+"If you need to preserve richer objects beyond Series classes, start with "
+"**HDF5**."
+msgstr "**Series 以外もまとめて保持したい** 場合は、まず **HDF5** を検討してください。"
+
+#: ../docs_redesign/reference/io_capabilities.md:108
+#: 031c0a414cfe4180aba884421c574272
+msgid "Optional Dependency Matrix"
+msgstr "オプション依存関係の対応表"
+
+#: ../docs_redesign/reference/io_capabilities.md:110
+#: a270a0bc811c4267a73412661834e4fc
+msgid ""
+"Most direct-I/O routes work in a base GWexpy install. The formats below "
+"depend on optional packages or optional metadata helpers."
+msgstr ""
+"多くの direct I/O 経路は GWexpy の基本インストールで利用できます。次の形式は optional package または "
+"optional metadata helper に依存します。"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: bb8808ddb70047cf9f6baee874dd782c
+msgid "Format / family"
+msgstr "形式 / 系統"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: d56584acf3e246d29f092cc81e8c1654
+msgid "Optional dependency"
+msgstr "オプション依存関係"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: e652e820f8b94081aad897c2cda39425
+msgid "GWexpy extra"
+msgstr "GWexpy extra"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 66f1fe299f2a4d9583c5d6f8313f4b8e
+msgid "Missing-dependency behavior"
+msgstr "未導入時の挙動"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: e419d136fa5646cb8e3065d60b1b4cd7
+msgid "**WAV metadata**"
+msgstr "**WAV メタデータ**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 813291448fd54efab9c78b8964c7ac37
+msgid "`tinytag`"
+msgstr "`tinytag`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: bb05c4edf2d74cecb6502e95f18db569 ce1e37a9b3574c2eafadf9f2d8657392
+msgid "`audio`"
+msgstr "`audio`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: a6e7ae3e88d544419c99ae3e9d82ecad
+msgid ""
+"`.read(..., extract_metadata=True)` warns and skips metadata when `tinytag` "
+"is missing; install with the `audio` or `all` extra from the [Installation "
+"Guide](../tutorials/installation.md). Basic WAV read/write remains "
+"available."
+msgstr ""
+"`tinytag` が無い場合、`.read(..., extract_metadata=True)` "
+"は警告を出してメタデータをスキップします。[インストールガイド](../tutorials/installation.md) の `audio` または"
+" `all` extra でインストールしてください。基本的な WAV の読み書きは引き続き利用できます。"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 7a79578f138f4afd99f62d838c88f81a a63c8fc855714b3d9ac109be63bec6e5
+msgid "**MP3 / FLAC / OGG / M4A**"
+msgstr "**MP3 / FLAC / OGG / M4A**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 1eff03fe5df6451690db770fe1221f54
+msgid "`pydub`, `tinytag`"
+msgstr "`pydub`, `tinytag`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 8daf5bfa13a941c789a9ec59734d415f
+msgid ""
+"Audio read/write raises `ImportError`; some codecs also need an external "
+"`ffmpeg`/`libav` binary."
+msgstr "音声の読み書きは `ImportError` を送出します。一部 codec は外部の `ffmpeg` / `libav` も必要です。"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 32ef32e003c6491aa14551f7e66c9406
+msgid "**TDMS**"
+msgstr "**TDMS**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: b8f65410a8e147f3919bd712ae5afb8a
+msgid "`nptdms`"
+msgstr "`nptdms`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: ad67671f842749af98957805f4b22d89
+msgid "`io`"
+msgstr "`io`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: c5ac6685255a4bfbb420c2b4df7fb894
+msgid ""
+"Reader raises `ImportError` with the required `io` extra in its install "
+"guidance."
+msgstr "reader は必要な `io` extra の案内付きで `ImportError` を送出します。"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: a4ae63523d9849219f05eb3cc148f757
+msgid "**mseed / SAC / GSE2 / K-NET**"
+msgstr "**mseed / SAC / GSE2 / K-NET**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 05baeaf347264bf996546c5314f9513c 9fc4bc05abe642e68e71461dfd33ab1c
+msgid "`obspy`"
+msgstr "`obspy`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 185d09432c894518af2227f3aa18375a 94722ecff1dd43bab59f6715ce95d7bf
+#: d52fa1e175c94f15b2c80f7a102f8937
+msgid "`seismic`"
+msgstr "`seismic`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: a14b718962974742b04698e8c8cea06c
+msgid ""
+"Registered reader/writer raises `ImportError` with the required `seismic` "
+"extra in its install guidance."
+msgstr "登録済みの reader / writer は必要な `seismic` extra の案内付きで `ImportError` を送出します。"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: b8dd877c3bb74d67956e4e3c8028be76
+msgid "**WIN / WIN32**"
+msgstr "**WIN / WIN32**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 24c1e49a45b544d990e99e46dc2421ee
+msgid ""
+"Uses conditional registration: when ObsPy is unavailable, the `win` / "
+"`win32` registry entries may be absent."
+msgstr "条件付き登録です。ObsPy がない環境では `win` / `win32` の registry entry 自体が存在しない場合があります。"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 6b55286ead76424d926f5ff6f99fddae
+msgid "`mth5`"
+msgstr "`mth5`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 0c1e06a82bd4424b974257c7915a6533
+msgid ""
+"Reader raises `ImportError` with the required `seismic` extra in its install"
+" guidance."
+msgstr "reader は必要な `seismic` extra の案内付きで `ImportError` を送出します。"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 67e6e15911054748be796bd8c81e1be1
+msgid "**nc / NetCDF4**"
+msgstr "**nc / NetCDF4**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 33762010905344089f9e6c4c48e671c6
+msgid "`xarray`, `netCDF4`"
+msgstr "`xarray`, `netCDF4`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: dd50f459a9594c51876f59774b89c290
+msgid "`netcdf4`"
+msgstr "`netcdf4`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: ff3bd158ff23419e9f99b0133e0f68de
+msgid ""
+"Reader/writer raises `ImportError` with the required `netcdf4` extra in its "
+"install guidance."
+msgstr "reader / writer は必要な `netcdf4` extra の案内付きで `ImportError` を送出します。"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 39be122ca57f49698d2fba9ea5736579
+msgid "**Zarr**"
+msgstr "**Zarr**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 6cffe419e3444a07933b6b2db0bd9cad 7d4dc536ea2c420db2d12f95a2abdc0a
+msgid "`zarr`"
+msgstr "`zarr`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: d9695f3935e94c22be3f1b2fa3b68a3a
+msgid ""
+"Reader/writer raises `ImportError` with the required `zarr` extra in its "
+"install guidance."
+msgstr "reader / writer は必要な `zarr` extra の案内付きで `ImportError` を送出します。"
+
+#: ../docs_redesign/reference/io_capabilities.md:124
+#: 718fbaa37b144e39b684569681ce62ad
+msgid "<a id=\"io-formats-en-a\"></a>"
+msgstr "<a id=\"io-formats-en-a\"></a>"
+
+#: ../docs_redesign/reference/io_capabilities.md:126
+#: c8e13d447d544d7681d4d8fd3dcb331d
+msgid "A. GW Standards"
+msgstr "A. GW標準"
+
+#: ../docs_redesign/reference/io_capabilities.md:128
+#: 9beba3a19f884422b10c3721dcfbe1a0
+msgid ""
+"These are the standard GW storage, exchange, and acquisition paths. If you "
+"are unsure, start with **HDF5**. Use **GWF** when you need external standard"
+" compatibility, and **DTTXML** for diagnostic tool output."
+msgstr ""
+"GW 系の標準保存・交換・取得経路です。 迷ったらまず **HDF5**、外部標準との互換が必要なら **GWF**、診断ツール出力なら "
+"**DTTXML** を見てください。"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 4cd54789f3274cb495645d1ecf267953
+msgid "Format / Path"
+msgstr "形式 / 経路"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: a9e62d1db6c142e09ee03d9477bb7b07 c1ac65387bda4d2aafa0220f0ab21129
+#: c8fab513c6df46f2b2db4ad2f60b5a0b d5262d77fff8434995ec79966e07d4d3
+msgid "R / W"
+msgstr "読 / 書"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 4c97fcc529c14115a9799e7ae220e1a2 99062508cf984cdf9d1d3c68c18e5a47
+#: a9c568741af24d2ea3131bae9aefd1e0 d5d75d60816147f58fb80807853c15e5
+msgid "Main entry"
+msgstr "主な入口"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 8ce56dd0159d495cb7705ff8e0637cad c367d94638474271abab897f404ecfa0
+#: dc41ebe314de4120aad8f8e86a92a583 fc1377e0243146179f0e14b846777904
+msgid "Best for"
+msgstr "適したデータ"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 4cf22bc54cde42739568593c69ac1177 4f5d77b8e2b84846a0e7065fa46b36a0
+#: a49dab02669840daaaba75ca48fc435e c8505c4ee59b4d6cbe473b1a348d912b
+#: df867b28625147439f6e514a0f801539
+msgid "Notes"
+msgstr "注意事項"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 98fab039454042fe80a2cbd0cb7ba373
+msgid "**GWF** (`.gwf`)"
+msgstr "**GWF** (`.gwf`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 1a216777b1f14bcb9a44618f95f98e3e 3ba0f038b7b44a5095ec7b918de3242a
+#: 54af777b281d4d5e883277e492d29e81 562798547c744870bb5144ac386bb5f3
+#: 608cc85c5c104f5bbd2bf6422157cf09 6d43dc28c6ca499091edc7f98e9360ca
+#: 747840d3c25c4247962f4f09418cf229 8423264e84b7402b81fe719a482741a7
+#: 9b7e56db6f034e64abff2db7400e2a23 a2c96a2a2c494fa798e93f924e1168bd
+#: b38df3d4120c4634bceaf182caad8f22 c837c17a96ca41018ee850d39831b99d
+#: dacbbd385b8f4476a36cfc5985280e26
+msgid "○ / ○"
+msgstr "○ / ○"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 0af269cb8795407692784517ab0d5252
+msgid "`TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()`"
+msgstr "`TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 4576a9a50ac044efac644b9fb1b35b83
+msgid "Standard LIGO/KAGRA frame exchange"
+msgstr "LIGO/KAGRA の標準交換"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: d131f5eb8c444b0ebaf96f31b15fe1e5
+msgid "Standard format, via gwpy"
+msgstr "標準形式。gwpy 経由"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 461bfa67f7a54f3ca515cb0551e973c3
+msgid "**HDF5** (`.h5`, `.hdf5`)"
+msgstr "**HDF5** (`.h5`, `.hdf5`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 519a04aecf62473e9f808a3b2e52e90d
+msgid ""
+"`TimeSeries.read()` / `.write()`, `TimeSeriesDict.read()` / `.write()`; "
+"other classes use `format=\"hdf5\"`"
+msgstr ""
+"`TimeSeries.read()` / `.write()`, `TimeSeriesDict.read()` / "
+"`.write()`。その他のクラスは `format=\"hdf5\"` を使用"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 493d6bc85ca843f2ab54cd0dacdb2460
+msgid "Long-term storage with metadata"
+msgstr "長期保存、メタデータ保持"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: bd632a3d03ca48f7b945dbca45f6022e
+msgid ""
+"Native time-series HDF5 auto-identifies; prefer explicit format for other "
+"families"
+msgstr "native time-series HDF5 は自動判別。その他のファミリは明示を推奨"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 05037bf705304da3aca4a2a7bdc7225d
+msgid "**hdf.ndscope** (`.h5`, `.hdf5`)"
+msgstr "**hdf.ndscope** (`.h5`, `.hdf5`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: a742bad5b3fb46f0b7df30af8961f4a9
+msgid ""
+"`TimeSeriesDict.read(..., format=\"hdf.ndscope\")`, `.write(..., "
+"format=\"hdf.ndscope\")`"
+msgstr ""
+"`TimeSeriesDict.read(..., format=\"hdf.ndscope\")`, `.write(..., "
+"format=\"hdf.ndscope\")`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 758da66f88024605aa88beffc9396e5e
+msgid "ndscope-compatible HDF5"
+msgstr "ndscope 互換"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 68d37e0d25aa4121a6064b6683a73445
+msgid ""
+"`TimeSeriesDict` only. Legacy aliases: `ndscope-hdf5`, `ndscope_hdf5`, "
+"`ndscopehdf5`"
+msgstr "`TimeSeriesDict` 限定。旧 alias: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: fe73a77f14d342868b782520d2401f3e
+msgid "**xml.diaggui** (`.xml`, `.xml.gz`)"
+msgstr "**xml.diaggui** (`.xml`, `.xml.gz`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 051d6a3e16284b7697897a763d6eebf0 3b9229be127a4a23a973690566c24bf3
+#: 4365681a49e54f8286288ab97e2b532c 5dfd8b1b0e844bc7bd36af13de941d95
+#: 7152964eab0a4435a7cbd06b33a0868b 9f7ec727d05d480a80240460bd25ea3c
+#: ae95cec30caf4af5ab8c476b4bd85b57 c7fa341e0e5845d9a580802687f4672f
+#: d6d58d6b141443b3acc3a85ce318bed1 e907ed3935cb41c1bd817e906d8a571a
+msgid "○ / ×"
+msgstr "○ / ×"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 4633e686f81b4555bfa7277d5051bc6c
+msgid "`TimeSeriesDict.read(..., format=\"xml.diaggui\", products=\"...\")`"
+msgstr "`TimeSeriesDict.read(..., format=\"xml.diaggui\", products=\"...\")`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 111c6089bd674f3682799948ddaa8319
+msgid "DiagGUI / DTT outputs"
+msgstr "DiagGUI / DTT 出力"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 523f3c30b819483e8f8cbcbc246e65f3
+msgid "`products` is required; legacy alias: `dttxml`"
+msgstr "`products` 必須。旧 alias: `dttxml`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: d881210ede554a30850c1d193f930fe0
+msgid "**NDS2**"
+msgstr "**NDS2**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 53c5e6114a93403f97116eba19e64da1
+msgid "`TimeSeries.fetch()`"
+msgstr "`TimeSeries.fetch()`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: c8c8c5f871534f6a941bae8fd8198549
+msgid "Detector data server access"
+msgstr "検出器データサーバ取得"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 4737d808fdac4ae895d91fdab2f805cf b9a3cf8911d54ac1af319d10fef466e8
+msgid "Network path"
+msgstr "ネットワーク経由"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: d77f93689b5c45a58c554c74bfe49e18
+msgid "**GWOSC**"
+msgstr "**GWOSC**"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 0691891be46a4eb9ada885a22d18c79f
+msgid "`TimeSeries.fetch_open_data()`"
+msgstr "`TimeSeries.fetch_open_data()`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: e05860c5d847432fa0c07e904db48ae2
+msgid "Open data access"
+msgstr "オープンデータ取得"
+
+#: ../docs_redesign/reference/io_capabilities.md:140
+#: 3c09aa1b3db74ab4aac1a7da4cdad489
+msgid "Purpose: compare the main GW-oriented direct-I/O and network entry points"
+msgstr "目的: GW 系で代表的な direct I/O とネットワーク取得の入口を比較する"
+
+#: ../docs_redesign/reference/io_capabilities.md:141
+#: e8fed42b0d5f403ab650e379299a6666
+msgid "Input: HDF5, GWF, DTTXML, or detector/open-data access parameters"
+msgstr "入力: HDF5, GWF, DTTXML, または検出器 / オープンデータ取得の条件"
+
+#: ../docs_redesign/reference/io_capabilities.md:142
+#: b0d037eaa4f64c14b91664713ec92cdf
+msgid "Output: `TimeSeries`, `TimeSeriesDict`, or fetched open data"
+msgstr "出力: `TimeSeries`, `TimeSeriesDict`, または取得した open data"
+
+#: ../docs_redesign/reference/io_capabilities.md:155
+#: 7da7f8ad957842699f3ac0633a086e57
+msgid "**HDF5** is the safest general recommendation for structured GW data."
+msgstr "**HDF5** は安全で構造化しやすく、GW 系で最も無難な保存先です。"
+
+#: ../docs_redesign/reference/io_capabilities.md:156
+#: 67409a510d324568a45794600abf4441
+msgid ""
+"**GWF** reads accept a list or tuple of `.gwf` files for `TimeSeries` and "
+"`TimeSeriesDict`. Files are merged in time-span order; contiguous spans join"
+" normally, gaps raise by default, `pad=<value>` or `gap=\"pad\"` fills gaps,"
+" and `gap=\"ignore\"` concatenates without filling. Overlapping spans are "
+"rejected by default or with `gap=\"raise\"`, while `gap=\"ignore\"` "
+"concatenates files in span order and permits overlap concatenation. If "
+"`start` or `end` extends beyond available data, the default `gap=\"raise\"` "
+"behavior rejects the request; use `pad=<value>` or `gap=\"pad\"` to fill the"
+" outer interval. `gap=\"ignore\"` never pads missing samples, including "
+"outer `start`/`end` ranges. When channel names are not supplied for multi-"
+"file reads, auto-discovery uses the first file and assumes the remaining "
+"files expose compatible channels."
+msgstr ""
+"**GWF** は `TimeSeries` と `TimeSeriesDict` で `.gwf` ファイルの list / tuple "
+"入力に対応します。ファイルは時刻 span 順で結合されます。連続 span はそのまま結合し、ギャップは既定で失敗します。`pad=<値>` または "
+"`gap=\"pad\"` で埋められ、`gap=\"ignore\"` では埋めずに連結します。オーバーラップする span は既定または "
+"`gap=\"raise\"` で失敗しますが、`gap=\"ignore\"` では span "
+"順に連結し、オーバーラップの連結を許可します。`start` / `end` が実データの外側に伸びる場合も、既定の `gap=\"raise\"` "
+"では失敗します。外側区間を埋めるには `pad=<値>` または `gap=\"pad\"` を使ってください。`gap=\"ignore\"` "
+"は内部ギャップも外側の `start` / `end` 区間も padding しません。複数ファイル読み込みで channel "
+"名を指定しない場合、自動検出は先頭ファイルを使い、残りのファイルにも互換 channel がある前提です。"
+
+#: ../docs_redesign/reference/io_capabilities.md:157
+#: 5bd11343cd05404d8796eacdba5c35e3
+msgid ""
+"**DTTXML** changes behavior depending on `products`. Keep public direct "
+"reads on `TimeSeriesDict.read(..., format=\"xml.diaggui\", products=...)`."
+msgstr ""
+"**DTTXML** は `products` によって出力型が変わります。public direct read は "
+"`TimeSeriesDict.read(..., format=\"xml.diaggui\", products=...)` に揃えます。"
+
+#: ../docs_redesign/reference/io_capabilities.md:158
+#: 092f8cd2eefb41c2b7672886612802c0
+msgid ""
+"Frequency-domain DTTXML direct shims and registry adapters are "
+"implementation-only, not part of the public direct-I/O contract. Advanced "
+"internal users handling complex transfer functions can prefer `native=True` "
+"there."
+msgstr ""
+"周波数領域の DTTXML direct shim と registry adapter は implementation-only で、public "
+"direct-I/O contract には含めません。複素 transfer function を扱う高度な内部利用では `native=True` "
+"を優先できます。"
+
+#: ../docs_redesign/reference/io_capabilities.md:159
+#: 779847d2927e4ac4a5eba2a2ddbb554d
+msgid ""
+"**NDS2 / GWOSC** are shown inside group A, but explicitly marked as `network"
+" path` rather than file formats."
+msgstr "**NDS2 / GWOSC** はファイル形式ではないため、ページ中では A に置きつつ備考で `ネットワーク経由` と明示します。"
+
+#: ../docs_redesign/reference/io_capabilities.md:161
+#: ba648438107049ac82c44ed5d49afc8a
+msgid "<a id=\"io-formats-en-b\"></a>"
+msgstr "<a id=\"io-formats-en-b\"></a>"
+
+#: ../docs_redesign/reference/io_capabilities.md:163
+#: f1b5a55d44494ef4a92fe44530fb682a
+msgid "B. Seismic and Geophysical Observation"
+msgstr "B. 地震・地球物理観測"
+
+#: ../docs_redesign/reference/io_capabilities.md:165
+#: 7ca4d6625f22493fa4cbe10ec25bbc49
+msgid ""
+"This group is for existing seismic and electromagnetic observation formats. "
+"In practice, **MiniSEED** is the easiest starting point when you need to "
+"place a format in context."
+msgstr "地震観測・電磁気観測の既存フォーマットです。 既存資産をまず読めることが重要なグループで、MiniSEED を起点に考えると分かりやすいです。"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 49d376a0d7dc495b9c9982948b89b126 5600471413af42ca8af5d77afb838739
+#: 7935cd8a5aab41278af93e2a6c434abc 940cf778b2444a9eb6f98648aace51d9
+#: da74ca38d741416e86e0a8e678c47a09 e0a1bd947fb640eb8ea12584dc10cc34
+msgid "Format"
+msgstr "形式"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: e4ccf81c263a429284e3ce0b30d45f1a
+msgid "**mseed** (`.mseed`)"
+msgstr "**mseed** (`.mseed`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 703f619d6a4c46a283aaa45d693eee4a
+msgid "`TimeSeriesDict.read(..., format=\"mseed\")`, `.write(..., format=\"mseed\")`"
+msgstr "`TimeSeriesDict.read(..., format=\"mseed\")`, `.write(..., format=\"mseed\")`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 83884ffdcd7145edbde1ccf184e640b5
+msgid "Standard seismic waveform exchange"
+msgstr "地震波形の標準交換"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 917f6249eef04a9b9f752780f0fe7abf
+msgid "`gap` controls gap handling; legacy alias: `miniseed`"
+msgstr "`gap` でギャップ処理を指定。旧 alias: `miniseed`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 0c91e336ee7e49cfaa2726bb5d90d7df
+msgid "**SAC** (`.sac`)"
+msgstr "**SAC** (`.sac`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 004818fdd9784241b34cd58c53aedf76
+msgid "`TimeSeriesDict.read(..., format=\"sac\")`, `.write(..., format=\"sac\")`"
+msgstr "`TimeSeriesDict.read(..., format=\"sac\")`, `.write(..., format=\"sac\")`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 84ae6ef91a584e1982aecbb07c81c7e1
+msgid "Seismic waveform analysis"
+msgstr "地震波形解析"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: a40296a69e664c75b9d2108ee9b93573 bcbf7a16e76d422598abc7743dd33d9b
+msgid "Via ObsPy"
+msgstr "ObsPy 経由"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 598bc172cc1f48288498c7bfa0c40d1e
+msgid "**GSE2** (`.gse2`)"
+msgstr "**GSE2** (`.gse2`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 55f216fef47a4fccac4b50206300ec13
+msgid "`TimeSeriesDict.read(..., format=\"gse2\")`, `.write(..., format=\"gse2\")`"
+msgstr "`TimeSeriesDict.read(..., format=\"gse2\")`, `.write(..., format=\"gse2\")`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: c74b1b1eaa4a4c55ade4b48f9eb3e6eb
+msgid "Seismic waveform exchange"
+msgstr "地震波形交換"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 6270e2befccc4cb6a96b70d20dceac2e
+msgid "**K-NET** (`.knet`)"
+msgstr "**K-NET** (`.knet`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 704dc9f8124b4156939cc9973cbb6078
+msgid "`TimeSeriesDict.read(..., format=\"knet\")`"
+msgstr "`TimeSeriesDict.read(..., format=\"knet\")`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: fd0a0bbd87d94c16b016fc6a49c9aac7
+msgid "Strong-motion records"
+msgstr "K-NET 強震記録"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 742a56d1bed848a58e93cec943247455
+msgid "Read-only"
+msgstr "読み込み専用"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 8636a6d1e2b64d00bed72e0cf6632f76
+msgid "**WIN / WIN32** (`.win`, `.cnt`)"
+msgstr "**WIN / WIN32** (`.win`, `.cnt`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 4ab738d6846c4d0d83543b4aaff1ba1c
+msgid ""
+"`TimeSeriesDict.read(..., format=\"win\")`, `TimeSeriesDict.read(..., "
+"format=\"win32\")`"
+msgstr ""
+"`TimeSeriesDict.read(..., format=\"win\")`, `TimeSeriesDict.read(..., "
+"format=\"win32\")`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 5736103e59eb41b5be10df43a0e091b5
+msgid "Japanese WIN datasets"
+msgstr "国内 WIN データ"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 84af1298dd564e6bb7986a4b944d482f
+msgid "Improved parser, read-only"
+msgstr "改良版 parser、読み込み専用"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 20efa9a3ab23491c96a9d9ef02b63822
+msgid "**ATS** (`.ats`)"
+msgstr "**ATS** (`.ats`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: b73b0d63af054a289ab5496cfd1b7668
+msgid ""
+"`TimeSeries.read(..., format=\"ats\")`, `TimeSeriesDict.read(..., "
+"format=\"ats\")`"
+msgstr ""
+"`TimeSeries.read(..., format=\"ats\")`, `TimeSeriesDict.read(..., "
+"format=\"ats\")`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 663d6cedb64943e9b35d10907f04b8be
+msgid "Metronix observation data"
+msgstr "Metronix 観測データ"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 1eeea72b96c54a90a7d3c8c2e2d11df5
+msgid "Native binary reader"
+msgstr "ネイティブ binary reader"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 7bf8364bf03d447a88f3def1bb2de7ba
+msgid "**ATS.MTH5** (`format=\"ats.mth5\"`)"
+msgstr "**ATS.MTH5** (`format=\"ats.mth5\"`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 7d6899943bfa4949a386579a351fe6ce
+msgid "`TimeSeries.read(..., format=\"ats.mth5\")`"
+msgstr "`TimeSeries.read(..., format=\"ats.mth5\")`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 7c57afa1b45847f5a864984a434d1b90
+msgid "Single MTH5-backed path"
+msgstr "MTH5 経由の単一路"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: debef2ad8d0146c8b5668258b559b0b3
+msgid "Partial support"
+msgstr "一部対応"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 59d9134de7c8419788d0ba2e1e5626da
+msgid "**MTH5 standalone** (`.h5`)"
+msgstr "**MTH5 standalone** (`.h5`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 0c80ee9cdcc04467a193687f4055908a 6ff530bb24b34dac815dbfbaa7b3018c
+msgid "In progress"
+msgstr "対応中"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: ce0d361c872f476791d0ba72d4d69d19
+msgid "Dedicated `format=\"mth5\"` not yet exposed"
+msgstr "専用 `format=\"mth5\"` は未整備"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 370bc9a1b6724efa981f56f882d39255
+msgid "Future general MTH5 direct I/O"
+msgstr "今後の汎用 MTH5 direct I/O"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: f697d83044264aada323107a484a61d0
+msgid ""
+"**Not currently a public direct-I/O format**. The only direct path today is "
+"`ats.mth5`"
+msgstr "**現時点では public direct-I/O 対応ではありません**。使える direct path は `ats.mth5` のみ"
+
+#: ../docs_redesign/reference/io_capabilities.md:179
+#: 63ea009407fc4c8cae6299eddc8d84c1
+msgid ""
+"Purpose: compare common seismic and geophysical readers without overstating "
+"MTH5 support"
+msgstr "目的: 地震・地球物理系 reader の違いを、MTH5 を過大評価せずに比較する"
+
+#: ../docs_redesign/reference/io_capabilities.md:180
+#: c057828268f84582aeaf8e1bc1a3361c
+msgid ""
+"Input: existing waveform files such as MiniSEED, WIN/WIN32, or the limited "
+"`ats.mth5` path"
+msgstr "入力: MiniSEED, WIN/WIN32, または限定公開中の `ats.mth5` 経路"
+
+#: ../docs_redesign/reference/io_capabilities.md:181
+#: 4a82b5b2d9284b25be22dedc873f4b08
+msgid "Output: `TimeSeries` or `TimeSeriesDict` objects depending on the reader"
+msgstr "出力: reader に応じた `TimeSeries` または `TimeSeriesDict`"
+
+#: ../docs_redesign/reference/io_capabilities.md:192
+#: d30015941b5f4350a89707a8e897521c
+msgid ""
+"**MiniSEED** pads gaps with `NaN` by default. Use `gap=\"raise\"` if you "
+"want failures instead."
+msgstr "**MiniSEED** はギャップがある場合、既定では `NaN` パディングされます。`gap=\"raise\"` で失敗させることもできます。"
+
+#: ../docs_redesign/reference/io_capabilities.md:193
+#: b905a7ed1be44c278b29ef032763a2d8
+msgid "**K-NET** and **WIN / WIN32** are intentionally read-only."
+msgstr "**K-NET**, **WIN / WIN32** は表のとおり読み込み専用です。"
+
+#: ../docs_redesign/reference/io_capabilities.md:194
+#: d287610939e444d68b96f5a1da5ff0a3
+msgid "**ATS.MTH5** is the limited current direct path."
+msgstr "**ATS.MTH5** は利用経路が限定される current direct path です。"
+
+#: ../docs_redesign/reference/io_capabilities.md:195
+#: 65cde1ed47564c9b89960750949f0594
+msgid ""
+"**MTH5 standalone** is still in design/publication cleanup. Read this as "
+"**\"`ats.mth5` has partial support\"**, not as **\"MTH5 direct I/O is "
+"generally complete.\"**"
+msgstr ""
+"**MTH5 standalone** は設計・公開整理中です。**「MTH5 は対応済み」ではなく、「`ats.mth5` のみ一部対応」** "
+"と読んでください。"
+
+#: ../docs_redesign/reference/io_capabilities.md:197
+#: fcc2b02f9d254b349b3e941af30d9d01
+msgid "<a id=\"io-formats-en-c\"></a>"
+msgstr "<a id=\"io-formats-en-c\"></a>"
+
+#: ../docs_redesign/reference/io_capabilities.md:199
+#: 87982505cf10412093a1541e5b9fcf21
+msgid "C. General Analysis and Exchange"
+msgstr "C. 汎用・解析用"
+
+#: ../docs_redesign/reference/io_capabilities.md:201
+#: b661a452b3204b1b9d45df3504f34833
+msgid ""
+"These formats are useful for analysis notebooks, interchange, and general "
+"storage. The key rule here is not to mix up “format choice” with “library "
+"conversion.”"
+msgstr "解析ノート、外部解析、交換に向いた形式です。 このグループでは「保存形式として選ぶ話」と「他ライブラリへ変換する話」を混ぜないのが重要です。"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 24e7affaa3cf4a3cb5fc8339061a8af6
+msgid "**CSV** (`.csv`)"
+msgstr "**CSV** (`.csv`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: e8ae9fd45fcd4720975970fa58c86e40
+msgid ""
+"`TimeSeries.read(\"data.csv\")`, `TimeSeriesDict.read(\"data.csv\")`, "
+"`TimeSeriesDict.write(..., format=\"csv\")`"
+msgstr ""
+"`TimeSeries.read(\"data.csv\")`, `TimeSeriesDict.read(\"data.csv\")`, "
+"`TimeSeriesDict.write(..., format=\"csv\")`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: a90774dd8cbc493782cd699014c0f089
+msgid "Lightweight exchange and inspection"
+msgstr "軽量な交換、目視確認"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 8cb7d56c838941bab015ab224bf8a321
+msgid "Auto-identifies `.csv`; simple CSV exchange is metadata-light"
+msgstr "`.csv` は自動判定されます。単純な CSV 交換は metadata-light です"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 9a0ff812ccea40429ae0604151bb2b02
+msgid "**TXT** (`.txt`)"
+msgstr "**TXT** (`.txt`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 5eedd497bfc44f1083fe81b887d454a4
+msgid ""
+"`TimeSeries.read(..., format=\"txt\")`, `TimeSeriesDict.read(dir, "
+"format=\"txt\")`, `TimeSeriesDict.write(dir, format=\"txt\")`"
+msgstr ""
+"`TimeSeries.read(..., format=\"txt\")`, `TimeSeriesDict.read(dir, "
+"format=\"txt\")`, `TimeSeriesDict.write(dir, format=\"txt\")`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 87bfe5c8d95749e8b9e290d98a900d16
+msgid "Plain-text exchange"
+msgstr "プレーンテキスト交換"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: d9a8317896754338a21074881b9c87f4
+msgid "**nc** (`.nc`)"
+msgstr "**nc** (`.nc`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: a3092f5f2d7646e99624bc2ac54683a3
+msgid ""
+"`TimeSeries.read(..., format=\"nc\")`, `TimeSeriesDict.read(..., "
+"format=\"nc\")`, `TimeSeriesMatrix.read(..., format=\"nc\")`, `.write(..., "
+"format=\"nc\")`"
+msgstr ""
+"`TimeSeries.read(..., format=\"nc\")`, `TimeSeriesDict.read(..., "
+"format=\"nc\")`, `TimeSeriesMatrix.read(..., format=\"nc\")`, `.write(..., "
+"format=\"nc\")`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: ed1dfeac4e95423490bb834bbd05dea3
+msgid "Scientific storage for time-series-oriented data"
+msgstr "時系列系の科学データ保存"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 9c2b1d50c6184f88b186b476532d42a4
+msgid ""
+"Direct I/O here is centered on TimeSeries classes; legacy format alias: "
+"`netcdf4`"
+msgstr "direct I/O は TimeSeries 系中心。旧 format alias: `netcdf4`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 562c61a49efc474dbc690663d8098690
+msgid "**Zarr** (`.zarr`)"
+msgstr "**Zarr** (`.zarr`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: c91e98fb92a643e0a8ce8e1e7bfaa609
+msgid ""
+"`TimeSeries.read(..., format=\"zarr\")`, `TimeSeriesDict.read(..., "
+"format=\"zarr\")`, `TimeSeriesMatrix.read(..., format=\"zarr\")`, "
+"`.write(..., format=\"zarr\")`"
+msgstr ""
+"`TimeSeries.read(..., format=\"zarr\")`, `TimeSeriesDict.read(..., "
+"format=\"zarr\")`, `TimeSeriesMatrix.read(..., format=\"zarr\")`, "
+"`.write(..., format=\"zarr\")`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: c65d8d613478403cbd452531fec75353
+msgid "Chunked storage and parallel workflows"
+msgstr "chunked 保存、並列処理"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 91c2e8910be44b14876445bdc3cd6649
+msgid "Direct I/O here is centered on TimeSeries classes"
+msgstr "direct I/O は TimeSeries 系中心"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 152ad242b93946c99bfaebb9948c24cf
+msgid "**ROOT** (`.root`)"
+msgstr "**ROOT** (`.root`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 3500060619c4454881bd55bf79015c2f
+msgid "`EventTable.read(\"events.root\")`, `EventTable.write(..., format=\"root\")`"
+msgstr "`EventTable.read(\"events.root\")`, `EventTable.write(..., format=\"root\")`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 94d9c8de314a485da800cc89838ee2a1
+msgid "EventTable I/O"
+msgstr "EventTable の入出力"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: c2f60a23a6604beda3a6132915a5b286
+msgid ""
+"Auto-identifies `.root`; direct I/O here is EventTable only and requires "
+"`uproot`"
+msgstr "`.root` は自動判定されます。直 I/O は EventTable のみで、`uproot` が必要です"
+
+#: ../docs_redesign/reference/io_capabilities.md:212
+#: bd65a6c8b0ba4f3987cf7269863fa506
+msgid ""
+"Purpose: show the general-purpose direct-I/O routes without mixing them with"
+" interop-only bridges"
+msgstr "目的: 汎用交換向けの direct I/O を、interop 専用の橋渡しと混同せず整理する"
+
+#: ../docs_redesign/reference/io_capabilities.md:213
+#: 448a410129f54c9197e194527fc8a624
+msgid "Input: CSV, Zarr, ROOT, or other general exchange formats"
+msgstr "入力: CSV, Zarr, ROOT などの汎用形式"
+
+#: ../docs_redesign/reference/io_capabilities.md:214
+#: 2e8064d598d14f328dd99b5c45846c65
+msgid "Output: `TimeSeriesDict`, `TimeSeriesMatrix`, or `EventTable`"
+msgstr "出力: `TimeSeriesDict`, `TimeSeriesMatrix`, または `EventTable`"
+
+#: ../docs_redesign/reference/io_capabilities.md:225
+#: eae0add911784b71967a7747bf8fe3f6
+msgid ""
+"**CSV** remains useful for lightweight exchange and inspection. Treat simple"
+" CSV files as metadata-light: use HDF5, GWF, Zarr, NetCDF, or a manifest-"
+"backed collection directory when name, channel, and unit metadata must be "
+"preserved."
+msgstr ""
+"**CSV** は素朴ですが、共有や確認には依然として有用です。単純な CSV ファイルは metadata-light "
+"と考えてください。`name`、`channel`、`unit` まで保持したい場合は HDF5、GWF、Zarr、NetCDF、または "
+"manifest 付き collection directory を使います。"
+
+#: ../docs_redesign/reference/io_capabilities.md:226
+#: 195dafee2d4b4061bef4b122d57f3ab7
+msgid ""
+"CSV component columns are naive civil time and use the configured "
+"`timezone`. Ambiguous daylight-saving folds and nonexistent gaps raise a "
+"line-numbered `ValueError`; the reader never chooses an offset silently. "
+"Numeric timestamps are absolute and the generated sample-index route remains"
+" relative; both ignore `timezone` with one warning per top-level read."
+msgstr ""
+"CSV component column は naive civil time であり、設定した `timezone` を使います。daylight-"
+"saving の曖昧な fold と存在しない gap は行番号付きの `ValueError` になり、reader が暗黙に offset "
+"を選ぶことはありません。numeric timestamp は absolute、生成された sample-index route は relative"
+" であり、どちらも top-level read ごとに 1 回の warning を出して `timezone` を無視します。"
+
+#: ../docs_redesign/reference/io_capabilities.md:231
+#: edf8cc6daa0d442387c398ae656ed1fe
+msgid ""
+"CSV validates numeric and configured component-column cadence before "
+"resampling, using continuous GPS instants for UTC components. It rejects "
+"malformed or irregular input and any absolute float64 axis whose rounding "
+"error or spacing is not strictly below half the cadence. `resample=` applies"
+" only to requested channels; the 10,000,000-value cap covers all resampled "
+"values across a top-level single- or multi-file read before allocation."
+msgstr ""
+"CSV は数値時刻と設定済み component 列の cadence を resampling 前に検証し、UTC component には連続 "
+"GPS instant を使います。不正または不規則な入力と、丸め誤差または spacing が cadence の半分未満ではない絶対 float64"
+" 軸を拒否します。`resample=` は要求された channel だけに適用され、10,000,000個の上限は top-level の単一または"
+" multi-file read 全体で allocation 前に全 resampled value を数えます。"
+
+#: ../docs_redesign/reference/io_capabilities.md:237
+#: d484ebbf780d4347816f0336fdd5234d
+msgid ""
+"Malformed source rows include their physical line number. A finite, positive"
+" `sample_rate` declares source cadence and is used for single-row input; "
+"without it, the legacy one-second fallback remains. Component streams that "
+"cross a leap second without a representable `second=60` row fail closed as a"
+" missing sample."
+msgstr ""
+"不正な source row には物理行番号が含まれます。有限かつ正の `sample_rate` は source cadence を宣言し"
+"、single-row input に使われます。指定がなければ従来の 1 秒 fallback が残ります。表現可能な `second=60` row"
+" なしで leap second をまたぐ component stream は、missing sample として fail closed します。"
+
+#: ../docs_redesign/reference/io_capabilities.md:242
+#: cc9449d955a74a0c8b5c8b88992205cc
+msgid ""
+"Numeric CSV timestamps retain the legacy GPS-second interpretation. v0.1.14 "
+"does not add `time_scale=` or `time_unit=`; convert other scales before "
+"reading."
+msgstr ""
+"CSV の数値時刻は従来どおり GPS 秒として解釈します。v0.1.14 では `time_scale=` と `time_unit=` "
+"を追加しないため、他の time scale は読み込み前に変換してください。"
+
+#: ../docs_redesign/reference/io_capabilities.md:245
+#: d2e163f8f2b744a1b3433979b4e9337b
+msgid ""
+"**TXT** direct I/O is more limited: single-series paths are explicit "
+"`format=\"txt\"`, and multi-channel paths use collection directories."
+msgstr ""
+"**TXT** の direct I/O はより限定的で、単一 series は `format=\"txt\"` 明示、複数チャネルは "
+"collection directory 前提です。"
+
+#: ../docs_redesign/reference/io_capabilities.md:246
+#: 25f93438dcfd4352a686f99414a0aa8d
+msgid ""
+"**Pickle** portability notes still exist in class references, but Pickle is "
+"not a published direct `.read()` / `.write()` format on this page."
+msgstr ""
+"**Pickle** の可搬性メモは各クラスの reference に残していますが、このページでは Pickle を public direct "
+"`.read()` / `.write()` 形式としては扱いません。"
+
+#: ../docs_redesign/reference/io_capabilities.md:247
+#: 5f955e1aa2bd43b7af11022dca289b4c
+msgid ""
+"**NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**."
+" Field/xarray bridges belong to interop. For NetCDF, `netcdf4` is a legacy "
+"format token alias for `nc`; `.netcdf4` is not a documented auto-identified "
+"extension alias."
+msgstr ""
+"**NetCDF4 / Zarr** はこのページでは **TimeSeries 系の direct I/O** としてだけ扱います。Field と "
+"xarray の橋渡しは interop 側を見てください。NetCDF の `netcdf4` は `nc` の旧 format token "
+"alias であり、`.netcdf4` は公開された自動判定 extension alias ではありません。"
+
+#: ../docs_redesign/reference/io_capabilities.md:248
+#: ec8a358dbf4e42ccb347ab53a9dd400d
+msgid ""
+"**Zarr** direct I/O now expects per-array timing metadata explicitly. "
+"`sample_rate` is the primary key, `dt` is accepted as a fallback, and reads "
+"raise `ValueError` if neither is present unless you intentionally recover a "
+"legacy store with `sample_rate_override=...` or `dt_override=...`."
+msgstr ""
+"**Zarr** の direct I/O では、配列ごとの timing metadata を明示的に要求します。`sample_rate` "
+"を優先し、`dt` は fallback として受け付けます。どちらも無い場合は `ValueError` を送出し、legacy store "
+"を意図的に救済したい場合だけ `sample_rate_override=...` または `dt_override=...` を指定してください。"
+
+#: ../docs_redesign/reference/io_capabilities.md:249
+#: 1d5682847bf24122bc2a9a5d5700bc5d
+msgid ""
+"**ROOT** object-level export/import belongs to interop. This page only "
+"covers EventTable direct I/O, which requires `uproot`."
+msgstr ""
+"**ROOT** の object-level 変換はここでは扱いません。I/O ガイドでは `uproot` を必要とする EventTable の直"
+" I/O のみ扱います。"
+
+#: ../docs_redesign/reference/io_capabilities.md:251
+#: 6fb7f54053bd4df2a1e4e83685fb6307
+msgid "<a id=\"io-formats-en-d\"></a>"
+msgstr "<a id=\"io-formats-en-d\"></a>"
+
+#: ../docs_redesign/reference/io_capabilities.md:253
+#: 0845858e71b14fe6bc67023cd19e9ed7
+msgid "D. Loggers and Instrument Formats"
+msgstr "D. 計測機器・ロガー"
+
+#: ../docs_redesign/reference/io_capabilities.md:255
+#: c004d25d31e042c98d233431baff82d9
+msgid ""
+"This group is for logger and instrument-specific time-series formats. Time "
+"handling, units, and audio `t0` semantics are the main points to watch."
+msgstr "ロガーや機材固有の時系列です。 時刻の扱い、単位、音声の `t0` など、フォーマットごとの注意点が比較的重要です。"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 4c64b14f35284279b988d4a0dcb663e0
+msgid "**GBD** (`.gbd`)"
+msgstr "**GBD** (`.gbd`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 8d6b1ef0bf24411ea3d64638cf7bde35
+msgid ""
+"`TimeSeries.read(..., format=\"gbd\", timezone=...)`, "
+"`TimeSeriesDict.read(..., format=\"gbd\", timezone=...)`, "
+"`TimeSeriesMatrix.read(..., format=\"gbd\", timezone=...)`"
+msgstr ""
+"`TimeSeries.read(..., format=\"gbd\", timezone=...)`, "
+"`TimeSeriesDict.read(..., format=\"gbd\", timezone=...)`, "
+"`TimeSeriesMatrix.read(..., format=\"gbd\", timezone=...)`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: a9f93de28d26486e94a64ed9a3324200
+msgid "GRAPHTEC loggers"
+msgstr "GRAPHTEC ロガー"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 517e4b4e48a74e43b2839a1769f5cb18
+msgid "`timezone` is required for published reads"
+msgstr "public read では `timezone` 必須"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 5b5b6e21f2ac40629a22f17ba3d1cd96
+msgid "**TDMS** (`.tdms`)"
+msgstr "**TDMS** (`.tdms`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: e2cef5542cee4ef89c341367a6191179
+msgid ""
+"`TimeSeries.read(..., format=\"tdms\")`, `TimeSeriesDict.read(..., "
+"format=\"tdms\")`, `TimeSeriesMatrix.read(..., format=\"tdms\")`"
+msgstr ""
+"`TimeSeries.read(..., format=\"tdms\")`, `TimeSeriesDict.read(..., "
+"format=\"tdms\")`, `TimeSeriesMatrix.read(..., format=\"tdms\")`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: f6d3dc4fa571488caefb0198bd8e21ae
+msgid "National Instruments data"
+msgstr "National Instruments"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 0adbd0bf4a5c435f87377794ecd5f58f
+msgid "Read-only; requires `nptdms`"
+msgstr "読み込み専用。`nptdms` が必要"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 1dddbe0277bc4dbe899bca1a9d995690
+msgid "**SDB** (`.sdb`)"
+msgstr "**SDB** (`.sdb`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 0bb1c3e4fb504b3db9b09473747cb1cd
+msgid ""
+"`TimeSeries.read(..., format=\"sdb\")`, `TimeSeriesDict.read(..., "
+"format=\"sdb\")`"
+msgstr ""
+"`TimeSeries.read(..., format=\"sdb\")`, `TimeSeriesDict.read(..., "
+"format=\"sdb\")`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 3433add3a6794c96a0265b042091d178
+msgid "WeeWX and similar archives"
+msgstr "WeeWX 等の蓄積データ"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: b59e6eea1030404486f2200e217c65d7
+msgid "Read-only; if present, every `usUnits` value must be integer `1`"
+msgstr "読み込み専用。存在する場合、すべての `usUnits` 値は整数の `1` でなければなりません"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 1d5b7e36ba2748d5ba77160ec07176ff
+msgid "**WAV** (`.wav`)"
+msgstr "**WAV** (`.wav`)"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 4e3fb085964d4bc69df91bff0f96acc7
+msgid ""
+"`TimeSeries.read(..., format=\"wav\")`, `TimeSeriesDict.read(..., "
+"format=\"wav\")`, `TimeSeries.write(..., format=\"wav\")`"
+msgstr ""
+"`TimeSeries.read(..., format=\"wav\")`, `TimeSeriesDict.read(..., "
+"format=\"wav\")`, `TimeSeries.write(..., format=\"wav\")`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: b72d503facf642119b0eddc1525a0da1
+msgid "Uncompressed audio"
+msgstr "非圧縮音声"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 5b356b9769394907aa4846ed87e92136
+msgid "Public write is single-series only; does not preserve absolute time"
+msgstr "公開の書き込み API は単一時系列のみ対応。絶対時刻は保持しない"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 8f3e82512df344069a08797e90806d9a
+msgid ""
+"`TimeSeries.read(..., format=\"mp3\" / \"flac\" / \"ogg\" / \"m4a\")`, "
+"`TimeSeriesDict.read(..., format=...)`, `.write(...)`"
+msgstr ""
+"`TimeSeries.read(..., format=\"mp3\" / \"flac\" / \"ogg\" / \"m4a\")`, "
+"`TimeSeriesDict.read(..., format=...)`, `.write(...)`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: aa7bc597c3384a84ad795b86126612de
+msgid "Compressed audio"
+msgstr "圧縮音声"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: a29bbc4d444b47e9a87c30b22df9b4d7
+msgid "Uses `pydub`; some formats also need `ffmpeg`"
+msgstr "`pydub`、一部形式は `ffmpeg` が必要"
+
+#: ../docs_redesign/reference/io_capabilities.md:266
+#: 2a8da24a2a2443819fa7e6de367e683f
+msgid "Purpose: highlight logger-specific and audio-specific direct-I/O requirements"
+msgstr "目的: ロガー系・音声系 format で注意すべき条件をまとめる"
+
+#: ../docs_redesign/reference/io_capabilities.md:267
+#: a70587af9e9246ecbe9f1306b3988eb8
+msgid "Input: logger data, SDB archives, or audio files"
+msgstr "入力: logger data、SDB archive、または audio file"
+
+#: ../docs_redesign/reference/io_capabilities.md:268
+#: 533b504909e24e15917a9d2cf8219e7c
+msgid "Output: `TimeSeries`, `TimeSeriesDict`, or `TimeSeriesMatrix`"
+msgstr "出力: `TimeSeries`, `TimeSeriesDict`, または `TimeSeriesMatrix`"
+
+#: ../docs_redesign/reference/io_capabilities.md:278
+#: fc85f0be33574b24bee94c46193a0c92
+msgid "**GBD** requires `timezone`."
+msgstr "**GBD** は `timezone` を省略できません。"
+
+#: ../docs_redesign/reference/io_capabilities.md:279
+#: 0ca4dfb15c9345b5a57bc6a4ac07b9ec
+msgid "**TDMS** requires the optional `nptdms` dependency."
+msgstr "**TDMS** は optional dependency の `nptdms` が必要です。"
+
+#: ../docs_redesign/reference/io_capabilities.md:280
+#: a34962b69cc343b7a7548d2c74300ec2
+msgid ""
+"**MP3 / FLAC / OGG / M4A** require the optional `pydub` dependency. MP3/M4A "
+"commonly also need `ffmpeg`."
+msgstr ""
+"**MP3 / FLAC / OGG / M4A** は optional dependency の `pydub` が必要で、MP3/M4A は "
+"`ffmpeg` も必要になることが多いです。"
+
+#: ../docs_redesign/reference/io_capabilities.md:281
+#: fff1d8ae569a4f3e8112e754c39c0026
+msgid "**SDB** uses the canonical `.sdb` extension and `format=\"sdb\"` name."
+msgstr "**SDB** には canonical な `.sdb` extension と `format=\"sdb\"` 名を使います。"
+
+#: ../docs_redesign/reference/io_capabilities.md:282
+#: 7abc6be810764e5a9ac3c751866f47e1
+msgid ""
+"**WAV / compressed-audio formats** do not preserve absolute timestamps. "
+"Reading with `t0=0.0` is a convenience convention, not a claim that the "
+"source had an absolute epoch."
+msgstr ""
+"**WAV / 圧縮音声形式** は絶対時刻を持たないため、読み込み時は便宜上 `t0=0.0` "
+"として扱います。「絶対時刻がある」という意味ではありません。"
+
+#: ../docs_redesign/reference/io_capabilities.md:284
+#: ce86f54943294dd7bfcfd065fbdbbeca
+msgid "<a id=\"io-formats-en-dev\"></a>"
+msgstr "<a id=\"io-formats-en-dev\"></a>"
+
+#: ../docs_redesign/reference/io_capabilities.md:286
+#: e43c8667583a4ae4830656eea7dd0f46
+msgid "Developer Notes"
+msgstr "開発者向け補足"
+
+#: ../docs_redesign/reference/io_capabilities.md:288
+#: 528108f9710548cca1f1fde4526887ca
+msgid ""
+"Most users can skip this section. It tracks implementation status for "
+"contributors: formats that work but are not yet prominent in the public "
+"tables, and format tokens reserved for future work."
+msgstr "ほとんどのユーザーはこのセクションを読み飛ばして構いません。このセクションは寄稿者向けに実装状況を追跡するためのもので、動作するもののまだ公開の対応表では目立たせていないフォーマットと、将来の実装のために予約されたフォーマットトークンをまとめています。"
+
+#: ../docs_redesign/reference/io_capabilities.md:291
+#: 55f531d4023f4232b97fc83a49c3f548
+msgid "Managed in design, but not prominent in the public page"
+msgstr "設計上は管理するが、公開ページでは主表示しないもの"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 475568620b7347ddadee35da3cfb43ba 4923614358874aa79bfd5a31aa9ddf98
+#: 896da84d61ec43589ca7a477ff4f3f93
+msgid "Status"
+msgstr "状態"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: d4aaa51b337a4f4d8f8b499424002d65
+msgid "`hdf.ndscope`"
+msgstr "`hdf.ndscope`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: d7887c6f5d8d44579ffb7dbeb0db7b63
+msgid "Implemented, not yet prominent"
+msgstr "実装済み（未掲載）"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 125d323947fa428f8a1e6168f57d2fdd
+msgid ""
+"`TimeSeriesDict`-only HDF5 schema. Legacy aliases: `ndscope-hdf5`, "
+"`ndscope_hdf5`, `ndscopehdf5`"
+msgstr ""
+"`TimeSeriesDict` 限定の HDF5 スキーマ。旧 alias は `ndscope-hdf5`, `ndscope_hdf5`, "
+"`ndscopehdf5`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: e29a49f874fd401c8ae6605fc7afcf67
+msgid "`ATS.MTH5`"
+msgstr "`ATS.MTH5`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 500d3da4d84b4c26b8505572f4239d95
+msgid "Implemented with partial scope"
+msgstr "実装済み（一部対応）"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: efcb030b61b645e2819bc0656af8e7a2
+msgid "Current public direct path backed by MTH5"
+msgstr "MTH5 経由の current public direct path"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: ac726b0e31494653ae39a0aac8559a68
+msgid "`MTH5 standalone`"
+msgstr "`MTH5 standalone`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 91030b4194f542629eb86a9a83ad5877
+msgid ""
+"Dedicated `format=\"mth5\"` is not exposed yet; not published as public "
+"direct I/O"
+msgstr "専用 `format=\"mth5\"` は未整備。public direct-I/O としては未公開"
+
+#: ../docs_redesign/reference/io_capabilities.md:299
+#: 4b4a826df830488e9d1063bba5dccd1c
+msgid "Planned Format Tokens"
+msgstr "実装予定のフォーマットトークン"
+
+#: ../docs_redesign/reference/io_capabilities.md:301
+#: cac60e43c1dd4e6ca8d1534bf97cd365
+msgid ""
+"The entries below are FrequencySeries-specific contributor tracking only. "
+"They do not describe the separately supported TimeSeries and TimeSeriesDict "
+"routes for WIN, WIN32, or SDB shown above."
+msgstr ""
+"以下の項目は FrequencySeries 固有の contributor tracking だけを対象にします。上に示した、別途対応する "
+"WIN、WIN32、SDB の TimeSeries と TimeSeriesDict route を説明するものではありません。"
+
+#: ../docs_redesign/reference/io_capabilities.md:305
+#: 4565db95ae984b088f4fd0e595970bb8
+msgid "TimeSeries stubs"
+msgstr "時系列 stub"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 4c2da4a81a774c7990e1a2dd8f2c5d17 7934b85b0b394e8d91f976875dd61d5c
+msgid "`orf`"
+msgstr "`orf`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 02cf72534e0c4fa1a80069bd60ac0b34 09820b1268ef440fa5f48f2154a7f6b0
+#: 0aa13dd34b30415aa9c3b2d2fc064a21 0ab94ecb829e40519a2261cac6b71bdd
+#: 1f7756247c4f4a25bb148883f5103cf9 2e13b844c62f4e22b4492208291e9916
+#: 375fdd9d53a847e2b2d7a6041a8b9aa3 3ceb71c4b7af4f1fb1c749d4704c3594
+#: 480707ff71374a6d95f98eafabdfcc51 526803096a9f4a00a6e8d34a01de944a
+#: 58206f2f4bc1448094007a9c26d001a5 65983adbeb884e0ab80a509c16fa4075
+#: 69eb54abeb8945fb9e811eaa620caead 73476065f6ee4dfdb189e6b79703805c
+#: 86f3a80e5cba4662935cc5ea38701d9f b20554828a0b4e7fa279ade2db5018cc
+#: dceb1d6df140402c9d9a0d0e1315df56
+msgid "Planned"
+msgstr "対応予定"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: da984b4b528f4d4d82835528560f31d4 f33ea945a0b44bde85c09845a3c28ba4
+msgid "`mem`"
+msgstr "`mem`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 6b80956744ec44dfa8439df71282edab 85309f1c1cce45dc9d97dd920d8ff83a
+msgid "`wvf`"
+msgstr "`wvf`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 84d8c01776df4ca6be29779238165fea bc31479bd36f47068b18ffc8d0c7ab9c
+msgid "`wdf`"
+msgstr "`wdf`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 0212b799acc54c3aa458fa5443578e2d d3d41eef4cf540edadfe36b3495ab903
+msgid "`taffmat`"
+msgstr "`taffmat`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 10ad836c5b3544ca819cf8322a02caa7 c6e2309b00f942b3be4a039aca10788c
+msgid "`lsf`"
+msgstr "`lsf`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 046f85a45cef4a34824dd1763d5ffcc1 a86dd54cd2f545c180a4cb91e5b36622
+msgid "`li`"
+msgstr "`li`"
+
+#: ../docs_redesign/reference/io_capabilities.md:317
+#: dacbc142bc9449aa85789c42db7e1422
+msgid "FrequencySeries stubs"
+msgstr "周波数系列 stub"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 5936f50d6b694be094f4c2d4b60d2f93
+msgid "`win`"
+msgstr "`win`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: def8f7ec077143ec98b35ff58c9edc7b
+msgid "`win32`"
+msgstr "`win32`"
+
+#: ../docs_redesign/reference/io_capabilities.md:16
+#: 7c732f19a9ea44d898dbfa0e3ba53ab1
+msgid "`sdb`"
+msgstr "`sdb`"
+
+#: ../docs_redesign/reference/io_capabilities.md:332
+#: 3ca0432a897a4a419f04bbd14c5a7ae2
+msgid "Related Pages"
+msgstr "関連ページ"
+
+#: ../docs_redesign/reference/io_capabilities.md:334
+#: 538da1e8b5564cd5b345005ff7dac21c
+msgid "[Interop tutorial](../how-to/interop/intro_interop.ipynb)"
+msgstr "[Interop チュートリアル](../how-to/interop/intro_interop.ipynb)"
+
+#: ../docs_redesign/reference/io_capabilities.md:335
+#: 7d392ac269364b85ae62b357827639b5
+msgid "[Interop API reference](../reference/api/interop)"
+msgstr "[Interop API リファレンス](../reference/api/interop)"
+
+#: ../docs_redesign/reference/io_capabilities.md:336
+#: 68be2d0e434e4c709d3dc874e0514682
+msgid ""
+"[Verification and Quality "
+"Signals](../explanation/verification_and_quality.md)"
+msgstr "[検証と品質シグナル](../explanation/verification_and_quality.md)"
+
+#: ../docs_redesign/reference/io_capabilities.md:337
+#: 10c3a064af554c2ea22104bebd6af78c
+msgid "[Installation guide](../tutorials/installation.md)"
+msgstr "[インストールガイド](../tutorials/installation.md)"
+
+#: ../docs_redesign/reference/io_capabilities.md:339
+#: 97625f57ff3a4d21991de0134152de83
+msgid "Next to Read"
+msgstr "次に読む"
+
+#: ../docs_redesign/reference/io_capabilities.md:341
+#: 9e4853ecd92f42f9b2ff1e9a632d12fe
+msgid ""
+"[Interop / Conversion Guide](interop_capabilities.md) for `to_*()` / "
+"`from_*()` bridges and object-level conversion"
+msgstr "[相互運用と変換ガイド](interop_capabilities.md)：`to_*()` / `from_*()` による連携とオブジェクト単位の変換"
+
+#: ../docs_redesign/reference/io_capabilities.md:342
+#: 92ffc381faee42948e275607befee76f
+msgid ""
+"[GPS Time Utility Functions](../how-to/time_utilities.md) if your I/O "
+"workflow needs timezone or GPS-time handling"
+msgstr ""
+"I/O ワークフローでタイムゾーンや GPS 時刻の扱いが必要なら [GPS 時刻ユーティリティ関数](../how-"
+"to/time_utilities.md)"
+
+#: ../docs_redesign/reference/io_capabilities.md:343
+#: 43edc8707721468dad2c469be0f4ad02
+msgid ""
+"[Installation guide](../tutorials/installation.md) if you need optional "
+"dependencies before using a format backend"
+msgstr "フォーマットのバックエンドを使う前にオプション依存が必要なら [インストールガイド](../tutorials/installation.md)"
+
+#: ../docs_redesign/reference/io_capabilities.md:345
+#: bd960235da8d45e896e304aef0088715
+msgid "Page-End Navigation"
+msgstr "ページ末尾ナビゲーション"
+
+#: ../docs_redesign/reference/io_capabilities.md:347
+#: d41db0ada3ea4676949f4f9adac21409
+msgid "<a href=\"#io-formats-en-quick\">Back to Quick Selection Table</a>"
+msgstr "<a href=\"#io-formats-en-quick\">クイック判定表へ戻る</a>"
+
+#: ../docs_redesign/reference/io_capabilities.md:348
+#: 7c18cc14a1d04c2598a871f890477290
+msgid "<a href=\"#io-formats-en-basic\">Back to Basic Usage</a>"
+msgstr "<a href=\"#io-formats-en-basic\">基本的な使い方へ戻る</a>"
+
+#: ../docs_redesign/reference/io_capabilities.md:349
+#: 018a0d6a11cf44c2abf8f10238c98a74
+msgid "<a href=\"#io-formats-en-top\">Back to Top</a>"
+msgstr "<a href=\"#io-formats-en-top\">トップへ戻る</a>"

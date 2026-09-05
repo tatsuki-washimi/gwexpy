@@ -1,0 +1,115 @@
+{
+  "head": "eed7b1ed8fa60cf6fd40b3cc2b88994c86ac8bdd",
+  "pr_merge_source": "8b167074fed82fcbe4ce1b415e9d51c0a2946967",
+  "pr_merge_base": "3ade51de26c9adf21c4a7ad076837967e61c8038",
+  "actionlint": {
+    "run": 33960803202,
+    "result": "success"
+  },
+  "compatibility": {
+    "run": 33960803298,
+    "result": "success",
+    "artifact_source_matches_head": true,
+    "per_version": {
+      "4.0.1": {
+        "environment": {
+          "gwpy": "4.0.1",
+          "python": "3.11.15 | packaged by conda-forge | (main, Jun 11 2026, 03:34:02) [GCC 14.3.0]",
+          "source_sha": "eed7b1ed8fa60cf6fd40b3cc2b88994c86ac8bdd",
+          "lalsuite": "7.26.15",
+          "numpy": "1.26.4",
+          "scipy": "1.13.1",
+          "astropy": "6.1.7",
+          "pandas": "3.0.5",
+          "matplotlib": "3.10.8",
+          "iminuit": "2.32.0"
+        },
+        "inventory_passed": 396,
+        "focused_passed": 11,
+        "proxy_passed": 87,
+        "proxy_skipped": 1,
+        "timeseries_passed": 3158,
+        "timeseries_skipped": 147,
+        "timeseries_xfailed": 3
+      },
+      "4.0.2": {
+        "environment": {
+          "gwpy": "4.0.2",
+          "python": "3.11.15 | packaged by conda-forge | (main, Jun 11 2026, 03:34:02) [GCC 14.3.0]",
+          "source_sha": "eed7b1ed8fa60cf6fd40b3cc2b88994c86ac8bdd",
+          "lalsuite": "7.26.15",
+          "numpy": "1.26.4",
+          "scipy": "1.13.1",
+          "astropy": "6.1.7",
+          "pandas": "3.0.5",
+          "matplotlib": "3.10.8",
+          "iminuit": "2.32.0"
+        },
+        "inventory_passed": 396,
+        "focused_passed": 11,
+        "proxy_passed": 87,
+        "proxy_skipped": 1,
+        "timeseries_passed": 3158,
+        "timeseries_skipped": 147,
+        "timeseries_xfailed": 3
+      }
+    }
+  },
+  "pr_fast": {
+    "run": 33960803203,
+    "result": "failure",
+    "passed": 10887,
+    "failed": 1,
+    "skipped": 398,
+    "deselected": 28,
+    "xfailed": 7,
+    "failure": "tests/test_release_contracts.py::test_v023_review_lanes_cover_every_fixed_base_candidate_change",
+    "parallel_jobs_succeeded": 10
+  },
+  "docs": {
+    "run": 33960803425,
+    "public_job": 101292241813,
+    "public_result": "success",
+    "legacy_job": 101292241727,
+    "legacy_result": "cancelled",
+    "annotation": "The job has exceeded the maximum execution time of 45m0s",
+    "notebook_checks_seconds": 1707,
+    "source_preparation_seconds": 852,
+    "strict_html_seconds_before_cancellation": 14,
+    "new_timeout_minutes": 60
+  },
+  "artifact_checks": {
+    "artifact": "docs-validation-evidence",
+    "source_matches_clean_pr_merge": true,
+    "successful_canonical_notebooks": 59,
+    "successful_case_studies": 24,
+    "languages": [
+      "en",
+      "ja"
+    ],
+    "audience_routes_per_home": 6,
+    "png_bytes_per_language": 45714,
+    "png_sha256": "91d0c4893b4eba1b4f083dbeda40d65bf519bb8e599e8a3103c6a20d2e41c6d0",
+    "retained_downloads_match_source": [
+      "quickstart.py",
+      "commissioner.py",
+      "commissioner.xml"
+    ]
+  },
+  "commands": [
+    "gh run view 33960803298 --json status,conclusion,jobs",
+    "gh run download 33960803298 --dir /tmp/gwexpy-pr713-followup/final-ci-compat",
+    "gh run view 33960803203 --log",
+    "gh run view 33960803425 --log",
+    "gh api repos/tatsuki-washimi/gwexpy/check-runs/101292241727/annotations",
+    "gh run download 33960803425 --name docs-validation-evidence --dir /tmp/gwexpy-pr713-followup/final-ci-docs"
+  ],
+  "permanent_run_urls": [
+    "https://github.com/tatsuki-washimi/gwexpy/actions/runs/33960803202",
+    "https://github.com/tatsuki-washimi/gwexpy/actions/runs/33960803298",
+    "https://github.com/tatsuki-washimi/gwexpy/actions/runs/33960803203",
+    "https://github.com/tatsuki-washimi/gwexpy/actions/runs/33960803425"
+  ],
+  "physical_approval": false,
+  "production_readback": false
+}

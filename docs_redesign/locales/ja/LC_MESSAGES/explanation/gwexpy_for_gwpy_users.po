@@ -27,10 +27,9 @@ msgstr "GWpy ユーザーのための GWexpy"
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:3
 #: 11771f6bea714582916cc4173a436a82
 msgid ""
-"This page is the **entry point for moving from GWpy to GWexpy**.   It is "
-"not intended to be a full API catalog. The goal is to understand, "
-"quickly, what still works as-is and where the high-value differences "
-"start."
+"This page is the **entry point for moving from GWpy to GWexpy**.   It is not intended to be a "
+"full API catalog. The goal is to understand, quickly, what still works as-is and where the high-"
+"value differences start."
 msgstr ""
 "このページは **GWpy から GWexpy へ移行するための入口** です。完全な API "
 "カタログを目指すものではありません。目的は、何がそのまま使えて、価値の高い差分がどこから始まるのかを手早く把握することです。"
@@ -38,14 +37,12 @@ msgstr ""
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:6
 #: d618590e2fec443b9a4c63728b426295
 msgid ""
-"If you want a **difference-oriented index of added APIs**, see [GWpy "
-"Difference API Index](../reference/gwpy_added_api.md).   If you want the "
-"full API surface regardless of GWpy compatibility, use the [API "
-"Reference](../reference/index.md)."
+"If you want a **difference-oriented index of added APIs**, see [GWpy Difference API "
+"Index](../reference/gwpy_added_api.md).   If you want the full API surface regardless of GWpy "
+"compatibility, use the [API Reference](../reference/index.md)."
 msgstr ""
-"**追加 API を差分観点で引ける一覧** が欲しい場合は [GWpy 差分 API "
-"一覧](../reference/gwpy_added_api.md) を参照してください。GWpy 互換性に関係なく全 API を見たい場合は "
-"[API リファレンス](../reference/index.md) を使ってください。"
+"**追加 API を差分観点で引ける一覧** が欲しい場合は [GWpy 差分 API 一覧](../reference/gwpy_added_api.md) を参照してください。GWpy "
+"互換性に関係なく全 API を見たい場合は [API リファレンス](../reference/index.md) を使ってください。"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:9
 #: 7e95568c839d413e91720ff305b80a11
@@ -55,20 +52,19 @@ msgstr "まず最初に押さえること"
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:11
 #: 252177d7c00b4bf89fbfe00866a5079e
 msgid ""
-"**Single-channel workflows are often still familiar.** For `TimeSeries` /"
-" `FrequencySeries` / `Spectrogram`, many basic read, plot, and spectral-"
-"analysis paths can be tried first by swapping imports to `gwexpy`."
+"**Single-channel workflows are often still familiar.** For `TimeSeries` / `FrequencySeries` / "
+"`Spectrogram`, many basic read, plot, and spectral-analysis paths can be tried first by swapping "
+"imports to `gwexpy`."
 msgstr ""
-"**単一チャンネルのワークフローは、多くの場合これまで通りです。** `TimeSeries` / `FrequencySeries` / "
-"`Spectrogram` では、基本的な読み込み・プロット・スペクトル解析の多くが、import を `gwexpy` "
-"に差し替えるだけでまず試せます。"
+"**単一チャンネルのワークフローは、多くの場合これまで通りです。** `TimeSeries` / `FrequencySeries` / `Spectrogram` "
+"では、基本的な読み込み・プロット・スペクトル解析の多くが、import を `gwexpy` に差し替えるだけでまず試せます。"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:13
 #: ba556afc0de84f619eed488cda8cb9a6
 msgid ""
-"**The biggest shift is multi-channel processing.** Instead of manually "
-"looping over `TimeSeriesDict`, you can convert it with `to_matrix()` and "
-"treat the channel set as a batch-analysis container."
+"**The biggest shift is multi-channel processing.** Instead of manually looping over "
+"`TimeSeriesDict`, you can convert it with `to_matrix()` and treat the channel set as a batch-"
+"analysis container."
 msgstr ""
 "**最も大きく変わるのは多チャンネル処理です。** `TimeSeriesDict` を手動でループする代わりに、`to_matrix()` "
 "で変換し、チャンネル群をバッチ解析コンテナとして扱えます。"
@@ -76,38 +72,19 @@ msgstr ""
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:15
 #: eaeab19abfed487197c5a834d51deebe
 msgid ""
-"**The Field API is a GWexpy-only extension.** `ScalarField` and "
-"`FieldList` / `FieldDict` cover spatially indexed data and batch "
-"operations across multiple fields, which GWpy does not provide as a "
-"standard layer."
+"**The Field API is a GWexpy-only extension.** `ScalarField` and `FieldList` / `FieldDict` cover "
+"spatially indexed data and batch operations across multiple fields, which GWpy does not provide "
+"as a standard layer."
 msgstr ""
-"**Field API は GWexpy 独自の拡張です。** `ScalarField` や `FieldList` / `FieldDict`"
-" は、空間的にインデックス付けされたデータや、複数フィールドにまたがるバッチ操作を扱います。これらは GWpy "
-"が標準層として提供していないものです。"
+"**Field API は GWexpy 独自の拡張です。** `ScalarField` や `FieldList` / `FieldDict` "
+"は、空間的にインデックス付けされたデータや、複数フィールドにまたがるバッチ操作を扱います。これらは GWpy が標準層として提供していないものです。"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:17
 #: d9ebc026b3754baa8b3755ea14da26ac
 msgid ""
-"**Some external-library calls move onto the data object itself.** "
-"Representative examples are `.find_peaks()`, `.fit()`, `.hht()`, and "
-"`.arima()`."
-msgstr ""
-"**一部の外部ライブラリ呼び出しは、データオブジェクト自身のメソッドになります。** 代表例は "
-"`.find_peaks()`、`.fit()`、`.hht()`、`.arima()` です。"
-
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:19
-#: c76185e9471f42b68c7e6072570025a5
-msgid ""
-"**Direct I/O and interop have their own guides.** Treat [File I/O "
-"Supported Formats Guide](../how-to/io_formats.md) as the source of truth "
-"for `read(..., format=...)` / `write(..., format=...)`, and [Interop / "
-"Conversion Guide](../how-to/interop.md) as the source of truth for "
-"`to_*()` / `from_*()` conversions."
-msgstr ""
-"**直接 I/O と相互運用には専用ガイドがあります。** `read(..., format=...)` / `write(..., "
-"format=...)` は [ファイル I/O 対応フォーマットガイド](../how-to/io_formats.md) を、`to_*()`"
-" / `from_*()` 変換は [Interop / 変換ガイド](../how-to/interop.md) "
-"を、それぞれ一次情報源として参照してください。"
+"**Some external-library calls move onto the data object itself.** Representative examples are "
+"`.find_peaks()`, `.fit()`, `.hht()`, and `.arima()`."
+msgstr "**一部の外部ライブラリ呼び出しは、データオブジェクト自身のメソッドになります。** 代表例は `.find_peaks()`、`.fit()`、`.hht()`、`.arima()` です。"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:22
 #: f4a02da37a8842a6919c011a23e2e817
@@ -158,8 +135,8 @@ msgstr "`ScalarField`, `FieldList`, `FieldDict`"
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md
 #: fd3a45c89b854942bd83d3fd6ea3ed1e
 msgid ""
-"[Field API Intro](../how-to/containers/field_scalar_intro), [GWpy "
-"Difference API Index](../reference/gwpy_added_api.md)"
+"[Field API Intro](../how-to/containers/field_scalar_intro), [GWpy Difference API "
+"Index](../reference/gwpy_added_api.md)"
 msgstr ""
 "[Field API 入門](../how-to/containers/field_scalar_intro), [GWpy 差分 API "
 "一覧](../reference/gwpy_added_api.md)"
@@ -179,9 +156,8 @@ msgstr "オブジェクトメソッド化された追加 API"
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:110
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:195
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:239
-#: 21903bf0e89944cdb61e84b916adb035 2490c29c1c4f4bce90076d975afcc571
-#: 34fe7434f95845aca4f6f691ff9fc0b3 819f76d9627f47d28e75113525a0e00f
-#: d1db70d7eeb541cb91ac6df45deb140a e9425f18b9ba4afda8e88ce51cb1665f
+#: 21903bf0e89944cdb61e84b916adb035 2490c29c1c4f4bce90076d975afcc571 34fe7434f95845aca4f6f691ff9fc0b3
+#: 819f76d9627f47d28e75113525a0e00f d1db70d7eeb541cb91ac6df45deb140a e9425f18b9ba4afda8e88ce51cb1665f
 msgid "[GWpy Difference API Index](../reference/gwpy_added_api.md)"
 msgstr "[GWpy 差分 API 一覧](../reference/gwpy_added_api.md)"
 
@@ -219,12 +195,12 @@ msgstr "差分レシピ 1: `TimeSeriesDict` の手ループを `TimeSeriesMatrix
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:34
 #: 854f1585bf544687857f60876fdae31f
 msgid ""
-"In GWpy-style code, pairwise comparisons or per-channel spectral logic "
-"often become explicit loops.   In GWexpy, `to_matrix()` is the main entry"
-" point for treating the whole channel set as a batch-analysis object."
+"In GWpy-style code, pairwise comparisons or per-channel spectral logic often become explicit "
+"loops.   In GWexpy, `to_matrix()` is the main entry point for treating the whole channel set as a"
+" batch-analysis object."
 msgstr ""
-"GWpy 流のコードでは、ペアごとの比較やチャンネルごとのスペクトル処理が明示的なループになりがちです。GWexpy "
-"では、`to_matrix()` がチャンネル群全体をバッチ解析オブジェクトとして扱う主要な入口になります。"
+"GWpy 流のコードでは、ペアごとの比較やチャンネルごとのスペクトル処理が明示的なループになりがちです。GWexpy では、`to_matrix()` "
+"がチャンネル群全体をバッチ解析オブジェクトとして扱う主要な入口になります。"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:37
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:82
@@ -232,9 +208,8 @@ msgstr ""
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:157
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:205
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:247
-#: 38f56d25b6414afbabc86e898a0c4c9d 5af927449afe4471ad051396a56bea49
-#: 83174a95794247d29b18273c9d82a4d6 dc32150440b24d28b1677be53da999fb
-#: df3698bd9b1f4b44acb7c92943c86eb3 f9d7dc432df64d03bab77fd3b78e40c9
+#: 38f56d25b6414afbabc86e898a0c4c9d 5af927449afe4471ad051396a56bea49 83174a95794247d29b18273c9d82a4d6
+#: dc32150440b24d28b1677be53da999fb df3698bd9b1f4b44acb7c92943c86eb3 f9d7dc432df64d03bab77fd3b78e40c9
 msgid "GWpy style"
 msgstr "GWpy 流"
 
@@ -244,17 +219,15 @@ msgstr "GWpy 流"
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:170
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:219
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:264
-#: 20d483a7c93941529713017984626d97 7ae7519503524b7289e4ad0189efe5e0
-#: 7c6517bbd696451aae9c5426314b8377 9d396f26bd2446ae912fa257299221ac
-#: a6a2d2fe7dea4843844feef4aa11ceb3 c0af8cf4952d4b3da5d3d882359c5992
+#: 20d483a7c93941529713017984626d97 7ae7519503524b7289e4ad0189efe5e0 7c6517bbd696451aae9c5426314b8377
+#: 9d396f26bd2446ae912fa257299221ac a6a2d2fe7dea4843844feef4aa11ceb3 c0af8cf4952d4b3da5d3d882359c5992
 msgid "GWexpy style"
 msgstr "GWexpy 流"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:65
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:187
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:279
-#: 5c619a34b2c84ffe91d18e52fe8c7cdd 9597fd55614945ee9e9722f454bfa7bb
-#: b4b7ed3b075f49e1ac30b00b6965de0a
+#: 5c619a34b2c84ffe91d18e52fe8c7cdd 9597fd55614945ee9e9722f454bfa7bb b4b7ed3b075f49e1ac30b00b6965de0a
 msgid "This difference matters when:"
 msgstr "この差分が効く場面:"
 
@@ -265,9 +238,7 @@ msgstr "ループを減らして、チャンネル集合をそのまま計算対
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:68
 #: 6bcdce84d49b40e9a0cbcb3606bf0575
-msgid ""
-"you want multi-channel analysis to stay in `TimeSeriesMatrix` / "
-"`FrequencySeriesMatrix`"
+msgid "you want multi-channel analysis to stay in `TimeSeriesMatrix` / `FrequencySeriesMatrix`"
 msgstr "多チャネル解析を `TimeSeriesMatrix` / `FrequencySeriesMatrix` へ揃えたいとき"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:70
@@ -276,9 +247,8 @@ msgstr "多チャネル解析を `TimeSeriesMatrix` / `FrequencySeriesMatrix` �
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:192
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:237
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:286
-#: 44bf43d47e1c417283b174bd6aa73343 9ca2920cad494f5e88724c2b1a795d00
-#: 9d580a4007ee49e7ba3e033434080622 a0952120119a427c9790fa3db4c23b5e
-#: dbc8587ad6ce4c8485e606f3fb336b49 f6b114c17851490e8d36888358ae1bce
+#: 44bf43d47e1c417283b174bd6aa73343 9ca2920cad494f5e88724c2b1a795d00 9d580a4007ee49e7ba3e033434080622
+#: a0952120119a427c9790fa3db4c23b5e dbc8587ad6ce4c8485e606f3fb336b49 f6b114c17851490e8d36888358ae1bce
 msgid "Related pages:"
 msgstr "関連ページ:"
 
@@ -300,12 +270,10 @@ msgstr "差分レシピ 2: 外部関数呼び出しをオブジェクトメソ�
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:79
 #: 6c10995e69174aac9c74a66ac399af0b
 msgid ""
-"In GWpy-based code, the natural pattern is often “extract arrays, then "
-"call SciPy or Statsmodels directly.”   In GWexpy, part of that workflow "
-"is exposed as methods on the data object itself."
+"In GWpy-based code, the natural pattern is often “extract arrays, then call SciPy or Statsmodels "
+"directly.”   In GWexpy, part of that workflow is exposed as methods on the data object itself."
 msgstr ""
-"GWpy ベースのコードでは、「配列を取り出してから SciPy や Statsmodels "
-"を直接呼ぶ」という流れが自然なパターンになりがちです。GWexpy "
+"GWpy ベースのコードでは、「配列を取り出してから SciPy や Statsmodels を直接呼ぶ」という流れが自然なパターンになりがちです。GWexpy "
 "では、そのワークフローの一部がデータオブジェクト自身のメソッドとして提供されます。"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:102
@@ -357,13 +325,12 @@ msgstr "差分レシピ 3: 単一チャネルコードは大きく変えなく�
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:118
 #: e81f8791b7a1404daef7536029884317
 msgid ""
-"If you already know GWpy’s base classes, you do not need to redesign "
-"everything up front.   In many cases, the practical migration path is: "
-"change imports first, then adopt GWexpy-specific APIs only where they "
-"help."
+"If you already know GWpy’s base classes, you do not need to redesign everything up front.   In "
+"many cases, the practical migration path is: change imports first, then adopt GWexpy-specific "
+"APIs only where they help."
 msgstr ""
-"GWpy の基本クラスをすでに知っているなら、最初からすべてを設計し直す必要はありません。多くの場合、現実的な移行手順は「まず import "
-"を変え、その後 GWexpy 固有の API を役立つ箇所だけ採用する」というものです。"
+"GWpy の基本クラスをすでに知っているなら、最初からすべてを設計し直す必要はありません。多くの場合、現実的な移行手順は「まず import を変え、その後 GWexpy 固有の API "
+"を役立つ箇所だけ採用する」というものです。"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:141
 #: 04e81bd2d9854f40a099ed24b0296a7e
@@ -377,9 +344,7 @@ msgstr "まずは既存の単一チャネル処理をそのまま持ってくる
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:144
 #: 6c845095a4464912975675ba4aea96a2
-msgid ""
-"add GWexpy-only APIs later, where multi-channel or higher-level analysis "
-"benefits matter"
+msgid "add GWexpy-only APIs later, where multi-channel or higher-level analysis benefits matter"
 msgstr "多チャネル化や追加メソッドが必要になった地点で `gwexpy` 固有 API を使う"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:149
@@ -400,27 +365,24 @@ msgstr "差分レシピ 4: `ScalarField` を `FieldList` / `FieldDict` でまと
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:154
 #: cd03259dc8de4efe9e09420de57fe927
 msgid ""
-"Typical GWpy migration paths focus on series-like objects, and GWpy does "
-"not provide a standard container layer for field-like data with shared "
-"spatial metadata. In GWexpy, you can keep a single field in `ScalarField`"
-" and manage multiple related fields through `FieldList` / `FieldDict`."
+"Typical GWpy migration paths focus on series-like objects, and GWpy does not provide a standard "
+"container layer for field-like data with shared spatial metadata. In GWexpy, you can keep a "
+"single field in `ScalarField` and manage multiple related fields through `FieldList` / "
+"`FieldDict`."
 msgstr ""
-"GWpy の標準的な移行対象は `TimeSeries` "
-"系が中心で、空間軸を持つフィールドコンテナや、そのコレクションに対応する標準クラスはありません。 GWexpy では、単一のフィールドを "
-"`ScalarField` で保持し、複数のフィールドを `FieldList` / `FieldDict` で一括管理できます。"
+"GWpy の標準的な移行対象は `TimeSeries` 系が中心で、空間軸を持つフィールドコンテナや、そのコレクションに対応する標準クラスはありません。 GWexpy では、単一のフィールドを"
+" `ScalarField` で保持し、複数のフィールドを `FieldList` / `FieldDict` で一括管理できます。"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:189
 #: b1e37993c38641068f6a11d348c0114b
-msgid ""
-"you want multiple fields to share unit/axis/domain checks instead of "
-"managing metadata by hand"
+msgid "you want multiple fields to share unit/axis/domain checks instead of managing metadata by hand"
 msgstr "同じ軸・単位・ドメインを共有する複数のフィールドをまとめて扱いたいとき"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:190
 #: d833c10beb81491c93812082cbeae8c6
 msgid ""
-"you want spatial transforms or selections to stay at the collection level"
-" rather than writing field-by-field loops"
+"you want spatial transforms or selections to stay at the collection level rather than writing "
+"field-by-field loops"
 msgstr "空間方向の変換や切り出しを、フィールド単位のループではなくコレクション単位で揃えたいとき"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:194
@@ -451,12 +413,12 @@ msgstr "差分レシピ 5: Pickle 共有時の互換性を見る"
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:202
 #: 95e481227f46486980c0954f87e1cd2d
 msgid ""
-"GWexpy is designed with result sharing in mind, including cases where the"
-" receiver does not have GWexpy installed.   The point here is not generic"
-" Pickle safety advice, but what a GWpy user can expect operationally."
+"GWexpy is designed with result sharing in mind, including cases where the receiver does not have "
+"GWexpy installed.   The point here is not generic Pickle safety advice, but what a GWpy user can "
+"expect operationally."
 msgstr ""
-"GWexpy は、受け取り手が GWexpy をインストールしていない場合も含め、結果の共有を念頭に設計されています。ここで重要なのは一般的な "
-"Pickle の安全性の話ではなく、GWpy ユーザーが運用上何を期待できるかという点です。"
+"GWexpy は、受け取り手が GWexpy をインストールしていない場合も含め、結果の共有を念頭に設計されています。ここで重要なのは一般的な Pickle の安全性の話ではなく、GWpy "
+"ユーザーが運用上何を期待できるかという点です。"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:234
 #: 74c7945ef1b2456e83e856682e641e3c
@@ -476,10 +438,9 @@ msgstr "差分レシピ 6: python-control との橋渡し"
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:244
 #: 9c6f945b7ebc46a6a87582091a8f53fc
 msgid ""
-"In GWpy-based code, using `control.bode()` or similar functions requires "
-"manually extracting a `FrequencySeries` value as a numpy array and "
-"passing it to `control.frd()`.   In GWexpy, `to_control_frd()` handles "
-"the conversion in one call, removing that boilerplate."
+"In GWpy-based code, using `control.bode()` or similar functions requires manually extracting a "
+"`FrequencySeries` value as a numpy array and passing it to `control.frd()`.   In GWexpy, "
+"`to_control_frd()` handles the conversion in one call, removing that boilerplate."
 msgstr ""
 "GWpy ベースのコードでは、`control.bode()` などの関数を使うために、`FrequencySeries` の値を numpy "
 "配列として手動で取り出し、`control.frd()` に渡す必要があります。GWexpy では `to_control_frd()` が 1 "
@@ -487,25 +448,21 @@ msgstr ""
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:281
 #: 071e261c1efe4efc8d358f7c157cdf3a
-msgid ""
-"you want to treat an ASD / PSD spectrum directly as a control-system FRD "
-"model"
+msgid "you want to treat an ASD / PSD spectrum directly as a control-system FRD model"
 msgstr "ASD / PSD スペクトルをそのまま制御系の FRD モデルとして扱いたいとき"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:282
 #: 54c268ddede746ab8d52d38bff3d83ca
 msgid ""
-"you want to skip manual numpy extraction before passing data to "
-"`control.bode()` / `control.nichols()` / `control.nyquist()`"
-msgstr ""
-"`control.bode()` / `control.nichols()` / `control.nyquist()` に渡す前の numpy "
-"配列取り出し処理を省きたいとき"
+"you want to skip manual numpy extraction before passing data to `control.bode()` / "
+"`control.nichols()` / `control.nyquist()`"
+msgstr "`control.bode()` / `control.nichols()` / `control.nyquist()` に渡す前の numpy 配列取り出し処理を省きたいとき"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:283
 #: eb3274fe8b794ae581256f9ec3a39bb4
 msgid ""
-"you want to restore a processed FRD back to a `FrequencySeries` and feed "
-"it into an existing plot or statistics pipeline"
+"you want to restore a processed FRD back to a `FrequencySeries` and feed it into an existing plot"
+" or statistics pipeline"
 msgstr "解析結果の FRD を GWexpy の `FrequencySeries` に戻して既存のプロット・統計処理パイプラインに繋げたいとき"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:284
@@ -514,11 +471,6 @@ msgid ""
 "you want to convert each channel in a multi-channel spectrum with "
 "`FrequencySeriesDict.to_control_frd()`"
 msgstr "多チャネルのスペクトルを `FrequencySeriesDict.to_control_frd()` でチャネルごとに FRD 化したいとき"
-
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:288
-#: ccfee7c342c64dcfaf4669e92931f737
-msgid "[Interop / Conversion Guide](../how-to/interop.md)"
-msgstr "[Interop / 変換ガイド](../how-to/interop.md)"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:289
 #: 897e45a45c884e89a74a30e3484adb5f
@@ -538,31 +490,26 @@ msgstr "GWpy 周辺の他パッケージとの位置関係"
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:295
 #: de6257e9138449079970b4ac4977cec6
 msgid ""
-"GWexpy is not the only package that extends GWpy, and moving to it does "
-"not mean leaving the rest of the ecosystem behind. spicypy adds signal-"
-"processing and control-systems methods, GWDama organises data into HDF5 "
-"datasets for later analysis, and the detector-characterization tools "
-"build operator-facing workflows on top of GWpy. GWexpy occupies the "
-"container, I/O, and analysis-primitive layer between GWpy and those "
-"workflows, so the usual pattern is to combine them rather than to choose "
-"one."
+"GWexpy is not the only package that extends GWpy, and moving to it does not mean leaving the rest"
+" of the ecosystem behind. spicypy adds signal-processing and control-systems methods, GWDama "
+"organises data into HDF5 datasets for later analysis, and the detector-characterization tools "
+"build operator-facing workflows on top of GWpy. GWexpy occupies the container, I/O, and analysis-"
+"primitive layer between GWpy and those workflows, so the usual pattern is to combine them rather "
+"than to choose one."
 msgstr ""
-"GWpy を拡張するパッケージは GWexpy だけではなく、GWexpy へ移行してもエコシステムの残りを"
-"手放すことにはなりません。spicypy は信号処理と制御系の手法を追加し、GWDama は後段の解析の"
-"ためにデータを HDF5 データセットへ整理し、detector characterization 系のツールは GWpy の"
-"上にオペレータ向けワークフローを構築します。GWexpy は GWpy とそれらのワークフローの間にある"
-"コンテナ・I/O・解析プリミティブの層を担うため、どれか一つを選ぶのではなく組み合わせて使うのが"
-"通常の形です。"
+"GWpy を拡張するパッケージは GWexpy だけではなく、GWexpy へ移行してもエコシステムの残りを手放すことにはなりません。spicypy "
+"は信号処理と制御系の手法を追加し、GWDama は後段の解析のためにデータを HDF5 データセットへ整理し、detector characterization 系のツールは GWpy "
+"の上にオペレータ向けワークフローを構築します。GWexpy は GWpy "
+"とそれらのワークフローの間にあるコンテナ・I/O・解析プリミティブの層を担うため、どれか一つを選ぶのではなく組み合わせて使うのが通常の形です。"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:302
 #: 0caa759633224c47843f6f831db93e6a
 msgid ""
-"For the full comparison, including which projects GWexpy bridges to and "
-"which it deliberately leaves out of scope, see [Where GWexpy Sits in the "
-"GW Python Ecosystem](ecosystem)."
+"For the full comparison, including which projects GWexpy bridges to and which it deliberately "
+"leaves out of scope, see [Where GWexpy Sits in the GW Python Ecosystem](ecosystem)."
 msgstr ""
-"GWexpy がどのプロジェクトと変換連携し、どれを意図的に対象外としているかを含む完全な比較は"
-"[GW Python エコシステムにおける GWexpy の位置付け](ecosystem)を参照してください。"
+"GWexpy がどのプロジェクトと変換連携し、どれを意図的に対象外としているかを含む完全な比較は[GW Python エコシステムにおける GWexpy "
+"の位置付け](ecosystem)を参照してください。"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:306
 #: e5f74ea6bde348e5935cb768b3b28043
@@ -572,22 +519,9 @@ msgstr "I/O と外部ライブラリ連携は別ページを見る"
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:308
 #: a8d633611f0b43e78db21d89070bb23f
 msgid ""
-"This page intentionally does not duplicate the I/O-format list or the "
-"external-library conversion list.   Use the dedicated guides below as the"
-" source of truth:"
+"This page intentionally does not duplicate the I/O-format list or the external-library conversion"
+" list.   Use the dedicated guides below as the source of truth:"
 msgstr "このページは、I/O フォーマット一覧や外部ライブラリ変換一覧をあえて重複して掲載しません。一次情報源としては以下の専用ガイドを使ってください："
-
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:311
-#: cd0ad9835d714c6bb98ebfabc34836da
-msgid "Direct I/O: [File I/O Supported Formats Guide](../how-to/io_formats.md)"
-msgstr "直接 I/O: [ファイル I/O 対応フォーマットガイド](../how-to/io_formats.md)"
-
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:312
-#: 5ebcfa78eed6441998af69739178354e
-msgid ""
-"External-library conversion: [Interop / Conversion Guide](../how-"
-"to/interop.md)"
-msgstr "外部ライブラリ変換: [Interop / 変換ガイド](../how-to/interop.md)"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:314
 #: a743f28595b84270898d5e403e573c75
@@ -597,66 +531,83 @@ msgstr "次のステップ"
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:316
 #: 76c02220d18e43fa9433b0813bb926d2
 msgid ""
-"[GWpy Difference API Index](../reference/gwpy_added_api.md) - look up "
-"added APIs from a difference-oriented view"
+"[GWpy Difference API Index](../reference/gwpy_added_api.md) - look up added APIs from a "
+"difference-oriented view"
 msgstr "[GWpy 差分 API 一覧](../reference/gwpy_added_api.md) - 追加 API を差分観点で引く"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:317
 #: 97345b0aca774b82bdd2f7021833450b
 msgid ""
-"[Field API Intro](../how-to/containers/field_scalar_intro) - see how "
-"`ScalarField`, `FieldList`, and `FieldDict` fit together"
+"[Field API Intro](../how-to/containers/field_scalar_intro) - see how `ScalarField`, `FieldList`, "
+"and `FieldDict` fit together"
 msgstr ""
-"[Field API 入門](../how-to/containers/field_scalar_intro) - "
-"`ScalarField`・`FieldList`・`FieldDict` の関係を理解する"
+"[Field API 入門](../how-to/containers/field_scalar_intro) - `ScalarField`・`FieldList`・`FieldDict` "
+"の関係を理解する"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:318
 #: 8d62a1e980484be89001fbd5a9dd6553
-msgid ""
-"[Tutorial Index](../tutorials/index.md) - move from migration recipes "
-"into worked examples"
+msgid "[Tutorial Index](../tutorials/index.md) - move from migration recipes into worked examples"
 msgstr "[チュートリアル一覧](../tutorials/index.md) - 移行レシピから実例へ進む"
-
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:319
-#: 4ef71cfc59b74899bd8329159ca2aff3
-msgid ""
-"[File I/O Supported Formats Guide](../how-to/io_formats.md) - check "
-"supported read/write formats"
-msgstr "[ファイル I/O 対応フォーマットガイド](../how-to/io_formats.md) - 対応する読み書きフォーマットを確認する"
-
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:320
-#: fe805b22b2674dee95a57b6d8e54bb7f
-msgid ""
-"[Interop / Conversion Guide](../how-to/interop.md) - check bridges to "
-"external libraries"
-msgstr "[Interop / 変換ガイド](../how-to/interop.md) - 外部ライブラリへの橋渡しを確認する"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/gwexpy_for_gwpy_users.md:321
 #: 8302aea0893d4fcabd36cc20c558786e
 msgid "[API Reference](../reference/index.md) - inspect the full API surface"
 msgstr "[API リファレンス](../reference/index.md) - 全 API を確認する"
 
+msgid ""
+"The project-wide [GWpy compatibility policy](gwpy_compatibility_policy.md) requires corresponding"
+" GWpy APIs to preserve default finite numerical results, sample selection, axis information, and "
+"successful completion. Use GWexpy-specific APIs or explicit opt-in options when you intentionally"
+" want different numerical behavior. The policy's sole named, human-approved safety exception, "
+"`non_intersecting_window_safety`, covers a completely disjoint HDF5 read window and must satisfy "
+"every policy gate; it does not authorize broader divergence."
+msgstr ""
+"プロジェクト横断の [GWpy 互換性ポリシー](gwpy_compatibility_policy.md)は、対応する GWpy APIについて、既定の有限数値結果、sample "
+"選択、軸情報、正常終了の維持を要求します。意図的に異なる数値挙動が必要な場合は、GWexpy 固有 API または明示的な opt-in "
+"optionを使用してください。このpolicyで唯一の名前付き・human-approvedの安全例外 `non_intersecting_window_safety` は、完全非交差の "
+"HDF5 read windowだけを対象とし、すべてのpolicy gateを満たさなければなりません。より広い差異は許可しません。"
+
+msgid ""
+"**Direct I/O and interop have their own guides.** Treat [File I/O Supported Formats "
+"Guide](../reference/io_capabilities.md) as the source of truth for `read(..., format=...)` / "
+"`write(..., format=...)`, and [Interop / Conversion Guide](../reference/interop_capabilities.md) "
+"as the source of truth for `to_*()` / `from_*()` conversions."
+msgstr ""
+"**直接 I/O と相互運用には専用ガイドがあります。** `read(..., format=...)` / `write(..., format=...)` は [ファイル I/O "
+"対応フォーマットガイド](../reference/io_capabilities.md) を、`to_*()` / `from_*()` 変換は [Interop / "
+"変換ガイド](../reference/interop_capabilities.md) を、それぞれ一次情報源として参照してください。"
+
+msgid "[Interop / Conversion Guide](../reference/interop_capabilities.md)"
+msgstr "[Interop / 変換ガイド](../reference/interop_capabilities.md)"
+
+msgid "Direct I/O: [File I/O Supported Formats Guide](../reference/io_capabilities.md)"
+msgstr "直接 I/O: [ファイル I/O 対応フォーマットガイド](../reference/io_capabilities.md)"
+
+msgid "External-library conversion: [Interop / Conversion Guide](../reference/interop_capabilities.md)"
+msgstr "外部ライブラリ変換: [Interop / 変換ガイド](../reference/interop_capabilities.md)"
+
+msgid ""
+"[File I/O Supported Formats Guide](../reference/io_capabilities.md) - check supported read/write "
+"formats"
+msgstr "[ファイル I/O 対応フォーマットガイド](../reference/io_capabilities.md) - 対応する読み書きフォーマットを確認する"
+
+msgid ""
+"[Interop / Conversion Guide](../reference/interop_capabilities.md) - check bridges to external "
+"libraries"
+msgstr "[Interop / 変換ガイド](../reference/interop_capabilities.md) - 外部ライブラリへの橋渡しを確認する"
+
+msgid ""
+"Check the [documentation version](../about/documentation_version.md) against your installed "
+"package and read [Known limitations](../about/known_limitations.md) before migrating. The recipes"
+" below assume your existing inputs, such as `cache` and `channels`. For a complete synthetic "
+"example that needs no external data, run the [Quickstart](../tutorials/quickstart.md)."
+msgstr ""
+"[ドキュメントの版](../about/documentation_version.md)とインストール済みパッケージを照合し、移行前に[既知の制限](../about/known_limitations.md)を確認してください。以下の例は、既存の"
+" `cache` や `channels` "
+"などの入力を前提にしています。外部データなしで完走できる合成データの例は、[Quickstart](../tutorials/quickstart.md)で実行できます。"
+
 #~ msgid "[HHT](../tutorials/index.md)"
 #~ msgstr ""
 
 #~ msgid "[ARIMA](../tutorials/index.md)"
 #~ msgstr ""
-
-msgid ""
-"The project-wide [GWpy compatibility "
-"policy](gwpy_compatibility_policy.md) requires corresponding GWpy APIs to "
-"preserve default finite numerical results, sample selection, axis "
-"information, and successful completion. Use GWexpy-specific APIs or explicit "
-"opt-in options when you intentionally want different numerical behavior. The "
-"policy's sole named, human-approved safety exception, "
-"`non_intersecting_window_safety`, covers a completely disjoint HDF5 read "
-"window and must satisfy every policy gate; it does not authorize broader "
-"divergence."
-msgstr ""
-"プロジェクト横断の [GWpy 互換性ポリシー](gwpy_compatibility_policy.md)は、"
-"対応する GWpy APIについて、既定の有限数値結果、sample 選択、軸情報、正常終了の"
-"維持を要求します。意図的に異なる数値挙動が必要な場合は、GWexpy 固有 API または"
-"明示的な opt-in optionを使用してください。このpolicyで唯一の名前付き・human-"
-"approvedの安全例外 `non_intersecting_window_safety` は、完全非交差の HDF5 read "
-"windowだけを対象とし、すべてのpolicy gateを満たさなければなりません。より広い差異"
-"は許可しません。"

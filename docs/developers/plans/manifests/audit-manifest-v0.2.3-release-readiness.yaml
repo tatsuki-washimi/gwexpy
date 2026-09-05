@@ -7,7 +7,7 @@ review_evidence_json: |
         "role": "reviewer",
         "model": "gpt-6-astra",
         "effort": "xhigh",
-        "reviewed_commit": "235163a336752ced188a3fcde7190d0da3bedac3",
+        "reviewed_commit": "fb4548de09f3b140ac3b16909d32195ee5761407",
         "scope_paths": [
           "docs/developers/plans/20260902_v0.2.3_gwpy_behavioral_compatibility.md",
           "docs/developers/plans/manifests/audit-manifest-v0.2.3-stats-compat.yaml",
@@ -20,32 +20,42 @@ review_evidence_json: |
         ],
         "scope_digest": "760a55b52d2de87d0c586feac8c237e59fea42584c100fe54692e5465dc9a444",
         "verdict": "APPROVED",
-        "timestamp_utc": "2026-09-05T12:08:06Z",
-        "raw_report_sha256": "b7f6ab0d31db0ea0c331e8d9476914a907ba87a3172f9aabfe93ec3e855472b6",
-        "finding_ids": []
+        "timestamp_utc": "2026-09-05T14:10:20Z",
+        "finding_ids": [],
+        "raw_report_sha256": "ca4e020ca49a45634b867a2d4830e7aec035e91fa1e7484702f7055686a8cd58"
       },
       {
         "lane": "release-security",
         "role": "reviewer",
         "model": "gpt-6-astra",
         "effort": "xhigh",
-        "reviewed_commit": "235163a336752ced188a3fcde7190d0da3bedac3",
+        "reviewed_commit": "fb4548de09f3b140ac3b16909d32195ee5761407",
         "scope_paths": [
           ".gitattributes",
+          ".github/workflows/docs-pages.yml",
+          ".github/workflows/docs-pr.yml",
+          ".github/workflows/docs-redesign-preview.yml",
           ".github/workflows/pr-fast.yml",
           ".github/workflows/publish-release.yml",
           ".zenodo.json",
           "CHANGELOG.md",
           "CITATION.cff",
           "RELEASING.md",
+          "docs/NOTEBOOK_POLICY.md",
           "docs/developers/plans/20260902_v0.2.3_gwpy_behavioral_compatibility.md",
           "docs/developers/plans/manifests/audit-manifest-v0.2.3-release-readiness.yaml",
+          "docs/developers/reports/audit_docs_audience_onboarding_20260905.json",
+          "docs/developers/reports/pr713_validation",
+          "docs/developers/reports/report_docs_audience_onboarding_20260905.md",
           "docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md",
           "gwexpy/_version.py",
           "release_notes",
           "requirements/release-build.txt",
+          "scripts/check_public_docs.py",
           "scripts/ci",
+          "scripts/prepare_public_docs.py",
           "scripts/validate_release.py",
+          "scripts/verify_public_examples.py",
           "tests/docs",
           "tests/test_check_release_metadata_script.py",
           "tests/test_gen_release_notes.py",
@@ -54,18 +64,18 @@ review_evidence_json: |
           "tests/test_release_contracts.py",
           "tests/test_validate_release_script.py"
         ],
-        "scope_digest": "989e41abc9625868f9dbcf4f595a3604869bcecca6d49eca998ba30e8ff0d866",
+        "scope_digest": "7ff873e678c30dbb23df9cae3527da01445f347cccd29dbd00bb77adb3381b82",
         "verdict": "APPROVED",
-        "timestamp_utc": "2026-09-05T12:10:31Z",
-        "raw_report_sha256": "d4a7daf14e2b9af28cb3ebe2c81160587e794488eb6bd15282c86fb12334dfb7",
-        "finding_ids": []
+        "timestamp_utc": "2026-09-05T14:10:54Z",
+        "finding_ids": [],
+        "raw_report_sha256": "6e3da2c708d357dc2365d4a74a3cd9a4aa5c27463845d29500e8fb2514b57da7"
       },
       {
         "lane": "scientific-compatibility",
         "role": "reviewer",
         "model": "gpt-6-astra",
         "effort": "xhigh",
-        "reviewed_commit": "235163a336752ced188a3fcde7190d0da3bedac3",
+        "reviewed_commit": "fb4548de09f3b140ac3b16909d32195ee5761407",
         "scope_paths": [
           ".agent/AGENTS.md",
           ".clinerules",
@@ -115,11 +125,11 @@ review_evidence_json: |
           "tests/time",
           "tests/timeseries"
         ],
-        "scope_digest": "5a1f4e129b04c82833ed35bed61a78f591032723f9139ea352ca235dd7b1eef9",
+        "scope_digest": "80e54dc6e265f2e7ad9d30e9403d04f65e27dc5207328a6ca5186a807ca90082",
         "verdict": "APPROVED",
-        "timestamp_utc": "2026-09-05T12:09:28Z",
-        "raw_report_sha256": "aed4212524489542c4e77ab114b5750c39ffe780f645d0ef2e413d8024bb55e4",
-        "finding_ids": []
+        "timestamp_utc": "2026-09-05T14:12:52Z",
+        "finding_ids": [],
+        "raw_report_sha256": "b3fda2a929e207508dafad2102d1ea8d7c0a24b5ccf640cbe28024f543db0f30"
       }
     ]
   }

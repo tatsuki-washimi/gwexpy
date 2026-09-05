@@ -1,13 +1,12 @@
 ---
 myst:
   html_meta:
-    description: "Current user-visible limitations, fail-closed boundaries, and safe alternatives in GWexpy v0.2.0."
+    description: "Current user-visible limitations, fail-closed boundaries, and safe alternatives in the released GWexpy series."
 ---
 
 # Known Limitations
 
-This page records the high-impact user-visible limitations of the current stable
-GWexpy v0.2.0 release. It is a curated compatibility guide, not a complete issue
+This page records the high-impact user-visible limitations of the released GWexpy {{ stable_release }} series. The boundaries introduced in v0.2.0 below remain applicable unless a later release note explicitly supersedes them. It is a curated compatibility guide, not a complete issue
 backlog and not a promise that a limitation will be removed in the next release.
 
 :::{important}
@@ -21,6 +20,21 @@ For format-specific and adapter-specific coverage that is not listed here, see
 [I/O formats](../how-to/io_formats.md) and
 [interoperability](../how-to/interop.md).
 
+## Development documentation and compatibility
+
+The development API pages can describe changes after {{ stable_release }}.
+Read the [documentation version](documentation_version.md) and
+[GWpy compatibility policy](../explanation/gwpy_compatibility_policy.md) when
+comparing them with an installed release. Successful inherited GWpy operations
+retain the parent contract; the fail-closed descriptions below apply to their
+specific documented boundaries, not as a general override of GWpy behavior.
+
+The current development compatibility notes include inherited mixed-channel CSD
+unit labels and dimensionless signal outputs. For physically calibrated noise
+projection, see the explicit output/input units in the
+[noise-budget example](../how-to/case-studies/case_noise_budget.ipynb).
+The [changelog](changelog.md) records the scope and approval of these differences.
+
 ## Exact time-axis precision
 
 GWexpy v0.2.0 preserves exact integer GPS-nanosecond origins on the supported
@@ -28,7 +42,9 @@ constructor, copy/slice, persistence, and interoperability paths covered by the
 release contract. It does not yet define a complete exact rational time-axis
 authority for every cadence and operation. Cadences such as 1024 Hz or 4096 Hz
 have fractional-nanosecond sample steps, while GWpy-compatible `t0`, `dt`, `times`,
-and `xindex` remain binary64 projections.
+and `xindex` remain binary64 projections. Since v0.2.2, slicing and cropping on
+such cadences can discard derived private exact authority while preserving the
+successful parent operation and its public time axis.
 
 If one-nanosecond distinctions or exact rational sample boundaries are scientifically
 significant, do not use the floating-point time axis as the sole authority across

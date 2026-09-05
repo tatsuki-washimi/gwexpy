@@ -1,0 +1,297 @@
+# Japanese translations for GWexpy.
+# Copyright (C) 2026 GWexpy Developers
+# This file is distributed under the same license as the GWexpy project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 15:41+0900\n"
+"PO-Revision-Date: 2026-09-05 06:42+0000\n"
+"Last-Translator: GWexpy documentation contributors\n"
+"Language: ja\n"
+"Language-Team: Japanese\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../tutorials/commissioner.md:1
+msgid "Commissioner: from GUI to a saved analysis"
+msgstr "Commissioner：GUI から保存可能な解析へ"
+
+#: ../../tutorials/commissioner.md:3
+msgid ""
+"Reproduce a familiar commissioning workflow in Python: load channels, select a time "
+"span, compare ASD and coherence, and save figures with the analysis settings. This "
+"lesson is for users of DiagGUI, ndscope, or Virgo dataDisplay who already choose "
+"channels and spectral settings in a GUI. No Python expertise is assumed beyond "
+"following the commands below; [First analysis](first_analysis.md#names-functions-and-"
+"channels) explains the syntax if needed."
+msgstr ""
+"使い慣れたコミッショニングの手順を Python で再現します。\n"
+"チャンネルの読込、時間区間の選択、ASD とコヒーレンスの比較、解析条件と図の保存まで進めます。\n"
+"DiagGUI、ndscope、Virgo dataDisplay の GUI でチャンネルやスペクトル設定を選んでいる方を対象とします。\n"
+"以下のコマンドを実行する以外の Python 経験は前提にしていません。\n"
+"構文が必要なら[最初の解析](first_analysis.md#names-functions-and-channels)で確認できます。"
+
+#: ../../tutorials/commissioner.md:7
+msgid ""
+"Prerequisites: [GWexpy installed](installation.md). The main example uses synthetic "
+"data and core dependencies, including HDF5 support; it requires no detector "
+"connection. Study goal: 20–30 minutes. Script runtime goal: seconds on a laptop, "
+"depending on the environment."
+msgstr ""
+"前提：[GWexpy のインストール](installation.md)。\n"
+"主な例には合成データと HDF5 サポートを含む標準の依存パッケージを使い、検出器への接続は必要ありません。\n"
+"学習時間の目安は 20〜30 分です。\n"
+"ノート PC で数秒程度の実行を目標としますが、環境によって異なります。"
+
+#: ../../tutorials/commissioner.md:11
+msgid "Map GUI choices to code"
+msgstr "GUI の選択をコードに対応付ける"
+
+#: ../../tutorials/commissioner.md
+msgid "GUI action or setting"
+msgstr "GUI の操作や設定"
+
+#: ../../tutorials/commissioner.md
+msgid "Script equivalent"
+msgstr "スクリプトでの対応"
+
+#: ../../tutorials/commissioner.md
+msgid "Select channels"
+msgstr "チャンネルを選択する"
+
+#: ../../tutorials/commissioner.md
+msgid "Keys in a `TimeSeriesDict`"
+msgstr "`TimeSeriesDict` のキー"
+
+#: ../../tutorials/commissioner.md
+msgid "Load an ndscope recording"
+msgstr "ndscope の記録を読み込む"
+
+#: ../../tutorials/commissioner.md
+msgid "`TimeSeriesDict.read(path, format=\"hdf.ndscope\")`"
+msgstr "`TimeSeriesDict.read(path, format=\"hdf.ndscope\")`"
+
+#: ../../tutorials/commissioner.md
+msgid "Choose a time interval"
+msgstr "時間区間を選択する"
+
+#: ../../tutorials/commissioner.md
+msgid "`channels.copy().crop(start, end)`, with GPS seconds for recorded GW data"
+msgstr ""
+"`channels.copy().crop(start, end)`。\n"
+"記録した GW データには GPS 秒を使います"
+
+#: ../../tutorials/commissioner.md
+msgid "Choose an ASD FFT length and overlap"
+msgstr "ASD の FFT 長とオーバーラップを選ぶ"
+
+#: ../../tutorials/commissioner.md
+msgid "`channels.asd(fftlength=2, overlap=1, window=\"hann\", method=\"welch\")`"
+msgstr "`channels.asd(fftlength=2, overlap=1, window=\"hann\", method=\"welch\")`"
+
+#: ../../tutorials/commissioner.md
+msgid "Choose a reference channel"
+msgstr "参照チャンネルを選ぶ"
+
+#: ../../tutorials/commissioner.md
+msgid "`sensor.coherence(reference, fftlength=2, overlap=1, window=\"hann\")`"
+msgstr "`sensor.coherence(reference, fftlength=2, overlap=1, window=\"hann\")`"
+
+#: ../../tutorials/commissioner.md
+msgid "Save traces as a figure"
+msgstr "トレースを図として保存する"
+
+#: ../../tutorials/commissioner.md
+msgid "`plot.savefig(\"asd.png\")`"
+msgstr "`plot.savefig(\"asd.png\")`"
+
+#: ../../tutorials/commissioner.md
+msgid "Record the analysis setup"
+msgstr "解析条件を記録する"
+
+#: ../../tutorials/commissioner.md
+msgid "A JSON file of channel names, times, and spectral settings"
+msgstr "チャンネル名、時刻、スペクトル設定を保存する JSON ファイル"
+
+#: ../../tutorials/commissioner.md:23
+msgid ""
+"Virgo dataDisplay is included as a familiar workflow background. This tutorial "
+"demonstrates the explicit ndscope and DiagGUI formats below; it does not define a "
+"direct dataDisplay reader."
+msgstr ""
+"Virgo dataDisplay は、読者が使い慣れた解析環境として挙げています。\n"
+"このチュートリアルでは以下の ndscope と DiagGUI の形式を明示して使用します。\n"
+"dataDisplay 専用の直接読込機能を示すものではありません。"
+
+#: ../../tutorials/commissioner.md:26
+msgid "Run a complete local workflow"
+msgstr "ローカルで一連の解析を実行する"
+
+#: ../../tutorials/commissioner.md:28
+#, python-brace-format
+msgid ""
+"Download {download}`commissioner.py <../_static/downloads/commissioner.py>` into a "
+"working folder. In a terminal, activate the environment from the installation guide "
+"and run:"
+msgstr ""
+"{download}`commissioner.py <../_static/downloads/commissioner.py>` を作業フォルダにダウンロードします。"
+"\n"
+"ターミナルでインストールガイドの環境を有効にし、次を実行します。"
+
+#: ../../tutorials/commissioner.md:35
+msgid ""
+"The script creates `commissioner-output/` with `channels.hdf5`, `asd.png`, "
+"`coherence.png`, and `analysis-parameters.json`. Rerunning it replaces these tutorial"
+" outputs. Open the PNG files in an image viewer and the JSON file in a text editor."
+msgstr ""
+"スクリプトは `commissioner-output/` に `channels.hdf5`、`asd.png`、`coherence.png`、`analysis-"
+"parameters.json` を作成します。\n"
+"再実行すると、これらの練習用出力を置き換えます。\n"
+"PNG は画像ビューア、JSON はテキストエディタで開いてください。"
+
+#: ../../tutorials/commissioner.md:43
+msgid "Inspect the saved data and time selection"
+msgstr "保存データと時間選択を確認する"
+
+#: ../../tutorials/commissioner.md:45
+msgid ""
+"The script makes two 32-second voltage channels sampled at 512 Hz and beginning at "
+"GPS 1400000000. Both contain a 40 Hz sine wave plus independently seeded Gaussian "
+"noise. The channel labels are synthetic examples."
+msgstr ""
+"スクリプトは、GPS 1400000000 を開始時刻とする長さ 32 秒、512 Hz サンプリングの電圧チャンネルを 2 つ作ります。\n"
+"両方に 40 Hz の正弦波と、独立したシードのガウスノイズを含めます。\n"
+"チャンネル名は合成データ用の例です。"
+
+#: ../../tutorials/commissioner.md:49
+msgid ""
+"`channels.write(..., format=\"hdf.ndscope\")` creates an ndscope-format HDF5 file. "
+"`TimeSeriesDict.read(..., format=\"hdf.ndscope\")` loads the channel values and their"
+" metadata. The printed list contains `X1:REFERENCE` and `X1:SENSOR`. These public "
+"calls load their required I/O handler on demand."
+msgstr ""
+"`channels.write(..., format=\"hdf.ndscope\")` は ndscope 形式の HDF5 ファイルを作ります。\n"
+"`TimeSeriesDict.read(..., format=\"hdf.ndscope\")` はチャンネル値とメタデータを読み込みます。\n"
+"表示される一覧には `X1:REFERENCE` と `X1:SENSOR` が含まれます。\n"
+"これらの公開 API は必要な I/O ハンドラを呼び出し時に読み込みます。"
+
+#: ../../tutorials/commissioner.md:54
+msgid ""
+"The crop selects offsets 4 through 28 seconds relative to the start: GPS 1400000004 "
+"up to, but excluding, GPS 1400000028. The resulting 24-second segment is shared by "
+"both channels. The script copies the collection before cropping because "
+"`TimeSeriesDict.crop()` updates its collection. For your own recording, inspect "
+"channel names, start times, sample rates, and units before choosing the interval and "
+"reference."
+msgstr ""
+"開始時刻から 4 秒後から 28 秒後まで、つまり GPS 1400000004 以上、GPS 1400000028 未満を切り出します。\n"
+"両チャンネルに同じ 24 秒間を選択します。\n"
+"`TimeSeriesDict.crop()` はコレクションを更新するため、スクリプトでは先にコピーしています。\n"
+"実際の記録では、区間と参照を選ぶ前にチャンネル名、開始時刻、サンプルレート、単位を確認してください。"
+
+#: ../../tutorials/commissioner.md:59
+msgid "Interpret the two figures"
+msgstr "2 枚の図を読み取る"
+
+#: ../../tutorials/commissioner.md:61
+msgid ""
+"The ASD figure shows a line near 40 Hz in both channels and a higher broadband floor "
+"in `X1:SENSOR`. Its unit is V per square root Hz. The script uses a Hann window, "
+"2-second FFT segments, 1-second overlap, and Welch averaging; the frequency-bin "
+"spacing is 0.5 Hz."
+msgstr ""
+"ASD の図では、両チャンネルの 40 Hz 付近に線が現れ、`X1:SENSOR` の広帯域ノイズフロアが高くなります。\n"
+"単位は V/√Hz です。\n"
+"Hann 窓、2 秒の FFT 区間、1 秒のオーバーラップ、Welch 平均を使い、周波数ビンの間隔は 0.5 Hz になります。"
+
+#: ../../tutorials/commissioner.md:65
+msgid ""
+"The second figure shows magnitude-squared coherence, a dimensionless measure between "
+"zero and one of linear association at each frequency. Coherence should rise near the "
+"shared 40 Hz tone. Away from that tone, the independent noise produces a smaller, "
+"fluctuating estimate; finite averaging does not give exactly zero. A high value "
+"identifies shared spectral content, but does not by itself establish the direction of"
+" a physical coupling."
+msgstr ""
+"2 枚目は二乗コヒーレンスです。\n"
+"各周波数での線形な関連を 0 から 1 の無次元量で示します。\n"
+"共通の 40 Hz の正弦波付近で高くなるはずです。\n"
+"その周囲では独立ノイズにより小さく変動する推定値になり、有限回の平均では正確にゼロにはなりません。\n"
+"高い値は共通のスペクトル成分を示しますが、それだけで物理的な結合の方向は判断できません。"
+
+#: ../../tutorials/commissioner.md:70
+msgid ""
+"`analysis-parameters.json` records the source file, channel choices, absolute crop "
+"bounds, FFT settings, the seeds used for the synthetic data, and the Python and "
+"package versions. Keep this file with the figures so that the calculation can be "
+"repeated."
+msgstr ""
+"`analysis-parameters.json` は入力ファイル、チャンネル選択、絶対時刻の切出し範囲、FFT 設定、合成データのシード、Python "
+"とパッケージのバージョンを記録します。\n"
+"計算を再実行できるように、図とともに保存してください。"
+
+#: ../../tutorials/commissioner.md:73
+msgid "Read a DiagGUI time-series export"
+msgstr "DiagGUI の時系列出力を読み込む"
+
+#: ../../tutorials/commissioner.md:75
+msgid "Install the optional `dttxml` dependency for this section in the same environment:"
+msgstr "この節では追加の依存パッケージ `dttxml` を同じ環境にインストールします。"
+
+#: ../../tutorials/commissioner.md:81
+#, python-brace-format
+msgid ""
+"Download the small synthetic {download}`commissioner.xml "
+"<../_static/downloads/commissioner.xml>` sample into your working folder. Save the "
+"following code as `read_diaggui.py` alongside it and run `python read_diaggui.py`:"
+msgstr ""
+"小さな合成サンプル {download}`commissioner.xml <../_static/downloads/commissioner.xml>` "
+"を作業フォルダにダウンロードします。\n"
+"以下を同じ場所に `read_diaggui.py` として保存し、`python read_diaggui.py` を実行します。"
+
+#: ../../tutorials/commissioner.md:97
+msgid ""
+"`products=\"TS\"` selects saved time-series data. The synthetic sample contains four "
+"voltage samples at 4 Hz under `TEST:SYNTHETIC_INPUT`. The example passes `unit=\"V\"`"
+" explicitly because this time-series adapter does not recover the physical unit from "
+"the XML; this unit is a known calibration assumption for the supplied sample. For "
+"your own export, supply the unit justified by its calibration. DiagGUI can also save "
+"frequency-domain products; those are separate spectra and use the corresponding "
+"frequency-series readers. An export must contain time-series data for this example. "
+"See [I/O formats](../reference/io_capabilities.md) for the product-specific entry "
+"points when loading your own saved spectral results."
+msgstr ""
+"`products=\"TS\"` は保存された時系列データを選択します。\n"
+"合成サンプルには `TEST:SYNTHETIC_INPUT` という名前で、4 Hz の電圧サンプルを 4 点含めています。\n"
+"この時系列アダプタは XML から物理単位を復元しないため、例では `unit=\"V\"` を明示しています。\n"
+"この単位は、付属サンプルについて既知の校正上の前提です。\n"
+"実際の出力には、その校正に基づく単位を指定してください。\n"
+"DiagGUI は周波数領域の結果も保存できますが、それらは別のスペクトルとして、対応する周波数系列リーダーで読み込みます。\n"
+"この例には時系列データを含む出力が必要です。\n"
+"保存したスペクトル結果を読む場合の入口は [I/O 形式](../reference/io_capabilities.md)を参照してください。"
+
+#: ../../tutorials/commissioner.md:105
+msgid "Further reading"
+msgstr "さらに読む"
+
+#: ../../tutorials/commissioner.md:107
+msgid "[First analysis](first_analysis.md): Python syntax and plot interpretation."
+msgstr "[最初の解析](first_analysis.md)：Python の構文と図の読み方。"
+
+#: ../../tutorials/commissioner.md:108
+msgid ""
+"[TimeSeriesMatrix basics](matrix_timeseries.ipynb): work with a larger aligned "
+"channel set."
+msgstr "[TimeSeriesMatrix の基礎](matrix_timeseries.ipynb)：時間軸を揃えた多数のチャンネルを扱います。"
+
+#: ../../tutorials/commissioner.md:109
+msgid ""
+"[Case studies](../how-to/case-studies/index.md): adapt a complete analysis to a "
+"measurement."
+msgstr "[ケーススタディ](../how-to/case-studies/index.md)：一連の解析を測定に応用します。"

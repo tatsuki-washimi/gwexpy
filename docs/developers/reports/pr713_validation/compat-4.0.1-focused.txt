@@ -1,0 +1,8 @@
+...........                                                              [100%]
+=============================== warnings summary ===============================
+tests/timeseries/test_transfer_function_compat.py::test_transfer_function_positional_mode_and_keyword_mode_conflict
+  <worktree>/tests/timeseries/test_transfer_function_compat.py:51: DeprecationWarning: Passing transfer_function mode as a positional argument is deprecated. Use mode='steady' or mode='transient' keyword instead.
+    a.transfer_function(b, "steady", mode="transient")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+11 passed, 1 warning in 0.40s

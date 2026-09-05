@@ -90,11 +90,23 @@ def test_exact_gwpy_matrix_proxy_gate_is_wired() -> None:
             "tests/interop/test_interop_lal.py",
         )
     )
-    assert " ".join(proxy_step["run"].split()) == expected_proxy_command
+    proxy_command = " ".join(proxy_step["run"].replace("\\\n", " ").split())
+    proxy_command = proxy_command.replace(
+        '--junitxml="${RUNNER_TEMP}/gwpy-compat-evidence/proxy.xml" ', ""
+    )
+    assert proxy_command == (
+        expected_proxy_command
+        + ' 2>&1 | tee "${RUNNER_TEMP}/gwpy-compat-evidence/proxy.log"'
+    )
     full_index = next(
         index
         for index, step in enumerate(steps)
         if step.get("name") == "Run full timeseries suite"
     )
     assert steps.index(proxy_step) < full_index
-    assert steps[full_index]["run"].strip() == "pytest -q tests/timeseries"
+    full_command = " ".join(steps[full_index]["run"].replace("\\\n", " ").split())
+    assert full_command == (
+        'pytest -q --junitxml="${RUNNER_TEMP}/gwpy-compat-evidence/timeseries.xml" '
+        'tests/timeseries 2>&1 | tee "${RUNNER_TEMP}/gwpy-compat-evidence/timeseries.log"'
+    )
+    assert by_name["Retain compatibility evidence"]["if"] == "always()"

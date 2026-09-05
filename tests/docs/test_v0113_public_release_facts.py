@@ -81,7 +81,7 @@ def test_public_release_docs_are_a_closed_version_neutral_inventory() -> None:
 def test_japanese_catalogues_translate_the_version_neutral_source_messages() -> None:
     required_messages = {
         JAPANESE_CATALOGUES[0]: (
-            "GWexpy v0.2.0 is available from both [PyPI](https://pypi.org/project/gwexpy/) "
+            "GWexpy {{ stable_release }} is available from both [PyPI](https://pypi.org/project/gwexpy/) "
             "and [conda-forge](https://anaconda.org/conda-forge/gwexpy). Check PyPI, "
             "conda-forge, or the [release page](https://github.com/tatsuki-washimi/gwexpy/releases) "
             "for available versions."

@@ -1,73 +1,102 @@
 ---
 myst:
   html_meta:
-    description: "Choose the right GWexpy onboarding path with quickstart, tutorial, GWpy migration, and learning-path links for the next steps in analysis."
+    description: "Choose a GWexpy first lesson for beginners, GW experimentalists, commissioners, scientific Python users, GWpy users, or returning GWexpy users."
 ---
 
-# Getting Started
+(getting-started)=
+# Start Here
 
-We provide a **systematic learning path** for GWexpy users.
-Choose the best starting point based on your background and goals.
+Choose your background to find a first lesson and a concrete result to work toward.
+You can start with synthetic data on your own computer; detector access is not a prerequisite.
+The suggested study times below are planning goals, excluding installation.
 
-If you want the shared assumptions and FFT/time conventions first, use [Prerequisites and Conventions](../explanation/prerequisites_and_conventions.md) as the entry point.
+(choose-your-path)=
+## Choose a first lesson
 
-## Choose Your Path
+::::{grid} 1 2 2 3
+:gutter: 3
 
-### 🚀 5-min Quick Start
+:::{grid-item-card} Beginner
+:link: first_analysis
+:link-type: doc
 
-[Quickstart](quickstart.md)
+Prerequisites: no Python or spectral-analysis experience assumed; install GWexpy first.
 
-For those who want to see results immediately. Get a figure in just 4 lines of code.
+Outcome: run Python code and explain a time-series plot and an ASD plot. Study goal: 20–30 minutes.
+:::
 
-### 📖 30-min Hands-on
+:::{grid-item-card} GW Experimentalist
+:link: for-gw-experimentalists
+:link-type: ref
 
-[Tutorial index](index.md)
+Prerequisites: familiar with channels, sample rates, and spectra; Python may be new.
 
-Learn the core data structures and GWexpy-specific matrix operations from scratch.
+Outcome: connect those concepts to `TimeSeries`, `TimeSeriesDict`, and a saved ASD figure. Study goal: 10–20 minutes.
+:::
 
-### 🔄 For GWpy Users
+:::{grid-item-card} Commissioner (DiagGUI · ndscope · Virgo dataDisplay)
+:link: commissioner
+:link-type: doc
 
-[GWexpy for GWpy Users](../explanation/gwexpy_for_gwpy_users.md)
+Prerequisites: comfortable choosing channels, time spans, FFT lengths, and reference channels in a GUI.
 
-For current GWpy users. Start with the migration recipes, then use the [GWpy Difference API Index](../reference/gwpy_added_api.md) when you need a difference-oriented lookup of added APIs.
+Outcome: reproduce a saved-data workflow with ASD, coherence, and recorded analysis settings. Study goal: 20–30 minutes.
+:::
+
+:::{grid-item-card} Scientific Python User
+:link: scientific_python
+:link-type: doc
+
+Prerequisites: NumPy arrays, dictionaries, and basic plotting; no GWpy knowledge needed.
+
+Outcome: attach time and unit metadata to arrays and replace a per-channel spectral loop with a collection method. Study goal: 10–15 minutes.
+:::
+
+:::{grid-item-card} GWpy User
+:link: ../explanation/gwexpy_for_gwpy_users
+:link-type: doc
+
+Prerequisites: existing GWpy scripts or familiarity with its containers.
+
+Outcome: identify useful GWexpy additions and adapt an existing analysis with the migration examples.
+:::
+
+:::{grid-item-card} GWexpy User
+:link: ../how-to/index
+:link-type: doc
+
+Prerequisites: a working GWexpy environment and a specific analysis task.
+
+Outcome: find a task recipe or case study; use the [API reference](../reference/index.md) for exact parameters.
+:::
+::::
 
 (en-learning-path)=
-## Learning Path
+(learning-path)=
+## Prepare and run
 
-### 1. Preparation
+(1-preparation)=
+1. Follow [Installation](installation.md) if GWexpy is not installed yet.
+2. Open the lesson matching your background. Each includes the concepts needed for its first result.
+3. For a short environment check, run the [Quickstart](quickstart.md): two synthetic channels produce a saved ASD figure.
 
-Start with the [Installation Guide](installation.md) to prepare a Python 3.11+ environment.
+(5-min-quick-start)=
+(30-min-hands-on)=
+(for-gwpy-users)=
+(2-core-data-structures)=
+(3-advanced-analysis)=
+(4-practical-applications)=
+## Continue with your result
 
-### 2. Core Data Structures
-
-We recommend learning the primary containers in the following order:
-
-1. [Basic Time Series](intro_timeseries.ipynb)
-2. [Basic Frequency Series](intro_frequencyseries.ipynb)
-3. [Basic Spectrograms](intro_spectrogram.ipynb)
-4. [Plot Customization](intro_plotting.ipynb)
-
-### 3. Advanced Analysis
-
-When you need a specific technique, see these how-to recipes:
-
-* **Multi-channel & Matrix Processing**: [TimeSeriesMatrix basics](matrix_timeseries.ipynb) / [Matrix containers](../how-to/containers/index.md)
-* **High-dimensional Data**: [Field API basics](../how-to/containers/field_scalar_intro.ipynb) / [ScalarField slicing guide](../how-to/containers/scalarfield_slicing.md)
-* **Signal Processing**: [Fitting](intro_fitting.ipynb) / [HHT](../how-to/spectral/advanced_hht.ipynb) / [ARIMA](../how-to/fitting/advanced_arima.ipynb)
-
-### 4. Practical Applications
-
-Explore real-world analysis workflows in our [Case Studies Gallery](../how-to/case-studies/index.md).
+Use [core lessons](index.md#core-lessons) to learn another container, or choose a [case study](../how-to/case-studies/index.md) that resembles your measurement.
+Detailed [FFT, GPS-time, and compatibility conventions](../explanation/prerequisites_and_conventions.md) are available when you need them.
 
 <a id="next-to-read"></a>
 <a id="next-steps"></a>
 
-## Next to Read
+## Further reading
 
-* [Case Studies Gallery](../how-to/case-studies/index.md) - Visual examples and practical workflows.
-* [All Tutorials](index.md)
-* [GWexpy for GWpy Users](../explanation/gwexpy_for_gwpy_users.md) - start from the difference-oriented migration recipes
-* [GWpy Difference API Index](../reference/gwpy_added_api.md) - look up added APIs from a GWpy-difference view
-* [Prerequisites and Conventions](../explanation/prerequisites_and_conventions.md) - entry point for environment assumptions, GPS time, and FFT conventions
-* [API Reference](../reference/index.md)
-* [Validated Algorithms](../explanation/validated_algorithms.md) - Verification reports for numerical accuracy.
+- [All tutorials](index.md)
+- [GWpy Difference API Index](../reference/gwpy_added_api.md)
+- [Developer guide](../about/developer.md)

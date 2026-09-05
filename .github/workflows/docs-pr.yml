@@ -7,6 +7,11 @@ on:
       - "CHANGELOG.md"
       - "docs/**"
       - "docs_redesign/**"
+      - "scripts/prepare_public_docs.py"
+      - "scripts/check_public_docs.py"
+      - "scripts/verify_public_examples.py"
+      - "gwexpy/**"
+      - "pyproject.toml"
       - "scripts/check_terms.py"
       - "scripts/check_docs_sync.py"
       - "scripts/check_forbidden_artifacts.py"
@@ -15,7 +20,6 @@ on:
       - "scripts/notebook_gen/prepare_docs_notebook_tree.py"
       - "docs/requirements.txt"
       - "environment.yml"
-      - "pyproject.toml"
       - ".github/workflows/docs-pr.yml"
 
 permissions:
@@ -27,12 +31,18 @@ concurrency:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  # Small notebook fits otherwise oversubscribe BLAS threads on large runners.
+  OPENBLAS_NUM_THREADS: "1"
+  OMP_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
 
 jobs:
   docs-pr:
     name: Docs build and smoke checks
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # PR #713 measured 28m27s for notebook checks and 14m12s for source
+    # preparation alone; leave time for the strict Sphinx build as well.
+    timeout-minutes: 60
     defaults:
       run:
         shell: bash -leo pipefail {0}
@@ -107,7 +117,7 @@ jobs:
       - name: Build Sphinx HTML
         run: |
           docs_src="${{ steps.prepare_docs_tree.outputs.docs_src }}"
-          sphinx-build -b html -W --keep-going \
+          python -m sphinx -b html -W --keep-going \
             -D nbsphinx_execute=never \
             -D nbsphinx_allow_errors=0 \
             "${docs_src}/docs" "${RUNNER_TEMP}/gwexpy-docs-pr-html"
@@ -157,25 +167,72 @@ jobs:
           docs_root="${RUNNER_TEMP}/gwexpy-docs-redesign-pr"
           docs_src="${docs_root}/docs_redesign"
           mkdir -p "${docs_root}"
-          rsync -a --delete --exclude "_build/" docs_redesign/ "${docs_src}/"
-          cp CHANGELOG.md "${docs_root}/CHANGELOG.md"
+          python scripts/prepare_public_docs.py "${docs_src}"
+          python scripts/verify_public_examples.py "${docs_src}"
           echo "docs_src=${docs_src}" >> "${GITHUB_OUTPUT}"
 
-      # Same plain `sphinx-build -b html` invocation (no -W) that
+      # Same plain `python -m sphinx -b html` invocation (no -W) that
       # docs-redesign-preview.yml and docs-pages.yml use for the real
       # deploy, so a green build here is the same build that would run at
       # deploy time -- it catches broken toctrees/links (build errors),
       # not the pre-existing warning baseline (31 EN / 69 JA, mostly
       # offline intersphinx timeouts) which this repo does not yet treat
       # as a hard gate for this tree.
+      - name: Verify introductory examples on their target release
+        run: |
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          release_env="${RUNNER_TEMP}/gwexpy-intro-release"
+          release_version=$(python -c 'import json; print(json.load(open("docs_redesign/release_status.json"))["intro_examples_release"])')
+          python -m venv "${release_env}"
+          "${release_env}/bin/python" -m pip install "gwexpy==${release_version}"
+          # Run away from the checkout with base dependencies only. The main
+          # build regenerates its figure afterward using the editable package.
+          cd "${RUNNER_TEMP}"
+          env -u PYTHONPATH "${release_env}/bin/python" \
+            "${GITHUB_WORKSPACE}/scripts/verify_public_examples.py" "${docs_src}" \
+            --expected-version "${release_version}"
+          cd "${GITHUB_WORKSPACE}"
+          python scripts/verify_public_examples.py "${docs_src}"
+
       - name: Build EN HTML
         run: |
           docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
-          sphinx-build -b html -d "${docs_src}/_build/doctrees_en" \
+          python -m sphinx -b html -d "${docs_src}/_build/doctrees_en" \
             "${docs_src}" "${docs_src}/_build/html"
 
       - name: Build JA HTML
         run: |
           docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
-          sphinx-build -b html -D language=ja -d "${docs_src}/_build/doctrees_ja" \
+          python -m sphinx -b html -D language=ja -d "${docs_src}/_build/doctrees_ja" \
             "${docs_src}" "${docs_src}/_build/html/ja"
+
+      - name: Check rendered entry paths
+        run: |
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          python scripts/check_public_docs.py "${docs_src}/_build/html" --expected-revision "${GITHUB_SHA}"
+
+      - name: Retain successful documentation evidence
+        if: success()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: docs-validation-evidence
+          path: |
+            ${{ steps.prepare_docs_redesign.outputs.docs_src }}/_build/html/build-info.json
+            ${{ steps.prepare_docs_redesign.outputs.docs_src }}/_build/html/ja/build-info.json
+            ${{ steps.prepare_docs_redesign.outputs.docs_src }}/_build/html/index.html
+            ${{ steps.prepare_docs_redesign.outputs.docs_src }}/_build/html/ja/index.html
+            ${{ steps.prepare_docs_redesign.outputs.docs_src }}/_build/html/_static/images/quickstart-asd.png
+            ${{ steps.prepare_docs_redesign.outputs.docs_src }}/_build/html/ja/_static/images/quickstart-asd.png
+            ${{ steps.prepare_docs_redesign.outputs.docs_src }}/_build/html/_static/downloads/quickstart.py
+            ${{ steps.prepare_docs_redesign.outputs.docs_src }}/_build/html/_static/downloads/commissioner.*
+          retention-days: 14
+
+      - name: Retain documentation diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: docs-build-diagnostics
+          path: |
+            ${{ steps.prepare_docs_redesign.outputs.docs_src }}/_build/**
+            /tmp/sphinx-err-*.log
+          retention-days: 7
