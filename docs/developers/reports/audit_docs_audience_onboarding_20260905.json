@@ -3,7 +3,7 @@
   "date": "2026-09-05",
   "task": "Approved Docs audience onboarding implementation",
   "branch": "docs/audience-onboarding",
-  "base_revision": "3f4a03ec4e006bfe85cda0dbb760ef6625167809",
+  "base_revision": "75d3d1a89ebc8942af1f3228152fea99d2d3420e",
   "skills": [
     "analyze_external",
     "setup_plan",
@@ -35,7 +35,8 @@
     "Merged updated main after PR conflict detection; preserved upstream API presentation hooks and release records, and retained the stronger canonical/public notebook unit, averaging and conjugation fixes.",
     "Rebuilt both languages after conflict resolution; both passed with two existing duplicate API index warnings, and the rendered entry-path checker passed again.",
     "Diagnosed the legacy Docs 45-minute timeout after successful notebook validation and source preparation; increased only that job limit to 60 minutes and retained strict HTML validation.",
-    "Integrated main@3f4a03ec after renewed PR conflict detection, combined the Japanese activity SVG hook with PR build/case evidence hooks, and preserved the newly approved upstream review container byte-for-byte."
+    "Integrated main@3f4a03ec after renewed PR conflict detection, combined the Japanese activity SVG hook with PR build/case evidence hooks, and preserved the newly approved upstream review container byte-for-byte.",
+    "Reproduced the post-integration PR Fast collection error in a fresh environment, then incorporated main@75d3d1a89 with its upstream test repair and refreshed review evidence. Verified the repaired module without adding a dependency or modifying approvals."
   ],
   "environment": {
     "python": "3.11.14",
@@ -209,6 +210,13 @@
       "skipped": 4,
       "seconds": 7.37,
       "explanation": "Post-merge check includes every affected docs/I/O test and the upstream release-test changes."
+    },
+    {
+      "command": "See integration-3f4a03ec.json subsequent_main_integration.isolated_verification.command",
+      "status": "passed_after_upstream_test_fix",
+      "before": "1 collection error: missing markdown_it",
+      "after": "10 passed in 0.09s",
+      "scope": "Isolated release-facts module in a fresh venv, not the full suite"
     }
   ],
   "external_link_failures": [
@@ -506,5 +514,5 @@
     },
     "final_main_integration": "docs/developers/reports/pr713_validation/integration-3f4a03ec.json"
   },
-  "previous_base_revision": "547332db31120365ca099bf8dc52c71eff5865db"
+  "previous_base_revision": "3f4a03ec4e006bfe85cda0dbb760ef6625167809"
 }

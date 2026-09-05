@@ -69,5 +69,45 @@
   "human_physics_approval": false,
   "merge_to_main": false,
   "production_readback": false,
-  "final_candidate_and_ci": "Recorded in PR #713 after the merge commit is created and its CI completes."
+  "final_candidate_and_ci": "Recorded in PR #713 after the merge commit is created and its CI completes.",
+  "subsequent_main_integration": {
+    "previous_head": "c27e7583e3c028229c1209b7274b882d55c311b5",
+    "merged_main": "75d3d1a89ebc8942af1f3228152fea99d2d3420e",
+    "conflicts": [],
+    "reason": "Main advanced again before final CI completed, with its own repair for the new release-facts test dependency and refreshed source-bound evidence.",
+    "collection_failure": {
+      "run_url": "https://github.com/tatsuki-washimi/gwexpy/actions/runs/33965441467",
+      "source_sha": "c27e7583e3c028229c1209b7274b882d55c311b5",
+      "error": "ModuleNotFoundError: No module named markdown_it",
+      "stage": "pytest collection; the review-scope check was not reached"
+    },
+    "upstream_fix": "235163a336752ced188a3fcde7190d0da3bedac3 removes the undeclared Markdown parser from the file-only release-facts test. Imported without modification; no extra PR Fast dependency was added.",
+    "isolated_verification": {
+      "environment": "Fresh Python 3.11 venv with pytest 9.1.1, Babel 2.18.0 and PyYAML 6.0.3; no markdown-it-py. Repository conftest is excluded to isolate the file-only module.",
+      "command": "conda run --no-capture-output -n gwexpy /tmp/gwexpy-pr713-final-main/markdown-env/bin/python -m pytest -c /dev/null -o cache_dir=/tmp/gwexpy-pr713-final-main/markdown-cache --noconftest tests/docs/test_docs_redesign_release_facts.py -q",
+      "before": {
+        "exit_code": 2,
+        "result": "1 collection error: missing markdown_it",
+        "seconds": 0.11
+      },
+      "after": {
+        "exit_code": 0,
+        "passed": 10,
+        "seconds": 0.09
+      }
+    },
+    "configuration_release_facts_check": {
+      "command": "conda run --no-capture-output -n gwexpy pytest tests/docs/test_docs_conf_runtime.py tests/docs/test_docs_redesign_release_facts.py -q",
+      "passed": 20,
+      "seconds": 0.83
+    },
+    "incoming_diff_check": "passed",
+    "existing_main_approvals": {
+      "reviewed_commit": "235163a336752ced188a3fcde7190d0da3bedac3",
+      "retained_byte_for_byte": true,
+      "applied_to_new_pr_candidate": false
+    },
+    "notebooks_unchanged": true,
+    "new_candidate_approval_created": false
+  }
 }

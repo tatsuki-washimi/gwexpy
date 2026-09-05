@@ -54,6 +54,12 @@ The merged library, inventory, extractor, release contract and approval containe
 
 Precommit integration checks reported 275 passed / 1 known review-scope failure / 4 skipped; the focused configuration/release-facts rerun passed 20 tests. Ruff, mypy and the diff whitespace check relative to the incorporated main passed. The incoming generated SVGs retain main's original bytes, including their whitespace. Commands and limitations are retained in `integration-3f4a03ec.json`. The exact committed candidate, CI outcomes and proposed review-scope digest are recorded in the PR body. No approval verdict is created by this integration.
 
+### Subsequent integration of main at 75d3d1a89
+
+PR Fast at `c27e7583e` stopped during collection, before the review-scope check: the release-facts test imported from main required the undeclared `markdown_it` dependency. A fresh venv containing only pytest, Babel and PyYAML reproduced that error. Before this PR added a dependency, main advanced to `75d3d1a89` with its own repair (`235163a33`) and refreshed source-bound evidence. That main was merged without conflicts; no additional PR Fast dependency or local test modification was retained.
+
+The same isolated environment, without `markdown-it-py`, now passes all 10 release-facts tests. The configuration/release-facts checks pass 20 tests, and the incoming diff whitespace check passes. The new main approval container is imported unchanged and still identifies its reviewed source `235163a33`; it does not approve this Docs candidate. Notebook code and the three combined Sphinx hooks are unchanged. Exact commands and results are included in `integration-3f4a03ec.json`; the next committed candidate requires fresh CI and proposed review digests.
+
 ## Physics review correspondence
 
 This is an automated source/evidence consistency review, **not human physics approval**. The existing two regression tests were reused; no replacement test suite or new scientific method was introduced.
