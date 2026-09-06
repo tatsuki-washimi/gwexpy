@@ -230,6 +230,41 @@ GUI removal ([#645](https://github.com/tatsuki-washimi/gwexpy/issues/645), PR
 ([#606](https://github.com/tatsuki-washimi/gwexpy/issues/606)) remain independent
 repository-level work.
 
+## v0.2.3 — GWpy behavioral compatibility stabilization (released 2026-09-05)
+
+Released from `75d3d1a89ebc8942af1f3228152fea99d2d3420e` as annotated tag
+[`v0.2.3`](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3), on
+[PyPI](https://pypi.org/project/gwexpy/0.2.3/) and
+[conda-forge](https://anaconda.org/conda-forge/gwexpy), and archived at
+[10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992). The
+publication record is the
+[v0.2.3 closure manifest](docs/developers/plans/manifests/audit-manifest-v0.2.3-release-closure.yaml)
+and its [closure report](docs/developers/reports/report_v0.2.3_release_closure_20260906.md).
+No v0.2.3 milestone was created; the release Issues were tracked directly and
+closed after the published evidence was read back.
+
+Release outcomes:
+
+- **GWpy compatibility surface:** the audited GWpy-derived methods and their
+  differential tests cover 575 logical members, with 224 fixed dispositions,
+  44 no-finding dispositions, zero unreviewed entries, and 882 GWexpy-only
+  entries explicitly outside the parent-override audit.
+- **Qualification and publication:** the tag-triggered run passed 19/19
+  qualification cells and 4/4 smoke cells. The qualified wheel and sdist were
+  published to PyPI with the recorded SHA-256 digests; the same release source
+  was archived by Zenodo and packaged on conda-forge.
+- **Known boundaries:** the separately approved #611
+  `non_intersecting_window_safety` exception remains limited to a completely
+  disjoint HDF5 read window. Retained parent-parity risks and the private
+  corrected Rayleigh route remain documented in the
+  [v0.2.3 changelog](CHANGELOG.md) and
+  [GWpy compatibility policy](docs_redesign/explanation/gwpy_compatibility_policy.md).
+
+The v0.2.3 compatibility audit and release-control scope are closed. Explicit
+numeric CSV time semantics (#634), the exact rational GPS time-axis contract
+(#688), and other future themes remain unscheduled; the roadmap does not assign
+them to a next version. No next-minor theme is committed.
+
 ## Future themes (not scheduled)
 
 No milestones exist for these yet, and the themes may be re-scoped. Each theme below

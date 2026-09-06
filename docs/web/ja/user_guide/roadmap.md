@@ -11,6 +11,14 @@
 
 ロードマップは公開していますが、研究上の要請や保守コスト、上流依存の変化によって優先度は変わりえます。
 
+## 現在のリリース基準
+
+- [v0.2.3](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3) は、現在公開されているメンテナンスリリースです。公開 API や依存パッケージを追加せず、GWpy 4.0.1 / 4.0.2 の監査済み既定挙動との互換性を復元しました。
+- v0.2.0 で、予測可能な単位、metadata の伝播、暗黙の型 downgrade ではなく明示的に失敗する container arithmetic の基準を確立しました。
+- exact timing、相互運用可能な persistence、決定論的な provenance、公開 GWpy compatibility は v0.2.0 で確立され、v0.2.3 でも維持されています。
+
+v0.2.3 は [PyPI](https://pypi.org/project/gwexpy/0.2.3/)、[conda-forge](https://anaconda.org/conda-forge/gwexpy)、[Zenodo（DOI 10.5281/zenodo.22344992）](https://doi.org/10.5281/zenodo.22344992) で公開されています。次の minor release のテーマは committed ではなく、今後の作業は方向性として扱います。
+
 ## 直近の重点項目
 
 - ナビゲーション、アクセシビリティ、検索性を含むドキュメント品質改善
