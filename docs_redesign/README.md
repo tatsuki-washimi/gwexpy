@@ -23,8 +23,9 @@ MyST-NB executes prepared notebooks into an untracked cache, with a 600-second
 per-cell timeout and errors raised. Full tracebacks are retained on failure.
 Committed notebooks stay free of outputs and execution counts. The case-study
 header reports measured execution time and package version separately from
-physical validation. `release_status.json` records the released package and
-release against which the introductory scripts are tested; it is not inferred
+physical validation. `release_status.json` records `latest_release`, the latest published package,
+and `intro_examples_release`, the release against which the introductory
+scripts are tested. These are independent metadata values and are not inferred
 from the development package's version number.
 
 Run `python scripts/verify_public_examples.py <prepared-docs-source>` after preparation to execute the Markdown lessons and regenerate the shared Quickstart figure from its downloadable source.
