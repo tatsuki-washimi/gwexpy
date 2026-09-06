@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-06",
+  "task": "Create the public Docs user testing plan",
+  "branch": "docs/public-docs-user-test-20260906",
+  "base_revision": "a1b38b05e2baee717d3cccd6458458f393333db0",
+  "public_baseline": {
+    "docs_source_revision": "1ff2cb99cc5a6013417cd5e3d147e1d21631e9e7",
+    "homepage": "https://tatsuki-washimi.github.io/gwexpy/docs/",
+    "package_version_for_sessions": "0.2.3",
+    "rule": "Record the deployed Docs SHA, displayed Docs version, and installed package version separately; do not mix observations from different deployed SHAs."
+  },
+  "skills": [
+    "web_docs_ia_overhaul",
+    "web_docs_page_rewrite",
+    "docs-ja",
+    "research-log-ja",
+    "japanese-tech-writing",
+    "manage_docs",
+    "web_docs_release_gates",
+    "gwexpy_conda_jobs",
+    "finalize_work"
+  ],
+  "scope": {
+    "included": [
+      "A reproducible four-participant EN/JA public Docs user test plan.",
+      "Entry selection, installation, Quickstart artifact, comprehension, and role-specific task measures.",
+      "Anonymous recording, intervention rules, decision thresholds, and environment-versus-Docs classification."
+    ],
+    "excluded": [
+      "No docs_redesign page, gettext, public HTML, runtime API, or notebook content changes.",
+      "No participant data, recordings, credentials, or experimental data committed to the repository.",
+      "No user test results claimed before sessions are run."
+    ]
+  },
+  "checks": [
+    {
+      "command": "rtk proxy python <plan static validation>",
+      "status": "passed",
+      "result": "155-line Markdown file has balanced fenced blocks, required baseline/version/task tokens, and no TODO/TBD or forbidden dash/middle-dot punctuation."
+    },
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy pytest -q tests/docs/test_docs_redesign_public_content.py tests/docs/test_docs_redesign_release_facts.py tests/docs/test_docs_conf_runtime.py",
+      "status": "passed",
+      "result": "30 passed in 0.91s"
+    },
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy python scripts/check_docs_sync.py",
+      "status": "passed",
+      "result": "169 paired files checked; heading counts synchronized. Existing unmatched-page warnings were reported by the checker."
+    },
+    {
+      "command": "rtk proxy conda run --no-capture-output -n gwexpy python -m sphinx -b html -W --keep-going -D nbsphinx_execute=never -D nbsphinx_allow_errors=0 docs /tmp/gwexpy-docs-user-test-plan-legacy-html",
+      "status": "passed",
+      "result": "Legacy HTML build succeeded with 415 source files. Existing notebook DuplicateCellId messages were emitted by nbformat; Sphinx exited successfully."
+    },
+    {
+      "command": "rtk proxy git diff --cached --check",
+      "status": "passed"
+    }
+  ],
+  "environment": {
+    "python": "3.11.14",
+    "gwexpy": "0.2.3",
+    "sphinx": "8.2.3",
+    "worktree": "/home/washimi/.config/superpowers/worktrees/gwexpy/docs-audience-onboarding"
+  },
+  "review": {
+    "human_review_required": false,
+    "physics_review_required": false,
+    "rationale": "The change is a research-plan and audit-record update only. It does not change scientific calculations, data models, public APIs, or published Docs content."
+  },
+  "files_changed": [
+    "docs/developers/plans/20260906_docs_user_test_plan.md",
+    "docs/developers/reports/audit_docs_user_test_plan_20260906.json"
+  ],
+  "followup": "Run the four sessions, then add an anonymized dated Markdown report under docs/developers/reports/ without changing this baseline record."
+}
