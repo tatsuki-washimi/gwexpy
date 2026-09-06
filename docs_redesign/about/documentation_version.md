@@ -2,7 +2,7 @@
 
 This site is built from the development branch. Its API reference describes
 the package version shown above each page, which may include unreleased changes.
-The currently released package is **{{ stable_release }}**. The introductory
+Latest release: **{{ latest_release }}**. The introductory
 downloadable examples are also checked against **{{ intro_examples_release }}**.
 
 Check the package in the environment where you run your analysis:

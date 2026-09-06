@@ -6,7 +6,7 @@ myst:
 
 # Known Limitations
 
-This page records the high-impact user-visible limitations of the released GWexpy {{ stable_release }} series. The boundaries introduced in v0.2.0 below remain applicable unless a later release note explicitly supersedes them. It is a curated compatibility guide, not a complete issue
+This page records the high-impact user-visible limitations of the released GWexpy {{ latest_release }} series. The boundaries introduced in v0.2.0 below remain applicable unless a later release note explicitly supersedes them. It is a curated compatibility guide, not a complete issue
 backlog and not a promise that a limitation will be removed in the next release.
 
 :::{important}
@@ -22,7 +22,7 @@ For format-specific and adapter-specific coverage that is not listed here, see
 
 ## Development documentation and compatibility
 
-The development API pages can describe changes after {{ stable_release }}.
+The development API pages can describe changes after {{ latest_release }}.
 Read the [documentation version](documentation_version.md) and
 [GWpy compatibility policy](../explanation/gwpy_compatibility_policy.md) when
 comparing them with an installed release. Successful inherited GWpy operations
