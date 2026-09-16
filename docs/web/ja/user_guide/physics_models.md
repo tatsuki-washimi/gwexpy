@@ -31,7 +31,7 @@ $$
 
 ### コヒーレンス (:term:`Coherence`)
 
-`gwexpy` の `.coherence()` メソッド（`TimeSeries`、`TimeSeriesDict`、および BruCo エンジン上）は、`scipy.signal.coherence` や `gwpy` と同じ慣習に従い、**二乗コヒーレンス**（magnitude-squared coherence）$\gamma^2(f)$ を返します：
+`TimeSeries.coherence()`、`TimeSeriesDict.coherence()`、および BruCo エンジンの `FastCoherenceEngine.compute_coherence()` は、いずれも `scipy.signal.coherence` や `gwpy` と同じ慣習に従い、**二乗コヒーレンス**（magnitude-squared coherence）$\gamma^2(f)$ を返します：
 
 $$
 \gamma^2(f) = \frac{|S_{xy}(f)|^2}{S_{xx}(f)\, S_{yy}(f)}
@@ -42,7 +42,7 @@ $$
 | $S_{xy}(f)$ | $x$ と $y$ のクロススペクトル密度 |
 | $S_{xx}(f)$, $S_{yy}(f)$ | $x$ と $y$ のパワースペクトル密度 |
 
-$\gamma^2$ は $[0, 1]$ の範囲に収まります。1 に近い値は、その周波数において 2 チャンネル間にノイズの影響が少ない線形な関係があることを示し、0 に近い値は線形な関係がないこと（あるいは測定がノイズに支配されていること）を示します。
+$\gamma^2$ は $[0, 1]$ の範囲に収まります。1 に近い値は、その周波数において 2 チャンネル間に強い線形な関係があることを示し、0 に近い値は線形な関係がないこと（あるいは測定がノイズに支配されていること）を示します。
 
 **本ドキュメント全体で、特に明示しない限り「Coherence（コヒーレンス）」は $\gamma^2$ を指します。** ページによって振幅比（例えばノイズプロジェクションのように ASD をコヒーレントな割合でスケールする場合）が必要な場合は、$\sqrt{\gamma^2}$ を明示的に使用し、その旨をラベルに記載します（例：「Coherence Amplitude」）。
 

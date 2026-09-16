@@ -16,7 +16,7 @@ available versions.
 GWexpy supports **Python 3.11 or later**. You can choose from several installation options (extras) depending on your analysis goals.
 
 :::{tip}
-**Not sure which one to pick?** If your goal is gravitational-wave analysis (NDS2, frame files, GW-specific tools), skip straight to [Conda Environment (Recommended / GW Analysis)](#conda-environment-recommended-gw-analysis) — it covers both the general-purpose "Recommended" extras and the GW-specific ones in a single environment. Only use [Minimal](#minimal) if you specifically want to keep dependencies to a bare minimum, and only use [Developer Mode](#developer-mode) if you are editing GWexpy itself.
+**Not sure which one to pick?** If your goal is gravitational-wave analysis (NDS2, frame files, GW-specific tools), skip straight to [Conda Environment (Recommended / GW Analysis)](#conda-environment-recommended-gw-analysis) — this creates a dedicated environment with GW-related binary dependencies and the `gw`, `analysis`, and `fitting` extras. Only use [Minimal](#minimal) if you specifically want to keep dependencies to a bare minimum, and only use [Developer Mode](#developer-mode) if you are editing GWexpy itself.
 :::
 
 (en-install-command)=

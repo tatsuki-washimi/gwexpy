@@ -160,14 +160,15 @@ msgstr "コヒーレンス (:term:`Coherence`)"
 
 #: ../../explanation/physics_models.md:33 96767e32c14e45568682937a37b4b558
 msgid ""
-"`gwexpy`'s `.coherence()` methods (on `TimeSeries`, `TimeSeriesDict`, and"
-" the Bruco engines) return the **magnitude-squared coherence** "
-"$\\gamma^2(f)$, following the convention used by `scipy.signal.coherence`"
-" and `gwpy`:"
+"`TimeSeries.coherence()`, `TimeSeriesDict.coherence()`, and the BruCo "
+"engine's `FastCoherenceEngine.compute_coherence()` all return the "
+"**magnitude-squared coherence** $\\gamma^2(f)$, following the convention "
+"used by `scipy.signal.coherence` and `gwpy`:"
 msgstr ""
-"`gwexpy` の `.coherence()` メソッド（`TimeSeries`、`TimeSeriesDict`、および Bruco "
-"エンジン上）は、`scipy.signal.coherence` や `gwpy` と同じ慣習に従い、**二乗コヒーレンス**"
-"（magnitude-squared coherence）$\\gamma^2(f)$ を返します："
+"`TimeSeries.coherence()`、`TimeSeriesDict.coherence()`、および BruCo "
+"エンジンの `FastCoherenceEngine.compute_coherence()` は、`scipy.signal.coherence`"
+" や `gwpy` と同じ慣習に従い、**二乗コヒーレンス**（magnitude-squared coherence）"
+"$\\gamma^2(f)$ を返します："
 
 #: ../../explanation/physics_models.md:35 7dc2a0bbebdd45a08a401958e508ef85
 msgid ""
@@ -197,13 +198,13 @@ msgstr "$x$ と $y$ のパワースペクトル密度"
 
 #: ../../explanation/physics_models.md:44 10a5354fbe0f49e0b85acae318fcaa1c
 msgid ""
-"$\\gamma^2$ is bounded in $[0, 1]$: values near 1 indicate a linear, "
-"noise-free relationship between the two channels at that frequency; "
+"$\\gamma^2$ is bounded in $[0, 1]$: values near 1 indicate a strong "
+"linear relationship between the two channels at that frequency; "
 "values near 0 indicate no linear relationship (or a noise-dominated "
 "measurement)."
 msgstr ""
-"$\\gamma^2$ は $[0, 1]$ の範囲に収まります。1 に近い値は、その周波数において 2 "
-"チャンネル間にノイズの影響が少ない線形な関係があることを示し、0 "
+"$\\gamma^2$ は $[0, 1]$ の範囲に収まります。1 に近い値は、その周波数における 2 "
+"チャンネル間の強い線形関係を示し、0 "
 "に近い値は線形な関係がないこと（あるいは測定がノイズに支配されていること）を示します。"
 
 #: ../../explanation/physics_models.md:46 41c8fa9721194b00a5a2f2c665b84029

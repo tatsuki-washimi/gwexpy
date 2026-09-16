@@ -30,7 +30,7 @@ $$
 
 ### Coherence (:term:`Coherence`)
 
-`gwexpy`'s `.coherence()` methods (on `TimeSeries`, `TimeSeriesDict`, and the Bruco engines) return the **magnitude-squared coherence** $\gamma^2(f)$, following the convention used by `scipy.signal.coherence` and `gwpy`:
+`TimeSeries.coherence()`, `TimeSeriesDict.coherence()`, and the BruCo engine's `FastCoherenceEngine.compute_coherence()` all return the **magnitude-squared coherence** $\gamma^2(f)$, following the convention used by `scipy.signal.coherence` and `gwpy`:
 
 $$
 \gamma^2(f) = \frac{|S_{xy}(f)|^2}{S_{xx}(f)\, S_{yy}(f)}
@@ -41,7 +41,7 @@ $$
 | $S_{xy}(f)$ | Cross spectral density between $x$ and $y$ |
 | $S_{xx}(f)$, $S_{yy}(f)$ | Power spectral densities of $x$ and $y$ |
 
-$\gamma^2$ is bounded in $[0, 1]$: values near 1 indicate a linear, noise-free relationship between the two channels at that frequency; values near 0 indicate no linear relationship (or a noise-dominated measurement).
+$\gamma^2$ is bounded in $[0, 1]$: values near 1 indicate a strong linear relationship between the two channels at that frequency; values near 0 indicate no linear relationship (or a noise-dominated measurement).
 
 **Throughout the docs, "Coherence" refers to $\gamma^2$ unless explicitly labeled otherwise.** When a page needs the amplitude ratio (e.g. to scale an ASD by the coherent fraction, as in noise projection), it uses $\sqrt{\gamma^2}$ explicitly and labels it accordingly (e.g. "Coherence Amplitude").
 
