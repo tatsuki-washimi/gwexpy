@@ -80,6 +80,82 @@ def scan_static_offline_violations(nb: nbformat.NotebookNode) -> list[str]:
     return violations
 
 
+def probe_kernel_environment(kernel_name: str, timeout: int = 30) -> dict:
+    """Execute a lightweight probe in kernel to retrieve sys and gwexpy metadata."""
+    probe_nb = nbformat.v4.new_notebook()
+    probe_code = """import json, sys
+try:
+    import gwexpy
+    gw_ver = getattr(gwexpy, "__version__", None)
+    gw_file = getattr(gwexpy, "__file__", None)
+except Exception:
+    gw_ver = None
+    gw_file = None
+
+env_info = {
+    "executable": sys.executable,
+    "prefix": sys.prefix,
+    "python_version": sys.version,
+    "gwexpy_version": gw_ver,
+    "gwexpy_file": gw_file,
+}
+print("__KERNEL_ENV_START__" + json.dumps(env_info) + "__KERNEL_ENV_END__")
+"""
+    probe_cell = nbformat.v4.new_code_cell(source=probe_code)
+    probe_nb.cells.append(probe_cell)
+    client = NotebookClient(probe_nb, timeout=timeout, kernel_name=kernel_name)
+    client.execute()
+
+    for output in probe_cell.get("outputs", []):
+        text = output.get("text", "")
+        if "__KERNEL_ENV_START__" in text and "__KERNEL_ENV_END__" in text:
+            raw = text.split("__KERNEL_ENV_START__")[1].split("__KERNEL_ENV_END__")[0]
+            return json.loads(raw)
+    raise RuntimeError(f"Failed to probe environment from kernel '{kernel_name}'")
+
+
+def verify_kernel_environment(
+    kernel_env: dict,
+    expected_prefix: Path | str | None = None,
+    allow_foreign: bool = False,
+    require_gwexpy: bool = True,
+) -> None:
+    """Verify kernel environment metadata against expectations."""
+    if not kernel_env.get("executable"):
+        raise RuntimeError("Kernel probe returned no python executable path.")
+    if not kernel_env.get("prefix"):
+        raise RuntimeError("Kernel probe returned no sys.prefix path.")
+
+    kernel_prefix = Path(kernel_env["prefix"]).resolve()
+
+    if expected_prefix is not None:
+        exp_prefix = Path(expected_prefix).resolve()
+        if kernel_prefix != exp_prefix:
+            raise RuntimeError(
+                f"Kernel prefix mismatch: kernel prefix is '{kernel_prefix}', but expected '{exp_prefix}'."
+            )
+    elif not allow_foreign:
+        runner_prefix = Path(sys.prefix).resolve()
+        if kernel_prefix != runner_prefix:
+            raise RuntimeError(
+                f"Kernel prefix mismatch: kernel is running under '{kernel_prefix}', while runner is in '{runner_prefix}'. "
+                "Specify --expected-prefix or --allow-foreign-kernel if this is intended."
+            )
+
+    if require_gwexpy:
+        gw_ver = kernel_env.get("gwexpy_version")
+        gw_file = kernel_env.get("gwexpy_file")
+        if not gw_file:
+            raise RuntimeError(
+                f"Kernel '{kernel_env.get('executable')}' cannot import gwexpy."
+            )
+        if not Path(gw_file).exists():
+            raise RuntimeError(f"gwexpy file '{gw_file}' reported by kernel does not exist on disk.")
+        if not gw_ver:
+            raise RuntimeError("Kernel imported gwexpy but __version__ is missing or empty.")
+
+
+
 def _is_finite_number(val: object) -> bool:
     if isinstance(val, (int, float)):
         return math.isfinite(val)
@@ -348,6 +424,22 @@ def main() -> int:
     parser.add_argument(
         "--timeout", type=int, default=None, help="Override cell timeout"
     )
+    parser.add_argument(
+        "--expected-prefix",
+        type=Path,
+        default=None,
+        help="Expected sys.prefix of the kernel environment",
+    )
+    parser.add_argument(
+        "--allow-foreign-kernel",
+        action="store_true",
+        help="Allow kernel sys.prefix to differ from runner sys.prefix without explicit --expected-prefix",
+    )
+    parser.add_argument(
+        "--no-require-gwexpy",
+        action="store_true",
+        help="Do not require gwexpy import in kernel (e.g. for synthetic fixtures)",
+    )
     args = parser.parse_args()
 
     source = args.source.resolve()
@@ -386,6 +478,24 @@ def main() -> int:
         out_dir = out_dir / run_name
 
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    # Probe and verify kernel environment before executing notebooks
+    try:
+        kernel_env = probe_kernel_environment(args.kernel, timeout=args.timeout or 30)
+        verify_kernel_environment(
+            kernel_env,
+            expected_prefix=args.expected_prefix,
+            allow_foreign=args.allow_foreign_kernel,
+            require_gwexpy=not args.no_require_gwexpy,
+        )
+        print(f"Verified kernel '{args.kernel}' environment:")
+        print(f"  executable: {kernel_env['executable']}")
+        print(f"  prefix:     {kernel_env['prefix']}")
+        print(f"  python:     {kernel_env['python_version'].split()[0]}")
+        print(f"  gwexpy:     {kernel_env.get('gwexpy_version')} ({kernel_env.get('gwexpy_file')})")
+    except Exception as err:
+        print(f"Error: Kernel environment verification failed for '{args.kernel}': {err}", file=sys.stderr)
+        return 1
 
     print(f"Verifying {len(notebooks)} workflow notebook(s) in {out_dir}...")
     all_passed = True
@@ -437,6 +547,8 @@ def main() -> int:
             and r["numerical_checks_passed"]
         ),
         "all_passed": all_passed,
+        "kernel_environment": kernel_env,
+        "environment_verified": True,
         "results": results,
     }
     summary_path = out_dir / "runner-summary.json"

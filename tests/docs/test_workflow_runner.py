@@ -10,7 +10,12 @@ from pathlib import Path
 import nbformat
 import pytest
 
-from scripts.verify_workflow_notebooks import load_manifest, verify_notebook
+from scripts.verify_workflow_notebooks import (
+    load_manifest,
+    probe_kernel_environment,
+    verify_kernel_environment,
+    verify_notebook,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 RUNNER_PATH = ROOT / "scripts/verify_workflow_notebooks.py"
@@ -326,3 +331,32 @@ def test_manifest_validation_duplicates(tmp_path: Path) -> None:
     )
     with pytest.raises(ValueError, match="Duplicate or empty notebook ID"):
         load_manifest(dup_manifest)
+
+
+def test_probe_and_verify_kernel_environment() -> None:
+    """Kernel environment probe should succeed and match current interpreter."""
+    env = probe_kernel_environment("python3", timeout=30)
+    assert "executable" in env and env["executable"]
+    assert "prefix" in env and env["prefix"]
+    assert "python_version" in env
+    # Should verify without error against current sys.prefix
+    verify_kernel_environment(env, expected_prefix=sys.prefix, require_gwexpy=False)
+
+
+def test_verify_kernel_environment_mismatches() -> None:
+    """verify_kernel_environment must reject mismatched prefix or missing gwexpy."""
+    fake_env = {
+        "executable": "/usr/bin/python3",
+        "prefix": "/usr",
+        "python_version": "3.10.0",
+        "gwexpy_version": None,
+        "gwexpy_file": None,
+    }
+    # Prefix mismatch
+    with pytest.raises(RuntimeError, match="Kernel prefix mismatch"):
+        verify_kernel_environment(fake_env, expected_prefix="/opt/myenv")
+
+    # Missing gwexpy
+    with pytest.raises(RuntimeError, match="cannot import gwexpy"):
+        verify_kernel_environment(fake_env, expected_prefix="/usr", require_gwexpy=True)
+
