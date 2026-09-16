@@ -31,7 +31,7 @@ $$
 
 ### コヒーレンス (:term:`Coherence`)
 
-`gwexpy` の `.coherence()` メソッド（`TimeSeries`、`TimeSeriesDict`、および Bruco エンジン上）は、`scipy.signal.coherence` や `gwpy` と同じ慣習に従い、**二乗コヒーレンス**（magnitude-squared coherence）$\gamma^2(f)$ を返します：
+`gwexpy` の `.coherence()` メソッド（`TimeSeries`、`TimeSeriesDict`、および BruCo エンジン上）は、`scipy.signal.coherence` や `gwpy` と同じ慣習に従い、**二乗コヒーレンス**（magnitude-squared coherence）$\gamma^2(f)$ を返します：
 
 $$
 \gamma^2(f) = \frac{|S_{xy}(f)|^2}{S_{xx}(f)\, S_{yy}(f)}
