@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "notebooks": [
+    {
+      "id": "T1",
+      "public": "how-to/monitoring/long_term_trend.ipynb",
+      "canonical": "docs/web/en/user_guide/tutorials/long_term_trend.ipynb",
+      "group": "core",
+      "cell_timeout_seconds": 120,
+      "required_outputs": [
+        "analysis-settings.json",
+        "validation-metrics.json",
+        "tables/events.csv",
+        "tables/coverage.csv"
+      ]
+    },
+    {
+      "id": "T2",
+      "public": "how-to/monitoring/event_catalog_timeseries.ipynb",
+      "canonical": "docs/web/en/user_guide/tutorials/event_catalog_timeseries.ipynb",
+      "group": "core",
+      "cell_timeout_seconds": 120,
+      "required_outputs": [
+        "analysis-settings.json",
+        "validation-metrics.json",
+        "tables/catalog.csv",
+        "tables/refined_events.csv",
+        "tables/event_channels.csv"
+      ]
+    },
+    {
+      "id": "T5",
+      "public": "how-to/monitoring/chunked_long_data.ipynb",
+      "canonical": "docs/web/en/user_guide/tutorials/chunked_long_data.ipynb",
+      "group": "core",
+      "cell_timeout_seconds": 180,
+      "required_outputs": [
+        "analysis-settings.json",
+        "validation-metrics.json",
+        "tables/chunk_summary.csv"
+      ]
+    },
+    {
+      "id": "T3",
+      "public": "how-to/spectral/resonance_discovery_q.ipynb",
+      "canonical": "docs/web/en/user_guide/tutorials/resonance_discovery_q.ipynb",
+      "group": "fitting",
+      "cell_timeout_seconds": 180,
+      "required_outputs": [
+        "analysis-settings.json",
+        "validation-metrics.json",
+        "tables/modes.csv"
+      ]
+    },
+    {
+      "id": "T4",
+      "public": "how-to/control/control_frd_roundtrip.ipynb",
+      "canonical": "docs/web/en/user_guide/tutorials/control_frd_roundtrip.ipynb",
+      "group": "control",
+      "cell_timeout_seconds": 120,
+      "required_outputs": [
+        "analysis-settings.json",
+        "validation-metrics.json",
+        "tables/frd_pair_errors.csv"
+      ]
+    },
+    {
+      "id": "T6",
+      "public": "how-to/calibration/calibration_units_contract.ipynb",
+      "canonical": "docs/web/en/user_guide/tutorials/calibration_units_contract.ipynb",
+      "group": "core",
+      "cell_timeout_seconds": 120,
+      "required_outputs": [
+        "analysis-settings.json",
+        "validation-metrics.json",
+        "tables/calibrated_tones.csv"
+      ]
+    },
+    {
+      "id": "T7",
+      "public": "how-to/interop/root_to_python_migration.ipynb",
+      "canonical": "docs/web/en/user_guide/tutorials/root_to_python_migration.ipynb",
+      "group": "core",
+      "cell_timeout_seconds": 120,
+      "required_outputs": [
+        "analysis-settings.json",
+        "validation-metrics.json",
+        "tables/rt60_trials.csv",
+        "tables/band_summary.csv"
+      ]
+    }
+  ]
+}
