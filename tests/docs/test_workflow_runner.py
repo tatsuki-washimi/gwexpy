@@ -34,7 +34,17 @@ out_dir = os.environ.get("GWEXPY_DOCS_OUTPUT_DIR", ".")
 os.makedirs(out_dir, exist_ok=True)
 with open(os.path.join(out_dir, "output.txt"), "w") as f:
     f.write("ok")
-metrics = {"status": "passed", "checks": {"chk1": {"passed": True}}}
+metrics = {
+    "status": "passed",
+    "data_kind": "synthetic",
+    "checks": {
+        "chk1": {
+            "passed": True,
+            "observed": "value",
+            "criterion": "check passed",
+        }
+    }
+}
 with open(os.path.join(out_dir, "validation-metrics.json"), "w") as f:
     json.dump(metrics, f)
 """
@@ -245,7 +255,17 @@ def test_runner_missing_required_checks_rejected(tmp_path: Path) -> None:
 import os, json
 out_dir = os.environ.get("GWEXPY_DOCS_OUTPUT_DIR", ".")
 os.makedirs(out_dir, exist_ok=True)
-metrics = {"status": "passed", "checks": {"check_A": {"passed": True}}}
+metrics = {
+    "status": "passed",
+    "data_kind": "synthetic",
+    "checks": {
+        "check_A": {
+            "passed": True,
+            "observed": "val",
+            "criterion": "check passed",
+        }
+    }
+}
 with open(os.path.join(out_dir, "validation-metrics.json"), "w") as f:
     json.dump(metrics, f)
 """

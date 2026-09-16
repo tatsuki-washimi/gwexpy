@@ -147,14 +147,23 @@ def verify_notebook(
         # Clone notebook to execute so we don't modify source
         nb_to_run = copy.deepcopy(nb)
 
+        # Injected setup cell ensures environment variables are definitely present inside the kernel process
+        setup_lines = [
+            "import os as _os",
+            "import sys as _sys",
+            f'_os.environ["GWEXPY_DOCS_OUTPUT_DIR"] = {repr(str(nb_out_dir))}',
+            '_os.environ["MPLBACKEND"] = "Agg"',
+        ]
         if offline:
-            setup_cell = nbformat.v4.new_code_cell(
-                source=OFFLINE_SETUP_CODE,
-                metadata={"tags": ["injected-offline-guard"]},
-            )
-            nb_to_run.cells.insert(0, setup_cell)
+            setup_lines.append(OFFLINE_SETUP_CODE)
 
-        # Set execution environment variables
+        setup_cell = nbformat.v4.new_code_cell(
+            source="\n".join(setup_lines),
+            metadata={"tags": ["injected-setup-guard"]},
+        )
+        nb_to_run.cells.insert(0, setup_cell)
+
+        # Set execution environment variables for host client
         env = os.environ.copy()
         env["GWEXPY_DOCS_OUTPUT_DIR"] = str(nb_out_dir)
         env["MPLBACKEND"] = "Agg"
@@ -183,12 +192,13 @@ def verify_notebook(
 
         duration = time.time() - start_time
 
-        # Save executed notebook (remove injected offline guard if present)
+        # Save executed notebook (remove injected setup guard if present)
         if (
-            offline
-            and nb_to_run.cells
-            and "injected-offline-guard"
-            in nb_to_run.cells[0].get("metadata", {}).get("tags", [])
+            nb_to_run.cells
+            and any(
+                tag in nb_to_run.cells[0].get("metadata", {}).get("tags", [])
+                for tag in ("injected-setup-guard", "injected-offline-guard")
+            )
         ):
             nb_to_run.cells.pop(0)
 
@@ -211,12 +221,18 @@ def verify_notebook(
         if exec_error is not None:
             return result
 
-        # Check required outputs
+        # Check required outputs: must be safe relative paths and exist as regular files
         missing = []
         for req in entry.get("required_outputs", []):
+            req_p = Path(req)
+            if req_p.is_absolute() or ".." in req_p.parts:
+                missing.append(f"{req} (invalid non-relative path)")
+                continue
             expected_file = nb_out_dir / req
             if not expected_file.exists():
                 missing.append(req)
+            elif not expected_file.is_file():
+                missing.append(f"{req} (not a regular file)")
         result["missing_outputs"] = missing
         result["required_outputs_passed"] = len(missing) == 0
 
@@ -249,6 +265,13 @@ def verify_notebook(
                     result["metrics_error"] = f"status is '{status}', expected 'passed'"
                     return result
 
+                # data_kind must be a non-empty string
+                data_kind = metrics_data.get("data_kind")
+                if not data_kind or not isinstance(data_kind, str):
+                    result["numerical_checks_passed"] = False
+                    result["metrics_error"] = "top-level 'data_kind' field is missing or not a non-empty string"
+                    return result
+
                 # Check required checks from manifest
                 req_checks = entry.get("required_checks", [])
                 missing_checks = [rc for rc in req_checks if rc not in checks]
@@ -258,16 +281,26 @@ def verify_notebook(
                     result["metrics_error"] = f"Missing required checks: {missing_checks}"
                     return result
 
-                # Each check must have a strictly boolean passed attribute: passed is True
+                # Each check must have passed=True (strictly bool), observed (present), and criterion (non-empty str)
                 checks_passed = True
                 for chk_name, chk_val in checks.items():
                     if not isinstance(chk_val, dict) or "passed" not in chk_val:
                         checks_passed = False
+                        result["metrics_error"] = f"check '{chk_name}' missing 'passed' attribute"
                         break
                     p_val = chk_val["passed"]
-                    # Strictly boolean and True
                     if not isinstance(p_val, bool) or p_val is not True:
                         checks_passed = False
+                        result["metrics_error"] = f"check '{chk_name}' passed is not True"
+                        break
+                    if "observed" not in chk_val:
+                        checks_passed = False
+                        result["metrics_error"] = f"check '{chk_name}' missing required 'observed' field"
+                        break
+                    criterion = chk_val.get("criterion")
+                    if not criterion or not isinstance(criterion, str) or not criterion.strip():
+                        checks_passed = False
+                        result["metrics_error"] = f"check '{chk_name}' missing non-empty 'criterion' string"
                         break
 
                 result["numerical_checks_passed"] = checks_passed

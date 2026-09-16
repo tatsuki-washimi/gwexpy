@@ -1,35 +1,132 @@
+
 msgid ""
 msgstr ""
-"Project-Id-Version: GWexpy\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version:  GWexpy\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-09-16 22:39+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
 
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:10002
+#: 474a3694476c4817903fce7282b0ee02
 msgid "Discover Resonances and Estimate Q Factors"
 msgstr "共振モードを発見してQ値を推定する"
 
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:10004
+#: e16ba649655e41ea8cc425feee7bfe86
+msgid ""
+"Mechanical resonances in suspensions, mirror substrates, and vacuum chambers "
+"can introduce steep noise peaks or destabilize feedback control loops. "
+"Identifying resonance natural frequencies ($f_n$) and quality factors ($Q$) "
+"enables building notch filters, damping loops, and tracking structural "
+"health."
+msgstr "懸架系、鏡基底、真空チェンバーにおける機械的共振は、急峻なノイズピークをもたらしたりフィードバック制御ループを不安定化させたりします。共振固有周波数（$f_n$）とクオリティファクタ（$Q$）を特定することで、ノッチフィルタの構築、制振ループの設計、および構造健全性の監視が可能になります。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:10006
+#: 196f958bf2d9451ebf2f5b169a4c4299
+msgid "**What you will achieve:**"
+msgstr "**このチュートリアルで達成できること：**"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:10007
+#: ef56e361ac2b4c40a8a7979ff581d1a2
+msgid ""
+"Generate an impulse-like excitation and synthetic multi-mode resonant "
+"response (3 modes at 73, 211, and 389 Hz)."
+msgstr "インパルス状の加振と合成多重モード共振応答（73 Hz、211 Hz、389 Hzの3つのモード）を生成します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:10008
+#: 99943782adf5419a8c3851a55425ed8e
+msgid ""
+"Detect drive triggers and contrast pre-excitation versus post-excitation "
+"amplitude spectral densities (ASDs)."
+msgstr "駆動トリガーを検出し、加振前と加振後の振幅スペクトル密度（ASD）を比較対比します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:10009
+#: 8ddf350ec8b643db9a11b1deecd47137
+#, fuzzy
+msgid "Compute the complex transfer function and discover peak candidates."
+msgstr "複素伝達関数とピーク候補の発見"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:10010
+#: 0ca333bd41a64ca58744a676d20a35aa
+msgid ""
+"Fit a discrete complex frequency-response model $H(z)$ using "
+"`gwexpy.fitting.fit_series` to estimate $f_n$ and $Q$."
+msgstr ""
+"`gwexpy.fitting.fit_series` を用いて離散複素周波数応答モデル $H(z)$ をフィッティングし、$f_n$ と $Q$ "
+"を推定します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:10011
+#: 7a1995bbe6384aef83ced80f8ca8a27b
+#, python-brace-format
+msgid ""
+"Cross-check frequency-domain fits against time-domain ringdown envelopes ($\t"
+"au_A$, $T_{60}$, $Q$)."
+msgstr "周波数領域のフィット結果を、時間領域のリングダウン包絡線（$\\tau_A$, $T_{60}$, $Q$）と相互照合します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:10012
+#: af2bd0bc1a6449cfbb0950f9ba16de0d
+msgid ""
+"Simulate a stepped-sine projection sweep and evaluate settling time "
+"requirements."
+msgstr "ステップ正弦波加振スイープをシミュレーションし、セトリング時間（整定時間）の要件を評価します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:10013
+#: 2894a49551624975a42adbb189407861
+msgid "Demonstrate failure cases on closely spaced modes and low-SNR records."
+msgstr "近接したモードや低S/N比の記録における失敗例・限界例を実証します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:10015
+#: c00c3d004f834d5fad07e5835bc62d4c
+msgid ""
+"**Data type**: Synthetic impulse excitation and multi-mode response (30 s at "
+"2048 Hz)."
+msgstr "**データ種別**: 合成インパルス加振および多重モード応答（30秒、2048 Hz）。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:20002
+#: 3367feb55e97411fa8839c6616ecbdd9
 msgid "Environment Setup"
 msgstr "環境のセットアップ"
 
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:40002
+#: ae3a41519f424d35be836490cae4641b
 msgid "Multi-Mode Resonant Fixture Generation"
 msgstr "複数共振モードを持つ合成データの生成"
 
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:60002
+#: 18e6ad1f711849ecb031a1019ebb2fa8
 msgid "Trigger Detection and Pre/Post ASD Comparison"
 msgstr "加振トリガー検出と加振前後ASDの比較"
 
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:80002
+#: 1feb6318a31c4464b7209f9ee9e671f0
 msgid "Complex Transfer Function and Peak Discovery"
 msgstr "複素伝達関数とピーク候補の発見"
 
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:100002
+#: aa6eaa294b034bb2b4469ec9d4d81f37
 msgid "Discrete Complex Frequency Response Fitting"
 msgstr "離散複素周波数応答モデルのフィッティング"
 
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:120002
+#: 44d6cc65d6f949cb8a69af0033bf84a1
 msgid "Ringdown Envelope and Time-Domain Validation"
 msgstr "リングダウン包絡線と時間領域での検証"
 
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:140002
+#: 10874b9649234993bc7445612ff7b50c
 msgid "Stepped-Sine Frequency Response Simulation"
 msgstr "ステップ正弦波掃引による応答シミュレーション"
 
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/spectral/resonance_discovery_q.ipynb:160002
+#: 2d3d664273694f88b7f502120924efe9
 msgid "Failure Cases and Verification Metrics"
 msgstr "失敗例と検証メトリクスの保存"
 

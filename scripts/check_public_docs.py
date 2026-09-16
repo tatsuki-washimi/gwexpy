@@ -188,6 +188,28 @@ def check(root: Path, expected_revision: str | None = None) -> list[str]:
         image = root / language / "_static/images/quickstart-asd.png"
         if not image.exists() or image.stat().st_size < 1000:
             errors.append(f"Missing Quickstart plot: {language}")
+
+        # Check workflow pages and JA translation presence
+        workflow_pages = (
+            "how-to/monitoring/index.html",
+            "how-to/calibration/index.html",
+            "how-to/monitoring/long_term_trend.html",
+            "how-to/monitoring/event_catalog_timeseries.html",
+            "how-to/monitoring/chunked_long_data.html",
+            "how-to/spectral/resonance_discovery_q.html",
+            "how-to/control/control_frd_roundtrip.html",
+            "how-to/calibration/calibration_units_contract.html",
+            "how-to/interop/root_to_python_migration.html",
+        )
+        for wp in workflow_pages:
+            wp_file = root / language / wp
+            if not wp_file.exists() or wp_file.stat().st_size < 500:
+                errors.append(f"Missing workflow HTML page: {language}{wp}")
+            elif language == "ja/":
+                content = wp_file.read_text(encoding="utf-8")
+                has_japanese = any("\u3040" <= ch <= "\u30ff" or "\u4e00" <= ch <= "\u9fff" for ch in content)
+                if not has_japanese:
+                    errors.append(f"JA workflow page lacks Japanese translation: {wp}")
     return errors
 
 

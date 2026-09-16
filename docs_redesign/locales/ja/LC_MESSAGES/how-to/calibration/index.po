@@ -3,9 +3,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: GWexpy\n"
+"Project-Id-Version:  GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-16 00:00+0000\n"
+"POT-Creation-Date: 2026-09-16 22:39+0900\n"
 "PO-Revision-Date: 2026-09-16 00:00+0000\n"
 "Last-Translator: GWexpy Developers\n"
 "Language: ja\n"
@@ -16,38 +16,332 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:1
+#: 4ae33e01a161405ca871288dec8f25c3
 msgid "Calibration and Physical Units"
 msgstr "校正と物理単位"
 
-msgid "Techniques for applying frequency-dependent calibration transfer functions, verifying physical dimensional units, and guarding against inversion and grid errors."
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:3
+#: 12e3b2722f5d400abb37ff995bc8001c
+msgid ""
+"Techniques for applying frequency-dependent calibration transfer functions, "
+"verifying physical dimensional units, and guarding against inversion and grid"
+" errors."
 msgstr "周波数依存の校正伝達関数の適用、物理次元・単位の整合性検証、および逆演算や周波数グリッド不一致の誤用を防ぐための技術解説です。"
 
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:5
+#: 06f0d95d4bd14c8980f6fcb32fe6bd1d
 msgid "Analysis Pathways"
 msgstr "解析パス"
 
-msgid "Calibration Units Contract"
-msgstr "単位を保った校正適用"
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:10
+#: 7d420db969ac49fbb09b0589e25a6476
+msgid ""
+"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
+"octicon-pulse sd-mr-1\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path "
+"d=\"M9.002 2.5a.75.75 0 0 1 .691.464l6.302 15.305 2.56-6.301a.75.75 0 0 1 "
+".695-.468h4a.75.75 0 0 1 0 1.5h-3.495l-3.06 7.532a.75.75 0 0 "
+"1-1.389.004L8.997 5.21l-3.054 7.329A.75.75 0 0 1 5.25 13H.75a.75.75 0 0 1 "
+"0-1.5h4l3.558-8.538a.75.75 0 0 1 .694-.462Z\"></path></svg> Calibration Units"
+" Contract"
+msgstr ""
+"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
+"octicon-pulse sd-mr-1\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path "
+"d=\"M9.002 2.5a.75.75 0 0 1 .691.464l6.302 15.305 2.56-6.301a.75.75 0 0 1 "
+".695-.468h4a.75.75 0 0 1 0 1.5h-3.495l-3.06 7.532a.75.75 0 0 "
+"1-1.389.004L8.997 5.21l-3.054 7.329A.75.75 0 0 1 5.25 13H.75a.75.75 0 0 1 "
+"0-1.5h4l3.558-8.538a.75.75 0 0 1 .694-.462Z\"></path></svg> Calibration Units"
+" Contract"
 
-msgid "Apply frequency-dependent response $C(f)$ to complex spectra and ASDs while enforcing astropy physical unit integrity."
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:14
+#: e986b5e9ea7d4eaa9970f241ecf85b49
+#, fuzzy
+msgid ""
+"Core tutorial: Apply frequency response $C(f)$ [count / m] to complex spectra"
+" and spectral densities while enforcing Astropy physical unit contracts and "
+"defensive exception guards."
 msgstr "Astropy の物理単位完全性を維持しながら、周波数応答 $C(f)$ を複素スペクトルや ASD へ正しく適用します。"
 
-msgid "Calibration Pipeline"
-msgstr "校正パイプライン"
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:17
+#: f0ec12c59a1443adab3793c7db5d6624
+msgid ""
+"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
+"octicon-tools sd-mr-1\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path "
+"d=\"M7.875 2.292a.114.114 0 0 0-.032.018A7.239 7.239 0 0 0 4.75 8.25a7.248 "
+"7.248 0 0 0 3.654 6.297c.57.327.982.955.941 1.682v.002l-.317 6.058a.75.75 0 1"
+" 1-1.498-.078l.317-6.062v-.004c.006-.09-.047-.215-.188-.296A8.749 8.749 0 0 1"
+" 3.25 8.25a8.738 8.738 0 0 1 3.732-7.169 1.547 1.547 0 0 1 "
+"1.709-.064c.484.292.809.835.809 1.46v4.714a.25.25 0 0 0 .119.213l2.25 "
+"1.385c.08.05.182.05.262 0l2.25-1.385a.25.25 0 0 0 "
+".119-.213V2.478c0-.626.325-1.169.81-1.461a1.547 1.547 0 0 1 1.708.064 8.741 "
+"8.741 0 0 1 3.732 7.17 8.747 8.747 0 0 1-4.41 "
+"7.598c-.14.081-.193.206-.188.296v.004l.318 6.062a.75.75 0 1 "
+"1-1.498.078l-.317-6.058v-.002c-.041-.727.37-1.355.94-1.682A7.247 7.247 0 0 0 "
+"19.25 8.25a7.239 7.239 0 0 0-3.093-5.94.114.114 0 0 "
+"0-.032-.018l-.01-.001c-.003 0-.014 "
+"0-.031.01-.036.022-.084.079-.084.177V7.19c0 .608-.315 1.172-.833 1.49l-2.25 "
+"1.385a1.75 1.75 0 0 1-1.834 0l-2.25-1.384A1.752 1.752 0 0 1 8 "
+"7.192V2.477c0-.098-.048-.155-.084-.176a.068.068 0 0 "
+"0-.031-.011l-.01.001Z\"></path></svg> Calibration Pipeline"
+msgstr ""
+"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
+"octicon-tools sd-mr-1\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path "
+"d=\"M7.875 2.292a.114.114 0 0 0-.032.018A7.239 7.239 0 0 0 4.75 8.25a7.248 "
+"7.248 0 0 0 3.654 6.297c.57.327.982.955.941 1.682v.002l-.317 6.058a.75.75 0 1"
+" 1-1.498-.078l.317-6.062v-.004c.006-.09-.047-.215-.188-.296A8.749 8.749 0 0 1"
+" 3.25 8.25a8.738 8.738 0 0 1 3.732-7.169 1.547 1.547 0 0 1 "
+"1.709-.064c.484.292.809.835.809 1.46v4.714a.25.25 0 0 0 .119.213l2.25 "
+"1.385c.08.05.182.05.262 0l2.25-1.385a.25.25 0 0 0 "
+".119-.213V2.478c0-.626.325-1.169.81-1.461a1.547 1.547 0 0 1 1.708.064 8.741 "
+"8.741 0 0 1 3.732 7.17 8.747 8.747 0 0 1-4.41 "
+"7.598c-.14.081-.193.206-.188.296v.004l.318 6.062a.75.75 0 1 "
+"1-1.498.078l-.317-6.058v-.002c-.041-.727.37-1.355.94-1.682A7.247 7.247 0 0 0 "
+"19.25 8.25a7.239 7.239 0 0 0-3.093-5.94.114.114 0 0 "
+"0-.032-.018l-.01-.001c-.003 0-.014 "
+"0-.031.01-.036.022-.084.079-.084.177V7.19c0 .608-.315 1.172-.833 1.49l-2.25 "
+"1.385a1.75 1.75 0 0 1-1.834 0l-2.25-1.384A1.752 1.752 0 0 1 8 "
+"7.192V2.477c0-.098-.048-.155-.084-.176a.068.068 0 0 "
+"0-.031-.011l-.01.001Z\"></path></svg> Calibration Pipeline"
 
-msgid "End-to-end calibration measurement, swept/stepped sine analysis, and model fitting."
-msgstr "加振応答測定、スウェプト/ステップ正弦波解析、モデルフィッティングの一連の流れです。"
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:21
+#: f846f4ab9769424eb68cfbb07429dffd
+msgid ""
+"Case study: End-to-end swept/stepped sine excitation analysis, coherence "
+"tracking, and parametric actuator transfer function fitting."
+msgstr "ケーススタディ：スウェプト/ステップ正弦波加振によるエンドツーエンドの応答解析、コヒーレンス追跡、およびアクチュエータ伝達関数フィッティング。"
 
-msgid "DTT XML Calibration"
-msgstr "DTT XML 校正応答"
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:24
+#: 1b92ecc0460240d4910e32ed0e505985
+msgid ""
+"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
+"octicon-file-code sd-mr-1\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path "
+"d=\"M3 3a2 2 0 0 1 2-2h9.982a2 2 0 0 1 1.414.586l4.018 4.018A2 2 0 0 1 21 "
+"7.018V21a2 2 0 0 1-2 2H4.75a.75.75 0 0 1 0-1.5H19a.5.5 0 0 0 .5-.5V8.5h-4a2 2"
+" 0 0 1-2-2v-4H5a.5.5 0 0 0-.5.5v6.25a.75.75 0 0 1-1.5 0Zm12-.5v4a.5.5 0 0 0 "
+".5.5h4a.5.5 0 0 0-.146-.336l-4.018-4.018A.5.5 0 0 0 15 2.5Z\"></path><path "
+"d=\"M4.53 12.24a.75.75 0 0 1-.039 1.06l-2.639 2.45 2.64 2.45a.75.75 0 1 "
+"1-1.022 1.1l-3.23-3a.75.75 0 0 1 0-1.1l3.23-3a.75.75 0 0 1 1.06.04Zm3.979 "
+"1.06a.75.75 0 1 1 1.02-1.1l3.231 3a.75.75 0 0 1 0 1.1l-3.23 3a.75.75 0 1 "
+"1-1.021-1.1l2.639-2.45-2.64-2.45Z\"></path></svg> DTT XML Calibration"
+msgstr ""
+"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
+"octicon-file-code sd-mr-1\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path "
+"d=\"M3 3a2 2 0 0 1 2-2h9.982a2 2 0 0 1 1.414.586l4.018 4.018A2 2 0 0 1 21 "
+"7.018V21a2 2 0 0 1-2 2H4.75a.75.75 0 0 1 0-1.5H19a.5.5 0 0 0 .5-.5V8.5h-4a2 2"
+" 0 0 1-2-2v-4H5a.5.5 0 0 0-.5.5v6.25a.75.75 0 0 1-1.5 0Zm12-.5v4a.5.5 0 0 0 "
+".5.5h4a.5.5 0 0 0-.146-.336l-4.018-4.018A.5.5 0 0 0 15 2.5Z\"></path><path "
+"d=\"M4.53 12.24a.75.75 0 0 1-.039 1.06l-2.639 2.45 2.64 2.45a.75.75 0 1 "
+"1-1.022 1.1l-3.23-3a.75.75 0 0 1 0-1.1l3.23-3a.75.75 0 0 1 1.06.04Zm3.979 "
+"1.06a.75.75 0 1 1 1.02-1.1l3.231 3a.75.75 0 0 1 0 1.1l-3.23 3a.75.75 0 1 "
+"1-1.021-1.1l2.639-2.45-2.64-2.45Z\"></path></svg> DTT XML Calibration"
 
-msgid "Load pre-measured calibration transfer functions directly from diagnostic test tool (DTT) XML files."
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:28
+#: 9758b81080974826b0baa98109c8b487
+#, fuzzy
+msgid ""
+"Case study: Ingest and reuse pre-measured calibration transfer function "
+"products directly from LIGO Diagnostic Test Tool (DTT) XML files."
 msgstr "診断測定ツール (DTT) XML ファイルから保存済み伝達関数を直接読み込みます。"
 
-msgid "Physics Validation"
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: f460026c55eb4d65b95312bc80525633
+msgid ""
+"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
+"octicon-shield-check sd-mr-1\" viewBox=\"0 0 24 24\" aria-"
+"hidden=\"true\"><path d=\"M16.53 9.78a.75.75 0 0 0-1.06-1.06L11 "
+"13.19l-1.97-1.97a.75.75 0 0 0-1.06 1.06l2.5 2.5a.75.75 0 0 0 1.06 "
+"0l5-5Z\"></path><path d=\"m12.54.637 8.25 2.675A1.75 1.75 0 0 1 22 4.976V10c0"
+" 6.19-3.771 10.704-9.401 12.83a1.704 1.704 0 0 1-1.198 0C5.77 20.705 2 16.19 "
+"2 10V4.976c0-.758.489-1.43 1.21-1.664L11.46.637a1.748 1.748 0 0 1 1.08 "
+"0Zm-.617 1.426-8.25 2.676a.249.249 0 0 0-.173.237V10c0 5.46 3.28 9.483 8.43 "
+"11.426a.199.199 0 0 0 .14 0C17.22 19.483 20.5 15.461 20.5 10V4.976a.25.25 0 0"
+" 0-.173-.237l-8.25-2.676a.253.253 0 0 0-.154 0Z\"></path></svg> Physics "
+"Validation"
+msgstr ""
+"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
+"octicon-shield-check sd-mr-1\" viewBox=\"0 0 24 24\" aria-"
+"hidden=\"true\"><path d=\"M16.53 9.78a.75.75 0 0 0-1.06-1.06L11 "
+"13.19l-1.97-1.97a.75.75 0 0 0-1.06 1.06l2.5 2.5a.75.75 0 0 0 1.06 "
+"0l5-5Z\"></path><path d=\"m12.54.637 8.25 2.675A1.75 1.75 0 0 1 22 4.976V10c0"
+" 6.19-3.771 10.704-9.401 12.83a1.704 1.704 0 0 1-1.198 0C5.77 20.705 2 16.19 "
+"2 10V4.976c0-.758.489-1.43 1.21-1.664L11.46.637a1.748 1.748 0 0 1 1.08 "
+"0Zm-.617 1.426-8.25 2.676a.249.249 0 0 0-.173.237V10c0 5.46 3.28 9.483 8.43 "
+"11.426a.199.199 0 0 0 .14 0C17.22 19.483 20.5 15.461 20.5 10V4.976a.25.25 0 0"
+" 0-.173-.237l-8.25-2.676a.253.253 0 0 0-.154 0Z\"></path></svg> Physics "
+"Validation"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:35
+#: 9e0c7fa0f649435ebeee31188d62e2d0
+msgid ""
+"Case study: Broad automated sanity checks, dimensional integrity auditing, "
+"and consistency validation across GWexpy containers."
+msgstr "ケーススタディ：広範な自動健全性チェック、次元完全性監査、およびGWexpyコンテナ間の整合性検証。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:39
+#: 2f3fad9e4f3f46bc94b946182f99f04f
+msgid "Role Separation and Scope"
+msgstr "役割分担とスコープ"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: c389409d5b09497a94ee79449f994014
+msgid "Resource"
+msgstr "リソース"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: 5f283521629f4108aad033c60a8c29dd
+msgid "Primary Scope"
+msgstr "主なスコープ"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: 17d77ef6c73847f18c8a1babc027dcdc
+msgid "Typical Usage"
+msgstr "典型的な用途"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: 6559d39b44db47bdbf7ba9cc530586b2
+msgid "Key Focus"
+msgstr "主要な焦点"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: 95272602b76049e3a8fa15cb204f08b7
+#, fuzzy
+msgid "**Calibration Units Contract** (Tutorial)"
+msgstr "単位を保った校正適用"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: bb74b65ccf5c41378a26a16cc3a2b616
+msgid "In-memory series calibration"
+msgstr "インメモリ系列の校正"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: 1512df115585407281864b330df3e7ca
+msgid "Daily script analysis"
+msgstr "日常のスクリプト解析"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: 53acdb1b6bcc455189fb6b8cd3530d38
+msgid "Unit safety, wrong-direction guards, grid mismatch errors"
+msgstr "単位安全性、逆方向ガード、グリッド不一致エラー"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: 81f2e5f48bde4dbbad724c2214599d2a
+#, fuzzy
+msgid "**Calibration Pipeline** (Case Study)"
+msgstr "校正パイプライン"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: 7636cdd1081a445e9b9ae60800250b0e
+msgid "Experimental measurement"
+msgstr "実験的測定"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: 3b3e305460d44032b9063e65354eb382
+msgid "Hardware commissioning"
+msgstr "ハードウェアコミッショニング"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: 8ad0fcf49bcf4cad958c0355727108e9
+msgid "Swept sine analysis, actuator calibration, TF modeling"
+msgstr "スウェプト正弦波解析、アクチュエータ校正、伝達関数モデル化"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: 7e37369590f04d92bdabcfc40c74daf9
+#, fuzzy
+msgid "**DTT XML Calibration** (Case Study)"
+msgstr "DTT XML 校正応答"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: 2ecaef0a3196456686445864d24b720c
+msgid "File I/O & legacy interop"
+msgstr "ファイルI/O・レガシー相互運用"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: 0105fca3872942c19a8e9c46d29e63cf
+msgid "Commissioning data reuse"
+msgstr "コミッショニングデータの再利用"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: aa1adf913faf4a67a62248470bd61fae
+msgid "Parsing XML transfer functions into GWexpy containers"
+msgstr "XML伝達関数をGWexpyコンテナへパース"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: dae3f878530e4f7eadd0d67a48ebb8e4
+#, fuzzy
+msgid "**Physics Validation** (Case Study)"
 msgstr "物理的妥当性検証"
 
-msgid "Automated unit sanity checks and consistency guards for gravitational-wave data containers."
-msgstr "重力波データコンテナの自動単位検証と整合性ガード。"
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: 60b13045b1024583be5f5145cc206096
+msgid "Container test suite"
+msgstr "コンテナテストスイート"
 
-msgid "Core Conventions"
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: 902a06b88e0a4940894beb98558cb22b
+msgid "Quality assurance"
+msgstr "品質保証"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:31
+#: 49e24041eb7144779d4c257110633d51
+#, fuzzy
+msgid "Broad physics invariant assertions"
+msgstr "物理的妥当性検証"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:48
+#: 3d3377e6c9d44f24a533031673084163
+#, fuzzy
+msgid "Core Mathematical Conventions"
 msgstr "主要な規約"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:50
+#: d357a6cc4d5e4c71bfa88bb97ab1ab34
+msgid ""
+"**Coupling Response**: $C(f) = Y_{\\text{count}}(f) / X_{\\text{m}}(f)$ with "
+"physical unit $\\text{ct}/\\text{m}$."
+msgstr ""
+"**結合応答**: 物理単位 $\\text{ct}/\\text{m}$ を持つ結合応答関数 $C(f) = Y_{\\text{count}}(f) "
+"/ X_{\\text{m}}(f)$。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:51
+#: dd0932450ee34c53aa7aab0542913993
+msgid ""
+"**Complex Spectrum Calibration**: $X(f) = Y(f) / C(f)$ restoring physical "
+"displacement in meters."
+msgstr "**複素スペクトル校正**: 物理変位（メートル）を復元する $X(f) = Y(f) / C(f)$。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:52
+#: ec769a8e9a1b4cffa30447faf6b928d8
+msgid ""
+"**Amplitude Spectral Density (ASD)**: $A_x(f) = A_y(f) / |C(f)|$ with unit "
+"$\\text{m}/\\sqrt{\\text{Hz}}$."
+msgstr ""
+"**振幅スペクトル密度（ASD）**: 単位 $\\text{m}/\\sqrt{\\text{Hz}}$ を持つ振幅スペクトル密度 $A_x(f) = "
+"A_y(f) / |C(f)|$。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:53
+#: 2a8c632eefc0491496331b0d1c421e3b
+#, python-brace-format
+msgid ""
+"**Power Spectral Density (PSD)**: $P_x(f) = P_y(f) / |C(f)|^2$ with unit "
+"$\\text{m}^2/\\text{Hz}$."
+msgstr ""
+"**パワースペクトル密度（PSD）**: 単位 $\\text{m}^2/\\text{Hz}$ を持つパワースペクトル密度 $P_x(f) = "
+"P_y(f) / |C(f)|^2$。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/index.md:54
+#: 3e88f05156dd49d9b1c3b88341d89064
+msgid "**Strain Sensitivity**: $h(f) = X(f) / L$ given detector arm length $L$."
+msgstr "**ひずみ感度**: 検出器アーム長 $L$ に対するひずみ感度スペクトル $h(f) = X(f) / L$。"
+
+#~ msgid ""
+#~ "End-to-end calibration measurement, "
+#~ "swept/stepped sine analysis, and model "
+#~ "fitting."
+#~ msgstr "加振応答測定、スウェプト/ステップ正弦波解析、モデルフィッティングの一連の流れです。"
+
+#~ msgid ""
+#~ "Automated unit sanity checks and consistency"
+#~ " guards for gravitational-wave data "
+#~ "containers."
+#~ msgstr "重力波データコンテナの自動単位検証と整合性ガード。"
+

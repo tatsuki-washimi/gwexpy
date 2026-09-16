@@ -1,29 +1,115 @@
+
 msgid ""
 msgstr ""
-"Project-Id-Version: GWexpy\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version:  GWexpy\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-09-16 22:39+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
 
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/control/control_frd_roundtrip.ipynb:10002
+#: f8ad1ecbdfa94bfabb17d353a26e19c9
 msgid "Compare Control Models with Measured Frequency Responses"
 msgstr "制御モデルと実測周波数応答を比較する"
 
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/control/control_frd_roundtrip.ipynb:10004
+#: aad4ddc7b4374a26a8bcea9994a1a793
+msgid ""
+"Control loop design and vibration isolation modeling in gravitational-wave "
+"detectors rely on state-space or transfer function models (often manipulated "
+"via `python-control`), while detector diagnostic data are stored as "
+"calibrated frequency series. Interoperating between continuous MIMO transfer "
+"functions and discrete `FrequencySeries` requires maintaining input/output "
+"channel pairings, physical units, and angular frequency contracts ($2\\pi$)."
+msgstr ""
+"重力波検出器における制御ループ設計と振動隔離モデリングは状態空間または伝達関数モデル（多くは `python-control` "
+"で操作）に依存し、検出器診断データは校正済み周波数系列として保存されます。連続 MIMO 伝達関数と離散 `FrequencySeries` "
+"の相互運用には、入出力チャンネルの対応付け、物理単位、および角周波数規約（$2\\pi$）の保持が必須となります。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/control/control_frd_roundtrip.ipynb:10006
+#: 1bd5545913cb414b8a91f5db0b032984
+msgid "**What you will achieve:**"
+msgstr "**このチュートリアルで達成できること：**"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/control/control_frd_roundtrip.ipynb:10007
+#: 2daac94cb0984c9c86908bdef424dba0
+msgid ""
+"Construct a normalized 2-input x 2-output MIMO transfer function model using "
+"`control.TransferFunction`."
+msgstr "`control.TransferFunction` を用いて、正規化された 2入力×2出力 MIMO 伝達関数モデルを構築します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/control/control_frd_roundtrip.ipynb:10008
+#: 312117a71e124986b2f8b6b8f152f783
+msgid ""
+"Apply physical I/O scaling: inputs (force [N], torque [N m]) and outputs "
+"(displacement [m], angle [rad])."
+msgstr "物理的な入出力スケーリングを適用します：入力（力 [N]、トルク [N m]）および出力（変位 [m]、角度 [rad]）。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/control/control_frd_roundtrip.ipynb:10009
+#: 8151412ed5064d9eba87ffcc4e7f3983
+msgid ""
+"Evaluate frequency response data (`control.frd`) across a log-spaced grid "
+"from 0.5 Hz to 100 Hz."
+msgstr "0.5 Hz〜100 Hz の対数グリッド上で周波数応答データ（`control.frd`）を評価します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/control/control_frd_roundtrip.ipynb:10010
+#: e775b1cd44224c8ca8fd714248640fd8
+msgid ""
+"Convert between `control.frd` and GWexpy `FrequencySeries` verifying the "
+"angular frequency ($2\\pi$) relationship."
+msgstr "角周波数（$2\\pi$）関係を検証しながら、`control.frd` と GWexpy `FrequencySeries` の間を相互変換します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/control/control_frd_roundtrip.ipynb:10011
+#: 300cd171d1d24fb9ac1edd2b1df185f5
+msgid "Perform 4 SISO round-trip conversions and verify exact complex recovery."
+msgstr "4組の SISO 往復変換を実行し、厳密な複素復元精度を検証します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/control/control_frd_roundtrip.ipynb:10012
+#: 03e6eaf2a65b48efa7ab858e46848db8
+msgid "Verify phase-wrapping handling, permutation tests, and zero-reference masking."
+msgstr "位相ラッピングの処理、置換テスト、およびゼロ近傍マスクを検証します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/control/control_frd_roundtrip.ipynb:10014
+#: 34c1a63ef52a4aa0947f0f58c23b94d6
+msgid ""
+"**Data type**: Simulated MIMO measurement and control transfer function model"
+" (300 frequency bins)."
+msgstr "**データ種別**: シミュレーションされた MIMO 測定および制御伝達関数モデル（300周波数ビン）。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/control/control_frd_roundtrip.ipynb:20002
+#: 67199281447b4fc199baf2edccfdd734
 msgid "Environment Setup"
 msgstr "環境のセットアップ"
 
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/control/control_frd_roundtrip.ipynb:40002
+#: 0e01abb34adb4d1c9b345df4873ca562
 msgid "Physical I/O Contract and Model Construction"
 msgstr "物理I/O契約とモデル構築"
 
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/control/control_frd_roundtrip.ipynb:60002
+#: 35b4cdc9dfce43ed964b9052f73a2e6b
 msgid "Interop: Angular Frequency Contract and SISO Round-Trip"
 msgstr "相互運用：角周波数契約とSISO往復変換"
 
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/control/control_frd_roundtrip.ipynb:80002
+#: b7d1b71ad85344f19956c758ab5c09ef
 msgid "Bode Comparison: Model vs Simulated Measurement"
 msgstr "ボード線図比較：モデルと模擬測定"
 
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/control/control_frd_roundtrip.ipynb:100002
+#: fab1943f09b749f4993b6df6c5de0d34
 msgid "Permutation, Phase Wrapping, and Zero Masking Checks"
 msgstr "並べ替え・位相アンラップ・ゼロ近傍マスク検査"
 
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/control/control_frd_roundtrip.ipynb:120002
+#: a81170c25f5344edb09506231405b394
 msgid "Export Settings and Verification Metrics"
 msgstr "解析設定と検証メトリクスの保存"
 
