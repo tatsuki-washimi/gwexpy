@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 06:33+0000\n"
+"POT-Creation-Date: 2026-09-16 10:06+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -17,25 +17,25 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.18.0\n"
+"Generated-By: Babel 2.17.0\n"
 
-#: ../../tutorials/intro_fitting.ipynb:10002 faf76c97bbd2444aa246fb13a493821e
+#: ../../tutorials/intro_fitting.ipynb:10002 c46f1936168c4e6696b4581d15df68f5
 msgid "Fitting: Basics"
 msgstr "フィッティング: 基本"
 
-#: ../../tutorials/intro_fitting.ipynb:10004 0c11aa9358f2446fad0eb2fe6ecab4b6
+#: ../../tutorials/intro_fitting.ipynb:10004 431afb137cf043debe32608b5f54c8a9
 msgid ""
 "**Goal**: Learn how to fit models to GW data using Ordinary Least Squares"
 " (OLS) and Generalized Least Squares (GLS)."
 msgstr "**目的**: 通常最小二乗法（OLS）および一般化最小二乗法（GLS）を使用して GW データにモデルをフィットする方法を学びます。"
 
-#: ../../tutorials/intro_fitting.ipynb:10006 b01e8d19a0a745cab7144fe3645b3229
+#: ../../tutorials/intro_fitting.ipynb:10006 c0f52876b95d42a6b91c9ff6e78ecede
 msgid ""
 "GWexpy uses **iminuit** as its primary optimization engine and provides "
 "specialized cost functions for spectral data with correlations."
 msgstr "GWexpy は主要な最適化エンジンとして **iminuit** を使用し、相関を持つスペクトルデータ用の特化したコスト関数を提供します。"
 
-#: ../../tutorials/intro_fitting.ipynb:10008 e6c55f8f9c1647e3b0e609bdad3f311d
+#: ../../tutorials/intro_fitting.ipynb:10008 2ea7c7aad6894085b5d5f534ab8b5c32
 msgid ""
 "Install it with the `fitting` extra before running this notebook: `pip "
 "install \"gwexpy[fitting]\"`."
@@ -43,29 +43,58 @@ msgstr ""
 "このノートブックを実行する前に、`fitting` extra でインストールしてください: `pip install "
 "\"gwexpy[fitting]\"`。"
 
-#: ../../tutorials/intro_fitting.ipynb:20002 2887176341c347cb80511dd19798b842
+#: ../../tutorials/intro_fitting.ipynb:20002 d457cdbf133b49bc99be1ece9e2c9ef5
 msgid "1. Simple OLS Fit"
 msgstr "1\\. 単純な OLS フィット"
 
-#: ../../tutorials/intro_fitting.ipynb:20004 d1da911ec9e1424cb4b7dfc9d05874d0
+#: ../../tutorials/intro_fitting.ipynb:20004 d7e8de6ba72c4a999f928cbdb694e53a
 msgid "We start with a simple power-law fit using diagonal errors (OLS)."
 msgstr "対角誤差（OLS）を使った単純なべき乗則フィットから始めます。"
 
-#: ../../tutorials/intro_fitting.ipynb:40002 3e7ad3ab965e4f638f8aa288f187556a
+#: ../../tutorials/intro_fitting.ipynb:40002 f3bb011c1cd74310a85abff97bbac692
 msgid "2. Generalized Least Squares (GLS)"
 msgstr "2\\. 一般化最小二乗法（GLS）"
 
-#: ../../tutorials/intro_fitting.ipynb:40004 b067609924a44ca6bad9a1abc2793a71
+#: ../../tutorials/intro_fitting.ipynb:40004 f861b100bba9469082eda47e4b82a7ab
 msgid ""
 "When data points are correlated (e.g., in a PSD estimate with overlapping"
 " windows), we use the covariance matrix $\\Sigma$."
 msgstr "データ点が相関している場合（例：重なり窓を使った PSD 推定）、共分散行列 $\\Sigma$ を使用します。"
 
-#: ../../tutorials/intro_fitting.ipynb:60002 90e17a9630584de7be1640f4f9f48106
+#: ../../tutorials/intro_fitting.ipynb:60002 6e771179bfe244199566f02e0fed49b1
+msgid ""
+"Both fits above are run on the *same* `y_obs_corr` data (drawn from the "
+"correlated covariance `cov`) and the *same* model, so the only difference"
+" is whether the fit accounts for the correlation. `m.errors` and "
+"`res_ols_on_corr.errors` are both Hesse-based parameter uncertainties "
+"from iminuit under a least-squares cost function (`errordef = "
+"Minuit.LEAST_SQUARES = 1.0`), so they are directly comparable."
+msgstr ""
+"上記の 2 つのフィットはいずれも、相関のある共分散 `cov` から生成した*同じ* `y_obs_corr` データと*同じ*モデルに対して"
+"行っており、違いはフィットが相関を考慮するかどうかだけです。`m.errors` と `res_ols_on_corr.errors` "
+"は、いずれも最小二乗コスト関数（`errordef = Minuit.LEAST_SQUARES = 1.0`）のもとで iminuit が計算する "
+"Hesse 近似による不確かさなので、直接比較できます。"
+
+#: ../../tutorials/intro_fitting.ipynb:60004 a54ee151241e4041834ea63f6b0cc0c8
+msgid ""
+"For this correlation structure and this draw of the data, the GLS fit "
+"reports a larger uncertainty on `A` than the OLS fit on the same data — "
+"consistent with OLS underestimating the uncertainty when it ignores "
+"correlated noise. This is a single realization, not a statistical "
+"guarantee: a rigorous check would look at parameter recovery and interval"
+" coverage across many random draws, which is beyond the scope of this "
+"introductory example."
+msgstr ""
+"この相関構造とこの1回のデータの実現では、GLS フィットは同じデータに対する OLS フィットよりも `A` "
+"の不確かさを大きく見積もります。これは、相関のあるノイズを無視すると OLS "
+"が不確かさを過小評価するという説明と整合します。ただし、これは1回の実現に基づく結果であり、統計的な保証ではありません。より厳密な検証には、"
+"多数回の乱数試行にわたるパラメータ回収の精度や信頼区間の被覆率を調べる必要がありますが、それは本入門教材の範囲を超えます。"
+
+#: ../../tutorials/intro_fitting.ipynb:70002 0d52bc17b5aa4d018469abc37c569029
 msgid "3. High-level Integration"
 msgstr "3\\. 高レベル統合パイプライン"
 
-#: ../../tutorials/intro_fitting.ipynb:60004 f4e3e87e62214d01a1418a3c12ed1e44
+#: ../../tutorials/intro_fitting.ipynb:70004 fd1978cce99e49c699a7933b730ed61a
 msgid ""
 "In real analysis, we often estimate the covariance matrix from the data "
 "itself using bootstrap methods. GWexpy provides an integrated pipeline "
@@ -74,25 +103,25 @@ msgstr ""
 "実際の解析では、ブートストラップ法を使ってデータ自体から共分散行列を推定することが多いです。GWexpy "
 "はこのための統合パイプラインを提供しています。"
 
-#: ../../tutorials/intro_fitting.ipynb:80002 663666b688344ed68101fafabd16f33e
+#: ../../tutorials/intro_fitting.ipynb:90002 919838619adb4c72aa7c38a20df8992a
 msgid "4. Exercises"
 msgstr "4\\. 演習"
 
-#: ../../tutorials/intro_fitting.ipynb:80004 efe4cb063bad4435a2ec19f8840cf329
+#: ../../tutorials/intro_fitting.ipynb:90004 faeada928728462c906d1b46039cc962
 msgid ""
-"**Parameter Bounds**: Modify the OLS fit to restrict `a > 0` using the "
+"**Parameter Bounds**: Modify the OLS fit to restrict `A > 0` using the "
 "`limits` argument in `fit_series`."
 msgstr ""
-"**パラメータ制約**: `fit_series` の `limits` 引数を使って `a > 0` となるよう OLS "
+"**パラメータ制約**: `fit_series` の `limits` 引数を使って `A > 0` となるよう OLS "
 "フィットを修正してください。"
 
-#: ../../tutorials/intro_fitting.ipynb:80005 de55d51e7e634f62bc62086fc32da6b9
+#: ../../tutorials/intro_fitting.ipynb:90005 20b85f70b1cd4d7c8939d9fe6a75c073
 msgid ""
 "**MCMC**: Enable MCMC in Section 3 by setting `run_mcmc=True` (requires "
 "`emcee`)."
 msgstr "**MCMC**: セクション 3 で `run_mcmc=True` を設定して MCMC を有効にしてください（`emcee` が必要）。"
 
-#: ../../tutorials/intro_fitting.ipynb:90002 aa16c16ea38945c5b588598f6253cf43
+#: ../../tutorials/intro_fitting.ipynb:100002 6da25697c99f45308bcc9886a8bc76bc
 msgid "5. Quick Check (NBMAKE)"
 msgstr "5\\. 検証セル（NBMAKE）"
 
