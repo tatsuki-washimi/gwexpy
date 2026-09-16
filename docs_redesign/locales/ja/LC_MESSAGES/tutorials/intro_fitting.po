@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-16 10:56+0900\n"
+"POT-Creation-Date: 2026-09-16 11:26+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -19,67 +19,67 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: ../../tutorials/intro_fitting.ipynb:10002 78b24975087f4ab8b6873ef58ebb24e9
+#: ../../tutorials/intro_fitting.ipynb:10002 41fc8f05a5ca42bcadfedba4a6748bdc
 msgid "Fitting: Basics"
 msgstr "フィッティング: 基本"
 
-#: ../../tutorials/intro_fitting.ipynb:10004 22a74fcf0f89498596d2189325bcc7cf
+#: ../../tutorials/intro_fitting.ipynb:10004 e03746e041514147973c7501667b9e60
 msgid "**Goal**: Learn how to fit models to GW data using Ordinary Least Squares (OLS) and Generalized Least Squares (GLS)."
 msgstr "**目的**: 通常最小二乗法（OLS）および一般化最小二乗法（GLS）を使用して GW データにモデルをフィットする方法を学びます。"
 
-#: ../../tutorials/intro_fitting.ipynb:10006 08e27df6bf5f417eaa881cd48e05e583
+#: ../../tutorials/intro_fitting.ipynb:10006 bc2f5acd4348495994b838dd7262df5d
 msgid "GWexpy uses **iminuit** as its primary optimization engine and provides specialized cost functions for spectral data with correlations."
 msgstr "GWexpy は主要な最適化エンジンとして **iminuit** を使用し、相関を持つスペクトルデータ用の特化したコスト関数を提供します。"
 
-#: ../../tutorials/intro_fitting.ipynb:10008 9466911539eb4b0385ed50053d8c6a9d
+#: ../../tutorials/intro_fitting.ipynb:10008 3626f6f4e73b43b5948cdf9420897f73
 msgid "Install it with the `fitting` extra before running this notebook: `pip install \"gwexpy[fitting]\"`."
 msgstr "このノートブックを実行する前に、`fitting` extra でインストールしてください: `pip install \"gwexpy[fitting]\"`。"
 
-#: ../../tutorials/intro_fitting.ipynb:20002 a3a269e9a89c4eb194adcbb2d15d9a17
+#: ../../tutorials/intro_fitting.ipynb:20002 78600adcff114f6fb9709462642488e0
 msgid "1. Simple OLS Fit"
 msgstr "1\\. 単純な OLS フィット"
 
-#: ../../tutorials/intro_fitting.ipynb:20004 b709f801896346ecb14958368c6876dc
+#: ../../tutorials/intro_fitting.ipynb:20004 4d4587a264814c19a5e61dd0b83c5172
 msgid "We start with a simple power-law fit using diagonal errors (OLS)."
 msgstr "対角誤差（OLS）を使った単純なべき乗則フィットから始めます。"
 
-#: ../../tutorials/intro_fitting.ipynb:40002 57b3f05f463543f6a84d9fdc0e0a68be
+#: ../../tutorials/intro_fitting.ipynb:40002 824ab4978da14b6ca55840c86519d8c9
 msgid "2. Generalized Least Squares (GLS)"
 msgstr "2\\. 一般化最小二乗法（GLS）"
 
-#: ../../tutorials/intro_fitting.ipynb:40004 4c24765945104eed8f883d06d067ed1e
+#: ../../tutorials/intro_fitting.ipynb:40004 f2abd3aa1e0e49b680ae01f3f90c45de
 msgid "When data points are correlated (e.g., in a PSD estimate with overlapping windows), we use the covariance matrix $\\Sigma$."
 msgstr "データ点が相関している場合（例：重なり窓を使った PSD 推定）、共分散行列 $\\Sigma$ を使用します。"
 
-#: ../../tutorials/intro_fitting.ipynb:60002 98bad217c01346c9954cac237c9e5906
-msgid "Both fits above use the *same* `y_obs_corr` data, the *same* model, and the *same* per-point observation uncertainty (`sigma_diag`, the diagonal of `cov`). The OLS fit uses only the diagonal of the covariance, while the GLS fit uses the full covariance including the off-diagonal correlation terms — so the two fits differ only in whether the correlation is taken into account, not in the assumed size of the per-point errors. `m.errors` and `res_ols_on_corr.errors` are both Hesse-based parameter uncertainties from iminuit under a least-squares cost function (`errordef = Minuit.LEAST_SQUARES = 1.0`), so they are directly comparable."
-msgstr "上記の 2 つのフィットは、いずれも*同じ* `y_obs_corr` データ、*同じ*モデル、*同じ*各点の観測誤差（`cov` の対角成分である `sigma_diag`）を使用しています。OLS フィットは共分散の対角成分のみを使い、GLS フィットは非対角の相関項を含む共分散全体を使うため、両者の違いは相関を考慮するかどうかだけであり、各点の誤差の大きさの前提は同じです。`m.errors` と `res_ols_on_corr.errors` は、いずれも最小二乗コスト関数（`errordef = Minuit.LEAST_SQUARES = 1.0`）のもとで iminuit が計算する Hesse 近似による不確かさなので、直接比較できます。"
+#: ../../tutorials/intro_fitting.ipynb:60002 d9dc90490ea1423db74987f800a361b4
+msgid "Both fits above use the *same* `y_obs_corr` data, the *same* model, and the *same* per-point observation uncertainty (`sigma_diag`, the square root of the diagonal of `cov`). The OLS fit uses only the diagonal of the covariance, while the GLS fit uses the full covariance including the off-diagonal correlation terms — so the two fits differ only in whether the correlation is taken into account, not in the assumed size of the per-point errors. `m.errors` and `res_ols_on_corr.errors` are both Hesse-based parameter uncertainties from iminuit under a least-squares cost function (`errordef = Minuit.LEAST_SQUARES = 1.0`), so they are directly comparable."
+msgstr "上記の 2 つのフィットは、いずれも*同じ* `y_obs_corr` データ、*同じ*モデル、*同じ*各点の観測誤差（`cov` の対角成分の平方根である `sigma_diag`）を使用しています。OLS フィットは共分散の対角成分のみを使い、GLS フィットは非対角の相関項を含む共分散全体を使うため、両者の違いは相関を考慮するかどうかだけであり、各点の誤差の大きさの前提は同じです。`m.errors` と `res_ols_on_corr.errors` は、いずれも最小二乗コスト関数（`errordef = Minuit.LEAST_SQUARES = 1.0`）のもとで iminuit が計算する Hesse 近似による不確かさなので、直接比較できます。"
 
-#: ../../tutorials/intro_fitting.ipynb:60004 79b52453ebba41c5a220db87c28d410d
+#: ../../tutorials/intro_fitting.ipynb:60004 451b1fbfc01746d081a52f9730b389a2
 msgid "For this correlation structure and this draw of the data, the GLS fit reports a larger uncertainty on both `A` and `alpha` than the OLS fit that ignores the correlation — consistent with OLS underestimating the uncertainty when correlated noise is treated as independent. This is a single realization, not a statistical guarantee: a rigorous check would look at parameter recovery and interval coverage across many random draws, which is beyond the scope of this introductory example."
 msgstr "この相関構造とこの1回のデータの実現では、GLS フィットは相関を無視した OLS フィットよりも `A` と `alpha` の両方で不確かさを大きく見積もります。これは、相関のあるノイズを独立とみなすと OLS が不確かさを過小評価するという説明と整合します。ただし、これは1回の実現に基づく結果であり、統計的な保証ではありません。より厳密な検証には、多数回の乱数試行にわたるパラメータ回収の精度や信頼区間の被覆率を調べる必要がありますが、それは本入門教材の範囲を超えます。"
 
-#: ../../tutorials/intro_fitting.ipynb:70002 5bebcb0a688e4d3ab504438e481042af
+#: ../../tutorials/intro_fitting.ipynb:70002 b9cfb4d426a24fcdbdabf89902512a75
 msgid "3. High-level Integration"
 msgstr "3\\. 高レベル統合パイプライン"
 
-#: ../../tutorials/intro_fitting.ipynb:70004 f27e7f5114e84d2498759499f175fd75
+#: ../../tutorials/intro_fitting.ipynb:70004 ff99b1933c9c4a7c864d864108b69977
 msgid "In real analysis, we often estimate the covariance matrix from the data itself using bootstrap methods. GWexpy provides an integrated pipeline for this."
 msgstr "実際の解析では、ブートストラップ法を使ってデータ自体から共分散行列を推定することが多いです。GWexpy はこのための統合パイプラインを提供しています。"
 
-#: ../../tutorials/intro_fitting.ipynb:90002 a371e83dd0b24c6394e3e6b8dedf37fd
+#: ../../tutorials/intro_fitting.ipynb:90002 d37d5c62e863476789d81b0c5067453e
 msgid "4. Exercises"
 msgstr "4\\. 演習"
 
-#: ../../tutorials/intro_fitting.ipynb:90004 8636223fff8c495f9dfd4a36a6402923
+#: ../../tutorials/intro_fitting.ipynb:90004 b3a90c8695d845ffb92af15741cd69cf
 msgid "**Parameter Bounds**: Modify the OLS fit to restrict `A > 0` using the `limits` argument in `fit_series`."
 msgstr "**パラメータ制約**: `fit_series` の `limits` 引数を使って `A > 0` となるよう OLS フィットを修正してください。"
 
-#: ../../tutorials/intro_fitting.ipynb:90005 2002771c0e65463f8bc832a90ff3b09f
+#: ../../tutorials/intro_fitting.ipynb:90005 ea9de9a133c547f9b9ce678eea5d0b30
 msgid "**MCMC**: Enable MCMC in Section 3 by setting `run_mcmc=True` (requires `emcee`)."
 msgstr "**MCMC**: セクション 3 で `run_mcmc=True` を設定して MCMC を有効にしてください（`emcee` が必要）。"
 
-#: ../../tutorials/intro_fitting.ipynb:100002 91e572010dfb45f9a93b94973c6edc88
+#: ../../tutorials/intro_fitting.ipynb:100002 75100e102e2848d8b62981d572daa5cf
 msgid "5. Quick Check (NBMAKE)"
 msgstr "5\\. 検証セル（NBMAKE）"
 
