@@ -11,7 +11,16 @@
         "analysis-settings.json",
         "validation-metrics.json",
         "tables/events.csv",
-        "tables/coverage.csv"
+        "tables/coverage.csv",
+        "figures/trend_baseline.png",
+        "figures/transients_and_steps.png"
+      ],
+      "required_checks": [
+        "trend_truth_recovery",
+        "trend_units",
+        "trend_gap_policy",
+        "trend_export_roundtrip",
+        "trend_no_events"
       ]
     },
     {
@@ -25,7 +34,22 @@
         "validation-metrics.json",
         "tables/catalog.csv",
         "tables/refined_events.csv",
-        "tables/event_channels.csv"
+        "tables/event_channels.csv",
+        "tables/aligned_witness.npz",
+        "tables/aligned_sensor.npz",
+        "tables/aligned_displacement.npz",
+        "figures/catalog_refinement.png",
+        "figures/aligned_waveforms.png",
+        "figures/mean_response.png"
+      ],
+      "required_checks": [
+        "event_id_preservation",
+        "event_refinement_accuracy",
+        "event_lag_recovery",
+        "event_window_half_open",
+        "event_edge_and_gap_status",
+        "event_alignment_no_unit_mixing",
+        "event_catalog_invalid"
       ]
     },
     {
@@ -37,7 +61,23 @@
       "required_outputs": [
         "analysis-settings.json",
         "validation-metrics.json",
-        "tables/chunk_summary.csv"
+        "tables/chunk_summary.csv",
+        "tables/checkpoint.json",
+        "figures/rms_time_series.png",
+        "figures/psd_comparison.png",
+        "figures/filter_boundary_error.png"
+      ],
+      "required_checks": [
+        "chunk_sample_coverage",
+        "chunk_rms_equals_reference",
+        "chunk_psd_equals_reference",
+        "chunk_irregular_boundary",
+        "chunk_filter_state",
+        "chunk_resume_idempotent",
+        "chunk_atomic_failure",
+        "chunk_config_mismatch",
+        "chunk_buffer_bound",
+        "chunk_short_and_empty"
       ]
     },
     {
@@ -49,7 +89,21 @@
       "required_outputs": [
         "analysis-settings.json",
         "validation-metrics.json",
-        "tables/modes.csv"
+        "tables/modes.csv",
+        "figures/trigger_window.png",
+        "figures/asd_comparison.png",
+        "figures/complex_response_fit.png",
+        "figures/ringdown_envelope.png",
+        "figures/stepped_sine_response.png"
+      ],
+      "required_checks": [
+        "resonance_candidates",
+        "resonance_fn_recovery",
+        "resonance_q_recovery",
+        "resonance_crosscheck",
+        "resonance_rt60_definition",
+        "resonance_failed_cases",
+        "resonance_sweep_response"
       ]
     },
     {
@@ -61,7 +115,18 @@
       "required_outputs": [
         "analysis-settings.json",
         "validation-metrics.json",
-        "tables/frd_pair_errors.csv"
+        "tables/frd_pair_errors.csv",
+        "figures/bode_comparison.png",
+        "figures/ratio_and_residual.png"
+      ],
+      "required_checks": [
+        "frd_shape",
+        "frd_axis_2pi",
+        "frd_complex_roundtrip",
+        "frd_metadata_boundary",
+        "frd_permutation",
+        "frd_phase_wrap",
+        "frd_zero_reference"
       ]
     },
     {
@@ -73,7 +138,19 @@
       "required_outputs": [
         "analysis-settings.json",
         "validation-metrics.json",
-        "tables/calibrated_tones.csv"
+        "tables/calibrated_tones.csv",
+        "figures/calibration_response.png",
+        "figures/spectrum_calibration.png",
+        "figures/asd_psd_comparison.png"
+      ],
+      "required_checks": [
+        "calibration_complex_recovery",
+        "calibration_tone_amplitude",
+        "calibration_phase",
+        "calibration_asd_psd_units",
+        "calibration_wrong_direction",
+        "calibration_grid_mismatch",
+        "calibration_zero_response"
       ]
     },
     {
@@ -86,7 +163,20 @@
         "analysis-settings.json",
         "validation-metrics.json",
         "tables/rt60_trials.csv",
-        "tables/band_summary.csv"
+        "tables/band_summary.csv",
+        "figures/rt60_sample_fit.png",
+        "figures/rt60_distribution.png",
+        "figures/rt60_by_band.png"
+      ],
+      "required_checks": [
+        "root_native_no_root_required",
+        "rt60_model_semantics",
+        "rt60_rebin_semantics",
+        "rt60_known_truth",
+        "rt60_table_integrity",
+        "rt60_legacy_selection",
+        "rt60_likelihood_branch",
+        "rt60_export_roundtrip"
       ]
     }
   ]

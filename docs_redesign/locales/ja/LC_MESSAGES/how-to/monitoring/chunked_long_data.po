@@ -1,38 +1,38 @@
-# Japanese translation for chunked_long_data.
-# Copyright (C) 2026, GWexpy Developers
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-16 00:00+0000\n"
-"PO-Revision-Date: 2026-09-16 00:00+0000\n"
-"Last-Translator: GWexpy Developers\n"
-"Language: ja\n"
-"Language-Team: Japanese\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.17.0\n"
+"Language: ja\n"
 
 msgid "Process Long Time Series in Chunks"
 msgstr "長時間時系列をチャンク分割して処理する"
 
-msgid "When processing continuous observations spanning hours or days, loading complete multi-channel waveforms into RAM causes memory exhaustion or system throttling. Streaming data in fixed-size blocks allows computing summary statistics, power spectral densities (PSDs), and filtered streams within a strictly bounded memory footprint."
-msgstr "数時間から数日に及ぶ連続観測データを処理する際、多チャンネルの全波形を RAM へ展開するとメモリ枯渇を引き起こします。固定サイズのブロックで順次処理を行うことで、統計量やパワースペクトル密度 (PSD)、フィルタ処理を有界なメモリバッファ内で安全に計算できます。"
-
 msgid "Environment Setup"
-msgstr "環境セットアップ"
+msgstr "環境のセットアップ"
 
-msgid "Streaming Disk Dataset Creation"
-msgstr "ストリーミング用ディスクデータセットの作成"
+msgid "Block-by-Block Dataset Generation"
+msgstr "ブロック単位でのデータセット生成"
 
-msgid "Bounded-Buffer Streaming Analysis and State Propagation"
-msgstr "有界バッファによるストリーミング解析と状態伝播"
+msgid "Streaming Analysis Architecture"
+msgstr "ストリーミング解析のアーキテクチャ"
 
-msgid "Verification Against Full Reference"
-msgstr "全量リファレンスとの整合性検証"
+msgid "Continuous Filtering across Chunk Boundaries"
+msgstr "チャンク境界を跨ぐ連続フィルタリング"
 
-msgid "Quality Metrics Export"
-msgstr "品質指標の出力"
+msgid "Atomic Checkpointing and Streaming Analysis"
+msgstr "アトミックなチェックポイントとストリーミング解析"
+
+msgid "Checkpoint Interrupt and Resume Verification"
+msgstr "チェックポイントの中断と再開の検証"
+
+msgid "Irregular Chunk Boundaries Verification"
+msgstr "不規則なチャンク境界の検証"
+
+msgid "Visualizing Streaming Summaries and Spectra"
+msgstr "ストリーミングサマリーとスペクトルの可視化"
+
+msgid "Verification Metrics and Bounds Assessment"
+msgstr "検証メトリクスとバッファ評価"
+

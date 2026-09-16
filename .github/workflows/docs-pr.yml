@@ -18,6 +18,9 @@ on:
       - "scripts/run_quickstart_test.py"
       - "scripts/notebook_gen/check_changed_notebooks.py"
       - "scripts/notebook_gen/prepare_docs_notebook_tree.py"
+      - "scripts/verify_workflow_notebooks.py"
+      - "docs_redesign/workflow_notebooks.json"
+      - "tests/docs/**"
       - "docs/requirements.txt"
       - "environment.yml"
       - ".github/workflows/docs-pr.yml"
@@ -236,3 +239,47 @@ jobs:
             ${{ steps.prepare_docs_redesign.outputs.docs_src }}/_build/**
             /tmp/sphinx-err-*.log
           retention-days: 7
+
+  minimal-dependency-workflow:
+    name: "Workflow [py${{ matrix.python-version }} / ${{ matrix.group }}]"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+        group: ["core", "fitting", "control"]
+        include:
+          - group: core
+            install-target: "."
+          - group: fitting
+            install-target: ".[fitting]"
+          - group: control
+            install-target: ".[control]"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install minimal dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e "${{ matrix.install-target }}"
+          python -m pip install nbclient nbformat ipykernel
+          python -m ipykernel install --user --name "gwexpy-wf-${{ matrix.group }}"
+          pip check
+      - name: Verify workflow notebooks for ${{ matrix.group }}
+        run: |
+          python scripts/verify_workflow_notebooks.py \
+            --group "${{ matrix.group }}" \
+            --kernel "gwexpy-wf-${{ matrix.group }}" \
+            --offline \
+            --output "/tmp/evidence-${{ matrix.group }}" \
+            --run-id "ci-${{ matrix.python-version }}-${{ matrix.group }}"
+      - name: Upload workflow evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: "workflow-evidence-py${{ matrix.python-version }}-${{ matrix.group }}"
+          path: "/tmp/evidence-${{ matrix.group }}"
+

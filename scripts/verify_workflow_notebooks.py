@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import copy
 import json
+import math
 import os
 import sys
 import tempfile
@@ -31,9 +32,11 @@ def _sandboxed_socket_connect(self, address):
 _socket.socket.connect = _sandboxed_socket_connect
 """
 
+STATIC_NETWORK_PATTERNS = ["curl ", "wget ", "urllib.request", "requests.get", "requests.post"]
+
 
 def load_manifest(manifest_path: Path) -> dict:
-    """Load and validate manifest file."""
+    """Load and strictly validate manifest file."""
     if not manifest_path.exists():
         raise FileNotFoundError(f"Manifest not found: {manifest_path}")
     data = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -41,7 +44,56 @@ def load_manifest(manifest_path: Path) -> dict:
         raise ValueError(f"Unsupported schema_version: {data.get('schema_version')}")
     if "notebooks" not in data or not isinstance(data["notebooks"], list):
         raise ValueError("Manifest must contain a 'notebooks' list")
+
+    seen_ids = set()
+    seen_public = set()
+    seen_canonical = set()
+    for nb in data["notebooks"]:
+        nb_id = nb.get("id")
+        if not nb_id or nb_id in seen_ids:
+            raise ValueError(f"Duplicate or empty notebook ID in manifest: {nb_id}")
+        seen_ids.add(nb_id)
+
+        pub = nb.get("public")
+        if not pub or pub in seen_public:
+            raise ValueError(f"Duplicate or empty public path in manifest: {pub}")
+        seen_public.add(pub)
+
+        can = nb.get("canonical")
+        if can:
+            if can in seen_canonical:
+                raise ValueError(f"Duplicate canonical path in manifest: {can}")
+            seen_canonical.add(can)
+
     return data
+
+
+def scan_static_offline_violations(nb: nbformat.NotebookNode) -> list[str]:
+    """Check code cells for obvious external network tool calls."""
+    violations = []
+    for idx, cell in enumerate(nb.cells):
+        if cell.cell_type == "code":
+            src = cell.source
+            for pattern in STATIC_NETWORK_PATTERNS:
+                if pattern in src:
+                    violations.append(f"Cell {idx} contains forbidden pattern '{pattern}'")
+    return violations
+
+
+def _is_finite_number(val: object) -> bool:
+    if isinstance(val, (int, float)):
+        return math.isfinite(val)
+    return True
+
+
+def _validate_json_finite(obj: object) -> bool:
+    if isinstance(obj, dict):
+        return all(_validate_json_finite(v) for v in obj.values())
+    if isinstance(obj, list):
+        return all(_validate_json_finite(v) for v in obj)
+    if isinstance(obj, float):
+        return math.isfinite(obj)
+    return True
 
 
 def verify_notebook(
@@ -57,17 +109,18 @@ def verify_notebook(
     public_rel = entry["public"]
     public_path = (source_root / public_rel).resolve()
     if not public_path.exists():
-        # Fallback to direct relative if source_root is docs_redesign
-        alt_path = (source_root / Path(public_rel).name).resolve()
-        if alt_path.exists():
-            public_path = alt_path
-        else:
-            raise FileNotFoundError(
-                f"Notebook file not found for {nb_id}: {public_path}"
-            )
+        raise FileNotFoundError(f"Notebook file not found for {nb_id}: {public_path}")
 
     timeout = timeout_override or entry.get("cell_timeout_seconds", 120)
     nb_out_dir = output_dir / nb_id
+
+    # B0 Policy: Do NOT wipe past artifacts with rmtree. Reusing non-empty directories is strictly forbidden.
+    if nb_out_dir.exists() and any(nb_out_dir.iterdir()):
+        raise FileExistsError(
+            f"Output directory for {nb_id} already exists and is not empty: {nb_out_dir}. "
+            "Reusing or overwriting existing evidence is forbidden by B0 policy. "
+            "Please specify a new run-isolated directory (e.g. run-<id>)."
+        )
     nb_out_dir.mkdir(parents=True, exist_ok=True)
 
     with tempfile.TemporaryDirectory(prefix=f"gwexpy-wf-{nb_id}-") as work_dir_str:
@@ -75,6 +128,21 @@ def verify_notebook(
         # Read source notebook
         with open(public_path, encoding="utf-8") as f:
             nb = nbformat.read(f, as_version=4)
+
+        if offline:
+            violations = scan_static_offline_violations(nb)
+            if violations:
+                return {
+                    "id": nb_id,
+                    "public": public_rel,
+                    "duration_seconds": 0.0,
+                    "execution_passed": False,
+                    "error": f"Offline policy violation: {violations}",
+                    "required_outputs_passed": False,
+                    "missing_outputs": list(entry.get("required_outputs", [])),
+                    "numerical_checks_passed": False,
+                    "metrics": None,
+                }
 
         # Clone notebook to execute so we don't modify source
         nb_to_run = copy.deepcopy(nb)
@@ -101,9 +169,8 @@ def verify_notebook(
 
         start_time = time.time()
         exec_error = None
+        old_output_dir = os.environ.get("GWEXPY_DOCS_OUTPUT_DIR")
         try:
-            # We execute in work_dir with custom env
-            old_output_dir = os.environ.get("GWEXPY_DOCS_OUTPUT_DIR")
             os.environ["GWEXPY_DOCS_OUTPUT_DIR"] = str(nb_out_dir)
             client.execute()
         except (CellExecutionError, CellTimeoutError, Exception) as err:
@@ -157,35 +224,59 @@ def verify_notebook(
         metrics_file = nb_out_dir / "validation-metrics.json"
         if metrics_file.exists():
             try:
-                metrics_data = json.loads(metrics_file.read_text(encoding="utf-8"))
+                metrics_raw = metrics_file.read_text(encoding="utf-8")
+                metrics_data = json.loads(metrics_raw)
                 result["metrics"] = metrics_data
-                status = metrics_data.get("status")
-                checks = metrics_data.get("checks", {})
-                checks_passed = True
-                if isinstance(checks, dict) and checks:
-                    for chk_name, chk_val in checks.items():
-                        if isinstance(chk_val, dict) and "passed" in chk_val:
-                            if not chk_val["passed"]:
-                                checks_passed = False
-                                break
-                        elif chk_val is False:
-                            checks_passed = False
-                            break
-                elif status not in ("passed", "success", "ok"):
-                    checks_passed = False
 
-                result["numerical_checks_passed"] = checks_passed and status in (
-                    "passed",
-                    "success",
-                    "ok",
-                    None,
-                )
+                # Verify all numbers in metrics are finite (no NaN, Infinity)
+                if not _validate_json_finite(metrics_data):
+                    result["numerical_checks_passed"] = False
+                    result["metrics_error"] = "Non-finite numbers found in validation-metrics.json"
+                    return result
+
+                status = metrics_data.get("status")
+                checks = metrics_data.get("checks")
+
+                # Checks must be a non-empty dictionary
+                if not isinstance(checks, dict) or len(checks) == 0:
+                    result["numerical_checks_passed"] = False
+                    result["metrics_error"] = "checks field is missing, empty, or not a dict"
+                    return result
+
+                # Status must be strictly 'passed'
+                if status != "passed":
+                    result["numerical_checks_passed"] = False
+                    result["metrics_error"] = f"status is '{status}', expected 'passed'"
+                    return result
+
+                # Check required checks from manifest
+                req_checks = entry.get("required_checks", [])
+                missing_checks = [rc for rc in req_checks if rc not in checks]
+                if missing_checks:
+                    result["numerical_checks_passed"] = False
+                    result["missing_checks"] = missing_checks
+                    result["metrics_error"] = f"Missing required checks: {missing_checks}"
+                    return result
+
+                # Each check must have a strictly boolean passed attribute: passed is True
+                checks_passed = True
+                for chk_name, chk_val in checks.items():
+                    if not isinstance(chk_val, dict) or "passed" not in chk_val:
+                        checks_passed = False
+                        break
+                    p_val = chk_val["passed"]
+                    # Strictly boolean and True
+                    if not isinstance(p_val, bool) or p_val is not True:
+                        checks_passed = False
+                        break
+
+                result["numerical_checks_passed"] = checks_passed
             except Exception as e:
                 result["numerical_checks_passed"] = False
                 result["metrics_error"] = str(e)
         else:
-            # If no metrics file was required, assume numerical checks passed if executed
-            result["numerical_checks_passed"] = result["required_outputs_passed"]
+            # If metrics file was not created, numerical checks failed
+            result["numerical_checks_passed"] = False
 
         return result
 
@@ -213,6 +304,12 @@ def main() -> int:
         "--output", type=Path, default=None, help="Output directory for evidence"
     )
     parser.add_argument(
+        "--run-id",
+        type=str,
+        default=None,
+        help="Run identifier for run-level evidence isolation (creates run-<id> subdirectory)",
+    )
+    parser.add_argument(
         "--offline", action="store_true", help="Prevent non-loopback network calls"
     )
     parser.add_argument(
@@ -221,26 +318,41 @@ def main() -> int:
     args = parser.parse_args()
 
     source = args.source.resolve()
-    manifest_path = args.manifest or (source / "workflow_notebooks.json")
-    if not manifest_path.exists():
-        manifest_path = ROOT / "docs_redesign/workflow_notebooks.json"
+    if not source.exists():
+        raise FileNotFoundError(f"Source directory does not exist: {source}")
 
+    manifest_path = (args.manifest or (source / "workflow_notebooks.json")).resolve()
     manifest = load_manifest(manifest_path)
     notebooks = manifest.get("notebooks", [])
 
-    if args.group:
-        notebooks = [nb for nb in notebooks if nb.get("group") == args.group]
+    all_manifest_ids = {nb["id"] for nb in notebooks}
     if args.ids:
+        unknown_ids = set(args.ids) - all_manifest_ids
+        if unknown_ids:
+            raise ValueError(f"Unknown notebook ID(s): {sorted(unknown_ids)}")
         notebooks = [nb for nb in notebooks if nb.get("id") in args.ids]
 
+    if args.group:
+        valid_groups = {nb.get("group") for nb in manifest.get("notebooks", [])}
+        if args.group not in valid_groups:
+            raise ValueError(f"Unknown group '{args.group}'. Valid groups: {sorted(valid_groups)}")
+        notebooks = [nb for nb in notebooks if nb.get("group") == args.group]
+
+    if not notebooks:
+        raise ValueError("No notebooks selected for verification (selection is empty)")
+
     out_dir = args.output
-    temp_dir = None
     if out_dir is None:
         temp_dir = tempfile.mkdtemp(prefix="gwexpy-workflow-evidence-")
         out_dir = Path(temp_dir)
     else:
         out_dir = out_dir.resolve()
-        out_dir.mkdir(parents=True, exist_ok=True)
+
+    if args.run_id:
+        run_name = args.run_id if args.run_id.startswith("run-") else f"run-{args.run_id}"
+        out_dir = out_dir / run_name
+
+    out_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"Verifying {len(notebooks)} workflow notebook(s) in {out_dir}...")
     all_passed = True
@@ -280,7 +392,7 @@ def main() -> int:
             if res.get("missing_outputs"):
                 print(f"  Missing required outputs: {res['missing_outputs']}")
             if not res.get("numerical_checks_passed"):
-                print("  Numerical checks failed in validation-metrics.json")
+                print(f"  Numerical checks failed: {res.get('metrics_error')}")
 
     summary = {
         "total": len(notebooks),

@@ -40,6 +40,13 @@ Follow a spectral line through time across a spectrogram, e.g. drifting power-li
 Compare STFT and Q-transform baselines against other time-frequency methods and see when each is the right choice.
 :::
 
+:::{grid-item-card} Resonance Discovery and Q Estimation
+:link: resonance_discovery_q
+:link-type: doc
+
+Identify narrow-band resonance modes, compute ASD/PSD, and fit complex discrete-time models for Q and ring-down decay time.
+:::
+
 ::::
 
 ```{toctree}
@@ -50,4 +57,5 @@ advanced_hht
 advanced_peak_detection
 advanced_peak_tracking
 time_frequency_analysis_comparison
+resonance_discovery_q
 ```

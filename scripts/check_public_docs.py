@@ -31,6 +31,16 @@ ENTRY_PAGES = (
     "about/developer.html",
     "about/known_limitations.html",
     "how-to/case-studies/index.html",
+    "how-to/index.html",
+    "how-to/monitoring/index.html",
+    "how-to/calibration/index.html",
+    "how-to/monitoring/long_term_trend.html",
+    "how-to/monitoring/event_catalog_timeseries.html",
+    "how-to/monitoring/chunked_long_data.html",
+    "how-to/spectral/resonance_discovery_q.html",
+    "how-to/control/control_frd_roundtrip.html",
+    "how-to/calibration/calibration_units_contract.html",
+    "how-to/interop/root_to_python_migration.html",
 )
 
 AUDIENCE_ROUTES = (
