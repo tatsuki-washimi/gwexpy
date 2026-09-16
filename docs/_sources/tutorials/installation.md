@@ -15,15 +15,21 @@ available versions.
 
 GWexpy supports **Python 3.11 or later**. You can choose from several installation options (extras) depending on your analysis goals.
 
+:::{tip}
+**Not sure which one to pick?** If your goal is gravitational-wave analysis (NDS2, frame files, GW-specific tools), skip straight to [Conda Environment (Recommended / GW Analysis)](#conda-environment-recommended-gw-analysis) — this creates a dedicated environment with GW-related binary dependencies and the `gw`, `analysis`, and `fitting` extras. Only use [Minimal](#minimal) if you specifically want to keep dependencies to a bare minimum, and only use [Developer Mode](#developer-mode) if you are editing GWexpy itself.
+:::
+
 (en-install-command)=
 ## Install Commands
+
+This table summarizes the commands; the sections below ([Minimal](#minimal), [Conda Environment (Recommended / GW Analysis)](#conda-environment-recommended-gw-analysis), [Developer Mode](#developer-mode)) give the full steps for each.
 
 | Goal | Installation Command | Features |
 | --- | --- | --- |
 | Minimal | `pip install gwexpy` | Numerical containers and basic arithmetic. Minimal dependencies. |
 | **Recommended** | `pip install "gwexpy[analysis,fitting,plotting]"` | Advanced statistics, curve fitting, and mapping features. |
 | GW Analysis | `pip install "gwexpy[gw,io]"` | Frame file support and official GW tools (NDS2 requires the Conda step below). |
-| Dev / Full | `pip install "gwexpy[all]"` | Enables declared non-GUI optional features. |
+| Developer / Full | `pip install -e ".[dev,all]"` | Editable install from source with all declared non-GUI optional features, for contributors. |
 
 ## 1. Installation Steps
 
@@ -133,6 +139,8 @@ Python's `pickle` module has inherent security risks (Arbitrary Code Execution) 
 <a id="next-steps"></a>
 
 ## 6. Next to Read
+
+**Installed successfully? Continue to [Quickstart](quickstart.md)** to confirm import and plotting with the smallest possible example — that is the single next step for most readers.
 
 * [Quickstart](quickstart.md) - confirm import and plotting with the smallest possible example
 * [Troubleshooting](../how-to/troubleshooting.md) - reverse-lookup common install, plotting, and binary dependency issues

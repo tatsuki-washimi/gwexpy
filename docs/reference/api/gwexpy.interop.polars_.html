@@ -563,7 +563,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.3</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/30c2f8ba077507f1219ec7d1289f6cbb45e12d65">30c2f8ba</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/c7ce7261bf381a6abea4e288ec921fab8a308777">c7ce7261</a>
   · Intro examples tested with 0.2.3
   · <a href="../../about/documentation_version.html">Version details</a>
   · <a href="../../about/known_limitations.html">Known limitations</a>
@@ -617,7 +617,7 @@
 <span class="sig-prename descclassname"><span class="pre">gwexpy.interop.polars_.</span></span><span class="sig-name descname"><span class="pre">from_polars_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.interop.polars_.from_polars_series" title="Link to this definition">#</a></dt>
 <dd><p>Create TimeSeries or FrequencySeries from polars.Series.</p>
 <p>A plain polars Series carries no timing or channel metadata. Missing
-<code class="docutils literal notranslate"><span class="pre">t0</span></code>/<code class="docutils literal notranslate"><span class="pre">dt</span></code> fall back to <code class="docutils literal notranslate"><span class="pre">0</span></code>/<code class="docutils literal notranslate"><span class="pre">1</span></code> with a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#UserWarning" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserWarning</span></code></a> (instead
+<code class="docutils literal notranslate"><span class="pre">t0</span></code>/<code class="docutils literal notranslate"><span class="pre">dt</span></code> fall back to <code class="docutils literal notranslate"><span class="pre">0</span></code>/<code class="docutils literal notranslate"><span class="pre">1</span></code> with a <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#UserWarning" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserWarning</span></code></a> (instead
 of silently), and <code class="docutils literal notranslate"><span class="pre">channel</span></code>/<code class="docutils literal notranslate"><span class="pre">name</span></code> may be supplied explicitly.</p>
 </dd></dl>
 
@@ -633,7 +633,7 @@ of silently), and <code class="docutils literal notranslate"><span class="pre">c
 <dd><p>Create TimeSeries from polars.DataFrame.</p>
 <p><code class="docutils literal notranslate"><span class="pre">t0</span></code>/<code class="docutils literal notranslate"><span class="pre">dt</span></code> are inferred from the time column (handling GPS, unix and
 datetime values). If the column is empty or holds a single sample, the
-missing timing falls back to <code class="docutils literal notranslate"><span class="pre">0</span></code>/<code class="docutils literal notranslate"><span class="pre">1</span></code> with a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#UserWarning" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserWarning</span></code></a> instead
+missing timing falls back to <code class="docutils literal notranslate"><span class="pre">0</span></code>/<code class="docutils literal notranslate"><span class="pre">1</span></code> with a <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#UserWarning" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserWarning</span></code></a> instead
 of silently. <code class="docutils literal notranslate"><span class="pre">channel</span></code> (which a DataFrame cannot carry) and <code class="docutils literal notranslate"><span class="pre">name</span></code> may be
 supplied explicitly; <code class="docutils literal notranslate"><span class="pre">name</span></code> defaults to the data column label.</p>
 </dd></dl>

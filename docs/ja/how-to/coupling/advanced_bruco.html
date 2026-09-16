@@ -49,6 +49,8 @@
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/translations.js?v=4755f45a"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/coupling/advanced_bruco';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/coupling/advanced_bruco.html" />
@@ -538,7 +540,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.3</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/30c2f8ba077507f1219ec7d1289f6cbb45e12d65">30c2f8ba</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/c7ce7261bf381a6abea4e288ec921fab8a308777">c7ce7261</a>
   · 入門例の検証対象 0.2.3
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -553,6 +555,7 @@
   <section class="tex2jax_ignore mathjax_ignore" id="bruco-coherence-analysis">
 <h1>Bruco: コヒーレンス解析<a class="headerlink" href="#bruco-coherence-analysis" title="Link to this heading">#</a></h1>
 <p>Brucoは**「総当たりコヒーレンス（Brute force coherence）」**を計算するためのツールです。重力波検出器（LIGOやVirgo）の主チャンネル（ターゲット）と、多数の補助チャンネルとの間のコヒーレンスを計算し、ノイズ源を特定することを目的としています。 物理的な狙いは、単に相関ランキングを作ることではなく、特定の周波数帯の DARM 過剰パワーを説明できる補助チャンネル候補を見つけ、実際に対処可能な結合経路へ結び付けることです。</p>
+<p>本ノートブックにおける「コヒーレンス」は、二乗コヒーレンス <span class="math notranslate nohighlight">\(\gamma^2 \in [0, 1]\)</span>（<a class="reference internal" href="../../explanation/physics_models.html"><span class="std std-doc">物理モデル: コヒーレンス</span></a> 参照）を指します。</p>
 <section id="coherence-calculation-with-parallel-processing">
 <h2>並列処理によるコヒーレンス計算<a class="headerlink" href="#coherence-calculation-with-parallel-processing" title="Link to this heading">#</a></h2>
 <p>Pythonの <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> モジュールを使用して複数のCPUコアで並列実行されます。</p>
@@ -701,7 +704,7 @@
 Target data std: 5.08e-19
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7fe22da69d10&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7faa30584590&gt;
 </pre></div>
 </div>
 <img alt="../../_images/db4057a7cf39862deba690453a0e9a9f9fad9d763d9c9149a03fb1c4a2cdd6ba.png" src="../../_images/db4057a7cf39862deba690453a0e9a9f9fad9d763d9c9149a03fb1c4a2cdd6ba.png" />
@@ -975,7 +978,7 @@ Target data std: 5.08e-19
 <span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">coh_prod</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Product: </span><span class="si">{</span><span class="n">ts_prod</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Coherence&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Coherence ($</span><span class="se">\\</span><span class="s2">gamma^2$)&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
@@ -984,7 +987,7 @@ Target data std: 5.08e-19
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/19810433c26c5f58edefb8f0d0ff26d072f2996c0a1993777fd2925b77bc51fd.png" src="../../_images/19810433c26c5f58edefb8f0d0ff26d072f2996c0a1993777fd2925b77bc51fd.png" />
+<img alt="../../_images/85a79d7fb1597d07313ed845a23f3a47c14eab2972f1d620ace2d439178c9378.png" src="../../_images/85a79d7fb1597d07313ed845a23f3a47c14eab2972f1d620ace2d439178c9378.png" />
 </div>
 </div>
 </section>

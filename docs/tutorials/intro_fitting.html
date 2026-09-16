@@ -457,7 +457,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.3</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/30c2f8ba077507f1219ec7d1289f6cbb45e12d65">30c2f8ba</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/c7ce7261bf381a6abea4e288ec921fab8a308777">c7ce7261</a>
   · Intro examples tested with 0.2.3
   · <a href="../about/documentation_version.html">Version details</a>
   · <a href="../about/known_limitations.html">Known limitations</a>
@@ -488,27 +488,29 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_series</span>
 
-<span class="c1"># Generate synthetic data</span>
+<span class="c1"># Generate synthetic data following a power law: y = A * f**alpha</span>
 <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
-<span class="n">model</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">f</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">a</span> <span class="o">*</span> <span class="n">f</span> <span class="o">+</span> <span class="n">b</span>
-<span class="n">y_true</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span>
-<span class="n">y_obs</span> <span class="o">=</span> <span class="n">y_true</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">))</span>
+<span class="n">model</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">f</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="n">A</span> <span class="o">*</span> <span class="n">f</span><span class="o">**</span><span class="n">alpha</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)</span>
+<span class="n">y_obs</span> <span class="o">=</span> <span class="n">y_true</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">))</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
 
 <span class="n">psd</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">y_obs</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">)</span>
 
-<span class="n">res</span> <span class="o">=</span> <span class="n">fit_series</span><span class="p">(</span><span class="n">psd</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">fit_series</span><span class="p">(</span><span class="n">psd</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mf">100.0</span><span class="p">,</span> <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">})</span>
 
 <span class="n">res</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fitted a=</span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, b=</span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fitted A=</span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, alpha=</span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/380e83ebf93bbdb1010a993422ac8375c589096aaef8fda1d4d6911fe3c77503.png" src="../_images/380e83ebf93bbdb1010a993422ac8375c589096aaef8fda1d4d6911fe3c77503.png" />
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fitted a=1.99, b=10.26
+<img alt="../_images/09ef4ee0f0cc31d39f7a7124b134c3dac8c828bb14a0e62ab47c6d684aace3be.png" src="../_images/09ef4ee0f0cc31d39f7a7124b134c3dac8c828bb14a0e62ab47c6d684aace3be.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fitted A=1063.49, alpha=-1.52
 </pre></div>
 </div>
 </div>
@@ -523,27 +525,62 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeneralizedLeastSquares</span>
 
-<span class="c1"># Create a dummy covariance matrix</span>
-<span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">))</span> <span class="o">*</span> <span class="mf">4.0</span>
+<span class="c1"># Build a correlated (non-diagonal) covariance matrix: Sigma_ij = sigma^2 * rho^|i-j|</span>
+<span class="n">sigma</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="n">rho</span> <span class="o">=</span> <span class="mf">0.6</span>
+<span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">))</span>
+<span class="n">cov</span> <span class="o">=</span> <span class="n">sigma</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">**</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">idx</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">idx</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:])</span>
 <span class="n">cov_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">cov</span><span class="p">)</span>
 
+<span class="c1"># Resample data with correlated noise drawn directly from this covariance</span>
+<span class="n">y_obs_corr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">cov</span><span class="p">)</span>
+
 <span class="c1"># 1. Define Cost Function</span>
-<span class="n">cost</span> <span class="o">=</span> <span class="n">GeneralizedLeastSquares</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">y_obs</span><span class="p">,</span> <span class="n">cov_inv</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">cov</span><span class="o">=</span><span class="n">cov</span><span class="p">)</span>
+<span class="n">cost</span> <span class="o">=</span> <span class="n">GeneralizedLeastSquares</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">y_obs_corr</span><span class="p">,</span> <span class="n">cov_inv</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">cov</span><span class="o">=</span><span class="n">cov</span><span class="p">)</span>
 
 <span class="c1"># 2. Initialize and Run Minuit</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">Minuit</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">Minuit</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">)</span>
 <span class="n">m</span><span class="o">.</span><span class="n">migrad</span><span class="p">()</span>
 
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;GLS fit (accounts for the correlated noise):&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span>
+
+<span class="c1"># Compare against an OLS fit on the *same* data, using the *same* per-point</span>
+<span class="c1"># variance (the diagonal of `cov`) but ignoring the off-diagonal correlation.</span>
+<span class="c1"># This isolates the effect of the correlation alone.</span>
+<span class="n">sigma_diag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">cov</span><span class="p">))</span>
+<span class="n">psd_corr</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">y_obs_corr</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">)</span>
+<span class="n">res_ols_on_corr</span> <span class="o">=</span> <span class="n">fit_series</span><span class="p">(</span>
+    <span class="n">psd_corr</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma_diag</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mf">100.0</span><span class="p">,</span> <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">OLS fit on the same data using only the diagonal of `cov` (ignores correlation):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;  A=</span><span class="si">{</span><span class="n">res_ols_on_corr</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">res_ols_on_corr</span><span class="o">.</span><span class="n">errors</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, &quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;alpha=</span><span class="si">{</span><span class="n">res_ols_on_corr</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">res_ols_on_corr</span><span class="o">.</span><span class="n">errors</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;  GLS: A=</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">errors</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, &quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;alpha=</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">errors</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;ValueView a=1.987114800112779 b=10.257738183268135&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>GLS fit (accounts for the correlated noise):
+&lt;ValueView A=908.960879383731 alpha=-1.4988207218966207&gt;
+&lt;ErrorView A=332.11791032869723 alpha=0.14281485260130117&gt;
+
+OLS fit on the same data using only the diagonal of `cov` (ignores correlation):
+  A=860.762 +/- 205.568, alpha=-1.481 +/- 0.087
+  GLS: A=908.961 +/- 332.118, alpha=-1.499 +/- 0.143
 </pre></div>
 </div>
 </div>
 </div>
+<p>Both fits above use the <em>same</em> <code class="docutils literal notranslate"><span class="pre">y_obs_corr</span></code> data, the <em>same</em> model, and the <em>same</em> per-point observation uncertainty (<code class="docutils literal notranslate"><span class="pre">sigma_diag</span></code>, the square root of the diagonal of <code class="docutils literal notranslate"><span class="pre">cov</span></code>). The OLS fit uses only the diagonal of the covariance, while the GLS fit uses the full covariance including the off-diagonal correlation terms — so the two fits differ only in whether the correlation is taken into account, not in the assumed size of the per-point errors. <code class="docutils literal notranslate"><span class="pre">m.errors</span></code> and <code class="docutils literal notranslate"><span class="pre">res_ols_on_corr.errors</span></code> are both Hesse-based parameter uncertainties from iminuit under a least-squares cost function (<code class="docutils literal notranslate"><span class="pre">errordef</span> <span class="pre">=</span> <span class="pre">Minuit.LEAST_SQUARES</span> <span class="pre">=</span> <span class="pre">1.0</span></code>), so they are directly comparable.</p>
+<p>For this correlation structure and this draw of the data, the GLS fit reports a larger uncertainty on both <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">alpha</span></code> than the OLS fit that ignores the correlation — consistent with OLS underestimating the uncertainty when correlated noise is treated as independent. This is a single realization, not a statistical guarantee: a rigorous check would look at parameter recovery and interval coverage across many random draws, which is beyond the scope of this introductory example.</p>
 </section>
 <section id="high-level-integration">
 <h2>3. High-level Integration<a class="headerlink" href="#high-level-integration" title="Link to this heading">#</a></h2>
@@ -572,14 +609,14 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5ec457dc36737f37657c91f29dac02f0dc1de2558d612ea18aeaf428a92fb5c1.png" src="../_images/5ec457dc36737f37657c91f29dac02f0dc1de2558d612ea18aeaf428a92fb5c1.png" />
+<img alt="../_images/e2350215e9e1a9fadba50f04d4bb42bc97db610405310e06a81d26d464c2326f.png" src="../_images/e2350215e9e1a9fadba50f04d4bb42bc97db610405310e06a81d26d464c2326f.png" />
 </div>
 </div>
 </section>
 <section id="exercises">
 <h2>4. Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
-<li><p><strong>Parameter Bounds</strong>: Modify the OLS fit to restrict <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> using the <code class="docutils literal notranslate"><span class="pre">limits</span></code> argument in <code class="docutils literal notranslate"><span class="pre">fit_series</span></code>.</p></li>
+<li><p><strong>Parameter Bounds</strong>: Modify the OLS fit to restrict <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> using the <code class="docutils literal notranslate"><span class="pre">limits</span></code> argument in <code class="docutils literal notranslate"><span class="pre">fit_series</span></code>.</p></li>
 <li><p><strong>MCMC</strong>: Enable MCMC in Section 3 by setting <code class="docutils literal notranslate"><span class="pre">run_mcmc=True</span></code> (requires <code class="docutils literal notranslate"><span class="pre">emcee</span></code>).</p></li>
 </ol>
 </section>
@@ -587,7 +624,7 @@
 <h2>5. Quick Check (NBMAKE)<a class="headerlink" href="#quick-check-nbmake" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">assert</span> <span class="s2">&quot;a&quot;</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">params</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">assert</span> <span class="s2">&quot;A&quot;</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">params</span>
 <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">reduced_chi2</span> <span class="o">&gt;</span> <span class="mi">0</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation successful!&quot;</span><span class="p">)</span>
 </pre></div>

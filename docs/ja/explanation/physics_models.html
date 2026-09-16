@@ -455,7 +455,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.3</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/30c2f8ba077507f1219ec7d1289f6cbb45e12d65">30c2f8ba</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/c7ce7261bf381a6abea4e288ec921fab8a308777">c7ce7261</a>
   · 入門例の検証対象 0.2.3
   · <a href="../about/documentation_version.html">版情報</a>
   · <a href="../about/known_limitations.html">既知の制限</a>
@@ -516,6 +516,36 @@
 </div>
 <ul class="simple">
 <li><p><strong>関連 API</strong>: <a class="reference internal" href="../reference/api/analysis.html"><span class="doc">Analysis</span></a> (<code class="docutils literal notranslate"><span class="pre">gwexpy.analysis.coupling.estimate_coupling</span></code>)</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="coherence-term-coherence">
+<h3>コヒーレンス (:term:<code class="docutils literal notranslate"><span class="pre">Coherence</span></code>)<a class="headerlink" href="#coherence-term-coherence" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">TimeSeries.coherence()</span></code>、<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.coherence()</span></code>、および BruCo エンジンの <code class="docutils literal notranslate"><span class="pre">FastCoherenceEngine.compute_coherence()</span></code> は、<code class="docutils literal notranslate"><span class="pre">scipy.signal.coherence</span></code> や <code class="docutils literal notranslate"><span class="pre">gwpy</span></code> と同じ慣習に従い、<strong>二乗コヒーレンス</strong>（magnitude-squared coherence）<span class="math notranslate nohighlight">\(\gamma^2(f)\)</span> を返します：</p>
+<div class="math notranslate nohighlight">
+\[
+\gamma^2(f) = \frac{|S_{xy}(f)|^2}{S_{xx}(f)\, S_{yy}(f)}
+\]</div>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>変数</p></th>
+<th class="head text-left"><p>定義</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><span class="math notranslate nohighlight">\(S_{xy}(f)\)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(x\)</span> と <span class="math notranslate nohighlight">\(y\)</span> のクロススペクトル密度</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><span class="math notranslate nohighlight">\(S_{xx}(f)\)</span>, <span class="math notranslate nohighlight">\(S_{yy}(f)\)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(x\)</span> と <span class="math notranslate nohighlight">\(y\)</span> のパワースペクトル密度</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><span class="math notranslate nohighlight">\(\gamma^2\)</span> は <span class="math notranslate nohighlight">\([0, 1]\)</span> の範囲に収まります。1 に近い値は、その周波数における 2 チャンネル間の強い線形関係を示し、0 に近い値は線形な関係がないこと（あるいは測定がノイズに支配されていること）を示します。</p>
+<p><strong>本ドキュメント全体で、特に明示しない限り「Coherence（コヒーレンス）」は <span class="math notranslate nohighlight">\(\gamma^2\)</span> を指します。</strong> ページによって振幅比（例えばノイズプロジェクションのように ASD をコヒーレントな割合でスケールする場合）が必要な場合は、<span class="math notranslate nohighlight">\(\sqrt{\gamma^2}\)</span> を明示的に使用し、その旨をラベルに記載します（例：「Coherence Amplitude」）。</p>
+<ul class="simple">
+<li><p><strong>関連 API</strong>: <a class="reference internal" href="../reference/api/timeseries.html"><span class="doc">Time Series</span></a> (<code class="docutils literal notranslate"><span class="pre">TimeSeries.coherence</span></code>), <a class="reference internal" href="../reference/api/analysis.html"><span class="doc">Analysis</span></a> (<code class="docutils literal notranslate"><span class="pre">gwexpy.analysis.bruco</span></code>)</p></li>
 </ul>
 </section>
 </section>
@@ -629,6 +659,7 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#response-and-coupling-functions">応答関数と結合関数 (Response &amp; Coupling)</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-excitation-detection">励起セグメントの自動検出</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#coupling-function-term-coupling-function-cf">結合関数 (:term:<code class="docutils literal notranslate"><span class="pre">Coupling</span> <span class="pre">Function</span></code>; CF)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#coherence-term-coherence">コヒーレンス (:term:<code class="docutils literal notranslate"><span class="pre">Coherence</span></code>)</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#built-in-noise-models">組み込みノイズモデル</a><ul class="pst-show_toc_level nav section-nav flex-column">
