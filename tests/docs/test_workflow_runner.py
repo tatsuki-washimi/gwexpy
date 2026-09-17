@@ -369,7 +369,8 @@ def test_verify_kernel_environment_install_modes(tmp_path: Path) -> None:
     fake_repo_file.parent.mkdir()
     fake_repo_file.write_text("# fake repo gwexpy\n", encoding="utf-8")
 
-    fake_site = tmp_path / "venv" / "lib" / "python3.12" / "site-packages" / "gwexpy" / "__init__.py"
+    fake_site_dir = tmp_path / "venv" / "lib" / "python3.12" / "site-packages"
+    fake_site = fake_site_dir / "gwexpy" / "__init__.py"
     fake_site.parent.mkdir(parents=True)
     fake_site.write_text("# fake site-packages gwexpy\n", encoding="utf-8")
 
@@ -379,6 +380,8 @@ def test_verify_kernel_environment_install_modes(tmp_path: Path) -> None:
         "python_version": "3.12.0",
         "gwexpy_version": "0.2.3",
         "gwexpy_file": str(fake_repo_file),
+        "purelib": str(fake_site_dir),
+        "platlib": str(fake_site_dir),
     }
 
     env_site = {
@@ -387,6 +390,8 @@ def test_verify_kernel_environment_install_modes(tmp_path: Path) -> None:
         "python_version": "3.12.0",
         "gwexpy_version": "0.2.3",
         "gwexpy_file": str(fake_site),
+        "purelib": str(fake_site_dir),
+        "platlib": str(fake_site_dir),
     }
 
     # Mode 'installed' with repo checkout file must be rejected
@@ -426,6 +431,48 @@ def test_verify_kernel_environment_install_modes(tmp_path: Path) -> None:
         install_mode="editable",
         repo_root=fake_repo,
     )
+
+    # Mode 'installed' with foreign site-packages file (not in purelib/platlib) must be rejected
+    fake_foreign_site = tmp_path / "foreign" / "site-packages" / "gwexpy" / "__init__.py"
+    fake_foreign_site.parent.mkdir(parents=True)
+    fake_foreign_site.write_text("# foreign site gwexpy\n", encoding="utf-8")
+    env_foreign = {
+        "executable": "/usr/bin/python3",
+        "prefix": "/usr",
+        "python_version": "3.12.0",
+        "gwexpy_version": "0.2.3",
+        "gwexpy_file": str(fake_foreign_site),
+        "purelib": str(fake_site_dir),
+        "platlib": str(fake_site_dir),
+    }
+    with pytest.raises(RuntimeError, match="Install mode is 'installed'"):
+        verify_kernel_environment(
+            env_foreign,
+            allow_foreign=True,
+            require_gwexpy=True,
+            install_mode="installed",
+            repo_root=fake_repo,
+        )
+
+    # Version mismatch must be rejected
+    env_wrong_version = {
+        "executable": "/usr/bin/python3",
+        "prefix": "/usr",
+        "python_version": "3.12.0",
+        "gwexpy_version": "0.1.0-stub",
+        "gwexpy_file": str(fake_site),
+        "purelib": str(fake_site_dir),
+        "platlib": str(fake_site_dir),
+    }
+    with pytest.raises(RuntimeError, match="gwexpy version mismatch"):
+        verify_kernel_environment(
+            env_wrong_version,
+            expected_version="0.2.3",
+            allow_foreign=True,
+            require_gwexpy=True,
+            install_mode="installed",
+            repo_root=fake_repo,
+        )
 
 
 def test_runner_injected_cell_kernel_env_and_mode_rejection(tmp_path: Path) -> None:
@@ -468,6 +515,8 @@ def test_runner_injected_cell_kernel_env_and_mode_rejection(tmp_path: Path) -> N
     assert res_editable_ok["execution_passed"] is True
     assert res_editable_ok.get("kernel_environment") is not None
     assert res_editable_ok["kernel_environment"]["gwexpy_version"] is not None
+    assert res_editable_ok["kernel_environment"]["verification_passed"] is True
+    assert res_editable_ok["kernel_environment"]["expected_version"] is not None
     assert (out_dir / "editable_ok" / "TTEST_ENV_CHECK" / "_kernel_env.json").exists()
 
     # Requesting install_mode="editable" with a mismatched repo root must fail
@@ -480,5 +529,199 @@ def test_runner_injected_cell_kernel_env_and_mode_rejection(tmp_path: Path) -> N
     )
     assert res_editable_mismatch["execution_passed"] is False
     assert "install_mode='editable' violated" in (res_editable_mismatch["error"] or "")
+
+
+def test_runner_injected_cell_expected_version_mismatch_rejected(tmp_path: Path) -> None:
+    """Injected setup cell must reject execution if imported version does not match expected_version."""
+    code = "x = 100"
+    nb_path = _create_fixture_notebook(tmp_path, code)
+    entry = {
+        "id": "TTEST_VER_FAIL",
+        "public": nb_path.name,
+        "group": "core",
+        "cell_timeout_seconds": 30,
+        "required_outputs": [],
+    }
+    out_dir = tmp_path / "out"
+
+    kernel_env = probe_kernel_environment("python3", timeout=30)
+    actual_kernel_gw_file = kernel_env.get("gwexpy_file")
+    assert actual_kernel_gw_file is not None
+    actual_kernel_repo_root = Path(actual_kernel_gw_file).resolve().parent.parent
+
+    res_ver_fail = verify_notebook(
+        entry=entry,
+        source_root=tmp_path,
+        output_dir=out_dir / "ver_fail",
+        install_mode="editable",
+        repo_root=actual_kernel_repo_root,
+        expected_version="0.9.99-bogus",
+    )
+    assert res_ver_fail["execution_passed"] is False
+    assert "expected '0.9.99-bogus'" in (res_ver_fail["error"] or "")
+    # Evidence must record the attempt and indicate verification_passed = False
+    assert res_ver_fail.get("kernel_environment") is not None
+    assert res_ver_fail["kernel_environment"]["expected_version"] == "0.9.99-bogus"
+    assert res_ver_fail["kernel_environment"]["verification_passed"] is False
+
+
+def test_runner_injected_cell_expected_package_root_mismatch_rejected(tmp_path: Path) -> None:
+    """Injected setup cell must reject execution if imported package directory does not match expected_package_root."""
+    code = "x = 100"
+    nb_path = _create_fixture_notebook(tmp_path, code)
+    entry = {
+        "id": "TTEST_PKG_ROOT_FAIL",
+        "public": nb_path.name,
+        "group": "core",
+        "cell_timeout_seconds": 30,
+        "required_outputs": [],
+    }
+    out_dir = tmp_path / "out"
+
+    res_pkg_fail = verify_notebook(
+        entry=entry,
+        source_root=tmp_path,
+        output_dir=out_dir / "pkg_fail",
+        expected_package_root=tmp_path / "custom_site" / "gwexpy",
+    )
+    assert res_pkg_fail["execution_passed"] is False
+    assert "expected explicitly configured" in (res_pkg_fail["error"] or "")
+    assert res_pkg_fail.get("kernel_environment") is not None
+    assert res_pkg_fail["kernel_environment"]["verification_passed"] is False
+
+
+def test_verify_kernel_environment_counterexample_matrix(tmp_path: Path) -> None:
+    """Verify each condition in the reviewer counterexample matrix under install_mode='installed'."""
+    target_prefix = str(tmp_path / "target_env")
+    target_purelib = str(tmp_path / "target_env" / "lib" / "python3.12" / "site-packages")
+    target_platlib = target_purelib
+    expected_ver = "0.2.3"
+
+    repo_root = tmp_path / "repo"
+    repo_pkg_file = repo_root / "gwexpy" / "__init__.py"
+    repo_pkg_file.parent.mkdir(parents=True)
+    repo_pkg_file.write_text("__version__ = '0.2.3'\n", encoding="utf-8")
+
+    foreign_site = tmp_path / "other_env" / "site-packages" / "gwexpy" / "__init__.py"
+    foreign_site.parent.mkdir(parents=True)
+    foreign_site.write_text("__version__ = '0.2.3'\n", encoding="utf-8")
+
+    valid_site = Path(target_purelib) / "gwexpy" / "__init__.py"
+    valid_site.parent.mkdir(parents=True)
+    valid_site.write_text("__version__ = '0.2.3'\n", encoding="utf-8")
+
+    # 1. Checkout module under install_mode='installed': REJECTED
+    env_checkout = {
+        "executable": f"{target_prefix}/bin/python",
+        "prefix": target_prefix,
+        "python_version": "3.12.14",
+        "gwexpy_version": "0.2.3",
+        "gwexpy_file": str(repo_pkg_file),
+        "purelib": target_purelib,
+        "platlib": target_platlib,
+    }
+    with pytest.raises(RuntimeError, match="Install mode is 'installed'"):
+        verify_kernel_environment(
+            env_checkout,
+            expected_prefix=target_prefix,
+            expected_version=expected_ver,
+            install_mode="installed",
+            repo_root=repo_root,
+        )
+
+    # 2. Foreign site-packages (version 0.2.3): REJECTED
+    env_foreign_site = {
+        "executable": f"{target_prefix}/bin/python",
+        "prefix": target_prefix,
+        "python_version": "3.12.14",
+        "gwexpy_version": "0.2.3",
+        "gwexpy_file": str(foreign_site),
+        "purelib": target_purelib,
+        "platlib": target_platlib,
+    }
+    with pytest.raises(RuntimeError, match="Install mode is 'installed'"):
+        verify_kernel_environment(
+            env_foreign_site,
+            expected_prefix=target_prefix,
+            expected_version=expected_ver,
+            install_mode="installed",
+            repo_root=repo_root,
+        )
+
+    # 3. Foreign site-packages with stub version (0.1.0-stub): REJECTED
+    env_foreign_stub = {
+        "executable": f"{target_prefix}/bin/python",
+        "prefix": target_prefix,
+        "python_version": "3.12.14",
+        "gwexpy_version": "0.1.0-stub",
+        "gwexpy_file": str(foreign_site),
+        "purelib": target_purelib,
+        "platlib": target_platlib,
+    }
+    with pytest.raises(RuntimeError):
+        verify_kernel_environment(
+            env_foreign_stub,
+            expected_prefix=target_prefix,
+            expected_version=expected_ver,
+            install_mode="installed",
+            repo_root=repo_root,
+        )
+
+    # 4. Version empty: REJECTED
+    env_empty_ver = {
+        "executable": f"{target_prefix}/bin/python",
+        "prefix": target_prefix,
+        "python_version": "3.12.14",
+        "gwexpy_version": "",
+        "gwexpy_file": str(valid_site),
+        "purelib": target_purelib,
+        "platlib": target_platlib,
+    }
+    with pytest.raises(RuntimeError, match="missing or empty"):
+        verify_kernel_environment(
+            env_empty_ver,
+            expected_prefix=target_prefix,
+            expected_version=expected_ver,
+            install_mode="installed",
+            repo_root=repo_root,
+        )
+
+    # 5. Prefix mismatch: REJECTED
+    env_bad_prefix = {
+        "executable": "/other/prefix/bin/python",
+        "prefix": "/other/prefix",
+        "python_version": "3.12.14",
+        "gwexpy_version": "0.2.3",
+        "gwexpy_file": str(valid_site),
+        "purelib": target_purelib,
+        "platlib": target_platlib,
+    }
+    with pytest.raises(RuntimeError, match="Kernel prefix mismatch"):
+        verify_kernel_environment(
+            env_bad_prefix,
+            expected_prefix=target_prefix,
+            expected_version=expected_ver,
+            install_mode="installed",
+            repo_root=repo_root,
+        )
+
+    # 6. Correct installed package in target environment: ACCEPTED
+    env_valid = {
+        "executable": f"{target_prefix}/bin/python",
+        "prefix": target_prefix,
+        "python_version": "3.12.14",
+        "gwexpy_version": "0.2.3",
+        "gwexpy_file": str(valid_site),
+        "purelib": target_purelib,
+        "platlib": target_platlib,
+    }
+    verify_kernel_environment(
+        env_valid,
+        expected_prefix=target_prefix,
+        expected_version=expected_ver,
+        install_mode="installed",
+        repo_root=repo_root,
+    )
+
 
 
