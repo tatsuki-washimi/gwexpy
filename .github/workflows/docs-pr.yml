@@ -274,6 +274,7 @@ jobs:
             --group "${{ matrix.group }}" \
             --kernel "gwexpy-wf-${{ matrix.group }}" \
             --offline \
+            --install-mode installed \
             --output "/tmp/evidence-${{ matrix.group }}" \
             --run-id "ci-${{ matrix.python-version }}-${{ matrix.group }}"
       - name: Upload workflow evidence

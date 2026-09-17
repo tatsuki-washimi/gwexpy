@@ -360,3 +360,125 @@ def test_verify_kernel_environment_mismatches() -> None:
     with pytest.raises(RuntimeError, match="cannot import gwexpy"):
         verify_kernel_environment(fake_env, expected_prefix="/usr", require_gwexpy=True)
 
+
+def test_verify_kernel_environment_install_modes(tmp_path: Path) -> None:
+    """verify_kernel_environment must distinguish installed (site-packages) vs editable (checkout) modes."""
+    fake_repo = tmp_path / "my_repo"
+    fake_repo.mkdir()
+    fake_repo_file = fake_repo / "gwexpy" / "__init__.py"
+    fake_repo_file.parent.mkdir()
+    fake_repo_file.write_text("# fake repo gwexpy\n", encoding="utf-8")
+
+    fake_site = tmp_path / "venv" / "lib" / "python3.12" / "site-packages" / "gwexpy" / "__init__.py"
+    fake_site.parent.mkdir(parents=True)
+    fake_site.write_text("# fake site-packages gwexpy\n", encoding="utf-8")
+
+    env_repo = {
+        "executable": "/usr/bin/python3",
+        "prefix": "/usr",
+        "python_version": "3.12.0",
+        "gwexpy_version": "0.2.3",
+        "gwexpy_file": str(fake_repo_file),
+    }
+
+    env_site = {
+        "executable": "/usr/bin/python3",
+        "prefix": "/usr",
+        "python_version": "3.12.0",
+        "gwexpy_version": "0.2.3",
+        "gwexpy_file": str(fake_site),
+    }
+
+    # Mode 'installed' with repo checkout file must be rejected
+    with pytest.raises(RuntimeError, match="Install mode is 'installed'"):
+        verify_kernel_environment(
+            env_repo,
+            allow_foreign=True,
+            require_gwexpy=True,
+            install_mode="installed",
+            repo_root=fake_repo,
+        )
+
+    # Mode 'installed' with site-packages file must succeed
+    verify_kernel_environment(
+        env_site,
+        allow_foreign=True,
+        require_gwexpy=True,
+        install_mode="installed",
+        repo_root=fake_repo,
+    )
+
+    # Mode 'editable' with site-packages file must be rejected
+    with pytest.raises(RuntimeError, match="Install mode is 'editable'"):
+        verify_kernel_environment(
+            env_site,
+            allow_foreign=True,
+            require_gwexpy=True,
+            install_mode="editable",
+            repo_root=fake_repo,
+        )
+
+    # Mode 'editable' with repo checkout file must succeed
+    verify_kernel_environment(
+        env_repo,
+        allow_foreign=True,
+        require_gwexpy=True,
+        install_mode="editable",
+        repo_root=fake_repo,
+    )
+
+
+def test_runner_injected_cell_kernel_env_and_mode_rejection(tmp_path: Path) -> None:
+    """Injected setup cell must record kernel environment and enforce requested install mode inside kernel."""
+    code = "x = 100"
+    nb_path = _create_fixture_notebook(tmp_path, code)
+    entry = {
+        "id": "TTEST_ENV_CHECK",
+        "public": nb_path.name,
+        "group": "core",
+        "cell_timeout_seconds": 30,
+        "required_outputs": [],
+    }
+    out_dir = tmp_path / "out"
+
+    # In our local environment, gwexpy is an editable checkout (not in site-packages).
+    # Requesting install_mode="installed" inside the notebook must trigger rejection in injected setup cell.
+    res_installed_fail = verify_notebook(
+        entry=entry,
+        source_root=tmp_path,
+        output_dir=out_dir / "installed_fail",
+        install_mode="installed",
+    )
+    assert res_installed_fail["execution_passed"] is False
+    assert "install_mode='installed' violated" in (res_installed_fail["error"] or "")
+
+    # Requesting install_mode="editable" with the kernel's actual editable repo root must succeed
+    kernel_env = probe_kernel_environment("python3", timeout=30)
+    actual_kernel_gw_file = kernel_env.get("gwexpy_file")
+    assert actual_kernel_gw_file is not None
+    actual_kernel_repo_root = Path(actual_kernel_gw_file).resolve().parent.parent
+
+    res_editable_ok = verify_notebook(
+        entry=entry,
+        source_root=tmp_path,
+        output_dir=out_dir / "editable_ok",
+        install_mode="editable",
+        repo_root=actual_kernel_repo_root,
+    )
+    assert res_editable_ok["execution_passed"] is True
+    assert res_editable_ok.get("kernel_environment") is not None
+    assert res_editable_ok["kernel_environment"]["gwexpy_version"] is not None
+    assert (out_dir / "editable_ok" / "TTEST_ENV_CHECK" / "_kernel_env.json").exists()
+
+    # Requesting install_mode="editable" with a mismatched repo root must fail
+    res_editable_mismatch = verify_notebook(
+        entry=entry,
+        source_root=tmp_path,
+        output_dir=out_dir / "editable_mismatch",
+        install_mode="editable",
+        repo_root=tmp_path / "other_repo",
+    )
+    assert res_editable_mismatch["execution_passed"] is False
+    assert "install_mode='editable' violated" in (res_editable_mismatch["error"] or "")
+
+

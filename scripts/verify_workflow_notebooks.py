@@ -84,13 +84,16 @@ def probe_kernel_environment(kernel_name: str, timeout: int = 30) -> dict:
     """Execute a lightweight probe in kernel to retrieve sys and gwexpy metadata."""
     probe_nb = nbformat.v4.new_notebook()
     probe_code = """import json, sys
+from pathlib import Path
+gw_err = None
 try:
     import gwexpy
     gw_ver = getattr(gwexpy, "__version__", None)
-    gw_file = getattr(gwexpy, "__file__", None)
-except Exception:
+    gw_file = str(Path(getattr(gwexpy, "__file__", "")).resolve()) if getattr(gwexpy, "__file__", None) else None
+except Exception as e:
     gw_ver = None
     gw_file = None
+    gw_err = str(e)
 
 env_info = {
     "executable": sys.executable,
@@ -98,13 +101,20 @@ env_info = {
     "python_version": sys.version,
     "gwexpy_version": gw_ver,
     "gwexpy_file": gw_file,
+    "gwexpy_error": gw_err,
 }
 print("__KERNEL_ENV_START__" + json.dumps(env_info) + "__KERNEL_ENV_END__")
 """
     probe_cell = nbformat.v4.new_code_cell(source=probe_code)
     probe_nb.cells.append(probe_cell)
-    client = NotebookClient(probe_nb, timeout=timeout, kernel_name=kernel_name)
-    client.execute()
+    with tempfile.TemporaryDirectory(prefix="gwexpy-probe-") as temp_dir:
+        client = NotebookClient(
+            probe_nb,
+            timeout=timeout,
+            kernel_name=kernel_name,
+            resources={"metadata": {"path": temp_dir}},
+        )
+        client.execute()
 
     for output in probe_cell.get("outputs", []):
         text = output.get("text", "")
@@ -119,6 +129,8 @@ def verify_kernel_environment(
     expected_prefix: Path | str | None = None,
     allow_foreign: bool = False,
     require_gwexpy: bool = True,
+    install_mode: str = "any",
+    repo_root: Path | str | None = None,
 ) -> None:
     """Verify kernel environment metadata against expectations."""
     if not kernel_env.get("executable"):
@@ -147,12 +159,38 @@ def verify_kernel_environment(
         gw_file = kernel_env.get("gwexpy_file")
         if not gw_file:
             raise RuntimeError(
-                f"Kernel '{kernel_env.get('executable')}' cannot import gwexpy."
+                f"Kernel '{kernel_env.get('executable')}' cannot import gwexpy: {kernel_env.get('gwexpy_error')}"
             )
-        if not Path(gw_file).exists():
+        gw_path = Path(gw_file).resolve()
+        if not gw_path.exists():
             raise RuntimeError(f"gwexpy file '{gw_file}' reported by kernel does not exist on disk.")
         if not gw_ver:
             raise RuntimeError("Kernel imported gwexpy but __version__ is missing or empty.")
+
+        if repo_root is None:
+            repo_root = Path(__file__).resolve().parent.parent
+        repo_path = Path(repo_root).resolve()
+
+        in_site = any(part in ("site-packages", "dist-packages") for part in gw_path.parts)
+        try:
+            gw_path.relative_to(repo_path)
+            in_repo = True
+        except ValueError:
+            in_repo = False
+
+        if install_mode == "installed":
+            if (not in_site) or in_repo:
+                raise RuntimeError(
+                    f"Install mode is 'installed', but gwexpy was loaded from '{gw_path}' "
+                    f"(in_site={in_site}, in_repo={in_repo}, repo_root='{repo_path}'). "
+                    "Refusing execution with non-installed or checkout-local package."
+                )
+        elif install_mode == "editable":
+            if not in_repo:
+                raise RuntimeError(
+                    f"Install mode is 'editable', but gwexpy was loaded from '{gw_path}' "
+                    f"outside repository checkout '{repo_path}'."
+                )
 
 
 
@@ -179,6 +217,10 @@ def verify_notebook(
     kernel_name: str = "python3",
     offline: bool = False,
     timeout_override: int | None = None,
+    expected_prefix: Path | str | None = None,
+    require_gwexpy: bool = True,
+    install_mode: str = "any",
+    repo_root: Path | str | None = None,
 ) -> dict:
     """Execute a single workflow notebook and verify required outputs and metrics."""
     nb_id = entry["id"]
@@ -198,6 +240,10 @@ def verify_notebook(
             "Please specify a new run-isolated directory (e.g. run-<id>)."
         )
     nb_out_dir.mkdir(parents=True, exist_ok=True)
+
+    if repo_root is None:
+        repo_root = Path(__file__).resolve().parent.parent
+    repo_path = Path(repo_root).resolve()
 
     with tempfile.TemporaryDirectory(prefix=f"gwexpy-wf-{nb_id}-") as work_dir_str:
         work_dir = Path(work_dir_str)
@@ -224,12 +270,76 @@ def verify_notebook(
         nb_to_run = copy.deepcopy(nb)
 
         # Injected setup cell ensures environment variables are definitely present inside the kernel process
+        # and verifies the kernel execution environment directly within the notebook process
         setup_lines = [
             "import os as _os",
             "import sys as _sys",
+            "import json as _json",
+            "from pathlib import Path as _Path",
             f'_os.environ["GWEXPY_DOCS_OUTPUT_DIR"] = {repr(str(nb_out_dir))}',
             '_os.environ["MPLBACKEND"] = "Agg"',
+            f'_nb_out = _Path({repr(str(nb_out_dir))})',
+            '_nb_out.mkdir(parents=True, exist_ok=True)',
+            '_k_exe = _sys.executable',
+            '_k_pfx = _sys.prefix',
+            '_k_ver = _sys.version',
+            '_gw_ver = None',
+            '_gw_file = None',
+            '_gw_err = None',
+            'try:',
+            '    import gwexpy as _gw',
+            '    _gw_ver = getattr(_gw, "__version__", None)',
+            '    _gw_file = str(_Path(getattr(_gw, "__file__", "")).resolve()) if getattr(_gw, "__file__", None) else None',
+            'except Exception as _e:',
+            '    _gw_err = str(_e)',
+            '_kernel_info = {',
+            '    "executable": _k_exe,',
+            '    "prefix": _k_pfx,',
+            '    "python_version": _k_ver,',
+            '    "gwexpy_version": _gw_ver,',
+            '    "gwexpy_file": _gw_file,',
+            '    "gwexpy_error": _gw_err,',
+            '}',
+            'with open(_nb_out / "_kernel_env.json", "w", encoding="utf-8") as _f:',
+            '    _json.dump(_kernel_info, _f, indent=2)',
         ]
+        if require_gwexpy:
+            setup_lines.extend([
+                'if _gw_file is None:',
+                '    raise RuntimeError(f"Notebook kernel cannot import gwexpy: {_gw_err}")',
+                'if not _gw_ver:',
+                '    raise RuntimeError("Notebook kernel imported gwexpy but __version__ is missing or empty")',
+                'if not _Path(_gw_file).exists():',
+                '    raise RuntimeError(f"gwexpy file \'{_gw_file}\' does not exist on disk")',
+            ])
+            if expected_prefix is not None:
+                exp_pfx_str = str(Path(expected_prefix).resolve())
+                setup_lines.extend([
+                    f'if _Path(_k_pfx).resolve() != _Path({repr(exp_pfx_str)}):',
+                    f'    raise RuntimeError(f"Notebook kernel prefix mismatch: \'{{_Path(_k_pfx).resolve()}}\' != \'{{{repr(exp_pfx_str)}}}\'")',
+                ])
+            if install_mode in ("installed", "editable"):
+                repo_root_str = str(repo_path)
+                setup_lines.extend([
+                    '_gw_p = _Path(_gw_file).resolve()',
+                    f'_repo_p = _Path({repr(repo_root_str)}).resolve()',
+                    '_in_site = any(_part in ("site-packages", "dist-packages") for _part in _gw_p.parts)',
+                    'try:',
+                    '    _gw_p.relative_to(_repo_p)',
+                    '    _in_repo = True',
+                    'except ValueError:',
+                    '    _in_repo = False',
+                ])
+                if install_mode == "installed":
+                    setup_lines.extend([
+                        'if (not _in_site) or _in_repo:',
+                        '    raise RuntimeError(f"Notebook kernel imported gwexpy from \'{_gw_p}\' (in repo or not in site-packages); install_mode=\'installed\' violated.")',
+                    ])
+                elif install_mode == "editable":
+                    setup_lines.extend([
+                        'if not _in_repo:',
+                        '    raise RuntimeError(f"Notebook kernel imported gwexpy from \'{_gw_p}\' (outside repo checkout \'{_repo_p}\'); install_mode=\'editable\' violated.")',
+                    ])
         if offline:
             setup_lines.append(OFFLINE_SETUP_CODE)
 
@@ -282,6 +392,15 @@ def verify_notebook(
         with open(executed_nb_path, "w", encoding="utf-8") as f:
             nbformat.write(nb_to_run, f)
 
+        # Read recorded kernel environment from notebook execution if present
+        kernel_env_file = nb_out_dir / "_kernel_env.json"
+        recorded_kernel_env = None
+        if kernel_env_file.exists():
+            try:
+                recorded_kernel_env = json.loads(kernel_env_file.read_text(encoding="utf-8"))
+            except Exception:
+                pass
+
         result: dict = {
             "id": nb_id,
             "public": public_rel,
@@ -292,6 +411,7 @@ def verify_notebook(
             "missing_outputs": [],
             "numerical_checks_passed": False,
             "metrics": None,
+            "kernel_environment": recorded_kernel_env,
         }
 
         if exec_error is not None:
@@ -440,6 +560,12 @@ def main() -> int:
         action="store_true",
         help="Do not require gwexpy import in kernel (e.g. for synthetic fixtures)",
     )
+    parser.add_argument(
+        "--install-mode",
+        choices=["any", "installed", "editable"],
+        default="any",
+        help="Verify whether gwexpy is imported from site-packages ('installed') or repository checkout ('editable')",
+    )
     args = parser.parse_args()
 
     source = args.source.resolve()
@@ -487,12 +613,15 @@ def main() -> int:
             expected_prefix=args.expected_prefix,
             allow_foreign=args.allow_foreign_kernel,
             require_gwexpy=not args.no_require_gwexpy,
+            install_mode=args.install_mode,
+            repo_root=ROOT,
         )
         print(f"Verified kernel '{args.kernel}' environment:")
-        print(f"  executable: {kernel_env['executable']}")
-        print(f"  prefix:     {kernel_env['prefix']}")
-        print(f"  python:     {kernel_env['python_version'].split()[0]}")
-        print(f"  gwexpy:     {kernel_env.get('gwexpy_version')} ({kernel_env.get('gwexpy_file')})")
+        print(f"  executable:   {kernel_env['executable']}")
+        print(f"  prefix:       {kernel_env['prefix']}")
+        print(f"  python:       {kernel_env['python_version'].split()[0]}")
+        print(f"  gwexpy:       {kernel_env.get('gwexpy_version')} ({kernel_env.get('gwexpy_file')})")
+        print(f"  install_mode: {args.install_mode}")
     except Exception as err:
         print(f"Error: Kernel environment verification failed for '{args.kernel}': {err}", file=sys.stderr)
         return 1
@@ -512,6 +641,10 @@ def main() -> int:
             kernel_name=args.kernel,
             offline=args.offline,
             timeout_override=args.timeout,
+            expected_prefix=args.expected_prefix,
+            require_gwexpy=not args.no_require_gwexpy,
+            install_mode=args.install_mode,
+            repo_root=ROOT,
         )
         results.append(res)
         status_str = (
@@ -547,6 +680,7 @@ def main() -> int:
             and r["numerical_checks_passed"]
         ),
         "all_passed": all_passed,
+        "install_mode": args.install_mode,
         "kernel_environment": kernel_env,
         "environment_verified": True,
         "results": results,
