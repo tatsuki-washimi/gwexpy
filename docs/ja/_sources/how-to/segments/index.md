@@ -35,6 +35,10 @@ Use `SegmentTable` to manage time-keyed data with lazy-loading, plus visualizati
 
 ::::
 
+## Related Workflows
+
+- [Event Catalog and Time Series Alignment](../monitoring/event_catalog_timeseries.ipynb): Convert discrete event trigger catalogs into `SegmentTable` instances and align multi-channel detector time windows.
+
 ```{toctree}
 :hidden:
 

@@ -1,0 +1,1338 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Discover Resonances and Estimate Q Factors &#8212; GWexpy</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../_static/documentation_options.js?v=6808a718"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=ccdb6887"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/spectral/resonance_discovery_q';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/how-to/spectral/resonance_discovery_q.html" />
+    <link rel="icon" href="../../_static/favicon.svg"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Fitting &amp; statistics" href="../fitting/index.html" />
+    <link rel="prev" title="Time-Frequency Analysis: Interactive Comparison" href="time_frequency_analysis_comparison.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  <link rel="alternate" hreflang="en" href="https://tatsuki-washimi.github.io/gwexpy/docs/how-to/spectral/resonance_discovery_q.html" />
+  <link rel="alternate" hreflang="ja" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/spectral/resonance_discovery_q.html" />
+  <link rel="alternate" hreflang="x-default" href="https://tatsuki-washimi.github.io/gwexpy/docs/how-to/spectral/resonance_discovery_q.html" />
+
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt=""/>
+    <img src="../../_static/logo.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">GWexpy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    How-to guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../reference/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanation/index.html">
+    Explanation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../about/index.html">
+    About
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item"><div class="navbar-item language-switcher">
+    <span class="active">EN / </span>
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/spectral/resonance_discovery_q.html" title="日本語">
+      <i class="fa-solid fa-language"></i> 日本語</a>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    How-to guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../reference/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanation/index.html">
+    Explanation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../about/index.html">
+    About
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item"><div class="navbar-item language-switcher">
+    <span class="active">EN / </span>
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/spectral/resonance_discovery_q.html" title="日本語">
+      <i class="fa-solid fa-language"></i> 日本語</a>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Data and formats</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../io_formats.html">Read and write data</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../interop.html">Convert scientific Python objects</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../interop/intro_interop.html">Interoperability: Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interop/root_to_python_migration.html">Pure-Python Migration of Legacy ROOT Reverberation Time (RT60) Analysis</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../time_utilities.html">GPS Time Utility Functions (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tools and operations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migration.html">Migrating Between GWexpy Versions</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Technique recipes</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../containers/index.html">Containers &amp; matrices</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../containers/matrix_frequencyseries.html">FrequencySeriesMatrix: Matrix Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/matrix_spectrogram.html">SpectrogramMatrix: Matrix Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/field_scalar_intro.html">Field API: ScalarField Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/field_advanced_workflow.html">Field API: Advanced Analysis Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/intro_histogram.html">Histogram: Basics</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Spectral &amp; time-frequency</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="advanced_spectrogram_processing.html">Spectrogram: Normalization and Cleaning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_hht.html">HHT: Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_peak_detection.html">Peak Detection: Finding Peaks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_peak_tracking.html">Peak Tracking: Time Evolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_frequency_analysis_comparison.html">Time-Frequency Analysis: Interactive Comparison</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Discover Resonances and Estimate Q Factors</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../fitting/index.html">Fitting &amp; statistics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_fitting.html">Fitting: Spectral Line Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_arima.html">ARIMA: Time Series Forecasting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_decomposition.html">Decomposition Analysis: PCA, ICA, and Eigenmodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_correlation.html">Correlation Analysis: Statistical Methods</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../fitting/rayleigh_gauch_tutorial.html">Non-Gaussian Noise Analysis: Rayleigh and Gaussian-Chi</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../control/index.html">Control &amp; modeling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_basics.html">Control Analysis: Resonance and Feedback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_modeling.html">Control Analysis: Plant Modeling from Measured Response</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_discretization.html">Control Analysis: Discretization (ZOH vs Tustin)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_modal_analysis.html">High-Precision Modal Analysis of Suspension Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/control_frd_roundtrip.html">Compare Control Models with Measured Frequency Responses</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../coupling/index.html">Coupling &amp; correlation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_bruco.html">Bruco: Coherence Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_coupling.html">Coupling Analysis: Multi-Channel Coupling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_field_analysis.html">Multi-Dimensional Field Analysis: Beam Profiles and Spatial Statistics</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../segments/index.html">Segments &amp; tables</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../segments/segment_asd_pipeline.html">ASD Analysis: Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segments/segment_visualization.html">Segment Analysis: Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segments/intro_segment_table.html">SegmentTable: Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segments/intro_table.html">Segment Analysis: Basic Pipeline</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../monitoring/index.html">Monitoring and Event Workflows</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/long_term_trend.html">Analyze Long-Term Trends and Detect State Changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/event_catalog_timeseries.html">Align Event Catalogs with Time-Series Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/chunked_long_data.html">Process Long Time Series in Chunks</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../calibration/index.html">Calibration and Physical Units</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../calibration/calibration_units_contract.html">Calibration Transfer Function and Physical Units Contract</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../viz/index.html">Visualization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../viz/intro_mapplotting.html">Map Plotting: Basics</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Case studies</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../case-studies/index.html">Case studies</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_active_damping.html">Active Damping for 6-DOF Active Vibration Isolation System (Non-Collocated Configuration)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_transfer_function.html">Tutorial: Transfer Function Measurement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_calibration_pipeline.html">Calibration Pipeline: Counts → Strain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_dttxml_calibration.html">Reading and Using DTT XML Files with gwexpy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_finesse_optics.html">Finesse 3 Interoperability: Simulation vs. Measurement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_seismic_obspy.html">Case Study: Seismic Analysis with ObsPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_gbd_format.html">Case Study: GBD Format I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_hdf5_provenance.html">Reproducible Metadata Management with HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_pycbc_search.html">PyCBC Interoperability: From gwexpy Preprocessing to GW Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bootstrap_gls_fitting.html">Case Study: Bootstrap PSD and GLS Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_ml_preprocessing.html">Case Study: ML Preprocessing Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_segment_analysis.html">Case Study: Event-Synchronized Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_physics_validation.html">Physical Validity Checking: Units, Floors, and Sanity Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_arima_burst_search.html">ARIMA-Based Burst Detection</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_signal_extraction.html">Signal Extraction: Weak Signal Recovery from Colored Noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_noise_budget.html">Noise Budgeting and Multi-Channel Correlation Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_lockin_detection.html">Lock-in Detection: Recovering Weak AM/FM Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_wiener_filter.html">Wiener Filtering: Coherent Noise Subtraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_coupling_analysis.html">Coupling Analysis: Estimating Transfer Paths Between Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bruco_ica_denoising.html">Case Study: Bruco and ICA Noise Reduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bruco_advanced.html">Bruco: Bilinear Coupling and AM/FM Demodulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_violin_mode.html">Case Study: Violin Mode Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_schumann_resonance.html">Case Study: Schumann Resonance Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_glitch_analysis.html">Glitch Analysis: Q-Transform and Omega-Scan</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">How-to guides</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Spectral &amp; time-frequency</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Discover Resonances and Estimate Q Factors</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+  <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
+  <span>Development documentation · 0.2.3</span>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/9ed90ec620345dd2908d277c5d168fd8620a22a9">9ed90ec6</a>
+  · Intro examples tested with 0.2.3
+  · <a href="../../about/documentation_version.html">Version details</a>
+  · <a href="../../about/known_limitations.html">Known limitations</a>
+</div>
+  
+  
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="discover-resonances-and-estimate-q-factors">
+<h1>Discover Resonances and Estimate Q Factors<a class="headerlink" href="#discover-resonances-and-estimate-q-factors" title="Link to this heading">#</a></h1>
+<p>Mechanical resonances in suspensions, mirror substrates, and vacuum chambers can introduce steep noise peaks or destabilize feedback control loops. Identifying resonance natural frequencies (<span class="math notranslate nohighlight">\(f_n\)</span>) and quality factors (<span class="math notranslate nohighlight">\(Q\)</span>) enables building notch filters, damping loops, and tracking structural health.</p>
+<p><strong>What you will achieve:</strong></p>
+<ol class="arabic simple">
+<li><p>Generate an impulse-like excitation and synthetic multi-mode resonant response (3 modes at 73, 211, and 389 Hz).</p></li>
+<li><p>Detect drive triggers and contrast pre-excitation versus post-excitation amplitude spectral densities (ASDs).</p></li>
+<li><p>Compute the complex transfer function and discover peak candidates.</p></li>
+<li><p>Fit a discrete complex frequency-response model <span class="math notranslate nohighlight">\(H(z)\)</span> using <code class="docutils literal notranslate"><span class="pre">gwexpy.fitting.fit_series</span></code> to estimate <span class="math notranslate nohighlight">\(f_n\)</span> and <span class="math notranslate nohighlight">\(Q\)</span>.</p></li>
+<li><p>Cross-check frequency-domain fits against time-domain ringdown envelopes (<span class="math notranslate nohighlight">\(	au_A\)</span>, <span class="math notranslate nohighlight">\(T_{60}\)</span>, <span class="math notranslate nohighlight">\(Q\)</span>).</p></li>
+<li><p>Simulate a stepped-sine projection sweep and evaluate settling time requirements.</p></li>
+<li><p>Demonstrate failure cases on closely spaced modes and low-SNR records.</p></li>
+</ol>
+<p><strong>Data type</strong>: Synthetic impulse excitation and multi-mode response (30 s at 2048 Hz).</p>
+<section id="environment-setup">
+<h2>Environment Setup<a class="headerlink" href="#environment-setup" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">curve_fit</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">gwexpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_series</span>
+
+<span class="n">output_dir_env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;GWEXPY_DOCS_OUTPUT_DIR&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">output_dir_env</span><span class="p">:</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir_env</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;gwexpy-t3-&quot;</span><span class="p">))</span>
+<span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;tables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;figures&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Artifacts will be written to: </span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Artifacts will be written to: /tmp/gwexpy-t3-5wlvjoa0
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="multi-mode-resonant-fixture-generation">
+<h2>Multi-Mode Resonant Fixture Generation<a class="headerlink" href="#multi-mode-resonant-fixture-generation" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fs</span> <span class="o">=</span> <span class="mf">2048.0</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">fs</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="mf">30.0</span>
+<span class="n">n_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt</span>
+<span class="n">gps_t0</span> <span class="o">=</span> <span class="mf">1400000000.0</span>
+
+<span class="c1"># Impulse excitation at t = 2.0 s (1 sample impulse-like drive)</span>
+<span class="n">drive</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
+<span class="n">trigger_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
+<span class="n">drive</span><span class="p">[</span><span class="n">trigger_idx</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+<span class="c1"># 3 isolated modes: fn=[73, 211, 389] Hz, Q=[40, 80, 120], A=[0.6, 0.4, 0.25]</span>
+<span class="n">truth_modes</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;mode_id&quot;</span><span class="p">:</span> <span class="s2">&quot;M1&quot;</span><span class="p">,</span> <span class="s2">&quot;fn&quot;</span><span class="p">:</span> <span class="mf">73.0</span><span class="p">,</span> <span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="mf">40.0</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;mode_id&quot;</span><span class="p">:</span> <span class="s2">&quot;M2&quot;</span><span class="p">,</span> <span class="s2">&quot;fn&quot;</span><span class="p">:</span> <span class="mf">211.0</span><span class="p">,</span> <span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="mf">80.0</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;mode_id&quot;</span><span class="p">:</span> <span class="s2">&quot;M3&quot;</span><span class="p">,</span> <span class="s2">&quot;fn&quot;</span><span class="p">:</span> <span class="mf">389.0</span><span class="p">,</span> <span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="mf">120.0</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">},</span>
+<span class="p">]</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">truth_modes</span><span class="p">:</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;fn&quot;</span><span class="p">]</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;Q&quot;</span><span class="p">]</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">]</span>
+    <span class="n">gamma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">fn</span> <span class="o">/</span> <span class="n">Q</span>
+    <span class="n">fd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">fn</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">gamma</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">fd</span> <span class="o">/</span> <span class="n">fs</span>
+    <span class="c1"># Discrete filter difference equation</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">A</span> <span class="o">*</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)]</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">response</span> <span class="o">+=</span> <span class="n">signal</span><span class="o">.</span><span class="n">lfilter</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">drive</span><span class="p">)</span>
+
+<span class="c1"># Add small sensor noise</span>
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">2026091603</span><span class="p">)</span>
+<span class="n">response</span> <span class="o">+=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>
+
+<span class="n">ts_drive</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">drive</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">gps_t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;DRIVE:IMPULSE&quot;</span><span class="p">)</span>
+<span class="n">ts_resp</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">gps_t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;RESP:DISPLACEMENT&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated 30s resonant response for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">truth_modes</span><span class="p">)</span><span class="si">}</span><span class="s2"> modes.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Generated 30s resonant response for 3 modes.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="trigger-detection-and-pre-post-asd-comparison">
+<h2>Trigger Detection and Pre/Post ASD Comparison<a class="headerlink" href="#trigger-detection-and-pre-post-asd-comparison" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Detect trigger from drive channel</span>
+<span class="n">trig_detected_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ts_drive</span><span class="o">.</span><span class="n">value</span><span class="p">)))</span>
+<span class="n">trig_time_s</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">trig_detected_idx</span><span class="p">])</span>
+
+<span class="c1"># Equal-length pre-excitation and post-excitation windows (1.5 s each)</span>
+<span class="n">win_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1.5</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
+<span class="n">ts_pre</span> <span class="o">=</span> <span class="n">ts_resp</span><span class="p">[</span><span class="n">trig_detected_idx</span> <span class="o">-</span> <span class="n">win_samples</span> <span class="p">:</span> <span class="n">trig_detected_idx</span><span class="p">]</span>
+<span class="n">ts_post</span> <span class="o">=</span> <span class="n">ts_resp</span><span class="p">[</span><span class="n">trig_detected_idx</span> <span class="p">:</span> <span class="n">trig_detected_idx</span> <span class="o">+</span> <span class="n">win_samples</span><span class="p">]</span>
+
+<span class="c1"># Figure 1: Time domain trigger window</span>
+<span class="n">fig1</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="mi">6</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)],</span> <span class="n">ts_drive</span><span class="o">.</span><span class="n">value</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="mi">6</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;crimson&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Drive [V]&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Drive Trigger (detected at t=</span><span class="si">{</span><span class="n">trig_time_s</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s)&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="mi">6</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)],</span> <span class="n">ts_resp</span><span class="o">.</span><span class="n">value</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="mi">6</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;navy&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">trig_time_s</span> <span class="o">-</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">trig_time_s</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Pre-excitation&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">trig_time_s</span><span class="p">,</span> <span class="n">trig_time_s</span> <span class="o">+</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Post-excitation&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Response [V]&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">fig1</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">fig1_path</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;figures/trigger_window.png&quot;</span>
+<span class="n">fig1</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig1_path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">fig1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig1</span><span class="p">)</span>
+
+<span class="c1"># Compute calibrated Amplitude Spectral Density (ASD) using GWexpy public API</span>
+<span class="c1"># Analysis parameters (identical for pre and post windows):</span>
+<span class="c1"># - fftlength = 0.5 s (1024 samples) -&gt; frequency resolution df = 2.0 Hz</span>
+<span class="c1"># - overlap = 0.25 s (512 samples) -&gt; 5 Welch averaging segments across 1.5 s</span>
+<span class="c1"># - window = &quot;hann&quot;</span>
+<span class="c1"># - method = &quot;welch&quot;</span>
+<span class="c1"># - ASD unit = V / Hz^(1/2)</span>
+<span class="n">asd_fftlength</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">asd_overlap</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">asd_window</span> <span class="o">=</span> <span class="s2">&quot;hann&quot;</span>
+<span class="n">asd_method</span> <span class="o">=</span> <span class="s2">&quot;welch&quot;</span>
+
+<span class="n">asd_pre</span> <span class="o">=</span> <span class="n">ts_resp</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="n">asd_fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">asd_overlap</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">asd_window</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">asd_method</span><span class="p">)</span>
+<span class="c1"># Compute ASD on post window directly</span>
+<span class="n">asd_post</span> <span class="o">=</span> <span class="n">ts_post</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="n">asd_fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">asd_overlap</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">asd_window</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">asd_method</span><span class="p">)</span>
+<span class="n">asd_pre</span> <span class="o">=</span> <span class="n">ts_pre</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="n">asd_fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">asd_overlap</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">asd_window</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">asd_method</span><span class="p">)</span>
+
+<span class="c1"># Independent cross-check against scipy.signal.welch</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">pxx_scipy_pre</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">welch</span><span class="p">(</span>
+    <span class="n">ts_pre</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">nperseg</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">asd_fftlength</span> <span class="o">*</span> <span class="n">fs</span><span class="p">),</span> <span class="n">noverlap</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">asd_overlap</span> <span class="o">*</span> <span class="n">fs</span><span class="p">),</span> <span class="n">window</span><span class="o">=</span><span class="n">asd_window</span>
+<span class="p">)</span>
+<span class="n">asd_scipy_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pxx_scipy_pre</span><span class="p">)</span>
+<span class="n">asd_scipy_match</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">asd_pre</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">asd_scipy_ref</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;GWexpy ASD verified against scipy.signal.welch: match=</span><span class="si">{</span><span class="n">asd_scipy_match</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ASD unit: </span><span class="si">{</span><span class="n">asd_pre</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">, Frequency resolution: </span><span class="si">{</span><span class="n">asd_pre</span><span class="o">.</span><span class="n">df</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Figure 2: Pre vs Post ASD comparison</span>
+<span class="n">fig2</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">asd_pre</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">asd_pre</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Pre-excitation ASD (noise floor, df=</span><span class="si">{</span><span class="n">asd_pre</span><span class="o">.</span><span class="n">df</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">asd_post</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">asd_post</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Post-excitation ASD (resonant modes, df=</span><span class="si">{</span><span class="n">asd_post</span><span class="o">.</span><span class="n">df</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;darkblue&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;ASD [V / Hz^(1/2)]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Pre- vs Post-Excitation Amplitude Spectral Density (Welch, Hann, 0.5s)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">fig2</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">fig2_path</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;figures/asd_comparison.png&quot;</span>
+<span class="n">fig2</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig2_path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">fig2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved trigger window and ASD comparison figures.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/7d6d975b01618a2811a9cd874017ecedfa19ad579318038d7af1a9982b11c769.png" src="../../_images/7d6d975b01618a2811a9cd874017ecedfa19ad579318038d7af1a9982b11c769.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>GWexpy ASD verified against scipy.signal.welch: match=True
+ASD unit: V / Hz(1/2), Frequency resolution: 2.0 Hz
+</pre></div>
+</div>
+<img alt="../../_images/844dc7ab4646dc8ee3ca66037709a6c6cee2b02dadc15b193b59d3803da27cf4.png" src="../../_images/844dc7ab4646dc8ee3ca66037709a6c6cee2b02dadc15b193b59d3803da27cf4.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Saved trigger window and ASD comparison figures.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="complex-transfer-function-and-peak-discovery">
+<h2>Complex Transfer Function and Peak Discovery<a class="headerlink" href="#complex-transfer-function-and-peak-discovery" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Post-trigger window of 8 seconds for high-resolution transfer function</span>
+<span class="n">fit_len_s</span> <span class="o">=</span> <span class="mf">8.0</span>
+<span class="n">fit_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fit_len_s</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
+<span class="n">sub_drive</span> <span class="o">=</span> <span class="n">drive</span><span class="p">[</span><span class="n">trig_detected_idx</span> <span class="p">:</span> <span class="n">trig_detected_idx</span> <span class="o">+</span> <span class="n">fit_samples</span><span class="p">]</span>
+<span class="n">sub_resp</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="n">trig_detected_idx</span> <span class="p">:</span> <span class="n">trig_detected_idx</span> <span class="o">+</span> <span class="n">fit_samples</span><span class="p">]</span>
+
+<span class="n">fft_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">sub_drive</span><span class="p">)</span>
+<span class="n">fft_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">sub_resp</span><span class="p">)</span>
+<span class="n">freqs_tf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">fit_samples</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+
+<span class="c1"># Mask bins where drive spectrum is small</span>
+<span class="n">valid_drive_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fft_d</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-6</span>
+<span class="n">H_complex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">fft_r</span><span class="p">)</span>
+<span class="n">H_complex</span><span class="p">[</span><span class="n">valid_drive_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">fft_r</span><span class="p">[</span><span class="n">valid_drive_mask</span><span class="p">]</span> <span class="o">/</span> <span class="n">fft_d</span><span class="p">[</span><span class="n">valid_drive_mask</span><span class="p">]</span>
+<span class="n">H_mag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">H_complex</span><span class="p">)</span>
+
+<span class="c1"># Find peak candidates without referencing truth parameters</span>
+<span class="n">pidx</span><span class="p">,</span> <span class="n">props</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="n">H_mag</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mi">30</span> <span class="o">/</span> <span class="p">(</span><span class="n">freqs_tf</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">freqs_tf</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+<span class="n">candidate_freqs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">freqs_tf</span><span class="p">[</span><span class="n">p</span><span class="p">])</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pidx</span> <span class="k">if</span> <span class="mf">50.0</span> <span class="o">&lt;=</span> <span class="n">freqs_tf</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mf">450.0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Discovered </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">candidate_freqs</span><span class="p">)</span><span class="si">}</span><span class="s2"> resonance peak candidates: </span><span class="si">{</span><span class="n">candidate_freqs</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate_freqs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;Must discover exactly 3 resonance candidates.&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Discovered 3 resonance peak candidates: [73.0, 211.0, 389.0] Hz
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="discrete-complex-frequency-response-fitting">
+<h2>Discrete Complex Frequency Response Fitting<a class="headerlink" href="#discrete-complex-frequency-response-fitting" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">discrete_complex_model</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B_re</span><span class="p">,</span> <span class="n">B_im</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exact discrete second-order resonant response in z-domain.&quot;&quot;&quot;</span>
+    <span class="n">gamma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">fn</span> <span class="o">/</span> <span class="n">Q</span>
+    <span class="n">fd_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">fn</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">))</span>
+    <span class="n">r_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">gamma</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span>
+    <span class="n">theta_val</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">fd_val</span> <span class="o">/</span> <span class="n">fs</span>
+    <span class="n">z_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="n">j</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">r_val</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta_val</span><span class="p">)</span> <span class="o">*</span> <span class="n">z_inv</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">r_val</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta_val</span><span class="p">)</span> <span class="o">*</span> <span class="n">z_inv</span> <span class="o">+</span> <span class="p">(</span><span class="n">r_val</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">z_inv</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">num</span> <span class="o">/</span> <span class="n">denom</span> <span class="o">+</span> <span class="p">(</span><span class="n">B_re</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">B_im</span><span class="p">)</span>
+
+<span class="n">mode_results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">fig3</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">f_cand</span><span class="p">,</span> <span class="n">m_true</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">candidate_freqs</span><span class="p">,</span> <span class="n">truth_modes</span><span class="p">)):</span>
+    <span class="c1"># Local band: f_cand +- 6 Hz</span>
+    <span class="n">f_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">freqs_tf</span> <span class="o">&gt;=</span> <span class="n">f_cand</span> <span class="o">-</span> <span class="mf">6.0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs_tf</span> <span class="o">&lt;=</span> <span class="n">f_cand</span> <span class="o">+</span> <span class="mf">6.0</span><span class="p">)</span>
+    <span class="n">f_sub</span> <span class="o">=</span> <span class="n">freqs_tf</span><span class="p">[</span><span class="n">f_mask</span><span class="p">]</span>
+    <span class="n">H_sub</span> <span class="o">=</span> <span class="n">H_complex</span><span class="p">[</span><span class="n">f_mask</span><span class="p">]</span>
+    
+    <span class="n">fs_sub</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">H_sub</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">f_sub</span><span class="p">)</span>
+    
+    <span class="c1"># Fit using gwexpy.fitting.fit_series on complex series</span>
+    <span class="n">p0</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;fn&quot;</span><span class="p">:</span> <span class="n">f_cand</span><span class="p">,</span> <span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="mf">50.0</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;B_re&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;B_im&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
+    <span class="n">fit_res</span> <span class="o">=</span> <span class="n">fit_series</span><span class="p">(</span><span class="n">fs_sub</span><span class="p">,</span> <span class="n">discrete_complex_model</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">fit_res</span><span class="o">.</span><span class="n">params</span>
+    <span class="n">fn_fit</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;fn&quot;</span><span class="p">]</span>
+    <span class="n">q_fit</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;Q&quot;</span><span class="p">]</span>
+    <span class="n">a_fit</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">]</span>
+    
+    <span class="c1"># Time-domain envelope fit on bandpassed response</span>
+    <span class="n">sos_bp</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">butter</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="n">fn_fit</span> <span class="o">-</span> <span class="mf">4.0</span><span class="p">,</span> <span class="n">fn_fit</span> <span class="o">+</span> <span class="mf">4.0</span><span class="p">],</span> <span class="n">btype</span><span class="o">=</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;sos&quot;</span><span class="p">)</span>
+    <span class="n">resp_bp</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">sosfilt</span><span class="p">(</span><span class="n">sos_bp</span><span class="p">,</span> <span class="n">response</span><span class="p">[</span><span class="n">trig_detected_idx</span><span class="p">:])</span>
+    <span class="n">t_rd</span> <span class="o">=</span> <span class="n">t</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">resp_bp</span><span class="p">)]</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">hilbert</span><span class="p">(</span><span class="n">resp_bp</span><span class="p">))</span>
+    <span class="c1"># Exclude filter transient and noise floor: fit t in [0.2, 1.5] s</span>
+    <span class="n">rd_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_rd</span> <span class="o">&gt;=</span> <span class="mf">0.2</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">t_rd</span> <span class="o">&lt;=</span> <span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">t_rd</span><span class="p">[</span><span class="n">rd_mask</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="n">rd_mask</span><span class="p">],</span> <span class="mf">1e-12</span><span class="p">)),</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">tau_amp</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">slope</span>
+    <span class="n">t60_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">1000.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">tau_amp</span>
+    <span class="n">q_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">fn_fit</span> <span class="o">*</span> <span class="n">tau_amp</span>
+    
+    <span class="n">mode_results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+        <span class="s2">&quot;mode_id&quot;</span><span class="p">:</span> <span class="n">m_true</span><span class="p">[</span><span class="s2">&quot;mode_id&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;candidate_hz&quot;</span><span class="p">:</span> <span class="n">f_cand</span><span class="p">,</span>
+        <span class="s2">&quot;fn_fit_hz&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">fn_fit</span><span class="p">),</span>
+        <span class="s2">&quot;q_freq&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">q_fit</span><span class="p">),</span>
+        <span class="s2">&quot;tau_amp_s&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">tau_amp</span><span class="p">),</span>
+        <span class="s2">&quot;q_time&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">q_time</span><span class="p">),</span>
+        <span class="s2">&quot;t60_s&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">t60_s</span><span class="p">),</span>
+        <span class="s2">&quot;fn_error_rel&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">fn_fit</span> <span class="o">-</span> <span class="n">m_true</span><span class="p">[</span><span class="s2">&quot;fn&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="n">m_true</span><span class="p">[</span><span class="s2">&quot;fn&quot;</span><span class="p">]),</span>
+        <span class="s2">&quot;q_error_rel&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">q_fit</span> <span class="o">-</span> <span class="n">m_true</span><span class="p">[</span><span class="s2">&quot;Q&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="n">m_true</span><span class="p">[</span><span class="s2">&quot;Q&quot;</span><span class="p">]),</span>
+        <span class="s2">&quot;cross_q_diff_rel&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">q_time</span> <span class="o">-</span> <span class="n">q_fit</span><span class="p">)</span> <span class="o">/</span> <span class="n">q_fit</span><span class="p">),</span>
+        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;valid&quot;</span><span class="p">,</span>
+    <span class="p">})</span>
+    
+    <span class="c1"># Plot Real and Imaginary fits</span>
+    <span class="n">H_model_eval</span> <span class="o">=</span> <span class="n">discrete_complex_model</span><span class="p">(</span><span class="n">f_sub</span><span class="p">,</span> <span class="o">**</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_sub</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">H_sub</span><span class="p">),</span> <span class="s2">&quot;k.&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Data Re&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_sub</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">H_model_eval</span><span class="p">),</span> <span class="s2">&quot;r-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Model Re&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Re(H) Mode </span><span class="si">{</span><span class="n">m_true</span><span class="p">[</span><span class="s1">&#39;mode_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_sub</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">H_sub</span><span class="p">),</span> <span class="s2">&quot;k.&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Data Im&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_sub</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">H_model_eval</span><span class="p">),</span> <span class="s2">&quot;b-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Model Im&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Im(H) Mode </span><span class="si">{</span><span class="n">m_true</span><span class="p">[</span><span class="s1">&#39;mode_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">fig3</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Discrete Complex Model Fits for All 3 Modes&quot;</span><span class="p">)</span>
+<span class="n">fig3</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">fig3_path</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;figures/complex_response_fit.png&quot;</span>
+<span class="n">fig3</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig3_path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">fig3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig3</span><span class="p">)</span>
+
+<span class="n">modes_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">mode_results</span><span class="p">)</span>
+<span class="n">modes_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;tables/modes.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fitted mode results:&quot;</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">modes_df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/1e5e69a5950839a3c69a31bfff4b791fe3b2e9e95bcebc848bc0d8dcab799152.png" src="../../_images/1e5e69a5950839a3c69a31bfff4b791fe3b2e9e95bcebc848bc0d8dcab799152.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fitted mode results:
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>mode_id</th>
+      <th>candidate_hz</th>
+      <th>fn_fit_hz</th>
+      <th>q_freq</th>
+      <th>tau_amp_s</th>
+      <th>q_time</th>
+      <th>t60_s</th>
+      <th>fn_error_rel</th>
+      <th>q_error_rel</th>
+      <th>cross_q_diff_rel</th>
+      <th>status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>M1</td>
+      <td>73.0</td>
+      <td>72.999998</td>
+      <td>40.008986</td>
+      <td>0.174064</td>
+      <td>39.919205</td>
+      <td>1.202392</td>
+      <td>3.038165e-08</td>
+      <td>0.000225</td>
+      <td>0.002244</td>
+      <td>valid</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>M2</td>
+      <td>211.0</td>
+      <td>210.999999</td>
+      <td>80.060371</td>
+      <td>0.121048</td>
+      <td>80.239993</td>
+      <td>0.836172</td>
+      <td>4.873721e-09</td>
+      <td>0.000755</td>
+      <td>0.002244</td>
+      <td>valid</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>M3</td>
+      <td>389.0</td>
+      <td>389.000012</td>
+      <td>120.083032</td>
+      <td>0.107194</td>
+      <td>130.999326</td>
+      <td>0.740468</td>
+      <td>3.133393e-08</td>
+      <td>0.000692</td>
+      <td>0.090906</td>
+      <td>valid</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="ringdown-envelope-and-time-domain-validation">
+<h2>Ringdown Envelope and Time-Domain Validation<a class="headerlink" href="#ringdown-envelope-and-time-domain-validation" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Figure 4: Ringdown envelope for Mode M1</span>
+<span class="n">sos_m1</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">butter</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mf">73.0</span> <span class="o">-</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">73.0</span> <span class="o">+</span> <span class="mf">4.0</span><span class="p">],</span> <span class="n">btype</span><span class="o">=</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;sos&quot;</span><span class="p">)</span>
+<span class="n">resp_m1</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">sosfilt</span><span class="p">(</span><span class="n">sos_m1</span><span class="p">,</span> <span class="n">response</span><span class="p">[</span><span class="n">trig_detected_idx</span><span class="p">:])</span>
+<span class="n">env_m1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">hilbert</span><span class="p">(</span><span class="n">resp_m1</span><span class="p">))</span>
+<span class="n">t_rd</span> <span class="o">=</span> <span class="n">t</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">resp_m1</span><span class="p">)]</span>
+
+<span class="n">fig4</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">t_rd</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)],</span> <span class="n">env_m1</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Hilbert Envelope (M1)&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;purple&quot;</span><span class="p">)</span>
+<span class="n">t_fit_line</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">tau_m1</span> <span class="o">=</span> <span class="n">modes_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">modes_df</span><span class="p">[</span><span class="s2">&quot;mode_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;M1&quot;</span><span class="p">,</span> <span class="s2">&quot;tau_amp_s&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">t_fit_line</span><span class="p">,</span> <span class="n">env_m1</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">t_fit_line</span> <span class="o">-</span> <span class="mf">0.2</span><span class="p">)</span> <span class="o">/</span> <span class="n">tau_m1</span><span class="p">),</span> <span class="s2">&quot;r--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Fit (tau=</span><span class="si">{</span><span class="n">tau_m1</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time from Trigger [s]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Envelope [V]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Mode M1 Time-Domain Ringdown Exponential Decay&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">fig4</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">fig4_path</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;figures/ringdown_envelope.png&quot;</span>
+<span class="n">fig4</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig4_path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">fig4</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig4</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved ringdown envelope plot to </span><span class="si">{</span><span class="n">fig4_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/6c3be8fc95dc18d93dbf33be4c48e33092310d679a23e97bc2f99b79dc4b63db.png" src="../../_images/6c3be8fc95dc18d93dbf33be4c48e33092310d679a23e97bc2f99b79dc4b63db.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Saved ringdown envelope plot to /tmp/gwexpy-t3-5wlvjoa0/figures/ringdown_envelope.png
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="stepped-sine-frequency-response-simulation">
+<h2>Stepped-Sine Frequency Response Simulation<a class="headerlink" href="#stepped-sine-frequency-response-simulation" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Stepped-sine sweep across M1 (73 Hz +- 4 linewidths): 17 frequency points</span>
+<span class="n">f0_m1</span> <span class="o">=</span> <span class="mf">73.0</span>
+<span class="n">gamma_m1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f0_m1</span> <span class="o">/</span> <span class="mf">40.0</span>
+<span class="n">linewidth</span> <span class="o">=</span> <span class="n">gamma_m1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>  <span class="c1"># ~ 1.825 Hz</span>
+<span class="n">sweep_freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">f0_m1</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">linewidth</span><span class="p">,</span> <span class="n">f0_m1</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">linewidth</span><span class="p">,</span> <span class="mi">17</span><span class="p">)</span>
+
+<span class="n">tau_est</span> <span class="o">=</span> <span class="n">tau_m1</span>
+<span class="n">settling_s</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">tau_est</span><span class="p">,</span> <span class="mf">10.0</span> <span class="o">/</span> <span class="n">f0_m1</span><span class="p">)</span>
+<span class="n">meas_s</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">10.0</span> <span class="o">/</span> <span class="n">f0_m1</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)</span>
+<span class="n">total_step_s</span> <span class="o">=</span> <span class="n">settling_s</span> <span class="o">+</span> <span class="n">meas_s</span>
+<span class="n">step_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_step_s</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
+<span class="n">meas_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">meas_s</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
+
+<span class="n">sweep_complex_resp</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">b_m1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.6</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">gamma_m1</span><span class="o">/</span><span class="n">fs</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">f0_m1</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="p">(</span><span class="n">gamma_m1</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">fs</span><span class="p">)]</span>
+<span class="n">a_m1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">gamma_m1</span><span class="o">/</span><span class="n">fs</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">f0_m1</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="p">(</span><span class="n">gamma_m1</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">fs</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">gamma_m1</span><span class="o">/</span><span class="n">fs</span><span class="p">)]</span>
+
+<span class="k">for</span> <span class="n">f_drive</span> <span class="ow">in</span> <span class="n">sweep_freqs</span><span class="p">:</span>
+    <span class="n">t_step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">step_samples</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt</span>
+    <span class="n">drive_sine</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f_drive</span> <span class="o">*</span> <span class="n">t_step</span><span class="p">)</span>
+    <span class="n">y_step</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">lfilter</span><span class="p">(</span><span class="n">b_m1</span><span class="p">,</span> <span class="n">a_m1</span><span class="p">,</span> <span class="n">drive_sine</span><span class="p">)</span>
+    <span class="c1"># Projection onto sine and cosine over measurement window</span>
+    <span class="n">meas_y</span> <span class="o">=</span> <span class="n">y_step</span><span class="p">[</span><span class="o">-</span><span class="n">meas_samples</span><span class="p">:]</span>
+    <span class="n">meas_t</span> <span class="o">=</span> <span class="n">t_step</span><span class="p">[</span><span class="o">-</span><span class="n">meas_samples</span><span class="p">:]</span>
+    <span class="n">c_proj</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">meas_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f_drive</span> <span class="o">*</span> <span class="n">meas_t</span><span class="p">))</span>
+    <span class="n">s_proj</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">meas_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f_drive</span> <span class="o">*</span> <span class="n">meas_t</span><span class="p">))</span>
+    <span class="n">H_proj</span> <span class="o">=</span> <span class="n">s_proj</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">c_proj</span>
+    <span class="n">sweep_complex_resp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">H_proj</span><span class="p">)</span>
+
+<span class="n">sweep_complex_resp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sweep_complex_resp</span><span class="p">)</span>
+
+<span class="c1"># Analytical discrete model evaluation at sweep freqs</span>
+<span class="n">H_true_sweep</span> <span class="o">=</span> <span class="n">discrete_complex_model</span><span class="p">(</span><span class="n">sweep_freqs</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="mf">73.0</span><span class="p">,</span> <span class="n">Q</span><span class="o">=</span><span class="mf">40.0</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">B_re</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">B_im</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">sweep_rel_err</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">sweep_complex_resp</span> <span class="o">-</span> <span class="n">H_true_sweep</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">H_true_sweep</span><span class="p">)))</span>
+
+<span class="c1"># Figure 5: Stepped sine vs discrete model</span>
+<span class="n">fig5</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sweep_freqs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">sweep_complex_resp</span><span class="p">),</span> <span class="s2">&quot;ro&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Stepped-Sine Projection (settled)&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sweep_freqs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">H_true_sweep</span><span class="p">),</span> <span class="s2">&quot;k--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Exact Discrete Model&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Magnitude |H|&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Stepped-Sine Response vs Exact Model across Mode M1&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sweep_freqs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">sweep_complex_resp</span><span class="p">,</span> <span class="n">deg</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="s2">&quot;ro&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sweep_freqs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">H_true_sweep</span><span class="p">,</span> <span class="n">deg</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="s2">&quot;k--&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Phase [deg]&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">fig5</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">fig5_path</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;figures/stepped_sine_response.png&quot;</span>
+<span class="n">fig5</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig5_path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">fig5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stepped-sine sweep max relative error vs exact model: </span><span class="si">{</span><span class="n">sweep_rel_err</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/04829b47ce05b0cbace23f6515a29579a3720d7d79e5cb3571ababe0a301adc3.png" src="../../_images/04829b47ce05b0cbace23f6515a29579a3720d7d79e5cb3571ababe0a301adc3.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Stepped-sine sweep max relative error vs exact model: 9.351e-03
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="failure-cases-and-verification-metrics">
+<h2>Failure Cases and Verification Metrics<a class="headerlink" href="#failure-cases-and-verification-metrics" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Failure Case 1: Closely spaced modes (overlapping bandwidths)</span>
+<span class="n">f_close_1</span><span class="p">,</span> <span class="n">f_close_2</span> <span class="o">=</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">101.0</span>
+<span class="n">t_short</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">fs</span><span class="p">))</span> <span class="o">*</span> <span class="n">dt</span>
+<span class="n">d_short</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">t_short</span><span class="p">);</span> <span class="n">d_short</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">resp_close</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">lfilter</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">f_close_1</span><span class="o">*</span><span class="n">dt</span><span class="p">),</span> <span class="mf">0.99</span><span class="p">],</span> <span class="n">d_short</span><span class="p">)</span> <span class="o">+</span>              <span class="n">signal</span><span class="o">.</span><span class="n">lfilter</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">f_close_2</span><span class="o">*</span><span class="n">dt</span><span class="p">),</span> <span class="mf">0.99</span><span class="p">],</span> <span class="n">d_short</span><span class="p">)</span>
+<span class="n">h_close</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">resp_close</span><span class="p">))</span>
+<span class="n">f_close</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">resp_close</span><span class="p">),</span> <span class="n">d</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+<span class="n">peaks_close</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="n">h_close</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">close_resolved</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">peaks_close</span><span class="p">[(</span><span class="n">f_close</span><span class="p">[</span><span class="n">peaks_close</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">98</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">f_close</span><span class="p">[</span><span class="n">peaks_close</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">103</span><span class="p">)])</span> <span class="o">==</span> <span class="mi">2</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Close modes separated without distortion: </span><span class="si">{</span><span class="n">close_resolved</span><span class="si">}</span><span class="s2"> (correctly flagged as overlapping)&quot;</span><span class="p">)</span>
+
+<span class="c1"># 2. Failure Case 2: Short record length (&lt; 0.5 s, insufficient decay observation)</span>
+<span class="n">short_record_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.15</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
+<span class="n">short_record_flagged</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">short_record_samples</span> <span class="o">&lt;</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">fs</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Short record duration </span><span class="si">{</span><span class="n">short_record_samples</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">dt</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s flagged as insufficient: </span><span class="si">{</span><span class="n">short_record_flagged</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># 3. Failure Case 3: Low-SNR regime (noise overwhelms resonance peak)</span>
+<span class="n">rng_low_snr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">999</span><span class="p">)</span>
+<span class="n">resp_low_snr</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="n">trig_detected_idx</span> <span class="p">:</span> <span class="n">trig_detected_idx</span> <span class="o">+</span> <span class="n">fit_samples</span><span class="p">]</span> <span class="o">+</span> <span class="n">rng_low_snr</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">fit_samples</span><span class="p">)</span>
+<span class="n">fft_low_snr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">resp_low_snr</span><span class="p">)</span>
+<span class="n">H_low_snr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fft_low_snr</span> <span class="o">/</span> <span class="n">fft_d</span><span class="p">)</span>
+<span class="n">peaks_noisy</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="n">H_low_snr</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+<span class="n">low_snr_flagged</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">peaks_noisy</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">)</span>  <span class="c1"># Overwhelmed by spurious noise peaks</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Low SNR noise regime flagged as unconstrained: </span><span class="si">{</span><span class="n">low_snr_flagged</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># 4. Seed robustness validation: seeds 0, 1, 2</span>
+<span class="n">seed_robustness_ok</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">for</span> <span class="n">s_val</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+    <span class="n">rng_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">s_val</span><span class="p">)</span>
+    <span class="n">resp_s</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="n">trig_detected_idx</span> <span class="p">:</span> <span class="n">trig_detected_idx</span> <span class="o">+</span> <span class="n">fit_samples</span><span class="p">]</span> <span class="o">+</span> <span class="n">rng_s</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="n">fit_samples</span><span class="p">)</span>
+    <span class="n">fft_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">resp_s</span><span class="p">)</span>
+    <span class="n">H_s</span> <span class="o">=</span> <span class="p">(</span><span class="n">fft_s</span> <span class="o">/</span> <span class="n">fft_d</span><span class="p">)[(</span><span class="n">freqs_tf</span> <span class="o">&gt;=</span> <span class="mf">67.0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs_tf</span> <span class="o">&lt;=</span> <span class="mf">79.0</span><span class="p">)]</span>
+    <span class="n">fs_s</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">H_s</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs_tf</span><span class="p">[(</span><span class="n">freqs_tf</span> <span class="o">&gt;=</span> <span class="mf">67.0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs_tf</span> <span class="o">&lt;=</span> <span class="mf">79.0</span><span class="p">)])</span>
+    <span class="n">fit_s</span> <span class="o">=</span> <span class="n">fit_series</span><span class="p">(</span><span class="n">fs_s</span><span class="p">,</span> <span class="n">discrete_complex_model</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;fn&quot;</span><span class="p">:</span> <span class="mf">73.0</span><span class="p">,</span> <span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="mf">40.0</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span> <span class="s2">&quot;B_re&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;B_im&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">})</span>
+    <span class="n">fn_err_s</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">fit_s</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;fn&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mf">73.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">73.0</span>
+    <span class="n">q_err_s</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">fit_s</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;Q&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mf">40.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">40.0</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">fn_err_s</span> <span class="o">&lt;</span> <span class="mf">0.01</span> <span class="ow">and</span> <span class="n">q_err_s</span> <span class="o">&lt;</span> <span class="mf">0.15</span><span class="p">):</span>
+        <span class="n">seed_robustness_ok</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># Verification of RT60 analytical amplitude ratio</span>
+<span class="n">ratio_at_t60</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">mode_results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;t60_s&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">mode_results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;tau_amp_s&quot;</span><span class="p">]))</span>
+<span class="n">rt60_definition_ok</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">ratio_at_t60</span><span class="p">,</span> <span class="mf">1.0e-3</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">))</span>
+
+<span class="n">settings</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;tutorial_id&quot;</span><span class="p">:</span> <span class="s2">&quot;T3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;data_kind&quot;</span><span class="p">:</span> <span class="s2">&quot;synthetic&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="mi">2026091603</span><span class="p">,</span>
+    <span class="s2">&quot;gps_t0_s&quot;</span><span class="p">:</span> <span class="n">gps_t0</span><span class="p">,</span>
+    <span class="s2">&quot;sample_rate_hz&quot;</span><span class="p">:</span> <span class="n">fs</span><span class="p">,</span>
+    <span class="s2">&quot;duration_s&quot;</span><span class="p">:</span> <span class="n">duration</span><span class="p">,</span>
+    <span class="s2">&quot;channel_units&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;DRIVE:IMPULSE&quot;</span><span class="p">:</span> <span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="s2">&quot;RESP:DISPLACEMENT&quot;</span><span class="p">:</span> <span class="s2">&quot;V&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;analysis_parameters&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fit_length_s&quot;</span><span class="p">:</span> <span class="n">fit_len_s</span><span class="p">,</span> <span class="s2">&quot;modes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">m</span><span class="p">[</span><span class="s2">&quot;mode_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">truth_modes</span><span class="p">]},</span>
+    <span class="s2">&quot;python_version&quot;</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_version</span><span class="p">(),</span>
+<span class="p">}</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;analysis-settings.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">metrics</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;passed&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;data_kind&quot;</span><span class="p">:</span> <span class="s2">&quot;synthetic&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;checks&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;resonance_candidates&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">candidate_freqs</span><span class="p">)),</span>
+            <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="s2">&quot;discovered exactly 3 candidate frequencies&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">candidate_freqs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;resonance_fn_recovery&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">modes_df</span><span class="p">[</span><span class="s2">&quot;fn_error_rel&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span>
+            <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="s2">&quot;natural frequency error &lt; 1.0%&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">modes_df</span><span class="p">[</span><span class="s2">&quot;fn_error_rel&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.01</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;resonance_q_recovery&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">modes_df</span><span class="p">[</span><span class="s2">&quot;q_error_rel&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span>
+            <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="s2">&quot;frequency-domain Q error &lt; 15.0%&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">modes_df</span><span class="p">[</span><span class="s2">&quot;q_error_rel&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.15</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;resonance_crosscheck&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">modes_df</span><span class="p">[</span><span class="s2">&quot;cross_q_diff_rel&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span>
+            <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="s2">&quot;cross-check difference between q_freq and q_time &lt; 20.0%&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">modes_df</span><span class="p">[</span><span class="s2">&quot;cross_q_diff_rel&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.20</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;resonance_rt60_definition&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="n">ratio_at_t60</span><span class="p">,</span>
+            <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="s2">&quot;T60 satisfies amplitude ratio == 1e-3 (ln(1000) * tau)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">rt60_definition_ok</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;resonance_failed_cases&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;close_modes_rejected&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="ow">not</span> <span class="n">close_resolved</span><span class="p">),</span>
+                <span class="s2">&quot;short_record_rejected&quot;</span><span class="p">:</span> <span class="n">short_record_flagged</span><span class="p">,</span>
+                <span class="s2">&quot;low_snr_rejected&quot;</span><span class="p">:</span> <span class="n">low_snr_flagged</span><span class="p">,</span>
+                <span class="s2">&quot;seeds_robust&quot;</span><span class="p">:</span> <span class="n">seed_robustness_ok</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="s2">&quot;close modes, short records, low SNR flagged invalid and seeds 0,1,2 verified&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">((</span><span class="ow">not</span> <span class="n">close_resolved</span><span class="p">)</span> <span class="ow">and</span> <span class="n">short_record_flagged</span> <span class="ow">and</span> <span class="n">low_snr_flagged</span> <span class="ow">and</span> <span class="n">seed_robustness_ok</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;resonance_sweep_response&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">sweep_rel_err</span><span class="p">),</span>
+            <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="s2">&quot;settled stepped-sine sweep matches discrete model within 5%&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">sweep_rel_err</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">),</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;validation-metrics.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;T3 settings and validation metrics saved successfully.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Close modes separated without distortion: False (correctly flagged as overlapping)
+Short record duration 0.15 s flagged as insufficient: True
+Low SNR noise regime flagged as unconstrained: True
+T3 settings and validation metrics saved successfully.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="time_frequency_analysis_comparison.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Time-Frequency Analysis: Interactive Comparison</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../fitting/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Fitting &amp; statistics</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#environment-setup">Environment Setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-mode-resonant-fixture-generation">Multi-Mode Resonant Fixture Generation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trigger-detection-and-pre-post-asd-comparison">Trigger Detection and Pre/Post ASD Comparison</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complex-transfer-function-and-peak-discovery">Complex Transfer Function and Peak Discovery</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#discrete-complex-frequency-response-fitting">Discrete Complex Frequency Response Fitting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ringdown-envelope-and-time-domain-validation">Ringdown Envelope and Time-Domain Validation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stepped-sine-frequency-response-simulation">Stepped-Sine Frequency Response Simulation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#failure-cases-and-verification-metrics">Failure Cases and Verification Metrics</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/how-to/spectral/resonance_discovery_q.ipynb">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, GWexpy Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

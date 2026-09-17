@@ -55,7 +55,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Bruco: Coherence Analysis" href="advanced_bruco.html" />
-    <link rel="prev" title="High-Precision Modal Analysis of Suspension Systems" href="../control/advanced_modal_analysis.html" />
+    <link rel="prev" title="Compare Control Models with Measured Frequency Responses" href="../control/control_frd_roundtrip.html" />
   
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -385,6 +385,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../io_formats.html">Read and write data</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../interop.html">Convert scientific Python objects</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../interop/intro_interop.html">Interoperability: Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interop/root_to_python_migration.html">Pure-Python Migration of Legacy ROOT Reverberation Time (RT60) Analysis</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../time_utilities.html">GPS Time Utility Functions (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
@@ -411,6 +412,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_peak_detection.html">Peak Detection: Finding Peaks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_peak_tracking.html">Peak Tracking: Time Evolution</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../spectral/time_frequency_analysis_comparison.html">Time-Frequency Analysis: Interactive Comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/resonance_discovery_q.html">Discover Resonances and Estimate Q Factors</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../fitting/index.html">Fitting &amp; statistics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -427,6 +429,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_modeling.html">Control Analysis: Plant Modeling from Measured Response</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_discretization.html">Control Analysis: Discretization (ZOH vs Tustin)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../control/advanced_modal_analysis.html">High-Precision Modal Analysis of Suspension Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/control_frd_roundtrip.html">Compare Control Models with Measured Frequency Responses</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Coupling &amp; correlation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -440,6 +443,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../segments/segment_visualization.html">Segment Analysis: Visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../segments/intro_segment_table.html">SegmentTable: Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../segments/intro_table.html">Segment Analysis: Basic Pipeline</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../monitoring/index.html">Monitoring and Event Workflows</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/long_term_trend.html">Analyze Long-Term Trends and Detect State Changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/event_catalog_timeseries.html">Align Event Catalogs with Time-Series Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/chunked_long_data.html">Process Long Time Series in Chunks</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../calibration/index.html">Calibration and Physical Units</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../calibration/calibration_units_contract.html">Calibration Transfer Function and Physical Units Contract</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../viz/index.html">Visualization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -534,7 +547,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.3</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/c7ce7261bf381a6abea4e288ec921fab8a308777">c7ce7261</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/9ed90ec620345dd2908d277c5d168fd8620a22a9">9ed90ec6</a>
   · Intro examples tested with 0.2.3
   · <a href="../../about/documentation_version.html">Version details</a>
   · <a href="../../about/known_limitations.html">Known limitations</a>
@@ -596,12 +609,12 @@ Multi-Dimensional Field Analysis: Beam Profiles and Spatial Statistics</div>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../control/advanced_modal_analysis.html"
+       href="../control/control_frd_roundtrip.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">High-Precision Modal Analysis of Suspension Systems</p>
+        <p class="prev-next-title">Compare Control Models with Measured Frequency Responses</p>
       </div>
     </a>
     <a class="right-next"

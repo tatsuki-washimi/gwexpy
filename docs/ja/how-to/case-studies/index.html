@@ -386,6 +386,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../io_formats.html">データの読み書き</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../interop.html">科学計算用 Python オブジェクトの変換</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../interop/intro_interop.html">相互運用: 基本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interop/root_to_python_migration.html">レガシー ROOT 残響時間 (RT60) 解析の Pure-Python 移行</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../time_utilities.html">GPS 時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
@@ -412,6 +413,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_peak_detection.html">ピーク検出: ピークを見つける</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_peak_tracking.html">ピーク追跡: 時間変化の解析</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../spectral/time_frequency_analysis_comparison.html">時間周波数解析：インタラクティブ比較</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/resonance_discovery_q.html">共振モードを発見してQ値を推定する</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../fitting/index.html">フィッティングと統計</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -428,6 +430,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_modeling.html">制御解析: 実測応答からのプラントモデリング</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_discretization.html">制御解析: 離散化（ZOH と Tustin の比較）</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../control/advanced_modal_analysis.html">懸架系の高精度モーダル解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/control_frd_roundtrip.html">制御モデルと実測周波数応答を比較する</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../coupling/index.html">カップリングと相関</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -441,6 +444,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../segments/segment_visualization.html">セグメント解析: 可視化</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../segments/intro_segment_table.html">SegmentTable: 基本</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../segments/intro_table.html">セグメント解析: 基本パイプライン</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../monitoring/index.html">長期監視とイベント解析</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/long_term_trend.html">長期トレンドを解析して状態変化を見つける</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/event_catalog_timeseries.html">イベントカタログと時系列データを対応付ける</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/chunked_long_data.html">長時間時系列をチャンク分割して処理する</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../calibration/index.html">校正と物理単位</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../calibration/calibration_units_contract.html">校正伝達関数と物理単位契約</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../viz/index.html">可視化</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -535,7 +548,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.3</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/c7ce7261bf381a6abea4e288ec921fab8a308777">c7ce7261</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/9ed90ec620345dd2908d277c5d168fd8620a22a9">9ed90ec6</a>
   · 入門例の検証対象 0.2.3
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>

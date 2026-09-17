@@ -1,8 +1,9 @@
 {
-  "source_revision": "c7ce7261bf381a6abea4e288ec921fab8a308777",
+  "source_revision": "9ed90ec620345dd2908d277c5d168fd8620a22a9",
   "source_ref": "main",
   "dirty": false,
   "notebook_sources": {
+    "how-to/calibration/calibration_units_contract.ipynb": "docs/web/en/user_guide/tutorials/calibration_units_contract.ipynb",
     "how-to/case-studies/case_active_damping.ipynb": "docs/web/en/user_guide/tutorials/case_active_damping.ipynb",
     "how-to/case-studies/case_arima_burst_search.ipynb": "docs/web/en/user_guide/tutorials/case_arima_burst_search.ipynb",
     "how-to/case-studies/case_bootstrap_gls_fitting.ipynb": "docs/web/en/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb",
@@ -36,6 +37,7 @@
     "how-to/control/advanced_control_discretization.ipynb": "docs/web/en/user_guide/tutorials/advanced_control_discretization.ipynb",
     "how-to/control/advanced_control_modeling.ipynb": "docs/web/en/user_guide/tutorials/advanced_control_modeling.ipynb",
     "how-to/control/advanced_modal_analysis.ipynb": "docs/web/en/user_guide/tutorials/advanced_modal_analysis.ipynb",
+    "how-to/control/control_frd_roundtrip.ipynb": "docs/web/en/user_guide/tutorials/control_frd_roundtrip.ipynb",
     "how-to/coupling/advanced_bruco.ipynb": "docs/web/en/user_guide/tutorials/advanced_bruco.ipynb",
     "how-to/coupling/advanced_coupling.ipynb": "docs/web/en/user_guide/tutorials/advanced_coupling.ipynb",
     "how-to/coupling/advanced_field_analysis.ipynb": "docs/web/en/user_guide/tutorials/advanced_field_analysis.ipynb",
@@ -45,6 +47,10 @@
     "how-to/fitting/advanced_fitting.ipynb": "docs/web/en/user_guide/tutorials/advanced_fitting.ipynb",
     "how-to/fitting/rayleigh_gauch_tutorial.ipynb": "docs/web/en/user_guide/tutorials/rayleigh_gauch_tutorial.ipynb",
     "how-to/interop/intro_interop.ipynb": "docs/web/en/user_guide/tutorials/intro_interop.ipynb",
+    "how-to/interop/root_to_python_migration.ipynb": "docs/web/en/user_guide/tutorials/root_to_python_migration.ipynb",
+    "how-to/monitoring/chunked_long_data.ipynb": "docs/web/en/user_guide/tutorials/chunked_long_data.ipynb",
+    "how-to/monitoring/event_catalog_timeseries.ipynb": "docs/web/en/user_guide/tutorials/event_catalog_timeseries.ipynb",
+    "how-to/monitoring/long_term_trend.ipynb": "docs/web/en/user_guide/tutorials/long_term_trend.ipynb",
     "how-to/segments/intro_segment_table.ipynb": "docs/web/en/user_guide/tutorials/intro_segment_table.ipynb",
     "how-to/segments/intro_table.ipynb": "docs/web/en/user_guide/tutorials/intro_table.ipynb",
     "how-to/segments/segment_asd_pipeline.ipynb": "docs/web/en/user_guide/tutorials/segment_asd_pipeline.ipynb",
@@ -53,6 +59,7 @@
     "how-to/spectral/advanced_peak_detection.ipynb": "docs/web/en/user_guide/tutorials/advanced_peak_detection.ipynb",
     "how-to/spectral/advanced_peak_tracking.ipynb": "docs/web/en/user_guide/tutorials/advanced_peak_tracking.ipynb",
     "how-to/spectral/advanced_spectrogram_processing.ipynb": "docs/web/en/user_guide/tutorials/advanced_spectrogram_processing.ipynb",
+    "how-to/spectral/resonance_discovery_q.ipynb": "docs/web/en/user_guide/tutorials/resonance_discovery_q.ipynb",
     "how-to/spectral/time_frequency_analysis_comparison.ipynb": "docs/web/en/user_guide/tutorials/time_frequency_analysis_comparison.ipynb",
     "how-to/viz/intro_mapplotting.ipynb": "docs/web/en/user_guide/tutorials/intro_mapplotting.ipynb",
     "tutorials/intro_fitting.ipynb": "docs/web/en/user_guide/tutorials/intro_fitting.ipynb",
@@ -70,299 +77,334 @@
   "language_baseurl": "https://tatsuki-washimi.github.io/gwexpy/docs/",
   "canonical_baseurl": "https://tatsuki-washimi.github.io/gwexpy/docs/",
   "notebook_execution": {
+    "how-to/calibration/calibration_units_contract": {
+      "succeeded": true,
+      "runtime": 5.535162380999964,
+      "method": "cache"
+    },
     "how-to/case-studies/case_active_damping": {
       "succeeded": true,
-      "runtime": 8.041987505000009,
+      "runtime": 6.725781236999978,
       "method": "cache"
     },
     "how-to/case-studies/case_arima_burst_search": {
       "succeeded": true,
-      "runtime": 19.54065879999999,
+      "runtime": 27.411686825999993,
       "method": "cache"
     },
     "how-to/case-studies/case_bootstrap_gls_fitting": {
       "succeeded": true,
-      "runtime": 25.938366850000023,
+      "runtime": 21.338730826000017,
       "method": "cache"
     },
     "how-to/case-studies/case_bruco_advanced": {
       "succeeded": true,
-      "runtime": 5.817338127000028,
+      "runtime": 5.224300051,
       "method": "cache"
     },
     "how-to/case-studies/case_bruco_ica_denoising": {
       "succeeded": true,
-      "runtime": 5.257190150999975,
+      "runtime": 5.219033176000039,
       "method": "cache"
     },
     "how-to/case-studies/case_calibration_pipeline": {
       "succeeded": true,
-      "runtime": 9.266154486000005,
+      "runtime": 6.914794438000001,
       "method": "cache"
     },
     "how-to/case-studies/case_coupling_analysis": {
       "succeeded": true,
-      "runtime": 5.271593314000029,
+      "runtime": 5.508836721000023,
       "method": "cache"
     },
     "how-to/case-studies/case_dttxml_calibration": {
       "succeeded": true,
-      "runtime": 4.340562833999968,
+      "runtime": 4.422496776000003,
       "method": "cache"
     },
     "how-to/case-studies/case_finesse_optics": {
       "succeeded": true,
-      "runtime": 4.933616653999991,
+      "runtime": 4.591578980999998,
       "method": "cache"
     },
     "how-to/case-studies/case_gbd_format": {
       "succeeded": true,
-      "runtime": 36.594830857999966,
+      "runtime": 60.96187593399998,
       "method": "cache"
     },
     "how-to/case-studies/case_glitch_analysis": {
       "succeeded": true,
-      "runtime": 7.372304659000008,
+      "runtime": 6.528635832999953,
       "method": "cache"
     },
     "how-to/case-studies/case_hdf5_provenance": {
       "succeeded": true,
-      "runtime": 3.8950000799999884,
+      "runtime": 3.5950511679999977,
       "method": "cache"
     },
     "how-to/case-studies/case_lockin_detection": {
       "succeeded": true,
-      "runtime": 4.341708518000019,
+      "runtime": 4.405181819000006,
       "method": "cache"
     },
     "how-to/case-studies/case_ml_preprocessing": {
       "succeeded": true,
-      "runtime": 5.468999335999968,
+      "runtime": 4.994513841000014,
       "method": "cache"
     },
     "how-to/case-studies/case_noise_budget": {
       "succeeded": true,
-      "runtime": 7.081391236000002,
+      "runtime": 5.653889644000003,
       "method": "cache"
     },
     "how-to/case-studies/case_physics_validation": {
       "succeeded": true,
-      "runtime": 4.282541535000007,
+      "runtime": 4.317200486000047,
       "method": "cache"
     },
     "how-to/case-studies/case_pycbc_search": {
       "succeeded": true,
-      "runtime": 5.041374678000011,
+      "runtime": 3.62219887699996,
       "method": "cache"
     },
     "how-to/case-studies/case_schumann_resonance": {
       "succeeded": true,
-      "runtime": 20.92742317899996,
+      "runtime": 16.213762078000002,
       "method": "cache"
     },
     "how-to/case-studies/case_segment_analysis": {
       "succeeded": true,
-      "runtime": 3.1779264630000057,
+      "runtime": 3.294932794000033,
       "method": "cache"
     },
     "how-to/case-studies/case_seismic_obspy": {
       "succeeded": true,
-      "runtime": 4.942116919,
+      "runtime": 4.447380112000019,
       "method": "cache"
     },
     "how-to/case-studies/case_signal_extraction": {
       "succeeded": true,
-      "runtime": 28.34300359399998,
+      "runtime": 72.91176879699998,
       "method": "cache"
     },
     "how-to/case-studies/case_transfer_function": {
       "succeeded": true,
-      "runtime": 27.104715237999983,
+      "runtime": 43.12740222500008,
       "method": "cache"
     },
     "how-to/case-studies/case_violin_mode": {
       "succeeded": true,
-      "runtime": 5.418658283000013,
+      "runtime": 5.02575295500003,
       "method": "cache"
     },
     "how-to/case-studies/case_wiener_filter": {
       "succeeded": true,
-      "runtime": 6.6503634840000245,
+      "runtime": 5.527575969000054,
       "method": "cache"
     },
     "how-to/containers/field_advanced_workflow": {
       "succeeded": true,
-      "runtime": 3.6402991499999757,
+      "runtime": 3.1151000219999787,
       "method": "cache"
     },
     "how-to/containers/field_scalar_intro": {
       "succeeded": true,
-      "runtime": 4.920196899000018,
+      "runtime": 3.9394888739999487,
       "method": "cache"
     },
     "how-to/containers/intro_histogram": {
       "succeeded": true,
-      "runtime": 3.5892968960000076,
+      "runtime": 3.2829947519999223,
       "method": "cache"
     },
     "how-to/containers/matrix_frequencyseries": {
       "succeeded": true,
-      "runtime": 44.42104410699994,
+      "runtime": 88.28421065400005,
       "method": "cache"
     },
     "how-to/containers/matrix_spectrogram": {
       "succeeded": true,
-      "runtime": 153.80108835500005,
+      "runtime": 266.585259092,
       "method": "cache"
     },
     "how-to/control/advanced_control_basics": {
       "succeeded": true,
-      "runtime": 17.724932774999957,
+      "runtime": 39.21034501899999,
       "method": "cache"
     },
     "how-to/control/advanced_control_discretization": {
       "succeeded": true,
-      "runtime": 28.58130207299996,
+      "runtime": 57.70749382600002,
       "method": "cache"
     },
     "how-to/control/advanced_control_modeling": {
       "succeeded": true,
-      "runtime": 4.307490338999969,
+      "runtime": 4.020528484000124,
       "method": "cache"
     },
     "how-to/control/advanced_modal_analysis": {
       "succeeded": true,
-      "runtime": 4.571247471999982,
+      "runtime": 3.9596154420000857,
+      "method": "cache"
+    },
+    "how-to/control/control_frd_roundtrip": {
+      "succeeded": true,
+      "runtime": 4.733112769999934,
       "method": "cache"
     },
     "how-to/coupling/advanced_bruco": {
       "succeeded": true,
-      "runtime": 27.626887409000005,
+      "runtime": 42.43263288900016,
       "method": "cache"
     },
     "how-to/coupling/advanced_coupling": {
       "succeeded": true,
-      "runtime": 5.9371768480000355,
+      "runtime": 6.120612626000138,
       "method": "cache"
     },
     "how-to/coupling/advanced_field_analysis": {
       "succeeded": true,
-      "runtime": 5.296330722999983,
+      "runtime": 4.661212373999888,
       "method": "cache"
     },
     "how-to/fitting/advanced_arima": {
       "succeeded": true,
-      "runtime": 160.11490026700005,
+      "runtime": 97.42591423399995,
       "method": "cache"
     },
     "how-to/fitting/advanced_correlation": {
       "succeeded": true,
-      "runtime": 109.59326768800008,
+      "runtime": 106.68583087699994,
       "method": "cache"
     },
     "how-to/fitting/advanced_decomposition": {
       "succeeded": true,
-      "runtime": 160.8764705409999,
+      "runtime": 120.38269535600011,
       "method": "cache"
     },
     "how-to/fitting/advanced_fitting": {
       "succeeded": true,
-      "runtime": 20.39668454699995,
+      "runtime": 34.82286297199994,
       "method": "cache"
     },
     "how-to/fitting/rayleigh_gauch_tutorial": {
       "succeeded": true,
-      "runtime": 185.955158707,
+      "runtime": 152.54593700500004,
       "method": "cache"
     },
     "how-to/interop/intro_interop": {
       "succeeded": true,
-      "runtime": 69.53586932400003,
+      "runtime": 63.153678032000016,
+      "method": "cache"
+    },
+    "how-to/interop/root_to_python_migration": {
+      "succeeded": true,
+      "runtime": 4.2409500229998685,
+      "method": "cache"
+    },
+    "how-to/monitoring/chunked_long_data": {
+      "succeeded": true,
+      "runtime": 5.232082843000171,
+      "method": "cache"
+    },
+    "how-to/monitoring/event_catalog_timeseries": {
+      "succeeded": true,
+      "runtime": 3.895477468999843,
+      "method": "cache"
+    },
+    "how-to/monitoring/long_term_trend": {
+      "succeeded": true,
+      "runtime": 3.819280261999893,
       "method": "cache"
     },
     "how-to/segments/intro_segment_table": {
       "succeeded": true,
-      "runtime": 3.4419872959999793,
+      "runtime": 3.0538044150000587,
       "method": "cache"
     },
     "how-to/segments/intro_table": {
       "succeeded": true,
-      "runtime": 3.553092563000064,
+      "runtime": 3.2239088270000593,
       "method": "cache"
     },
     "how-to/segments/segment_asd_pipeline": {
       "succeeded": true,
-      "runtime": 3.575926754999955,
+      "runtime": 3.0298855890000596,
       "method": "cache"
     },
     "how-to/segments/segment_visualization": {
       "succeeded": true,
-      "runtime": 4.589758863000043,
+      "runtime": 3.5583944570000767,
       "method": "cache"
     },
     "how-to/spectral/advanced_hht": {
       "succeeded": true,
-      "runtime": 12.03767212899993,
+      "runtime": 17.053505931000018,
       "method": "cache"
     },
     "how-to/spectral/advanced_peak_detection": {
       "succeeded": true,
-      "runtime": 4.007985213999973,
+      "runtime": 3.4581978030000755,
       "method": "cache"
     },
     "how-to/spectral/advanced_peak_tracking": {
       "succeeded": true,
-      "runtime": 59.62339551199989,
+      "runtime": 72.47101943500002,
       "method": "cache"
     },
     "how-to/spectral/advanced_spectrogram_processing": {
       "succeeded": true,
-      "runtime": 251.98300689000007,
+      "runtime": 279.88621387800026,
+      "method": "cache"
+    },
+    "how-to/spectral/resonance_discovery_q": {
+      "succeeded": true,
+      "runtime": 4.77226685100004,
       "method": "cache"
     },
     "how-to/spectral/time_frequency_analysis_comparison": {
       "succeeded": true,
-      "runtime": 9.76777158699997,
+      "runtime": 7.331888633999824,
       "method": "cache"
     },
     "how-to/viz/intro_mapplotting": {
       "succeeded": true,
-      "runtime": 4.794577634000007,
+      "runtime": 3.7286386779996974,
       "method": "cache"
     },
     "tutorials/intro_fitting": {
       "succeeded": true,
-      "runtime": 7.959140466999997,
+      "runtime": 6.185706387999744,
       "method": "cache"
     },
     "tutorials/intro_frequencyseries": {
       "succeeded": true,
-      "runtime": 6.215378964000138,
+      "runtime": 5.669165970999984,
       "method": "cache"
     },
     "tutorials/intro_noise": {
       "succeeded": true,
-      "runtime": 16.020531052000024,
+      "runtime": 14.506568931999936,
       "method": "cache"
     },
     "tutorials/intro_plotting": {
       "succeeded": true,
-      "runtime": 150.9202808970001,
+      "runtime": 127.08177334599986,
       "method": "cache"
     },
     "tutorials/intro_spectrogram": {
       "succeeded": true,
-      "runtime": 10.84728214200004,
+      "runtime": 13.355765972999961,
       "method": "cache"
     },
     "tutorials/intro_timeseries": {
       "succeeded": true,
-      "runtime": 28.77847990500004,
+      "runtime": 31.856293997000193,
       "method": "cache"
     },
     "tutorials/matrix_timeseries": {
       "succeeded": true,
-      "runtime": 415.39884224599973,
+      "runtime": 603.4248715620001,
       "method": "cache"
     },
     "about/changelog": {
@@ -455,6 +497,11 @@
       "runtime": null,
       "method": null
     },
+    "how-to/calibration/index": {
+      "succeeded": null,
+      "runtime": null,
+      "method": null
+    },
     "how-to/case-studies/index": {
       "succeeded": null,
       "runtime": null,
@@ -511,6 +558,11 @@
       "method": null
     },
     "how-to/migration": {
+      "succeeded": null,
+      "runtime": null,
+      "method": null
+    },
+    "how-to/monitoring/index": {
       "succeeded": null,
       "runtime": null,
       "method": null

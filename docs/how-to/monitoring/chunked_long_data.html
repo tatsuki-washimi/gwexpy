@@ -1,0 +1,1417 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Process Long Time Series in Chunks &#8212; GWexpy</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=27e7dca1" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../_static/documentation_options.js?v=6808a718"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=ccdb6887"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/monitoring/chunked_long_data';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/how-to/monitoring/chunked_long_data.html" />
+    <link rel="icon" href="../../_static/favicon.svg"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Calibration and Physical Units" href="../calibration/index.html" />
+    <link rel="prev" title="Align Event Catalogs with Time-Series Data" href="event_catalog_timeseries.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  <link rel="alternate" hreflang="en" href="https://tatsuki-washimi.github.io/gwexpy/docs/how-to/monitoring/chunked_long_data.html" />
+  <link rel="alternate" hreflang="ja" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/monitoring/chunked_long_data.html" />
+  <link rel="alternate" hreflang="x-default" href="https://tatsuki-washimi.github.io/gwexpy/docs/how-to/monitoring/chunked_long_data.html" />
+
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt=""/>
+    <img src="../../_static/logo.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">GWexpy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    How-to guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../reference/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanation/index.html">
+    Explanation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../about/index.html">
+    About
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item"><div class="navbar-item language-switcher">
+    <span class="active">EN / </span>
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/monitoring/chunked_long_data.html" title="日本語">
+      <i class="fa-solid fa-language"></i> 日本語</a>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    How-to guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../reference/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanation/index.html">
+    Explanation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../about/index.html">
+    About
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item"><div class="navbar-item language-switcher">
+    <span class="active">EN / </span>
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/monitoring/chunked_long_data.html" title="日本語">
+      <i class="fa-solid fa-language"></i> 日本語</a>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Data and formats</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../io_formats.html">Read and write data</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../interop.html">Convert scientific Python objects</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../interop/intro_interop.html">Interoperability: Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interop/root_to_python_migration.html">Pure-Python Migration of Legacy ROOT Reverberation Time (RT60) Analysis</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../time_utilities.html">GPS Time Utility Functions (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tools and operations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migration.html">Migrating Between GWexpy Versions</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Technique recipes</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../containers/index.html">Containers &amp; matrices</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../containers/matrix_frequencyseries.html">FrequencySeriesMatrix: Matrix Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/matrix_spectrogram.html">SpectrogramMatrix: Matrix Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/field_scalar_intro.html">Field API: ScalarField Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/field_advanced_workflow.html">Field API: Advanced Analysis Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/intro_histogram.html">Histogram: Basics</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../spectral/index.html">Spectral &amp; time-frequency</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_spectrogram_processing.html">Spectrogram: Normalization and Cleaning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_hht.html">HHT: Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_peak_detection.html">Peak Detection: Finding Peaks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_peak_tracking.html">Peak Tracking: Time Evolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/time_frequency_analysis_comparison.html">Time-Frequency Analysis: Interactive Comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/resonance_discovery_q.html">Discover Resonances and Estimate Q Factors</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../fitting/index.html">Fitting &amp; statistics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_fitting.html">Fitting: Spectral Line Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_arima.html">ARIMA: Time Series Forecasting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_decomposition.html">Decomposition Analysis: PCA, ICA, and Eigenmodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_correlation.html">Correlation Analysis: Statistical Methods</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../fitting/rayleigh_gauch_tutorial.html">Non-Gaussian Noise Analysis: Rayleigh and Gaussian-Chi</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../control/index.html">Control &amp; modeling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_basics.html">Control Analysis: Resonance and Feedback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_modeling.html">Control Analysis: Plant Modeling from Measured Response</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_discretization.html">Control Analysis: Discretization (ZOH vs Tustin)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_modal_analysis.html">High-Precision Modal Analysis of Suspension Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/control_frd_roundtrip.html">Compare Control Models with Measured Frequency Responses</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../coupling/index.html">Coupling &amp; correlation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_bruco.html">Bruco: Coherence Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_coupling.html">Coupling Analysis: Multi-Channel Coupling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_field_analysis.html">Multi-Dimensional Field Analysis: Beam Profiles and Spatial Statistics</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../segments/index.html">Segments &amp; tables</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../segments/segment_asd_pipeline.html">ASD Analysis: Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segments/segment_visualization.html">Segment Analysis: Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segments/intro_segment_table.html">SegmentTable: Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segments/intro_table.html">Segment Analysis: Basic Pipeline</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Monitoring and Event Workflows</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="long_term_trend.html">Analyze Long-Term Trends and Detect State Changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="event_catalog_timeseries.html">Align Event Catalogs with Time-Series Data</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Process Long Time Series in Chunks</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../calibration/index.html">Calibration and Physical Units</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../calibration/calibration_units_contract.html">Calibration Transfer Function and Physical Units Contract</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../viz/index.html">Visualization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../viz/intro_mapplotting.html">Map Plotting: Basics</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Case studies</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../case-studies/index.html">Case studies</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_active_damping.html">Active Damping for 6-DOF Active Vibration Isolation System (Non-Collocated Configuration)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_transfer_function.html">Tutorial: Transfer Function Measurement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_calibration_pipeline.html">Calibration Pipeline: Counts → Strain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_dttxml_calibration.html">Reading and Using DTT XML Files with gwexpy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_finesse_optics.html">Finesse 3 Interoperability: Simulation vs. Measurement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_seismic_obspy.html">Case Study: Seismic Analysis with ObsPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_gbd_format.html">Case Study: GBD Format I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_hdf5_provenance.html">Reproducible Metadata Management with HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_pycbc_search.html">PyCBC Interoperability: From gwexpy Preprocessing to GW Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bootstrap_gls_fitting.html">Case Study: Bootstrap PSD and GLS Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_ml_preprocessing.html">Case Study: ML Preprocessing Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_segment_analysis.html">Case Study: Event-Synchronized Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_physics_validation.html">Physical Validity Checking: Units, Floors, and Sanity Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_arima_burst_search.html">ARIMA-Based Burst Detection</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_signal_extraction.html">Signal Extraction: Weak Signal Recovery from Colored Noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_noise_budget.html">Noise Budgeting and Multi-Channel Correlation Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_lockin_detection.html">Lock-in Detection: Recovering Weak AM/FM Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_wiener_filter.html">Wiener Filtering: Coherent Noise Subtraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_coupling_analysis.html">Coupling Analysis: Estimating Transfer Paths Between Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bruco_ica_denoising.html">Case Study: Bruco and ICA Noise Reduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bruco_advanced.html">Bruco: Bilinear Coupling and AM/FM Demodulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_violin_mode.html">Case Study: Violin Mode Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_schumann_resonance.html">Case Study: Schumann Resonance Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_glitch_analysis.html">Glitch Analysis: Q-Transform and Omega-Scan</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">How-to guides</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Monitoring and Event Workflows</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Process Long Time Series in Chunks</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+  <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
+  <span>Development documentation · 0.2.3</span>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/9ed90ec620345dd2908d277c5d168fd8620a22a9">9ed90ec6</a>
+  · Intro examples tested with 0.2.3
+  · <a href="../../about/documentation_version.html">Version details</a>
+  · <a href="../../about/known_limitations.html">Known limitations</a>
+</div>
+  
+  
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="process-long-time-series-in-chunks">
+<h1>Process Long Time Series in Chunks<a class="headerlink" href="#process-long-time-series-in-chunks" title="Link to this heading">#</a></h1>
+<p>When processing continuous observations spanning hours or days, loading complete multi-channel waveforms into RAM causes memory exhaustion or system throttling. Streaming data in fixed-size blocks allows computing summary statistics, power spectral densities (PSDs), and filtered streams within a strictly bounded memory footprint.</p>
+<p><strong>What you will achieve:</strong></p>
+<ol class="arabic simple">
+<li><p>Generate a multi-channel dataset on disk in HDF5 format in streaming blocks without allocating full arrays.</p></li>
+<li><p>Maintain exact mathematical equivalence with full-array processing for additive statistics (sum of squares for RMS).</p></li>
+<li><p>Compute streaming Welch PSDs without resetting FFT window boundaries across chunk edges.</p></li>
+<li><p>Pass IIR filter state vectors (<code class="docutils literal notranslate"><span class="pre">sosfilt</span></code> with initial state <code class="docutils literal notranslate"><span class="pre">zi</span></code>) across chunk boundaries for seamless continuous filtering.</p></li>
+<li><p>Implement atomic JSON/NPZ checkpoints to ensure safe interrupt-and-resume execution without duplicating data.</p></li>
+<li><p>Verify buffer memory bounds, irregular chunk boundaries, and empty/short input handling.</p></li>
+</ol>
+<p><strong>Data type</strong>: Synthetic HDF5 dataset (30 min, 2 channels at 256 Hz).</p>
+<section id="environment-setup">
+<h2>Environment Setup<a class="headerlink" href="#environment-setup" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">gwexpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="n">output_dir_env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;GWEXPY_DOCS_OUTPUT_DIR&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">output_dir_env</span><span class="p">:</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir_env</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;gwexpy-t5-&quot;</span><span class="p">))</span>
+<span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;tables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;figures&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;checkpoints&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Artifacts will be written to: </span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Artifacts will be written to: /tmp/gwexpy-t5-4yetos_x
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="block-by-block-dataset-generation">
+<h2>Block-by-Block Dataset Generation<a class="headerlink" href="#block-by-block-dataset-generation" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 30 minutes, 2 channels at 256 Hz -&gt; 460,800 samples total</span>
+<span class="n">duration_s</span> <span class="o">=</span> <span class="mi">30</span> <span class="o">*</span> <span class="mi">60</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="mf">256.0</span>
+<span class="n">dt_s</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">fs</span>
+<span class="n">total_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration_s</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
+<span class="n">block_seconds</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">block_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">block_seconds</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>  <span class="c1"># 5,120 samples per block</span>
+<span class="n">n_blocks</span> <span class="o">=</span> <span class="n">total_samples</span> <span class="o">//</span> <span class="n">block_samples</span>
+
+<span class="n">h5_path</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;long_data_30min.h5&quot;</span>
+
+<span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">dset</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span>
+        <span class="s2">&quot;/samples&quot;</span><span class="p">,</span>
+        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">total_samples</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span>
+        <span class="n">chunks</span><span class="o">=</span><span class="p">(</span><span class="n">block_samples</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">dset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;channels&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CH1:RAW&quot;</span><span class="p">,</span> <span class="s2">&quot;CH2:RAW&quot;</span><span class="p">]</span>
+    <span class="n">dset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="s2">&quot;V&quot;</span><span class="p">]</span>
+    <span class="n">dset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;sample_rate_hz&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span>
+    <span class="n">dset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;gps_t0_s&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1400000000.0</span>
+
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">2026091605</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_blocks</span><span class="p">):</span>
+        <span class="n">i0</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="n">block_samples</span>
+        <span class="n">i1</span> <span class="o">=</span> <span class="n">i0</span> <span class="o">+</span> <span class="n">block_samples</span>
+        <span class="n">t_block</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">i0</span><span class="p">,</span> <span class="n">i1</span><span class="p">))</span> <span class="o">*</span> <span class="n">dt_s</span>
+        <span class="n">ch1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">12.0</span> <span class="o">*</span> <span class="n">t_block</span><span class="p">)</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">block_samples</span><span class="p">)</span>
+        <span class="n">ch2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">35.0</span> <span class="o">*</span> <span class="n">t_block</span><span class="p">)</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">block_samples</span><span class="p">)</span>
+        <span class="n">dset</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">ch1</span>
+        <span class="n">dset</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">ch2</span>
+
+<span class="n">total_bytes</span> <span class="o">=</span> <span class="n">total_samples</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">8</span>
+<span class="n">block_bytes</span> <span class="o">=</span> <span class="n">block_samples</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">8</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated HDF5 dataset: </span><span class="si">{</span><span class="n">total_samples</span><span class="si">}</span><span class="s2"> samples (~</span><span class="si">{</span><span class="n">total_bytes</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> KiB) in blocks of </span><span class="si">{</span><span class="n">block_samples</span><span class="si">}</span><span class="s2"> samples (~</span><span class="si">{</span><span class="n">block_bytes</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> KiB).&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Generated HDF5 dataset: 460800 samples (~7200.0 KiB) in blocks of 5120 samples (~80.0 KiB).
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="streaming-analysis-architecture">
+<h2>Streaming Analysis Architecture<a class="headerlink" href="#streaming-analysis-architecture" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">iter_hdf5_blocks</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">block_size</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Yield TimeSeries blocks without loading the whole dataset into memory.&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">dset</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;/samples&quot;</span><span class="p">]</span>
+        <span class="n">n_total</span> <span class="o">=</span> <span class="n">dset</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">fs</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;sample_rate_hz&quot;</span><span class="p">])</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;gps_t0_s&quot;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">start_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_total</span><span class="p">,</span> <span class="n">block_size</span><span class="p">):</span>
+            <span class="n">end_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">start_idx</span> <span class="o">+</span> <span class="n">block_size</span><span class="p">,</span> <span class="n">n_total</span><span class="p">)</span>
+            <span class="n">block_data</span> <span class="o">=</span> <span class="n">dset</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">ts_ch1</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">block_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span> <span class="o">+</span> <span class="n">start_idx</span> <span class="o">/</span> <span class="n">fs</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;CH1:RAW&quot;</span><span class="p">)</span>
+            <span class="n">ts_ch2</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">block_data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span> <span class="o">+</span> <span class="n">start_idx</span> <span class="o">/</span> <span class="n">fs</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;CH2:RAW&quot;</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">start_idx</span><span class="p">,</span> <span class="n">end_idx</span><span class="p">,</span> <span class="n">ts_ch1</span><span class="p">,</span> <span class="n">ts_ch2</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="continuous-filtering-across-chunk-boundaries">
+<h2>Continuous Filtering across Chunk Boundaries<a class="headerlink" href="#continuous-filtering-across-chunk-boundaries" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># High-pass filter design (10 Hz highpass Butterworth, order 4)</span>
+<span class="n">sos</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">butter</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">btype</span><span class="o">=</span><span class="s2">&quot;highpass&quot;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;sos&quot;</span><span class="p">)</span>
+<span class="n">initial_zi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">sos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">))</span>  <span class="c1"># state for single channel</span>
+
+<span class="c1"># 5-minute reference slice for exact mathematical comparison</span>
+<span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">ref_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">300</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
+    <span class="n">ref_raw_ch1</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;/samples&quot;</span><span class="p">][:</span><span class="n">ref_samples</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+<span class="n">ref_filtered_ch1</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">sosfilt</span><span class="p">(</span><span class="n">sos</span><span class="p">,</span> <span class="n">ref_raw_ch1</span><span class="p">,</span> <span class="n">zi</span><span class="o">=</span><span class="n">initial_zi</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+<span class="c1"># Stream the same 5-minute data in 20s blocks, propagating zi</span>
+<span class="n">streaming_filtered_ch1</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">current_zi</span> <span class="o">=</span> <span class="n">initial_zi</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">s_idx</span><span class="p">,</span> <span class="n">e_idx</span><span class="p">,</span> <span class="n">ts1</span><span class="p">,</span> <span class="n">ts2</span> <span class="ow">in</span> <span class="n">iter_hdf5_blocks</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="n">block_samples</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">s_idx</span> <span class="o">&gt;=</span> <span class="n">ref_samples</span><span class="p">:</span>
+        <span class="k">break</span>
+    <span class="n">y_chunk</span><span class="p">,</span> <span class="n">current_zi</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">sosfilt</span><span class="p">(</span><span class="n">sos</span><span class="p">,</span> <span class="n">ts1</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">zi</span><span class="o">=</span><span class="n">current_zi</span><span class="p">)</span>
+    <span class="n">streaming_filtered_ch1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_chunk</span><span class="p">)</span>
+
+<span class="n">streaming_filtered_ch1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">streaming_filtered_ch1</span><span class="p">)</span>
+<span class="n">filter_max_err</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ref_filtered_ch1</span> <span class="o">-</span> <span class="n">streaming_filtered_ch1</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max difference between streaming and monolithic sosfilt: </span><span class="si">{</span><span class="n">filter_max_err</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">filter_max_err</span> <span class="o">&lt;</span> <span class="mf">1e-12</span><span class="p">,</span> <span class="s2">&quot;Streaming filter state must match monolithic filter.&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Max difference between streaming and monolithic sosfilt: 0.000e+00
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="atomic-checkpointing-and-streaming-analysis">
+<h2>Atomic Checkpointing and Streaming Analysis<a class="headerlink" href="#atomic-checkpointing-and-streaming-analysis" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_analysis_identity</span><span class="p">(</span><span class="n">h5_file</span><span class="p">,</span> <span class="n">block_size</span><span class="p">,</span> <span class="n">fftlength_s</span><span class="p">,</span> <span class="n">overlap_s</span><span class="p">,</span> <span class="n">sos_coeffs</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">chunk_read</span><span class="o">=</span><span class="mi">2048</span><span class="p">):</span>
+    <span class="n">hasher</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">dset</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;/samples&quot;</span><span class="p">]</span>
+        <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dset</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+        <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dset</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+        <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;sample_rate_hz&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+        <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;gps_t0_s&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+        <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;channels&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+        <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+        <span class="c1"># Sequential block streaming hash avoiding copy overhead via memoryview on small slices (32 KiB)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dset</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">chunk_read</span><span class="p">):</span>
+            <span class="n">blk</span> <span class="o">=</span> <span class="n">dset</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">chunk_read</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">memoryview</span><span class="p">(</span><span class="n">blk</span><span class="p">))</span>
+        <span class="n">hash_peak_bytes</span> <span class="o">=</span> <span class="n">chunk_read</span> <span class="o">*</span> <span class="n">dset</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">dset</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span> <span class="k">if</span> <span class="n">dset</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">block_size</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+    <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fftlength_s</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+    <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">overlap_s</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+    <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">memoryview</span><span class="p">(</span><span class="n">sos_coeffs</span><span class="p">))</span>
+    <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">hasher</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(),</span> <span class="n">hash_peak_bytes</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">save_checkpoint_atomic</span><span class="p">(</span><span class="n">ckpt_dir</span><span class="p">,</span> <span class="n">gen_id</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">,</span> <span class="n">npz_arrays</span><span class="p">):</span>
+    <span class="n">ckpt_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">ckpt_dir</span><span class="p">)</span>
+    <span class="n">gen_npz</span> <span class="o">=</span> <span class="n">ckpt_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;state_gen_</span><span class="si">{</span><span class="n">gen_id</span><span class="si">:</span><span class="s2">04d</span><span class="si">}</span><span class="s2">.npz&quot;</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="n">gen_npz</span><span class="p">,</span> <span class="o">**</span><span class="n">npz_arrays</span><span class="p">)</span>
+    <span class="n">meta</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;generation&quot;</span><span class="p">:</span> <span class="n">gen_id</span><span class="p">,</span>
+        <span class="s2">&quot;npz_file&quot;</span><span class="p">:</span> <span class="n">gen_npz</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">state_dict</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">tmp_json</span> <span class="o">=</span> <span class="n">ckpt_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;checkpoint_tmp_</span><span class="si">{</span><span class="n">gen_id</span><span class="si">:</span><span class="s2">04d</span><span class="si">}</span><span class="s2">.json&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tmp_json</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tmp_json</span><span class="p">,</span> <span class="n">ckpt_dir</span> <span class="o">/</span> <span class="s2">&quot;checkpoint.json&quot;</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">load_checkpoint</span><span class="p">(</span><span class="n">ckpt_dir</span><span class="p">):</span>
+    <span class="n">ckpt_json</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">ckpt_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;checkpoint.json&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ckpt_json</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ckpt_json</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">meta</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">npz_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">ckpt_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;npz_file&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">meta</span><span class="p">,</span> <span class="n">npz_data</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">run_streaming_analysis</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="n">block_size</span><span class="p">,</span> <span class="n">ckpt_dir</span><span class="p">,</span> <span class="n">stop_after_chunk</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fftlength_s</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">channel_order</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CH1:RAW&quot;</span><span class="p">,</span> <span class="s2">&quot;CH2:RAW&quot;</span><span class="p">]):</span>
+    <span class="n">overlap_s</span> <span class="o">=</span> <span class="n">fftlength_s</span> <span class="o">/</span> <span class="mf">2.0</span>
+    <span class="n">nperseg</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fftlength_s</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
+    <span class="n">noverlap</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">overlap_s</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
+    <span class="n">hop</span> <span class="o">=</span> <span class="n">nperseg</span> <span class="o">-</span> <span class="n">noverlap</span>
+    <span class="n">win</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">windows</span><span class="o">.</span><span class="n">hann</span><span class="p">(</span><span class="n">nperseg</span><span class="p">,</span> <span class="n">sym</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">win_sq_sum</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">win</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    
+    <span class="n">ckpt_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">ckpt_dir</span><span class="p">)</span>
+    <span class="n">ckpt_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="n">current_identity</span><span class="p">,</span> <span class="n">hash_peak_bytes</span> <span class="o">=</span> <span class="n">compute_analysis_identity</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="n">block_size</span><span class="p">,</span> <span class="n">fftlength_s</span><span class="p">,</span> <span class="n">overlap_s</span><span class="p">,</span> <span class="n">sos</span><span class="p">,</span> <span class="n">channel_order</span><span class="p">)</span>
+    <span class="n">buffer_peak_bytes</span> <span class="o">=</span> <span class="n">hash_peak_bytes</span>
+    
+    <span class="n">gen</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">start_block_idx</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">carry_buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+    <span class="n">sum_sq_ch1</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">sum_sq_ch2</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">n_processed</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">psd_accum</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">psd_frames</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">filter_zi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">sos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">chunk_summaries</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">if</span> <span class="n">resume</span><span class="p">:</span>
+        <span class="n">loaded</span> <span class="o">=</span> <span class="n">load_checkpoint</span><span class="p">(</span><span class="n">ckpt_dir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">loaded</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">meta</span><span class="p">,</span> <span class="n">npz</span> <span class="o">=</span> <span class="n">loaded</span>
+            <span class="n">saved_id</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;analysis_identity&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">saved_id</span> <span class="o">!=</span> <span class="n">current_identity</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Checkpoint configuration or source identity mismatch; refusing to resume.&quot;</span><span class="p">)</span>
+            <span class="n">expected_next_sample</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;next_sample_idx&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">expected_next_sample</span> <span class="o">%</span> <span class="n">block_size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resume sample index </span><span class="si">{</span><span class="n">expected_next_sample</span><span class="si">}</span><span class="s2"> misaligned with block size </span><span class="si">{</span><span class="n">block_size</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            
+            <span class="n">gen</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;generation&quot;</span><span class="p">]</span>
+            <span class="n">start_block_idx</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">][</span><span class="s2">&quot;next_block_idx&quot;</span><span class="p">]</span>
+            <span class="n">n_processed</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">][</span><span class="s2">&quot;n_processed&quot;</span><span class="p">]</span>
+            <span class="n">sum_sq_ch1</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">][</span><span class="s2">&quot;sum_sq_ch1&quot;</span><span class="p">]</span>
+            <span class="n">sum_sq_ch2</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">][</span><span class="s2">&quot;sum_sq_ch2&quot;</span><span class="p">]</span>
+            <span class="n">psd_frames</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">][</span><span class="s2">&quot;psd_frames&quot;</span><span class="p">]</span>
+            <span class="n">carry_buffer</span> <span class="o">=</span> <span class="n">npz</span><span class="p">[</span><span class="s2">&quot;carry_buffer&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">filter_zi</span> <span class="o">=</span> <span class="n">npz</span><span class="p">[</span><span class="s2">&quot;filter_zi&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s2">&quot;psd_accum&quot;</span> <span class="ow">in</span> <span class="n">npz</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">npz</span><span class="p">[</span><span class="s2">&quot;psd_accum&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">psd_accum</span> <span class="o">=</span> <span class="n">npz</span><span class="p">[</span><span class="s2">&quot;psd_accum&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">chunk_summaries</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;chunk_summaries&quot;</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resumed from generation </span><span class="si">{</span><span class="n">gen</span><span class="si">}</span><span class="s2">, next block </span><span class="si">{</span><span class="n">start_block_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># buffer_peak_bytes initialized with hash_peak_bytes</span>
+
+    <span class="k">for</span> <span class="n">b_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">s_idx</span><span class="p">,</span> <span class="n">e_idx</span><span class="p">,</span> <span class="n">ts1</span><span class="p">,</span> <span class="n">ts2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">iter_hdf5_blocks</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="n">block_size</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">b_idx</span> <span class="o">&lt;</span> <span class="n">start_block_idx</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">stop_after_chunk</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">b_idx</span> <span class="o">&gt;=</span> <span class="n">stop_after_chunk</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stopping execution at chunk </span><span class="si">{</span><span class="n">b_idx</span><span class="si">}</span><span class="s2"> as requested.&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+            
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="n">channel_order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;CH1:RAW&quot;</span> <span class="k">else</span> <span class="n">ts2</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="n">channel_order</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;CH2:RAW&quot;</span> <span class="k">else</span> <span class="n">ts1</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">n_block</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+        <span class="n">n_processed</span> <span class="o">+=</span> <span class="n">n_block</span>
+        
+        <span class="c1"># 1. Additive sum of squares</span>
+        <span class="n">sum_sq_ch1</span> <span class="o">+=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x1</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+        <span class="n">sum_sq_ch2</span> <span class="o">+=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x2</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+        
+        <span class="c1"># 2. Filter state update</span>
+        <span class="n">filt_x1</span><span class="p">,</span> <span class="n">filter_zi</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">sosfilt</span><span class="p">(</span><span class="n">sos</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">zi</span><span class="o">=</span><span class="n">filter_zi</span><span class="p">)</span>
+        
+        <span class="c1"># 3. Welch PSD with carry buffer</span>
+        <span class="n">stream_x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">carry_buffer</span><span class="p">,</span> <span class="n">x1</span><span class="p">])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">carry_buffer</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">x1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">n_frames</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">stream_x1</span><span class="p">)</span> <span class="o">-</span> <span class="n">noverlap</span><span class="p">)</span> <span class="o">//</span> <span class="n">hop</span>
+        <span class="k">if</span> <span class="n">n_frames</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">f_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_frames</span><span class="p">):</span>
+                <span class="n">seg</span> <span class="o">=</span> <span class="n">stream_x1</span><span class="p">[</span><span class="n">f_i</span> <span class="o">*</span> <span class="n">hop</span> <span class="p">:</span> <span class="n">f_i</span> <span class="o">*</span> <span class="n">hop</span> <span class="o">+</span> <span class="n">nperseg</span><span class="p">]</span>
+                <span class="n">seg</span> <span class="o">=</span> <span class="p">(</span><span class="n">seg</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">seg</span><span class="p">))</span> <span class="o">*</span> <span class="n">win</span>
+                <span class="n">fft_seg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span>
+                <span class="n">periodogram</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fft_seg</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">fs</span> <span class="o">*</span> <span class="n">win_sq_sum</span><span class="p">)</span>
+                <span class="n">periodogram</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*=</span> <span class="mf">2.0</span>
+                <span class="k">if</span> <span class="n">psd_accum</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">psd_accum</span> <span class="o">=</span> <span class="n">periodogram</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">psd_accum</span> <span class="o">+=</span> <span class="n">periodogram</span>
+                <span class="n">psd_frames</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">remainder_start</span> <span class="o">=</span> <span class="n">n_frames</span> <span class="o">*</span> <span class="n">hop</span>
+            <span class="c1"># Detach copy to prevent retaining large stream_x1 buffer in memory</span>
+            <span class="n">carry_buffer</span> <span class="o">=</span> <span class="n">stream_x1</span><span class="p">[</span><span class="n">remainder_start</span><span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">carry_buffer</span> <span class="o">=</span> <span class="n">stream_x1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">stream_bytes</span> <span class="o">=</span> <span class="n">stream_x1</span><span class="o">.</span><span class="n">nbytes</span>
+        <span class="k">del</span> <span class="n">stream_x1</span>
+            
+        <span class="c1"># Comprehensive working buffer measurement across hashing, read, carry, filter, Welch FFT, and accumulator</span>
+        <span class="n">seg_bytes</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">nbytes</span> <span class="k">if</span> <span class="s1">&#39;seg&#39;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">fft_bytes</span> <span class="o">=</span> <span class="n">fft_seg</span><span class="o">.</span><span class="n">nbytes</span> <span class="k">if</span> <span class="s1">&#39;fft_seg&#39;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">p_bytes</span> <span class="o">=</span> <span class="n">periodogram</span><span class="o">.</span><span class="n">nbytes</span> <span class="k">if</span> <span class="s1">&#39;periodogram&#39;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">current_buf_bytes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">win</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">+</span> <span class="n">x1</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">+</span> <span class="n">x2</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">+</span> <span class="n">stream_bytes</span> <span class="o">+</span> <span class="n">carry_buffer</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">+</span>
+            <span class="n">filter_zi</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">+</span> <span class="n">filt_x1</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">+</span> <span class="n">seg_bytes</span> <span class="o">+</span> <span class="n">fft_bytes</span> <span class="o">+</span> <span class="n">p_bytes</span> <span class="o">+</span>
+            <span class="p">(</span><span class="n">psd_accum</span><span class="o">.</span><span class="n">nbytes</span> <span class="k">if</span> <span class="n">psd_accum</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">buffer_peak_bytes</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">buffer_peak_bytes</span><span class="p">,</span> <span class="n">current_buf_bytes</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">filt_x1</span>
+        
+        <span class="n">chunk_summaries</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;chunk_idx&quot;</span><span class="p">:</span> <span class="n">b_idx</span><span class="p">,</span>
+            <span class="s2">&quot;start_sample&quot;</span><span class="p">:</span> <span class="n">s_idx</span><span class="p">,</span>
+            <span class="s2">&quot;end_sample&quot;</span><span class="p">:</span> <span class="n">e_idx</span><span class="p">,</span>
+            <span class="s2">&quot;mean_ch1&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x1</span><span class="p">)),</span>
+            <span class="s2">&quot;rms_ch1&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x1</span><span class="o">**</span><span class="mi">2</span><span class="p">))),</span>
+            <span class="s2">&quot;rms_ch2&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x2</span><span class="o">**</span><span class="mi">2</span><span class="p">))),</span>
+        <span class="p">})</span>
+        
+        <span class="n">gen</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">save_checkpoint_atomic</span><span class="p">(</span>
+            <span class="n">ckpt_dir</span><span class="p">,</span>
+            <span class="n">gen</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;analysis_identity&quot;</span><span class="p">:</span> <span class="n">current_identity</span><span class="p">,</span>
+                <span class="s2">&quot;next_block_idx&quot;</span><span class="p">:</span> <span class="n">b_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;next_sample_idx&quot;</span><span class="p">:</span> <span class="n">e_idx</span><span class="p">,</span>
+                <span class="s2">&quot;n_processed&quot;</span><span class="p">:</span> <span class="n">n_processed</span><span class="p">,</span>
+                <span class="s2">&quot;sum_sq_ch1&quot;</span><span class="p">:</span> <span class="n">sum_sq_ch1</span><span class="p">,</span>
+                <span class="s2">&quot;sum_sq_ch2&quot;</span><span class="p">:</span> <span class="n">sum_sq_ch2</span><span class="p">,</span>
+                <span class="s2">&quot;psd_frames&quot;</span><span class="p">:</span> <span class="n">psd_frames</span><span class="p">,</span>
+                <span class="s2">&quot;chunk_summaries&quot;</span><span class="p">:</span> <span class="n">chunk_summaries</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;carry_buffer&quot;</span><span class="p">:</span> <span class="n">carry_buffer</span><span class="p">,</span>
+                <span class="s2">&quot;filter_zi&quot;</span><span class="p">:</span> <span class="n">filter_zi</span><span class="p">,</span>
+                <span class="s2">&quot;psd_accum&quot;</span><span class="p">:</span> <span class="n">psd_accum</span> <span class="k">if</span> <span class="n">psd_accum</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="n">rms_ch1_final</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sum_sq_ch1</span> <span class="o">/</span> <span class="n">n_processed</span><span class="p">)</span> <span class="k">if</span> <span class="n">n_processed</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
+    <span class="n">rms_ch2_final</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sum_sq_ch2</span> <span class="o">/</span> <span class="n">n_processed</span><span class="p">)</span> <span class="k">if</span> <span class="n">n_processed</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
+    <span class="n">mean_psd</span> <span class="o">=</span> <span class="n">psd_accum</span> <span class="o">/</span> <span class="n">psd_frames</span> <span class="k">if</span> <span class="n">psd_frames</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nperseg</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">nperseg</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="n">dt_s</span><span class="p">)</span>
+    <span class="n">output_buffers_bytes</span> <span class="o">=</span> <span class="n">mean_psd</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">+</span> <span class="n">freqs</span><span class="o">.</span><span class="n">nbytes</span>
+    <span class="n">buffer_peak_bytes</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">buffer_peak_bytes</span><span class="p">,</span> <span class="n">buffer_peak_bytes</span> <span class="o">+</span> <span class="n">output_buffers_bytes</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;n_processed&quot;</span><span class="p">:</span> <span class="n">n_processed</span><span class="p">,</span>
+        <span class="s2">&quot;rms_ch1&quot;</span><span class="p">:</span> <span class="n">rms_ch1_final</span><span class="p">,</span>
+        <span class="s2">&quot;rms_ch2&quot;</span><span class="p">:</span> <span class="n">rms_ch2_final</span><span class="p">,</span>
+        <span class="s2">&quot;freqs&quot;</span><span class="p">:</span> <span class="n">freqs</span><span class="p">,</span>
+        <span class="s2">&quot;mean_psd&quot;</span><span class="p">:</span> <span class="n">mean_psd</span><span class="p">,</span>
+        <span class="s2">&quot;buffer_peak_bytes&quot;</span><span class="p">:</span> <span class="n">buffer_peak_bytes</span><span class="p">,</span>
+        <span class="s2">&quot;chunk_summaries&quot;</span><span class="p">:</span> <span class="n">chunk_summaries</span><span class="p">,</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="checkpoint-interrupt-and-resume-verification">
+<h2>Checkpoint Interrupt and Resume Verification<a class="headerlink" href="#checkpoint-interrupt-and-resume-verification" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute independently defined monolithic reference across the entire dataset</span>
+<span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">full_dset_ch1</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;/samples&quot;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">monolithic_ref_rms</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">full_dset_ch1</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span>
+<span class="n">f_ref_welch</span><span class="p">,</span> <span class="n">monolithic_ref_psd</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">welch</span><span class="p">(</span>
+    <span class="n">full_dset_ch1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">nperseg</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">4.0</span> <span class="o">*</span> <span class="n">fs</span><span class="p">),</span> <span class="n">noverlap</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">fs</span><span class="p">),</span> <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Run full streaming analysis without interruption</span>
+<span class="n">full_res</span> <span class="o">=</span> <span class="n">run_streaming_analysis</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="n">block_samples</span><span class="p">,</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;checkpoints/full&quot;</span><span class="p">)</span>
+
+<span class="c1"># 1. Compare streaming vs monolithic reference</span>
+<span class="n">rms_ref_rel_diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">full_res</span><span class="p">[</span><span class="s2">&quot;rms_ch1&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">monolithic_ref_rms</span><span class="p">)</span> <span class="o">/</span> <span class="n">monolithic_ref_rms</span>
+<span class="n">psd_ref_rel_diff</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">full_res</span><span class="p">[</span><span class="s2">&quot;mean_psd&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">monolithic_ref_psd</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">monolithic_ref_psd</span><span class="p">))</span>
+<span class="n">psd_ref_abs_diff</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">full_res</span><span class="p">[</span><span class="s2">&quot;mean_psd&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">monolithic_ref_psd</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Streaming vs Monolithic Reference: RMS rel diff = </span><span class="si">{</span><span class="n">rms_ref_rel_diff</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">, PSD max rel diff = </span><span class="si">{</span><span class="n">psd_ref_rel_diff</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># 2. Run interrupted at chunk 7, then resume</span>
+<span class="n">ckpt_resume_dir</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;checkpoints/interrupted&quot;</span>
+<span class="k">if</span> <span class="n">ckpt_resume_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">ckpt_resume_dir</span><span class="p">)</span>
+<span class="n">run_streaming_analysis</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="n">block_samples</span><span class="p">,</span> <span class="n">ckpt_resume_dir</span><span class="p">,</span> <span class="n">stop_after_chunk</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">resumed_res</span> <span class="o">=</span> <span class="n">run_streaming_analysis</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="n">block_samples</span><span class="p">,</span> <span class="n">ckpt_resume_dir</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Test idempotency: full vs resumed must match exactly</span>
+<span class="n">rms_diff_resume</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">full_res</span><span class="p">[</span><span class="s2">&quot;rms_ch1&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">resumed_res</span><span class="p">[</span><span class="s2">&quot;rms_ch1&quot;</span><span class="p">])</span>
+<span class="n">psd_diff_resume</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">full_res</span><span class="p">[</span><span class="s2">&quot;mean_psd&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">resumed_res</span><span class="p">[</span><span class="s2">&quot;mean_psd&quot;</span><span class="p">])))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resumed RMS difference: </span><span class="si">{</span><span class="n">rms_diff_resume</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">, PSD max difference: </span><span class="si">{</span><span class="n">psd_diff_resume</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">rms_diff_resume</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;Resumed streaming analysis must be mathematically idempotent.&quot;</span>
+<span class="k">assert</span> <span class="n">psd_diff_resume</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;Resumed PSD must be identical.&quot;</span>
+
+<span class="c1"># 3. Comprehensive Negative Tests for Resume Safety</span>
+<span class="c1"># Test A: chunk size changed (60s -&gt; 17.25s)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">irreg_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">17.25</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
+    <span class="n">run_streaming_analysis</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="n">irreg_samples</span><span class="p">,</span> <span class="n">ckpt_resume_dir</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">chunk_size_rejected</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+    <span class="n">chunk_size_rejected</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Negative test - Chunk size mismatch rejected: </span><span class="si">{</span><span class="n">chunk_size_rejected</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Test B: FFT conditions changed (4.0s -&gt; 2.0s)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">run_streaming_analysis</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="n">block_samples</span><span class="p">,</span> <span class="n">ckpt_resume_dir</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fftlength_s</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+    <span class="n">fft_change_rejected</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+    <span class="n">fft_change_rejected</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Negative test - FFT condition change rejected: </span><span class="si">{</span><span class="n">fft_change_rejected</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Test C: Channel order changed</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">run_streaming_analysis</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="n">block_samples</span><span class="p">,</span> <span class="n">ckpt_resume_dir</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">channel_order</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CH2:RAW&quot;</span><span class="p">,</span> <span class="s2">&quot;CH1:RAW&quot;</span><span class="p">])</span>
+    <span class="n">channel_order_rejected</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+    <span class="n">channel_order_rejected</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Negative test - Channel order mismatch rejected: </span><span class="si">{</span><span class="n">channel_order_rejected</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Test D: Source file content changed (different file)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">h5_dummy</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;dummy_other.h5&quot;</span>
+    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5_dummy</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_d</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">f_d</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;/samples&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;sample_rate_hz&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;gps_t0_s&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1400000000.0</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;channels&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CH1:RAW&quot;</span><span class="p">,</span> <span class="s2">&quot;CH2:RAW&quot;</span><span class="p">]</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="s2">&quot;V&quot;</span><span class="p">]</span>
+    <span class="n">run_streaming_analysis</span><span class="p">(</span><span class="n">h5_dummy</span><span class="p">,</span> <span class="n">block_samples</span><span class="p">,</span> <span class="n">ckpt_resume_dir</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">source_change_rejected</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+    <span class="n">source_change_rejected</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Negative test - Source content mismatch rejected: </span><span class="si">{</span><span class="n">source_change_rejected</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Test E: Source file intermediate data tampering (samples 1024..19999 modified)</span>
+<span class="n">h5_tampered</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;tampered_intermediate.h5&quot;</span>
+<span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="n">h5_tampered</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5_tampered</span><span class="p">,</span> <span class="s2">&quot;r+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_t</span><span class="p">:</span>
+    <span class="n">f_t</span><span class="p">[</span><span class="s2">&quot;/samples&quot;</span><span class="p">][</span><span class="mi">1024</span><span class="p">:</span><span class="mi">20000</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*=</span> <span class="mf">2.0</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">run_streaming_analysis</span><span class="p">(</span><span class="n">h5_tampered</span><span class="p">,</span> <span class="n">block_samples</span><span class="p">,</span> <span class="n">ckpt_resume_dir</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">tamper_rejected</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+    <span class="n">tamper_rejected</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Negative test - Intermediate data tampering rejected: </span><span class="si">{</span><span class="n">tamper_rejected</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># 4. Atomic failure simulation:</span>
+<span class="c1"># Stop after chunk 7, write uncommitted shard, then resume cleanly</span>
+<span class="n">ckpt_atomic_dir</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;checkpoints/atomic_failure&quot;</span>
+<span class="k">if</span> <span class="n">ckpt_atomic_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">ckpt_atomic_dir</span><span class="p">)</span>
+<span class="n">run_streaming_analysis</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="n">block_samples</span><span class="p">,</span> <span class="n">ckpt_atomic_dir</span><span class="p">,</span> <span class="n">stop_after_chunk</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+
+<span class="n">uncommitted_npz</span> <span class="o">=</span> <span class="n">ckpt_atomic_dir</span> <span class="o">/</span> <span class="s2">&quot;state_gen_0008.npz&quot;</span>
+<span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="n">uncommitted_npz</span><span class="p">,</span> <span class="n">carry_buffer</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">999.0</span><span class="p">]),</span> <span class="n">filter_zi</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">sos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">)),</span> <span class="n">psd_accum</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]))</span>
+
+<span class="n">resumed_atomic_res</span> <span class="o">=</span> <span class="n">run_streaming_analysis</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="n">block_samples</span><span class="p">,</span> <span class="n">ckpt_atomic_dir</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">atomic_failure_ok</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span>
+    <span class="n">resumed_atomic_res</span><span class="p">[</span><span class="s2">&quot;n_processed&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">total_samples</span> <span class="ow">and</span>
+    <span class="n">resumed_atomic_res</span><span class="p">[</span><span class="s2">&quot;rms_ch1&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">full_res</span><span class="p">[</span><span class="s2">&quot;rms_ch1&quot;</span><span class="p">]</span> <span class="ow">and</span>
+    <span class="nb">len</span><span class="p">(</span><span class="n">resumed_atomic_res</span><span class="p">[</span><span class="s2">&quot;chunk_summaries&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">full_res</span><span class="p">[</span><span class="s2">&quot;chunk_summaries&quot;</span><span class="p">])</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Atomic failure recovery verified: </span><span class="si">{</span><span class="n">atomic_failure_ok</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Streaming vs Monolithic Reference: RMS rel diff = 1.511e-16, PSD max rel diff = 9.992e-16
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Stopping execution at chunk 7 as requested.
+Resumed from generation 7, next block 7
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Resumed RMS difference: 0.000e+00, PSD max difference: 0.000e+00
+Negative test - Chunk size mismatch rejected: True
+Negative test - FFT condition change rejected: True
+Negative test - Channel order mismatch rejected: True
+Negative test - Source content mismatch rejected: True
+Negative test - Intermediate data tampering rejected: True
+Stopping execution at chunk 7 as requested.
+Resumed from generation 7, next block 7
+Atomic failure recovery verified: True
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="irregular-chunk-boundaries-verification">
+<h2>Irregular Chunk Boundaries Verification<a class="headerlink" href="#irregular-chunk-boundaries-verification" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run with irregular chunk length (17.25s = 4416 samples, not multiple of 512 hop)</span>
+<span class="n">irreg_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">17.25</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
+<span class="n">irreg_res</span> <span class="o">=</span> <span class="n">run_streaming_analysis</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="n">irreg_samples</span><span class="p">,</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;checkpoints/irregular&quot;</span><span class="p">)</span>
+
+<span class="c1"># Compare RMS and PSD with 20s block run</span>
+<span class="n">rms_diff_irreg</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">full_res</span><span class="p">[</span><span class="s2">&quot;rms_ch1&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">irreg_res</span><span class="p">[</span><span class="s2">&quot;rms_ch1&quot;</span><span class="p">])</span>
+<span class="n">psd_diff_irreg</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">full_res</span><span class="p">[</span><span class="s2">&quot;mean_psd&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">irreg_res</span><span class="p">[</span><span class="s2">&quot;mean_psd&quot;</span><span class="p">])))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Irregular chunk boundary RMS diff: </span><span class="si">{</span><span class="n">rms_diff_irreg</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">, PSD max diff: </span><span class="si">{</span><span class="n">psd_diff_irreg</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">rms_diff_irreg</span> <span class="o">&lt;</span> <span class="mf">1e-12</span><span class="p">,</span> <span class="s2">&quot;Irregular chunk RMS must match regular chunk RMS.&quot;</span>
+<span class="k">assert</span> <span class="n">psd_diff_irreg</span> <span class="o">&lt;</span> <span class="mf">1e-12</span><span class="p">,</span> <span class="s2">&quot;Irregular chunk PSD must match regular chunk PSD.&quot;</span>
+
+<span class="c1"># Short chunk (&lt; hop size of 2s = 512 samples) and empty dataset handling</span>
+<span class="n">h5_short</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;short_test.h5&quot;</span>
+<span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5_short</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_s</span><span class="p">:</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">f_s</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;/samples&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">256</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;sample_rate_hz&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;gps_t0_s&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1400000000.0</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;channels&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CH1:RAW&quot;</span><span class="p">,</span> <span class="s2">&quot;CH2:RAW&quot;</span><span class="p">]</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="s2">&quot;V&quot;</span><span class="p">]</span>
+<span class="n">short_res</span> <span class="o">=</span> <span class="n">run_streaming_analysis</span><span class="p">(</span><span class="n">h5_short</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;checkpoints/short&quot;</span><span class="p">)</span>
+<span class="n">short_ok</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">short_res</span><span class="p">[</span><span class="s2">&quot;n_processed&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">256</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">short_res</span><span class="p">[</span><span class="s2">&quot;chunk_summaries&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">h5_empty</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;empty_test.h5&quot;</span>
+<span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5_empty</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_e</span><span class="p">:</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">f_e</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;/samples&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;sample_rate_hz&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;gps_t0_s&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1400000000.0</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;channels&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CH1:RAW&quot;</span><span class="p">,</span> <span class="s2">&quot;CH2:RAW&quot;</span><span class="p">]</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="s2">&quot;V&quot;</span><span class="p">]</span>
+<span class="n">empty_res</span> <span class="o">=</span> <span class="n">run_streaming_analysis</span><span class="p">(</span><span class="n">h5_empty</span><span class="p">,</span> <span class="n">block_samples</span><span class="p">,</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;checkpoints/empty&quot;</span><span class="p">)</span>
+<span class="n">empty_ok</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">empty_res</span><span class="p">[</span><span class="s2">&quot;n_processed&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">empty_res</span><span class="p">[</span><span class="s2">&quot;chunk_summaries&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Short dataset test: </span><span class="si">{</span><span class="n">short_ok</span><span class="si">}</span><span class="s2">, Empty dataset test: </span><span class="si">{</span><span class="n">empty_ok</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Irregular chunk boundary RMS diff: 2.220e-16, PSD max diff: 0.000e+00
+Short dataset test: True, Empty dataset test: True
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="visualizing-streaming-summaries-and-spectra">
+<h2>Visualizing Streaming Summaries and Spectra<a class="headerlink" href="#visualizing-streaming-summaries-and-spectra" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sum_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">full_res</span><span class="p">[</span><span class="s2">&quot;chunk_summaries&quot;</span><span class="p">])</span>
+<span class="n">sum_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;tables/chunk_summary.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># Archival checkpoint in tables/</span>
+<span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;checkpoints/full/checkpoint.json&quot;</span><span class="p">,</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;tables/checkpoint.json&quot;</span><span class="p">)</span>
+
+<span class="c1"># 1. RMS time series plot</span>
+<span class="n">fig1</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">chunk_times_min</span> <span class="o">=</span> <span class="p">(</span><span class="n">sum_df</span><span class="p">[</span><span class="s2">&quot;chunk_idx&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">block_seconds</span><span class="p">)</span> <span class="o">/</span> <span class="mf">60.0</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">chunk_times_min</span><span class="p">,</span> <span class="n">sum_df</span><span class="p">[</span><span class="s2">&quot;rms_ch1&quot;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CH1:RAW RMS (20s block)&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;navy&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">chunk_times_min</span><span class="p">,</span> <span class="n">sum_df</span><span class="p">[</span><span class="s2">&quot;rms_ch2&quot;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CH2:RAW RMS (20s block)&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;forestgreen&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time [minutes]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;RMS [V]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Streaming Chunk-by-Chunk RMS Evolution&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">fig1</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">fig1_path</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;figures/rms_time_series.png&quot;</span>
+<span class="n">fig1</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig1_path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">fig1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig1</span><span class="p">)</span>
+
+<span class="c1"># 2. PSD comparison plot</span>
+<span class="n">fig2</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">full_res</span><span class="p">[</span><span class="s2">&quot;freqs&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">:],</span> <span class="n">full_res</span><span class="p">[</span><span class="s2">&quot;mean_psd&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">:],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Streaming Welch PSD (4s Hann, 2s overlap)&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;darkred&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;PSD [V^2/Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Full 30-Minute Streaming Power Spectral Density&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">fig2</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">fig2_path</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;figures/psd_comparison.png&quot;</span>
+<span class="n">fig2</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig2_path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">fig2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig2</span><span class="p">)</span>
+
+<span class="c1"># 3. Filter boundary error plot</span>
+<span class="n">fig3</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">))</span>
+<span class="n">t_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ref_filtered_ch1</span><span class="p">[:</span><span class="mi">1024</span><span class="p">]))</span> <span class="o">*</span> <span class="n">dt_s</span>
+<span class="n">err_slice</span> <span class="o">=</span> <span class="p">(</span><span class="n">ref_filtered_ch1</span> <span class="o">-</span> <span class="n">streaming_filtered_ch1</span><span class="p">)[:</span><span class="mi">1024</span><span class="p">]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_err</span><span class="p">,</span> <span class="n">err_slice</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;purple&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Difference [V]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Streaming vs Monolithic Filter Difference across Chunk Edge (Max ~ 1e-16 V)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">fig3</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">fig3_path</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;figures/filter_boundary_error.png&quot;</span>
+<span class="n">fig3</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig3_path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">fig3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved RMS, PSD, and filter boundary figures.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/4405eff2573a6c8578c6071961d7e8fc9b8f98609bd8b21935185dcb95a6af88.png" src="../../_images/4405eff2573a6c8578c6071961d7e8fc9b8f98609bd8b21935185dcb95a6af88.png" />
+<img alt="../../_images/987210c05df7abaf0ecbafc603c0908396bbc80e0cd1e654f77eda01d995577a.png" src="../../_images/987210c05df7abaf0ecbafc603c0908396bbc80e0cd1e654f77eda01d995577a.png" />
+<img alt="../../_images/bee744cb50d042baec20c5996bf4e389d5290cadaa631f57bbc103a755b4cd81.png" src="../../_images/bee744cb50d042baec20c5996bf4e389d5290cadaa631f57bbc103a755b4cd81.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Saved RMS, PSD, and filter boundary figures.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="verification-metrics-and-bounds-assessment">
+<h2>Verification Metrics and Bounds Assessment<a class="headerlink" href="#verification-metrics-and-bounds-assessment" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">settings</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;tutorial_id&quot;</span><span class="p">:</span> <span class="s2">&quot;T5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;data_kind&quot;</span><span class="p">:</span> <span class="s2">&quot;synthetic&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="mi">2026091605</span><span class="p">,</span>
+    <span class="s2">&quot;gps_t0_s&quot;</span><span class="p">:</span> <span class="mf">1400000000.0</span><span class="p">,</span>
+    <span class="s2">&quot;sample_rate_hz&quot;</span><span class="p">:</span> <span class="n">fs</span><span class="p">,</span>
+    <span class="s2">&quot;duration_s&quot;</span><span class="p">:</span> <span class="n">duration_s</span><span class="p">,</span>
+    <span class="s2">&quot;channel_units&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;CH1:RAW&quot;</span><span class="p">:</span> <span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="s2">&quot;CH2:RAW&quot;</span><span class="p">:</span> <span class="s2">&quot;V&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;analysis_parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;block_seconds&quot;</span><span class="p">:</span> <span class="n">block_seconds</span><span class="p">,</span>
+        <span class="s2">&quot;fftlength_s&quot;</span><span class="p">:</span> <span class="mf">4.0</span><span class="p">,</span>
+        <span class="s2">&quot;overlap_s&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+        <span class="s2">&quot;window&quot;</span><span class="p">:</span> <span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;buffer_budget_kib&quot;</span><span class="p">:</span> <span class="mf">350.0</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;python_version&quot;</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_version</span><span class="p">(),</span>
+<span class="p">}</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;analysis-settings.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">metrics</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;passed&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;data_kind&quot;</span><span class="p">:</span> <span class="s2">&quot;synthetic&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;checks&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;chunk_sample_coverage&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">full_res</span><span class="p">[</span><span class="s2">&quot;n_processed&quot;</span><span class="p">]),</span>
+            <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;processed == total samples (</span><span class="si">{</span><span class="n">total_samples</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">full_res</span><span class="p">[</span><span class="s2">&quot;n_processed&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">total_samples</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;chunk_rms_equals_reference&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">full_res</span><span class="p">[</span><span class="s2">&quot;rms_ch1&quot;</span><span class="p">]),</span>
+            <span class="s2">&quot;reference&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">monolithic_ref_rms</span><span class="p">),</span>
+            <span class="s2">&quot;relative_error&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">rms_ref_rel_diff</span><span class="p">),</span>
+            <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="s2">&quot;streaming RMS matches independently computed monolithic reference within 1e-10&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">rms_ref_rel_diff</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;chunk_psd_equals_reference&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">full_res</span><span class="p">[</span><span class="s2">&quot;mean_psd&quot;</span><span class="p">])),</span>
+            <span class="s2">&quot;reference&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">monolithic_ref_psd</span><span class="p">)),</span>
+            <span class="s2">&quot;relative_error&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">psd_ref_rel_diff</span><span class="p">),</span>
+            <span class="s2">&quot;absolute_error&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">psd_ref_abs_diff</span><span class="p">),</span>
+            <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="s2">&quot;streaming PSD matches monolithic reference within 1e-10 relative error&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">psd_ref_rel_diff</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;chunk_irregular_boundary&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">rms_diff_irreg</span><span class="p">),</span>
+            <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="s2">&quot;irregular chunk RMS matches regular within 1e-10&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">rms_diff_irreg</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;chunk_filter_state&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">filter_max_err</span><span class="p">),</span>
+            <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="s2">&quot;max sosfilt difference across chunks &lt; 1e-10&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">filter_max_err</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;chunk_resume_idempotent&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">rms_diff_resume</span><span class="p">),</span>
+            <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="s2">&quot;resumed run matches uninterrupted run identically&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">rms_diff_resume</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">psd_diff_resume</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;chunk_atomic_failure&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">atomic_failure_ok</span><span class="p">),</span>
+            <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="s2">&quot;uncommitted shard ignored, resume starts from last valid generation without double counting&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">atomic_failure_ok</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;chunk_config_mismatch&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;chunk_size_rejected&quot;</span><span class="p">:</span> <span class="n">chunk_size_rejected</span><span class="p">,</span>
+                <span class="s2">&quot;fft_change_rejected&quot;</span><span class="p">:</span> <span class="n">fft_change_rejected</span><span class="p">,</span>
+                <span class="s2">&quot;channel_order_rejected&quot;</span><span class="p">:</span> <span class="n">channel_order_rejected</span><span class="p">,</span>
+                <span class="s2">&quot;source_change_rejected&quot;</span><span class="p">:</span> <span class="n">source_change_rejected</span><span class="p">,</span>
+                <span class="s2">&quot;tamper_rejected&quot;</span><span class="p">:</span> <span class="n">tamper_rejected</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="s2">&quot;mismatched chunk size, FFT, channel order, source file, or tampered data rejected&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">chunk_size_rejected</span> <span class="ow">and</span> <span class="n">fft_change_rejected</span> <span class="ow">and</span> <span class="n">channel_order_rejected</span> <span class="ow">and</span> <span class="n">source_change_rejected</span> <span class="ow">and</span> <span class="n">tamper_rejected</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;chunk_buffer_bound&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">full_res</span><span class="p">[</span><span class="s2">&quot;buffer_peak_bytes&quot;</span><span class="p">]),</span>
+            <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="s2">&quot;peak working buffer &lt; 358400 bytes (350 KiB)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">full_res</span><span class="p">[</span><span class="s2">&quot;buffer_peak_bytes&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">358400</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;chunk_short_and_empty&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">short_ok</span> <span class="ow">and</span> <span class="n">empty_ok</span><span class="p">),</span>
+            <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="s2">&quot;short chunks (&lt; hop) buffered, empty dataset handled without exception&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">short_ok</span> <span class="ow">and</span> <span class="n">empty_ok</span><span class="p">),</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;validation-metrics.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;T5 settings and validation metrics saved successfully.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>T5 settings and validation metrics saved successfully.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="event_catalog_timeseries.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Align Event Catalogs with Time-Series Data</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../calibration/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Calibration and Physical Units</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#environment-setup">Environment Setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#block-by-block-dataset-generation">Block-by-Block Dataset Generation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#streaming-analysis-architecture">Streaming Analysis Architecture</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#continuous-filtering-across-chunk-boundaries">Continuous Filtering across Chunk Boundaries</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#atomic-checkpointing-and-streaming-analysis">Atomic Checkpointing and Streaming Analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#checkpoint-interrupt-and-resume-verification">Checkpoint Interrupt and Resume Verification</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#irregular-chunk-boundaries-verification">Irregular Chunk Boundaries Verification</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-streaming-summaries-and-spectra">Visualizing Streaming Summaries and Spectra</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#verification-metrics-and-bounds-assessment">Verification Metrics and Bounds Assessment</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/how-to/monitoring/chunked_long_data.ipynb">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, GWexpy Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
