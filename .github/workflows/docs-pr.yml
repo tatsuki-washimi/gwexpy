@@ -256,9 +256,9 @@ jobs:
           - group: control
             install-target: ".[control]"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install minimal dependencies
@@ -279,7 +279,7 @@ jobs:
             --run-id "ci-${{ matrix.python-version }}-${{ matrix.group }}"
       - name: Upload workflow evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "workflow-evidence-py${{ matrix.python-version }}-${{ matrix.group }}"
           path: "/tmp/evidence-${{ matrix.group }}"
