@@ -152,6 +152,8 @@ def test_deployment_readback_rejects_stale_or_incomplete_publication(
                     "dirty": False,
                 }
             ).encode()
+        elif ".ipynb" in request.full_url:
+            data = b'{"cells": [], "metadata": {}, "nbformat": 4}'
         elif ".png" in request.full_url:
             data = (
                 b"not an image"
@@ -169,6 +171,17 @@ def test_deployment_readback_rejects_stale_or_incomplete_publication(
             page += "".join(f'<a href="{route}">route</a>' for route in routes)
             if defect != "anchor":
                 page += '<div id="for-gw-experimentalists"></div>'
+            # Workflow readback fixtures: language switch, figure, download.
+            rel = request.full_url.split("docs.example.test/", 1)[1].split("?", 1)[0]
+            rel = rel[3:] if rel.startswith("ja/") else rel
+            page += (
+                f'<a href="https://docs.example.test/{rel}">EN</a>'
+                f'<a href="https://docs.example.test/ja/{rel}">JA</a>'
+                '<img src="_images/fig.png">'
+                '<a href="_sources/notebook.ipynb">notebook</a>'
+            )
+            if "/ja/" in request.full_url:
+                page += "<p>日本語の説明文</p>"
             data = page.encode()
         return io.BytesIO(data)
 
