@@ -1,0 +1,323 @@
+# Japanese translation for Monitoring Index.
+# Copyright (C) 2026, GWexpy Developers
+#
+msgid ""
+msgstr ""
+"Project-Id-Version:  GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-16 22:39+0900\n"
+"PO-Revision-Date: 2026-09-16 00:00+0000\n"
+"Last-Translator: GWexpy Developers\n"
+"Language: ja\n"
+"Language-Team: Japanese\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:1
+#: b520308bff0e40dba5bdca9d79b137bc
+msgid "Monitoring and Event Workflows"
+msgstr "長期監視とイベント解析"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:3
+#: 2d9916127cdc47b7998255fe6d946de2
+#, fuzzy
+msgid ""
+"Goal-oriented recipes for analyzing stored slow monitoring records, "
+"correlating transient event catalogs with multi-channel detector time series,"
+" and processing long continuous observations with bounded memory."
+msgstr "保存された低速モニタリングデータの解析、突発イベントカタログと多チャンネル検出器時系列の照合、およびメモリを抑えた長時間連続観測データの処理を目的とした実践レシピです。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:6
+#: b1a6860788d4494ba5c0c112500e65dd
+msgid ""
+"These tutorials cover **offline and post-run diagnostic workflows** on "
+"recorded data files. They are designed for reproducible batch analysis and do"
+" not implement an online, 24/7 real-time telemetry daemon."
+msgstr "これらのチュートリアルは、記録されたデータファイルに対する**オフラインおよび測定後診断ワークフロー**を対象としています。再現性のあるバッチ解析を目的として設計されており、オンラインの常時稼働リアルタイムテレメトリデーモンを実装するものではありません。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:9
+#: 6f1c3315d01543a2909385390d1b3e04
+msgid "Analysis Pathways"
+msgstr "解析パス"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:14
+#: bc9d613f075d43338afe7f4171ed9a86
+msgid ""
+"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
+"octicon-graph sd-mr-1\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path "
+"d=\"M2.5 2.75a.75.75 0 0 0-1.5 0v18.5c0 .414.336.75.75.75H20a.75.75 0 0 0 "
+"0-1.5H2.5V2.75Z\"></path><path d=\"M22.28 7.78a.75.75 0 0 0-1.06-1.06l-5.72 "
+"5.72-3.72-3.72a.75.75 0 0 0-1.06 0l-6 6a.75.75 0 1 0 1.06 1.06l5.47-5.47 3.72"
+" 3.72a.75.75 0 0 0 1.06 0l6.25-6.25Z\"></path></svg> Long-term Trends"
+msgstr ""
+"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
+"octicon-graph sd-mr-1\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path "
+"d=\"M2.5 2.75a.75.75 0 0 0-1.5 0v18.5c0 .414.336.75.75.75H20a.75.75 0 0 0 "
+"0-1.5H2.5V2.75Z\"></path><path d=\"M22.28 7.78a.75.75 0 0 0-1.06-1.06l-5.72 "
+"5.72-3.72-3.72a.75.75 0 0 0-1.06 0l-6 6a.75.75 0 1 0 1.06 1.06l5.47-5.47 3.72"
+" 3.72a.75.75 0 0 0 1.06 0l6.25-6.25Z\"></path></svg> Long-term Trends"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:18
+#: a186a852f9bd40c7adbcd6e5ff240084
+msgid ""
+"Separate slow diurnal/linear baseline drift from short pulse transients and "
+"persistent state steps."
+msgstr "日周変動や線形ドリフトによるゆっくりした基線変動と、短いパルス状変動および持続的な状態段差を区別して抽出します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:21
+#: f8df9cd3521c4519935c0975f34826f1
+msgid ""
+"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
+"octicon-clock sd-mr-1\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path "
+"d=\"M12.5 7.25a.75.75 0 0 0-1.5 0v5.5c0 .27.144.518.378.651l3.5 2a.75.75 0 0 "
+"0 .744-1.302L12.5 12.315V7.25Z\"></path><path d=\"M12 1c6.075 0 11 4.925 11 "
+"11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1ZM2.5 12a9.5 9.5 0 0 0 9.5 9.5 "
+"9.5 9.5 0 0 0 9.5-9.5A9.5 9.5 0 0 0 12 2.5 9.5 9.5 0 0 0 2.5 "
+"12Z\"></path></svg> Event Alignment"
+msgstr ""
+"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
+"octicon-clock sd-mr-1\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path "
+"d=\"M12.5 7.25a.75.75 0 0 0-1.5 0v5.5c0 .27.144.518.378.651l3.5 2a.75.75 0 0 "
+"0 .744-1.302L12.5 12.315V7.25Z\"></path><path d=\"M12 1c6.075 0 11 4.925 11 "
+"11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1ZM2.5 12a9.5 9.5 0 0 0 9.5 9.5 "
+"9.5 9.5 0 0 0 9.5-9.5A9.5 9.5 0 0 0 12 2.5 9.5 9.5 0 0 0 2.5 "
+"12Z\"></path></svg> Event Alignment"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:25
+#: 4b82f4bcf75c450c928698483cefff5a
+msgid ""
+"Refine discrete catalog event times against witness sensors and align multi-"
+"channel time windows."
+msgstr "環境・補助センサ波形を用いて離散カタログのイベント時刻を精密化し、複数チャンネルの解析窓を整列します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: 93ef27f9d1ca4ed1bad54d355ac1c159
+msgid ""
+"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
+"octicon-database sd-mr-1\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path "
+"d=\"M12 1.25c2.487 0 4.773.402 6.466 1.079.844.337 1.577.758 2.112 "
+"1.264.536.507.922 1.151.922 1.907v12.987l-.026.013h.026c0 .756-.386 1.4-.922 "
+"1.907-.535.506-1.268.927-2.112 1.264-1.693.677-3.979 1.079-6.466 "
+"1.079s-4.774-.402-6.466-1.079c-.844-.337-1.577-.758-2.112-1.264C2.886 19.9 "
+"2.5 19.256 2.5 18.5h.026l-.026-.013V5.5c0-.756.386-1.4.922-1.907.535-.506 "
+"1.268-.927 2.112-1.264C7.226 1.652 9.513 1.25 12 1.25ZM4 "
+"14.371v4.116l-.013.013H4c0 .211.103.487.453.817.351.332.898.666 1.638.962 "
+"1.475.589 3.564.971 5.909.971 2.345 0 4.434-.381 5.909-.971.739-.296 "
+"1.288-.63 1.638-.962.349-.33.453-.607.453-.817h.013L20 18.487v-4.116a7.85 "
+"7.85 0 0 1-1.534.8c-1.693.677-3.979 1.079-6.466 "
+"1.079s-4.774-.402-6.466-1.079a7.843 7.843 0 0 1-1.534-.8ZM20 12V7.871a7.85 "
+"7.85 0 0 1-1.534.8C16.773 9.348 14.487 9.75 12 "
+"9.75s-4.774-.402-6.466-1.079A7.85 7.85 0 0 1 4 7.871V12c0 "
+".21.104.487.453.817.35.332.899.666 1.638.961 1.475.59 3.564.972 5.909.972 "
+"2.345 0 4.434-.382 5.909-.972.74-.295 1.287-.629 "
+"1.638-.96.35-.33.453-.607.453-.818ZM4 5.5c0 "
+".211.103.487.453.817.351.332.898.666 1.638.962 1.475.589 3.564.971 5.909.971 "
+"2.345 0 4.434-.381 5.909-.971.739-.296 1.288-.63 "
+"1.638-.962.349-.33.453-.607.453-.817 "
+"0-.211-.103-.487-.453-.817-.351-.332-.898-.666-1.638-.962-1.475-.589-3.564-.971-5.909-.971-2.345"
+" 0-4.434.381-5.909.971-.739.296-1.288.63-1.638.962C4.104 5.013 4 5.29 4 "
+"5.5Z\"></path></svg> Chunked Processing"
+msgstr ""
+"<svg version=\"1.1\" width=\"1.5em\" height=\"1.5em\" class=\"sd-octicon sd-"
+"octicon-database sd-mr-1\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path "
+"d=\"M12 1.25c2.487 0 4.773.402 6.466 1.079.844.337 1.577.758 2.112 "
+"1.264.536.507.922 1.151.922 1.907v12.987l-.026.013h.026c0 .756-.386 1.4-.922 "
+"1.907-.535.506-1.268.927-2.112 1.264-1.693.677-3.979 1.079-6.466 "
+"1.079s-4.774-.402-6.466-1.079c-.844-.337-1.577-.758-2.112-1.264C2.886 19.9 "
+"2.5 19.256 2.5 18.5h.026l-.026-.013V5.5c0-.756.386-1.4.922-1.907.535-.506 "
+"1.268-.927 2.112-1.264C7.226 1.652 9.513 1.25 12 1.25ZM4 "
+"14.371v4.116l-.013.013H4c0 .211.103.487.453.817.351.332.898.666 1.638.962 "
+"1.475.589 3.564.971 5.909.971 2.345 0 4.434-.381 5.909-.971.739-.296 "
+"1.288-.63 1.638-.962.349-.33.453-.607.453-.817h.013L20 18.487v-4.116a7.85 "
+"7.85 0 0 1-1.534.8c-1.693.677-3.979 1.079-6.466 "
+"1.079s-4.774-.402-6.466-1.079a7.843 7.843 0 0 1-1.534-.8ZM20 12V7.871a7.85 "
+"7.85 0 0 1-1.534.8C16.773 9.348 14.487 9.75 12 "
+"9.75s-4.774-.402-6.466-1.079A7.85 7.85 0 0 1 4 7.871V12c0 "
+".21.104.487.453.817.35.332.899.666 1.638.961 1.475.59 3.564.972 5.909.972 "
+"2.345 0 4.434-.382 5.909-.972.74-.295 1.287-.629 "
+"1.638-.96.35-.33.453-.607.453-.818ZM4 5.5c0 "
+".211.103.487.453.817.351.332.898.666 1.638.962 1.475.589 3.564.971 5.909.971 "
+"2.345 0 4.434-.381 5.909-.971.739-.296 1.288-.63 "
+"1.638-.962.349-.33.453-.607.453-.817 "
+"0-.211-.103-.487-.453-.817-.351-.332-.898-.666-1.638-.962-1.475-.589-3.564-.971-5.909-.971-2.345"
+" 0-4.434.381-5.909.971-.739.296-1.288.63-1.638.962C4.104 5.013 4 5.29 4 "
+"5.5Z\"></path></svg> Chunked Processing"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:32
+#: 710747d4ab674db3bdcfe2886cfa23ce
+msgid ""
+"Stream long time-series records in bounded blocks, maintaining global PSD "
+"continuity and atomic checkpoints."
+msgstr "長時間の時系列記録を有界なブロックで順次処理し、大域的PSDの連続性とアトミックなチェックポイントを維持します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:36
+#: 17ca8e8bed0b41d5b2f634d70b46d06a
+msgid "Workflow Comparison"
+msgstr "ワークフローの比較"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: 4d6c102848564f9eba90a91b97c3ec08
+msgid "Workflow"
+msgstr "ワークフロー"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: 02c608bb3d9e48599da4d10f573275f4
+msgid "Primary Input"
+msgstr "主な入力"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: 6bcfa61aeff94745a52b37c2b194e916
+msgid "Key Output"
+msgstr "主な出力"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: cd0e779e922449848359f7ef31c4a67b
+msgid "Required Dependencies"
+msgstr "必要な依存パッケージ"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: ac8707673ca84f14bc92a3b4974b1abc
+msgid "Missing Data / Boundary Handling"
+msgstr "欠損データ・境界処理"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: 5a619d3318ac4c6194ed7bb559d68644
+msgid "**Trend & State Analysis**"
+msgstr "**トレンド・状態解析**"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: 78e176dad779422d962c2ed63790cb02
+msgid "Multi-channel 1-minute slow records"
+msgstr "多チャンネル1分値低速記録"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: 60e4b7baf4c94771a9f85c723348fe97
+msgid "Estimated baseline, pulse & step candidate tables"
+msgstr "推定基線、パルス・ステップ候補テーブル"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: 2e357e732b894cf2aa8c2df05422fd7f 7de89157ed1a4be0a4b39e6aead3ef3c
+msgid "`numpy`, `scipy`, `gwpy`, `pandas`"
+msgstr "`numpy`, `scipy`, `gwpy`, `pandas`"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: 43ce55d008e24c3d95118985a53ae5ae
+msgid "Valid contiguous runs, edge exclusion flags"
+msgstr "有効連続区間、端点除外フラグ"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: f78c7ef4f4d7426fbf8e5ee423e591b3
+msgid "**Catalog & Waveform Alignment**"
+msgstr "**カタログ・波形整列**"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: 638c4cfb9aa2477ead21bf23c431b13e
+msgid "Event timestamp catalog + time series"
+msgstr "イベント時刻カタログ＋時系列"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: 6a76c08d3be3466d9335440a20c7d874
+msgid "Refined event times, channel-aligned arrays"
+msgstr "精密化イベント時刻、チャンネル整列配列"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: 1d020512bd9141e3a2ee94f7b1ef943b
+msgid "Half-open intervals, partial / gap / no_peak status"
+msgstr "半開区間、partial / gap / no_peak ステータス"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: 497bc5c9251c4a259893e4d11a82cd77
+#, fuzzy
+msgid "**Chunked Streaming**"
+msgstr "チャンク分割処理"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: 79d7392ec7974966a6247d963a69ffda
+msgid "Multi-channel file on disk (HDF5)"
+msgstr "ディスク上ファイル（HDF5）"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: 124ee9a524594d01ab6b22d5ffbca658
+msgid "Streaming PSD, time-binned RMS, checkpoints"
+msgstr "ストリーミングPSD、時間ビンRMS、チェックポイント"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: 52d90173c5aa4572858157de334574fd
+msgid "`numpy`, `scipy`, `gwpy`, `h5py`"
+msgstr "`numpy`, `scipy`, `gwpy`, `h5py`"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:28
+#: 6213c8d467314a088bd93ab3e524cce4
+msgid "Bounded memory buffer, resume consistency"
+msgstr "有界メモリバッファ、再開整合性"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:44
+#: a34583f6372048c5896bbe86c6eb6b32
+msgid "Recommended Progression"
+msgstr "推奨される進め方"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:46
+#: ccc6c367fab4422eb551fa48a24fe047
+msgid ""
+"**T1 to T2 Sequential Pathway**: In diagnostic investigations, start with "
+"**Long-term Trends (T1)** to isolate anomalous intervals, transient bursts, "
+"and operational state steps across slow monitor channels. The resulting "
+"candidate event timestamps feed directly into **Event Alignment (T2)**, where"
+" discrete triggers are refined against high-bandwidth witness channels and "
+"converted to structured `SegmentTable` objects."
+msgstr ""
+"**T1 から T2 への連続経路**: "
+"機器診断調査では、まず**長期トレンド（T1）**から開始し、低速監視チャンネル全体における異常区間、過渡バースト、運用状態ステップを切り離します。得られた候補イベントタイムスタンプは直接**イベント整列（T2）**へ引き渡され、広帯域環境チャンネルに対して離散トリガーを精密化し、構造化された"
+" `SegmentTable` オブジェクトへ変換されます。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:47
+#: 12a5160a378348ed920a2379a4dd6ab2
+msgid ""
+"**Independent High-Throughput Pathway (T5)**: When analyzing multi-hour or "
+"multi-day datasets that exceed available workstation RAM, use **Chunked "
+"Processing (T5)** independently. It provides bounded-memory sequential "
+"streaming, stateful digital filtering (`sosfilt(..., zi=...)`), cumulative "
+"PSD estimation, and atomic checkpointing without loading the full recording "
+"into memory."
+msgstr ""
+"**独立した高スループット経路（T5）**: ワークステーションの RAM "
+"を超える数時間〜数日間のデータセットを解析する場合、**チャンク分割処理（T5）**を独立して使用します。全記録をメモリに展開することなく、有界メモリによる順次ストリーミング、状態保持デジタルフィルタリング（`sosfilt(...,"
+" zi=...)`）、累積 PSD 推定、およびアトミックチェックポイントを提供します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:49
+#: 281e7b610a404c3b8da08a2a2d1fada1
+msgid "Related Resources"
+msgstr "関連リソース"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:51
+#: 367b4ed90b274ead94fcbe7dd8ff07d7
+msgid ""
+"[Segment Tables](../segments/intro_segment_table.ipynb): Construct and "
+"manipulate time segments."
+msgstr "[セグメントテーブル](../segments/intro_segment_table.ipynb): 時間セグメントの構築と操作。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:52
+#: ff82abf308374814a26ad11c1481366d
+msgid ""
+"[Case Study: Segment Analysis](../case-studies/case_segment_analysis.ipynb): "
+"End-to-end data quality vetoing workflow."
+msgstr ""
+"[ケーススタディ：セグメント解析](../case-studies/case_segment_analysis.ipynb): "
+"エンドツーエンドのデータ品質インジェクション/拒否ワークフロー。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/index.md:53
+#: 1ccdb656eb41499aaa8f11a3ca56308b
+msgid ""
+"[Time & GPS Utilities](../time_utilities.md): Conversions between GPS, UTC, "
+"and sample index grids."
+msgstr "[時刻・GPSユーティリティ](../time_utilities.md): GPS、UTC、サンプルインデックスグリッド間の相互変換。"
+
+#~ msgid "Long-term Trends"
+#~ msgstr "長期トレンド"
+
+#~ msgid "Event Alignment"
+#~ msgstr "イベント対応付け"
+

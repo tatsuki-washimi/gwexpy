@@ -1,0 +1,116 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version:  GWexpy\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-09-16 22:39+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/event_catalog_timeseries.ipynb:10002
+#: aa91fd8052364860864f7fc6c7c3da34
+msgid "Align Event Catalogs with Time-Series Data"
+msgstr "イベントカタログと時系列データを対応付ける"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/event_catalog_timeseries.ipynb:10004
+#: 581cf8978d3d4932aa00bb518bf0d714
+msgid ""
+"Multi-messenger and detector characterization workflows regularly correlate "
+"discrete event catalogs (e.g., transient glitches, environmental triggers, "
+"auxiliary witness triggers) with multi-channel continuous time series. Rather"
+" than assuming catalog timestamps are exact, high-rate witness channels can "
+"refine the event time, allowing precision alignment of heterogeneous sensors."
+msgstr "マルチメッセンジャー解析や検出器の特性評価ワークフローでは、離散イベントカタログ（突発性グリッチ、環境トリガー、補助環境トリガーなど）と多チャンネル連続時系列を頻繁に対応付けます。カタログのタイムスタンプが厳密であると仮定するのではなく、高レートの環境チャンネルを用いてイベント時刻を精密化し、異種センサを高精度に整列させます。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/event_catalog_timeseries.ipynb:10006
+#: eaa4ace0e80549059cc37e99646aa51b
+msgid "**What you will achieve:**"
+msgstr "**このチュートリアルで達成できること：**"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/event_catalog_timeseries.ipynb:10007
+#: ee3e341996394c7a96c0a88c18c119d9
+msgid ""
+"Generate an 8-event catalog and 3-channel time series (witness, sensor, "
+"displacement) with injected delays, data gaps, and edge events."
+msgstr "注入された遅延、データ欠損、および端点イベントを含む、8イベントのカタログと3チャンネルの時系列（環境、センサ、変位）を生成します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/event_catalog_timeseries.ipynb:10008
+#: 2a5d1e13e3c24741bcc45890a14beb11
+msgid "Use `gwpy.segments.Segment` and `SegmentTable` to manage search windows."
+msgstr "`gwpy.segments.Segment` および `SegmentTable` を使用して探索窓を管理します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/event_catalog_timeseries.ipynb:10009
+#: d0a4cc102c6c4c55ae53d066da0c8f4a
+msgid ""
+"Refine candidate timestamps on positive witness pulses and reject negative"
+"/non-peak triggers."
+msgstr "正の環境パルス上で候補タイムスタンプを精密化し、負のトリガーや非ピークトリガーを除外します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/event_catalog_timeseries.ipynb:10010
+#: 9962404e82454b3ca239a18b4f4cad4c
+msgid ""
+"Extract half-open channel-specific windows (`[start, end)`) and align valid "
+"events without mixing heterogeneous physical units."
+msgstr "半開区間によるチャンネル固有窓（`[start, end)`）を抽出し、異種物理単位を混在させることなく有効なイベントを整列します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/event_catalog_timeseries.ipynb:10011
+#: 8ea99a6322a84031a1addd3738dde560
+msgid ""
+"Export structured catalogs, aligned `.npz` arrays, and verify all catalog "
+"integrity checks."
+msgstr "構造化カタログ、整列された `.npz` 配列を出力し、すべてのカタログ完全性チェックを検証します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/event_catalog_timeseries.ipynb:10013
+#: c3ef0ce1688f49a993b289cd2f3b35b4
+msgid ""
+"**Data type**: Synthetic multi-channel time series (600 s at 128 Hz) and "
+"event catalog."
+msgstr "**データ種別**: 合成多チャンネル時系列（600秒、128 Hz）およびイベントカタログ。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/event_catalog_timeseries.ipynb:20002
+#: b3067ee0be154fa69b0dd5f120342717
+msgid "Environment Setup"
+msgstr "環境のセットアップ"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/event_catalog_timeseries.ipynb:40002
+#: eb365e40d49d4f30b7be60e42a1406a1
+msgid "Catalog and Multi-Channel Data Contract"
+msgstr "カタログと複数チャンネルのデータ契約"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/event_catalog_timeseries.ipynb:60002
+#: f384891f663e4ee38490140609466032
+msgid "Timestamp Refinement using Witness Pulses"
+msgstr "ウィットネスパルスを用いた時刻の精密化"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/event_catalog_timeseries.ipynb:80002
+#: b29d666f9aff4631bf07e942f0ce00c6
+msgid "Visualizing Catalog and Refined Timestamps"
+msgstr "カタログ時刻と精密化時刻の可視化"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/event_catalog_timeseries.ipynb:100002
+#: b712792b718b41209e43fb4d7e7e8359
+msgid "Extracting Channel-Specific Half-Open Windows"
+msgstr "チャンネル別半開区間ウィンドウの切り出し"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/event_catalog_timeseries.ipynb:120002
+#: e52e9839a69b4689aadee3d612eafc89
+msgid "Visualizing Aligned Waveforms and Average Response"
+msgstr "整列波形と平均応答の可視化"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/event_catalog_timeseries.ipynb:140002
+#: 8f9aced6fc7f44e3b26bda77719d61b9
+msgid "Verification and Integrity Checks"
+msgstr "検証とカタログ整合性検査"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/event_catalog_timeseries.ipynb:160002
+#: 1b2f4b9649a94a57ac643921b9eab77d
+msgid "Export Settings and Validation Metrics"
+msgstr "解析設定と検証メトリクスの保存"
+

@@ -1,0 +1,314 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version:  GWexpy\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-09-16 22:39+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:10002
+#: df52eaf19aa3425d8a605d388503fec5
+msgid "Pure-Python Migration of Legacy ROOT Reverberation Time (RT60) Analysis"
+msgstr "レガシー ROOT 残響時間 (RT60) 解析の Pure-Python 移行"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:10004
+#: 902b7ee04ac049d59276509b99eb6e2b
+#, python-brace-format
+msgid ""
+"Historically, reverberation time ($T_{60} / \\mathrm{RT}_{60}$) analyses and "
+"ring-down decay fits in gravitational-wave detector facilities were performed"
+" using legacy ROOT macros (`TGraphErrors`, `TF1`). This tutorial demonstrates"
+" a modern, pure-Python pipeline using `scipy.optimize.curve_fit` and "
+"`pandas`, completely free of CERN ROOT dependencies."
+msgstr ""
+"歴史的に、重力波検出器施設における残響時間（$T_{60} / \\mathrm{RT}_{60}$）解析やリングダウン減衰フィッティングは、レガシーな "
+"ROOT マクロ（`TGraphErrors`, `TF1`）を用いて実行されていました。このチュートリアルでは、CERN ROOT "
+"への依存を完全に排除し、`scipy.optimize.curve_fit` と `pandas` を用いた現代的な純粋 Python "
+"パイプラインを実証します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:10006
+#: d1ee71f2c62b405d8410f05929a0b2d1
+msgid "Scientific and Computational Objectives"
+msgstr "科学的および計算上の目標"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:10007
+#: 27fa3874a49247b783342f121c0cbdef
+msgid ""
+"**Zero External Legacy Dependency**: Execute end-to-end decay analysis "
+"without `ROOT`, `pyroot`, or external C++ libraries."
+msgstr "**外部レガシー依存ゼロ**: `ROOT`、`pyroot`、または外部 C++ ライブラリなしでエンドツーエンドの減衰解析を実行します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:10008
+#: cd69697652b2435c8bf5aec464bce858
+msgid ""
+"**Reverberation Decay Model Semantics**: Model the energy decay as $y(t) = A "
+"\\cdot 1000^{(t_0 - t)/\\mathrm{RT}_{60}}$, representing a "
+"$-60\\,\\mathrm{dB}$ ($10^{-3}$) power drop over time $\\mathrm{RT}_{60}$."
+msgstr ""
+"**残響減衰モデルのセマンティクス**: 時間 $\\mathrm{RT}_{60}$ にわたる "
+"$-60\\,\\mathrm{dB}$（$10^{-3}$）のパワー低下を表す $y(t) = A \\cdot 1000^{(t_0 - "
+"t)/\\mathrm{RT}_{60}}$ としてエネルギー減衰をモデル化します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:10009
+#: 3adca81052b44b86a432345b26d29b99
+msgid ""
+"**Rebinning with Variance Propagation**: Downsample time series by pair-wise "
+"summation while rigorously compounding measurement uncertainties: "
+"$\\sigma_{\\mathrm{rebin}} = \\sqrt{\\sigma_1^2 + \\sigma_2^2}$."
+msgstr ""
+"**分散伝播を伴うリビン**: 測定の不確かさを厳密に合成（$\\sigma_{\\mathrm{rebin}} = \\sqrt{\\sigma_1^2"
+" + \\sigma_2^2}$）しながら、ペアごとの合算により時系列をダウンサンプリングします。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:10010
+#: 69c0ab0a282c44c6b112cfdb264385f2
+msgid ""
+"**Multi-Trial Execution & Branching**: Process 160 synthetic trials (8 events"
+" $\\times$ 20 frequency bands) with baseline subtraction (`ddof=0`), "
+"categorizing results into `accepted`, `requires_likelihood_review`, and "
+"`rejected`."
+msgstr ""
+"**多試行実行と条件分岐**: 基線減算（`ddof=0`）を伴う160回の合成試行（8イベント $\\times$ 20周波数帯域）を処理し、結果を "
+"`accepted`、`requires_likelihood_review`、および `rejected` に分類します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:10011
+#: 63c5825d76df498cb04a0ccfd6ac7f0d
+msgid ""
+"**Round-Trip Integrity**: Export structured CSV tables and verify exact "
+"round-trip schema and value recovery."
+msgstr "**往復完全性**: 構造化 CSV テーブルを出力し、厳密な往復スキーマと数値の復元を検証します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:20002
+#: 8ad6c620900f48b6b0470cf0576da490
+msgid "Environment Setup"
+msgstr "環境のセットアップ"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:40002
+#: 90cc1a116eb6481cb89101fdc1763492
+msgid "1. Decay Model and Rebinning Semantics"
+msgstr "1. 減衰モデルとリビニングセマンティクス"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:40004
+#: 256dae1474a64032a223a28aa57dcce4
+msgid ""
+"We define the exponential $-60\\,\\mathrm{dB}$ reverberation decay model "
+"where amplitude $A$ is defined at reference time $t = 0.1\\,\\mathrm{s}$: "
+"$$y(t) = A \\cdot 1000^{(0.1 - t) / \\mathrm{RT}_{60}}$$ At $t = "
+"0.1\\,\\mathrm{s}$, $y = A$. At $t = 0.1 + \\mathrm{RT}_{60}$, $y = A / 1000$"
+" ($-60\\,\\mathrm{dB}$). The signal onset is at $t_{\\mathrm{onset}} = "
+"0.05\\,\\mathrm{s}$, providing valid decaying data throughout the entire "
+"standard fit interval $t \\in [0.05, 0.5]\\,\\mathrm{s}$."
+msgstr ""
+"振幅 $A$ が基準時刻 $t = 0.1\\,\\mathrm{s}$ で定義される指数関数的 $-60\\,\\mathrm{dB}$ "
+"残響減衰モデルを定義します： $$y(t) = A \\cdot 1000^{(0.1 - t) / \\mathrm{RT}_{60}}$$ $t = "
+"0.1\\,\\mathrm{s}$ で $y = A$、$t = 0.1 + \\mathrm{RT}_{60}$ で $y = A / "
+"1000$（$-60\\,\\mathrm{dB}$）となります。信号の立ち上がりは $t_{\\mathrm{onset}} = "
+"0.05\\,\\mathrm{s}$ であり、標準フィッティング区間 $t \\in [0.05, 0.5]\\,\\mathrm{s}$ "
+"の全域にわたって有効な減衰データが提供されます。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:40009
+#: 2a901e21072546feba5bd1b331d41d6f
+msgid ""
+"Pairwise rebinning combines two consecutive time bins: $$t_{\\mathrm{rebin}} "
+"= \\frac{t_{2i} + t_{2i+1}}{2}, \\quad y_{\\mathrm{rebin}} = y_{2i} + "
+"y_{2i+1}, \\quad \\sigma_{\\mathrm{rebin}} = \\sqrt{\\sigma_{2i}^2 + "
+"\\sigma_{2i+1}^2}$$"
+msgstr ""
+"ペア単位のリビンは2つの連続する時間ビンを結合します： $$t_{\\mathrm{rebin}} = \\frac{t_{2i} + "
+"t_{2i+1}}{2}, \\quad y_{\\mathrm{rebin}} = y_{2i} + y_{2i+1}, \\quad "
+"\\sigma_{\\mathrm{rebin}} = \\sqrt{\\sigma_{2i}^2 + \\sigma_{2i+1}^2}$$"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:60002
+#: 63339dacd7ac4819b1f682be6c000ce3
+msgid "2. Multi-Trial Synthetic Simulation (160 Trials)"
+msgstr "2. 複数試行の合成シミュレーション (160試行)"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:60004
+#: cb0213b07d1a4a41939c5dcdd7eafb49
+msgid ""
+"We simulate 8 acoustic events across 20 frequency bands (center frequencies "
+"500 Hz to 1450 Hz in 50 Hz steps), totaling 160 trials. Each trial includes:"
+msgstr ""
+"20周波数帯域（中心周波数 500 Hz〜1450 Hz、50 "
+"Hz刻み）にわたる8回の音響イベントをシミュレーションし、計160回の試行を生成します。各試行には以下が含まれます："
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:60006
+#: b85d973995b64ca88d28c73ff5d0eabf
+#, python-brace-format
+msgid ""
+"Baseline noise estimated from $[-0.5, 0.0]\\,\\mathrm{s}$ using `np.std(..., "
+"ddof=0)`."
+msgstr "`np.std(..., ddof=0)` を用いて $[-0.5, 0.0]\\,\\mathrm{s}$ から基線ノイズを推定します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:60007
+#: 1c6c3f36caae4ef89d31a98734f81b0d
+msgid ""
+"Pre-subtraction uncertainty $\\sigma = \\sqrt{\\sigma_{\\mathrm{bkg}}^2 + "
+"(0.05 y)^2}$."
+msgstr "引き算前の不確かさ $\\sigma = \\sqrt{\\sigma_{\\mathrm{bkg}}^2 + (0.05 y)^2}$。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:60008
+#: 134c22f9c12e4147911c87e6c3326cc6
+msgid "Factor-of-2 rebinning."
+msgstr "2倍のリビン。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:60009
+#: 832d782598734d22bbdadabbd760a14a
+#, python-brace-format
+msgid ""
+"Non-linear least-squares fitting via `scipy.optimize.curve_fit` over $t \\in "
+"[0.05, 0.5]\\,\\mathrm{s}$."
+msgstr ""
+"$t \\in [0.05, 0.5]\\,\\mathrm{s}$ にわたる `scipy.optimize.curve_fit` "
+"による非線形最小二乗フィッティング。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:60010
+#: c97970a08705451986bc28d6b8a8fb56
+msgid "Legacy acceptance branching:"
+msgstr "レガシー合否判定分岐："
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:60011
+#: 5535809c1b44480a944bd44c9925725b
+msgid ""
+"**accepted**: $\\mathrm{RT}_{60} > 0.05\\,\\mathrm{s}$ and "
+"$\\sigma_{\\mathrm{RT}_{60}} / \\mathrm{RT}_{60} < 0.15$"
+msgstr ""
+"**accepted（採択）**: $\\mathrm{RT}_{60} > 0.05\\,\\mathrm{s}$ かつ "
+"$\\sigma_{\\mathrm{RT}_{60}} / \\mathrm{RT}_{60} < 0.15$"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:60012
+#: f5593b546e3148c293129f6d5d9e154c
+msgid ""
+"**requires_likelihood_review**: $\\mathrm{RT}_{60} < 2 "
+"\\sigma_{\\mathrm{RT}_{60}}$ (low SNR / poor constraint)"
+msgstr ""
+"**requires_likelihood_review（尤度精査要）**: $\\mathrm{RT}_{60} < 2 "
+"\\sigma_{\\mathrm{RT}_{60}}$（低S/N比 / 制約不足）"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:60013
+#: 0230535b0f8d4aaeb5020c3461b6d814
+msgid "**rejected**: other unconstrained fits."
+msgstr "**rejected（棄却）**: その他の制約を満たさないフィット。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:80002
+#: 3f844b6408a8406f90f3ca09cef17819
+msgid "3. Band Aggregation and Summary Statistics"
+msgstr "3. 周波数帯域集約と要約統計量"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:80004
+#: 7e6e2d36f65543999aa4368dffae946e
+msgid ""
+"For each frequency band, we compute summary statistics over all accepted "
+"trials:"
+msgstr "各周波数帯域について、採択されたすべての試行にわたる要約統計量を算出します："
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:80005
+#: 8b96777ae24c422695997c9ee856ceca
+msgid "Number of accepted events $N_{\\mathrm{acc}}$"
+msgstr "採択されたイベント数 $N_{\\mathrm{acc}}$"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:80006
+#: 111a1450b0f34ef79fece5dc2c5e3147
+msgid "Mean reverberation time $\\overline{\\mathrm{RT}}_{60}$"
+msgstr "平均残響時間 $\\overline{\\mathrm{RT}}_{60}$"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:80007
+#: e4f163d8cd004bedb4248a7e8a8d93bf
+msgid "Standard deviation $s_{\\mathrm{RT}_{60}}$"
+msgstr "標準偏差 $s_{\\mathrm{RT}_{60}}$"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:100002
+#: a4f7e1a93e394cfab13868d5fdca0e92
+msgid "4. Visual Diagnostics and Artifact Generation"
+msgstr "4. 診断可視化と成果物生成"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:100004
+#: 0adb736ee86f4c46879192c24134b5e5
+msgid "We generate three required diagnostic figures and display them inline:"
+msgstr "3つの必須診断図面を生成し、インライン表示します："
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:100005
+#: c0d6b69b567144e3b32379635dca51e4
+msgid ""
+"`figures/rt60_sample_fit.png`: Sample fit showing raw data, rebinned data, "
+"fitted model, and residual."
+msgstr "`figures/rt60_sample_fit.png`: 生データ、リビン後データ、フィットモデル、残差を示す代表的フィット図。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:100006
+#: 095376de16f245589763715b09479238
+msgid ""
+"`figures/rt60_distribution.png`: Histogram of fitted RT60 vs true values for "
+"accepted trials."
+msgstr "`figures/rt60_distribution.png`: 採択された試行における推定 RT60 と真値のヒストグラム。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:100007
+#: 458ffd3f5cc44f1bafd77010de401dd9
+msgid "`figures/rt60_by_band.png`: Mean RT60 with error bars across frequency bands."
+msgstr "`figures/rt60_by_band.png`: 周波数帯域ごとの誤差棒付き平均 RT60。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:120002
+#: fe07b79228a940a182216d3cab2ff912
+msgid "5. Defensive Verification and Quality Metrics"
+msgstr "5. 防御的検証と品質指標"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:120004
+#: 18fef18753a04efdb3eeb413cd3c5cc8
+msgid "We verify:"
+msgstr "以下の項目を検証します："
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:120005
+#: 97811b1f6431446d9e3922e5d487326d
+msgid ""
+"**root_native_no_root_required**: Confirms CERN ROOT is not required or "
+"imported."
+msgstr "**root_native_no_root_required**: CERN ROOT が要求されず、インポートされていないことを確認。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:120006
+#: ce8ba704ff0e4b1b87d3830b2952d63c
+#, python-brace-format
+msgid ""
+"**rt60_model_semantics**: Exact mathematical -60 dB at $t_0 + "
+"\\mathrm{RT}_{60}$."
+msgstr "**rt60_model_semantics**: $t_0 + \\mathrm{RT}_{60}$ で厳密に -60 dB となる数学的整合性。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:120007
+#: 219e4437c9174a7480a8466043a81bd9
+msgid "**rt60_rebin_semantics**: Quadrature error compounding."
+msgstr "**rt60_rebin_semantics**: 2乗和の平方根による誤差伝播。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:120008
+#: 0954661f496249a29815cac6ab236c07
+msgid "**rt60_known_truth**: Median relative error $< 5\\%$ for accepted fits."
+msgstr "**rt60_known_truth**: 採択されたフィットにおいて相対誤差の中央値 $< 5\\%$。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:120009
+#: 20cd57b1eef644d8997610d502deb135
+msgid "**rt60_table_integrity**: Exactly 160 trials recorded."
+msgstr "**rt60_table_integrity**: 厳密に160回の試行が記録されていること。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:120010
+#: ea9f1bb4640840e199556fe84b594410
+msgid "**rt60_legacy_selection**: At least 100 accepted trials."
+msgstr "**rt60_legacy_selection**: 少なくとも100回以上の試行が採択されていること。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:120011
+#: 431124a3c8df487a82dd966f82123766
+msgid ""
+"**rt60_likelihood_branch**: At least 1 trial categorized into "
+"`requires_likelihood_review`."
+msgstr ""
+"**rt60_likelihood_branch**: 少なくとも1試行以上が `requires_likelihood_review` "
+"に分類されていること。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/interop/root_to_python_migration.ipynb:120012
+#: bb747456430d4c4194fda1d07be44114
+msgid "**rt60_export_roundtrip**: Round-trip validation of CSV tables."
+msgstr "**rt60_export_roundtrip**: CSV テーブルの往復検証。"
+

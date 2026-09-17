@@ -1,0 +1,128 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version:  GWexpy\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-09-16 22:39+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:10002
+#: e99031890b5c49759b0d8c5fa8df56a6
+msgid "Process Long Time Series in Chunks"
+msgstr "長時間時系列をチャンク分割して処理する"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:10004
+#: 15a943a7cc41435f91b93e24c54bcd47
+msgid ""
+"When processing continuous observations spanning hours or days, loading "
+"complete multi-channel waveforms into RAM causes memory exhaustion or system "
+"throttling. Streaming data in fixed-size blocks allows computing summary "
+"statistics, power spectral densities (PSDs), and filtered streams within a "
+"strictly bounded memory footprint."
+msgstr "数時間から数日に及ぶ連続観測データを処理する際、完全な多チャンネル波形をRAMに一括ロードするとメモリ枯渇やシステムのスロットリングを引き起こします。固定サイズのブロックでデータをストリーミング処理することで、厳密に有界なメモリ消費量の中で要約統計量、パワースペクトル密度（PSD）、およびフィルタ処理されたストリームを算出できます。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:10006
+#: 9932f1b4c5f6453b8eebb2105b8e123e
+msgid "**What you will achieve:**"
+msgstr "**このチュートリアルで達成できること：**"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:10007
+#: c7a62d485981406b910fb2553e2101f5
+msgid ""
+"Generate a multi-channel dataset on disk in HDF5 format in streaming blocks "
+"without allocating full arrays."
+msgstr "全配列をメモリ確保することなく、HDF5形式の多チャンネルデータセットをストリーミングブロック単位でディスク上に生成します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:10008
+#: ffdd5133c2d5418e9000c68183a1b49f
+msgid ""
+"Maintain exact mathematical equivalence with full-array processing for "
+"additive statistics (sum of squares for RMS)."
+msgstr "加加統計量（RMSのための二乗和）について、配列一括処理と厳密な数学的等価性を維持します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:10009
+#: d063012f24de485c8d8e18dd79dd4d22
+msgid ""
+"Compute streaming Welch PSDs without resetting FFT window boundaries across "
+"chunk edges."
+msgstr "チャンク境界でFFT窓境界をリセットすることなく、ストリーミングWelch PSDを算出します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:10010
+#: bbbeaa967c1d4030b14ca9e7cac3c429
+msgid ""
+"Pass IIR filter state vectors (`sosfilt` with initial state `zi`) across "
+"chunk boundaries for seamless continuous filtering."
+msgstr "チャンク境界をまたいでIIRフィルタの状態ベクトル（初期状態 `zi` を伴う `sosfilt`）を受け渡し、継ぎ目のない連続フィルタリングを実現します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:10011
+#: 4de00b278ecf44f39851ea6f091c9e76
+msgid ""
+"Implement atomic JSON/NPZ checkpoints to ensure safe interrupt-and-resume "
+"execution without duplicating data."
+msgstr "アトミックなJSON/NPZチェックポイントを実装し、データの重複計算なしに安全な中断・再開実行を保証します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:10012
+#: 37b49a2948ae429b8511a100961c6feb
+msgid ""
+"Verify buffer memory bounds, irregular chunk boundaries, and empty/short "
+"input handling."
+msgstr "バッファメモリ上限、不規則なチャンク境界、および空/短小入力の処理を検証します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:10014
+#: 43f31a0ba81f4e04a552a2ac541c6b0e
+msgid "**Data type**: Synthetic HDF5 dataset (30 min, 2 channels at 256 Hz)."
+msgstr "**データ種別**: 合成HDF5データセット（30分、2チャンネル、256 Hz）。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:20002
+#: a19627d000334c2da6246b147457580b
+msgid "Environment Setup"
+msgstr "環境のセットアップ"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:40002
+#: 1f884dbe48e644299ff510277032194b
+msgid "Block-by-Block Dataset Generation"
+msgstr "ブロック単位でのデータセット生成"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:60002
+#: 2521c808c6fa4caaa24f943161f0c8b8
+msgid "Streaming Analysis Architecture"
+msgstr "ストリーミング解析のアーキテクチャ"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:80002
+#: 117def14eb604de898199c70ef5772fd
+msgid "Continuous Filtering across Chunk Boundaries"
+msgstr "チャンク境界を跨ぐ連続フィルタリング"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:100002
+#: ef9e11c494c244e39e57038012908c84
+msgid "Atomic Checkpointing and Streaming Analysis"
+msgstr "アトミックなチェックポイントとストリーミング解析"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:120002
+#: fdd8de17d48a429383ce4ad86d566b90
+msgid "Checkpoint Interrupt and Resume Verification"
+msgstr "チェックポイントの中断と再開の検証"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:140002
+#: 17b7d88d680e48b69e7cad141c2d7e28
+msgid "Irregular Chunk Boundaries Verification"
+msgstr "不規則なチャンク境界の検証"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:160002
+#: 3a0d61bba91d40b9aabc76439baf89ff
+msgid "Visualizing Streaming Summaries and Spectra"
+msgstr "ストリーミングサマリーとスペクトルの可視化"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/chunked_long_data.ipynb:180002
+#: 36d9e34d96f84c9cad64931fc452bcfc
+msgid "Verification Metrics and Bounds Assessment"
+msgstr "検証メトリクスとバッファ評価"
+

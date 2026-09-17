@@ -1,0 +1,112 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version:  GWexpy\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-09-16 22:39+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/long_term_trend.ipynb:10002
+#: 3af9682554734c558c98dbe441420fe1
+msgid "Analyze Long-Term Trends and Detect State Changes"
+msgstr "長期トレンドを解析して状態変化を見つける"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/long_term_trend.ipynb:10004
+#: a1cbc601d31f48b5b193725d8365cf41
+msgid ""
+"Continuous monitoring of gravitational-wave detector subsystems involves "
+"processing slow-cadence sensor records (e.g., temperatures, seismometers, "
+"vacuum gauges) over spans of 24 to 48 hours. The goal is to distinguish slow "
+"diurnal drifts from short-duration transient pulses and persistent step-like "
+"state changes, while properly handling data gaps."
+msgstr "重力波検出器サブシステムの継続的監視では、24〜48時間にわたる低速サンプリングのセンサ記録（温度計、地震計、真空計など）を処理します。目的は、データ欠損を適切に処理しながら、ゆっくりとした日周ドリフト、短時間の過渡パルス、および持続的なステップ状状態変化を正確に識別することです。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/long_term_trend.ipynb:10006
+#: 3c7cf16acf394bbd973852695a0eedbe
+msgid "**What you will achieve:**"
+msgstr "**このチュートリアルで達成できること：**"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/long_term_trend.ipynb:10007
+#: 3d7aa504011c4818a13c6bdde298ab41
+msgid ""
+"Generate a 48-hour 4-channel slow sensor dataset with diurnal drift, "
+"transient pulses, state changes, and data gaps."
+msgstr "日周ドリフト、過渡パルス、状態変化、データ欠損を含む48時間・4チャンネルの低速センサデータセットを生成します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/long_term_trend.ipynb:10008
+#: f194e7cd5e4b4dae82ae8664420822da
+msgid ""
+"Estimate a low-pass baseline using contiguous valid segments without bridging"
+" across missing data."
+msgstr "欠損データをまたいで補間することなく、連続する有効セグメントのみを用いて低域通過基線を推定します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/long_term_trend.ipynb:10009
+#: bc89e16234b3483da8242e405663fd83
+msgid ""
+"Detect positive transient pulses on the residual stream and step-like "
+"transitions on sample-to-sample differences."
+msgstr "残差系列上の正の過渡パルスと、標本間差分に基づくステップ状の遷移を検出します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/long_term_trend.ipynb:10010
+#: 8969c983356f4388b95b70fbb0946133
+msgid "Verify gap policies and export structured event catalogs with unit sidecars."
+msgstr "ギャップ処理ポリシーを検証し、単位情報を付加した構造化イベントカタログを出力します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/long_term_trend.ipynb:10011
+#: 0ab6e3f5885242068ddc49c6fb12b2c1
+msgid "Display inline figures and verify all required metrics."
+msgstr "インライン図面を表示し、すべての必須メトリクスを検証します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/long_term_trend.ipynb:10013
+#: b7d5b3fea0284881b3725e6d6717c50c
+msgid "**Data type**: Synthetic sensor voltage records (48 hours at dt=60 s)."
+msgstr "**データ種別**: 合成センサ電圧記録（48時間、サンプリング周期 dt=60秒）。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/long_term_trend.ipynb:20002
+#: c00cf2eaed054d6fb7a22f2f932f304e
+msgid "Environment Setup"
+msgstr "環境のセットアップ"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/long_term_trend.ipynb:40002
+#: 3d77febd98fe45dd8984860d9790bcb8
+msgid "Data Contract and Synthetic Fixture Generation"
+msgstr "データ契約と合成データの生成"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/long_term_trend.ipynb:60002
+#: 8630244589bf40cdb53494cb1cad9bfd
+msgid "Visualizing Raw Sensor Trends"
+msgstr "生センサートレンドの可視化"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/long_term_trend.ipynb:80002
+#: 8bc429b0a9114e14924b5937cce1d38b
+msgid "Estimating Baselines across Contiguous Valid Blocks"
+msgstr "連続有効ブロックにわたる基線の推定"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/long_term_trend.ipynb:100002
+#: 364e458e8f944ef3b57891e6903b0957
+msgid "Transient Pulse and Step Change Detection"
+msgstr "過渡パルスおよびステップ状状態変化の検出"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/long_term_trend.ipynb:120002
+#: 4c528a4de5a449dabd3f1117c5035fb0
+msgid "Visualizing Detected Transients and Steps"
+msgstr "検出された過渡現象とステップの可視化"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/long_term_trend.ipynb:140002
+#: 7f8d01ec4a1c4e0c9d9b3cd69f49b1d4
+msgid "Negative Testing: Gap Channels and Empty Variants"
+msgstr "負例テスト：欠損チャンネルと空テーブル"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/monitoring/long_term_trend.ipynb:160002
+#: db56b70ae5d74b86a22a9011f8e5d2dc
+msgid "Export Settings and Verification Metrics"
+msgstr "解析設定と検証メトリクスの保存"
+

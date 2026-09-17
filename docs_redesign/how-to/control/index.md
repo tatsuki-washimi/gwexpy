@@ -33,6 +33,13 @@ Compare Zero-Order Hold and Tustin discretization of a continuous plant in both 
 Extract resonance frequencies, damping ratios, and mode shapes from measured vibration data without a known excitation force.
 :::
 
+:::{grid-item-card} Compare Control Models with Measured Frequency Responses
+:link: control_frd_roundtrip
+:link-type: doc
+
+MIMO and SISO transfer function round-trip conversions between python-control and GWexpy FrequencySeries with physical units.
+:::
+
 ::::
 
 ```{toctree}
@@ -42,4 +49,5 @@ advanced_control_basics
 advanced_control_modeling
 advanced_control_discretization
 advanced_modal_analysis
+control_frd_roundtrip
 ```

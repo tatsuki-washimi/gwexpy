@@ -1,0 +1,220 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version:  GWexpy\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-09-16 22:39+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:10002
+#: 3f63a132e365469796a10be83ecb5077
+msgid "Calibration Transfer Function and Physical Units Contract"
+msgstr "校正伝達関数と物理単位契約"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:10004
+#: 370eabf540fb4e798ae60203df63cbc4
+msgid ""
+"This tutorial demonstrates rigorous application of frequency-dependent "
+"calibration transfer functions $C(f) = Y(f) / X(f)$ with unit `count / m`, "
+"converting raw digital counts into physical displacement meters "
+"$[\\mathrm{m}]$ and differential arm strain $[1 / \\sqrt{\\mathrm{Hz}}]$."
+msgstr ""
+"このチュートリアルでは、単位 `count / m` を持つ周波数依存の校正伝達関数 $C(f) = Y(f) / X(f)$ "
+"を厳密に適用し、生のデジタルカウントを物理変位メートル $[\\mathrm{m}]$ および差動アームひずみ $[1 / "
+"\\sqrt{\\mathrm{Hz}}]$ へ変換する手法を実証します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:10006
+#: 46b0fc26b3b846c4af612594e6f5e4d8
+msgid "Scientific and Computational Objectives"
+msgstr "科学的および計算上の目標"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:10007
+#: 668e8121efcd40f28cbb80ae3246c47a
+msgid ""
+"**Physical I/O Contract**: Define frequency response $C(f)$ [count / m] and "
+"apply the inverse calibration $X(f) = Y(f) / C(f)$ to recover physical "
+"displacement."
+msgstr ""
+"**物理入出力規約**: 周波数応答 $C(f)$ [count / m] を定義し、逆校正 $X(f) = Y(f) / C(f)$ "
+"を適用して物理変位を復元します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:10008
+#: 413492c767d9465186e893377fb0dbe3
+#, python-brace-format
+msgid ""
+"**Harmonic Tone Recovery**: Inject 3 discrete calibration lines (40 Hz, 80 "
+"Hz, 160 Hz) and verify $<2\\%$ amplitude recovery and $<10^{-6}$ rad phase "
+"consistency."
+msgstr ""
+"**高調波トーン信号の復元**: 3つの離散校正ライン（40 Hz, 80 Hz, 160 Hz）を注入し、振幅復元誤差 $<2\\%$ および位相整合性"
+" $<10^{-6}$ rad を確認します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:10009
+#: 91672f2990864e3396a09f4c954a82d0
+msgid ""
+"**ASD & PSD Dimensional Consistency**: Verify that displacement ASD has unit "
+"$[\\mathrm{m} / \\sqrt{\\mathrm{Hz}}]$ and PSD has unit $[\\mathrm{m}^2 / "
+"\\mathrm{Hz}]$, and compute arm strain sensitivity $h(f) = X(f) / L$ ($L = "
+"3000\\,\\mathrm{m}$)."
+msgstr ""
+"**ASD・PSD 次元整合性**: 変位 ASD の単位が $[\\mathrm{m} / \\sqrt{\\mathrm{Hz}}]$、PSD "
+"の単位が $[\\mathrm{m}^2 / \\mathrm{Hz}]$ であることを検証し、アームひずみ感度 $h(f) = X(f) / L$（$L"
+" = 3000\\,\\mathrm{m}$）を算出します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:10010
+#: 3c2fc6d2869244669b2e7b8a7423650b
+msgid ""
+"**Defensive Validation**: Catch wrong-direction conversions via Astropy "
+"`UnitConversionError`, catch frequency-grid mismatches, and handle zero-"
+"response DC singularities safely."
+msgstr ""
+"**防御的検証**: Astropy の `UnitConversionError` "
+"による逆方向変換の検出、周波数グリッド不一致の検出、およびDC特異点（ゼロ応答）の安全な除外を実証します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:20002
+#: 7b9269a152884d3884a3c901188cc5c8
+msgid "Environment Setup"
+msgstr "環境のセットアップ"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:40002
+#: cee0b160b89f476894e4d7ab8ef9d433
+msgid "1. Physical Signal and Calibration Model"
+msgstr "1. 物理信号と校正モデル"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:40004
+#: 62f9734a3894406b80ca9dc24cc7c55b
+msgid ""
+"We simulate a physical displacement signal $x_{\\mathrm{phys}}(t)$ [m] "
+"containing three calibrated sinusoidal injection lines and broadband "
+"background displacement noise."
+msgstr "3本の校正用正弦波注入ラインと広帯域背景変位ノイズを含む物理変位信号 $x_{\\mathrm{phys}}(t)$ [m] をシミュレーションします。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:40006
+#: 06f2335e5f7e4b2c9edd17fe419a65ce
+#, python-brace-format
+msgid ""
+"The instrument readout introduces a frequency-dependent transfer function "
+"$C(f)$ [count / m] with DC gain $G = 1.0 \\times 10^9\\,\\mathrm{ct/m}$, "
+"high-frequency roll-off pole at $f_p = 300\\,\\mathrm{Hz}$, zero at $f_z = "
+"30\\,\\mathrm{Hz}$, and fixed pipeline delay $\\tau = 4 / f_s\\,\\mathrm{s}$."
+msgstr ""
+"測定器の読み出し系は、DCゲイン $G = 1.0 \\times 10^9\\,\\mathrm{ct/m}$、高周波ロールオフ極 $f_p = "
+"300\\,\\mathrm{Hz}$、零点 $f_z = 30\\,\\mathrm{Hz}$、および固定パイプライン遅延 $\\tau = 4 / "
+"f_s\\,\\mathrm{s}$ を持つ周波数依存の伝達関数 $C(f)$ [count / m] を導入します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:60002
+#: 05073c4de2b343b8bc2be74f667a26d9
+msgid "2. Calibration Recovery and Harmonic Line Verification"
+msgstr "2. 校正復元と調和線の検証"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:60004
+#: 817e6ccc96a44bcba22b473c30e79cbc
+msgid ""
+"To calibrate from raw counts $Y(f)$ back to displacement $X(f)$, we divide by"
+" the complex response: $$X_{\\mathrm{cal}}(f) = \\frac{Y(f)}{C(f)}$$ "
+"Dimensional consistency dictates: $$\\frac{\\mathrm{ct}}{\\mathrm{ct} / "
+"\\mathrm{m}} = \\mathrm{m}$$"
+msgstr ""
+"生のカウント $Y(f)$ から変位 $X(f)$ を復元校正するために、複素応答で除算します： $$X_{\\mathrm{cal}}(f) = "
+"\\frac{Y(f)}{C(f)}$$ 次元の整合性より次が成り立ちます： $$\\frac{\\mathrm{ct}}{\\mathrm{ct} / "
+"\\mathrm{m}} = \\mathrm{m}$$"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:60009
+#: 1c2565d222ff42fcbf3cc8c263fc9a21
+msgid "We verify amplitude and phase recovery at the three injected line frequencies."
+msgstr "注入された3つのライン周波数において、振幅および位相の復元精度を検証します。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:80002
+#: cf491aeda5c140f696b5d400984e5c15
+msgid "3. Defensive Unit & Grid Consistency Guards"
+msgstr "3. 防御的単位・グリッド整合性ガード"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:80004
+#: ccf5c39f04a74cde86fef74b61b36ee9
+msgid "We verify essential safety checks:"
+msgstr "以下の必須の安全性チェックを検証します："
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:80005
+#: 091df2c72cee46df81303a8dcace5c13
+msgid ""
+"**Wrong-direction guard**: Multiplying $Y \\cdot C$ or attempting "
+"`raw_counts.to(u.m)` without calibration must raise `UnitConversionError`."
+msgstr ""
+"**逆方向変換ガード**: $Y \\cdot C$ の乗算や校正なしの `raw_counts.to(u.m)` は "
+"`UnitConversionError` を発生させる必要があります。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:80006
+#: 0708824ee63347f3b332a92e41f1078c
+msgid ""
+"**Frequency grid mismatch guard**: Incompatible frequency vectors (different "
+"$\\Delta f$ or lengths) must be detected before division."
+msgstr "**周波数グリッド不一致ガード**: 互換性のない周波数ベクトル（異なる $\\Delta f$ や長さ）は除算前に検出される必要があります。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:80007
+#: f6155cd2ba7047bca3c14370cd472404
+msgid ""
+"**Zero-response DC singularity guard**: Zero response at DC or nodes must be "
+"safely masked and excluded without artificial small values."
+msgstr "**ゼロ応答DC特異点ガード**: DCやノードでのゼロ応答は、人工的な微小値に置き換えることなく安全にマスク・除外される必要があります。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:100002
+#: c532d41417cd4048bebb166adb95b634
+msgid "4. Spectral Densities (ASD, PSD) and Strain Sensitivity"
+msgstr "4. スペクトル密度（ASD, PSD）とひずみ感度"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:100004
+#: 1daf38f9a40540c0b0bde4513478118c
+msgid ""
+"We compute the Amplitude Spectral Density (ASD) and Power Spectral Density "
+"(PSD) of calibrated displacement, and convert to differential arm strain "
+"$h(f) = X(f) / L$ with detector arm length $L = 3000\\,\\mathrm{m}$: $$A_x(f)"
+" = \\frac{A_y(f)}{|C(f)|} \\quad [\\mathrm{m} / \\sqrt{\\mathrm{Hz}}]$$ "
+"$$P_x(f) = \\frac{P_y(f)}{|C(f)|^2} = A_x(f)^2 \\quad [\\mathrm{m}^2 / "
+"\\mathrm{Hz}]$$ $$h(f) = \\frac{A_x(f)}{L} \\quad [1 / "
+"\\sqrt{\\mathrm{Hz}}]$$"
+msgstr ""
+"校正済み変位の振幅スペクトル密度（ASD）およびパワースペクトル密度（PSD）を算出し、検出器アーム長 $L = 3000\\,\\mathrm{m}$ "
+"を用いて差動アームひずみ $h(f) = X(f) / L$ に変換します：\n"
+"$$A_x(f) = \\frac{A_y(f)}{|C(f)|} \\quad [\\mathrm{m} / "
+"\\sqrt{\\mathrm{Hz}}]$$\n"
+"$$P_x(f) = \\frac{P_y(f)}{|C(f)|^2} = A_x(f)^2 \\quad [\\mathrm{m}^2 / "
+"\\mathrm{Hz}]$$\n"
+"$$h(f) = \\frac{A_x(f)}{L} \\quad [1 / \\sqrt{\\mathrm{Hz}}]$$"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:120002
+#: c6eb02f2007a468582f0452950a742c0
+msgid "5. Visual Diagnostics and Artifact Generation"
+msgstr "5. 診断可視化と成果物生成"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:120004
+#: 8b82ac0f249640a19508d53ac8c8663e
+msgid "We generate three required diagnostic figures and display them inline:"
+msgstr "3つの必須診断図面を生成し、インライン表示します："
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:120005
+#: e6cf7cf9fce04506a6d5baaba2ee5d4b
+msgid "`calibration_response.png`: Bode magnitude and phase response of $C(f)$."
+msgstr "`calibration_response.png`: $C(f)$ のボード振幅・位相応答。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:120006
+#: 8deba65fa6694573b0142d27464b32f6
+msgid ""
+"`spectrum_calibration.png`: Complex spectrum recovery showing raw counts vs "
+"calibrated displacement."
+msgstr "`spectrum_calibration.png`: 生カウントと校正済み変位を示す複素スペクトル復元。"
+
+#: ../../../home/washimi/work/gwexpy-worktrees/docs-remediation-20260916/docs_redesign/how-to/calibration/calibration_units_contract.ipynb:120007
+#: 7718f30b1349484081696f2fe62e2ea9
+msgid ""
+"`asd_psd_comparison.png`: Calibrated displacement ASD and corresponding "
+"strain sensitivity."
+msgstr "`asd_psd_comparison.png`: 校正済み変位 ASD および対応するひずみ感度。"
+

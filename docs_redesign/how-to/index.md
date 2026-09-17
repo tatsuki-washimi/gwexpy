@@ -101,6 +101,20 @@ Track contributions across auxiliary channels and fields.
 Build, visualize and analyze data-quality segments and tabular results.
 :::
 
+:::{grid-item-card} {octicon}`graph;1.5em;sd-mr-1` Monitoring & events
+:link: monitoring/index
+:link-type: doc
+
+Long-term trends, event catalog correlation, and chunked streaming workflows.
+:::
+
+:::{grid-item-card} {octicon}`meter;1.5em;sd-mr-1` Calibration & units
+:link: calibration/index
+:link-type: doc
+
+Frequency-dependent calibration transfer functions and physical unit contracts.
+:::
+
 :::{grid-item-card} {octicon}`globe;1.5em;sd-mr-1` Visualization
 :link: viz/index
 :link-type: doc
@@ -149,6 +163,8 @@ fitting/index
 control/index
 coupling/index
 segments/index
+monitoring/index
+calibration/index
 viz/index
 ```
 
