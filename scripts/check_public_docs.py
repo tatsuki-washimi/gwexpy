@@ -8,7 +8,7 @@ import json
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.error import URLError
-from urllib.parse import unquote, urlsplit
+from urllib.parse import unquote, urljoin, urlsplit
 from urllib.request import Request, urlopen
 
 ENTRY_PAGES = (
@@ -51,6 +51,31 @@ AUDIENCE_ROUTES = (
     "explanation/gwexpy_for_gwpy_users.html",
     "how-to/index.html",
 )
+
+# Nine logical workflow pages published by the monitoring / spectral /
+# control / calibration / interop program (2 landing + 7 tutorial pages).
+WORKFLOW_PAGES = (
+    "how-to/monitoring/index.html",
+    "how-to/monitoring/long_term_trend.html",
+    "how-to/monitoring/event_catalog_timeseries.html",
+    "how-to/monitoring/chunked_long_data.html",
+    "how-to/spectral/resonance_discovery_q.html",
+    "how-to/control/control_frd_roundtrip.html",
+    "how-to/calibration/index.html",
+    "how-to/calibration/calibration_units_contract.html",
+    "how-to/interop/root_to_python_migration.html",
+)
+
+# Tutorial workflow pages that must expose a downloadable notebook.
+WORKFLOW_NOTEBOOK_PAGES = {
+    "how-to/monitoring/long_term_trend.html": "long_term_trend.ipynb",
+    "how-to/monitoring/event_catalog_timeseries.html": "event_catalog_timeseries.ipynb",
+    "how-to/monitoring/chunked_long_data.html": "chunked_long_data.ipynb",
+    "how-to/spectral/resonance_discovery_q.html": "resonance_discovery_q.ipynb",
+    "how-to/control/control_frd_roundtrip.html": "control_frd_roundtrip.ipynb",
+    "how-to/calibration/calibration_units_contract.html": "calibration_units_contract.ipynb",
+    "how-to/interop/root_to_python_migration.html": "root_to_python_migration.ipynb",
+}
 
 
 LEGACY_ANCHORS = {
@@ -99,15 +124,141 @@ class Links(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
         self.links: list[str] = []
+        self.anchor_links: list[str] = []
+        self.images: list[str] = []
         self.ids: set[str] = set()
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         values = dict(attrs)
         if values.get("id"):
             self.ids.add(str(values["id"]))
-        key = "href" if tag == "a" else "src" if tag == "img" else None
-        if key and values.get(key):
-            self.links.append(str(values[key]))
+        if tag == "a" and values.get("href"):
+            href = str(values["href"])
+            self.links.append(href)
+            self.anchor_links.append(href)
+        elif tag == "img" and values.get("src"):
+            src = str(values["src"])
+            self.links.append(src)
+            self.images.append(src)
+
+
+def has_japanese_text(text: str) -> bool:
+    return any("\u3040" <= ch <= "\u30ff" or "\u4e00" <= ch <= "\u9fff" for ch in text)
+
+
+def is_notebook_payload(data: bytes) -> bool:
+    """Return True when downloaded bytes have a minimal nbformat structure."""
+    try:
+        payload = json.loads(data.decode("utf-8"))
+    except (UnicodeDecodeError, ValueError):
+        return False
+    if not isinstance(payload, dict):
+        return False
+    if (
+        not isinstance(payload.get("cells"), list)
+        or not payload["cells"]
+        or not isinstance(payload.get("metadata"), dict)
+        or type(payload.get("nbformat")) is not int
+        or payload["nbformat"] < 4
+        or type(payload.get("nbformat_minor")) is not int
+    ):
+        return False
+    for cell in payload["cells"]:
+        if not isinstance(cell, dict):
+            return False
+        if cell.get("cell_type") not in {"code", "markdown", "raw"}:
+            return False
+        if not isinstance(cell.get("metadata"), dict):
+            return False
+        source = cell.get("source")
+        if isinstance(source, str):
+            pass
+        elif isinstance(source, list) and all(isinstance(line, str) for line in source):
+            pass
+        else:
+            return False
+        if cell["cell_type"] == "code":
+            if not isinstance(cell.get("outputs"), list):
+                return False
+            execution_count = cell.get("execution_count")
+            if execution_count is not None and type(execution_count) is not int:
+                return False
+    return True
+
+
+def expected_notebook_hrefs(links: list[str], expected_filename: str) -> list[str]:
+    """Select download links whose URL path has the expected notebook filename."""
+    return sorted(
+        {
+            href
+            for href in links
+            if Path(unquote(urlsplit(href).path)).name == expected_filename
+        }
+    )
+
+
+def is_analysis_figure_href(href: str) -> bool:
+    """Return whether a rendered image is a Sphinx notebook analysis figure."""
+    path = urlsplit(href).path.lower()
+    if not (path.startswith("_images/") or "/_images/" in path):
+        return False
+    filename = Path(unquote(path)).name
+    suffix = Path(filename).suffix
+    if suffix not in {".png", ".jpg", ".jpeg", ".webp"}:
+        return False
+    stem = Path(filename).stem
+    return not any(token in stem for token in ("logo", "icon", "favicon"))
+
+
+def is_image_payload(data: bytes, content_type: str, href: str) -> bool:
+    """Validate an image response by media type, signature, and URL suffix."""
+    if not data:
+        return False
+    stripped = data.lstrip().lower()
+    media_type = content_type.split(";", 1)[0].strip().lower()
+    if media_type in {"text/html", "application/xhtml+xml"}:
+        return False
+    if stripped.startswith((b"<!doctype html", b"<html", b"<head", b"<body")):
+        return False
+    suffix = Path(urlsplit(href).path).suffix.lower()
+    if suffix == ".png":
+        return data.startswith(b"\x89PNG\r\n\x1a\n")
+    if suffix in {".jpg", ".jpeg"}:
+        return data.startswith(b"\xff\xd8\xff")
+    if suffix == ".webp":
+        return len(data) >= 12 and data[:4] == b"RIFF" and data[8:12] == b"WEBP"
+    if suffix == ".svg":
+        return b"<svg" in stripped
+    return media_type.startswith("image/")
+
+
+def workflow_page_errors(
+    *,
+    page_html: str,
+    language: str,
+    expected_revision: str,
+    counterpart_url: str,
+    page_name: str | None = None,
+) -> list[str]:
+    """Pure content checks for one rendered workflow page (EN or JA).
+
+    Each page links only its counterpart language (the theme renders a
+    single switch link), so only the counterpart URL is required here.
+    """
+    errors: list[str] = []
+    if "gwexpy-build-status" not in page_html or expected_revision[:8] not in page_html:
+        errors.append("missing expected build identity")
+    parsed = Links()
+    parsed.feed(page_html)
+    if counterpart_url not in parsed.links:
+        errors.append("missing language switch link")
+    if language == "ja/" and not has_japanese_text(page_html):
+        errors.append("JA page lacks Japanese translation")
+    if page_name in WORKFLOW_NOTEBOOK_PAGES and not any(
+        is_analysis_figure_href(src) for src in parsed.images
+    ):
+        errors.append("missing analysis figure")
+    return errors
 
 
 def check(root: Path, expected_revision: str | None = None) -> list[str]:
@@ -190,26 +341,31 @@ def check(root: Path, expected_revision: str | None = None) -> list[str]:
             errors.append(f"Missing Quickstart plot: {language}")
 
         # Check workflow pages and JA translation presence
-        workflow_pages = (
-            "how-to/monitoring/index.html",
-            "how-to/calibration/index.html",
-            "how-to/monitoring/long_term_trend.html",
-            "how-to/monitoring/event_catalog_timeseries.html",
-            "how-to/monitoring/chunked_long_data.html",
-            "how-to/spectral/resonance_discovery_q.html",
-            "how-to/control/control_frd_roundtrip.html",
-            "how-to/calibration/calibration_units_contract.html",
-            "how-to/interop/root_to_python_migration.html",
-        )
-        for wp in workflow_pages:
+        for wp in WORKFLOW_PAGES:
             wp_file = root / language / wp
             if not wp_file.exists() or wp_file.stat().st_size < 500:
                 errors.append(f"Missing workflow HTML page: {language}{wp}")
-            elif language == "ja/":
+            else:
                 content = wp_file.read_text(encoding="utf-8")
-                has_japanese = any("\u3040" <= ch <= "\u30ff" or "\u4e00" <= ch <= "\u9fff" for ch in content)
-                if not has_japanese:
+                if language == "ja/" and not has_japanese_text(content):
                     errors.append(f"JA workflow page lacks Japanese translation: {wp}")
+                if wp in WORKFLOW_NOTEBOOK_PAGES and not any(
+                    is_analysis_figure_href(src) for src in parse(wp_file).images
+                ):
+                    errors.append(f"missing analysis figure: {language}{wp}")
+        for wp in WORKFLOW_NOTEBOOK_PAGES:
+            wp_file = root / language / wp
+            if not wp_file.exists():
+                continue
+            expected_filename = WORKFLOW_NOTEBOOK_PAGES[wp]
+            ipynb_hrefs = expected_notebook_hrefs(
+                parse(wp_file).anchor_links, expected_filename
+            )
+            if not ipynb_hrefs:
+                errors.append(
+                    f"Missing notebook download link: {language}{wp} "
+                    f"(expected {expected_filename})"
+                )
     return errors
 
 
@@ -227,6 +383,18 @@ def check_remote(base_url: str, expected_revision: str) -> list[str]:
                 )
                 with urlopen(request, timeout=20) as response:
                     return response.read()
+
+            def fetch_url(url: str) -> tuple[bytes, str]:
+                request = Request(
+                    url + "?revision=" + expected_revision,
+                    headers={"Cache-Control": "no-cache"},
+                )
+                with urlopen(request, timeout=20) as response:
+                    headers = getattr(response, "headers", None)
+                    content_type = (
+                        str(headers.get("Content-Type", "")) if headers else ""
+                    )
+                    return response.read(), content_type
 
             info = json.loads(fetch("build-info.json"))
             if info.get("source_revision") != expected_revision or info.get("dirty"):
@@ -258,6 +426,63 @@ def check_remote(base_url: str, expected_revision: str) -> list[str]:
             figure = fetch("_static/images/quickstart-asd.png")
             if not figure.startswith(b"\x89PNG\r\n\x1a\n") or len(figure) < 1000:
                 errors.append(f"{prefix}: missing Quickstart figure")
+            # Read back the nine logical workflow pages: build identity,
+            # language switch, rendered figures, and notebook downloads.
+            base_en = base_url.rstrip("/") + "/"
+            base_ja = base_url.rstrip("/") + "/ja/"
+            for name in WORKFLOW_PAGES:
+                try:
+                    page = fetch(name).decode("utf-8")
+                except (URLError, TimeoutError, ValueError) as exc:
+                    errors.append(f"{prefix}{name}: {exc}")
+                    continue
+                for err in workflow_page_errors(
+                    page_html=page,
+                    language=language,
+                    expected_revision=expected_revision,
+                    counterpart_url=(base_ja if language == "" else base_en) + name,
+                    page_name=name,
+                ):
+                    errors.append(f"{prefix}{name}: {err}")
+                parsed = Links()
+                parsed.feed(page)
+                page_url = prefix + name
+                for src in sorted(set(parsed.images)):
+                    if urlsplit(src).scheme or urlsplit(src).netloc:
+                        continue
+                    if (
+                        not src.lower()
+                        .split("?")[0]
+                        .endswith((".png", ".svg", ".jpg", ".jpeg", ".webp"))
+                    ):
+                        continue
+                    try:
+                        image, content_type = fetch_url(urljoin(page_url, src))
+                    except (URLError, TimeoutError, ValueError) as exc:
+                        errors.append(f"{prefix}{name}: image {src}: {exc}")
+                        continue
+                    if not is_image_payload(image, content_type, src):
+                        errors.append(f"{prefix}{name}: invalid image {src}")
+                if name in WORKFLOW_NOTEBOOK_PAGES:
+                    expected_filename = WORKFLOW_NOTEBOOK_PAGES[name]
+                    ipynb_hrefs = expected_notebook_hrefs(
+                        parsed.anchor_links, expected_filename
+                    )
+                    if not ipynb_hrefs:
+                        errors.append(
+                            f"{prefix}{name}: missing notebook download link "
+                            f"(expected {expected_filename})"
+                        )
+                        continue
+                    try:
+                        notebook, _ = fetch_url(urljoin(page_url, ipynb_hrefs[0]))
+                    except (URLError, TimeoutError, ValueError) as exc:
+                        errors.append(f"{prefix}{name}: notebook download: {exc}")
+                        continue
+                    if not is_notebook_payload(notebook):
+                        errors.append(
+                            f"{prefix}{name}: notebook download is not a notebook"
+                        )
             source = Path(__file__).resolve().parents[1] / "docs_redesign"
             for filename in ("quickstart.py", "commissioner.py", "commissioner.xml"):
                 path = "_static/downloads/" + filename
