@@ -70,14 +70,33 @@ def _build_tree(root: Path) -> None:
         static_img = lang_dir / "_static/images/quickstart-asd.png"
         static_img.parent.mkdir(parents=True, exist_ok=True)
         static_img.write_bytes(b"\x89PNG\r\n\x1a\n" + b"0" * 1200)
+        analysis_img = root / "_images/workflow-figure.png"
+        analysis_img.parent.mkdir(parents=True, exist_ok=True)
+        analysis_img.write_bytes(b"\x89PNG\r\n\x1a\n" + b"0" * 1200)
         for wp, nb_name in WORKFLOW_NOTEBOOK_PAGES.items():
             wp_file = lang_dir / wp
             sources = lang_dir / "_sources"
             sources.mkdir(exist_ok=True)
-            (sources / nb_name).write_text('{"cells": [], "nbformat": 4}')
+            (sources / nb_name).write_text(
+                json.dumps(
+                    {
+                        "cells": [
+                            {
+                                "cell_type": "markdown",
+                                "metadata": {},
+                                "source": ["workflow notebook"],
+                            }
+                        ],
+                        "metadata": {},
+                        "nbformat": 4,
+                        "nbformat_minor": 5,
+                    }
+                )
+            )
             html = wp_file.read_text(encoding="utf-8")
             html = html.replace(
                 "</body></html>",
+                f'<img src="/gwexpy/docs/_images/workflow-figure.png">'
                 f'<a href="../../_sources/{nb_name}">notebook</a></body></html>',
             )
             wp_file.write_text(html)
@@ -128,6 +147,24 @@ def test_language_switch_mismatch_is_reported(tmp_path) -> None:
     target.write_text(html)
     errors = check(tmp_path, REVISION)
     assert any("Missing language switch" in e for e in errors)
+
+
+@pytest.mark.parametrize(
+    "page_name",
+    ["how-to/monitoring/index.html", "how-to/calibration/index.html"],
+)
+def test_landing_pages_do_not_require_analysis_figure(page_name: str) -> None:
+    html = _page_html(page_name, "")
+    assert (
+        workflow_page_errors(
+            page_html=html,
+            language="",
+            expected_revision=REVISION,
+            counterpart_url=BASEURL + "ja/" + page_name,
+            page_name=page_name,
+        )
+        == []
+    )
 
 
 def test_missing_notebook_download_link_is_reported(tmp_path) -> None:
@@ -188,7 +225,19 @@ def test_workflow_page_content_helper() -> None:
 
 
 def test_notebook_payload_helper() -> None:
-    assert is_notebook_payload(b'{"cells": [], "nbformat": 4}')
+    valid = json.dumps(
+        {
+            "cells": [{"cell_type": "markdown", "metadata": {}, "source": ["text"]}],
+            "metadata": {},
+            "nbformat": 4,
+            "nbformat_minor": 5,
+        }
+    ).encode()
+    assert is_notebook_payload(valid)
+    assert not is_notebook_payload(b'{"cells": [], "nbformat": 4}')
+    assert not is_notebook_payload(
+        b'{"cells": [123], "metadata": {}, "nbformat": 4, "nbformat_minor": 5}'
+    )
     assert not is_notebook_payload(b"<html>not a notebook</html>")
     assert not is_notebook_payload(b"\x89PNG\r\n\x1a\n")
     assert has_japanese_text("日本語")
@@ -226,11 +275,26 @@ def _mock_response(defect: str | None):
         if url.split("?", 1)[0].endswith(".png"):
             if defect == "image" and "_images/workflow" in url:
                 return io.BytesIO(b"")
+            if defect == "image_html" and "_images/workflow" in url:
+                return io.BytesIO(b"<html><body>404</body></html>")
             return io.BytesIO(b"\x89PNG\r\n\x1a\n" + b"0" * 1200)
         if ".ipynb" in url:
             if defect == "notebook":
                 return io.BytesIO(b"<html>not a notebook</html>")
-            return io.BytesIO(b'{"cells": [], "metadata": {}, "nbformat": 4}')
+            if defect == "notebook_empty":
+                return io.BytesIO(
+                    b'{"cells": [], "metadata": {}, "nbformat": 4, "nbformat_minor": 5}'
+                )
+            if defect == "notebook_bad_cell":
+                return io.BytesIO(
+                    b'{"cells": [123], "metadata": {}, "nbformat": 4, '
+                    b'"nbformat_minor": 5}'
+                )
+            return io.BytesIO(
+                b'{"cells": [{"cell_type": "markdown", "metadata": {}, '
+                b'"source": ["text"]}], "metadata": {}, "nbformat": 4, '
+                b'"nbformat_minor": 5}'
+            )
         if "/downloads/" in url:
             filename = url.split("?", 1)[0].rsplit("/", 1)[1]
             return io.BytesIO((DOCS / "_static/downloads" / filename).read_bytes())
@@ -251,8 +315,15 @@ def _mock_response(defect: str | None):
         page += "".join(f'<a href="{route}">route</a>' for route in _MOCK_ROUTES)
         page += '<div id="for-gw-experimentalists"></div>'
         if is_workflow:
-            page += '<img src="_images/workflow-fig.png">'
-            page += '<a href="_sources/workflow.ipynb">notebook</a>'
+            t1 = "how-to/monitoring/long_term_trend.html"
+            t7 = "how-to/interop/root_to_python_migration.html"
+            if not (defect == "analysis_figure_missing" and rel == t1):
+                page += '<img src="_images/workflow-fig.png">'
+            if rel in WORKFLOW_NOTEBOOK_PAGES:
+                notebook_name = WORKFLOW_NOTEBOOK_PAGES[rel]
+                if defect == "notebook_wrong_target" and rel == t1:
+                    notebook_name = WORKFLOW_NOTEBOOK_PAGES[t7]
+                page += f'<a href="_sources/{notebook_name}">notebook</a>'
         if "/ja/" in url and defect != "ja_text":
             page += "<p>日本語の説明文</p>"
         if defect == "unreachable" and is_workflow and "/ja/" not in url:
@@ -270,7 +341,12 @@ def _mock_response(defect: str | None):
         ("lang_switch", ["missing language switch link"]),
         ("ja_text", ["lacks Japanese translation"]),
         ("notebook", ["not a notebook"]),
-        ("image", ["empty image"]),
+        ("notebook_empty", ["not a notebook"]),
+        ("notebook_bad_cell", ["not a notebook"]),
+        ("notebook_wrong_target", ["missing notebook download link"]),
+        ("image", ["invalid image"]),
+        ("image_html", ["invalid image"]),
+        ("analysis_figure_missing", ["missing analysis figure"]),
         ("revision", ["deployed revision is not the clean expected commit"]),
         ("unreachable", ["mock connection failure"]),
     ],

@@ -13,7 +13,11 @@ import numpy as np
 import pytest
 from astropy import units as u
 
-from scripts.check_public_docs import AUDIENCE_ROUTES, check_remote
+from scripts.check_public_docs import (
+    AUDIENCE_ROUTES,
+    WORKFLOW_NOTEBOOK_PAGES,
+    check_remote,
+)
 from scripts.prepare_public_docs import canonicalize, code_cells, prepare
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -153,7 +157,11 @@ def test_deployment_readback_rejects_stale_or_incomplete_publication(
                 }
             ).encode()
         elif ".ipynb" in request.full_url:
-            data = b'{"cells": [], "metadata": {}, "nbformat": 4}'
+            data = (
+                b'{"cells": [{"cell_type": "markdown", "metadata": {}, '
+                b'"source": ["text"]}], "metadata": {}, "nbformat": 4, '
+                b'"nbformat_minor": 5}'
+            )
         elif ".png" in request.full_url:
             data = (
                 b"not an image"
@@ -174,12 +182,14 @@ def test_deployment_readback_rejects_stale_or_incomplete_publication(
             # Workflow readback fixtures: language switch, figure, download.
             rel = request.full_url.split("docs.example.test/", 1)[1].split("?", 1)[0]
             rel = rel[3:] if rel.startswith("ja/") else rel
+            notebook_name = WORKFLOW_NOTEBOOK_PAGES.get(rel)
             page += (
                 f'<a href="https://docs.example.test/{rel}">EN</a>'
                 f'<a href="https://docs.example.test/ja/{rel}">JA</a>'
                 '<img src="_images/fig.png">'
-                '<a href="_sources/notebook.ipynb">notebook</a>'
             )
+            if notebook_name:
+                page += f'<a href="_sources/{notebook_name}">notebook</a>'
             if "/ja/" in request.full_url:
                 page += "<p>日本語の説明文</p>"
             data = page.encode()

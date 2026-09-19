@@ -124,15 +124,19 @@ class Links(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
         self.links: list[str] = []
+        self.images: list[str] = []
         self.ids: set[str] = set()
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         values = dict(attrs)
         if values.get("id"):
             self.ids.add(str(values["id"]))
-        key = "href" if tag == "a" else "src" if tag == "img" else None
-        if key and values.get(key):
-            self.links.append(str(values[key]))
+        if tag == "a" and values.get("href"):
+            self.links.append(str(values["href"]))
+        elif tag == "img" and values.get("src"):
+            src = str(values["src"])
+            self.links.append(src)
+            self.images.append(src)
 
 
 def has_japanese_text(text: str) -> bool:
@@ -140,12 +144,80 @@ def has_japanese_text(text: str) -> bool:
 
 
 def is_notebook_payload(data: bytes) -> bool:
-    """Return True when downloaded bytes look like a Jupyter notebook."""
+    """Return True when downloaded bytes have a minimal nbformat structure."""
     try:
         payload = json.loads(data.decode("utf-8"))
     except (UnicodeDecodeError, ValueError):
         return False
-    return isinstance(payload, dict) and isinstance(payload.get("cells"), list)
+    if not isinstance(payload, dict):
+        return False
+    if (
+        not isinstance(payload.get("cells"), list)
+        or not payload["cells"]
+        or not isinstance(payload.get("metadata"), dict)
+        or type(payload.get("nbformat")) is not int
+        or payload["nbformat"] < 4
+        or type(payload.get("nbformat_minor")) is not int
+    ):
+        return False
+    for cell in payload["cells"]:
+        if not isinstance(cell, dict):
+            return False
+        if cell.get("cell_type") not in {"code", "markdown", "raw"}:
+            return False
+        if not isinstance(cell.get("metadata"), dict):
+            return False
+        source = cell.get("source")
+        if isinstance(source, str):
+            pass
+        elif isinstance(source, list) and all(isinstance(line, str) for line in source):
+            pass
+        else:
+            return False
+        if cell["cell_type"] == "code":
+            if not isinstance(cell.get("outputs"), list):
+                return False
+            execution_count = cell.get("execution_count")
+            if execution_count is not None and type(execution_count) is not int:
+                return False
+    return True
+
+
+def expected_notebook_hrefs(links: list[str], expected_filename: str) -> list[str]:
+    """Select download links whose URL path has the expected notebook filename."""
+    return sorted(
+        {
+            href
+            for href in links
+            if Path(unquote(urlsplit(href).path)).name == expected_filename
+        }
+    )
+
+
+def is_analysis_figure_href(href: str) -> bool:
+    """Return whether a rendered image is a Sphinx notebook analysis figure."""
+    path = urlsplit(href).path.lower()
+    return path.startswith("_images/") or "/_images/" in path
+
+
+def is_image_payload(data: bytes, content_type: str, href: str) -> bool:
+    """Validate an image response by media type, signature, and URL suffix."""
+    if not data:
+        return False
+    stripped = data.lstrip().lower()
+    media_type = content_type.split(";", 1)[0].strip().lower()
+    if media_type in {"text/html", "application/xhtml+xml"}:
+        return False
+    if stripped.startswith((b"<!doctype html", b"<html", b"<head", b"<body")):
+        return False
+    suffix = Path(urlsplit(href).path).suffix.lower()
+    if suffix == ".png":
+        return data.startswith(b"\x89PNG\r\n\x1a\n")
+    if suffix in {".jpg", ".jpeg"}:
+        return data.startswith(b"\xff\xd8\xff")
+    if suffix == ".svg":
+        return b"<svg" in stripped
+    return media_type.startswith("image/")
 
 
 def workflow_page_errors(
@@ -154,6 +226,7 @@ def workflow_page_errors(
     language: str,
     expected_revision: str,
     counterpart_url: str,
+    page_name: str | None = None,
 ) -> list[str]:
     """Pure content checks for one rendered workflow page (EN or JA).
 
@@ -169,6 +242,10 @@ def workflow_page_errors(
         errors.append("missing language switch link")
     if language == "ja/" and not has_japanese_text(page_html):
         errors.append("JA page lacks Japanese translation")
+    if page_name in WORKFLOW_NOTEBOOK_PAGES and not any(
+        is_analysis_figure_href(src) for src in parsed.images
+    ):
+        errors.append("missing analysis figure")
     return errors
 
 
@@ -256,17 +333,24 @@ def check(root: Path, expected_revision: str | None = None) -> list[str]:
             wp_file = root / language / wp
             if not wp_file.exists() or wp_file.stat().st_size < 500:
                 errors.append(f"Missing workflow HTML page: {language}{wp}")
-            elif language == "ja/":
-                content = wp_file.read_text(encoding="utf-8")
-                if not has_japanese_text(content):
+            else:
+                if language == "ja/" and not has_japanese_text(
+                    wp_file.read_text(encoding="utf-8")
+                ):
                     errors.append(f"JA workflow page lacks Japanese translation: {wp}")
         for wp in WORKFLOW_NOTEBOOK_PAGES:
             wp_file = root / language / wp
             if not wp_file.exists():
                 continue
-            ipynb_hrefs = [h for h in parse(wp_file).links if ".ipynb" in h]
+            expected_filename = WORKFLOW_NOTEBOOK_PAGES[wp]
+            ipynb_hrefs = expected_notebook_hrefs(
+                parse(wp_file).links, expected_filename
+            )
             if not ipynb_hrefs:
-                errors.append(f"Missing notebook download link: {language}{wp}")
+                errors.append(
+                    f"Missing notebook download link: {language}{wp} "
+                    f"(expected {expected_filename})"
+                )
     return errors
 
 
@@ -285,13 +369,17 @@ def check_remote(base_url: str, expected_revision: str) -> list[str]:
                 with urlopen(request, timeout=20) as response:
                     return response.read()
 
-            def fetch_url(url: str) -> bytes:
+            def fetch_url(url: str) -> tuple[bytes, str]:
                 request = Request(
                     url + "?revision=" + expected_revision,
                     headers={"Cache-Control": "no-cache"},
                 )
                 with urlopen(request, timeout=20) as response:
-                    return response.read()
+                    headers = getattr(response, "headers", None)
+                    content_type = (
+                        str(headers.get("Content-Type", "")) if headers else ""
+                    )
+                    return response.read(), content_type
 
             info = json.loads(fetch("build-info.json"))
             if info.get("source_revision") != expected_revision or info.get("dirty"):
@@ -338,12 +426,13 @@ def check_remote(base_url: str, expected_revision: str) -> list[str]:
                     language=language,
                     expected_revision=expected_revision,
                     counterpart_url=(base_ja if language == "" else base_en) + name,
+                    page_name=name,
                 ):
                     errors.append(f"{prefix}{name}: {err}")
                 parsed = Links()
                 parsed.feed(page)
                 page_url = prefix + name
-                for src in sorted(set(parsed.links)):
+                for src in sorted(set(parsed.images)):
                     if urlsplit(src).scheme or urlsplit(src).netloc:
                         continue
                     if (
@@ -353,19 +442,25 @@ def check_remote(base_url: str, expected_revision: str) -> list[str]:
                     ):
                         continue
                     try:
-                        image = fetch_url(urljoin(page_url, src))
+                        image, content_type = fetch_url(urljoin(page_url, src))
                     except (URLError, TimeoutError, ValueError) as exc:
                         errors.append(f"{prefix}{name}: image {src}: {exc}")
                         continue
-                    if not image:
-                        errors.append(f"{prefix}{name}: empty image {src}")
+                    if not is_image_payload(image, content_type, src):
+                        errors.append(f"{prefix}{name}: invalid image {src}")
                 if name in WORKFLOW_NOTEBOOK_PAGES:
-                    ipynb_hrefs = sorted({h for h in parsed.links if ".ipynb" in h})
+                    expected_filename = WORKFLOW_NOTEBOOK_PAGES[name]
+                    ipynb_hrefs = expected_notebook_hrefs(
+                        parsed.links, expected_filename
+                    )
                     if not ipynb_hrefs:
-                        errors.append(f"{prefix}{name}: missing notebook download link")
+                        errors.append(
+                            f"{prefix}{name}: missing notebook download link "
+                            f"(expected {expected_filename})"
+                        )
                         continue
                     try:
-                        notebook = fetch_url(urljoin(page_url, ipynb_hrefs[0]))
+                        notebook, _ = fetch_url(urljoin(page_url, ipynb_hrefs[0]))
                     except (URLError, TimeoutError, ValueError) as exc:
                         errors.append(f"{prefix}{name}: notebook download: {exc}")
                         continue
