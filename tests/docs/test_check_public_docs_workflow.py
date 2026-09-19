@@ -176,6 +176,37 @@ def test_missing_notebook_download_link_is_reported(tmp_path) -> None:
     assert any("Missing notebook download link" in e for e in errors)
 
 
+def test_workflow_page_without_analysis_figures_is_reported(tmp_path) -> None:
+    _build_tree(tmp_path)
+    page_name = next(iter(WORKFLOW_NOTEBOOK_PAGES))
+    for language in ("", "ja/"):
+        target = tmp_path / language / page_name
+        html = target.read_text(encoding="utf-8")
+        target.write_text(
+            html.replace('<img src="/gwexpy/docs/_images/workflow-figure.png">', "")
+        )
+    errors = check(tmp_path, REVISION)
+    assert sum("missing analysis figure" in error for error in errors) == 2
+
+
+def test_logos_and_icons_are_not_analysis_figures() -> None:
+    page_name = next(iter(WORKFLOW_NOTEBOOK_PAGES))
+    html = (
+        f"<aside class='gwexpy-build-status'>{REVISION[:8]}</aside>"
+        f'<a href="{BASEURL}ja/{page_name}">JA</a>'
+        '<img src="../../_images/logo.png">'
+        '<img src="../../_images/icon.png">'
+    )
+    errors = workflow_page_errors(
+        page_html=html,
+        language="",
+        expected_revision=REVISION,
+        counterpart_url=BASEURL + "ja/" + page_name,
+        page_name=page_name,
+    )
+    assert "missing analysis figure" in errors
+
+
 def test_build_revision_mismatch_is_reported(tmp_path) -> None:
     _build_tree(tmp_path)
     errors = check(tmp_path, "0" * 40)

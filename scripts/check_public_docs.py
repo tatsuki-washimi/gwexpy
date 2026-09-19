@@ -124,6 +124,7 @@ class Links(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
         self.links: list[str] = []
+        self.anchor_links: list[str] = []
         self.images: list[str] = []
         self.ids: set[str] = set()
 
@@ -132,7 +133,9 @@ class Links(HTMLParser):
         if values.get("id"):
             self.ids.add(str(values["id"]))
         if tag == "a" and values.get("href"):
-            self.links.append(str(values["href"]))
+            href = str(values["href"])
+            self.links.append(href)
+            self.anchor_links.append(href)
         elif tag == "img" and values.get("src"):
             src = str(values["src"])
             self.links.append(src)
@@ -197,7 +200,14 @@ def expected_notebook_hrefs(links: list[str], expected_filename: str) -> list[st
 def is_analysis_figure_href(href: str) -> bool:
     """Return whether a rendered image is a Sphinx notebook analysis figure."""
     path = urlsplit(href).path.lower()
-    return path.startswith("_images/") or "/_images/" in path
+    if not (path.startswith("_images/") or "/_images/" in path):
+        return False
+    filename = Path(unquote(path)).name
+    suffix = Path(filename).suffix
+    if suffix not in {".png", ".jpg", ".jpeg", ".webp"}:
+        return False
+    stem = Path(filename).stem
+    return not any(token in stem for token in ("logo", "icon", "favicon"))
 
 
 def is_image_payload(data: bytes, content_type: str, href: str) -> bool:
@@ -215,6 +225,8 @@ def is_image_payload(data: bytes, content_type: str, href: str) -> bool:
         return data.startswith(b"\x89PNG\r\n\x1a\n")
     if suffix in {".jpg", ".jpeg"}:
         return data.startswith(b"\xff\xd8\xff")
+    if suffix == ".webp":
+        return len(data) >= 12 and data[:4] == b"RIFF" and data[8:12] == b"WEBP"
     if suffix == ".svg":
         return b"<svg" in stripped
     return media_type.startswith("image/")
@@ -334,17 +346,20 @@ def check(root: Path, expected_revision: str | None = None) -> list[str]:
             if not wp_file.exists() or wp_file.stat().st_size < 500:
                 errors.append(f"Missing workflow HTML page: {language}{wp}")
             else:
-                if language == "ja/" and not has_japanese_text(
-                    wp_file.read_text(encoding="utf-8")
-                ):
+                content = wp_file.read_text(encoding="utf-8")
+                if language == "ja/" and not has_japanese_text(content):
                     errors.append(f"JA workflow page lacks Japanese translation: {wp}")
+                if wp in WORKFLOW_NOTEBOOK_PAGES and not any(
+                    is_analysis_figure_href(src) for src in parse(wp_file).images
+                ):
+                    errors.append(f"missing analysis figure: {language}{wp}")
         for wp in WORKFLOW_NOTEBOOK_PAGES:
             wp_file = root / language / wp
             if not wp_file.exists():
                 continue
             expected_filename = WORKFLOW_NOTEBOOK_PAGES[wp]
             ipynb_hrefs = expected_notebook_hrefs(
-                parse(wp_file).links, expected_filename
+                parse(wp_file).anchor_links, expected_filename
             )
             if not ipynb_hrefs:
                 errors.append(
@@ -438,7 +453,7 @@ def check_remote(base_url: str, expected_revision: str) -> list[str]:
                     if (
                         not src.lower()
                         .split("?")[0]
-                        .endswith((".png", ".svg", ".jpg", ".jpeg"))
+                        .endswith((".png", ".svg", ".jpg", ".jpeg", ".webp"))
                     ):
                         continue
                     try:
@@ -451,7 +466,7 @@ def check_remote(base_url: str, expected_revision: str) -> list[str]:
                 if name in WORKFLOW_NOTEBOOK_PAGES:
                     expected_filename = WORKFLOW_NOTEBOOK_PAGES[name]
                     ipynb_hrefs = expected_notebook_hrefs(
-                        parsed.links, expected_filename
+                        parsed.anchor_links, expected_filename
                     )
                     if not ipynb_hrefs:
                         errors.append(
