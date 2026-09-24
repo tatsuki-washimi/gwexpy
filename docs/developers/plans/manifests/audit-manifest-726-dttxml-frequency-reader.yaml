@@ -1,0 +1,218 @@
+manifest_version: 1
+issue: 726
+lane: D
+project: GWexpy
+date: "2026-09-24"
+base_sha: 277c50a12e653d6c36e02ba407545d60e24d9e9e
+status: implementation_verified_pending_real_sample
+stopped: false
+worktree: "isolated issue-726 integration branch"
+
+scope:
+  summary: >-
+    Record the Issue #726 DiagGUI XML frequency-reader repair and correct the
+    synthetic DTT XML calibration fixtures used by the tutorials.
+  included:
+    - "FrequencySeries, FrequencySeriesDict, and FrequencySeriesMatrix DTT XML readers."
+    - "ASD parsing through both the installed dttxml and native parsers."
+    - "Complex TransferFunction parsing with linear frequency axes and indexed output channels."
+    - "Repair the synthetic PSD, TF, and COH XML builders in the English case studies and generator templates."
+    - "Record the external-parser AttributeError, native ndarray truth-value error, and TF StopIteration regressions."
+    - "Preserve directly imported load_dttxml_products(native=False) FrequencySeries values with a private reader adapter."
+  excluded:
+    - "No change to TimeSeries DTT XML payload behavior."
+    - "No creation of the absent Japanese web notebook."
+    - "No real-sample acceptance; the real TF XML sample remains pending."
+    - "No release publication."
+
+changed_files:
+  - path: CHANGELOG.md
+    change: "Added a Pending patch release note covering FS, FSD, and FSM readers and the three diagnosed failure modes."
+  - path: docs_redesign/how-to/case-studies/case_dttxml_calibration.ipynb
+    change: "Corrected synthetic DTT XML metadata, documented native mapping versus external FrequencySeries payloads, and labeled the m/N transfer-function unit as dimensional."
+  - path: docs/web/en/user_guide/tutorials/case_dttxml_calibration.ipynb
+    change: "Corrected synthetic DTT XML metadata, documented both backend payload value types in EN and JA sections, and labeled the m/N transfer-function unit as dimensional."
+  - path: scripts/dev_tools/make_dttxml_tutorial.py
+    change: "Corrected its standalone XML helper and embedded English and Japanese notebook templates, including backend-specific payload descriptions and dimensional m/N unit wording; notebooks were not regenerated."
+  - path: gwexpy/io/dttxml_common.py
+    change: "Integrated native TF parsing while preserving native=False loader FrequencySeries values after a compatibility audit."
+  - path: tests/io/test_dttxml_common.py
+    change: "Integrated common parser characterization, native normalization, and external FrequencySeries parity coverage."
+  - path: tests/io/test_dttxml_issue726.py
+    change: "Integrated public FS/FSD/FSM reader regressions and direct-loader FrequencySeries compatibility coverage."
+  - path: gwexpy/frequencyseries/io/dttxml.py
+    change: "Integrated lane R reader repair and one private adapter for native mapping and external FrequencySeries payloads."
+  - path: docs/developers/plans/manifests/audit-manifest-726-dttxml-frequency-reader.yaml
+    change: "Recorded final synthetic-fixture verification and the remaining real-sample limitation."
+  - path: docs/plans/2026-09-24-issue-726-dttxml-frequency-readers.md
+    change: "Approved mplan saved and execution checkpoints updated by orchestrator; copy synchronized separately."
+
+integration_state:
+  integrated: ["lane T tests", "lane C native TF parsing", "lane R frequency readers", "lane I integration", "lane V verification", "public-helper compatibility follow-up"]
+  pending: ["real TF XML sample inspection and unit/serialization acceptance"]
+
+completion_gate:
+  evidence_bundle: "External to the worktree; bundle location and digest are recorded outside tracked files."
+  task_level_status: "complete for the pre-sample implementation"
+  real_sample_acceptance: "partial; real TF XML serialization and AUnit/BUnit interpretation remain pending"
+  formal_changed_file_gate: "partial: 6 passed, 4 unverified"
+  formal_gate_findings:
+    - "Six Python/YAML files passed the formal gate."
+    - "Unverified: CHANGELOG.md and the plan Markdown file were skipped because markdownlint-cli2/markdownlint are unavailable."
+    - "Unverified: the two notebooks have no .ipynb quality-gate profile; direct JSON and runtime checks passed."
+  lifting_steps:
+    - "Install markdownlint-cli2 (markdownlint)."
+    - "Add an .ipynb JSON quality-gate profile."
+    - "Rerun the formal changed-file gate on the current worktree and recheck the new evidence bundle."
+
+fixture_contract:
+  results:
+    - name: "Result[0]"
+      type: Spectrum
+      subtype: 1
+      product: PSD
+      dimensions: [1, 512]
+    - name: "Result[1]"
+      type: TransferFunction
+      subtype: 0
+      product: TF
+      dimensions: [1, 512]
+    - name: "Result[2]"
+      type: Spectrum
+      subtype: 3
+      product: COH
+      dimensions: [1, 512]
+  frequency_axis: "f0=0 Hz, df=1 Hz, N=512"
+  transfer_pair: "ChannelA=excitation, ChannelB[0]=displacement"
+  required_metadata: ["Name=Result[n]", M, N, "ChannelB[n]", "Array Dim M", "Array Dim N"]
+
+validation:
+  baseline:
+    source: "Issue #726 characterization against base 277c50a12e653d6c36e02ba407545d60e24d9e9e"
+    historical_characterization: "Original regression set: 11 failed, 3 passed."
+    expanded_regression_on_base: "Final expanded regression file: 13 failed, 1 passed."
+    malformed_dimensions: "Malformed 2-D and 1-D dimension cases each failed on base before their respective fixes."
+    public_helper_compatibility: "A new native=False FrequencySeries value-type test failed on the intermediate mapping implementation and passed after restoration."
+    environment_note: >-
+      The first full-suite attempt had 8 import-path environment failures. They
+      were resolved with explicit worktree PYTHONPATH; the exact 8 cases then
+      passed, and the final full suite used that PYTHONPATH.
+  final_verification:
+    status: passed_pending_real_sample
+    final_source: "Integration tree based on 277c50a12e653d6c36e02ba407545d60e24d9e9e, including the private public-helper compatibility adapter."
+    suites:
+      - suite: "Focused DTTXML"
+        result: "74 passed after public-helper compatibility repair"
+      - suite: "io-contract --no-fixtures"
+        result: "1523 passed, 24 skipped, 1 deselected after public-helper compatibility repair"
+      - suite: "io-conformance"
+        result: "71 passed, 7 skipped; output reported 6 blocked of 6 total from pre-existing scenario classification"
+      - suite: "Broad TimeSeries/FrequencySeries/GWpy"
+        result: "6329 passed, 126 skipped, 4 xfailed"
+      - suite: "Full tests suite with explicit integration-worktree PYTHONPATH"
+        command: "pytest -q tests/ with PYTHONPATH set to the integration worktree root"
+        result: "12979 passed, 309 skipped, 6 xfailed, 234 warnings; exit 0; 827.23 seconds after public-helper compatibility repair"
+    tooling:
+      - check: "Full ruff check on gwexpy/ and tests/"
+        command: "ruff check gwexpy/ tests/"
+        result: passed
+      - check: "Formatting check for changed files"
+        result: passed
+      - check: "mypy on changed modules"
+        result: passed
+      - check: "mypy gwexpy/"
+        result: "396 source files passed"
+      - check: "Full-tree ruff format --check"
+        result: "One unrelated existing file, tests/docs/test_workflow_runner.py, would reformat; changed Python files pass"
+      - check: "git diff --check"
+        result: passed
+    docs_and_templates:
+      - check: "Both notebook JSON documents validate; EN/JA generated fixture, native product display, TF selection, and COH selection execute without generating notebooks."
+        result: passed
+      - check: "Docs workflow preparation and examples"
+        command: "prepare_public_docs.py and verify_public_examples.py on an external temporary copy"
+        result: "66 notebooks prepared; public examples passed"
+      - check: "Changed DTTXML case-study execution"
+        command: "MyST-NB execution in Sphinx's temporary docs copy"
+        result: "Executed and cached successfully; broad all-notebook execution was stopped after this result due to unrelated long-running notebooks"
+      - check: "EN and JA HTML structure"
+        command: "sphinx -b html -D nb_execution_mode=off on the temporary docs copy"
+        result: "Both builds succeeded"
+      - check: "JA/EN docs synchronization"
+        command: "python scripts/check_docs_sync.py"
+        result: passed
+      - check: "Release-facts test"
+        command: "conda run -n gwexpy pytest tests/docs/test_docs_redesign_release_facts.py -q"
+        result: "10 passed"
+  performance:
+    fixture: "Identical 9063-byte ASD+TF synthetic XML for frozen base and final integration."
+    method: "5 warmups; median of 30 loader wall calls and median of 5 tracemalloc peaks."
+    external_parser:
+      baseline: {median_ms: 0.2898, median_peak_kib: 112.7}
+      final: {median_ms: 0.2780, median_peak_kib: 112.7}
+      parity: "Both return ASD/PSD/TF with FrequencySeries values."
+    native_parser:
+      baseline: {median_ms: 0.0785, median_peak_kib: 112.1}
+      final: {median_ms: 0.1064, median_peak_kib: 112.1}
+      caveat: "Final native parser reads TF as well as ASD/PSD; baseline native parser skipped TF, so timing covers expanded work."
+review:
+  human_review_required: pending_real_sample
+  physics_review_required: pending_real_sample
+  real_sample_review: pending_user_sample
+  rationale: >-
+    The synthetic fixtures exercise stored ASD values and complex transfer
+    functions without adding scaling. Final parser and physical-serialization
+    acceptance remains pending inspection of the supplied real transfer-function
+    XML sample, especially its subtype and channel/unit serialization.
+
+agent_audit:
+  skills_used: [mplan, verify_physics, pr-writer, github-mcp-secret-filter]
+  commands_executed:
+    - "pytest -q tests/io/test_dttxml_issue726.py tests/io/test_dttxml_common.py tests/io/test_dttxml_reader.py tests/test_dttxml_loading.py tests/io/test_frequencyseries_io.py"
+    - "pytest -q tests/ with the integration worktree on PYTHONPATH"
+    - "python scripts/ci/run_gate.py io-contract --no-fixtures"
+    - "python scripts/ci/run_gate.py io-conformance"
+    - "ruff check gwexpy/ tests/"
+    - "ruff format --check on changed Python files"
+    - "mypy gwexpy/ (396 source files)"
+    - "prepare_public_docs.py, verify_public_examples.py, check_docs_sync.py, and EN/JA Sphinx HTML builds"
+  check_physics_summary:
+    status: "synthetic and installed-parser reference reviewed; real-sample qualification pending"
+    findings:
+      - "No new spectral rescaling or Fourier transform is introduced; stored ASD/PSD samples are preserved."
+      - "Installed dttxml parser labels TransferFunction subtype 0 as B/A and Spectrum subtype 3 as coherence."
+      - "Complex TF real/imaginary parts, phase, frequency axis, pair labels, epoch, and explicit unit overrides are covered by synthetic tests."
+      - "Native BUnit handling differs from the installed external parser, which ignores it; real AUnit/BUnit and pair semantics require the supplied TF sample."
+
+supported_native_subtypes:
+  spectrum:
+    1: PSD
+    2: CSD
+    3: COH
+  transfer_function:
+    0: "TF with linear f0/df axis"
+    2: COH
+    6: "TF with embedded frequency axis"
+  limitation: >-
+    This lists the native normalization layouts implemented for the frequency
+    reader. It does not claim support for every DiagGUI subtype; additional
+    layouts require separate coverage.
+
+unit_policy:
+  synthetic_fixture: "The reader regression fixture carries BUnit values; native parsing reads them, while explicit unit= overrides are verified for both backends. The tutorial uses a separate unitless synthetic fixture."
+  real_sample: "AUnit/BUnit interpretation and per-pair unit handling remain pending inspection of the real TF XML sample."
+  per_pair_unit_matrix: "Deferred; no per-pair mixed-unit matrix contract is claimed by this patch."
+  external_parser: "The installed dttxml parser can lose phase for TransferFunction subtype 6; native parsing is the documented workaround."
+
+release_notes:
+  target: "v0.2.3-compatible patch"
+  user_visible_change: >-
+    Supported DiagGUI XML ASD and transfer-function products can be loaded by
+    the FrequencySeries, FrequencySeriesDict, and FrequencySeriesMatrix readers
+    through either parser path.
+
+limitations:
+  - "No Japanese web notebook exists in the checkout; the generator's JA template is corrected for future generation."
+  - "Tutorial notebooks were edited directly because running the generator would replace newer notebook content."
+  - "Implementation and regression verification passed; real TF serialization and unit interpretation remain pending the supplied sample."
+  - "The native parser covers only the subtype layouts listed above; other DTT layouts are outside the verified scope."

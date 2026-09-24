@@ -1,5 +1,19 @@
 # Changelog
 
+## Pending patch release
+
+### Fixed
+
+- **DiagGUI XML frequency reader correctness (#726)**: Fixed the existing
+  `FrequencySeries`, `FrequencySeriesDict`, and `FrequencySeriesMatrix` readers
+  for supported ASD and transfer-function products. The fix resolves the
+  external-parser `AttributeError`, native NumPy frequency-array truth-value
+  error, and native transfer-function `StopIteration` while retaining complex
+  values and frequency axes for supported layouts. For subtype 6, the native
+  parser retains phase that the installed `dttxml` parser can lose. The directly
+  imported `load_dttxml_products(native=False)` helper keeps its existing
+  `FrequencySeries` values; normalization occurs inside the readers.
+
 ## [0.2.3] - 2026-09-05
 
 Published on 2026-09-05 UTC: [PyPI 0.2.3](https://pypi.org/project/gwexpy/0.2.3/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3), and [Zenodo DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992).

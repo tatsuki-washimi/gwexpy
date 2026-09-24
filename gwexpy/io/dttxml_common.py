@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import gzip
+import re
 import warnings
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -146,9 +147,12 @@ def _decode_dtt_stream(stream_text: str, encoding: str, dtype_str: str) -> np.nd
     encoding_parts = [e.strip().lower() for e in encoding.split(",")]
     is_base64 = "base64" in encoding_parts
     is_little = "littleendian" in encoding_parts
+    is_big = "bigendian" in encoding_parts
 
     if not is_base64:
         raise ValueError(f"Unsupported encoding: {encoding}. Only base64 supported.")
+    if is_little == is_big or len(encoding_parts) != 2:
+        raise ValueError(f"Unsupported byte order in encoding: {encoding}")
 
     # Decode base64
     raw_bytes = base64.b64decode(stream_text.strip())
@@ -204,13 +208,9 @@ def load_dttxml_native(source: str) -> dict:
 
     Notes
     -----
-    DTT XML Subtype Reference:
-    - 1: Power Spectrum (real, float)
-    - 2: Cross Spectrum (complex, floatComplex)
-    - 3: Transfer Function magnitude/phase (complex interpretation)
-    - 4: Transfer Function real/imag (complex)
-    - 5: Response (real)
-    - 6: Response complex (floatComplex) - **correctly parsed here**
+    DTT assigns product meanings using both the ``LIGO_LW`` Type and Subtype.
+    A TransferFunction subtype 6 stream contains float64 frequencies followed
+    by complex64 values; decoding the entire stream as one dtype loses phase.
 
     """
     try:
@@ -222,169 +222,175 @@ def load_dttxml_native(source: str) -> dict:
     root = cast(Any, tree.getroot())
     normalized: dict = {}
 
-    # Find all Result blocks
-    for result_elem in root.findall(".//LIGO_LW[@Type='Spectrum']"):
-        result_name = result_elem.get("Name", "")
+    # (product, sample dtype, explicit frequency column)
+    spectrum_layouts = {
+        1: ("PSD", "float", False),
+        2: ("CSD", "floatComplex", False),
+        3: ("COH", "float", False),
+    }
+    transfer_layouts = {
+        0: ("TF", "floatComplex", False),
+        2: ("COH", "float", False),
+        6: ("TF", "floatComplex", True),
+    }
 
-        # Extract parameters
-        params: dict = {}
-        for param in result_elem.findall("Param"):
-            name = param.get("Name", "")
-            ptype = param.get("Type", "string")
-            text = param.text.strip() if param.text else ""
-
-            if ptype == "int":
-                params[name] = int(text) if text else 0
-            elif ptype == "double":
-                params[name] = float(text) if text else 0.0
-            elif ptype == "boolean":
-                params[name] = text.lower() in ("true", "1")
-            else:
-                params[name] = text
-
-        # Extract time
-        time_elem = result_elem.find("Time[@Name='t0']")
-        t0 = (
-            float(time_elem.text.strip())
-            if time_elem is not None and time_elem.text
-            else 0.0
-        )
-
-        try:
-            subtype = int(params.get("Subtype", 0))
-        except (ValueError, TypeError):
-            subtype = 0
-        f0 = float(params.get("f0", 0.0))
-        df = float(params.get("df", 1.0))
-        n_points = int(params.get("N", 0))
-
-        # Extract channel info
-        channel_a = params.get("ChannelA", "")
-        # ChannelB may be indexed: ChannelB[0], ChannelB[1], etc.
-        channels_b = []
-        for key, val in params.items():
-            if key.startswith("ChannelB"):
-                channels_b.append(val)
-
-        # Find Array element
-        array_elem = result_elem.find("Array")
-        if array_elem is None:
+    for result_elem in root.iter("LIGO_LW"):
+        result_type = result_elem.get("Type")
+        if result_type not in ("Spectrum", "TransferFunction"):
             continue
-
-        array_type = array_elem.get("Type", "float")
-
-        # Get dimensions
-        dims = [int(d.text.strip()) for d in array_elem.findall("Dim") if d.text]
-
-        # Get stream
-        stream_elem = array_elem.find("Stream")
+        result_name = result_elem.get("Name", "")
+        params = {
+            param.get("Name"): (param.text or "").strip()
+            for param in result_elem.findall("Param")
+            if param.get("Name")
+        }
+        try:
+            subtype = int(params.get("Subtype", ""))
+            n_points = int(params.get("N", ""))
+            f0 = float(params.get("f0", 0.0))
+            df = float(params.get("df", 1.0))
+            n_rows = int(params["M"]) if "M" in params else None
+        except (TypeError, ValueError) as exc:
+            warnings.warn(
+                f"Invalid frequency metadata for {result_name}: {exc}", stacklevel=2
+            )
+            continue
+        layouts = spectrum_layouts if result_type == "Spectrum" else transfer_layouts
+        if subtype not in layouts:
+            warnings.warn(
+                f"Unsupported {result_type} subtype {subtype} for {result_name}",
+                stacklevel=2,
+            )
+            continue
+        if n_points <= 0:
+            warnings.warn(f"Invalid N for {result_name}: {n_points}", stacklevel=2)
+            continue
+        product, sample_type, embedded_frequencies = layouts[subtype]
+        array_elem = result_elem.find("Array")
+        stream_elem = array_elem.find("Stream") if array_elem is not None else None
         if stream_elem is None or stream_elem.text is None:
             continue
-
-        encoding = stream_elem.get("Encoding", "LittleEndian,base64")
-        stream_text = stream_elem.text
-
-        # Decode data
-        try:
-            data = _decode_dtt_stream(stream_text, encoding, array_type)
-        except (ValueError, TypeError) as e:
-            warnings.warn(f"Failed to decode stream for {result_name}: {e}")
+        array_type = array_elem.get("Type")
+        if array_type != sample_type:
+            warnings.warn(
+                f"Unsupported Array Type {array_type!r} for "
+                f"{result_type} subtype {subtype} in {result_name}",
+                stacklevel=2,
+            )
             continue
-
-        # Reshape if multi-dimensional
-        if len(dims) > 1:
-            # For TF/CSD: dims = [n_channel_pairs, n_freq]
-            try:
-                data = data.reshape(dims)
-            except ValueError:
+        try:
+            dims = [int(dim.text) for dim in array_elem.findall("Dim")]
+        except (TypeError, ValueError) as exc:
+            warnings.warn(f"Invalid dimensions for {result_name}: {exc}", stacklevel=2)
+            continue
+        if any(dim <= 0 for dim in dims):
+            warnings.warn(f"Invalid dimensions for {result_name}: {dims}", stacklevel=2)
+            continue
+        encoding = stream_elem.get("Encoding", "LittleEndian,base64")
+        try:
+            if result_type == "TransferFunction" and subtype == 6:
+                # The first N eight-byte words are float64 frequencies; the
+                # remaining words are complex64 values. dttxml 1.1.8 takes
+                # .real of the entire complex view and discards TF phase.
+                words = _decode_dtt_stream(stream_elem.text, encoding, "floatComplex")
+                frequencies = _decode_dtt_stream(stream_elem.text, encoding, "double")[
+                    :n_points
+                ]
+                data = words[n_points:]
+            else:
+                words = _decode_dtt_stream(stream_elem.text, encoding, sample_type)
+                if embedded_frequencies:
+                    frequencies = np.asarray(words[:n_points].real, dtype=float)
+                    data = words[n_points:]
+                else:
+                    frequencies = f0 + np.arange(n_points) * df
+                    data = words
+        except (TypeError, ValueError) as exc:
+            warnings.warn(
+                f"Failed to decode stream for {result_name}: {exc}", stacklevel=2
+            )
+            continue
+        if data.size % n_points:
+            warnings.warn(f"Invalid data length for {result_name}", stacklevel=2)
+            continue
+        actual_rows = data.size // n_points
+        if not actual_rows or (n_rows is not None and n_rows != actual_rows):
+            warnings.warn(f"Invalid row count for {result_name}", stacklevel=2)
+            continue
+        if len(dims) == 2:
+            expected_dims = [actual_rows + int(embedded_frequencies), n_points]
+            if dims != expected_dims:
                 warnings.warn(
-                    f"Cannot reshape {result_name} data "
-                    f"(size={data.size}) to dims={dims}; keeping flat",
+                    f"Dimensions {dims} disagree with expected {expected_dims} "
+                    f"for {result_name}",
                     stacklevel=2,
                 )
+                continue
+        elif dims and int(np.prod(dims)) not in (
+            words.size,
+            data.size if embedded_frequencies else words.size,
+        ):
+            warnings.warn(
+                f"Dimensions {dims} disagree with stream size for {result_name}",
+                stacklevel=2,
+            )
+            continue
+        data = data.reshape(actual_rows, n_points)
+        frequencies = np.asarray(frequencies, dtype=float)
+        if frequencies.size != n_points:
+            continue
+        f0 = float(frequencies[0])
+        if n_points > 1:
+            df = float(frequencies[1] - frequencies[0])
 
-        # Build frequency axis
-        frequencies = f0 + np.arange(n_points) * df
-
-        # Categorize by subtype
-        # Subtype 1: PSD (real)
-        # Subtype 2: CSD (complex)
-        # Subtype 3, 4, 6: TF (complex)
-        # Subtype 5: Response (real)
-
-        result_info = {
-            "data": data,
+        channel_a = params.get("ChannelA", "")
+        if not channel_a:
+            continue
+        reference = re.fullmatch(r"Reference\[(\d+)\]", result_name)
+        if reference is not None:
+            channel_a = f"{channel_a}(REF{reference.group(1)})"
+        indexed_b = []
+        for name, channel in params.items():
+            if name == "ChannelB":
+                indexed_b.append((0, channel))
+            elif name.startswith("ChannelB[") and name.endswith("]"):
+                try:
+                    indexed_b.append((int(name[9:-1]), channel))
+                except ValueError:
+                    continue
+        channels_b = [channel for _, channel in sorted(indexed_b) if channel]
+        time_elem = result_elem.find("Time[@Name='t0']")
+        epoch = (
+            float(time_elem.text) if time_elem is not None and time_elem.text else 0.0
+        )
+        info = {
             "frequencies": frequencies,
             "f0": f0,
             "df": df,
-            "epoch": t0,
+            "epoch": epoch,
+            "unit": None if product == "COH" else params.get("BUnit") or None,
             "subtype": subtype,
             "channel_a": channel_a,
             "channels_b": channels_b,
-            "unit": params.get("BUnit"),
         }
-
-        if subtype == 1:
-            # Power Spectrum
-            product_key = "PSD"
-            if product_key not in normalized:
-                normalized[product_key] = {}
-            normalized[product_key][channel_a] = result_info
-            # Also store as ASD
-            if "ASD" not in normalized:
-                normalized["ASD"] = {}
-            normalized["ASD"][channel_a] = result_info
-
-        elif subtype == 2:
-            # Cross Spectrum
-            product_key = "CSD"
-            if product_key not in normalized:
-                normalized[product_key] = {}
-            for i, ch_b in enumerate(channels_b):
-                key = (ch_b, channel_a)
-                if len(dims) > 1 and i < data.shape[0]:
-                    result_info_copy = dict(result_info)
-                    result_info_copy["data"] = data[i]
-                    normalized[product_key][key] = result_info_copy
-                else:
-                    normalized[product_key][key] = result_info
-
-        elif subtype in (3, 4, 6):
-            # Transfer Function (complex)
-            product_key = "TF"
-            if product_key not in normalized:
-                normalized[product_key] = {}
-            for i, ch_b in enumerate(channels_b):
-                key = (ch_b, channel_a)
-                if len(dims) > 1 and i < data.shape[0]:
-                    result_info_copy = dict(result_info)
-                    result_info_copy["data"] = data[i]
-                    normalized[product_key][key] = result_info_copy
-                else:
-                    normalized[product_key][key] = result_info
-
-        elif subtype == 5:
-            # Response (real) - treat as TF
-            product_key = "TF"
-            if product_key not in normalized:
-                normalized[product_key] = {}
-            for i, ch_b in enumerate(channels_b):
-                key = (ch_b, channel_a)
-                normalized[product_key][key] = result_info
-
-    # Also check for Coherence blocks (may have different structure)
-    for result_elem in root.findall(".//LIGO_LW[@Type='Spectrum']"):
-        params = {}
-        for param in result_elem.findall("Param"):
-            name = param.get("Name", "")
-            text = param.text.strip() if param.text else ""
-            params[name] = text
-
-        subtype = int(params.get("Subtype", "0") or "0")
-
-        # Coherence typically has specific naming or is derived from CSD/PSD
-        # For now, we rely on the TracesGraphType or similar markers
-        # This is a simplified implementation
+        if product == "PSD":
+            payload = {**info, "data": data[0]}
+            normalized.setdefault(product, {})[channel_a] = payload
+            # DTT labels this trace PSD; the existing ASD alias exposes
+            # the same stored samples without a numerical conversion.
+            normalized.setdefault("ASD", {})[channel_a] = payload
+        else:
+            if len(channels_b) != actual_rows:
+                warnings.warn(
+                    f"ChannelB count disagrees with data rows for {result_name}",
+                    stacklevel=2,
+                )
+                continue
+            for row, channel_b in enumerate(channels_b):
+                normalized.setdefault(product, {})[(channel_b, channel_a)] = {
+                    **info,
+                    "data": data[row],
+                }
 
     return normalized
 
@@ -418,7 +424,10 @@ def load_dttxml_products(source, *, native: bool = False):
     Returns
     -------
     dict
-        Normalized mapping of products (TF, PSD, ASD, CSD, COH, TS).
+        Mapping of products (TF, PSD, ASD, CSD, COH, TS). With the installed
+        ``dttxml`` package and ``native=False``, frequency entries are
+        ``FrequencySeries`` objects. Native frequency entries are dictionaries.
+        Time-series entries, when present, remain dictionaries.
 
     Notes
     -----
@@ -454,44 +463,29 @@ def load_dttxml_products(source, *, native: bool = False):
 
     normalized = {}
 
-    # Helper to safe get
-    def get_attr(obj, name, default=None):
-        return getattr(obj, name, default)
-
-    # Helper to create GWEXPY object
-    def create_series(
-        data, x_axis=None, dt=None, t0=0, unit=None, name=None, type="time"
-    ):
+    def frequency_series(data, info, name, *, unit=None):
+        """Preserve the native=False loader's observable FrequencySeries values."""
         from gwexpy.interop._registry import ConverterRegistry
 
         FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
-        TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
-
+        axis = info.FHz
         try:
-            if type == "time":
-                if dt is None and x_axis is not None and len(x_axis) > 1:
-                    dt = x_axis[1] - x_axis[0]
-                return TimeSeries(data, dt=dt, t0=t0, name=name, unit=unit)
-            elif type == "freq":
-                # FrequencySeries expects df and f0.
-                if x_axis is not None and len(x_axis) > 1:
-                    df = x_axis[1] - x_axis[0]
-                    f0 = x_axis[0]
-                    # Check uniformity? For now assume yes or accepted approx
-                    return FrequencySeries(
-                        data, df=df, f0=f0, epoch=t0, name=name, unit=unit
-                    )
+            if axis is not None and len(axis) > 1:
                 return FrequencySeries(
-                    data, df=1, f0=0, epoch=t0, name=name, unit=unit
-                )  # Fallback
-        except (AttributeError, TypeError, ValueError) as e:
-            # Do NOT degrade to a dict here: every caller stores the result as
-            # a TimeSeries/FrequencySeries and later accesses Series attributes
-            # (.value/.f0/...), so a dict fallback only defers an opaque
-            # AttributeError downstream.  Fail clearly at the source instead.
+                    data,
+                    df=axis[1] - axis[0],
+                    f0=axis[0],
+                    epoch=info.gps_second,
+                    name=name,
+                    unit=unit,
+                )
+            return FrequencySeries(
+                data, df=1, f0=0, epoch=info.gps_second, name=name, unit=unit
+            )
+        except (AttributeError, TypeError, ValueError) as exc:
             raise ValueError(
-                f"Failed to create gwexpy {type} series for {name!r}: {e}"
-            ) from e
+                f"Failed to create gwexpy freq series for {name!r}: {exc}"
+            ) from exc
 
     # 1. Time Series (TS)
     # Return raw dicts (not TimeSeries objects) so that read_timeseriesdict_dttxml
@@ -509,21 +503,15 @@ def load_dttxml_products(source, *, native: bool = False):
             }
         normalized["TS"] = ts_dict
 
-    # 2. PSD (actually ASD)
+    # 2. DTT's PSD result is also exposed under the existing ASD alias.
     if hasattr(results, "PSD"):
-        asd_dict = {}
+        psd_dict = {}
         for ch, info in results.PSD.items():
-            unit = get_attr(info, "BUnit", None)
-            asd_dict[ch] = create_series(
-                info.PSD[0],
-                x_axis=info.FHz,
-                t0=info.gps_second,
-                name=ch,
-                unit=unit,
-                type="freq",
+            psd_dict[ch] = frequency_series(
+                info.PSD[0], info, ch, unit=getattr(info, "BUnit", None)
             )
-        normalized["ASD"] = asd_dict
-        normalized["PSD"] = asd_dict
+        normalized["ASD"] = psd_dict
+        normalized["PSD"] = psd_dict
 
     # 3. Coherence (COH)
     if hasattr(results, "COH"):
@@ -531,15 +519,7 @@ def load_dttxml_products(source, *, native: bool = False):
         for chA, info in results.COH.items():
             for i, chB in enumerate(info.channelB):
                 key = (chB, chA)
-                # Coherence is dimensionless
-                coh_dict[key] = create_series(
-                    info.coherence[i],
-                    x_axis=info.FHz,
-                    t0=info.gps_second,
-                    name=str(key),
-                    unit=None,
-                    type="freq",
-                )
+                coh_dict[key] = frequency_series(info.coherence[i], info, str(key))
         normalized["COH"] = coh_dict
 
     # 4. Transfer Function (TF)
@@ -559,7 +539,7 @@ def load_dttxml_products(source, *, native: bool = False):
                 if not np.iscomplexobj(xfer_data) and not phase_loss_warned:
                     # Transfer functions should typically be complex
                     # Real-only TF may indicate phase information was lost
-                    subtype = get_attr(info, "subtype", None)
+                    subtype = getattr(info, "subtype_raw", None)
                     if subtype in (3, 4, 6) or subtype is None:
                         warnings.warn(
                             f"Transfer function data for {key} appears to be real-only. "
@@ -571,13 +551,7 @@ def load_dttxml_products(source, *, native: bool = False):
                         )
                         phase_loss_warned = True
 
-                tf_dict[key] = create_series(
-                    xfer_data,
-                    x_axis=info.FHz,
-                    t0=info.gps_second,
-                    name=str(key),
-                    type="freq",
-                )
+                tf_dict[key] = frequency_series(xfer_data, info, str(key))
         normalized["TF"] = tf_dict
 
     # 5. CSD
@@ -586,13 +560,7 @@ def load_dttxml_products(source, *, native: bool = False):
         for chA, info in results.CSD.items():
             for i, chB in enumerate(info.channelB):
                 key = (chB, chA)
-                csd_dict[key] = create_series(
-                    info.CSD[i],
-                    x_axis=info.FHz,
-                    t0=info.gps_second,
-                    name=str(key),
-                    type="freq",
-                )
+                csd_dict[key] = frequency_series(info.CSD[i], info, str(key))
         normalized["CSD"] = csd_dict
 
     return normalized
