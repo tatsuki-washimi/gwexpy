@@ -4,7 +4,7 @@ lane: D
 project: GWexpy
 date: "2026-09-24"
 base_sha: 277c50a12e653d6c36e02ba407545d60e24d9e9e
-status: real_tf_qualified_pending_pr_update
+status: real_tf_qualified_pending_ci_recheck
 stopped: false
 worktree: "isolated issue-726 integration branch"
 
@@ -42,7 +42,7 @@ changed_files:
   - path: tests/io/test_dttxml_common.py
     change: "Integrated common parser characterization, native normalization, external FrequencySeries parity, and uniform-axis classification coverage including cumulative drift."
   - path: tests/io/test_dttxml_issue726.py
-    change: "Integrated public reader and direct-loader regressions, including synthetic embedded nonuniform TF/COH axes, uniform embedded-axis df compatibility, and cumulative drift."
+    change: "Integrated public reader and direct-loader regressions, including embedded axes and cumulative drift; the TS external-parser check is conditional on optional dttxml availability."
   - path: gwexpy/frequencyseries/io/dttxml.py
     change: "Integrated reader repair and one private adapter for native mapping and external FrequencySeries payloads, including irregular axes without df."
   - path: docs/developers/plans/manifests/audit-manifest-726-dttxml-frequency-reader.yaml
@@ -52,7 +52,7 @@ changed_files:
 
 integration_state:
   integrated: ["lane T tests", "lane C native TF parsing", "lane R frequency readers", "lane I integration", "lane V verification", "public-helper compatibility follow-up", "real TF subtype 3/5 serialization follow-up"]
-  pending: ["PR update and normal CI/reviewer gates before merge"]
+  pending: ["Push the CI optional-dependency test guard, then complete new-head CI and normal PR review"]
 
 completion_gate:
   evidence_bundle: "External to the worktree; bundle location and digest are recorded outside tracked files."
@@ -105,6 +105,7 @@ validation:
     storage_precision: "Frozen pre-#726 native parser returned finite float64 PSD for Spectrum subtype 1 double and complex128 CSD for Spectrum subtype 2 doubleComplex. Three new cases failed against the first PR head with Unsupported Array Type and passed after the precision repair."
     real_tf_followup: "First PR head rejected native TransferFunction subtype 3/5, while the external helper linearized an embedded nonuniform axis. Five new synthetic checks failed before correction and passed after it."
     uniform_axis_followup: "Independent reviews found that explicit coordinates removed the existing .df property for rounded float32 uniform embedded axes, and that local-step comparison could miss cumulative drift. New direct-helper and high-f0 classification regressions failed before their repairs; full-axis comparison now preserves f0/df only for axes uniform within storage precision and keeps genuinely nonuniform embedded coordinates explicit."
+    ci_optional_dependency_followup: "The first real-sample PR head failed the Core I/O contract gate because CI omits optional dttxml. The new TS external-parser regression ran against the longstanding native fallback, which does not parse TS. Injecting absent dttxml locally reproduced the failure; conditioning that test on HAS_DTTXML gave one skip, while the installed-parser test still passed. No product TS behavior changed."
     environment_note: >-
       The first full-suite attempt had 8 import-path environment failures. They
       were resolved with explicit worktree PYTHONPATH; the exact 8 cases then
@@ -117,6 +118,8 @@ validation:
         result: "85 passed after embedded-axis subtype 3/5, uniform-axis compatibility, and cumulative-drift follow-ups"
       - suite: "io-contract --no-fixtures"
         result: "1534 passed, 24 skipped, 1 deselected after embedded-axis and uniform-axis compatibility follow-ups"
+      - suite: "io-contract --no-fixtures with dttxml simulated absent"
+        result: "1527 passed, 31 skipped, 1 deselected after optional-dependency test guard"
       - suite: "io-conformance"
         result: "71 passed, 7 skipped; output reported 6 blocked of 6 total from pre-existing scenario classification"
       - suite: "Broad TimeSeries/FrequencySeries/GWpy"
@@ -209,6 +212,7 @@ agent_audit:
     - "Local raw-stream versus native/external/public-reader qualification on the user-supplied TF export; measurement file and raw metadata not tracked"
     - "Red/green rounded-uniform helper metadata, high-f0 nonuniform, and cumulative-drift classifier regressions"
     - "Synthetic prior-head versus follow-up loader timing and tracemalloc comparison"
+    - "Core I/O CI log triage, no-dttxml local reproduction, and no-dttxml io-contract gate recheck"
   check_physics_summary:
     status: "real-sample numerical and structural parity verified; user confirmed physical B/A direction and explicit-unit policy"
     findings:

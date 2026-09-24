@@ -641,6 +641,9 @@ def test_tf_pairs_filter_selects_requested_label_mapping(synthetic_diaggui_xml, 
     )
 
 
+@pytest.mark.skipif(
+    not HAS_DTTXML, reason="TS parsing requires the optional dttxml parser"
+)
 def test_timeseriesdict_reads_synthetic_dttxml_product(synthetic_diaggui_xml):
     result = TimeSeriesDict.read(
         synthetic_diaggui_xml, format="xml.diaggui", products="TS"
