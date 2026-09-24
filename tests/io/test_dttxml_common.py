@@ -20,6 +20,27 @@ from gwexpy.io.dttxml_common import (
 )
 from gwexpy.timeseries import TimeSeriesDict
 
+
+def test_uniform_frequency_step_uses_spacing_not_absolute_frequency():
+    rounded_uniform = np.arange(100, dtype=np.float32) / 10
+    assert dttxml_common._uniform_frequency_step(rounded_uniform) == pytest.approx(0.1)
+
+    # A large f0 must not hide a nonuniform step in float32 storage.
+    irregular = np.array(
+        [1_000_000, 1_000_001, 1_000_002.5, 1_000_003.5], dtype=np.float32
+    )
+    assert dttxml_common._uniform_frequency_step(irregular) is None
+
+    increments = np.where(np.arange(99) % 2 == 0, 1.0, 1.0625).astype(np.float32)
+    drifting = np.concatenate(
+        (
+            np.array([1_000_000.0], dtype=np.float32),
+            np.float32(1_000_000.0) + np.cumsum(increments, dtype=np.float32),
+        )
+    )
+    assert dttxml_common._uniform_frequency_step(drifting) is None
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

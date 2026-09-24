@@ -4,7 +4,7 @@ lane: D
 project: GWexpy
 date: "2026-09-24"
 base_sha: 277c50a12e653d6c36e02ba407545d60e24d9e9e
-status: implementation_verified_pending_real_sample
+status: real_tf_qualified_pending_pr_update
 stopped: false
 worktree: "isolated issue-726 integration branch"
 
@@ -15,20 +15,22 @@ scope:
   included:
     - "FrequencySeries, FrequencySeriesDict, and FrequencySeriesMatrix DTT XML readers."
     - "ASD parsing through both the installed dttxml and native parsers."
-    - "Complex TransferFunction parsing with linear frequency axes and indexed output channels."
+    - "Complex TransferFunction parsing with linear or embedded nonuniform frequency axes and indexed output channels."
     - "Repair the synthetic PSD, TF, and COH XML builders in the English case studies and generator templates."
     - "Record the external-parser AttributeError, native ndarray truth-value error, and TF StopIteration regressions."
     - "Preserve directly imported load_dttxml_products(native=False) FrequencySeries values with a private reader adapter."
     - "Preserve native double and doubleComplex storage precision for verified Type/Subtype layouts."
+    - "Preserve embedded frequency columns in TransferFunction subtype 3 TF and subtype 5 COH through both parser paths."
   excluded:
     - "No change to TimeSeries DTT XML payload behavior."
     - "No creation of the absent Japanese web notebook."
-    - "No real-sample acceptance; the real TF XML sample remains pending."
+    - "No publication of the user-supplied measurement XML or raw channel metadata."
+    - "No inference of TF units from manually entered plot labels; the inspected TF XML omits AUnit/BUnit."
     - "No release publication."
 
 changed_files:
   - path: CHANGELOG.md
-    change: "Added a Pending patch release note covering FS, FSD, and FSM readers and the three diagnosed failure modes."
+    change: "Recorded FS/FSD/FSM correctness repairs, including TF subtype 3 and COH subtype 5 embedded frequency axes."
   - path: docs_redesign/how-to/case-studies/case_dttxml_calibration.ipynb
     change: "Corrected synthetic DTT XML metadata, documented native mapping versus external FrequencySeries payloads, and labeled the m/N transfer-function unit as dimensional."
   - path: docs/web/en/user_guide/tutorials/case_dttxml_calibration.ipynb
@@ -36,29 +38,29 @@ changed_files:
   - path: scripts/dev_tools/make_dttxml_tutorial.py
     change: "Corrected its standalone XML helper and embedded English and Japanese notebook templates, including backend-specific payload descriptions and dimensional m/N unit wording; notebooks were not regenerated."
   - path: gwexpy/io/dttxml_common.py
-    change: "Integrated native TF parsing while preserving native=False loader FrequencySeries values after a compatibility audit."
+    change: "Integrated native TF parsing, embedded subtype 3/5 frequency columns, and nonuniform external FrequencySeries axes while preserving native=False value types."
   - path: tests/io/test_dttxml_common.py
-    change: "Integrated common parser characterization, native normalization, and external FrequencySeries parity coverage."
+    change: "Integrated common parser characterization, native normalization, external FrequencySeries parity, and uniform-axis classification coverage including cumulative drift."
   - path: tests/io/test_dttxml_issue726.py
-    change: "Integrated public FS/FSD/FSM reader regressions and direct-loader FrequencySeries compatibility coverage."
+    change: "Integrated public reader and direct-loader regressions, including synthetic embedded nonuniform TF/COH axes, uniform embedded-axis df compatibility, and cumulative drift."
   - path: gwexpy/frequencyseries/io/dttxml.py
-    change: "Integrated lane R reader repair and one private adapter for native mapping and external FrequencySeries payloads."
+    change: "Integrated reader repair and one private adapter for native mapping and external FrequencySeries payloads, including irregular axes without df."
   - path: docs/developers/plans/manifests/audit-manifest-726-dttxml-frequency-reader.yaml
     change: "Recorded final synthetic-fixture verification and the remaining real-sample limitation."
   - path: docs/plans/2026-09-24-issue-726-dttxml-frequency-readers.md
     change: "Approved mplan saved and execution checkpoints updated by orchestrator; copy synchronized separately."
 
 integration_state:
-  integrated: ["lane T tests", "lane C native TF parsing", "lane R frequency readers", "lane I integration", "lane V verification", "public-helper compatibility follow-up"]
-  pending: ["real TF XML sample inspection and unit/serialization acceptance"]
+  integrated: ["lane T tests", "lane C native TF parsing", "lane R frequency readers", "lane I integration", "lane V verification", "public-helper compatibility follow-up", "real TF subtype 3/5 serialization follow-up"]
+  pending: ["PR update and normal CI/reviewer gates before merge"]
 
 completion_gate:
   evidence_bundle: "External to the worktree; bundle location and digest are recorded outside tracked files."
-  task_level_status: "complete for the pre-sample implementation"
-  real_sample_acceptance: "partial; real TF XML serialization and AUnit/BUnit interpretation remain pending"
-  formal_changed_file_gate: "partial: 6 passed, 4 unverified"
+  task_level_status: "real TF subtype 3/5 implementation and local regression qualification complete"
+  real_sample_acceptance: "complete; Type/Subtype, embedded axes, pair mapping, shape, complex values, and unit policy verified; user confirmed physical B/A direction"
+  formal_changed_file_gate: "historical partial: 6 passed, 4 unverified before the real-sample follow-up; not rerun afterward"
   formal_gate_findings:
-    - "Six Python/YAML files passed the formal gate."
+    - "Six Python/YAML files passed the earlier formal gate; final changed Python files also passed direct Ruff, format, MyPy, and pytest checks."
     - "Unverified: CHANGELOG.md and the plan Markdown file were skipped because markdownlint-cli2/markdownlint are unavailable."
     - "Unverified: the two notebooks have no .ipynb quality-gate profile; direct JSON and runtime checks passed."
   lifting_steps:
@@ -86,6 +88,12 @@ fixture_contract:
   frequency_axis: "f0=0 Hz, df=1 Hz, N=512"
   transfer_pair: "ChannelA=excitation, ChannelB[0]=displacement"
   required_metadata: ["Name=Result[n]", M, N, "ChannelB[n]", "Array Dim M", "Array Dim N"]
+  embedded_frequency_fixture:
+    type: TransferFunction
+    subtypes: {3: TF, 5: COH}
+    shape: "One-dimensional Array with (M+1)*N words: one frequency row and M data rows."
+    frequency_axis: "Synthetic nonuniform frequencies; f0=df=0 in XML."
+    privacy: "Generated independently; no measurement channel names or samples are copied."
 
 validation:
   baseline:
@@ -95,25 +103,27 @@ validation:
     malformed_dimensions: "Malformed 2-D and 1-D dimension cases each failed on base before their respective fixes."
     public_helper_compatibility: "A new native=False FrequencySeries value-type test failed on the intermediate mapping implementation and passed after restoration."
     storage_precision: "Frozen pre-#726 native parser returned finite float64 PSD for Spectrum subtype 1 double and complex128 CSD for Spectrum subtype 2 doubleComplex. Three new cases failed against the first PR head with Unsupported Array Type and passed after the precision repair."
+    real_tf_followup: "First PR head rejected native TransferFunction subtype 3/5, while the external helper linearized an embedded nonuniform axis. Five new synthetic checks failed before correction and passed after it."
+    uniform_axis_followup: "Independent reviews found that explicit coordinates removed the existing .df property for rounded float32 uniform embedded axes, and that local-step comparison could miss cumulative drift. New direct-helper and high-f0 classification regressions failed before their repairs; full-axis comparison now preserves f0/df only for axes uniform within storage precision and keeps genuinely nonuniform embedded coordinates explicit."
     environment_note: >-
       The first full-suite attempt had 8 import-path environment failures. They
       were resolved with explicit worktree PYTHONPATH; the exact 8 cases then
       passed, and the final full suite used that PYTHONPATH.
   final_verification:
-    status: passed_pending_real_sample
+    status: passed_with_real_sample_qualification
     final_source: "Integration tree based on 277c50a12e653d6c36e02ba407545d60e24d9e9e, including the private public-helper compatibility adapter."
     suites:
       - suite: "Focused DTTXML"
-        result: "77 passed after native storage-precision review repair"
+        result: "85 passed after embedded-axis subtype 3/5, uniform-axis compatibility, and cumulative-drift follow-ups"
       - suite: "io-contract --no-fixtures"
-        result: "1526 passed, 24 skipped, 1 deselected after native storage-precision review repair"
+        result: "1534 passed, 24 skipped, 1 deselected after embedded-axis and uniform-axis compatibility follow-ups"
       - suite: "io-conformance"
         result: "71 passed, 7 skipped; output reported 6 blocked of 6 total from pre-existing scenario classification"
       - suite: "Broad TimeSeries/FrequencySeries/GWpy"
         result: "6329 passed, 126 skipped, 4 xfailed"
       - suite: "Full tests suite with explicit integration-worktree PYTHONPATH"
         command: "pytest -q tests/ with PYTHONPATH set to the integration worktree root"
-        result: "12984 passed, 307 skipped, 6 xfailed, 234 warnings; exit 0; 856.51 seconds after native storage-precision review repair"
+        result: "12992 passed, 307 skipped, 6 xfailed, 234 warnings; exit 0; 763.80 seconds after real TF and uniform-axis follow-ups"
     tooling:
       - check: "Full ruff check on gwexpy/ and tests/"
         command: "ruff check gwexpy/ tests/"
@@ -163,18 +173,29 @@ validation:
       first_pr_head_median_ms: 0.0517
       review_fix_median_ms: 0.0514
       note: "Measured in one local process; this small sample shows no material per-call cost for the precision check."
+    embedded_axis_followup:
+      fixture: "Small independent synthetic TransferFunction XML with a nonuniform embedded axis."
+      method: "5 warmups, 100 loader calls, and median of 5 tracemalloc peaks per revision in one process."
+      regular_native_median_ms: {first_pr_head: 0.0588, followup: 0.0538}
+      regular_external_median_ms: {first_pr_head: 0.1621, followup: 0.1643}
+      irregular_external_median_ms: {first_pr_head: 0.1923, followup: 0.3794}
+      note: "The regular-axis paths have no material measured slowdown. The explicit irregular-axis external path spends more time classifying and constructing correct frequency coordinates; the first PR head returned an incorrect linear axis."
 review:
-  human_review_required: pending_real_sample
-  physics_review_required: pending_real_sample
-  real_sample_review: pending_user_sample
+  human_review_required: completed_for_real_sample_direction_and_unit_policy
+  physics_review_required: completed_for_real_sample_direction_and_unit_policy
+  real_sample_review: "Subtype 3 TF and subtype 5 COH serialization, raw stream values, frequencies, epoch, dimensions, and installed-parser (ChannelB, ChannelA) mapping checked for every pair; file units absent. The user confirmed B/A physical direction and explicit-unit policy."
   rationale: >-
-    The synthetic fixtures exercise stored ASD values and complex transfer
-    functions without adding scaling. Final parser and physical-serialization
-    acceptance remains pending inspection of the supplied real transfer-function
-    XML sample, especially its subtype and channel/unit serialization.
+    The synthetic fixtures and local measurement comparison exercise stored
+    complex TF values without spectral rescaling. Both parser paths match the
+    supplied TF XML's raw values and embedded frequency axis. The installed
+    dttxml parser identifies subtype 3 as B/A. AUnit and BUnit are absent; the
+    user confirms DiagGUI discards unit metadata and plot-axis labels are
+    manually entered. The reader therefore leaves file-derived units empty and
+    accepts explicit unit= when the caller knows the units. Human sign-off on
+    the physical B/A direction was confirmed by the user.
 
 agent_audit:
-  skills_used: [mplan, verify_physics, pr-writer, github-mcp-secret-filter, receiving-code-review]
+  skills_used: [mplan, verify_physics, pr-writer, github-mcp-secret-filter, receiving-code-review, agent-output-report]
   commands_executed:
     - "pytest -q tests/io/test_dttxml_issue726.py tests/io/test_dttxml_common.py tests/io/test_dttxml_reader.py tests/test_dttxml_loading.py tests/io/test_frequencyseries_io.py"
     - "pytest -q tests/ with the integration worktree on PYTHONPATH"
@@ -185,13 +206,17 @@ agent_audit:
     - "mypy gwexpy/ (396 source files)"
     - "prepare_public_docs.py, verify_public_examples.py, check_docs_sync.py, and EN/JA Sphinx HTML builds"
     - "Frozen-base native double/doubleComplex runtime characterization and three red/green precision regression cases"
+    - "Local raw-stream versus native/external/public-reader qualification on the user-supplied TF export; measurement file and raw metadata not tracked"
+    - "Red/green rounded-uniform helper metadata, high-f0 nonuniform, and cumulative-drift classifier regressions"
+    - "Synthetic prior-head versus follow-up loader timing and tracemalloc comparison"
   check_physics_summary:
-    status: "synthetic and installed-parser reference reviewed; real-sample qualification pending"
+    status: "real-sample numerical and structural parity verified; user confirmed physical B/A direction and explicit-unit policy"
     findings:
       - "No new spectral rescaling or Fourier transform is introduced; stored ASD/PSD samples are preserved."
       - "Installed dttxml parser labels TransferFunction subtype 0 as B/A and Spectrum subtype 3 as coherence."
       - "Complex TF real/imaginary parts, phase, frequency axis, pair labels, epoch, and explicit unit overrides are covered by synthetic tests."
-      - "Native BUnit handling differs from the installed external parser, which ignores it; real AUnit/BUnit and pair semantics require the supplied TF sample."
+      - "Native BUnit handling differs from the installed external parser, which ignores it; this export has no BUnit, so both paths leave file-derived units empty. The user confirms DiagGUI omits unit metadata and plot labels are manual."
+      - "Every TF and COH pair matches raw stream data and the installed parser's B/A labels; the user confirmed that ChannelA is the input and ChannelB[n] is the output."
 
 supported_native_subtypes:
   spectrum:
@@ -201,6 +226,8 @@ supported_native_subtypes:
   transfer_function:
     0: "TF with linear f0/df axis"
     2: COH
+    3: "TF with embedded complex frequency row"
+    5: "COH with embedded real frequency row"
     6: "TF with embedded frequency axis"
   limitation: >-
     This lists the native normalization layouts implemented for the frequency
@@ -226,7 +253,7 @@ supported_native_subtypes:
 
 unit_policy:
   synthetic_fixture: "The reader regression fixture carries BUnit values; native parsing reads them, while explicit unit= overrides are verified for both backends. The tutorial uses a separate unitless synthetic fixture."
-  real_sample: "AUnit/BUnit interpretation and per-pair unit handling remain pending inspection of the real TF XML sample."
+  real_sample: "The inspected TransferFunction export omits AUnit and BUnit. The user confirms DiagGUI removes unit metadata and plot-axis labels are manual. Both readers expose unitless samples by default; a local unit= override check for both parser modes preserved values and axes."
   per_pair_unit_matrix: "Deferred; no per-pair mixed-unit matrix contract is claimed by this patch."
   external_parser: "The installed dttxml parser can lose phase for TransferFunction subtype 6; native parsing is the documented workaround."
 
@@ -240,5 +267,5 @@ release_notes:
 limitations:
   - "No Japanese web notebook exists in the checkout; the generator's JA template is corrected for future generation."
   - "Tutorial notebooks were edited directly because running the generator would replace newer notebook content."
-  - "Implementation and regression verification passed; real TF serialization and unit interpretation remain pending the supplied sample."
+  - "A real TF subtype 3/COH subtype 5 export confirms serialization and numerical parity; DiagGUI omits file unit metadata, so callers must supply known units explicitly."
   - "The native parser covers only the subtype layouts listed above; other DTT layouts are outside the verified scope."

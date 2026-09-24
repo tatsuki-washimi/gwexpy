@@ -185,6 +185,24 @@ def _decode_dtt_stream(stream_text: str, encoding: str, dtype_str: str) -> np.nd
     return np.frombuffer(raw_bytes, dtype=dt)
 
 
+def _uniform_frequency_step(frequencies) -> float | None:
+    """Return the bin spacing when an explicit frequency axis is uniform."""
+    axis = np.asarray(frequencies)
+    if axis.size < 2:
+        return None
+    if not np.issubdtype(axis.dtype, np.floating):
+        axis = np.asarray(axis, dtype=float)
+    if not np.all(np.isfinite(axis)):
+        return None
+    step = float(axis[1] - axis[0])
+    scale = max(1.0, float(np.max(np.abs(axis))), abs(step))
+    tolerance = 2 * float(np.spacing(np.asarray(scale, dtype=axis.dtype)))
+    expected = float(axis[0]) + np.arange(axis.size) * step
+    if np.allclose(axis, expected, rtol=0, atol=tolerance):
+        return step
+    return None
+
+
 def load_dttxml_native(source: str) -> dict:
     """Parse DTT XML file directly without using dttxml package.
 
@@ -233,6 +251,8 @@ def load_dttxml_native(source: str) -> dict:
     transfer_layouts = {
         0: ("TF", True, False),
         2: ("COH", False, False),
+        3: ("TF", True, True),
+        5: ("COH", False, True),
         6: ("TF", True, True),
     }
 
@@ -351,8 +371,11 @@ def load_dttxml_native(source: str) -> dict:
         if frequencies.size != n_points:
             continue
         f0 = float(frequencies[0])
-        if n_points > 1:
-            df = float(frequencies[1] - frequencies[0])
+        axis_df = (
+            _uniform_frequency_step(frequencies)
+            if embedded_frequencies and n_points > 1
+            else df
+        )
 
         channel_a = params.get("ChannelA", "")
         if not channel_a:
@@ -377,7 +400,7 @@ def load_dttxml_native(source: str) -> dict:
         info = {
             "frequencies": frequencies,
             "f0": f0,
-            "df": df,
+            "df": axis_df,
             "epoch": epoch,
             "unit": None if product == "COH" else params.get("BUnit") or None,
             "subtype": subtype,
@@ -482,6 +505,19 @@ def load_dttxml_products(source, *, native: bool = False):
         axis = info.FHz
         try:
             if axis is not None and len(axis) > 1:
+                subtype = getattr(info, "subtype", "")
+                subtype_raw = getattr(info, "subtype_raw", None)
+                has_embedded_axis = subtype_raw in (3, 4, 5, 6, 7) or (
+                    isinstance(subtype, str) and "format (f," in subtype.lower()
+                )
+                if has_embedded_axis and _uniform_frequency_step(axis) is None:
+                    return FrequencySeries(
+                        data,
+                        frequencies=axis,
+                        epoch=info.gps_second,
+                        name=name,
+                        unit=unit,
+                    )
                 return FrequencySeries(
                     data,
                     df=axis[1] - axis[0],

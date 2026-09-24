@@ -33,6 +33,7 @@ _TF_SECOND_VALUES = np.array(
 _TS_CHANNEL = "K1:TEST-TIME"
 _TS_VALUES = np.array([1.5, -2.0, 0.25, 8.0], dtype=np.float32)
 _TS_DT = 0.125
+_EMBEDDED_FREQUENCIES = np.array([10.0, 11.0, 13.5, 17.0], dtype=np.float32)
 
 
 def _add_product(
@@ -136,6 +137,197 @@ def synthetic_diaggui_xml(tmp_path):
     path = tmp_path / "synthetic_diaggui.xml"
     ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
     return path
+
+
+@pytest.fixture
+def embedded_frequency_diaggui_xml(tmp_path):
+    """Model the one-dimensional (f, Y) TF/COH layout in a real DTT export."""
+    root = ET.Element("LIGO_LW")
+    tf_rows = np.stack((_TF_VALUES, _TF_SECOND_VALUES))
+    coherence_rows = np.array(
+        [[0.2, 0.4, 0.6, 0.8], [0.1, 0.3, 0.5, 0.7]], dtype=np.float32
+    )
+    common = {
+        "M": "2",
+        "N": str(len(_EMBEDDED_FREQUENCIES)),
+        "f0": "0",
+        "df": "0",
+        "ChannelA": _INPUT_CHANNEL,
+        "ChannelB[0]": _OUTPUT_CHANNELS[0],
+        "ChannelB[1]": _OUTPUT_CHANNELS[1],
+    }
+    _add_product(
+        root,
+        result_index=0,
+        product_type="TransferFunction",
+        params={"Subtype": "3", **common},
+        values=np.concatenate(
+            (_EMBEDDED_FREQUENCIES.astype(np.complex64), tf_rows.ravel())
+        ),
+        dtype="floatComplex",
+        dims=(3 * len(_EMBEDDED_FREQUENCIES),),
+        time_params={"t0": str(_EPOCH)},
+    )
+    _add_product(
+        root,
+        result_index=1,
+        product_type="TransferFunction",
+        params={"Subtype": "5", **common},
+        values=np.concatenate((_EMBEDDED_FREQUENCIES, coherence_rows.ravel())),
+        dtype="float",
+        dims=(3 * len(_EMBEDDED_FREQUENCIES),),
+        time_params={"t0": str(_EPOCH)},
+    )
+    path = tmp_path / "embedded_frequency_diaggui.xml"
+    ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
+    return path
+
+
+@pytest.fixture
+def rounded_uniform_embedded_diaggui_xml(tmp_path):
+    """Use float32 storage for a uniform axis with small rounding differences."""
+    root = ET.Element("LIGO_LW")
+    frequencies = np.arange(100, dtype=np.float32) / 10
+    values = np.ones(frequencies.size, dtype=np.complex64)
+    _add_product(
+        root,
+        result_index=0,
+        product_type="TransferFunction",
+        params={
+            "Subtype": "3",
+            "M": "1",
+            "N": str(frequencies.size),
+            "f0": "0",
+            "df": "0",
+            "ChannelA": _INPUT_CHANNEL,
+            "ChannelB[0]": _OUTPUT_CHANNELS[0],
+        },
+        values=np.concatenate((frequencies.astype(np.complex64), values)),
+        dtype="floatComplex",
+        dims=(2 * frequencies.size,),
+        time_params={"t0": str(_EPOCH)},
+    )
+    path = tmp_path / "rounded_uniform_embedded_diaggui.xml"
+    ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
+    return path, frequencies
+
+
+@pytest.mark.skipif(not HAS_DTTXML, reason="requires the optional dttxml parser")
+def test_external_loader_retains_uniform_embedded_df_contract(
+    rounded_uniform_embedded_diaggui_xml,
+):
+    path, raw_frequencies = rounded_uniform_embedded_diaggui_xml
+    series = load_dttxml_products(path, native=False)["TF"][
+        (_OUTPUT_CHANNELS[0], _INPUT_CHANNEL)
+    ]
+    assert isinstance(series, FrequencySeries)
+    assert series.dtype == np.dtype(np.complex64)
+    np.testing.assert_array_equal(series.value, np.ones(100, dtype=np.complex64))
+    assert float(series.df.value) == pytest.approx(float(raw_frequencies[1]))
+    # The existing helper builds a linear axis for uniform (f, Y) layouts.
+    # float32 rounding can make its bins differ slightly from the raw row.
+    np.testing.assert_allclose(
+        series.frequencies.value, raw_frequencies, rtol=0, atol=1e-6
+    )
+
+
+@pytest.mark.skipif(not HAS_DTTXML, reason="requires the optional dttxml parser")
+def test_external_loader_preserves_small_cumulative_frequency_drift(
+    rounded_uniform_embedded_diaggui_xml,
+):
+    path, _ = rounded_uniform_embedded_diaggui_xml
+    increments = np.where(np.arange(99) % 2 == 0, 1.0, 1.0625).astype(np.float32)
+    frequencies = np.concatenate(
+        (
+            np.array([1_000_000.0], dtype=np.float32),
+            np.float32(1_000_000.0) + np.cumsum(increments, dtype=np.float32),
+        )
+    )
+    tree = ET.parse(path)
+    stream = tree.find(".//Stream")
+    assert stream is not None and stream.text is not None
+    words = np.frombuffer(base64.b64decode(stream.text), dtype="<c8").copy()
+    words[: frequencies.size] = frequencies.astype(np.complex64)
+    stream.text = base64.b64encode(words.tobytes()).decode("ascii")
+    tree.write(path)
+
+    series = load_dttxml_products(path, native=False)["TF"][
+        (_OUTPUT_CHANNELS[0], _INPUT_CHANNEL)
+    ]
+    np.testing.assert_array_equal(series.frequencies.value, frequencies)
+    assert getattr(series, "df", None) is None
+
+
+@pytest.mark.skipif(not HAS_DTTXML, reason="requires the optional dttxml parser")
+def test_external_loader_preserves_embedded_irregular_frequencies(
+    embedded_frequency_diaggui_xml,
+):
+    products = load_dttxml_products(embedded_frequency_diaggui_xml, native=False)
+    pair = (_OUTPUT_CHANNELS[0], _INPUT_CHANNEL)
+    for product, expected in (
+        ("TF", _TF_VALUES),
+        ("COH", np.array([0.2, 0.4, 0.6, 0.8], dtype=np.float32)),
+    ):
+        series = products[product][pair]
+        assert isinstance(series, FrequencySeries)
+        np.testing.assert_array_equal(series.value, expected)
+        assert series.dtype == expected.dtype
+        np.testing.assert_array_equal(series.frequencies.value, _EMBEDDED_FREQUENCIES)
+        assert float(series.epoch.value) == pytest.approx(_EPOCH)
+        assert str(series.unit) == ""
+
+
+@pytest.mark.parametrize("native", [False, True], ids=["dttxml", "native"])
+def test_embedded_frequency_tf_matrix_preserves_axis_phase_and_pairs(
+    embedded_frequency_diaggui_xml, native
+):
+    matrix = FrequencySeriesMatrix.read(
+        embedded_frequency_diaggui_xml,
+        format="xml.diaggui",
+        products="TF",
+        native=native,
+    )
+    assert matrix.shape == (2, 1, len(_EMBEDDED_FREQUENCIES))
+    assert matrix.dtype == np.dtype(np.complex64)
+    assert list(matrix.rows) == sorted(_OUTPUT_CHANNELS)
+    assert list(matrix.cols) == [_INPUT_CHANNEL]
+    np.testing.assert_array_equal(matrix.frequencies.value, _EMBEDDED_FREQUENCIES)
+    assert matrix.epoch == pytest.approx(_EPOCH)
+    for row, expected in zip(
+        _OUTPUT_CHANNELS, (_TF_VALUES, _TF_SECOND_VALUES), strict=True
+    ):
+        series = matrix[row, _INPUT_CHANNEL]
+        np.testing.assert_array_equal(series.value, expected)
+        np.testing.assert_array_equal(series.value.imag, expected.imag)
+        np.testing.assert_array_equal(np.angle(series.value), np.angle(expected))
+        np.testing.assert_array_equal(series.frequencies.value, _EMBEDDED_FREQUENCIES)
+        assert str(series.unit) == ""
+
+
+@pytest.mark.parametrize("native", [False, True], ids=["dttxml", "native"])
+def test_embedded_frequency_coherence_matrix_preserves_axis_and_pairs(
+    embedded_frequency_diaggui_xml, native
+):
+    matrix = FrequencySeriesMatrix.read(
+        embedded_frequency_diaggui_xml,
+        format="xml.diaggui",
+        products="COH",
+        native=native,
+    )
+    assert matrix.shape == (2, 1, len(_EMBEDDED_FREQUENCIES))
+    assert matrix.dtype == np.dtype(np.float32)
+    assert list(matrix.rows) == sorted(_OUTPUT_CHANNELS)
+    assert list(matrix.cols) == [_INPUT_CHANNEL]
+    np.testing.assert_array_equal(matrix.frequencies.value, _EMBEDDED_FREQUENCIES)
+    assert matrix.epoch == pytest.approx(_EPOCH)
+    np.testing.assert_array_equal(
+        matrix[_OUTPUT_CHANNELS[0], _INPUT_CHANNEL].value,
+        np.array([0.2, 0.4, 0.6, 0.8], dtype=np.float32),
+    )
+    np.testing.assert_array_equal(
+        matrix[_OUTPUT_CHANNELS[1], _INPUT_CHANNEL].value,
+        np.array([0.1, 0.3, 0.5, 0.7], dtype=np.float32),
+    )
 
 
 @pytest.mark.skipif(not HAS_DTTXML, reason="requires the optional dttxml parser")

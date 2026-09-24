@@ -14,7 +14,10 @@
   imported `load_dttxml_products(native=False)` helper keeps its existing
   `FrequencySeries` values; normalization occurs inside the readers. Supported
   native layouts continue to decode `double` and `doubleComplex` Array storage
-  without reducing sample precision.
+  without reducing sample precision. Native TF subtype 3 and coherence subtype 5
+  now consume their embedded frequency column, while the external-parser path
+  preserves nonuniform axes instead of replacing them with a linear grid.
+  Uniform embedded axes retain the helper's existing `f0`/`df` metadata.
 
 ## [0.2.3] - 2026-09-05
 

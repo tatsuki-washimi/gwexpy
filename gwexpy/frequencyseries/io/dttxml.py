@@ -77,11 +77,12 @@ def _frequency_payload_for_reader(payload):
     normalized = {}
     for key, value in payload.items():
         if isinstance(value, FrequencySeries):
+            df = getattr(value, "df", None)
             normalized[key] = {
                 "data": np.asarray(value.value),
                 "frequencies": np.asarray(value.frequencies.value),
                 "f0": value.f0.value,
-                "df": value.df.value,
+                "df": df.value if df is not None else None,
                 "epoch": value.epoch.value if value.epoch is not None else None,
                 "unit": value.unit,
             }
