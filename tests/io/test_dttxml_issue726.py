@@ -35,14 +35,6 @@ _TS_VALUES = np.array([1.5, -2.0, 0.25, 8.0], dtype=np.float32)
 _TS_DT = 0.125
 
 
-def _float32_bytes(values: np.ndarray) -> bytes:
-    return np.asarray(values, dtype="<f4").tobytes()
-
-
-def _complex64_bytes(values: np.ndarray) -> bytes:
-    return np.asarray(values, dtype="<c8").tobytes()
-
-
 def _add_product(
     root: ET.Element,
     *,
@@ -65,7 +57,13 @@ def _add_product(
     for dim in dims:
         ET.SubElement(array, "Dim").text = str(dim)
     stream = ET.SubElement(array, "Stream", {"Encoding": "LittleEndian,base64"})
-    raw = _float32_bytes(values) if dtype == "float" else _complex64_bytes(values)
+    storage_dtype = {
+        "float": "<f4",
+        "double": "<f8",
+        "floatComplex": "<c8",
+        "doubleComplex": "<c16",
+    }[dtype]
+    raw = np.asarray(values, dtype=storage_dtype).tobytes()
     stream.text = base64.b64encode(raw).decode("ascii")
 
 
@@ -254,6 +252,86 @@ def test_asd_frequencyseries_preserves_data_and_metadata(synthetic_diaggui_xml, 
     assert float(result.epoch.value) == pytest.approx(_EPOCH)
     if native:
         assert str(result.unit) == "m"
+
+
+@pytest.mark.parametrize(
+    ("product_type", "subtype", "array_type", "product", "values"),
+    [
+        (
+            "Spectrum",
+            "1",
+            "double",
+            "ASD",
+            np.array([1.25, 2.5, 5.0], dtype=np.float64),
+        ),
+        (
+            "Spectrum",
+            "2",
+            "doubleComplex",
+            "CSD",
+            np.array([1 + 2j, -0.5 + 0.25j, 3 - 4j], dtype=np.complex128),
+        ),
+        (
+            "TransferFunction",
+            "0",
+            "doubleComplex",
+            "TF",
+            np.array([1 + 2j, -0.5 + 0.25j, 3 - 4j], dtype=np.complex128),
+        ),
+    ],
+)
+def test_native_reader_preserves_double_precision_storage(
+    tmp_path, product_type, subtype, array_type, product, values
+):
+    """Supported products preserve their declared on-disk precision."""
+    root = ET.Element("LIGO_LW")
+    _add_product(
+        root,
+        result_index=0,
+        product_type=product_type,
+        params={
+            "Subtype": subtype,
+            "M": "1",
+            "N": str(len(values)),
+            "f0": str(_F0),
+            "df": str(_DF),
+            "ChannelA": _INPUT_CHANNEL,
+            "ChannelB[0]": _OUTPUT_CHANNELS[0],
+        },
+        values=values,
+        dtype=array_type,
+        dims=(1, len(values)),
+        time_params={"t0": str(_EPOCH)},
+    )
+    path = tmp_path / f"{product}_{array_type}.xml"
+    ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
+
+    products = load_dttxml_products(path, native=True)
+    key = _INPUT_CHANNEL if product == "ASD" else (_OUTPUT_CHANNELS[0], _INPUT_CHANNEL)
+    payload = products[product][key]
+    assert payload["data"].dtype == values.dtype
+    np.testing.assert_array_equal(payload["data"], values)
+    np.testing.assert_allclose(
+        payload["frequencies"], _F0 + _DF * np.arange(len(values))
+    )
+    assert payload["epoch"] == pytest.approx(_EPOCH)
+
+    if product == "ASD":
+        series = FrequencySeries.read(
+            path, format="xml.diaggui", products=product, native=True
+        )
+    else:
+        matrix = FrequencySeriesMatrix.read(
+            path, format="xml.diaggui", products=product, native=True
+        )
+        assert matrix.shape == (1, 1, len(values))
+        assert list(matrix.rows) == [_OUTPUT_CHANNELS[0]]
+        assert list(matrix.cols) == [_INPUT_CHANNEL]
+        series = matrix[_OUTPUT_CHANNELS[0], _INPUT_CHANNEL]
+    assert series.dtype == values.dtype
+    np.testing.assert_array_equal(series.value, values)
+    np.testing.assert_allclose(series.frequencies.value, payload["frequencies"])
+    assert float(series.epoch.value) == pytest.approx(_EPOCH)
 
 
 @pytest.mark.parametrize("native", [False, True], ids=["dttxml", "native"])

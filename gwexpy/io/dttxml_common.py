@@ -222,16 +222,18 @@ def load_dttxml_native(source: str) -> dict:
     root = cast(Any, tree.getroot())
     normalized: dict = {}
 
-    # (product, sample dtype, explicit frequency column)
+    # Product semantics and storage precision are independent. The Array Type
+    # selects the decoder dtype after the Type/Subtype pair selects the product.
+    # Tuple fields: (product, complex samples, explicit frequency column).
     spectrum_layouts = {
-        1: ("PSD", "float", False),
-        2: ("CSD", "floatComplex", False),
-        3: ("COH", "float", False),
+        1: ("PSD", False, False),
+        2: ("CSD", True, False),
+        3: ("COH", False, False),
     }
     transfer_layouts = {
-        0: ("TF", "floatComplex", False),
-        2: ("COH", "float", False),
-        6: ("TF", "floatComplex", True),
+        0: ("TF", True, False),
+        2: ("COH", False, False),
+        6: ("TF", True, True),
     }
 
     for result_elem in root.iter("LIGO_LW"):
@@ -265,13 +267,22 @@ def load_dttxml_native(source: str) -> dict:
         if n_points <= 0:
             warnings.warn(f"Invalid N for {result_name}: {n_points}", stacklevel=2)
             continue
-        product, sample_type, embedded_frequencies = layouts[subtype]
+        product, complex_samples, embedded_frequencies = layouts[subtype]
         array_elem = result_elem.find("Array")
         stream_elem = array_elem.find("Stream") if array_elem is not None else None
         if stream_elem is None or stream_elem.text is None:
             continue
         array_type = array_elem.get("Type")
-        if array_type != sample_type:
+        allowed_types: tuple[str, ...] = (
+            ("floatComplex", "doubleComplex")
+            if complex_samples
+            else ("float", "double")
+        )
+        if result_type == "TransferFunction" and subtype == 6:
+            # This mixed layout stores float64 frequencies and complex64 data.
+            # A doubleComplex variant needs a separately verified byte layout.
+            allowed_types = ("floatComplex",)
+        if array_type not in allowed_types:
             warnings.warn(
                 f"Unsupported Array Type {array_type!r} for "
                 f"{result_type} subtype {subtype} in {result_name}",
@@ -298,7 +309,7 @@ def load_dttxml_native(source: str) -> dict:
                 ]
                 data = words[n_points:]
             else:
-                words = _decode_dtt_stream(stream_elem.text, encoding, sample_type)
+                words = _decode_dtt_stream(stream_elem.text, encoding, array_type)
                 if embedded_frequencies:
                     frequencies = np.asarray(words[:n_points].real, dtype=float)
                     data = words[n_points:]

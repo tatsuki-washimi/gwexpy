@@ -19,6 +19,7 @@ scope:
     - "Repair the synthetic PSD, TF, and COH XML builders in the English case studies and generator templates."
     - "Record the external-parser AttributeError, native ndarray truth-value error, and TF StopIteration regressions."
     - "Preserve directly imported load_dttxml_products(native=False) FrequencySeries values with a private reader adapter."
+    - "Preserve native double and doubleComplex storage precision for verified Type/Subtype layouts."
   excluded:
     - "No change to TimeSeries DTT XML payload behavior."
     - "No creation of the absent Japanese web notebook."
@@ -93,6 +94,7 @@ validation:
     expanded_regression_on_base: "Final expanded regression file: 13 failed, 1 passed."
     malformed_dimensions: "Malformed 2-D and 1-D dimension cases each failed on base before their respective fixes."
     public_helper_compatibility: "A new native=False FrequencySeries value-type test failed on the intermediate mapping implementation and passed after restoration."
+    storage_precision: "Frozen pre-#726 native parser returned finite float64 PSD for Spectrum subtype 1 double and complex128 CSD for Spectrum subtype 2 doubleComplex. Three new cases failed against the first PR head with Unsupported Array Type and passed after the precision repair."
     environment_note: >-
       The first full-suite attempt had 8 import-path environment failures. They
       were resolved with explicit worktree PYTHONPATH; the exact 8 cases then
@@ -102,16 +104,16 @@ validation:
     final_source: "Integration tree based on 277c50a12e653d6c36e02ba407545d60e24d9e9e, including the private public-helper compatibility adapter."
     suites:
       - suite: "Focused DTTXML"
-        result: "74 passed after public-helper compatibility repair"
+        result: "77 passed after native storage-precision review repair"
       - suite: "io-contract --no-fixtures"
-        result: "1523 passed, 24 skipped, 1 deselected after public-helper compatibility repair"
+        result: "1526 passed, 24 skipped, 1 deselected after native storage-precision review repair"
       - suite: "io-conformance"
         result: "71 passed, 7 skipped; output reported 6 blocked of 6 total from pre-existing scenario classification"
       - suite: "Broad TimeSeries/FrequencySeries/GWpy"
         result: "6329 passed, 126 skipped, 4 xfailed"
       - suite: "Full tests suite with explicit integration-worktree PYTHONPATH"
         command: "pytest -q tests/ with PYTHONPATH set to the integration worktree root"
-        result: "12979 passed, 309 skipped, 6 xfailed, 234 warnings; exit 0; 827.23 seconds after public-helper compatibility repair"
+        result: "12984 passed, 307 skipped, 6 xfailed, 234 warnings; exit 0; 856.51 seconds after native storage-precision review repair"
     tooling:
       - check: "Full ruff check on gwexpy/ and tests/"
         command: "ruff check gwexpy/ tests/"
@@ -155,6 +157,12 @@ validation:
       baseline: {median_ms: 0.0785, median_peak_kib: 112.1}
       final: {median_ms: 0.1064, median_peak_kib: 112.1}
       caveat: "Final native parser reads TF as well as ASD/PSD; baseline native parser skipped TF, so timing covers expanded work."
+    storage_precision_review:
+      fixture: "Same 512-bin float32 Spectrum subtype 1 XML for the first PR head and review fix."
+      method: "5 warmups and median of 100 native load calls per source revision."
+      first_pr_head_median_ms: 0.0517
+      review_fix_median_ms: 0.0514
+      note: "Measured in one local process; this small sample shows no material per-call cost for the precision check."
 review:
   human_review_required: pending_real_sample
   physics_review_required: pending_real_sample
@@ -166,7 +174,7 @@ review:
     XML sample, especially its subtype and channel/unit serialization.
 
 agent_audit:
-  skills_used: [mplan, verify_physics, pr-writer, github-mcp-secret-filter]
+  skills_used: [mplan, verify_physics, pr-writer, github-mcp-secret-filter, receiving-code-review]
   commands_executed:
     - "pytest -q tests/io/test_dttxml_issue726.py tests/io/test_dttxml_common.py tests/io/test_dttxml_reader.py tests/test_dttxml_loading.py tests/io/test_frequencyseries_io.py"
     - "pytest -q tests/ with the integration worktree on PYTHONPATH"
@@ -176,6 +184,7 @@ agent_audit:
     - "ruff format --check on changed Python files"
     - "mypy gwexpy/ (396 source files)"
     - "prepare_public_docs.py, verify_public_examples.py, check_docs_sync.py, and EN/JA Sphinx HTML builds"
+    - "Frozen-base native double/doubleComplex runtime characterization and three red/green precision regression cases"
   check_physics_summary:
     status: "synthetic and installed-parser reference reviewed; real-sample qualification pending"
     findings:
@@ -197,6 +206,18 @@ supported_native_subtypes:
     This lists the native normalization layouts implemented for the frequency
     reader. It does not claim support for every DiagGUI subtype; additional
     layouts require separate coverage.
+  storage_precision: >-
+    Supported real-sample layouts accept float and double; supported complex
+    layouts without embedded frequencies accept floatComplex and doubleComplex.
+    TransferFunction subtype 6 is limited to its verified mixed float64-frequency
+    and complex64-sample stream. A doubleComplex variant has no verified layout.
+  legacy_spectrum_embedded_frequency_audit: >-
+    Installed dttxml classifies Spectrum subtype 4 as FFT (f,Y), subtype 5 as
+    PSD (f,Y), and subtype 6 as CSD (f,Y). The frozen native parser mislabeled
+    all three as TF and did not separate the embedded frequency column. These
+    layouts are intentionally excluded from this #726 correction pending
+    dedicated axis and row-shape fixtures; their exclusion is not caused by
+    Array Type precision checking.
 
 unit_policy:
   synthetic_fixture: "The reader regression fixture carries BUnit values; native parsing reads them, while explicit unit= overrides are verified for both backends. The tutorial uses a separate unitless synthetic fixture."

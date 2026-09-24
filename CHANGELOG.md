@@ -12,7 +12,9 @@
   values and frequency axes for supported layouts. For subtype 6, the native
   parser retains phase that the installed `dttxml` parser can lose. The directly
   imported `load_dttxml_products(native=False)` helper keeps its existing
-  `FrequencySeries` values; normalization occurs inside the readers.
+  `FrequencySeries` values; normalization occurs inside the readers. Supported
+  native layouts continue to decode `double` and `doubleComplex` Array storage
+  without reducing sample precision.
 
 ## [0.2.3] - 2026-09-05
 
