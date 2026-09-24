@@ -47,15 +47,17 @@ def make_synthetic_dttxml(path: str) -> None:
 
     def psd_block(channel, data, f0_, df_, N_, t0=1000000000):
         enc = _b64_float32(data)
-        return f"""  <LIGO_LW Type="Spectrum">
+        return f"""  <LIGO_LW Name="Result[0]" Type="Spectrum">
 {param("ChannelA", channel)}
 {param("Subtype", "1")}
+{param("M", "1")}
 {param("f0", str(f0_))}
 {param("df", str(df_))}
 {param("N", str(N_))}
 {param("BUnit", "1/Hz")}
     <Time Name="t0">{t0}</Time>
     <Array Type="float">
+      <Dim>1</Dim>
       <Dim>{N_}</Dim>
       <Stream Encoding="LittleEndian,base64">{enc}</Stream>
     </Array>
@@ -63,16 +65,18 @@ def make_synthetic_dttxml(path: str) -> None:
 
     def tf_block(ch_a, ch_b, data, f0_, df_, N_, t0=1000000000):
         enc = _b64_complex64(data)
-        return f"""  <LIGO_LW Type="Spectrum">
+        return f"""  <LIGO_LW Name="Result[1]" Type="TransferFunction">
 {param("ChannelA", ch_a)}
-{param("ChannelB", ch_b)}
-{param("Subtype", "3")}
+{param("ChannelB[0]", ch_b)}
+{param("Subtype", "0")}
+{param("M", "1")}
 {param("f0", str(f0_))}
 {param("df", str(df_))}
 {param("N", str(N_))}
 {param("BUnit", "1")}
     <Time Name="t0">{t0}</Time>
     <Array Type="floatComplex">
+      <Dim>1</Dim>
       <Dim>{N_}</Dim>
       <Stream Encoding="LittleEndian,base64">{enc}</Stream>
     </Array>
@@ -80,16 +84,18 @@ def make_synthetic_dttxml(path: str) -> None:
 
     def coh_block(ch_a, ch_b, data, f0_, df_, N_, t0=1000000000):
         enc = _b64_float32(data)
-        return f"""  <LIGO_LW Type="Spectrum">
+        return f"""  <LIGO_LW Name="Result[2]" Type="Spectrum">
 {param("ChannelA", ch_a)}
-{param("ChannelB", ch_b)}
-{param("Subtype", "2")}
+{param("ChannelB[0]", ch_b)}
+{param("Subtype", "3")}
+{param("M", "1")}
 {param("f0", str(f0_))}
 {param("df", str(df_))}
 {param("N", str(N_))}
 {param("BUnit", "1")}
     <Time Name="t0">{t0}</Time>
     <Array Type="float">
+      <Dim>1</Dim>
       <Dim>{N_}</Dim>
       <Stream Encoding="LittleEndian,base64">{enc}</Stream>
     </Array>
@@ -98,9 +104,9 @@ def make_synthetic_dttxml(path: str) -> None:
     xml = "<?xml version='1.0' encoding='utf-8'?>\n<LIGO_LW>\n"
     xml += psd_block("K1:SUS-ITMX_EXCITATION", psd_input, f0, df, N)
     xml += "\n"
-    xml += tf_block("K1:SUS-ITMX_DISP_DQ", "K1:SUS-ITMX_EXCITATION", tf, f0, df, N)
+    xml += tf_block("K1:SUS-ITMX_EXCITATION", "K1:SUS-ITMX_DISP_DQ", tf, f0, df, N)
     xml += "\n"
-    xml += coh_block("K1:SUS-ITMX_DISP_DQ", "K1:SUS-ITMX_EXCITATION", coh, f0, df, N)
+    xml += coh_block("K1:SUS-ITMX_EXCITATION", "K1:SUS-ITMX_DISP_DQ", coh, f0, df, N)
     xml += "\n</LIGO_LW>\n"
 
     Path(path).write_text(xml)
@@ -220,13 +226,14 @@ def make_synthetic_dttxml(path):
     def p(name, val):
         return f'    <Param Name="{name}" Type="string">{val}</Param>'
 
-    def block(attrs, data, dtype, f0_, df_, N_):
-        lines = ['  <LIGO_LW Type="Spectrum">']
+    def block(attrs, data, dtype, product_type, result_index, N_):
+        lines = [f'  <LIGO_LW Name="Result[{result_index}]" Type="{product_type}">']
         for k, v in attrs.items():
             lines.append(p(k, v))
         lines += [
             '    <Time Name="t0">1300000000</Time>',
             f'    <Array Type="{dtype}">',
+            '      <Dim>1</Dim>',
             f'      <Dim>{N_}</Dim>',
             f'      <Stream Encoding="LittleEndian,base64">{data}</Stream>',
             '    </Array>',
@@ -236,18 +243,18 @@ def make_synthetic_dttxml(path):
 
     xml = "<?xml version='1.0' encoding='utf-8'?>\\n<LIGO_LW>\\n"
     xml += block({"ChannelA": "K1:SUS-ITMX_EXCITATION",
-                  "Subtype": "1", "f0": str(f0_hz), "df": str(df), "N": str(N)},
-                 b64f32(psd_data), "float", f0_hz, df, N)
+                  "Subtype": "1", "M": "1", "f0": str(f0_hz), "df": str(df), "N": str(N)},
+                 b64f32(psd_data), "float", "Spectrum", 0, N)
     xml += "\\n"
-    xml += block({"ChannelA": "K1:SUS-ITMX_DISP_DQ",
-                  "ChannelB": "K1:SUS-ITMX_EXCITATION",
-                  "Subtype": "3", "f0": str(f0_hz), "df": str(df), "N": str(N)},
-                 b64c64(tf_data), "floatComplex", f0_hz, df, N)
+    xml += block({"ChannelA": "K1:SUS-ITMX_EXCITATION",
+                  "ChannelB[0]": "K1:SUS-ITMX_DISP_DQ",
+                  "Subtype": "0", "M": "1", "f0": str(f0_hz), "df": str(df), "N": str(N)},
+                 b64c64(tf_data), "floatComplex", "TransferFunction", 1, N)
     xml += "\\n"
-    xml += block({"ChannelA": "K1:SUS-ITMX_DISP_DQ",
-                  "ChannelB": "K1:SUS-ITMX_EXCITATION",
-                  "Subtype": "2", "f0": str(f0_hz), "df": str(df), "N": str(N)},
-                 b64f32(coh_data.astype(np.float32)), "float", f0_hz, df, N)
+    xml += block({"ChannelA": "K1:SUS-ITMX_EXCITATION",
+                  "ChannelB[0]": "K1:SUS-ITMX_DISP_DQ",
+                  "Subtype": "3", "M": "1", "f0": str(f0_hz), "df": str(df), "N": str(N)},
+                 b64f32(coh_data.astype(np.float32)), "float", "Spectrum", 2, N)
     xml += "\\n</LIGO_LW>\\n"
 
     pathlib.Path(path).write_text(xml)
@@ -273,13 +280,19 @@ for ch in channels:
 ## 3. Load Measurement Products
 
 `load_dttxml_products()` returns a dictionary keyed by product type.
-Each product is itself a dict with numpy arrays for data and frequency axis.
+Frequency products are keyed by channel (PSD/ASD) or by
+`(channel_b, channel_a)` pairs (TF/COH). With `native=True`, each value is a
+mapping containing `frequencies` and `data` arrays, as used below. With
+`native=False` and the `dttxml` package installed, each value remains a
+`FrequencySeries`; use `.frequencies.value` and `.value` instead.
 
 ```
 {
-  "PSD": [{"freq": ndarray, "data": ndarray, "channel_a": str, ...}],
-  "TF":  [{"freq": ndarray, "data": ndarray (complex), ...}],
-  "COH": [{"freq": ndarray, "data": ndarray, ...}],
+  "PSD": {channel: {"frequencies": ndarray, "data": ndarray, ...}},
+  "ASD": {channel: {"frequencies": ndarray, "data": ndarray, ...}},
+  "TF": {(channel_b, channel_a): {"frequencies": ndarray,
+                                    "data": ndarray (complex), ...}},
+  "COH": {(channel_b, channel_a): {"frequencies": ndarray, "data": ndarray, ...}},
   ...
 }
 ```
@@ -294,9 +307,9 @@ products = load_dttxml_products(xml_path, native=True)
 print("Product types found:", list(products.keys()))
 for ptype, items in products.items():
     print(f"  {ptype}: {len(items)} measurement(s)")
-    for item in items:
-        print(f"    ChannelA={item.get('channel_a', '?')}"
-              f"  N={len(item['freq'])}  df={item['freq'][1]-item['freq'][0]:.3f} Hz")
+    for key, item in (items.items() if isinstance(items, dict) else enumerate(items)):
+        print(f"    {key}: N={len(item['frequencies'])}"
+              f"  df={item['frequencies'][1]-item['frequencies'][0]:.3f} Hz")
 """),
     md("""\
 ## 4. Bode Plot — Transfer Function
@@ -306,11 +319,20 @@ gwexpy's plotting and fitting methods.
 """),
     code("""\
 # Extract the first TF measurement
-tf_prod = products["TF"][0]
-freqs = tf_prod["freq"]           # frequency axis [Hz]
+_tf_items = products.get("TF", {})
+if isinstance(_tf_items, dict):
+    _tf_list = list(_tf_items.values())
+elif isinstance(_tf_items, list):
+    _tf_list = _tf_items
+else:
+    _tf_list = []
+tf_prod = _tf_list[0] if _tf_list else None
+if tf_prod is None:
+    raise ValueError("No TF data found in this DTT XML file")
+freqs = tf_prod["frequencies"]    # frequency axis [Hz]
 tf_data = tf_prod["data"]         # complex transfer function
 
-# Build FrequencySeries (unit: dimensionless for displacement/force TF)
+# Build FrequencySeries with displacement/force units (m/N)
 tf_fs = FrequencySeries(tf_data, frequencies=freqs, unit="m/N", name="ITMX TF")
 
 # --- Bode plot ---
@@ -339,8 +361,11 @@ Values close to 1 mean the output is well explained by the input;
 values below ~0.9 suggest the measurement is unreliable at those frequencies.
 """),
     code("""\
-coh_prod = products["COH"][0]
-coh_freqs = coh_prod["freq"]
+coh_items = products.get("COH", {})
+coh_prod = next(iter(coh_items.values()), None) if isinstance(coh_items, dict) else None
+if coh_prod is None:
+    raise ValueError("No COH data found in this DTT XML file")
+coh_freqs = coh_prod["frequencies"]
 coh_data  = coh_prod["data"]
 
 fig, ax = plt.subplots(figsize=(9, 3))
@@ -507,13 +532,14 @@ def make_synthetic_dttxml(path):
     def p(name, val):
         return f'    <Param Name="{name}" Type="string">{val}</Param>'
 
-    def block(attrs, data, dtype, N_):
-        lines = ['  <LIGO_LW Type="Spectrum">']
+    def block(attrs, data, dtype, product_type, result_index, N_):
+        lines = [f'  <LIGO_LW Name="Result[{result_index}]" Type="{product_type}">']
         for k, v in attrs.items():
             lines.append(p(k, v))
         lines += [
             '    <Time Name="t0">1300000000</Time>',
             f'    <Array Type="{dtype}">',
+            '      <Dim>1</Dim>',
             f'      <Dim>{N_}</Dim>',
             f'      <Stream Encoding="LittleEndian,base64">{data}</Stream>',
             '    </Array>',
@@ -523,18 +549,18 @@ def make_synthetic_dttxml(path):
 
     xml = "<?xml version='1.0' encoding='utf-8'?>\\n<LIGO_LW>\\n"
     xml += block({"ChannelA": "K1:SUS-ITMX_EXCITATION",
-                  "Subtype": "1", "f0": "0.0", "df": "1.0", "N": str(N)},
-                 b64f32(psd_data), "float", N)
+                  "Subtype": "1", "M": "1", "f0": "0.0", "df": "1.0", "N": str(N)},
+                 b64f32(psd_data), "float", "Spectrum", 0, N)
     xml += "\\n"
-    xml += block({"ChannelA": "K1:SUS-ITMX_DISP_DQ",
-                  "ChannelB": "K1:SUS-ITMX_EXCITATION",
-                  "Subtype": "3", "f0": "0.0", "df": "1.0", "N": str(N)},
-                 b64c64(tf_data), "floatComplex", N)
+    xml += block({"ChannelA": "K1:SUS-ITMX_EXCITATION",
+                  "ChannelB[0]": "K1:SUS-ITMX_DISP_DQ",
+                  "Subtype": "0", "M": "1", "f0": "0.0", "df": "1.0", "N": str(N)},
+                 b64c64(tf_data), "floatComplex", "TransferFunction", 1, N)
     xml += "\\n"
-    xml += block({"ChannelA": "K1:SUS-ITMX_DISP_DQ",
-                  "ChannelB": "K1:SUS-ITMX_EXCITATION",
-                  "Subtype": "2", "f0": "0.0", "df": "1.0", "N": str(N)},
-                 b64f32(coh_data.astype(np.float32)), "float", N)
+    xml += block({"ChannelA": "K1:SUS-ITMX_EXCITATION",
+                  "ChannelB[0]": "K1:SUS-ITMX_DISP_DQ",
+                  "Subtype": "3", "M": "1", "f0": "0.0", "df": "1.0", "N": str(N)},
+                 b64f32(coh_data.astype(np.float32)), "float", "Spectrum", 2, N)
     xml += "\\n</LIGO_LW>\\n"
 
     pathlib.Path(path).write_text(xml)
@@ -560,12 +586,19 @@ for ch in channels:
 ## 3. 測定量の読み込み
 
 `load_dttxml_products()` は測定量の種類をキーとする辞書を返します。
+周波数データは PSD/ASD ではチャネル名、TF/COH では
+`(channel_b, channel_a)` のペアをキーとします。以下で使う `native=True` では
+各値は `frequencies` と `data` の配列を含む辞書です。`dttxml` パッケージを
+使う `native=False` では各値は従来どおり `FrequencySeries` であり、
+`.frequencies.value` と `.value` から配列を取得します。
 
 ```python
 {
-  "PSD": [{"freq": ndarray, "data": ndarray, "channel_a": str, ...}],
-  "TF":  [{"freq": ndarray, "data": ndarray (複素数), ...}],
-  "COH": [{"freq": ndarray, "data": ndarray, ...}],
+  "PSD": {channel: {"frequencies": ndarray, "data": ndarray, ...}},
+  "ASD": {channel: {"frequencies": ndarray, "data": ndarray, ...}},
+  "TF": {(channel_b, channel_a): {"frequencies": ndarray,
+                                  "data": ndarray (複素数), ...}},
+  "COH": {(channel_b, channel_a): {"frequencies": ndarray, "data": ndarray, ...}},
   ...
 }
 ```
@@ -579,9 +612,9 @@ products = load_dttxml_products(xml_path, native=True)
 print("取得した測定量:", list(products.keys()))
 for ptype, items in products.items():
     print(f"  {ptype}: {len(items)} 件")
-    for item in items:
-        print(f"    ChannelA={item.get('channel_a', '?')}"
-              f"  N={len(item['freq'])}  df={item['freq'][1]-item['freq'][0]:.3f} Hz")
+    for key, item in (items.items() if isinstance(items, dict) else enumerate(items)):
+        print(f"    {key}: N={len(item['frequencies'])}"
+              f"  df={item['frequencies'][1]-item['frequencies'][0]:.3f} Hz")
 """),
     md("""\
 ## 4. Bode プロット — 伝達関数の可視化
@@ -589,8 +622,17 @@ for ptype, items in products.items():
 TF データを取り出し、振幅と位相を周波数の関数としてプロットします。
 """),
     code("""\
-tf_prod = products["TF"][0]
-freqs   = tf_prod["freq"]
+_tf_items = products.get("TF", {})
+if isinstance(_tf_items, dict):
+    _tf_list = list(_tf_items.values())
+elif isinstance(_tf_items, list):
+    _tf_list = _tf_items
+else:
+    _tf_list = []
+tf_prod = _tf_list[0] if _tf_list else None
+if tf_prod is None:
+    raise ValueError("DTT XML ファイルに TF データがありません")
+freqs   = tf_prod["frequencies"]
 tf_data = tf_prod["data"]  # 複素数配列
 
 fig, (ax_mag, ax_ph) = plt.subplots(2, 1, figsize=(9, 6), sharex=True)
@@ -618,8 +660,11 @@ plt.show()
 信頼性が低く、フィッティングの対象から外すことが推奨されます。
 """),
     code("""\
-coh_prod = products["COH"][0]
-coh_freqs = coh_prod["freq"]
+coh_items = products.get("COH", {})
+coh_prod = next(iter(coh_items.values()), None) if isinstance(coh_items, dict) else None
+if coh_prod is None:
+    raise ValueError("DTT XML ファイルに COH データがありません")
+coh_freqs = coh_prod["frequencies"]
 coh_data  = coh_prod["data"]
 
 fig, ax = plt.subplots(figsize=(9, 3))

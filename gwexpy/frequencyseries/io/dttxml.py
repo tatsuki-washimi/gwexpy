@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from datetime import UTC
 from os import PathLike, fspath
 
@@ -54,6 +55,44 @@ def _build_epoch(value, timezone):
     return datetime_to_gps(ensure_datetime(value, tzinfo=tzinfo))
 
 
+def _frequencies_from_info(info, data_length):
+    """Return an entry's explicit frequency axis or reconstruct it from f0/df."""
+    raw_frequencies = info.get("frequencies")
+    if raw_frequencies is not None:
+        frequencies = np.asarray(raw_frequencies)
+        if frequencies.size:
+            return frequencies
+
+    df = info.get("df")
+    if df is None:
+        return np.asarray([])
+    f0 = info.get("f0")
+    if f0 is None:
+        f0 = 0.0
+    return np.asarray(f0 + np.arange(data_length) * df)
+
+
+def _frequency_payload_for_reader(payload):
+    """Adapt the public loader's two backend shapes at the reader boundary."""
+    normalized = {}
+    for key, value in payload.items():
+        if isinstance(value, FrequencySeries):
+            df = getattr(value, "df", None)
+            normalized[key] = {
+                "data": np.asarray(value.value),
+                "frequencies": np.asarray(value.frequencies.value),
+                "f0": value.f0.value,
+                "df": df.value if df is not None else None,
+                "epoch": value.epoch.value if value.epoch is not None else None,
+                "unit": value.unit,
+            }
+        elif isinstance(value, Mapping):
+            normalized[key] = dict(value)
+        else:
+            raise TypeError(f"Unsupported xml.diaggui frequency payload for {key!r}")
+    return normalized
+
+
 def read_frequencyseriesdict_dttxml(
     source,
     *,
@@ -104,22 +143,29 @@ def read_frequencyseriesdict_dttxml(
         )
 
     normalized = load_dttxml_products(source, native=native)
-    payload = normalized.get(prod, {})
+    payload = _frequency_payload_for_reader(normalized.get(prod, {}))
     fsd = FrequencySeriesDict()
     for ch, info in payload.items():
         if channels and ch not in channels:
             continue
         epoch_val = epoch if epoch is not None else info.get("epoch")
         gps = _build_epoch(epoch_val, epoch_timezone)
-        freqs = np.asarray(info.get("frequencies") or [])
-        df = info.get("df") or (np.diff(freqs)[0] if freqs.size > 1 else None)
+        data = np.asarray(info.get("data", np.array([])))
+        freqs = _frequencies_from_info(info, data.size)
+        df = info.get("df")
+        if df is None and freqs.size > 1:
+            df = np.diff(freqs)[0]
         kwargs_fs = {"name": ch, "channel": ch}
         if freqs.size:
             kwargs_fs["frequencies"] = freqs
-        elif df is not None:
-            kwargs_fs["df"] = df
+        else:
+            if df is not None:
+                kwargs_fs["df"] = df
+            f0 = info.get("f0")
+            if f0 is not None:
+                kwargs_fs["f0"] = f0
         fs = FrequencySeries(
-            info.get("data", np.array([])),
+            data,
             unit=info.get("unit") or unit,
             epoch=gps,
             **kwargs_fs,
@@ -193,51 +239,86 @@ def read_frequencyseriesmatrix_dttxml(
         raise ValueError(f"xml.diaggui products '{prod}' is not a matrix product")
 
     normalized = load_dttxml_products(source, native=native)
-    payload = normalized.get(prod, {})
-    pairs_list = list(payload.keys())
-    if pairs:
-        pairs_list = [p for p in pairs_list if p in set(pairs)]
-    row_labels = rows or sorted({p[0] for p in pairs_list if isinstance(p, tuple)})
-    col_labels = cols or sorted({p[1] for p in pairs_list if isinstance(p, tuple)})
+    payload = _frequency_payload_for_reader(normalized.get(prod, {}))
+    if not payload:
+        raise ValueError(f"No matrix pairs found for xml.diaggui product '{prod}'")
 
-    # Determine frequency axis from first entry
-    freq_axis = None
-    df = None
-    for info in payload.values():
-        freqs = np.asarray(info.get("frequencies") or [])
-        if freqs.size:
-            freq_axis = freqs
-            break
-        if info.get("df"):
-            df = info["df"]
-            break
-    if freq_axis is None:
-        freq_axis = np.arange(len(next(iter(payload.values())).get("data", []))) * (
-            df or 1.0
+    pair_filter = set(pairs) if pairs is not None else None
+    row_filter = set(rows) if rows is not None else None
+    col_filter = set(cols) if cols is not None else None
+    selected_entries = []
+    for pair, info in payload.items():
+        if not isinstance(pair, tuple) or len(pair) != 2:
+            continue
+        row, col = pair
+        if pair_filter is not None and pair not in pair_filter:
+            continue
+        if row_filter is not None and row not in row_filter:
+            continue
+        if col_filter is not None and col not in col_filter:
+            continue
+        selected_entries.append((pair, info))
+
+    if not selected_entries:
+        raise ValueError(
+            f"No matrix pairs found for xml.diaggui product '{prod}' and filters"
         )
-    nfreq = len(freq_axis)
-    matrix = np.full((len(row_labels), len(col_labels), nfreq), np.nan, dtype=float)
-    meta_unit = unit
 
-    for (row, col), info in payload.items():
-        if row_labels and row not in row_labels:
-            continue
-        if col_labels and col not in col_labels:
-            continue
-        i = row_labels.index(row)
-        j = col_labels.index(col)
-        vector = np.asarray(info.get("data", np.zeros(nfreq, dtype=float)))
+    row_labels = (
+        list(rows)
+        if rows is not None
+        else sorted({pair[0] for pair, _ in selected_entries})
+    )
+    col_labels = (
+        list(cols)
+        if cols is not None
+        else sorted({pair[1] for pair, _ in selected_entries})
+    )
+
+    first_pair, first_info = selected_entries[0]
+    first_data = np.asarray(first_info.get("data", np.array([])))
+    freq_axis = _frequencies_from_info(first_info, first_data.size)
+    nfreq = len(freq_axis)
+    vectors = []
+    meta_unit = unit
+    if meta_unit is None:
+        meta_unit = next(
+            (
+                info.get("unit")
+                for _, info in selected_entries
+                if info.get("unit") is not None
+            ),
+            None,
+        )
+    for pair, info in selected_entries:
+        vector = np.asarray(info.get("data", np.array([])))
+        if vector.ndim != 1:
+            raise ValueError(
+                f"Matrix data for pair {pair!r} must be one-dimensional; "
+                f"got shape {vector.shape}"
+            )
         if vector.size != nfreq:
-            if vector.size and not freq_axis.size:
-                freq_axis = np.arange(vector.size)
-                matrix = np.full(
-                    (len(row_labels), len(col_labels), vector.size), np.nan, dtype=float
-                )
-                nfreq = vector.size
-            vector = np.resize(vector, nfreq)
-        matrix[i, j] = vector
-        if meta_unit is None:
-            meta_unit = info.get("unit")
+            raise ValueError(
+                f"Matrix data for pair {pair!r} has {vector.size} samples, "
+                f"but the frequency axis has {nfreq}"
+            )
+        pair_frequencies = _frequencies_from_info(info, vector.size)
+        if pair_frequencies.shape != freq_axis.shape or not np.array_equal(
+            pair_frequencies, freq_axis
+        ):
+            raise ValueError(
+                f"Frequency axis for matrix pair {pair!r} does not match "
+                f"the axis for pair {first_pair!r}"
+            )
+        vectors.append((pair, info, vector))
+
+    # Keep parser precision where possible while allowing NaN-filled cells.
+    dtype = np.result_type(np.float32, *(vector.dtype for _, _, vector in vectors))
+    matrix = np.full((len(row_labels), len(col_labels), nfreq), np.nan, dtype=dtype)
+    row_index = {label: index for index, label in enumerate(row_labels)}
+    col_index = {label: index for index, label in enumerate(col_labels)}
+    for (row, col), _info, vector in vectors:
+        matrix[row_index[row], col_index[col]] = vector
 
     fsm = FrequencySeriesMatrix(
         matrix,
@@ -245,7 +326,9 @@ def read_frequencyseriesmatrix_dttxml(
         rows=row_labels,
         cols=col_labels,
         unit=meta_unit,
-        epoch=_build_epoch(epoch, epoch_timezone),
+        epoch=_build_epoch(
+            epoch if epoch is not None else first_info.get("epoch"), epoch_timezone
+        ),
     )
     if unit:
         fsm = apply_unit(fsm, unit)
@@ -256,6 +339,7 @@ def read_frequencyseriesmatrix_dttxml(
             "products": prod,
             "rows": row_labels,
             "cols": col_labels,
+            "pairs": [pair for pair, _, _ in vectors],
             "unit_source": "override" if unit else "file",
         },
     )
