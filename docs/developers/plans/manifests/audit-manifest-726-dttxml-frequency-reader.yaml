@@ -4,7 +4,7 @@ lane: D
 project: GWexpy
 date: "2026-09-24"
 base_sha: 277c50a12e653d6c36e02ba407545d60e24d9e9e
-status: real_tf_qualified_pending_ci_recheck
+status: real_tf_qualified_ci_green_ready_for_review
 stopped: false
 worktree: "isolated issue-726 integration branch"
 
@@ -46,17 +46,17 @@ changed_files:
   - path: gwexpy/frequencyseries/io/dttxml.py
     change: "Integrated reader repair and one private adapter for native mapping and external FrequencySeries payloads, including irregular axes without df."
   - path: docs/developers/plans/manifests/audit-manifest-726-dttxml-frequency-reader.yaml
-    change: "Recorded final synthetic-fixture verification and the remaining real-sample limitation."
+    change: "Recorded synthetic and real-sample qualification, CI results, and review state."
   - path: docs/plans/2026-09-24-issue-726-dttxml-frequency-readers.md
     change: "Approved mplan saved and execution checkpoints updated by orchestrator; copy synchronized separately."
 
 integration_state:
-  integrated: ["lane T tests", "lane C native TF parsing", "lane R frequency readers", "lane I integration", "lane V verification", "public-helper compatibility follow-up", "real TF subtype 3/5 serialization follow-up"]
-  pending: ["Push the CI optional-dependency test guard, then complete new-head CI and normal PR review"]
+  integrated: ["lane T tests", "lane C native TF parsing", "lane R frequency readers", "lane I integration", "lane V verification", "public-helper compatibility follow-up", "real TF subtype 3/5 serialization follow-up", "optional-dependency test guard", "new-head CI and review requalification"]
+  pending: []
 
 completion_gate:
   evidence_bundle: "External to the worktree; bundle location and digest are recorded outside tracked files."
-  task_level_status: "real TF subtype 3/5 implementation and local regression qualification complete"
+  task_level_status: "real TF subtype 3/5 implementation and local regression qualification complete; code head ef417515 passed CI and PR is ready for review"
   real_sample_acceptance: "complete; Type/Subtype, embedded axes, pair mapping, shape, complex values, and unit policy verified; user confirmed physical B/A direction"
   formal_changed_file_gate: "historical partial: 6 passed, 4 unverified before the real-sample follow-up; not rerun afterward"
   formal_gate_findings:
@@ -113,6 +113,8 @@ validation:
   final_verification:
     status: passed_with_real_sample_qualification
     final_source: "Integration tree based on 277c50a12e653d6c36e02ba407545d60e24d9e9e, including the private public-helper compatibility adapter."
+    github_pr: "#727 Ready for review and mergeable at the code-head review; Issue #726 remains open"
+    github_ci: "Code head ef417515cefa01715ba116722d872a6b3d973844: 22 of 22 jobs succeeded across PR Fast, Test (gwpy-compat), Repo Hygiene, and Docs PR; zero failed or pending"
     suites:
       - suite: "Focused DTTXML"
         result: "85 passed after embedded-axis subtype 3/5, uniform-axis compatibility, and cumulative-drift follow-ups"
@@ -186,6 +188,7 @@ validation:
 review:
   human_review_required: completed_for_real_sample_direction_and_unit_policy
   physics_review_required: completed_for_real_sample_direction_and_unit_policy
+  github_review: "Review 5305957961 on ef417515cefa01715ba116722d872a6b3d973844 found no additional code, physics, compatibility, or CI blocker; requested this audit-state synchronization."
   real_sample_review: "Subtype 3 TF and subtype 5 COH serialization, raw stream values, frequencies, epoch, dimensions, and installed-parser (ChannelB, ChannelA) mapping checked for every pair; file units absent. The user confirmed B/A physical direction and explicit-unit policy."
   rationale: >-
     The synthetic fixtures and local measurement comparison exercise stored
