@@ -211,6 +211,11 @@ supported_native_subtypes:
     layouts without embedded frequencies accept floatComplex and doubleComplex.
     TransferFunction subtype 6 is limited to its verified mixed float64-frequency
     and complex64-sample stream. A doubleComplex variant has no verified layout.
+  missing_array_type: >-
+    The frozen native parser defaulted a missing Array Type to float. The #726
+    native parser requires an explicit supported Array Type and rejects its
+    absence. An XML block without Array Type is not guaranteed as a valid
+    DiagGUI frequency layout by this patch; its old fallback is not retained.
   legacy_spectrum_embedded_frequency_audit: >-
     Installed dttxml classifies Spectrum subtype 4 as FFT (f,Y), subtype 5 as
     PSD (f,Y), and subtype 6 as CSD (f,Y). The frozen native parser mislabeled
