@@ -9,11 +9,14 @@ skills_used:
   - superpowers:using-git-worktrees
   - superpowers:receiving-code-review
   - superpowers:requesting-code-review
+  - triage_ci
+  - github-mcp-secret-filter
 files_changed:
   - docs/plans/2026-09-25-diaggui-xml-fixes-730-734.md
   - gwexpy/io/dttxml_common.py
   - tests/io/test_dttxml_issue730.py
   - .github/workflows/pr-fast.yml
+  - tests/docs/test_gwpy_compatibility_policy.py
   - docs/developers/plans/manifests/audit-manifest-730-dttxml-ts.yaml
 behavior:
   layout: "LIGO_LW Type=TimeSeries, Subtype=0, Array Type=float (float32 Y)"
@@ -31,17 +34,23 @@ known_limitations:
   external_dttxml_duplicate_channels: "dttxml 1.1.8 can overwrite duplicate TimeSeries channels; this implementation leaves the installed external route unchanged. Duplicate-channel rejection is limited to the new native fallback."
   external_dttxml_base64: "dttxml 1.1.8 uses permissive base64 decoding; strict validation here is limited to the new native TimeSeries path."
   native_base64: "TimeSeries streams opt into strict base64 decoding with XML whitespace removal inside the shared decoder; other callers retain its permissive default."
+ci_baseline_repair:
+  cause: "The pinned main changed .agent/AGENTS.md Last-updated to 2026-09-25 in #736, but an unchanged docs test still required 2026-09-03; PR-fast failed that single test on the pinned base as well."
+  change: "Validate the Last-updated ISO date header format instead of pinning an obsolete date."
+  local_reproduction: "The exact test node failed before this test-only change and passed afterward."
 ci_coverage:
   base_io_contract:
     absence_check: "python -c 'import importlib.util; assert importlib.util.find_spec(\"dttxml\") is None'"
     command: "python scripts/ci/run_gate.py io-contract"
     configured_order: "Checks that dttxml is absent and runs the base I/O gate before the workflow installs dttxml; the focused test launches a child using sys.executable and checks absence again there."
-    github_result: "Not run; this records the configured PR workflow."
+    github_result: "Passed on PR #737 at head 29c286bc3e3d7fc2482a008945193efa5faec86e."
   installed_parser:
     install: "python -m pip install dttxml==1.1.8"
     test: "python -m pytest -q tests/io/test_dttxml_issue730.py tests/io/test_dttxml_common.py::TestLoadDttxmlProducts::test_ts_entries_stay_dict_shaped_and_reader_consumes_them"
-    github_result: "Not run; this records the configured PR workflow."
+    github_result: "Passed on PR #737 at head 29c286bc3e3d7fc2482a008945193efa5faec86e."
 verification:
+  - command: "python -m pytest -q tests/docs/test_gwpy_compatibility_policy.py (gwexpy conda environment)"
+    result: "12 passed; includes the previously failing test_agent_and_contributor_rules_make_divergence_a_blocker node"
   - command: "GWEXPY_NO_DTTXML_PYTHON=/tmp/gwexpy-diaggui-a-base/bin/python /home/washimi/miniforge3/envs/gwexpy/bin/python -m pytest -q tests/io/test_dttxml_issue730.py"
     result: "10 passed; verified installed dttxml 1.1.8 route, native product loader, malformed base64 rejection, line-break acceptance, duplicate-channel failure, and separate no-dttxml children for explicit and auto public reads"
   - command: "GWEXPY_NO_DTTXML_PYTHON=/tmp/gwexpy-diaggui-a-base/bin/python /home/washimi/miniforge3/envs/gwexpy/bin/python -m pytest -q tests/io/test_dttxml_issue730.py tests/io/test_dttxml_common.py::TestLoadDttxmlProducts::test_ts_entries_stay_dict_shaped_and_reader_consumes_them"
