@@ -1,0 +1,42 @@
+issue: 734
+title: Register DiagGUI identifier for TimeSeriesMatrix
+base: aaf91486e4a8cc34eb6a678acccd2ff070d3c157
+status: implemented
+skills_used: []
+files_changed:
+  - gwexpy/timeseries/io/dttxml.py
+  - tests/io/test_dttxml_issue734.py
+  - docs/developers/plans/manifests/audit-manifest-734-diaggui-matrix-identifier.yaml
+behavior:
+  identifier: "Registers only canonical xml.diaggui for TimeSeriesMatrix"
+  reader: "Existing explicit TimeSeriesMatrix readers remain registered for xml.diaggui and dttxml"
+  fixture: "Two TimeSeries/Subtype=0 float32 blocks; little-endian base64; N=4; dt=0.125; t0=1234567890.25"
+  fallback_environment:
+    python: /tmp/gwexpy-diaggui-a-base/bin/python
+    dttxml_spec: null
+    checks: ["TimeSeriesMatrix.read explicit xml.diaggui", "TimeSeriesMatrix.read format=None", ".xml", ".xml.gz", "returned matrix type, sample values, and time coordinates"]
+  public_contract: "TimeSeriesDict remains first in direct-I/O contract; public_auto_identify remains false; no dttxml identifier added"
+performance:
+  outcome: "not applicable: identifier-only"
+  protocol: "No reader or parser behavior changed; the new identifier invokes the existing suffix predicate during format identification."
+verification:
+  - command: "GWEXPY_NO_DTTXML_PYTHON=/tmp/gwexpy-diaggui-a-base/bin/python /home/washimi/miniforge3/envs/gwexpy/bin/python -m pytest -q tests/io/test_dttxml_issue734.py tests/io/test_io_contract.py::test_current_public_boundary_decisions_are_recorded"
+    result: "5 passed; verifies .xml and .xml.gz with explicit and auto reads in separate base-only processes, plus the direct-I/O boundary decision node."
+  - command: "python scripts/ci/run_gate.py io-contract --no-fixtures (gwexpy conda environment)"
+    result: "1556 passed, 15 skipped, 1 deselected"
+  - command: "python scripts/ci/run_gate.py io-conformance (gwexpy conda environment)"
+    result: "73 passed, 5 skipped"
+  - command: "ruff check gwexpy/timeseries/io/dttxml.py tests/io/test_dttxml_issue734.py"
+    result: "passed"
+  - command: "ruff format --check gwexpy/timeseries/io/dttxml.py tests/io/test_dttxml_issue734.py"
+    result: "passed"
+  - command: "python -m mypy gwexpy/timeseries/io/dttxml.py"
+    result: "Success: no issues found in 1 source file"
+  - command: "git diff --check"
+    result: "passed"
+omitted_checks:
+  - "Full test suite: focused issue tests, the exact requested contract node, io-contract --no-fixtures, and io-conformance cover the changed I/O route; unrelated package suites were not run."
+  - "check_physics: not applicable; this identifier-only change does not alter parsing, data values, or physical calculations."
+human_review:
+  required: false
+  reason: "No physics calculation or data model implementation changed."

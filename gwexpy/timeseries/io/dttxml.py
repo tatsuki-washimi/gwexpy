@@ -175,3 +175,8 @@ io_registry.register_identifier(
     TimeSeriesDict,
     lambda *args, **kwargs: _looks_like_dttxml(args[1] if len(args) > 1 else None),
 )
+io_registry.register_identifier(
+    "xml.diaggui",
+    TimeSeriesMatrix,
+    lambda *args, **kwargs: _looks_like_dttxml(args[1] if len(args) > 1 else None),
+)
