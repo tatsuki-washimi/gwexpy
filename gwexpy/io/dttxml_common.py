@@ -215,6 +215,34 @@ def _uniform_frequency_step(frequencies) -> float | None:
     return None
 
 
+def _validate_external_fft_array_types(source: str) -> None:
+    """Reject uncharacterized raw precision for Spectrum FFT layouts."""
+    tree = _parse_dttxml_xml(source)
+    root = cast(Any, tree.getroot())
+    for result_elem in root.iter("LIGO_LW"):
+        if result_elem.get("Type") != "Spectrum":
+            continue
+        params = {
+            param.get("Name"): (param.text or "").strip()
+            for param in result_elem.findall("Param")
+            if param.get("Name")
+        }
+        try:
+            subtype = int(params.get("Subtype", ""))
+        except ValueError:
+            continue
+        if subtype not in (0, 4):
+            continue
+        array_elem = result_elem.find("Array")
+        array_type = array_elem.get("Type") if array_elem is not None else None
+        if array_type != "floatComplex":
+            result_name = result_elem.get("Name", "")
+            raise ValueError(
+                f"Unsupported Array Type {array_type!r} for FFT result "
+                f"{result_name}; only floatComplex is characterized"
+            )
+
+
 def load_dttxml_native(source: str) -> dict:
     """Parse DTT XML file directly without using dttxml package.
 
@@ -232,6 +260,7 @@ def load_dttxml_native(source: str) -> dict:
     dict
         Normalized mapping of products:
         - "TS": {channel: {"data": ndarray, "dt": float, "epoch": float, ...}}
+        - "FFT": {channel: {"data": ndarray, "frequencies": ndarray, ...}}
         - "TF": {(chB, chA): {"data": ndarray, "frequencies": ndarray, ...}}
         - "PSD"/"ASD": {channel: {"data": ndarray, "frequencies": ndarray, ...}}
         - "CSD": {(chB, chA): {"data": ndarray, "frequencies": ndarray, ...}}
@@ -255,18 +284,21 @@ def load_dttxml_native(source: str) -> dict:
 
     # Product semantics and storage precision are independent. The Array Type
     # selects the decoder dtype after the Type/Subtype pair selects the product.
-    # Tuple fields: (product, complex samples, explicit frequency column).
+    # Tuple fields: (product, complex samples, explicit frequency column,
+    # normalized key mode).
     spectrum_layouts = {
-        1: ("PSD", False, False),
-        2: ("CSD", True, False),
-        3: ("COH", False, False),
+        0: ("FFT", True, False, "channel"),
+        1: ("PSD", False, False, "channel"),
+        2: ("CSD", True, False, "pair"),
+        3: ("COH", False, False, "pair"),
+        4: ("FFT", True, True, "channel"),
     }
     transfer_layouts = {
-        0: ("TF", True, False),
-        2: ("COH", False, False),
-        3: ("TF", True, True),
-        5: ("COH", False, True),
-        6: ("TF", True, True),
+        0: ("TF", True, False, "pair"),
+        2: ("COH", False, False, "pair"),
+        3: ("TF", True, True, "pair"),
+        5: ("COH", False, True, "pair"),
+        6: ("TF", True, True, "pair"),
     }
 
     for result_elem in root.iter("LIGO_LW"):
@@ -388,7 +420,7 @@ def load_dttxml_native(source: str) -> dict:
         if n_points <= 0:
             warnings.warn(f"Invalid N for {result_name}: {n_points}", stacklevel=2)
             continue
-        product, complex_samples, embedded_frequencies = layouts[subtype]
+        product, complex_samples, embedded_frequencies, key_mode = layouts[subtype]
         array_elem = result_elem.find("Array")
         stream_elem = array_elem.find("Stream") if array_elem is not None else None
         if stream_elem is None or stream_elem.text is None:
@@ -399,11 +431,18 @@ def load_dttxml_native(source: str) -> dict:
             if complex_samples
             else ("float", "double")
         )
+        if product == "FFT":
+            allowed_types = ("floatComplex",)
         if result_type == "TransferFunction" and subtype == 6:
             # This mixed layout stores float64 frequencies and complex64 data.
             # A doubleComplex variant needs a separately verified byte layout.
             allowed_types = ("floatComplex",)
         if array_type not in allowed_types:
+            if product == "FFT":
+                raise ValueError(
+                    f"Unsupported Array Type {array_type!r} for FFT result "
+                    f"{result_name}; only floatComplex is characterized"
+                )
             warnings.warn(
                 f"Unsupported Array Type {array_type!r} for "
                 f"{result_type} subtype {subtype} in {result_name}",
@@ -432,7 +471,7 @@ def load_dttxml_native(source: str) -> dict:
             else:
                 words = _decode_dtt_stream(stream_elem.text, encoding, array_type)
                 if embedded_frequencies:
-                    frequencies = np.asarray(words[:n_points].real, dtype=float)
+                    frequencies = words[:n_points]
                     data = words[n_points:]
                 else:
                     frequencies = f0 + np.arange(n_points) * df
@@ -442,30 +481,50 @@ def load_dttxml_native(source: str) -> dict:
                 f"Failed to decode stream for {result_name}: {exc}", stacklevel=2
             )
             continue
+        if embedded_frequencies and np.iscomplexobj(frequencies):
+            if product == "FFT" and np.any(np.imag(frequencies) != 0):
+                raise ValueError(
+                    f"Embedded frequency axis for {result_name} contains "
+                    "nonzero imaginary values"
+                )
+            frequencies = np.real(frequencies)
         if data.size % n_points:
-            warnings.warn(f"Invalid data length for {result_name}", stacklevel=2)
+            message = f"Invalid data length for {result_name}"
+            if product == "FFT":
+                raise ValueError(message)
+            warnings.warn(message, stacklevel=2)
             continue
         actual_rows = data.size // n_points
         if not actual_rows or (n_rows is not None and n_rows != actual_rows):
-            warnings.warn(f"Invalid row count for {result_name}", stacklevel=2)
+            message = f"Invalid row count for {result_name}: expected {n_rows}, got {actual_rows}"
+            if product == "FFT":
+                raise ValueError(message)
+            warnings.warn(message, stacklevel=2)
             continue
+        if product == "FFT" and key_mode == "channel" and actual_rows != 1:
+            raise ValueError(
+                f"FFT result {result_name} has {actual_rows} data rows; "
+                "only an unambiguous one-row FFT layout is supported"
+            )
         if len(dims) == 2:
             expected_dims = [actual_rows + int(embedded_frequencies), n_points]
             if dims != expected_dims:
-                warnings.warn(
+                message = (
                     f"Dimensions {dims} disagree with expected {expected_dims} "
-                    f"for {result_name}",
-                    stacklevel=2,
+                    f"for {result_name}"
                 )
+                if product == "FFT":
+                    raise ValueError(message)
+                warnings.warn(message, stacklevel=2)
                 continue
         elif dims and int(np.prod(dims)) not in (
             words.size,
             data.size if embedded_frequencies else words.size,
         ):
-            warnings.warn(
-                f"Dimensions {dims} disagree with stream size for {result_name}",
-                stacklevel=2,
-            )
+            message = f"Dimensions {dims} disagree with stream size for {result_name}"
+            if product == "FFT":
+                raise ValueError(message)
+            warnings.warn(message, stacklevel=2)
             continue
         data = data.reshape(actual_rows, n_points)
         frequencies = np.asarray(frequencies, dtype=float)
@@ -480,6 +539,8 @@ def load_dttxml_native(source: str) -> dict:
 
         channel_a = params.get("ChannelA", "")
         if not channel_a:
+            if product == "FFT":
+                raise ValueError(f"FFT result {result_name} is missing ChannelA")
             continue
         reference = re.fullmatch(r"Reference\[(\d+)\]", result_name)
         if reference is not None:
@@ -503,29 +564,39 @@ def load_dttxml_native(source: str) -> dict:
             "f0": f0,
             "df": axis_df,
             "epoch": epoch,
-            "unit": None if product == "COH" else params.get("BUnit") or None,
+            "unit": (
+                None if product in ("COH", "FFT") else params.get("BUnit") or None
+            ),
             "subtype": subtype,
             "channel_a": channel_a,
             "channels_b": channels_b,
         }
-        if product == "PSD":
+        if key_mode == "channel":
+            channel_products = normalized.setdefault(product, {})
+            if product == "FFT" and channel_a in channel_products:
+                raise ValueError(
+                    f"Duplicate {product} channel {channel_a!r}; refusing to overwrite"
+                )
             payload = {**info, "data": data[0]}
-            normalized.setdefault(product, {})[channel_a] = payload
-            # DTT labels this trace PSD; the existing ASD alias exposes
-            # the same stored samples without a numerical conversion.
-            normalized.setdefault("ASD", {})[channel_a] = payload
+            channel_products[channel_a] = payload
         else:
             if len(channels_b) != actual_rows:
-                warnings.warn(
-                    f"ChannelB count disagrees with data rows for {result_name}",
-                    stacklevel=2,
-                )
+                message = f"ChannelB count disagrees with data rows for {result_name}"
+                if product == "FFT":
+                    raise ValueError(message)
+                warnings.warn(message, stacklevel=2)
                 continue
             for row, channel_b in enumerate(channels_b):
                 normalized.setdefault(product, {})[(channel_b, channel_a)] = {
                     **info,
                     "data": data[row],
                 }
+
+        if product == "PSD":
+            payload = channel_products[channel_a]
+            # DTT labels this trace PSD; the existing ASD alias exposes
+            # the same stored samples without a numerical conversion.
+            normalized.setdefault("ASD", {})[channel_a] = payload
 
     return normalized
 
@@ -559,9 +630,10 @@ def load_dttxml_products(source, *, native: bool = False):
     Returns
     -------
     dict
-        Mapping of products (TF, PSD, ASD, CSD, COH, TS). With the installed
-        ``dttxml`` package and ``native=False``, frequency entries are
+        Mapping of products (FFT, TF, PSD, ASD, CSD, COH, TS). With the
+        installed ``dttxml`` package and ``native=False``, frequency entries are
         ``FrequencySeries`` objects. Native frequency entries are dictionaries.
+        FFT entries retain raw values and do not infer a normalization or unit.
         Time-series entries, when present, remain dictionaries.
 
     Notes
@@ -598,12 +670,27 @@ def load_dttxml_products(source, *, native: bool = False):
 
     normalized = {}
 
-    def frequency_series(data, info, name, *, unit=None):
+    def frequency_series(data, info, name, *, unit=None, strict_axis=False):
         """Preserve the native=False loader's observable FrequencySeries values."""
         from gwexpy.interop._registry import ConverterRegistry
 
         FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
         axis = info.FHz
+        if strict_axis:
+            axis = np.asarray(axis)
+            if np.iscomplexobj(axis):
+                if np.any(np.imag(axis) != 0):
+                    raise ValueError(
+                        f"Embedded frequency axis for {name!r} contains "
+                        "nonzero imaginary values"
+                    )
+                axis = np.real(axis)
+            values = np.asarray(data)
+            if axis.size != values.size:
+                raise ValueError(
+                    f"Frequency axis for {name!r} has {axis.size} values, "
+                    f"but the product has {values.size} samples"
+                )
         try:
             if axis is not None and len(axis) > 1:
                 subtype = getattr(info, "subtype", "")
@@ -623,6 +710,14 @@ def load_dttxml_products(source, *, native: bool = False):
                     data,
                     df=axis[1] - axis[0],
                     f0=axis[0],
+                    epoch=info.gps_second,
+                    name=name,
+                    unit=unit,
+                )
+            if strict_axis and axis is not None and len(axis) == 1:
+                return FrequencySeries(
+                    data,
+                    frequencies=axis,
                     epoch=info.gps_second,
                     name=name,
                     unit=unit,
@@ -651,7 +746,24 @@ def load_dttxml_products(source, *, native: bool = False):
             }
         normalized["TS"] = ts_dict
 
-    # 2. DTT's PSD result is also exposed under the existing ASD alias.
+    # 2. Raw FFT output is indexed by ChannelA in the installed parser. The
+    # surveyed Spectrum/0 and /4 layouts each carry exactly one FFT row.
+    if hasattr(results, "FFT"):
+        _validate_external_fft_array_types(str(source))
+        fft_dict = {}
+        for channel, info in results.FFT.items():
+            fft_data = np.asarray(info.FFT)
+            if fft_data.ndim != 2 or fft_data.shape[0] != 1:
+                raise ValueError(
+                    f"FFT result for {channel!r} has shape {fft_data.shape}; "
+                    "only an unambiguous one-row FFT layout is supported"
+                )
+            fft_dict[channel] = frequency_series(
+                fft_data[0], info, channel, strict_axis=True
+            )
+        normalized["FFT"] = fft_dict
+
+    # 3. DTT's PSD result is also exposed under the existing ASD alias.
     if hasattr(results, "PSD"):
         psd_dict = {}
         for ch, info in results.PSD.items():
@@ -661,7 +773,7 @@ def load_dttxml_products(source, *, native: bool = False):
         normalized["ASD"] = psd_dict
         normalized["PSD"] = psd_dict
 
-    # 3. Coherence (COH)
+    # 4. Coherence (COH)
     if hasattr(results, "COH"):
         coh_dict = {}
         for chA, info in results.COH.items():
@@ -670,7 +782,7 @@ def load_dttxml_products(source, *, native: bool = False):
                 coh_dict[key] = frequency_series(info.coherence[i], info, str(key))
         normalized["COH"] = coh_dict
 
-    # 4. Transfer Function (TF)
+    # 5. Transfer Function (TF)
     tf_source = getattr(results, "TF", None)
     if tf_source is None and hasattr(results, "_mydict") and "TF" in results._mydict:
         tf_source = results._mydict["TF"]
@@ -702,7 +814,7 @@ def load_dttxml_products(source, *, native: bool = False):
                 tf_dict[key] = frequency_series(xfer_data, info, str(key))
         normalized["TF"] = tf_dict
 
-    # 5. CSD
+    # 6. CSD
     if hasattr(results, "CSD"):
         csd_dict = {}
         for chA, info in results.CSD.items():
