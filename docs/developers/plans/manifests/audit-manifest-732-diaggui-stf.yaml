@@ -57,18 +57,26 @@ performance:
     Same subtype 4 synthetic fixture with N=4. One warmup was excluded where
     applicable; medians use five installed external/native reads and three
     no-dttxml child reads. perf_counter and tracemalloc bracket the reader call
-    after imports. These descriptive measurements have no threshold.
+    after imports. The fallback wall median includes fresh child startup, while
+    its traced peak is measured inside the child. The final measurement was
+    rerun on head 53b95295066d7ccd70bcd7abacae1a1034b66e9a. These descriptive
+    measurements have no threshold.
   before:
     outcome: "All three routes raised No matrix pairs found for STF."
     external: "0.323 ms median; 86371 traced peak bytes"
     native: "0.197 ms median; 86019 traced peak bytes"
     fallback: "576 ms median including child startup; 1428417 traced peak bytes in child"
-  after:
+  after_pre_review:
     outcome: "All three routes returned FrequencySeriesMatrix shape (1, 1, 4), complex64 response."
     external: "1.605 ms median; 89595 traced peak bytes"
     native: "1.205 ms median; 85963 traced peak bytes"
     fallback: "588 ms median including child startup; 1483454 traced peak bytes in child"
-  caveat: "Before/after calls differ in outcome because the baseline lacked STF support; the small absolute increase includes raw layout validation and result construction."
+  after:
+    outcome: "All three routes returned FrequencySeriesMatrix shape (1, 1, 4), complex64 response."
+    external: "0.958 ms median; 89869 traced peak bytes"
+    native: "0.695 ms median; 85963 traced peak bytes"
+    fallback: "2290 ms median including fresh child startup; 1493366 traced peak bytes in child"
+  caveat: "The baseline calls raised before returning STF results, so before/after latency is not an equivalent-work comparison. The fallback wall measurement is startup-dominated and varied substantially from the pre-review run; no latency threshold or claim is implied."
 ci_route:
   workflow: .github/workflows/pr-fast.yml
   step: "Check installed DiagGUI routes, FFT, and #415 regression"
@@ -94,6 +102,8 @@ verification:
     result: passed
   - command: "rtk mypy gwexpy/io/dttxml_common.py gwexpy/frequencyseries/io/dttxml.py gwexpy/timeseries/io/dttxml.py"
     result: "No issues found."
+  - command: "rtk python inline benchmark: subtype 4 N=4 synthetic XML, one warmup then five external/native reads and three fresh no-dttxml child reads, with perf_counter/tracemalloc after imports"
+    result: "Final head 53b95295066d7ccd70bcd7abacae1a1034b66e9a: external 0.958 ms / 89869 bytes, native 0.695 ms / 85963 bytes, fallback 2290 ms including child startup / 1493366 bytes traced in child; all routes returned (1, 1, 4), complex64."
   - command: "rtk python -c \"import yaml; yaml.safe_load(open('.github/workflows/pr-fast.yml', encoding='utf-8'))\""
     result: "Workflow YAML parsed."
   - command: "rtk git diff --check"
