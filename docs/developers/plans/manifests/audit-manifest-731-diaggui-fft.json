@@ -19,9 +19,17 @@
         "subtype": "FFT in format (Y)",
         "array_type": "floatComplex",
         "FFT_dtype": "complex64",
-        "FFT_shape": [1, 4],
+        "FFT_shape": [
+          1,
+          4
+        ],
         "FHz_dtype": "float64",
-        "FHz": [17.5, 20.0, 22.5, 25.0],
+        "FHz": [
+          17.5,
+          20.0,
+          22.5,
+          25.0
+        ],
         "channel_key": "K1:AUDIT-FFT-0",
         "epoch": 1234567890.25
       },
@@ -30,13 +38,28 @@
         "subtype": "FFT in format (f, Y)",
         "array_type": "floatComplex",
         "FFT_dtype": "complex64",
-        "FFT_shape": [1, 4],
+        "FFT_shape": [
+          1,
+          4
+        ],
         "FHz_dtype": "complex64",
         "FHz": [
-          [10.0, 0.0],
-          [11.0, 0.0],
-          [13.5, 0.0],
-          [17.0, 0.0]
+          [
+            10.0,
+            0.0
+          ],
+          [
+            11.0,
+            0.0
+          ],
+          [
+            13.5,
+            0.0
+          ],
+          [
+            17.0,
+            0.0
+          ]
         ],
         "channel_key": "K1:AUDIT-FFT-4",
         "epoch": 1234567890.25
@@ -95,6 +118,38 @@
     {
       "command": "rtk git diff --cached --check",
       "result": "Passed after staging the three issue-owned files."
+    },
+    {
+      "command": "rtk env GWEXPY_NO_DTTXML_PYTHON=/tmp/gwexpy-diaggui-a-base/bin/python conda run -n gwexpy python -m pytest -q tests/io/test_dttxml_issue731.py",
+      "result": "15 passed, including the actual separate no-dttxml interpreter route for subtype 0 and 4 single-bin direct and dictionary reads."
+    },
+    {
+      "command": "rtk conda run -n gwexpy python -m pytest -q tests/io/test_dttxml_issue731.py tests/io/test_dttxml_issue726.py tests/io/test_dttxml_issue730.py",
+      "result": "47 passed, 3 skipped."
+    },
+    {
+      "command": "rtk conda run -n gwexpy python scripts/ci/run_gate.py io-contract --no-fixtures",
+      "result": "1556 passed, 27 skipped, 1 deselected; gate exited 0 and the gwexpy import smoke passed."
+    },
+    {
+      "command": "rtk conda run -n gwexpy python scripts/ci/run_gate.py io-conformance",
+      "result": "71 passed, 7 skipped; gate exited 0 and printed the existing conformance summary `6 blocked / 6 total` (recorded without interpretation)."
+    },
+    {
+      "command": "rtk conda run -n gwexpy ruff check gwexpy/io/dttxml_common.py tests/io/test_dttxml_issue731.py",
+      "result": "Passed."
+    },
+    {
+      "command": "rtk conda run -n gwexpy ruff format --check gwexpy/io/dttxml_common.py tests/io/test_dttxml_issue731.py",
+      "result": "Passed; both files are formatted."
+    },
+    {
+      "command": "rtk conda run -n gwexpy mypy gwexpy/io/dttxml_common.py",
+      "result": "Success: no issues found in 1 source file."
+    },
+    {
+      "command": "rtk git diff --check",
+      "result": "Passed."
     }
   ],
   "performance": {
@@ -112,7 +167,9 @@
         "before_peak_traced_bytes": 88023,
         "after_peak_traced_bytes": 87966,
         "before_product_keys": [],
-        "after_product_keys": ["FFT"]
+        "after_product_keys": [
+          "FFT"
+        ]
       },
       "native_installed_native_true": {
         "before_median_us": 30.75,
@@ -120,7 +177,9 @@
         "before_peak_traced_bytes": 88256,
         "after_peak_traced_bytes": 88149,
         "before_product_keys": [],
-        "after_product_keys": ["FFT"]
+        "after_product_keys": [
+          "FFT"
+        ]
       },
       "fallback_no_dttxml_native_false": {
         "before_median_us": 37.28,
@@ -128,15 +187,28 @@
         "before_peak_traced_bytes": 88622,
         "after_peak_traced_bytes": 88758,
         "before_product_keys": [],
-        "after_product_keys": ["FFT"]
+        "after_product_keys": [
+          "FFT"
+        ]
       }
     },
-    "interpretation": "The additional wall time is associated with decoding and constructing two newly returned FrequencySeries objects where the prior code emitted no FFT product. Traced peak allocation stayed within 0.2 percent across the measured routes; small-fixture timing is descriptive only."
+    "interpretation": "The additional wall time is associated with decoding and constructing two newly returned FrequencySeries objects where the prior code emitted no FFT product. Traced peak allocation stayed within 0.2 percent across the measured routes; small-fixture timing is descriptive only.",
+    "review_correction_probe": {
+      "protocol": "Same characterized /tmp/issue731_parser_characterization.xml. Five warmups and 50 load_dttxml_products calls per route; compare current code with the FFT raw-XML validation helper replaced by a no-op to isolate its incremental cost.",
+      "results": {
+        "without_fft_xml_preflight_median_us": 322.39,
+        "with_fft_xml_preflight_median_us": 344.58,
+        "incremental_median_us": 22.19
+      },
+      "interpretation": "The added raw XML metadata inspection costs about 22 microseconds on this small fixture. This is a descriptive single-fixture comparison without a fixed threshold; it does not include process RSS."
+    }
   },
   "not_run": [
     "Full repository test suite",
     "Full-package MyPy and full-repository Ruff checks",
+    "Optional GUI, network, and NDS backend gates",
     "Optional I/O, GUI, and network backend gates",
+    "check_physics: FFT values and axes are copied without a physical-unit or normalization claim",
     "check_physics: implementation preserves raw parser values and makes no physical-unit or normalization claim"
   ],
   "files_changed": [
@@ -147,6 +219,18 @@
   "review": {
     "physics_review_required": false,
     "reason": "No physical unit or FFT normalization is inferred; values and coordinates are preserved from the selected XML stream.",
-    "independent_sol_review": "Pending root review after rebase onto the latest integrated main."
+    "independent_sol_review": "Preliminary exact-head review identified two Major findings. Both are addressed in this follow-up; a new exact-head review is pending after the parent rebases this branch onto the merged #734 base.",
+    "corrections": [
+      {
+        "finding": "External FFT conversion replaced a nonzero single-bin frequency with the FrequencySeries default zero origin.",
+        "correction": "For FFT-only strict-axis conversion, a one-bin axis is passed explicitly to FrequencySeries(frequencies=...). PSD/CSD/COH/TF construction is unchanged.",
+        "regression": "Spectrum/0 f0=17.5 and Spectrum/4 embedded f=31.25 are asserted through installed dttxml, native, and a separate interpreter without dttxml; both direct and dictionary reads are covered."
+      },
+      {
+        "finding": "The installed dttxml FFT path trusted parsed data without validating the XML Array Type, allowing doubleComplex subtype 0 with N=8 to be reinterpreted as finite but incorrect complex64 samples.",
+        "correction": "Before returning external FFT products, inspect raw Spectrum subtype 0/4 XML Array Type and reject anything except characterized floatComplex. Validation is scoped to FFT results.",
+        "regression": "An adversarial N=8 doubleComplex subtype 0 fixture must raise ValueError with native and external parsers."
+      }
+    ]
   }
 }

@@ -215,6 +215,34 @@ def _uniform_frequency_step(frequencies) -> float | None:
     return None
 
 
+def _validate_external_fft_array_types(source: str) -> None:
+    """Reject uncharacterized raw precision for Spectrum FFT layouts."""
+    tree = _parse_dttxml_xml(source)
+    root = cast(Any, tree.getroot())
+    for result_elem in root.iter("LIGO_LW"):
+        if result_elem.get("Type") != "Spectrum":
+            continue
+        params = {
+            param.get("Name"): (param.text or "").strip()
+            for param in result_elem.findall("Param")
+            if param.get("Name")
+        }
+        try:
+            subtype = int(params.get("Subtype", ""))
+        except ValueError:
+            continue
+        if subtype not in (0, 4):
+            continue
+        array_elem = result_elem.find("Array")
+        array_type = array_elem.get("Type") if array_elem is not None else None
+        if array_type != "floatComplex":
+            result_name = result_elem.get("Name", "")
+            raise ValueError(
+                f"Unsupported Array Type {array_type!r} for FFT result "
+                f"{result_name}; only floatComplex is characterized"
+            )
+
+
 def load_dttxml_native(source: str) -> dict:
     """Parse DTT XML file directly without using dttxml package.
 
@@ -686,6 +714,14 @@ def load_dttxml_products(source, *, native: bool = False):
                     name=name,
                     unit=unit,
                 )
+            if strict_axis and axis is not None and len(axis) == 1:
+                return FrequencySeries(
+                    data,
+                    frequencies=axis,
+                    epoch=info.gps_second,
+                    name=name,
+                    unit=unit,
+                )
             return FrequencySeries(
                 data, df=1, f0=0, epoch=info.gps_second, name=name, unit=unit
             )
@@ -713,6 +749,7 @@ def load_dttxml_products(source, *, native: bool = False):
     # 2. Raw FFT output is indexed by ChannelA in the installed parser. The
     # surveyed Spectrum/0 and /4 layouts each carry exactly one FFT row.
     if hasattr(results, "FFT"):
+        _validate_external_fft_array_types(str(source))
         fft_dict = {}
         for channel, info in results.FFT.items():
             fft_data = np.asarray(info.FFT)

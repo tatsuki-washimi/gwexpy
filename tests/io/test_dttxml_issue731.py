@@ -124,6 +124,38 @@ def _write_fft_xml(
     return path
 
 
+def _write_one_bin_fft_xml(path: Path) -> Path:
+    root = ET.Element("LIGO_LW")
+    _add_spectrum(
+        root,
+        result_index=0,
+        subtype=0,
+        channel="K1:AUDIT-FFT-ONE-LINEAR",
+        values=np.array([2.5 - 1.25j], dtype=np.complex64),
+        array_type="floatComplex",
+        n_points=1,
+        rows=1,
+        f0=17.5,
+        df=2.5,
+        dims=(1, 1),
+    )
+    _add_spectrum(
+        root,
+        result_index=1,
+        subtype=4,
+        channel="K1:AUDIT-FFT-ONE-EMBEDDED",
+        values=np.array([31.25 + 0j, -0.75 + 3.5j], dtype=np.complex64),
+        array_type="floatComplex",
+        n_points=1,
+        rows=1,
+        f0=0,
+        df=0,
+        dims=(2, 1),
+    )
+    ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
+    return path
+
+
 @pytest.fixture
 def fft_xml(tmp_path: Path) -> Path:
     """Build the characterized Spectrum/0 and Spectrum/4 raw XML layouts."""
@@ -202,6 +234,70 @@ def test_fft_reader_rejects_ambiguous_or_invalid_layouts(
         load_dttxml_products(path, native=native)
 
 
+@pytest.mark.parametrize("native", [False, True], ids=["dttxml", "native"])
+def test_fft_one_bin_frequency_axis_is_preserved(tmp_path: Path, native: bool) -> None:
+    path = _write_one_bin_fft_xml(tmp_path / "spectrum_fft_one_bin.xml")
+    expected = {
+        "K1:AUDIT-FFT-ONE-LINEAR": (
+            np.array([2.5 - 1.25j], dtype=np.complex64),
+            np.array([17.5]),
+        ),
+        "K1:AUDIT-FFT-ONE-EMBEDDED": (
+            np.array([-0.75 + 3.5j], dtype=np.complex64),
+            np.array([31.25]),
+        ),
+    }
+
+    normalized = load_dttxml_products(path, native=native)["FFT"]
+    result = FrequencySeriesDict.read(
+        path, format="xml.diaggui", products="FFT", native=native
+    )
+    assert list(result) == list(expected)
+    for channel, (values, frequencies) in expected.items():
+        if native:
+            assert isinstance(normalized[channel], dict)
+            np.testing.assert_array_equal(
+                normalized[channel]["frequencies"], frequencies
+            )
+        else:
+            _assert_series(normalized[channel], values, frequencies)
+        _assert_series(result[channel], values, frequencies)
+        direct = FrequencySeries.read(
+            path,
+            format="xml.diaggui",
+            products="FFT",
+            channels=[channel],
+            native=native,
+        )
+        _assert_series(direct, values, frequencies)
+
+
+@pytest.mark.parametrize("native", [False, True], ids=["dttxml", "native"])
+def test_fft_reader_rejects_double_complex_n8_even_when_external_parser_accepts(
+    tmp_path: Path, native: bool
+) -> None:
+    path = tmp_path / "spectrum_fft_double_complex_n8.xml"
+    _add_root = ET.Element("LIGO_LW")
+    _add_spectrum(
+        _add_root,
+        result_index=0,
+        subtype=0,
+        channel="K1:AUDIT-FFT-DOUBLE-COMPLEX",
+        values=np.arange(8, dtype=np.float32).astype(np.complex64)
+        + 1j * np.arange(8, dtype=np.float32),
+        array_type="doubleComplex",
+        n_points=8,
+        rows=1,
+        f0=0,
+        df=1,
+        dims=(1, 8),
+    )
+    ET.ElementTree(_add_root).write(path, encoding="utf-8", xml_declaration=True)
+
+    with pytest.raises(ValueError, match="only floatComplex is characterized"):
+        load_dttxml_products(path, native=native)
+
+
 def test_fft_fallback_in_separate_no_dttxml_interpreter(fft_xml: Path) -> None:
     """Exercise the actual fallback environment without package monkeypatching."""
     if importlib.util.find_spec("dttxml") is None:
@@ -212,6 +308,7 @@ def test_fft_fallback_in_separate_no_dttxml_interpreter(fft_xml: Path) -> None:
         pytest.skip("fallback route needs a separate interpreter without dttxml")
 
     project_root = Path(__file__).resolve().parents[2]
+    one_bin_xml = _write_one_bin_fft_xml(fft_xml.parent / "spectrum_fft_one_bin.xml")
     code = """
 import importlib.util, json, sys
 import numpy as np
@@ -235,12 +332,23 @@ for channel in channels:
         'epoch': float(series.epoch.value), 'name': direct.name,
         'direct_type': type(direct).__name__,
     }
+one_bin = FrequencySeriesDict.read(sys.argv[2], format='xml.diaggui', products='FFT')
+for channel, frequency in (
+    ('K1:AUDIT-FFT-ONE-LINEAR', 17.5),
+    ('K1:AUDIT-FFT-ONE-EMBEDDED', 31.25),
+):
+    series = one_bin[channel]
+    direct = FrequencySeries.read(
+        sys.argv[2], format='xml.diaggui', products='FFT', channels=[channel]
+    )
+    assert series.frequencies.value.tolist() == [frequency]
+    assert direct.frequencies.value.tolist() == [frequency]
 print(json.dumps(payload))
 """
     env = os.environ.copy()
     env["PYTHONPATH"] = str(project_root)
     completed = subprocess.run(
-        [python, "-c", code, str(fft_xml)],
+        [python, "-c", code, str(fft_xml), str(one_bin_xml)],
         check=True,
         capture_output=True,
         text=True,
