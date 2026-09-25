@@ -22,8 +22,8 @@ from gwexpy.frequencyseries import FrequencySeriesMatrix
 from gwexpy.io.dttxml_common import HAS_DTTXML
 
 _EPOCH = 1_234_567_890.25
-_INPUT = "K1:ISSUE732-CHANNEL-A"
-_OUTPUT = "K1:ISSUE732-CHANNEL-B"
+_CHANNEL_A = "K1:ISSUE732-CHANNEL-A"
+_CHANNEL_B = "K1:ISSUE732-CHANNEL-B"
 _F0 = 17.5
 _DF = 2.5
 _FREQUENCIES = np.array([10.0, 11.0, 13.5, 17.0], dtype=np.float32)
@@ -38,7 +38,7 @@ def _stf_xml(
     subtype: int,
     values: np.ndarray = _VALUES,
     frequencies: np.ndarray = _FREQUENCIES,
-    channel_b: tuple[str, ...] = (_OUTPUT,),
+    channel_b: tuple[str, ...] = (_CHANNEL_B,),
     m: int = 1,
 ) -> Path:
     """Write one labeled STF row with the surveyed /1 or /4 XML layout."""
@@ -59,7 +59,7 @@ def _stf_xml(
         "N": str(n_points),
         "f0": str(_F0 if not embedded else 0.0),
         "df": str(_DF if not embedded else 0.0),
-        "ChannelA": _INPUT,
+        "ChannelA": _CHANNEL_A,
     }
     params.update(
         {f"ChannelB[{index}]": channel for index, channel in enumerate(channel_b)}
@@ -90,13 +90,13 @@ def test_dttxml_118_stf_object_matches_xml_layout(stf_xml: Path) -> None:
     import dttxml
 
     assert dttxml.__version__ == "1.1.8"
-    result = dttxml.DiagAccess(str(stf_xml)).results["STF"][_INPUT]
+    result = dttxml.DiagAccess(str(stf_xml)).results["STF"][_CHANNEL_A]
     assert result.type_name == "STF"
     assert result.subtype_raw in (1, 4)
     assert result.gps_second == pytest.approx(_EPOCH)
-    assert result.channelA == _INPUT
-    np.testing.assert_array_equal(result.channelB, [_OUTPUT])
-    assert result.channelB_inv[_OUTPUT] == 0
+    assert result.channelA == _CHANNEL_A
+    np.testing.assert_array_equal(result.channelB, [_CHANNEL_B])
+    assert result.channelB_inv[_CHANNEL_B] == 0
 
     response = result.response
     assert response.dtype == np.dtype("complex64")
@@ -121,8 +121,8 @@ def test_dttxml_118_stf_object_matches_xml_layout(stf_xml: Path) -> None:
     assert xml_params["Subtype"] == str(result.subtype_raw)
     assert xml_params["M"] == "1"
     assert xml_params["N"] == str(len(_VALUES))
-    assert xml_params["ChannelA"] == _INPUT
-    assert xml_params["ChannelB[0]"] == _OUTPUT
+    assert xml_params["ChannelA"] == _CHANNEL_A
+    assert xml_params["ChannelB[0]"] == _CHANNEL_B
     array = xml_result.find("Array")
     assert array is not None and array.get("Type") == "floatComplex"
     assert [int(dim.text) for dim in array.findall("Dim")] == [
@@ -156,9 +156,9 @@ def test_stf_matrix_reader_preserves_labeled_complex_row_and_axis(
 
     assert isinstance(result, FrequencySeriesMatrix)
     assert result.shape == (1, 1, len(_VALUES))
-    assert list(result.rows) == [_OUTPUT]
-    assert list(result.cols) == [_INPUT]
-    series = result[_OUTPUT, _INPUT]
+    assert list(result.rows) == [_CHANNEL_B]
+    assert list(result.cols) == [_CHANNEL_A]
+    series = result[_CHANNEL_B, _CHANNEL_A]
     assert series.dtype == np.dtype("complex64")
     np.testing.assert_array_equal(series.value, _VALUES)
     assert np.any(series.value.imag != 0), "complex phase must survive normalization"
@@ -207,9 +207,9 @@ import importlib.util, json, sys
 assert importlib.util.find_spec('dttxml') is None
 import numpy as np
 from gwexpy.frequencyseries import FrequencySeriesMatrix
-path = sys.argv[1]
+path, channel_a, channel_b = sys.argv[1:]
 result = FrequencySeriesMatrix.read(path, format='xml.diaggui', products='STF')
-series = result['K1:ISSUE732-CHANNEL-B', 'K1:ISSUE732-CHANNEL-A']
+series = result[channel_b, channel_a]
 print(json.dumps({
     'type': type(result).__name__, 'shape': result.shape,
     'rows': list(result.rows), 'cols': list(result.cols),
@@ -222,7 +222,7 @@ print(json.dumps({
     env = os.environ.copy()
     env["PYTHONPATH"] = str(project_root)
     completed = subprocess.run(
-        [str(python), "-c", code, str(stf_xml)],
+        [str(python), "-c", code, str(stf_xml), _CHANNEL_A, _CHANNEL_B],
         check=True,
         capture_output=True,
         text=True,
@@ -237,8 +237,8 @@ print(json.dumps({
     )
     assert result["type"] == "FrequencySeriesMatrix"
     assert result["shape"] == [1, 1, len(_VALUES)]
-    assert result["rows"] == [_OUTPUT]
-    assert result["cols"] == [_INPUT]
+    assert result["rows"] == [_CHANNEL_B]
+    assert result["cols"] == [_CHANNEL_A]
     assert result["dtype"] == "complex64"
     np.testing.assert_array_equal(
         result["values"], np.column_stack((_VALUES.real, _VALUES.imag))
@@ -267,7 +267,7 @@ def test_stf_reader_reports_ambiguous_or_inconsistent_layout(
     if case == "missing-channel-b":
         kwargs["channel_b"] = ()
     elif case == "ambiguous-channel-b":
-        kwargs["channel_b"] = (_OUTPUT, "K1:ISSUE732-SECOND-OUTPUT")
+        kwargs["channel_b"] = (_CHANNEL_B, "K1:ISSUE732-SECOND-OUTPUT")
     elif case == "row-count-mismatch":
         kwargs["m"] = 2
     elif case == "imaginary-frequency":
