@@ -15,7 +15,7 @@ import numpy as np
 import pytest
 
 from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
-from gwexpy.io.dttxml_common import load_dttxml_products
+from gwexpy.io.dttxml_common import HAS_DTTXML, load_dttxml_products
 
 EPOCH = 1_234_567_890.25
 LINEAR_CHANNEL = "K1:AUDIT-FFT-LINEAR"
@@ -183,11 +183,16 @@ def test_fft_frequency_readers_preserve_both_channel_layouts(
     normalized = load_dttxml_products(fft_xml, native=native)
     fft = normalized["FFT"]
     assert list(fft) == [LINEAR_CHANNEL, EMBEDDED_CHANNEL]
-    if native:
-        for channel in (LINEAR_CHANNEL, EMBEDDED_CHANNEL):
+    if native or not HAS_DTTXML:
+        for channel, values, frequencies in (
+            (LINEAR_CHANNEL, LINEAR_VALUES, LINEAR_FREQUENCIES),
+            (EMBEDDED_CHANNEL, EMBEDDED_VALUES, EMBEDDED_FREQUENCIES),
+        ):
             assert isinstance(fft[channel], dict)
             assert fft[channel]["unit"] is None
             assert fft[channel]["epoch"] == EPOCH
+            np.testing.assert_array_equal(fft[channel]["data"], values)
+            np.testing.assert_array_equal(fft[channel]["frequencies"], frequencies)
     else:
         assert all(isinstance(series, FrequencySeries) for series in fft.values())
 
@@ -254,8 +259,9 @@ def test_fft_one_bin_frequency_axis_is_preserved(tmp_path: Path, native: bool) -
     )
     assert list(result) == list(expected)
     for channel, (values, frequencies) in expected.items():
-        if native:
+        if native or not HAS_DTTXML:
             assert isinstance(normalized[channel], dict)
+            np.testing.assert_array_equal(normalized[channel]["data"], values)
             np.testing.assert_array_equal(
                 normalized[channel]["frequencies"], frequencies
             )

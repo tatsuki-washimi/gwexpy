@@ -150,6 +150,34 @@
     {
       "command": "rtk git diff --check",
       "result": "Passed."
+    },
+    {
+      "command": "rtk /tmp/gwexpy-diaggui-a-base/bin/python -m pytest -q tests/io/test_dttxml_issue731.py -k 'frequency_readers_preserve_both_channel_layouts or one_bin_frequency_axis_is_preserved'",
+      "result": "Before the assertion fix, reproduced 2 failures: native=False in a base-only interpreter correctly returns native dictionary payloads, while the tests incorrectly expected normalized FrequencySeries objects."
+    },
+    {
+      "command": "rtk /tmp/gwexpy-diaggui-a-base/bin/python -m pytest -q tests/io/test_dttxml_issue731.py",
+      "result": "After distinguishing parser availability with HAS_DTTXML, 15 passed in the base-only environment, including the direct and dictionary fallback routes."
+    },
+    {
+      "command": "rtk conda run -n gwexpy python -m pytest -q tests/io/test_dttxml_issue730.py tests/io/test_dttxml_issue731.py tests/io/test_dttxml_common.py::TestLoadDttxmlProducts::test_ts_entries_stay_dict_shaped_and_reader_consumes_them",
+      "result": "23 passed, 3 skipped in the installed dttxml==1.1.8 environment; the fallback-only subprocess case skipped as expected in this installed-parser step."
+    },
+    {
+      "command": "rtk conda run -n gwexpy python -c 'import yaml; yaml.safe_load(open(\".github/workflows/pr-fast.yml\", encoding=\"utf-8\")); print(\"workflow YAML parsed\")'",
+      "result": "Workflow YAML parsed."
+    },
+    {
+      "command": "rtk conda run -n gwexpy ruff check tests/io/test_dttxml_issue731.py",
+      "result": "Passed."
+    },
+    {
+      "command": "rtk conda run -n gwexpy ruff format --check tests/io/test_dttxml_issue731.py",
+      "result": "Passed; the test file is formatted."
+    },
+    {
+      "command": "rtk git diff --check",
+      "result": "Passed."
     }
   ],
   "performance": {
@@ -210,6 +238,7 @@
     "check_physics: FFT values and axes are copied without a physical-unit or normalization claim"
   ],
   "files_changed": [
+    ".github/workflows/pr-fast.yml",
     "gwexpy/io/dttxml_common.py",
     "tests/io/test_dttxml_issue731.py",
     "docs/developers/plans/manifests/audit-manifest-731-diaggui-fft.json"
@@ -230,6 +259,12 @@
         "regression": "An adversarial N=8 doubleComplex subtype 0 fixture must raise ValueError with native and external parsers."
       }
     ]
+  },
+  "ci_route_regression": {
+    "workflow": ".github/workflows/pr-fast.yml",
+    "step": "Check installed DiagGUI routes, FFT, and #415 regression",
+    "coverage": "Run tests/io/test_dttxml_issue731.py in the existing installed dttxml==1.1.8 interpreter. The preceding base-only io-contract step continues to exercise native fallback and the test suite's fallback subprocess route.",
+    "failure_and_repair": "The PR CI base-only job exposed assertions that equated native=False with installed dttxml. They now branch on HAS_DTTXML for normalized loader payload shape, while direct FrequencySeries and FrequencySeriesDict reader contracts remain asserted in both environments."
   },
   "rebased_validation": {
     "base": "d4f21aed78ba4cdfc00f59bff7841ff363417858",
