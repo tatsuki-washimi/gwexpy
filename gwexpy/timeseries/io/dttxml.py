@@ -109,7 +109,7 @@ def read_timeseriesdict_dttxml(
     if prod not in SUPPORTED_TS:
         raise ValueError(f"xml.diaggui products '{prod}' is not a time-series product")
 
-    normalized = load_dttxml_products(source)
+    normalized = load_dttxml_products(source, products=prod)
     payload = normalized.get(prod, {})
     tsd = TimeSeriesDict()
     for ch, info in payload.items():

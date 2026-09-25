@@ -243,7 +243,167 @@ def _validate_external_fft_array_types(source: str) -> None:
             )
 
 
-def load_dttxml_native(source: str) -> dict:
+def _stf_error(result_name: str, detail: str) -> ValueError:
+    return ValueError(f"Invalid STF layout for {result_name}: {detail}")
+
+
+def _indexed_stf_channels_b(result_elem, result_name: str) -> list[str]:
+    """Return validated ChannelB labels in their serialized index order."""
+    indexed: dict[int, str] = {}
+    for param in result_elem.findall("Param"):
+        name = param.get("Name", "")
+        if name == "ChannelB":
+            raise _stf_error(result_name, "ChannelB must use indexed labels")
+        if not name.startswith("ChannelB["):
+            continue
+        match = re.fullmatch(r"ChannelB\[(\d+)\]", name)
+        if match is None:
+            raise _stf_error(result_name, f"malformed indexed label {name!r}")
+        index = int(match.group(1))
+        label = (param.text or "").strip()
+        if index in indexed:
+            raise _stf_error(result_name, f"duplicate ChannelB index {index}")
+        if not label:
+            raise _stf_error(result_name, f"ChannelB[{index}] is empty")
+        indexed[index] = label
+
+    if sorted(indexed) != list(range(len(indexed))):
+        raise _stf_error(result_name, "ChannelB indices must be contiguous from zero")
+    labels = [indexed[index] for index in range(len(indexed))]
+    if len(labels) != len(set(labels)):
+        raise _stf_error(result_name, "ChannelB labels must be unique")
+    return labels
+
+
+def _external_stf_layouts(source: str) -> dict[str, dict[str, Any]]:
+    """Validate characterized raw STF blocks before consulting dttxml fields.
+
+    dttxml 1.1.8 exposes subtype 4 frequency words as real values, so the raw
+    stream must be checked before its finite but potentially wrong FHz axis is
+    trusted.
+    """
+    tree = _parse_dttxml_xml(source)
+    root = cast(Any, tree.getroot())
+    layouts: dict[str, dict[str, Any]] = {}
+    for result_elem in root.iter("LIGO_LW"):
+        if (
+            result_elem.get("Type") != "TransferFunction"
+            or re.fullmatch(r"Result\[\d+\]", result_elem.get("Name", "")) is None
+        ):
+            continue
+        params = {
+            param.get("Name"): (param.text or "").strip()
+            for param in result_elem.findall("Param")
+            if param.get("Name")
+        }
+        try:
+            subtype = int(params.get("Subtype", ""))
+        except ValueError:
+            continue
+        if subtype not in (1, 4):
+            continue
+        result_name = result_elem.get("Name", "")
+        try:
+            n_points = int(params.get("N", ""))
+            n_rows = int(params.get("M", ""))
+        except ValueError as exc:
+            raise _stf_error(result_name, f"invalid dimensions: {exc}") from exc
+        if subtype == 1:
+            try:
+                f0 = float(params.get("f0", ""))
+                df = float(params.get("df", ""))
+            except ValueError as exc:
+                raise _stf_error(
+                    result_name, f"invalid linear-axis metadata: {exc}"
+                ) from exc
+            if not np.isfinite(f0) or not np.isfinite(df):
+                raise _stf_error(result_name, "f0 and df must be finite")
+        channel_a = params.get("ChannelA", "")
+        if not channel_a:
+            raise _stf_error(result_name, "missing ChannelA")
+        if n_points <= 0 or n_rows <= 0:
+            raise _stf_error(
+                result_name, f"M and N must be positive; got M={n_rows}, N={n_points}"
+            )
+        channels_b = _indexed_stf_channels_b(result_elem, result_name)
+        if len(channels_b) != n_rows:
+            raise _stf_error(
+                result_name,
+                f"row count M={n_rows} disagrees with ChannelB count {len(channels_b)}",
+            )
+        array_elem = result_elem.find("Array")
+        if array_elem is None or array_elem.get("Type") != "floatComplex":
+            array_type = array_elem.get("Type") if array_elem is not None else None
+            raise _stf_error(
+                result_name,
+                f"unsupported Array Type {array_type!r}; only floatComplex is characterized",
+            )
+        try:
+            dims = [int(dim.text) for dim in array_elem.findall("Dim")]
+        except (TypeError, ValueError) as exc:
+            raise _stf_error(result_name, f"invalid Array dimensions: {exc}") from exc
+        expected_dims = [n_rows + int(subtype == 4), n_points]
+        if dims != expected_dims:
+            raise _stf_error(
+                result_name, f"Array dimensions {dims} do not match {expected_dims}"
+            )
+        stream_elem = array_elem.find("Stream")
+        if stream_elem is None or stream_elem.text is None:
+            raise _stf_error(result_name, "missing Array Stream")
+        try:
+            words = _decode_dtt_stream(
+                stream_elem.text,
+                stream_elem.get("Encoding", "LittleEndian,base64"),
+                "floatComplex",
+            )
+        except (TypeError, ValueError) as exc:
+            raise _stf_error(
+                result_name, f"could not decode Array Stream: {exc}"
+            ) from exc
+        expected_words = (n_rows + int(subtype == 4)) * n_points
+        if words.size != expected_words:
+            raise _stf_error(
+                result_name,
+                f"stream has {words.size} words; expected {expected_words}",
+            )
+        if subtype == 4:
+            embedded = words[:n_points]
+            if np.any(np.imag(embedded) != 0):
+                raise _stf_error(
+                    result_name,
+                    "embedded frequency axis contains nonzero imaginary values",
+                )
+            frequencies = np.real(embedded)
+            response = words[n_points:].reshape(n_rows, n_points)
+        else:
+            frequencies = f0 + np.arange(n_points) * df
+            response = words.reshape(n_rows, n_points)
+        if frequencies.size != n_points or not np.all(np.isfinite(frequencies)):
+            raise _stf_error(result_name, "frequency axis is not finite and length N")
+        if channel_a in layouts:
+            raise _stf_error(result_name, f"duplicate ChannelA key {channel_a!r}")
+        time_elem = result_elem.find("Time[@Name='t0']")
+        try:
+            epoch = float(time_elem.text) if time_elem is not None else 0.0
+        except (TypeError, ValueError) as exc:
+            raise _stf_error(result_name, f"invalid t0: {exc}") from exc
+        if not np.isfinite(epoch):
+            raise _stf_error(result_name, "t0 must be finite")
+        layouts[channel_a] = {
+            "result_name": result_name,
+            "subtype": subtype,
+            "n_rows": n_rows,
+            "n_points": n_points,
+            "df": df if subtype == 1 else None,
+            "channel_b": channels_b,
+            "frequencies": frequencies,
+            "response": response,
+            "epoch": epoch,
+        }
+    return layouts
+
+
+def load_dttxml_native(source: str, *, products: str | None = None) -> dict:
     """Parse DTT XML file directly without using dttxml package.
 
     This function provides an alternative parser that correctly handles
@@ -254,6 +414,8 @@ def load_dttxml_native(source: str) -> dict:
     ----------
     source : str
         Path to the DTT XML file.
+    products : str, optional
+        Normalize only this product. If omitted, parse all supported products.
 
     Returns
     -------
@@ -262,6 +424,7 @@ def load_dttxml_native(source: str) -> dict:
         - "TS": {channel: {"data": ndarray, "dt": float, "epoch": float, ...}}
         - "FFT": {channel: {"data": ndarray, "frequencies": ndarray, ...}}
         - "TF": {(chB, chA): {"data": ndarray, "frequencies": ndarray, ...}}
+        - "STF": {(chB, chA): {"data": ndarray, "frequencies": ndarray, ...}}
         - "PSD"/"ASD": {channel: {"data": ndarray, "frequencies": ndarray, ...}}
         - "CSD": {(chB, chA): {"data": ndarray, "frequencies": ndarray, ...}}
         - "COH": {(chB, chA): {"data": ndarray, "frequencies": ndarray, ...}}
@@ -271,6 +434,10 @@ def load_dttxml_native(source: str) -> dict:
     DTT assigns product meanings using both the ``LIGO_LW`` Type and Subtype.
     A TransferFunction subtype 6 stream contains float64 frequencies followed
     by complex64 values; decoding the entire stream as one dtype loses phase.
+    Characterized STF layouts are TransferFunction subtypes 1 and 4 with
+    ``floatComplex`` storage. Their ChannelB rows are keyed with the serialized
+    ChannelA identity; this mapping does not assign physical pair direction,
+    units, or normalization.
 
     """
     try:
@@ -281,6 +448,7 @@ def load_dttxml_native(source: str) -> dict:
 
     root = cast(Any, tree.getroot())
     normalized: dict = {}
+    selected_products = {products.upper()} if products is not None else None
 
     # Product semantics and storage precision are independent. The Array Type
     # selects the decoder dtype after the Type/Subtype pair selects the product.
@@ -295,8 +463,10 @@ def load_dttxml_native(source: str) -> dict:
     }
     transfer_layouts = {
         0: ("TF", True, False, "pair"),
+        1: ("STF", True, False, "pair"),
         2: ("COH", False, False, "pair"),
         3: ("TF", True, True, "pair"),
+        4: ("STF", True, True, "pair"),
         5: ("COH", False, True, "pair"),
         6: ("TF", True, True, "pair"),
     }
@@ -304,6 +474,8 @@ def load_dttxml_native(source: str) -> dict:
     for result_elem in root.iter("LIGO_LW"):
         result_type = result_elem.get("Type")
         if result_type == "TimeSeries":
+            if selected_products is not None and "TS" not in selected_products:
+                continue
             result_name = result_elem.get("Name", "")
             params = {
                 param.get("Name"): (param.text or "").strip()
@@ -417,13 +589,26 @@ def load_dttxml_native(source: str) -> dict:
                 stacklevel=2,
             )
             continue
+        product, complex_samples, embedded_frequencies, key_mode = layouts[subtype]
+        if (
+            selected_products is not None
+            and product not in selected_products
+            and not (product == "PSD" and "ASD" in selected_products)
+        ):
+            continue
         if n_points <= 0:
+            if product == "STF":
+                raise _stf_error(result_name, f"N must be positive; got {n_points}")
             warnings.warn(f"Invalid N for {result_name}: {n_points}", stacklevel=2)
             continue
-        product, complex_samples, embedded_frequencies, key_mode = layouts[subtype]
+        if product == "STF" and n_rows is None:
+            raise _stf_error(result_name, "missing M row count")
         array_elem = result_elem.find("Array")
         stream_elem = array_elem.find("Stream") if array_elem is not None else None
         if stream_elem is None or stream_elem.text is None:
+            if product == "STF":
+                missing = "Array/Stream" if array_elem is not None else "Array"
+                raise _stf_error(result_name, f"missing {missing}")
             continue
         array_type = array_elem.get("Type")
         allowed_types: tuple[str, ...] = (
@@ -433,14 +618,17 @@ def load_dttxml_native(source: str) -> dict:
         )
         if product == "FFT":
             allowed_types = ("floatComplex",)
+        if product == "STF":
+            allowed_types = ("floatComplex",)
         if result_type == "TransferFunction" and subtype == 6:
             # This mixed layout stores float64 frequencies and complex64 data.
             # A doubleComplex variant needs a separately verified byte layout.
             allowed_types = ("floatComplex",)
         if array_type not in allowed_types:
-            if product == "FFT":
+            if product in ("FFT", "STF"):
+                product_label = "FFT" if product == "FFT" else "STF"
                 raise ValueError(
-                    f"Unsupported Array Type {array_type!r} for FFT result "
+                    f"Unsupported Array Type {array_type!r} for {product_label} result "
                     f"{result_name}; only floatComplex is characterized"
                 )
             warnings.warn(
@@ -452,9 +640,17 @@ def load_dttxml_native(source: str) -> dict:
         try:
             dims = [int(dim.text) for dim in array_elem.findall("Dim")]
         except (TypeError, ValueError) as exc:
+            if product == "STF":
+                raise _stf_error(
+                    result_name, f"invalid Array dimensions: {exc}"
+                ) from exc
             warnings.warn(f"Invalid dimensions for {result_name}: {exc}", stacklevel=2)
             continue
         if any(dim <= 0 for dim in dims):
+            if product == "STF":
+                raise _stf_error(
+                    result_name, f"Array dimensions must be positive: {dims}"
+                )
             warnings.warn(f"Invalid dimensions for {result_name}: {dims}", stacklevel=2)
             continue
         encoding = stream_elem.get("Encoding", "LittleEndian,base64")
@@ -477,25 +673,37 @@ def load_dttxml_native(source: str) -> dict:
                     frequencies = f0 + np.arange(n_points) * df
                     data = words
         except (TypeError, ValueError) as exc:
+            if product == "STF":
+                raise _stf_error(
+                    result_name, f"could not decode Array Stream: {exc}"
+                ) from exc
             warnings.warn(
                 f"Failed to decode stream for {result_name}: {exc}", stacklevel=2
             )
             continue
         if embedded_frequencies and np.iscomplexobj(frequencies):
-            if product == "FFT" and np.any(np.imag(frequencies) != 0):
+            if product in ("FFT", "STF") and np.any(np.imag(frequencies) != 0):
+                product_label = "FFT" if product == "FFT" else "STF"
                 raise ValueError(
-                    f"Embedded frequency axis for {result_name} contains "
+                    f"Embedded {product_label} frequency axis for {result_name} contains "
                     "nonzero imaginary values"
                 )
             frequencies = np.real(frequencies)
         if data.size % n_points:
             message = f"Invalid data length for {result_name}"
+            if product == "STF":
+                raise _stf_error(result_name, message)
             if product == "FFT":
                 raise ValueError(message)
             warnings.warn(message, stacklevel=2)
             continue
         actual_rows = data.size // n_points
         if not actual_rows or (n_rows is not None and n_rows != actual_rows):
+            if product == "STF":
+                raise _stf_error(
+                    result_name,
+                    f"row count M={n_rows} does not match data rows={actual_rows}",
+                )
             message = f"Invalid row count for {result_name}: expected {n_rows}, got {actual_rows}"
             if product == "FFT":
                 raise ValueError(message)
@@ -506,13 +714,22 @@ def load_dttxml_native(source: str) -> dict:
                 f"FFT result {result_name} has {actual_rows} data rows; "
                 "only an unambiguous one-row FFT layout is supported"
             )
-        if len(dims) == 2:
+        if product == "STF":
+            expected_dims = [actual_rows + int(embedded_frequencies), n_points]
+            if dims != expected_dims:
+                raise _stf_error(
+                    result_name,
+                    f"Array dimensions {dims} do not match expected {expected_dims}",
+                )
+        elif len(dims) == 2:
             expected_dims = [actual_rows + int(embedded_frequencies), n_points]
             if dims != expected_dims:
                 message = (
                     f"Dimensions {dims} disagree with expected {expected_dims} "
                     f"for {result_name}"
                 )
+                if product == "STF":
+                    raise _stf_error(result_name, message)
                 if product == "FFT":
                     raise ValueError(message)
                 warnings.warn(message, stacklevel=2)
@@ -522,6 +739,8 @@ def load_dttxml_native(source: str) -> dict:
             data.size if embedded_frequencies else words.size,
         ):
             message = f"Dimensions {dims} disagree with stream size for {result_name}"
+            if product == "STF":
+                raise _stf_error(result_name, message)
             if product == "FFT":
                 raise ValueError(message)
             warnings.warn(message, stacklevel=2)
@@ -529,7 +748,14 @@ def load_dttxml_native(source: str) -> dict:
         data = data.reshape(actual_rows, n_points)
         frequencies = np.asarray(frequencies, dtype=float)
         if frequencies.size != n_points:
+            if product == "STF":
+                raise _stf_error(
+                    result_name,
+                    f"frequency axis has {frequencies.size} values; expected N={n_points}",
+                )
             continue
+        if product == "STF" and not np.all(np.isfinite(frequencies)):
+            raise _stf_error(result_name, "frequency axis contains nonfinite values")
         f0 = float(frequencies[0])
         axis_df = (
             _uniform_frequency_step(frequencies)
@@ -539,22 +765,27 @@ def load_dttxml_native(source: str) -> dict:
 
         channel_a = params.get("ChannelA", "")
         if not channel_a:
+            if product == "STF":
+                raise _stf_error(result_name, "missing ChannelA")
             if product == "FFT":
                 raise ValueError(f"FFT result {result_name} is missing ChannelA")
             continue
         reference = re.fullmatch(r"Reference\[(\d+)\]", result_name)
         if reference is not None:
             channel_a = f"{channel_a}(REF{reference.group(1)})"
-        indexed_b = []
-        for name, channel in params.items():
-            if name == "ChannelB":
-                indexed_b.append((0, channel))
-            elif name.startswith("ChannelB[") and name.endswith("]"):
-                try:
-                    indexed_b.append((int(name[9:-1]), channel))
-                except ValueError:
-                    continue
-        channels_b = [channel for _, channel in sorted(indexed_b) if channel]
+        if product == "STF":
+            channels_b = _indexed_stf_channels_b(result_elem, result_name)
+        else:
+            indexed_b = []
+            for name, channel in params.items():
+                if name == "ChannelB":
+                    indexed_b.append((0, channel))
+                elif name.startswith("ChannelB[") and name.endswith("]"):
+                    try:
+                        indexed_b.append((int(name[9:-1]), channel))
+                    except ValueError:
+                        continue
+            channels_b = [channel for _, channel in sorted(indexed_b) if channel]
         time_elem = result_elem.find("Time[@Name='t0']")
         epoch = (
             float(time_elem.text) if time_elem is not None and time_elem.text else 0.0
@@ -564,9 +795,9 @@ def load_dttxml_native(source: str) -> dict:
             "f0": f0,
             "df": axis_df,
             "epoch": epoch,
-            "unit": (
-                None if product in ("COH", "FFT") else params.get("BUnit") or None
-            ),
+            "unit": None
+            if product in ("COH", "FFT", "STF")
+            else params.get("BUnit") or None,
             "subtype": subtype,
             "channel_a": channel_a,
             "channels_b": channels_b,
@@ -582,12 +813,18 @@ def load_dttxml_native(source: str) -> dict:
         else:
             if len(channels_b) != actual_rows:
                 message = f"ChannelB count disagrees with data rows for {result_name}"
+                if product == "STF":
+                    raise _stf_error(result_name, message)
                 if product == "FFT":
                     raise ValueError(message)
                 warnings.warn(message, stacklevel=2)
                 continue
             for row, channel_b in enumerate(channels_b):
-                normalized.setdefault(product, {})[(channel_b, channel_a)] = {
+                pair = (channel_b, channel_a)
+                product_entries = normalized.setdefault(product, {})
+                if product == "STF" and pair in product_entries:
+                    raise _stf_error(result_name, f"duplicate channel pair {pair!r}")
+                product_entries[pair] = {
                     **info,
                     "data": data[row],
                 }
@@ -614,13 +851,16 @@ SUPPORTED_FREQ = {"PSD", "ASD", "FFT"}
 SUPPORTED_MATRIX = {"TF", "STF", "CSD", "COH"}
 
 
-def load_dttxml_products(source, *, native: bool = False):
+def load_dttxml_products(source, *, native: bool = False, products: str | None = None):
     """Load products from a dttxml file into a normalized mapping.
 
     Parameters
     ----------
     source : str
         Path to the DTT XML file.
+    products : str, optional
+        If provided, normalize only this product. The default normalizes all
+        products for callers that need a complete inventory.
     native : bool, optional
         If True, use gwexpy's native XML parser instead of the dttxml package.
         This correctly handles complex data types (floatComplex) that may be
@@ -630,10 +870,11 @@ def load_dttxml_products(source, *, native: bool = False):
     Returns
     -------
     dict
-        Mapping of products (FFT, TF, PSD, ASD, CSD, COH, TS). With the
+        Mapping of products (FFT, TF, STF, PSD, ASD, CSD, COH, TS). With the
         installed ``dttxml`` package and ``native=False``, frequency entries are
         ``FrequencySeries`` objects. Native frequency entries are dictionaries.
-        FFT entries retain raw values and do not infer a normalization or unit.
+        FFT and STF entries retain raw values and do not infer a normalization
+        or unit.
         Time-series entries, when present, remain dictionaries.
 
     Notes
@@ -660,7 +901,9 @@ def load_dttxml_products(source, *, native: bool = False):
                 "Install dttxml for full functionality: pip install dttxml",
                 UserWarning,
             )
-        return load_dttxml_native(source)
+        return load_dttxml_native(source, products=products)
+
+    selected_products = {products.upper()} if products is not None else None
 
     try:
         results = dttxml.DiagAccess(source).results
@@ -735,7 +978,9 @@ def load_dttxml_products(source, *, native: bool = False):
     # can call info.get("epoch") / info.get("dt") / info.get("data") uniformly.
     # Returning TimeSeries objects here caused AttributeError because TimeSeries.get()
     # is the NDS data-fetch method, not dict.get().
-    if hasattr(results, "TS"):
+    if (selected_products is None or "TS" in selected_products) and hasattr(
+        results, "TS"
+    ):
         ts_dict = {}
         for ch, info in results.TS.items():
             ts_dict[ch] = {
@@ -748,7 +993,9 @@ def load_dttxml_products(source, *, native: bool = False):
 
     # 2. Raw FFT output is indexed by ChannelA in the installed parser. The
     # surveyed Spectrum/0 and /4 layouts each carry exactly one FFT row.
-    if hasattr(results, "FFT"):
+    if (selected_products is None or "FFT" in selected_products) and hasattr(
+        results, "FFT"
+    ):
         _validate_external_fft_array_types(str(source))
         fft_dict = {}
         for channel, info in results.FFT.items():
@@ -764,7 +1011,9 @@ def load_dttxml_products(source, *, native: bool = False):
         normalized["FFT"] = fft_dict
 
     # 3. DTT's PSD result is also exposed under the existing ASD alias.
-    if hasattr(results, "PSD"):
+    if (selected_products is None or selected_products & {"PSD", "ASD"}) and hasattr(
+        results, "PSD"
+    ):
         psd_dict = {}
         for ch, info in results.PSD.items():
             psd_dict[ch] = frequency_series(
@@ -774,7 +1023,9 @@ def load_dttxml_products(source, *, native: bool = False):
         normalized["PSD"] = psd_dict
 
     # 4. Coherence (COH)
-    if hasattr(results, "COH"):
+    if (selected_products is None or "COH" in selected_products) and hasattr(
+        results, "COH"
+    ):
         coh_dict = {}
         for chA, info in results.COH.items():
             for i, chB in enumerate(info.channelB):
@@ -786,7 +1037,7 @@ def load_dttxml_products(source, *, native: bool = False):
     tf_source = getattr(results, "TF", None)
     if tf_source is None and hasattr(results, "_mydict") and "TF" in results._mydict:
         tf_source = results._mydict["TF"]
-    if tf_source:
+    if (selected_products is None or "TF" in selected_products) and tf_source:
         tf_dict = {}
         phase_loss_warned = False
         for chA, info in tf_source.items():
@@ -814,8 +1065,114 @@ def load_dttxml_products(source, *, native: bool = False):
                 tf_dict[key] = frequency_series(xfer_data, info, str(key))
         normalized["TF"] = tf_dict
 
+    # The characterized external STF object is keyed by ChannelA and stores
+    # an MxN complex64 response. Pair keys below follow serialized ChannelB
+    # labels and ChannelA identity; they do not assert physical direction.
+    stf_source = getattr(results, "STF", None)
+    if stf_source is None and hasattr(results, "_mydict"):
+        stf_source = results._mydict.get("STF")
+    # Limit the extra raw XML pass to files for which dttxml exposed STF.
+    # This keeps unrelated product routes on their existing path.
+    stf_requested = selected_products is None or "STF" in selected_products
+    stf_layouts = (
+        _external_stf_layouts(str(source)) if stf_requested and stf_source else {}
+    )
+    if stf_layouts:
+        if stf_source is None:
+            raise _stf_error(
+                "<file>", "dttxml did not expose the characterized STF results"
+            )
+        stf_dict = {}
+        for channel_a, layout in stf_layouts.items():
+            result_name = layout["result_name"]
+            if channel_a not in stf_source:
+                raise _stf_error(
+                    result_name, f"missing external result key {channel_a!r}"
+                )
+            info = stf_source[channel_a]
+            subtype = getattr(info, "subtype_raw", None)
+            if subtype != layout["subtype"]:
+                raise _stf_error(
+                    result_name,
+                    f"external subtype {subtype!r} disagrees with XML subtype {layout['subtype']}",
+                )
+            response = np.asarray(getattr(info, "response", None))
+            expected_shape = (layout["n_rows"], layout["n_points"])
+            if (
+                response.dtype != np.dtype("complex64")
+                or response.shape != expected_shape
+            ):
+                raise _stf_error(
+                    result_name,
+                    f"external response has dtype {response.dtype} and shape {response.shape}; "
+                    f"expected complex64 {expected_shape}",
+                )
+            if not np.array_equal(response, layout["response"], equal_nan=True):
+                raise _stf_error(
+                    result_name,
+                    "external response disagrees with raw complex64 stream",
+                )
+            if getattr(info, "channelA", None) != channel_a:
+                raise _stf_error(
+                    result_name, "external ChannelA identity disagrees with XML"
+                )
+            try:
+                external_channels_b = [
+                    str(channel) for channel in np.asarray(info.channelB)
+                ]
+                external_axis = np.asarray(info.FHz)
+                external_epoch = float(info.gps_second)
+            except (AttributeError, TypeError, ValueError) as exc:
+                raise _stf_error(
+                    result_name, f"incomplete external STF fields: {exc}"
+                ) from exc
+            if external_channels_b != layout["channel_b"]:
+                raise _stf_error(
+                    result_name,
+                    "external ChannelB ordering disagrees with indexed XML labels",
+                )
+            if np.iscomplexobj(external_axis):
+                if np.any(np.imag(external_axis) != 0):
+                    raise _stf_error(result_name, "external frequency axis is complex")
+                external_axis = np.real(external_axis)
+            if external_axis.shape != layout["frequencies"].shape or not np.array_equal(
+                external_axis, layout["frequencies"]
+            ):
+                raise _stf_error(
+                    result_name,
+                    "external frequency axis disagrees with the characterized XML axis",
+                )
+            if not np.isfinite(external_epoch) or external_epoch != layout["epoch"]:
+                raise _stf_error(result_name, "external epoch disagrees with XML t0")
+            axis = layout["frequencies"]
+            axis_df = (
+                float(layout["df"])
+                if layout["subtype"] == 1
+                else _uniform_frequency_step(axis)
+                if layout["n_points"] > 1
+                else None
+            )
+            for row, channel_b in enumerate(layout["channel_b"]):
+                pair = (channel_b, channel_a)
+                if pair in stf_dict:
+                    raise _stf_error(result_name, f"duplicate channel pair {pair!r}")
+                stf_dict[pair] = {
+                    "data": response[row],
+                    "frequencies": axis,
+                    "f0": float(axis[0]),
+                    "df": axis_df,
+                    "epoch": external_epoch,
+                    "unit": None,
+                    "subtype": layout["subtype"],
+                    "channel_a": channel_a,
+                    "channels_b": layout["channel_b"],
+                }
+        normalized["STF"] = stf_dict
+
     # 6. CSD
-    if hasattr(results, "CSD"):
+    if (selected_products is None or "CSD" in selected_products) and hasattr(
+        results, "CSD"
+    ):
         csd_dict = {}
         for chA, info in results.CSD.items():
             for i, chB in enumerate(info.channelB):

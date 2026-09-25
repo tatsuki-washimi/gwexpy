@@ -142,7 +142,7 @@ def read_frequencyseriesdict_dttxml(
             f"xml.diaggui products '{prod}' is not a frequency-series product"
         )
 
-    normalized = load_dttxml_products(source, native=native)
+    normalized = load_dttxml_products(source, native=native, products=prod)
     payload = _frequency_payload_for_reader(normalized.get(prod, {}))
     fsd = FrequencySeriesDict()
     for ch, info in payload.items():
@@ -238,7 +238,7 @@ def read_frequencyseriesmatrix_dttxml(
     if prod not in SUPPORTED_MATRIX:
         raise ValueError(f"xml.diaggui products '{prod}' is not a matrix product")
 
-    normalized = load_dttxml_products(source, native=native)
+    normalized = load_dttxml_products(source, native=native, products=prod)
     payload = _frequency_payload_for_reader(normalized.get(prod, {}))
     if not payload:
         raise ValueError(f"No matrix pairs found for xml.diaggui product '{prod}'")
@@ -263,6 +263,14 @@ def read_frequencyseriesmatrix_dttxml(
         raise ValueError(
             f"No matrix pairs found for xml.diaggui product '{prod}' and filters"
         )
+
+    if prod == "STF":
+        stf_epochs = {float(info.get("epoch", 0.0)) for _, info in selected_entries}
+        if len(stf_epochs) > 1:
+            raise ValueError(
+                "STF matrix entries have different epochs; one matrix cannot "
+                "represent multiple result t0 values"
+            )
 
     row_labels = (
         list(rows)
