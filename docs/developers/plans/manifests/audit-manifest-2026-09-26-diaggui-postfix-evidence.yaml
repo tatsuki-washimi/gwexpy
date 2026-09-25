@@ -1,0 +1,126 @@
+manifest_version: 1
+issue: 729
+title: "Post-fix DiagGUI XML evidence matrix"
+branch: docs/diaggui-post-fix-matrix-2026-09-26
+base_sha: 76c2a6c4b68c153f89ea807d2bfcea2f0512f581
+status: local_evidence_prepared
+skills_used:
+  - mplan
+scope:
+  summary: >-
+    Add a new dated post-fix evidence matrix and report after all five issue fixes
+    merged. Preserve the archived 2026-09-25 matrix bit-for-bit and retain its
+    fixed 663-cell ID universe.
+  merged_issue_prs:
+    - "#737 (#730): base-install TimeSeries support"
+    - "#739 (#731): FFT reader behavior"
+    - "#740 (#732): STF reader behavior"
+    - "#741 (#733): TF/6 phase handling"
+    - "#738 (#734): TimeSeriesMatrix identifier"
+  archive:
+    path: docs/plans/2026-09-25-diaggui-xml-product-audit-matrix.csv
+    sha256: eaa3890fc4038fbb776f8a535cbba5c203d3a5fdcd53de05314d46fb7ae01202
+    rows: 663
+    immutable: true
+  post_fix_matrix:
+    path: docs/plans/2026-09-26-diaggui-xml-product-audit-matrix-postfix.csv
+    sha256: 35d51c144c1bcbab07d03541a2e6cd9048ba630a9e025b68b652af7479a3a3ee
+    rows: 663
+    changed_rows: 35
+    cell_ids_and_order_unchanged: true
+    transitions:
+      observed_to_verified: 15
+      unverified_to_verified: 16
+      unverified_to_observed: 4
+    status_counts:
+      verified: 62
+      observed: 18
+      unverified: 271
+      "N/A": 312
+    observed_cells:
+      - Spectrum/0:fallback:explicit:FrequencySeries
+      - Spectrum/4:fallback:explicit:FrequencySeries
+      - TransferFunction/6:external:explicit:FrequencySeriesMatrix
+      - TransferFunction/6:native:explicit:FrequencySeriesMatrix
+files_changed:
+  - docs/plans/2026-09-26-diaggui-xml-product-audit-matrix-postfix.csv
+  - docs/plans/2026-09-26-diaggui-xml-postfix-evidence.md
+  - docs/plans/2026-09-25-diaggui-xml-fixes-730-734.md
+  - docs/developers/plans/manifests/audit-manifest-2026-09-26-diaggui-postfix-evidence.yaml
+file_hashes:
+  "docs/plans/2026-09-26-diaggui-xml-product-audit-matrix-postfix.csv": 35d51c144c1bcbab07d03541a2e6cd9048ba630a9e025b68b652af7479a3a3ee
+  "docs/plans/2026-09-26-diaggui-xml-postfix-evidence.md": 7de7fbdc9de26cc5018ce18464ae7bda7acb8d005569ab429e3bb20bd78dc41c
+behavior_evidence:
+  issue_730:
+    tests:
+      - tests/io/test_dttxml_issue730.py::test_native_parser_reads_source_grounded_timeseries
+      - tests/io/test_dttxml_issue730.py::test_native_product_loader_reads_timeseries
+      - tests/io/test_dttxml_issue730.py::test_public_read_in_real_no_dttxml_process
+    boundary: "Three reader cells; characterized native normalization and base-only explicit/auto TimeSeriesDict only."
+  issue_734:
+    tests:
+      - tests/io/test_dttxml_issue734.py::test_matrix_read_in_real_base_only_process
+    boundary: "Two base-only TimeSeriesMatrix reader cells; only tested XML/XML.GZ, explicit/auto routes, type, values, and time coordinates."
+  issue_731:
+    tests:
+      - tests/io/test_dttxml_issue731.py::test_fft_frequency_readers_preserve_both_channel_layouts
+      - tests/io/test_dttxml_issue731.py::test_fft_one_bin_frequency_axis_is_preserved
+      - tests/io/test_dttxml_issue731.py::test_fft_fallback_in_separate_no_dttxml_interpreter
+    boundary: "Spectrum/0 and /4 tested FFT fixtures. Fallback explicit FrequencySeries cells remain observed; all claims are limited to the tested reader assertions."
+  issue_732:
+    tests:
+      - tests/io/test_dttxml_issue732.py::test_stf_matrix_reader_preserves_labeled_complex_row_and_axis
+      - tests/io/test_dttxml_issue732.py::test_stf_matrix_reader_uses_real_no_dttxml_interpreter
+      - tests/io/test_dttxml_issue732.py::test_stf_reader_preserves_one_bin_axis
+    boundary: "TransferFunction/1 and /4 matrix routes for tested fixtures, including the base-only route and subtype-1 spacing assertion."
+  issue_733:
+    tests:
+      - tests/io/test_dttxml_issue733.py::test_external_tf6_preserves_or_fails_before_returning_real_only_data
+      - tests/io/test_dttxml_issue733.py::test_native_tf6_preserves_complex_values_axis_epoch_and_pair
+      - tests/io/test_dttxml_issue733.py::test_tf6_result_index_is_independent_of_subtype
+      - tests/io/test_dttxml_issue733.py::test_tf6_preserves_near_uniform_serialized_axis_through_matrix
+    boundary: >-
+      TF/6 loader evidence is limited to a unique matching Result, M=1, and the
+      tested little-endian float64 frequency plus complex64 sample layout.
+      Matrix cells are observed for their exact axis assertion only. Reference,
+      ambiguous/colliding identities, and unsupported layouts are excluded.
+evidence_limits:
+  - "Synthetic fixtures support only the tested reader behavior; they do not establish serialization meaning or physical conventions."
+  - "No real-export compatibility, units, direction, calibration, conjugation, or normalization claim is made."
+  - "No arbitrary TF/6 row count, precision, endian, layout, or Reference result is verified."
+verification:
+  focused_tests:
+    command: >-
+      rtk conda run -n gwexpy python -m pytest -q
+      tests/io/test_dttxml_issue733.py tests/io/test_dttxml_issue726.py
+      tests/io/test_dttxml_issue730.py tests/io/test_dttxml_issue731.py
+      tests/io/test_dttxml_issue732.py tests/io/test_dttxml_issue734.py
+    result: "110 passed, 12 skipped. Run in this worktree at base 76c2a6c4b68c153f89ea807d2bfcea2f0512f581."
+  csv_invariants:
+    command: "Python csv/hashlib/collections.Counter comparison of archive and post-fix matrix"
+    result: "Passed: archive hash matches; each CSV has 663 unique IDs in identical order; exactly 35 rows changed; only status/reason/evidence_ref changed; transition counts and final totals match this manifest."
+  path_and_reference_checks:
+    command: "Validate changed CSV evidence paths, referenced test nodes, report file references, and required paths"
+    result: "Passed: each changed evidence_ref resolves to an existing source file and test function; report path references resolve."
+  yaml_validation:
+    command: "Parse final manifest with PyYAML"
+    result: "Passed: PyYAML parsed the manifest; embedded base SHA and status-count assertions passed."
+  diff_check:
+    command: "rtk git diff --check 76c2a6c4b68c153f89ea807d2bfcea2f0512f581"
+    result: "Passed: git diff --check against the exact base reported no whitespace errors."
+omitted_checks:
+  - check: "Ruff and Ruff format"
+    reason: "Changed files are Markdown, CSV, YAML, and a plan checklist; no Python code changed."
+  - check: "MyPy"
+    reason: "No Python code or public types changed."
+  - check: "Full test suite"
+    reason: "This is a docs/data-only update. The focused adjacent reader tests cover the evidence claims; unrelated suites are not required."
+  - check: "Sphinx build"
+    reason: "No rendered docs tree, navigation, or documentation build configuration changed."
+  - check: "check_physics"
+    reason: "No physical calculation or model changed; no physical convention is claimed."
+physics_review:
+  applicable: false
+  human_review_required: false
+  reason: "Evidence-only classification and reporting; no parser code, data model, or physical interpretation changed."
+side_effects: "Local documentation/data changes only. No GitHub writes."

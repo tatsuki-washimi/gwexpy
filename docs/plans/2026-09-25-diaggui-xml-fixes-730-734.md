@@ -53,8 +53,8 @@ For #734, register only the canonical `xml.diaggui` identifier for `TimeSeriesMa
 
 - [x] **Step 1: Save and synchronize this plan in the isolated worktree, then create its plan-only commit.**
 - [x] **Step 2: Implement, verify, review, and integrate #730.**
-- [ ] **Step 3: Characterize #731/#732, implement and integrate #731 then #732, while #734 proceeds in parallel.**
-- [ ] **Step 4: Implement, verify, review, and integrate #733; finish #734 against the latest main.**
-- [ ] **Step 5: Create a separate post-fix matrix after all five issue PRs are integrated.**
+- [x] **Step 3: Characterize #731/#732, implement and integrate #731 then #732, while #734 proceeds in parallel.** Merged as PR #739 (#731) and PR #740 (#732); #734 merged as PR #738.
+- [x] **Step 4: Implement, verify, review, and integrate #733; finish #734 against the latest main.** #733 merged as PR #741. Together with #730 PR #737, #731 PR #739, #732 PR #740, and #734 PR #738, all five issue fixes are integrated at main `76c2a6c4b68c153f89ea807d2bfcea2f0512f581`.
+- [x] **Step 5: Create a separate post-fix matrix after all five issue PRs are integrated.** Added `docs/plans/2026-09-26-diaggui-xml-product-audit-matrix-postfix.csv`, its evidence report, and this audit manifest against the merged main SHA above; the archived 2026-09-25 matrix remains unchanged.
 
 Treat `docs/plans/2026-09-25-diaggui-xml-product-audit-matrix.csv` as immutable #735 archival evidence. The post-fix matrix is a new dated file with the same 663 cell IDs. A reproducible fixture can verify only the reader behavior it observes; a serialization meaning or physical convention requires independent provenance for the fixture layout. Upgrade only cells whose evidence supports the specific claim, and retain the remaining unverified cells. If no new evidence warrants a matrix change, report that outcome without rewriting the archived snapshot.
