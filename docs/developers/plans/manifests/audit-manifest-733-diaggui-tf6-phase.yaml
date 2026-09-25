@@ -1,0 +1,119 @@
+manifest_version: 1
+issue: 733
+title: "Preserve phase in DiagGUI TransferFunction subtype 6"
+branch: fix/issue-733-diaggui-tf6-phase
+base_sha: 88b4aa635fe2fe3ae4c9c25a8eb0a436bd903619
+status: local_implementation_verified
+worktree: "/home/washimi/.config/superpowers/worktrees/gwexpy/issue-733-diaggui-tf6-phase"
+skills_used: []
+skill_notes:
+  - "The project audit_io_backends skill symlink was absent in this checkout; followed .agent/AGENTS.md and the adjacent I/O audit manifests."
+
+scope:
+  summary: >-
+    Recover the characterized, single-row TransferFunction subtype 6 response
+    from its serialized stream when dttxml 1.1.8 returns a matching real-only
+    projection. Reject collisions and identities/layouts that cannot authorize
+    that recovery.
+  included:
+    - "External and native TF preflight for same-pair TF/0 or TF/3 plus TF/6 ambiguity."
+    - "External TF/6 phase recovery only for a unique Result[n] raw block whose subtype, ChannelA, ChannelB, axis, epoch, and real projection match the dttxml object."
+    - "Preserve exact serialized float64 frequency values through FrequencySeries and FrequencySeriesMatrix construction."
+    - "Fail closed for duplicate candidates, ambiguous ChannelA parser keys, missing subtype identity, mismatched parser identity, malformed streams, unsupported byte order, unsupported row count, and TF/6 Reference results."
+  excluded:
+    - "No TF/6 Reference recovery; dttxml 1.1.8 exposes reference TF results with decorated ChannelA identity, and this route is not independently characterized for phase repair."
+    - "No support claim for M != 1, doubleComplex, non-little-endian streams, or layouts other than float64 frequency words followed by complex64 samples."
+    - "No claim about transfer-function direction, units, conjugation, calibration meaning, or normalization."
+    - "No TF matrix epoch guarantee for multiple Result blocks with differing t0 values."
+
+changed_files:
+  - path: gwexpy/io/dttxml_common.py
+    change: "Added subtype-6 raw layout validation, collision and identity checks, fail-closed paths, matching external phase recovery, and explicit-axis FrequencySeries construction."
+  - path: tests/io/test_dttxml_issue733.py
+    change: "Added independent scalar struct oracle and regressions for phase, axes, collisions, parser identity, Result/Reference inventory, malformed encodings, duplicate candidates, unindexed TF/0 labels, and distinct TF/0 preservation."
+  - path: .github/workflows/pr-fast.yml
+    change: "Added the #733 test module to the installed dttxml 1.1.8 CI step."
+  - path: docs/developers/plans/manifests/audit-manifest-733-diaggui-tf6-phase.yaml
+    change: "Recorded source evidence, scope boundaries, characterization, checks, and descriptive resource measurements."
+
+evidence:
+  parser:
+    python: "3.11.14"
+    dttxml: "1.1.8"
+    observations:
+      - "The tested single-row TF/6 object exposes FHz as float64 and xfer as float32 real-only values."
+      - "A renamed Result[2] with Subtype=6 is still parsed as subtype 6; Result index is independent of subtype."
+      - "A mixed Result[2] plus Reference[0] TF/6 file exposes both A and A(REF0) under results.TF; Reference[0] also appears under references. A-specific raw Result repair is possible, but Reference phase repair is explicitly refused."
+  serialized_layout:
+    fixture: "Synthetic XML generated in tests/io/test_dttxml_issue733.py; no measurement data used."
+    oracle: "Independent scalar struct packing/unpacking: N little-endian float64 frequency words followed by N interleaved complex64 samples; total 16*N bytes for M=1."
+    checks: "Raw array type floatComplex, dimensions [2,N], LittleEndian,base64, exact decoded size, finite axis, indexed ChannelB[0], t0, and parser real projection are checked before recovery."
+    evidence_boundary: "Characterizes only M=1. It does not establish physical meaning or support for other TF/6 array shapes."
+
+behavior:
+  external_repair: "Requires one matching raw Result[n]/TransferFunction/Subtype=6 candidate for the pair, external subtype_raw=6, matching ChannelA and ChannelB, exact FHz and t0 equality, and xfer equal to either raw complex64 values or their real projection."
+  native: "Retains the native complex64 decode and runs the same raw candidate/collision preflight for requested TF products."
+  collision_policy: "Rejects same-pair subtype 6 combined with TF/0 or TF/3 in either XML order; also rejects duplicate TF/6 candidates and multiple raw TF result blocks sharing a TF/6 ChannelA parser key."
+  reference_policy: "Rejects an external TF/6 Reference[n] result with a subtype-specific ValueError before returning its real-only values."
+  axis_policy: "Constructs repaired external FrequencySeries with explicit raw frequencies= to avoid near-uniform classification rounding a serialized float64 bin."
+
+performance:
+  protocol: >-
+    Same synthetic M=1, N=3 fixture and installed dttxml environment. Baseline
+    source loaded from test-only head c24aea892112cc0096fb0306021d241ddbb3eaf4;
+    final source imported from this worktree. Imports and one warmup call were
+    outside measurement. perf_counter and tracemalloc bracketed each of 25
+    calls; report medians, with no thresholds or performance claim implied.
+  before:
+    external: "0.794 ms median; 85,879 traced peak bytes median. Returns dttxml real-only values."
+    native: "0.336 ms median; 85,293 traced peak bytes median."
+  after:
+    external: "1.571 ms median; 86,542 traced peak bytes median. Returns matching complex64 phase and exact axis."
+    native: "0.753 ms median; 88,680 traced peak bytes median."
+  caveat: "These small synthetic-fixture measurements are descriptive and machine/environment specific."
+
+verification:
+  - command: "rtk conda run -n gwexpy python -m pytest -q tests/io/test_dttxml_issue733.py tests/io/test_dttxml_issue726.py tests/io/test_dttxml_issue730.py tests/io/test_dttxml_issue731.py tests/io/test_dttxml_issue732.py tests/io/test_dttxml_issue734.py"
+    result: "110 passed, 12 skipped after the lexical subtype follow-up."
+  - command: "rtk conda run -n gwexpy python -m pytest -q tests/io/test_dttxml_issue730.py tests/io/test_dttxml_issue731.py tests/io/test_dttxml_issue732.py tests/io/test_dttxml_issue733.py tests/io/test_dttxml_common.py::TestLoadDttxmlProducts::test_ts_entries_stay_dict_shaped_and_reader_consumes_them"
+    result: "86 passed, 8 skipped after the lexical subtype follow-up; matches the installed-parser workflow test list."
+  - command: "rtk conda run -n gwexpy python -m pytest -q tests/io/test_dttxml_issue733.py"
+    result: "29 passed after the lexical subtype follow-up."
+  - command: "rtk conda run -n gwexpy python scripts/ci/run_gate.py io-contract --no-fixtures"
+    result: "1619 passed, 36 skipped, 1 deselected after the lexical subtype follow-up."
+  - command: "rtk conda run -n gwexpy python scripts/ci/run_gate.py io-conformance"
+    result: "71 passed, 7 skipped; gate exited 0 and printed the existing summary 6 blocked / 6 total."
+  - command: "rtk conda run -n gwexpy python -c \"import runpy; from pathlib import Path; ns=runpy.run_path('tests/io/test_dttxml_issue733.py'); print(ns['_write_tf6'](Path('/tmp'), filename='gwexpy-issue733-base.xml')[0])\""
+    result: "Generated /tmp/gwexpy-issue733-base.xml from the independent synthetic fixture helper."
+  - command: "rtk /tmp/gwexpy-diaggui-a-base/bin/python -c \"import importlib.util, numpy as np; assert importlib.util.find_spec('dttxml') is None; from gwexpy.io.dttxml_common import load_dttxml_products; p=load_dttxml_products('/tmp/gwexpy-issue733-base.xml'); x=p['TF'][('K1:TEST-OUTPUT','K1:TEST-INPUT')]; assert isinstance(x, dict); np.testing.assert_array_equal(x['data'], np.array([1+2j,-0.5+0.25j,3-4j],dtype=np.complex64)); np.testing.assert_array_equal(x['frequencies'], [17.5,20,22.5]); print('base-only default fallback: phase, axis, and pair preserved')\""
+    result: "Verified dttxml is absent and the default fallback returns the expected complex64 values, frequencies, and pair."
+  - command: "rtk env PYTHONPATH=/home/washimi/.config/superpowers/worktrees/gwexpy/issue-733-diaggui-tf6-phase conda run -n gwexpy python /tmp/gwexpy_issue733_benchmark.py"
+    result: "Ran the 25-call, same-fixture external/native timing and tracemalloc characterization recorded above; baseline module came from test-only head c24aea892112cc0096fb0306021d241ddbb3eaf4."
+  - command: "rtk conda run -n gwexpy ruff check gwexpy/io/dttxml_common.py tests/io/test_dttxml_issue733.py"
+    result: "Passed."
+  - command: "rtk conda run -n gwexpy ruff format --check gwexpy/io/dttxml_common.py tests/io/test_dttxml_issue733.py"
+    result: "Passed."
+  - command: "rtk conda run -n gwexpy mypy gwexpy/io/dttxml_common.py"
+    result: "Success; no issues found."
+  - command: "rtk conda run -n gwexpy python -c \"import yaml; yaml.safe_load(open('.github/workflows/pr-fast.yml', encoding='utf-8'))\""
+    result: "Workflow YAML parsed."
+  - command: "rtk git diff --check"
+    result: "Passed."
+
+review_findings:
+  - finding: "The post-commit exact-head review found the raw TF/6 preflight recognized only literal Subtype text '6'."
+    cause: "The fast presence check used string equality while both installed and native parsers convert Subtype text with int()."
+    resolution: "The precheck now uses safe integer parsing; added an external/native regression for Subtype='06'."
+  - finding: "An intermediate adjacent #732 run reported duplicate channel pairs instead of the expected unique-label validation error."
+    cause: "A temporary TF/6 ChannelB parsing edit had unintentionally changed `_external_stf_layouts` from strict indexed-label validation to legacy parsing."
+    resolution: "Restored `_indexed_stf_channels_b` unchanged in `_external_stf_layouts`; the exact failing test and full adjacent suite then passed. This was a resolved implementation regression, not test-order flakiness."
+
+omitted_checks:
+  - "Full repository test suite: focused adjacent DTTXML tests and both required I/O gates passed; unrelated suites were not run."
+  - "Physics check: no physical convention, units, channel direction, or normalization is inferred or changed."
+  - "Real measurement sample: none supplied or used; characterization is synthetic and serializer/parser specific."
+
+review:
+  human_physics_review_required: false
+  note: "The change repairs byte-level parser data loss and limits claims to directly characterized serialized fields."
+  github_writes: "None."
