@@ -74,13 +74,13 @@ performance:
 
 verification:
   - command: "rtk conda run -n gwexpy python -m pytest -q tests/io/test_dttxml_issue733.py tests/io/test_dttxml_issue726.py tests/io/test_dttxml_issue730.py tests/io/test_dttxml_issue731.py tests/io/test_dttxml_issue732.py tests/io/test_dttxml_issue734.py"
-    result: "108 passed, 12 skipped."
+    result: "110 passed, 12 skipped after the lexical subtype follow-up."
   - command: "rtk conda run -n gwexpy python -m pytest -q tests/io/test_dttxml_issue730.py tests/io/test_dttxml_issue731.py tests/io/test_dttxml_issue732.py tests/io/test_dttxml_issue733.py tests/io/test_dttxml_common.py::TestLoadDttxmlProducts::test_ts_entries_stay_dict_shaped_and_reader_consumes_them"
-    result: "84 passed, 8 skipped; matches the installed-parser workflow test list."
+    result: "86 passed, 8 skipped after the lexical subtype follow-up; matches the installed-parser workflow test list."
   - command: "rtk conda run -n gwexpy python -m pytest -q tests/io/test_dttxml_issue733.py"
-    result: "27 passed."
+    result: "29 passed after the lexical subtype follow-up."
   - command: "rtk conda run -n gwexpy python scripts/ci/run_gate.py io-contract --no-fixtures"
-    result: "1615 passed, 36 skipped, 1 deselected."
+    result: "1619 passed, 36 skipped, 1 deselected after the lexical subtype follow-up."
   - command: "rtk conda run -n gwexpy python scripts/ci/run_gate.py io-conformance"
     result: "71 passed, 7 skipped; gate exited 0 and printed the existing summary 6 blocked / 6 total."
   - command: "rtk conda run -n gwexpy python -c \"import runpy; from pathlib import Path; ns=runpy.run_path('tests/io/test_dttxml_issue733.py'); print(ns['_write_tf6'](Path('/tmp'), filename='gwexpy-issue733-base.xml')[0])\""
@@ -101,6 +101,9 @@ verification:
     result: "Passed."
 
 review_findings:
+  - finding: "The post-commit exact-head review found the raw TF/6 preflight recognized only literal Subtype text '6'."
+    cause: "The fast presence check used string equality while both installed and native parsers convert Subtype text with int()."
+    resolution: "The precheck now uses safe integer parsing; added an external/native regression for Subtype='06'."
   - finding: "An intermediate adjacent #732 run reported duplicate channel pairs instead of the expected unique-label validation error."
     cause: "A temporary TF/6 ChannelB parsing edit had unintentionally changed `_external_stf_layouts` from strict indexed-label validation to legacy parsing."
     resolution: "Restored `_indexed_stf_channels_b` unchanged in `_external_stf_layouts`; the exact failing test and full adjacent suite then passed. This was a resolved implementation regression, not test-order flakiness."

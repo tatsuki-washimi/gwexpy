@@ -425,10 +425,14 @@ def _tf6_raw_layouts(source: str) -> dict[tuple[str, str], dict[str, Any]]:
         if elem.get("Type") == "TransferFunction"
         and re.fullmatch(r"Result\[\d+\]", elem.get("Name", "")) is not None
     ]
-    has_tf6 = any(
-        (elem.findtext("Param[@Name='Subtype']") or "").strip() == "6"
-        for elem in result_blocks
-    )
+
+    def is_tf6_result(elem: Any) -> bool:
+        try:
+            return int((elem.findtext("Param[@Name='Subtype']") or "").strip()) == 6
+        except ValueError:
+            return False
+
+    has_tf6 = any(is_tf6_result(elem) for elem in result_blocks)
     if not has_tf6:
         return layouts
 

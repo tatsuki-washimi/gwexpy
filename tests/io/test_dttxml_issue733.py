@@ -253,6 +253,26 @@ def test_tf6_result_index_is_independent_of_subtype(tmp_path):
     _assert_tf6_series(products["TF"][_PAIR], frequencies, samples)
 
 
+@pytest.mark.parametrize("native", [False, True], ids=["external", "native"])
+def test_tf6_subtype_integer_text_with_leading_zero_is_supported(tmp_path, native):
+    if not native and not HAS_DTTXML:
+        pytest.skip("external route requires dttxml==1.1.8")
+    path, frequencies, samples = _write_tf6(tmp_path)
+    tree = ET.parse(path)
+    subtype = tree.find(".//Param[@Name='Subtype']")
+    assert subtype is not None
+    subtype.text = "06"
+    tree.write(path, encoding="utf-8", xml_declaration=True)
+
+    products = load_dttxml_products(path, native=native)
+    if native:
+        parsed = products["TF"][_PAIR]
+        np.testing.assert_array_equal(parsed["frequencies"], frequencies)
+        np.testing.assert_array_equal(parsed["data"], samples)
+    else:
+        _assert_tf6_series(products["TF"][_PAIR], frequencies, samples)
+
+
 @pytest.mark.skipif(not HAS_DTTXML, reason="external route requires dttxml==1.1.8")
 def test_reference_tf6_does_not_collide_with_result_tf6(tmp_path):
     path, _, _ = _write_tf6(tmp_path, name="Result[2]")
