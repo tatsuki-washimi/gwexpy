@@ -241,7 +241,9 @@ def test_external_tf6_preserves_or_fails_before_returning_real_only_data(tmp_pat
 
 
 @pytest.mark.skipif(not HAS_DTTXML, reason="external route requires dttxml==1.1.8")
-def test_external_tf0_survives_distinct_tf6_repair_or_specific_refusal(tmp_path):
+def test_external_tf0_survives_distinct_tf6_repair_or_specific_refusal(
+    tmp_path, monkeypatch
+):
     tf6_path, tf6_frequencies, tf6_samples = _write_tf6(
         tmp_path,
         name="Result[6]",
@@ -258,6 +260,23 @@ def test_external_tf0_survives_distinct_tf6_repair_or_specific_refusal(tmp_path)
     path = tmp_path / "distinct_tf0_tf6.xml"
     ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
 
+    import dttxml
+
+    original_diag_access = dttxml.DiagAccess
+    external_tf0_sentinel = np.asarray(
+        [101.0 + 7.0j, -103.0 + 11.0j, 107.0 - 13.0j], dtype=np.complex64
+    )
+
+    class SentinelDiagAccess:
+        def __init__(self, source):
+            parsed = original_diag_access(source)
+            parsed.results.TF[_CHANNEL_A].xfer = external_tf0_sentinel.reshape(1, -1)
+            self.results = parsed.results
+
+    # Keep the source XML untouched. This sentinel exists only in the installed
+    # parser's in-memory TF/0 result and detects wholesale native TF replacement.
+    monkeypatch.setattr(dttxml, "DiagAccess", SentinelDiagAccess)
+
     tf6_pair = ("K1:TEST-TF6-OUTPUT", "K1:TEST-TF6-INPUT")
     try:
         products = load_dttxml_products(path)
@@ -269,7 +288,7 @@ def test_external_tf0_survives_distinct_tf6_repair_or_specific_refusal(tmp_path)
     tf0 = products["TF"][_PAIR]
     assert isinstance(tf0, FrequencySeries)
     assert tf0.dtype == np.dtype(np.complex64)
-    np.testing.assert_array_equal(tf0.value, np.asarray(tf0_values, dtype=np.complex64))
+    np.testing.assert_array_equal(tf0.value, external_tf0_sentinel)
     np.testing.assert_array_equal(tf0.frequencies.value, _FREQUENCIES)
     assert float(tf0.epoch.value) == pytest.approx(_EPOCH)
     _assert_tf6_series(products["TF"][tf6_pair], tf6_frequencies, tf6_samples)
