@@ -11,6 +11,7 @@ import importlib.util
 import json
 import os
 import subprocess
+import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -173,9 +174,33 @@ def test_stf_matrix_reader_preserves_labeled_complex_row_and_axis(
 
 def test_stf_matrix_reader_uses_real_no_dttxml_interpreter(stf_xml: Path) -> None:
     """Fallback coverage must run in a separate interpreter without dttxml."""
-    python = Path("/tmp/gwexpy-diaggui-a-base/bin/python")
-    if not python.is_file():
-        pytest.skip("the dedicated no-dttxml characterization interpreter is absent")
+    if importlib.util.find_spec("dttxml") is None:
+        # Base-only CI already runs this test under the required interpreter.
+        python = sys.executable
+    else:
+        # Installed-parser jobs need a separately verified base-only Python.
+        python = os.environ.get("GWEXPY_NO_DTTXML_PYTHON")
+        if python:
+            try:
+                probe = subprocess.run(
+                    [
+                        python,
+                        "-c",
+                        "import importlib.util; "
+                        "raise SystemExit(importlib.util.find_spec('dttxml') is not None)",
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+            except (OSError, subprocess.SubprocessError):
+                python = None
+            else:
+                if probe.returncode != 0:
+                    python = None
+        if not python:
+            pytest.skip("no available interpreter without dttxml was configured")
+
     project_root = Path(__file__).resolve().parents[2]
     code = """
 import importlib.util, json, sys
