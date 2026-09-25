@@ -2,7 +2,7 @@
   "issue": 731,
   "title": "Normalize DiagGUI Spectrum FFT products",
   "branch": "fix/issue-731-diaggui-fft",
-  "base_sha": "aaf91486e4a8cc34eb6a678acccd2ff070d3c157",
+  "base_sha": "d4f21aed78ba4cdfc00f59bff7841ff363417858",
   "skills": [
     "mplan",
     "audit_io_backends",
@@ -217,7 +217,7 @@
   "review": {
     "physics_review_required": false,
     "reason": "No physical unit or FFT normalization is inferred; values and coordinates are preserved from the selected XML stream.",
-    "independent_sol_review": "Preliminary exact-head review identified two Major findings. Both are addressed in this follow-up; a new exact-head review is pending after the parent rebases this branch onto the merged #734 base.",
+    "independent_sol_review": "Sol cleared the two original Major findings on pre-rebase correction head d83b3d7; final exact-head review is an external PR gate, with the reviewed SHA and verdict recorded in the PR description.",
     "corrections": [
       {
         "finding": "External FFT conversion replaced a nonzero single-bin frequency with the FrequencySeries default zero origin.",
@@ -230,5 +230,12 @@
         "regression": "An adversarial N=8 doubleComplex subtype 0 fixture must raise ValueError with native and external parsers."
       }
     ]
+  },
+  "rebased_validation": {
+    "base": "d4f21aed78ba4cdfc00f59bff7841ff363417858",
+    "focused": "54 passed for issue #731, #726, #730, and merged #734 tests using the separate no-dttxml interpreter",
+    "io_contract": "1556 passed, 31 skipped, 1 deselected; --no-fixtures gate exited 0",
+    "io_conformance": "71 passed, 7 skipped; gate exited 0; existing summary was 6 blocked / 6 total",
+    "static": "Ruff check and format passed; MyPy dttxml_common.py passed; git diff --check passed"
   }
 }
