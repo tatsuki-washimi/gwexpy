@@ -82,6 +82,14 @@ jobs:
       - name: Run I/O contract tests
         run: python scripts/ci/run_gate.py io-contract
 
+      - name: Install dttxml for external DiagGUI route
+        run: python -m pip install dttxml==1.1.8
+
+      - name: Check installed DiagGUI route and #415 regression
+        run: >-
+          python -m pytest -q tests/io/test_dttxml_issue730.py
+          tests/io/test_dttxml_common.py::TestLoadDttxmlProducts::test_ts_entries_stay_dict_shaped_and_reader_consumes_them
+
   io-conformance-gate:
     name: I/O conformance gate
     runs-on: ubuntu-latest

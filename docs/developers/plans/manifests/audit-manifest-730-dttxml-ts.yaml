@@ -1,0 +1,72 @@
+issue: 730
+title: Base-install DiagGUI TimeSeries parsing
+base: ce9b331bcf486c310497154f14ef2e0f3a65fb9c
+plan_commit: 139f66d1a
+status: implemented
+skills_used:
+  - mplan
+  - setup_plan
+  - superpowers:using-git-worktrees
+  - superpowers:receiving-code-review
+  - superpowers:requesting-code-review
+files_changed:
+  - docs/plans/2026-09-25-diaggui-xml-fixes-730-734.md
+  - gwexpy/io/dttxml_common.py
+  - tests/io/test_dttxml_issue730.py
+  - .github/workflows/pr-fast.yml
+  - docs/developers/plans/manifests/audit-manifest-730-dttxml-ts.yaml
+behavior:
+  layout: "LIGO_LW Type=TimeSeries, Subtype=0, Array Type=float (float32 Y)"
+  fixture: "N=4, little-endian base64, Channel=K1:AUDIT-TS, dt=0.125, t0=1234567890.25"
+  samples: [1.5, -2.0, 0.25, 8.0]
+  fallback_environment:
+    python: "CI sys.executable child when dttxml is absent; otherwise GWEXPY_NO_DTTXML_PYTHON"
+    dttxml_spec: null
+    checks: ["TimeSeriesDict.read explicit xml.diaggui", "TimeSeriesDict.read format=None"]
+  installed_environment:
+    python: /home/washimi/miniforge3/envs/gwexpy/bin/python
+    dttxml_version: 1.1.8
+    checks: ["explicit public TS read", "mixed TS+Spectrum/PSD/ASD+TransferFunction values, dtype, frequency axis, and epoch"]
+ci_coverage:
+  base_io_contract:
+    command: "python scripts/ci/run_gate.py io-contract"
+    configured_order: "Runs before the workflow installs dttxml; the focused test launches a child using sys.executable and asserts find_spec('dttxml') is None in that child."
+    github_result: "Not run; this records the configured PR workflow."
+  installed_parser:
+    install: "python -m pip install dttxml==1.1.8"
+    test: "python -m pytest -q tests/io/test_dttxml_issue730.py tests/io/test_dttxml_common.py::TestLoadDttxmlProducts::test_ts_entries_stay_dict_shaped_and_reader_consumes_them"
+    github_result: "Not run; this records the configured PR workflow."
+verification:
+  - command: "GWEXPY_NO_DTTXML_PYTHON=/tmp/gwexpy-diaggui-a-base/bin/python /home/washimi/miniforge3/envs/gwexpy/bin/python -m pytest -q tests/io/test_dttxml_issue730.py"
+    result: "6 passed; verified installed dttxml 1.1.8 route and separate no-dttxml child processes for explicit and auto public reads"
+  - command: "GWEXPY_NO_DTTXML_PYTHON=/tmp/gwexpy-diaggui-a-base/bin/python /home/washimi/miniforge3/envs/gwexpy/bin/python -m pytest -q tests/io/test_dttxml_issue730.py tests/io/test_dttxml_common.py::TestLoadDttxmlProducts::test_ts_entries_stay_dict_shaped_and_reader_consumes_them"
+    result: "7 passed; includes the exact #415 regression node"
+  - command: "env -u GWEXPY_NO_DTTXML_PYTHON /home/washimi/miniforge3/envs/gwexpy/bin/python -m pytest -q tests/io/test_dttxml_issue730.py tests/io/test_dttxml_common.py::TestLoadDttxmlProducts::test_ts_entries_stay_dict_shaped_and_reader_consumes_them"
+    result: "5 passed, 2 skipped; simulates the workflow's installed-parser step after the base-only gate"
+  - command: "python scripts/ci/run_gate.py io-contract --no-fixtures (gwexpy conda environment)"
+    result: "1554 passed, 9 skipped, 1 deselected; local gwexpy environment has dttxml installed and GWEXPY_NO_DTTXML_PYTHON points to the real base-only interpreter for fallback child checks. This is not the future base-only GitHub CI result."
+  - command: "/tmp/gwexpy-diaggui-a-base/bin/python -m pytest -q tests/io/test_dttxml_issue730.py"
+    result: "4 passed, 2 skipped; pytest process has no dttxml and uses sys.executable for separate explicit and auto fallback child reads."
+  - command: "python scripts/ci/run_gate.py io-conformance (gwexpy conda environment)"
+    result: "73 passed, 5 skipped"
+  - command: "ruff check gwexpy/io/dttxml_common.py tests/io/test_dttxml_issue730.py"
+    result: "passed"
+  - command: "ruff format --check gwexpy/io/dttxml_common.py tests/io/test_dttxml_issue730.py"
+    result: "passed"
+  - command: "python -m mypy gwexpy/io/dttxml_common.py"
+    result: "Success: no issues found in 1 source file"
+  - command: "git diff --check"
+    result: "passed"
+performance:
+  protocol: "Same four-sample TS-only XML; 3 warmups, 40 timed reads, and maximum tracemalloc peak over 5 fresh traced reads per parser in one Python 3.12 process. Baseline source loaded from the pinned base commit."
+  baseline: "0.017 ms/read; 84149 bytes peak traced allocation"
+  changed: "0.028 ms/read; 84153 bytes peak traced allocation"
+  caveat: "Baseline did not recognize TimeSeries and returned an empty mapping, so baseline timing is not equivalent work; added decoding explains the small measured increase. The four-sample case is too small to establish scaling behavior."
+  outcome: "No material peak-allocation change was observed; no performance regression threshold applies."
+omitted_checks:
+  - "Full repository test suite: the I/O contract gate ran tests/io/ plus its documented contract-adjacent suites, and io-conformance passed; unrelated package suites were not run."
+  - "Full-package Ruff and MyPy: changed-file Ruff and the applicable parser-module MyPy check were run."
+  - "check_physics: not applicable; this change decodes an already specified serialized time axis and samples and does not add or alter a physics calculation."
+human_review:
+  required: false
+  reason: "No fields package changes or physics calculation changes; numeric serialization contract and axis metadata are asserted by tests."

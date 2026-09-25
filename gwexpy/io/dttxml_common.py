@@ -219,6 +219,7 @@ def load_dttxml_native(source: str) -> dict:
     -------
     dict
         Normalized mapping of products:
+        - "TS": {channel: {"data": ndarray, "dt": float, "epoch": float, ...}}
         - "TF": {(chB, chA): {"data": ndarray, "frequencies": ndarray, ...}}
         - "PSD"/"ASD": {channel: {"data": ndarray, "frequencies": ndarray, ...}}
         - "CSD": {(chB, chA): {"data": ndarray, "frequencies": ndarray, ...}}
@@ -258,6 +259,88 @@ def load_dttxml_native(source: str) -> dict:
 
     for result_elem in root.iter("LIGO_LW"):
         result_type = result_elem.get("Type")
+        if result_type == "TimeSeries":
+            result_name = result_elem.get("Name", "")
+            params = {
+                param.get("Name"): (param.text or "").strip()
+                for param in result_elem.findall("Param")
+                if param.get("Name")
+            }
+            try:
+                subtype = int(params.get("Subtype", ""))
+                n_points = int(params.get("N", ""))
+                dt = float(params.get("dt", ""))
+                time_elem = result_elem.find("Time[@Name='t0']")
+                epoch = float(time_elem.text) if time_elem is not None else float("nan")
+            except (TypeError, ValueError) as exc:
+                warnings.warn(
+                    f"Invalid time-series metadata for {result_name}: {exc}",
+                    stacklevel=2,
+                )
+                continue
+            channel = params.get("Channel", "")
+            if subtype != 0 or n_points <= 0 or not channel:
+                warnings.warn(
+                    f"Unsupported or invalid time-series metadata for {result_name}",
+                    stacklevel=2,
+                )
+                continue
+            if not np.isfinite(dt) or dt <= 0 or not np.isfinite(epoch):
+                warnings.warn(
+                    f"Invalid dt or t0 for time series {result_name}", stacklevel=2
+                )
+                continue
+            array_elem = result_elem.find("Array")
+            stream_elem = array_elem.find("Stream") if array_elem is not None else None
+            if (
+                array_elem is None
+                or array_elem.get("Type") != "float"
+                or stream_elem is None
+                or stream_elem.text is None
+            ):
+                warnings.warn(
+                    f"Unsupported time-series array for {result_name}", stacklevel=2
+                )
+                continue
+            try:
+                dims = [int(dim.text) for dim in array_elem.findall("Dim")]
+            except (TypeError, ValueError) as exc:
+                warnings.warn(
+                    f"Invalid dimensions for time series {result_name}: {exc}",
+                    stacklevel=2,
+                )
+                continue
+            if dims != [n_points]:
+                warnings.warn(
+                    f"Invalid dimensions for time series {result_name}: {dims}",
+                    stacklevel=2,
+                )
+                continue
+            try:
+                data = _decode_dtt_stream(
+                    stream_elem.text,
+                    stream_elem.get("Encoding", ""),
+                    "float",
+                )
+            except (TypeError, ValueError) as exc:
+                warnings.warn(
+                    f"Failed to decode time series {result_name}: {exc}",
+                    stacklevel=2,
+                )
+                continue
+            if data.size != n_points:
+                warnings.warn(
+                    f"Invalid data length for time series {result_name}",
+                    stacklevel=2,
+                )
+                continue
+            normalized.setdefault("TS", {})[channel] = {
+                "data": data,
+                "dt": dt,
+                "epoch": epoch,
+                "unit": None,
+            }
+            continue
         if result_type not in ("Spectrum", "TransferFunction"):
             continue
         result_name = result_elem.get("Name", "")
