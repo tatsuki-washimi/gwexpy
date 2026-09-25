@@ -1,6 +1,6 @@
 # GWexpy AI Agent Guidelines
 
-Last-updated: 2026-09-03
+Last-updated: 2026-09-25
 
 **Summary.**  
 This repository is optimized for collaboration with AI Coding Agents (Claude, Codex, Antigravity, Cursor, GitHub Copilot Workspace, etc.). Agents **must** read and follow these guidelines before performing any code changes, tests, or documentation updates.
@@ -17,7 +17,9 @@ Before any code changes or runs, ensure ALL items below are satisfied:
   absent in your checkout (e.g. CI, a fresh clone). Treat their absence as
   normal and fall back to this document plus README.md/CONTRIBUTING.md.
 - Inspect `docs/developers/plans/` for relevant historical context and design decisions.
-- Ensure you have local environment with `.[dev,test,docs]` installed.
+- Prepare the dependencies needed for the checks selected in Section 3. The
+  declared development extra is `.[dev]`; documentation build dependencies are
+  listed in `docs/requirements.txt`. Do not assume `test` or `docs` extras exist.
 - **Registry behavior**: supported public I/O entry points register their required handlers on demand. Call `gwexpy.register_all()` only when a task deliberately requires the complete constructor and I/O surface up front. A plain `import gwexpy` is not a full registry bootstrap.
 - Confirm that changes requiring physics judgement will be flagged for **human review**.
 - Log every high-level action and attach it to the PR (see “Audit & tagging” below).
@@ -78,25 +80,35 @@ Before any code changes or runs, ensure ALL items below are satisfied:
 
 ## 3. Build, Test, and QA Commands (local verification)
 
-Agents must run and **pass** the following before creating a PR:
+Choose local checks from the changed files and the behavior they can affect.
+Before creating a PR, inspect the complete diff against its base, run
+`git diff --check <base>...HEAD` (or check the staged diff before committing),
+and record the checks run, their results, and any relevant checks omitted. A
+docs-only change does not require the full Python test, lint, and type-check
+suites solely because it is a PR. Existing GitHub CI workflows still run as
+configured; this local selection does not waive a required CI check.
 
-- Installation
-  - `pip install -e ".[dev,test,docs]"`
-- Static analysis & formatting
-  - `ruff check gwexpy/ tests/`
-  - Auto-fix: `ruff check --fix .`
-  - `ruff format gwexpy/ tests/`
-- Type checking
-  - `mypy gwexpy/` (CI enforces `mypy --strict` where applicable; any new public function must have types)
-- Tests
-  - Unit tests: `pytest tests/` (PRs that change functionality must include tests)
-  - GUI tests: `./tests/run_gui_tests.sh` and `./tests/run_gui_nds_tests.sh` (if GUI changes)
-- Docs
-  - `cd docs && make html`
-- Additional CI gates (must be satisfied)
-  - `mypy` must pass on the changed files.
-  - Linting (`ruff`) must be clean.
-  - Test coverage for modified modules must not decrease below an agreed threshold (documented in CI).
+| Change | Local verification |
+| --- | --- |
+| Documentation or data files only | Check changed text, links, and structured-data invariants (for example CSV IDs, required fields, and counts). Build Sphinx when the change affects rendered documentation, its navigation, or its build configuration. Python tests, Ruff, and MyPy are not required unless the documentation executes or changes Python code. |
+| Python source or tests | Run focused tests for the affected behavior. Run `ruff check` and `ruff format --check` on changed Python files. Run the applicable MyPy check when production Python types or APIs change. Add compatibility and regression tests for changed functionality. |
+| Dependency, build, or CI configuration | Exercise the affected install, build, or workflow path. Run broader tests when the change can affect the wider package. |
+| GUI behavior | Run the relevant GUI test scripts in addition to focused tests, when the required display and services are available. |
+| Physics or data-model behavior | Add the relevant numerical and metadata checks, run `check_physics`, and follow the human-review rules in Sections 1 and 6. |
+
+Use the project's actual commands and declared dependencies. For example,
+`python -m pip install -e ".[dev]"` installs development tools, while
+`python -m pip install -r docs/requirements.txt` and
+`python -m sphinx -b html docs docs/_build/html/docs` build the documentation
+as described in `CONTRIBUTING.md`. There is no `docs/Makefile` `html` target.
+Use `ruff format --check` for verification; do not run auto-fix commands across
+unrelated files.
+
+Expand from focused checks to `pytest tests/`, `ruff check gwexpy/ tests/`, or
+`mypy gwexpy/` when the affected surface is broad or a required gate calls for
+them. If a check fails only on unchanged baseline files, identify and report
+that failure separately from regressions introduced by the PR. Do not claim a
+failed or skipped check passed. Investigate required CI failures before merge.
 
 ---
 
@@ -121,8 +133,9 @@ Agents must run and **pass** the following before creating a PR:
    - Maintain physical consistency (units, axes).
    - Add unit tests and, if relevant, integration tests.
 3. **Validate.**
-   - Run `check_physics` for algorithm validation and attach results to the PR.
-   - Run `pytest`, `ruff`, and `mypy` locally; fix issues until clean.
+   - Select and run the checks in Section 3 for the actual change. Run
+     `check_physics` when the change needs physics judgment, and attach the
+     applicable results and any baseline failures to the PR.
 4. **Finalize.**
    - Use `wrap_up_gwexpy` to prepare commit(s) and ensure CI readiness.
    - Tag PRs created by agents with `AGENT: <skill-name>` and include a short human-readable summary of automated changes.
@@ -133,7 +146,8 @@ Agents must run and **pass** the following before creating a PR:
 ## 6. Audit, Tagging, and Human Review
 
 - **Audit log.** Agents must produce a JSON/YAML manifest for each PR containing:
-  - Skill name(s) used, commands executed, test results, `check_physics` summary, and files changed.
+  - Skill name(s) used, commands executed, results, relevant checks omitted,
+    `check_physics` summary when applicable, and files changed.
 - **PR tagging.**
   - Agent PR title should start with `[AGENT:<skill>]`.
   - If changes affect physics or data model, add `needs-physics-review`.
@@ -157,6 +171,9 @@ Agents must run and **pass** the following before creating a PR:
 
 ### Guideline changelog
 
+- **2026-09-25**: Made local PR verification proportional to changed files,
+  corrected the declared install extras and Sphinx build command, and required
+  baseline failures to be reported separately from new regressions.
 - **2026-09-03**: Added the narrowly gated, human-approved
   `non_intersecting_window_safety` exception without weakening the default GWpy
   parity rule.
