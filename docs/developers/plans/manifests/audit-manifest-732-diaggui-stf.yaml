@@ -1,0 +1,91 @@
+issue: 732
+title: Normalize DiagGUI STF TransferFunction subtypes 1 and 4
+branch: fix/issue-732-diaggui-stf
+base_sha: ad1b3fc8470976741dbf3b0cf3fb238995dc9711
+status: implemented
+skills_used:
+  - audit_io_backends
+files_changed:
+  - gwexpy/io/dttxml_common.py
+  - tests/io/test_dttxml_issue732.py
+  - .github/workflows/pr-fast.yml
+  - docs/developers/plans/manifests/audit-manifest-732-diaggui-stf.yaml
+characterization:
+  installed_parser:
+    python: "3.12.12"
+    dttxml: "1.1.8"
+    result: "DiagAccess(path).results.STF[ChannelA] is a Bunch"
+    response:
+      dtype: complex64
+      shape: "M x N"
+    channel_b: "Indexed ChannelB labels are exposed in numeric index order"
+    subtype_1: "FHz is reconstructed from f0 + df * arange(N)"
+    subtype_4: "The first N floatComplex words encode frequencies; response follows as complex64. dttxml FHz retains the real component only."
+  evidence_boundary: >-
+    Characterization uses synthetic XML that matches the installed parser's
+    observed fields. It establishes serialized layout and parser behavior only;
+    it does not establish STF physical meaning, channel pair direction, units,
+    conjugation, or normalization.
+implementation:
+  supported_layouts:
+    - "TransferFunction/1, Array Type floatComplex, M response rows of N samples, linear f0/df axis"
+    - "TransferFunction/4, Array Type floatComplex, one embedded complex64 frequency row followed by M complex64 response rows"
+  mapping: "Each validated response row is keyed by (ChannelB[index], ChannelA), using serialized labels without a physical direction claim."
+  validation:
+    - "M, N, Array dimensions, decoded stream length, response shape, and frequency-axis length must agree."
+    - "ChannelB indices must be unique and contiguous from zero; labels must be nonempty and unique; label count must equal M."
+    - "Subtype 4 embedded frequency words with nonzero imaginary components raise STF-specific ValueError before external axis projection is trusted."
+    - "Only floatComplex storage is characterized; doubleComplex STF raises STF-specific ValueError."
+    - "Irregular embedded axes and one-bin axes remain explicit."
+  existing_products: "TF, COH, FFT, PSD, CSD, ASD, and TS branches retain their existing subtype mappings; raw STF preflight runs only when dttxml exposes STF results."
+performance:
+  protocol: >-
+    Same subtype 4 synthetic fixture with N=4. One warmup was excluded where
+    applicable; medians use five installed external/native reads and three
+    no-dttxml child reads. perf_counter and tracemalloc bracket the reader call
+    after imports. These descriptive measurements have no threshold.
+  before:
+    outcome: "All three routes raised No matrix pairs found for STF."
+    external: "0.323 ms median; 86371 traced peak bytes"
+    native: "0.197 ms median; 86019 traced peak bytes"
+    fallback: "576 ms median including child startup; 1428417 traced peak bytes in child"
+  after:
+    outcome: "All three routes returned FrequencySeriesMatrix shape (1, 1, 4), complex64 response."
+    external: "1.605 ms median; 89595 traced peak bytes"
+    native: "1.205 ms median; 85963 traced peak bytes"
+    fallback: "588 ms median including child startup; 1483454 traced peak bytes in child"
+  caveat: "Before/after calls differ in outcome because the baseline lacked STF support; the small absolute increase includes raw layout validation and result construction."
+ci_route:
+  workflow: .github/workflows/pr-fast.yml
+  step: "Check installed DiagGUI routes, FFT, and #415 regression"
+  coverage: "Adds test_dttxml_issue732.py after dttxml==1.1.8 installation. The earlier base io-contract gate runs the test without dttxml; child assertions verify genuine package absence."
+verification:
+  - command: "rtk env GWEXPY_NO_DTTXML_PYTHON=/tmp/gwexpy-diaggui-a-base/bin/python python -m pytest -q tests/io/test_dttxml_issue732.py"
+    result: "26 passed in installed dttxml==1.1.8 environment; genuine no-dttxml child route passed."
+  - command: "rtk env PYTHONPATH=$PWD /tmp/gwexpy-diaggui-a-base/bin/python -m pytest -q tests/io/test_dttxml_issue732.py"
+    result: "16 passed, 10 skipped; installed-parser-only checks skipped, base-only fallback ran."
+  - command: "rtk env GWEXPY_NO_DTTXML_PYTHON=/tmp/gwexpy-diaggui-a-base/bin/python python -m pytest -q tests/io/test_dttxml_issue732.py tests/io/test_dttxml_issue731.py tests/io/test_dttxml_issue730.py tests/io/test_dttxml_issue726.py tests/io/test_dttxml_issue734.py"
+    result: "80 passed."
+  - command: "rtk env GWEXPY_NO_DTTXML_PYTHON=/tmp/gwexpy-diaggui-a-base/bin/python python -m pytest -q tests/io/test_dttxml_issue730.py tests/io/test_dttxml_issue731.py tests/io/test_dttxml_issue732.py tests/io/test_dttxml_common.py::TestLoadDttxmlProducts::test_ts_entries_stay_dict_shaped_and_reader_consumes_them"
+    result: "52 passed; matches the installed-parser workflow step coverage."
+  - command: "rtk python scripts/ci/run_gate.py io-contract --no-fixtures"
+    result: "1594 passed, 18 skipped, 1 deselected; gate exited 0."
+  - command: "rtk python scripts/ci/run_gate.py io-conformance"
+    result: "73 passed, 5 skipped; gate exited 0 and printed the existing summary 6 blocked / 6 total."
+  - command: "rtk ruff check gwexpy/io/dttxml_common.py tests/io/test_dttxml_issue732.py"
+    result: passed
+  - command: "rtk ruff format --check gwexpy/io/dttxml_common.py tests/io/test_dttxml_issue732.py"
+    result: passed
+  - command: "rtk mypy gwexpy/io/dttxml_common.py"
+    result: "No issues found."
+  - command: "rtk python -c \"import yaml; yaml.safe_load(open('.github/workflows/pr-fast.yml', encoding='utf-8'))\""
+    result: "Workflow YAML parsed."
+  - command: "rtk git diff --check"
+    result: passed
+omitted_checks:
+  - "Full repository pytest suite: focused adjacent issue tests plus both I/O gates cover the changed backend; unrelated suites were not run."
+  - "io-optional, io-zarr, and io-network-backend gates: no changes affect those backends."
+  - "check_physics: not run because the implementation does not infer or change an STF physical convention, units, conjugation, or normalization."
+human_review:
+  required: true
+  status: "Independent Sol review requested for the committed final head."

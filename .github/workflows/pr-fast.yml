@@ -92,6 +92,7 @@ jobs:
         run: >-
           python -m pytest -q tests/io/test_dttxml_issue730.py
           tests/io/test_dttxml_issue731.py
+          tests/io/test_dttxml_issue732.py
           tests/io/test_dttxml_common.py::TestLoadDttxmlProducts::test_ts_entries_stay_dict_shaped_and_reader_consumes_them
 
   io-conformance-gate:

@@ -24,6 +24,7 @@ from gwexpy.io.dttxml_common import HAS_DTTXML
 _EPOCH = 1_234_567_890.25
 _CHANNEL_A = "K1:ISSUE732-CHANNEL-A"
 _CHANNEL_B = "K1:ISSUE732-CHANNEL-B"
+_CHANNEL_B_SECOND = "K1:ISSUE732-CHANNEL-Z"
 _F0 = 17.5
 _DF = 2.5
 _FREQUENCIES = np.array([10.0, 11.0, 13.5, 17.0], dtype=np.float32)
@@ -40,13 +41,20 @@ def _stf_xml(
     frequencies: np.ndarray = _FREQUENCIES,
     channel_b: tuple[str, ...] = (_CHANNEL_B,),
     m: int = 1,
+    array_type: str = "floatComplex",
 ) -> Path:
     """Write one labeled STF row with the surveyed /1 or /4 XML layout."""
-    values = np.asarray(values, dtype=np.complex64).reshape(-1)
+    values = np.asarray(values, dtype=np.complex64)
+    if values.ndim == 1:
+        values = values.reshape(1, -1)
     frequencies = np.asarray(frequencies, dtype=np.complex64).reshape(-1)
-    n_points = len(_VALUES)
+    n_points = values.shape[1]
     embedded = subtype == 4
-    words = np.concatenate((frequencies, values)) if embedded else values
+    words = (
+        np.concatenate((frequencies.reshape(1, -1), values), axis=0)
+        if embedded
+        else values
+    )
 
     root = ET.Element("LIGO_LW")
     result = ET.SubElement(
@@ -67,12 +75,14 @@ def _stf_xml(
     for name, value in params.items():
         ET.SubElement(result, "Param", {"Name": name, "Type": "lstring"}).text = value
 
-    array = ET.SubElement(result, "Array", {"Type": "floatComplex"})
+    array = ET.SubElement(result, "Array", {"Type": array_type})
     ET.SubElement(array, "Dim").text = str(m + int(embedded))
     ET.SubElement(array, "Dim").text = str(n_points)
     ET.SubElement(
         array, "Stream", {"Encoding": "LittleEndian,base64"}
-    ).text = base64.b64encode(words.astype("<c8").tobytes()).decode("ascii")
+    ).text = base64.b64encode(
+        words.astype("<c16" if array_type == "doubleComplex" else "<c8").tobytes()
+    ).decode("ascii")
 
     path = tmp_path / f"stf_{subtype}.xml"
     ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
@@ -172,6 +182,64 @@ def test_stf_matrix_reader_preserves_labeled_complex_row_and_axis(
     assert float(series.epoch.value) == pytest.approx(_EPOCH)
 
 
+@pytest.mark.parametrize("subtype", [1, 4], ids=["linear", "embedded"])
+@pytest.mark.parametrize("native", [False, True], ids=["external", "native"])
+def test_stf_reader_preserves_one_bin_axis(
+    tmp_path: Path, subtype: int, native: bool
+) -> None:
+    frequencies = np.array([_F0 if subtype == 1 else _FREQUENCIES[0]], dtype=np.float32)
+    values = _VALUES[:1]
+    path = _stf_xml(
+        tmp_path,
+        subtype=subtype,
+        values=values,
+        frequencies=frequencies,
+    )
+    result = FrequencySeriesMatrix.read(
+        path,
+        format="xml.diaggui",
+        products="STF",
+        native=native,
+    )
+
+    series = result[_CHANNEL_B, _CHANNEL_A]
+    np.testing.assert_array_equal(series.value, values)
+    np.testing.assert_array_equal(series.frequencies.value, frequencies)
+
+
+@pytest.mark.parametrize("native", [False, True], ids=["external", "native"])
+def test_stf_reader_preserves_every_indexed_response_row(
+    tmp_path: Path, native: bool
+) -> None:
+    values = np.array(
+        [
+            [1.0 + 2.0j, 3.0 - 4.0j, -2.0 + 0.5j, 0.25 - 1.0j],
+            [-1.0 + 0.5j, 2.0 + 1.0j, 0.75 - 3.0j, 4.0 + 0.25j],
+        ],
+        dtype=np.complex64,
+    )
+    path = _stf_xml(
+        tmp_path,
+        subtype=4,
+        values=values,
+        channel_b=(_CHANNEL_B_SECOND, _CHANNEL_B),
+        m=2,
+    )
+    result = FrequencySeriesMatrix.read(
+        path,
+        format="xml.diaggui",
+        products="STF",
+        native=native,
+    )
+
+    assert list(result.rows) == sorted((_CHANNEL_B, _CHANNEL_B_SECOND))
+    assert list(result.cols) == [_CHANNEL_A]
+    np.testing.assert_array_equal(
+        result[_CHANNEL_B_SECOND, _CHANNEL_A].value, values[0]
+    )
+    np.testing.assert_array_equal(result[_CHANNEL_B, _CHANNEL_A].value, values[1])
+
+
 def test_stf_matrix_reader_uses_real_no_dttxml_interpreter(stf_xml: Path) -> None:
     """Fallback coverage must run in a separate interpreter without dttxml."""
     if importlib.util.find_spec("dttxml") is None:
@@ -252,8 +320,10 @@ print(json.dumps({
     [
         ("missing-channel-b", "ChannelB"),
         ("ambiguous-channel-b", "ChannelB"),
+        ("duplicate-channel-label", "unique"),
         ("row-count-mismatch", "M.*row|row.*M"),
         ("imaginary-frequency", "frequency.*imaginary|imaginary.*frequency"),
+        ("double-complex", "floatComplex"),
     ],
 )
 @pytest.mark.parametrize("native", [False, True], ids=["external", "native"])
@@ -268,12 +338,18 @@ def test_stf_reader_reports_ambiguous_or_inconsistent_layout(
         kwargs["channel_b"] = ()
     elif case == "ambiguous-channel-b":
         kwargs["channel_b"] = (_CHANNEL_B, "K1:ISSUE732-SECOND-OUTPUT")
+    elif case == "duplicate-channel-label":
+        kwargs["channel_b"] = (_CHANNEL_B, _CHANNEL_B)
+        kwargs["m"] = 2
+        kwargs["values"] = np.vstack((_VALUES, _VALUES))
     elif case == "row-count-mismatch":
         kwargs["m"] = 2
     elif case == "imaginary-frequency":
         frequencies = _FREQUENCIES.astype(np.complex64)
         frequencies[1] += np.complex64(0.5j)
         kwargs["frequencies"] = frequencies
+    elif case == "double-complex":
+        kwargs["array_type"] = "doubleComplex"
     path = _stf_xml(tmp_path, **kwargs)
 
     with pytest.raises(ValueError, match=match):
