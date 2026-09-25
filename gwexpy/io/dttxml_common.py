@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import gzip
 import re
 import warnings
@@ -113,7 +114,13 @@ def extract_xml_channels(filename: str) -> list[ChannelInfo]:
     return channels
 
 
-def _decode_dtt_stream(stream_text: str, encoding: str, dtype_str: str) -> np.ndarray:
+def _decode_dtt_stream(
+    stream_text: str,
+    encoding: str,
+    dtype_str: str,
+    *,
+    strict_base64: bool = False,
+) -> np.ndarray:
     """Decode a DTT XML <Stream> element directly.
 
     This function provides a fallback for cases where dttxml package
@@ -128,6 +135,9 @@ def _decode_dtt_stream(stream_text: str, encoding: str, dtype_str: str) -> np.nd
         Encoding specification (e.g., "LittleEndian,base64").
     dtype_str : str
         Array type (e.g., "float", "floatComplex", "double").
+    strict_base64 : bool, optional
+        If True, ignore XML whitespace and reject non-base64 characters and
+        malformed padding. The default preserves the existing decoder behavior.
 
     Returns
     -------
@@ -141,8 +151,6 @@ def _decode_dtt_stream(stream_text: str, encoding: str, dtype_str: str) -> np.nd
     - "doubleComplex": interleaved float64 pairs (real, imag)
 
     """
-    import base64
-
     # Parse encoding
     encoding_parts = [e.strip().lower() for e in encoding.split(",")]
     is_base64 = "base64" in encoding_parts
@@ -154,8 +162,12 @@ def _decode_dtt_stream(stream_text: str, encoding: str, dtype_str: str) -> np.nd
     if is_little == is_big or len(encoding_parts) != 2:
         raise ValueError(f"Unsupported byte order in encoding: {encoding}")
 
-    # Decode base64
-    raw_bytes = base64.b64decode(stream_text.strip())
+    # Decode base64. TimeSeries uses strict validation because base64.b64decode's
+    # default silently discards invalid characters; other product routes retain
+    # their established permissive behavior.
+    if strict_base64:
+        stream_text = "".join(stream_text.split())
+    raw_bytes = base64.b64decode(stream_text.strip(), validate=strict_base64)
 
     # Determine dtype
     dtype_lower = dtype_str.lower()
@@ -290,6 +302,11 @@ def load_dttxml_native(source: str) -> dict:
                     f"Invalid dt or t0 for time series {result_name}", stacklevel=2
                 )
                 continue
+            ts_products = normalized.get("TS", {})
+            if channel in ts_products:
+                raise ValueError(
+                    f"Duplicate TimeSeries channel {channel!r}; refusing to overwrite"
+                )
             array_elem = result_elem.find("Array")
             stream_elem = array_elem.find("Stream") if array_elem is not None else None
             if (
@@ -321,6 +338,7 @@ def load_dttxml_native(source: str) -> dict:
                     stream_elem.text,
                     stream_elem.get("Encoding", ""),
                     "float",
+                    strict_base64=True,
                 )
             except (TypeError, ValueError) as exc:
                 warnings.warn(

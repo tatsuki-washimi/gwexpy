@@ -27,6 +27,10 @@ behavior:
     python: /home/washimi/miniforge3/envs/gwexpy/bin/python
     dttxml_version: 1.1.8
     checks: ["explicit public TS read", "mixed TS+Spectrum/PSD/ASD+TransferFunction values, dtype, frequency axis, and epoch"]
+known_limitations:
+  external_dttxml_duplicate_channels: "dttxml 1.1.8 can overwrite duplicate TimeSeries channels; this implementation leaves the installed external route unchanged. Duplicate-channel rejection is limited to the new native fallback."
+  external_dttxml_base64: "dttxml 1.1.8 uses permissive base64 decoding; strict validation here is limited to the new native TimeSeries path."
+  native_base64: "TimeSeries streams opt into strict base64 decoding with XML whitespace removal inside the shared decoder; other callers retain its permissive default."
 ci_coverage:
   base_io_contract:
     command: "python scripts/ci/run_gate.py io-contract"
@@ -38,15 +42,15 @@ ci_coverage:
     github_result: "Not run; this records the configured PR workflow."
 verification:
   - command: "GWEXPY_NO_DTTXML_PYTHON=/tmp/gwexpy-diaggui-a-base/bin/python /home/washimi/miniforge3/envs/gwexpy/bin/python -m pytest -q tests/io/test_dttxml_issue730.py"
-    result: "6 passed; verified installed dttxml 1.1.8 route and separate no-dttxml child processes for explicit and auto public reads"
+    result: "10 passed; verified installed dttxml 1.1.8 route, native product loader, malformed base64 rejection, line-break acceptance, duplicate-channel failure, and separate no-dttxml children for explicit and auto public reads"
   - command: "GWEXPY_NO_DTTXML_PYTHON=/tmp/gwexpy-diaggui-a-base/bin/python /home/washimi/miniforge3/envs/gwexpy/bin/python -m pytest -q tests/io/test_dttxml_issue730.py tests/io/test_dttxml_common.py::TestLoadDttxmlProducts::test_ts_entries_stay_dict_shaped_and_reader_consumes_them"
-    result: "7 passed; includes the exact #415 regression node"
+    result: "11 passed; includes the exact #415 regression node"
   - command: "env -u GWEXPY_NO_DTTXML_PYTHON /home/washimi/miniforge3/envs/gwexpy/bin/python -m pytest -q tests/io/test_dttxml_issue730.py tests/io/test_dttxml_common.py::TestLoadDttxmlProducts::test_ts_entries_stay_dict_shaped_and_reader_consumes_them"
-    result: "5 passed, 2 skipped; simulates the workflow's installed-parser step after the base-only gate"
+    result: "9 passed, 2 skipped; simulates the workflow's installed-parser step after the base-only gate"
   - command: "python scripts/ci/run_gate.py io-contract --no-fixtures (gwexpy conda environment)"
-    result: "1554 passed, 9 skipped, 1 deselected; local gwexpy environment has dttxml installed and GWEXPY_NO_DTTXML_PYTHON points to the real base-only interpreter for fallback child checks. This is not the future base-only GitHub CI result."
+    result: "1558 passed, 9 skipped, 1 deselected; local gwexpy environment has dttxml installed and GWEXPY_NO_DTTXML_PYTHON points to the real base-only interpreter for fallback child checks. This is not the future base-only GitHub CI result."
   - command: "/tmp/gwexpy-diaggui-a-base/bin/python -m pytest -q tests/io/test_dttxml_issue730.py"
-    result: "4 passed, 2 skipped; pytest process has no dttxml and uses sys.executable for separate explicit and auto fallback child reads."
+    result: "8 passed, 2 skipped; pytest process has no dttxml and uses sys.executable for separate explicit and auto fallback child reads."
   - command: "python scripts/ci/run_gate.py io-conformance (gwexpy conda environment)"
     result: "73 passed, 5 skipped"
   - command: "ruff check gwexpy/io/dttxml_common.py tests/io/test_dttxml_issue730.py"
@@ -59,10 +63,10 @@ verification:
     result: "passed"
 performance:
   protocol: "Same four-sample TS-only XML; 3 warmups, 40 timed reads, and maximum tracemalloc peak over 5 fresh traced reads per parser in one Python 3.12 process. Baseline source loaded from the pinned base commit."
-  baseline: "0.017 ms/read; 84149 bytes peak traced allocation"
-  changed: "0.028 ms/read; 84153 bytes peak traced allocation"
+  baseline: "0.016 ms/read; 84379 bytes peak traced allocation"
+  changed: "0.028 ms/read; 84379 bytes peak traced allocation"
   caveat: "Baseline did not recognize TimeSeries and returned an empty mapping, so baseline timing is not equivalent work; added decoding explains the small measured increase. The four-sample case is too small to establish scaling behavior."
-  outcome: "No material peak-allocation change was observed; no performance regression threshold applies."
+  outcome: "The TS path performs strict validation during its single base64 decode; no material peak-allocation change was observed, and no performance regression threshold applies."
 omitted_checks:
   - "Full repository test suite: the I/O contract gate ran tests/io/ plus its documented contract-adjacent suites, and io-conformance passed; unrelated package suites were not run."
   - "Full-package Ruff and MyPy: changed-file Ruff and the applicable parser-module MyPy check were run."

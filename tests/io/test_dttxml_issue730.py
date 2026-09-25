@@ -117,7 +117,7 @@ def _assert_public_read(path: Path, fmt: str | None) -> None:
     np.testing.assert_array_equal(series.value, VALUES)
     assert series.dtype == np.dtype("float32")
     assert np.isclose(float(series.dt.value), DT)
-    assert np.isclose(float(series.t0.value), EPOCH)
+    assert float(series.t0.value) == pytest.approx(EPOCH, rel=0, abs=1e-6)
     assert str(series.channel) == CHANNEL
 
 
@@ -129,6 +129,55 @@ def test_native_parser_reads_source_grounded_timeseries(ts_xml: Path) -> None:
     assert info["data"].dtype == np.dtype("float32")
     assert info["dt"] == DT
     assert info["epoch"] == EPOCH
+
+
+def test_native_product_loader_reads_timeseries(ts_xml: Path) -> None:
+    products = load_dttxml_products(str(ts_xml), native=True)
+    assert list(products["TS"]) == [CHANNEL]
+    info = products["TS"][CHANNEL]
+    np.testing.assert_array_equal(info["data"], VALUES)
+    assert info["data"].dtype == np.dtype("float32")
+    assert info["dt"] == DT
+    assert info["epoch"] == EPOCH
+
+
+def test_native_timeseries_rejects_invalid_base64(ts_xml: Path) -> None:
+    import xml.etree.ElementTree as ET
+
+    tree = ET.parse(ts_xml)
+    tree.find(".//Array/Stream").text = "AADAPwAA!MAAAIA+AAAAQQA=="
+    tree.write(ts_xml, encoding="utf-8", xml_declaration=True)
+
+    with pytest.warns(UserWarning, match="Failed to decode time series"):
+        products = load_dttxml_native(str(ts_xml))
+    assert "TS" not in products
+
+
+def test_native_timeseries_accepts_base64_line_breaks(ts_xml: Path) -> None:
+    import xml.etree.ElementTree as ET
+
+    tree = ET.parse(ts_xml)
+    stream = tree.find(".//Array/Stream")
+    encoded = stream.text
+    stream.text = f"{encoded[:8]}\n{encoded[8:]}"
+    tree.write(ts_xml, encoding="utf-8", xml_declaration=True)
+
+    info = load_dttxml_native(str(ts_xml))["TS"][CHANNEL]
+    np.testing.assert_array_equal(info["data"], VALUES)
+
+
+def test_native_timeseries_duplicate_channel_fails_closed(ts_xml: Path) -> None:
+    import copy
+    import xml.etree.ElementTree as ET
+
+    tree = ET.parse(ts_xml)
+    duplicate = copy.deepcopy(tree.find(".//LIGO_LW[@Type='TimeSeries']"))
+    duplicate.set("Name", "Result[1]")
+    tree.getroot().append(duplicate)
+    tree.write(ts_xml, encoding="utf-8", xml_declaration=True)
+
+    with pytest.raises(ValueError, match="Duplicate TimeSeries channel.*K1:AUDIT-TS"):
+        load_dttxml_native(str(ts_xml))
 
 
 def test_native_timeseries_keeps_existing_frequency_products(ts_xml: Path) -> None:
@@ -181,7 +230,7 @@ def test_installed_dttxml_route_preserves_mixed_frequency_products(
         np.testing.assert_array_equal(series.frequencies.value, [17.5, 20.0, 22.5])
         assert float(series.f0.value) == pytest.approx(17.5)
         assert float(series.df.value) == pytest.approx(2.5)
-        assert float(series.epoch.value) == pytest.approx(EPOCH)
+        assert float(series.epoch.value) == pytest.approx(EPOCH, rel=0, abs=1e-6)
     tf_key = ("K1:AUDIT-OUTPUT", "K1:AUDIT-INPUT")
     tf_series = products["TF"][tf_key]
     np.testing.assert_array_equal(tf_series.value, [1 + 2j, -0.5 + 0.25j, 3 - 4j])
@@ -189,7 +238,7 @@ def test_installed_dttxml_route_preserves_mixed_frequency_products(
     np.testing.assert_array_equal(tf_series.frequencies.value, [17.5, 20.0, 22.5])
     assert float(tf_series.f0.value) == pytest.approx(17.5)
     assert float(tf_series.df.value) == pytest.approx(2.5)
-    assert float(tf_series.epoch.value) == pytest.approx(EPOCH)
+    assert float(tf_series.epoch.value) == pytest.approx(EPOCH, rel=0, abs=1e-6)
 
 
 @pytest.mark.parametrize("fmt", ["xml.diaggui", None], ids=["explicit", "auto"])
@@ -236,5 +285,5 @@ print(json.dumps({
     np.testing.assert_array_equal(result["data"], VALUES)
     assert result["dtype"] == "float32"
     assert result["dt"] == DT
-    assert result["epoch"] == EPOCH
+    assert result["epoch"] == pytest.approx(EPOCH, rel=0, abs=1e-6)
     assert result["channel"] == CHANNEL
