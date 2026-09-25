@@ -79,6 +79,9 @@ jobs:
       - name: Set up gwexpy environment
         uses: ./.github/actions/setup-gwexpy
 
+      - name: Verify base I/O environment has no dttxml
+        run: python -c 'import importlib.util; assert importlib.util.find_spec("dttxml") is None'
+
       - name: Run I/O contract tests
         run: python scripts/ci/run_gate.py io-contract
 

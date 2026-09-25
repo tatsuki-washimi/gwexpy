@@ -33,8 +33,9 @@ known_limitations:
   native_base64: "TimeSeries streams opt into strict base64 decoding with XML whitespace removal inside the shared decoder; other callers retain its permissive default."
 ci_coverage:
   base_io_contract:
+    absence_check: "python -c 'import importlib.util; assert importlib.util.find_spec(\"dttxml\") is None'"
     command: "python scripts/ci/run_gate.py io-contract"
-    configured_order: "Runs before the workflow installs dttxml; the focused test launches a child using sys.executable and asserts find_spec('dttxml') is None in that child."
+    configured_order: "Checks that dttxml is absent and runs the base I/O gate before the workflow installs dttxml; the focused test launches a child using sys.executable and checks absence again there."
     github_result: "Not run; this records the configured PR workflow."
   installed_parser:
     install: "python -m pip install dttxml==1.1.8"
