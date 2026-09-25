@@ -1,0 +1,86 @@
+issue: 730
+title: Base-install DiagGUI TimeSeries parsing
+base: ce9b331bcf486c310497154f14ef2e0f3a65fb9c
+plan_commit: 139f66d1a
+status: implemented
+skills_used:
+  - mplan
+  - setup_plan
+  - superpowers:using-git-worktrees
+  - superpowers:receiving-code-review
+  - superpowers:requesting-code-review
+  - triage_ci
+  - github-mcp-secret-filter
+files_changed:
+  - docs/plans/2026-09-25-diaggui-xml-fixes-730-734.md
+  - gwexpy/io/dttxml_common.py
+  - tests/io/test_dttxml_issue730.py
+  - .github/workflows/pr-fast.yml
+  - tests/docs/test_gwpy_compatibility_policy.py
+  - docs/developers/plans/manifests/audit-manifest-730-dttxml-ts.yaml
+behavior:
+  layout: "LIGO_LW Type=TimeSeries, Subtype=0, Array Type=float (float32 Y)"
+  fixture: "N=4, little-endian base64, Channel=K1:AUDIT-TS, dt=0.125, t0=1234567890.25"
+  samples: [1.5, -2.0, 0.25, 8.0]
+  fallback_environment:
+    python: "CI sys.executable child when dttxml is absent; otherwise GWEXPY_NO_DTTXML_PYTHON"
+    dttxml_spec: null
+    checks: ["TimeSeriesDict.read explicit xml.diaggui", "TimeSeriesDict.read format=None"]
+  installed_environment:
+    python: /home/washimi/miniforge3/envs/gwexpy/bin/python
+    dttxml_version: 1.1.8
+    checks: ["explicit public TS read", "mixed TS+Spectrum/PSD/ASD+TransferFunction values, dtype, frequency axis, and epoch"]
+known_limitations:
+  external_dttxml_duplicate_channels: "dttxml 1.1.8 can overwrite duplicate TimeSeries channels; this implementation leaves the installed external route unchanged. Duplicate-channel rejection is limited to the new native fallback."
+  external_dttxml_base64: "dttxml 1.1.8 uses permissive base64 decoding; strict validation here is limited to the new native TimeSeries path."
+  native_base64: "TimeSeries streams opt into strict base64 decoding with XML whitespace removal inside the shared decoder; other callers retain its permissive default."
+ci_baseline_repair:
+  cause: "The pinned main changed .agent/AGENTS.md Last-updated to 2026-09-25 in #736, but an unchanged docs test still required 2026-09-03; PR-fast failed that single test on the pinned base as well."
+  change: "Validate the Last-updated ISO date header format instead of pinning an obsolete date."
+  local_reproduction: "The exact test node failed before this test-only change and passed afterward."
+ci_coverage:
+  base_io_contract:
+    absence_check: "python -c 'import importlib.util; assert importlib.util.find_spec(\"dttxml\") is None'"
+    command: "python scripts/ci/run_gate.py io-contract"
+    configured_order: "Checks that dttxml is absent and runs the base I/O gate before the workflow installs dttxml; the focused test launches a child using sys.executable and checks absence again there."
+    github_result: "Passed on PR #737 at head 29c286bc3e3d7fc2482a008945193efa5faec86e."
+  installed_parser:
+    install: "python -m pip install dttxml==1.1.8"
+    test: "python -m pytest -q tests/io/test_dttxml_issue730.py tests/io/test_dttxml_common.py::TestLoadDttxmlProducts::test_ts_entries_stay_dict_shaped_and_reader_consumes_them"
+    github_result: "Passed on PR #737 at head 29c286bc3e3d7fc2482a008945193efa5faec86e."
+verification:
+  - command: "python -m pytest -q tests/docs/test_gwpy_compatibility_policy.py (gwexpy conda environment)"
+    result: "12 passed; includes the previously failing test_agent_and_contributor_rules_make_divergence_a_blocker node"
+  - command: "GWEXPY_NO_DTTXML_PYTHON=/tmp/gwexpy-diaggui-a-base/bin/python /home/washimi/miniforge3/envs/gwexpy/bin/python -m pytest -q tests/io/test_dttxml_issue730.py"
+    result: "10 passed; verified installed dttxml 1.1.8 route, native product loader, malformed base64 rejection, line-break acceptance, duplicate-channel failure, and separate no-dttxml children for explicit and auto public reads"
+  - command: "GWEXPY_NO_DTTXML_PYTHON=/tmp/gwexpy-diaggui-a-base/bin/python /home/washimi/miniforge3/envs/gwexpy/bin/python -m pytest -q tests/io/test_dttxml_issue730.py tests/io/test_dttxml_common.py::TestLoadDttxmlProducts::test_ts_entries_stay_dict_shaped_and_reader_consumes_them"
+    result: "11 passed; includes the exact #415 regression node"
+  - command: "env -u GWEXPY_NO_DTTXML_PYTHON /home/washimi/miniforge3/envs/gwexpy/bin/python -m pytest -q tests/io/test_dttxml_issue730.py tests/io/test_dttxml_common.py::TestLoadDttxmlProducts::test_ts_entries_stay_dict_shaped_and_reader_consumes_them"
+    result: "9 passed, 2 skipped; simulates the workflow's installed-parser step after the base-only gate"
+  - command: "python scripts/ci/run_gate.py io-contract --no-fixtures (gwexpy conda environment)"
+    result: "1558 passed, 9 skipped, 1 deselected; local gwexpy environment has dttxml installed and GWEXPY_NO_DTTXML_PYTHON points to the real base-only interpreter for fallback child checks. This is not the future base-only GitHub CI result."
+  - command: "/tmp/gwexpy-diaggui-a-base/bin/python -m pytest -q tests/io/test_dttxml_issue730.py"
+    result: "8 passed, 2 skipped; pytest process has no dttxml and uses sys.executable for separate explicit and auto fallback child reads."
+  - command: "python scripts/ci/run_gate.py io-conformance (gwexpy conda environment)"
+    result: "73 passed, 5 skipped"
+  - command: "ruff check gwexpy/io/dttxml_common.py tests/io/test_dttxml_issue730.py"
+    result: "passed"
+  - command: "ruff format --check gwexpy/io/dttxml_common.py tests/io/test_dttxml_issue730.py"
+    result: "passed"
+  - command: "python -m mypy gwexpy/io/dttxml_common.py"
+    result: "Success: no issues found in 1 source file"
+  - command: "git diff --check"
+    result: "passed"
+performance:
+  protocol: "Same four-sample TS-only XML; 3 warmups, 40 timed reads, and maximum tracemalloc peak over 5 fresh traced reads per parser in one Python 3.12 process. Baseline source loaded from the pinned base commit."
+  baseline: "0.016 ms/read; 84379 bytes peak traced allocation"
+  changed: "0.028 ms/read; 84379 bytes peak traced allocation"
+  caveat: "Baseline did not recognize TimeSeries and returned an empty mapping, so baseline timing is not equivalent work; added decoding explains the small measured increase. The four-sample case is too small to establish scaling behavior."
+  outcome: "The TS path performs strict validation during its single base64 decode; no material peak-allocation change was observed, and no performance regression threshold applies."
+omitted_checks:
+  - "Full repository test suite: the I/O contract gate ran tests/io/ plus its documented contract-adjacent suites, and io-conformance passed; unrelated package suites were not run."
+  - "Full-package Ruff and MyPy: changed-file Ruff and the applicable parser-module MyPy check were run."
+  - "check_physics: not applicable; this change decodes an already specified serialized time axis and samples and does not add or alter a physics calculation."
+human_review:
+  required: false
+  reason: "No fields package changes or physics calculation changes; numeric serialization contract and axis metadata are asserted by tests."
