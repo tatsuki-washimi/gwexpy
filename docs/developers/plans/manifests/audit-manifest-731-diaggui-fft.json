@@ -1,0 +1,152 @@
+{
+  "issue": 731,
+  "title": "Normalize DiagGUI Spectrum FFT products",
+  "branch": "fix/issue-731-diaggui-fft",
+  "base_sha": "aaf91486e4a8cc34eb6a678acccd2ff070d3c157",
+  "skills": [
+    "mplan",
+    "audit_io_backends",
+    "gwexpy_conda_jobs"
+  ],
+  "characterization": {
+    "installed_python": "3.11.14",
+    "dttxml_version": "1.1.8",
+    "raw_xml": "/tmp/issue731_parser_characterization.xml",
+    "parser_object": "dttxml.DiagAccess(path).results.FFT[ChannelA]",
+    "observed": {
+      "Spectrum/0": {
+        "object": "declarative.bunch.Bunch",
+        "subtype": "FFT in format (Y)",
+        "array_type": "floatComplex",
+        "FFT_dtype": "complex64",
+        "FFT_shape": [1, 4],
+        "FHz_dtype": "float64",
+        "FHz": [17.5, 20.0, 22.5, 25.0],
+        "channel_key": "K1:AUDIT-FFT-0",
+        "epoch": 1234567890.25
+      },
+      "Spectrum/4": {
+        "object": "declarative.bunch.Bunch",
+        "subtype": "FFT in format (f, Y)",
+        "array_type": "floatComplex",
+        "FFT_dtype": "complex64",
+        "FFT_shape": [1, 4],
+        "FHz_dtype": "complex64",
+        "FHz": [
+          [10.0, 0.0],
+          [11.0, 0.0],
+          [13.5, 0.0],
+          [17.0, 0.0]
+        ],
+        "channel_key": "K1:AUDIT-FFT-4",
+        "epoch": 1234567890.25
+      }
+    },
+    "evidence_boundary": "These are installed-parser observations on generated source-grounded XML. They do not establish a real export, physical unit, or FFT normalization convention. The committed audit report is docs/plans/2026-09-25-diaggui-xml-product-audit.md#fft-stf-and-other-subtypes."
+  },
+  "implementation_scope": {
+    "supported_layouts": [
+      "Spectrum/0, Array Type floatComplex, one row, linear f0/df axis",
+      "Spectrum/4, Array Type floatComplex, one row, embedded complex64 frequency words with exactly zero imaginary components"
+    ],
+    "key_mode": "Spectrum/0 and /4 use channel keys from ChannelA; existing channel/pair layouts are selected explicitly in native subtype metadata.",
+    "return_contract": "FrequencySeriesDict readers retain ChannelA keys; direct FrequencySeries reads return a FrequencySeries. Values and phase are copied from the raw stream. No FFT unit or normalization is inferred.",
+    "failures": [
+      "multirow FFT results",
+      "declared row or stream count mismatches",
+      "embedded FFT frequency values with nonzero imaginary components",
+      "uncharacterized native FFT array precision such as doubleComplex"
+    ],
+    "unsupported_variants": "No evidence was collected for doubleComplex FFT storage or other Spectrum subtypes/layouts beyond 0 and 4; these remain unsupported by this change."
+  },
+  "commands_and_results": [
+    {
+      "command": "rtk /home/washimi/miniforge3/envs/gwexpy/bin/python -c 'import sys,dttxml; print(sys.version); print(dttxml.__version__)'",
+      "result": "Python 3.11.14; dttxml 1.1.8."
+    },
+    {
+      "command": "rtk /home/washimi/miniforge3/envs/gwexpy/bin/python - (inline characterization script generated /tmp/issue731_parser_characterization.xml, inspected its Param/Array/Stream metadata, and read DiagAccess(path).results.FFT)",
+      "result": "Observed both ChannelA-keyed Bunch results, complex64 (1, 4) FFT values, phases, /0 float64 linear FHz, /4 complex64 embedded FHz with zero imaginary words, and epoch 1234567890.25."
+    },
+    {
+      "command": "rtk /usr/bin/env GWEXPY_NO_DTTXML_PYTHON=/tmp/gwexpy-diaggui-a-base/bin/python /home/washimi/miniforge3/envs/gwexpy/bin/python -m pytest -q tests/io/test_dttxml_issue731.py tests/io/test_dttxml_issue726.py tests/io/test_dttxml_issue730.py",
+      "result": "46 passed after final code refinements; the fallback test used a separate Python 3.11.16 interpreter where find_spec('dttxml') is None."
+    },
+    {
+      "command": "rtk conda run -n gwexpy python scripts/ci/run_gate.py io-contract --no-fixtures",
+      "result": "1552 passed, 27 skipped, 1 deselected; gwexpy import smoke passed."
+    },
+    {
+      "command": "rtk conda run -n gwexpy python scripts/ci/run_gate.py io-conformance",
+      "result": "71 passed, 7 skipped; gate exited 0 and printed the existing conformance summary `6 blocked / 6 total` (recorded without interpretation)."
+    },
+    {
+      "command": "rtk conda run -n gwexpy ruff check gwexpy/io/dttxml_common.py tests/io/test_dttxml_issue731.py",
+      "result": "Passed."
+    },
+    {
+      "command": "rtk conda run -n gwexpy ruff format --check gwexpy/io/dttxml_common.py tests/io/test_dttxml_issue731.py",
+      "result": "Passed; both files are formatted."
+    },
+    {
+      "command": "rtk conda run -n gwexpy mypy gwexpy/io/dttxml_common.py",
+      "result": "Success: no issues found in 1 source file."
+    },
+    {
+      "command": "rtk git diff --cached --check",
+      "result": "Passed after staging the three issue-owned files."
+    }
+  ],
+  "performance": {
+    "protocol": "Same /tmp/issue731_parser_characterization.xml containing one Spectrum/0 and one Spectrum/4 result; load_dttxml_products; five warmups; 50 timed calls; report median wall time. tracemalloc measured peak Python-traced allocation for one call after warmup. No numeric threshold was used.",
+    "code_source": {
+      "before": "The clean issue worktree at base SHA aaf91486e4a8cc34eb6a678acccd2ff070d3c157, measured before source edits; no separate temporary checkout or module was used.",
+      "after": "The same issue worktree after the #731 implementation.",
+      "route_imports": "Each process imported the issue worktree from its working directory or explicit PYTHONPATH. External and native used the gwexpy conda Python; fallback used /tmp/gwexpy-diaggui-a-base/bin/python with dttxml absent."
+    },
+    "measurement_limit": "tracemalloc does not include all NumPy/native allocations; the values characterize Python-traced peak memory, not process RSS.",
+    "results": {
+      "external_dttxml_native_false": {
+        "before_median_us": 80.67,
+        "after_median_us": 364.98,
+        "before_peak_traced_bytes": 88023,
+        "after_peak_traced_bytes": 87966,
+        "before_product_keys": [],
+        "after_product_keys": ["FFT"]
+      },
+      "native_installed_native_true": {
+        "before_median_us": 30.75,
+        "after_median_us": 105.49,
+        "before_peak_traced_bytes": 88256,
+        "after_peak_traced_bytes": 88149,
+        "before_product_keys": [],
+        "after_product_keys": ["FFT"]
+      },
+      "fallback_no_dttxml_native_false": {
+        "before_median_us": 37.28,
+        "after_median_us": 104.63,
+        "before_peak_traced_bytes": 88622,
+        "after_peak_traced_bytes": 88758,
+        "before_product_keys": [],
+        "after_product_keys": ["FFT"]
+      }
+    },
+    "interpretation": "The additional wall time is associated with decoding and constructing two newly returned FrequencySeries objects where the prior code emitted no FFT product. Traced peak allocation stayed within 0.2 percent across the measured routes; small-fixture timing is descriptive only."
+  },
+  "not_run": [
+    "Full repository test suite",
+    "Full-package MyPy and full-repository Ruff checks",
+    "Optional I/O, GUI, and network backend gates",
+    "check_physics: implementation preserves raw parser values and makes no physical-unit or normalization claim"
+  ],
+  "files_changed": [
+    "gwexpy/io/dttxml_common.py",
+    "tests/io/test_dttxml_issue731.py",
+    "docs/developers/plans/manifests/audit-manifest-731-diaggui-fft.json"
+  ],
+  "review": {
+    "physics_review_required": false,
+    "reason": "No physical unit or FFT normalization is inferred; values and coordinates are preserved from the selected XML stream.",
+    "independent_sol_review": "Pending root review after rebase onto the latest integrated main."
+  }
+}
