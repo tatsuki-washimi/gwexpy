@@ -19,10 +19,11 @@ import numpy as np
 import pytest
 
 from gwexpy.frequencyseries import FrequencySeriesMatrix
-from gwexpy.io.dttxml_common import HAS_DTTXML
+from gwexpy.io.dttxml_common import HAS_DTTXML, load_dttxml_products
 
 _EPOCH = 1_234_567_890.25
 _CHANNEL_A = "K1:ISSUE732-CHANNEL-A"
+_CHANNEL_A_SECOND = "K1:ISSUE732-CHANNEL-Z"
 _CHANNEL_B = "K1:ISSUE732-CHANNEL-B"
 _CHANNEL_B_SECOND = "K1:ISSUE732-CHANNEL-Z"
 _F0 = 17.5
@@ -42,6 +43,8 @@ def _stf_xml(
     channel_b: tuple[str, ...] = (_CHANNEL_B,),
     m: int = 1,
     array_type: str = "floatComplex",
+    include_axis_params: bool = True,
+    epoch: float = _EPOCH,
 ) -> Path:
     """Write one labeled STF row with the surveyed /1 or /4 XML layout."""
     values = np.asarray(values, dtype=np.complex64)
@@ -60,15 +63,16 @@ def _stf_xml(
     result = ET.SubElement(
         root, "LIGO_LW", {"Name": "Result[0]", "Type": "TransferFunction"}
     )
-    ET.SubElement(result, "Time", {"Name": "t0", "Type": "GPS"}).text = str(_EPOCH)
+    ET.SubElement(result, "Time", {"Name": "t0", "Type": "GPS"}).text = str(epoch)
     params = {
         "Subtype": str(subtype),
         "M": str(m),
         "N": str(n_points),
-        "f0": str(_F0 if not embedded else 0.0),
-        "df": str(_DF if not embedded else 0.0),
         "ChannelA": _CHANNEL_A,
     }
+    if include_axis_params:
+        params["f0"] = str(_F0 if not embedded else 0.0)
+        params["df"] = str(_DF if not embedded else 0.0)
     params.update(
         {f"ChannelB[{index}]": channel for index, channel in enumerate(channel_b)}
     )
@@ -182,6 +186,133 @@ def test_stf_matrix_reader_preserves_labeled_complex_row_and_axis(
     assert float(series.epoch.value) == pytest.approx(_EPOCH)
 
 
+@pytest.mark.skipif(not HAS_DTTXML, reason="requires dttxml==1.1.8")
+def test_external_stf_preflight_ignores_reference_nodes(tmp_path: Path) -> None:
+    """External preflight matches STF results, while native parsing keeps refs."""
+    import dttxml
+
+    path = _stf_xml(tmp_path, subtype=4)
+    tree = ET.parse(path)
+    root = tree.getroot()
+    result = root.find("LIGO_LW[@Name='Result[0]']")
+    assert result is not None
+    reference = ET.fromstring(ET.tostring(result))
+    reference.set("Name", "Reference[0]")
+    channel_b = reference.find("Param[@Name='ChannelB[0]']")
+    assert channel_b is not None
+    channel_b.text = _CHANNEL_B_SECOND
+    root.append(reference)
+    tree.write(path, encoding="utf-8", xml_declaration=True)
+
+    access = dttxml.DiagAccess(str(path))
+    assert list(access.results.STF) == [_CHANNEL_A]
+    assert list(access.references) == [0]
+    assert access.references[0].type_name == "STF"
+
+    external = FrequencySeriesMatrix.read(
+        path, format="xml.diaggui", products="STF", native=False
+    )
+    assert list(external.rows) == [_CHANNEL_B]
+    assert list(external.cols) == [_CHANNEL_A]
+    np.testing.assert_array_equal(external[_CHANNEL_B, _CHANNEL_A].value, _VALUES)
+
+    native = FrequencySeriesMatrix.read(
+        path, format="xml.diaggui", products="STF", native=True
+    )
+    assert list(native.rows) == sorted((_CHANNEL_B, _CHANNEL_B_SECOND))
+    assert list(native.cols) == sorted((_CHANNEL_A, f"{_CHANNEL_A}(REF0)"))
+    np.testing.assert_array_equal(native[_CHANNEL_B, _CHANNEL_A].value, _VALUES)
+    np.testing.assert_array_equal(
+        native[_CHANNEL_B_SECOND, f"{_CHANNEL_A}(REF0)"].value, _VALUES
+    )
+
+
+@pytest.mark.parametrize("native", [False, True], ids=["external", "native"])
+def test_stf_subtype4_axis_does_not_require_f0_df(tmp_path: Path, native: bool) -> None:
+    if not native and not HAS_DTTXML:
+        pytest.skip("external route requires dttxml==1.1.8")
+    path = _stf_xml(tmp_path, subtype=4, include_axis_params=False)
+
+    result = FrequencySeriesMatrix.read(
+        path, format="xml.diaggui", products="STF", native=native
+    )
+
+    series = result[_CHANNEL_B, _CHANNEL_A]
+    np.testing.assert_array_equal(series.value, _VALUES)
+    np.testing.assert_array_equal(series.frequencies.value, _FREQUENCIES)
+
+
+@pytest.mark.parametrize("native", [False, True], ids=["external", "native"])
+def test_matrix_reader_scopes_stf_validation_to_requested_product(
+    tmp_path: Path, native: bool
+) -> None:
+    if not native and not HAS_DTTXML:
+        pytest.skip("external route requires dttxml==1.1.8")
+    path = _stf_xml(tmp_path, subtype=4)
+    tree = ET.parse(path)
+    root = tree.getroot()
+    stf = root.find("LIGO_LW[@Name='Result[0]']")
+    assert stf is not None
+    malformed = ET.fromstring(ET.tostring(stf))
+
+    # Convert the first block to a valid TF/3 result with the embedded axis.
+    stf.find("Param[@Name='Subtype']").text = "3"
+    stf.find("Param[@Name='ChannelA']").text = _CHANNEL_A_SECOND
+
+    # Add a malformed STF/4 result whose embedded axis has an imaginary value.
+    malformed.set("Name", "Result[1]")
+    malformed.find("Param[@Name='Subtype']").text = "4"
+    malformed.find("Param[@Name='ChannelA']").text = _CHANNEL_A
+    malformed_stream = malformed.find("Array/Stream")
+    assert malformed_stream is not None and malformed_stream.text is not None
+    malformed_words = np.frombuffer(
+        base64.b64decode(malformed_stream.text), dtype="<c8"
+    ).copy()
+    malformed_words[1] += np.complex64(0.5j)
+    malformed_stream.text = base64.b64encode(
+        malformed_words.astype("<c8").tobytes()
+    ).decode("ascii")
+    root.append(malformed)
+    tree.write(path, encoding="utf-8", xml_declaration=True)
+
+    tf = FrequencySeriesMatrix.read(
+        path, format="xml.diaggui", products="TF", native=native
+    )
+    assert list(tf.cols) == [_CHANNEL_A_SECOND]
+    np.testing.assert_array_equal(tf[_CHANNEL_B, _CHANNEL_A_SECOND].value, _VALUES)
+    np.testing.assert_array_equal(
+        tf[_CHANNEL_B, _CHANNEL_A_SECOND].frequencies.value,
+        _FREQUENCIES,
+    )
+
+    with pytest.raises(ValueError, match="frequency.*imaginary|imaginary.*frequency"):
+        FrequencySeriesMatrix.read(
+            path, format="xml.diaggui", products="STF", native=native
+        )
+
+
+@pytest.mark.parametrize("native", [False, True], ids=["external", "native"])
+def test_stf_matrix_reader_rejects_different_result_epochs(
+    tmp_path: Path, native: bool
+) -> None:
+    if not native and not HAS_DTTXML:
+        pytest.skip("external route requires dttxml==1.1.8")
+    path = _stf_xml(tmp_path, subtype=4)
+    tree = ET.parse(path)
+    root = tree.getroot()
+    second = ET.fromstring(ET.tostring(root.find("LIGO_LW[@Name='Result[0]']")))
+    second.set("Name", "Result[1]")
+    second.find("Param[@Name='ChannelA']").text = _CHANNEL_A_SECOND
+    second.find("Time[@Name='t0']").text = str(_EPOCH + 1.0)
+    root.append(second)
+    tree.write(path, encoding="utf-8", xml_declaration=True)
+
+    with pytest.raises(ValueError, match="STF.*different epochs"):
+        FrequencySeriesMatrix.read(
+            path, format="xml.diaggui", products="STF", native=native
+        )
+
+
 @pytest.mark.parametrize("subtype", [1, 4], ids=["linear", "embedded"])
 @pytest.mark.parametrize("native", [False, True], ids=["external", "native"])
 def test_stf_reader_preserves_one_bin_axis(
@@ -205,6 +336,11 @@ def test_stf_reader_preserves_one_bin_axis(
     series = result[_CHANNEL_B, _CHANNEL_A]
     np.testing.assert_array_equal(series.value, values)
     np.testing.assert_array_equal(series.frequencies.value, frequencies)
+    if subtype == 1:
+        normalized = load_dttxml_products(path, native=native, products="STF")
+        assert float(normalized["STF"][_CHANNEL_B, _CHANNEL_A]["df"]) == pytest.approx(
+            _DF
+        )
 
 
 @pytest.mark.parametrize("native", [False, True], ids=["external", "native"])
@@ -240,8 +376,25 @@ def test_stf_reader_preserves_every_indexed_response_row(
     np.testing.assert_array_equal(result[_CHANNEL_B, _CHANNEL_A].value, values[1])
 
 
-def test_stf_matrix_reader_uses_real_no_dttxml_interpreter(stf_xml: Path) -> None:
+@pytest.mark.parametrize(
+    "include_axis_params", [True, False], ids=["with-f0-df", "no-f0-df"]
+)
+def test_stf_matrix_reader_uses_real_no_dttxml_interpreter(
+    stf_xml: Path, include_axis_params: bool
+) -> None:
     """Fallback coverage must run in a separate interpreter without dttxml."""
+    if not include_axis_params:
+        tree = ET.parse(stf_xml)
+        result_node = tree.find(".//LIGO_LW[@Type='TransferFunction']")
+        assert result_node is not None
+        subtype = int(result_node.find("Param[@Name='Subtype']").text)
+        if subtype == 1:
+            pytest.skip("subtype 1 requires f0 and df")
+        for name in ("f0", "df"):
+            param = result_node.find(f"Param[@Name='{name}']")
+            assert param is not None
+            result_node.remove(param)
+        tree.write(stf_xml, encoding="utf-8", xml_declaration=True)
     if importlib.util.find_spec("dttxml") is None:
         # Base-only CI already runs this test under the required interpreter.
         python = sys.executable
@@ -318,6 +471,8 @@ print(json.dumps({
 @pytest.mark.parametrize(
     ("case", "match"),
     [
+        ("nonpositive-n", "N must be positive"),
+        ("missing-stream", "missing Array/Stream"),
         ("missing-channel-b", "ChannelB"),
         ("ambiguous-channel-b", "ChannelB"),
         ("duplicate-channel-label", "unique"),
@@ -351,6 +506,21 @@ def test_stf_reader_reports_ambiguous_or_inconsistent_layout(
     elif case == "double-complex":
         kwargs["array_type"] = "doubleComplex"
     path = _stf_xml(tmp_path, **kwargs)
+    if case in ("nonpositive-n", "missing-stream"):
+        tree = ET.parse(path)
+        result = tree.find(".//LIGO_LW[@Type='TransferFunction']")
+        assert result is not None
+        if case == "nonpositive-n":
+            result.find("Param[@Name='N']").text = "0"
+        else:
+            array = result.find("Array")
+            assert array is not None
+            stream = array.find("Stream")
+            assert stream is not None
+            array.remove(stream)
+        tree.write(path, encoding="utf-8", xml_declaration=True)
+    if case == "missing-stream" and not native:
+        pytest.skip("dttxml 1.1.8 fails before the external STF adapter can validate")
 
     with pytest.raises(ValueError, match=match):
         FrequencySeriesMatrix.read(

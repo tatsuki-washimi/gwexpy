@@ -2,11 +2,13 @@ issue: 732
 title: Normalize DiagGUI STF TransferFunction subtypes 1 and 4
 branch: fix/issue-732-diaggui-stf
 base_sha: ad1b3fc8470976741dbf3b0cf3fb238995dc9711
-status: implemented
+status: review-fixes-implemented
 skills_used:
   - audit_io_backends
 files_changed:
   - gwexpy/io/dttxml_common.py
+  - gwexpy/frequencyseries/io/dttxml.py
+  - gwexpy/timeseries/io/dttxml.py
   - tests/io/test_dttxml_issue732.py
   - .github/workflows/pr-fast.yml
   - docs/developers/plans/manifests/audit-manifest-732-diaggui-stf.yaml
@@ -21,6 +23,7 @@ characterization:
     channel_b: "Indexed ChannelB labels are exposed in numeric index order"
     subtype_1: "FHz is reconstructed from f0 + df * arange(N)"
     subtype_4: "The first N floatComplex words encode frequencies; response follows as complex64. dttxml FHz retains the real component only."
+    references: "dttxml 1.1.8 stores Reference[n] products under DiagAccess.references; STF references are not copied into results.STF."
   evidence_boundary: >-
     Characterization uses synthetic XML that matches the installed parser's
     observed fields. It establishes serialized layout and parser behavior only;
@@ -37,7 +40,18 @@ implementation:
     - "Subtype 4 embedded frequency words with nonzero imaginary components raise STF-specific ValueError before external axis projection is trusted."
     - "Only floatComplex storage is characterized; doubleComplex STF raises STF-specific ValueError."
     - "Irregular embedded axes and one-bin axes remain explicit."
-  existing_products: "TF, COH, FFT, PSD, CSD, ASD, and TS branches retain their existing subtype mappings; raw STF preflight runs only when dttxml exposes STF results."
+  existing_products: "TF, COH, FFT, PSD, CSD, ASD, and TS branches retain their existing subtype mappings. Typed readers can scope normalization to their requested product; direct load_dttxml_products calls retain the all-products default. External STF preflight matches Result[n] nodes only."
+review_fixes:
+  base_sha: ad1b3fc8470976741dbf3b0cf3fb238995dc9711
+  coverage:
+    - "A mixed Result[0] STF plus Reference[0] STF file confirms installed dttxml inventory and successful external Result parsing; native parsing retains both serialized products."
+    - "Subtype 4 without f0/df succeeds through external, native, and no-dttxml fallback routes; subtype 1 retains its serialized df for one-bin data."
+    - "A valid TransferFunction/3 result beside malformed STF/4 succeeds when TF is requested and fails closed when STF is requested, in external and native routes."
+    - "Two STF result blocks with different t0 values are rejected before constructing a matrix with one epoch."
+    - "Native STF blocks with nonpositive N or missing Array/Stream raise STF-specific ValueError."
+  behavior:
+    product_selector: "load_dttxml_products/load_dttxml_native accept an optional product selector; typed frequency-series and time-series readers pass the validated request. Direct loader calls keep the previous all-products default."
+    matrix_epoch: "STF matrix construction rejects selected entries whose epochs differ."
 performance:
   protocol: >-
     Same subtype 4 synthetic fixture with N=4. One warmup was excluded where
@@ -60,23 +74,25 @@ ci_route:
   step: "Check installed DiagGUI routes, FFT, and #415 regression"
   coverage: "Adds test_dttxml_issue732.py after dttxml==1.1.8 installation. The earlier base io-contract gate runs the test without dttxml; child assertions verify genuine package absence."
 verification:
+  - command: "rtk pytest -q tests/io/test_dttxml_issue732.py"
+    result: "34 passed, 5 skipped in installed dttxml==1.1.8 environment; optional base-only child cases skip when the interpreter is not configured."
   - command: "rtk env GWEXPY_NO_DTTXML_PYTHON=/tmp/gwexpy-diaggui-a-base/bin/python python -m pytest -q tests/io/test_dttxml_issue732.py"
-    result: "26 passed in installed dttxml==1.1.8 environment; genuine no-dttxml child route passed."
-  - command: "rtk env PYTHONPATH=$PWD /tmp/gwexpy-diaggui-a-base/bin/python -m pytest -q tests/io/test_dttxml_issue732.py"
-    result: "16 passed, 10 skipped; installed-parser-only checks skipped, base-only fallback ran."
+    result: "37 passed, 2 skipped with GWEXPY_NO_DTTXML_PYTHON configured in the installed-parser parent; STF/4 without f0/df is exercised in the real no-dttxml child interpreter."
   - command: "rtk env GWEXPY_NO_DTTXML_PYTHON=/tmp/gwexpy-diaggui-a-base/bin/python python -m pytest -q tests/io/test_dttxml_issue732.py tests/io/test_dttxml_issue731.py tests/io/test_dttxml_issue730.py tests/io/test_dttxml_issue726.py tests/io/test_dttxml_issue734.py"
-    result: "80 passed."
+    result: "81 passed, 12 skipped."
   - command: "rtk env GWEXPY_NO_DTTXML_PYTHON=/tmp/gwexpy-diaggui-a-base/bin/python python -m pytest -q tests/io/test_dttxml_issue730.py tests/io/test_dttxml_issue731.py tests/io/test_dttxml_issue732.py tests/io/test_dttxml_common.py::TestLoadDttxmlProducts::test_ts_entries_stay_dict_shaped_and_reader_consumes_them"
     result: "52 passed; matches the installed-parser workflow step coverage."
   - command: "rtk python scripts/ci/run_gate.py io-contract --no-fixtures"
-    result: "1594 passed, 18 skipped, 1 deselected; gate exited 0."
+    result: "1604 passed, 21 skipped, 1 deselected; gate exited 0."
   - command: "rtk python scripts/ci/run_gate.py io-conformance"
     result: "73 passed, 5 skipped; gate exited 0 and printed the existing summary 6 blocked / 6 total."
   - command: "rtk ruff check gwexpy/io/dttxml_common.py tests/io/test_dttxml_issue732.py"
     result: passed
-  - command: "rtk ruff format --check gwexpy/io/dttxml_common.py tests/io/test_dttxml_issue732.py"
+  - command: "rtk ruff format --check gwexpy/io/dttxml_common.py gwexpy/frequencyseries/io/dttxml.py gwexpy/timeseries/io/dttxml.py tests/io/test_dttxml_issue732.py"
     result: passed
-  - command: "rtk mypy gwexpy/io/dttxml_common.py"
+  - command: "rtk ruff check gwexpy/io/dttxml_common.py gwexpy/frequencyseries/io/dttxml.py gwexpy/timeseries/io/dttxml.py tests/io/test_dttxml_issue732.py"
+    result: passed
+  - command: "rtk mypy gwexpy/io/dttxml_common.py gwexpy/frequencyseries/io/dttxml.py gwexpy/timeseries/io/dttxml.py"
     result: "No issues found."
   - command: "rtk python -c \"import yaml; yaml.safe_load(open('.github/workflows/pr-fast.yml', encoding='utf-8'))\""
     result: "Workflow YAML parsed."

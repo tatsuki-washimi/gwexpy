@@ -286,7 +286,10 @@ def _external_stf_layouts(source: str) -> dict[str, dict[str, Any]]:
     root = cast(Any, tree.getroot())
     layouts: dict[str, dict[str, Any]] = {}
     for result_elem in root.iter("LIGO_LW"):
-        if result_elem.get("Type") != "TransferFunction":
+        if (
+            result_elem.get("Type") != "TransferFunction"
+            or re.fullmatch(r"Result\[\d+\]", result_elem.get("Name", "")) is None
+        ):
             continue
         params = {
             param.get("Name"): (param.text or "").strip()
@@ -303,12 +306,18 @@ def _external_stf_layouts(source: str) -> dict[str, dict[str, Any]]:
         try:
             n_points = int(params.get("N", ""))
             n_rows = int(params.get("M", ""))
-            f0 = float(params.get("f0", ""))
-            df = float(params.get("df", ""))
         except ValueError as exc:
-            raise _stf_error(
-                result_name, f"invalid dimensions or axis metadata: {exc}"
-            ) from exc
+            raise _stf_error(result_name, f"invalid dimensions: {exc}") from exc
+        if subtype == 1:
+            try:
+                f0 = float(params.get("f0", ""))
+                df = float(params.get("df", ""))
+            except ValueError as exc:
+                raise _stf_error(
+                    result_name, f"invalid linear-axis metadata: {exc}"
+                ) from exc
+            if not np.isfinite(f0) or not np.isfinite(df):
+                raise _stf_error(result_name, "f0 and df must be finite")
         channel_a = params.get("ChannelA", "")
         if not channel_a:
             raise _stf_error(result_name, "missing ChannelA")
@@ -316,8 +325,6 @@ def _external_stf_layouts(source: str) -> dict[str, dict[str, Any]]:
             raise _stf_error(
                 result_name, f"M and N must be positive; got M={n_rows}, N={n_points}"
             )
-        if not np.isfinite(f0) or not np.isfinite(df):
-            raise _stf_error(result_name, "f0 and df must be finite")
         channels_b = _indexed_stf_channels_b(result_elem, result_name)
         if len(channels_b) != n_rows:
             raise _stf_error(
@@ -387,6 +394,7 @@ def _external_stf_layouts(source: str) -> dict[str, dict[str, Any]]:
             "subtype": subtype,
             "n_rows": n_rows,
             "n_points": n_points,
+            "df": df if subtype == 1 else None,
             "channel_b": channels_b,
             "frequencies": frequencies,
             "response": response,
@@ -395,7 +403,7 @@ def _external_stf_layouts(source: str) -> dict[str, dict[str, Any]]:
     return layouts
 
 
-def load_dttxml_native(source: str) -> dict:
+def load_dttxml_native(source: str, *, products: str | None = None) -> dict:
     """Parse DTT XML file directly without using dttxml package.
 
     This function provides an alternative parser that correctly handles
@@ -406,6 +414,8 @@ def load_dttxml_native(source: str) -> dict:
     ----------
     source : str
         Path to the DTT XML file.
+    products : str, optional
+        Normalize only this product. If omitted, parse all supported products.
 
     Returns
     -------
@@ -438,6 +448,7 @@ def load_dttxml_native(source: str) -> dict:
 
     root = cast(Any, tree.getroot())
     normalized: dict = {}
+    selected_products = {products.upper()} if products is not None else None
 
     # Product semantics and storage precision are independent. The Array Type
     # selects the decoder dtype after the Type/Subtype pair selects the product.
@@ -463,6 +474,8 @@ def load_dttxml_native(source: str) -> dict:
     for result_elem in root.iter("LIGO_LW"):
         result_type = result_elem.get("Type")
         if result_type == "TimeSeries":
+            if selected_products is not None and "TS" not in selected_products:
+                continue
             result_name = result_elem.get("Name", "")
             params = {
                 param.get("Name"): (param.text or "").strip()
@@ -576,15 +589,26 @@ def load_dttxml_native(source: str) -> dict:
                 stacklevel=2,
             )
             continue
+        product, complex_samples, embedded_frequencies, key_mode = layouts[subtype]
+        if (
+            selected_products is not None
+            and product not in selected_products
+            and not (product == "PSD" and "ASD" in selected_products)
+        ):
+            continue
         if n_points <= 0:
+            if product == "STF":
+                raise _stf_error(result_name, f"N must be positive; got {n_points}")
             warnings.warn(f"Invalid N for {result_name}: {n_points}", stacklevel=2)
             continue
-        product, complex_samples, embedded_frequencies, key_mode = layouts[subtype]
         if product == "STF" and n_rows is None:
             raise _stf_error(result_name, "missing M row count")
         array_elem = result_elem.find("Array")
         stream_elem = array_elem.find("Stream") if array_elem is not None else None
         if stream_elem is None or stream_elem.text is None:
+            if product == "STF":
+                missing = "Array/Stream" if array_elem is not None else "Array"
+                raise _stf_error(result_name, f"missing {missing}")
             continue
         array_type = array_elem.get("Type")
         allowed_types: tuple[str, ...] = (
@@ -827,13 +851,16 @@ SUPPORTED_FREQ = {"PSD", "ASD", "FFT"}
 SUPPORTED_MATRIX = {"TF", "STF", "CSD", "COH"}
 
 
-def load_dttxml_products(source, *, native: bool = False):
+def load_dttxml_products(source, *, native: bool = False, products: str | None = None):
     """Load products from a dttxml file into a normalized mapping.
 
     Parameters
     ----------
     source : str
         Path to the DTT XML file.
+    products : str, optional
+        If provided, normalize only this product. The default normalizes all
+        products for callers that need a complete inventory.
     native : bool, optional
         If True, use gwexpy's native XML parser instead of the dttxml package.
         This correctly handles complex data types (floatComplex) that may be
@@ -874,7 +901,9 @@ def load_dttxml_products(source, *, native: bool = False):
                 "Install dttxml for full functionality: pip install dttxml",
                 UserWarning,
             )
-        return load_dttxml_native(source)
+        return load_dttxml_native(source, products=products)
+
+    selected_products = {products.upper()} if products is not None else None
 
     try:
         results = dttxml.DiagAccess(source).results
@@ -949,7 +978,9 @@ def load_dttxml_products(source, *, native: bool = False):
     # can call info.get("epoch") / info.get("dt") / info.get("data") uniformly.
     # Returning TimeSeries objects here caused AttributeError because TimeSeries.get()
     # is the NDS data-fetch method, not dict.get().
-    if hasattr(results, "TS"):
+    if (selected_products is None or "TS" in selected_products) and hasattr(
+        results, "TS"
+    ):
         ts_dict = {}
         for ch, info in results.TS.items():
             ts_dict[ch] = {
@@ -962,7 +993,9 @@ def load_dttxml_products(source, *, native: bool = False):
 
     # 2. Raw FFT output is indexed by ChannelA in the installed parser. The
     # surveyed Spectrum/0 and /4 layouts each carry exactly one FFT row.
-    if hasattr(results, "FFT"):
+    if (selected_products is None or "FFT" in selected_products) and hasattr(
+        results, "FFT"
+    ):
         _validate_external_fft_array_types(str(source))
         fft_dict = {}
         for channel, info in results.FFT.items():
@@ -978,7 +1011,9 @@ def load_dttxml_products(source, *, native: bool = False):
         normalized["FFT"] = fft_dict
 
     # 3. DTT's PSD result is also exposed under the existing ASD alias.
-    if hasattr(results, "PSD"):
+    if (selected_products is None or selected_products & {"PSD", "ASD"}) and hasattr(
+        results, "PSD"
+    ):
         psd_dict = {}
         for ch, info in results.PSD.items():
             psd_dict[ch] = frequency_series(
@@ -988,7 +1023,9 @@ def load_dttxml_products(source, *, native: bool = False):
         normalized["PSD"] = psd_dict
 
     # 4. Coherence (COH)
-    if hasattr(results, "COH"):
+    if (selected_products is None or "COH" in selected_products) and hasattr(
+        results, "COH"
+    ):
         coh_dict = {}
         for chA, info in results.COH.items():
             for i, chB in enumerate(info.channelB):
@@ -1000,7 +1037,7 @@ def load_dttxml_products(source, *, native: bool = False):
     tf_source = getattr(results, "TF", None)
     if tf_source is None and hasattr(results, "_mydict") and "TF" in results._mydict:
         tf_source = results._mydict["TF"]
-    if tf_source:
+    if (selected_products is None or "TF" in selected_products) and tf_source:
         tf_dict = {}
         phase_loss_warned = False
         for chA, info in tf_source.items():
@@ -1036,7 +1073,10 @@ def load_dttxml_products(source, *, native: bool = False):
         stf_source = results._mydict.get("STF")
     # Limit the extra raw XML pass to files for which dttxml exposed STF.
     # This keeps unrelated product routes on their existing path.
-    stf_layouts = _external_stf_layouts(str(source)) if stf_source else {}
+    stf_requested = selected_products is None or "STF" in selected_products
+    stf_layouts = (
+        _external_stf_layouts(str(source)) if stf_requested and stf_source else {}
+    )
     if stf_layouts:
         if stf_source is None:
             raise _stf_error(
@@ -1106,9 +1146,9 @@ def load_dttxml_products(source, *, native: bool = False):
                 raise _stf_error(result_name, "external epoch disagrees with XML t0")
             axis = layout["frequencies"]
             axis_df = (
-                _uniform_frequency_step(axis)
-                if layout["subtype"] == 4 and layout["n_points"] > 1
-                else float(axis[1] - axis[0])
+                float(layout["df"])
+                if layout["subtype"] == 1
+                else _uniform_frequency_step(axis)
                 if layout["n_points"] > 1
                 else None
             )
@@ -1130,7 +1170,9 @@ def load_dttxml_products(source, *, native: bool = False):
         normalized["STF"] = stf_dict
 
     # 6. CSD
-    if hasattr(results, "CSD"):
+    if (selected_products is None or "CSD" in selected_products) and hasattr(
+        results, "CSD"
+    ):
         csd_dict = {}
         for chA, info in results.CSD.items():
             for i, chB in enumerate(info.channelB):
