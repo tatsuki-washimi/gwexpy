@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import re
 import struct
 import xml.etree.ElementTree as ET
 from types import SimpleNamespace
@@ -20,6 +21,7 @@ _SAMPLES = (1.0 + 2.0j, -0.5 + 0.25j, 3.0 - 4.0j)
 _CHANNEL_A = "K1:TEST-INPUT"
 _CHANNEL_B = "K1:TEST-OUTPUT"
 _PAIR = (_CHANNEL_B, _CHANNEL_A)
+_TF6_REFUSAL = r"(?i)(subtype\s*6|tf\s*/\s*6|tf6)"
 
 
 def _oracle_bytes(
@@ -213,6 +215,13 @@ def test_independent_oracle_decodes_only_little_endian_mixed_fixture(tmp_path):
     raw = base64.b64decode(stream, validate=True)
     oracle_frequencies, oracle_samples = _oracle_decode(raw, len(_SAMPLES))
     assert raw == _oracle_bytes()
+    np.testing.assert_array_equal(
+        oracle_frequencies, np.asarray([17.5, 20.0, 22.5], dtype=np.float64)
+    )
+    np.testing.assert_array_equal(
+        oracle_samples,
+        np.asarray([1.0 + 2.0j, -0.5 + 0.25j, 3.0 - 4.0j], dtype=np.complex64),
+    )
     np.testing.assert_array_equal(oracle_frequencies, frequencies)
     np.testing.assert_array_equal(oracle_samples, samples)
     assert oracle_samples.dtype == np.dtype(np.complex64)
@@ -224,10 +233,46 @@ def test_external_tf6_preserves_or_fails_before_returning_real_only_data(tmp_pat
     path, frequencies, samples = _write_tf6(tmp_path)
     try:
         products = load_dttxml_products(path)
-    except ValueError:
+    except ValueError as exc:
+        assert re.search(_TF6_REFUSAL, str(exc)), str(exc)
         return
     assert "TF" in products and _PAIR in products["TF"]
     _assert_tf6_series(products["TF"][_PAIR], frequencies, samples)
+
+
+@pytest.mark.skipif(not HAS_DTTXML, reason="external route requires dttxml==1.1.8")
+def test_external_tf0_survives_distinct_tf6_repair_or_specific_refusal(tmp_path):
+    tf6_path, tf6_frequencies, tf6_samples = _write_tf6(
+        tmp_path,
+        name="Result[6]",
+        channel_a="K1:TEST-TF6-INPUT",
+        channel_b="K1:TEST-TF6-OUTPUT",
+        filename="distinct_tf6.xml",
+    )
+    root = ET.Element("LIGO_LW")
+    tf0_values = (2.0 + 3.0j, -1.0 + 0.5j, 4.0 - 2.0j)
+    _write_tf0(root, name="Result[0]", samples=tf0_values)
+    tf6_block = ET.parse(tf6_path).getroot().find("LIGO_LW")
+    assert tf6_block is not None
+    root.append(tf6_block)
+    path = tmp_path / "distinct_tf0_tf6.xml"
+    ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
+
+    tf6_pair = ("K1:TEST-TF6-OUTPUT", "K1:TEST-TF6-INPUT")
+    try:
+        products = load_dttxml_products(path)
+    except ValueError as exc:
+        assert re.search(_TF6_REFUSAL, str(exc)), str(exc)
+        return
+
+    assert "TF" in products
+    tf0 = products["TF"][_PAIR]
+    assert isinstance(tf0, FrequencySeries)
+    assert tf0.dtype == np.dtype(np.complex64)
+    np.testing.assert_array_equal(tf0.value, np.asarray(tf0_values, dtype=np.complex64))
+    np.testing.assert_array_equal(tf0.frequencies.value, _FREQUENCIES)
+    assert float(tf0.epoch.value) == pytest.approx(_EPOCH)
+    _assert_tf6_series(products["TF"][tf6_pair], tf6_frequencies, tf6_samples)
 
 
 def test_native_tf6_preserves_complex_values_axis_epoch_and_pair(tmp_path):
