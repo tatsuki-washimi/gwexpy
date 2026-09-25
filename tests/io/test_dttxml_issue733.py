@@ -12,7 +12,7 @@ import numpy as np
 import pytest
 
 import gwexpy.io.dttxml_common as dttxml_common
-from gwexpy.frequencyseries import FrequencySeries
+from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesMatrix
 from gwexpy.io.dttxml_common import HAS_DTTXML, load_dttxml_products
 
 _EPOCH = 1_234_567_890.25
@@ -241,6 +241,40 @@ def test_external_tf6_preserves_or_fails_before_returning_real_only_data(tmp_pat
 
 
 @pytest.mark.skipif(not HAS_DTTXML, reason="external route requires dttxml==1.1.8")
+def test_tf6_result_index_is_independent_of_subtype(tmp_path):
+    """The raw Result index is identity; the Subtype Param selects semantics."""
+    path, frequencies, samples = _write_tf6(tmp_path, name="Result[2]")
+    import dttxml
+
+    parsed = dttxml.DiagAccess(path).results.TF[_CHANNEL_A]
+    assert parsed.subtype_raw == 6
+    assert list(parsed.channelB) == [_CHANNEL_B]
+    products = load_dttxml_products(path)
+    _assert_tf6_series(products["TF"][_PAIR], frequencies, samples)
+
+
+@pytest.mark.skipif(not HAS_DTTXML, reason="external route requires dttxml==1.1.8")
+def test_reference_tf6_does_not_collide_with_result_tf6(tmp_path):
+    path, _, _ = _write_tf6(tmp_path, name="Result[2]")
+    root = ET.parse(path).getroot()
+    result = root.find("LIGO_LW")
+    assert result is not None
+    reference = ET.fromstring(ET.tostring(result))
+    reference.set("Name", "Reference[0]")
+    root.append(reference)
+    path = tmp_path / "result_and_reference_tf6.xml"
+    ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
+
+    import dttxml
+
+    parsed = dttxml.DiagAccess(str(path))
+    assert list(parsed.results.TF) == [_CHANNEL_A, f"{_CHANNEL_A}(REF0)"]
+    assert parsed.references[0].channelA == _CHANNEL_A
+    with pytest.raises(ValueError, match=r"TF/6 Reference"):
+        load_dttxml_products(str(path))
+
+
+@pytest.mark.skipif(not HAS_DTTXML, reason="external route requires dttxml==1.1.8")
 def test_external_tf0_survives_distinct_tf6_repair_or_specific_refusal(
     tmp_path, monkeypatch
 ):
@@ -307,6 +341,33 @@ def test_native_tf6_preserves_complex_values_axis_epoch_and_pair(tmp_path):
     assert native["epoch"] == pytest.approx(_EPOCH)
 
 
+@pytest.mark.parametrize("native", [False, True], ids=["external", "native"])
+def test_tf6_preserves_near_uniform_serialized_axis_through_matrix(tmp_path, native):
+    if not native and not HAS_DTTXML:
+        pytest.skip("external route requires dttxml==1.1.8")
+    frequencies = (10.0, 11.0, float(np.nextafter(12.0, np.inf)))
+    path, expected_frequencies, samples = _write_tf6(tmp_path, frequencies=frequencies)
+    products = load_dttxml_products(path, native=native)
+    if native:
+        series = FrequencySeries(
+            products["TF"][_PAIR]["data"],
+            frequencies=products["TF"][_PAIR]["frequencies"],
+            epoch=products["TF"][_PAIR]["epoch"],
+        )
+    else:
+        series = products["TF"][_PAIR]
+    np.testing.assert_array_equal(series.frequencies.value, expected_frequencies)
+    np.testing.assert_array_equal(series.value, samples)
+
+    matrix = FrequencySeriesMatrix.read(
+        path,
+        format="xml.diaggui",
+        products="TF",
+        native=native,
+    )
+    np.testing.assert_array_equal(matrix.frequencies.value, expected_frequencies)
+
+
 @pytest.mark.parametrize("tf6_first", [False, True], ids=["tf0-first", "tf6-first"])
 @pytest.mark.parametrize("native", [False, True], ids=["external", "native"])
 def test_same_pair_tf0_and_tf6_fail_closed_in_either_xml_order(
@@ -316,6 +377,30 @@ def test_same_pair_tf0_and_tf6_fail_closed_in_either_xml_order(
         pytest.skip("external route requires dttxml==1.1.8")
     path, _ = _write_collision(tmp_path, tf6_first)
     with pytest.raises(ValueError, match="ambiguous|collision|multiple|subtype"):
+        load_dttxml_products(path, native=native)
+
+
+@pytest.mark.parametrize("native", [False, True], ids=["external", "native"])
+def test_same_channel_a_tf_results_fail_closed_when_parser_key_is_ambiguous(
+    tmp_path, native
+):
+    if not native and not HAS_DTTXML:
+        pytest.skip("external route requires dttxml==1.1.8")
+    path, _, _ = _write_tf6(tmp_path)
+    root = ET.Element("LIGO_LW")
+    _write_tf0(
+        root,
+        name="Result[0]",
+        samples=_SAMPLES,
+        channel_b="K1:OTHER-OUTPUT",
+    )
+    tf6_block = ET.parse(path).getroot().find("LIGO_LW")
+    assert tf6_block is not None
+    root.append(tf6_block)
+    path = tmp_path / "same_channel_a_tf0_tf6.xml"
+    ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
+
+    with pytest.raises(ValueError, match="Ambiguous TF/6 parser identity"):
         load_dttxml_products(path, native=native)
 
 
@@ -368,6 +453,41 @@ def test_raw_tf6_identity_mismatch_fails_closed(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize("native", [False, True], ids=["external", "native"])
+@pytest.mark.parametrize("malformation", ["big-endian", "truncated"], ids=None)
+def test_uncharacterized_tf6_stream_layout_fails_closed(tmp_path, native, malformation):
+    if not native and not HAS_DTTXML:
+        pytest.skip("external route requires dttxml==1.1.8")
+    path, _, _ = _write_tf6(tmp_path)
+    tree = ET.parse(path)
+    stream = tree.find(".//Stream")
+    assert stream is not None and stream.text is not None
+    if malformation == "big-endian":
+        stream.set("Encoding", "BigEndian,base64")
+    else:
+        raw = base64.b64decode(stream.text, validate=True)
+        stream.text = base64.b64encode(raw[:-1]).decode("ascii")
+    tree.write(path, encoding="utf-8", xml_declaration=True)
+
+    with pytest.raises(ValueError, match="TF/6|subtype"):
+        load_dttxml_products(path, native=native)
+
+
+@pytest.mark.parametrize("native", [False, True], ids=["external", "native"])
+def test_duplicate_raw_tf6_candidates_fail_closed(tmp_path, native):
+    if not native and not HAS_DTTXML:
+        pytest.skip("external route requires dttxml==1.1.8")
+    path, _, _ = _write_tf6(tmp_path)
+    tree = ET.parse(path)
+    block = tree.getroot().find("LIGO_LW")
+    assert block is not None
+    tree.getroot().append(ET.fromstring(ET.tostring(block)))
+    tree.write(path, encoding="utf-8", xml_declaration=True)
+
+    with pytest.raises(ValueError, match="duplicate|TF/6"):
+        load_dttxml_products(path, native=native)
+
+
+@pytest.mark.parametrize("native", [False, True], ids=["external", "native"])
 def test_noncolliding_tf0_is_unchanged(tmp_path, native):
     if not native and not HAS_DTTXML:
         pytest.skip("external route requires dttxml==1.1.8")
@@ -388,3 +508,18 @@ def test_noncolliding_tf0_is_unchanged(tmp_path, native):
         np.testing.assert_array_equal(series.value, values)
         np.testing.assert_array_equal(series.frequencies.value, _FREQUENCIES)
         assert float(series.epoch.value) == pytest.approx(_EPOCH)
+
+
+def test_native_noncolliding_tf0_accepts_unindexed_channel_b(tmp_path):
+    root = ET.Element("LIGO_LW")
+    _write_tf0(root, name="Result[0]", samples=_SAMPLES)
+    result = root.find("LIGO_LW")
+    assert result is not None
+    channel_b = result.find("Param[@Name='ChannelB[0]']")
+    assert channel_b is not None
+    channel_b.set("Name", "ChannelB")
+    path = tmp_path / "unindexed_tf0.xml"
+    ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
+
+    products = load_dttxml_products(path, native=True)
+    np.testing.assert_array_equal(products["TF"][_PAIR]["data"], _SAMPLES)

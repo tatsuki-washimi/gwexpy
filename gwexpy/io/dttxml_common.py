@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import binascii
 import gzip
 import re
 import warnings
@@ -403,6 +404,202 @@ def _external_stf_layouts(source: str) -> dict[str, dict[str, Any]]:
     return layouts
 
 
+def _tf6_raw_layouts(source: str) -> dict[tuple[str, str], dict[str, Any]]:
+    """Decode unique, characterized TransferFunction/6 XML blocks.
+
+    The characterized single-row stream is little-endian float64 frequencies
+    followed by N interleaved complex64 samples. Other row counts fail closed.
+    This validates the whole serialized block before it can repair an external
+    parser result.
+    """
+    tree = _parse_dttxml_xml(source)
+    root = cast(Any, tree.getroot())
+    layouts: dict[tuple[str, str], dict[str, Any]] = {}
+    tf_pairs: dict[tuple[str, str], set[int]] = {}
+    tf6_pair_counts: dict[tuple[str, str], int] = {}
+    tf6_names: set[str] = set()
+    transfer_channel_counts: dict[str, int] = {}
+    result_blocks = [
+        elem
+        for elem in root.iter("LIGO_LW")
+        if elem.get("Type") == "TransferFunction"
+        and re.fullmatch(r"Result\[\d+\]", elem.get("Name", "")) is not None
+    ]
+    has_tf6 = any(
+        (elem.findtext("Param[@Name='Subtype']") or "").strip() == "6"
+        for elem in result_blocks
+    )
+    if not has_tf6:
+        return layouts
+
+    for result_elem in result_blocks:
+        if result_elem.get("Type") != "TransferFunction":
+            continue
+        result_name = result_elem.get("Name", "")
+        params = {
+            param.get("Name"): (param.text or "").strip()
+            for param in result_elem.findall("Param")
+            if param.get("Name")
+        }
+        try:
+            subtype = int(params.get("Subtype", ""))
+        except ValueError:
+            continue
+        if subtype not in (0, 3, 6):
+            continue
+        if subtype == 6 and result_name in tf6_names:
+            raise ValueError(f"Duplicate TF/6 result identity {result_name!r}")
+        if subtype == 6:
+            tf6_names.add(result_name)
+        channel_a = params.get("ChannelA", "")
+        if not channel_a:
+            if subtype != 6:
+                continue
+            raise ValueError(
+                f"Invalid TF/{subtype} result {result_name}: missing ChannelA"
+            )
+        transfer_channel_counts[channel_a] = (
+            transfer_channel_counts.get(channel_a, 0) + 1
+        )
+        if subtype == 6:
+            channels_b = _indexed_stf_channels_b(result_elem, result_name)
+        else:
+            indexed_b = []
+            for name, channel in params.items():
+                if name == "ChannelB":
+                    indexed_b.append((0, channel))
+                elif name.startswith("ChannelB[") and name.endswith("]"):
+                    try:
+                        indexed_b.append((int(name[9:-1]), channel))
+                    except ValueError:
+                        continue
+            channels_b = [channel for _, channel in sorted(indexed_b) if channel]
+        for channel_b in channels_b:
+            pair = (channel_b, channel_a)
+            tf_pairs.setdefault(pair, set()).add(subtype)
+            if subtype == 6:
+                tf6_pair_counts[pair] = tf6_pair_counts.get(pair, 0) + 1
+        if subtype != 6:
+            continue
+
+        try:
+            n_points = int(params.get("N", ""))
+            n_rows = int(params.get("M", ""))
+        except ValueError as exc:
+            raise ValueError(
+                f"Invalid TF/6 dimensions for {result_name}: {exc}"
+            ) from exc
+        if n_points <= 0 or n_rows <= 0 or len(channels_b) != n_rows:
+            raise ValueError(
+                f"Invalid TF/6 dimensions or channel identity for {result_name}: "
+                f"M={n_rows}, N={n_points}, ChannelB={len(channels_b)}"
+            )
+        if n_rows != 1:
+            raise ValueError(
+                f"Unsupported TF/6 row count M={n_rows} for {result_name}; "
+                "only the characterized single-row layout is supported"
+            )
+        array_elem = result_elem.find("Array")
+        if array_elem is None or array_elem.get("Type") != "floatComplex":
+            array_type = array_elem.get("Type") if array_elem is not None else None
+            raise ValueError(
+                f"Unsupported TF/6 Array Type {array_type!r} for {result_name}"
+            )
+        try:
+            dims = [int(dim.text) for dim in array_elem.findall("Dim")]
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                f"Invalid TF/6 dimensions for {result_name}: {exc}"
+            ) from exc
+        if dims != [n_rows + 1, n_points]:
+            raise ValueError(
+                f"Invalid TF/6 Array dimensions {dims} for {result_name}; "
+                f"expected {[n_rows + 1, n_points]}"
+            )
+        stream_elem = array_elem.find("Stream")
+        if stream_elem is None or stream_elem.text is None:
+            raise ValueError(f"Missing TF/6 Array Stream for {result_name}")
+        encoding = stream_elem.get("Encoding", "LittleEndian,base64")
+        if [part.strip().lower() for part in encoding.split(",")] != [
+            "littleendian",
+            "base64",
+        ]:
+            raise ValueError(
+                f"Unsupported TF/6 encoding {encoding!r} for {result_name}; "
+                "only LittleEndian,base64 is characterized"
+            )
+        try:
+            raw = base64.b64decode("".join(stream_elem.text.split()), validate=True)
+        except (binascii.Error, ValueError) as exc:
+            raise ValueError(
+                f"Invalid TF/6 base64 stream for {result_name}: {exc}"
+            ) from exc
+        expected_size = 8 * n_points + 8 * n_rows * n_points
+        if len(raw) != expected_size:
+            raise ValueError(
+                f"Invalid TF/6 stream size for {result_name}: {len(raw)} bytes; "
+                f"expected {expected_size}"
+            )
+        frequency_size = 8 * n_points
+        frequencies = np.frombuffer(raw[:frequency_size], dtype="<f8").copy()
+        data = (
+            np.frombuffer(raw[frequency_size:], dtype="<c8")
+            .copy()
+            .reshape(n_rows, n_points)
+        )
+        if not np.all(np.isfinite(frequencies)):
+            raise ValueError(f"Nonfinite TF/6 frequency axis for {result_name}")
+        time_elem = result_elem.find("Time[@Name='t0']")
+        try:
+            epoch = float(time_elem.text) if time_elem is not None else 0.0
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"Invalid TF/6 epoch for {result_name}: {exc}") from exc
+        if not np.isfinite(epoch):
+            raise ValueError(f"Nonfinite TF/6 epoch for {result_name}")
+        for row, channel_b in enumerate(channels_b):
+            pair = (channel_b, channel_a)
+            if pair in layouts:
+                raise ValueError(
+                    f"Duplicate TF/6 raw candidate for channel pair {pair!r}"
+                )
+            layouts[pair] = {
+                "result_name": result_name,
+                "channel_a": channel_a,
+                "channel_b": channel_b,
+                "frequencies": frequencies,
+                "data": data[row],
+                "epoch": epoch,
+                "n_points": n_points,
+                "n_rows": n_rows,
+            }
+
+    collisions = [
+        pair
+        for pair, subtypes in tf_pairs.items()
+        if 6 in subtypes and len(subtypes) > 1
+    ]
+    if collisions:
+        raise ValueError(
+            f"Ambiguous TF subtype collision involving subtype 6 for channel pair "
+            f"{collisions[0]!r}"
+        )
+    duplicates = [pair for pair, count in tf6_pair_counts.items() if count > 1]
+    if duplicates:
+        raise ValueError(
+            f"Duplicate TF/6 raw candidates for channel pair {duplicates[0]!r}"
+        )
+    ambiguous_channel_a = [
+        channel_a
+        for channel_a, count in transfer_channel_counts.items()
+        if count > 1 and any(key[1] == channel_a for key in layouts)
+    ]
+    if ambiguous_channel_a:
+        raise ValueError(
+            f"Ambiguous TF/6 parser identity for ChannelA {ambiguous_channel_a[0]!r}"
+        )
+    return layouts
+
+
 def load_dttxml_native(source: str, *, products: str | None = None) -> dict:
     """Parse DTT XML file directly without using dttxml package.
 
@@ -449,6 +646,8 @@ def load_dttxml_native(source: str, *, products: str | None = None) -> dict:
     root = cast(Any, tree.getroot())
     normalized: dict = {}
     selected_products = {products.upper()} if products is not None else None
+    if selected_products is None or "TF" in selected_products:
+        _tf6_raw_layouts(source)
 
     # Product semantics and storage precision are independent. The Array Type
     # selects the decoder dtype after the Type/Subtype pair selects the product.
@@ -879,10 +1078,14 @@ def load_dttxml_products(source, *, native: bool = False, products: str | None =
 
     Notes
     -----
-    **Known Issue with dttxml Package**:
-    The dttxml package may incorrectly parse complex Transfer Function data
-    (subtype 6) by taking only the real part, losing phase information. Use
-    ``native=True`` to work around this issue.
+    The external dttxml 1.1.8 parser exposes characterized TransferFunction
+    subtype 6 values as real-only. This loader restores phase only when one
+    serialized ``Result[n]`` block matches the parser's subtype, channel pair,
+    frequency axis, epoch, and real-valued sample projection. The supported raw
+    layout is one response row with little-endian float64 frequencies followed
+    by complex64 samples. Ambiguous, malformed, unsupported, or Reference
+    subtype 6 layouts raise ``ValueError`` rather than returning lossy values.
+    The native parser decodes the same supported layout directly.
 
     Examples
     --------
@@ -904,6 +1107,12 @@ def load_dttxml_products(source, *, native: bool = False, products: str | None =
         return load_dttxml_native(source, products=products)
 
     selected_products = {products.upper()} if products is not None else None
+    tf6_layouts = (
+        _tf6_raw_layouts(str(source))
+        if (selected_products is None or "TF" in selected_products)
+        and Path(str(source)).is_file()
+        else {}
+    )
 
     try:
         results = dttxml.DiagAccess(source).results
@@ -1037,20 +1246,88 @@ def load_dttxml_products(source, *, native: bool = False, products: str | None =
     tf_source = getattr(results, "TF", None)
     if tf_source is None and hasattr(results, "_mydict") and "TF" in results._mydict:
         tf_source = results._mydict["TF"]
+    if tf6_layouts and not tf_source:
+        raise ValueError("dttxml omitted serialized TF/6 Result blocks")
     if (selected_products is None or "TF" in selected_products) and tf_source:
         tf_dict = {}
+        matched_tf6_pairs: set[tuple[str, str]] = set()
         phase_loss_warned = False
         for chA, info in tf_source.items():
             for i, chB in enumerate(info.channelB):
                 key = (chB, chA)
                 xfer_data = info.xfer[i]
+                tf6_layout = tf6_layouts.get(key)
+                subtype = getattr(info, "subtype_raw", None)
+                if tf6_layout is not None and subtype is None:
+                    raise ValueError(
+                        f"Cannot authorize TF/6 phase recovery for {key!r}: "
+                        "external subtype identity is missing"
+                    )
+                if subtype == 6:
+                    if tf6_layout is None:
+                        if re.fullmatch(r".+\(REF\d+\)", chA) is not None:
+                            raise ValueError(
+                                f"TF/6 Reference result {key!r} has no characterized "
+                                "phase-preserving decoder"
+                            )
+                        raise ValueError(
+                            f"Cannot match external TF/6 result {key!r} to a unique raw XML block"
+                        )
+                    external_channel_a = getattr(info, "channelA", chA)
+                    if (
+                        tf6_layout["channel_a"] != chA
+                        or tf6_layout["channel_b"] != str(chB)
+                        or external_channel_a != chA
+                    ):
+                        raise ValueError(
+                            f"External TF/6 identity {key!r} disagrees with raw XML"
+                        )
+                    try:
+                        external_axis = np.asarray(info.FHz)
+                        external_epoch = float(info.gps_second)
+                        external_data = np.asarray(xfer_data)
+                    except (AttributeError, TypeError, ValueError) as exc:
+                        raise ValueError(
+                            f"Incomplete external TF/6 identity for {key!r}: {exc}"
+                        ) from exc
+                    raw_data = tf6_layout["data"]
+                    if (
+                        external_axis.shape != tf6_layout["frequencies"].shape
+                        or not np.array_equal(external_axis, tf6_layout["frequencies"])
+                        or external_epoch != tf6_layout["epoch"]
+                    ):
+                        raise ValueError(
+                            f"External TF/6 axis or epoch for {key!r} disagrees with raw XML"
+                        )
+                    if np.iscomplexobj(external_data):
+                        agrees = np.array_equal(external_data, raw_data, equal_nan=True)
+                    else:
+                        agrees = np.array_equal(
+                            external_data, raw_data.real, equal_nan=True
+                        )
+                    if not agrees:
+                        raise ValueError(
+                            f"External TF/6 samples for {key!r} disagree with raw XML"
+                        )
+                    from gwexpy.interop._registry import ConverterRegistry
+
+                    FrequencySeries = ConverterRegistry.get_constructor(
+                        "FrequencySeries"
+                    )
+                    tf_dict[key] = FrequencySeries(
+                        raw_data,
+                        frequencies=tf6_layout["frequencies"],
+                        epoch=tf6_layout["epoch"],
+                        name=str(key),
+                    )
+                    matched_tf6_pairs.add(key)
+                    continue
 
                 # Check for potential phase loss: if TF data is real but expected complex
                 # dttxml may strip imaginary part for subtype 6
                 if not np.iscomplexobj(xfer_data) and not phase_loss_warned:
                     # Transfer functions should typically be complex
                     # Real-only TF may indicate phase information was lost
-                    subtype = getattr(info, "subtype_raw", None)
                     if subtype in (3, 4, 6) or subtype is None:
                         warnings.warn(
                             f"Transfer function data for {key} appears to be real-only. "
@@ -1064,6 +1341,12 @@ def load_dttxml_products(source, *, native: bool = False, products: str | None =
 
                 tf_dict[key] = frequency_series(xfer_data, info, str(key))
         normalized["TF"] = tf_dict
+        missing_tf6_pairs = set(tf6_layouts) - matched_tf6_pairs
+        if missing_tf6_pairs:
+            raise ValueError(
+                "dttxml omitted serialized TF/6 channel pairs "
+                f"{sorted(missing_tf6_pairs)!r}"
+            )
 
     # The characterized external STF object is keyed by ChannelA and stores
     # an MxN complex64 response. Pair keys below follow serialized ChannelB
