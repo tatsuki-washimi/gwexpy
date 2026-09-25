@@ -46,13 +46,13 @@ For #734, register only the canonical `xml.diaggui` identifier for `TimeSeriesMa
 - Use real separate processes/environments for external (`dttxml==1.1.8`, `native=False`), native (`dttxml==1.1.8`, `native=True`), and fallback (`find_spec('dttxml') is None`, `native=False`). Module monkeypatching does not prove base-install behavior.
 - Before Step 2, identify the current #415 regression test node or reproducible conditions and record them in #730's audit manifest. A nonexistent `test_dttxml_issue415.py` is not a gate.
 - Each PR runs its own focused XML tests, relevant #726 regressions, `io-contract --no-fixtures`, `io-conformance`, changed-file `ruff check` and `ruff format --check`, applicable MyPy, and `git diff --check`. Use the `gwexpy` conda environment for pytest/Ruff/MyPy. Record checks omitted under the current `.agent/AGENTS.md` proportional-verification policy. `io-conformance` is a general gate, not direct proof for DiagGUI.
-- Record same-fixture before/after wall time and peak-memory characterization for A–D on affected I/O paths. For E, measure existing explicit matrix reads and an unaffected identifier path; note that the old auto route failed, so its time is not comparable. These measurements have no fixed numeric pass threshold; investigate material differences and include protocol, results, and caveats in each PR manifest.
+- Record same-fixture before/after wall time and peak-memory characterization for A–D on affected I/O paths. These measurements have no fixed numeric pass threshold; investigate material differences and include protocol, results, and caveats in each PR manifest. For E, registry identification alone does not warrant timing or peak-memory measurement; record `not applicable: identifier-only` in its manifest.
 - Include a per-PR JSON/YAML audit manifest, `[AGENT:<skill>]` title, independent Sol review of the exact final head SHA, and applicable `check_physics`/`needs-physics-review` handling. After any rebase, rerun affected checks and obtain a new final review verdict. #734 must rebase onto current main before merge if B/C merged in the meantime; C and D likewise use the latest integrated parser base.
 
 ## Checklist and post-fix evidence
 
 - [x] **Step 1: Save and synchronize this plan in the isolated worktree, then create its plan-only commit.**
-- [ ] **Step 2: Implement, verify, review, and integrate #730.**
+- [x] **Step 2: Implement, verify, review, and integrate #730.**
 - [ ] **Step 3: Characterize #731/#732, implement and integrate #731 then #732, while #734 proceeds in parallel.**
 - [ ] **Step 4: Implement, verify, review, and integrate #733; finish #734 against the latest main.**
 - [ ] **Step 5: Create a separate post-fix matrix after all five issue PRs are integrated.**
