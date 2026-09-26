@@ -1,0 +1,113 @@
+schema: gwexpy-v024-release-preparation-audit-v1
+release: v0.2.4
+branch: release/v0.2.4-prep-control
+branch_base: 1032a2baeee3a7ec2aab04a4a3237f97e67af1e3
+purpose: >-
+  Audit the release-preparation control and metadata changes for v0.2.4.
+  This PR audit is separate from the exact readiness evidence placeholder.
+release_state:
+  decision: HOLD
+  metadata_date: 2026-09-26
+  review_base_commit: 75d3d1a89ebc8942af1f3228152fea99d2d3420e
+  candidate_S: not_assigned
+  publishing_R: not_assigned
+  human_scientific_data_model_approval: not_received
+  readiness_evidence_path: docs/developers/plans/manifests/audit-manifest-v0.2.4-release-readiness.yaml
+  readiness_evidence_state: exact_empty_placeholder
+  date_slip_rule: >-
+    If the release date slips beyond the metadata date, establish a new S and
+    repeat the required candidate review.
+skills:
+  - name: setup_plan
+    purpose: Decompose the v0.2.4 preparation scope and required artifacts.
+  - name: prep_release
+    purpose: Prepare release metadata, notes, contract, and release checks.
+  - name: gwexpy_conda_jobs
+    purpose: Run focused checks in the gwexpy conda environment.
+implemented_file_groups:
+  release_metadata:
+    - .zenodo.json
+    - CHANGELOG.md
+    - CITATION.cff
+    - gwexpy/_version.py
+    - release_notes/v0.2.4.md
+  release_documents_and_evidence:
+    - RELEASING.md
+    - docs/developers/plans/20260926_v0.2.4_release_plan.md
+    - docs/developers/plans/manifests/audit-manifest-v0.2.4-release-readiness.yaml
+  release_controls:
+    - scripts/ci/release_contract.py
+    - scripts/ci/release_contracts.json
+    - scripts/ci/validate_release_review_evidence.py
+    - scripts/ci/verify_release_human_approval.py
+    - scripts/validate_release.py
+  tests:
+    - tests/test_release_contracts.py
+    - tests/test_release_human_approval.py
+    - tests/test_validate_release_script.py
+validation:
+  checks:
+    - command: >-
+        rtk conda run -n gwexpy python -m pytest -q
+        tests/test_release_contracts.py tests/test_validate_release_script.py
+        tests/test_release_human_approval.py
+      result: pass; 89 passed
+    - command: >-
+        rtk conda run -n gwexpy python -m pytest -q
+        tests/test_release_contracts.py
+      result: pass; 35 passed
+    - command: focused integrated release and qualification suite in integration worktree
+      result: pass; 223 passed
+    - command: >-
+        rtk conda run -n gwexpy ruff check scripts/ci/release_contract.py
+        scripts/ci/validate_release_review_evidence.py
+        scripts/ci/verify_release_human_approval.py scripts/validate_release.py
+        tests/test_release_contracts.py tests/test_validate_release_script.py
+        tests/test_release_human_approval.py
+      result: pass
+    - command: >-
+        rtk conda run -n gwexpy ruff format --check
+        scripts/ci/release_contract.py
+        scripts/ci/validate_release_review_evidence.py
+        scripts/ci/verify_release_human_approval.py scripts/validate_release.py
+        tests/test_release_contracts.py tests/test_validate_release_script.py
+        tests/test_release_human_approval.py
+      result: pass
+    - command: rtk conda run -n gwexpy python scripts/check_release_metadata.py
+      result: pass; detected v0.2.4 and matching metadata date/version
+    - command: >-
+        rtk conda run -n gwexpy python -m pytest -q
+        tests/test_release_contracts.py::test_v024_review_lanes_cover_every_change_since_peeled_v023_source
+      result: pass; 1 passed on committed candidate
+    - command: >-
+        rtk conda run -n gwexpy python scripts/ci/release_contract.py
+        --review-evidence-path v0.2.2
+      result: pass; printed the v0.2.2 canonical evidence path
+    - command: >-
+        rtk conda run -n gwexpy python scripts/ci/release_contract.py
+        --review-evidence-path v0.2.3
+      result: pass; printed the v0.2.3 canonical evidence path
+    - command: >-
+        rtk conda run -n gwexpy python scripts/ci/release_contract.py
+        --review-evidence-path v0.2.4
+      result: pass; printed the v0.2.4 canonical evidence path
+    - command: rtk git diff --check 1032a2ba...HEAD
+      result: pass; clean before this audit manifest was added
+  omitted_or_pending:
+    - check: local four-cell qualification smoke
+      result: pending; no local result is claimed
+    - check: full repository test suite
+      result: not run; focused release and qualification checks were selected
+    - check: check_physics
+      result: >-
+        not applicable to this PR because it contains release metadata and
+        release-control changes only, with no runtime or physics edits
+review_status:
+  readiness: HOLD
+  candidate_S: pending
+  publishing_R: pending
+  human_scientific_data_model_approval: pending
+  approval_comment_id: null
+  statement: >-
+    No S or R approval has been recorded. The readiness placeholder remains
+    empty until the reviewed candidate and required human approval are available.
