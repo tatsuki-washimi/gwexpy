@@ -108,6 +108,30 @@ def test_mode_node_lists_are_explicit_and_avoid_skip_prone_route_probes() -> Non
         "test_native_tf6_preserves_complex_values" in node
         for node in evidence.BASE_TEST_NODES
     )
+    assert any(
+        "test_fft_fallback_in_separate_no_dttxml_interpreter" in node
+        for node in evidence.BASE_TEST_NODES
+    )
+    assert any(
+        "test_stf_matrix_reader_uses_real_no_dttxml_interpreter[linear-fhz-with-f0-df]"
+        in node
+        for node in evidence.BASE_TEST_NODES
+    )
+    assert any(
+        "test_stf_matrix_reader_uses_real_no_dttxml_interpreter[embedded-fhz-with-f0-df]"
+        in node
+        for node in evidence.BASE_TEST_NODES
+    )
+    assert any(
+        "test_stf_matrix_reader_uses_real_no_dttxml_interpreter[embedded-fhz-no-f0-df]"
+        in node
+        for node in evidence.BASE_TEST_NODES
+    )
+    assert not any(
+        "test_stf_matrix_reader_uses_real_no_dttxml_interpreter[linear-fhz-no-f0-df]"
+        in node
+        for node in evidence.BASE_TEST_NODES
+    )
     assert not any(
         "test_public_read_in_real_no_dttxml_process" in node
         for node in evidence.DTTXML_TEST_NODES
