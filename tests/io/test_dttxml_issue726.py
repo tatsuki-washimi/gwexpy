@@ -213,7 +213,7 @@ def rounded_uniform_embedded_diaggui_xml(tmp_path):
 
 
 @pytest.mark.skipif(not HAS_DTTXML, reason="requires the optional dttxml parser")
-def test_external_loader_retains_uniform_embedded_df_contract(
+def test_external_loader_preserves_exact_rounded_embedded_axis(
     rounded_uniform_embedded_diaggui_xml,
 ):
     path, raw_frequencies = rounded_uniform_embedded_diaggui_xml
@@ -223,12 +223,9 @@ def test_external_loader_retains_uniform_embedded_df_contract(
     assert isinstance(series, FrequencySeries)
     assert series.dtype == np.dtype(np.complex64)
     np.testing.assert_array_equal(series.value, np.ones(100, dtype=np.complex64))
-    assert float(series.df.value) == pytest.approx(float(raw_frequencies[1]))
-    # The existing helper builds a linear axis for uniform (f, Y) layouts.
-    # float32 rounding can make its bins differ slightly from the raw row.
-    np.testing.assert_allclose(
-        series.frequencies.value, raw_frequencies, rtol=0, atol=1e-6
-    )
+    # A nominal step does not guarantee that f0/df reconstructs the exact
+    # serialized float32 bins. Preserve the full axis when it does not.
+    np.testing.assert_array_equal(series.frequencies.value, raw_frequencies)
 
 
 @pytest.mark.skipif(not HAS_DTTXML, reason="requires the optional dttxml parser")

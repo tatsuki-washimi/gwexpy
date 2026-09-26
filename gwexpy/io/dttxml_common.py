@@ -199,7 +199,13 @@ def _decode_dtt_stream(
 
 
 def _uniform_frequency_step(frequencies) -> float | None:
-    """Return the bin spacing when an explicit frequency axis is uniform."""
+    """Return a candidate bin spacing for an approximately uniform axis.
+
+    Callers that compress an embedded serialized axis into ``f0``/``df`` must
+    still verify the frequencies produced by the real ``FrequencySeries``
+    constructor against the original axis. This helper only identifies a
+    possible step; its tolerance is not permission to discard serialized bins.
+    """
     axis = np.asarray(frequencies)
     if axis.size < 2:
         return None
@@ -1156,7 +1162,22 @@ def load_dttxml_products(source, *, native: bool = False, products: str | None =
                 has_embedded_axis = subtype_raw in (3, 4, 5, 6, 7) or (
                     isinstance(subtype, str) and "format (f," in subtype.lower()
                 )
-                if has_embedded_axis and _uniform_frequency_step(axis) is None:
+                if has_embedded_axis:
+                    step = _uniform_frequency_step(axis)
+                    if step is not None:
+                        candidate = FrequencySeries(
+                            data,
+                            df=step,
+                            f0=axis[0],
+                            epoch=info.gps_second,
+                            name=name,
+                            unit=unit,
+                        )
+                        if np.array_equal(
+                            np.asarray(candidate.frequencies.value),
+                            np.asarray(axis),
+                        ):
+                            return candidate
                     return FrequencySeries(
                         data,
                         frequencies=axis,

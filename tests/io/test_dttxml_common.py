@@ -23,6 +23,9 @@ from gwexpy.timeseries import TimeSeriesDict
 
 def test_uniform_frequency_step_uses_spacing_not_absolute_frequency():
     rounded_uniform = np.arange(100, dtype=np.float32) / 10
+    # This is a possible nominal step, not proof that f0/df construction
+    # reproduces every serialized float32 bin. The external-reader regression
+    # verifies exact values and requires an explicit axis when it does not.
     assert dttxml_common._uniform_frequency_step(rounded_uniform) == pytest.approx(0.1)
 
     # A large f0 must not hide a nonuniform step in float32 storage.
