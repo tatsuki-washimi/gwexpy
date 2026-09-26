@@ -12,8 +12,11 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 RELEASE_VERSION = "0.2.2"
 RELEASE_DATE = "2026-09-01"
 RELEASE_HISTORY_ENTRY = f"[{RELEASE_VERSION}] - {RELEASE_DATE}"
-CANDIDATE_RELEASE_VERSION = "0.2.3"
-CANDIDATE_RELEASE_DATE = "2026-09-05"
+PUBLISHED_V023_VERSION = "0.2.3"
+PUBLISHED_V023_DATE = "2026-09-05"
+PUBLISHED_V023_HISTORY_ENTRY = f"[{PUBLISHED_V023_VERSION}] - {PUBLISHED_V023_DATE}"
+CANDIDATE_RELEASE_VERSION = "0.2.4"
+CANDIDATE_RELEASE_DATE = "2026-09-26"
 CANDIDATE_RELEASE_HISTORY_ENTRY = (
     f"[{CANDIDATE_RELEASE_VERSION}] - {CANDIDATE_RELEASE_DATE}"
 )
@@ -142,25 +145,26 @@ def test_v022_activity_snapshot_has_japanese_public_copy() -> None:
         assert message.string == translation
 
 
-def test_published_v022_and_v023_metadata_remain_distinct() -> None:
-    """Preserve v0.2.2 history alongside v0.2.3 release identity."""
+def test_published_v022_and_v023_history_remains_distinct_from_v024_candidate():
+    """Keep published docs at v0.2.3 while release metadata advances to v0.2.4."""
     changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     citation = (REPO_ROOT / "CITATION.cff").read_text(encoding="utf-8")
     zenodo = json.loads((REPO_ROOT / ".zenodo.json").read_text(encoding="utf-8"))
+    release_status = json.loads(
+        (REPO_ROOT / "docs_redesign/release_status.json").read_text(encoding="utf-8")
+    )
     catalogue_path = (
         REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"
     )
     with catalogue_path.open(encoding="utf-8") as stream:
         catalogue = pofile.read_po(stream, locale="ja")
 
-    assert re.search(
-        rf"^## {re.escape(RELEASE_HISTORY_ENTRY)}$", changelog, re.MULTILINE
-    )
-    assert re.search(
-        rf"^## {re.escape(CANDIDATE_RELEASE_HISTORY_ENTRY)}$",
-        changelog,
-        re.MULTILINE,
-    )
+    for history_entry in (
+        RELEASE_HISTORY_ENTRY,
+        PUBLISHED_V023_HISTORY_ENTRY,
+        CANDIDATE_RELEASE_HISTORY_ENTRY,
+    ):
+        assert re.search(rf"^## {re.escape(history_entry)}$", changelog, re.MULTILINE)
     assert re.search(
         rf"^version: {re.escape(CANDIDATE_RELEASE_VERSION)}$",
         citation,
@@ -173,6 +177,15 @@ def test_published_v022_and_v023_metadata_remain_distinct() -> None:
     )
     assert zenodo["version"] == CANDIDATE_RELEASE_VERSION
     assert zenodo["publication_date"] == CANDIDATE_RELEASE_DATE
+
+    assert release_status["latest_release"] == PUBLISHED_V023_VERSION
+    assert release_status["intro_examples_release"] == PUBLISHED_V023_VERSION
+    for language in ("en", "ja"):
+        public_changelog = (
+            REPO_ROOT / f"docs/web/{language}/user_guide/changelog.md"
+        ).read_text(encoding="utf-8")
+        assert f"## {PUBLISHED_V023_HISTORY_ENTRY}" in public_changelog
+        assert f"## [{CANDIDATE_RELEASE_VERSION}]" not in public_changelog
 
     release_message = catalogue.get(RELEASE_HISTORY_ENTRY)
     assert release_message is not None
@@ -297,8 +310,9 @@ def test_redesign_changelog_includes_the_canonical_release_history() -> None:
     canonical_releases = re.findall(
         r"^## (\[[^\]]+\] - \d{4}-\d{2}-\d{2})$", canonical, re.MULTILINE
     )
-    assert canonical_releases == [
-        CANDIDATE_RELEASE_HISTORY_ENTRY,
+    assert canonical_releases[0] == CANDIDATE_RELEASE_HISTORY_ENTRY
+    assert canonical_releases[1:] == [
+        PUBLISHED_V023_HISTORY_ENTRY,
         RELEASE_HISTORY_ENTRY,
         "[0.2.1] - 2026-08-31",
         "[0.2.0] - 2026-08-26",
@@ -339,11 +353,13 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
     changelog_message = catalogue.get("Changelog")
     assert changelog_message is not None
     assert changelog_message.string == "更新履歴"
-    for release in re.findall(
+    release_entries = re.findall(
         r"^## (\[[^\]]+\] - \d{4}-\d{2}-\d{2})$",
         (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8"),
         re.MULTILINE,
-    ):
+    )
+    assert release_entries[0] == CANDIDATE_RELEASE_HISTORY_ENTRY
+    for release in release_entries[1:]:
         release_message = catalogue.get(release)
         assert release_message is not None
         assert release_message.string == release
@@ -353,7 +369,7 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
     current_release = (
         (REPO_ROOT / "CHANGELOG.md")
         .read_text(encoding="utf-8")
-        .split("## [0.2.3] - ", 1)[1]
+        .split(f"## {PUBLISHED_V023_HISTORY_ENTRY}", 1)[1]
         .split("## [0.2.2]", 1)[0]
     )
     # This release uses headings, paragraphs and list items. Split those
@@ -363,7 +379,7 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
     for block in blocks:
         content = re.sub(r"^\s*(?:#{1,6}|[-+*]|\d+\.)\s+", "", block)
         message_id = " ".join(content.split())
-        if not message_id or message_id == CANDIDATE_RELEASE_DATE:
+        if not message_id or message_id == PUBLISHED_V023_DATE:
             continue
         message = catalogue.get(message_id)
         assert message is not None, message_id

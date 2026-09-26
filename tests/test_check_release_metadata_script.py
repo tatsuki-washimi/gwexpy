@@ -422,15 +422,15 @@ def test_main_fails_when_release_dates_drift(tmp_path: Path, monkeypatch, capsys
     assert "Release date mismatch" in output
 
 
-def test_repository_v023_release_identity_metadata_is_synchronized(monkeypatch, capsys):
+def test_repository_v024_release_identity_metadata_is_synchronized(monkeypatch, capsys):
     module = load_script_module()
     monkeypatch.chdir(ROOT)
 
-    assert module.get_version_from_py() == "0.2.3"
-    assert module.get_version_from_cff() == "0.2.3"
-    assert module.get_date_from_cff() == "2026-09-05"
-    assert module.get_version_from_zenodo() == "0.2.3"
-    assert module.get_date_from_zenodo() == "2026-09-05"
+    assert module.get_version_from_py() == "0.2.4"
+    assert module.get_version_from_cff() == "0.2.4"
+    assert module.get_date_from_cff() == "2026-09-26"
+    assert module.get_version_from_zenodo() == "0.2.4"
+    assert module.get_date_from_zenodo() == "2026-09-26"
 
     module.main()
 

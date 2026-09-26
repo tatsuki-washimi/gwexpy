@@ -8,7 +8,9 @@ import hashlib
 import importlib.util
 import json
 import re
+import subprocess
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -33,6 +35,18 @@ ENTRY_KEYS = {
     "raw_report_sha256",
     "finding_ids",
 }
+V024_TAG = "v0.2.4"
+V024_HUMAN_APPROVAL_KEYS = {
+    "approver_login",
+    "role",
+    "reviewed_commit",
+    "scope_paths",
+    "scope_digest",
+    "timestamp_utc",
+    "verdict",
+    "comment_id",
+}
+V024_APPROVER_LOGIN = "tatsuki-washimi"
 
 
 class ReleaseReviewEvidenceError(ValueError):
@@ -107,8 +121,6 @@ def _load_review_document(path: Path) -> dict[str, Any]:
 
 
 def _scope_digest(repo_root: Path, commit: str, paths: list[str]) -> str:
-    import subprocess
-
     for path in paths:
         exists = subprocess.run(
             ["git", "cat-file", "-e", f"{commit}:{path}"],
@@ -129,6 +141,120 @@ def _scope_digest(repo_root: Path, commit: str, paths: list[str]) -> str:
     if result.returncode:
         raise ReleaseReviewEvidenceError("cannot calculate review scope digest")
     return hashlib.sha256(result.stdout).hexdigest()
+
+
+def changed_paths_between(repo_root: Path | str, base: str, candidate: str) -> set[str]:
+    """Return both sides of every changed path, including rename endpoints."""
+    result = subprocess.run(
+        [
+            "git",
+            "diff",
+            "--no-renames",
+            "--name-only",
+            "-z",
+            "--diff-filter=ACDMRTUXB",
+            f"{base}..{candidate}",
+            "--",
+        ],
+        cwd=repo_root,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode:
+        raise ReleaseReviewEvidenceError("cannot enumerate release review changes")
+    raw_paths = result.stdout
+    if raw_paths and not raw_paths.endswith(b"\0"):
+        raise ReleaseReviewEvidenceError("git returned a malformed changed-path list")
+    try:
+        paths = [
+            item.decode("utf-8", errors="strict") for item in raw_paths.split(b"\0")
+        ]
+    except UnicodeDecodeError as exc:
+        raise ReleaseReviewEvidenceError("changed paths are not valid UTF-8") from exc
+    if paths[-1:] != [""] or any(not path for path in paths[:-1]):
+        raise ReleaseReviewEvidenceError("git returned a malformed changed-path list")
+    return set(paths[:-1])
+
+
+def _scope_covers_path(path: str, scope_paths: set[str]) -> bool:
+    return any(path == scope or path.startswith(f"{scope}/") for scope in scope_paths)
+
+
+def validate_review_scope_coverage(
+    repo_root: Path | str,
+    reviewed_commit: str,
+    contract: dict[str, Any],
+) -> None:
+    """Require configured v0.2.4 review lanes to cover the full release diff."""
+    base = contract.get("review_base_sha")
+    if not isinstance(base, str) or SHA40.fullmatch(base) is None:
+        raise ReleaseReviewEvidenceError("v0.2.4 has no frozen review baseline")
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", base, reviewed_commit],
+        cwd=repo_root,
+        capture_output=True,
+        check=False,
+    )
+    if ancestor.returncode:
+        raise ReleaseReviewEvidenceError(
+            "v0.2.3 release source is not an ancestor of reviewed commit"
+        )
+    changed = changed_paths_between(repo_root, base, reviewed_commit)
+    lane_paths = {
+        path for paths in dict(contract["review_lanes"]).values() for path in paths
+    }
+    uncovered = sorted(
+        path for path in changed if not _scope_covers_path(path, lane_paths)
+    )
+    if uncovered:
+        raise ReleaseReviewEvidenceError(
+            "release review lanes do not cover changed paths: " + ", ".join(uncovered)
+        )
+
+
+def _valid_utc_timestamp(value: object) -> bool:
+    if not isinstance(value, str) or TIMESTAMP.fullmatch(value) is None:
+        return False
+    try:
+        datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
+    except ValueError:
+        return False
+    return True
+
+
+def _validate_v024_human_approval(
+    repo_root: Path,
+    approval: object,
+    reviewed_commit: str,
+    contract: dict[str, Any],
+) -> None:
+    if not isinstance(approval, dict) or set(approval) != V024_HUMAN_APPROVAL_KEYS:
+        raise ReleaseReviewEvidenceError("invalid human approval keys")
+    lane_paths = dict(contract["review_lanes"]).get("scientific-data-model")
+    paths = approval["scope_paths"]
+    comment_id = approval["comment_id"]
+    if (
+        approval["approver_login"] != V024_APPROVER_LOGIN
+        or approval["role"] != "release-owner"
+        or approval["reviewed_commit"] != reviewed_commit
+        or not isinstance(paths, list)
+        or not isinstance(lane_paths, list)
+        or paths != lane_paths
+        or not isinstance(approval["scope_digest"], str)
+        or SHA256.fullmatch(approval["scope_digest"]) is None
+        or not _valid_utc_timestamp(approval["timestamp_utc"])
+        or approval["verdict"] != "APPROVED"
+        or isinstance(comment_id, bool)
+        or not isinstance(comment_id, int)
+        or comment_id <= 0
+    ):
+        raise ReleaseReviewEvidenceError("invalid human approval evidence")
+    if approval["scope_digest"] != _scope_digest(
+        repo_root, reviewed_commit, lane_paths
+    ):
+        raise ReleaseReviewEvidenceError(
+            "human approval scope digest does not match the reviewed tree"
+        )
 
 
 def validate_review_evidence(
@@ -153,9 +279,12 @@ def validate_review_evidence(
         lane: set(paths) for lane, paths in dict(contract["review_lanes"]).items()
     }
     data = _load_review_document(evidence_path)
+    expected_top_level = {"schema", "entries"}
+    if expected_tag == V024_TAG:
+        expected_top_level.add("human_approval")
     if (
         not isinstance(data, dict)
-        or set(data) != {"schema", "entries"}
+        or set(data) != expected_top_level
         or data["schema"] != schema
     ):
         raise ReleaseReviewEvidenceError("unknown or missing review evidence keys")
@@ -236,6 +365,11 @@ def validate_review_evidence(
         seen.add(lane)
     if seen != required_lanes:
         raise ReleaseReviewEvidenceError("review evidence has missing or extra lanes")
+    if expected_tag == V024_TAG:
+        _validate_v024_human_approval(
+            Path(repo_root), data["human_approval"], reviewed_commit, contract
+        )
+        validate_review_scope_coverage(Path(repo_root), reviewed_commit, contract)
     return data
 
 

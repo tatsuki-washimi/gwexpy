@@ -20,6 +20,10 @@ V023_PLAN_PATH = (
 V023_REVIEW_EVIDENCE_PATH = (
     "docs/developers/plans/manifests/audit-manifest-v0.2.3-release-readiness.yaml"
 )
+V024_PLAN_PATH = "docs/developers/plans/20260926_v0.2.4_release_plan.md"
+V024_REVIEW_EVIDENCE_PATH = (
+    "docs/developers/plans/manifests/audit-manifest-v0.2.4-release-readiness.yaml"
+)
 V023_EMPTY_REVIEW_EVIDENCE = """\
 review_evidence_json: |
   {
@@ -36,6 +40,23 @@ review_evidence_json: |
         "lane": "release-security"
       }
     ]
+}
+"""
+V024_EMPTY_REVIEW_EVIDENCE = """\
+review_evidence_json: |
+  {
+    "schema": "gwexpy-v024-review-evidence-v1",
+    "entries": [],
+    "human_approval": {
+      "approver_login": "",
+      "role": "",
+      "reviewed_commit": "",
+      "scope_paths": [],
+      "scope_digest": "",
+      "timestamp_utc": "",
+      "verdict": "",
+      "comment_id": 0
+    }
   }
 """
 
@@ -193,6 +214,55 @@ def commit_v023_r(
     )
     git(repo, "add", ".")
     git(repo, "commit", "-m", "R")
+    return git(repo, "rev-parse", "HEAD")
+
+
+def make_v024_s_to_r_repo(
+    tmp_path: Path,
+    *,
+    source_manifest: str | None = V024_EMPTY_REVIEW_EVIDENCE,
+) -> tuple[Path, Path, Path, str]:
+    repo = tmp_path / "v024-review-repo"
+    repo.mkdir(parents=True)
+    git(repo, "init", "-b", "main")
+    git(repo, "config", "user.name", "Release Test")
+    git(repo, "config", "user.email", "release-test@example.invalid")
+    plan = repo / V024_PLAN_PATH
+    manifest = repo / V024_REVIEW_EVIDENCE_PATH
+    plan.parent.mkdir(parents=True)
+    manifest.parent.mkdir(parents=True)
+    plan.write_text(
+        "- [ ] candidate review evidence\n- [ ] qualification\n",
+        encoding="utf-8",
+    )
+    if source_manifest is not None:
+        manifest.write_text(source_manifest, encoding="utf-8")
+    git(repo, "add", ".")
+    git(repo, "commit", "-m", "v0.2.4 source S")
+    return repo, plan, manifest, git(repo, "rev-parse", "HEAD")
+
+
+def commit_v024_r(
+    repo: Path,
+    plan: Path,
+    manifest: Path,
+    *,
+    update_plan: bool = False,
+    extra_file: bool = False,
+) -> str:
+    if update_plan:
+        plan.write_text(
+            "- [x] candidate review evidence\n- [x] qualification\n",
+            encoding="utf-8",
+        )
+    manifest.write_text(
+        'review_evidence_json: |\n  {"schema": "gwexpy-v024-review-evidence-v1"}\n',
+        encoding="utf-8",
+    )
+    if extra_file:
+        (repo / "outside.txt").write_text("not allowed\n", encoding="utf-8")
+    git(repo, "add", ".")
+    git(repo, "commit", "-m", "v0.2.4 review evidence R")
     return git(repo, "rev-parse", "HEAD")
 
 
@@ -572,3 +642,135 @@ def test_v023_s_to_r_accepts_distinct_source_with_exact_empty_placeholder(
     )
 
     assert validated_commit == reviewed_commit
+
+
+def test_v024_s_to_r_rejects_the_same_reviewed_and_source_commit(
+    tmp_path: Path,
+) -> None:
+    validator = load_validator()
+    repo, _plan, _manifest, reviewed_commit = make_v024_s_to_r_repo(tmp_path)
+
+    with pytest.raises(validator.ReleaseValidationError, match="distinct commits"):
+        validator.validate_s_to_r(
+            repo,
+            reviewed_commit,
+            reviewed_commit,
+            expected_tag="v0.2.4",
+        )
+
+
+@pytest.mark.parametrize(
+    "source_manifest",
+    [
+        pytest.param(None, id="absent"),
+        pytest.param(
+            V024_EMPTY_REVIEW_EVIDENCE.replace('"entries": []', '"entries": [{}]'),
+            id="populated-entries",
+        ),
+        pytest.param(
+            V024_EMPTY_REVIEW_EVIDENCE.replace('"comment_id": 0', '"comment_id": 1'),
+            id="approval-already-populated",
+        ),
+        pytest.param(
+            f"unreviewed: true\n{V024_EMPTY_REVIEW_EVIDENCE}",
+            id="extra-yaml",
+        ),
+        pytest.param(
+            "review_evidence_json: >\n"
+            '  {"schema":"gwexpy-v024-review-evidence-v1","entries":[]}\n',
+            id="malformed-block",
+        ),
+    ],
+)
+def test_v024_s_to_r_rejects_noncanonical_source_placeholder(
+    tmp_path: Path,
+    source_manifest: str | None,
+) -> None:
+    validator = load_validator()
+    repo, plan, manifest, reviewed_commit = make_v024_s_to_r_repo(
+        tmp_path,
+        source_manifest=source_manifest,
+    )
+    source_sha = commit_v024_r(repo, plan, manifest, update_plan=True)
+
+    with pytest.raises(
+        validator.ReleaseValidationError,
+        match="exact empty review evidence placeholder",
+    ):
+        validator.validate_s_to_r(
+            repo,
+            reviewed_commit,
+            source_sha,
+            expected_tag="v0.2.4",
+        )
+
+
+@pytest.mark.parametrize("update_plan", [False, True])
+def test_v024_s_to_r_accepts_distinct_review_evidence_and_plan_checkboxes(
+    tmp_path: Path,
+    update_plan: bool,
+) -> None:
+    validator = load_validator()
+    repo, plan, manifest, reviewed_commit = make_v024_s_to_r_repo(tmp_path)
+    source_sha = commit_v024_r(repo, plan, manifest, update_plan=update_plan)
+
+    validator.validate_s_to_r(
+        repo,
+        reviewed_commit,
+        source_sha,
+        expected_tag="v0.2.4",
+    )
+
+
+def test_v024_s_to_r_rejects_plan_text_changes_outside_checkbox_transition(
+    tmp_path: Path,
+) -> None:
+    validator = load_validator()
+    repo, plan, manifest, reviewed_commit = make_v024_s_to_r_repo(tmp_path)
+    plan.write_text(
+        "- [x] candidate review evidence\n- [ ] qualification changed\n",
+        encoding="utf-8",
+    )
+    source_sha = commit_v024_r(repo, plan, manifest)
+
+    with pytest.raises(
+        validator.ReleaseValidationError,
+        match=r"only transition existing checkbox \[ \] to \[x\]",
+    ):
+        validator.validate_s_to_r(
+            repo,
+            reviewed_commit,
+            source_sha,
+            expected_tag="v0.2.4",
+        )
+
+
+def test_v024_s_to_r_rejects_paths_outside_evidence_and_plan(
+    tmp_path: Path,
+) -> None:
+    validator = load_validator()
+    repo, plan, manifest, reviewed_commit = make_v024_s_to_r_repo(tmp_path)
+    source_sha = commit_v024_r(repo, plan, manifest, extra_file=True)
+
+    with pytest.raises(
+        validator.ReleaseValidationError,
+        match="outside coordinator audit paths",
+    ):
+        validator.validate_s_to_r(
+            repo,
+            reviewed_commit,
+            source_sha,
+            expected_tag="v0.2.4",
+        )
+
+
+def test_v024_candidate_release_requires_review_evidence(tmp_path: Path) -> None:
+    validator = load_validator()
+    repo = make_repo(tmp_path, version="0.2.4", date="2026-09-26")
+    source_sha = git(repo, "rev-parse", "HEAD")
+
+    with pytest.raises(
+        validator.ReleaseValidationError,
+        match="v0.2.4 requires release review evidence",
+    ):
+        validator.validate_release(repo, source_sha, "v0.2.4")

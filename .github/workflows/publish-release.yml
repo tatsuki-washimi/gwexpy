@@ -31,6 +31,9 @@ jobs:
     name: Verify immutable release source
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: read
+      issues: read
     outputs:
       source_sha: ${{ steps.validate.outputs.source_sha }}
       version: ${{ steps.validate.outputs.version }}
@@ -90,19 +93,39 @@ jobs:
         env:
           RELEASE_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.release_ref || github.ref_name }}
           EXPECTED_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_tag || github.ref_name }}
-          REVIEW_EVIDENCE: ${{ github.event_name == 'workflow_dispatch' && inputs.review_evidence || '' }}
+          REVIEW_EVIDENCE_INPUT: ${{ github.event_name == 'workflow_dispatch' && inputs.review_evidence || '' }}
         run: |
-          review_args=()
-          if [[ -n "$REVIEW_EVIDENCE" ]]; then
-            review_args=(--review-evidence "$REVIEW_EVIDENCE")
+          canonical_review_evidence="$(python control/scripts/ci/release_contract.py --review-evidence-path "$EXPECTED_TAG")"
+          if [[ -z "$canonical_review_evidence" ]]; then
+            echo "release contract has no review evidence path" >&2
+            exit 1
           fi
-          result="$(python control/scripts/validate_release.py --repo-root source --release-ref "$RELEASE_REF" --expected-tag "$EXPECTED_TAG" "${review_args[@]}" --frozen-tip)"
+          if [[ -n "$REVIEW_EVIDENCE_INPUT" && "$REVIEW_EVIDENCE_INPUT" != "$canonical_review_evidence" ]]; then
+            echo "review evidence input does not match the configured path" >&2
+            exit 1
+          fi
+          result="$(python control/scripts/validate_release.py --repo-root source --release-ref "$RELEASE_REF" --expected-tag "$EXPECTED_TAG" --review-evidence "$canonical_review_evidence" --frozen-tip)"
           printf '%s\n' "$result"
           printf '%s\n' "$result" | awk -F= '
             /^source_sha=/ {print "source_sha=" $2}
             /^version=/ {print "version=" $2}
             /^artifact_prefix=/ {print "artifact_prefix=" $2}
           ' >> "$GITHUB_OUTPUT"
+          printf 'review_evidence=%s\n' "$canonical_review_evidence" >> "$GITHUB_OUTPUT"
+
+      - name: Verify GitHub human approval for the reviewed source
+        if: steps.validate.outputs.version == '0.2.4'
+        env:
+          EXPECTED_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_tag || github.ref_name }}
+          REVIEW_EVIDENCE: ${{ steps.validate.outputs.review_evidence }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          python control/scripts/ci/verify_release_human_approval.py \
+            --repo-root source \
+            --evidence "$REVIEW_EVIDENCE" \
+            --expected-tag "$EXPECTED_TAG" \
+            --repository "$GITHUB_REPOSITORY"
 
   build:
     name: Build and check release artifacts
@@ -256,7 +279,7 @@ jobs:
   qualify:
     name: Qualify ${{ matrix.cell }}
     needs: [verify, build]
-    if: ${{ needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' }}
+    if: ${{ needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
@@ -370,6 +393,10 @@ jobs:
               python -c 'import os; from pathlib import Path; Path(os.environ["JUNIT"]).parent.mkdir(parents=True, exist_ok=True)'
               "${runner[@]}" -m pytest --junitxml="$JUNIT" --import-mode=importlib -q "${tests[@]}"
               ;;
+            0.2.4)
+              python -c 'import os; from pathlib import Path; Path(os.environ["JUNIT"]).parent.mkdir(parents=True, exist_ok=True)'
+              "${runner[@]}" -m pytest --junitxml="$JUNIT" --import-mode=importlib -q "${tests[@]}"
+              ;;
             *)
               echo "unsupported qualification version: $EXPECTED_VERSION" >&2
               exit 1
@@ -417,6 +444,27 @@ jobs:
             --junit "$JUNIT" \
             --expected-skips "$EXPECTED_SKIPS"
 
+      - name: Record qualification cell skip evidence (v0.2.4)
+        if: needs.verify.outputs.version == '0.2.4'
+        shell: bash
+        env:
+          CELL: ${{ matrix.cell }}
+          SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          VERSION: ${{ needs.verify.outputs.version }}
+          REPORT: ${{ runner.temp }}/qualification-report/qualification.json
+          JUNIT: ${{ runner.temp }}/qualification-report/pytest.xml
+          PAYLOAD_MANIFEST: ${{ runner.temp }}/release-sidecars/distribution-sha256.json
+          EXPECTED_SKIPS: source/scripts/ci/v024_qualification_expected_skips.json
+        run: |
+          python source/scripts/ci/qualification_evidence.py record \
+            --version "$VERSION" \
+            --cell "$CELL" \
+            --source-sha "$SOURCE_SHA" \
+            --payload-manifest "$PAYLOAD_MANIFEST" \
+            --report "$REPORT" \
+            --junit "$JUNIT" \
+            --expected-skips "$EXPECTED_SKIPS"
+
       - name: Upload qualification cell evidence
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
@@ -428,12 +476,12 @@ jobs:
   qualification_evidence:
     name: Aggregate nineteen qualification cells
     needs: [verify, build, qualify]
-    if: ${{ needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' }}
+    if: ${{ needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Check out verified qualification source
-        if: needs.verify.outputs.version == '0.2.3'
+        if: needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ needs.verify.outputs.source_sha }}
@@ -441,7 +489,7 @@ jobs:
           path: source
 
       - name: Set up Python
-        if: needs.verify.outputs.version == '0.2.3'
+        if: needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4'
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.11"
@@ -468,6 +516,10 @@ jobs:
               printf '%s\n' 'evidence_schema=gwexpy-v022-qualification-evidence-v1' 'artifact_prefix=v022-qualification-evidence' >> "$GITHUB_OUTPUT"
               ;;
             0.2.3)
+              python source/scripts/ci/qualification_evidence.py contract \
+                --version "$VERSION" >> "$GITHUB_OUTPUT"
+              ;;
+            0.2.4)
               python source/scripts/ci/qualification_evidence.py contract \
                 --version "$VERSION" >> "$GITHUB_OUTPUT"
               ;;
@@ -519,11 +571,206 @@ jobs:
             --output "$OUTPUT" \
             --expected-skips "$EXPECTED_SKIPS"
 
+      - name: Assert v0.2.4 skip and same-payload qualification ledger
+        if: needs.verify.outputs.version == '0.2.4'
+        env:
+          CELLS: ${{ runner.temp }}/qualification-cells
+          SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          VERSION: ${{ needs.verify.outputs.version }}
+          PAYLOAD_MANIFEST: ${{ runner.temp }}/release-sidecars/distribution-sha256.json
+          OUTPUT: ${{ runner.temp }}/qualification-manifest.json
+          EXPECTED_SKIPS: source/scripts/ci/v024_qualification_expected_skips.json
+        run: |
+          python source/scripts/ci/qualification_evidence.py aggregate \
+            --version "$VERSION" \
+            --source-sha "$SOURCE_SHA" \
+            --payload-manifest "$PAYLOAD_MANIFEST" \
+            --reports-dir "$CELLS" \
+            --output "$OUTPUT" \
+            --expected-skips "$EXPECTED_SKIPS"
+
       - name: Upload qualification manifest
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: ${{ steps.qualification_contract.outputs.artifact_prefix }}-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/qualification-manifest.json
+          if-no-files-found: error
+          retention-days: 90
+
+  diaggui_qualification:
+    name: Qualify installed DiagGUI routes (${{ matrix.cell }})
+    needs: [verify, build]
+    if: ${{ needs.verify.outputs.version == '0.2.4' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {cell: base-wheel, mode: base, distribution: wheel}
+          - {cell: base-sdist, mode: base, distribution: sdist}
+          - {cell: dttxml-wheel, mode: dttxml, distribution: wheel}
+          - {cell: dttxml-sdist, mode: dttxml, distribution: sdist}
+    steps:
+      - name: Check out verified DiagGUI qualification source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.verify.outputs.source_sha }}
+          fetch-depth: 1
+          path: source
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+
+      - name: Download the candidate payload and sidecars
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: release-payload-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/release-payload
+
+      - name: Download detached candidate manifest
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/release-sidecars
+
+      - name: Create an isolated candidate environment
+        env:
+          EXPECTED_VERSION: ${{ needs.verify.outputs.version }}
+          SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          DISTRIBUTION: ${{ matrix.distribution }}
+          MODE: ${{ matrix.mode }}
+        run: |
+          python -m venv "${{ runner.temp }}/diaggui-venv"
+          python="${{ runner.temp }}/diaggui-venv/bin/python"
+          artifact_name="$(python source/scripts/ci/validate_release_payload.py \
+            --payload-dir "${{ runner.temp }}/release-payload" \
+            --manifest "${{ runner.temp }}/release-sidecars/distribution-sha256.json" \
+            --expected-version "$EXPECTED_VERSION" \
+            --source-sha "$SOURCE_SHA" \
+            --kind "$DISTRIBUTION")"
+          artifact="${{ runner.temp }}/release-payload/$artifact_name"
+          "$python" -m pip install --disable-pip-version-check --no-cache-dir "$artifact" pytest
+          if [[ "$MODE" == "dttxml" ]]; then
+            "$python" -m pip install --disable-pip-version-check --no-cache-dir dttxml==1.1.8
+          fi
+          "$python" -m pip check
+          "$python" -c "import importlib.util, gwexpy; assert gwexpy.__version__ == '$EXPECTED_VERSION'; assert 'site-packages' in gwexpy.__file__; expected = '$MODE' == 'dttxml'; present = importlib.util.find_spec('dttxml') is not None; assert present is expected; print(gwexpy.__file__)"
+
+      - name: Run explicit installed DiagGUI qualification node list
+        env:
+          MODE: ${{ matrix.mode }}
+          JUNIT: ${{ runner.temp }}/diaggui-report/pytest.xml
+        run: |
+          python="${{ runner.temp }}/diaggui-venv/bin/python"
+          tests_dir="${{ runner.temp }}/diaggui-tests"
+          mkdir -p "$tests_dir/io" "$(dirname "$JUNIT")"
+          cp source/tests/io/test_dttxml_issue730.py "$tests_dir/io/"
+          cp source/tests/io/test_dttxml_issue731.py "$tests_dir/io/"
+          cp source/tests/io/test_dttxml_issue732.py "$tests_dir/io/"
+          cp source/tests/io/test_dttxml_issue733.py "$tests_dir/io/"
+          cp source/tests/io/test_dttxml_issue734.py "$tests_dir/io/"
+          cp source/tests/io/test_dttxml_common.py "$tests_dir/io/"
+          mapfile -t tests < <(python source/scripts/ci/diaggui_qualification_evidence.py test-nodes --mode "$MODE" | sed "s#^#diaggui-tests/#")
+          cd "${{ runner.temp }}"
+          "$python" -m pytest --import-mode=importlib --junitxml="$JUNIT" -q "${tests[@]}"
+
+      - name: Record installed DiagGUI facts and skip set
+        env:
+          CELL: ${{ matrix.cell }}
+          SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          EXPECTED_VERSION: ${{ needs.verify.outputs.version }}
+          DISTRIBUTION: ${{ matrix.distribution }}
+          PAYLOAD_DIR: ${{ runner.temp }}/release-payload
+          PAYLOAD_MANIFEST: ${{ runner.temp }}/release-sidecars/distribution-sha256.json
+          JUNIT: ${{ runner.temp }}/diaggui-report/pytest.xml
+          REPORT: ${{ runner.temp }}/diaggui-report/diaggui-qualification.json
+        run: |
+          python="${{ runner.temp }}/diaggui-venv/bin/python"
+          artifact_name="$(python source/scripts/ci/validate_release_payload.py \
+            --payload-dir "$PAYLOAD_DIR" \
+            --manifest "$PAYLOAD_MANIFEST" \
+            --expected-version "$EXPECTED_VERSION" \
+            --source-sha "$SOURCE_SHA" \
+            --kind "$DISTRIBUTION")"
+          artifact="$PAYLOAD_DIR/$artifact_name"
+          "$python" source/scripts/ci/diaggui_qualification_evidence.py record \
+            --cell "$CELL" \
+            --source-sha "$SOURCE_SHA" \
+            --payload-manifest "$PAYLOAD_MANIFEST" \
+            --artifact "$artifact" \
+            --junit "$JUNIT" \
+            --report "$REPORT"
+
+      - name: Upload DiagGUI cell evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: release-diaggui-qualification-${{ needs.verify.outputs.source_sha }}-${{ matrix.cell }}
+          path: ${{ runner.temp }}/diaggui-report/diaggui-qualification.json
+          if-no-files-found: error
+          retention-days: 90
+
+  diaggui_qualification_evidence:
+    name: Aggregate four DiagGUI qualification cells
+    needs: [verify, build, diaggui_qualification]
+    if: ${{ !cancelled() && needs.verify.result == 'success' && needs.build.result == 'success' && (needs.verify.outputs.version != '0.2.4' || needs.diaggui_qualification.result == 'success') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Mark historical release as having no DiagGUI lane
+        if: needs.verify.outputs.version != '0.2.4'
+        run: echo "DiagGUI qualification applies to v0.2.4 only"
+
+      - name: Check out verified DiagGUI aggregate source
+        if: needs.verify.outputs.version == '0.2.4'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.verify.outputs.source_sha }}
+          fetch-depth: 1
+          path: source
+
+      - name: Set up Python for DiagGUI aggregate
+        if: needs.verify.outputs.version == '0.2.4'
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+
+      - name: Download all DiagGUI cell evidence
+        if: needs.verify.outputs.version == '0.2.4'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: release-diaggui-qualification-${{ needs.verify.outputs.source_sha }}-*
+          path: ${{ runner.temp }}/diaggui-cells
+
+      - name: Download detached DiagGUI candidate manifest
+        if: needs.verify.outputs.version == '0.2.4'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/release-sidecars
+
+      - name: Assert four candidate-bound DiagGUI reports
+        if: needs.verify.outputs.version == '0.2.4'
+        env:
+          SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          PAYLOAD_MANIFEST: ${{ runner.temp }}/release-sidecars/distribution-sha256.json
+          REPORTS_DIR: ${{ runner.temp }}/diaggui-cells
+          OUTPUT: ${{ runner.temp }}/diaggui-qualification-manifest.json
+        run: |
+          python source/scripts/ci/diaggui_qualification_evidence.py aggregate \
+            --source-sha "$SOURCE_SHA" \
+            --payload-manifest "$PAYLOAD_MANIFEST" \
+            --reports-dir "$REPORTS_DIR" \
+            --output "$OUTPUT"
+
+      - name: Upload DiagGUI qualification manifest
+        if: needs.verify.outputs.version == '0.2.4'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: v024-diaggui-qualification-evidence-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/diaggui-qualification-manifest.json
           if-no-files-found: error
           retention-days: 90
 
@@ -583,7 +830,7 @@ jobs:
 
   publish:
     name: Publish verified artifacts to PyPI
-    needs: [verify, build, smoke, qualify, qualification_evidence, evidence]
+    needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, evidence]
     if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15

@@ -1,4 +1,4 @@
-"""Fail-closed contracts for v0.2.3 qualification skip evidence."""
+"""Fail-closed contracts for versioned release qualification skip evidence."""
 
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "ci" / "qualification_evidence.py"
 BASELINE = ROOT / "scripts" / "ci" / "v023_qualification_expected_skips.json"
+BASELINE_V024 = ROOT / "scripts" / "ci" / "v024_qualification_expected_skips.json"
 
 EXPECTED_CELLS = (
     "install-ubuntu-3.11-wheel",
@@ -81,6 +82,14 @@ def baseline_data(
         ],
         "schema": "gwexpy-v023-qualification-expected-skips-v1",
         "version": "0.2.3",
+    }
+
+
+def baseline_v024_data() -> dict[str, object]:
+    return {
+        "cells": [{"cell": cell, "optional_skips": []} for cell in EXPECTED_CELLS],
+        "schema": "gwexpy-v024-qualification-expected-skips-v1",
+        "version": "0.2.4",
     }
 
 
@@ -193,8 +202,14 @@ def test_repository_baseline_survives_crlf_checkout(
         capture_output=True,
     )
 
-    assert attributes.read_bytes() == (
-        b"scripts/ci/v023_qualification_expected_skips.json text eol=lf"
+    assert (
+        attributes.read_bytes()
+        == attributes_newline.join(
+            (
+                b"scripts/ci/v023_qualification_expected_skips.json text eol=lf",
+                b"scripts/ci/v024_qualification_expected_skips.json text eol=lf",
+            )
+        )
         + attributes_newline
     )
     # Exercise the actual workflow contract against both checkout conditions.
@@ -223,7 +238,7 @@ def test_repository_baseline_survives_crlf_checkout(
         evidence.load_expected_skips(baseline)
 
 
-def test_version_contract_preserves_v022_and_adds_v023() -> None:
+def test_version_contract_preserves_v022_v023_and_adds_v024() -> None:
     evidence = load_module()
 
     assert evidence.qualification_contract("0.2.2") == {
@@ -236,8 +251,85 @@ def test_version_contract_preserves_v022_and_adds_v023() -> None:
         "evidence_schema": "gwexpy-v023-qualification-evidence-v1",
         "expected_skips_schema": "gwexpy-v023-qualification-expected-skips-v1",
     }
+    assert evidence.qualification_contract("0.2.4") == {
+        "artifact_prefix": "v024-qualification-evidence",
+        "evidence_schema": "gwexpy-v024-qualification-evidence-v1",
+        "expected_skips_schema": "gwexpy-v024-qualification-expected-skips-v1",
+    }
     with pytest.raises(evidence.QualificationEvidenceError, match="unsupported"):
-        evidence.qualification_contract("0.2.4")
+        evidence.qualification_contract("0.2.5")
+
+
+def test_v024_baseline_is_version_bound_and_has_a_distinct_identity() -> None:
+    evidence = load_module()
+    raw = BASELINE_V024.read_bytes()
+    loaded = evidence.load_expected_skips(BASELINE_V024, version="0.2.4")
+
+    assert raw == canonical_json(baseline_v024_data())
+    assert tuple(loaded.cells) == EXPECTED_CELLS
+    assert all(not skips for skips in loaded.cells.values())
+    assert loaded.sha256 == hashlib.sha256(raw).hexdigest()
+    with pytest.raises(evidence.QualificationEvidenceError, match="schema"):
+        evidence.load_expected_skips(BASELINE_V024, version="0.2.3")
+
+
+def test_v024_records_and_aggregates_all_nineteen_cells_with_its_baseline(
+    tmp_path: Path,
+) -> None:
+    evidence = load_module()
+    payload = write_payload(tmp_path / "payload-v024.json", version="0.2.4")
+    junit = write_junit(tmp_path / "pytest.xml", [])
+    reports = tmp_path / "reports"
+    for cell in EXPECTED_CELLS:
+        evidence.record_cell(
+            version="0.2.4",
+            cell=cell,
+            source_sha=SOURCE_SHA,
+            payload_manifest=payload,
+            report_path=reports / cell / "qualification.json",
+            junit_path=junit,
+            expected_skips_path=BASELINE_V024,
+        )
+
+    aggregate = evidence.aggregate_reports(
+        version="0.2.4",
+        source_sha=SOURCE_SHA,
+        payload_manifest=payload,
+        reports_dir=reports,
+        output_path=tmp_path / "aggregate-v024.json",
+        expected_skips_path=BASELINE_V024,
+    )
+
+    assert aggregate["schema"] == "gwexpy-v024-qualification-evidence-v1"
+    assert aggregate["version"] == "0.2.4"
+    assert aggregate["source_sha"] == SOURCE_SHA
+    assert (
+        aggregate["baseline_sha256"]
+        == hashlib.sha256(BASELINE_V024.read_bytes()).hexdigest()
+    )
+    assert len(aggregate["cells"]) == 19
+
+
+def test_v024_rejects_a_skip_that_is_not_in_its_own_baseline(tmp_path: Path) -> None:
+    evidence = load_module()
+    payload = write_payload(tmp_path / "payload-v024.json", version="0.2.4")
+    junit = write_junit(
+        tmp_path / "pytest.xml",
+        [("tests.required", "test_contract", "new unexpected skip")],
+    )
+
+    with pytest.raises(
+        evidence.QualificationEvidenceError, match="required observed skips"
+    ):
+        evidence.record_cell(
+            version="0.2.4",
+            cell=EXPECTED_CELLS[0],
+            source_sha=SOURCE_SHA,
+            payload_manifest=payload,
+            report_path=tmp_path / "qualification.json",
+            junit_path=junit,
+            expected_skips_path=BASELINE_V024,
+        )
 
 
 def test_record_v023_accepts_reviewed_optional_skip_and_records_baseline_sha(
@@ -968,7 +1060,7 @@ def test_record_rejects_unknown_version_cell_and_missing_v023_inputs(
 
     with pytest.raises(evidence.QualificationEvidenceError, match="unsupported"):
         evidence.record_cell(
-            version="0.2.4",
+            version="0.2.5",
             cell=EXPECTED_CELLS[0],
             source_sha=SOURCE_SHA,
             payload_manifest=payload,

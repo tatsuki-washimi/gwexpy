@@ -14,6 +14,7 @@ CONTRACT_PATH = Path(__file__).with_name("release_contracts.json")
 CONTRACT_SCHEMA = "gwexpy-release-contracts-v1"
 RELEASE_TAG = re.compile(r"^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
 ARTIFACT_PREFIX = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+SHA40 = re.compile(r"^[0-9a-f]{40}$")
 CONTRACT_KEYS = {
     "plan_path",
     "review_evidence_path",
@@ -94,8 +95,18 @@ def _safe_branch_ref(value: str) -> bool:
 
 
 def _validate_contract(tag: str, contract: object) -> dict[str, Any]:
-    if not isinstance(contract, dict) or set(contract) != CONTRACT_KEYS:
+    if not isinstance(contract, dict) or frozenset(contract) not in {
+        frozenset(CONTRACT_KEYS),
+        frozenset(CONTRACT_KEYS | {"review_base_sha"}),
+    }:
         raise ReleaseContractError(f"invalid release contract for {tag}")
+    review_base_sha = contract.get("review_base_sha")
+    if review_base_sha is not None and (
+        tag != "v0.2.4"
+        or not isinstance(review_base_sha, str)
+        or SHA40.fullmatch(review_base_sha) is None
+    ):
+        raise ReleaseContractError(f"invalid review_base_sha for {tag}")
     if not _safe_path(contract["plan_path"]) or not _safe_path(
         contract["review_evidence_path"]
     ):
@@ -174,12 +185,18 @@ def protected_refs(tag: str) -> list[str]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Print exact-tag protected refs for workflow consumption."""
+    """Print an exact-tag workflow value selected from the release contract."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--protected-ref", metavar="EXPECTED_TAG", required=True)
+    selection = parser.add_mutually_exclusive_group(required=True)
+    selection.add_argument("--protected-ref", metavar="EXPECTED_TAG")
+    selection.add_argument("--review-evidence-path", metavar="EXPECTED_TAG")
     args = parser.parse_args(argv)
     try:
-        print(*protected_refs(args.protected_ref), sep="\n")
+        if args.protected_ref is not None:
+            print(*protected_refs(args.protected_ref), sep="\n")
+        else:
+            contract = release_contract(args.review_evidence_path)
+            print(contract["review_evidence_path"])
     except ReleaseContractError as exc:
         print(f"release contract failed: {exc}")
         return 1

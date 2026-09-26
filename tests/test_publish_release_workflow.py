@@ -250,17 +250,14 @@ def test_release_smoke_covers_both_artifacts_on_python_311_and_312():
         assert token in workflow if token == "retention-days: 90" else token in smoke
 
 
-def test_v022_and_v023_release_qualification_share_exact_nineteen_cells():
+def test_v022_through_v024_release_qualification_share_exact_nineteen_cells():
     import yaml
 
     workflow = yaml.safe_load(read_workflow())
     matrix = workflow["jobs"]["qualify"]["strategy"]["matrix"]["include"]
 
     assert len(matrix) == 19
-    allowlist = (
-        "${{ needs.verify.outputs.version == '0.2.2' || "
-        "needs.verify.outputs.version == '0.2.3' }}"
-    )
+    allowlist = "${{ needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' }}"
     assert workflow["jobs"]["qualify"]["if"] == allowlist
     assert workflow["jobs"]["qualification_evidence"]["if"] == allowlist
     assert matrix == [
@@ -427,6 +424,7 @@ def test_v022_and_v023_release_qualification_share_exact_nineteen_cells():
     assert "tests/timeseries/test_gwpy_behavioral_compatibility.py" in qualify
     assert '--junitxml="$JUNIT"' in qualify
     assert "v023_qualification_expected_skips.json" in qualify
+    assert "v024_qualification_expected_skips.json" in qualify
     assert "qualification_evidence.py record" in qualify
     assert "needs.verify.outputs.version == '0.2.3'" in qualify
     publish = text.split("\n  publish:\n", maxsplit=1)[1]
@@ -446,6 +444,7 @@ def test_qualification_evidence_switch_is_fail_closed_and_versioned():
     )
     assert "if" not in run_step
     assert "0.2.3)" in run_step["run"]
+    assert "0.2.4)" in run_step["run"]
     assert '--junitxml="$JUNIT"' in run_step["run"]
 
     aggregate = text.split("\n  qualification_evidence:\n", maxsplit=1)[1].split(
@@ -455,6 +454,7 @@ def test_qualification_evidence_switch_is_fail_closed_and_versioned():
     assert "qualification_evidence.py contract" in aggregate
     assert "qualification_evidence.py aggregate" in aggregate
     assert "v023_qualification_expected_skips.json" in aggregate
+    assert "v024_qualification_expected_skips.json" in aggregate
     assert "steps.qualification_contract.outputs.artifact_prefix" in aggregate
     assert "continue-on-error" not in aggregate
     assert "always()" not in aggregate
@@ -462,9 +462,66 @@ def test_qualification_evidence_switch_is_fail_closed_and_versioned():
     publish = text.split("\n  publish:\n", maxsplit=1)[1]
     needs = publish.split("\n    if:", maxsplit=1)[0]
     assert (
-        "needs: [verify, build, smoke, qualify, qualification_evidence, evidence]"
+        "needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, evidence]"
         in needs
     )
+
+
+def test_v024_diaggui_lane_is_four_cell_digest_bound_and_required_for_publish():
+    import yaml
+
+    workflow = yaml.safe_load(read_workflow())
+    jobs = workflow["jobs"]
+    cells = jobs["diaggui_qualification"]["strategy"]["matrix"]["include"]
+
+    assert cells == [
+        {"cell": "base-wheel", "mode": "base", "distribution": "wheel"},
+        {"cell": "base-sdist", "mode": "base", "distribution": "sdist"},
+        {"cell": "dttxml-wheel", "mode": "dttxml", "distribution": "wheel"},
+        {"cell": "dttxml-sdist", "mode": "dttxml", "distribution": "sdist"},
+    ]
+    assert jobs["diaggui_qualification"]["needs"] == ["verify", "build"]
+    assert jobs["diaggui_qualification_evidence"]["needs"] == [
+        "verify",
+        "build",
+        "diaggui_qualification",
+    ]
+    assert "diaggui_qualification_evidence" in jobs["publish"]["needs"]
+    assert (
+        "needs.diaggui_qualification.result == 'success'"
+        in jobs["diaggui_qualification_evidence"]["if"]
+    )
+    diag_run = "\n".join(
+        step.get("run", "") for step in jobs["diaggui_qualification"]["steps"]
+    )
+    assert "validate_release_payload.py" in diag_run
+    assert "dttxml==1.1.8" in diag_run
+    assert "diaggui_qualification_evidence.py test-nodes" in diag_run
+    assert "diaggui_qualification_evidence.py record" in diag_run
+    assert "diaggui_qualification_evidence.py aggregate" in "\n".join(
+        step.get("run", "") for step in jobs["diaggui_qualification_evidence"]["steps"]
+    )
+    assert "always()" not in read_workflow()
+    assert "continue-on-error" not in read_workflow()
+
+
+def test_v024_human_approval_verifier_uses_github_read_permission_and_canonical_path():
+    import yaml
+
+    workflow = yaml.safe_load(read_workflow())
+    verify = workflow["jobs"]["verify"]
+    assert verify["permissions"] == {"contents": "read", "issues": "read"}
+    validate = next(step for step in verify["steps"] if step.get("id") == "validate")
+    verifier = next(
+        step
+        for step in verify["steps"]
+        if step["name"] == "Verify GitHub human approval for the reviewed source"
+    )
+    assert "--review-evidence-path" in validate["run"]
+    assert '--review-evidence "$canonical_review_evidence"' in validate["run"]
+    assert verifier["if"] == "steps.validate.outputs.version == '0.2.4'"
+    assert "verify_release_human_approval.py" in verifier["run"]
+    assert verifier["env"]["GITHUB_TOKEN"] == "${{ secrets.GITHUB_TOKEN }}"
 
 
 def test_v023_expected_skip_baseline_declares_lf_checkout_contract():
@@ -493,6 +550,34 @@ def test_v023_expected_skip_baseline_declares_lf_checkout_contract():
     lines = result.stdout.splitlines()
     assert "scripts/ci/v023_qualification_expected_skips.json: text: set" in lines
     assert "scripts/ci/v023_qualification_expected_skips.json: eol: lf" in lines
+
+
+def test_v024_expected_skip_baseline_declares_lf_checkout_contract():
+    repository = WORKFLOW.parents[2]
+    attributes = repository / ".gitattributes"
+    declarations = attributes.read_text(encoding="utf-8").splitlines()
+
+    assert (
+        "scripts/ci/v024_qualification_expected_skips.json text eol=lf" in declarations
+    )
+
+    result = subprocess.run(
+        [
+            "git",
+            "check-attr",
+            "text",
+            "eol",
+            "--",
+            "scripts/ci/v024_qualification_expected_skips.json",
+        ],
+        cwd=repository,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    lines = result.stdout.splitlines()
+    assert "scripts/ci/v024_qualification_expected_skips.json: text: set" in lines
+    assert "scripts/ci/v024_qualification_expected_skips.json: eol: lf" in lines
 
 
 def test_v022_historical_evidence_does_not_require_v023_candidate_files():
@@ -531,8 +616,11 @@ def test_v022_historical_evidence_does_not_require_v023_candidate_files():
     setup_python = next(
         step for step in aggregate_steps if step["name"] == "Set up Python"
     )
-    assert checkout["if"] == "needs.verify.outputs.version == '0.2.3'"
-    assert setup_python["if"] == "needs.verify.outputs.version == '0.2.3'"
+    assert checkout["if"] == (
+        "needs.verify.outputs.version == '0.2.3' || "
+        "needs.verify.outputs.version == '0.2.4'"
+    )
+    assert setup_python["if"] == checkout["if"]
 
 
 def test_release_smoke_executes_with_license_sidecar_path(tmp_path):
