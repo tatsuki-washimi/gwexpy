@@ -312,6 +312,25 @@ def _git_bytes(repo_root: Path, *args: str) -> bytes:
     return result.stdout
 
 
+def _parse_git_name_only_paths(output: bytes) -> set[str]:
+    """Parse canonical NUL-terminated Git path output without normalization."""
+    if not output:
+        return set()
+    if not output.endswith(b"\0"):
+        raise ReleaseValidationError("git diff returned malformed NUL-delimited paths")
+
+    raw_paths = output[:-1].split(b"\0")
+    if any(not path for path in raw_paths):
+        raise ReleaseValidationError("git diff returned malformed NUL-delimited paths")
+    try:
+        paths = [path.decode("utf-8", errors="strict") for path in raw_paths]
+    except UnicodeDecodeError as exc:
+        raise ReleaseValidationError("git diff returned a non-UTF-8 path") from exc
+    if len(paths) != len(set(paths)):
+        raise ReleaseValidationError("git diff returned duplicate paths")
+    return set(paths)
+
+
 def _validate_plan_delta(
     repo_root: Path,
     reviewed_commit: str,
@@ -401,10 +420,16 @@ def validate_s_to_r(
     )
     if ancestor.returncode:
         raise ReleaseValidationError("reviewed commit is not an ancestor of source SHA")
-    changed = _git(
-        root, "diff", "--name-only", "-z", f"{reviewed_commit}..{source_sha}"
+    changed = _git_bytes(
+        root,
+        "diff",
+        "--no-renames",
+        "--name-only",
+        "-z",
+        f"{reviewed_commit}..{source_sha}",
+        "--",
     )
-    paths = {path for path in changed.split("\0") if path}
+    paths = _parse_git_name_only_paths(changed)
     contract = _release_contract(expected_tag)
     if expected_tag == "v0.2.3":
         _validate_v023_review_source_placeholder(

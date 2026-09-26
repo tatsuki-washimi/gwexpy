@@ -1,0 +1,48 @@
+schema: gwexpy-agent-audit-v1
+task: v0.2.4 S-to-R changed-path parsing hardening
+branch: release/v0.2.4-s4-path-validation
+base_commit: bf9ce774a5e8caedb5ef1a7057f4ee59702a6c3f
+skills:
+  - gwexpy_conda_jobs
+changed_file_groups:
+  - group: strict S-to-R changed-path parsing
+    files:
+      - scripts/validate_release.py
+      - tests/test_validate_release_script.py
+  - group: agent audit record
+    files:
+      - docs/developers/plans/manifests/audit-manifest-v0.2.4-s4-path-validation.yaml
+verification:
+  - command: >-
+      rtk conda run -n gwexpy python -m pytest -q
+      tests/test_validate_release_script.py::test_v024_s_to_r_rejects_leading_whitespace_path_even_with_allowed_plan_delta
+      tests/test_validate_release_script.py::test_v024_s_to_r_rejects_rename_from_out_of_scope_endpoint
+    result: >-
+      Before the fix, all four whitespace and rename cases failed because the
+      expected ReleaseValidationError was not raised, reproducing the path
+      normalization and rename endpoint escapes.
+  - command: >-
+      rtk conda run -n gwexpy python -m pytest -q
+      tests/test_validate_release_script.py::test_v024_s_to_r_rejects_leading_whitespace_path_even_with_allowed_plan_delta
+      tests/test_validate_release_script.py::test_v024_s_to_r_rejects_rename_from_out_of_scope_endpoint
+      tests/test_validate_release_script.py::test_git_name_only_path_parser_preserves_whitespace_and_empty_output
+      tests/test_validate_release_script.py::test_git_name_only_path_parser_rejects_noncanonical_output
+    result: 10 passed after the fix, including malformed, empty, duplicate, and non-UTF-8 output checks.
+  - command: >-
+      rtk conda run -n gwexpy python -m pytest -q tests/test_validate_release_script.py
+      tests/test_release_contracts.py
+    result: 84 passed
+  - command: rtk ruff check and rtk ruff format --check on changed Python files
+    result: passed
+  - command: rtk git diff --check
+    result: passed
+  - command: rtk conda run -n gwexpy python scripts/check_release_metadata.py
+    result: passed; v0.2.4 metadata and date consistent
+check_physics:
+  status: not_applicable
+  reason: no physics, data-model, or gwexpy runtime behavior changed
+pending_or_omitted:
+  - check: full repository suite and PR CI
+    status: pending
+  - check: release S/R review or approval
+    status: not part of this validator-only correction
