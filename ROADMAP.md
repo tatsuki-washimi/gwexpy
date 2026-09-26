@@ -265,6 +265,23 @@ numeric CSV time semantics (#634), the exact rational GPS time-axis contract
 (#688), and other future themes remain unscheduled; the roadmap does not assign
 them to a next version. No next-minor theme is committed.
 
+## v0.2.4 — DiagGUI XML I/O maintenance release (released 2026-09-26)
+
+Released from `522e52a082925da4dd37966d82a7616bdd2a5248` as annotated tag
+[`v0.2.4`](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4),
+available on [PyPI](https://pypi.org/project/gwexpy/0.2.4/) and in the
+[GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4).
+As of the 2026-09-26 13:35 UTC readback, conda-forge and Zenodo still list
+v0.2.3; no public v0.2.4 Zenodo record was visible, and no v0.2.4 feedstock PR
+had been opened. The current publication status is recorded in the
+[v0.2.4 publication status manifest](docs/developers/plans/manifests/audit-manifest-v0.2.4-publication-status.yaml).
+
+The tag-triggered publication run passed 33/33 checks, and the PyPI wheel and
+sdist matched the qualified payload byte for byte. The GitHub Release was
+published on 2026-09-26. Zenodo archiving has not been confirmed complete, and
+conda-forge packaging remains pending; this record does not mark distribution
+closure complete.
+
 ## Future themes (not scheduled)
 
 No milestones exist for these yet, and the themes may be re-scoped. Each theme below

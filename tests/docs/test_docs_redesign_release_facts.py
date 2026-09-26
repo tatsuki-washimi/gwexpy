@@ -15,10 +15,10 @@ RELEASE_HISTORY_ENTRY = f"[{RELEASE_VERSION}] - {RELEASE_DATE}"
 PUBLISHED_V023_VERSION = "0.2.3"
 PUBLISHED_V023_DATE = "2026-09-05"
 PUBLISHED_V023_HISTORY_ENTRY = f"[{PUBLISHED_V023_VERSION}] - {PUBLISHED_V023_DATE}"
-CANDIDATE_RELEASE_VERSION = "0.2.4"
-CANDIDATE_RELEASE_DATE = "2026-09-26"
-CANDIDATE_RELEASE_HISTORY_ENTRY = (
-    f"[{CANDIDATE_RELEASE_VERSION}] - {CANDIDATE_RELEASE_DATE}"
+PUBLISHED_V024_VERSION = "0.2.4"
+PUBLISHED_V024_DATE = "2026-09-26"
+PUBLISHED_V024_HISTORY_ENTRY = (
+    f"[{PUBLISHED_V024_VERSION}] - {PUBLISHED_V024_DATE}"
 )
 RELEASE_DOI_URL = "https://doi.org/10.5281/zenodo.22228340"
 ACTIVITY_RELEASE_VERSION = "0.2.2"
@@ -119,7 +119,8 @@ def test_candidate_activity_uses_the_same_data_in_both_languages() -> None:
             assert "Commits per week" not in svg
     assert published_sha in source
     assert "https://doi.org/10.5281/zenodo.22344992" in source
-    assert "https://pypi.org/project/gwexpy/0.2.3/" in source
+    historical_changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "https://pypi.org/project/gwexpy/0.2.3/" in historical_changelog
 
 
 def test_v022_activity_snapshot_has_japanese_public_copy() -> None:
@@ -134,7 +135,9 @@ def test_v022_activity_snapshot_has_japanese_public_copy() -> None:
         catalogue = pofile.read_po(stream, locale="ja")
 
     expected_translations = {
-        "Weekly development activity": "週次開発活動",
+        "v0.2.3 weekly development activity": "v0.2.3 の週次開発活動",
+        "Published on 2026-09-26 UTC: [PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4). The latest conda-forge and Zenodo versions remain v0.2.3, archived at [DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992); v0.2.4 distribution follow-up is pending.": "2026-09-26（UTC）に公開しました：[PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/) と [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4)。conda-forge と Zenodo の最新バージョンは v0.2.3 で、[DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992) に保存されています。v0.2.4 の配布対応は継続中です。",
+        "Published on 2026-09-05 UTC: [PyPI 0.2.3](https://pypi.org/project/gwexpy/0.2.3/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3), and [Zenodo DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992).": "2026-09-05（UTC）に公開しました：[PyPI 0.2.3](https://pypi.org/project/gwexpy/0.2.3/)、[conda-forge](https://anaconda.org/conda-forge/gwexpy)、[GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3)、[Zenodo DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992)。",
         "[Download the weekly CSV data](/_static/downloads/development-activity-v0.2.2-weekly.csv)": "[週次 CSV データをダウンロード](/_static/downloads/development-activity-v0.2.2-weekly.csv)",
         "The v0.2.2 release is available from [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2) and archived under [Zenodo DOI 10.5281/zenodo.22228340](https://doi.org/10.5281/zenodo.22228340).": "v0.2.2 リリースは [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2) から取得でき、[Zenodo DOI 10.5281/zenodo.22228340](https://doi.org/10.5281/zenodo.22228340) でアーカイブされています。",
     }
@@ -145,8 +148,8 @@ def test_v022_activity_snapshot_has_japanese_public_copy() -> None:
         assert message.string == translation
 
 
-def test_published_v022_and_v023_history_remains_distinct_from_v024_candidate():
-    """Keep published docs at v0.2.3 while release metadata advances to v0.2.4."""
+def test_published_v022_v023_and_v024_history_remains_distinct():
+    """Keep v0.2.3 history and the newly published v0.2.4 entry explicit."""
     changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     citation = (REPO_ROOT / "CITATION.cff").read_text(encoding="utf-8")
     zenodo = json.loads((REPO_ROOT / ".zenodo.json").read_text(encoding="utf-8"))
@@ -162,30 +165,39 @@ def test_published_v022_and_v023_history_remains_distinct_from_v024_candidate():
     for history_entry in (
         RELEASE_HISTORY_ENTRY,
         PUBLISHED_V023_HISTORY_ENTRY,
-        CANDIDATE_RELEASE_HISTORY_ENTRY,
+        PUBLISHED_V024_HISTORY_ENTRY,
     ):
         assert re.search(rf"^## {re.escape(history_entry)}$", changelog, re.MULTILINE)
     assert re.search(
-        rf"^version: {re.escape(CANDIDATE_RELEASE_VERSION)}$",
+        rf"^version: {re.escape(PUBLISHED_V024_VERSION)}$",
         citation,
         re.MULTILINE,
     )
     assert re.search(
-        rf"^date-released: {re.escape(CANDIDATE_RELEASE_DATE)}$",
+        rf"^date-released: {re.escape(PUBLISHED_V024_DATE)}$",
         citation,
         re.MULTILINE,
     )
-    assert zenodo["version"] == CANDIDATE_RELEASE_VERSION
-    assert zenodo["publication_date"] == CANDIDATE_RELEASE_DATE
+    assert zenodo["version"] == PUBLISHED_V024_VERSION
+    assert zenodo["publication_date"] == PUBLISHED_V024_DATE
 
-    assert release_status["latest_release"] == PUBLISHED_V023_VERSION
-    assert release_status["intro_examples_release"] == PUBLISHED_V023_VERSION
+    assert release_status["latest_release"] == PUBLISHED_V024_VERSION
+    assert release_status["intro_examples_release"] == PUBLISHED_V024_VERSION
     for language in ("en", "ja"):
         public_changelog = (
             REPO_ROOT / f"docs/web/{language}/user_guide/changelog.md"
         ).read_text(encoding="utf-8")
+        assert f"## {PUBLISHED_V024_HISTORY_ENTRY}" in public_changelog
         assert f"## {PUBLISHED_V023_HISTORY_ENTRY}" in public_changelog
-        assert f"## [{CANDIDATE_RELEASE_VERSION}]" not in public_changelog
+        assert "conda-forge" in public_changelog
+        assert "latest" in public_changelog or "最新" in public_changelog
+
+    redesigned_changelog = (
+        REPO_ROOT / "docs_redesign/about/changelog.md"
+    ).read_text(encoding="utf-8")
+    assert "Published on 2026-09-26 UTC" in redesigned_changelog
+    assert "development-activity-v0.2.3.svg" in redesigned_changelog
+    assert ':start-after: "# Changelog"' in redesigned_changelog
 
     release_message = catalogue.get(RELEASE_HISTORY_ENTRY)
     assert release_message is not None
@@ -306,24 +318,31 @@ def test_redesign_changelog_includes_the_published_release_history() -> None:
     canonical = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
 
     published_heading = f"## {PUBLISHED_V023_HISTORY_ENTRY}"
-    candidate_heading = f"## {CANDIDATE_RELEASE_HISTORY_ENTRY}"
+    current_heading = f"## {PUBLISHED_V024_HISTORY_ENTRY}"
     assert ":::{include} ../../CHANGELOG.md" in source
-    assert f':start-after: "{published_heading}"' in source
-    assert f"\n{published_heading}\n" in source
-    assert candidate_heading not in source
-
-    candidate_section = canonical.split(candidate_heading, 1)[1].split(
+    assert ':start-after: "# Changelog"' in source
+    assert current_heading not in source
+    assert published_heading not in source
+    current_section = canonical.split(current_heading, 1)[1].split(
         published_heading, 1
     )[0]
-    assert "Release status: candidate." not in candidate_section
-    assert "Publication is on HOLD" not in candidate_section
-    rendered_history = published_heading + canonical.split(published_heading, 1)[1]
-    assert candidate_heading not in rendered_history
-    assert published_heading in rendered_history
+    assert "Release status: candidate." not in current_section
+    assert "Publication is on HOLD" not in current_section
+
+    rendered_history = canonical.split("# Changelog", 1)[1]
+    rendered_headings = re.findall(
+        r"^## (\[[^\]]+\] - \d{4}-\d{2}-\d{2})$",
+        rendered_history,
+        re.MULTILINE,
+    )
+    assert rendered_headings[:2] == [
+        PUBLISHED_V024_HISTORY_ENTRY,
+        PUBLISHED_V023_HISTORY_ENTRY,
+    ]
     canonical_releases = re.findall(
         r"^## (\[[^\]]+\] - \d{4}-\d{2}-\d{2})$", canonical, re.MULTILINE
     )
-    assert canonical_releases[0] == CANDIDATE_RELEASE_HISTORY_ENTRY
+    assert canonical_releases[0] == PUBLISHED_V024_HISTORY_ENTRY
     assert canonical_releases[1:] == [
         PUBLISHED_V023_HISTORY_ENTRY,
         RELEASE_HISTORY_ENTRY,
@@ -371,7 +390,7 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
         (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8"),
         re.MULTILINE,
     )
-    assert release_entries[0] == CANDIDATE_RELEASE_HISTORY_ENTRY
+    assert release_entries[0] == PUBLISHED_V024_HISTORY_ENTRY
     for release in release_entries[1:]:
         release_message = catalogue.get(release)
         assert release_message is not None
@@ -382,8 +401,8 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
     current_release = (
         (REPO_ROOT / "CHANGELOG.md")
         .read_text(encoding="utf-8")
-        .split(f"## {PUBLISHED_V023_HISTORY_ENTRY}", 1)[1]
-        .split("## [0.2.2]", 1)[0]
+        .split(f"## {PUBLISHED_V024_HISTORY_ENTRY}", 1)[1]
+        .split(f"## {PUBLISHED_V023_HISTORY_ENTRY}", 1)[0]
     )
     # This release uses headings, paragraphs and list items. Split those
     # blocks without requiring a docs-only Markdown parser in the PR gate.
@@ -392,7 +411,7 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
     for block in blocks:
         content = re.sub(r"^\s*(?:#{1,6}|[-+*]|\d+\.)\s+", "", block)
         message_id = " ".join(content.split())
-        if not message_id or message_id == PUBLISHED_V023_DATE:
+        if not message_id or message_id in {PUBLISHED_V024_DATE, PUBLISHED_V023_DATE}:
             continue
         message = catalogue.get(message_id)
         assert message is not None, message_id

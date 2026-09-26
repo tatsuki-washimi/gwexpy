@@ -26,8 +26,8 @@ def test_release_status_records_latest_published_and_example_releases() -> None:
     """Published-release metadata is independent from the development version."""
     status = json.loads(RELEASE_STATUS.read_text(encoding="utf-8"))
     assert status == {
-        "latest_release": "0.2.3",
-        "intro_examples_release": "0.2.3",
+        "latest_release": "0.2.4",
+        "intro_examples_release": "0.2.4",
     }
     assert _LEGACY_KEY not in status
 
@@ -38,6 +38,10 @@ def test_release_status_is_consumed_by_both_language_documents() -> None:
     assert "Latest release: **{{ latest_release }}**." in source
     assert "{{ intro_examples_release }}" in source
 
+    install_source = INSTALLATION.read_text(encoding="utf-8")
+    assert "GWexpy {{ latest_release }} is available on [PyPI]" in install_source
+    assert "The latest conda-forge package is v0.2.3." in install_source
+
     catalogue = (
         ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/documentation_version.po"
     ).read_text(encoding="utf-8")
@@ -45,6 +49,12 @@ def test_release_status_is_consumed_by_both_language_documents() -> None:
     assert "{{ latest_release }}" in catalogue
     assert "{{ intro_examples_release }}" in catalogue
     assert "最新リリース: **{{ latest_release }}**" in catalogue
+
+    install_catalogue = (
+        ROOT / "docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po"
+    ).read_text(encoding="utf-8")
+    assert "GWexpy {{ latest_release }}" in install_catalogue
+    assert "conda-forge の最新パッケージは v0.2.3 です。" in install_catalogue
 
 
 def test_legacy_release_name_is_absent_from_live_docs_contract() -> None:

@@ -3,11 +3,11 @@
 This page provides the public roadmap entry point for GWexpy documentation and feature planning.
 It is intended as a lightweight overview rather than a release contract.
 
-*Last updated: 2026-09-06.*
+*Last updated: 2026-09-26.*
 
 ## How to Read This Page
 
-- **Released baseline**: the shipped v0.2.3 maintenance baseline and the v0.2.0 semantic contract
+- **Released baseline**: the shipped v0.2.4 maintenance baseline and the v0.2.0 semantic contract
 - **Directional themes**: areas we may improve in upcoming iterations
 - **Mid-term**: work we want to expose more broadly after the current docs and API cleanup
 - **Long-term**: exploratory directions that are useful but not yet scheduled
@@ -16,13 +16,13 @@ The roadmap is public, but priorities can change based on research needs, mainte
 
 ## Current Release Baseline
 
-- [v0.2.3](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3) is the current released maintenance baseline. It restores the audited GWpy 4.0.1 / 4.0.2 default behavior without adding a public API or dependency.
+- [v0.2.4](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4) is the current released maintenance baseline. It improves characterized DiagGUI XML support without adding a public API or dependency.
 - v0.2.0 establishes the container-arithmetic baseline: predictable units,
   metadata propagation, and explicit failures instead of silent type downgrades
 - Exact timing, interoperable persistence, deterministic provenance, and public
-  GWpy compatibility were established in v0.2.0 and are retained by v0.2.3
+  GWpy compatibility were established in v0.2.0 and are retained by v0.2.4
 
-The v0.2.3 release is available on [PyPI](https://pypi.org/project/gwexpy/0.2.3/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), and [Zenodo (DOI 10.5281/zenodo.22344992)](https://doi.org/10.5281/zenodo.22344992). No next-minor release theme is committed; future work remains directional.
+The v0.2.4 release is available on [PyPI](https://pypi.org/project/gwexpy/0.2.4/) and [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4). The latest conda-forge and Zenodo versions remain v0.2.3, archived at [DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992); v0.2.4 distribution follow-up is pending. No next-minor release theme is committed; future work remains directional.
 
 ## Directional Themes
 

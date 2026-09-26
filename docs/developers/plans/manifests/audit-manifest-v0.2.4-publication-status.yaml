@@ -1,0 +1,59 @@
+schema: gwexpy-v024-publication-status-v1
+version: 0.2.4
+status: publication-partial
+closure_complete: false
+recorded_at_utc: "2026-09-26T13:35:00Z"
+release:
+  source_sha: 522e52a082925da4dd37966d82a7616bdd2a5248
+  runtime_tree: 27165f31eb4a60d129ef4e2eb7f159b023b56d9b
+  tag: v0.2.4
+  tag_object_sha: 2bc0789918fbc0327114df0d1ac0840faf5ed2ba
+  tagger_utc: "2026-09-26T12:53:57Z"
+  release_notes: release_notes/v0.2.4.md
+publication:
+  workflow: .github/workflows/publish-release.yml
+  workflow_run_id: 36243706918
+  workflow_run_url: https://github.com/tatsuki-washimi/gwexpy/actions/runs/36243706918
+  conclusion: success
+  strict_checks: 33/33
+  pypi:
+    url: https://pypi.org/project/gwexpy/0.2.4/
+    state: published
+    sdist_and_wheel_byte_match: pass
+  github_release:
+    id: 397242347
+    url: https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4
+    published_at: "2026-09-26T13:16:44Z"
+    draft: false
+    prerelease: false
+    release_body_content_corresponds_to_release_notes: true
+  zenodo:
+    state: webhook_accepted_public_record_not_yet_visible
+    latest_available_version: 0.2.3
+    latest_doi: 10.5281/zenodo.22344992
+    release_event_http_status: 202
+    duplicate_event_http_status: 409
+    duplicate_event_message: release already received
+    redelivery: not_attempted
+    v024_record: not_yet_publicly_visible_as_of_readback
+  conda_forge:
+    state: pending
+    latest_available_version: 0.2.3
+    feedstock_pull_request: none_as_of_readback
+public_docs:
+  latest_release: 0.2.4
+  intro_examples_release: 0.2.4
+  intro_examples_024_verification: pass
+  intro_examples_verification:
+    command: scripts/verify_public_examples.py
+    sources: [candidate_docs, clean_r2_git_archive]
+    environment: isolated_python_3_12_with_published_pypi_wheel
+    optional_commissioner_xml: dttxml_1.1.8_passed_without_skip
+    helper_sha256: 772b6d979b760c14796852482f0fb4428c6808ab4f82a81e1cf1b36b8f45cad3
+    pypi_wheel_sha256: 34afe8188c753cd9da0b182a5d2a88cce2f7ec36633730fe0bee15e2506df56d
+  distribution_statement: PyPI and GitHub Release are current; conda-forge and Zenodo remain at v0.2.3.
+  docs_deployment_readback: pending
+verification:
+  authoritative_state_readback_at_utc: "2026-09-26T13:35:00Z"
+  zenodo_and_conda_forge_completion_claimed: false
+  publication_closure_claimed: false

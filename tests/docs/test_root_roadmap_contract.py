@@ -362,6 +362,24 @@ def test_v023_section_records_the_published_outcome_and_closure_manifest() -> No
     assert not STATUS_RE.findall(section)
 
 
+def test_v024_section_records_publication_without_claiming_distribution_closure() -> None:
+    """The latest release links only verified channels and its partial status."""
+    section = _level_two_section(ROADMAP, "v0.2.4")
+
+    assert section, "ROADMAP.md must contain a v0.2.4 release section"
+    assert "released 2026-09-26" in section
+    assert "522e52a082925da4dd37966d82a7616bdd2a5248" in section
+    assert "https://pypi.org/project/gwexpy/0.2.4/" in section
+    assert "https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4" in section
+    assert "conda-forge and Zenodo still list" in section
+    assert "v0.2.4 publication status manifest" in section
+    assert "33 checks" in section
+    assert "does not mark distribution closure complete" in " ".join(
+        section.split()
+    )
+    assert not STATUS_RE.findall(section)
+
+
 def test_release_scope_authority_is_not_duplicated_in_design() -> None:
     """ROADMAP owns release scope while the design owns taxonomy and triage."""
     assert "canonical source of\n*inclusion criteria*" in ROADMAP
@@ -453,7 +471,7 @@ def test_future_theme_headings_do_not_assign_specific_versions() -> None:
 
 def test_release_headings_do_not_preassign_future_minors() -> None:
     """Only currently recognized release sections may use v0.x.y headings."""
-    allowed = {"v0.1.13", "v0.1.14", "v0.2.0", "v0.2.3"}
+    allowed = {"v0.1.13", "v0.1.14", "v0.2.0", "v0.2.3", "v0.2.4"}
     actual = {match.casefold() for match in RELEASE_HEADING_RE.findall(ROADMAP)}
 
     assert actual <= allowed, f"Unexpected release headings: {sorted(actual - allowed)}"
@@ -515,7 +533,7 @@ def test_v0114_deferred_issues_are_recorded_in_its_changelog() -> None:
 
 def test_required_release_headings_are_present() -> None:
     """Required release sections must not disappear via an empty-subset pass."""
-    required = {"v0.1.13", "v0.1.14", "v0.2.0", "v0.2.3"}
+    required = {"v0.1.13", "v0.1.14", "v0.2.0", "v0.2.3", "v0.2.4"}
     actual = {match.casefold() for match in RELEASE_HEADING_RE.findall(ROADMAP)}
 
     assert required <= actual, (

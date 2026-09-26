@@ -2,6 +2,14 @@
 
 GWexpy の主な変更履歴を記載します。
 
+2026-09-26（UTC）に公開しました：[PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/) と [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4)。conda-forge と Zenodo の最新バージョンは v0.2.3 です。v0.2.3 は [DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992) に保存されています。
+
+## [0.2.4] - 2026-09-26
+
+特徴が確認された DiagGUI XML の周波数、時系列、FFT、STF、伝達関数製品への対応を改善したパッチリリースです。対応済みレイアウトではシリアライズされた値と軸を保持し、未確認のレイアウトは処理を拒否します。公開 API や依存パッケージは追加していません。
+
+[v0.2.4 リリースノート](https://github.com/tatsuki-washimi/gwexpy/blob/main/release_notes/v0.2.4.md)に、対応レイアウトと互換性に関する注意事項を記載しています。
+
 ## [0.2.3] - 2026-09-05
 
 GWpy 4.0.1 および 4.0.2 との互換性を修正したメンテナンスリリースです。

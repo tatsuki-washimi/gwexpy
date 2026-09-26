@@ -1,0 +1,59 @@
+schema: gwexpy-v024-post-pypi-docs-pr-audit-v1
+recorded_at_utc: "2026-09-26"
+status: ready_for_review
+skills:
+  - web_docs_release_gates
+  - japanese-tech-writing
+  - gwexpy_conda_jobs
+changed_file_groups:
+  public_release_status:
+    - docs_redesign/release_status.json
+    - docs_redesign/tutorials/installation.md
+    - docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po
+  public_changelogs:
+    - docs_redesign/about/changelog.md
+    - docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po
+    - docs/web/en/user_guide/changelog.md
+    - docs/web/ja/user_guide/changelog.md
+  public_roadmaps:
+    - ROADMAP.md
+    - docs_redesign/explanation/roadmap.md
+    - docs_redesign/locales/ja/LC_MESSAGES/explanation/roadmap.po
+    - docs/web/en/user_guide/roadmap.md
+    - docs/web/ja/user_guide/roadmap.md
+  publication_status_record:
+    - docs/developers/plans/manifests/audit-manifest-v0.2.4-publication-status.yaml
+    - docs/developers/reports/report_v0.2.4_publication_status_20260926.md
+  tests:
+    - tests/docs/test_docs_redesign_release_facts.py
+    - tests/docs/test_docs_redesign_release_status.py
+    - tests/docs/test_root_roadmap_contract.py
+    - tests/docs/test_v024_publication_status.py
+  pr_audit_manifest:
+    - docs/developers/plans/manifests/audit-manifest-v0.2.4-post-pypi-docs.yaml
+commands:
+  - command: "rtk conda run -n gwexpy pytest tests/docs/test_docs_redesign_release_facts.py tests/docs/test_docs_redesign_release_status.py tests/docs/test_root_roadmap_contract.py tests/docs/test_v024_publication_status.py -q"
+    result: "passed: 45 tests"
+  - command: "rtk conda run -n gwexpy python -m sphinx -b html docs docs/_build/html/docs"
+    result: "passed; pre-existing notebook duplicate-cell-id warnings were emitted"
+  - command: "rtk conda run -n gwexpy python -m sphinx -b html -D nb_execution_mode=off docs_redesign docs_redesign/_build/html"
+    result: "passed; rendered v0.2.4 heading precedes v0.2.3"
+  - command: "rtk conda run -n gwexpy python -m sphinx -b html -D language=ja -D nb_execution_mode=off docs_redesign docs_redesign/_build/html-ja"
+    result: "passed; rendered v0.2.4 heading precedes v0.2.3"
+  - command: "rtk Python HTML heading-order check on docs_redesign/_build/html/about/changelog.html and docs_redesign/_build/html-ja/about/changelog.html"
+    result: "passed; v0.2.4 precedes v0.2.3 in both rendered pages"
+  - command: "rtk conda run -n gwexpy python -m sphinx -b linkcheck docs docs/_build/linkcheck"
+    result: "stopped after over 2 minutes with no progress; not counted as pass or failure"
+  - command: "rtk conda run -n gwexpy Python requests GET loop with redirects and 20-second timeout for PyPI 0.2.4, GitHub Release v0.2.4, release-note blob, conda-forge package page, and v0.2.3 Zenodo DOI"
+    result: "all five returned HTTP 200"
+  - command: "rtk git diff --check"
+    result: passed
+check_physics:
+  status: not_applicable
+  reason: Documentation, translation, tests, and publication bookkeeping only; no runtime, physics, or data-model code changed.
+release_state:
+  pypi_024: published_and_byte_matched
+  github_release_024: published
+  zenodo_024: webhook_accepted_public_record_not_yet_visible
+  conda_forge_024: pending
+  publication_closure_complete: false

@@ -2,6 +2,18 @@
 
 Notable changes to the GWexpy project.
 
+Published on 2026-09-26 UTC: [PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/) and [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4). The latest conda-forge and Zenodo versions remain v0.2.3; v0.2.3 is archived at [DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992).
+
+## [0.2.4] - 2026-09-26
+
+This patch release improves support for characterized DiagGUI XML frequency,
+time-series, FFT, STF, and transfer-function products. It preserves serialized
+values and axes for supported layouts and fails closed for uncharacterized
+layouts. It adds no public API or dependency.
+
+See the [v0.2.4 release notes](https://github.com/tatsuki-washimi/gwexpy/blob/main/release_notes/v0.2.4.md)
+for the supported layouts and compatibility notes.
+
 ## [0.2.3] - 2026-09-05
 
 This maintenance release fixes compatibility with GWpy 4.0.1 and
