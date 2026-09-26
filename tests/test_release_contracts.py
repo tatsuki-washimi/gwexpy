@@ -355,6 +355,36 @@ def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
     assert "- [x]" not in plan
 
 
+def test_v023_contract_and_readiness_evidence_match_published_source() -> None:
+    """Freeze v0.2.3 approval scope and evidence to the immutable tag source."""
+    if not _git_commit_available(V023_RELEASE_SOURCE):
+        pytest.fail("peeled v0.2.3 source is required to verify historical evidence")
+
+    published_contract = subprocess.run(
+        ["git", "show", f"{V023_RELEASE_SOURCE}:scripts/ci/release_contracts.json"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    current_contract = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
+    tag_contract = json.loads(published_contract.stdout)
+    assert current_contract["releases"]["v0.2.3"] == tag_contract["releases"]["v0.2.3"]
+    assert "v0.2.4" in current_contract["releases"]
+
+    published_evidence = subprocess.run(
+        [
+            "git",
+            "show",
+            f"{V023_RELEASE_SOURCE}:docs/developers/plans/manifests/audit-manifest-v0.2.3-release-readiness.yaml",
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+    )
+    assert V023_MANIFEST.read_bytes() == published_evidence.stdout
+
+
 @pytest.mark.parametrize(
     ("tag", "expected_path"),
     [
