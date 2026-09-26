@@ -34,6 +34,16 @@ release adds no public API or dependency.
 - **DiagGUI TimeSeriesMatrix identifier (#734)**: Registered the canonical
   `xml.diaggui` identifier for `TimeSeriesMatrix` reads.
 
+### Compatibility notes
+
+- Embedded float32 frequency bins are preserved at their serialized precision,
+  rather than snapped to an ideal grid. If float32 rounding makes their represented
+  spacing fail the uniform-axis check, `df` can be `None` and
+  `FrequencySeries.ifft()` is unavailable. An inverse FFT requires an explicit
+  regrid/interpolation onto a chosen uniform frequency grid first; this changes
+  sample locations and values and is not guaranteed to be scientifically
+  equivalent to the embedded axis.
+
 ## [0.2.3] - 2026-09-05
 
 Published on 2026-09-05 UTC: [PyPI 0.2.3](https://pypi.org/project/gwexpy/0.2.3/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3), and [Zenodo DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992).
