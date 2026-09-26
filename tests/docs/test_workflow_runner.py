@@ -11,6 +11,7 @@ import nbformat
 import pytest
 
 from scripts.verify_workflow_notebooks import (
+    get_repo_gwexpy_version,
     load_manifest,
     probe_kernel_environment,
     verify_kernel_environment,
@@ -363,6 +364,9 @@ def test_verify_kernel_environment_mismatches() -> None:
 
 def test_verify_kernel_environment_install_modes(tmp_path: Path) -> None:
     """verify_kernel_environment must distinguish installed (site-packages) vs editable (checkout) modes."""
+    expected_version = get_repo_gwexpy_version(ROOT)
+    assert expected_version is not None
+
     fake_repo = tmp_path / "my_repo"
     fake_repo.mkdir()
     fake_repo_file = fake_repo / "gwexpy" / "__init__.py"
@@ -378,7 +382,7 @@ def test_verify_kernel_environment_install_modes(tmp_path: Path) -> None:
         "executable": "/usr/bin/python3",
         "prefix": "/usr",
         "python_version": "3.12.0",
-        "gwexpy_version": "0.2.3",
+        "gwexpy_version": expected_version,
         "gwexpy_file": str(fake_repo_file),
         "purelib": str(fake_site_dir),
         "platlib": str(fake_site_dir),
@@ -388,7 +392,7 @@ def test_verify_kernel_environment_install_modes(tmp_path: Path) -> None:
         "executable": "/usr/bin/python3",
         "prefix": "/usr",
         "python_version": "3.12.0",
-        "gwexpy_version": "0.2.3",
+        "gwexpy_version": expected_version,
         "gwexpy_file": str(fake_site),
         "purelib": str(fake_site_dir),
         "platlib": str(fake_site_dir),
@@ -398,6 +402,7 @@ def test_verify_kernel_environment_install_modes(tmp_path: Path) -> None:
     with pytest.raises(RuntimeError, match="Install mode is 'installed'"):
         verify_kernel_environment(
             env_repo,
+            expected_version=expected_version,
             allow_foreign=True,
             require_gwexpy=True,
             install_mode="installed",
@@ -407,6 +412,7 @@ def test_verify_kernel_environment_install_modes(tmp_path: Path) -> None:
     # Mode 'installed' with site-packages file must succeed
     verify_kernel_environment(
         env_site,
+        expected_version=expected_version,
         allow_foreign=True,
         require_gwexpy=True,
         install_mode="installed",
@@ -417,6 +423,7 @@ def test_verify_kernel_environment_install_modes(tmp_path: Path) -> None:
     with pytest.raises(RuntimeError, match="Install mode is 'editable'"):
         verify_kernel_environment(
             env_site,
+            expected_version=expected_version,
             allow_foreign=True,
             require_gwexpy=True,
             install_mode="editable",
@@ -426,6 +433,7 @@ def test_verify_kernel_environment_install_modes(tmp_path: Path) -> None:
     # Mode 'editable' with repo checkout file must succeed
     verify_kernel_environment(
         env_repo,
+        expected_version=expected_version,
         allow_foreign=True,
         require_gwexpy=True,
         install_mode="editable",
@@ -440,7 +448,7 @@ def test_verify_kernel_environment_install_modes(tmp_path: Path) -> None:
         "executable": "/usr/bin/python3",
         "prefix": "/usr",
         "python_version": "3.12.0",
-        "gwexpy_version": "0.2.3",
+        "gwexpy_version": expected_version,
         "gwexpy_file": str(fake_foreign_site),
         "purelib": str(fake_site_dir),
         "platlib": str(fake_site_dir),
@@ -448,6 +456,7 @@ def test_verify_kernel_environment_install_modes(tmp_path: Path) -> None:
     with pytest.raises(RuntimeError, match="Install mode is 'installed'"):
         verify_kernel_environment(
             env_foreign,
+            expected_version=expected_version,
             allow_foreign=True,
             require_gwexpy=True,
             install_mode="installed",
@@ -467,7 +476,7 @@ def test_verify_kernel_environment_install_modes(tmp_path: Path) -> None:
     with pytest.raises(RuntimeError, match="gwexpy version mismatch"):
         verify_kernel_environment(
             env_wrong_version,
-            expected_version="0.2.3",
+            expected_version=expected_version,
             allow_foreign=True,
             require_gwexpy=True,
             install_mode="installed",
