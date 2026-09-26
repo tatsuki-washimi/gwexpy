@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build fail-closed release qualification evidence for v0.2.2/v0.2.3."""
+"""Build fail-closed release qualification evidence for v0.2.2-v0.2.4."""
 
 from __future__ import annotations
 
@@ -37,6 +37,7 @@ QUALIFICATION_CELLS = (
 )
 
 V023_BASELINE_SCHEMA = "gwexpy-v023-qualification-expected-skips-v1"
+V024_BASELINE_SCHEMA = "gwexpy-v024-qualification-expected-skips-v1"
 _CONTRACTS: dict[str, dict[str, str | None]] = {
     "0.2.2": {
         "artifact_prefix": "v022-qualification-evidence",
@@ -48,10 +49,16 @@ _CONTRACTS: dict[str, dict[str, str | None]] = {
         "evidence_schema": "gwexpy-v023-qualification-evidence-v1",
         "expected_skips_schema": V023_BASELINE_SCHEMA,
     },
+    "0.2.4": {
+        "artifact_prefix": "v024-qualification-evidence",
+        "evidence_schema": "gwexpy-v024-qualification-evidence-v1",
+        "expected_skips_schema": V024_BASELINE_SCHEMA,
+    },
 }
 _PAYLOAD_SCHEMAS = {
     "0.2.2": "gwexpy-v022-release-payload-v1",
     "0.2.3": "gwexpy-v023-release-payload-v1",
+    "0.2.4": "gwexpy-v024-release-payload-v1",
 }
 _SHA40 = re.compile(r"^[0-9a-f]{40}$")
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -232,8 +239,14 @@ def qualification_contract(version: str) -> dict[str, str | None]:
         ) from exc
 
 
-def load_expected_skips(path: Path | str) -> ExpectedSkips:
-    """Load the canonical reviewed v0.2.3 optional-skip baseline."""
+def load_expected_skips(path: Path | str, *, version: str = "0.2.3") -> ExpectedSkips:
+    """Load a canonical version-specific optional-skip baseline."""
+    contract = qualification_contract(version)
+    expected_schema = contract["expected_skips_schema"]
+    if expected_schema is None:
+        raise QualificationEvidenceError(
+            f"{version} qualification does not use an expected-skip baseline"
+        )
     data, raw = _load_json(
         Path(path),
         maximum=_MAX_BASELINE_BYTES,
@@ -241,9 +254,9 @@ def load_expected_skips(path: Path | str) -> ExpectedSkips:
         require_canonical=True,
     )
     _require_exact_keys(data, {"cells", "schema", "version"}, description="baseline")
-    if data["schema"] != V023_BASELINE_SCHEMA:
+    if data["schema"] != expected_schema:
         raise QualificationEvidenceError("invalid expected-skip baseline schema")
-    if data["version"] != "0.2.3":
+    if data["version"] != version:
         raise QualificationEvidenceError("invalid expected-skip baseline version")
     records = data["cells"]
     if not isinstance(records, list) or len(records) != len(QUALIFICATION_CELLS):
@@ -558,9 +571,9 @@ def record_cell(
 
     if junit_path is None or expected_skips_path is None:
         raise QualificationEvidenceError(
-            "v0.2.3 evidence requires JUnit and expected-skip baseline"
+            f"v{version} evidence requires JUnit and expected-skip baseline"
         )
-    baseline = load_expected_skips(expected_skips_path)
+    baseline = load_expected_skips(expected_skips_path, version=version)
     testcase_count, observed = _parse_junit(Path(junit_path))
     approved = set(baseline.cells[cell])
     required = set(observed) - approved
@@ -638,7 +651,7 @@ def aggregate_reports(
         Path(payload_manifest), version=version, source_sha=source_sha
     )
     reports = _load_cell_reports(
-        Path(reports_dir), require_canonical=version == "0.2.3"
+        Path(reports_dir), require_canonical=version in {"0.2.3", "0.2.4"}
     )
     observed_cells: set[str] = set()
 
@@ -681,9 +694,9 @@ def aggregate_reports(
 
     if expected_skips_path is None:
         raise QualificationEvidenceError(
-            "v0.2.3 aggregate requires expected-skip baseline"
+            f"v{version} aggregate requires expected-skip baseline"
         )
-    baseline = load_expected_skips(expected_skips_path)
+    baseline = load_expected_skips(expected_skips_path, version=version)
     summaries: list[dict[str, Any]] = []
     expected_keys = {
         "baseline_sha256",
@@ -698,7 +711,11 @@ def aggregate_reports(
         "version",
     }
     for report in reports:
-        _require_exact_keys(report, expected_keys, description="v0.2.3 cell report")
+        _require_exact_keys(
+            report,
+            expected_keys,
+            description=f"v{version.replace('.', '')} cell report",
+        )
         cell = report["cell"]
         if not isinstance(cell, str) or cell not in QUALIFICATION_CELLS:
             raise QualificationEvidenceError("qualification report has unknown cell")
