@@ -41,7 +41,8 @@ physics_review:
     Rounded float32 axes can now have df=None, so direct ifft() is unavailable
     for that case. Scientific owner acceptance is required before merge and
     before a new S can be approved.
-  check_physics_status: human_review_required
+  design_choice: strict_serialized_axis_preservation_accepted_by_user
+  check_physics_status: pr_code_review_and_new_S_approval_required
 changed_file_groups:
   runtime_and_qualification:
     - gwexpy/io/dttxml_common.py
@@ -87,7 +88,9 @@ pending_or_omitted:
   - check: broad local Sphinx build
     status: stopped while executing unrelated notebooks; target page rendered separately
   - check: scientific owner acceptance of df/ifft tradeoff
-    status: pending human decision; do not merge corrective PR automatically
+    status: >-
+      Strict axis preservation selected by user; the corrective PR still needs
+      human code review before merge and new-S approval after merge.
   - check: new-S review lanes and human approval
     status: pending corrective PR merge and new S
   - check: exact-R qualification and candidate dry-run
