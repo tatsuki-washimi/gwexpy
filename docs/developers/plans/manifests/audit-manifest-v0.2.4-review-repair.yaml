@@ -1,0 +1,94 @@
+schema: gwexpy-v024-review-repair-audit-v1
+release: v0.2.4
+branch: release/v0.2.4-review-repair
+reviewed_source_replaced: dc07eb81689f89631dadbfc0775ce2287e239496
+release_state:
+  decision: HOLD
+  new_source_S: pending_corrective_pr_merge
+  publishing_R: not_created
+  human_scientific_data_model_approval: not_received
+  readiness_evidence_state: exact_empty_placeholder
+findings_addressed:
+  - id: SDM-001
+    scope: embedded DiagGUI frequency axes
+    resolution: >-
+      Use f0/df for an embedded axis only if the constructed FrequencySeries
+      reproduces every serialized frequency exactly; otherwise retain the
+      explicit frequency array.
+  - id: SEC-001
+    scope: historical v0.2.3 review provenance
+    resolution: >-
+      Restore the v0.2.3 contract and readiness evidence bytes from the peeled
+      published release source. Keep v0.2.4 review lanes separate.
+  - id: DOC-001
+    scope: public changelog publication boundary
+    resolution: >-
+      Mark the root v0.2.4 entry as candidate/HOLD and include only the
+      published v0.2.3 onward in the public Sphinx changelog.
+skills:
+  - prep_release
+  - gwexpy_conda_jobs
+  - triage_ci
+  - superpowers:systematic-debugging
+  - verify_physics
+physics_review:
+  summary: >-
+    The external embedded-axis branch changes only frequency-axis representation.
+    It passes the same samples, unit, epoch, and name to both constructors;
+    it retains explicit bins whenever f0/df reconstruction would change them.
+    No FFT or normalization calculation was changed.
+  nontrivial_issue: >-
+    Rounded float32 axes can now have df=None, so direct ifft() is unavailable
+    for that case. Scientific owner acceptance is required before merge and
+    before a new S can be approved.
+  check_physics_status: human_review_required
+changed_file_groups:
+  runtime_and_qualification:
+    - gwexpy/io/dttxml_common.py
+    - scripts/ci/diaggui_qualification_evidence.py
+    - tests/io/test_dttxml_common.py
+    - tests/io/test_dttxml_issue726.py
+    - tests/io/test_dttxml_issue731.py
+    - tests/test_diaggui_qualification_evidence.py
+  historical_release_control:
+    - scripts/ci/release_contracts.json
+    - docs/developers/plans/manifests/audit-manifest-v0.2.3-release-readiness.yaml
+    - tests/test_release_contracts.py
+  published_docs:
+    - CHANGELOG.md
+    - docs_redesign/about/changelog.md
+    - tests/docs/test_docs_redesign_release_facts.py
+  audit:
+    - docs/developers/plans/manifests/audit-manifest-v0.2.4-review-repair.yaml
+verification:
+  - command: >-
+      rtk conda run -n gwexpy python -m pytest -q
+      tests/io/test_dttxml_common.py tests/io/test_dttxml_issue726.py
+      tests/io/test_dttxml_issue731.py tests/io/test_dttxml_issue732.py
+      tests/io/test_dttxml_issue733.py
+      tests/test_diaggui_qualification_evidence.py
+      tests/test_release_contracts.py tests/test_validate_release_script.py
+      tests/docs/test_docs_redesign_release_facts.py
+      tests/test_check_release_metadata_script.py
+    result: 240 passed, 6 existing skips
+  - command: dttxml 1.1.8 selected qualification node list
+    result: 88 passed, 0 skipped in an isolated local environment
+  - command: rtk conda run -n gwexpy ruff check on changed Python files
+    result: passed
+  - command: rtk conda run -n gwexpy mypy gwexpy/io/dttxml_common.py
+    result: passed
+  - command: targeted Sphinx changelog render with notebook execution off
+    result: passed; rendered v0.2.3 heading and excluded v0.2.4
+  - command: rtk conda run -n gwexpy python scripts/check_release_metadata.py
+    result: passed; v0.2.4 version and date remain consistent
+pending_or_omitted:
+  - check: full PR CI
+    status: pending corrective PR
+  - check: broad local Sphinx build
+    status: stopped while executing unrelated notebooks; target page rendered separately
+  - check: scientific owner acceptance of df/ifft tradeoff
+    status: pending human decision; do not merge corrective PR automatically
+  - check: new-S review lanes and human approval
+    status: pending corrective PR merge and new S
+  - check: exact-R qualification and candidate dry-run
+    status: pending; no R exists
