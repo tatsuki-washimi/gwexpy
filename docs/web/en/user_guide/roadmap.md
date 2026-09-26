@@ -13,17 +13,18 @@ The roadmap is public, but priorities can change based on research needs, mainte
 
 ## Current Release Baseline
 
-- [v0.2.3](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3) is the
-  current released maintenance baseline. It restores the audited GWpy 4.0.1 /
-  4.0.2 default behavior without adding a public API or dependency.
+- [v0.2.4](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4) is the
+  current released maintenance baseline. It improves characterized DiagGUI XML
+  support without adding a public API or dependency.
 - v0.2.0 established the container-arithmetic baseline: predictable units,
   metadata propagation, and explicit failures instead of silent type downgrades.
 - Exact timing, interoperable persistence, deterministic provenance, and public
-  GWpy compatibility were established in v0.2.0 and are retained by v0.2.3.
+  GWpy compatibility were established in v0.2.0 and are retained by v0.2.4.
 
-The v0.2.3 release is available on [PyPI](https://pypi.org/project/gwexpy/0.2.3/),
-[conda-forge](https://anaconda.org/conda-forge/gwexpy), and [Zenodo
-(DOI 10.5281/zenodo.22344992)](https://doi.org/10.5281/zenodo.22344992).
+The v0.2.4 release is available on [PyPI](https://pypi.org/project/gwexpy/0.2.4/)
+and [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4).
+Zenodo has published v0.2.4 at [DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439).
+The v0.2.4 package is also available on [conda-forge](https://anaconda.org/conda-forge/gwexpy).
 No next-minor release theme is committed; future work remains directional.
 
 ## Near-Term Focus

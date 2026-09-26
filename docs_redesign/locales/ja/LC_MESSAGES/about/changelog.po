@@ -21,8 +21,8 @@ msgstr "更新履歴"
 
 #: ../gwexpy-ja-v0111-v0114-release-notes/docs_redesign/about/changelog.md:3
 #: 81b77fae9668420cb258a2b17092244c
-msgid "Weekly development activity"
-msgstr "週次開発活動"
+msgid "v0.2.3 weekly development activity"
+msgstr "v0.2.3 の週次開発活動"
 
 #: ../gwexpy-ja-v0111-v0114-release-notes/docs_redesign/about/changelog.md:5
 #: 01de266846dc418dba0b842cb66d59ca
@@ -3487,9 +3487,45 @@ msgstr "最後の2群では、特定の Array2D/Plane2D の縮約と数値配列
 msgid "Added `tests/timeseries/test_rms_compat.py` pinning gwpy-compatible `TimeSeries.rms(stride)` behaviour (gwpy reference parity, positional-int regression for #451, trailing-window drop, NaN-per-window propagation) and the gwexpy enhancements (time/dimensionless `Quantity` stride, unit preservation, and `ValueError` for sub-sample/zero/negative/irregular strides). Re-pointed `test_stats_mixin.py::test_rms_with_unit` onto `Series`."
 msgstr "`tests/timeseries/test_rms_compat.py` を追加し、GWpy と互換な `TimeSeries.rms(stride)` の挙動（GWpy との一致、#451 の整数の位置引数に関する回帰、末尾の不完全な区間の除外、区間ごとの NaN 伝播）と、GWexpy の拡張（時間または無次元の `Quantity` による stride、単位の保持、1サンプル未満、ゼロ、負、不規則な stride に対する `ValueError`）を固定しました。`test_stats_mixin.py::test_rms_with_unit` の対象を `Series` に変更しました。"
 
-#: post-publication v0.2.3
+#: post-publication v0.2.4
+msgid "Published on 2026-09-26 UTC: [PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4), and [Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439)."
+msgstr "2026-09-26（UTC）に公開しました：[PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/)、[conda-forge](https://anaconda.org/conda-forge/gwexpy)、[GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4)、[Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439)。"
+
+#: ../../CHANGELOG.md
 msgid "Published on 2026-09-05 UTC: [PyPI 0.2.3](https://pypi.org/project/gwexpy/0.2.3/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3), and [Zenodo DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992)."
 msgstr "2026-09-05（UTC）に公開しました：[PyPI 0.2.3](https://pypi.org/project/gwexpy/0.2.3/)、[conda-forge](https://anaconda.org/conda-forge/gwexpy)、[GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3)、[Zenodo DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992)。"
+
+#: ../../CHANGELOG.md
+msgid "This patch release improves support for characterized DiagGUI XML frequency, time-series, FFT, STF, and transfer-function products. The changes preserve serialized values and axes for the supported layouts and fail closed for uncharacterized layouts. They do not infer physical units, calibration direction, or FFT normalization where the input does not state them. This release adds no public API or dependency."
+msgstr "本パッチリリースでは、特徴が確認された DiagGUI XML の周波数、時系列、FFT、STF、伝達関数製品への対応を改善しました。対応するレイアウトではシリアライズされた値と軸を保持し、特徴が確認されていないレイアウトは処理を拒否します。入力に記載されていない物理単位、校正方向、FFT 正規化は推測しません。公開 API や依存関係は追加していません。"
+
+#: ../../CHANGELOG.md
+msgid "**DiagGUI XML frequency readers (#726)**: Fixed `FrequencySeries`, `FrequencySeriesDict`, and `FrequencySeriesMatrix` reads for characterized ASD, transfer-function, and coherence layouts. Embedded frequency columns, nonuniform axes, complex values, and supported double precision are retained through the native and installed-parser routes."
+msgstr "**DiagGUI XML 周波数リーダー (#726)**：特徴が確認された ASD、伝達関数、coherence のレイアウトについて、`FrequencySeries`、`FrequencySeriesDict`、`FrequencySeriesMatrix` の読み込みを修正しました。埋め込み周波数列、不等間隔の軸、複素数値、対応する double 精度を、native とインストール済み parser の両経路で保持します。"
+
+#: ../../CHANGELOG.md
+msgid "**DiagGUI XML TimeSeries (#730)**: Added native fallback parsing for characterized `TimeSeries` products, with strict validation of serialized dimensions, sample count, and base64 data."
+msgstr "**DiagGUI XML TimeSeries (#730)**：特徴が確認された `TimeSeries` 製品向けに native fallback parser を追加し、シリアライズされた次元、サンプル数、base64 データを厳密に検証します。"
+
+#: ../../CHANGELOG.md
+msgid "**DiagGUI Spectrum FFT (#731)**: Added characterized Spectrum subtypes 0 and 4 with their linear or embedded frequency axes and complex samples. Unsupported layouts fail closed."
+msgstr "**DiagGUI Spectrum FFT (#731)**：特徴が確認された Spectrum subtype 0 と 4 を追加しました。線形または埋め込みの周波数軸と複素数サンプルを保持し、未対応のレイアウトは処理を拒否します。"
+
+#: ../../CHANGELOG.md
+msgid "**DiagGUI STF products (#732)**: Added characterized TransferFunction subtypes 1 and 4 for `FrequencySeriesMatrix`, preserving complex responses and serialized frequency axes."
+msgstr "**DiagGUI STF 製品 (#732)**：`FrequencySeriesMatrix` 向けに特徴が確認された TransferFunction subtype 1 と 4 を追加し、複素応答とシリアライズされた周波数軸を保持します。"
+
+#: ../../CHANGELOG.md
+msgid "**DiagGUI TransferFunction subtype 6 (#733)**: Preserved the characterized complex phase and exact serialized frequency values on the external-parser route; ambiguous or unsupported layouts fail closed."
+msgstr "**DiagGUI TransferFunction subtype 6 (#733)**：external parser 経路で、特徴が確認された複素位相とシリアライズされた周波数値を厳密に保持します。曖昧または未対応のレイアウトは処理を拒否します。"
+
+#: ../../CHANGELOG.md
+msgid "**DiagGUI TimeSeriesMatrix identifier (#734)**: Registered the canonical `xml.diaggui` identifier for `TimeSeriesMatrix` reads."
+msgstr "**DiagGUI TimeSeriesMatrix 識別子 (#734)**：`TimeSeriesMatrix` 読み込み用の標準識別子 `xml.diaggui` を登録しました。"
+
+#: ../../CHANGELOG.md
+msgid "Embedded float32 frequency bins are preserved at their serialized precision, rather than snapped to an ideal grid. If `f0`/`df` construction cannot reproduce every serialized bin exactly, `df` can be `None` and `FrequencySeries.ifft()` is unavailable. An inverse FFT requires an explicit regrid/interpolation onto a chosen uniform frequency grid first; this changes sample locations and values and is not guaranteed to be scientifically equivalent to the embedded axis."
+msgstr "埋め込み float32 周波数ビンは理想的な格子に丸めず、シリアライズされた精度で保持します。`f0`/`df` による構築で全ビンを厳密に再現できない場合、`df` は `None` となり、`FrequencySeries.ifft()` は利用できません。逆 FFT を行うには、選択した一様周波数格子へ明示的に再格子化または補間する必要があります。この操作はサンプル位置と値を変えるため、埋め込み軸と科学的に同等とは限りません。"
 
 #: post-publication v0.2.3
 msgid "Weekly GWexpy development activity through v0.2.3, showing non-merge commits and edited source lines by category."

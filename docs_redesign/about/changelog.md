@@ -1,8 +1,8 @@
 # Changelog
 
-Published on 2026-09-05 UTC: [PyPI 0.2.3](https://pypi.org/project/gwexpy/0.2.3/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3), and [Zenodo DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992).
+Published on 2026-09-26 UTC: [PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4), and [Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439).
 
-## Weekly development activity
+## v0.2.3 weekly development activity
 
 :::{figure} /_static/images/development-activity-v0.2.3.svg
 :alt: Weekly GWexpy development activity through v0.2.3, showing non-merge commits and edited source lines by category.
@@ -21,8 +21,6 @@ The earlier v0.2.2 snapshot remains available as an [SVG](/_static/images/develo
 
 The v0.2.2 release is available from [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2) and archived under [Zenodo DOI 10.5281/zenodo.22228340](https://doi.org/10.5281/zenodo.22228340).
 
-## [0.2.3] - 2026-09-05
-
 :::{include} ../../CHANGELOG.md
-:start-after: "## [0.2.3] - 2026-09-05"
+:start-after: "# Changelog"
 :::
