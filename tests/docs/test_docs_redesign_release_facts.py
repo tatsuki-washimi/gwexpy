@@ -299,14 +299,27 @@ def test_v022_release_closure_manifest_binds_distribution_channels() -> None:
     assert "pending" not in manifest
 
 
-def test_redesign_changelog_includes_the_canonical_release_history() -> None:
+def test_redesign_changelog_includes_the_published_release_history() -> None:
     source = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
         encoding="utf-8"
     )
     canonical = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
 
+    published_heading = f"## {PUBLISHED_V023_HISTORY_ENTRY}"
+    candidate_heading = f"## {CANDIDATE_RELEASE_HISTORY_ENTRY}"
     assert ":::{include} ../../CHANGELOG.md" in source
-    assert ':start-after: "# Changelog"' in source
+    assert f':start-after: "{published_heading}"' in source
+    assert f"\n{published_heading}\n" in source
+    assert candidate_heading not in source
+
+    candidate_section = canonical.split(candidate_heading, 1)[1].split(
+        published_heading, 1
+    )[0]
+    assert "Release status: candidate." in candidate_section
+    assert "Publication is on HOLD" in candidate_section
+    rendered_history = published_heading + canonical.split(published_heading, 1)[1]
+    assert candidate_heading not in rendered_history
+    assert published_heading in rendered_history
     canonical_releases = re.findall(
         r"^## (\[[^\]]+\] - \d{4}-\d{2}-\d{2})$", canonical, re.MULTILINE
     )
