@@ -315,8 +315,8 @@ def test_redesign_changelog_includes_the_published_release_history() -> None:
     candidate_section = canonical.split(candidate_heading, 1)[1].split(
         published_heading, 1
     )[0]
-    assert "Release status: candidate." in candidate_section
-    assert "Publication is on HOLD" in candidate_section
+    assert "Release status: candidate." not in candidate_section
+    assert "Publication is on HOLD" not in candidate_section
     rendered_history = published_heading + canonical.split(published_heading, 1)[1]
     assert candidate_heading not in rendered_history
     assert published_heading in rendered_history

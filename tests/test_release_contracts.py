@@ -19,6 +19,7 @@ REVIEW_VALIDATOR_PATH = ROOT / "scripts" / "ci" / "validate_release_review_evide
 RELEASE_VALIDATOR_PATH = ROOT / "scripts" / "validate_release.py"
 V023_IMPLEMENTATION_BASE = "a8085b71446d3ef3417a7e5b5ac8efb156368eac"
 V023_RELEASE_SOURCE = "75d3d1a89ebc8942af1f3228152fea99d2d3420e"
+V024_RELEASE_TAG = "v0.2.4"
 V024_MANIFEST = (
     ROOT
     / "docs"
@@ -138,6 +139,37 @@ def _v023_review_revision(candidate: str) -> str:
         capture_output=True,
     )
     return V023_RELEASE_SOURCE if result.returncode == 0 else candidate
+
+
+def _v024_review_revision(candidate: str) -> str:
+    """Pin populated v0.2.4 evidence checks to the immutable release source."""
+    result = subprocess.run(
+        ["git", "rev-parse", "--verify", f"refs/tags/{V024_RELEASE_TAG}^{{commit}}"],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode or not _git_commit_available(result.stdout.strip()):
+        return candidate
+    release_source = result.stdout.strip()
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", release_source, candidate],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+    )
+    return release_source if ancestor.returncode == 0 else candidate
+
+
+def _git_file_at_revision(revision: str, path: str) -> bytes:
+    result = subprocess.run(
+        ["git", "show", f"{revision}:{path}"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+    )
+    return result.stdout
 
 
 def _review_scope_covers(path: str, scope: set[str]) -> bool:
@@ -345,14 +377,39 @@ def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
     ]
     assert v024["artifact_prefix"] == "v024-integration-evidence"
     assert v024["protected_refs"] == ["main", "maint/0.2"]
-    assert (
-        V024_MANIFEST.read_bytes()
-        == load_release_validator().V024_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER
-    )
-    plan = V024_PLAN.read_text(encoding="utf-8")
-    assert "75d3d1a89ebc8942af1f3228152fea99d2d3420e" in plan
-    assert "- [ ]" in plan
-    assert "- [x]" not in plan
+    release_validator = load_release_validator()
+    evidence_bytes = V024_MANIFEST.read_bytes()
+    if evidence_bytes == release_validator.V024_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER:
+        # A reviewed source S must remain an exact empty placeholder with no
+        # completion checkboxes pre-checked.
+        plan = V024_PLAN.read_text(encoding="utf-8")
+        assert "75d3d1a89ebc8942af1f3228152fea99d2d3420e" in plan
+        assert "Release decision: **HOLD**" in plan
+        assert "- [ ]" in plan
+        assert "- [x]" not in plan
+    else:
+        # A source R is valid only when its populated evidence validates at S
+        # and the S-to-R delta contains only the allowed checkbox transitions.
+        # Once published, read the release contract, evidence, and plan from
+        # the peeled tag tree so later main commits cannot rewrite approval.
+        source_sha = _v024_review_revision(_candidate_revision())
+        source_contract = json.loads(
+            _git_file_at_revision(source_sha, "scripts/ci/release_contracts.json")
+        )
+        assert data["releases"]["v0.2.4"] == source_contract["releases"]["v0.2.4"]
+        evidence_path = str(v024["review_evidence_path"])
+        assert evidence_bytes == _git_file_at_revision(source_sha, evidence_path)
+        plan_path = str(v024["plan_path"])
+        plan = _git_file_at_revision(source_sha, plan_path).decode("utf-8")
+        assert "75d3d1a89ebc8942af1f3228152fea99d2d3420e" in plan
+        assert "Release decision: **HOLD**" in plan
+        reviewed_commit = release_validator.validate_review_evidence(
+            ROOT,
+            V024_MANIFEST,
+            source_sha,
+            expected_tag="v0.2.4",
+        )
+        assert reviewed_commit != source_sha
 
 
 def test_v023_contract_and_readiness_evidence_match_published_source() -> None:

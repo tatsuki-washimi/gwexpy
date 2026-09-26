@@ -2,9 +2,6 @@
 
 ## [0.2.4] - 2026-09-26
 
-Release status: candidate. Publication is on HOLD pending final review and
-approval.
-
 This patch release improves support for characterized DiagGUI XML frequency,
 time-series, FFT, STF, and transfer-function products. The changes preserve
 serialized values and axes for the supported layouts and fail closed for

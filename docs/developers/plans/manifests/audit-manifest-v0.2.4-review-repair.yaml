@@ -23,8 +23,9 @@ findings_addressed:
   - id: DOC-001
     scope: public changelog publication boundary
     resolution: >-
-      Mark the root v0.2.4 entry as candidate/HOLD and include only the
-      published v0.2.3 onward in the public Sphinx changelog.
+      Remove pre-publication HOLD language from the root changelog so it can be
+      tagged after final GO. Keep operational HOLD in the release plan and
+      include only published v0.2.3 history in the public Sphinx changelog.
   - id: CI-001
     scope: DiagGUI qualification node coverage in the release workflow
     resolution: >-
@@ -102,6 +103,44 @@ verification:
     result: passed; rendered v0.2.3 heading and excluded v0.2.4
   - command: rtk conda run -n gwexpy python scripts/check_release_metadata.py
     result: passed; v0.2.4 version and date remain consistent
+  - command: >-
+      pre-fix focused test on exact R:
+      test_release_contracts_cover_frozen_releases_and_v023_lane
+    result: >-
+      reproduced the failure: the assertion incorrectly required R's validated
+      populated evidence to equal S's exact empty placeholder.
+  - command: >-
+      focused contract test on populated R after correction:
+      test_release_contracts_cover_frozen_releases_and_v023_lane
+    result: >-
+      1 passed; validated R's populated review evidence and the allowed S-to-R
+      evidence and checkbox transitions.
+  - command: >-
+      focused contract and docs tests after resetting S readiness state
+    result: >-
+      2 passed; readiness bytes matched the exact empty placeholder, all plan
+      checkboxes were unchecked, and no pre-publication HOLD text remained in
+      the root changelog entry.
+  - command: >-
+      rtk conda run -n gwexpy python -m pytest -q tests/test_release_contracts.py
+      tests/test_validate_release_script.py tests/test_release_review_evidence.py
+      tests/test_release_human_approval.py
+    result: 116 passed; fail-closed v0.2.4 S-to-R tests included.
+  - command: >-
+      rtk conda run -n gwexpy python -m pytest -q
+      tests/docs/test_docs_redesign_release_facts.py
+      tests/test_check_release_metadata_script.py
+    result: 31 passed
+  - command: disposable tagged-source regression probe
+    result: >-
+      1 passed with a temporary local v0.2.4 tag at R and a disposable later
+      commit; the populated-evidence test selected the peeled tag source and
+      required current evidence bytes and v0.2.4 contract to match that source.
+      Temporary tag and worktree were removed.
+  - command: >-
+      rtk ruff check and ruff format --check on changed Python test files;
+      rtk git diff --check
+    result: all passed
 pending_or_omitted:
   - check: full PR CI
     status: pending corrective PR
