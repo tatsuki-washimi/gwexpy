@@ -78,14 +78,16 @@ def test_public_release_docs_are_a_closed_version_neutral_inventory() -> None:
         assert EXACT_TAG_CITATION in source, path
 
 
-def test_japanese_catalogues_translate_the_version_neutral_source_messages() -> None:
+def test_japanese_catalogues_translate_the_current_source_messages() -> None:
+    installation_source = _read(INSTALLATION_SOURCES[0])
+    installation_note = re.search(
+        r":::\{note\}\s*\n(.*?)\n:::", installation_source, re.DOTALL
+    )
+    assert installation_note is not None
+    installation_message = " ".join(installation_note.group(1).split())
+
     required_messages = {
-        JAPANESE_CATALOGUES[0]: (
-            "GWexpy {{ latest_release }} is available from both [PyPI](https://pypi.org/project/gwexpy/) "
-            "and [conda-forge](https://anaconda.org/conda-forge/gwexpy). Check PyPI, "
-            "conda-forge, or the [release page](https://github.com/tatsuki-washimi/gwexpy/releases) "
-            "for available versions."
-        ),
+        JAPANESE_CATALOGUES[0]: installation_message,
         JAPANESE_CATALOGUES[1]: "gwexpy <installed version>",
         JAPANESE_CATALOGUES[2]: (
             "For a reproducible citation, use the `CITATION.cff` file from the exact release "
