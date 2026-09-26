@@ -10,6 +10,21 @@ gh workflow run publish-release.yml --ref main \
   -f review_evidence=docs/developers/plans/manifests/audit-manifest-v0.2.3-release-readiness.yaml
 ```
 
+For the v0.2.4 candidate, dispatch from `main` with R's full 40-character
+SHA and the configured v0.2.4 evidence path:
+
+```bash
+gh workflow run publish-release.yml --ref main \
+  -f release_ref=<R-full-SHA> \
+  -f expected_tag=v0.2.4 \
+  -f review_evidence=docs/developers/plans/manifests/audit-manifest-v0.2.4-release-readiness.yaml
+```
+
+`R` is the publishing source commit. The readiness evidence names the distinct
+reviewed source `S`; validation binds S to R and permits only the evidence
+update and existing plan checkboxes transitioning from `[ ]` to `[x]`. A
+v0.2.4 candidate run must provide this evidence path.
+
 The accepted tag-specific plan, evidence schema/path, review lanes, S-to-R
 paths, payload/integration schemas, artifact prefix, and protected refs are defined only in
 `scripts/ci/release_contracts.json`.  A syntactically valid SemVer tag that is
@@ -40,7 +55,7 @@ loads the exact expected tag's `protected_refs` from the release contract and
 requires every fetched `origin/<protected-ref>` tip to equal the validated
 40-character source SHA.  The frozen v0.1.13 and v0.1.14 contracts require
 `main` and `maint/0.1`; v0.2.0 and v0.2.2 require exactly `main` and
-`maint/0.2`, as does v0.2.3.
+`maint/0.2`, as do v0.2.3 and v0.2.4.
 A missing protected-ref fetch or any moved tip is a release failure; it is
 never ignored as optional.
 
@@ -61,7 +76,8 @@ text) and emits a single allowlisted aggregate artifact whose name is selected f
 `v0114-integration-evidence-<40-character-source-sha>`, or
 `v020-integration-evidence-<40-character-source-sha>`, or
 `v022-integration-evidence-<40-character-source-sha>`, or
-`v023-integration-evidence-<40-character-source-sha>`.  It is retained for
+`v023-integration-evidence-<40-character-source-sha>`, or
+`v024-integration-evidence-<40-character-source-sha>`.  It is retained for
 90 days.  Record its artifact ID, API digest, `created_at`, and
 `expires_at` in UTC; acceptance requires
 `expires_at - created_at >= 90 days - 5 minutes`.
@@ -115,6 +131,52 @@ For v0.2.3, `S` and `R` must be distinct commits. Before accepting the allowed
 `S..R` delta, the validator reads the configured evidence path directly from
 `S` and requires the byte-exact empty placeholder. Validation fails closed if
 the placeholder is absent, already populated, malformed, or contains extra YAML.
+
+For v0.2.4, the frozen review baseline is the peeled v0.2.3 source
+`75d3d1a89ebc8942af1f3228152fea99d2d3420e`. Before accepting review evidence,
+the validator compares that baseline with S and requires every changed path to
+be covered by at least one configured lane. Rename detection is disabled for
+this path inventory so both the old and new names are checked. The
+scientific/data-model lane scope is exactly the contract value
+`["gwexpy", "tests/io"]`.
+
+The v0.2.4 readiness JSON has exactly three top-level keys: `schema`, `entries`,
+and `human_approval`. The human object has exactly `approver_login`, `role`,
+`reviewed_commit`, `scope_paths`, `scope_digest`, `timestamp_utc`, `verdict`,
+and positive integer `comment_id`. It binds approval to S and the configured
+scientific/data-model lane's paths and tree digest. The required values identify
+`approver_login: tatsuki-washimi`, `role: release-owner`, and
+`verdict: APPROVED`.
+
+The comment referenced by `comment_id` must exist through the GitHub Issues
+Comments API. The workflow supplies `GITHUB_TOKEN` with `issues: read` to the
+following command. It derives S from the evidence and checks the API author,
+exact UTC `created_at`, that `updated_at` equals `created_at`, and the canonical
+body without printing its raw text:
+
+```bash
+python control/scripts/ci/verify_release_human_approval.py \
+  --repo-root source \
+  --expected-tag "$EXPECTED_TAG" \
+  --repository "$GITHUB_REPOSITORY" \
+  --evidence "$REVIEW_EVIDENCE"
+```
+
+The comment body must consist of these four lines, with S and the scope digest
+filled in:
+
+```text
+GWEXPY-RELEASE-APPROVAL v0.2.4
+S: <40-character-reviewed-SHA>
+SCOPE: <64-character-scientific-data-model-scope-digest>
+VERDICT: APPROVED
+```
+
+On tag pushes, `release_contract.py --review-evidence-path v0.2.4` prints the
+canonical readiness path for the source validator and human approval verifier.
+On manual dispatch, pass that same path as `review_evidence`. The selected
+metadata date is 2026-09-26 UTC. If publication slips to a later UTC date,
+update the release metadata and repeat review and qualification against a new S.
 
 The selected evidence file must contain
 exactly one top-level `review_evidence_json: |` block whose content is the

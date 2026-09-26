@@ -1,23 +1,35 @@
 # Changelog
 
-## Pending patch release
+## [0.2.4] - 2026-09-26
+
+This patch release improves support for characterized DiagGUI XML frequency,
+time-series, FFT, STF, and transfer-function products. The changes preserve
+serialized values and axes for the supported layouts and fail closed for
+uncharacterized layouts. They do not infer physical units, calibration
+direction, or FFT normalization where the input does not state them. This
+release adds no public API or dependency.
 
 ### Fixed
 
-- **DiagGUI XML frequency reader correctness (#726)**: Fixed the existing
-  `FrequencySeries`, `FrequencySeriesDict`, and `FrequencySeriesMatrix` readers
-  for supported ASD and transfer-function products. The fix resolves the
-  external-parser `AttributeError`, native NumPy frequency-array truth-value
-  error, and native transfer-function `StopIteration` while retaining complex
-  values and frequency axes for supported layouts. For subtype 6, the native
-  parser retains phase that the installed `dttxml` parser can lose. The directly
-  imported `load_dttxml_products(native=False)` helper keeps its existing
-  `FrequencySeries` values; normalization occurs inside the readers. Supported
-  native layouts continue to decode `double` and `doubleComplex` Array storage
-  without reducing sample precision. Native TF subtype 3 and coherence subtype 5
-  now consume their embedded frequency column, while the external-parser path
-  preserves nonuniform axes instead of replacing them with a linear grid.
-  Uniform embedded axes retain the helper's existing `f0`/`df` metadata.
+- **DiagGUI XML frequency readers (#726)**: Fixed `FrequencySeries`,
+  `FrequencySeriesDict`, and `FrequencySeriesMatrix` reads for characterized
+  ASD, transfer-function, and coherence layouts. Embedded frequency columns,
+  nonuniform axes, complex values, and supported double precision are retained
+  through the native and installed-parser routes.
+- **DiagGUI XML TimeSeries (#730)**: Added native fallback parsing for
+  characterized `TimeSeries` products, with strict validation of serialized
+  dimensions, sample count, and base64 data.
+- **DiagGUI Spectrum FFT (#731)**: Added characterized Spectrum subtypes 0 and
+  4 with their linear or embedded frequency axes and complex samples. Unsupported
+  layouts fail closed.
+- **DiagGUI STF products (#732)**: Added characterized TransferFunction
+  subtypes 1 and 4 for `FrequencySeriesMatrix`, preserving complex responses
+  and serialized frequency axes.
+- **DiagGUI TransferFunction subtype 6 (#733)**: Preserved the characterized
+  complex phase and exact serialized frequency values on the external-parser
+  route; ambiguous or unsupported layouts fail closed.
+- **DiagGUI TimeSeriesMatrix identifier (#734)**: Registered the canonical
+  `xml.diaggui` identifier for `TimeSeriesMatrix` reads.
 
 ## [0.2.3] - 2026-09-05
 
@@ -1515,6 +1527,7 @@ Early stable GWexpy release focused on API stability, GWpy compatibility, and re
 - Fixed unit propagation in complex matrix operations.
 - Corrected IFFT amplitude scaling for one-sided spectra.
 
+[0.2.4]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.2.3...v0.2.4
 [0.1.14]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.13...v0.1.14
 [0.1.13]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.12...v0.1.13
 [0.1.12]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.11...v0.1.12

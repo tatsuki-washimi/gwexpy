@@ -16,8 +16,18 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTRACTS_PATH = ROOT / "scripts" / "ci" / "release_contracts.json"
 LOADER_PATH = ROOT / "scripts" / "ci" / "release_contract.py"
 REVIEW_VALIDATOR_PATH = ROOT / "scripts" / "ci" / "validate_release_review_evidence.py"
+RELEASE_VALIDATOR_PATH = ROOT / "scripts" / "validate_release.py"
 V023_IMPLEMENTATION_BASE = "a8085b71446d3ef3417a7e5b5ac8efb156368eac"
 V023_RELEASE_SOURCE = "75d3d1a89ebc8942af1f3228152fea99d2d3420e"
+V024_MANIFEST = (
+    ROOT
+    / "docs"
+    / "developers"
+    / "plans"
+    / "manifests"
+    / "audit-manifest-v0.2.4-release-readiness.yaml"
+)
+V024_PLAN = ROOT / "docs" / "developers" / "plans" / "20260926_v0.2.4_release_plan.md"
 V023_PLAN = (
     ROOT
     / "docs"
@@ -63,6 +73,17 @@ def load_review_validator():
     return module
 
 
+def load_release_validator():
+    spec = importlib.util.spec_from_file_location(
+        "validate_release_for_contract_tests", RELEASE_VALIDATOR_PATH
+    )
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 def _git_commit_available(revision: str) -> bool:
     result = subprocess.run(
         ["git", "cat-file", "-e", f"{revision}^{{commit}}"],
@@ -71,6 +92,13 @@ def _git_commit_available(revision: str) -> bool:
         capture_output=True,
     )
     return result.returncode == 0
+
+
+def git(repo: Path, *args: str) -> str:
+    result = subprocess.run(
+        ["git", *args], cwd=repo, check=True, capture_output=True, text=True
+    )
+    return result.stdout.strip()
 
 
 def _candidate_revision() -> str:
@@ -160,6 +188,7 @@ def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
         "v0.2.0",
         "v0.2.2",
         "v0.2.3",
+        "v0.2.4",
     }
 
     v0113 = data["releases"]["v0.1.13"]
@@ -291,6 +320,109 @@ def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
     assert v023["artifact_prefix"] == "v023-integration-evidence"
     assert v023["protected_refs"] == ["main", "maint/0.2"]
     assert "qualification_profile" not in v023
+
+    v024 = data["releases"]["v0.2.4"]
+    assert v024["plan_path"] == (
+        "docs/developers/plans/20260926_v0.2.4_release_plan.md"
+    )
+    assert v024["review_evidence_path"] == (
+        "docs/developers/plans/manifests/audit-manifest-v0.2.4-release-readiness.yaml"
+    )
+    assert v024["review_evidence_schema"] == "gwexpy-v024-review-evidence-v1"
+    assert v024["review_base_sha"] == V023_RELEASE_SOURCE
+    assert set(v024["review_lanes"]) == {
+        "scientific-data-model",
+        "documentation",
+        "release-security",
+    }
+    assert v024["review_lanes"]["scientific-data-model"] == [
+        "gwexpy",
+        "tests/io",
+    ]
+    assert v024["s_to_r_allowed_paths"] == [
+        "docs/developers/plans/20260926_v0.2.4_release_plan.md",
+        "docs/developers/plans/manifests/audit-manifest-v0.2.4-release-readiness.yaml",
+    ]
+    assert v024["artifact_prefix"] == "v024-integration-evidence"
+    assert v024["protected_refs"] == ["main", "maint/0.2"]
+    assert (
+        V024_MANIFEST.read_bytes()
+        == load_release_validator().V024_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER
+    )
+    plan = V024_PLAN.read_text(encoding="utf-8")
+    assert "75d3d1a89ebc8942af1f3228152fea99d2d3420e" in plan
+    assert "- [ ]" in plan
+    assert "- [x]" not in plan
+
+
+def test_release_contract_cli_prints_canonical_review_evidence_path() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(LOADER_PATH),
+            "--review-evidence-path",
+            "v0.2.4",
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert result.stdout.strip() == (
+        "docs/developers/plans/manifests/audit-manifest-v0.2.4-release-readiness.yaml"
+    )
+
+
+def test_v024_review_lanes_cover_every_change_since_peeled_v023_source() -> None:
+    if not _git_commit_available(V023_RELEASE_SOURCE):
+        pytest.fail(
+            "peeled v0.2.3 source is unavailable; review coverage requires full history"
+        )
+    candidate = _candidate_revision()
+    changed_paths = _changed_paths_between(ROOT, V023_RELEASE_SOURCE, candidate)
+    contracts = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
+    lanes = contracts["releases"]["v0.2.4"]["review_lanes"]
+    scope = {path for paths in lanes.values() for path in paths}
+    uncovered = sorted(
+        path for path in changed_paths if not _review_scope_covers(path, scope)
+    )
+    assert uncovered == []
+
+
+def test_v024_review_coverage_checks_both_rename_paths_and_rejects_new_scope(
+    tmp_path: Path,
+) -> None:
+    repo = tmp_path / "coverage-repo"
+    repo.mkdir()
+    git(repo, "init", "-b", "main")
+    git(repo, "config", "user.name", "Release Test")
+    git(repo, "config", "user.email", "release-test@example.invalid")
+    old_path = repo / "covered" / "old.txt"
+    old_path.parent.mkdir()
+    old_path.write_text("old path\n", encoding="utf-8")
+    git(repo, "add", ".")
+    git(repo, "commit", "-m", "baseline")
+    base = git(repo, "rev-parse", "HEAD")
+    new_path = repo / "uncovered" / "new.txt"
+    new_path.parent.mkdir()
+    git(repo, "mv", "covered/old.txt", "uncovered/new.txt")
+    git(repo, "commit", "-am", "rename across review scopes")
+    candidate = git(repo, "rev-parse", "HEAD")
+
+    validator = load_review_validator()
+    assert validator.changed_paths_between(repo, base, candidate) == {
+        "covered/old.txt",
+        "uncovered/new.txt",
+    }
+    contract = {
+        "review_base_sha": base,
+        "review_lanes": {"science": ["covered"]},
+    }
+    with pytest.raises(
+        validator.ReleaseReviewEvidenceError,
+        match="uncovered/new.txt",
+    ):
+        validator.validate_review_scope_coverage(repo, candidate, contract)
 
 
 def test_v023_plan_limits_hdf5_private_augmentation_to_named_markers() -> None:
