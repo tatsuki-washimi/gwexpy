@@ -148,6 +148,15 @@ def test_mode_node_lists_are_explicit_and_avoid_skip_prone_route_probes() -> Non
         "test_stf_matrix_reader_uses_real_no_dttxml_interpreter" in node
         for node in evidence.DTTXML_TEST_NODES
     )
+    layout_nodes = [
+        node
+        for node in evidence.DTTXML_TEST_NODES
+        if "test_stf_reader_reports_ambiguous_or_inconsistent_layout" in node
+    ]
+    assert len(layout_nodes) == 15
+    assert all("[" in node and node.endswith("]") for node in layout_nodes)
+    assert not any("external-missing-stream" in node for node in layout_nodes)
+    assert any("native-missing-stream" in node for node in layout_nodes)
 
 
 def test_payload_candidate_hash_and_filename_are_checked(tmp_path: Path) -> None:
