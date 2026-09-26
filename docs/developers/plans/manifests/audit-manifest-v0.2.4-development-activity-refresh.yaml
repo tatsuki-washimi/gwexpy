@@ -1,0 +1,60 @@
+schema: gwexpy-v024-development-activity-refresh-audit-v1
+recorded_at_utc: "2026-09-26T16:41:45Z"
+status: prepared_for_review
+skill: web_docs_release_gates
+base_main: df0569a4a716ebe62f638bf1f8a347a7298e8e6b
+reason: The public changelog still showed the v0.2.3 weekly activity plot after v0.2.4 publication.
+target:
+  ref: v0.2.4
+  release_source_sha: 522e52a082925da4dd37966d82a7616bdd2a5248
+  non_merge_commits: 1962
+  first_utc_week: "2025-12-15"
+  last_utc_week: "2026-09-21"
+  csv_rows: 205
+artifacts:
+  english_svg:
+    path: docs_redesign/_static/images/development-activity-v0.2.4.svg
+    sha256: 8c4534614b7496fedbd1d4f3ddb63bf02ca785dbe5b6bd5ebceda33a7e31290f
+  japanese_svg:
+    path: docs_redesign/_static/images/development-activity-v0.2.4-ja.svg
+    sha256: 73f88375450ceb2aa9e53be44796f1d8e5a62fd476f55ce34a69eb5dc36fe940
+  shared_weekly_csv:
+    path: docs_redesign/_static/downloads/development-activity-v0.2.4-weekly.csv
+    sha256: 1a449a3cb1be659698dd6ab02850e3b483249540475c71afe42994438d2f34f9
+changed_paths:
+  - docs/developers/plans/manifests/audit-manifest-v0.2.4-development-activity-refresh.yaml
+  - docs/developers/plans/notes/development-activity-visualization-handover.md
+  - docs_redesign/_static/downloads/development-activity-v0.2.4-weekly.csv
+  - docs_redesign/_static/images/development-activity-v0.2.4-ja.svg
+  - docs_redesign/_static/images/development-activity-v0.2.4.svg
+  - docs_redesign/about/changelog.md
+  - docs_redesign/conf.py
+  - docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po
+  - scripts/generate_development_activity.py
+  - tests/docs/test_docs_redesign_release_facts.py
+  - tests/test_generate_development_activity.py
+checks:
+  - command: "generate_development_activity.py --ref v0.2.4 --language en/ja"
+    result: "Both runs analyzed 1962 non-merge commits at exact release source R2."
+  - command: "cmp English and Japanese generator CSV outputs"
+    result: "Byte-identical; both SVGs embed the same CSV digest."
+  - command: "pytest -q tests/docs/test_docs_redesign_release_facts.py tests/test_generate_development_activity.py"
+    result: "45 passed"
+  - command: "ruff check and ruff format --check on changed Python files and generator"
+    result: passed
+  - command: "Sphinx HTML builds for docs_redesign with nb_execution_mode=off, en and ja"
+    result: "Both passed; rendered changelogs select their respective SVG and the shared CSV."
+  - command: "Rendered HTML asset readback"
+    result: "Both SVGs and downloaded CSV match checked-in bytes; prior v0.2.3 source remains linked."
+  - command: "Visual inspection of both rendered SVGs"
+    result: "English and Japanese labels and v0.2.4 release marker are visible."
+  - command: "Rasterize SVGs before and after line-end whitespace normalization"
+    result: "English and Japanese PNG bytes were identical, respectively."
+  - command: "git diff --cached --check"
+    result: "The generator normalizes Matplotlib path-line whitespace; the staged diff passes."
+check_physics:
+  status: not_applicable
+  reason: Documentation, assets, tests, and SVG whitespace normalization only; no physics or data-model change.
+historical_assets: preserved
+publication:
+  deployment_readback: pending

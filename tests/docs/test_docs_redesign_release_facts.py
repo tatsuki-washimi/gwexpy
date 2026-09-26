@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import csv
 import hashlib
 import json
 import re
@@ -25,6 +26,10 @@ ACTIVITY_CSV_SHA256 = "cd72102029af78b05dcb002051365092f128df341125164e4ba7c8a96
 CANDIDATE_ACTIVITY_SHA = "3ade51de26c9adf21c4a7ad076837967e61c8038"
 CANDIDATE_ACTIVITY_CSV_SHA256 = (
     "0a0453910f6944e53312b9e36f811e40e608698f2b75eee8171d1a26b64abdd8"
+)
+PUBLISHED_V024_SHA = "522e52a082925da4dd37966d82a7616bdd2a5248"
+PUBLISHED_V024_ACTIVITY_CSV_SHA256 = (
+    "1a449a3cb1be659698dd6ab02850e3b483249540475c71afe42994438d2f34f9"
 )
 RELEASE_CLOSURE_MANIFEST = (
     REPO_ROOT
@@ -100,8 +105,8 @@ def test_candidate_activity_uses_the_same_data_in_both_languages() -> None:
     assert "The candidate has not been tagged or published." not in source
     assert CANDIDATE_ACTIVITY_SHA in source
 
-    # The main figure now covers the published tag; preserve the earlier
-    # candidate assets as a separate, immutable historical snapshot.
+    # Preserve the earlier published and candidate assets as immutable
+    # historical snapshots after the current figure advances to v0.2.4.
     published_sha = "75d3d1a89ebc8942af1f3228152fea99d2d3420e"
     published_csv = static / "downloads/development-activity-v0.2.3-weekly.csv"
     digest = hashlib.sha256(published_csv.read_bytes()).hexdigest()
@@ -121,6 +126,43 @@ def test_candidate_activity_uses_the_same_data_in_both_languages() -> None:
     assert "https://pypi.org/project/gwexpy/0.2.3/" in historical_changelog
 
 
+def test_current_activity_matches_the_published_v024_tag() -> None:
+    static = REPO_ROOT / "docs_redesign/_static"
+    release_status = json.loads(
+        (REPO_ROOT / "docs_redesign/release_status.json").read_text(encoding="utf-8")
+    )
+    version = release_status["latest_release"]
+    source = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
+        encoding="utf-8"
+    )
+    csv_path = static / f"downloads/development-activity-v{version}-weekly.csv"
+
+    assert f"## v{version} weekly development activity" in source
+    assert (
+        f":::{{figure}} /_static/images/development-activity-v{version}.svg" in source
+    )
+    assert f"/_static/downloads/development-activity-v{version}-weekly.csv" in source
+    assert PUBLISHED_V024_SHA in source
+    assert hashlib.sha256(csv_path.read_bytes()).hexdigest() == (
+        PUBLISHED_V024_ACTIVITY_CSV_SHA256
+    )
+    with csv_path.open(encoding="utf-8", newline="") as stream:
+        rows = list(csv.DictReader(stream))
+    assert {row["target_ref"] for row in rows} == {f"v{version}"}
+    assert {row["target_sha"] for row in rows} == {PUBLISHED_V024_SHA}
+    assert sum(int(row["commit_count"]) for row in rows) == 1962
+    for suffix in ("", "-ja"):
+        svg = (
+            static / f"images/development-activity-v{version}{suffix}.svg"
+        ).read_text(encoding="utf-8")
+        assert f"Target ref: v{version}; resolved SHA: {PUBLISHED_V024_SHA}" in svg
+        assert f"canonical CSV SHA-256: {PUBLISHED_V024_ACTIVITY_CSV_SHA256}" in svg
+        assert f"v{version}" in svg
+        if suffix:
+            assert "週ごとのコミット数" in svg
+            assert "Commits per week" not in svg
+
+
 def test_v022_activity_snapshot_has_japanese_public_copy() -> None:
     """Keep the changelog figure readable on the Japanese docs site."""
     source_text = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
@@ -133,7 +175,9 @@ def test_v022_activity_snapshot_has_japanese_public_copy() -> None:
         catalogue = pofile.read_po(stream, locale="ja")
 
     expected_translations = {
-        "v0.2.3 weekly development activity": "v0.2.3 の週次開発活動",
+        "v0.2.4 weekly development activity": "v0.2.4 の週次開発活動",
+        "Weekly GWexpy development activity through v0.2.4, showing non-merge commits and edited source lines by category.": "v0.2.4 までの GWexpy の週次開発活動。カテゴリ別に、マージを除くコミット数と編集されたソース行数を示します。",
+        "[Download the weekly CSV data](/_static/downloads/development-activity-v0.2.4-weekly.csv)": "[週次 CSV データをダウンロード](/_static/downloads/development-activity-v0.2.4-weekly.csv)",
         "Published on 2026-09-26 UTC: [PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4), and [Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439).": "2026-09-26（UTC）に公開しました：[PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/)、[conda-forge](https://anaconda.org/conda-forge/gwexpy)、[GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4)、[Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439)。",
         "Published on 2026-09-05 UTC: [PyPI 0.2.3](https://pypi.org/project/gwexpy/0.2.3/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3), and [Zenodo DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992).": "2026-09-05（UTC）に公開しました：[PyPI 0.2.3](https://pypi.org/project/gwexpy/0.2.3/)、[conda-forge](https://anaconda.org/conda-forge/gwexpy)、[GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3)、[Zenodo DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992)。",
         "[Download the weekly CSV data](/_static/downloads/development-activity-v0.2.2-weekly.csv)": "[週次 CSV データをダウンロード](/_static/downloads/development-activity-v0.2.2-weekly.csv)",
@@ -196,7 +240,7 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
         encoding="utf-8"
     )
     assert "Published on 2026-09-26 UTC" in redesigned_changelog
-    assert "development-activity-v0.2.3.svg" in redesigned_changelog
+    assert "development-activity-v0.2.4.svg" in redesigned_changelog
     assert ':start-after: "# Changelog"' in redesigned_changelog
 
     release_message = catalogue.get(RELEASE_HISTORY_ENTRY)

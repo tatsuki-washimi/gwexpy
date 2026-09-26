@@ -319,6 +319,7 @@ def test_svg_uses_contiguous_week_bins_without_hatching(
     assert annotation_rotations == [90.0, 0.0]
     assert annotation_heights == [1.025, 1.17]
     svg = (tmp_path / "activity.svg").read_text(encoding="utf-8")
+    assert all(not line.endswith((" ", "\t")) for line in svg.splitlines())
     if language == "ja":
         for label in (
             "GWexpy の開発活動",

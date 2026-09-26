@@ -446,12 +446,16 @@ def setup(app):
 
     def _localize_changelog_activity(app, docname, source):
         if app.config.language == "ja" and docname == "about/changelog":
-            source[0] = source[0].replace(
-                ":::{figure} /_static/images/development-activity-v0.2.3.svg",
-                ":::{figure} /_static/images/development-activity-v0.2.3-ja.svg",
-            ).replace(
-                ":::{figure} /_static/images/development-activity-v0.2.3-candidate.svg",
-                ":::{figure} /_static/images/development-activity-v0.2.3-candidate-ja.svg",
+            source[0] = (
+                source[0]
+                .replace(
+                    ":::{figure} /_static/images/development-activity-v0.2.4.svg",
+                    ":::{figure} /_static/images/development-activity-v0.2.4-ja.svg",
+                )
+                .replace(
+                    ":::{figure} /_static/images/development-activity-v0.2.3-candidate.svg",
+                    ":::{figure} /_static/images/development-activity-v0.2.3-candidate-ja.svg",
+                )
             )
 
     app.connect("source-read", _localize_changelog_activity)
