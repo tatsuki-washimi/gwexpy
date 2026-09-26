@@ -505,7 +505,7 @@ def test_v024_diaggui_lane_is_four_cell_digest_bound_and_required_for_publish():
     assert "continue-on-error" not in read_workflow()
 
 
-def test_v024_diaggui_dttxml_copies_every_file_referenced_by_test_nodes():
+def test_v024_diaggui_copies_every_file_referenced_by_node_lists():
     import yaml
 
     workflow = yaml.safe_load(read_workflow())
@@ -523,11 +523,13 @@ def test_v024_diaggui_dttxml_copies_every_file_referenced_by_test_nodes():
     script = (
         WORKFLOW.parents[2] / "scripts" / "ci" / "diaggui_qualification_evidence.py"
     )
-    nodes = subprocess.check_output(
-        [sys.executable, str(script), "test-nodes", "--mode", "dttxml"],
-        text=True,
-    ).splitlines()
-    node_paths = {node.split("::", maxsplit=1)[0] for node in nodes}
+    node_paths = set()
+    for mode in ("base", "dttxml"):
+        nodes = subprocess.check_output(
+            [sys.executable, str(script), "test-nodes", "--mode", mode],
+            text=True,
+        ).splitlines()
+        node_paths.update(node.split("::", maxsplit=1)[0] for node in nodes)
 
     assert node_paths
     assert all(path.startswith("io/") for path in node_paths)

@@ -25,6 +25,12 @@ findings_addressed:
     resolution: >-
       Mark the root v0.2.4 entry as candidate/HOLD and include only the
       published v0.2.3 onward in the public Sphinx changelog.
+  - id: CI-001
+    scope: DiagGUI qualification node coverage in the release workflow
+    resolution: >-
+      Copy issue726 for the newly selected rounded-axis node and retain issue734
+      for the base-mode nodes. A workflow regression requires copied modules to
+      equal the union of files referenced by the base and dttxml node lists.
 skills:
   - prep_release
   - gwexpy_conda_jobs
@@ -60,6 +66,9 @@ changed_file_groups:
     - release_notes/v0.2.4.md
     - docs_redesign/about/changelog.md
     - tests/docs/test_docs_redesign_release_facts.py
+  release_workflow_qualification:
+    - .github/workflows/publish-release.yml
+    - tests/test_publish_release_workflow.py
   audit:
     - docs/developers/plans/manifests/audit-manifest-v0.2.4-review-repair.yaml
 verification:
@@ -75,6 +84,16 @@ verification:
     result: 240 passed, 6 existing skips
   - command: dttxml 1.1.8 selected qualification node list
     result: 88 passed, 0 skipped in an isolated local environment
+  - command: disposable four-cell distribution probe using source eaff637eb547f6f5b8a2867c0ec828a0e127d1d5
+    result: >-
+      base-wheel 51 passed/0 skipped, base-sdist 51 passed/0 skipped,
+      dttxml-wheel 88 passed/0 skipped, and dttxml-sdist 88 passed/0 skipped.
+      The probe was limited to source eaff637eb547f6f5b8a2867c0ec828a0e127d1d5
+      and is not exact-S/R qualification.
+  - command: rtk conda run -n gwexpy python -m pytest -q tests/test_publish_release_workflow.py
+    result: >-
+      27 passed, including an assertion that workflow copy targets equal the
+      union of source files referenced by the base and dttxml node lists.
   - command: rtk conda run -n gwexpy ruff check on changed Python files
     result: passed
   - command: rtk conda run -n gwexpy mypy gwexpy/io/dttxml_common.py
