@@ -208,10 +208,12 @@ def _uniform_frequency_step(frequencies) -> float | None:
     if not np.all(np.isfinite(axis)):
         return None
     step = float(axis[1] - axis[0])
-    scale = max(1.0, float(np.max(np.abs(axis))), abs(step))
-    tolerance = 2 * float(np.spacing(np.asarray(scale, dtype=axis.dtype)))
     expected = float(axis[0]) + np.arange(axis.size) * step
-    if np.allclose(axis, expected, rtol=0, atol=tolerance):
+    # Compare each value against its local storage precision. A tolerance based
+    # on the largest frequency can span multiple ULPs at smaller values, while
+    # even one full ULP at a bin can encode a real serialized-axis difference.
+    tolerance = np.abs(np.spacing(axis))
+    if np.all(np.abs(axis.astype(float) - expected) < tolerance):
         return step
     return None
 

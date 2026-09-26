@@ -89,6 +89,7 @@ DTTXML_TEST_NODES = (
     "io/test_dttxml_issue730.py::test_installed_dttxml_route_reads_timeseries",
     "io/test_dttxml_issue730.py::test_installed_dttxml_route_preserves_mixed_frequency_products",
     "io/test_dttxml_issue731.py::test_fft_frequency_readers_preserve_both_channel_layouts",
+    "io/test_dttxml_issue731.py::test_external_fft_preserves_quantized_nonuniform_embedded_axis",
     "io/test_dttxml_issue731.py::test_fft_reader_rejects_ambiguous_or_invalid_layouts",
     "io/test_dttxml_issue731.py::test_fft_one_bin_frequency_axis_is_preserved",
     "io/test_dttxml_issue731.py::test_fft_reader_rejects_double_complex_n8_even_when_external_parser_accepts",
