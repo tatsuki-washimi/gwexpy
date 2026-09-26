@@ -45,6 +45,34 @@ implemented_file_groups:
     - tests/test_release_contracts.py
     - tests/test_release_human_approval.py
     - tests/test_validate_release_script.py
+distribution_probe:
+  kind: disposable_local_distribution_probe
+  source_sha: eff08e5c9802f88c2d1c06725436954718786609
+  candidate_relation: >-
+    This was a disposable local probe source, not the exact-R publishing
+    candidate and not an assigned S.
+  artifacts:
+    built: [wheel, sdist]
+    digest_checked: true
+  matrix:
+    base_distribution:
+      wheel: {passed: 51, skipped: 0}
+      sdist: {passed: 51, skipped: 0}
+    dttxml:
+      version: "1.1.8"
+      wheel: {passed: 86, skipped: 0}
+      sdist: {passed: 86, skipped: 0}
+  cell_count: 4
+  evidence_validation:
+    typed_reports: 4 passed
+    aggregate_report: passed
+  temporary_path: /tmp/gwexpy-v024-integr-check.IQ5c11
+  persistence: >-
+    The temporary path is not durable evidence storage; this manifest records
+    the source SHA and result summary only.
+  exploratory_probe: >-
+    An initial invalid exploratory probe was excluded from these successful
+    results; only the final digest-checked probe is counted above.
 validation:
   checks:
     - command: >-
@@ -94,8 +122,10 @@ validation:
     - command: rtk git diff --check 1032a2ba...HEAD
       result: pass; clean before this audit manifest was added
   omitted_or_pending:
-    - check: local four-cell qualification smoke
-      result: pending; no local result is claimed
+    - check: exact-R CI and candidate dry-run
+      result: pending; the disposable local probe does not establish exact-R results
+    - check: S review lanes and human scientific/data-model approval
+      result: pending; no S or approval is assigned
     - check: full repository test suite
       result: not run; focused release and qualification checks were selected
     - check: check_physics
