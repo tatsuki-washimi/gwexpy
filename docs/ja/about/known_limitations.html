@@ -445,8 +445,8 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.4</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/bf9ce774a5e8caedb5ef1a7057f4ee59702a6c3f">bf9ce774</a>
-  · 入門例の検証対象 0.2.3
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/df0569a4a716ebe62f638bf1f8a347a7298e8e6b">df0569a4</a>
+  · 入門例の検証対象 0.2.4
   · <a href="documentation_version.html">版情報</a>
   · <a href="#">既知の制限</a>
 </div>
@@ -459,7 +459,7 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="known-limitations">
 <h1>既知の制約<a class="headerlink" href="#known-limitations" title="Link to this heading">#</a></h1>
-<p>このページは、リリース済み GWexpy 0.2.3 系列で利用者への影響が大きい制限を記録しています。以下に示す v0.2.0 で導入された境界は、後のリリースノートで明示的に更新されない限り引き続き適用されます。互換性に関する主な注意点をまとめたもので、すべての未解決 Issue を列挙したものではなく、次のリリースで制限が解消されることを約束するものでもありません。</p>
+<p>このページは、リリース済み GWexpy 0.2.4 系列で利用者への影響が大きい制限を記録しています。以下に示す v0.2.0 で導入された境界は、後のリリースノートで明示的に更新されない限り引き続き適用されます。互換性に関する主な注意点をまとめたもので、すべての未解決 Issue を列挙したものではなく、次のリリースで制限が解消されることを約束するものでもありません。</p>
 <div class="admonition important">
 <p class="admonition-title">重要</p>
 <p>物理的に安全でメタデータを保持する結果を定義できない場合、GWexpy の契約は、裸の <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> や <code class="docutils literal notranslate"><span class="pre">astropy.units.Quantity</span></code>、意味の曖昧な時刻へ黙って退行するのではなく、明示的に失敗することです。そのため、以下に示す <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> や <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> は、意図した安全境界である場合があります。</p>
@@ -467,7 +467,7 @@
 <p>ここに列挙していないフォーマット別・アダプター別の対応範囲は、<a class="reference internal" href="../how-to/io_formats.html"><span class="std std-doc">I/O formats</span></a> と <a class="reference internal" href="../how-to/interop.html"><span class="std std-doc">interoperability</span></a> を参照してください。</p>
 <section id="development-documentation-and-compatibility">
 <h2>開発版ドキュメントと互換性<a class="headerlink" href="#development-documentation-and-compatibility" title="Link to this heading">#</a></h2>
-<p>開発版の API ページには、0.2.3 より後の変更が含まれる場合があります。インストール済みのリリースと比較する場合は、<a class="reference internal" href="documentation_version.html"><span class="std std-doc">ドキュメントのバージョン</span></a>と <a class="reference internal" href="../explanation/gwpy_compatibility_policy.html"><span class="std std-doc">GWpy 互換性ポリシー</span></a>を参照してください。GWpy から継承した操作が成功する場合は、親の仕様を保持します。以下の処理を拒否する制限は、文書化された個別の境界に適用されるもので、GWpy の挙動を全般的に変更するものではありません。</p>
+<p>開発版の API ページには、0.2.4 より後の変更が含まれる場合があります。インストール済みのリリースと比較する場合は、<a class="reference internal" href="documentation_version.html"><span class="std std-doc">ドキュメントのバージョン</span></a>と <a class="reference internal" href="../explanation/gwpy_compatibility_policy.html"><span class="std std-doc">GWpy 互換性ポリシー</span></a>を参照してください。GWpy から継承した操作が成功する場合は、親の仕様を保持します。以下の処理を拒否する制限は、文書化された個別の境界に適用されるもので、GWpy の挙動を全般的に変更するものではありません。</p>
 <p>現在の開発版の互換性に関する注意点には、継承した異種チャンネル間 CSD の単位ラベルと、無次元の信号出力が含まれます。物理的に校正したノイズ寄与の推定については、<a class="reference internal" href="../how-to/case-studies/case_noise_budget.html"><span class="std std-doc">ノイズバジェットの例</span></a>で出力/入力の単位を明示する方法を参照してください。これらの差異の範囲と承認は、<a class="reference internal" href="changelog.html"><span class="std std-doc">変更履歴</span></a>に記録しています。</p>
 </section>
 <section id="exact-time-axis-precision">
