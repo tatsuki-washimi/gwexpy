@@ -32,7 +32,6 @@ changed_paths:
   - docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po
   - scripts/generate_development_activity.py
   - tests/docs/test_docs_redesign_release_facts.py
-  - tests/test_generate_development_activity.py
 checks:
   - command: "generate_development_activity.py --ref v0.2.4 --language en/ja"
     result: "Both runs analyzed 1962 non-merge commits at exact release source R2."

@@ -158,6 +158,7 @@ def test_current_activity_matches_the_published_v024_tag() -> None:
         assert f"Target ref: v{version}; resolved SHA: {PUBLISHED_V024_SHA}" in svg
         assert f"canonical CSV SHA-256: {PUBLISHED_V024_ACTIVITY_CSV_SHA256}" in svg
         assert f"v{version}" in svg
+        assert all(not line.endswith((" ", "\t")) for line in svg.splitlines())
         if suffix:
             assert "週ごとのコミット数" in svg
             assert "Commits per week" not in svg
