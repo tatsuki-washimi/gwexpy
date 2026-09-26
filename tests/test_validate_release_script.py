@@ -659,6 +659,33 @@ def test_v024_s_to_r_rejects_the_same_reviewed_and_source_commit(
         )
 
 
+def test_git_name_only_path_parser_preserves_whitespace_and_empty_output() -> None:
+    validator = load_validator()
+
+    assert validator._parse_git_name_only_paths(b"") == set()
+    assert validator._parse_git_name_only_paths(b" \tpath\0") == {" \tpath"}
+
+
+@pytest.mark.parametrize(
+    ("output", "message"),
+    [
+        (b"path", "malformed NUL-delimited"),
+        (b"path\0\0", "malformed NUL-delimited"),
+        (b"\0", "malformed NUL-delimited"),
+        (b"\xff\0", "non-UTF-8"),
+        (b"path\0path\0", "duplicate paths"),
+    ],
+)
+def test_git_name_only_path_parser_rejects_noncanonical_output(
+    output: bytes,
+    message: str,
+) -> None:
+    validator = load_validator()
+
+    with pytest.raises(validator.ReleaseValidationError, match=message):
+        validator._parse_git_name_only_paths(output)
+
+
 @pytest.mark.parametrize(
     "source_manifest",
     [
@@ -751,6 +778,73 @@ def test_v024_s_to_r_rejects_paths_outside_evidence_and_plan(
     validator = load_validator()
     repo, plan, manifest, reviewed_commit = make_v024_s_to_r_repo(tmp_path)
     source_sha = commit_v024_r(repo, plan, manifest, extra_file=True)
+
+    with pytest.raises(
+        validator.ReleaseValidationError,
+        match="outside coordinator audit paths",
+    ):
+        validator.validate_s_to_r(
+            repo,
+            reviewed_commit,
+            source_sha,
+            expected_tag="v0.2.4",
+        )
+
+
+@pytest.mark.parametrize("prefix", [" ", "\t", "\n"], ids=["space", "tab", "newline"])
+def test_v024_s_to_r_rejects_leading_whitespace_path_even_with_allowed_plan_delta(
+    tmp_path: Path,
+    prefix: str,
+) -> None:
+    validator = load_validator()
+    repo, plan, manifest, reviewed_commit = make_v024_s_to_r_repo(tmp_path)
+    commit_v024_r(repo, plan, manifest, update_plan=True)
+
+    hidden_path = repo / f"{prefix}{V024_PLAN_PATH}"
+    hidden_path.parent.mkdir(parents=True, exist_ok=True)
+    hidden_path.write_text("unreviewed path\n", encoding="utf-8")
+    git(repo, "add", ".")
+    git(repo, "commit", "-m", "add whitespace-prefixed out-of-scope path")
+    source_sha = git(repo, "rev-parse", "HEAD")
+
+    with pytest.raises(
+        validator.ReleaseValidationError,
+        match="outside coordinator audit paths",
+    ):
+        validator.validate_s_to_r(
+            repo,
+            reviewed_commit,
+            source_sha,
+            expected_tag="v0.2.4",
+        )
+
+
+def test_v024_s_to_r_rejects_rename_from_out_of_scope_endpoint(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    validator = load_validator()
+    repo, _plan, _manifest, _reviewed_commit = make_v024_s_to_r_repo(tmp_path)
+    old_path = repo / "unreviewed-source.txt"
+    old_path.write_text("renamed content\n", encoding="utf-8")
+    git(repo, "add", ".")
+    git(repo, "commit", "--amend", "--no-edit")
+    reviewed_commit = git(repo, "rev-parse", "HEAD")
+
+    allowed_destination = repo / "coordinator-owned.txt"
+    old_path.rename(allowed_destination)
+    git(repo, "add", "--all")
+    git(repo, "commit", "-m", "rename an out-of-scope path into the allowed set")
+    source_sha = git(repo, "rev-parse", "HEAD")
+    monkeypatch.setattr(
+        validator,
+        "_release_contract",
+        lambda _tag: {
+            "plan_path": V024_PLAN_PATH,
+            "review_evidence_path": V024_REVIEW_EVIDENCE_PATH,
+            "s_to_r_allowed_paths": ["coordinator-owned.txt"],
+        },
+    )
 
     with pytest.raises(
         validator.ReleaseValidationError,
