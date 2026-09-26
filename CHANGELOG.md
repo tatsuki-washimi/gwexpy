@@ -2,6 +2,9 @@
 
 ## [0.2.4] - 2026-09-26
 
+Release status: candidate. Publication is on HOLD pending final review and
+approval.
+
 This patch release improves support for characterized DiagGUI XML frequency,
 time-series, FFT, STF, and transfer-function products. The changes preserve
 serialized values and axes for the supported layouts and fail closed for
@@ -30,6 +33,16 @@ release adds no public API or dependency.
   route; ambiguous or unsupported layouts fail closed.
 - **DiagGUI TimeSeriesMatrix identifier (#734)**: Registered the canonical
   `xml.diaggui` identifier for `TimeSeriesMatrix` reads.
+
+### Compatibility notes
+
+- Embedded float32 frequency bins are preserved at their serialized precision,
+  rather than snapped to an ideal grid. If `f0`/`df` construction cannot
+  reproduce every serialized bin exactly, `df` can be `None` and
+  `FrequencySeries.ifft()` is unavailable. An inverse FFT requires an explicit
+  regrid/interpolation onto a chosen uniform frequency grid first; this changes
+  sample locations and values and is not guaranteed to be scientifically
+  equivalent to the embedded axis.
 
 ## [0.2.3] - 2026-09-05
 

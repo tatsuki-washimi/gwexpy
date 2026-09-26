@@ -199,7 +199,13 @@ def _decode_dtt_stream(
 
 
 def _uniform_frequency_step(frequencies) -> float | None:
-    """Return the bin spacing when an explicit frequency axis is uniform."""
+    """Return a candidate bin spacing for an approximately uniform axis.
+
+    Callers that compress an embedded serialized axis into ``f0``/``df`` must
+    still verify the frequencies produced by the real ``FrequencySeries``
+    constructor against the original axis. This helper only identifies a
+    possible step; its tolerance is not permission to discard serialized bins.
+    """
     axis = np.asarray(frequencies)
     if axis.size < 2:
         return None
@@ -208,10 +214,12 @@ def _uniform_frequency_step(frequencies) -> float | None:
     if not np.all(np.isfinite(axis)):
         return None
     step = float(axis[1] - axis[0])
-    scale = max(1.0, float(np.max(np.abs(axis))), abs(step))
-    tolerance = 2 * float(np.spacing(np.asarray(scale, dtype=axis.dtype)))
     expected = float(axis[0]) + np.arange(axis.size) * step
-    if np.allclose(axis, expected, rtol=0, atol=tolerance):
+    # Compare each value against its local storage precision. A tolerance based
+    # on the largest frequency can span multiple ULPs at smaller values, while
+    # even one full ULP at a bin can encode a real serialized-axis difference.
+    tolerance = np.abs(np.spacing(axis))
+    if np.all(np.abs(axis.astype(float) - expected) < tolerance):
         return step
     return None
 
@@ -1154,7 +1162,22 @@ def load_dttxml_products(source, *, native: bool = False, products: str | None =
                 has_embedded_axis = subtype_raw in (3, 4, 5, 6, 7) or (
                     isinstance(subtype, str) and "format (f," in subtype.lower()
                 )
-                if has_embedded_axis and _uniform_frequency_step(axis) is None:
+                if has_embedded_axis:
+                    step = _uniform_frequency_step(axis)
+                    if step is not None:
+                        candidate = FrequencySeries(
+                            data,
+                            df=step,
+                            f0=axis[0],
+                            epoch=info.gps_second,
+                            name=name,
+                            unit=unit,
+                        )
+                        if np.array_equal(
+                            np.asarray(candidate.frequencies.value),
+                            np.asarray(axis),
+                        ):
+                            return candidate
                     return FrequencySeries(
                         data,
                         frequencies=axis,

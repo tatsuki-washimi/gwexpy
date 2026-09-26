@@ -148,6 +148,14 @@ def test_mode_node_lists_are_explicit_and_avoid_skip_prone_route_probes() -> Non
         "test_stf_matrix_reader_uses_real_no_dttxml_interpreter" in node
         for node in evidence.DTTXML_TEST_NODES
     )
+    assert any(
+        "test_external_fft_preserves_quantized_nonuniform_embedded_axis" in node
+        for node in evidence.DTTXML_TEST_NODES
+    )
+    assert not any(
+        "test_external_fft_preserves_quantized_nonuniform_embedded_axis" in node
+        for node in evidence.BASE_TEST_NODES
+    )
     layout_nodes = [
         node
         for node in evidence.DTTXML_TEST_NODES

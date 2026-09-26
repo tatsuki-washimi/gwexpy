@@ -221,6 +221,56 @@ def test_fft_frequency_readers_preserve_both_channel_layouts(
         _assert_series(direct, values, frequencies)
 
 
+@pytest.mark.skipif(not HAS_DTTXML, reason="requires dttxml==1.1.8")
+def test_external_fft_preserves_quantized_nonuniform_embedded_axis(
+    tmp_path: Path,
+) -> None:
+    axes = (
+        (
+            "large-offset",
+            np.array([1_000_000, 1_000_001, 1_000_002.0625], dtype=np.float32),
+        ),
+        (
+            "nextafter-low-offset",
+            np.array(
+                [0, 0.1, 0.2, np.nextafter(np.float32(0.3), np.float32(-np.inf))],
+                dtype=np.float32,
+            ),
+        ),
+        (
+            "rounded-uniform-float32",
+            np.arange(100, dtype=np.float32) / 10,
+        ),
+    )
+    for axis_name, axis in axes:
+        samples = np.arange(1, axis.size + 1, dtype=np.float32).astype(np.complex64)
+        channel = f"K1:AUDIT-FFT-{axis_name.upper()}"
+        root = ET.Element("LIGO_LW")
+        _add_spectrum(
+            root,
+            result_index=0,
+            subtype=4,
+            channel=channel,
+            values=np.concatenate((axis.astype(np.complex64), samples)),
+            array_type="floatComplex",
+            n_points=axis.size,
+            rows=1,
+            f0=0,
+            df=0,
+            dims=(2, axis.size),
+        )
+        path = tmp_path / f"spectrum_fft_{axis_name}.xml"
+        ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
+
+        result = FrequencySeriesDict.read(
+            path, format="xml.diaggui", products="FFT", native=False
+        )
+
+        assert list(result) == [channel]
+        np.testing.assert_array_equal(result[channel].value, samples)
+        np.testing.assert_array_equal(result[channel].frequencies.value, axis)
+
+
 @pytest.mark.parametrize("native", [False, True], ids=["dttxml", "native"])
 @pytest.mark.parametrize(
     ("malformation", "message"),

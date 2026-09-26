@@ -23,6 +23,9 @@ from gwexpy.timeseries import TimeSeriesDict
 
 def test_uniform_frequency_step_uses_spacing_not_absolute_frequency():
     rounded_uniform = np.arange(100, dtype=np.float32) / 10
+    # This is a possible nominal step, not proof that f0/df construction
+    # reproduces every serialized float32 bin. The external-reader regression
+    # verifies exact values and requires an explicit axis when it does not.
     assert dttxml_common._uniform_frequency_step(rounded_uniform) == pytest.approx(0.1)
 
     # A large f0 must not hide a nonuniform step in float32 storage.
@@ -30,6 +33,13 @@ def test_uniform_frequency_step_uses_spacing_not_absolute_frequency():
         [1_000_000, 1_000_001, 1_000_002.5, 1_000_003.5], dtype=np.float32
     )
     assert dttxml_common._uniform_frequency_step(irregular) is None
+
+    # A one-ULP perturbation at a large offset must not be treated as axis
+    # quantization: reconstructing with df=1.0 would lose the serialized tail.
+    quantized_irregular = np.array(
+        [1_000_000, 1_000_001, 1_000_002.0625], dtype=np.float32
+    )
+    assert dttxml_common._uniform_frequency_step(quantized_irregular) is None
 
     increments = np.where(np.arange(99) % 2 == 0, 1.0, 1.0625).astype(np.float32)
     drifting = np.concatenate(

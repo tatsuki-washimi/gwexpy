@@ -21,6 +21,8 @@ The earlier v0.2.2 snapshot remains available as an [SVG](/_static/images/develo
 
 The v0.2.2 release is available from [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2) and archived under [Zenodo DOI 10.5281/zenodo.22228340](https://doi.org/10.5281/zenodo.22228340).
 
+## [0.2.3] - 2026-09-05
+
 :::{include} ../../CHANGELOG.md
-:start-after: "# Changelog"
+:start-after: "## [0.2.3] - 2026-09-05"
 :::
