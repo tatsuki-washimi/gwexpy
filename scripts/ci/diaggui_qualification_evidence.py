@@ -302,11 +302,9 @@ def _installed_candidate_facts(
     hash_values = {hash_value} if isinstance(hash_value, str) else set()
     hashes = archive_info.get("hashes")
     if isinstance(hashes, dict):
-        hash_values.add(
-            f"sha256={hashes['sha256']}"
-            if isinstance(hashes.get("sha256"), str)
-            else None
-        )
+        sha256_value = hashes.get("sha256")
+        if isinstance(sha256_value, str):
+            hash_values.add(f"sha256={sha256_value}")
     if f"sha256={artifact_sha256}" not in hash_values:
         raise DiagGUIQualificationError(
             "installed gwexpy digest does not match candidate"
