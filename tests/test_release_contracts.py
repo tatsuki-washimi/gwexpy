@@ -355,22 +355,39 @@ def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
     assert "- [x]" not in plan
 
 
-def test_release_contract_cli_prints_canonical_review_evidence_path() -> None:
+@pytest.mark.parametrize(
+    ("tag", "expected_path"),
+    [
+        (
+            "v0.2.2",
+            "docs/developers/plans/manifests/audit-manifest-v0.2.2-release-readiness.yaml",
+        ),
+        (
+            "v0.2.3",
+            "docs/developers/plans/manifests/audit-manifest-v0.2.3-release-readiness.yaml",
+        ),
+        (
+            "v0.2.4",
+            "docs/developers/plans/manifests/audit-manifest-v0.2.4-release-readiness.yaml",
+        ),
+    ],
+)
+def test_release_contract_cli_prints_canonical_review_evidence_path(
+    tag: str, expected_path: str
+) -> None:
     result = subprocess.run(
         [
             sys.executable,
             str(LOADER_PATH),
             "--review-evidence-path",
-            "v0.2.4",
+            tag,
         ],
         cwd=ROOT,
         check=True,
         capture_output=True,
         text=True,
     )
-    assert result.stdout.strip() == (
-        "docs/developers/plans/manifests/audit-manifest-v0.2.4-release-readiness.yaml"
-    )
+    assert result.stdout.strip() == expected_path
 
 
 def test_v024_review_lanes_cover_every_change_since_peeled_v023_source() -> None:
