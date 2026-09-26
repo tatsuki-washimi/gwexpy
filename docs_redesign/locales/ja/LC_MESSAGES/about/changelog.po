@@ -21,8 +21,8 @@ msgstr "更新履歴"
 
 #: ../gwexpy-ja-v0111-v0114-release-notes/docs_redesign/about/changelog.md:3
 #: 81b77fae9668420cb258a2b17092244c
-msgid "v0.2.3 weekly development activity"
-msgstr "v0.2.3 の週次開発活動"
+msgid "v0.2.4 weekly development activity"
+msgstr "v0.2.4 の週次開発活動"
 
 #: ../gwexpy-ja-v0111-v0114-release-notes/docs_redesign/about/changelog.md:5
 #: 01de266846dc418dba0b842cb66d59ca
@@ -3527,25 +3527,29 @@ msgstr "**DiagGUI TimeSeriesMatrix 識別子 (#734)**：`TimeSeriesMatrix` 読�
 msgid "Embedded float32 frequency bins are preserved at their serialized precision, rather than snapped to an ideal grid. If `f0`/`df` construction cannot reproduce every serialized bin exactly, `df` can be `None` and `FrequencySeries.ifft()` is unavailable. An inverse FFT requires an explicit regrid/interpolation onto a chosen uniform frequency grid first; this changes sample locations and values and is not guaranteed to be scientifically equivalent to the embedded axis."
 msgstr "埋め込み float32 周波数ビンは理想的な格子に丸めず、シリアライズされた精度で保持します。`f0`/`df` による構築で全ビンを厳密に再現できない場合、`df` は `None` となり、`FrequencySeries.ifft()` は利用できません。逆 FFT を行うには、選択した一様周波数格子へ明示的に再格子化または補間する必要があります。この操作はサンプル位置と値を変えるため、埋め込み軸と科学的に同等とは限りません。"
 
-#: post-publication v0.2.3
-msgid "Weekly GWexpy development activity through v0.2.3, showing non-merge commits and edited source lines by category."
-msgstr "v0.2.3 までの GWexpy の週次開発活動。カテゴリ別に、マージを除くコミット数と編集されたソース行数を示します。"
+#: post-publication v0.2.4
+msgid "Weekly GWexpy development activity through v0.2.4, showing non-merge commits and edited source lines by category."
+msgstr "v0.2.4 までの GWexpy の週次開発活動。カテゴリ別に、マージを除くコミット数と編集されたソース行数を示します。"
 
-#: post-publication v0.2.3
-msgid "Weekly activity through the immutable v0.2.3 release tag. The stacked bars group non-merge commits and edited source lines by category; release markers identify reachable stable tags, including v0.2.3."
-msgstr "不変の v0.2.3 リリースタグまでの週次活動です。積み上げ棒はカテゴリ別にマージを除くコミット数と編集されたソース行数を示し、リリースマーカーは v0.2.3 を含む到達可能な安定タグを示します。"
+#: post-publication v0.2.4
+msgid "Weekly activity through the immutable v0.2.4 release tag. The stacked bars group non-merge commits and edited source lines by category; release markers identify reachable stable tags, including v0.2.4."
+msgstr "不変の v0.2.4 リリースタグまでの週次活動です。積み上げ棒はカテゴリ別にマージを除くコミット数と編集されたソース行数を示し、リリースマーカーは v0.2.4 を含む到達可能な安定タグを示します。"
 
-#: post-publication v0.2.3
-msgid "The snapshot ends at commit `75d3d1a89ebc8942af1f3228152fea99d2d3420e`. Both language versions use the same weekly data. Bar heights show the logarithm of each weekly total, while the coloured segments show category proportions; edited lines are additions plus deletions, excluding generated files and binary changes."
-msgstr "このスナップショットの終点はコミット `75d3d1a89ebc8942af1f3228152fea99d2d3420e` です。日英の図は同じ週次データを使用します。棒の高さは週次合計の対数、色分けした部分はカテゴリの割合を表します。編集行数は追加行数と削除行数の合計で、生成ファイルとバイナリの変更を除きます。"
+#: post-publication v0.2.4
+msgid "The snapshot ends at commit `522e52a082925da4dd37966d82a7616bdd2a5248`. Both language versions use the same weekly data. Bar heights show the logarithm of each weekly total, while the coloured segments show category proportions; edited lines are additions plus deletions, excluding generated files and binary changes."
+msgstr "このスナップショットの終点はコミット `522e52a082925da4dd37966d82a7616bdd2a5248` です。日英の図は同じ週次データを使用します。棒の高さは週次合計の対数、色分けした部分はカテゴリの割合を表します。編集行数は追加行数と削除行数の合計で、生成ファイルとバイナリの変更を除きます。"
+
+#: post-publication v0.2.4
+msgid "The earlier v0.2.3 release snapshot at `75d3d1a89ebc8942af1f3228152fea99d2d3420e` remains available as an [SVG](/_static/images/development-activity-v0.2.3.svg) and [weekly CSV](/_static/downloads/development-activity-v0.2.3-weekly.csv)."
+msgstr "以前の v0.2.3 リリースのスナップショット（`75d3d1a89ebc8942af1f3228152fea99d2d3420e`）も、[SVG](/_static/images/development-activity-v0.2.3-ja.svg) と[週次 CSV](/_static/downloads/development-activity-v0.2.3-weekly.csv) から参照できます。"
 
 #: post-publication v0.2.3
 msgid "The pre-publication candidate snapshot at `3ade51de26c9adf21c4a7ad076837967e61c8038` remains available as an [SVG](/_static/images/development-activity-v0.2.3-candidate.svg) and [weekly CSV](/_static/downloads/development-activity-v0.2.3-candidate-weekly.csv)."
 msgstr "公開前の候補 `3ade51de26c9adf21c4a7ad076837967e61c8038` のスナップショットも、[SVG](/_static/images/development-activity-v0.2.3-candidate-ja.svg) と[週次 CSV](/_static/downloads/development-activity-v0.2.3-candidate-weekly.csv) から参照できます。"
 
-#: post-publication v0.2.3
-msgid "[Download the weekly CSV data](/_static/downloads/development-activity-v0.2.3-weekly.csv)"
-msgstr "[週次 CSV データをダウンロード](/_static/downloads/development-activity-v0.2.3-weekly.csv)"
+#: post-publication v0.2.4
+msgid "[Download the weekly CSV data](/_static/downloads/development-activity-v0.2.4-weekly.csv)"
+msgstr "[週次 CSV データをダウンロード](/_static/downloads/development-activity-v0.2.4-weekly.csv)"
 
 #: post-publication v0.2.3
 msgid "This maintenance release implements GWpy 4.0.1/4.0.2 compatibility fixes across the audited GWpy-derived API surface. Historical automated differential evidence is recorded for runtime candidate `d55717e9aed9ef5c22bb5d8ed0df95e19a313545`, with review and evidence source `ff47d66ce985c295193a8d8cd1acef3ddd61add1`. That runtime's human scientific/data-model sign-off is approved: the release owner reapproved the four unchanged parent-parity risks, signal methods, and signal-related internal reconstruction authority for non-second irregular axes on 2026-09-04. The approval is strictly limited to the six approved risk groups and excludes other contracts. The historical approval remains bound only to candidate `c7b79db7fee2e646069679a0efe3d65c7ed4e562` and exactly five disclosed parent-parity risks; see the [aggregate sign-off report](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/reports/report_v0.2.3_human_scientific_data_model_signoff_20260903.md). This approval does not cover later source revisions. This release adds no public API or dependency."

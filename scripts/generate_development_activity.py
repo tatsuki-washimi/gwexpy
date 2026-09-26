@@ -856,6 +856,13 @@ def write_svg(
         plt.rcParams["svg.hashsalt"] = previous_hashsalt
         plt.rcParams["svg.fonttype"] = previous_fonttype
         plt.close(figure)
+    # Matplotlib leaves spaces at the ends of multiline SVG path commands.
+    # Remove them so checked-in plots pass Git's whitespace validation.
+    svg = path.read_text(encoding="utf-8")
+    path.write_text(
+        "\n".join(line.rstrip(" \t") for line in svg.splitlines()) + "\n",
+        encoding="utf-8",
+    )
 
 
 def _unique_json_object(pairs: list[tuple[str, object]]) -> dict[str, object]:

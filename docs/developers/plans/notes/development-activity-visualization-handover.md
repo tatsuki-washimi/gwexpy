@@ -65,7 +65,7 @@ visualisation remains auditable.
 
 ## v0.2.3 candidate snapshot (2026-09-05)
 
-The current public figure now covers candidate commit
+The historical candidate figure covers commit
 `3ade51de26c9adf21c4a7ad076837967e61c8038`, with 1,862 non-merge commits.
 This is an immutable commit snapshot before the documentation refresh,
 not a v0.2.3 release tag. The plot marks only reachable existing stable tags.
@@ -87,6 +87,28 @@ with distinct `--svg-output`, `--csv-output`, and `--audit-output` paths.
 The per-commit audit is retained in external release evidence. No history
 aggregation is performed during Sphinx builds, and no tag is manufactured
 for the candidate marker.
+
+## Published v0.2.4 record (2026-09-26)
+
+The current public figure covers the immutable `v0.2.4` tag
+(`522e52a082925da4dd37966d82a7616bdd2a5248`). It includes 1,962
+non-merge commits. The canonical weekly CSV SHA-256 is
+`1a449a3cb1be659698dd6ab02850e3b483249540475c71afe42994438d2f34f9`.
+The English and Japanese SVG SHA-256 values are
+`8c4534614b7496fedbd1d4f3ddb63bf02ca785dbe5b6bd5ebceda33a7e31290f`
+and `73f88375450ceb2aa9e53be44796f1d8e5a62fd476f55ce34a69eb5dc36fe940`.
+Both SVGs embed the tag, release-source SHA, and shared CSV digest. The
+v0.2.3 published assets remain available as historical snapshots.
+
+Regenerate with `scripts/generate_development_activity.py --ref v0.2.4`
+and separate English/Japanese SVG outputs. The English run writes
+`development-activity-v0.2.4-weekly.csv`; the Japanese run writes a
+temporary CSV that must be byte-identical. Keep the per-commit audits outside
+the published static assets. The site build reads the checked-in artifacts
+and does not aggregate Git history.
+The generator removes Matplotlib's trailing spaces on SVG path lines; this
+normalization leaves rasterized pixels unchanged and keeps the tracked assets
+compatible with `git diff --check`.
 
 ## Historical local checks
 
