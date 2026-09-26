@@ -9,8 +9,9 @@ myst:
 :::{note}
 GWexpy {{ latest_release }} is available on [PyPI](https://pypi.org/project/gwexpy/)
 and the [GitHub releases page](https://github.com/tatsuki-washimi/gwexpy/releases).
-The latest conda-forge package is v0.2.3. Check each source for its available
-versions.
+The latest conda-forge package is v0.2.3. The v0.2.4 source is archived on
+[Zenodo](https://zenodo.org/records/22978439). Check each install source for
+its available versions.
 :::
 
 GWexpy supports **Python 3.11 or later**. You can choose from several installation options (extras) depending on your analysis goals.

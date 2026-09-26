@@ -2,7 +2,7 @@
 
 GWexpy の主な変更履歴を記載します。
 
-2026-09-26（UTC）に公開しました：[PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/) と [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4)。conda-forge と Zenodo の最新バージョンは v0.2.3 です。v0.2.3 は [DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992) に保存されています。
+2026-09-26（UTC）に公開しました：[PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/)、[GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4)、[Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439)。conda-forge の最新パッケージは v0.2.3 です。
 
 ## [0.2.4] - 2026-09-26
 

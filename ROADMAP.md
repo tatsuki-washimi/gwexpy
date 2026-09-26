@@ -271,16 +271,21 @@ Released from `522e52a082925da4dd37966d82a7616bdd2a5248` as annotated tag
 [`v0.2.4`](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4),
 available on [PyPI](https://pypi.org/project/gwexpy/0.2.4/) and in the
 [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4).
-As of the 2026-09-26 13:35 UTC readback, conda-forge and Zenodo still list
-v0.2.3; no public v0.2.4 Zenodo record was visible, and no v0.2.4 feedstock PR
-had been opened. The current publication status is recorded in the
+At the 2026-09-26 14:09 UTC readback, Zenodo lists v0.2.4 as published at
+[DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439) (record
+22978439). Its 14,595,789-byte source archive matches all 2,590 paths and file
+contents in the R2 release source tree. The latest conda-forge version remains
+v0.2.3, and no v0.2.4 feedstock PR had been opened. The current publication status is recorded in the
 [v0.2.4 publication status manifest](docs/developers/plans/manifests/audit-manifest-v0.2.4-publication-status.yaml).
 
 The tag-triggered publication run passed 33/33 checks, and the PyPI wheel and
 sdist matched the qualified payload byte for byte. The GitHub Release was
-published on 2026-09-26. Zenodo archiving has not been confirmed complete, and
-conda-forge packaging remains pending; this record does not mark distribution
-closure complete.
+published on 2026-09-26. Zenodo's archive matches release source
+`522e52a082925da4dd37966d82a7616bdd2a5248`; its API reports MD5
+`c18f22ce6a63cc176a8cfb7cb81a5e4e` and the downloaded archive SHA-256 is
+`67c224393870a0f6103e324fb4469e0c0064e3004e6efb9c8b64f3455b193515`.
+Conda-forge packaging remains pending, so this record does not mark
+distribution closure complete.
 
 ## Future themes (not scheduled)
 

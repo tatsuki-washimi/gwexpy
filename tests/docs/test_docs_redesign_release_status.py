@@ -41,6 +41,7 @@ def test_release_status_is_consumed_by_both_language_documents() -> None:
     install_source = INSTALLATION.read_text(encoding="utf-8")
     assert "GWexpy {{ latest_release }} is available on [PyPI]" in install_source
     assert "The latest conda-forge package is v0.2.3." in install_source
+    assert "https://zenodo.org/records/22978439" in install_source
 
     catalogue = (
         ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/documentation_version.po"
@@ -55,6 +56,7 @@ def test_release_status_is_consumed_by_both_language_documents() -> None:
     ).read_text(encoding="utf-8")
     assert "GWexpy {{ latest_release }}" in install_catalogue
     assert "conda-forge の最新パッケージは v0.2.3 です。" in install_catalogue
+    assert "https://zenodo.org/records/22978439" in install_catalogue
 
 
 def test_legacy_release_name_is_absent_from_live_docs_contract() -> None:

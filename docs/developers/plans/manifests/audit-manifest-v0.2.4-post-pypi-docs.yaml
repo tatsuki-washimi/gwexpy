@@ -1,5 +1,5 @@
 schema: gwexpy-v024-post-pypi-docs-pr-audit-v1
-recorded_at_utc: "2026-09-26"
+recorded_at_utc: "2026-09-26T14:13:34Z"
 status: ready_for_review
 skills:
   - web_docs_release_gates
@@ -36,17 +36,29 @@ commands:
     result: "passed: 45 tests"
   - command: "rtk conda run -n gwexpy python -m sphinx -b html docs docs/_build/html/docs"
     result: "passed; pre-existing notebook duplicate-cell-id warnings were emitted"
-  - command: "rtk conda run -n gwexpy python -m sphinx -b html -D nb_execution_mode=off docs_redesign docs_redesign/_build/html"
-    result: "passed; rendered v0.2.4 heading precedes v0.2.3"
+  - command: "rtk conda run -n gwexpy python -m sphinx -E -a -b html -D nb_execution_mode=off docs_redesign docs_redesign/_build/html"
+    result: "passed; full English build without warnings"
   - command: "rtk conda run -n gwexpy python -m sphinx -b html -D language=ja -D nb_execution_mode=off docs_redesign docs_redesign/_build/html-ja"
-    result: "passed; rendered v0.2.4 heading precedes v0.2.3"
-  - command: "rtk Python HTML heading-order check on docs_redesign/_build/html/about/changelog.html and docs_redesign/_build/html-ja/about/changelog.html"
-    result: "passed; v0.2.4 precedes v0.2.3 in both rendered pages"
+    result: "passed after recompiling the updated Japanese changelog catalog"
+  - command: "rtk curl -fsSL --max-time 15 https://zenodo.org/api/records/22978439 | rtk jq '{id, doi, state, status, created, updated, version: .metadata.version, publication_date: .metadata.publication_date}'"
+    result: "published record 22978439; DOI 10.5281/zenodo.22978439; version 0.2.4; publication date 2026-09-26"
+  - command: "rtk curl GET checks for https://zenodo.org/records/22978439 and https://doi.org/10.5281/zenodo.22978439"
+    result: "direct record page returned HTTP 200; DOI resolver returned HTTP 404 at 2026-09-26T14:13:34Z; public links use the direct record page"
+  - command: "rtk curl -fsSL https://zenodo.org/api/records/22978439/files/tatsuki-washimi/gwexpy-v0.2.4.zip/content -o /tmp/gwexpy-zenodo-22978439.zip; rtk md5sum and rtk sha256sum of downloaded archive"
+    result: "14,595,789 bytes; API MD5 c18f22ce6a63cc176a8cfb7cb81a5e4e; downloaded SHA-256 67c224393870a0f6103e324fb4469e0c0064e3004e6efb9c8b64f3455b193515"
+  - command: "rtk git archive --format=tar 522e52a082925da4dd37966d82a7616bdd2a5248 | rtk tar -xf -; rtk unzip Zenodo archive; rtk diff -qr extracted trees"
+    result: "no differences; all 2,590 archive paths and file contents match R2 release source"
+  - command: "rtk Python rendered HTML assertion on English/Japanese changelogs for v0.2.4/v0.2.3 heading order, direct Zenodo link, and Japanese publication blurb"
+    result: "passed; v0.2.4 precedes v0.2.3 in both pages; Japanese blurb is translated; both links point to the direct record page"
+  - command: "rtk conda run -n gwexpy ruff check tests/docs/test_docs_redesign_release_facts.py tests/docs/test_docs_redesign_release_status.py tests/docs/test_root_roadmap_contract.py tests/docs/test_v024_publication_status.py"
+    result: passed
+  - command: "rtk conda run -n gwexpy ruff format --check tests/docs/test_docs_redesign_release_facts.py tests/docs/test_docs_redesign_release_status.py tests/docs/test_root_roadmap_contract.py tests/docs/test_v024_publication_status.py"
+    result: passed
   - command: "rtk conda run -n gwexpy python -m sphinx -b linkcheck docs docs/_build/linkcheck"
     result: "stopped after over 2 minutes with no progress; not counted as pass or failure"
-  - command: "rtk conda run -n gwexpy Python requests GET loop with redirects and 20-second timeout for PyPI 0.2.4, GitHub Release v0.2.4, release-note blob, conda-forge package page, and v0.2.3 Zenodo DOI"
+  - command: "rtk conda run -n gwexpy Python requests GET loop with redirects and 20-second timeout for PyPI 0.2.4, GitHub Release v0.2.4, release-note blob, conda-forge package page, and Zenodo record 22978439"
     result: "all five returned HTTP 200"
-  - command: "rtk git diff --check"
+  - command: "rtk git diff --cached --check"
     result: passed
 check_physics:
   status: not_applicable
@@ -54,6 +66,8 @@ check_physics:
 release_state:
   pypi_024: published_and_byte_matched
   github_release_024: published
-  zenodo_024: webhook_accepted_public_record_not_yet_visible
+  zenodo_024: published
+  zenodo_024_doi: 10.5281/zenodo.22978439
+  zenodo_doi_resolver: pending_propagation
   conda_forge_024: pending
   publication_closure_complete: false

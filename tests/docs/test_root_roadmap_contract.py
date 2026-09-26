@@ -362,7 +362,9 @@ def test_v023_section_records_the_published_outcome_and_closure_manifest() -> No
     assert not STATUS_RE.findall(section)
 
 
-def test_v024_section_records_publication_without_claiming_distribution_closure() -> None:
+def test_v024_section_records_publication_without_claiming_distribution_closure() -> (
+    None
+):
     """The latest release links only verified channels and its partial status."""
     section = _level_two_section(ROADMAP, "v0.2.4")
 
@@ -371,12 +373,13 @@ def test_v024_section_records_publication_without_claiming_distribution_closure(
     assert "522e52a082925da4dd37966d82a7616bdd2a5248" in section
     assert "https://pypi.org/project/gwexpy/0.2.4/" in section
     assert "https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4" in section
-    assert "conda-forge and Zenodo still list" in section
+    assert "Zenodo lists v0.2.4 as published" in section
+    assert "10.5281/zenodo.22978439" in section
+    normalized_section = " ".join(section.split())
+    assert "latest conda-forge version remains v0.2.3" in normalized_section
     assert "v0.2.4 publication status manifest" in section
     assert "33 checks" in section
-    assert "does not mark distribution closure complete" in " ".join(
-        section.split()
-    )
+    assert "does not mark distribution closure complete" in " ".join(section.split())
     assert not STATUS_RE.findall(section)
 
 
