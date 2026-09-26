@@ -1,8 +1,9 @@
 schema: gwexpy-v024-post-pypi-docs-pr-audit-v1
-recorded_at_utc: "2026-09-26T14:13:34Z"
+recorded_at_utc: "2026-09-26T15:10:35Z"
 status: ready_for_review
 skills:
   - web_docs_release_gates
+  - manage_docs
   - japanese-tech-writing
   - gwexpy_conda_jobs
 changed_file_groups:
@@ -10,6 +11,8 @@ changed_file_groups:
     - docs_redesign/release_status.json
     - docs_redesign/tutorials/installation.md
     - docs_redesign/locales/ja/LC_MESSAGES/tutorials/installation.po
+    - docs/web/en/user_guide/installation.md
+    - docs/web/ja/user_guide/installation.md
   public_changelogs:
     - docs_redesign/about/changelog.md
     - docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po
@@ -29,6 +32,7 @@ changed_file_groups:
     - tests/docs/test_docs_redesign_release_status.py
     - tests/docs/test_root_roadmap_contract.py
     - tests/docs/test_v024_publication_status.py
+    - tests/docs/test_v0113_public_release_facts.py
   pr_audit_manifest:
     - docs/developers/plans/manifests/audit-manifest-v0.2.4-post-pypi-docs.yaml
 commands:
@@ -60,6 +64,22 @@ commands:
     result: "all five returned HTTP 200"
   - command: "rtk git diff --cached --check"
     result: passed
+  - command: "rtk Anaconda package API and DOI resolver readback with rtk Python; downloaded package SHA-256 verification"
+    result: "at 2026-09-26T15:10:35Z, latest Anaconda version 0.2.4 and official artifact SHA-256 785f1084d99dcbe8593458ba3545ebb42bae8344b4ccb255e597b00fe04d134c; downloaded 650,868-byte file matched; DOI resolver returned HTTP 200"
+  - command: "rtk readback of conda-forge/gwexpy-feedstock PR #14"
+    result: "GitHub API reports merged_at 2026-09-26T14:56:39Z and merge_commit_sha 06024045fe88340db6799db527ac2a30f209536d"
+  - command: "rtk conda run -n gwexpy pytest tests/docs/test_docs_redesign_release_facts.py tests/docs/test_docs_redesign_release_status.py tests/docs/test_root_roadmap_contract.py tests/docs/test_v024_publication_status.py tests/docs/test_v0113_public_release_facts.py -q"
+    result: "passed: 48 tests"
+  - command: "rtk conda run -n gwexpy ruff check and ruff format --check on five changed Python test files"
+    result: passed
+  - command: "rtk conda run -n gwexpy python -m sphinx -E -a -b html -D nb_execution_mode=off docs_redesign docs_redesign/_build/html"
+    result: "passed; English HTML build succeeded"
+  - command: "rtk conda run -n gwexpy python -m sphinx -E -a -b html -D language=ja -D nb_execution_mode=off docs_redesign docs_redesign/_build/html-ja"
+    result: "passed; Japanese catalogues compiled and Japanese HTML build succeeded"
+  - command: "rtk Python assertions over rendered English/Japanese installation, changelog, and roadmap HTML"
+    result: "passed; current conda-forge availability and Japanese translation are visible in rendered pages"
+  - command: "rtk git diff --check"
+    result: passed
 check_physics:
   status: not_applicable
   reason: Documentation, translation, tests, and publication bookkeeping only; no runtime, physics, or data-model code changed.
@@ -68,6 +88,7 @@ release_state:
   github_release_024: published
   zenodo_024: published
   zenodo_024_doi: 10.5281/zenodo.22978439
-  zenodo_doi_resolver: pending_propagation
-  conda_forge_024: pending
+  zenodo_doi_resolver: resolved_http_200
+  conda_forge_024: published_and_byte_matched
+  docs_deployment_readback: pending
   publication_closure_complete: false

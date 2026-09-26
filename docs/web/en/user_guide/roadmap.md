@@ -24,7 +24,7 @@ The roadmap is public, but priorities can change based on research needs, mainte
 The v0.2.4 release is available on [PyPI](https://pypi.org/project/gwexpy/0.2.4/)
 and [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4).
 Zenodo has published v0.2.4 at [DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439).
-The latest conda-forge package remains v0.2.3; its v0.2.4 update is pending.
+The v0.2.4 package is also available on [conda-forge](https://anaconda.org/conda-forge/gwexpy).
 No next-minor release theme is committed; future work remains directional.
 
 ## Near-Term Focus

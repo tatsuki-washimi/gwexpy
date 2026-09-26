@@ -2,7 +2,7 @@
 
 GWexpy の主な変更履歴を記載します。
 
-2026-09-26（UTC）に公開しました：[PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/)、[GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4)、[Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439)。conda-forge の最新パッケージは v0.2.3 です。
+2026-09-26（UTC）に公開しました：[PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/)、[conda-forge](https://anaconda.org/conda-forge/gwexpy)、[GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4)、[Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439)。
 
 ## [0.2.4] - 2026-09-26
 
@@ -109,8 +109,8 @@ GWexpy 0.2.2 では、HDF5 の厳密な epoch metadata を GWexpy の private st
 - optional extras、ソースインストール、将来の配布チャネル切り替えに関する案内を整理。
 
 ### 既知の制限とフォローアップ (Known Limitations And Follow-Ups)
-- #293 の最終段階である PyPI 公開はまだ人手実行のままです。公開インストール手順は、最初の PyPI リリースと post-publish smoke が成功するまで GitHub / ソース導入のままにします。`pip install gwexpy` への切り替えは公開後に行います。
-- `conda-forge` パッケージはまだ公開されていません。#294 では staged-recipes 提出と fresh conda 環境での smoke test を継続します。
+- v0.1.1 当時、#293 の最終段階である PyPI 公開は人手実行でした。現在は公開済みで、現行のインストール手順と release validation は最新のリリースドキュメントで管理しています。
+- v0.1.1 当時、`conda-forge` パッケージはまだ公開されていませんでした。#294 では staged-recipes 提出と fresh conda 環境での smoke test を追跡していました。
 - ノイズ契約 (#278)、astro range の単位と前提 (#282)、BruCo/coupling/response ワークフロー (#284)、preprocessing / decomposition / forecasting 契約 (#288) は、現状挙動の docs/test baseline は入ったものの、方針決定が残っています。
 - GUI と可視化まわりでは、payload metadata、ラベル、colorbar、plot helper の意味論、公開ドキュメントの残差 drift が継続課題です (#274, #275, #283)。GUI は引き続き安定性ラベル上の実験的機能です。
 - ローカル検証のフォローアップ #335 では、`pytest tests/ -q` を 1 プロセスで通したときに exit 139 が断続的に発生します。分割スイートでは通過していますが、単一プロセス異常終了の原因は未解明です。

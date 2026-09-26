@@ -271,11 +271,17 @@ Released from `522e52a082925da4dd37966d82a7616bdd2a5248` as annotated tag
 [`v0.2.4`](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4),
 available on [PyPI](https://pypi.org/project/gwexpy/0.2.4/) and in the
 [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4).
-At the 2026-09-26 14:09 UTC readback, Zenodo lists v0.2.4 as published at
+Zenodo lists v0.2.4 as published at
 [DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439) (record
-22978439). Its 14,595,789-byte source archive matches all 2,590 paths and file
-contents in the R2 release source tree. The latest conda-forge version remains
-v0.2.3, and no v0.2.4 feedstock PR had been opened. The current publication status is recorded in the
+22978439), and the DOI resolver now returns HTTP 200. Its 14,595,789-byte source
+archive matches all 2,590 paths and file contents in the R2 release source tree.
+The v0.2.4 conda-forge package is also published. Feedstock PR
+[#14](https://github.com/conda-forge/gwexpy-feedstock/pull/14) merged at
+2026-09-26 14:56:39 UTC as `06024045fe88340db6799db527ac2a30f209536d`. The
+Anaconda API lists `noarch/gwexpy-0.2.4-pyhc364b38_0.conda`, uploaded at
+2026-09-26 14:58:44 UTC, with SHA-256
+`785f1084d99dcbe8593458ba3545ebb42bae8344b4ccb255e597b00fe04d134c`; a public
+download matches that digest. The current publication status is recorded in the
 [v0.2.4 publication status manifest](docs/developers/plans/manifests/audit-manifest-v0.2.4-publication-status.yaml).
 
 The tag-triggered publication run passed 33/33 checks, and the PyPI wheel and
@@ -284,8 +290,8 @@ published on 2026-09-26. Zenodo's archive matches release source
 `522e52a082925da4dd37966d82a7616bdd2a5248`; its API reports MD5
 `c18f22ce6a63cc176a8cfb7cb81a5e4e` and the downloaded archive SHA-256 is
 `67c224393870a0f6103e324fb4469e0c0064e3004e6efb9c8b64f3455b193515`.
-Conda-forge packaging remains pending, so this record does not mark
-distribution closure complete.
+Public distribution channels are verified. Documentation deployment readback
+remains pending, so this record does not mark publication closure complete.
 
 ## Future themes (not scheduled)
 

@@ -2,7 +2,7 @@
 
 Notable changes to the GWexpy project.
 
-Published on 2026-09-26 UTC: [PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4), and [Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439). The latest conda-forge package remains v0.2.3.
+Published on 2026-09-26 UTC: [PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4), and [Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439).
 
 ## [0.2.4] - 2026-09-26
 
@@ -122,7 +122,7 @@ The archived release has the
 
 ### Known Limitations And Follow-Ups
 - At the time of v0.1.1, PyPI publication was a human-controlled final step for issue #293. It is now published; current installation guidance and release validation are maintained with the current release documentation.
-- `conda-forge` packaging is not published yet. Issue #294 remains the follow-up for the staged-recipes submission and fresh conda-environment smoke tests.
+- At the time of v0.1.1, `conda-forge` packaging was not published. Issue #294 tracked the staged-recipes submission and fresh conda-environment smoke tests.
 - Open numerical and analysis audit follow-ups remain for noise contracts (#278), astro range assumptions and unit handling (#282), Bruco/coupling/response workflow semantics (#284), and preprocessing/decomposition/forecasting contracts (#288). Current docs/test baselines record present behavior, but these surfaces still have deferred policy decisions.
 - GUI and visual-surface follow-ups remain open for payload metadata, labels, colorbars, plot-helper semantics, and residual public-doc drift (#274, #275, #283). The GUI should still be treated as experimental.
 - Local validation follow-up #335 tracks an intermittent one-process `pytest tests/ -q` exit 139. Split-suite validation passed and remains the current evidence base, but the single-process crash is not yet explained.

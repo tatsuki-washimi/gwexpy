@@ -1,9 +1,9 @@
 # GWexpy v0.2.4 publication status
 
-This record captures the verified publication state as of 2026-09-26 14:13 UTC.
-Zenodo API and archive metadata were read at 14:09 UTC; the direct record page
-and DOI resolution were checked at 14:13 UTC. Zenodo publication is verified;
-conda-forge packaging remains pending, so this is still a partial status record.
+This record captures the verified publication state as of 2026-09-26 15:10 UTC.
+The v0.2.4 release is published on PyPI, GitHub Releases, Zenodo, and
+conda-forge. Documentation deployment readback remains pending, so this record
+does not mark publication closure complete.
 
 The release source is `522e52a082925da4dd37966d82a7616bdd2a5248`, tagged as
 `v0.2.4` by annotated tag object `2bc0789918fbc0327114df0d1ac0840faf5ed2ba`.
@@ -19,9 +19,8 @@ tag-pinned changelog entry.
 The public Zenodo API reports record `22978439` as published, version 0.2.4,
 publication date 2026-09-26, DOI `10.5281/zenodo.22978439`, resource type
 Software. The direct [Zenodo record page](https://zenodo.org/records/22978439)
-returned HTTP 200; the DOI resolver returned HTTP 404 at the readback time, so
-public documentation links directly to the record until DOI resolution is
-available. Its archive file is `tatsuki-washimi/gwexpy-v0.2.4.zip` (14,595,789
+returned HTTP 200, and the DOI resolver returned HTTP 200 at the 15:10 UTC
+readback. Its archive file is `tatsuki-washimi/gwexpy-v0.2.4.zip` (14,595,789
 bytes); the API reports MD5 `c18f22ce6a63cc176a8cfb7cb81a5e4e`, and an
 independent download has SHA-256
 `67c224393870a0f6103e324fb4469e0c0064e3004e6efb9c8b64f3455b193515`. The
@@ -29,10 +28,16 @@ archive contains 2,590 paths whose names and file contents match `git archive`
 of release source `522e52a082925da4dd37966d82a7616bdd2a5248`.
 
 The earlier `released` webhook response was HTTP 202; duplicate delivery
-returned HTTP 409, and no redelivery was attempted. At the readback time,
-conda-forge remained at v0.2.3 and no v0.2.4 feedstock pull request existed.
-The public roadmaps and changelogs now link the v0.2.4 Zenodo record and keep
-the pending conda-forge state explicit.
+returned HTTP 409, and no redelivery was attempted.
+
+Conda-forge feedstock PR [#14](https://github.com/conda-forge/gwexpy-feedstock/pull/14)
+merged at 2026-09-26 14:56:39 UTC as
+`06024045fe88340db6799db527ac2a30f209536d`. The official Anaconda package API
+reports latest version 0.2.4 and lists
+`noarch/gwexpy-0.2.4-pyhc364b38_0.conda`, uploaded at 2026-09-26 14:58:44 UTC.
+Its SHA-256 is
+`785f1084d99dcbe8593458ba3545ebb42bae8344b4ccb255e597b00fe04d134c`; a fresh
+public download matched that digest byte for byte (650,868 bytes).
 
 The introductory downloadable examples were verified against v0.2.4 using
 both the candidate documentation source and a clean R2 Git archive in an

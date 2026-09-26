@@ -2,7 +2,7 @@ schema: gwexpy-v024-publication-status-v1
 version: 0.2.4
 status: publication-partial
 closure_complete: false
-recorded_at_utc: "2026-09-26T14:09:01Z"
+recorded_at_utc: "2026-09-26T15:10:35Z"
 release:
   source_sha: 522e52a082925da4dd37966d82a7616bdd2a5248
   runtime_tree: 27165f31eb4a60d129ef4e2eb7f159b023b56d9b
@@ -39,8 +39,8 @@ publication:
     api_publication_status: published
     direct_record_http_status: 200
     doi_resolver_url: https://doi.org/10.5281/zenodo.22978439
-    doi_resolver_http_status: 404
-    doi_resolver_readback_at_utc: "2026-09-26T14:13:34Z"
+    doi_resolver_http_status: 200
+    doi_resolver_readback_at_utc: "2026-09-26T15:10:35Z"
     created_at_utc: "2026-09-26T13:52:18.326969Z"
     updated_at_utc: "2026-09-26T13:52:18.508100Z"
     version: 0.2.4
@@ -64,9 +64,23 @@ publication:
       duplicate_event_message: release already received
       redelivery: not_attempted
   conda_forge:
-    state: pending
-    latest_available_version: 0.2.3
-    feedstock_pull_request: none_as_of_readback
+    state: published
+    readback_at_utc: "2026-09-26T15:10:35Z"
+    latest_available_version: "0.2.4"
+    api_url: https://api.anaconda.org/package/conda-forge/gwexpy
+    package_url: https://anaconda.org/conda-forge/gwexpy
+    feedstock_pull_request:
+      number: 14
+      url: https://github.com/conda-forge/gwexpy-feedstock/pull/14
+      merged_at_utc: "2026-09-26T14:56:39Z"
+      merge_commit: 06024045fe88340db6799db527ac2a30f209536d
+    artifact:
+      basename: noarch/gwexpy-0.2.4-pyhc364b38_0.conda
+      uploaded_at_utc: "2026-09-26T14:58:44Z"
+      bytes: 650868
+      anaconda_artifact_sha256_checksum: 785f1084d99dcbe8593458ba3545ebb42bae8344b4ccb255e597b00fe04d134c
+      downloaded_sha256: 785f1084d99dcbe8593458ba3545ebb42bae8344b4ccb255e597b00fe04d134c
+      public_bytes_match: true
 public_docs:
   latest_release: 0.2.4
   intro_examples_release: 0.2.4
@@ -78,11 +92,11 @@ public_docs:
     optional_commissioner_xml: dttxml_1.1.8_passed_without_skip
     helper_sha256: 772b6d979b760c14796852482f0fb4428c6808ab4f82a81e1cf1b36b8f45cad3
     pypi_wheel_sha256: 34afe8188c753cd9da0b182a5d2a88cce2f7ec36633730fe0bee15e2506df56d
-  distribution_statement: PyPI, GitHub Release, and Zenodo are available at v0.2.4; the latest conda-forge package remains v0.2.3.
+  distribution_statement: PyPI, GitHub Release, Zenodo, and conda-forge are available at v0.2.4.
   docs_deployment_readback: pending
 verification:
-  authoritative_state_readback_at_utc: "2026-09-26T14:09:01Z"
+  authoritative_state_readback_at_utc: "2026-09-26T15:10:35Z"
   zenodo_publication_verified: true
-  zenodo_doi_resolver_verified: false
-  conda_forge_publication_verified: false
+  zenodo_doi_resolver_verified: true
+  conda_forge_publication_verified: true
   publication_closure_claimed: false

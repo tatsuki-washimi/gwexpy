@@ -376,10 +376,13 @@ def test_v024_section_records_publication_without_claiming_distribution_closure(
     assert "Zenodo lists v0.2.4 as published" in section
     assert "10.5281/zenodo.22978439" in section
     normalized_section = " ".join(section.split())
-    assert "latest conda-forge version remains v0.2.3" in normalized_section
+    assert "The v0.2.4 conda-forge package is also published" in normalized_section
+    assert "https://github.com/conda-forge/gwexpy-feedstock/pull/14" in section
+    assert "06024045fe88340db6799db527ac2a30f209536d" in section
+    assert "785f1084d99dcbe8593458ba3545ebb42bae8344b4ccb255e597b00fe04d134c" in section
     assert "v0.2.4 publication status manifest" in section
     assert "33 checks" in section
-    assert "does not mark distribution closure complete" in " ".join(section.split())
+    assert "does not mark publication closure complete" in normalized_section
     assert not STATUS_RE.findall(section)
 
 

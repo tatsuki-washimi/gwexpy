@@ -1,6 +1,6 @@
 # Changelog
 
-Published on 2026-09-26 UTC: [PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4), and [Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439). The latest conda-forge package remains v0.2.3; its v0.2.4 update is pending.
+Published on 2026-09-26 UTC: [PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4), and [Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439).
 
 ## v0.2.3 weekly development activity
 

@@ -58,8 +58,8 @@ def test_v024_publication_status_binds_verified_source_and_channels() -> None:
         "api_publication_status": "published",
         "direct_record_http_status": 200,
         "doi_resolver_url": "https://doi.org/10.5281/zenodo.22978439",
-        "doi_resolver_http_status": 404,
-        "doi_resolver_readback_at_utc": "2026-09-26T14:13:34Z",
+        "doi_resolver_http_status": 200,
+        "doi_resolver_readback_at_utc": "2026-09-26T15:10:35Z",
         "created_at_utc": "2026-09-26T13:52:18.326969Z",
         "updated_at_utc": "2026-09-26T13:52:18.508100Z",
         "version": "0.2.4",
@@ -87,9 +87,25 @@ def test_v024_publication_status_binds_verified_source_and_channels() -> None:
         },
     }
     assert publication["conda_forge"] == {
-        "state": "pending",
-        "latest_available_version": "0.2.3",
-        "feedstock_pull_request": "none_as_of_readback",
+        "state": "published",
+        "readback_at_utc": "2026-09-26T15:10:35Z",
+        "latest_available_version": "0.2.4",
+        "api_url": "https://api.anaconda.org/package/conda-forge/gwexpy",
+        "package_url": "https://anaconda.org/conda-forge/gwexpy",
+        "feedstock_pull_request": {
+            "number": 14,
+            "url": "https://github.com/conda-forge/gwexpy-feedstock/pull/14",
+            "merged_at_utc": "2026-09-26T14:56:39Z",
+            "merge_commit": "06024045fe88340db6799db527ac2a30f209536d",
+        },
+        "artifact": {
+            "basename": "noarch/gwexpy-0.2.4-pyhc364b38_0.conda",
+            "uploaded_at_utc": "2026-09-26T14:58:44Z",
+            "bytes": 650868,
+            "anaconda_artifact_sha256_checksum": "785f1084d99dcbe8593458ba3545ebb42bae8344b4ccb255e597b00fe04d134c",
+            "downloaded_sha256": "785f1084d99dcbe8593458ba3545ebb42bae8344b4ccb255e597b00fe04d134c",
+            "public_bytes_match": True,
+        },
     }
 
 
@@ -114,13 +130,16 @@ def test_v024_publication_record_preserves_example_and_docs_readback_state() -> 
     assert manifest["public_docs"]["docs_deployment_readback"] == "pending"
     assert manifest["verification"]["publication_closure_claimed"] is False
     assert manifest["verification"]["zenodo_publication_verified"] is True
-    assert manifest["verification"]["zenodo_doi_resolver_verified"] is False
-    assert manifest["verification"]["conda_forge_publication_verified"] is False
+    assert manifest["verification"]["zenodo_doi_resolver_verified"] is True
+    assert manifest["verification"]["conda_forge_publication_verified"] is True
     assert "does not" in report
     assert "mark publication closure complete" in report
     assert "dttxml==1.1.8" in report
     assert "The public Zenodo API reports record `22978439` as published" in report
-    assert "DOI resolver returned HTTP 404" in report
+    assert "DOI resolver returned HTTP 200" in report
+    assert "feedstock PR [#14]" in report
+    assert "785f1084d99dcbe8593458ba3545ebb42bae8344b4ccb255e597b00fe04d134c" in report
+    assert "Documentation deployment readback remains pending" in report
     assert "file contents match `git archive`" in report
 
 
@@ -134,16 +153,19 @@ def test_public_release_sources_distinguish_published_and_pending_channels() -> 
         ROOT / "docs_redesign/tutorials/installation.md",
         ROOT / "docs_redesign/explanation/roadmap.md",
         ROOT / "docs_redesign/about/changelog.md",
+        ROOT / "docs/web/en/user_guide/installation.md",
+        ROOT / "docs/web/ja/user_guide/installation.md",
         ROOT / "docs/web/en/user_guide/roadmap.md",
         ROOT / "docs/web/ja/user_guide/roadmap.md",
         ROOT / "docs/web/en/user_guide/changelog.md",
         ROOT / "docs/web/ja/user_guide/changelog.md",
     )
     joined = "\n".join(path.read_text(encoding="utf-8") for path in public_sources)
-    assert "v0.2.4" in joined
-    assert "latest conda-forge package is v0.2.3" in joined
-    assert "Zenodo DOI 10.5281/zenodo.22978439" in joined
-    assert "https://zenodo.org/records/22978439" in joined
-    assert "https://doi.org/10.5281/zenodo.22978439" not in joined
-    assert "latest conda-forge package remains v0.2.3" in joined
-    assert "conda-forge の最新パッケージは v0.2.3" in joined
+    normalized = " ".join(joined.split())
+    assert "v0.2.4" in normalized
+    assert "latest conda-forge package is v0.2.4" in normalized
+    assert "Zenodo DOI 10.5281/zenodo.22978439" in normalized
+    assert "https://zenodo.org/records/22978439" in normalized
+    assert "https://doi.org/10.5281/zenodo.22978439" not in normalized
+    assert "The latest conda-forge package remains v0.2.3" not in normalized
+    assert "GWexpy v0.2.4 は [PyPI]" in normalized

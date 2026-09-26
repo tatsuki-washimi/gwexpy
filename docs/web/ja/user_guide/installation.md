@@ -27,10 +27,10 @@ myst:
 - [次に読む](#next-to-read)
 
 :::{note}
-GWexpy v0.2.0 は [PyPI](https://pypi.org/project/gwexpy/) と
-[conda-forge](https://anaconda.org/conda-forge/gwexpy) の両方から利用できます。
-利用可能なバージョンは PyPI、conda-forge、または
-[リリースページ](https://github.com/tatsuki-washimi/gwexpy/releases) で確認してください。
+GWexpy v0.2.4 は [PyPI](https://pypi.org/project/gwexpy/)、
+[conda-forge](https://anaconda.org/conda-forge/gwexpy)、
+[リリースページ](https://github.com/tatsuki-washimi/gwexpy/releases) から利用できます。
+利用可能なバージョンは各配布元で確認してください。
 :::
 
 GWexpy は **Python 3.11 以上** をサポートしています。解析の目的に合わせて、いくつかのインストールオプション（extras）を選択できます。

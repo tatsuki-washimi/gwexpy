@@ -134,7 +134,7 @@ def test_v022_activity_snapshot_has_japanese_public_copy() -> None:
 
     expected_translations = {
         "v0.2.3 weekly development activity": "v0.2.3 の週次開発活動",
-        "Published on 2026-09-26 UTC: [PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4), and [Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439). The latest conda-forge package remains v0.2.3; its v0.2.4 update is pending.": "2026-09-26（UTC）に公開しました：[PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/)、[GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4)、[Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439)。conda-forge の最新パッケージは v0.2.3 で、v0.2.4 への更新は継続中です。",
+        "Published on 2026-09-26 UTC: [PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4), and [Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439).": "2026-09-26（UTC）に公開しました：[PyPI 0.2.4](https://pypi.org/project/gwexpy/0.2.4/)、[conda-forge](https://anaconda.org/conda-forge/gwexpy)、[GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.4)、[Zenodo DOI 10.5281/zenodo.22978439](https://zenodo.org/records/22978439)。",
         "Published on 2026-09-05 UTC: [PyPI 0.2.3](https://pypi.org/project/gwexpy/0.2.3/), [conda-forge](https://anaconda.org/conda-forge/gwexpy), [GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3), and [Zenodo DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992).": "2026-09-05（UTC）に公開しました：[PyPI 0.2.3](https://pypi.org/project/gwexpy/0.2.3/)、[conda-forge](https://anaconda.org/conda-forge/gwexpy)、[GitHub Release](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.3)、[Zenodo DOI 10.5281/zenodo.22344992](https://doi.org/10.5281/zenodo.22344992)。",
         "[Download the weekly CSV data](/_static/downloads/development-activity-v0.2.2-weekly.csv)": "[週次 CSV データをダウンロード](/_static/downloads/development-activity-v0.2.2-weekly.csv)",
         "The v0.2.2 release is available from [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2) and archived under [Zenodo DOI 10.5281/zenodo.22228340](https://doi.org/10.5281/zenodo.22228340).": "v0.2.2 リリースは [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2) から取得でき、[Zenodo DOI 10.5281/zenodo.22228340](https://doi.org/10.5281/zenodo.22228340) でアーカイブされています。",
@@ -188,8 +188,9 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
         ).read_text(encoding="utf-8")
         assert f"## {PUBLISHED_V024_HISTORY_ENTRY}" in public_changelog
         assert f"## {PUBLISHED_V023_HISTORY_ENTRY}" in public_changelog
-        assert "conda-forge" in public_changelog
-        assert "latest" in public_changelog or "最新" in public_changelog
+        current_status = public_changelog.split("## [0.2.4]", 1)[0]
+        assert "conda-forge" in current_status
+        assert "0.2.3" not in current_status
 
     redesigned_changelog = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
         encoding="utf-8"
