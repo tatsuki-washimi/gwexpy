@@ -961,7 +961,7 @@ def test_v025_cross_format_io_gate_is_candidate_bound_and_required_for_publish()
     )
     assert "validate_release_payload.py" in install["run"]
     assert '--source-sha "$SOURCE_SHA"' in install["run"]
-    assert '"$artifact[io,netcdf4,zarr]"' in install["run"]
+    assert '"${artifact}[io,netcdf4,zarr]"' in install["run"]
     assert "test_tdms_invalid_increment_contract.py" in install["run"]
     assert 'v025_cross_format_io_evidence.py" record' in install["run"]
     assert (

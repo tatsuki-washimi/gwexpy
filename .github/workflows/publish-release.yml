@@ -877,7 +877,7 @@ jobs:
             --expected-version 0.2.5 --source-sha "$SOURCE_SHA" --kind "$DISTRIBUTION")"
           artifact="$PAYLOAD_DIR/$artifact_name"
           if [[ "$MODE" == optional ]]; then
-            "$python" -m pip install --disable-pip-version-check --no-cache-dir "$artifact[io,netcdf4,zarr]" pytest
+            "$python" -m pip install --disable-pip-version-check --no-cache-dir "${artifact}[io,netcdf4,zarr]" pytest
           else
             "$python" -m pip install --disable-pip-version-check --no-cache-dir "$artifact" pytest
           fi

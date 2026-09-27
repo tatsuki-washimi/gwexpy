@@ -119,6 +119,24 @@ omitted:
   - Full matrix GitHub Actions qualification requires the future frozen R and same-run artifacts.
   - Physics check is not applicable to release-control and metadata changes.
   - The conda gwexpy environment retains installed 0.2.4 metadata; test_version passed in a temporary venv with the locally built 0.2.5 wheel.
+follow_up:
+  issue: 'PR #752 Actionlint ShellCheck SC1087 on $artifact[io,netcdf4,zarr]'
+  change: 'Use ${artifact}[io,netcdf4,zarr] inside double quotes.'
+  checks:
+    - command: >-
+        conda run -n gwexpy pytest -q
+        tests/test_publish_release_workflow.py::test_v025_cross_format_io_gate_is_candidate_bound_and_required_for_publish
+        tests/test_publish_release_workflow.py::test_v022_through_v024_release_qualification_share_exact_nineteen_cells
+        tests/test_publish_release_workflow.py::test_v024_human_approval_verifier_uses_github_read_permission_and_canonical_path
+      result: exit 0; 3 passed
+    - command: conda run -n gwexpy ruff check tests/test_publish_release_workflow.py
+      result: exit 0; all checks passed
+    - command: conda run -n gwexpy ruff format --check tests/test_publish_release_workflow.py
+      result: exit 0; 1 file already formatted
+    - command: git diff --check
+      result: exit 0
+    - command: local Actionlint lookup
+      result: actionlint and shellcheck executables unavailable in PATH and common local binary paths
 files_changed:
   - .gitattributes
   - .github/workflows/publish-release.yml
