@@ -8,8 +8,9 @@ review_findings:
   - DOC-2: Added Japanese gettext entries for the heading, lead, Fixed label, and six bullets.
   - RS-01: Documented fail-closed recovery for a partial PyPI upload.
 source_evidence:
-  - /home/washimi/.claude/plans/2026-09-27-v025-review-evidence/documentation.md
-  - docs/developers/reports/2026-09-27-public-io-cross-format-post-fix-report.md
+  report_path: docs/developers/reports/2026-09-27-public-io-cross-format-post-fix-report.md
+  report_sha256: 8861f05ed8f51ce85b88dc76815487917e7bd8959b4864fd07d6a9240f5232ad
+  review_pr: https://github.com/tatsuki-washimi/gwexpy/pull/753
 checks:
   - command: >-
       conda run -n gwexpy pytest -q
