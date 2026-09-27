@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Record and aggregate the v0.2.4 installed DiagGUI qualification lane."""
+"""Record and aggregate installed DiagGUI qualification for v0.2.4/v0.2.5."""
 
 from __future__ import annotations
 
@@ -19,6 +19,20 @@ VERSION = "0.2.4"
 PAYLOAD_SCHEMA = "gwexpy-v024-release-payload-v1"
 CELL_SCHEMA = "gwexpy-v024-diaggui-qualification-cell-v1"
 AGGREGATE_SCHEMA = "gwexpy-v024-diaggui-qualification-evidence-v1"
+
+
+def _select_version(version: str) -> None:
+    """Select the release-specific evidence schema while preserving v0.2.4 defaults."""
+    if version not in {"0.2.4", "0.2.5"}:
+        raise DiagGUIQualificationError(f"unsupported DiagGUI release: {version}")
+    global VERSION, PAYLOAD_SCHEMA, CELL_SCHEMA, AGGREGATE_SCHEMA
+    VERSION = version
+    code = "v024" if version == "0.2.4" else "v025"
+    PAYLOAD_SCHEMA = f"gwexpy-{code}-release-payload-v1"
+    CELL_SCHEMA = f"gwexpy-{code}-diaggui-qualification-cell-v1"
+    AGGREGATE_SCHEMA = f"gwexpy-{code}-diaggui-qualification-evidence-v1"
+
+
 EXPECTED_DTTXML_VERSION = "1.1.8"
 CELLS = ("base-wheel", "base-sdist", "dttxml-wheel", "dttxml-sdist")
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
@@ -192,7 +206,7 @@ def _payload_files(path: Path, *, source_sha: str) -> dict[str, dict[str, str]]:
         or data["source_sha"] != source_sha
     ):
         raise DiagGUIQualificationError(
-            "payload manifest is not bound to the v0.2.4 candidate"
+            "payload manifest is not bound to the DiagGUI candidate"
         )
     files = _require_keys(
         data["files"], {"wheel", "sdist"}, description="payload files"
@@ -564,11 +578,13 @@ def _parser() -> argparse.ArgumentParser:
     record.add_argument("--artifact", type=Path, required=True)
     record.add_argument("--junit", type=Path, required=True)
     record.add_argument("--report", type=Path, required=True)
+    record.add_argument("--version", choices=("0.2.4", "0.2.5"), default="0.2.4")
     aggregate = commands.add_parser("aggregate")
     aggregate.add_argument("--source-sha", required=True)
     aggregate.add_argument("--payload-manifest", type=Path, required=True)
     aggregate.add_argument("--reports-dir", type=Path, required=True)
     aggregate.add_argument("--output", type=Path, required=True)
+    aggregate.add_argument("--version", choices=("0.2.4", "0.2.5"), default="0.2.4")
     return parser
 
 
@@ -580,6 +596,7 @@ def main(argv: list[str] | None = None) -> int:
             nodes = BASE_TEST_NODES if args.mode == "base" else DTTXML_TEST_NODES
             print(*nodes, sep="\n")
         elif args.command == "record":
+            _select_version(args.version)
             record_cell(
                 cell=args.cell,
                 source_sha=args.source_sha,
@@ -589,6 +606,7 @@ def main(argv: list[str] | None = None) -> int:
                 report_path=args.report,
             )
         else:
+            _select_version(args.version)
             aggregate_reports(
                 source_sha=args.source_sha,
                 payload_manifest=args.payload_manifest,

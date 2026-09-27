@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build fail-closed release qualification evidence for v0.2.2-v0.2.4."""
+"""Build fail-closed release qualification evidence for v0.2.2-v0.2.5."""
 
 from __future__ import annotations
 
@@ -38,6 +38,7 @@ QUALIFICATION_CELLS = (
 
 V023_BASELINE_SCHEMA = "gwexpy-v023-qualification-expected-skips-v1"
 V024_BASELINE_SCHEMA = "gwexpy-v024-qualification-expected-skips-v1"
+V025_BASELINE_SCHEMA = "gwexpy-v025-qualification-expected-skips-v1"
 _CONTRACTS: dict[str, dict[str, str | None]] = {
     "0.2.2": {
         "artifact_prefix": "v022-qualification-evidence",
@@ -54,11 +55,17 @@ _CONTRACTS: dict[str, dict[str, str | None]] = {
         "evidence_schema": "gwexpy-v024-qualification-evidence-v1",
         "expected_skips_schema": V024_BASELINE_SCHEMA,
     },
+    "0.2.5": {
+        "artifact_prefix": "v025-qualification-evidence",
+        "evidence_schema": "gwexpy-v025-qualification-evidence-v1",
+        "expected_skips_schema": V025_BASELINE_SCHEMA,
+    },
 }
 _PAYLOAD_SCHEMAS = {
     "0.2.2": "gwexpy-v022-release-payload-v1",
     "0.2.3": "gwexpy-v023-release-payload-v1",
     "0.2.4": "gwexpy-v024-release-payload-v1",
+    "0.2.5": "gwexpy-v025-release-payload-v1",
 }
 _SHA40 = re.compile(r"^[0-9a-f]{40}$")
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -651,7 +658,7 @@ def aggregate_reports(
         Path(payload_manifest), version=version, source_sha=source_sha
     )
     reports = _load_cell_reports(
-        Path(reports_dir), require_canonical=version in {"0.2.3", "0.2.4"}
+        Path(reports_dir), require_canonical=version in {"0.2.3", "0.2.4", "0.2.5"}
     )
     observed_cells: set[str] = set()
 

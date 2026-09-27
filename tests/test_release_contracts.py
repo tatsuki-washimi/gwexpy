@@ -221,6 +221,7 @@ def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
         "v0.2.2",
         "v0.2.3",
         "v0.2.4",
+        "v0.2.5",
     }
 
     v0113 = data["releases"]["v0.1.13"]
@@ -377,6 +378,12 @@ def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
     ]
     assert v024["artifact_prefix"] == "v024-integration-evidence"
     assert v024["protected_refs"] == ["main", "maint/0.2"]
+
+    v025 = data["releases"]["v0.2.5"]
+    assert v025["review_base_sha"] == "522e52a082925da4dd37966d82a7616bdd2a5248"
+    assert v025["review_evidence_schema"] == "gwexpy-v025-review-evidence-v1"
+    assert v025["artifact_prefix"] == "v025-integration-evidence"
+    assert v025["protected_refs"] == ["main", "maint/0.2"]
     release_validator = load_release_validator()
     evidence_bytes = V024_MANIFEST.read_bytes()
     if evidence_bytes == release_validator.V024_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER:
@@ -491,6 +498,21 @@ def test_v024_review_lanes_cover_every_change_since_peeled_v023_source() -> None
         path for path in changed_paths if not _review_scope_covers(path, scope)
     )
     assert uncovered == []
+
+
+def test_v025_review_lanes_cover_every_change_since_peeled_v024_source() -> None:
+    source = "522e52a082925da4dd37966d82a7616bdd2a5248"
+    if not _git_commit_available(source):
+        pytest.fail("peeled v0.2.4 source is unavailable; full history is required")
+    candidate = _candidate_revision()
+    changed_paths = _changed_paths_between(ROOT, source, candidate)
+    contracts = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
+    lanes = contracts["releases"]["v0.2.5"]["review_lanes"]
+    scope = {path for paths in lanes.values() for path in paths}
+    assert (
+        sorted(path for path in changed_paths if not _review_scope_covers(path, scope))
+        == []
+    )
 
 
 def test_v024_review_coverage_checks_both_rename_paths_and_rejects_new_scope(

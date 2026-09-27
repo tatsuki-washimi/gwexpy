@@ -43,6 +43,9 @@ review_evidence_json: |
     }
   }
 """
+V025_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER = V024_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER.replace(
+    b"v024", b"v025"
+)
 
 
 class ReleaseValidationError(ValueError):
@@ -385,17 +388,23 @@ def _validate_v024_review_source_placeholder(
     repo_root: Path,
     reviewed_commit: str,
     evidence_path: str,
+    expected_tag: str = "v0.2.4",
 ) -> None:
     try:
         source = _git_bytes(repo_root, "show", f"{reviewed_commit}:{evidence_path}")
     except ReleaseValidationError as exc:
         raise ReleaseValidationError(
-            "v0.2.4 reviewed source must contain the exact empty review "
+            f"{expected_tag} reviewed source must contain the exact empty review "
             "evidence placeholder"
         ) from exc
-    if source != V024_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER:
+    placeholder = (
+        V025_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER
+        if expected_tag == "v0.2.5"
+        else V024_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER
+    )
+    if source != placeholder:
         raise ReleaseValidationError(
-            "v0.2.4 reviewed source must contain the exact empty review "
+            f"{expected_tag} reviewed source must contain the exact empty review "
             "evidence placeholder"
         )
 
@@ -409,7 +418,7 @@ def validate_s_to_r(
 ) -> None:
     """Bind Terra's reviewed S to R through only coordinator-owned deltas."""
     root = Path(repo_root).resolve()
-    if expected_tag in {"v0.2.3", "v0.2.4"} and reviewed_commit == source_sha:
+    if expected_tag in {"v0.2.3", "v0.2.4", "v0.2.5"} and reviewed_commit == source_sha:
         raise ReleaseValidationError(
             f"{expected_tag} S-to-R binding requires distinct commits"
         )
@@ -437,11 +446,12 @@ def validate_s_to_r(
             reviewed_commit,
             str(contract["review_evidence_path"]),
         )
-    elif expected_tag == "v0.2.4":
+    elif expected_tag in {"v0.2.4", "v0.2.5"}:
         _validate_v024_review_source_placeholder(
             root,
             reviewed_commit,
             str(contract["review_evidence_path"]),
+            expected_tag,
         )
     allowed_paths = set(cast(list[str], contract["s_to_r_allowed_paths"]))
     if not paths <= allowed_paths:
@@ -479,8 +489,8 @@ def validate_release(
         )
     contract = _release_contract(expected_tag)
     artifact_prefix = str(contract["artifact_prefix"])
-    if expected_tag == "v0.2.4" and review_evidence is None:
-        raise ReleaseValidationError("v0.2.4 requires release review evidence")
+    if expected_tag in {"v0.2.4", "v0.2.5"} and review_evidence is None:
+        raise ReleaseValidationError(f"{expected_tag} requires release review evidence")
 
     if is_release_tag(release_ref):
         if release_ref != expected_tag:

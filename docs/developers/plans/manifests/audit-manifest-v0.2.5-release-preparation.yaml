@@ -1,0 +1,152 @@
+schema: gwexpy-agent-release-preparation-v1
+date_utc: 2026-09-27
+status: ready_for_review
+skills:
+  - prep_release
+  - gwexpy_conda_jobs
+scope:
+  - Extend v0.2.4 release controls for v0.2.5 while retaining historical contracts.
+  - Add eight candidate-bound cross-format I/O cells and aggregate validation.
+  - Update candidate version, date, changelog, notes, plan, and release instructions.
+review_base_sha: 522e52a082925da4dd37966d82a7616bdd2a5248
+release_decision: HOLD
+checks:
+  - command: >-
+      conda run -n gwexpy pytest -q tests/test_release_contracts.py
+      tests/test_validate_release_script.py tests/test_release_review_evidence.py
+      tests/test_release_human_approval.py tests/test_qualification_skip_evidence.py
+      tests/test_diaggui_qualification_evidence.py tests/test_publish_release_workflow.py
+      tests/test_check_release_metadata_script.py tests/test_v025_cross_format_io_evidence.py
+      tests/test_release_payload.py tests/test_release_evidence.py
+      tests/docs/test_docs_redesign_release_facts.py
+      tests/docs/test_docs_redesign_release_status.py tests/test_gen_release_notes.py
+    result: exit 0; 291 passed
+  - command: >-
+      GWEXPY_ALLOW_ZARR=1 conda run -n gwexpy pytest -q
+      tests/io/test_optional_deps.py::TestZarrImportGuard::test_public_auto_zarr_reads_preserve_missing_backend_importerror
+      tests/io/test_optional_deps.py::TestZarrImportGuard::test_public_matrix_auto_zarr_write_preserves_missing_backend_importerror
+      tests/io/test_hdf5_manifest_collection_integrity.py::test_timeseriesdict_auto_read_rejects_unreadable_manifest_entry
+      tests/io/test_gbd_gl500_header_validation.py::test_valid_gl500_public_readers_keep_timing_scaling_and_digital_values
+      tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_roundtrip_preserves_unit
+      tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_read_handles_heterogeneous_numeric_cell_dtypes
+      tests/io/test_zarr_reader.py::test_public_matrix_read_preserves_multichannel_native_int64
+      tests/io/test_zarr_reader.py::test_public_matrix_read_preserves_units_for_native_float_channels
+      tests/io/test_zarr_reader.py::test_public_matrix_read_rejects_lossy_mixed_dtype_zarr_stores
+    result: exit 0; 11 passed
+  - command: >-
+      GWEXPY_ALLOW_ZARR=1 conda run -n gwexpy pytest -q
+      tests/io/test_netcdf4_matrix_validation.py::test_public_legacy_read_rejects_irregular_time
+      tests/io/test_zarr_reader.py::test_public_zarr_reads_preserve_int64_and_complex_values
+      tests/io/test_tdms_invalid_increment_contract.py::test_public_tdms_readers_reject_missing_or_invalid_waveform_increment
+    result: exit 0; 60 passed
+  - command: >-
+      conda run -n gwexpy python -m build --no-isolation --sdist --wheel
+      --outdir /tmp/gwexpy-v025-prep-build
+    result: exit 0; local wheel and sdist built without publication
+  - command: >-
+      conda run -n gwexpy python scripts/check_release_artifacts.py
+      /tmp/gwexpy-v025-prep-build
+    result: exit 0; release artifacts passed hygiene checks
+  - command: conda run -n gwexpy python scripts/check_release_metadata.py
+    result: exit 0; metadata consistency check passed
+  - command: >-
+      conda run -n gwexpy python -m venv --system-site-packages
+      /tmp/gwexpy-v025-version-venv
+    result: exit 0; fresh wheel verification environment created
+  - command: >-
+      /tmp/gwexpy-v025-version-venv/bin/python -m pip install --no-deps
+      --no-cache-dir /tmp/gwexpy-v025-prep-build/gwexpy-0.2.5-py3-none-any.whl
+    result: exit 0; local wheel installed
+  - command: >-
+      conda run -n gwexpy python -m venv --system-site-packages
+      /tmp/gwexpy-v025-sdist-venv
+    result: exit 0; fresh sdist verification environment created
+  - command: >-
+      /tmp/gwexpy-v025-sdist-venv/bin/python -m pip install --no-deps
+      --no-cache-dir /tmp/gwexpy-v025-prep-build/gwexpy-0.2.5.tar.gz
+    result: exit 0; local sdist built and installed
+  - command: >-
+      /tmp/gwexpy-v025-version-venv/bin/python -c
+      'import hashlib,sys; from pathlib import Path;
+      sys.path.insert(0,"/home/washimi/.config/superpowers/worktrees/gwexpy/v025-release-prep/scripts/ci");
+      import v025_cross_format_io_evidence as e;
+      p=Path("/tmp/gwexpy-v025-prep-build/gwexpy-0.2.5-py3-none-any.whl");
+      print(e._installed(p, hashlib.sha256(p.read_bytes()).hexdigest()))'
+    result: exit 0; returned True with matching wheel PEP 610 archive hash
+  - command: >-
+      /tmp/gwexpy-v025-sdist-venv/bin/python -c
+      'import hashlib,sys; from pathlib import Path;
+      sys.path.insert(0,"/home/washimi/.config/superpowers/worktrees/gwexpy/v025-release-prep/scripts/ci");
+      import v025_cross_format_io_evidence as e;
+      p=Path("/tmp/gwexpy-v025-prep-build/gwexpy-0.2.5.tar.gz");
+      print(e._installed(p, hashlib.sha256(p.read_bytes()).hexdigest()))'
+    result: exit 0; returned True with matching sdist PEP 610 archive hash
+  - command: >-
+      conda run -n gwexpy ruff check scripts/validate_release.py
+      scripts/ci/release_contract.py scripts/ci/qualification_evidence.py
+      scripts/ci/diaggui_qualification_evidence.py
+      scripts/ci/validate_release_review_evidence.py
+      scripts/ci/verify_release_human_approval.py
+      scripts/ci/v025_cross_format_io_evidence.py tests/test_release_contracts.py
+      tests/test_validate_release_script.py tests/test_release_human_approval.py
+      tests/test_diaggui_qualification_evidence.py
+      tests/test_qualification_skip_evidence.py tests/test_publish_release_workflow.py
+      tests/test_check_release_metadata_script.py
+      tests/test_v025_cross_format_io_evidence.py
+      tests/docs/test_docs_redesign_release_facts.py
+    result: exit 0; all checks passed
+  - command: >-
+      conda run -n gwexpy ruff format --check scripts/validate_release.py
+      scripts/ci/release_contract.py scripts/ci/qualification_evidence.py
+      scripts/ci/diaggui_qualification_evidence.py
+      scripts/ci/validate_release_review_evidence.py
+      scripts/ci/verify_release_human_approval.py
+      scripts/ci/v025_cross_format_io_evidence.py tests/test_release_contracts.py
+      tests/test_validate_release_script.py tests/test_release_human_approval.py
+      tests/test_diaggui_qualification_evidence.py
+      tests/test_qualification_skip_evidence.py tests/test_publish_release_workflow.py
+      tests/test_check_release_metadata_script.py
+      tests/test_v025_cross_format_io_evidence.py
+      tests/docs/test_docs_redesign_release_facts.py
+    result: exit 0; 16 files already formatted
+  - command: git diff --check
+    result: exit 0
+  - command: >-
+      conda run -n gwexpy python -m sphinx -b html docs_redesign
+      /tmp/gwexpy-v025-docs
+    result: interrupted after about four minutes without output; exit 1 (KeyboardInterrupt)
+omitted:
+  - Full matrix GitHub Actions qualification requires the future frozen R and same-run artifacts.
+  - Physics check is not applicable to release-control and metadata changes.
+  - The conda gwexpy environment retains installed 0.2.4 metadata; test_version passed in a temporary venv with the locally built 0.2.5 wheel.
+files_changed:
+  - .gitattributes
+  - .github/workflows/publish-release.yml
+  - .zenodo.json
+  - CHANGELOG.md
+  - CITATION.cff
+  - RELEASING.md
+  - docs/developers/plans/20260927_v0.2.5_release_plan.md
+  - docs/developers/plans/manifests/audit-manifest-v0.2.5-release-preparation.yaml
+  - docs/developers/plans/manifests/audit-manifest-v0.2.5-release-readiness.yaml
+  - docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po
+  - gwexpy/_version.py
+  - release_notes/v0.2.5.md
+  - scripts/ci/diaggui_qualification_evidence.py
+  - scripts/ci/qualification_evidence.py
+  - scripts/ci/release_contract.py
+  - scripts/ci/release_contracts.json
+  - scripts/ci/v025_cross_format_io_evidence.py
+  - scripts/ci/v025_qualification_expected_skips.json
+  - scripts/ci/validate_release_review_evidence.py
+  - scripts/ci/verify_release_human_approval.py
+  - scripts/validate_release.py
+  - tests/docs/test_docs_redesign_release_facts.py
+  - tests/test_check_release_metadata_script.py
+  - tests/test_diaggui_qualification_evidence.py
+  - tests/test_publish_release_workflow.py
+  - tests/test_qualification_skip_evidence.py
+  - tests/test_release_contracts.py
+  - tests/test_release_human_approval.py
+  - tests/test_v025_cross_format_io_evidence.py
+  - tests/test_validate_release_script.py

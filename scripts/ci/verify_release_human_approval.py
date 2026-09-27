@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the v0.2.4 release-owner approval through the GitHub comment API."""
+"""Verify the release-owner approval through the GitHub comment API."""
 
 from __future__ import annotations
 
@@ -126,6 +126,7 @@ def _validate_comment(
     comment: dict[str, Any],
     approval: dict[str, Any],
     reviewed_commit: str,
+    expected_tag: str = "v0.2.4",
 ) -> None:
     user = comment.get("user")
     created_at = comment.get("created_at")
@@ -141,7 +142,7 @@ def _validate_comment(
     ):
         raise HumanApprovalError("GitHub comment author or timestamp does not match")
     expected_body = [
-        "GWEXPY-RELEASE-APPROVAL v0.2.4",
+        f"GWEXPY-RELEASE-APPROVAL {expected_tag}",
         f"S: {reviewed_commit}",
         f"SCOPE: {approval['scope_digest']}",
         "VERDICT: APPROVED",
@@ -168,8 +169,10 @@ def verify_human_approval(
         root, Path(evidence) if evidence is not None else None, contract
     )
     evidence_data = _load_and_validate_evidence(root, evidence_path, expected_tag)
-    if expected_tag != "v0.2.4":
-        raise HumanApprovalError("human approval verification is configured for v0.2.4")
+    if expected_tag not in {"v0.2.4", "v0.2.5"}:
+        raise HumanApprovalError(
+            "human approval verification is not configured for this tag"
+        )
     approval = evidence_data["human_approval"]
     reviewed_commit = approval["reviewed_commit"]
     credential = token if token is not None else os.environ.get("GITHUB_TOKEN", "")
@@ -182,7 +185,7 @@ def verify_human_approval(
         credential,
         base_url,
     )
-    _validate_comment(comment, approval, reviewed_commit)
+    _validate_comment(comment, approval, reviewed_commit, expected_tag)
     return reviewed_commit
 
 

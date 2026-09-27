@@ -868,3 +868,47 @@ def test_v024_candidate_release_requires_review_evidence(tmp_path: Path) -> None
         match="v0.2.4 requires release review evidence",
     ):
         validator.validate_release(repo, source_sha, "v0.2.4")
+
+
+def test_v025_candidate_requires_review_evidence(tmp_path: Path) -> None:
+    validator = load_validator()
+    repo = make_repo(tmp_path, version="0.2.5", date="2026-09-27")
+    with pytest.raises(
+        validator.ReleaseValidationError,
+        match="v0.2.5 requires release review evidence",
+    ):
+        validator.validate_release(repo, git(repo, "rev-parse", "HEAD"), "v0.2.5")
+
+
+def test_v025_s_to_r_accepts_only_evidence_and_existing_checkboxes(
+    tmp_path: Path,
+) -> None:
+    validator = load_validator()
+    repo = tmp_path / "v025-review-repo"
+    repo.mkdir()
+    git(repo, "init", "-b", "main")
+    git(repo, "config", "user.name", "Release Test")
+    git(repo, "config", "user.email", "release-test@example.invalid")
+    plan = repo / "docs/developers/plans/20260927_v0.2.5_release_plan.md"
+    evidence = (
+        repo
+        / "docs/developers/plans/manifests/audit-manifest-v0.2.5-release-readiness.yaml"
+    )
+    plan.parent.mkdir(parents=True)
+    evidence.parent.mkdir(parents=True)
+    plan.write_text("- [ ] review\n", encoding="utf-8")
+    evidence.write_bytes(validator.V025_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER)
+    git(repo, "add", ".")
+    git(repo, "commit", "-m", "S")
+    reviewed = git(repo, "rev-parse", "HEAD")
+    plan.write_text("- [x] review\n", encoding="utf-8")
+    evidence.write_text(
+        'review_evidence_json: |\n  {"schema":"gwexpy-v025-review-evidence-v1"}\n',
+        encoding="utf-8",
+    )
+    git(repo, "add", ".")
+    git(repo, "commit", "-m", "R")
+    source = git(repo, "rev-parse", "HEAD")
+    validator.validate_s_to_r(repo, reviewed, source, expected_tag="v0.2.5")
+    with pytest.raises(validator.ReleaseValidationError, match="distinct commits"):
+        validator.validate_s_to_r(repo, source, source, expected_tag="v0.2.5")

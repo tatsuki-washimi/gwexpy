@@ -19,6 +19,9 @@ PUBLISHED_V023_HISTORY_ENTRY = f"[{PUBLISHED_V023_VERSION}] - {PUBLISHED_V023_DA
 PUBLISHED_V024_VERSION = "0.2.4"
 PUBLISHED_V024_DATE = "2026-09-26"
 PUBLISHED_V024_HISTORY_ENTRY = f"[{PUBLISHED_V024_VERSION}] - {PUBLISHED_V024_DATE}"
+CANDIDATE_V025_VERSION = "0.2.5"
+CANDIDATE_V025_DATE = "2026-09-27"
+CANDIDATE_V025_HISTORY_ENTRY = f"[{CANDIDATE_V025_VERSION}] - {CANDIDATE_V025_DATE}"
 RELEASE_DOI_URL = "https://doi.org/10.5281/zenodo.22228340"
 ACTIVITY_RELEASE_VERSION = "0.2.2"
 ACTIVITY_RELEASE_SHA = "2503743cf654606a5baa83c7b7e7c8b8e1e06596"
@@ -210,20 +213,21 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
         RELEASE_HISTORY_ENTRY,
         PUBLISHED_V023_HISTORY_ENTRY,
         PUBLISHED_V024_HISTORY_ENTRY,
+        CANDIDATE_V025_HISTORY_ENTRY,
     ):
         assert re.search(rf"^## {re.escape(history_entry)}$", changelog, re.MULTILINE)
     assert re.search(
-        rf"^version: {re.escape(PUBLISHED_V024_VERSION)}$",
+        rf"^version: {re.escape(CANDIDATE_V025_VERSION)}$",
         citation,
         re.MULTILINE,
     )
     assert re.search(
-        rf"^date-released: {re.escape(PUBLISHED_V024_DATE)}$",
+        rf"^date-released: {re.escape(CANDIDATE_V025_DATE)}$",
         citation,
         re.MULTILINE,
     )
-    assert zenodo["version"] == PUBLISHED_V024_VERSION
-    assert zenodo["publication_date"] == PUBLISHED_V024_DATE
+    assert zenodo["version"] == CANDIDATE_V025_VERSION
+    assert zenodo["publication_date"] == CANDIDATE_V025_DATE
 
     assert release_status["latest_release"] == PUBLISHED_V024_VERSION
     assert release_status["intro_examples_release"] == PUBLISHED_V024_VERSION
@@ -380,15 +384,17 @@ def test_redesign_changelog_includes_the_published_release_history() -> None:
         rendered_history,
         re.MULTILINE,
     )
-    assert rendered_headings[:2] == [
+    assert rendered_headings[:3] == [
+        CANDIDATE_V025_HISTORY_ENTRY,
         PUBLISHED_V024_HISTORY_ENTRY,
         PUBLISHED_V023_HISTORY_ENTRY,
     ]
     canonical_releases = re.findall(
         r"^## (\[[^\]]+\] - \d{4}-\d{2}-\d{2})$", canonical, re.MULTILINE
     )
-    assert canonical_releases[0] == PUBLISHED_V024_HISTORY_ENTRY
+    assert canonical_releases[0] == CANDIDATE_V025_HISTORY_ENTRY
     assert canonical_releases[1:] == [
+        PUBLISHED_V024_HISTORY_ENTRY,
         PUBLISHED_V023_HISTORY_ENTRY,
         RELEASE_HISTORY_ENTRY,
         "[0.2.1] - 2026-08-31",
@@ -435,7 +441,7 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
         (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8"),
         re.MULTILINE,
     )
-    assert release_entries[0] == PUBLISHED_V024_HISTORY_ENTRY
+    assert release_entries[0] == CANDIDATE_V025_HISTORY_ENTRY
     for release in release_entries[1:]:
         release_message = catalogue.get(release)
         assert release_message is not None

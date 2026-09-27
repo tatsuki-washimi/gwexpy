@@ -238,6 +238,18 @@ def test_human_verifier_accepts_exact_comment_and_rejects_edited_comments() -> N
         verifier._validate_comment(edited, approval, reviewed_commit)
 
 
+def test_v025_human_approval_requires_its_own_canonical_tag_token() -> None:
+    verifier = load_module("v025_human_verifier_comment_test", HUMAN_VERIFIER)
+    approval, historical, reviewed_commit = approval_fixture()
+    current = dict(
+        historical,
+        body=historical["body"].replace("v0.2.4", "v0.2.5"),
+    )
+    verifier._validate_comment(current, approval, reviewed_commit, "v0.2.5")
+    with pytest.raises(verifier.HumanApprovalError, match="canonical approval"):
+        verifier._validate_comment(historical, approval, reviewed_commit, "v0.2.5")
+
+
 @pytest.mark.parametrize(
     ("line_index", "replacement"),
     [
