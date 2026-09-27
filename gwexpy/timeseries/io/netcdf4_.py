@@ -366,6 +366,7 @@ def _validate_matrix_cells(matrix_vars, *, require_indices: bool):
                     raise ValueError(
                         f"NetCDF matrix {axis} index must be a nonnegative integer"
                     )
+                index = int(index)
                 if key in forward and forward[key] != index:
                     raise ValueError(
                         f"NetCDF matrix {axis} key has conflicting indices"
