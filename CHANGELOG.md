@@ -2,16 +2,19 @@
 
 ## [0.2.5] - 2026-09-27
 
-This patch release hardens public cross-format I/O after the #751 audit.
-It preserves data values, axes, and metadata across the characterized
-Zarr, NetCDF4, HDF5, TDMS, GBD, and audio routes, with clear errors for
-invalid stores and unavailable optional backends.
+This patch fixes supported NetCDF4 and Zarr matrix value, axis, and unit
+handling; HDF5 manifest integrity; TDMS waveform-increment and GBD header
+validation; and audio registry tag provenance. The supported optional-backend
+routes report a backend-specific `ImportError` when their package is absent.
 
 ### Fixed
 
-- Preserved integer and complex dtypes and axis units across supported Zarr and NetCDF4 matrix reads.
-- Rejected malformed collection manifests and invalid format metadata before returning partial data.
-- Kept optional backend errors clear for base installations.
+- **NetCDF4 matrices and axes**: Reject malformed matrix topology, unsafe heterogeneous dtype conversion, and irregular legacy time axes; retain cell units in supported matrix writes and legacy reads.
+- **Zarr values and metadata**: Retain tested integer and complex samples, axes, and units; reject unsafe mixed-dtype conversion and inconsistent axes in supported stores.
+- **HDF5 manifest-backed collections**: Reject unreadable, missing, or substituted payloads while preserving tolerant manifest-free discovery.
+- **TDMS and GL500 GBD validation**: Reject absent or invalid waveform increments and malformed required GL500 header fields within the tested firmware scope.
+- **Audio registry tags**: Retain available WAV and FLAC tag metadata in provenance.
+- **Optional backends**: Supported public Zarr and NetCDF4 routes raise a backend-specific `ImportError` when the required package is absent.
 
 
 ## [0.2.4] - 2026-09-26

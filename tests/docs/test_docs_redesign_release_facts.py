@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import csv
+import gettext
 import hashlib
+import io
 import json
 import re
 from pathlib import Path
 
 import yaml
-from babel.messages import pofile
+from babel.messages import mofile, pofile
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RELEASE_VERSION = "0.2.2"
@@ -473,6 +475,41 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
         assert message is not None, message_id
         assert message.string and "fuzzy" not in message.flags, message_id
         assert re.search(r"[\u3040-\u30ff\u4e00-\u9fff]", message.string), message_id
+
+
+def test_v025_changelog_gettext_compiles_and_translates_qualified_claims() -> None:
+    changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    release_note = (REPO_ROOT / "release_notes/v0.2.5.md").read_text(encoding="utf-8")
+    section = changelog.split(f"## {CANDIDATE_V025_HISTORY_ENTRY}", 1)[1].split(
+        f"## {PUBLISHED_V024_HISTORY_ENTRY}", 1
+    )[0]
+    blocks = re.split(r"\n\s*\n|\n(?=\s*(?:#{1,6}|[-+*]|\d+\.)\s)", section)
+    ids = []
+    for block in blocks:
+        content = re.sub(r"^\s*(?:#{1,6}|[-+*]|\d+\.)\s+", "", block)
+        message_id = " ".join(content.split())
+        if message_id:
+            ids.append(message_id)
+    assert len(ids) == 8  # Lead, Fixed, and six scoped bullets.
+    assert ids[0].startswith("This patch fixes supported NetCDF4 and Zarr")
+    assert ids[1] == "Fixed"
+    assert all(message_id in release_note for message_id in ids[2:])
+    assert "preserve serialized values and metadata" not in release_note
+
+    path = REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"
+    with path.open(encoding="utf-8") as stream:
+        catalogue = pofile.read_po(stream, locale="ja")
+    output = io.BytesIO()
+    mofile.write_mo(output, catalogue)
+    output.seek(0)
+    translations = gettext.GNUTranslations(output)
+    for message_id in (CANDIDATE_V025_HISTORY_ENTRY, *ids):
+        message = catalogue.get(message_id)
+        assert message is not None, message_id
+        assert message.string and "fuzzy" not in message.flags, message_id
+        assert re.search(r"[\u3040-\u30ff\u4e00-\u9fff]", message.string), message_id
+        assert translations.gettext(message_id) == message.string, message_id
+        assert translations.gettext(message_id) != message_id, message_id
 
 
 def test_noise_tutorial_declares_the_packaged_gwinc_dependency() -> None:
