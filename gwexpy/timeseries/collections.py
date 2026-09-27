@@ -611,6 +611,28 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                         orig_key = keymap.get(grp_name, grp_name)
                         out[orig_key] = ts
                     return apply_time_selection(out, start, end)
+        if fmt in {"wav", "flac"} and kwargs.get("extract_metadata"):
+            from gwexpy.io.utils import extract_audio_metadata, set_provenance
+
+            reader_kwargs = dict(kwargs)
+            reader_kwargs["extract_metadata"] = False
+            result = super().read(source, *args, **reader_kwargs)
+
+            attrs = getattr(result, "attrs", None)
+            if isinstance(attrs, dict):
+                provenance = dict(attrs)
+            else:
+                existing_provenance = getattr(result, "_gwexpy_io", None)
+                provenance = (
+                    dict(existing_provenance)
+                    if isinstance(existing_provenance, dict)
+                    else {}
+                )
+            metadata = extract_audio_metadata(source)
+            provenance.update(metadata)
+            if provenance:
+                set_provenance(result, provenance)
+            return result
         return super().read(source, *args, **kwargs)
 
     def __reduce_ex__(self, protocol: SupportsIndex):
