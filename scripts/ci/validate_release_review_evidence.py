@@ -36,6 +36,7 @@ ENTRY_KEYS = {
     "finding_ids",
 }
 V024_TAG = "v0.2.4"
+STRICT_APPROVAL_TAGS = {"v0.2.4", "v0.2.5"}
 V024_HUMAN_APPROVAL_KEYS = {
     "approver_login",
     "role",
@@ -185,10 +186,10 @@ def validate_review_scope_coverage(
     reviewed_commit: str,
     contract: dict[str, Any],
 ) -> None:
-    """Require configured v0.2.4 review lanes to cover the full release diff."""
+    """Require configured release lanes to cover the full release diff."""
     base = contract.get("review_base_sha")
     if not isinstance(base, str) or SHA40.fullmatch(base) is None:
-        raise ReleaseReviewEvidenceError("v0.2.4 has no frozen review baseline")
+        raise ReleaseReviewEvidenceError("release has no frozen review baseline")
     ancestor = subprocess.run(
         ["git", "merge-base", "--is-ancestor", base, reviewed_commit],
         cwd=repo_root,
@@ -197,7 +198,7 @@ def validate_review_scope_coverage(
     )
     if ancestor.returncode:
         raise ReleaseReviewEvidenceError(
-            "v0.2.3 release source is not an ancestor of reviewed commit"
+            "release review baseline is not an ancestor of reviewed commit"
         )
     changed = changed_paths_between(repo_root, base, reviewed_commit)
     lane_paths = {
@@ -280,7 +281,7 @@ def validate_review_evidence(
     }
     data = _load_review_document(evidence_path)
     expected_top_level = {"schema", "entries"}
-    if expected_tag == V024_TAG:
+    if expected_tag in STRICT_APPROVAL_TAGS:
         expected_top_level.add("human_approval")
     if (
         not isinstance(data, dict)
@@ -365,7 +366,7 @@ def validate_review_evidence(
         seen.add(lane)
     if seen != required_lanes:
         raise ReleaseReviewEvidenceError("review evidence has missing or extra lanes")
-    if expected_tag == V024_TAG:
+    if expected_tag in STRICT_APPROVAL_TAGS:
         _validate_v024_human_approval(
             Path(repo_root), data["human_approval"], reviewed_commit, contract
         )

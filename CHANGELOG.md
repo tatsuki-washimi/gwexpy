@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.5] - 2026-09-27
+
+This patch release hardens public cross-format I/O after the #751 audit.
+It preserves data values, axes, and metadata across the characterized
+Zarr, NetCDF4, HDF5, TDMS, GBD, and audio routes, with clear errors for
+invalid stores and unavailable optional backends.
+
+### Fixed
+
+- Preserved integer and complex dtypes and axis units across supported Zarr and NetCDF4 matrix reads.
+- Rejected malformed collection manifests and invalid format metadata before returning partial data.
+- Kept optional backend errors clear for base installations.
+
+
 ## [0.2.4] - 2026-09-26
 
 This patch release improves support for characterized DiagGUI XML frequency,
@@ -1549,3 +1563,4 @@ Early stable GWexpy release focused on API stability, GWpy compatibility, and re
 [0.1.0]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0b2...v0.1.0
 [0.1.0b2]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0b1...v0.1.0b2
 [0.1.0b1]: https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.1.0b1
+[0.2.5]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.2.4...v0.2.5

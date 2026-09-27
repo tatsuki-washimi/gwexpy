@@ -257,7 +257,7 @@ def test_v022_through_v024_release_qualification_share_exact_nineteen_cells():
     matrix = workflow["jobs"]["qualify"]["strategy"]["matrix"]["include"]
 
     assert len(matrix) == 19
-    allowlist = "${{ needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' }}"
+    allowlist = "${{ needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' }}"
     assert workflow["jobs"]["qualify"]["if"] == allowlist
     assert workflow["jobs"]["qualification_evidence"]["if"] == allowlist
     assert matrix == [
@@ -444,7 +444,7 @@ def test_qualification_evidence_switch_is_fail_closed_and_versioned():
     )
     assert "if" not in run_step
     assert "0.2.3)" in run_step["run"]
-    assert "0.2.4)" in run_step["run"]
+    assert "0.2.4|0.2.5)" in run_step["run"]
     assert '--junitxml="$JUNIT"' in run_step["run"]
 
     aggregate = text.split("\n  qualification_evidence:\n", maxsplit=1)[1].split(
@@ -462,7 +462,7 @@ def test_qualification_evidence_switch_is_fail_closed_and_versioned():
     publish = text.split("\n  publish:\n", maxsplit=1)[1]
     needs = publish.split("\n    if:", maxsplit=1)[0]
     assert (
-        "needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, evidence]"
+        "needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, cross_format_io_evidence, evidence]"
         in needs
     )
 
@@ -551,7 +551,10 @@ def test_v024_human_approval_verifier_uses_github_read_permission_and_canonical_
     )
     assert "--review-evidence-path" in validate["run"]
     assert '--review-evidence "$canonical_review_evidence"' in validate["run"]
-    assert verifier["if"] == "steps.validate.outputs.version == '0.2.4'"
+    assert (
+        verifier["if"]
+        == "steps.validate.outputs.version == '0.2.4' || steps.validate.outputs.version == '0.2.5'"
+    )
     assert "verify_release_human_approval.py" in verifier["run"]
     assert verifier["env"]["GITHUB_TOKEN"] == "${{ secrets.GITHUB_TOKEN }}"
 
@@ -612,6 +615,34 @@ def test_v024_expected_skip_baseline_declares_lf_checkout_contract():
     assert "scripts/ci/v024_qualification_expected_skips.json: eol: lf" in lines
 
 
+def test_v025_expected_skip_baseline_declares_lf_checkout_contract():
+    repository = WORKFLOW.parents[2]
+    attributes = repository / ".gitattributes"
+    declarations = attributes.read_text(encoding="utf-8").splitlines()
+
+    assert (
+        "scripts/ci/v025_qualification_expected_skips.json text eol=lf" in declarations
+    )
+
+    result = subprocess.run(
+        [
+            "git",
+            "check-attr",
+            "text",
+            "eol",
+            "--",
+            "scripts/ci/v025_qualification_expected_skips.json",
+        ],
+        cwd=repository,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    lines = result.stdout.splitlines()
+    assert "scripts/ci/v025_qualification_expected_skips.json: text: set" in lines
+    assert "scripts/ci/v025_qualification_expected_skips.json: eol: lf" in lines
+
+
 def test_v022_historical_evidence_does_not_require_v023_candidate_files():
     import yaml
 
@@ -650,7 +681,8 @@ def test_v022_historical_evidence_does_not_require_v023_candidate_files():
     )
     assert checkout["if"] == (
         "needs.verify.outputs.version == '0.2.3' || "
-        "needs.verify.outputs.version == '0.2.4'"
+        "needs.verify.outputs.version == '0.2.4' || "
+        "needs.verify.outputs.version == '0.2.5'"
     )
     assert setup_python["if"] == checkout["if"]
 
@@ -902,3 +934,44 @@ def test_workflow_contract_revision_disagreement_fails_closed(tmp_path: Path):
 
     with pytest.raises(validator.ReleaseValidationError, match="origin/maint/0.3"):
         validator.validate_frozen_tip(repo, source_sha, expected_tag="v0.2.0")
+
+
+def test_v025_cross_format_io_gate_is_candidate_bound_and_required_for_publish():
+    import yaml
+
+    workflow = yaml.safe_load(read_workflow())
+    jobs = workflow["jobs"]
+    matrix = jobs["cross_format_io"]["strategy"]["matrix"]["include"]
+    assert len(matrix) == 8
+    assert {(row["mode"], row["python"], row["distribution"]) for row in matrix} == {
+        (mode, python, distribution)
+        for mode in ("base", "optional")
+        for python in ("3.11", "3.12")
+        for distribution in ("wheel", "sdist")
+    }
+    assert (
+        jobs["cross_format_io"]["if"]
+        == "${{ needs.verify.outputs.version == '0.2.5' }}"
+    )
+    install = next(
+        step
+        for step in jobs["cross_format_io"]["steps"]
+        if step["name"]
+        == "Install digest-checked candidate and run selected public regressions"
+    )
+    assert "validate_release_payload.py" in install["run"]
+    assert '--source-sha "$SOURCE_SHA"' in install["run"]
+    assert '"${artifact}[io,netcdf4,zarr]"' in install["run"]
+    assert "test_tdms_invalid_increment_contract.py" in install["run"]
+    assert 'v025_cross_format_io_evidence.py" record' in install["run"]
+    assert (
+        "v025_cross_format_io_evidence.py aggregate"
+        in jobs["cross_format_io_evidence"]["steps"][-2]["run"]
+    )
+    assert "cross_format_io_evidence" in jobs["publish"]["needs"]
+    assert {
+        "smoke",
+        "qualification_evidence",
+        "diaggui_qualification_evidence",
+        "cross_format_io_evidence",
+    } <= set(jobs["publish"]["needs"])

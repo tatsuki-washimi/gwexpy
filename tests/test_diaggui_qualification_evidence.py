@@ -28,6 +28,24 @@ def load_module():
     return module
 
 
+def test_v025_schema_selection_preserves_v024_nodes_and_semantics() -> None:
+    evidence = load_module()
+    base_nodes = evidence.BASE_TEST_NODES
+    dttxml_nodes = evidence.DTTXML_TEST_NODES
+    assert evidence.VERSION == "0.2.4"
+    evidence._select_version("0.2.5")
+    assert evidence.VERSION == "0.2.5"
+    assert evidence.PAYLOAD_SCHEMA == "gwexpy-v025-release-payload-v1"
+    assert evidence.CELL_SCHEMA == "gwexpy-v025-diaggui-qualification-cell-v1"
+    assert evidence.AGGREGATE_SCHEMA == "gwexpy-v025-diaggui-qualification-evidence-v1"
+    assert evidence.BASE_TEST_NODES == base_nodes
+    assert evidence.DTTXML_TEST_NODES == dttxml_nodes
+    evidence._select_version("0.2.4")
+    assert evidence.PAYLOAD_SCHEMA == "gwexpy-v024-release-payload-v1"
+    with pytest.raises(evidence.DiagGUIQualificationError, match="unsupported"):
+        evidence._select_version("0.2.6")
+
+
 def canonical_json(data: object) -> bytes:
     return (
         json.dumps(data, ensure_ascii=True, separators=(",", ":"), sort_keys=True)

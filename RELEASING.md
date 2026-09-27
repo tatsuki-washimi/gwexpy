@@ -25,6 +25,13 @@ reviewed source `S`; validation binds S to R and permits only the evidence
 update and existing plan checkboxes transitioning from `[ ]` to `[x]`. A
 v0.2.4 candidate run must provide this evidence path.
 
+For v0.2.5, dispatch from `main` with R's full SHA, `expected_tag=v0.2.5`,
+and `review_evidence=docs/developers/plans/manifests/audit-manifest-v0.2.5-release-readiness.yaml`.
+The selected metadata date is 2026-09-27 UTC. If publication moves to a later
+UTC date, update all release dates before S freeze and repeat review and
+qualification. Never backdate the tag. The v0.2.5 decision remains HOLD until
+all release gates pass.
+
 The accepted tag-specific plan, evidence schema/path, review lanes, S-to-R
 paths, payload/integration schemas, artifact prefix, and protected refs are defined only in
 `scripts/ci/release_contracts.json`.  A syntactically valid SemVer tag that is
@@ -177,6 +184,19 @@ canonical readiness path for the source validator and human approval verifier.
 On manual dispatch, pass that same path as `review_evidence`. The selected
 metadata date is 2026-09-26 UTC. If publication slips to a later UTC date,
 update the release metadata and repeat review and qualification against a new S.
+
+The v0.2.5 review baseline is peeled v0.2.4 source
+`522e52a082925da4dd37966d82a7616bdd2a5248`. Its review scope, distinct
+S-to-R transition, empty placeholder, and human approval use the v0.2.4
+rules with v0.2.5 schemas and approval comment token
+`GWEXPY-RELEASE-APPROVAL v0.2.5`. The release workflow requires four
+independent aggregate gates for v0.2.5: four smoke cells, 19 qualification
+cells, four DiagGUI cells, and eight cross-format I/O cells. Each I/O cell
+validates the same-run two-file payload SHA-256 manifest and records
+`backend_presence` for `zarr`, `xarray`, and `netCDF4`: all absent in base
+cells and all present in optional cells. Candidate and tag runs may build
+different bytes, but each run must use exact source R and an internally
+consistent payload. The publish job depends on all four aggregates.
 
 The selected evidence file must contain
 exactly one top-level `review_evidence_json: |` block whose content is the

@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "ci" / "qualification_evidence.py"
 BASELINE = ROOT / "scripts" / "ci" / "v023_qualification_expected_skips.json"
 BASELINE_V024 = ROOT / "scripts" / "ci" / "v024_qualification_expected_skips.json"
+BASELINE_V025 = ROOT / "scripts" / "ci" / "v025_qualification_expected_skips.json"
 
 EXPECTED_CELLS = (
     "install-ubuntu-3.11-wheel",
@@ -164,8 +165,12 @@ def test_repository_baseline_survives_crlf_checkout(
     )
 
     baseline = repository / "scripts" / "ci" / "v023_qualification_expected_skips.json"
+    baseline_v025 = (
+        repository / "scripts" / "ci" / "v025_qualification_expected_skips.json"
+    )
     baseline.parent.mkdir(parents=True)
     shutil.copyfile(BASELINE, baseline)
+    shutil.copyfile(BASELINE_V025, baseline_v025)
 
     for args in (
         ["init", "-q", "-b", "main"],
@@ -195,6 +200,7 @@ def test_repository_baseline_survives_crlf_checkout(
 
     attributes.unlink()
     baseline.unlink()
+    baseline_v025.unlink()
     subprocess.run(
         ["git", "checkout", "--", "."],
         cwd=repository,
@@ -208,6 +214,7 @@ def test_repository_baseline_survives_crlf_checkout(
             (
                 b"scripts/ci/v023_qualification_expected_skips.json text eol=lf",
                 b"scripts/ci/v024_qualification_expected_skips.json text eol=lf",
+                b"scripts/ci/v025_qualification_expected_skips.json text eol=lf",
             )
         )
         + attributes_newline
@@ -232,10 +239,20 @@ def test_repository_baseline_survives_crlf_checkout(
     assert hashlib.sha256(raw).hexdigest() == BASELINE_SHA256
     evidence = load_module()
     assert evidence.load_expected_skips(baseline).sha256 == BASELINE_SHA256
+    raw_v025 = baseline_v025.read_bytes()
+    assert raw_v025 == BASELINE_V025.read_bytes()
+    assert b"\r\n" not in raw_v025
+    assert (
+        evidence.load_expected_skips(baseline_v025, version="0.2.5").sha256
+        == hashlib.sha256(raw_v025).hexdigest()
+    )
 
     baseline.write_bytes(raw.replace(b"\n", b"\r\n"))
     with pytest.raises(evidence.QualificationEvidenceError, match="canonical"):
         evidence.load_expected_skips(baseline)
+    baseline_v025.write_bytes(raw_v025.replace(b"\n", b"\r\n"))
+    with pytest.raises(evidence.QualificationEvidenceError, match="canonical"):
+        evidence.load_expected_skips(baseline_v025, version="0.2.5")
 
 
 def test_version_contract_preserves_v022_v023_and_adds_v024() -> None:
@@ -256,8 +273,13 @@ def test_version_contract_preserves_v022_v023_and_adds_v024() -> None:
         "evidence_schema": "gwexpy-v024-qualification-evidence-v1",
         "expected_skips_schema": "gwexpy-v024-qualification-expected-skips-v1",
     }
+    assert evidence.qualification_contract("0.2.5") == {
+        "artifact_prefix": "v025-qualification-evidence",
+        "evidence_schema": "gwexpy-v025-qualification-evidence-v1",
+        "expected_skips_schema": "gwexpy-v025-qualification-expected-skips-v1",
+    }
     with pytest.raises(evidence.QualificationEvidenceError, match="unsupported"):
-        evidence.qualification_contract("0.2.5")
+        evidence.qualification_contract("0.2.6")
 
 
 def test_v024_baseline_is_version_bound_and_has_a_distinct_identity() -> None:
@@ -1060,7 +1082,7 @@ def test_record_rejects_unknown_version_cell_and_missing_v023_inputs(
 
     with pytest.raises(evidence.QualificationEvidenceError, match="unsupported"):
         evidence.record_cell(
-            version="0.2.5",
+            version="0.2.6",
             cell=EXPECTED_CELLS[0],
             source_sha=SOURCE_SHA,
             payload_manifest=payload,

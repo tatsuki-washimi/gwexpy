@@ -114,7 +114,7 @@ jobs:
           printf 'review_evidence=%s\n' "$canonical_review_evidence" >> "$GITHUB_OUTPUT"
 
       - name: Verify GitHub human approval for the reviewed source
-        if: steps.validate.outputs.version == '0.2.4'
+        if: steps.validate.outputs.version == '0.2.4' || steps.validate.outputs.version == '0.2.5'
         env:
           EXPECTED_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_tag || github.ref_name }}
           REVIEW_EVIDENCE: ${{ steps.validate.outputs.review_evidence }}
@@ -279,7 +279,7 @@ jobs:
   qualify:
     name: Qualify ${{ matrix.cell }}
     needs: [verify, build]
-    if: ${{ needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' }}
+    if: ${{ needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
@@ -393,7 +393,7 @@ jobs:
               python -c 'import os; from pathlib import Path; Path(os.environ["JUNIT"]).parent.mkdir(parents=True, exist_ok=True)'
               "${runner[@]}" -m pytest --junitxml="$JUNIT" --import-mode=importlib -q "${tests[@]}"
               ;;
-            0.2.4)
+            0.2.4|0.2.5)
               python -c 'import os; from pathlib import Path; Path(os.environ["JUNIT"]).parent.mkdir(parents=True, exist_ok=True)'
               "${runner[@]}" -m pytest --junitxml="$JUNIT" --import-mode=importlib -q "${tests[@]}"
               ;;
@@ -465,6 +465,27 @@ jobs:
             --junit "$JUNIT" \
             --expected-skips "$EXPECTED_SKIPS"
 
+      - name: Record qualification cell skip evidence (v0.2.5)
+        if: needs.verify.outputs.version == '0.2.5'
+        shell: bash
+        env:
+          CELL: ${{ matrix.cell }}
+          SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          VERSION: ${{ needs.verify.outputs.version }}
+          REPORT: ${{ runner.temp }}/qualification-report/qualification.json
+          JUNIT: ${{ runner.temp }}/qualification-report/pytest.xml
+          PAYLOAD_MANIFEST: ${{ runner.temp }}/release-sidecars/distribution-sha256.json
+          EXPECTED_SKIPS: source/scripts/ci/v025_qualification_expected_skips.json
+        run: |
+          python source/scripts/ci/qualification_evidence.py record \
+            --version "$VERSION" \
+            --cell "$CELL" \
+            --source-sha "$SOURCE_SHA" \
+            --payload-manifest "$PAYLOAD_MANIFEST" \
+            --report "$REPORT" \
+            --junit "$JUNIT" \
+            --expected-skips "$EXPECTED_SKIPS"
+
       - name: Upload qualification cell evidence
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
@@ -476,12 +497,12 @@ jobs:
   qualification_evidence:
     name: Aggregate nineteen qualification cells
     needs: [verify, build, qualify]
-    if: ${{ needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' }}
+    if: ${{ needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Check out verified qualification source
-        if: needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4'
+        if: needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ needs.verify.outputs.source_sha }}
@@ -489,7 +510,7 @@ jobs:
           path: source
 
       - name: Set up Python
-        if: needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4'
+        if: needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5'
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.11"
@@ -519,7 +540,7 @@ jobs:
               python source/scripts/ci/qualification_evidence.py contract \
                 --version "$VERSION" >> "$GITHUB_OUTPUT"
               ;;
-            0.2.4)
+            0.2.4|0.2.5)
               python source/scripts/ci/qualification_evidence.py contract \
                 --version "$VERSION" >> "$GITHUB_OUTPUT"
               ;;
@@ -589,6 +610,24 @@ jobs:
             --output "$OUTPUT" \
             --expected-skips "$EXPECTED_SKIPS"
 
+      - name: Assert v0.2.5 skip and same-payload qualification ledger
+        if: needs.verify.outputs.version == '0.2.5'
+        env:
+          CELLS: ${{ runner.temp }}/qualification-cells
+          SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          VERSION: ${{ needs.verify.outputs.version }}
+          PAYLOAD_MANIFEST: ${{ runner.temp }}/release-sidecars/distribution-sha256.json
+          OUTPUT: ${{ runner.temp }}/qualification-manifest.json
+          EXPECTED_SKIPS: source/scripts/ci/v025_qualification_expected_skips.json
+        run: |
+          python source/scripts/ci/qualification_evidence.py aggregate \
+            --version "$VERSION" \
+            --source-sha "$SOURCE_SHA" \
+            --payload-manifest "$PAYLOAD_MANIFEST" \
+            --reports-dir "$CELLS" \
+            --output "$OUTPUT" \
+            --expected-skips "$EXPECTED_SKIPS"
+
       - name: Upload qualification manifest
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
@@ -600,7 +639,7 @@ jobs:
   diaggui_qualification:
     name: Qualify installed DiagGUI routes (${{ matrix.cell }})
     needs: [verify, build]
-    if: ${{ needs.verify.outputs.version == '0.2.4' }}
+    if: ${{ (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
@@ -698,6 +737,7 @@ jobs:
             --kind "$DISTRIBUTION")"
           artifact="$PAYLOAD_DIR/$artifact_name"
           "$python" source/scripts/ci/diaggui_qualification_evidence.py record \
+            --version "$EXPECTED_VERSION" \
             --cell "$CELL" \
             --source-sha "$SOURCE_SHA" \
             --payload-manifest "$PAYLOAD_MANIFEST" \
@@ -716,16 +756,16 @@ jobs:
   diaggui_qualification_evidence:
     name: Aggregate four DiagGUI qualification cells
     needs: [verify, build, diaggui_qualification]
-    if: ${{ !cancelled() && needs.verify.result == 'success' && needs.build.result == 'success' && (needs.verify.outputs.version != '0.2.4' || needs.diaggui_qualification.result == 'success') }}
+    if: ${{ !cancelled() && needs.verify.result == 'success' && needs.build.result == 'success' && ((needs.verify.outputs.version != '0.2.4' && needs.verify.outputs.version != '0.2.5') || needs.diaggui_qualification.result == 'success') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Mark historical release as having no DiagGUI lane
-        if: needs.verify.outputs.version != '0.2.4'
-        run: echo "DiagGUI qualification applies to v0.2.4 only"
+        if: (needs.verify.outputs.version != '0.2.4' && needs.verify.outputs.version != '0.2.5')
+        run: echo "DiagGUI qualification applies to v0.2.4 and v0.2.5 only"
 
       - name: Check out verified DiagGUI aggregate source
-        if: needs.verify.outputs.version == '0.2.4'
+        if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5')
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ needs.verify.outputs.source_sha }}
@@ -733,27 +773,27 @@ jobs:
           path: source
 
       - name: Set up Python for DiagGUI aggregate
-        if: needs.verify.outputs.version == '0.2.4'
+        if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5')
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.11"
 
       - name: Download all DiagGUI cell evidence
-        if: needs.verify.outputs.version == '0.2.4'
+        if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5')
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           pattern: release-diaggui-qualification-${{ needs.verify.outputs.source_sha }}-*
           path: ${{ runner.temp }}/diaggui-cells
 
       - name: Download detached DiagGUI candidate manifest
-        if: needs.verify.outputs.version == '0.2.4'
+        if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5')
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: release-sidecars-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-sidecars
 
       - name: Assert four candidate-bound DiagGUI reports
-        if: needs.verify.outputs.version == '0.2.4'
+        if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5')
         env:
           SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
           PAYLOAD_MANIFEST: ${{ runner.temp }}/release-sidecars/distribution-sha256.json
@@ -761,17 +801,156 @@ jobs:
           OUTPUT: ${{ runner.temp }}/diaggui-qualification-manifest.json
         run: |
           python source/scripts/ci/diaggui_qualification_evidence.py aggregate \
+            --version "${{ needs.verify.outputs.version }}" \
             --source-sha "$SOURCE_SHA" \
             --payload-manifest "$PAYLOAD_MANIFEST" \
             --reports-dir "$REPORTS_DIR" \
             --output "$OUTPUT"
 
       - name: Upload DiagGUI qualification manifest
-        if: needs.verify.outputs.version == '0.2.4'
+        if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5')
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: v024-diaggui-qualification-evidence-${{ needs.verify.outputs.source_sha }}
+          name: v${{ needs.verify.outputs.version == '0.2.4' && '024' || '025' }}-diaggui-qualification-evidence-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/diaggui-qualification-manifest.json
+          if-no-files-found: error
+          retention-days: 90
+
+  cross_format_io:
+    name: Qualify installed cross-format I/O (${{ matrix.cell }})
+    needs: [verify, build]
+    if: ${{ needs.verify.outputs.version == '0.2.5' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {cell: base-3.11-wheel, mode: base, python: '3.11', distribution: wheel}
+          - {cell: base-3.11-sdist, mode: base, python: '3.11', distribution: sdist}
+          - {cell: base-3.12-wheel, mode: base, python: '3.12', distribution: wheel}
+          - {cell: base-3.12-sdist, mode: base, python: '3.12', distribution: sdist}
+          - {cell: optional-3.11-wheel, mode: optional, python: '3.11', distribution: wheel}
+          - {cell: optional-3.11-sdist, mode: optional, python: '3.11', distribution: sdist}
+          - {cell: optional-3.12-wheel, mode: optional, python: '3.12', distribution: wheel}
+          - {cell: optional-3.12-sdist, mode: optional, python: '3.12', distribution: sdist}
+    steps:
+      - name: Check out verified I/O source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.verify.outputs.source_sha }}
+          fetch-depth: 1
+          path: source
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Download same-run candidate payload
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: release-payload-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/release-payload
+
+      - name: Download detached candidate manifest
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/release-sidecars
+
+      - name: Install digest-checked candidate and run selected public regressions
+        env:
+          CELL: ${{ matrix.cell }}
+          MODE: ${{ matrix.mode }}
+          DISTRIBUTION: ${{ matrix.distribution }}
+          SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          PAYLOAD_DIR: ${{ runner.temp }}/release-payload
+          PAYLOAD_MANIFEST: ${{ runner.temp }}/release-sidecars/distribution-sha256.json
+          JUNIT: ${{ runner.temp }}/cross-format-io-report/pytest.xml
+          REPORT: ${{ runner.temp }}/cross-format-io-report/cross-format-io.json
+        run: |
+          python -m venv "${{ runner.temp }}/cross-format-io-venv"
+          python="${{ runner.temp }}/cross-format-io-venv/bin/python"
+          artifact_name="$(python source/scripts/ci/validate_release_payload.py \
+            --payload-dir "$PAYLOAD_DIR" --manifest "$PAYLOAD_MANIFEST" \
+            --expected-version 0.2.5 --source-sha "$SOURCE_SHA" --kind "$DISTRIBUTION")"
+          artifact="$PAYLOAD_DIR/$artifact_name"
+          if [[ "$MODE" == optional ]]; then
+            "$python" -m pip install --disable-pip-version-check --no-cache-dir "${artifact}[io,netcdf4,zarr]" pytest
+          else
+            "$python" -m pip install --disable-pip-version-check --no-cache-dir "$artifact" pytest
+          fi
+          "$python" -m pip check
+          mkdir -p "${{ runner.temp }}/cross-format-io-tests/io" "$(dirname "$JUNIT")"
+          cp source/tests/io/test_optional_deps.py source/tests/io/test_hdf5_manifest_collection_integrity.py \
+            source/tests/io/test_gbd_gl500_header_validation.py \
+            source/tests/io/test_netcdf4_matrix_validation.py source/tests/io/test_zarr_reader.py \
+            source/tests/io/test_tdms_invalid_increment_contract.py \
+            "${{ runner.temp }}/cross-format-io-tests/io/"
+          mapfile -t tests < <(python source/scripts/ci/v025_cross_format_io_evidence.py test-nodes --mode "$MODE" | sed "s#^#cross-format-io-tests/#")
+          cd "${{ runner.temp }}"
+          GWEXPY_ALLOW_ZARR=1 "$python" -m pytest --import-mode=importlib --junitxml="$JUNIT" -q "${tests[@]}"
+          "$python" "$GITHUB_WORKSPACE/source/scripts/ci/v025_cross_format_io_evidence.py" record \
+            --cell "$CELL" --source-sha "$SOURCE_SHA" --payload-manifest "$PAYLOAD_MANIFEST" \
+            --artifact "$artifact" --junit "$JUNIT" --report "$REPORT"
+
+      - name: Upload cross-format I/O cell evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: release-cross-format-io-${{ needs.verify.outputs.source_sha }}-${{ matrix.cell }}
+          path: ${{ runner.temp }}/cross-format-io-report/cross-format-io.json
+          if-no-files-found: error
+          retention-days: 90
+
+  cross_format_io_evidence:
+    name: Aggregate eight cross-format I/O cells
+    needs: [verify, build, cross_format_io]
+    if: ${{ !cancelled() && needs.verify.result == 'success' && needs.build.result == 'success' && (needs.verify.outputs.version != '0.2.5' || needs.cross_format_io.result == 'success') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Mark historical release as having no cross-format I/O lane
+        if: needs.verify.outputs.version != '0.2.5'
+        run: echo "Cross-format I/O qualification applies to v0.2.5 only"
+
+      - name: Check out verified I/O aggregate source
+        if: needs.verify.outputs.version == '0.2.5'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.verify.outputs.source_sha }}
+          fetch-depth: 1
+          path: source
+
+      - name: Download all I/O cell reports
+        if: needs.verify.outputs.version == '0.2.5'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: release-cross-format-io-${{ needs.verify.outputs.source_sha }}-*
+          path: ${{ runner.temp }}/cross-format-io-cells
+
+      - name: Download detached candidate manifest
+        if: needs.verify.outputs.version == '0.2.5'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/release-sidecars
+
+      - name: Assert eight candidate-bound I/O reports
+        if: needs.verify.outputs.version == '0.2.5'
+        run: |
+          python source/scripts/ci/v025_cross_format_io_evidence.py aggregate \
+            --source-sha "${{ needs.verify.outputs.source_sha }}" \
+            --payload-manifest "${{ runner.temp }}/release-sidecars/distribution-sha256.json" \
+            --reports-dir "${{ runner.temp }}/cross-format-io-cells" \
+            --output "${{ runner.temp }}/cross-format-io-manifest.json"
+
+      - name: Upload I/O qualification manifest
+        if: needs.verify.outputs.version == '0.2.5'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: v025-cross-format-io-evidence-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/cross-format-io-manifest.json
           if-no-files-found: error
           retention-days: 90
 
@@ -831,7 +1010,7 @@ jobs:
 
   publish:
     name: Publish verified artifacts to PyPI
-    needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, evidence]
+    needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, cross_format_io_evidence, evidence]
     if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
