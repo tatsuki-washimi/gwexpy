@@ -1,0 +1,71 @@
+schema: gwexpy-agent-documentation-review-fixes-v1
+date_utc: 2026-09-27
+status: ready_for_review
+source_base_sha: 81faac07877319e05fec996286a246af7054d2b8
+release_decision: HOLD
+review_findings:
+  - DOC-1: Scoped v0.2.5 English release claims to the qualified #751 routes.
+  - DOC-2: Added Japanese gettext entries for the heading, lead, Fixed label, and six bullets.
+  - RS-01: Documented fail-closed recovery for a partial PyPI upload.
+source_evidence:
+  report_path: docs/developers/reports/2026-09-27-public-io-cross-format-post-fix-report.md
+  report_sha256: 8861f05ed8f51ce85b88dc76815487917e7bd8959b4864fd07d6a9240f5232ad
+  review_pr: https://github.com/tatsuki-washimi/gwexpy/pull/753
+checks:
+  - command: >-
+      conda run -n gwexpy pytest -q
+      tests/docs/test_docs_redesign_release_facts.py
+      tests/docs/test_docs_redesign_release_status.py
+      tests/docs/test_root_roadmap_contract.py
+      tests/docs/test_v024_publication_status.py
+      tests/test_gen_release_notes.py
+      tests/test_check_release_metadata_script.py
+    result: exit 0; 79 passed
+  - command: conda run -n gwexpy python scripts/check_release_metadata.py
+    result: exit 0; metadata consistency check passed
+  - command: >-
+      conda run -n gwexpy pybabel compile
+      -i docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po
+      -o /tmp/v025-review-fixes-changelog.mo
+    result: >-
+      exit 1; five historical placeholder incompatibilities outside the v0.2.5
+      entries; the catalog at source_base_sha reports the same five errors.
+      The focused gettext test compiles the full catalog with Babel in memory
+      and verifies Japanese translations through gettext.GNUTranslations.
+  - command: conda run -n gwexpy ruff check tests/docs/test_docs_redesign_release_facts.py
+    result: exit 0; all checks passed
+  - command: conda run -n gwexpy ruff format --check tests/docs/test_docs_redesign_release_facts.py
+    result: exit 0; one file already formatted
+  - command: git diff --check
+    result: exit 0
+security_follow_up:
+  scope: >-
+    RELEASING.md and tests/test_publish_release_workflow.py are in the
+    v0.2.5 release-security lane; this manifest is in the documentation lane.
+  checks:
+    - command: >-
+        conda run -n gwexpy pytest -q
+        tests/test_publish_release_workflow.py tests/test_release_contracts.py
+      result: exit 0; 67 passed
+    - command: >-
+        conda run -n gwexpy pytest -q
+        tests/test_publish_release_workflow.py::test_partial_pypi_upload_recovery_requires_same_run_bytes_and_review
+        tests/test_release_contracts.py::test_v025_review_lanes_cover_every_change_since_peeled_v024_source
+      result: exit 0; 2 passed
+    - command: conda run -n gwexpy ruff check tests/test_publish_release_workflow.py
+      result: exit 0; all checks passed
+    - command: conda run -n gwexpy ruff format --check tests/test_publish_release_workflow.py
+      result: exit 0; one file already formatted
+    - command: git diff --check
+      result: exit 0
+omitted:
+  - Full Sphinx build deferred as requested for this narrow review fix.
+  - Candidate and tag qualification remain subject to the release plan.
+files_changed:
+  - RELEASING.md
+  - CHANGELOG.md
+  - release_notes/v0.2.5.md
+  - docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po
+  - tests/docs/test_docs_redesign_release_facts.py
+  - tests/test_publish_release_workflow.py
+  - docs/developers/plans/manifests/audit-manifest-v0.2.5-documentation-review-fixes.yaml

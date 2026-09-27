@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version:  GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 16:50+0900\n"
-"PO-Revision-Date: 2026-09-01 00:00+0000\n"
+"PO-Revision-Date: 2026-09-27 00:00+0000\n"
 "Last-Translator: GWexpy Developers\n"
 "Language: ja\n"
 "Language-Team: Japanese\n"
@@ -50,6 +50,71 @@ msgid ""
 msgstr ""
 "v0.2.2 リリースは [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2) から取得でき、"
 "[Zenodo DOI 10.5281/zenodo.22228340](https://doi.org/10.5281/zenodo.22228340) でアーカイブされています。"
+
+#: ../../../CHANGELOG.md:3
+msgid "[0.2.5] - 2026-09-27"
+msgstr "[0.2.5] - 2026年9月27日"
+
+#: ../../../CHANGELOG.md:5
+msgid ""
+"This patch fixes supported NetCDF4 and Zarr matrix value, axis, and unit "
+"handling; HDF5 manifest integrity; TDMS waveform-increment and GBD header "
+"validation; and audio registry tag provenance. The supported optional-backend "
+"routes report a backend-specific `ImportError` when their package is absent."
+msgstr ""
+"このパッチリリースでは、対応する NetCDF4 と Zarr の行列における値、軸、単位の処理、"
+"HDF5 のマニフェストの整合性、TDMS の波形間隔と GBD のヘッダー検証、"
+"音声形式のレジストリが取得したタグの出所を修正しました。"
+"対応するオプション依存の経路では、必要なパッケージがない場合、"
+"バックエンド固有の `ImportError` を返します。"
+
+#: ../../../CHANGELOG.md:12
+msgid ""
+"**NetCDF4 matrices and axes**: Reject malformed matrix topology, unsafe "
+"heterogeneous dtype conversion, and irregular legacy time axes; retain cell "
+"units in supported matrix writes and legacy reads."
+msgstr ""
+"**NetCDF4 の行列と軸**：不正な行列構造、値が失われる異種 dtype 変換、"
+"および旧形式の不規則な時間軸を拒否します。"
+"対応する行列の書き込みと旧形式の読み込みでは、セルの単位を保持します。"
+
+#: ../../../CHANGELOG.md:13
+msgid ""
+"**Zarr values and metadata**: Retain tested integer and complex samples, "
+"axes, and units; reject unsafe mixed-dtype conversion and inconsistent axes "
+"in supported stores."
+msgstr ""
+"**Zarr の値とメタデータ**：検証済みの整数値と複素数値、軸、単位を保持します。"
+"対応するストアでは、値が失われる混合 dtype 変換と整合しない軸を拒否します。"
+
+#: ../../../CHANGELOG.md:14
+msgid ""
+"**HDF5 manifest-backed collections**: Reject unreadable, missing, or "
+"substituted payloads while preserving tolerant manifest-free discovery."
+msgstr ""
+"**HDF5 のマニフェスト付きコレクション**：読めない、欠落した、または差し替えられた"
+"ペイロードを拒否します。マニフェストのない場合の探索は従来どおり許容します。"
+
+#: ../../../CHANGELOG.md:15
+msgid ""
+"**TDMS and GL500 GBD validation**: Reject absent or invalid waveform "
+"increments and malformed required GL500 header fields within the tested "
+"firmware scope."
+msgstr ""
+"**TDMS と GL500 GBD の検証**：波形間隔が欠落または不正な TDMS データと、"
+"検証済みファームウェアの範囲で必須ヘッダー項目が不正な GL500 データを拒否します。"
+
+#: ../../../CHANGELOG.md:16
+msgid "**Audio registry tags**: Retain available WAV and FLAC tag metadata in provenance."
+msgstr "**音声形式のレジストリのタグ**：取得できた WAV と FLAC のタグ情報を出所情報に保持します。"
+
+#: ../../../CHANGELOG.md:17
+msgid ""
+"**Optional backends**: Supported public Zarr and NetCDF4 routes raise a "
+"backend-specific `ImportError` when the required package is absent."
+msgstr ""
+"**オプションのバックエンド**：対応する公開 Zarr 経路と NetCDF4 経路では、"
+"必要なパッケージがない場合にバックエンド固有の `ImportError` を送出します。"
 
 #: ../../../CHANGELOG.md
 msgid "[0.2.4] - 2026-09-26"
@@ -2449,6 +2514,7 @@ msgstr ""
 "**time**: `to_gps()` にオプトインの `dtype=` 出力モードを追加。デフォルトは引き続き GWpy 互換で、`dtype=float` / "
 "`dtype=\"float\"` は通常の float 値を返し、`dtype=\"quantity\"` は `.times` と直接比較できる秒単位の Quantity を返す。"
 
+#: ../../../CHANGELOG.md:10
 #: ../gwexpy-ja-v0111-v0114-release-notes/CHANGELOG.md:1106
 #: ../gwexpy-ja-v0111-v0114-release-notes/CHANGELOG.md:1133
 #: ../gwexpy-ja-v0111-v0114-release-notes/CHANGELOG.md:1230

@@ -55,6 +55,40 @@ After a tag push, the strict workflow must pass verify, build, smoke, and
 publish.  Confirm the PyPI distribution/version, GitHub Release, Zenodo, and
 conda follow-up state before declaring release acceptance.
 
+## Partial PyPI upload recovery
+
+The strict publish job uploads the wheel and sdist in one action, but PyPI
+accepts the files individually. If that job fails after either file appears
+on PyPI, stop release acceptance and keep the decision on HOLD. A failed job
+is not proof that neither file was published.
+
+1. Record the failed strict run ID, source `R`, final tag and peeled SHA, and
+   the IDs and digests of its `release-payload-<R>` and
+   `release-sidecars-<R>` artifacts. Preserve those same-run artifacts,
+   `distribution-sha256.json`, and all gate reports and aggregate evidence.
+   Do not move or replace `R` or its tag.
+2. Read the PyPI file list for the exact version, including each filename and
+   SHA-256 digest (`urls[].filename` and `urls[].digests.sha256` in the PyPI
+   version JSON). Compare it with both `files.wheel` and `files.sdist` in the
+   failed run's detached `distribution-sha256.json`. Verify the manifest's
+   source SHA is `R` and its hashes match the preserved same-run payload.
+   Record the PyPI response and comparison as recovery evidence. Any unknown
+   file, mismatched hash, or uncertain artifact identity keeps the release on
+   HOLD for investigation.
+3. If exactly one distribution is present with the expected hash, require an
+   explicit reviewed release-owner decision before any attempt to upload the
+   missing distribution. A completion, if approved, may use only the missing
+   file from that failed run's verified payload; record the approval, upload
+   method, and resulting PyPI filename/hash readback. Keep acceptance on HOLD
+   until both expected files and hashes are present and the remaining release
+   checks are complete. If those bytes cannot be recovered and verified, keep
+   the version on HOLD and decide the next release path with the release owner.
+
+Do not blindly rerun the strict publish job: PyPI will not replace an existing
+filename, and a new run builds a new payload. Do not rebuild the missing file
+or use `skip-existing` to substitute a fresh distribution. Neither action
+proves that the published wheel and sdist came from the same qualified run.
+
 ## Frozen source, payload, and evidence
 
 Both a candidate dispatch and a tag push run the frozen-tip validator.  It

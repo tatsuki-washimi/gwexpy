@@ -758,6 +758,39 @@ def test_releasing_manual_dispatch_supplies_v023_review_evidence():
     ) in releasing
 
 
+def test_partial_pypi_upload_recovery_requires_same_run_bytes_and_review():
+    releasing = (WORKFLOW.parents[2] / "RELEASING.md").read_text(encoding="utf-8")
+    procedure = releasing.split("## Partial PyPI upload recovery\n", maxsplit=1)[
+        1
+    ].split("\n## Frozen source, payload, and evidence", maxsplit=1)[0]
+    normalized = re.sub(r"\s+", " ", procedure)
+
+    for required in (
+        "stop release acceptance",
+        "decision on HOLD",
+        "failed strict run ID",
+        "source `R`",
+        "final tag and peeled SHA",
+        "`release-payload-<R>`",
+        "`release-sidecars-<R>`",
+        "all gate reports and aggregate evidence",
+        "`urls[].filename` and `urls[].digests.sha256`",
+        "`files.wheel` and `files.sdist`",
+        "manifest's source SHA is `R`",
+        "preserved same-run payload",
+        "explicit reviewed release-owner decision",
+        "only the missing file from that failed run's verified payload",
+        "both expected files and hashes are present",
+        "Do not blindly rerun the strict publish job",
+        "Do not rebuild the missing file",
+        "`skip-existing`",
+    ):
+        assert required in normalized
+    assert normalized.index("Compare it with both") < normalized.index(
+        "explicit reviewed release-owner decision"
+    )
+
+
 def test_workflow_is_payload_only_locked_and_collects_same_run_evidence():
     workflow = read_workflow()
     assert "--require-hashes -r requirements/release-build.txt" in workflow
