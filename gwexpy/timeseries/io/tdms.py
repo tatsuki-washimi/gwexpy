@@ -121,9 +121,18 @@ def read_timeseriesdict_tdms(
             props = channel.properties
 
             # Timing
-            dt = props.get("wf_increment", 1.0)
-            if dt == 0 or np.isinf(dt) or np.isnan(dt):
-                dt = 1.0  # fallback
+            dt = props.get("wf_increment")
+            is_boolean_increment = isinstance(dt, (bool, np.bool_))
+            if not is_boolean_increment:
+                try:
+                    dt = float(dt)
+                except (TypeError, ValueError, OverflowError):
+                    dt = float("nan")
+            if is_boolean_increment or not np.isfinite(dt) or dt <= 0:
+                raise ValueError(
+                    f"TDMS channel {full_name!r} has a missing or invalid "
+                    "'wf_increment'; expected a positive, finite sample interval"
+                )
 
             t0 = props.get("wf_start_time", 0.0)
             if (
