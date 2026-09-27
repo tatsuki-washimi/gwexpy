@@ -274,18 +274,61 @@ def _legacy_timing(ds, tc) -> tuple[float, float]:
         )
         t0_datetime = _dt.datetime.fromtimestamp(t0_unix_ns / 1e9, tz=_dt.UTC)
         t0 = datetime_to_gps(t0_datetime)
-        dt = (
-            float(
-                np.median(np.diff(time_vals.astype("datetime64[ns]").astype(np.int64)))
-            )
-            / 1e9
-            if len(time_vals) > 1
-            else 1.0
-        )
+        intervals = np.diff(time_vals.astype("datetime64[ns]").astype(np.int64))
+        if intervals.size and (
+            np.any(intervals <= 0) or np.any(intervals != intervals[0])
+        ):
+            raise ValueError("irregular NetCDF time coordinate cannot be represented")
+        dt = float(intervals[0]) / 1e9 if intervals.size else 1.0
     else:
         numeric = np.asarray(time_vals, dtype=np.float64)
         t0 = float(numeric[0])
-        dt = float(np.median(np.diff(numeric))) if len(numeric) > 1 else 1.0
+        intervals = np.diff(numeric)
+        if intervals.size:
+            if not np.all(np.isfinite(intervals)) or np.any(intervals <= 0):
+                raise ValueError(
+                    "irregular NetCDF time coordinate cannot be represented"
+                )
+            # Every interval is finite even when subtracting the endpoints
+            # would overflow float64.
+            estimate = float(intervals[0])
+            # Try cadence precision, not epoch-sized ULP tolerance.  Decimal
+            # legacy writers often rounded a regular cadence at each timestamp.
+            # Accept it only if a single finite cadence reproduces every stored
+            # coordinate exactly; one displaced sample must fail.
+            sample_numbers = np.arange(len(numeric))
+
+            def matches(candidate: float) -> bool:
+                if not math.isfinite(candidate) or candidate <= 0:
+                    return False
+                with np.errstate(over="ignore", invalid="ignore"):
+                    offsets = sample_numbers * candidate
+                    expected = t0 + offsets
+                if np.all(np.isfinite(expected)):
+                    return bool(np.array_equal(numeric, expected))
+                # The offset can overflow before addition to a negative t0.
+                extended = np.longdouble(t0) + sample_numbers.astype(
+                    np.longdouble
+                ) * np.longdouble(candidate)
+                return bool(np.array_equal(numeric, extended.astype(np.float64)))
+
+            candidates = (
+                estimate,
+                *(float(f"{estimate:.{digits}g}") for digits in range(1, 18)),
+            )
+            matched_dt = next(
+                (candidate for candidate in candidates if matches(candidate)),
+                None,
+            )
+            if matched_dt is None:
+                raise ValueError(
+                    "irregular NetCDF time coordinate cannot be represented"
+                )
+            dt = matched_dt
+        else:
+            dt = 1.0
+    if not math.isfinite(t0) or not math.isfinite(dt) or dt <= 0:
+        raise ValueError("invalid NetCDF time coordinate")
     return t0, dt
 
 

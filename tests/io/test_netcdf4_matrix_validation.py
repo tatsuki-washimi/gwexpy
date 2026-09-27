@@ -89,6 +89,23 @@ def test_public_matrix_read_rejects_bad_topology_or_units(tmp_path, mutation, me
         TimeSeriesMatrix.read(path, format="nc")
 
 
+@pytest.mark.parametrize("reader", [TimeSeries, TimeSeriesDict, TimeSeriesMatrix])
+@pytest.mark.parametrize(
+    "times",
+    [
+        np.array([0, 1, 2, 4, 5], dtype=float),
+        np.array([0, 1, 2, 4, 5], dtype="timedelta64[s]") + np.datetime64("2020-01-01"),
+    ],
+)
+def test_public_legacy_read_rejects_irregular_time(tmp_path, reader, times):
+    path = tmp_path / "irregular.nc"
+    xr.Dataset(
+        {"signal": ("time", [10, 11, 12, 14, 15])}, coords={"time": times}
+    ).to_netcdf(path)
+    with pytest.raises(ValueError, match="irregular.*time"):
+        reader.read(path, format="nc")
+
+
 def test_public_matrix_read_rejects_partially_missing_cell_metadata(tmp_path):
     path = tmp_path / "partial.nc"
     TimeSeriesMatrix(np.ones((1, 1, 3)), t0=0, dt=1).write(path, format="nc")
@@ -99,6 +116,17 @@ def test_public_matrix_read_rejects_partially_missing_cell_metadata(tmp_path):
     ds.to_netcdf(path, mode="w")
     with pytest.raises(ValueError, match="missing.*row"):
         TimeSeriesMatrix.read(path, format="nc")
+
+
+def test_public_read_rejects_one_ulp_numeric_gap_at_gps_epoch(tmp_path):
+    path = tmp_path / "one-ulp-gap.nc"
+    epoch = 1e9
+    times = np.array([epoch, epoch + 1, epoch + 2 + np.spacing(epoch), epoch + 3])
+    xr.Dataset({"signal": ("time", [1, 2, 3, 4])}, coords={"time": times}).to_netcdf(
+        path
+    )
+    with pytest.raises(ValueError, match="irregular.*time"):
+        TimeSeries.read(path, format="nc")
 
 
 @pytest.mark.parametrize("axis", ["row", "col"])
@@ -192,6 +220,30 @@ def test_public_matrix_read_handles_heterogeneous_numeric_cell_dtypes(
         return
     loaded = TimeSeriesMatrix.read(path, format="nc")
     np.testing.assert_array_equal(loaded.value[0, 1], [1.5, 2.25, 3.75])
+
+
+def test_public_read_accepts_regular_numeric_axis_with_overflowing_endpoints(tmp_path):
+    path = tmp_path / "large-regular.nc"
+    times = (
+        np.longdouble(-9e307) + np.arange(4, dtype=np.longdouble) * np.longdouble(6e307)
+    ).astype(np.float64)
+    xr.Dataset(
+        {"signal": ("time", [1.0, 2.0, 3.0, 4.0])}, coords={"time": times}
+    ).to_netcdf(path)
+    loaded = TimeSeries.read(path, format="nc")
+    np.testing.assert_array_equal(loaded.value, [1.0, 2.0, 3.0, 4.0])
+    assert np.isclose(loaded.dt.value, 6e307)
+
+
+def test_public_read_accepts_regular_high_epoch_decimal_cadence(tmp_path):
+    path = tmp_path / "regular-high-epoch.nc"
+    times = 1e9 + np.arange(5) * 0.125
+    xr.Dataset({"signal": ("time", np.arange(5))}, coords={"time": times}).to_netcdf(
+        path
+    )
+    loaded = TimeSeries.read(path, format="nc")
+    assert loaded.t0.value == 1e9
+    assert loaded.dt.value == 0.125
 
 
 def test_public_matrix_read_rejects_empty_declared_matrix(tmp_path):
