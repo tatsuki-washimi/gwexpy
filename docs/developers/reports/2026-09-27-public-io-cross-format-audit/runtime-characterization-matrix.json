@@ -1,0 +1,1493 @@
+{
+  "schema": "gwexpy-public-io-runtime-characterization-v2",
+  "source_baseline": {
+    "repository": "tatsuki-washimi/gwexpy",
+    "sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+    "version": "0.2.4"
+  },
+  "scenario_count": 74,
+  "status_counts": {
+    "CONFIRMED_CORRECTNESS_DEFECT": 36,
+    "CONFIRMED_COMPATIBILITY_BEHAVIOR": 6,
+    "CONFIRMED_INTENTIONAL_BEHAVIOR": 8,
+    "REFUTED_STATIC_SUSPICION": 12,
+    "BLOCKED": 12
+  },
+  "scope_rule": "Only formats with at least one measured public scenario are AUDITED. Other canonical formats are INVENTORY_ONLY in runtime-scope-inventory.json, not BLOCKED.",
+  "finding_status_enum": [
+    "CONFIRMED_CORRECTNESS_DEFECT",
+    "CONFIRMED_COMPATIBILITY_BEHAVIOR",
+    "CONFIRMED_INTENTIONAL_BEHAVIOR",
+    "REFUTED_STATIC_SUSPICION",
+    "BLOCKED"
+  ],
+  "blocked_reason_enum": [
+    "dependency",
+    "missing_fixture",
+    "missing_authority",
+    "external_environment",
+    "ambiguous_contract",
+    "other"
+  ],
+  "impact_class_enum": [
+    "silent_value_corruption",
+    "silent_axis_corruption",
+    "silent_metadata_corruption",
+    "silent_entry_loss",
+    "fabricated_metadata",
+    "explicit_error",
+    "api_route_mismatch"
+  ],
+  "authority_order": [
+    "documented public GWexpy contract",
+    "file-format and native-library semantics",
+    "finite normal GWpy behavior",
+    "existing GWexpy compatibility policy",
+    "repository tests and documentation"
+  ],
+  "environments_ref": "environment-matrix.json",
+  "commands": [
+    {
+      "id": "A-NETCDF-PRESENT",
+      "environment": "present",
+      "cwd": "repository root checked out at source_baseline.sha",
+      "command": "rtk proxy env PYTHONPATH=. /home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/present/bin/python docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-a/netcdf_probe.py"
+    },
+    {
+      "id": "A-ZARR-PRESENT",
+      "environment": "present",
+      "cwd": "repository root checked out at source_baseline.sha",
+      "command": "rtk proxy env PYTHONPATH=. /home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/present/bin/python docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-a/zarr_probe.py"
+    },
+    {
+      "id": "A-OPTIONAL-BASE",
+      "environment": "base",
+      "cwd": "repository root checked out at source_baseline.sha",
+      "command": "After A-NETCDF-PRESENT and A-ZARR-PRESENT, run: rtk proxy env PYTHONPATH=. /home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/base/bin/python docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-a/missing_probe.py"
+    },
+    {
+      "id": "B-TDMS-PRESENT",
+      "environment": "present",
+      "cwd": "integration worktree; PYTHONPATH points to source_baseline.sha checkout",
+      "command": "rtk proxy env PYTHONPATH=/home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/A-netcdf-zarr /home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/present/bin/python docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-b/lane_b_probe.py --family tdms --out docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-b/fixtures/tdms > docs/developers/reports/2026-09-27-public-io-cross-format-audit/evidence/lane-b/tdms.jsonl"
+    },
+    {
+      "id": "B-TDMS-BASE",
+      "environment": "base",
+      "cwd": "repository root checked out at source_baseline.sha",
+      "command": "rtk proxy env PYTHONPATH=. /home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/base/bin/python docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-b/lane_b_probe.py --family tdms_missing --out docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-b/fixtures/tdms"
+    },
+    {
+      "id": "B-GBD-PRESENT",
+      "environment": "present",
+      "cwd": "repository root checked out at source_baseline.sha",
+      "command": "rtk proxy env PYTHONPATH=. /home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/present/bin/python docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-b/lane_b_probe.py --family gbd --out docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-b/fixtures/gbd"
+    },
+    {
+      "id": "B-GBD-BASE",
+      "environment": "base",
+      "cwd": "repository root checked out at source_baseline.sha",
+      "command": "rtk proxy env PYTHONPATH=. /home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/base/bin/python docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-b/lane_b_probe.py --family gbd --out docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-b/fixtures/gbd_base"
+    },
+    {
+      "id": "B-ATS-PRESENT",
+      "environment": "present",
+      "cwd": "repository root checked out at source_baseline.sha",
+      "command": "rtk proxy env PYTHONPATH=. /home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/present/bin/python docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-b/lane_b_probe.py --family ats --out docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-b/fixtures/ats"
+    },
+    {
+      "id": "B-ATS-BASE",
+      "environment": "base",
+      "cwd": "repository root checked out at source_baseline.sha",
+      "command": "rtk proxy env PYTHONPATH=. /home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/base/bin/python docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-b/lane_b_probe.py --family ats --out docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-b/fixtures/ats_base"
+    },
+    {
+      "id": "B-MATRIX-METADATA-PRESENT",
+      "environment": "present",
+      "cwd": "repository root checked out at source_baseline.sha; run B-TDMS-PRESENT and B-GBD-PRESENT first",
+      "command": "rtk proxy env PYTHONPATH=. /home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/present/bin/python docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-b/matrix_metadata.py"
+    },
+    {
+      "id": "B-GWPY-ORACLE-PRESENT",
+      "environment": "present",
+      "cwd": "repository root checked out at source_baseline.sha; run B-TDMS-PRESENT, B-GBD-PRESENT and B-ATS-PRESENT first",
+      "command": "rtk proxy env PYTHONPATH=. /home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/present/bin/python docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-b/gwpy_oracle.py"
+    },
+    {
+      "id": "C-PRESENT",
+      "environment": "present",
+      "cwd": "repository root checked out at source_baseline.sha",
+      "command": "rtk proxy env PYTHONPATH=. /home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/present/bin/python docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-c/probe.py"
+    },
+    {
+      "id": "C-BASE",
+      "environment": "base",
+      "cwd": "repository root checked out at source_baseline.sha",
+      "command": "rtk proxy env PYTHONPATH=. /home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/base/bin/python docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-c/probe.py"
+    },
+    {
+      "id": "D-PRESENT",
+      "environment": "present",
+      "cwd": "repository root checked out at source_baseline.sha",
+      "command": "rtk proxy env PYTHONPATH=. /home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/present/bin/python docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-d/d_lane.py"
+    },
+    {
+      "id": "D-BASE",
+      "environment": "base",
+      "cwd": "repository root checked out at source_baseline.sha",
+      "command": "rtk proxy env PYTHONPATH=. /home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/base/bin/python docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-d/d_lane.py"
+    },
+    {
+      "id": "A-NETCDF-DTYPE-FOLLOWUP",
+      "environment": "present",
+      "cwd": "/home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/integration",
+      "command": "rtk proxy env PYTHONPATH=/home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/A-netcdf-zarr /home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/present/bin/python docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-a/heterogeneous_dtype_probe.py --out docs/developers/reports/2026-09-27-public-io-cross-format-audit/evidence/lane-a/heterogeneous_dtype.jsonl"
+    },
+    {
+      "id": "A-ZARR-FOLLOWUP",
+      "environment": "present",
+      "cwd": "integration worktree; PYTHONPATH points to source_baseline.sha checkout",
+      "command": "rtk proxy env PYTHONPATH=/home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/A-netcdf-zarr /home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/present/bin/python docs/developers/reports/2026-09-27-public-io-cross-format-audit/repro/lane-a/zarr_axis_units_multistore_probe.py --out docs/developers/reports/2026-09-27-public-io-cross-format-audit/evidence/lane-a/zarr_axis_units_multistore.jsonl"
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "NC-MATRIX-001",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_value_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "fixture": "netcdf_probe.py generates xarray/netCDF4 2x2 matrix with missing_cell.nc and only three cells",
+      "command_id": "A-NETCDF-PRESENT",
+      "oracle": "Independent xarray fixture and source-cell manifest",
+      "expected": "Reject incomplete topology before returning a complete-looking 2x2 matrix.",
+      "actual": "Returns shape (2,2,3); cell r1,c1 has no source assignment. Classification is based on accepted incomplete topology, not the incidental bytes in np.empty.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "NC-MATRIX-002",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_entry_loss",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "fixture": "duplicate_cell.nc contains a second variable at (r0,c0) with value 99 while original c00 has 11",
+      "command_id": "A-NETCDF-PRESENT",
+      "oracle": "Independent xarray source-cell inventory",
+      "expected": "Reject two source variables assigned to one matrix cell.",
+      "actual": "Returns the last value 99 at r0,c0, dropping the original value 11.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "NC-MATRIX-003",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_metadata_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "fixture": "same_key_different_index.nc and same_col_key_different_index.nc",
+      "command_id": "A-NETCDF-PRESENT",
+      "oracle": "Independent xarray cell key/index attributes",
+      "expected": "Reject one row or column key mapped to conflicting indices.",
+      "actual": "Returns a dense matrix and normalizes the conflicting axis labels, discarding source index meaning.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "NC-MATRIX-004",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_metadata_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "fixture": "different_key_same_index.nc and different_col_key_same_index.nc",
+      "command_id": "A-NETCDF-PRESENT",
+      "oracle": "Independent xarray cell key/index attributes",
+      "expected": "Reject distinct row or column keys assigned the same index.",
+      "actual": "Returns both keys in a dense output axis without preserving the contradictory source index mapping.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "NC-MATRIX-005",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_metadata_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "fixture": "negative_index.nc and negative_col_index.nc",
+      "command_id": "A-NETCDF-PRESENT",
+      "oracle": "Independent xarray cell index attributes",
+      "expected": "Reject a negative row or column index.",
+      "actual": "Returns a matrix with the affected axis reordered to include the negative-index key.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "NC-MATRIX-006",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_metadata_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "fixture": "sparse_index.nc, sparse_col_index.nc, out_of_range_index.nc, out_of_range_col_index.nc",
+      "command_id": "A-NETCDF-PRESENT",
+      "oracle": "Independent xarray cell index attributes",
+      "expected": "Reject sparse, nonzero-based, or out-of-range row/column indices.",
+      "actual": "Returns a dense matrix with the source index meaning dropped; all variants returned shape (2,2,3).",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "NC-MATRIX-007",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_metadata_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "fixture": "unit_mismatch.nc uses V for three cells and m for c11",
+      "command_id": "A-NETCDF-PRESENT",
+      "oracle": "Independent xarray variable unit attributes",
+      "expected": "Reject incompatible units or retain per-cell distinctions.",
+      "actual": "Returns all four cells labeled V; c11 value 22 is mislabeled as volts.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "NC-MATRIX-008",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "BLOCKED",
+      "blocked_reason": "missing_fixture",
+      "impact_class": null,
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "fixture": "Attempted per-cell sample-length mismatch on a shared sample dimension.",
+      "command_id": "A-NETCDF-PRESENT",
+      "oracle": "NetCDF shared dimension semantics",
+      "expected": "A valid fixture must reach the public reader with genuinely different cell lengths.",
+      "actual": "The shared sample dimension fixes one length; no valid independent fixture was found.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "NC-MATRIX-009",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "BLOCKED",
+      "blocked_reason": "missing_fixture",
+      "impact_class": null,
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "fixture": "Attempted distinct per-cell t0/dt attributes in the v2 matrix schema.",
+      "command_id": "A-NETCDF-PRESENT",
+      "oracle": "NetCDF v2 schema timing is file-global",
+      "expected": "A valid fixture must establish an authoritative separate cell axis.",
+      "actual": "Extra per-cell t0/dt attrs are ignored and do not establish distinct source axes.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "NC-AXIS-001",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_axis_corruption",
+      "public_entrypoint": "TimeSeries.read(path, format='nc') and auto; Dict and Matrix legacy routes also exercised",
+      "fixture": "Independent xarray legacy numeric coordinate [0,1,2,4,5] with values [10,11,12,14,15]",
+      "command_id": "A-NETCDF-PRESENT",
+      "oracle": "Source coordinate values read back independently with xarray",
+      "expected": "Preserve source times or explicitly reject irregular cadence.",
+      "actual": "Returned times are [0,1,2,3,4], compressing the source gap.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "NC-AXIS-002",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_axis_corruption",
+      "public_entrypoint": "TimeSeries.read(path, format='nc') and auto; Dict and Matrix legacy routes also exercised",
+      "fixture": "Independent xarray datetime64 axis has one 2-second gap.",
+      "command_id": "A-NETCDF-PRESENT",
+      "oracle": "Source datetime64 coordinates read back independently with xarray",
+      "expected": "Preserve the gap in source datetime coordinates or reject irregular cadence.",
+      "actual": "Returned GPS times advance by one second at every sample, compressing the gap.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "NC-MATRIX-UNIT-001",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_metadata_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.write(path, format='nc') and auto",
+      "fixture": "Write a one-cell TimeSeriesMatrix with unit V, then open the NetCDF with xarray.",
+      "command_id": "A-NETCDF-PRESENT",
+      "oracle": "Independent xarray inspection; single and Dict writer controls preserve V",
+      "expected": "Serialize source cell units V.",
+      "actual": "Explicit and auto Matrix writers store units as an empty string.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "NC-MATRIX-UNIT-002",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_metadata_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc') and auto",
+      "fixture": "Read a legacy NetCDF variable with units V into a Matrix cell.",
+      "command_id": "A-NETCDF-PRESENT",
+      "oracle": "Native xarray variable units; public single/Dict readers retain V",
+      "expected": "Retain the source cell unit V.",
+      "actual": "Matrix cell unit is empty.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "NC-DTYPE-001",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_value_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "fixture": "Independent xarray 1x2 matrix with int32 first cell [1, 2, 3] and float64 second cell [1.5, 2.25, 3.75].",
+      "command_id": "A-NETCDF-DTYPE-FOLLOWUP",
+      "oracle": "xarray native data variable dtypes and values",
+      "expected": "Preserve the second-cell float64 values or reject explicitly; do not return altered finite values.",
+      "actual": "Returns an int32 matrix with the second cell silently converted to [1, 2, 3].",
+      "evidence": "evidence/lane-a/heterogeneous_dtype.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "NC-ROUTE-001",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "REFUTED_STATIC_SUSPICION",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "TimeSeries, TimeSeriesDict and TimeSeriesMatrix explicit and auto routes",
+      "fixture": "Complete valid v2 NetCDF matrix and public-write control cases.",
+      "command_id": "A-NETCDF-PRESENT",
+      "oracle": "Independent xarray data and schema inspection",
+      "expected": "Public NetCDF routes should return declared classes and preserve valid values.",
+      "actual": "The exercised complete fixtures returned declared classes and correct values/labels.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "ZARR-DTYPE-001",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_value_corruption",
+      "public_entrypoint": "TimeSeries, TimeSeriesDict and TimeSeriesMatrix public explicit read/write routes",
+      "fixture": "Native Zarr int64 [9007199254740993,-9007199254740995,17] and independent native reads of public writes.",
+      "command_id": "A-ZARR-PRESENT",
+      "oracle": "Native Zarr array values and dtype",
+      "expected": "Preserve exact int64 values on read and write.",
+      "actual": "Values become float64 [9007199254740992,-9007199254740996,17], silently rounding two integers.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/zarr_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "ZARR-DTYPE-002",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_value_corruption",
+      "public_entrypoint": "TimeSeries, TimeSeriesDict and TimeSeriesMatrix public explicit read/write routes",
+      "fixture": "Native complex64/complex128 Zarr arrays with nonzero imaginary components and phases.",
+      "command_id": "A-ZARR-PRESENT",
+      "oracle": "Native Zarr real/imaginary arrays and phase",
+      "expected": "Preserve complex values or explicitly reject unsupported complex dtype.",
+      "actual": "Public read/write returns float64 real parts only and emits ComplexWarning.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/zarr_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "ZARR-DTYPE-003",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "BLOCKED",
+      "blocked_reason": "ambiguous_contract",
+      "impact_class": null,
+      "public_entrypoint": "TimeSeries, TimeSeriesDict and TimeSeriesMatrix public explicit read/write routes",
+      "fixture": "Native int16/int32/float32 Zarr arrays and public writes independently inspected.",
+      "command_id": "A-ZARR-PRESENT",
+      "oracle": "Native Zarr values and dtype",
+      "expected": "Whether dtype-only widening is a defect is unspecified when values remain exact.",
+      "actual": "These dtypes become float64 while representable values remain exact.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/zarr_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "ZARR-DTYPE-004",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "REFUTED_STATIC_SUSPICION",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "TimeSeries, TimeSeriesDict and TimeSeriesMatrix public explicit read/write routes",
+      "fixture": "Native float64 Zarr data [1.1,-2.2,3.3] and independent store inspection.",
+      "command_id": "A-ZARR-PRESENT",
+      "oracle": "Native Zarr values, dtype and axis metadata",
+      "expected": "Preserve float64 values and dtype.",
+      "actual": "Values, float64 dtype, axes and unit were retained.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/zarr_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "ZARR-AUTO-001",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "api_route_mismatch",
+      "public_entrypoint": "TimeSeries.read(path) auto-identification for a .zarr directory",
+      "fixture": "Native valid Zarr store directory native_int64.zarr.",
+      "command_id": "A-ZARR-PRESENT",
+      "oracle": "Public contract declares auto-identification; explicit TimeSeries format='zarr' succeeds",
+      "expected": "Auto route should identify and read a supported .zarr store.",
+      "actual": "Raises IsADirectoryError. TimeSeriesDict and TimeSeriesMatrix auto routes succeeded.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/zarr_present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "OPTIONAL-001",
+      "formats": [
+        "nc",
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_INTENTIONAL_BEHAVIOR",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "Explicit NetCDF/Zarr reads and writes in base profile",
+      "fixture": "Valid external NetCDF/Zarr stores and public values to write.",
+      "command_id": "A-OPTIONAL-BASE",
+      "oracle": "Contract unavailable_behavior=raises_import_error",
+      "expected": "Raise ImportError with install guidance when optional backend is absent.",
+      "actual": "All exercised explicit operations raise the documented ImportError.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/missing_base.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "OPTIONAL-002",
+      "formats": [
+        "nc",
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "api_route_mismatch",
+      "public_entrypoint": "TimeSeriesMatrix.read/write auto routes for .nc and .zarr",
+      "fixture": "A valid NetCDF and Zarr fixture plus Matrix write objects in the base profile.",
+      "command_id": "A-OPTIONAL-BASE",
+      "oracle": "Public contract declares auto identification and unavailable_behavior=raises_import_error",
+      "expected": "Surface the missing optional dependency as ImportError.",
+      "actual": "Four Matrix auto operations return a generic could-not-identify ValueError instead.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/missing_base.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "OPTIONAL-003",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "api_route_mismatch",
+      "public_entrypoint": "TimeSeries.read(path) auto-identification for a .zarr directory",
+      "fixture": "Valid native Zarr float64 and int64 stores in present and base profiles.",
+      "command_id": "A-OPTIONAL-BASE",
+      "oracle": "Contract auto-identification and explicit missing-dependency policy",
+      "expected": "Raise ImportError when Zarr is absent.",
+      "actual": "The single-series auto route raises IsADirectoryError in both profiles, masking dependency state.",
+      "evidence": "evidence/lane-a/report.md; evidence/lane-a/missing_base.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "TDMS-TIME-001",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_axis_corruption",
+      "public_entrypoint": "TimeSeries.read; Dict and Matrix public reads also exercised",
+      "fixture": "TDMS fixture has samples [11,13,17], channel G/C, no wf_increment.",
+      "command_id": "B-TDMS-PRESENT",
+      "oracle": "npTDMS native time_track; absent increment raises KeyError",
+      "expected": "Fail closed because sample interval is unavailable.",
+      "actual": "Returns dt=1.0 while preserving values and channel labels.",
+      "evidence": "evidence/lane-b/tdms.jsonl; evidence/lane-b/reassessment.md",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "TDMS-TIME-002",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_axis_corruption",
+      "public_entrypoint": "TimeSeries.read; Dict and Matrix public reads also exercised",
+      "fixture": "TDMS fixture with wf_increment=0 and three waveform values.",
+      "command_id": "B-TDMS-PRESENT",
+      "oracle": "npTDMS time_track gives [0,0,0].",
+      "expected": "Preserve the native zero spacing or reject invalid timing.",
+      "actual": "Returns dt=1.0.",
+      "evidence": "evidence/lane-b/tdms.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "TDMS-TIME-003",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "fabricated_metadata",
+      "public_entrypoint": "TimeSeries.read; Dict and Matrix public reads also exercised",
+      "fixture": "TDMS fixture with wf_increment=NaN.",
+      "command_id": "B-TDMS-PRESENT",
+      "oracle": "npTDMS native time_track returns NaN coordinates.",
+      "expected": "Do not silently replace malformed time metadata with a plausible finite interval.",
+      "actual": "Returns finite dt=1.0.",
+      "evidence": "evidence/lane-b/tdms.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "TDMS-TIME-004",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "fabricated_metadata",
+      "public_entrypoint": "TimeSeries.read; Dict and Matrix public reads also exercised",
+      "fixture": "TDMS fixture with wf_increment=+Inf.",
+      "command_id": "B-TDMS-PRESENT",
+      "oracle": "npTDMS native time_track returns [NaN,Inf,Inf].",
+      "expected": "Reject malformed/nonfinite sample interval.",
+      "actual": "Returns finite dt=1.0.",
+      "evidence": "evidence/lane-b/tdms.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "TDMS-TIME-005",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "fabricated_metadata",
+      "public_entrypoint": "TimeSeries.read; Dict and Matrix public reads also exercised",
+      "fixture": "TDMS fixture with wf_increment=-Inf.",
+      "command_id": "B-TDMS-PRESENT",
+      "oracle": "npTDMS native time_track returns [NaN,-Inf,-Inf].",
+      "expected": "Reject malformed/nonfinite sample interval.",
+      "actual": "Returns finite dt=1.0.",
+      "evidence": "evidence/lane-b/tdms.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "TDMS-TIME-006",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "REFUTED_STATIC_SUSPICION",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "TimeSeries.read; Dict and Matrix public reads also exercised",
+      "fixture": "TDMS wf_increment=.25, channel wf_start_time=2024-01-02T03:04:05.",
+      "command_id": "B-TDMS-PRESENT",
+      "oracle": "npTDMS waveform coordinates and source channel properties",
+      "expected": "Retain interval, timestamp and values.",
+      "actual": "dt=.25, GPS t0=1388199863, values and channel naming match.",
+      "evidence": "evidence/lane-b/tdms.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "TDMS-TIME-007",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "BLOCKED",
+      "blocked_reason": "ambiguous_contract",
+      "impact_class": null,
+      "public_entrypoint": "TimeSeries.read(..., format='tdms')",
+      "fixture": "Channel wf_start_time absent; custom root DateTime present.",
+      "command_id": "B-TDMS-PRESENT",
+      "oracle": "npTDMS supplies relative channel time; NI docs do not define this custom root DateTime as channel acquisition time.",
+      "expected": "Contract does not resolve whether this root property is authoritative channel time.",
+      "actual": "GWexpy uses root DateTime as the channel t0.",
+      "evidence": "evidence/lane-b/tdms.jsonl; evidence/lane-b/reassessment.md",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "TDMS-TIME-008",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "BLOCKED",
+      "blocked_reason": "ambiguous_contract",
+      "impact_class": null,
+      "public_entrypoint": "TimeSeries.read(..., format='tdms')",
+      "fixture": "wf_increment=.25; channel wf_start_time and root DateTime absent.",
+      "command_id": "B-TDMS-PRESENT",
+      "oracle": "npTDMS time_track returns relative coordinates [0,.25,.5]; the public contract does not define missing absolute epoch handling.",
+      "expected": "Resolve whether to retain relative zero origin or reject missing absolute epoch.",
+      "actual": "GWexpy returns t0=0, dt=.25, with matching relative coordinates.",
+      "evidence": "evidence/lane-b/tdms.jsonl; evidence/lane-b/reassessment.md",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "TDMS-TIME-009",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_INTENTIONAL_BEHAVIOR",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "TimeSeries.read(..., epoch=1234567890.0, format='tdms')",
+      "fixture": "Valid TDMS timing fixture and explicit numeric epoch override.",
+      "command_id": "B-TDMS-PRESENT",
+      "oracle": "Public contract epoch_arg=override",
+      "expected": "Explicit override replaces source t0 while leaving sample interval/value semantics intact.",
+      "actual": "Returned t0 equals the requested GPS epoch.",
+      "evidence": "evidence/lane-b/tdms.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "TDMS-UNIT-001",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "BLOCKED",
+      "blocked_reason": "ambiguous_contract",
+      "impact_class": null,
+      "public_entrypoint": "TimeSeries.read(..., format='tdms')",
+      "fixture": "TDMS channel has unit_string='V'.",
+      "command_id": "B-TDMS-PRESENT",
+      "oracle": "npTDMS exposes unit_string V; published TDMS contract names waveform timing and group/channel names but no unit-import promise.",
+      "expected": "No contract basis to require unit import.",
+      "actual": "GWexpy returns a dimensionless unit.",
+      "evidence": "evidence/lane-b/tdms.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "TDMS-OPTIONAL-001",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_INTENTIONAL_BEHAVIOR",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "TimeSeries, Dict and Matrix reads with nptdms absent",
+      "fixture": "Synthetic TDMS fixtures in present profile, then public reads in base profile.",
+      "command_id": "B-TDMS-BASE",
+      "oracle": "Contract unavailable_behavior=raises_import_error",
+      "expected": "Raise documented ImportError with install guidance.",
+      "actual": "All tested public reads raise the documented ImportError.",
+      "evidence": "evidence/lane-b/tdms_missing.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "GBD-CONTROL-001",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "REFUTED_STATIC_SUSPICION",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "TimeSeriesDict.read(..., format='gbd')",
+      "fixture": "Manufacturer-authored GL500-shaped big-endian short fixture; raw [2000,-4000,10000], 10 V range.",
+      "command_id": "B-GBD-PRESENT",
+      "oracle": "GL500 specification and independent timestamp/scaling calculation",
+      "expected": "Values [1,-2,5] V, dt=.1; timezone conversion changes epoch by 32400 seconds.",
+      "actual": "All expected values and timing observed.",
+      "evidence": "evidence/lane-b/gbd.jsonl; evidence/lane-b/reassessment.md",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "GBD-HEADER-001",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_axis_corruption",
+      "public_entrypoint": "TimeSeries.read(..., format='gbd')",
+      "fixture": "GL500 fixture with required Sample header field removed.",
+      "command_id": "B-GBD-PRESENT",
+      "oracle": "Graphtec-authored GL500 specification for firmware 1.00-1.21, hosted as a Studylib mirror",
+      "expected": "Reject malformed header with no authoritative sample interval.",
+      "actual": "Returns dt=1.0 without warning; valid control specifies 100 ms.",
+      "evidence": "evidence/lane-b/gbd.jsonl; evidence/lane-b/reassessment.md",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "GBD-HEADER-002",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "REFUTED_STATIC_SUSPICION",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "TimeSeries.read(..., format='gbd')",
+      "fixture": "GL500-shaped fixture with required Type header field removed.",
+      "command_id": "B-GBD-PRESENT",
+      "oracle": "Public reader behavior on malformed synthetic GL500 fixture",
+      "expected": "Static suspicion was that Type may be defaulted.",
+      "actual": "Reader raises ValueError: buffer is smaller than requested size.",
+      "evidence": "evidence/lane-b/gbd.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "GBD-HEADER-003",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_entry_loss",
+      "public_entrypoint": "TimeSeriesDict.read(..., format='gbd')",
+      "fixture": "GL500 fixture with required Order header field removed.",
+      "command_id": "B-GBD-PRESENT",
+      "oracle": "Graphtec-authored GL500 specification for firmware 1.00-1.21, hosted as a Studylib mirror",
+      "expected": "Reject malformed channel order rather than invent channel identity.",
+      "actual": "Returns invented CH0 with values [2000,0,-4000], losing CH1 and Alarm without warning.",
+      "evidence": "evidence/lane-b/gbd.jsonl; evidence/lane-b/reassessment.md",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "GBD-HEADER-004",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_entry_loss",
+      "public_entrypoint": "TimeSeriesDict.read(..., format='gbd')",
+      "fixture": "GL500 fixture with required Counts field removed.",
+      "command_id": "B-GBD-PRESENT",
+      "oracle": "Graphtec-authored GL500 specification for firmware 1.00-1.21, hosted as a Studylib mirror",
+      "expected": "Reject malformed sample-count metadata.",
+      "actual": "Returns named channels with empty arrays and no warning.",
+      "evidence": "evidence/lane-b/gbd.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "GBD-HEADER-005",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_value_corruption",
+      "public_entrypoint": "TimeSeries.read(..., format='gbd')",
+      "fixture": "GL500 fixture with $Amp scale removed.",
+      "command_id": "B-GBD-PRESENT",
+      "oracle": "GL500 control fixture with declared amplitude scale",
+      "expected": "Reject absent scale or apply a format-authorized fallback.",
+      "actual": "Returns raw [2000,-4000,10000] as volts instead of [1,-2,5] V.",
+      "evidence": "evidence/lane-b/gbd.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "GBD-COUNT-001",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "BLOCKED",
+      "blocked_reason": "ambiguous_contract",
+      "impact_class": null,
+      "public_entrypoint": "TimeSeriesDict.read(..., format='gbd')",
+      "fixture": "GL500 Counts=2 header plus three complete payload rows.",
+      "command_id": "B-GBD-PRESENT",
+      "oracle": "Manufacturer-authored GL500 spec says Counts is number of captured points and defines payload bytes; surplus-byte behavior for malformed input is unspecified in GWexpy.",
+      "expected": "Resolve malformed surplus-payload policy before defect classification.",
+      "actual": "Returns two rows without warning.",
+      "evidence": "evidence/lane-b/gbd.jsonl; evidence/lane-b/reassessment.md",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "GBD-TRUNC-001",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "REFUTED_STATIC_SUSPICION",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "TimeSeries.read(..., format='gbd')",
+      "fixture": "GL500 header declares four rows but payload contains three.",
+      "command_id": "B-GBD-PRESENT",
+      "oracle": "Public reader behavior on a truncated synthetic file",
+      "expected": "Static suspicion was that reader might return a plausible short series.",
+      "actual": "Reader raises ValueError: buffer is smaller than requested size.",
+      "evidence": "evidence/lane-b/gbd.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "GBD-DIGITAL-001",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_INTENTIONAL_BEHAVIOR",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "TimeSeriesDict.read(..., format='gbd')",
+      "fixture": "GL500 alarm bitmasks [0,2,8].",
+      "command_id": "B-GBD-PRESENT",
+      "oracle": "GL500 bit assignments plus GWexpy contract's documented binarization of configured digital channels",
+      "expected": "Configured digital-channel output is binary per public contract.",
+      "actual": "Reader returns [0,1,1]; alarm bit identity is collapsed as documented.",
+      "evidence": "evidence/lane-b/gbd.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "GBD-LEGACY-001",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "BLOCKED",
+      "blocked_reason": "missing_authority",
+      "impact_class": null,
+      "public_entrypoint": "GBD public read routes outside the GL500 fixture",
+      "fixture": "No authoritative malformed-header fixture for other Graphtec generations was available.",
+      "command_id": "B-GBD-PRESENT",
+      "oracle": "Graphtec-authored specification applies to GL500 firmware 1.00-1.21; official FAQ only confirms GBD family identity.",
+      "expected": "Need model-specific authority before generalizing GL500 conclusions.",
+      "actual": "Not generalized.",
+      "evidence": "evidence/lane-b/reassessment.md",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "ATS-CONTROL-001",
+      "formats": [
+        "ats"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "REFUTED_STATIC_SUSPICION",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "TimeSeries.read(..., format='ats')",
+      "fixture": "Manually packed native ATS counts [1000,-2000,3000], LSB .5 mV/count, 4 Hz, Unix start 1704164645.",
+      "command_id": "B-ATS-PRESENT",
+      "oracle": "Independent binary decode and GPS conversion",
+      "expected": "Values [.5,-1,1.5] V, dt=.25, GPS t0=1388199863.",
+      "actual": "All expected values, interval and timestamp observed; name stable.",
+      "evidence": "evidence/lane-b/ats.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "ATS-TRUNC-001",
+      "formats": [
+        "ats"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "BLOCKED",
+      "blocked_reason": "missing_authority",
+      "impact_class": null,
+      "public_entrypoint": "TimeSeries.read and TimeSeriesDict.read(..., format='ats')",
+      "fixture": "ATS header declares five samples; binary payload has three.",
+      "command_id": "B-ATS-PRESENT",
+      "oracle": "Observed reader warning and partial values; no Metronix/native authority was found that requires or endorses binary-payload salvage.",
+      "expected": "Need an authoritative malformed-file policy before choosing defect or intentional salvage.",
+      "actual": "Returns three scaled samples and warns that it uses actual data size.",
+      "evidence": "evidence/lane-b/ats.jsonl; evidence/lane-b/reassessment.md",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "ATS-RATE-001",
+      "formats": [
+        "ats"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "REFUTED_STATIC_SUSPICION",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "TimeSeries.read(..., format='ats')",
+      "fixture": "ATS fixtures with zero and NaN sample rates.",
+      "command_id": "B-ATS-PRESENT",
+      "oracle": "Public exception behavior and no returned finite time axis",
+      "expected": "Static suspicion was that invalid rate might yield a plausible finite axis.",
+      "actual": "Both cases raise ValueError; no finite axis is returned.",
+      "evidence": "evidence/lane-b/ats.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "ATS-EPOCH-001",
+      "formats": [
+        "ats"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_INTENTIONAL_BEHAVIOR",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "TimeSeries.read(..., epoch=1234567890.0, format='ats')",
+      "fixture": "Valid native ATS timing fixture plus numeric epoch override.",
+      "command_id": "B-ATS-PRESENT",
+      "oracle": "Public contract epoch_arg=override",
+      "expected": "Override t0 while retaining rate and scaled data.",
+      "actual": "Returned t0 equals the requested GPS epoch.",
+      "evidence": "evidence/lane-b/ats.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "MATRIX-CONVERSION-001",
+      "formats": [
+        "gbd",
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_INTENTIONAL_BEHAVIOR",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "TimeSeriesMatrix read conversion from TimeSeriesDict",
+      "fixture": "GBD and TDMS public Dict reads converted through to_matrix().",
+      "command_id": "B-MATRIX-METADATA-PRESENT",
+      "oracle": "GWexpy public conversion contract docs_redesign/reference/gwpy_added_api.md:27-35",
+      "expected": "Matrix conversion contract does not carry TimeSeries unit/channel metadata.",
+      "actual": "Matrix cells retain names but have empty unit and channel=None, as documented.",
+      "evidence": "evidence/lane-b/matrix_metadata.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "HDF5-TS-COLL-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_entry_loss",
+      "public_entrypoint": "TimeSeriesDict.read and TimeSeriesList.read, format='hdf5'",
+      "fixture": "C1 manifest-backed three-entry A/B/C collection, independently reordered to C/B/A; only B axis metadata corrupted.",
+      "command_id": "C-PRESENT",
+      "oracle": "Independent h5py inspection confirms manifest still lists B; public single-entry B read raises.",
+      "expected": "Fail closed when an authoritative manifest-listed entry cannot be decoded.",
+      "actual": "Dict/List reads succeed with C,A only; list indices compress to 0,1. Both physical collection layouts were exercised.",
+      "evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "HDF5-FS-COLL-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_entry_loss",
+      "public_entrypoint": "FrequencySeriesDict.read and FrequencySeriesList.read, format='hdf5'",
+      "fixture": "C1 manifest-backed A/B/C collection, independently reordered; only B axis metadata corrupted.",
+      "command_id": "C-PRESENT",
+      "oracle": "Independent h5py manifest and single-entry B decode exception.",
+      "expected": "Fail closed when an authoritative manifest-listed entry cannot be decoded.",
+      "actual": "Dict/List reads succeed without B and compress list indices.",
+      "evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "HDF5-SPEC-COLL-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_entry_loss",
+      "public_entrypoint": "SpectrogramDict().read and SpectrogramList().read, format='hdf5'",
+      "fixture": "C1 manifest-backed A/B/C collection, independently reordered; only B axis metadata corrupted.",
+      "command_id": "C-PRESENT",
+      "oracle": "Independent h5py manifest and single-entry B decode exception.",
+      "expected": "Fail closed when an authoritative manifest-listed entry cannot be decoded.",
+      "actual": "Instance Dict/List reads succeed without B and compress list indices.",
+      "evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "HDF5-HIST-COLL-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_entry_loss",
+      "public_entrypoint": "HistogramDict.read and HistogramList.read, format='hdf5'",
+      "fixture": "C1 manifest-backed A/B/C collection, independently reordered; only B unit metadata corrupted.",
+      "command_id": "C-PRESENT",
+      "oracle": "Independent h5py manifest and single-entry B decode exception.",
+      "expected": "Fail closed when an authoritative manifest-listed entry cannot be decoded.",
+      "actual": "Dict/List reads succeed without B and compress list indices. Physical entries are HDF5 groups.",
+      "evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "HDF5-DISCOVERY-TS-LIST-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_COMPATIBILITY_BEHAVIOR",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "TimeSeriesList.read, format='hdf5', no collection manifest",
+      "fixture": "C2 unstructured A/B/C collection with manifest attrs removed; only B axis metadata corrupted.",
+      "command_id": "C-PRESENT",
+      "oracle": "Uncorrupted C2 control succeeds; historical policy documents tolerant generic discovery.",
+      "expected": "Record legacy discovery separately from authoritative-manifest behavior.",
+      "actual": "Returns A,C with compressed list indices; classified as compatibility behavior.",
+      "evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "HDF5-DISCOVERY-FS-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_COMPATIBILITY_BEHAVIOR",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "FrequencySeriesDict/List.read, format='hdf5', no collection manifest",
+      "fixture": "C2 unstructured A/B/C collection with manifest attrs removed; only B axis metadata corrupted.",
+      "command_id": "C-PRESENT",
+      "oracle": "Uncorrupted C2 controls succeed; historical policy documents tolerant generic discovery.",
+      "expected": "Record legacy discovery separately from authoritative-manifest behavior.",
+      "actual": "Returns A,C and compresses List indices.",
+      "evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "HDF5-DISCOVERY-SPEC-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_COMPATIBILITY_BEHAVIOR",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "SpectrogramDict/List instance .read, format='hdf5', no collection manifest",
+      "fixture": "C2 unstructured A/B/C collection with manifest attrs removed; only B axis metadata corrupted.",
+      "command_id": "C-PRESENT",
+      "oracle": "Uncorrupted C2 controls succeed; historical policy documents tolerant generic discovery.",
+      "expected": "Record legacy discovery separately from authoritative-manifest behavior.",
+      "actual": "Returns A,C and compresses List indices.",
+      "evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "HDF5-DISCOVERY-HIST-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_COMPATIBILITY_BEHAVIOR",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "HistogramDict/List.read, format='hdf5', no collection manifest",
+      "fixture": "C2 unstructured A/B/C collection with manifest attrs removed; only B unit metadata corrupted.",
+      "command_id": "C-PRESENT",
+      "oracle": "Uncorrupted C2 controls succeed; historical policy documents tolerant generic discovery.",
+      "expected": "Record legacy discovery separately from authoritative-manifest behavior.",
+      "actual": "Returns A,C and compresses List indices.",
+      "evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "HDF5-DISCOVERY-TS-DICT-DATASET-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "REFUTED_STATIC_SUSPICION",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "TimeSeriesDict.read, format='hdf5', no collection manifest, dataset layout",
+      "fixture": "C2 unstructured dataset-layout collection with only B metadata corrupted.",
+      "command_id": "C-PRESENT",
+      "oracle": "Valid uncorrupted C2 dataset control succeeds.",
+      "expected": "Static suspicion was that corrupt entry would be silently skipped.",
+      "actual": "Public read raises TypeError rather than returning a partial dictionary.",
+      "evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "HDF5-DISCOVERY-TS-DICT-GROUP-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "BLOCKED",
+      "blocked_reason": "missing_fixture",
+      "impact_class": null,
+      "public_entrypoint": "TimeSeriesDict.read, format='hdf5', no collection manifest, group layout",
+      "fixture": "Attempted C2 group-layout corrupt-B scenario.",
+      "command_id": "C-PRESENT",
+      "oracle": "Uncorrupted C2 group control itself raises ValueError because empty TimeSeriesDict span cannot be calculated.",
+      "expected": "Need valid C2 control before assessing partial-entry behavior.",
+      "actual": "No valid control.",
+      "evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "HDF5-HIST-DATASET-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "BLOCKED",
+      "blocked_reason": "missing_fixture",
+      "impact_class": null,
+      "public_entrypoint": "HistogramDict/List.read, format='hdf5', requested dataset-per-entry layout",
+      "fixture": "Requested dataset layout through the writer.",
+      "command_id": "C-PRESENT",
+      "oracle": "Independent h5py inspection shows the writer physically creates entry groups.",
+      "expected": "A true histogram dataset-per-entry fixture is needed for layout-specific conclusions.",
+      "actual": "The requested dataset layout was not physically produced.",
+      "evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "OBSPY-DUP-001",
+      "formats": [
+        "mseed"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "REFUTED_STATIC_SUSPICION",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "TimeSeriesDict.read([path1,path2], format='mseed')",
+      "fixture": "Two independently written ObsPy Trace files with same XX.TEST..BHZ ID: contiguous, gap, conflicting overlap, and different sample rate.",
+      "command_id": "D-PRESENT",
+      "oracle": "Native ObsPy Stream.merge(method=1, fill_value=nan); official Stream API documents merging same-ID traces",
+      "expected": "Determine whether duplicate IDs can reach dict assignment and overwrite entries.",
+      "actual": "Contiguous/gap/overlap traces merge before dict construction; differing rates raise TypeError. No duplicate reached overwrite in tested valid scenarios.",
+      "evidence": "evidence/lane-d/D_report.md; evidence/lane-d/present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "OBSPY-DUP-BASE-001",
+      "formats": [
+        "mseed"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "BLOCKED",
+      "blocked_reason": "dependency",
+      "impact_class": null,
+      "public_entrypoint": "TimeSeriesDict.read(..., format='mseed') in base profile",
+      "fixture": "ObsPy duplicate-ID fixture generated in present profile.",
+      "command_id": "D-BASE",
+      "oracle": "No ObsPy module is installed in base.",
+      "expected": "Duplicate reachability was assessed in present profile; base cannot exercise the reader.",
+      "actual": "No runtime result in base.",
+      "evidence": "evidence/lane-d/base.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "SDB-KW-001",
+      "formats": [
+        "sdb"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_COMPATIBILITY_BEHAVIOR",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "Direct, explicit-registry and auto TimeSeriesDict SDB reads with epoch=999",
+      "fixture": "Synthetic SQLite archive rows at Unix times 1700000000, 1700000300, 1700000600.",
+      "command_id": "D-PRESENT",
+      "oracle": "Astropy Unix-to-GPS conversion and public contract epoch_arg=none",
+      "expected": "No epoch override is promised by the SDB contract.",
+      "actual": "epoch=999 is accepted and ignored; file-derived t0 and data are returned.",
+      "evidence": "evidence/lane-d/D_report.md; evidence/lane-d/present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "WIN-KW-001",
+      "formats": [
+        "win"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_COMPATIBILITY_BEHAVIOR",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "Direct and public explicit/auto WIN reads with epoch=999",
+      "fixture": "One valid WIN packet: channel 0001, two samples [10,11], 2 Hz, 2024-01-02 03:04:05 UTC.",
+      "command_id": "D-PRESENT",
+      "oracle": "WIN packet semantics and public contract epoch_arg=none",
+      "expected": "No epoch override is promised by the WIN contract.",
+      "actual": "epoch=999 is accepted and ignored; file-derived t0 and values are returned.",
+      "evidence": "evidence/lane-d/D_report.md; evidence/lane-d/present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "WIN-OPTIONAL-001",
+      "formats": [
+        "win"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_INTENTIONAL_BEHAVIOR",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "WIN explicit and auto reads with ObsPy absent",
+      "fixture": "Valid WIN packet in base profile.",
+      "command_id": "D-BASE",
+      "oracle": "Contract conditionally registers WIN and requires ObsPy for direct parsing.",
+      "expected": "Explicit route raises ImportError; auto route may be unregistered.",
+      "actual": "Explicit read raises ImportError; auto read raises IORegistryError because WIN is unregistered.",
+      "evidence": "evidence/lane-d/D_report.md; evidence/lane-d/base.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "WAV-CONTROL-001",
+      "formats": [
+        "wav"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "REFUTED_STATIC_SUSPICION",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "TimeSeries and TimeSeriesDict explicit/auto WAV reads; epoch override",
+      "fixture": "SciPy-written five-frame asymmetric stereo int16 WAV at 8000 Hz.",
+      "command_id": "D-PRESENT",
+      "oracle": "Independent scipy.io.wavfile.read values and sample rate",
+      "expected": "Preserve channel order, values, sample rate and relative t0.",
+      "actual": "Stereo channels, all five samples, dt=.000125 and relative t0=0 match; epoch override shifts only t0.",
+      "evidence": "evidence/lane-d/D_report.md; evidence/lane-d/present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "AUDIO-CONTROL-001",
+      "formats": [
+        "flac"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "REFUTED_STATIC_SUSPICION",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "TimeSeries and TimeSeriesDict explicit/auto FLAC reads; epoch override",
+      "fixture": "Lossless pydub FLAC encoded from the asymmetric stereo WAV, tagged with title.",
+      "command_id": "D-PRESENT",
+      "oracle": "Independent pydub PCM decode, WAV samples, and native tinytag metadata",
+      "expected": "Preserve decoded samples, channel order, rate and relative time.",
+      "actual": "Public values and axes match; values are normalized to float64 by 32768.",
+      "evidence": "evidence/lane-d/D_report.md; evidence/lane-d/present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "AUDIO-METADATA-001",
+      "formats": [
+        "wav",
+        "flac"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_metadata_corruption",
+      "public_entrypoint": "TimeSeriesDict.read(path, format='flac'|'wav', extract_metadata=True), explicit registry route",
+      "fixture": "Tagged FLAC title 'D audit title'; matching WAV control. Native tinytag and direct reader preserve metadata.",
+      "command_id": "D-PRESENT",
+      "oracle": "tinytag direct file read and reader docstrings promising available metadata in provenance",
+      "expected": "Store available file metadata in provenance when extract_metadata=True.",
+      "actual": "Public route returns no provenance and emits false file-not-found warning for stringified _io.FileIO; direct path reader returns title/bitrate/duration for FLAC.",
+      "evidence": "evidence/lane-d/D_report.md; evidence/lane-d/present.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "AUDIO-OPTIONAL-001",
+      "formats": [
+        "wav",
+        "flac"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_INTENTIONAL_BEHAVIOR",
+      "blocked_reason": null,
+      "impact_class": null,
+      "public_entrypoint": "WAV extract_metadata and FLAC reads with tinytag/pydub absent",
+      "fixture": "Synthetic WAV and derived FLAC in base profile.",
+      "command_id": "D-BASE",
+      "oracle": "Published unavailable_behavior rules",
+      "expected": "WAV data remains readable and warns/skips optional metadata; FLAC without pydub raises ImportError.",
+      "actual": "Both expected behaviors observed.",
+      "evidence": "evidence/lane-d/D_report.md; evidence/lane-d/base.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "ZARR-AXIS-001",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_axis_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='zarr')",
+      "fixture": "Independent native Zarr matrix cells differ in t0 by 1 ms at 16 Hz.",
+      "command_id": "A-ZARR-FOLLOWUP",
+      "oracle": "Native Zarr per-cell timing attributes",
+      "expected": "Reject cells that cannot share one TimeSeriesMatrix time axis.",
+      "actual": "Accepts both cells and assigns the first cell's t0 to the returned matrix.",
+      "evidence": "evidence/lane-a/zarr_axis_units_multistore.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "ZARR-UNIT-001",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_metadata_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='zarr')",
+      "fixture": "Independent native Zarr channel arrays both declare unit V and share timing.",
+      "command_id": "A-ZARR-FOLLOWUP",
+      "oracle": "Native Zarr channel unit attributes",
+      "expected": "Preserve V on both returned matrix cells.",
+      "actual": "Returns a dimensionless matrix for the two-channel native store.",
+      "evidence": "evidence/lane-a/zarr_axis_units_multistore.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "ZARR-MULTISTORE-DTYPE-001",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_value_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read([int_store, float_store], format='zarr')",
+      "fixture": "Adjacent native Zarr stores contain int64 values above 2**53 and float64 values.",
+      "command_id": "A-ZARR-FOLLOWUP",
+      "oracle": "Native Zarr source dtype and values",
+      "expected": "Preserve int64 values exactly or reject an incompatible multi-store dtype merge.",
+      "actual": "Promotes the merged matrix to float64 and rounds both large integers.",
+      "evidence": "evidence/lane-a/zarr_axis_units_multistore.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "ZARR-UINT64-001",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_value_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='zarr')",
+      "fixture": "Independent native Zarr matrix cell stores uint64 values above 2**53.",
+      "command_id": "A-ZARR-FOLLOWUP",
+      "oracle": "Native Zarr source dtype and values",
+      "expected": "Preserve uint64 values exactly or reject an unsupported conversion.",
+      "actual": "Converts to float64 and rounds both large unsigned integers.",
+      "evidence": "evidence/lane-a/zarr_axis_units_multistore.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    },
+    {
+      "finding_id": "TDMS-TIME-010",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "blocked_reason": null,
+      "impact_class": "silent_axis_corruption",
+      "public_entrypoint": "TimeSeries.read and TimeSeriesDict.read accept negative timing; Matrix also exercised",
+      "fixture": "Independent npTDMS file has wf_increment=-0.1 and three waveform values.",
+      "command_id": "B-TDMS-PRESENT",
+      "oracle": "npTDMS channel properties and time_track",
+      "expected": "Reject a nonpositive sample interval before constructing public series.",
+      "actual": "TimeSeries and Dict return dt=-0.1 with descending sample times; Matrix fails later during alignment.",
+      "evidence": "evidence/lane-b/tdms.jsonl",
+      "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa"
+    }
+  ],
+  "formats_rule": "Each finding uses a non-empty formats array of canonical format IDs from public-route-inventory.json; multi-format scenarios list each canonical ID separately."
+}

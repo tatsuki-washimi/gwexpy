@@ -1,0 +1,342 @@
+{
+  "evidence_base": "bundle_root",
+  "schema": "gwexpy-runtime-scope-inventory-v1",
+  "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+  "canonical_format_source": "docs/developers/contracts/public_io_contract.json#/formats",
+  "method": "runtime findings exist for at least one public scenario in lane",
+  "scope_count": {
+    "AUDITED": 11,
+    "INVENTORY_ONLY": 14
+  },
+  "formats": [
+    {
+      "canonical_name": "gwf",
+      "scope_status": "INVENTORY_ONLY",
+      "runtime_lane": null,
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/0",
+        "scope_basis": "no A-D runtime finding for this canonical format"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": null,
+        "basis": "no A-D runtime finding for this canonical format"
+      }
+    },
+    {
+      "canonical_name": "hdf.ndscope",
+      "scope_status": "INVENTORY_ONLY",
+      "runtime_lane": null,
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/1",
+        "scope_basis": "no A-D runtime finding for this canonical format"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": null,
+        "basis": "no A-D runtime finding for this canonical format"
+      }
+    },
+    {
+      "canonical_name": "hdf5",
+      "scope_status": "AUDITED",
+      "runtime_lane": "C: HDF5 collection/manifest",
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/2",
+        "scope_basis": "runtime findings exist for at least one public scenario in lane"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": "evidence/lane-c/report.md:26",
+        "basis": "runtime findings exist for at least one public scenario in lane"
+      }
+    },
+    {
+      "canonical_name": "xml.diaggui",
+      "scope_status": "INVENTORY_ONLY",
+      "runtime_lane": null,
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/3",
+        "scope_basis": "no A-D runtime finding for this canonical format"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": null,
+        "basis": "no A-D runtime finding for this canonical format"
+      }
+    },
+    {
+      "canonical_name": "csv",
+      "scope_status": "INVENTORY_ONLY",
+      "runtime_lane": null,
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/4",
+        "scope_basis": "no A-D runtime finding for this canonical format"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": null,
+        "basis": "no A-D runtime finding for this canonical format"
+      }
+    },
+    {
+      "canonical_name": "txt",
+      "scope_status": "INVENTORY_ONLY",
+      "runtime_lane": null,
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/5",
+        "scope_basis": "no A-D runtime finding for this canonical format"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": null,
+        "basis": "no A-D runtime finding for this canonical format"
+      }
+    },
+    {
+      "canonical_name": "pickle",
+      "scope_status": "INVENTORY_ONLY",
+      "runtime_lane": null,
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/6",
+        "scope_basis": "no A-D runtime finding for this canonical format"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": null,
+        "basis": "no A-D runtime finding for this canonical format"
+      }
+    },
+    {
+      "canonical_name": "root",
+      "scope_status": "INVENTORY_ONLY",
+      "runtime_lane": null,
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/7",
+        "scope_basis": "no A-D runtime finding for this canonical format"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": null,
+        "basis": "no A-D runtime finding for this canonical format"
+      }
+    },
+    {
+      "canonical_name": "sdb",
+      "scope_status": "AUDITED",
+      "runtime_lane": "D: ObsPy/SDB/WIN/WAV/audio controls",
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/8",
+        "scope_basis": "runtime findings exist for at least one public scenario in lane"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": "evidence/lane-d/D_report.md:22",
+        "basis": "runtime findings exist for at least one public scenario in lane"
+      }
+    },
+    {
+      "canonical_name": "wav",
+      "scope_status": "AUDITED",
+      "runtime_lane": "D: ObsPy/SDB/WIN/WAV/audio controls",
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/9",
+        "scope_basis": "runtime findings exist for at least one public scenario in lane"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": "evidence/lane-d/D_report.md:24",
+        "basis": "runtime findings exist for at least one public scenario in lane"
+      }
+    },
+    {
+      "canonical_name": "flac",
+      "scope_status": "AUDITED",
+      "runtime_lane": "D: ObsPy/SDB/WIN/WAV/audio controls",
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/10",
+        "scope_basis": "runtime findings exist for at least one public scenario in lane"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": "evidence/lane-d/D_report.md:25",
+        "basis": "runtime findings exist for at least one public scenario in lane"
+      }
+    },
+    {
+      "canonical_name": "ogg",
+      "scope_status": "INVENTORY_ONLY",
+      "runtime_lane": null,
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/11",
+        "scope_basis": "no A-D runtime finding for this canonical format"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": null,
+        "basis": "no A-D runtime finding for this canonical format",
+        "explicit_noncoverage_ref": "evidence/lane-d/D_report.md:35"
+      }
+    },
+    {
+      "canonical_name": "mp3",
+      "scope_status": "INVENTORY_ONLY",
+      "runtime_lane": null,
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/12",
+        "scope_basis": "no A-D runtime finding for this canonical format"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": null,
+        "basis": "no A-D runtime finding for this canonical format",
+        "explicit_noncoverage_ref": "evidence/lane-d/D_report.md:35"
+      }
+    },
+    {
+      "canonical_name": "m4a",
+      "scope_status": "INVENTORY_ONLY",
+      "runtime_lane": null,
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/13",
+        "scope_basis": "no A-D runtime finding for this canonical format"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": null,
+        "basis": "no A-D runtime finding for this canonical format",
+        "explicit_noncoverage_ref": "evidence/lane-d/D_report.md:35"
+      }
+    },
+    {
+      "canonical_name": "gbd",
+      "scope_status": "AUDITED",
+      "runtime_lane": "B: TDMS/GBD/ATS",
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/14",
+        "scope_basis": "runtime findings exist for at least one public scenario in lane"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": "evidence/lane-b/gbd.jsonl:2",
+        "basis": "runtime findings exist for at least one public scenario in lane"
+      }
+    },
+    {
+      "canonical_name": "tdms",
+      "scope_status": "AUDITED",
+      "runtime_lane": "B: TDMS/GBD/ATS",
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/15",
+        "scope_basis": "runtime findings exist for at least one public scenario in lane"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": "evidence/lane-b/tdms.jsonl:2",
+        "basis": "runtime findings exist for at least one public scenario in lane"
+      }
+    },
+    {
+      "canonical_name": "mseed",
+      "scope_status": "AUDITED",
+      "runtime_lane": "D: ObsPy/SDB/WIN/WAV/audio controls",
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/16",
+        "scope_basis": "runtime findings exist for at least one public scenario in lane"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": "evidence/lane-d/D_report.md:21",
+        "basis": "runtime findings exist for at least one public scenario in lane"
+      }
+    },
+    {
+      "canonical_name": "sac",
+      "scope_status": "INVENTORY_ONLY",
+      "runtime_lane": null,
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/17",
+        "scope_basis": "no A-D runtime finding for this canonical format"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": null,
+        "basis": "no A-D runtime finding for this canonical format"
+      }
+    },
+    {
+      "canonical_name": "gse2",
+      "scope_status": "INVENTORY_ONLY",
+      "runtime_lane": null,
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/18",
+        "scope_basis": "no A-D runtime finding for this canonical format"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": null,
+        "basis": "no A-D runtime finding for this canonical format"
+      }
+    },
+    {
+      "canonical_name": "knet",
+      "scope_status": "INVENTORY_ONLY",
+      "runtime_lane": null,
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/19",
+        "scope_basis": "no A-D runtime finding for this canonical format"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": null,
+        "basis": "no A-D runtime finding for this canonical format"
+      }
+    },
+    {
+      "canonical_name": "win",
+      "scope_status": "AUDITED",
+      "runtime_lane": "D: ObsPy/SDB/WIN/WAV/audio controls",
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/20",
+        "scope_basis": "runtime findings exist for at least one public scenario in lane"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": "evidence/lane-d/D_report.md:23",
+        "basis": "runtime findings exist for at least one public scenario in lane"
+      }
+    },
+    {
+      "canonical_name": "ats",
+      "scope_status": "AUDITED",
+      "runtime_lane": "B: TDMS/GBD/ATS",
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/21",
+        "scope_basis": "runtime findings exist for at least one public scenario in lane"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": "evidence/lane-b/ats.jsonl:2",
+        "basis": "runtime findings exist for at least one public scenario in lane"
+      }
+    },
+    {
+      "canonical_name": "ats.mth5",
+      "scope_status": "INVENTORY_ONLY",
+      "runtime_lane": null,
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/22",
+        "scope_basis": "no A-D runtime finding for this canonical format"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": null,
+        "basis": "no A-D runtime finding for this canonical format"
+      }
+    },
+    {
+      "canonical_name": "nc",
+      "scope_status": "AUDITED",
+      "runtime_lane": "A: NetCDF/Zarr",
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/23",
+        "scope_basis": "runtime findings exist for at least one public scenario in lane"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": "evidence/lane-a/report.md:32",
+        "basis": "runtime findings exist for at least one public scenario in lane"
+      }
+    },
+    {
+      "canonical_name": "zarr",
+      "scope_status": "AUDITED",
+      "runtime_lane": "A: NetCDF/Zarr",
+      "evidence": {
+        "canonical_contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/24",
+        "scope_basis": "runtime findings exist for at least one public scenario in lane"
+      },
+      "scope_status_evidence": {
+        "runtime_finding_ref": "evidence/lane-a/report.md:33",
+        "basis": "runtime findings exist for at least one public scenario in lane"
+      }
+    }
+  ],
+  "scope_note": "Format-specific scope status does not assert a result for every public route. Unmeasured formats remain INVENTORY_ONLY."
+}

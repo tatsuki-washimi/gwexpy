@@ -1,0 +1,40 @@
+{
+  "environment": {
+    "conda_prefix": "/home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/base",
+    "gwexpy_source": "/home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/fix-wave/gwexpy/__init__.py",
+    "gwexpy_version": "0.2.4",
+    "optional_package_absence": {
+      "netCDF4": true,
+      "xarray": true,
+      "zarr": true
+    },
+    "python": "/home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/base/bin/python",
+    "python_version": "3.11.14"
+  },
+  "public_routes": {
+    "matrix_auto_netcdf_read": {
+      "exception": "ImportError",
+      "message": "xarray is required for reading/writing NetCDF4 files. Install with `pip install 'gwexpy[netcdf4]'`."
+    },
+    "matrix_auto_netcdf_write": {
+      "exception": "ImportError",
+      "message": "xarray is required for reading/writing NetCDF4 files. Install with `pip install 'gwexpy[netcdf4]'`."
+    },
+    "matrix_auto_read": {
+      "exception": "ImportError",
+      "message": "zarr is required for reading/writing Zarr stores. Install with `pip install 'gwexpy[zarr]'`."
+    },
+    "matrix_auto_write": {
+      "exception": "ImportError",
+      "message": "zarr is required for reading/writing Zarr stores. Install with `pip install 'gwexpy[zarr]'`."
+    },
+    "timeseries_auto_read": {
+      "exception": "ImportError",
+      "message": "zarr is required for reading/writing Zarr stores. Install with `pip install 'gwexpy[zarr]'`."
+    },
+    "timeseriesdict_auto_read": {
+      "exception": "ImportError",
+      "message": "zarr is required for reading/writing Zarr stores. Install with `pip install 'gwexpy[zarr]'`."
+    }
+  }
+}

@@ -1,0 +1,2221 @@
+{
+  "schema": "gwexpy-public-route-inventory-v1",
+  "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+  "contract_file": "docs/developers/contracts/public_io_contract.json",
+  "format_count": 25,
+  "method": "Static contract extraction and source/test reference inspection; no runtime outcome inferred. Contract direct/registry sets may include non-public implementation classes; explicit_format_route is restricted to public_api classes.",
+  "formats": [
+    {
+      "canonical_name": "gwf",
+      "aliases": [
+        "frame",
+        "framecpp",
+        "framel",
+        "lalframe",
+        "gwf.framecpp",
+        "gwf.framel",
+        "gwf.lalframe"
+      ],
+      "public_classes": {
+        "read": [
+          "TimeSeries",
+          "TimeSeriesDict"
+        ],
+        "write": [
+          "TimeSeries",
+          "TimeSeriesDict"
+        ]
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ],
+        "write": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ]
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": [
+          "For multi-file GWF reads without an explicit channel selector, channel auto-discovery uses the first source and assumes the remaining sources contain compatible channel names."
+        ]
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [],
+        "extras": [],
+        "unavailable_behavior": {
+          "read": "available_in_base_install",
+          "write": "available_in_base_install"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ],
+          "write": [
+            "TimeSeries",
+            "TimeSeriesDict"
+          ]
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_gwf.py",
+          "line": 1,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/0",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/gwf/__init__.py:1"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "hdf.ndscope",
+      "aliases": [
+        "ndscope-hdf5",
+        "ndscope_hdf5",
+        "ndscopehdf5"
+      ],
+      "public_classes": {
+        "read": [
+          "TimeSeriesDict"
+        ],
+        "write": [
+          "TimeSeriesDict"
+        ]
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ],
+        "write": [
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ]
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [],
+        "extras": [],
+        "unavailable_behavior": {
+          "read": "available_in_base_install",
+          "write": "available_in_base_install"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ],
+          "write": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ]
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/timeseries/test_io_ndscope_hdf5.py",
+          "line": 18,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/1",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/ndscope_hdf5.py:392"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "hdf5",
+      "aliases": [],
+      "public_classes": {
+        "read": [
+          "TimeSeries",
+          "TimeSeriesDict",
+          "TimeSeriesList",
+          "TimeSeriesMatrix",
+          "FrequencySeries",
+          "FrequencySeriesDict",
+          "FrequencySeriesList",
+          "Spectrogram",
+          "SpectrogramDict",
+          "SpectrogramList",
+          "Histogram",
+          "HistogramDict",
+          "HistogramList",
+          "EventTable"
+        ],
+        "write": [
+          "TimeSeries",
+          "TimeSeriesDict",
+          "TimeSeriesList",
+          "TimeSeriesMatrix",
+          "FrequencySeries",
+          "FrequencySeriesDict",
+          "FrequencySeriesList",
+          "Spectrogram",
+          "SpectrogramDict",
+          "SpectrogramList",
+          "Histogram",
+          "HistogramDict",
+          "HistogramList",
+          "EventTable"
+        ]
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "direct_and_registry"
+          },
+          {
+            "class": "TimeSeriesList",
+            "contract_route": "direct"
+          },
+          {
+            "class": "TimeSeriesMatrix",
+            "contract_route": "direct"
+          },
+          {
+            "class": "FrequencySeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "FrequencySeriesDict",
+            "contract_route": "direct"
+          },
+          {
+            "class": "FrequencySeriesList",
+            "contract_route": "direct"
+          },
+          {
+            "class": "Spectrogram",
+            "contract_route": "registry"
+          },
+          {
+            "class": "SpectrogramDict",
+            "contract_route": "direct"
+          },
+          {
+            "class": "SpectrogramList",
+            "contract_route": "direct"
+          },
+          {
+            "class": "Histogram",
+            "contract_route": "direct"
+          },
+          {
+            "class": "HistogramDict",
+            "contract_route": "direct"
+          },
+          {
+            "class": "HistogramList",
+            "contract_route": "direct"
+          },
+          {
+            "class": "EventTable",
+            "contract_route": "registry"
+          }
+        ],
+        "write": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "direct_and_registry"
+          },
+          {
+            "class": "TimeSeriesList",
+            "contract_route": "direct"
+          },
+          {
+            "class": "TimeSeriesMatrix",
+            "contract_route": "direct"
+          },
+          {
+            "class": "FrequencySeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "FrequencySeriesDict",
+            "contract_route": "direct"
+          },
+          {
+            "class": "FrequencySeriesList",
+            "contract_route": "direct"
+          },
+          {
+            "class": "Spectrogram",
+            "contract_route": "registry"
+          },
+          {
+            "class": "SpectrogramDict",
+            "contract_route": "direct"
+          },
+          {
+            "class": "SpectrogramList",
+            "contract_route": "direct"
+          },
+          {
+            "class": "Histogram",
+            "contract_route": "direct"
+          },
+          {
+            "class": "HistogramDict",
+            "contract_route": "direct"
+          },
+          {
+            "class": "HistogramList",
+            "contract_route": "direct"
+          },
+          {
+            "class": "EventTable",
+            "contract_route": "registry"
+          }
+        ]
+      },
+      "auto_identification": {
+        "public_auto_identify": false,
+        "registry_auto_identify": true,
+        "contract_notes": [
+          "GWpy-backed TimeSeries and TimeSeriesDict auto-identify native HDF5 for .h5 and .hdf5; structurally identified NDScope files take precedence over the generic native route.",
+          "The format-wide public_auto_identify flag remains false because it represents a uniform guarantee across every published HDF5 class family; the TimeSeries and TimeSeriesDict behavior is a class-scoped guarantee."
+        ]
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [],
+        "extras": [],
+        "unavailable_behavior": {
+          "read": "available_in_base_install",
+          "write": "available_in_base_install"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [
+            "TimeSeriesDict",
+            "TimeSeriesList",
+            "TimeSeriesMatrix",
+            "FrequencySeriesDict",
+            "FrequencySeriesList",
+            "SpectrogramDict",
+            "SpectrogramList",
+            "Histogram",
+            "HistogramDict",
+            "HistogramList"
+          ],
+          "write": [
+            "TimeSeriesDict",
+            "TimeSeriesList",
+            "TimeSeriesMatrix",
+            "FrequencySeriesDict",
+            "FrequencySeriesList",
+            "SpectrogramDict",
+            "SpectrogramList",
+            "Histogram",
+            "HistogramDict",
+            "HistogramList"
+          ]
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "FrequencySeries",
+            "Spectrogram",
+            "SegmentList",
+            "DataQualityFlag",
+            "DataQualityDict",
+            "EventTable"
+          ],
+          "write": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "FrequencySeries",
+            "Spectrogram",
+            "SegmentList",
+            "DataQualityFlag",
+            "DataQualityDict",
+            "EventTable"
+          ]
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_hdf5_timeseries_family.py",
+          "line": 156,
+          "coverage_status": "existing_test_file_reference_only"
+        },
+        {
+          "path": "tests/io/test_hdf5_collection.py",
+          "line": 33,
+          "coverage_status": "existing_test_file_reference_only"
+        },
+        {
+          "path": "tests/io/test_histogram_hdf5_io.py",
+          "line": 19,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/2",
+        "implementation_refs": [
+          "gwexpy/io/hdf5_collection.py:55",
+          "gwexpy/timeseries/collections.py:383",
+          "gwexpy/frequencyseries/collections.py:182",
+          "gwexpy/spectrogram/collections.py:202",
+          "gwexpy/histogram/collections.py:118"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "xml.diaggui",
+      "aliases": [
+        "dttxml"
+      ],
+      "public_classes": {
+        "read": [
+          "TimeSeriesDict"
+        ],
+        "write": []
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ],
+        "write": []
+      },
+      "auto_identification": {
+        "public_auto_identify": false,
+        "registry_auto_identify": true,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [],
+        "extras": [],
+        "unavailable_behavior": {
+          "read": "available_in_base_install",
+          "write": "not_public"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [
+            "FrequencySeries",
+            "FrequencySeriesDict"
+          ],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix",
+            "FrequencySeriesDict",
+            "FrequencySeriesMatrix"
+          ],
+          "write": []
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_dttxml_reader.py",
+          "line": 10,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/3",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/dttxml.py:160",
+          "gwexpy/frequencyseries/io/dttxml.py:1"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "csv",
+      "aliases": [],
+      "public_classes": {
+        "read": [
+          "TimeSeries",
+          "TimeSeriesDict"
+        ],
+        "write": [
+          "TimeSeries",
+          "TimeSeriesDict"
+        ]
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "direct_and_registry"
+          }
+        ],
+        "write": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "direct"
+          }
+        ]
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [],
+        "extras": [],
+        "unavailable_behavior": {
+          "read": "available_in_base_install",
+          "write": "available_in_base_install"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [
+            "TimeSeriesDict",
+            "TimeSeriesList",
+            "FrequencySeriesDict",
+            "FrequencySeriesList"
+          ],
+          "write": [
+            "TimeSeriesDict",
+            "TimeSeriesList",
+            "FrequencySeriesDict",
+            "FrequencySeriesList"
+          ]
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix",
+            "FrequencySeries",
+            "Spectrogram",
+            "EventTable"
+          ],
+          "write": [
+            "TimeSeries",
+            "FrequencySeries",
+            "Spectrogram",
+            "EventTable"
+          ]
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_csv_txt_contract.py",
+          "line": 20,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/4",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/csv_enhanced.py:447",
+          "gwexpy/timeseries/collections.py:383",
+          "gwexpy/io/collection_dir.py:1"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "txt",
+      "aliases": [],
+      "public_classes": {
+        "read": [
+          "TimeSeries",
+          "TimeSeriesDict"
+        ],
+        "write": [
+          "TimeSeries",
+          "TimeSeriesDict"
+        ]
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "direct"
+          }
+        ],
+        "write": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "direct"
+          }
+        ]
+      },
+      "auto_identification": {
+        "public_auto_identify": false,
+        "registry_auto_identify": false,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [],
+        "extras": [],
+        "unavailable_behavior": {
+          "read": "available_in_base_install",
+          "write": "available_in_base_install"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [
+            "TimeSeriesDict",
+            "TimeSeriesList",
+            "FrequencySeriesDict",
+            "FrequencySeriesList"
+          ],
+          "write": [
+            "TimeSeriesDict",
+            "TimeSeriesList",
+            "FrequencySeriesDict",
+            "FrequencySeriesList"
+          ]
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "FrequencySeries"
+          ],
+          "write": [
+            "TimeSeries",
+            "FrequencySeries"
+          ]
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_csv_txt_contract.py",
+          "line": 20,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/5",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/ascii.py:1",
+          "gwexpy/timeseries/collections.py:383",
+          "gwexpy/io/collection_dir.py:1"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "pickle",
+      "aliases": [],
+      "public_classes": {
+        "read": [],
+        "write": []
+      },
+      "explicit_format_route": {
+        "read": [],
+        "write": []
+      },
+      "auto_identification": {
+        "public_auto_identify": false,
+        "registry_auto_identify": false,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [],
+        "extras": [],
+        "unavailable_behavior": {
+          "read": "not_public",
+          "write": "not_public"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [],
+          "write": []
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_pickle_direct_io.py",
+          "line": 13,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/6",
+        "implementation_refs": [
+          "gwexpy/io/pickle_compat.py:1"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "root",
+      "aliases": [],
+      "public_classes": {
+        "read": [
+          "EventTable"
+        ],
+        "write": [
+          "EventTable"
+        ]
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "EventTable",
+            "contract_route": "registry"
+          }
+        ],
+        "write": [
+          {
+            "class": "EventTable",
+            "contract_route": "registry"
+          }
+        ]
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": [
+          "EventTable .root files are auto-identified by the live registry; read/write require the optional uproot backend."
+        ]
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [
+          "uproot"
+        ],
+        "extras": [],
+        "unavailable_behavior": {
+          "read": "raises_import_error",
+          "write": "raises_import_error"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": [
+            "TimeSeriesDict",
+            "TimeSeriesList",
+            "FrequencySeriesDict",
+            "FrequencySeriesList",
+            "SpectrogramDict",
+            "SpectrogramList",
+            "HistogramDict",
+            "HistogramList"
+          ]
+        },
+        "registry_api": {
+          "read": [
+            "EventTable"
+          ],
+          "write": [
+            "EventTable"
+          ]
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/table/test_root_eventtable_io.py",
+          "line": 9,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/7",
+        "implementation_refs": [
+          "gwexpy/table/io/root.py:1",
+          "gwexpy/interop/root_.py:1"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "sdb",
+      "aliases": [],
+      "public_classes": {
+        "read": [
+          "TimeSeries",
+          "TimeSeriesDict"
+        ],
+        "write": []
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ],
+        "write": []
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": [
+          "Only the sdb format token and .sdb auto-identification are public."
+        ]
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [],
+        "extras": [],
+        "unavailable_behavior": {
+          "read": "available_in_base_install",
+          "write": "not_public"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ],
+          "write": []
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_sdb_public_io.py",
+          "line": 37,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/8",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/sdb.py:345"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "wav",
+      "aliases": [],
+      "public_classes": {
+        "read": [
+          "TimeSeries",
+          "TimeSeriesDict"
+        ],
+        "write": [
+          "TimeSeries"
+        ]
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ],
+        "write": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          }
+        ]
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [
+          "tinytag"
+        ],
+        "extras": [
+          "audio"
+        ],
+        "unavailable_behavior": {
+          "read": "warns_and_skips_optional_metadata",
+          "write": "available_in_base_install"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ],
+          "write": [
+            "TimeSeries"
+          ]
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_wav_public_io.py",
+          "line": 22,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/9",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/wav.py:164"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "flac",
+      "aliases": [],
+      "public_classes": {
+        "read": [
+          "TimeSeries",
+          "TimeSeriesDict"
+        ],
+        "write": [
+          "TimeSeries",
+          "TimeSeriesDict"
+        ]
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ],
+        "write": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ]
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [
+          "pydub",
+          "tinytag"
+        ],
+        "extras": [
+          "audio"
+        ],
+        "unavailable_behavior": {
+          "read": "raises_import_error",
+          "write": "raises_import_error"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ],
+          "write": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ]
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_compressed_audio_public_io.py",
+          "line": 44,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/10",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/audio.py:314"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "ogg",
+      "aliases": [],
+      "public_classes": {
+        "read": [
+          "TimeSeries",
+          "TimeSeriesDict"
+        ],
+        "write": [
+          "TimeSeries",
+          "TimeSeriesDict"
+        ]
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ],
+        "write": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ]
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [
+          "pydub",
+          "tinytag"
+        ],
+        "extras": [
+          "audio"
+        ],
+        "unavailable_behavior": {
+          "read": "raises_import_error",
+          "write": "raises_import_error"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ],
+          "write": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ]
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_compressed_audio_public_io.py",
+          "line": 44,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/11",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/audio.py:314"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "mp3",
+      "aliases": [],
+      "public_classes": {
+        "read": [
+          "TimeSeries",
+          "TimeSeriesDict"
+        ],
+        "write": [
+          "TimeSeries",
+          "TimeSeriesDict"
+        ]
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ],
+        "write": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ]
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [
+          "pydub",
+          "tinytag"
+        ],
+        "extras": [
+          "audio"
+        ],
+        "unavailable_behavior": {
+          "read": "raises_import_error",
+          "write": "raises_import_error"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ],
+          "write": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ]
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_compressed_audio_public_io.py",
+          "line": 44,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/12",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/audio.py:314"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "m4a",
+      "aliases": [],
+      "public_classes": {
+        "read": [
+          "TimeSeries",
+          "TimeSeriesDict"
+        ],
+        "write": [
+          "TimeSeries",
+          "TimeSeriesDict"
+        ]
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ],
+        "write": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ]
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [
+          "pydub",
+          "tinytag"
+        ],
+        "extras": [
+          "audio"
+        ],
+        "unavailable_behavior": {
+          "read": "raises_import_error",
+          "write": "raises_import_error"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ],
+          "write": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ]
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_compressed_audio_public_io.py",
+          "line": 44,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/13",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/audio.py:314"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "gbd",
+      "aliases": [],
+      "public_classes": {
+        "read": [
+          "TimeSeries",
+          "TimeSeriesDict",
+          "TimeSeriesMatrix"
+        ],
+        "write": []
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesMatrix",
+            "contract_route": "registry"
+          }
+        ],
+        "write": []
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": [
+          "GUI auto-load is not part of the published GBD contract because it cannot supply timezone implicitly."
+        ]
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [],
+        "extras": [],
+        "unavailable_behavior": {
+          "read": "available_in_base_install",
+          "write": "not_public"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ],
+          "write": []
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_gbd_tdms_public_io.py",
+          "line": 17,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/14",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/gbd.py:500"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "tdms",
+      "aliases": [],
+      "public_classes": {
+        "read": [
+          "TimeSeries",
+          "TimeSeriesDict",
+          "TimeSeriesMatrix"
+        ],
+        "write": []
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesMatrix",
+            "contract_route": "registry"
+          }
+        ],
+        "write": []
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [
+          "nptdms"
+        ],
+        "extras": [
+          "io"
+        ],
+        "unavailable_behavior": {
+          "read": "raises_import_error",
+          "write": "not_public"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ],
+          "write": []
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_gbd_tdms_public_io.py",
+          "line": 17,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/15",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/tdms.py:201"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "mseed",
+      "aliases": [
+        "miniseed"
+      ],
+      "public_classes": {
+        "read": [
+          "TimeSeriesDict"
+        ],
+        "write": [
+          "TimeSeriesDict"
+        ]
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ],
+        "write": [
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ]
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [
+          "obspy"
+        ],
+        "extras": [
+          "seismic"
+        ],
+        "unavailable_behavior": {
+          "read": "raises_import_error",
+          "write": "raises_import_error"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ],
+          "write": [
+            "TimeSeries",
+            "TimeSeriesDict"
+          ]
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_seismic_public_io.py",
+          "line": 19,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/16",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/seismic.py:273"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "sac",
+      "aliases": [],
+      "public_classes": {
+        "read": [
+          "TimeSeriesDict"
+        ],
+        "write": [
+          "TimeSeriesDict"
+        ]
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ],
+        "write": [
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ]
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [
+          "obspy"
+        ],
+        "extras": [
+          "seismic"
+        ],
+        "unavailable_behavior": {
+          "read": "raises_import_error",
+          "write": "raises_import_error"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ],
+          "write": [
+            "TimeSeries",
+            "TimeSeriesDict"
+          ]
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_seismic_public_io.py",
+          "line": 19,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/17",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/seismic.py:288"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "gse2",
+      "aliases": [],
+      "public_classes": {
+        "read": [
+          "TimeSeriesDict"
+        ],
+        "write": [
+          "TimeSeriesDict"
+        ]
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ],
+        "write": [
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ]
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [
+          "obspy"
+        ],
+        "extras": [
+          "seismic"
+        ],
+        "unavailable_behavior": {
+          "read": "raises_import_error",
+          "write": "raises_import_error"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ],
+          "write": [
+            "TimeSeries",
+            "TimeSeriesDict"
+          ]
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_seismic_public_io.py",
+          "line": 19,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/18",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/seismic.py:300"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "knet",
+      "aliases": [],
+      "public_classes": {
+        "read": [
+          "TimeSeriesDict"
+        ],
+        "write": []
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ],
+        "write": []
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [
+          "obspy"
+        ],
+        "extras": [
+          "seismic"
+        ],
+        "unavailable_behavior": {
+          "read": "raises_import_error",
+          "write": "not_public"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ],
+          "write": []
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_seismic_public_io.py",
+          "line": 19,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/19",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/seismic.py:312"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "win",
+      "aliases": [
+        "win32"
+      ],
+      "public_classes": {
+        "read": [
+          "TimeSeriesDict"
+        ],
+        "write": []
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ],
+        "write": []
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [
+          "obspy"
+        ],
+        "extras": [
+          "seismic"
+        ],
+        "unavailable_behavior": {
+          "read": "conditional_registration",
+          "write": "not_public"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ],
+          "write": []
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_win_reader.py",
+          "line": 42,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/20",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/win.py:334"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "ats",
+      "aliases": [],
+      "public_classes": {
+        "read": [
+          "TimeSeries",
+          "TimeSeriesDict"
+        ],
+        "write": []
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          }
+        ],
+        "write": []
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [],
+        "extras": [],
+        "unavailable_behavior": {
+          "read": "available_in_base_install",
+          "write": "not_public"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ],
+          "write": []
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_ats_reader.py",
+          "line": 41,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/21",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/ats.py:503"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "ats.mth5",
+      "aliases": [],
+      "public_classes": {
+        "read": [
+          "TimeSeries"
+        ],
+        "write": []
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          }
+        ],
+        "write": []
+      },
+      "auto_identification": {
+        "public_auto_identify": false,
+        "registry_auto_identify": false,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [
+          "mth5"
+        ],
+        "extras": [
+          "seismic"
+        ],
+        "unavailable_behavior": {
+          "read": "raises_import_error",
+          "write": "not_public"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries"
+          ],
+          "write": []
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_ats_mth5_reader.py",
+          "line": 102,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/22",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/ats.py:512"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "nc",
+      "aliases": [
+        "netcdf4"
+      ],
+      "public_classes": {
+        "read": [
+          "TimeSeries",
+          "TimeSeriesDict",
+          "TimeSeriesMatrix"
+        ],
+        "write": [
+          "TimeSeries",
+          "TimeSeriesDict",
+          "TimeSeriesMatrix"
+        ]
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesMatrix",
+            "contract_route": "registry"
+          }
+        ],
+        "write": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesMatrix",
+            "contract_route": "registry"
+          }
+        ]
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": [
+          "The public auto-identified extension is .nc; .netcdf4 is a format-token alias, not a documented extension alias."
+        ]
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [
+          "xarray",
+          "netCDF4"
+        ],
+        "extras": [
+          "netcdf4"
+        ],
+        "unavailable_behavior": {
+          "read": "raises_import_error",
+          "write": "raises_import_error"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ],
+          "write": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ]
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_netcdf4_reader.py",
+          "line": 23,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/23",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/netcdf4_.py:663"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    },
+    {
+      "canonical_name": "zarr",
+      "aliases": [],
+      "public_classes": {
+        "read": [
+          "TimeSeries",
+          "TimeSeriesDict",
+          "TimeSeriesMatrix"
+        ],
+        "write": [
+          "TimeSeries",
+          "TimeSeriesDict",
+          "TimeSeriesMatrix"
+        ]
+      },
+      "explicit_format_route": {
+        "read": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesMatrix",
+            "contract_route": "registry"
+          }
+        ],
+        "write": [
+          {
+            "class": "TimeSeries",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesDict",
+            "contract_route": "registry"
+          },
+          {
+            "class": "TimeSeriesMatrix",
+            "contract_route": "registry"
+          }
+        ]
+      },
+      "auto_identification": {
+        "public_auto_identify": true,
+        "registry_auto_identify": true,
+        "contract_notes": []
+      },
+      "optional_dependency_policy": {
+        "optional_dependencies": [
+          "zarr"
+        ],
+        "extras": [
+          "zarr"
+        ],
+        "unavailable_behavior": {
+          "read": "raises_import_error",
+          "write": "raises_import_error"
+        }
+      },
+      "direct_registry_route": {
+        "direct_api": {
+          "read": [],
+          "write": []
+        },
+        "registry_api": {
+          "read": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ],
+          "write": [
+            "TimeSeries",
+            "TimeSeriesDict",
+            "TimeSeriesMatrix"
+          ]
+        }
+      },
+      "existing_relevant_test_coverage": [
+        {
+          "path": "tests/io/test_zarr_reader.py",
+          "line": 56,
+          "coverage_status": "existing_test_file_reference_only"
+        }
+      ],
+      "evidence": {
+        "contract_pointer": "docs/developers/contracts/public_io_contract.json#/formats/24",
+        "implementation_refs": [
+          "gwexpy/timeseries/io/zarr_.py:655"
+        ],
+        "registry_helper_refs": [
+          "gwexpy/io/registry.py:3",
+          "gwexpy/timeseries/io/_registration.py:43"
+        ]
+      },
+      "inventory_basis": "static_contract_and_source_only"
+    }
+  ]
+}
