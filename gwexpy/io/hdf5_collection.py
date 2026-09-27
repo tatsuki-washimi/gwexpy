@@ -12,6 +12,9 @@ ORDER_ATTR = "gwexpy_order"
 KIND_ATTR = "gwexpy_kind"
 LAYOUT_ATTR = "gwexpy_layout"
 VERSION_ATTR = "gwexpy_layout_version"
+COLLECTION_MANIFEST_ATTRS = frozenset(
+    {KEYMAP_ATTR, ORDER_ATTR, KIND_ATTR, LAYOUT_ATTR, VERSION_ATTR}
+)
 LAYOUT_DATASET = "dataset-per-entry"
 LAYOUT_GROUP = "group-per-entry"
 
@@ -48,6 +51,11 @@ def detect_hdf5_layout(h5f: h5py.File) -> str | None:
     if kinds == {"Group"}:
         return LAYOUT_GROUP
     return None
+
+
+def has_hdf5_collection_manifest(h5f: h5py.Group | h5py.File) -> bool:
+    """Return whether an HDF5 container has collection manifest metadata."""
+    return any(attr in h5f.attrs for attr in COLLECTION_MANIFEST_ATTRS)
 
 
 def write_hdf5_manifest(

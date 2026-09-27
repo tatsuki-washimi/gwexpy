@@ -29,6 +29,7 @@ from gwexpy.io.hdf5_collection import (
     LAYOUT_GROUP,
     detect_hdf5_layout,
     ensure_hdf5_file,
+    has_hdf5_collection_manifest,
     normalize_layout,
     read_hdf5_keymap,
     read_hdf5_order,
@@ -574,6 +575,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             end = kwargs.get("end")
 
             with h5py.File(source, "r") as h5f:
+                manifest_backed = has_hdf5_collection_manifest(h5f)
                 layout = detect_hdf5_layout(h5f)
                 keymap = read_hdf5_keymap(h5f)
                 order = read_hdf5_order(h5f)
@@ -584,6 +586,8 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                         try:
                             ts = TimeSeries.read(h5f, format="hdf5", path=ds_name)
                         except (KeyError, ValueError, TypeError, OSError) as e:
+                            if manifest_backed:
+                                raise
                             logger.debug("Skipping dataset %s: %s", ds_name, e)
                             continue
                         orig_key = keymap.get(ds_name, ds_name)
@@ -591,13 +595,17 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                     return apply_time_selection(out, start, end)
                 if layout == LAYOUT_GROUP:
                     for grp_name in keys:
+                        grp = h5f[grp_name]
                         try:
-                            grp = h5f[grp_name]
                             ts = TimeSeries.read(grp, format="hdf5", path="data")
-                        except (KeyError, ValueError, TypeError, OSError):
+                        except (KeyError, ValueError, TypeError, OSError) as e:
+                            if manifest_backed:
+                                raise
                             try:
                                 ts = TimeSeries.read(grp, format="hdf5")
                             except (KeyError, ValueError, TypeError, OSError) as e2:
+                                if manifest_backed:
+                                    raise e from e2
                                 logger.debug("Skipping group %s: %s", grp_name, e2)
                                 continue
                         orig_key = keymap.get(grp_name, grp_name)
@@ -2391,6 +2399,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
             with h5py.File(source, "r") as h5f:
+                manifest_backed = has_hdf5_collection_manifest(h5f)
                 layout = detect_hdf5_layout(h5f)
                 order = read_hdf5_order(h5f) or list(h5f.keys())
                 out_items: list[Any] = []
@@ -2399,19 +2408,25 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
                         try:
                             ts = TimeSeries.read(h5f, format="hdf5", path=ds_name)
                         except (KeyError, ValueError, TypeError, OSError) as e:
+                            if manifest_backed:
+                                raise
                             logger.debug("Skipping dataset %s: %s", ds_name, e)
                             continue
                         out_items.append(apply_time_selection(ts, start, end))
                     return cls(*out_items)
                 if layout == LAYOUT_GROUP:
                     for grp_name in order:
+                        grp = h5f[grp_name]
                         try:
-                            grp = h5f[grp_name]
                             ts = TimeSeries.read(grp, format="hdf5", path="data")
-                        except (KeyError, ValueError, TypeError, OSError):
+                        except (KeyError, ValueError, TypeError, OSError) as e:
+                            if manifest_backed:
+                                raise
                             try:
                                 ts = TimeSeries.read(grp, format="hdf5")
                             except (KeyError, ValueError, TypeError, OSError) as e2:
+                                if manifest_backed:
+                                    raise e from e2
                                 logger.debug("Skipping group %s: %s", grp_name, e2)
                                 continue
                         out_items.append(apply_time_selection(ts, start, end))
