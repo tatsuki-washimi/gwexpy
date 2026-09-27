@@ -5,6 +5,8 @@ Tests the extract_metadata parameter in audio.py and wav.py readers,
 including tinytag integration and error handling.
 """
 
+import shutil
+import struct
 import tempfile
 import warnings
 from pathlib import Path
@@ -49,6 +51,48 @@ def _create_minimal_wav_with_metadata(path: Path) -> dict:
         "duration": pytest.approx(duration, abs=0.01),
         "bitrate": pytest.approx(sample_rate * 16 / 1000, abs=1),  # kbps
     }
+
+
+def _add_wave_info_metadata(path: Path, *, title: str, artist: str) -> None:
+    """Append RIFF INFO tags so TinyTag can serve as the metadata oracle."""
+    raw = path.read_bytes()
+    info = bytearray(b"INFO")
+    for tag, value in ((b"INAM", title), (b"IART", artist)):
+        encoded = value.encode("utf-8") + b"\x00"
+        info.extend(tag + struct.pack("<I", len(encoded)) + encoded)
+        if len(encoded) % 2:
+            info.extend(b"\x00")
+
+    list_chunk = b"LIST" + struct.pack("<I", len(info)) + info
+    if len(info) % 2:
+        list_chunk += b"\x00"
+    raw += list_chunk
+    path.write_bytes(raw[:4] + struct.pack("<I", len(raw) - 8) + raw[8:])
+
+
+def _create_tagged_audio(path: Path, format_name: str) -> Path:
+    """Create a short tagged WAV/FLAC fixture for public registry reads."""
+    wav_path = path.with_suffix(".wav")
+    sample_rate = 8000
+    data = np.array([1000, -2000, 3000, -4000, 5000], dtype=np.int16)
+    wavfile.write(wav_path, sample_rate, data)
+    _add_wave_info_metadata(
+        wav_path, title="Registry metadata title", artist="GWexpy test"
+    )
+
+    if format_name == "wav":
+        return wav_path
+
+    if shutil.which("ffmpeg") is None:
+        pytest.skip("ffmpeg is required to create a tagged FLAC fixture")
+    audio_segment = pytest.importorskip("pydub").AudioSegment
+    flac_path = path.with_suffix(".flac")
+    audio_segment.from_wav(str(wav_path)).export(
+        str(flac_path),
+        format="flac",
+        tags={"title": "Registry metadata title", "artist": "GWexpy test"},
+    )
+    return flac_path
 
 
 # --- Unit tests for extract_audio_metadata ---
@@ -191,6 +235,72 @@ def test_wav_metadata_extraction(tmp_path):
     # Should have duration metadata
     assert "duration" in provenance
     assert provenance["duration"] == expected["duration"]
+
+
+@pytest.mark.parametrize("format_name", ["wav", "flac"])
+@pytest.mark.skipif(not TINYTAG_AVAILABLE, reason="tinytag not installed")
+def test_public_audio_registry_preserves_available_metadata(tmp_path, format_name):
+    """Public WAV/FLAC reads keep metadata reported by TinyTag in provenance."""
+    from tinytag import TinyTag
+
+    path = _create_tagged_audio(tmp_path / f"registry.{format_name}", format_name)
+    tag = TinyTag.get(str(path))
+    expected = {
+        "title": tag.title,
+        "bitrate": tag.bitrate,
+        "duration": tag.duration,
+    }
+    assert all(value is not None for value in expected.values())
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        tsd = TimeSeriesDict.read(path, format=format_name, extract_metadata=True)
+    assert not caught
+    provenance = getattr(tsd, "_gwexpy_io", None)
+    if provenance is None and isinstance(getattr(tsd, "attrs", None), dict):
+        provenance = tsd.attrs
+
+    assert isinstance(provenance, dict)
+    assert provenance["title"] == expected["title"]
+    assert provenance["bitrate"] == pytest.approx(expected["bitrate"])
+    assert provenance["duration"] == pytest.approx(expected["duration"])
+
+
+@pytest.mark.skipif(not TINYTAG_AVAILABLE, reason="tinytag not installed")
+def test_public_audio_registry_merges_metadata_into_existing_provenance(
+    tmp_path, monkeypatch
+):
+    """Registry metadata augments provenance already attached by the reader."""
+    from gwpy.timeseries import TimeSeriesDict as GwpyTimeSeriesDict
+    from tinytag import TinyTag
+
+    path = _create_tagged_audio(tmp_path / "registry.wav", "wav")
+    expected_tag = TinyTag.get(str(path))
+
+    def read_with_baseline_provenance(cls, source, *args, **kwargs):
+        result = cls()
+        result._gwexpy_io = {
+            "format": "wav",
+            "epoch_source": "user",
+            "unit_source": "override",
+            "reader_marker": "preserve-me",
+        }
+        return result
+
+    monkeypatch.setattr(
+        GwpyTimeSeriesDict, "read", classmethod(read_with_baseline_provenance)
+    )
+    tsd = TimeSeriesDict.read(path, format="wav", extract_metadata=True)
+    provenance = getattr(tsd, "_gwexpy_io", None)
+
+    assert isinstance(provenance, dict)
+    assert provenance["format"] == "wav"
+    assert provenance["epoch_source"] == "user"
+    assert provenance["unit_source"] == "override"
+    assert provenance["reader_marker"] == "preserve-me"
+    assert provenance["title"] == expected_tag.title
+    assert provenance["bitrate"] == pytest.approx(expected_tag.bitrate)
+    assert provenance["duration"] == pytest.approx(expected_tag.duration)
 
 
 # --- Integration tests with audio.py reader ---

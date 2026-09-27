@@ -165,12 +165,18 @@ class SeriesMatrixIOMixin:
 
         # Fall back to unified registry.  Any failure is re-raised unchanged
         # when a format was given; only an *unidentified* format gets the
-        # friendlier message.  (The original ``except (KeyError, TypeError,
-        # ValueError, Exception)`` was just ``except Exception`` spelled
-        # redundantly.)
+        # friendlier message.  Preserve missing optional backend errors for
+        # auto-selected NetCDF and Zarr routes so their install hints remain
+        # actionable.
         try:
             return io_registry.write(self, target, format=format, **kwargs)
-        except Exception:
+        except Exception as exc:
+            if (
+                format is None
+                and ext in {".nc", ".zarr"}
+                and isinstance(exc, ImportError)
+            ):
+                raise
             if format is None:
                 raise ValueError(
                     f"Could not identify format for {target}. "
@@ -350,10 +356,17 @@ class SeriesMatrixIOMixin:
         if format != "hdf5":
             # Fall back to unified registry.  Re-raise unchanged when a format
             # was given; only an unidentified format gets the friendlier
-            # message.
+            # message. Preserve missing optional NetCDF and Zarr backends on
+            # auto routes.
             try:
                 return io_registry.read(cls, source, format=format, **kwargs)
-            except Exception:
+            except Exception as exc:
+                if (
+                    format is None
+                    and _ext in {".nc", ".zarr"}
+                    and isinstance(exc, ImportError)
+                ):
+                    raise
                 if format is None:
                     raise ValueError(
                         f"Could not identify format for {source}. "

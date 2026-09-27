@@ -1,0 +1,1720 @@
+{
+  "schema": "gwexpy-public-io-cross-format-post-fix-v1",
+  "created": "2026-09-27",
+  "baseline": {
+    "matrix_ref": "2026-09-27-public-io-cross-format-audit/runtime-characterization-matrix.json",
+    "matrix_sha256": "b144f65292a8161bda0a50af8ac12db9f81a2a44ca04bdd5c8b88728e5802612",
+    "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+    "scenario_count": 74,
+    "status_counts": {
+      "CONFIRMED_CORRECTNESS_DEFECT": 36,
+      "CONFIRMED_COMPATIBILITY_BEHAVIOR": 6,
+      "CONFIRMED_INTENTIONAL_BEHAVIOR": 8,
+      "REFUTED_STATIC_SUSPICION": 12,
+      "BLOCKED": 12
+    },
+    "immutability": "The referenced baseline report, matrix, evidence, reproduction bundle, and ZIP are unchanged."
+  },
+  "post_fix_source": {
+    "repository": "tatsuki-washimi/gwexpy",
+    "branch": "codex/fix-public-io-audit-20260927",
+    "implementation_base_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+    "baseline_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+    "working_tree_state": "Qualified source and test contents are bound to the final complete Git tree by the Qualified-Tree trailer on the audit/evidence-only commit.",
+    "source_tree_content_sha256": "c192c52eb2b3adab7a388f199de7000913fd4609f352a9b867b68287b12943f2",
+    "qualified_git_tree_sha_storage": "Qualified-Tree trailer on final audit/evidence-only commit; the report and matrix are blobs in that tree and therefore do not embed a self-referential tree hash.",
+    "runtime_commit_count": 9,
+    "runtime_commit_boundaries": [
+      {
+        "order": 1,
+        "commit_subject": "fix(netcdf): reject malformed matrix topology and unsafe dtype casts",
+        "finding_ids": ["NC-MATRIX-001 through NC-MATRIX-007", "NC-DTYPE-001"]
+      },
+      {
+        "order": 2,
+        "commit_subject": "fix(netcdf): reject irregular legacy time axes",
+        "finding_ids": ["NC-AXIS-001", "NC-AXIS-002"]
+      },
+      {
+        "order": 3,
+        "commit_subject": "fix(netcdf): preserve matrix cell units",
+        "finding_ids": ["NC-MATRIX-UNIT-001", "NC-MATRIX-UNIT-002"]
+      },
+      {
+        "order": 4,
+        "commit_subject": "fix(zarr): preserve values, axes, units, and multi-store dtypes",
+        "finding_ids": ["ZARR-DTYPE-001", "ZARR-DTYPE-002", "ZARR-AXIS-001", "ZARR-UNIT-001", "ZARR-MULTISTORE-DTYPE-001", "ZARR-UINT64-001"]
+      },
+      {
+        "order": 5,
+        "commit_subject": "fix(zarr): preserve public auto routes without optional dependencies",
+        "finding_ids": ["ZARR-AUTO-001", "OPTIONAL-002", "OPTIONAL-003"]
+      },
+      {
+        "order": 6,
+        "commit_subject": "fix(tdms): reject invalid waveform increments",
+        "finding_ids": ["TDMS-TIME-001 through TDMS-TIME-005", "TDMS-TIME-010"]
+      },
+      {
+        "order": 7,
+        "commit_subject": "fix(gbd): reject malformed GL500 header fields",
+        "finding_ids": ["GBD-HEADER-001", "GBD-HEADER-003 through GBD-HEADER-005"]
+      },
+      {
+        "order": 8,
+        "commit_subject": "fix(hdf5): fail closed on invalid manifest collection payloads",
+        "finding_ids": ["HDF5-TS-COLL-001", "HDF5-FS-COLL-001", "HDF5-SPEC-COLL-001", "HDF5-HIST-COLL-001", "HDF5-MANIFEST-PAYLOAD-001"]
+      },
+      {
+        "order": 9,
+        "commit_subject": "fix(audio): preserve registry tag provenance",
+        "finding_ids": ["AUDIO-METADATA-001"]
+      }
+    ],
+    "source_tree_files_in_digest": [
+      "docs/developers/plans/manifests/audit-manifest-v0.2.3-gwpy-overrides.json",
+      "gwexpy/frequencyseries/collections.py",
+      "gwexpy/histogram/collections.py",
+      "gwexpy/io/hdf5_collection.py",
+      "gwexpy/spectrogram/collections.py",
+      "gwexpy/timeseries/collections.py",
+      "gwexpy/timeseries/io/gbd.py",
+      "gwexpy/timeseries/io/netcdf4_.py",
+      "gwexpy/timeseries/io/tdms.py",
+      "gwexpy/timeseries/io/zarr_.py",
+      "gwexpy/timeseries/timeseries.py",
+      "gwexpy/types/series_matrix_io.py",
+      "tests/io/test_audio_metadata.py",
+      "tests/io/test_gbd_gl500_header_validation.py",
+      "tests/io/test_hdf5_manifest_collection_integrity.py",
+      "tests/io/test_netcdf4_matrix_validation.py",
+      "tests/io/test_optional_deps.py",
+      "tests/io/test_tdms_invalid_increment_contract.py",
+      "tests/io/test_zarr_reader.py"
+    ],
+    "qualification_identity_note": "The content digest covers modified/added gwexpy and tests files plus the GWpy override inventory source-location metadata. Report/evidence files are excluded."
+  },
+  "environment": {
+    "name": "conda environment gwexpy",
+    "python": "3.11.14",
+    "gwexpy": "0.2.4 editable install from this worktree",
+    "gwpy": "4.0.2",
+    "numpy": "1.26.4",
+    "xarray": "2026.2.0",
+    "netCDF4": "1.7.4",
+    "zarr": "3.1.5",
+    "nptdms": "1.11.0",
+    "obspy": "1.5.0",
+    "scipy": "1.12.0",
+    "pydub": "0.25.1",
+    "tinytag": "2.3.0",
+    "h5py": "3.16.0",
+    "mth5": "0.6.8",
+    "ffmpeg": "/usr/bin/ffmpeg",
+    "optional_dependency_note": "The selected qualification environment contains the listed optional packages. A separate fresh-process probe in the audit base environment confirmed that zarr, xarray, and netCDF4 are absent and that six public auto routes return the backend-specific ImportError."
+  },
+  "post_fix_scenario_count": 74,
+  "post_fix_status_enum": [
+    "FIX_VERIFIED",
+    "NOT_REQUALIFIED"
+  ],
+  "post_fix_status_counts": {
+    "FIX_VERIFIED": 36,
+    "NOT_REQUALIFIED": 38
+  },
+  "finding_status_semantics": "baseline_finding_status is immutable baseline classification. FIX_VERIFIED means a named public-route regression assertion passed in the post-fix worktree. NOT_REQUALIFIED means the baseline scenario remains linked for context but was not independently rerun; it is not a new post-fix classification.",
+  "qualification_runs": [
+    {
+      "id": "targeted_io_regressions",
+      "command": "rtk proxy conda run -n gwexpy env GWEXPY_ALLOW_ZARR=1 PYTHONPATH=. python -m pytest --junitxml=docs/developers/reports/2026-09-27-public-io-cross-format-post-fix-evidence/targeted-regressions.xml -q tests/io/test_audio_metadata.py tests/io/test_tdms_invalid_increment_contract.py tests/io/test_gbd_tdms_public_io.py tests/io/test_zarr_reader.py tests/io/test_optional_deps.py tests/io/test_netcdf4_matrix_validation.py tests/io/test_netcdf4_reader.py tests/io/test_hdf5_manifest_collection_integrity.py tests/io/test_histogram_hdf5_io.py tests/io/test_gwpy_hdf5_compat.py tests/io/test_gbd_gl500_header_validation.py",
+      "result": {
+        "passed": 319,
+        "skipped": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "evidence_ref": "2026-09-27-public-io-cross-format-post-fix-evidence/targeted-regressions.xml"
+    },
+    {
+      "id": "io_contract_gate",
+      "command": "rtk proxy conda run -n gwexpy python scripts/ci/run_gate.py io-contract",
+      "result": {
+        "passed": 1797,
+        "skipped": 35,
+        "deselected": 1,
+        "failures": 0
+      }
+    },
+    {
+      "id": "io_conformance_gate",
+      "command": "rtk proxy conda run -n gwexpy python scripts/ci/run_gate.py io-conformance",
+      "result": {
+        "passed": 71,
+        "skipped": 7,
+        "failures": 0,
+        "expanded_contract_blocking_display": "6 blocked / 6 total"
+      }
+    },
+    {
+      "id": "io_optional_gate",
+      "command": "rtk proxy conda run -n gwexpy python scripts/ci/run_gate.py io-optional",
+      "result": {
+        "passed": 81,
+        "skipped": 1,
+        "failures": 0
+      }
+    },
+    {
+      "id": "io_zarr_gate",
+      "command": "rtk proxy conda run -n gwexpy python scripts/ci/run_gate.py io-zarr",
+      "result": {
+        "passed": 60,
+        "failures": 0
+      }
+    },
+    {
+      "id": "gwpy_hdf5_compatibility",
+      "command": "rtk proxy conda run -n gwexpy env GWEXPY_ALLOW_ZARR=1 PYTHONPATH=. python -m pytest tests/io/test_gwpy_hdf5_compat.py tests/io/test_hdf5_manifest_collection_integrity.py tests/io/test_histogram_hdf5_io.py -q",
+      "result": {
+        "passed": 72,
+        "failures": 0
+      }
+    },
+    {
+      "id": "full_pytest",
+      "command": "rtk proxy conda run -n gwexpy env GWEXPY_ALLOW_ZARR=1 PYTHONPATH=. python -m pytest -q --tb=short",
+      "result": {
+        "passed": 13425,
+        "skipped": 278,
+        "xfailed": 6,
+        "failures": 0,
+        "duration_seconds": 715.26
+      }
+    },
+    {
+      "id": "ruff_check",
+      "command": "rtk proxy conda run -n gwexpy ruff check gwexpy tests",
+      "result": {
+        "status": "passed",
+        "summary": "All checks passed!"
+      }
+    },
+    {
+      "id": "ruff_format_check",
+      "command": "rtk proxy conda run -n gwexpy ruff format --check <18 changed Python files>",
+      "result": {
+        "status": "passed",
+        "files_checked": 18
+      }
+    },
+    {
+      "id": "mypy_changed_production_files",
+      "command": "rtk proxy conda run -n gwexpy mypy --ignore-missing-imports <11 changed production files>",
+      "result": {
+        "status": "passed",
+        "files_checked": 11,
+        "summary": "Success: no issues found in 11 source files"
+      }
+    },
+    {
+      "id": "git_diff_check",
+      "command": "git diff --check",
+      "result": {
+        "status": "passed"
+      }
+    },
+    {
+      "id": "optional_missing_backend_public_routes",
+      "command": "conda run -p /home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/base env GWEXPY_ALLOW_ZARR=1 PYTHONPATH=. python docs/developers/reports/2026-09-27-public-io-cross-format-post-fix-evidence/probe_missing_zarr_public_routes.py",
+      "result": {
+        "routes_checked": 6,
+        "expected_import_errors": 6,
+        "unexpected_results": 0,
+        "absent_modules": [
+          "zarr",
+          "xarray",
+          "netCDF4"
+        ],
+        "fresh_process": true
+      },
+      "evidence_ref": "2026-09-27-public-io-cross-format-post-fix-evidence/optional-missing-zarr-public-routes.json"
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "NC-MATRIX-001",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_value_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "baseline_expected": "Reject incomplete topology before returning a complete-looking 2x2 matrix.",
+      "baseline_actual": "Returns shape (2,2,3); cell r1,c1 has no source assignment. Classification is based on accepted incomplete topology, not the incidental bytes in np.empty.",
+      "baseline_command_id": "A-NETCDF-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Public matrix reads now reject malformed cell topology, key/index conflicts, invalid indices, and unit conflicts before returning a matrix.",
+      "regression_tests": [
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_read_rejects_bad_topology_or_units",
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_read_rejects_consistent_axis_index_corruption"
+      ]
+    },
+    {
+      "finding_id": "NC-MATRIX-002",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_entry_loss",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "baseline_expected": "Reject two source variables assigned to one matrix cell.",
+      "baseline_actual": "Returns the last value 99 at r0,c0, dropping the original value 11.",
+      "baseline_command_id": "A-NETCDF-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Public matrix reads now reject malformed cell topology, key/index conflicts, invalid indices, and unit conflicts before returning a matrix.",
+      "regression_tests": [
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_read_rejects_bad_topology_or_units",
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_read_rejects_consistent_axis_index_corruption"
+      ]
+    },
+    {
+      "finding_id": "NC-MATRIX-003",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_metadata_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "baseline_expected": "Reject one row or column key mapped to conflicting indices.",
+      "baseline_actual": "Returns a dense matrix and normalizes the conflicting axis labels, discarding source index meaning.",
+      "baseline_command_id": "A-NETCDF-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Public matrix reads now reject malformed cell topology, key/index conflicts, invalid indices, and unit conflicts before returning a matrix.",
+      "regression_tests": [
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_read_rejects_bad_topology_or_units",
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_read_rejects_consistent_axis_index_corruption"
+      ]
+    },
+    {
+      "finding_id": "NC-MATRIX-004",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_metadata_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "baseline_expected": "Reject distinct row or column keys assigned the same index.",
+      "baseline_actual": "Returns both keys in a dense output axis without preserving the contradictory source index mapping.",
+      "baseline_command_id": "A-NETCDF-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Public matrix reads now reject malformed cell topology, key/index conflicts, invalid indices, and unit conflicts before returning a matrix.",
+      "regression_tests": [
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_read_rejects_bad_topology_or_units",
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_read_rejects_consistent_axis_index_corruption"
+      ]
+    },
+    {
+      "finding_id": "NC-MATRIX-005",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_metadata_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "baseline_expected": "Reject a negative row or column index.",
+      "baseline_actual": "Returns a matrix with the affected axis reordered to include the negative-index key.",
+      "baseline_command_id": "A-NETCDF-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Public matrix reads now reject malformed cell topology, key/index conflicts, invalid indices, and unit conflicts before returning a matrix.",
+      "regression_tests": [
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_read_rejects_bad_topology_or_units",
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_read_rejects_consistent_axis_index_corruption"
+      ]
+    },
+    {
+      "finding_id": "NC-MATRIX-006",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_metadata_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "baseline_expected": "Reject sparse, nonzero-based, or out-of-range row/column indices.",
+      "baseline_actual": "Returns a dense matrix with the source index meaning dropped; all variants returned shape (2,2,3).",
+      "baseline_command_id": "A-NETCDF-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Public matrix reads now reject malformed cell topology, key/index conflicts, invalid indices, and unit conflicts before returning a matrix.",
+      "regression_tests": [
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_read_rejects_bad_topology_or_units",
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_read_rejects_consistent_axis_index_corruption"
+      ]
+    },
+    {
+      "finding_id": "NC-MATRIX-007",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_metadata_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "baseline_expected": "Reject incompatible units or retain per-cell distinctions.",
+      "baseline_actual": "Returns all four cells labeled V; c11 value 22 is mislabeled as volts.",
+      "baseline_command_id": "A-NETCDF-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Public matrix reads now reject malformed cell topology, key/index conflicts, invalid indices, and unit conflicts before returning a matrix.",
+      "regression_tests": [
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_read_rejects_bad_topology_or_units",
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_read_rejects_consistent_axis_index_corruption"
+      ]
+    },
+    {
+      "finding_id": "NC-MATRIX-008",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "BLOCKED",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "baseline_expected": "A valid fixture must reach the public reader with genuinely different cell lengths.",
+      "baseline_actual": "The shared sample dimension fixes one length; no valid independent fixture was found.",
+      "baseline_command_id": "A-NETCDF-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "NC-MATRIX-009",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "BLOCKED",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "baseline_expected": "A valid fixture must establish an authoritative separate cell axis.",
+      "baseline_actual": "Extra per-cell t0/dt attrs are ignored and do not establish distinct source axes.",
+      "baseline_command_id": "A-NETCDF-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "NC-AXIS-001",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_axis_corruption",
+      "public_entrypoint": "TimeSeries.read(path, format='nc') and auto; Dict and Matrix legacy routes also exercised",
+      "baseline_expected": "Preserve source times or explicitly reject irregular cadence.",
+      "baseline_actual": "Returned times are [0,1,2,3,4], compressing the source gap.",
+      "baseline_command_id": "A-NETCDF-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Public single, Dict, and Matrix readers reject irregular numeric and datetime coordinates instead of compressing the source gap.",
+      "regression_tests": [
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_legacy_read_rejects_irregular_time"
+      ]
+    },
+    {
+      "finding_id": "NC-AXIS-002",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_axis_corruption",
+      "public_entrypoint": "TimeSeries.read(path, format='nc') and auto; Dict and Matrix legacy routes also exercised",
+      "baseline_expected": "Preserve the gap in source datetime coordinates or reject irregular cadence.",
+      "baseline_actual": "Returned GPS times advance by one second at every sample, compressing the gap.",
+      "baseline_command_id": "A-NETCDF-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Public single, Dict, and Matrix readers reject irregular numeric and datetime coordinates instead of compressing the source gap.",
+      "regression_tests": [
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_legacy_read_rejects_irregular_time"
+      ]
+    },
+    {
+      "finding_id": "NC-MATRIX-UNIT-001",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_metadata_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.write(path, format='nc') and auto",
+      "baseline_expected": "Serialize source cell units V.",
+      "baseline_actual": "Explicit and auto Matrix writers store units as an empty string.",
+      "baseline_command_id": "A-NETCDF-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "The public Matrix writer stores V on each cell and the public reader restores V.",
+      "regression_tests": [
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_roundtrip_preserves_unit"
+      ]
+    },
+    {
+      "finding_id": "NC-MATRIX-UNIT-002",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_metadata_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc') and auto",
+      "baseline_expected": "Retain the source cell unit V.",
+      "baseline_actual": "Matrix cell unit is empty.",
+      "baseline_command_id": "A-NETCDF-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "The public legacy Matrix reader retains the source cell unit V.",
+      "regression_tests": [
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_read_legacy_single_channel_preserves_unit"
+      ]
+    },
+    {
+      "finding_id": "NC-DTYPE-001",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_value_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='nc')",
+      "baseline_expected": "Preserve the second-cell float64 values or reject explicitly; do not return altered finite values.",
+      "baseline_actual": "Returns an int32 matrix with the second cell silently converted to [1, 2, 3].",
+      "baseline_command_id": "A-NETCDF-DTYPE-FOLLOWUP",
+      "baseline_evidence": "evidence/lane-a/heterogeneous_dtype.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "A heterogeneous int32/float64 Matrix is explicitly rejected when no safe common representation exists; finite values are not truncated.",
+      "regression_tests": [
+        "tests/io/test_netcdf4_matrix_validation.py::test_public_matrix_read_handles_heterogeneous_numeric_cell_dtypes"
+      ]
+    },
+    {
+      "finding_id": "NC-ROUTE-001",
+      "formats": [
+        "nc"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "REFUTED_STATIC_SUSPICION",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeries, TimeSeriesDict and TimeSeriesMatrix explicit and auto routes",
+      "baseline_expected": "Public NetCDF routes should return declared classes and preserve valid values.",
+      "baseline_actual": "The exercised complete fixtures returned declared classes and correct values/labels.",
+      "baseline_command_id": "A-NETCDF-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/netcdf_present.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "ZARR-DTYPE-001",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_value_corruption",
+      "public_entrypoint": "TimeSeries, TimeSeriesDict and TimeSeriesMatrix public explicit read/write routes",
+      "baseline_expected": "Preserve exact int64 values on read and write.",
+      "baseline_actual": "Values become float64 [9007199254740992,-9007199254740996,17], silently rounding two integers.",
+      "baseline_command_id": "A-ZARR-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/zarr_present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Public Zarr reads and writes preserve exact int64 values beyond 2**53.",
+      "regression_tests": [
+        "tests/io/test_zarr_reader.py::test_public_zarr_reads_preserve_int64_and_complex_values",
+        "tests/io/test_zarr_reader.py::test_public_zarr_writes_preserve_int64_and_complex_values"
+      ]
+    },
+    {
+      "finding_id": "ZARR-DTYPE-002",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_value_corruption",
+      "public_entrypoint": "TimeSeries, TimeSeriesDict and TimeSeriesMatrix public explicit read/write routes",
+      "baseline_expected": "Preserve complex values or explicitly reject unsupported complex dtype.",
+      "baseline_actual": "Public read/write returns float64 real parts only and emits ComplexWarning.",
+      "baseline_command_id": "A-ZARR-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/zarr_present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Public Zarr reads and writes retain both real and imaginary components of complex values.",
+      "regression_tests": [
+        "tests/io/test_zarr_reader.py::test_public_zarr_reads_preserve_int64_and_complex_values",
+        "tests/io/test_zarr_reader.py::test_public_zarr_writes_preserve_int64_and_complex_values"
+      ]
+    },
+    {
+      "finding_id": "ZARR-DTYPE-003",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "BLOCKED",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeries, TimeSeriesDict and TimeSeriesMatrix public explicit read/write routes",
+      "baseline_expected": "Whether dtype-only widening is a defect is unspecified when values remain exact.",
+      "baseline_actual": "These dtypes become float64 while representable values remain exact.",
+      "baseline_command_id": "A-ZARR-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/zarr_present.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "ZARR-DTYPE-004",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "REFUTED_STATIC_SUSPICION",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeries, TimeSeriesDict and TimeSeriesMatrix public explicit read/write routes",
+      "baseline_expected": "Preserve float64 values and dtype.",
+      "baseline_actual": "Values, float64 dtype, axes and unit were retained.",
+      "baseline_command_id": "A-ZARR-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/zarr_present.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "ZARR-AUTO-001",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "api_route_mismatch",
+      "public_entrypoint": "TimeSeries.read(path) auto-identification for a .zarr directory",
+      "baseline_expected": "Auto route should identify and read a supported .zarr store.",
+      "baseline_actual": "Raises IsADirectoryError. TimeSeriesDict and TimeSeriesMatrix auto routes succeeded.",
+      "baseline_command_id": "A-ZARR-PRESENT",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/zarr_present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "The public single-TimeSeries auto route reads a supported .zarr directory and preserves its series identity and values.",
+      "regression_tests": [
+        "tests/io/test_zarr_reader.py::test_public_single_timeseries_auto_reads_zarr_store"
+      ]
+    },
+    {
+      "finding_id": "OPTIONAL-001",
+      "formats": [
+        "nc",
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_INTENTIONAL_BEHAVIOR",
+      "baseline_impact_class": null,
+      "public_entrypoint": "Explicit NetCDF/Zarr reads and writes in base profile",
+      "baseline_expected": "Raise ImportError with install guidance when optional backend is absent.",
+      "baseline_actual": "All exercised explicit operations raise the documented ImportError.",
+      "baseline_command_id": "A-OPTIONAL-BASE",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/missing_base.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "OPTIONAL-002",
+      "formats": [
+        "nc",
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "api_route_mismatch",
+      "public_entrypoint": "TimeSeriesMatrix.read/write auto routes for .nc and .zarr",
+      "baseline_expected": "Surface the missing optional dependency as ImportError.",
+      "baseline_actual": "Four Matrix auto operations return a generic could-not-identify ValueError instead.",
+      "baseline_command_id": "A-OPTIONAL-BASE",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/missing_base.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "A fresh process with zarr, xarray, and netCDF4 absent returned backend-specific ImportError for Matrix Zarr and NetCDF auto read/write routes; module-boundary regressions also cover dependency resolution.",
+      "post_fix_environment_run_id": "optional_missing_backend_public_routes",
+      "post_fix_environment_evidence_ref": "2026-09-27-public-io-cross-format-post-fix-evidence/optional-missing-zarr-public-routes.json",
+      "regression_tests": [
+        "tests/io/test_optional_deps.py::test_public_matrix_auto_read_preserves_optional_backend_importerror",
+        "tests/io/test_optional_deps.py::test_public_matrix_auto_write_preserves_optional_backend_importerror"
+      ]
+    },
+    {
+      "finding_id": "OPTIONAL-003",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "api_route_mismatch",
+      "public_entrypoint": "TimeSeries.read(path) auto-identification for a .zarr directory",
+      "baseline_expected": "Raise ImportError when Zarr is absent.",
+      "baseline_actual": "The single-series auto route raises IsADirectoryError in both profiles, masking dependency state.",
+      "baseline_command_id": "A-OPTIONAL-BASE",
+      "baseline_evidence": "evidence/lane-a/report.md; evidence/lane-a/missing_base.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "A fresh process with Zarr absent returned the Zarr-specific ImportError from TimeSeries, TimeSeriesDict, and TimeSeriesMatrix public auto reads.",
+      "post_fix_environment_run_id": "optional_missing_backend_public_routes",
+      "post_fix_environment_evidence_ref": "2026-09-27-public-io-cross-format-post-fix-evidence/optional-missing-zarr-public-routes.json",
+      "regression_tests": [
+        "tests/io/test_optional_deps.py::TestZarrImportGuard::test_public_auto_zarr_reads_preserve_missing_backend_importerror"
+      ]
+    },
+    {
+      "finding_id": "TDMS-TIME-001",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_axis_corruption",
+      "public_entrypoint": "TimeSeries.read; Dict and Matrix public reads also exercised",
+      "baseline_expected": "Fail closed because sample interval is unavailable.",
+      "baseline_actual": "Returns dt=1.0 while preserving values and channel labels.",
+      "baseline_command_id": "B-TDMS-PRESENT",
+      "baseline_evidence": "evidence/lane-b/tdms.jsonl; evidence/lane-b/reassessment.md",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Public TimeSeries, Dict, and Matrix reads reject absent, boolean, zero, negative, NaN, and infinite wf_increment values, including with an epoch override.",
+      "regression_tests": [
+        "tests/io/test_tdms_invalid_increment_contract.py::test_public_tdms_readers_reject_missing_or_invalid_waveform_increment"
+      ]
+    },
+    {
+      "finding_id": "TDMS-TIME-002",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_axis_corruption",
+      "public_entrypoint": "TimeSeries.read; Dict and Matrix public reads also exercised",
+      "baseline_expected": "Preserve the native zero spacing or reject invalid timing.",
+      "baseline_actual": "Returns dt=1.0.",
+      "baseline_command_id": "B-TDMS-PRESENT",
+      "baseline_evidence": "evidence/lane-b/tdms.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Public TimeSeries, Dict, and Matrix reads reject absent, boolean, zero, negative, NaN, and infinite wf_increment values, including with an epoch override.",
+      "regression_tests": [
+        "tests/io/test_tdms_invalid_increment_contract.py::test_public_tdms_readers_reject_missing_or_invalid_waveform_increment"
+      ]
+    },
+    {
+      "finding_id": "TDMS-TIME-003",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "fabricated_metadata",
+      "public_entrypoint": "TimeSeries.read; Dict and Matrix public reads also exercised",
+      "baseline_expected": "Do not silently replace malformed time metadata with a plausible finite interval.",
+      "baseline_actual": "Returns finite dt=1.0.",
+      "baseline_command_id": "B-TDMS-PRESENT",
+      "baseline_evidence": "evidence/lane-b/tdms.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Public TimeSeries, Dict, and Matrix reads reject absent, boolean, zero, negative, NaN, and infinite wf_increment values, including with an epoch override.",
+      "regression_tests": [
+        "tests/io/test_tdms_invalid_increment_contract.py::test_public_tdms_readers_reject_missing_or_invalid_waveform_increment"
+      ]
+    },
+    {
+      "finding_id": "TDMS-TIME-004",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "fabricated_metadata",
+      "public_entrypoint": "TimeSeries.read; Dict and Matrix public reads also exercised",
+      "baseline_expected": "Reject malformed/nonfinite sample interval.",
+      "baseline_actual": "Returns finite dt=1.0.",
+      "baseline_command_id": "B-TDMS-PRESENT",
+      "baseline_evidence": "evidence/lane-b/tdms.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Public TimeSeries, Dict, and Matrix reads reject absent, boolean, zero, negative, NaN, and infinite wf_increment values, including with an epoch override.",
+      "regression_tests": [
+        "tests/io/test_tdms_invalid_increment_contract.py::test_public_tdms_readers_reject_missing_or_invalid_waveform_increment"
+      ]
+    },
+    {
+      "finding_id": "TDMS-TIME-005",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "fabricated_metadata",
+      "public_entrypoint": "TimeSeries.read; Dict and Matrix public reads also exercised",
+      "baseline_expected": "Reject malformed/nonfinite sample interval.",
+      "baseline_actual": "Returns finite dt=1.0.",
+      "baseline_command_id": "B-TDMS-PRESENT",
+      "baseline_evidence": "evidence/lane-b/tdms.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Public TimeSeries, Dict, and Matrix reads reject absent, boolean, zero, negative, NaN, and infinite wf_increment values, including with an epoch override.",
+      "regression_tests": [
+        "tests/io/test_tdms_invalid_increment_contract.py::test_public_tdms_readers_reject_missing_or_invalid_waveform_increment"
+      ]
+    },
+    {
+      "finding_id": "TDMS-TIME-006",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "REFUTED_STATIC_SUSPICION",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeries.read; Dict and Matrix public reads also exercised",
+      "baseline_expected": "Retain interval, timestamp and values.",
+      "baseline_actual": "dt=.25, GPS t0=1388199863, values and channel naming match.",
+      "baseline_command_id": "B-TDMS-PRESENT",
+      "baseline_evidence": "evidence/lane-b/tdms.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "TDMS-TIME-007",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "BLOCKED",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeries.read(..., format='tdms')",
+      "baseline_expected": "Contract does not resolve whether this root property is authoritative channel time.",
+      "baseline_actual": "GWexpy uses root DateTime as the channel t0.",
+      "baseline_command_id": "B-TDMS-PRESENT",
+      "baseline_evidence": "evidence/lane-b/tdms.jsonl; evidence/lane-b/reassessment.md",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "TDMS-TIME-008",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "BLOCKED",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeries.read(..., format='tdms')",
+      "baseline_expected": "Resolve whether to retain relative zero origin or reject missing absolute epoch.",
+      "baseline_actual": "GWexpy returns t0=0, dt=.25, with matching relative coordinates.",
+      "baseline_command_id": "B-TDMS-PRESENT",
+      "baseline_evidence": "evidence/lane-b/tdms.jsonl; evidence/lane-b/reassessment.md",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "TDMS-TIME-009",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_INTENTIONAL_BEHAVIOR",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeries.read(..., epoch=1234567890.0, format='tdms')",
+      "baseline_expected": "Explicit override replaces source t0 while leaving sample interval/value semantics intact.",
+      "baseline_actual": "Returned t0 equals the requested GPS epoch.",
+      "baseline_command_id": "B-TDMS-PRESENT",
+      "baseline_evidence": "evidence/lane-b/tdms.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "TDMS-UNIT-001",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "BLOCKED",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeries.read(..., format='tdms')",
+      "baseline_expected": "No contract basis to require unit import.",
+      "baseline_actual": "GWexpy returns a dimensionless unit.",
+      "baseline_command_id": "B-TDMS-PRESENT",
+      "baseline_evidence": "evidence/lane-b/tdms.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "TDMS-OPTIONAL-001",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_INTENTIONAL_BEHAVIOR",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeries, Dict and Matrix reads with nptdms absent",
+      "baseline_expected": "Raise documented ImportError with install guidance.",
+      "baseline_actual": "All tested public reads raise the documented ImportError.",
+      "baseline_command_id": "B-TDMS-BASE",
+      "baseline_evidence": "evidence/lane-b/tdms_missing.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "GBD-CONTROL-001",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "REFUTED_STATIC_SUSPICION",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeriesDict.read(..., format='gbd')",
+      "baseline_expected": "Values [1,-2,5] V, dt=.1; timezone conversion changes epoch by 32400 seconds.",
+      "baseline_actual": "All expected values and timing observed.",
+      "baseline_command_id": "B-GBD-PRESENT",
+      "baseline_evidence": "evidence/lane-b/gbd.jsonl; evidence/lane-b/reassessment.md",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "GBD-HEADER-001",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_axis_corruption",
+      "public_entrypoint": "TimeSeries.read(..., format='gbd')",
+      "baseline_expected": "Reject malformed header with no authoritative sample interval.",
+      "baseline_actual": "Returns dt=1.0 without warning; valid control specifies 100 ms.",
+      "baseline_command_id": "B-GBD-PRESENT",
+      "baseline_evidence": "evidence/lane-b/gbd.jsonl; evidence/lane-b/reassessment.md",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "GL500 firmware 1.00–1.21 public readers reject missing or malformed Sample, Order, Counts, and Amp metadata while the valid control retains its timing, channels, scale, and digital values.",
+      "regression_tests": [
+        "tests/io/test_gbd_gl500_header_validation.py::test_gl500_public_readers_reject_malformed_required_header_metadata",
+        "tests/io/test_gbd_gl500_header_validation.py::test_valid_gl500_public_readers_keep_timing_scaling_and_digital_values"
+      ]
+    },
+    {
+      "finding_id": "GBD-HEADER-002",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "REFUTED_STATIC_SUSPICION",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeries.read(..., format='gbd')",
+      "baseline_expected": "Static suspicion was that Type may be defaulted.",
+      "baseline_actual": "Reader raises ValueError: buffer is smaller than requested size.",
+      "baseline_command_id": "B-GBD-PRESENT",
+      "baseline_evidence": "evidence/lane-b/gbd.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "GBD-HEADER-003",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_entry_loss",
+      "public_entrypoint": "TimeSeriesDict.read(..., format='gbd')",
+      "baseline_expected": "Reject malformed channel order rather than invent channel identity.",
+      "baseline_actual": "Returns invented CH0 with values [2000,0,-4000], losing CH1 and Alarm without warning.",
+      "baseline_command_id": "B-GBD-PRESENT",
+      "baseline_evidence": "evidence/lane-b/gbd.jsonl; evidence/lane-b/reassessment.md",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "GL500 firmware 1.00–1.21 public readers reject missing or malformed Sample, Order, Counts, and Amp metadata while the valid control retains its timing, channels, scale, and digital values.",
+      "regression_tests": [
+        "tests/io/test_gbd_gl500_header_validation.py::test_gl500_public_readers_reject_malformed_required_header_metadata",
+        "tests/io/test_gbd_gl500_header_validation.py::test_valid_gl500_public_readers_keep_timing_scaling_and_digital_values"
+      ]
+    },
+    {
+      "finding_id": "GBD-HEADER-004",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_entry_loss",
+      "public_entrypoint": "TimeSeriesDict.read(..., format='gbd')",
+      "baseline_expected": "Reject malformed sample-count metadata.",
+      "baseline_actual": "Returns named channels with empty arrays and no warning.",
+      "baseline_command_id": "B-GBD-PRESENT",
+      "baseline_evidence": "evidence/lane-b/gbd.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "GL500 firmware 1.00–1.21 public readers reject missing or malformed Sample, Order, Counts, and Amp metadata while the valid control retains its timing, channels, scale, and digital values.",
+      "regression_tests": [
+        "tests/io/test_gbd_gl500_header_validation.py::test_gl500_public_readers_reject_malformed_required_header_metadata",
+        "tests/io/test_gbd_gl500_header_validation.py::test_valid_gl500_public_readers_keep_timing_scaling_and_digital_values"
+      ]
+    },
+    {
+      "finding_id": "GBD-HEADER-005",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_value_corruption",
+      "public_entrypoint": "TimeSeries.read(..., format='gbd')",
+      "baseline_expected": "Reject absent scale or apply a format-authorized fallback.",
+      "baseline_actual": "Returns raw [2000,-4000,10000] as volts instead of [1,-2,5] V.",
+      "baseline_command_id": "B-GBD-PRESENT",
+      "baseline_evidence": "evidence/lane-b/gbd.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "GL500 firmware 1.00–1.21 public readers reject missing or malformed Sample, Order, Counts, and Amp metadata while the valid control retains its timing, channels, scale, and digital values.",
+      "regression_tests": [
+        "tests/io/test_gbd_gl500_header_validation.py::test_gl500_public_readers_reject_malformed_required_header_metadata",
+        "tests/io/test_gbd_gl500_header_validation.py::test_valid_gl500_public_readers_keep_timing_scaling_and_digital_values"
+      ]
+    },
+    {
+      "finding_id": "GBD-COUNT-001",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "BLOCKED",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeriesDict.read(..., format='gbd')",
+      "baseline_expected": "Resolve malformed surplus-payload policy before defect classification.",
+      "baseline_actual": "Returns two rows without warning.",
+      "baseline_command_id": "B-GBD-PRESENT",
+      "baseline_evidence": "evidence/lane-b/gbd.jsonl; evidence/lane-b/reassessment.md",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "GBD-TRUNC-001",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "REFUTED_STATIC_SUSPICION",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeries.read(..., format='gbd')",
+      "baseline_expected": "Static suspicion was that reader might return a plausible short series.",
+      "baseline_actual": "Reader raises ValueError: buffer is smaller than requested size.",
+      "baseline_command_id": "B-GBD-PRESENT",
+      "baseline_evidence": "evidence/lane-b/gbd.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "GBD-DIGITAL-001",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_INTENTIONAL_BEHAVIOR",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeriesDict.read(..., format='gbd')",
+      "baseline_expected": "Configured digital-channel output is binary per public contract.",
+      "baseline_actual": "Reader returns [0,1,1]; alarm bit identity is collapsed as documented.",
+      "baseline_command_id": "B-GBD-PRESENT",
+      "baseline_evidence": "evidence/lane-b/gbd.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "GBD-LEGACY-001",
+      "formats": [
+        "gbd"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "BLOCKED",
+      "baseline_impact_class": null,
+      "public_entrypoint": "GBD public read routes outside the GL500 fixture",
+      "baseline_expected": "Need model-specific authority before generalizing GL500 conclusions.",
+      "baseline_actual": "Not generalized.",
+      "baseline_command_id": "B-GBD-PRESENT",
+      "baseline_evidence": "evidence/lane-b/reassessment.md",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "ATS-CONTROL-001",
+      "formats": [
+        "ats"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "REFUTED_STATIC_SUSPICION",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeries.read(..., format='ats')",
+      "baseline_expected": "Values [.5,-1,1.5] V, dt=.25, GPS t0=1388199863.",
+      "baseline_actual": "All expected values, interval and timestamp observed; name stable.",
+      "baseline_command_id": "B-ATS-PRESENT",
+      "baseline_evidence": "evidence/lane-b/ats.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "ATS-TRUNC-001",
+      "formats": [
+        "ats"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "BLOCKED",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeries.read and TimeSeriesDict.read(..., format='ats')",
+      "baseline_expected": "Need an authoritative malformed-file policy before choosing defect or intentional salvage.",
+      "baseline_actual": "Returns three scaled samples and warns that it uses actual data size.",
+      "baseline_command_id": "B-ATS-PRESENT",
+      "baseline_evidence": "evidence/lane-b/ats.jsonl; evidence/lane-b/reassessment.md",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "ATS-RATE-001",
+      "formats": [
+        "ats"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "REFUTED_STATIC_SUSPICION",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeries.read(..., format='ats')",
+      "baseline_expected": "Static suspicion was that invalid rate might yield a plausible finite axis.",
+      "baseline_actual": "Both cases raise ValueError; no finite axis is returned.",
+      "baseline_command_id": "B-ATS-PRESENT",
+      "baseline_evidence": "evidence/lane-b/ats.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "ATS-EPOCH-001",
+      "formats": [
+        "ats"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_INTENTIONAL_BEHAVIOR",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeries.read(..., epoch=1234567890.0, format='ats')",
+      "baseline_expected": "Override t0 while retaining rate and scaled data.",
+      "baseline_actual": "Returned t0 equals the requested GPS epoch.",
+      "baseline_command_id": "B-ATS-PRESENT",
+      "baseline_evidence": "evidence/lane-b/ats.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "MATRIX-CONVERSION-001",
+      "formats": [
+        "gbd",
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_INTENTIONAL_BEHAVIOR",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeriesMatrix read conversion from TimeSeriesDict",
+      "baseline_expected": "Matrix conversion contract does not carry TimeSeries unit/channel metadata.",
+      "baseline_actual": "Matrix cells retain names but have empty unit and channel=None, as documented.",
+      "baseline_command_id": "B-MATRIX-METADATA-PRESENT",
+      "baseline_evidence": "evidence/lane-b/matrix_metadata.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "HDF5-TS-COLL-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_entry_loss",
+      "public_entrypoint": "TimeSeriesDict.read and TimeSeriesList.read, format='hdf5'",
+      "baseline_expected": "Fail closed when an authoritative manifest-listed entry cannot be decoded.",
+      "baseline_actual": "Dict/List reads succeed with C,A only; list indices compress to 0,1. Both physical collection layouts were exercised.",
+      "baseline_command_id": "C-PRESENT",
+      "baseline_evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Manifest-backed collection reads fail closed when a listed entry is unreadable or absent; manifest-free discovery retains its tolerant behavior in the regression suite.",
+      "regression_tests": [
+        "tests/io/test_hdf5_manifest_collection_integrity.py::test_manifest_backed_collection_read_rejects_unreadable_entry",
+        "tests/io/test_hdf5_manifest_collection_integrity.py::test_manifest_backed_group_collection_read_rejects_missing_listed_entry"
+      ]
+    },
+    {
+      "finding_id": "HDF5-FS-COLL-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_entry_loss",
+      "public_entrypoint": "FrequencySeriesDict.read and FrequencySeriesList.read, format='hdf5'",
+      "baseline_expected": "Fail closed when an authoritative manifest-listed entry cannot be decoded.",
+      "baseline_actual": "Dict/List reads succeed without B and compress list indices.",
+      "baseline_command_id": "C-PRESENT",
+      "baseline_evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Manifest-backed collection reads fail closed when a listed entry is unreadable or absent; manifest-free discovery retains its tolerant behavior in the regression suite.",
+      "regression_tests": [
+        "tests/io/test_hdf5_manifest_collection_integrity.py::test_manifest_backed_collection_read_rejects_unreadable_entry",
+        "tests/io/test_hdf5_manifest_collection_integrity.py::test_manifest_backed_group_collection_read_rejects_missing_listed_entry"
+      ]
+    },
+    {
+      "finding_id": "HDF5-SPEC-COLL-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_entry_loss",
+      "public_entrypoint": "SpectrogramDict().read and SpectrogramList().read, format='hdf5'",
+      "baseline_expected": "Fail closed when an authoritative manifest-listed entry cannot be decoded.",
+      "baseline_actual": "Instance Dict/List reads succeed without B and compress list indices.",
+      "baseline_command_id": "C-PRESENT",
+      "baseline_evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Manifest-backed collection reads fail closed when a listed entry is unreadable or absent; manifest-free discovery retains its tolerant behavior in the regression suite.",
+      "regression_tests": [
+        "tests/io/test_hdf5_manifest_collection_integrity.py::test_manifest_backed_collection_read_rejects_unreadable_entry",
+        "tests/io/test_hdf5_manifest_collection_integrity.py::test_manifest_backed_group_collection_read_rejects_missing_listed_entry"
+      ]
+    },
+    {
+      "finding_id": "HDF5-HIST-COLL-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_entry_loss",
+      "public_entrypoint": "HistogramDict.read and HistogramList.read, format='hdf5'",
+      "baseline_expected": "Fail closed when an authoritative manifest-listed entry cannot be decoded.",
+      "baseline_actual": "Dict/List reads succeed without B and compress list indices. Physical entries are HDF5 groups.",
+      "baseline_command_id": "C-PRESENT",
+      "baseline_evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Manifest-backed collection reads fail closed when a listed entry is unreadable or absent; manifest-free discovery retains its tolerant behavior in the regression suite.",
+      "regression_tests": [
+        "tests/io/test_hdf5_manifest_collection_integrity.py::test_manifest_backed_collection_read_rejects_unreadable_entry",
+        "tests/io/test_hdf5_manifest_collection_integrity.py::test_manifest_backed_group_collection_read_rejects_missing_listed_entry"
+      ]
+    },
+    {
+      "finding_id": "HDF5-DISCOVERY-TS-LIST-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_COMPATIBILITY_BEHAVIOR",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeriesList.read, format='hdf5', no collection manifest",
+      "baseline_expected": "Record legacy discovery separately from authoritative-manifest behavior.",
+      "baseline_actual": "Returns A,C with compressed list indices; classified as compatibility behavior.",
+      "baseline_command_id": "C-PRESENT",
+      "baseline_evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "HDF5-DISCOVERY-FS-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_COMPATIBILITY_BEHAVIOR",
+      "baseline_impact_class": null,
+      "public_entrypoint": "FrequencySeriesDict/List.read, format='hdf5', no collection manifest",
+      "baseline_expected": "Record legacy discovery separately from authoritative-manifest behavior.",
+      "baseline_actual": "Returns A,C and compresses List indices.",
+      "baseline_command_id": "C-PRESENT",
+      "baseline_evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "HDF5-DISCOVERY-SPEC-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_COMPATIBILITY_BEHAVIOR",
+      "baseline_impact_class": null,
+      "public_entrypoint": "SpectrogramDict/List instance .read, format='hdf5', no collection manifest",
+      "baseline_expected": "Record legacy discovery separately from authoritative-manifest behavior.",
+      "baseline_actual": "Returns A,C and compresses List indices.",
+      "baseline_command_id": "C-PRESENT",
+      "baseline_evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "HDF5-DISCOVERY-HIST-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_COMPATIBILITY_BEHAVIOR",
+      "baseline_impact_class": null,
+      "public_entrypoint": "HistogramDict/List.read, format='hdf5', no collection manifest",
+      "baseline_expected": "Record legacy discovery separately from authoritative-manifest behavior.",
+      "baseline_actual": "Returns A,C and compresses List indices.",
+      "baseline_command_id": "C-PRESENT",
+      "baseline_evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "HDF5-DISCOVERY-TS-DICT-DATASET-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "REFUTED_STATIC_SUSPICION",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeriesDict.read, format='hdf5', no collection manifest, dataset layout",
+      "baseline_expected": "Static suspicion was that corrupt entry would be silently skipped.",
+      "baseline_actual": "Public read raises TypeError rather than returning a partial dictionary.",
+      "baseline_command_id": "C-PRESENT",
+      "baseline_evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "HDF5-DISCOVERY-TS-DICT-GROUP-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "BLOCKED",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeriesDict.read, format='hdf5', no collection manifest, group layout",
+      "baseline_expected": "Need valid C2 control before assessing partial-entry behavior.",
+      "baseline_actual": "No valid control.",
+      "baseline_command_id": "C-PRESENT",
+      "baseline_evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "HDF5-HIST-DATASET-001",
+      "formats": [
+        "hdf5"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "BLOCKED",
+      "baseline_impact_class": null,
+      "public_entrypoint": "HistogramDict/List.read, format='hdf5', requested dataset-per-entry layout",
+      "baseline_expected": "A true histogram dataset-per-entry fixture is needed for layout-specific conclusions.",
+      "baseline_actual": "The requested dataset layout was not physically produced.",
+      "baseline_command_id": "C-PRESENT",
+      "baseline_evidence": "evidence/lane-c/report.md; evidence/lane-c/present.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "OBSPY-DUP-001",
+      "formats": [
+        "mseed"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "REFUTED_STATIC_SUSPICION",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeriesDict.read([path1,path2], format='mseed')",
+      "baseline_expected": "Determine whether duplicate IDs can reach dict assignment and overwrite entries.",
+      "baseline_actual": "Contiguous/gap/overlap traces merge before dict construction; differing rates raise TypeError. No duplicate reached overwrite in tested valid scenarios.",
+      "baseline_command_id": "D-PRESENT",
+      "baseline_evidence": "evidence/lane-d/D_report.md; evidence/lane-d/present.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "OBSPY-DUP-BASE-001",
+      "formats": [
+        "mseed"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "BLOCKED",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeriesDict.read(..., format='mseed') in base profile",
+      "baseline_expected": "Duplicate reachability was assessed in present profile; base cannot exercise the reader.",
+      "baseline_actual": "No runtime result in base.",
+      "baseline_command_id": "D-BASE",
+      "baseline_evidence": "evidence/lane-d/base.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "SDB-KW-001",
+      "formats": [
+        "sdb"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_COMPATIBILITY_BEHAVIOR",
+      "baseline_impact_class": null,
+      "public_entrypoint": "Direct, explicit-registry and auto TimeSeriesDict SDB reads with epoch=999",
+      "baseline_expected": "No epoch override is promised by the SDB contract.",
+      "baseline_actual": "epoch=999 is accepted and ignored; file-derived t0 and data are returned.",
+      "baseline_command_id": "D-PRESENT",
+      "baseline_evidence": "evidence/lane-d/D_report.md; evidence/lane-d/present.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "WIN-KW-001",
+      "formats": [
+        "win"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_COMPATIBILITY_BEHAVIOR",
+      "baseline_impact_class": null,
+      "public_entrypoint": "Direct and public explicit/auto WIN reads with epoch=999",
+      "baseline_expected": "No epoch override is promised by the WIN contract.",
+      "baseline_actual": "epoch=999 is accepted and ignored; file-derived t0 and values are returned.",
+      "baseline_command_id": "D-PRESENT",
+      "baseline_evidence": "evidence/lane-d/D_report.md; evidence/lane-d/present.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "WIN-OPTIONAL-001",
+      "formats": [
+        "win"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_INTENTIONAL_BEHAVIOR",
+      "baseline_impact_class": null,
+      "public_entrypoint": "WIN explicit and auto reads with ObsPy absent",
+      "baseline_expected": "Explicit route raises ImportError; auto route may be unregistered.",
+      "baseline_actual": "Explicit read raises ImportError; auto read raises IORegistryError because WIN is unregistered.",
+      "baseline_command_id": "D-BASE",
+      "baseline_evidence": "evidence/lane-d/D_report.md; evidence/lane-d/base.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "WAV-CONTROL-001",
+      "formats": [
+        "wav"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "REFUTED_STATIC_SUSPICION",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeries and TimeSeriesDict explicit/auto WAV reads; epoch override",
+      "baseline_expected": "Preserve channel order, values, sample rate and relative t0.",
+      "baseline_actual": "Stereo channels, all five samples, dt=.000125 and relative t0=0 match; epoch override shifts only t0.",
+      "baseline_command_id": "D-PRESENT",
+      "baseline_evidence": "evidence/lane-d/D_report.md; evidence/lane-d/present.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "AUDIO-CONTROL-001",
+      "formats": [
+        "flac"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "REFUTED_STATIC_SUSPICION",
+      "baseline_impact_class": null,
+      "public_entrypoint": "TimeSeries and TimeSeriesDict explicit/auto FLAC reads; epoch override",
+      "baseline_expected": "Preserve decoded samples, channel order, rate and relative time.",
+      "baseline_actual": "Public values and axes match; values are normalized to float64 by 32768.",
+      "baseline_command_id": "D-PRESENT",
+      "baseline_evidence": "evidence/lane-d/D_report.md; evidence/lane-d/present.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "AUDIO-METADATA-001",
+      "formats": [
+        "wav",
+        "flac"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_metadata_corruption",
+      "public_entrypoint": "TimeSeriesDict.read(path, format='flac'|'wav', extract_metadata=True), explicit registry route",
+      "baseline_expected": "Store available file metadata in provenance when extract_metadata=True.",
+      "baseline_actual": "Public route returns no provenance and emits false file-not-found warning for stringified _io.FileIO; direct path reader returns title/bitrate/duration for FLAC.",
+      "baseline_command_id": "D-PRESENT",
+      "baseline_evidence": "evidence/lane-d/D_report.md; evidence/lane-d/present.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "WAV and FLAC public registry reads place available title, bitrate, and duration into provenance while preserving existing GWexpy I/O provenance.",
+      "regression_tests": [
+        "tests/io/test_audio_metadata.py::test_public_audio_registry_preserves_available_metadata",
+        "tests/io/test_audio_metadata.py::test_public_audio_registry_merges_metadata_into_existing_provenance"
+      ]
+    },
+    {
+      "finding_id": "AUDIO-OPTIONAL-001",
+      "formats": [
+        "wav",
+        "flac"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_INTENTIONAL_BEHAVIOR",
+      "baseline_impact_class": null,
+      "public_entrypoint": "WAV extract_metadata and FLAC reads with tinytag/pydub absent",
+      "baseline_expected": "WAV data remains readable and warns/skips optional metadata; FLAC without pydub raises ImportError.",
+      "baseline_actual": "Both expected behaviors observed.",
+      "baseline_command_id": "D-BASE",
+      "baseline_evidence": "evidence/lane-d/D_report.md; evidence/lane-d/base.jsonl",
+      "post_fix_status": "NOT_REQUALIFIED",
+      "post_fix_observation": null,
+      "regression_tests": []
+    },
+    {
+      "finding_id": "ZARR-AXIS-001",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_axis_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='zarr')",
+      "baseline_expected": "Reject cells that cannot share one TimeSeriesMatrix time axis.",
+      "baseline_actual": "Accepts both cells and assigns the first cell's t0 to the returned matrix.",
+      "baseline_command_id": "A-ZARR-FOLLOWUP",
+      "baseline_evidence": "evidence/lane-a/zarr_axis_units_multistore.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "The public Zarr Matrix reader rejects channel cells with differing start epochs instead of assigning one shared axis.",
+      "regression_tests": [
+        "tests/io/test_zarr_reader.py::test_public_matrix_read_rejects_native_matrix_cells_with_mismatched_epochs"
+      ]
+    },
+    {
+      "finding_id": "ZARR-UNIT-001",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_metadata_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='zarr')",
+      "baseline_expected": "Preserve V on both returned matrix cells.",
+      "baseline_actual": "Returns a dimensionless matrix for the two-channel native store.",
+      "baseline_command_id": "A-ZARR-FOLLOWUP",
+      "baseline_evidence": "evidence/lane-a/zarr_axis_units_multistore.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "The public reader preserves V units on native multi-channel Zarr arrays.",
+      "regression_tests": [
+        "tests/io/test_zarr_reader.py::test_public_matrix_read_preserves_units_for_native_float_channels"
+      ]
+    },
+    {
+      "finding_id": "ZARR-MULTISTORE-DTYPE-001",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_value_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read([int_store, float_store], format='zarr')",
+      "baseline_expected": "Preserve int64 values exactly or reject an incompatible multi-store dtype merge.",
+      "baseline_actual": "Promotes the merged matrix to float64 and rounds both large integers.",
+      "baseline_command_id": "A-ZARR-FOLLOWUP",
+      "baseline_evidence": "evidence/lane-a/zarr_axis_units_multistore.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "The public multi-store Matrix reader preserves exact native int64 cell values.",
+      "regression_tests": [
+        "tests/io/test_zarr_reader.py::test_public_matrix_read_preserves_multichannel_native_int64"
+      ]
+    },
+    {
+      "finding_id": "ZARR-UINT64-001",
+      "formats": [
+        "zarr"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_value_corruption",
+      "public_entrypoint": "TimeSeriesMatrix.read(path, format='zarr')",
+      "baseline_expected": "Preserve uint64 values exactly or reject an unsupported conversion.",
+      "baseline_actual": "Converts to float64 and rounds both large unsigned integers.",
+      "baseline_command_id": "A-ZARR-FOLLOWUP",
+      "baseline_evidence": "evidence/lane-a/zarr_axis_units_multistore.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "The public Zarr read/write route preserves uint64 values above 2**53 exactly.",
+      "regression_tests": [
+        "tests/io/test_zarr_reader.py::test_public_zarr_read_write_roundtrip_preserves_uint64"
+      ]
+    },
+    {
+      "finding_id": "TDMS-TIME-010",
+      "formats": [
+        "tdms"
+      ],
+      "scope_status": "AUDITED",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "baseline_finding_status": "CONFIRMED_CORRECTNESS_DEFECT",
+      "baseline_impact_class": "silent_axis_corruption",
+      "public_entrypoint": "TimeSeries.read and TimeSeriesDict.read accept negative timing; Matrix also exercised",
+      "baseline_expected": "Reject a nonpositive sample interval before constructing public series.",
+      "baseline_actual": "TimeSeries and Dict return dt=-0.1 with descending sample times; Matrix fails later during alignment.",
+      "baseline_command_id": "B-TDMS-PRESENT",
+      "baseline_evidence": "evidence/lane-b/tdms.jsonl",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "Public TimeSeries, Dict, and Matrix reads reject absent, boolean, zero, negative, NaN, and infinite wf_increment values, including with an epoch override.",
+      "regression_tests": [
+        "tests/io/test_tdms_invalid_increment_contract.py::test_public_tdms_readers_reject_missing_or_invalid_waveform_increment"
+      ]
+    }
+  ],
+  "additional_review_followups": [
+    {
+      "finding_id": "HDF5-MANIFEST-PAYLOAD-001",
+      "scope_status": "discovered_during_fix_review",
+      "baseline_matrix_included": false,
+      "baseline_impact_class": "silent_value_corruption",
+      "scope": "Code-review follow-up outside the original 74-scenario matrix; same HDF5 manifest fix boundary.",
+      "baseline_source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+      "pre_fix_observation": "At the baseline checkout, HistogramDict and HistogramList public group reads accepted unrelated root-level values/edges after the manifest entry's canonical data group was removed, returning [999.0, 999.0, 999.0]. Earlier red regressions also failed all six TimeSeries/FrequencySeries/Spectrogram Dict/List cases.",
+      "post_fix_status": "FIX_VERIFIED",
+      "post_fix_observation": "All eight TimeSeries/FrequencySeries/Spectrogram/Histogram Dict/List group cases reject fallback to unrelated group-level payloads.",
+      "pre_fix_reproduction_ref": "2026-09-27-public-io-cross-format-post-fix-evidence/baseline-hdf5-payload-fallback.py",
+      "pre_fix_observed_output": {
+        "dict": [
+          999.0,
+          999.0,
+          999.0
+        ],
+        "list": [
+          999.0,
+          999.0,
+          999.0
+        ]
+      },
+      "post_fix_regression_test": "tests/io/test_hdf5_manifest_collection_integrity.py::test_manifest_backed_group_read_does_not_fallback_to_other_dataset",
+      "post_fix_regression_test_nodes": [
+        "tests/io/test_hdf5_manifest_collection_integrity.py::test_manifest_backed_group_read_does_not_fallback_to_other_dataset"
+      ],
+      "post_fix_case_labels": [
+        "timeseries-dict",
+        "timeseries-list",
+        "frequencyseries-dict",
+        "frequencyseries-list",
+        "spectrogram-dict",
+        "spectrogram-list",
+        "histogram-dict",
+        "histogram-list"
+      ],
+      "post_fix_rejection_assertion": "Every case requires the public read to raise instead of returning unrelated root-level values/edges.",
+      "post_fix_case_count": 8,
+      "post_fix_evidence_ref": "2026-09-27-public-io-cross-format-post-fix-evidence/targeted-regressions.xml"
+    }
+  ]
+}

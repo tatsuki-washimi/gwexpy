@@ -10,6 +10,7 @@ from gwexpy.io.hdf5_collection import (
     LAYOUT_GROUP,
     detect_hdf5_layout,
     ensure_hdf5_file,
+    has_hdf5_collection_manifest,
     normalize_layout,
     read_hdf5_keymap,
     read_hdf5_order,
@@ -122,6 +123,10 @@ class HistogramBaseDict(OrderedDict[str, _H]):
             import h5py
 
             with h5py.File(source, "r") as h5f:
+                manifest_backed = has_hdf5_collection_manifest(h5f)
+                manifest_layout = h5f.attrs.get("gwexpy_layout")
+                if isinstance(manifest_layout, bytes):
+                    manifest_layout = manifest_layout.decode("utf-8")
                 layout = detect_hdf5_layout(h5f)
                 keymap = read_hdf5_keymap(h5f)
                 order = read_hdf5_order(h5f)
@@ -134,6 +139,8 @@ class HistogramBaseDict(OrderedDict[str, _H]):
                                 _H, Histogram.read(h5f, format="hdf5", path=ds_name)
                             )
                         except (KeyError, ValueError, TypeError, OSError) as e:
+                            if manifest_backed:
+                                raise
                             logger.debug("Skipping dataset %s: %s", ds_name, e)
                             continue
                         orig_key = keymap.get(ds_name, ds_name)
@@ -141,19 +148,43 @@ class HistogramBaseDict(OrderedDict[str, _H]):
                     return out
                 if layout == LAYOUT_GROUP:
                     for grp_name in keys:
-                        try:
-                            grp = h5f[grp_name]
-                            h = cast(
-                                _H, Histogram.read(grp, format="hdf5", path="data")
-                            )
-                        except (KeyError, ValueError, TypeError, OSError):
+                        grp = h5f[grp_name]
+                        if manifest_backed:
+                            if manifest_layout == LAYOUT_DATASET:
+                                h = cast(
+                                    _H,
+                                    Histogram.read(h5f, format="hdf5", path=grp_name),
+                                )
+                            elif manifest_layout == LAYOUT_GROUP:
+                                if "data" not in grp:
+                                    raise KeyError(
+                                        f"Manifest-listed histogram group "
+                                        f"{grp_name!r} is missing its data group"
+                                    )
+                                h = cast(
+                                    _H,
+                                    Histogram.read(grp, format="hdf5", path="data"),
+                                )
+                            else:
+                                raise ValueError(
+                                    "Manifest-backed histogram collection has an "
+                                    f"unknown layout: {manifest_layout!r}"
+                                )
+                        else:
                             try:
                                 h = cast(
-                                    _H, Histogram.read(grp, format="hdf5", path=None)
+                                    _H,
+                                    Histogram.read(grp, format="hdf5", path="data"),
                                 )
-                            except (KeyError, ValueError, TypeError, OSError) as e2:
-                                logger.debug("Skipping group %s: %s", grp_name, e2)
-                                continue
+                            except (KeyError, ValueError, TypeError, OSError):
+                                try:
+                                    h = cast(
+                                        _H,
+                                        Histogram.read(grp, format="hdf5", path=None),
+                                    )
+                                except (KeyError, ValueError, TypeError, OSError) as e:
+                                    logger.debug("Skipping group %s: %s", grp_name, e)
+                                    continue
                         orig_key = keymap.get(grp_name, grp_name)
                         out[orig_key] = h
                     return out
@@ -352,6 +383,10 @@ class HistogramBaseList(PlotMixin, list[_H]):
             import h5py
 
             with h5py.File(source, "r") as h5f:
+                manifest_backed = has_hdf5_collection_manifest(h5f)
+                manifest_layout = h5f.attrs.get("gwexpy_layout")
+                if isinstance(manifest_layout, bytes):
+                    manifest_layout = manifest_layout.decode("utf-8")
                 layout = detect_hdf5_layout(h5f)
                 order = read_hdf5_order(h5f) or list(h5f.keys())
                 out_items: list[Histogram] = []
@@ -360,21 +395,39 @@ class HistogramBaseList(PlotMixin, list[_H]):
                         try:
                             h = Histogram.read(h5f, format="hdf5", path=ds_name)
                         except (KeyError, ValueError, TypeError, OSError) as e:
+                            if manifest_backed:
+                                raise
                             logger.debug("Skipping dataset %s: %s", ds_name, e)
                             continue
                         out_items.append(h)
                     return cast(Any, cls)(out_items)
                 if layout == LAYOUT_GROUP:
                     for grp_name in order:
-                        try:
-                            grp = h5f[grp_name]
-                            h = Histogram.read(grp, format="hdf5", path="data")
-                        except (KeyError, ValueError, TypeError, OSError):
+                        grp = h5f[grp_name]
+                        if manifest_backed:
+                            if manifest_layout == LAYOUT_DATASET:
+                                h = Histogram.read(h5f, format="hdf5", path=grp_name)
+                            elif manifest_layout == LAYOUT_GROUP:
+                                if "data" not in grp:
+                                    raise KeyError(
+                                        f"Manifest-listed histogram group "
+                                        f"{grp_name!r} is missing its data group"
+                                    )
+                                h = Histogram.read(grp, format="hdf5", path="data")
+                            else:
+                                raise ValueError(
+                                    "Manifest-backed histogram collection has an "
+                                    f"unknown layout: {manifest_layout!r}"
+                                )
+                        else:
                             try:
-                                h = Histogram.read(grp, format="hdf5", path=None)
-                            except (KeyError, ValueError, TypeError, OSError) as e2:
-                                logger.debug("Skipping group %s: %s", grp_name, e2)
-                                continue
+                                h = Histogram.read(grp, format="hdf5", path="data")
+                            except (KeyError, ValueError, TypeError, OSError):
+                                try:
+                                    h = Histogram.read(grp, format="hdf5", path=None)
+                                except (KeyError, ValueError, TypeError, OSError) as e:
+                                    logger.debug("Skipping group %s: %s", grp_name, e)
+                                    continue
                         out_items.append(h)
                     return cast(Any, cls)(out_items)
         from astropy.io import registry

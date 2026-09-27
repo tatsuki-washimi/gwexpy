@@ -274,19 +274,125 @@ def _legacy_timing(ds, tc) -> tuple[float, float]:
         )
         t0_datetime = _dt.datetime.fromtimestamp(t0_unix_ns / 1e9, tz=_dt.UTC)
         t0 = datetime_to_gps(t0_datetime)
-        dt = (
-            float(
-                np.median(np.diff(time_vals.astype("datetime64[ns]").astype(np.int64)))
-            )
-            / 1e9
-            if len(time_vals) > 1
-            else 1.0
-        )
+        intervals = np.diff(time_vals.astype("datetime64[ns]").astype(np.int64))
+        if intervals.size and (
+            np.any(intervals <= 0) or np.any(intervals != intervals[0])
+        ):
+            raise ValueError("irregular NetCDF time coordinate cannot be represented")
+        dt = float(intervals[0]) / 1e9 if intervals.size else 1.0
     else:
         numeric = np.asarray(time_vals, dtype=np.float64)
         t0 = float(numeric[0])
-        dt = float(np.median(np.diff(numeric))) if len(numeric) > 1 else 1.0
+        intervals = np.diff(numeric)
+        if intervals.size:
+            if not np.all(np.isfinite(intervals)) or np.any(intervals <= 0):
+                raise ValueError(
+                    "irregular NetCDF time coordinate cannot be represented"
+                )
+            # Every interval is finite even when subtracting the endpoints
+            # would overflow float64.
+            estimate = float(intervals[0])
+            # Try cadence precision, not epoch-sized ULP tolerance.  Decimal
+            # legacy writers often rounded a regular cadence at each timestamp.
+            # Accept it only if a single finite cadence reproduces every stored
+            # coordinate exactly; one displaced sample must fail.
+            sample_numbers = np.arange(len(numeric))
+
+            def matches(candidate: float) -> bool:
+                if not math.isfinite(candidate) or candidate <= 0:
+                    return False
+                with np.errstate(over="ignore", invalid="ignore"):
+                    offsets = sample_numbers * candidate
+                    expected = t0 + offsets
+                if np.all(np.isfinite(expected)):
+                    return bool(np.array_equal(numeric, expected))
+                # The offset can overflow before addition to a negative t0.
+                extended = np.longdouble(t0) + sample_numbers.astype(
+                    np.longdouble
+                ) * np.longdouble(candidate)
+                return bool(np.array_equal(numeric, extended.astype(np.float64)))
+
+            candidates = (
+                estimate,
+                *(float(f"{estimate:.{digits}g}") for digits in range(1, 18)),
+            )
+            matched_dt = next(
+                (candidate for candidate in candidates if matches(candidate)),
+                None,
+            )
+            if matched_dt is None:
+                raise ValueError(
+                    "irregular NetCDF time coordinate cannot be represented"
+                )
+            dt = matched_dt
+        else:
+            dt = 1.0
+    if not math.isfinite(t0) or not math.isfinite(dt) or dt <= 0:
+        raise ValueError("invalid NetCDF time coordinate")
     return t0, dt
+
+
+def _homogeneous_unit(units) -> str:
+    """Return one cell unit, rejecting a matrix with mixed cell units."""
+    names = {str(unit) for unit in units}
+    if len(names) != 1:
+        raise ValueError("NetCDF matrix cells have mixed units")
+    return names.pop()
+
+
+def _validate_matrix_cells(matrix_vars, *, require_indices: bool):
+    """Validate the complete rectangular cell and key/index topology."""
+    rows: dict[object, int] = {}
+    cols: dict[object, int] = {}
+    row_indices: dict[int, object] = {}
+    col_indices: dict[int, object] = {}
+    cells = set()
+    has_indices = [
+        row is not None or col is not None for _, _, row, col, _ in matrix_vars
+    ]
+    if require_indices or any(has_indices):
+        if not all(has_indices):
+            raise ValueError("NetCDF matrix cell is missing row/column index")
+        for row_key, col_key, row_index, col_index, _ in matrix_vars:
+            for axis, key, index, forward, reverse in (
+                ("row", row_key, row_index, rows, row_indices),
+                ("column", col_key, col_index, cols, col_indices),
+            ):
+                if (
+                    isinstance(index, (bool, np.bool_))
+                    or not isinstance(index, (int, np.integer))
+                    or index < 0
+                ):
+                    raise ValueError(
+                        f"NetCDF matrix {axis} index must be a nonnegative integer"
+                    )
+                index = int(index)
+                if key in forward and forward[key] != index:
+                    raise ValueError(
+                        f"NetCDF matrix {axis} key has conflicting indices"
+                    )
+                if index in reverse and reverse[index] != key:
+                    raise ValueError(f"NetCDF matrix {axis} index has conflicting keys")
+                forward[key] = index
+                reverse[index] = key
+        for axis, reverse in (("row", row_indices), ("column", col_indices)):
+            if set(reverse) != set(range(len(reverse))):
+                raise ValueError(
+                    f"NetCDF matrix {axis} indices are sparse or out of range"
+                )
+        row_keys = [row_indices[index] for index in range(len(row_indices))]
+        col_keys = [col_indices[index] for index in range(len(col_indices))]
+    else:
+        row_keys = list(OrderedDict.fromkeys(row for row, _, _, _, _ in matrix_vars))
+        col_keys = list(OrderedDict.fromkeys(col for _, col, _, _, _ in matrix_vars))
+    for row_key, col_key, _, _, _ in matrix_vars:
+        cell = (row_key, col_key)
+        if cell in cells:
+            raise ValueError("duplicate NetCDF matrix cell")
+        cells.add(cell)
+    if len(cells) != len(row_keys) * len(col_keys):
+        raise ValueError("missing NetCDF matrix cell")
+    return row_keys, col_keys
 
 
 def read_timeseriesdict_netcdf4(
@@ -498,7 +604,24 @@ def read_timeseriesmatrix_netcdf4(
         for var_name, da in ds.data_vars.items():
             row_raw = da.attrs.get("gwexpy_row_key")
             col_raw = da.attrs.get("gwexpy_col_key")
-            if row_raw is None or col_raw is None or tc not in da.dims:
+            matrix_attrs = any(
+                name in da.attrs
+                for name in (
+                    "gwexpy_row_key",
+                    "gwexpy_col_key",
+                    "gwexpy_row_index",
+                    "gwexpy_col_index",
+                )
+            )
+            if matrix_attrs and (
+                row_raw is None or col_raw is None or tc not in da.dims
+            ):
+                raise ValueError(
+                    "NetCDF matrix cell is missing row/column metadata or time axis"
+                )
+            if not matrix_attrs:
+                if "gwexpy_matrix_rows" in ds.attrs and tc in da.dims:
+                    raise ValueError("NetCDF declared matrix has an unmarked cell")
                 continue
             if da.attrs.get("gwexpy_key_format") == "json":
                 row_key = _decode_netcdf_key(row_raw)
@@ -511,47 +634,81 @@ def read_timeseriesmatrix_netcdf4(
             matrix_vars.append((row_key, col_key, row_index, col_index, da))
 
         if not matrix_vars:
+            if "gwexpy_matrix_rows" in ds.attrs or "gwexpy_matrix_columns" in ds.attrs:
+                raise ValueError("NetCDF declared matrix has no cells")
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", RuntimeWarning)
                 tsd = read_timeseriesdict_netcdf4(source, **kwargs)
-            if is_v2:
-                # A v2 dictionary has one exact, validated regular axis.  Do
-                # not round-trip that axis through ``TimeSeriesDict.to_matrix``:
-                # its general-purpose alignment constructs float timestamps,
-                # which loses a non-binary dt at large GPS epochs.
-                values = np.stack(
-                    [np.asarray(series.value) for series in tsd.values()]
-                )[:, np.newaxis, :]
-                matrix = TimeSeriesMatrix(
-                    values,
-                    t0=t0,
-                    dt=dt,
-                    channel_names=list(tsd),
-                )
-                return apply_time_selection(matrix, start, end)
-            return apply_time_selection(tsd.to_matrix(), start, end)
+            if not tsd:
+                raise ValueError("NetCDF file has no time-series cells")
+            # The file has one validated shared axis.  Construct it directly;
+            # generic collection alignment can lose exact v2 timing and units.
+            values = np.stack([np.asarray(series.value) for series in tsd.values()])[
+                :, np.newaxis, :
+            ]
+            # A matrix exposes one physical unit.  Reject an unmarked legacy
+            # multichannel file whose units cannot be represented by that unit.
+            unit = _homogeneous_unit(series.unit for series in tsd.values())
+            matrix = TimeSeriesMatrix(
+                values,
+                t0=t0,
+                dt=dt,
+                unit=unit,
+                channel_names=list(tsd),
+            )
+            return apply_time_selection(matrix, start, end)
 
-        if is_v2:
-            if any(
-                row_index is None or col_index is None
-                for _, _, row_index, col_index, _ in matrix_vars
+        row_keys, col_keys = _validate_matrix_cells(matrix_vars, require_indices=is_v2)
+        declared_rows = ds.attrs.get("gwexpy_matrix_rows")
+        declared_cols = ds.attrs.get("gwexpy_matrix_columns")
+        if (declared_rows is None) != (declared_cols is None):
+            raise ValueError("NetCDF matrix is missing declared row/column dimension")
+        if declared_rows is not None:
+            if not isinstance(declared_rows, (int, np.integer)) or declared_rows != len(
+                row_keys
             ):
-                raise ValueError("NetCDF v2 matrix cell is missing row/column index")
-            matrix_vars.sort(key=lambda item: (int(item[2]), int(item[3])))
-        row_keys = list(OrderedDict.fromkeys(row for row, _, _, _, _ in matrix_vars))
-        col_keys = list(OrderedDict.fromkeys(col for _, col, _, _, _ in matrix_vars))
+                raise ValueError(
+                    "NetCDF matrix declared row dimension disagrees with cells"
+                )
+            if not isinstance(declared_cols, (int, np.integer)) or declared_cols != len(
+                col_keys
+            ):
+                raise ValueError(
+                    "NetCDF matrix declared column dimension disagrees with cells"
+                )
+        # Older v2 files did not declare dimensions.  Their observed rectangle
+        # is validated, but deletion of an entire final row/column is unknowable.
 
-        first = matrix_vars[0][4]
-        unit = first.attrs.get("units") or first.attrs.get("unit")
+        unit = _homogeneous_unit(
+            da.attrs.get("units") or da.attrs.get("unit") or ""
+            for _, _, _, _, da in matrix_vars
+        )
         n_samples = len(ds[tc])
+        cell_values = [np.asarray(da.values) for _, _, _, _, da in matrix_vars]
+        dtype = np.result_type(*(values.dtype for values in cell_values))
+
+        def lossless(values) -> bool:
+            if not np.can_cast(values.dtype, dtype, casting="safe"):
+                return False
+            # NumPy calls int64 -> float64 a "safe" dtype cast even when an
+            # individual integer exceeds the float64 exact-integer range.
+            with np.errstate(over="ignore", invalid="ignore"):
+                converted = values.astype(dtype)
+                roundtrip = converted.astype(values.dtype)
+            return bool(np.array_equal(values, roundtrip, equal_nan=True))
+
+        if not all(lossless(values) for values in cell_values):
+            raise ValueError(
+                "NetCDF matrix cell dtypes have no safe common representation"
+            )
         data = np.empty(
             (len(row_keys), len(col_keys), n_samples),
-            dtype=np.asarray(first.values).dtype,
+            dtype=dtype,
         )
-        for row_key, col_key, _, _, da in matrix_vars:
+        for (row_key, col_key, _, _, _), values in zip(matrix_vars, cell_values):
             i = row_keys.index(row_key)
             j = col_keys.index(col_key)
-            data[i, j, :] = np.asarray(da.values)
+            data[i, j, :] = values
 
         matrix = TimeSeriesMatrix(
             data,
@@ -580,7 +737,9 @@ def read_timeseriesmatrix_netcdf4(
 # -- Writer --------------------------------------------------------------------
 
 
-def write_timeseriesdict_netcdf4(tsd, target, **kwargs):
+def write_timeseriesdict_netcdf4(
+    tsd, target, *, _matrix_shape: tuple[int, int] | None = None, **kwargs
+):
     """Write a TimeSeriesDict to a NetCDF4 file.
 
     Version 2 stores a shared integer ``sample`` coordinate and exact timing
@@ -619,6 +778,9 @@ def write_timeseriesdict_netcdf4(tsd, target, **kwargs):
         coords={"sample": np.arange(n_samples, dtype=np.int64)},
         attrs=_v2_timing_attrs(t0_gps, dt_sec),
     )
+    if _matrix_shape is not None:
+        ds.attrs["gwexpy_matrix_rows"] = _matrix_shape[0]
+        ds.attrs["gwexpy_matrix_columns"] = _matrix_shape[1]
     ds.to_netcdf(str(target), **kwargs)
 
 
@@ -641,6 +803,7 @@ def write_timeseriesmatrix_netcdf4(tsm, target, **kwargs):
     row_keys = list(tsm.row_keys())
     col_keys = list(tsm.col_keys())
     n_rows, n_cols, n_samples = tsm.shape
+    unit = _homogeneous_unit(tsm.units.flat)
 
     tsd: TimeSeriesDict = TimeSeriesDict()
     for i, rk in enumerate(row_keys):
@@ -651,11 +814,11 @@ def write_timeseriesmatrix_netcdf4(tsm, target, **kwargs):
                 x0=tsm.x0,
                 dt=tsm.dt,
                 xunit=tsm.xunit,
-                unit=tsm.unit if hasattr(tsm, "unit") else None,
+                unit=unit,
             )
             tsd[(rk, ck)] = ts
 
-    write_timeseriesdict_netcdf4(tsd, target, **kwargs)
+    write_timeseriesdict_netcdf4(tsd, target, _matrix_shape=(n_rows, n_cols), **kwargs)
 
 
 # -- Registration --------------------------------------------------------------

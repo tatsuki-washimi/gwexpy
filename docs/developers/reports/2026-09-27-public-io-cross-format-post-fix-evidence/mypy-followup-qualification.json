@@ -1,0 +1,138 @@
+{
+  "schema": "gwexpy-public-io-cross-format-mypy-followup-v1",
+  "followup_id": "PR751-MYPY-FOLLOWUP-001",
+  "created": "2026-09-27",
+  "scope": "CI blocker correction and post-fix qualification follow-up",
+  "baseline": {
+    "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+    "scenario_count": 74,
+    "immutable": true,
+    "baseline_status_counts_unchanged": {
+      "CONFIRMED_CORRECTNESS_DEFECT": 36,
+      "CONFIRMED_COMPATIBILITY_BEHAVIOR": 6,
+      "CONFIRMED_INTENTIONAL_BEHAVIOR": 8,
+      "REFUTED_STATIC_SUSPICION": 12,
+      "BLOCKED": 12
+    }
+  },
+  "starting_commit": "1d5f559ea54876a0e28cd7c2eef06ca1e71b3f4f",
+  "source_test_tree_evaluated": "5658fa0562b409aa6e96c39769e0a4849f5d1a96",
+  "junit_evidence": {
+    "case_level_report_generated_and_aggregated": true,
+    "case_level_xml_included_in_repository": false,
+    "aggregate_counts_cross_checked_against_pytest_summary": true
+  },
+  "change": {
+    "file": "gwexpy/timeseries/io/netcdf4_.py",
+    "description": "Convert each validated nonnegative Python or NumPy integer matrix index to Python int before dictionary lookup and assignment.",
+    "public_contract_changed": false,
+    "baseline_finding_count_changed": false
+  },
+  "environment": {
+    "name": "conda environment gwexpy",
+    "python": "3.11.14",
+    "package_source": "editable install from this worktree",
+    "GWEXPY_ALLOW_ZARR": "1 for full pytest",
+    "PYTHONPATH": ". for full pytest"
+  },
+  "qualification_runs": [
+    {
+      "id": "netcdf_targeted_regressions",
+      "command": "rtk proxy conda run -n gwexpy python -m pytest -q tests/io/test_netcdf4_matrix_validation.py tests/io/test_netcdf4_reader.py",
+      "result": {
+        "passed": 70,
+        "failures": 0,
+        "errors": 0
+      }
+    },
+    {
+      "id": "io_contract_gate",
+      "command": "rtk proxy conda run -n gwexpy python scripts/ci/run_gate.py io-contract",
+      "result": {
+        "passed": 1797,
+        "skipped": 35,
+        "deselected": 1,
+        "failures": 0,
+        "errors": 0
+      }
+    },
+    {
+      "id": "io_conformance_gate",
+      "command": "rtk proxy conda run -n gwexpy python scripts/ci/run_gate.py io-conformance",
+      "result": {
+        "passed": 71,
+        "skipped": 7,
+        "failures": 0,
+        "errors": 0,
+        "generated_contract_display": "6 blocked / 6 total"
+      }
+    },
+    {
+      "id": "full_mypy",
+      "command": "rtk proxy conda run -n gwexpy mypy gwexpy",
+      "result": {
+        "status": "passed",
+        "source_files": 396,
+        "summary": "Success: no issues found in 396 source files"
+      }
+    },
+    {
+      "id": "pr_fast_mypy",
+      "command": "rtk proxy conda run -n gwexpy mypy gwexpy tests/docs/test_tutorial_notebook_quality.py --ignore-missing-imports",
+      "result": {
+        "status": "passed",
+        "source_files": 397,
+        "summary": "Success: no issues found in 397 source files"
+      }
+    },
+    {
+      "id": "ruff_check",
+      "command": "rtk proxy conda run -n gwexpy ruff check gwexpy/ tests/",
+      "result": {
+        "status": "passed",
+        "summary": "All checks passed!"
+      }
+    },
+    {
+      "id": "ruff_format_check",
+      "command": "rtk proxy conda run -n gwexpy ruff format --check gwexpy/timeseries/io/netcdf4_.py",
+      "result": {
+        "status": "passed",
+        "summary": "1 file already formatted"
+      }
+    },
+    {
+      "id": "full_pytest",
+      "command": "conda run -n gwexpy env GWEXPY_ALLOW_ZARR=1 PYTHONPATH=. python -m pytest -q --tb=short --junitxml=docs/developers/reports/2026-09-27-public-io-cross-format-post-fix-evidence/mypy-followup-full-pytest-zarr-enabled.xml",
+      "result": {
+        "passed": 13425,
+        "skipped": 278,
+        "xfailed": 6,
+        "failures": 0,
+        "errors": 0,
+        "duration_seconds": 731.26,
+        "junit_tests": 13709,
+        "junit_skipped_including_xfailed": 284
+      }
+    },
+    {
+      "id": "git_diff_check",
+      "command": "git diff --check",
+      "result": {
+        "status": "passed"
+      }
+    }
+  ],
+  "post_fix_matrix": {
+    "ref": "../2026-09-27-public-io-cross-format-post-fix-matrix.json",
+    "scenario_count": 74,
+    "status_counts_unchanged": {
+      "FIX_VERIFIED": 36,
+      "NOT_REQUALIFIED": 38
+    }
+  },
+  "qualified_complete_tree": {
+    "storage": "Qualified-Tree trailer on the final evidence-only commit",
+    "embedded_self_reference": false
+  }
+}

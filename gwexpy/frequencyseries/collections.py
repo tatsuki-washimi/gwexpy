@@ -14,6 +14,7 @@ from gwexpy.io.hdf5_collection import (
     LAYOUT_GROUP,
     detect_hdf5_layout,
     ensure_hdf5_file,
+    has_hdf5_collection_manifest,
     normalize_layout,
     read_hdf5_keymap,
     read_hdf5_order,
@@ -224,6 +225,7 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
             return out
         if fmt in ("hdf5", "h5", "hdf"):
             with h5py.File(source, "r") as h5f:
+                manifest_backed = has_hdf5_collection_manifest(h5f)
                 layout = detect_hdf5_layout(h5f)
                 keymap = read_hdf5_keymap(h5f)
                 order = read_hdf5_order(h5f)
@@ -234,6 +236,8 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
                         try:
                             fs = FrequencySeries.read(h5f, format="hdf5", path=ds_name)
                         except (KeyError, ValueError, TypeError, OSError) as e:
+                            if manifest_backed:
+                                raise
                             logger.debug("Skipping dataset %s: %s", ds_name, e)
                             continue
                         orig_key = keymap.get(ds_name, ds_name)
@@ -241,13 +245,17 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
                     return out
                 if layout == LAYOUT_GROUP:
                     for grp_name in keys:
+                        grp = h5f[grp_name]
                         try:
-                            grp = h5f[grp_name]
                             fs = FrequencySeries.read(grp, format="hdf5", path="data")
-                        except (KeyError, ValueError, TypeError, OSError):
+                        except (KeyError, ValueError, TypeError, OSError) as e:
+                            if manifest_backed:
+                                raise
                             try:
                                 fs = FrequencySeries.read(grp, format="hdf5")
                             except (KeyError, ValueError, TypeError, OSError) as e2:
+                                if manifest_backed:
+                                    raise e from e2
                                 logger.debug("Skipping group %s: %s", grp_name, e2)
                                 continue
                         orig_key = keymap.get(grp_name, grp_name)
@@ -833,6 +841,7 @@ class FrequencySeriesBaseList(PlotMixin, list[_FS]):
             return cls(dir_items)
         if fmt in ("hdf5", "h5", "hdf"):
             with h5py.File(source, "r") as h5f:
+                manifest_backed = has_hdf5_collection_manifest(h5f)
                 layout = detect_hdf5_layout(h5f)
                 order = read_hdf5_order(h5f) or list(h5f.keys())
                 out_items: list[FrequencySeries] = []
@@ -841,19 +850,25 @@ class FrequencySeriesBaseList(PlotMixin, list[_FS]):
                         try:
                             fs = FrequencySeries.read(h5f, format="hdf5", path=ds_name)
                         except (KeyError, ValueError, TypeError, OSError) as e:
+                            if manifest_backed:
+                                raise
                             logger.debug("Skipping dataset %s: %s", ds_name, e)
                             continue
                         out_items.append(fs)
                     return cls(out_items)
                 if layout == LAYOUT_GROUP:
                     for grp_name in order:
+                        grp = h5f[grp_name]
                         try:
-                            grp = h5f[grp_name]
                             fs = FrequencySeries.read(grp, format="hdf5", path="data")
-                        except (KeyError, ValueError, TypeError, OSError):
+                        except (KeyError, ValueError, TypeError, OSError) as e:
+                            if manifest_backed:
+                                raise
                             try:
                                 fs = FrequencySeries.read(grp, format="hdf5")
                             except (KeyError, ValueError, TypeError, OSError) as e2:
+                                if manifest_backed:
+                                    raise e from e2
                                 logger.debug("Skipping group %s: %s", grp_name, e2)
                                 continue
                         out_items.append(fs)

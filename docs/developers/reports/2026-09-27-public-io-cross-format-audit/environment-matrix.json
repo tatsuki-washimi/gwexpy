@@ -1,0 +1,62 @@
+{
+  "schema": "gwexpy-public-io-audit-environments-v1",
+  "source_sha": "ae10234a1e37853508c54901bf7c9e80878f25aa",
+  "python": "3.11.14",
+  "gwexpy": "0.2.4",
+  "gwpy": "4.0.2",
+  "numpy": "1.26.4",
+  "profiles": {
+    "present": {
+      "purpose": "runtime characterization with relevant optional packages installed",
+      "python_executable": "/home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/present/bin/python",
+      "source_import": "lane worktree selected through PYTHONPATH; each lane reported gwexpy.__file__ inside its own worktree",
+      "packages": {
+        "netCDF4": "1.7.4",
+        "xarray": "2026.2.0",
+        "zarr": "3.1.5",
+        "h5py": "3.16.0",
+        "nptdms": "1.11.0",
+        "obspy": "1.5.0",
+        "pydub": "0.25.1",
+        "tinytag": "2.3.0",
+        "mth5": "0.6.8",
+        "astropy": "6.1.7",
+        "scipy": "1.12.0"
+      },
+      "system_tools": {
+        "ffmpeg": "/usr/bin/ffmpeg"
+      }
+    },
+    "base": {
+      "purpose": "isolated clone with the relevant optional packages actually uninstalled; no monkeypatching",
+      "python_executable": "/home/washimi/.config/superpowers/worktrees/gwexpy-public-io-audit/envs/base/bin/python",
+      "source_import": "lane worktree selected through PYTHONPATH; each lane reported gwexpy.__file__ inside its own worktree",
+      "core_versions_shared_with_present": {
+        "gwpy": "4.0.2",
+        "numpy": "1.26.4",
+        "h5py": "3.16.0",
+        "astropy": "6.1.7"
+      },
+      "absent_packages": [
+        "netCDF4",
+        "xarray",
+        "zarr",
+        "nptdms",
+        "obspy",
+        "pydub",
+        "tinytag",
+        "mth5",
+        "mtpy",
+        "mt_metadata"
+      ],
+      "system_tools": {
+        "ffmpeg": "/usr/bin/ffmpeg"
+      }
+    }
+  },
+  "isolation": {
+    "source": "All runtime lanes used separate worktrees created at source_sha. No lane rebased or updated during characterization.",
+    "python_environment": "present and base are separate environment prefixes. The base profile removed optional packages from an isolated environment instead of changing import behavior in-process.",
+    "immutability": "Both audit environments were read-only after setup."
+  }
+}

@@ -1,0 +1,261 @@
+"""Temporary public-I/O probe. Run only in the parent-provided audit environments.
+
+Usage: python .audit_tmp/lane_b_probe.py --family {tdms,gbd,ats} --out DIR
+Writes self-contained fixtures and one JSON observation per public read. It has
+no dependency on GWexpy writers. Native oracles are encoded in fixture metadata.
+"""
+
+from __future__ import annotations
+
+import argparse
+import datetime as dt
+import importlib.metadata as metadata
+import json
+import struct
+import warnings
+from pathlib import Path
+
+import numpy as np
+
+SHA = "ae10234a1e37853508c54901bf7c9e80878f25aa"
+UTC = dt.timezone.utc
+
+
+def version(name):
+    try:
+        return metadata.version(name)
+    except metadata.PackageNotFoundError:
+        return None
+
+
+def series_info(ts):
+    info = {
+        "type": type(ts).__name__,
+        "value": np.asarray(ts.value).tolist(),
+        "dtype": str(np.asarray(ts.value).dtype),
+        "shape": list(np.asarray(ts.value).shape),
+    }
+    for key in ("t0", "dt", "unit", "name", "channel", "times"):
+        try:
+            value = getattr(ts, key)
+            if key in ("t0", "dt"):
+                value = float(value.value)
+            elif key == "times":
+                value = np.asarray(value.value).tolist()
+            else:
+                value = str(value)
+            info[key] = value
+        except Exception as exc:
+            info[f"{key}_inspection_error"] = f"{type(exc).__name__}: {exc}"
+    return info
+
+
+def result(label, path, reader, **kwargs):
+    with warnings.catch_warnings(record=True) as captured:
+        warnings.simplefilter("always")
+        try:
+            value = reader(path, **kwargs)
+            if hasattr(value, "keys") and hasattr(value, "items"):
+                actual = {
+                    "type": type(value).__name__,
+                    "keys": list(value.keys()),
+                    "channels": {key: series_info(item) for key, item in value.items()},
+                }
+            else:
+                actual = series_info(value)
+        except Exception as exc:
+            actual = {"error_type": type(exc).__name__, "error": str(exc)}
+    return {
+        "case": label,
+        "path": str(path),
+        "kwargs": kwargs,
+        "actual": actual,
+        "warnings": [str(w.message) for w in captured],
+    }
+
+
+def tdms_cases(out):
+    from nptdms import ChannelObject, GroupObject, RootObject, TdmsFile, TdmsWriter
+    from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+
+    increments = {
+        "ABSENT": None,
+        "INVALID_ZERO": 0.0,
+        "INVALID_NEGATIVE": -0.1,
+        "INVALID_NAN": float("nan"),
+        "INVALID_POSINF": float("inf"),
+        "INVALID_NEGINF": float("-inf"),
+        "VALID": 0.25,
+    }
+    wf_time = dt.datetime(2024, 1, 2, 3, 4, 5)
+    root_time = dt.datetime(2024, 1, 3, 4, 5, 6)
+    for inc_name, inc in increments.items():
+        for time_name, start in (("START", wf_time), ("NOSTART", None)):
+            for root_name, root in (("ROOT", root_time), ("NOROOT", None)):
+                props = {"wf_start_offset": 0.0, "unit_string": "V"}
+                if inc is not None:
+                    props["wf_increment"] = inc
+                if start is not None:
+                    props["wf_start_time"] = start
+                root_props = {"DateTime": root} if root is not None else {}
+                label = f"TDMS-TIME-{inc_name}-{time_name}-{root_name}"
+                path = out / f"{label}.tdms"
+                with TdmsWriter(path) as writer:
+                    writer.write_segment([
+                        RootObject(properties=root_props), GroupObject("G"),
+                        ChannelObject("G", "C", np.array([11, 13, 17], dtype=np.int16), properties=props),
+                    ])
+                native = TdmsFile.read(path)["G"]["C"]
+                oracle = {
+                    "values": native.read_data().tolist(),
+                    "dtype": str(native.read_data().dtype),
+                    "properties": {k: str(v) for k, v in native.properties.items()},
+                    "time_track": None,
+                }
+                try:
+                    oracle["time_track"] = native.time_track().tolist()
+                except Exception as exc:
+                    oracle["time_track_error"] = f"{type(exc).__name__}: {exc}"
+                for api, reader in (
+                    ("TimeSeries", TimeSeries.read),
+                    ("TimeSeriesDict", TimeSeriesDict.read),
+                    ("TimeSeriesMatrix", TimeSeriesMatrix.read),
+                ):
+                    for override, extra in (("SOURCE", {}), ("EPOCH", {"epoch": 1234567890.0})):
+                        row = result(f"{label}-{api}-{override}", path, reader, format="tdms", **extra)
+                        row["oracle"] = oracle
+                        yield row
+
+
+def tdms_missing_cases(out):
+    """Read a fixture generated by tdms_cases in an env without nptdms."""
+    from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+
+    path = out / "TDMS-TIME-VALID-START-NOROOT.tdms"
+    if not path.exists():
+        raise FileNotFoundError(f"Generate the TDMS fixtures first: {path}")
+    for api, reader in (("TimeSeries", TimeSeries.read),
+                        ("TimeSeriesDict", TimeSeriesDict.read),
+                        ("TimeSeriesMatrix", TimeSeriesMatrix.read)):
+        yield result(f"TDMS-OPTIONAL-001-{api}", path, reader, format="tdms")
+
+
+def gbd_file(out, name, omit=(), counts=3, payload_rows=3, order=("CH1", "Alarm"),
+             amp=True, sample="100ms", dtype="BigEndian, Short, Setup, Current"):
+    fields = [
+        "$Common", "ID = 3E0512D6", "Volume = 1, 1", "HeaderSiz = 2048",
+        'Vendor = "GRAPHTEC Corporation"', 'Model = "GL500"',
+        'Suffix = "      "', "CH = 4CH", "Option = None",
+        'Format = "Ver1.00"', 'Hardware = "Ver1.00"',
+        'Firmware = "Ver1.00"', 'OS = "Ver3.02", "Ver1.00"',
+        "$$Data", "Format = BinaryData",
+        f"Type = {dtype}", f"Order = {', '.join(order)}", f"Sample = {sample}",
+        f"Counts = {counts}", "Trigger = 0", "Stat = Off", "Event = Off",
+        "$$Time", "Start = 2024-01-02,03:04:05",
+        "Stop = 2024-01-02,03:04:06", "Trigger = 2024-01-02,03:04:05",
+    ]
+    if amp:
+        fields += ["$Amp"] + [f"CH{i} = M, DC, 10V, Off, TC_K, +0" for i in range(1, 5)]
+    fields += ["$EndHeader"]
+    fields = [line for line in fields if line.split(" = ")[0] not in omit]
+    header = ("\r\n".join(fields) + "\r\n").encode("ascii")
+    if len(header) > 2048:
+        raise ValueError("header exceeds 2048 bytes")
+    # GL500: big endian signed short, interleaved by Order. Alarm is a bit mask.
+    raw = [(2000, 0), (-4000, 2), (10000, 8)][:payload_rows]
+    body = b"".join(struct.pack(">hh", *row) for row in raw)
+    path = out / f"{name}.gbd"
+    path.write_bytes(header.ljust(2048, b" ") + body)
+    return path, {"raw_rows": raw, "CH1_V": [x * 10.0 / 20000.0 for x, _ in raw],
+                  "Alarm_mask": [y for _, y in raw], "dt_s": 0.1,
+                  "start_local": "2024-01-02 03:04:05", "header_counts": counts}
+
+
+def gbd_cases(out):
+    from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+
+    configs = [
+        ("GBD-CONTROL-001", {}),
+        ("GBD-HEADER-SAMPLE", {"omit": ("Sample",)}),
+        ("GBD-HEADER-TYPE", {"omit": ("Type",)}),
+        ("GBD-HEADER-ORDER", {"omit": ("Order",)}),
+        ("GBD-HEADER-COUNTS", {"omit": ("Counts",)}),
+        ("GBD-HEADER-AMP", {"amp": False}),
+        ("GBD-COUNT-LOW", {"counts": 2, "payload_rows": 3}),
+        ("GBD-TRUNC-001", {"counts": 4, "payload_rows": 3}),
+        ("GBD-DIGITAL-001", {}),
+    ]
+    for label, options in configs:
+        path, oracle = gbd_file(out, label, **options)
+        for api, reader in (
+            ("TimeSeries", TimeSeries.read),
+            ("TimeSeriesDict", TimeSeriesDict.read),
+            ("TimeSeriesMatrix", TimeSeriesMatrix.read),
+        ):
+            for tz in ("UTC", "Asia/Tokyo"):
+                kwargs = {"format": "gbd", "timezone": tz}
+                if api == "TimeSeries":
+                    kwargs["channels"] = ["CH1"]
+                row = result(f"{label}-{api}-{tz}", path, reader, **kwargs)
+                row["oracle"] = oracle
+                yield row
+                if label == "GBD-CONTROL-001":
+                    override = dict(kwargs, epoch=1234567890.0)
+                    row = result(f"{label}-{api}-{tz}-EPOCH", path, reader, **override)
+                    row["oracle"] = oracle
+                    yield row
+
+
+def ats_file(out, label, declared=3, raw=(1000, -2000, 3000), rate=4.0,
+             unix=1704164645, lsb_mV=0.5):
+    header = bytearray(1024)
+    struct.pack_into("<HhIfId", header, 0, 1024, 80, declared, rate, unix, lsb_mV)
+    struct.pack_into("<H", header, 0x20, 7)
+    header[0x26:0x28] = b"Ex"
+    header[0x28:0x2E] = b"EFP06 "
+    struct.pack_into("<h", header, 0x2E, 12)
+    header[0x84:0x90] = b"ADU08       "
+    struct.pack_into("<h", header, 0xAA, 0)
+    path = out / f"{label}.ats"
+    path.write_bytes(header + struct.pack("<" + "i" * len(raw), *raw))
+    return path, {"header_samples": declared, "raw_counts": list(raw),
+                  "scaled_V": [x * lsb_mV / 1000.0 for x in raw],
+                  "sample_rate_hz": rate, "unix_start": unix, "lsb_mV": lsb_mV}
+
+
+def ats_cases(out):
+    from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+
+    for label, options in (
+        ("ATS-CONTROL-001", {}),
+        ("ATS-TRUNC-001", {"declared": 5}),
+        ("ATS-RATE-ZERO", {"rate": 0.0}),
+        ("ATS-RATE-NAN", {"rate": float("nan")}),
+    ):
+        path, oracle = ats_file(out, label, **options)
+        for api, reader in (("TimeSeries", TimeSeries.read),
+                            ("TimeSeriesDict", TimeSeriesDict.read)):
+            for override, extra in (("SOURCE", {}), ("EPOCH", {"epoch": 1234567890.0})):
+                row = result(f"{label}-{api}-{override}", path, reader, format="ats", **extra)
+                row["oracle"] = oracle
+                yield row
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--family", required=True,
+                        choices=("tdms", "tdms_missing", "gbd", "ats"))
+    parser.add_argument("--out", required=True, type=Path)
+    args = parser.parse_args()
+    args.out.mkdir(parents=True, exist_ok=True)
+    print(json.dumps({"source_sha": SHA, "family": args.family,
+                      "versions": {x: version(x) for x in
+                                   ("gwexpy", "gwpy", "numpy", "astropy", "nptdms", "mth5")}}))
+    cases = {"tdms": tdms_cases, "tdms_missing": tdms_missing_cases,
+             "gbd": gbd_cases, "ats": ats_cases}[args.family]
+    for row in cases(args.out):
+        print(json.dumps(row, default=str, allow_nan=True))
+
+
+if __name__ == "__main__":
+    main()

@@ -15,6 +15,7 @@ from gwexpy.io.hdf5_collection import (
     LAYOUT_GROUP,
     detect_hdf5_layout,
     ensure_hdf5_file,
+    has_hdf5_collection_manifest,
     normalize_layout,
     read_hdf5_keymap,
     read_hdf5_order,
@@ -205,6 +206,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         new_list = self.__class__()
         if format == "hdf5":
             with h5py.File(source, "r") as h5f:
+                manifest_backed = has_hdf5_collection_manifest(h5f)
                 layout = detect_hdf5_layout(h5f)
                 order = read_hdf5_order(h5f) or list(h5f.keys())
                 if layout == LAYOUT_DATASET or layout is None:
@@ -216,24 +218,30 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
                         except ProvenanceSidecarError:
                             raise
                         except (KeyError, ValueError, TypeError, OSError) as e:
+                            if manifest_backed:
+                                raise
                             logger.debug("Skipping dataset %s: %s", ds_name, e)
                     self.extend(new_list)
                     return self
                 if layout == LAYOUT_GROUP:
                     for grp_name in order:
+                        grp = h5f[grp_name]
                         try:
-                            grp = h5f[grp_name]
                             new_list.append(
                                 Spectrogram.read(grp, format="hdf5", path="data")
                             )
                         except ProvenanceSidecarError:
                             raise
-                        except (KeyError, ValueError, TypeError, OSError):
+                        except (KeyError, ValueError, TypeError, OSError) as e:
+                            if manifest_backed:
+                                raise
                             try:
                                 new_list.append(Spectrogram.read(grp, format="hdf5"))
                             except ProvenanceSidecarError:
                                 raise
                             except (KeyError, ValueError, TypeError, OSError) as e2:
+                                if manifest_backed:
+                                    raise e from e2
                                 logger.debug("Skipping group %s: %s", grp_name, e2)
                     self.extend(new_list)
                     return self
@@ -616,6 +624,7 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
         format = kwargs.get("format", "hdf5")
         if format == "hdf5":
             with h5py.File(source, "r") as h5f:
+                manifest_backed = has_hdf5_collection_manifest(h5f)
                 layout = detect_hdf5_layout(h5f)
                 keymap = read_hdf5_keymap(h5f)
                 order = read_hdf5_order(h5f) or list(h5f.keys())
@@ -626,6 +635,8 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
                         except ProvenanceSidecarError:
                             raise
                         except (KeyError, ValueError, TypeError, OSError) as e:
+                            if manifest_backed:
+                                raise
                             logger.debug("Skipping dataset %s: %s", ds_name, e)
                             continue
                         key = keymap.get(ds_name, ds_name)
@@ -633,17 +644,21 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
                     return self
                 if layout == LAYOUT_GROUP:
                     for grp_name in order:
+                        grp = h5f[grp_name]
                         try:
-                            grp = h5f[grp_name]
                             s = Spectrogram.read(grp, format="hdf5", path="data")
                         except ProvenanceSidecarError:
                             raise
-                        except (KeyError, ValueError, TypeError, OSError):
+                        except (KeyError, ValueError, TypeError, OSError) as e:
+                            if manifest_backed:
+                                raise
                             try:
                                 s = Spectrogram.read(grp, format="hdf5")
                             except ProvenanceSidecarError:
                                 raise
                             except (KeyError, ValueError, TypeError, OSError) as e2:
+                                if manifest_backed:
+                                    raise e from e2
                                 logger.debug("Skipping group %s: %s", grp_name, e2)
                                 continue
                         key = keymap.get(grp_name, grp_name)

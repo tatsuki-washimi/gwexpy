@@ -296,17 +296,21 @@ def _read_header_text(fh: io.BufferedReader) -> tuple[str, int]:
 
 
 def _parse_header(header_text: str, header_size: int) -> GBDHeader:
+    gl500_data_fields = _validate_gl500_legacy_header(header_text)
     start = _find_field(header_text, r"Start\s*[:=]\s*([^\r\n]+)")
     stop = _find_field(header_text, r"Stop\s*[:=]\s*([^\r\n]+)", default=start)
-    dt_raw = _find_field(header_text, r"Sample\s*[:=]\s*([^\r\n]+)", default="1")
+    if gl500_data_fields is None:
+        dt_raw = _find_field(header_text, r"Sample\s*[:=]\s*([^\r\n]+)", default="1")
+        order_raw = _find_field(header_text, r"Order\s*[:=]\s*([^\r\n]+)", default="")
+        counts_raw = _find_field(header_text, r"Counts\s*[:=]\s*([0-9]+)", default="0")
+    else:
+        dt_raw, order_raw, counts_raw = gl500_data_fields
     dt = _parse_sample(dt_raw)
     dtype_raw = _find_field(
         header_text, r"Type\s*[:=]\s*([^\r\n]+)", default="little,float32"
     )
     dtype = _parse_dtype(dtype_raw)
-    order_raw = _find_field(header_text, r"Order\s*[:=]\s*([^\r\n]+)", default="")
     order = [c.strip() for c in re.split(r"[,\s]+", order_raw) if c.strip()] or ["CH0"]
-    counts_raw = _find_field(header_text, r"Counts\s*[:=]\s*([0-9]+)", default="0")
     counts = int(counts_raw)
     scales = _parse_scales(header_text, order)
     return GBDHeader(
@@ -329,6 +333,135 @@ def _find_field(text: str, pattern: str, default: str | None = None) -> str:
     if default is not None:
         return default
     raise ValueError(f"Missing required header field matching {pattern}")
+
+
+def _validate_gl500_legacy_header(
+    header_text: str,
+) -> tuple[str, str, str] | None:
+    """Reject incomplete reconstruction metadata for GL500 firmware 1.00–1.21.
+
+    The legacy parser defaults missing fields for other GBD variants. For this
+    GL500 firmware range, Sample, Order, Counts, and analog $Amp ranges are
+    required to interpret the sample axis and payload values. Return the
+    validated ``Sample``, ``Order``, and ``Counts`` values for parsing.
+    """
+    if not _is_gl500_firmware_100_121(header_text):
+        return None
+
+    data_section = _header_section(header_text, "Data")
+    if data_section is None:
+        raise ValueError(
+            "Malformed GL500 firmware 1.00–1.21 header: missing $$Data section"
+        )
+
+    sample_raw = _section_line_value(data_section, "Sample")
+    if sample_raw is None or not sample_raw:
+        raise ValueError(
+            "Malformed GL500 firmware 1.00–1.21 header: missing Sample value"
+        )
+    try:
+        sample = _parse_sample(sample_raw)
+    except (OverflowError, ValueError) as exc:
+        raise ValueError(
+            "Malformed GL500 firmware 1.00–1.21 header: invalid Sample value"
+        ) from exc
+    if not np.isfinite(sample) or sample <= 0:
+        raise ValueError(
+            "Malformed GL500 firmware 1.00–1.21 header: Sample must be finite and positive"
+        )
+
+    order_raw = _section_line_value(data_section, "Order")
+    if order_raw is None or not order_raw:
+        raise ValueError(
+            "Malformed GL500 firmware 1.00–1.21 header: missing Order value"
+        )
+    order = [channel.strip() for channel in order_raw.split(",")]
+    if (
+        not order
+        or any(not channel for channel in order)
+        or len({channel.casefold() for channel in order}) != len(order)
+    ):
+        raise ValueError(
+            "Malformed GL500 firmware 1.00–1.21 header: invalid Order value"
+        )
+
+    counts_raw = _section_line_value(data_section, "Counts")
+    if counts_raw is None or re.fullmatch(r"\d+", counts_raw) is None:
+        raise ValueError(
+            "Malformed GL500 firmware 1.00–1.21 header: invalid Counts value"
+        )
+
+    amp_section = _header_section(header_text, "Amp")
+    if amp_section is None:
+        raise ValueError(
+            "Malformed GL500 firmware 1.00–1.21 header: missing $Amp section"
+        )
+    amp_ranges = _parse_amp_range_lines(
+        amp_section.splitlines(), preserve_empty_fields=True
+    )
+    digital_channels = _default_digital_channels(order)
+    for channel in order:
+        if channel.upper() in digital_channels:
+            continue
+        if _scale_from_gl500_amp_range(amp_ranges.get(channel.upper())) is None:
+            raise ValueError(
+                "Malformed GL500 firmware 1.00–1.21 header: missing or invalid "
+                f"$Amp range for {channel}"
+            )
+    return sample_raw, order_raw, counts_raw
+
+
+def _is_gl500_firmware_100_121(header_text: str) -> bool:
+    model = _header_line_value(header_text, "Model")
+    if model is None or _unquote_header_value(model).casefold() != "gl500":
+        return False
+    firmware = _header_line_value(header_text, "Firmware")
+    if firmware is None:
+        return False
+    match = re.fullmatch(r"(?i)(?:ver)?\s*1\.(\d{2})", _unquote_header_value(firmware))
+    return match is not None and int(match.group(1)) <= 21
+
+
+def _header_line_value(header_text: str, name: str) -> str | None:
+    """Return a named metadata line from the header, if present."""
+    match = re.search(
+        rf"(?im)^[ \t]*{re.escape(name)}[ \t]*[:=][ \t]*([^\r\n]*)",
+        header_text,
+    )
+    return match.group(1).strip() if match is not None else None
+
+
+def _unquote_header_value(value: str) -> str:
+    value = value.strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+        return value[1:-1].strip()
+    return value
+
+
+def _header_section(header_text: str, name: str) -> str | None:
+    """Return a named dollar-delimited section, preserving blank sections."""
+    active = False
+    found = False
+    lines: list[str] = []
+    for raw_line in header_text.splitlines():
+        line = raw_line.strip()
+        if line.startswith("$"):
+            section_name = line.lstrip("$").strip().casefold()
+            active = section_name == name.casefold()
+            found = found or active
+            continue
+        if active:
+            lines.append(raw_line)
+    return "\n".join(lines) if found else None
+
+
+def _section_line_value(section: str, name: str) -> str | None:
+    """Return the value of an anchored metadata line within a section."""
+    match = re.search(
+        rf"(?im)^[ \t]*{re.escape(name)}[ \t]*[:=][ \t]*([^\r\n]*)",
+        section,
+    )
+    return match.group(1).strip() if match is not None else None
 
 
 def _parse_sample(raw: str) -> float:
@@ -366,6 +499,27 @@ def _parse_dtype(raw: str) -> np.dtype:
 
 
 def _parse_scales(header_text: str, order: list[str]) -> list[float]:
+    if _is_gl500_firmware_100_121(header_text):
+        amp_section = _header_section(header_text, "Amp")
+        if amp_section is None:
+            raise ValueError(
+                "Malformed GL500 firmware 1.00–1.21 header: missing $Amp section"
+            )
+        amp_ranges = _parse_amp_range_lines(
+            amp_section.splitlines(), preserve_empty_fields=True
+        )
+        digital_channels = _default_digital_channels(order)
+        scales = []
+        for channel in order:
+            scale = _scale_from_gl500_amp_range(amp_ranges.get(channel.upper()))
+            if scale is None and channel.upper() not in digital_channels:
+                raise ValueError(
+                    "Malformed GL500 firmware 1.00–1.21 header: missing or "
+                    f"invalid $Amp range for {channel}"
+                )
+            scales.append(scale if scale is not None else 1.0)
+        return scales
+
     amp_ranges = _extract_amp_ranges(header_text)
     scales = []
     for ch in order:
@@ -378,7 +532,7 @@ def _parse_scales(header_text: str, order: list[str]) -> list[float]:
 
 
 def _extract_amp_ranges(header_text: str) -> dict[str, str]:
-    ranges: dict[str, str] = {}
+    amp_lines: list[str] = []
     in_amp_section = False
     for raw_line in header_text.splitlines():
         line = raw_line.strip()
@@ -390,14 +544,56 @@ def _extract_amp_ranges(header_text: str) -> dict[str, str]:
             continue
         if not in_amp_section:
             continue
+        amp_lines.append(raw_line)
+    return _parse_amp_range_lines(amp_lines)
+
+
+def _parse_amp_range_lines(
+    lines: Iterable[str], *, preserve_empty_fields: bool = False
+) -> dict[str, str]:
+    """Extract channel range text from lines already known to be in $Amp."""
+    ranges: dict[str, str] = {}
+    for raw_line in lines:
+        line = raw_line.strip()
         match = re.match(r"^(CH\d+)\s*=\s*(.+)", line, re.IGNORECASE)
         if not match:
             continue
         channel_name = match.group(1).upper()
-        fields = [field.strip() for field in match.group(2).split(",") if field.strip()]
+        fields = [field.strip() for field in match.group(2).split(",")]
+        if not preserve_empty_fields:
+            fields = [field for field in fields if field]
         if len(fields) >= 3:
             ranges[channel_name] = fields[2]
     return ranges
+
+
+def _scale_from_gl500_amp_range(range_str: str | None) -> float | None:
+    """Return a finite positive scale only for a complete supported range."""
+    if not range_str:
+        return None
+    cleaned = range_str.strip().replace("−", "-")
+    number = r"(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?"
+    match = re.fullmatch(
+        rf"\s*(?:±\s*(?P<absolute>{number})|(?P<signed>[+-]?{number}))"
+        r"\s*(?P<unit>[a-zA-Zμµ]*)\s*",
+        cleaned,
+    )
+    if match is None:
+        return None
+    try:
+        magnitude = abs(float(match.group("absolute") or match.group("signed")))
+    except ValueError:
+        return None
+    if not np.isfinite(magnitude) or magnitude <= 0:
+        return None
+    multiplier = _unit_multiplier(match.group("unit"))
+    if multiplier is None:
+        return None
+    volts = magnitude * multiplier
+    scale = volts / GBD_FULL_SCALE
+    if not np.isfinite(scale) or scale <= 0:
+        return None
+    return scale
 
 
 def _scale_from_amp_range(range_str: str | None) -> float | None:

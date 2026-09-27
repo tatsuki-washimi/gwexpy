@@ -13,6 +13,270 @@ if os.environ.get("GWEXPY_ALLOW_ZARR", "") != "1":
 
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
+_T0 = 1_234_567_890.25
+_SAMPLE_RATE = 16.0
+
+
+def _native_zarr_series(path, values, *, t0=_T0):
+    """Create a one-channel native Zarr fixture without GWexpy's writer."""
+    store = zarr.open_group(str(path), mode="w")
+    creator = getattr(store, "create_array", None) or store.create_dataset
+    array = creator("signal", data=np.asarray(values))
+    array.attrs["sample_rate"] = _SAMPLE_RATE
+    array.attrs["t0"] = t0
+    array.attrs["unit"] = "V"
+    return path
+
+
+def _native_zarr_matrix(path, channels):
+    """Create a native Zarr matrix fixture with per-cell matrix metadata."""
+    store = zarr.open_group(str(path), mode="w")
+    creator = getattr(store, "create_array", None) or store.create_dataset
+    for col_index, (name, values, t0) in enumerate(channels):
+        array = creator(name, data=np.asarray(values))
+        array.attrs.update(
+            {
+                "sample_rate": _SAMPLE_RATE,
+                "t0": t0,
+                "unit": "V",
+                "gwexpy_row_key": json.dumps("row0"),
+                "gwexpy_col_key": json.dumps(f"col{col_index}"),
+                "gwexpy_key_format": "json",
+                "gwexpy_row_index": 0,
+                "gwexpy_col_index": col_index,
+            }
+        )
+    return path
+
+
+def _native_zarr_channels(path, channels):
+    """Create a native multi-channel Zarr store without matrix metadata."""
+    store = zarr.open_group(str(path), mode="w")
+    creator = getattr(store, "create_array", None) or store.create_dataset
+    for name, values in channels.items():
+        array = creator(name, data=np.asarray(values))
+        array.attrs["sample_rate"] = _SAMPLE_RATE
+        array.attrs["t0"] = _T0
+        array.attrs["unit"] = "V"
+    return path
+
+
+_LOSSLESS_ZARR_VALUES = (
+    pytest.param(
+        np.array([2**53 + 1, -(2**53) - 3, 17], dtype=np.int64),
+        id="int64",
+    ),
+    pytest.param(
+        np.array([1 + 2j, -3 + 4j, 5 - 6j], dtype=np.complex64),
+        id="complex64",
+    ),
+    pytest.param(
+        np.array([1.1 + 2.2j, -3.3 + 4.4j, 5.5 - 6.6j], dtype=np.complex128),
+        id="complex128",
+    ),
+)
+_LOSSLESS_ZARR_READ_VALUES = (
+    *_LOSSLESS_ZARR_VALUES,
+    pytest.param(
+        np.array([2**63 + 1, 2**64 - 1, 17], dtype=np.uint64),
+        id="uint64",
+    ),
+)
+
+
+@pytest.mark.parametrize("values", _LOSSLESS_ZARR_READ_VALUES)
+@pytest.mark.parametrize("reader_kind", ["single", "dict", "matrix"])
+def test_public_zarr_reads_preserve_int64_and_complex_values(
+    tmp_path, values, reader_kind
+):
+    path = _native_zarr_series(tmp_path / f"native-{reader_kind}.zarr", values)
+    readers = {
+        "single": lambda: TimeSeries.read(path, format="zarr"),
+        "dict": lambda: TimeSeriesDict.read(path, format="zarr")["signal"],
+        "matrix": lambda: TimeSeriesMatrix.read(path, format="zarr")[0, 0],
+    }
+
+    loaded = readers[reader_kind]()
+    actual = np.asarray(loaded.value)
+
+    assert actual.dtype == values.dtype
+    assert str(loaded.unit) == "V"
+    assert float(loaded.t0.value).hex() == _T0.hex()
+    assert float(loaded.dt.value).hex() == (1.0 / _SAMPLE_RATE).hex()
+    np.testing.assert_array_equal(actual, values)
+    if np.iscomplexobj(values):
+        np.testing.assert_array_equal(np.real(actual), np.real(values))
+        np.testing.assert_array_equal(np.imag(actual), np.imag(values))
+        np.testing.assert_array_equal(np.angle(actual), np.angle(values))
+
+
+@pytest.mark.parametrize("values", _LOSSLESS_ZARR_VALUES)
+@pytest.mark.parametrize("writer_kind", ["single", "dict", "matrix"])
+def test_public_zarr_writes_preserve_int64_and_complex_values(
+    tmp_path, values, writer_kind
+):
+    path = tmp_path / f"written-{writer_kind}.zarr"
+    series = TimeSeries(
+        values,
+        t0=_T0,
+        sample_rate=_SAMPLE_RATE,
+        name="signal",
+        unit="V",
+    )
+    writers = {
+        "single": lambda: series.write(path, format="zarr"),
+        "dict": lambda: TimeSeriesDict({"signal": series}).write(path, format="zarr"),
+        "matrix": lambda: TimeSeriesMatrix(
+            values.reshape(1, 1, -1),
+            t0=_T0,
+            sample_rate=_SAMPLE_RATE,
+            unit="V",
+        ).write(path, format="zarr"),
+    }
+
+    writers[writer_kind]()
+    store = zarr.open_group(str(path), mode="r")
+    actual = np.asarray(store[next(iter(store.keys()))][:])
+    attrs = dict(store[next(iter(store.keys()))].attrs)
+
+    assert actual.dtype == values.dtype
+    assert attrs["t0"] == _T0
+    assert attrs["sample_rate"] == _SAMPLE_RATE
+    assert attrs["unit"] == "V"
+    np.testing.assert_array_equal(actual, values)
+    if np.iscomplexobj(values):
+        np.testing.assert_array_equal(np.real(actual), np.real(values))
+        np.testing.assert_array_equal(np.imag(actual), np.imag(values))
+        np.testing.assert_array_equal(np.angle(actual), np.angle(values))
+
+    if writer_kind == "matrix":
+        loaded_matrix = TimeSeriesMatrix.read(path, format="zarr")
+        assert loaded_matrix.value.dtype == values.dtype
+        np.testing.assert_array_equal(loaded_matrix.value[0, 0], values)
+
+
+def test_public_zarr_read_write_roundtrip_preserves_uint64(tmp_path):
+    values = np.array([2**63 + 1, 2**64 - 1, 17], dtype=np.uint64)
+    native_path = _native_zarr_series(tmp_path / "native-uint64.zarr", values)
+    loaded = TimeSeries.read(native_path, format="zarr")
+    output_path = tmp_path / "roundtrip-uint64.zarr"
+
+    loaded.write(output_path, format="zarr")
+
+    store = zarr.open_group(str(output_path), mode="r")
+    written = np.asarray(store["signal"][:])
+    assert written.dtype == np.dtype(np.uint64)
+    np.testing.assert_array_equal(written, values)
+
+
+def test_public_single_timeseries_auto_reads_zarr_store(tmp_path):
+    values = np.array([2**53 + 1, -(2**53) - 3, 17], dtype=np.int64)
+    path = _native_zarr_series(tmp_path / "single-auto.zarr", values)
+
+    loaded = TimeSeries.read(path)
+
+    assert loaded.name == "signal"
+    assert str(loaded.unit) == "V"
+    np.testing.assert_array_equal(loaded.value, values)
+
+
+def test_public_zarr_matrix_rejects_mixed_dtypes_that_need_conversion(tmp_path):
+    path = tmp_path / "mixed-dtypes.zarr"
+    store = zarr.open_group(str(path), mode="w")
+    creator = getattr(store, "create_array", None) or store.create_dataset
+    channels = (
+        ("float_channel", np.array([1.0, 2.0, 3.0], dtype=np.float64), "float", 0),
+        (
+            "int_channel",
+            np.array([2**53 + 1, 2, 3], dtype=np.int64),
+            "int",
+            1,
+        ),
+    )
+    for name, values, col_key, col_index in channels:
+        array = creator(name, data=values)
+        array.attrs.update(
+            {
+                "sample_rate": _SAMPLE_RATE,
+                "t0": _T0,
+                "unit": "V",
+                "gwexpy_row_key": json.dumps("row0"),
+                "gwexpy_col_key": json.dumps(col_key),
+                "gwexpy_key_format": "json",
+                "gwexpy_row_index": 0,
+                "gwexpy_col_index": col_index,
+            }
+        )
+
+    with pytest.raises(ValueError, match="different numeric dtypes"):
+        TimeSeriesMatrix.read(path, format="zarr")
+
+
+def test_public_matrix_read_preserves_multichannel_native_int64(tmp_path):
+    values = np.array(
+        [
+            [2**53 + 1, -(2**53) - 3, 17],
+            [2**53 + 5, -(2**53) - 7, 23],
+        ],
+        dtype=np.int64,
+    )
+    path = _native_zarr_channels(
+        tmp_path / "native-multichannel.zarr",
+        {"first": values[0], "second": values[1]},
+    )
+
+    loaded = TimeSeriesMatrix.read(path, format="zarr")
+
+    assert loaded.value.dtype == np.dtype(np.int64)
+    np.testing.assert_array_equal(loaded.value[:, 0, :], values)
+
+
+def test_public_matrix_read_preserves_units_for_native_float_channels(tmp_path):
+    path = _native_zarr_channels(
+        tmp_path / "native-float-multichannel.zarr",
+        {
+            "first": np.array([1.0, 2.0, 3.0], dtype=np.float64),
+            "second": np.array([4.0, 5.0, 6.0], dtype=np.float64),
+        },
+    )
+
+    loaded = TimeSeriesMatrix.read(path, format="zarr")
+
+    assert all(str(loaded[index, 0].unit) == "V" for index in range(2))
+    np.testing.assert_array_equal(
+        loaded.value[:, 0, :], [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
+    )
+
+
+def test_public_matrix_read_rejects_native_matrix_cells_with_mismatched_epochs(
+    tmp_path,
+):
+    path = _native_zarr_matrix(
+        tmp_path / "native-mismatched-epochs.zarr",
+        [
+            ("first", [1.0, 2.0, 3.0], 1_234_567_890.25),
+            ("second", [4.0, 5.0, 6.0], 1_234_567_890.251),
+        ],
+    )
+
+    with pytest.raises(ValueError, match="matching t0"):
+        TimeSeriesMatrix.read(path, format="zarr")
+
+
+def test_public_matrix_read_rejects_lossy_mixed_dtype_zarr_stores(tmp_path):
+    int_path = _native_zarr_series(
+        tmp_path / "native-int64.zarr",
+        np.array([2**53 + 1, 2**53 + 3], dtype=np.int64),
+    )
+    float_path = _native_zarr_series(
+        tmp_path / "native-float64.zarr",
+        np.array([1.25, 2.5], dtype=np.float64),
+        t0=_T0 + 2 / _SAMPLE_RATE,
+    )
+
+    with pytest.raises(ValueError, match="different numeric dtypes"):
+        TimeSeriesMatrix.read([int_path, float_path], format="zarr")
+
 
 class TestZarrRoundtrip:
     def _write_matrix_array(
