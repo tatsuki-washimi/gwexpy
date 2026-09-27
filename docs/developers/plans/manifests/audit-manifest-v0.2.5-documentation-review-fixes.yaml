@@ -6,6 +6,7 @@ release_decision: HOLD
 review_findings:
   - DOC-1: Scoped v0.2.5 English release claims to the qualified #751 routes.
   - DOC-2: Added Japanese gettext entries for the heading, lead, Fixed label, and six bullets.
+  - RS-01: Documented fail-closed recovery for a partial PyPI upload.
 source_evidence:
   - /home/washimi/.claude/plans/2026-09-27-v025-review-evidence/documentation.md
   - docs/developers/reports/2026-09-27-public-io-cross-format-post-fix-report.md
@@ -36,12 +37,34 @@ checks:
     result: exit 0; one file already formatted
   - command: git diff --check
     result: exit 0
+security_follow_up:
+  scope: >-
+    RELEASING.md and tests/test_publish_release_workflow.py are in the
+    v0.2.5 release-security lane; this manifest is in the documentation lane.
+  checks:
+    - command: >-
+        conda run -n gwexpy pytest -q
+        tests/test_publish_release_workflow.py tests/test_release_contracts.py
+      result: exit 0; 67 passed
+    - command: >-
+        conda run -n gwexpy pytest -q
+        tests/test_publish_release_workflow.py::test_partial_pypi_upload_recovery_requires_same_run_bytes_and_review
+        tests/test_release_contracts.py::test_v025_review_lanes_cover_every_change_since_peeled_v024_source
+      result: exit 0; 2 passed
+    - command: conda run -n gwexpy ruff check tests/test_publish_release_workflow.py
+      result: exit 0; all checks passed
+    - command: conda run -n gwexpy ruff format --check tests/test_publish_release_workflow.py
+      result: exit 0; one file already formatted
+    - command: git diff --check
+      result: exit 0
 omitted:
   - Full Sphinx build deferred as requested for this narrow review fix.
   - Candidate and tag qualification remain subject to the release plan.
 files_changed:
+  - RELEASING.md
   - CHANGELOG.md
   - release_notes/v0.2.5.md
   - docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po
   - tests/docs/test_docs_redesign_release_facts.py
+  - tests/test_publish_release_workflow.py
   - docs/developers/plans/manifests/audit-manifest-v0.2.5-documentation-review-fixes.yaml
