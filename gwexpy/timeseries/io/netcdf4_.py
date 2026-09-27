@@ -802,6 +802,7 @@ def write_timeseriesmatrix_netcdf4(tsm, target, **kwargs):
     row_keys = list(tsm.row_keys())
     col_keys = list(tsm.col_keys())
     n_rows, n_cols, n_samples = tsm.shape
+    unit = _homogeneous_unit(tsm.units.flat)
 
     tsd: TimeSeriesDict = TimeSeriesDict()
     for i, rk in enumerate(row_keys):
@@ -812,7 +813,7 @@ def write_timeseriesmatrix_netcdf4(tsm, target, **kwargs):
                 x0=tsm.x0,
                 dt=tsm.dt,
                 xunit=tsm.xunit,
-                unit=tsm.unit if hasattr(tsm, "unit") else None,
+                unit=unit,
             )
             tsd[(rk, ck)] = ts
 

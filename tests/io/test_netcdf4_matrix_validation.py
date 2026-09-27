@@ -106,6 +106,35 @@ def test_public_legacy_read_rejects_irregular_time(tmp_path, reader, times):
         reader.read(path, format="nc")
 
 
+def test_public_matrix_roundtrip_preserves_unit(tmp_path):
+    path = _matrix_file(tmp_path)
+    with xr.open_dataset(path) as ds:
+        assert {da.attrs["units"] for da in ds.data_vars.values()} == {"V"}
+    loaded = TimeSeriesMatrix.read(path, format="nc")
+    assert {str(unit) for unit in loaded.units.flat} == {"V"}
+
+
+def test_public_matrix_read_legacy_single_channel_preserves_unit(tmp_path):
+    path = tmp_path / "legacy.nc"
+    xr.Dataset(
+        {"signal": xr.DataArray([1, 2, 3], dims=["time"], attrs={"units": "V"})},
+        coords={"time": [0.0, 1.0, 2.0]},
+    ).to_netcdf(path)
+    with pytest.warns(RuntimeWarning, match="legacy"):
+        loaded = TimeSeriesMatrix.read(path, format="nc")
+    assert str(loaded[0, 0].unit) == "V"
+
+
+def test_public_matrix_write_rejects_mixed_units_before_target_exists(tmp_path):
+    path = tmp_path / "mixed.nc"
+    source = TimeSeriesMatrix(
+        np.ones((2, 2, 3)), t0=0, dt=1, unit=[["V", "V"], ["V", "m"]]
+    )
+    with pytest.raises(ValueError, match="mixed units"):
+        source.write(path, format="nc")
+    assert not path.exists()
+
+
 def test_public_matrix_read_rejects_partially_missing_cell_metadata(tmp_path):
     path = tmp_path / "partial.nc"
     TimeSeriesMatrix(np.ones((1, 1, 3)), t0=0, dt=1).write(path, format="nc")
