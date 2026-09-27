@@ -83,6 +83,22 @@ def _decode_zarr_key(raw):
         return str(raw)
 
 
+def _zarr_numeric_data(values):
+    """Normalize Zarr payloads without losing 64-bit integer or complex data.
+
+    Other numeric dtypes keep the reader and writer's existing float64
+    conversion. 64-bit integers need their native representation to retain
+    all bits, and complex samples need both components, so those are passed
+    through unchanged.
+    """
+    array = np.asarray(values)
+    if array.dtype.kind == "c" or (
+        array.dtype.kind in "iu" and array.dtype.itemsize == 8
+    ):
+        return array
+    return np.asarray(array, dtype=np.float64)
+
+
 # -- Reader --------------------------------------------------------------------
 
 
@@ -186,7 +202,7 @@ def _series_from_zarr_array(
     arr_unit = unit or attrs.get("unit") or attrs.get("units")
 
     ts = TimeSeries(
-        np.asarray(arr[:], dtype=np.float64),
+        _zarr_numeric_data(arr[:]),
         t0=t0,
         sample_rate=sample_rate,
         name=str(key),
@@ -357,6 +373,11 @@ def read_timeseriesmatrix_zarr(
         ]
         merged = matrices[0]
         for mat in matrices[1:]:
+            if merged.value.dtype != mat.value.dtype:
+                raise ValueError(
+                    "Zarr stores with different numeric dtypes cannot be "
+                    "combined without conversion."
+                )
             merged = merged.append(mat, inplace=False, gap="pad", pad=np.nan)
         return apply_time_selection(merged, start, end)
 
@@ -436,7 +457,7 @@ def read_timeseriesmatrix_zarr(
         if len(tsd) == 1:
             key, ts = next(iter(tsd.items()))
             matrix = TimeSeriesMatrix(
-                np.asarray(ts.value, dtype=np.float64)[np.newaxis, np.newaxis, :],
+                _zarr_numeric_data(ts.value)[np.newaxis, np.newaxis, :],
                 x0=ts.x0,
                 dt=ts.dt,
                 xunit=ts.xunit,
@@ -444,7 +465,55 @@ def read_timeseriesmatrix_zarr(
                 channel_names=[key],
             )
             return apply_time_selection(matrix, start, end)
-        return apply_time_selection(tsd.to_matrix(), start, end)
+        series = list(tsd.values())
+        payloads = [np.asarray(ts.value) for ts in series]
+        preserve_exact_dtype = any(
+            array.dtype.kind == "c"
+            or (array.dtype.kind in "iu" and array.dtype.itemsize == 8)
+            for array in payloads
+        )
+        native_first = series[0]
+        native_first_t0 = float(native_first.t0.value)
+        native_first_dt = float(native_first.dt.value)
+        native_first_unit = str(native_first.unit)
+        if any(array.dtype != payloads[0].dtype for array in payloads[1:]):
+            raise ValueError(
+                "Native Zarr matrix channels with different numeric dtypes "
+                "cannot be represented together without conversion."
+            )
+        if any(str(ts.unit) != native_first_unit for ts in series[1:]):
+            raise ValueError("Native Zarr matrix channels must have matching units.")
+        matching_axis = all(
+            len(ts) == len(native_first)
+            and float(ts.t0.value).hex() == native_first_t0.hex()
+            and float(ts.dt.value).hex() == native_first_dt.hex()
+            for ts in series[1:]
+        )
+        if preserve_exact_dtype and not matching_axis:
+            raise ValueError(
+                "Native Zarr matrix channels with 64-bit integer or complex "
+                "data must have matching sample counts and time axes to "
+                "preserve values exactly."
+            )
+        if matching_axis:
+            matrix = TimeSeriesMatrix(
+                np.stack(payloads)[:, np.newaxis, :],
+                t0=native_first_t0,
+                dt=native_first_dt,
+                unit=native_first.unit,
+                channel_names=list(tsd),
+            )
+            return apply_time_selection(matrix, start, end)
+        from ..preprocess import align_timeseries_collection
+
+        aligned, times, _ = align_timeseries_collection(series, how="intersection")
+        matrix = TimeSeriesMatrix(
+            aligned.T[:, np.newaxis, :],
+            times=times,
+            unit=native_first.unit,
+            channel_names=list(tsd),
+        )
+        return apply_time_selection(matrix, start, end)
 
     seen_cells = set()
     row_positions: dict[object, int] = {}
@@ -493,33 +562,34 @@ def read_timeseriesmatrix_zarr(
     first_sample_rate = float(first.sample_rate.value)
     first_unit = str(first_source_unit) if first_source_unit is not None else None
 
-    data = np.full(
+    data = np.empty(
         (len(row_keys), len(col_keys), n_samples),
-        np.nan,
-        dtype=np.float64,
+        dtype=_zarr_numeric_data(first.value).dtype,
     )
     row_to_index = {row_key: i for i, row_key in enumerate(row_keys)}
     col_to_index = {col_key: j for j, col_key in enumerate(col_keys)}
+    matrix_dtype = data.dtype
     for row_key, col_key, _, _, source_unit, ts in matrix_entries:
         if len(ts) != n_samples:
             raise ValueError("Zarr matrix channels must have matching sample counts")
-        if not np.isclose(float(ts.t0.value), first_t0, rtol=1e-12, atol=1e-12):
+        if float(ts.t0.value).hex() != first_t0.hex():
             raise ValueError("Zarr matrix channels must have matching t0 values")
-        if not np.isclose(
-            float(ts.sample_rate.value),
-            first_sample_rate,
-            rtol=1e-12,
-            atol=1e-12,
-        ):
+        if float(ts.sample_rate.value).hex() != first_sample_rate.hex():
             raise ValueError(
                 "Zarr matrix channels must have matching sample_rate values"
             )
         ts_unit = str(source_unit) if source_unit is not None else None
         if ts_unit != first_unit:
             raise ValueError("Zarr matrix channels must have matching units")
+        channel_data = _zarr_numeric_data(ts.value)
+        if channel_data.dtype != matrix_dtype:
+            raise ValueError(
+                "Zarr matrix channels with different numeric dtypes cannot be "
+                "represented together without conversion."
+            )
         i = row_to_index[row_key]
         j = col_to_index[col_key]
-        data[i, j, :] = np.asarray(ts.value, dtype=np.float64)
+        data[i, j, :] = channel_data
 
     matrix = TimeSeriesMatrix(
         data,
@@ -569,7 +639,7 @@ def write_timeseriesdict_zarr(tsd, target, **kwargs):
             col_positions.setdefault(key[1], len(col_positions))
 
     for key, ts in tsd.items():
-        data = np.asarray(ts.value, dtype=np.float64)
+        data = _zarr_numeric_data(ts.value)
         # zarr>=3 uses create_array(data=...) and removed create_dataset.
         # zarr<3 has create_dataset; fall back for compatibility.
         creator = getattr(store, "create_array", None) or store.create_dataset
@@ -635,7 +705,7 @@ def write_timeseriesmatrix_zarr(tsm, target, **kwargs):
             ts_unit = str(ts.unit) if ts.unit is not None else None
             if ts_unit != first_unit:
                 raise ValueError("Zarr matrix channels must have matching units")
-            data = np.asarray(ts.value, dtype=np.float64)
+            data = _zarr_numeric_data(ts.value)
             array_key = (row_key, col_key)
             arr = creator(_encode_zarr_array_name(array_key), data=data, overwrite=True)
             arr.attrs["sample_rate"] = float(ts.sample_rate.value)
