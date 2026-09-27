@@ -14,6 +14,7 @@ This module integrates all Mixins into a single TimeSeries class.
 from __future__ import annotations
 
 import inspect
+import os
 from contextvars import ContextVar
 from datetime import date
 from operator import index
@@ -220,13 +221,18 @@ class TimeSeries(
         register_all()
 
         fmt = kwargs.get("format")
+        auto_zarr_path = (
+            fmt is None
+            and isinstance(source, (str, os.PathLike))
+            and os.fsdecode(source).lower().endswith(".zarr")
+        )
         if fmt in {"nc", "netcdf4"}:
             from .io.netcdf4_ import read_timeseries_netcdf4
 
             reader_kwargs = dict(kwargs)
             reader_kwargs.pop("format", None)
             return cls(read_timeseries_netcdf4(source, **reader_kwargs))
-        if fmt == "zarr":
+        if fmt == "zarr" or auto_zarr_path:
             if args:
                 raise TypeError(
                     "TimeSeries.read(..., format='zarr') does not accept "

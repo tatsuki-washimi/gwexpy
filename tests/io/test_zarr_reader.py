@@ -169,6 +169,15 @@ def test_public_zarr_read_write_roundtrip_preserves_uint64(tmp_path):
     np.testing.assert_array_equal(written, values)
 
 
+def test_public_single_timeseries_auto_reads_zarr_store(tmp_path):
+    values = np.array([2**53 + 1, -(2**53) - 3, 17], dtype=np.int64)
+    path = _native_zarr_series(tmp_path / "single-auto.zarr", values)
+
+    loaded = TimeSeries.read(path)
+
+    assert loaded.name == "signal"
+    assert str(loaded.unit) == "V"
+    np.testing.assert_array_equal(loaded.value, values)
 
 
 def test_public_zarr_matrix_rejects_mixed_dtypes_that_need_conversion(tmp_path):
@@ -267,8 +276,6 @@ def test_public_matrix_read_rejects_lossy_mixed_dtype_zarr_stores(tmp_path):
 
     with pytest.raises(ValueError, match="different numeric dtypes"):
         TimeSeriesMatrix.read([int_path, float_path], format="zarr")
-
-
 
 
 class TestZarrRoundtrip:
