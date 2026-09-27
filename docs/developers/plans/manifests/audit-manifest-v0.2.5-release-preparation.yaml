@@ -137,6 +137,25 @@ follow_up:
       result: exit 0
     - command: local Actionlint lookup
       result: actionlint and shellcheck executables unavailable in PATH and common local binary paths
+documentation_follow_up:
+  issue: Transient candidate/HOLD text in CHANGELOG would persist in published R.
+  change: Removed transient status from CHANGELOG; retained HOLD in release plan and this manifest.
+  checks:
+    - command: >-
+        conda run -n gwexpy pytest -q
+        tests/docs/test_docs_redesign_release_facts.py
+        tests/docs/test_docs_redesign_release_status.py
+        tests/test_gen_release_notes.py
+        tests/test_check_release_metadata_script.py
+      result: exit 0; 46 passed
+    - command: conda run -n gwexpy python scripts/check_release_metadata.py
+      result: exit 0; metadata consistency check passed
+    - command: conda run -n gwexpy ruff check tests/docs/test_docs_redesign_release_facts.py
+      result: exit 0; all checks passed
+    - command: conda run -n gwexpy ruff format --check tests/docs/test_docs_redesign_release_facts.py
+      result: exit 0; one file already formatted
+    - command: git diff --check
+      result: exit 0
 files_changed:
   - .gitattributes
   - .github/workflows/publish-release.yml

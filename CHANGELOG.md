@@ -2,8 +2,6 @@
 
 ## [0.2.5] - 2026-09-27
 
-Release status: candidate. Publication is on HOLD pending release gates.
-
 This patch release hardens public cross-format I/O after the #751 audit.
 It preserves data values, axes, and metadata across the characterized
 Zarr, NetCDF4, HDF5, TDMS, GBD, and audio routes, with clear errors for
