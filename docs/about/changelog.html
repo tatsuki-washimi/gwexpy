@@ -443,7 +443,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.5</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/81faac07877319e05fec996286a246af7054d2b8">81faac07</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/ef7d144fe5464ddc5ddc23cb29064f93edd7f06f">ef7d144f</a>
   · Intro examples tested with 0.2.4
   · <a href="documentation_version.html">Version details</a>
   · <a href="known_limitations.html">Known limitations</a>
@@ -476,16 +476,19 @@
 </section>
 <section id="id1">
 <h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.2.4...v0.2.5">0.2.5</a> - 2026-09-27<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
-<p>This patch release hardens public cross-format I/O after the #751 audit.
-It preserves data values, axes, and metadata across the characterized
-Zarr, NetCDF4, HDF5, TDMS, GBD, and audio routes, with clear errors for
-invalid stores and unavailable optional backends.</p>
+<p>This patch fixes supported NetCDF4 and Zarr matrix value, axis, and unit
+handling; HDF5 manifest integrity; TDMS waveform-increment and GBD header
+validation; and audio registry tag provenance. The supported optional-backend
+routes report a backend-specific <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> when their package is absent.</p>
 <section id="fixed">
 <h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>Preserved integer and complex dtypes and axis units across supported Zarr and NetCDF4 matrix reads.</p></li>
-<li><p>Rejected malformed collection manifests and invalid format metadata before returning partial data.</p></li>
-<li><p>Kept optional backend errors clear for base installations.</p></li>
+<li><p><strong>NetCDF4 matrices and axes</strong>: Reject malformed matrix topology, unsafe heterogeneous dtype conversion, and irregular legacy time axes; retain cell units in supported matrix writes and legacy reads.</p></li>
+<li><p><strong>Zarr values and metadata</strong>: Retain tested integer and complex samples, axes, and units; reject unsafe mixed-dtype conversion and inconsistent axes in supported stores.</p></li>
+<li><p><strong>HDF5 manifest-backed collections</strong>: Reject unreadable, missing, or substituted payloads while preserving tolerant manifest-free discovery.</p></li>
+<li><p><strong>TDMS and GL500 GBD validation</strong>: Reject absent or invalid waveform increments and malformed required GL500 header fields within the tested firmware scope.</p></li>
+<li><p><strong>Audio registry tags</strong>: Retain available WAV and FLAC tag metadata in provenance.</p></li>
+<li><p><strong>Optional backends</strong>: Supported public Zarr and NetCDF4 routes raise a backend-specific <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> when the required package is absent.</p></li>
 </ul>
 </section>
 </section>

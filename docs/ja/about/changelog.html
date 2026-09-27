@@ -444,7 +444,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.5</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/81faac07877319e05fec996286a246af7054d2b8">81faac07</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/ef7d144fe5464ddc5ddc23cb29064f93edd7f06f">ef7d144f</a>
   · 入門例の検証対象 0.2.4
   · <a href="documentation_version.html">版情報</a>
   · <a href="known_limitations.html">既知の制限</a>
@@ -476,17 +476,17 @@
 <p>v0.2.2 リリースは <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2">GitHub Releases</a> から取得でき、<a class="reference external" href="https://doi.org/10.5281/zenodo.22228340">Zenodo DOI 10.5281/zenodo.22228340</a> でアーカイブされています。</p>
 </section>
 <section id="id1">
-<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.2.4...v0.2.5">0.2.5</a> - 2026-09-27<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
-<p>This patch release hardens public cross-format I/O after the #751 audit.
-It preserves data values, axes, and metadata across the characterized
-Zarr, NetCDF4, HDF5, TDMS, GBD, and audio routes, with clear errors for
-invalid stores and unavailable optional backends.</p>
+<h2>[0.2.5] - 2026年9月27日<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>このパッチリリースでは、対応する NetCDF4 と Zarr の行列における値、軸、単位の処理、HDF5 のマニフェストの整合性、TDMS の波形間隔と GBD のヘッダー検証、音声形式のレジストリが取得したタグの出所を修正しました。対応するオプション依存の経路では、必要なパッケージがない場合、バックエンド固有の <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を返します。</p>
 <section id="fixed">
 <h3>修正<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>Preserved integer and complex dtypes and axis units across supported Zarr and NetCDF4 matrix reads.</p></li>
-<li><p>Rejected malformed collection manifests and invalid format metadata before returning partial data.</p></li>
-<li><p>Kept optional backend errors clear for base installations.</p></li>
+<li><p><strong>NetCDF4 の行列と軸</strong>：不正な行列構造、値が失われる異種 dtype 変換、および旧形式の不規則な時間軸を拒否します。対応する行列の書き込みと旧形式の読み込みでは、セルの単位を保持します。</p></li>
+<li><p><strong>Zarr の値とメタデータ</strong>：検証済みの整数値と複素数値、軸、単位を保持します。対応するストアでは、値が失われる混合 dtype 変換と整合しない軸を拒否します。</p></li>
+<li><p><strong>HDF5 のマニフェスト付きコレクション</strong>：読めない、欠落した、または差し替えられたペイロードを拒否します。マニフェストのない場合の探索は従来どおり許容します。</p></li>
+<li><p><strong>TDMS と GL500 GBD の検証</strong>：波形間隔が欠落または不正な TDMS データと、検証済みファームウェアの範囲で必須ヘッダー項目が不正な GL500 データを拒否します。</p></li>
+<li><p><strong>音声形式のレジストリのタグ</strong>：取得できた WAV と FLAC のタグ情報を出所情報に保持します。</p></li>
+<li><p><strong>オプションのバックエンド</strong>：対応する公開 Zarr 経路と NetCDF4 経路では、必要なパッケージがない場合にバックエンド固有の <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。</p></li>
 </ul>
 </section>
 </section>
@@ -1533,7 +1533,7 @@ invalid stores and unavailable optional backends.</p>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v0-2-4-weekly-development-activity">v0.2.4 の週次開発活動</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">0.2.5 - 2026-09-27</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">[0.2.5] - 2026年9月27日</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">修正</a></li>
 </ul>
 </li>
