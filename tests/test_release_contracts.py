@@ -19,7 +19,7 @@ REVIEW_VALIDATOR_PATH = ROOT / "scripts" / "ci" / "validate_release_review_evide
 RELEASE_VALIDATOR_PATH = ROOT / "scripts" / "validate_release.py"
 V023_IMPLEMENTATION_BASE = "a8085b71446d3ef3417a7e5b5ac8efb156368eac"
 V023_RELEASE_SOURCE = "75d3d1a89ebc8942af1f3228152fea99d2d3420e"
-V024_RELEASE_TAG = "v0.2.4"
+V024_RELEASE_SOURCE = "522e52a082925da4dd37966d82a7616bdd2a5248"
 V024_MANIFEST = (
     ROOT
     / "docs"
@@ -143,23 +143,15 @@ def _v023_review_revision(candidate: str) -> str:
 
 def _v024_review_revision(candidate: str) -> str:
     """Pin populated v0.2.4 evidence checks to the immutable release source."""
-    result = subprocess.run(
-        ["git", "rev-parse", "--verify", f"refs/tags/{V024_RELEASE_TAG}^{{commit}}"],
-        cwd=ROOT,
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode or not _git_commit_available(result.stdout.strip()):
+    if not _git_commit_available(V024_RELEASE_SOURCE):
         return candidate
-    release_source = result.stdout.strip()
     ancestor = subprocess.run(
-        ["git", "merge-base", "--is-ancestor", release_source, candidate],
+        ["git", "merge-base", "--is-ancestor", V024_RELEASE_SOURCE, candidate],
         cwd=ROOT,
         check=False,
         capture_output=True,
     )
-    return release_source if ancestor.returncode == 0 else candidate
+    return V024_RELEASE_SOURCE if ancestor.returncode == 0 else candidate
 
 
 def _git_file_at_revision(revision: str, path: str) -> bytes:
@@ -489,7 +481,10 @@ def test_v024_review_lanes_cover_every_change_since_peeled_v023_source() -> None
         pytest.fail(
             "peeled v0.2.3 source is unavailable; review coverage requires full history"
         )
-    candidate = _candidate_revision()
+    if not _git_commit_available(V024_RELEASE_SOURCE):
+        pytest.fail("peeled v0.2.4 source is unavailable; full history is required")
+    candidate = _v024_review_revision(_candidate_revision())
+    assert candidate == V024_RELEASE_SOURCE
     changed_paths = _changed_paths_between(ROOT, V023_RELEASE_SOURCE, candidate)
     contracts = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
     lanes = contracts["releases"]["v0.2.4"]["review_lanes"]
@@ -501,7 +496,7 @@ def test_v024_review_lanes_cover_every_change_since_peeled_v023_source() -> None
 
 
 def test_v025_review_lanes_cover_every_change_since_peeled_v024_source() -> None:
-    source = "522e52a082925da4dd37966d82a7616bdd2a5248"
+    source = V024_RELEASE_SOURCE
     if not _git_commit_available(source):
         pytest.fail("peeled v0.2.4 source is unavailable; full history is required")
     candidate = _candidate_revision()
