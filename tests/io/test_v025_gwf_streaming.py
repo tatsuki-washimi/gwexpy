@@ -15,7 +15,7 @@ from gwpy.timeseries import TimeSeries as GwpyTimeSeries
 from gwpy.timeseries import TimeSeriesDict as GwpyTimeSeriesDict
 
 import gwexpy.timeseries._gwf_io as gwf_io
-from gwexpy.timeseries import TimeSeriesDict
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
 CHANNEL = "K1:V025-F4-STREAM"
 
@@ -68,6 +68,47 @@ def test_large_sorted_serial_read_retains_bounded_parts(tmp_path, monkeypatch) -
     assert peak <= 4
 
 
+def test_large_sorted_serial_places_values_without_repeated_append(
+    tmp_path, monkeypatch
+) -> None:
+    """The contiguous fast route grows the result only once."""
+    sources = _frames(tmp_path, 16)
+    original = TimeSeriesDict.append
+    original_copyto = gwf_io.np.copyto
+    append_calls = 0
+    placement_calls = 0
+    initial_storage: list[bool] = []
+
+    def counted_append(self, *args, **kwargs):
+        nonlocal append_calls
+        append_calls += 1
+        result = original(self, *args, **kwargs)
+        initial_storage.extend(
+            [
+                type(self[CHANNEL]) is TimeSeries,
+                self[CHANNEL].flags.owndata,
+                self[CHANNEL].flags.writeable,
+                getattr(self[CHANNEL], "_xindex", None) is None,
+                not np.shares_memory(self[CHANNEL].value, args[0][CHANNEL].value),
+            ]
+        )
+        return result
+
+    def counted_copyto(destination, values, *args, **kwargs):
+        nonlocal placement_calls
+        if kwargs.get("casting") == "no" and destination.shape == (8,):
+            placement_calls += 1
+        return original_copyto(destination, values, *args, **kwargs)
+
+    monkeypatch.setattr(TimeSeriesDict, "append", counted_append)
+    monkeypatch.setattr(gwf_io.np, "copyto", counted_copyto)
+    result = TimeSeriesDict.read(sources, [CHANNEL], format="gwf", parallel=False)
+    assert result[CHANNEL].value.tolist() == list(range(16 * 8))
+    assert append_calls == 1
+    assert initial_storage == [True] * 5
+    assert placement_calls == 15
+
+
 def test_large_sorted_serial_preserves_public_result(tmp_path, monkeypatch) -> None:
     """Streaming carries exact values, order, time, units, and provenance."""
     sources = _frames(tmp_path, 16)
@@ -79,7 +120,11 @@ def test_large_sorted_serial_preserves_public_result(tmp_path, monkeypatch) -> N
     assert list(candidate) == list(old)
     np.testing.assert_array_equal(candidate[CHANNEL].value, old[CHANNEL].value)
     assert candidate[CHANNEL].dtype == old[CHANNEL].dtype
+    assert candidate[CHANNEL].flags.owndata == old[CHANNEL].flags.owndata
+    assert candidate[CHANNEL].flags.writeable == old[CHANNEL].flags.writeable
     assert candidate[CHANNEL].unit == old[CHANNEL].unit
+    assert candidate[CHANNEL].name == old[CHANNEL].name
+    assert candidate[CHANNEL].channel == old[CHANNEL].channel
     assert candidate[CHANNEL].t0 == old[CHANNEL].t0
     assert candidate[CHANNEL].dt == old[CHANNEL].dt
     assert candidate[CHANNEL].span == old[CHANNEL].span
@@ -87,6 +132,54 @@ def test_large_sorted_serial_preserves_public_result(tmp_path, monkeypatch) -> N
     assert getattr(candidate[CHANNEL], "_gwexpy_io", None) == getattr(
         old[CHANNEL], "_gwexpy_io", None
     )
+
+
+def test_preallocated_result_avoids_final_full_array_copy(
+    tmp_path, monkeypatch
+) -> None:
+    """An owned result needs one coercion per source and no final copy."""
+    sources = _frames(tmp_path, 16)
+    original = gwf_io._coerce_gwf_timeseriesdict
+    coercions = 0
+
+    def counted_coerce(*args, **kwargs):
+        nonlocal coercions
+        coercions += 1
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(gwf_io, "_coerce_gwf_timeseriesdict", counted_coerce)
+    result = TimeSeriesDict.read(sources, [CHANNEL], format="gwf", parallel=False)
+    assert result[CHANNEL].value.tolist() == list(range(16 * 8))
+    assert coercions == len(sources)
+
+
+def test_later_dtype_mismatch_replays_old_merge(tmp_path, monkeypatch) -> None:
+    """A part requiring GWpy's casting semantics returns to the old route."""
+    sources = _frames(tmp_path, 16)
+    original = gwf_io._read_gwf_timeseriesdict_serial
+    calls: list[Path] = []
+
+    def mixed_dtype_read(source, *args, **kwargs):
+        calls.append(Path(source))
+        part = original(source, *args, **kwargs)
+        if Path(source) == sources[8]:
+            part[CHANNEL] = part[CHANNEL].astype(np.float32)
+        return part
+
+    monkeypatch.setattr(gwf_io, "_read_gwf_timeseriesdict_serial", mixed_dtype_read)
+    monkeypatch.setattr(gwf_io, "_GWF_BOUNDED_MIN_SOURCES", 17)
+    old = TimeSeriesDict.read(sources, [CHANNEL], format="gwf", parallel=False)
+    calls.clear()
+    monkeypatch.setattr(gwf_io, "_GWF_BOUNDED_MIN_SOURCES", 16)
+    candidate = TimeSeriesDict.read(sources, [CHANNEL], format="gwf", parallel=False)
+
+    np.testing.assert_array_equal(candidate[CHANNEL].value, old[CHANNEL].value)
+    assert candidate[CHANNEL].dtype == old[CHANNEL].dtype
+    assert candidate[CHANNEL].unit == old[CHANNEL].unit
+    assert candidate[CHANNEL].t0 == old[CHANNEL].t0
+    assert candidate[CHANNEL].dt == old[CHANNEL].dt
+    assert calls.count(sources[8]) == 2
+    assert calls.count(sources[-1]) == 1
 
 
 def test_speculative_diagnostics_are_not_published(

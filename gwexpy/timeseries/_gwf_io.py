@@ -793,13 +793,17 @@ def _merge_bounded_gwf_parts(
     channels: list[str],
     dict_class: type[Any],
     series_class: type[Any],
+    source_count: int,
 ) -> Any:
-    """Merge one part at a time while retaining only leading metadata."""
+    """Place equal contiguous parts into one final array, retaining leading metadata."""
     out = dict_class()
     leading_part = None
     leading_series: dict[str, Any] = {}
+    first_length = None
+    output_series = None
+    placed = 0
     for part in parts:
-        if not part or any(
+        if len(part) != len(channels) or any(
             channel not in part or len(part[channel]) == 0 for channel in channels
         ):
             raise ValueError("Bounded GWF read returned a partial or empty result")
@@ -810,9 +814,48 @@ def _merge_bounded_gwf_parts(
             if isinstance(provenance, dict):
                 out._gwexpy_io = copy.deepcopy(provenance)
         _copy_gwf_custom_attributes(part, out, only_missing=True)
-        out.append(part, gap="raise", pad=None)
         for key, series in part.items():
             leading_series.setdefault(key, series)
+            if getattr(series, "_xindex", None) is not None:
+                raise ValueError("Irregular GWF series requires the old merge route")
+            if first_length is None:
+                first_length = len(series)
+                if first_length > np.iinfo(np.intp).max // source_count:
+                    raise OverflowError("GWF result exceeds platform index space")
+                out.append(part, gap="raise", pad=None)
+                output_series = out[key]
+                if getattr(output_series, "_xindex", None) is not None:
+                    raise ValueError(
+                        "Irregular GWF output requires the old merge route"
+                    )
+                if (
+                    type(output_series) is not series_class
+                    or not output_series.flags.owndata
+                    or not output_series.flags.writeable
+                    or np.shares_memory(output_series.value, series.value)
+                ):
+                    raise ValueError("GWF output cannot be placed without copying")
+                output_series.resize((first_length * source_count,), refcheck=False)
+                placed = first_length
+            else:
+                if (
+                    output_series is None
+                    or len(series) != first_length
+                    or series.dtype != output_series.dtype
+                    or series.unit != output_series.unit
+                    or series.dt != output_series.dt
+                    or output_series[:placed].is_contiguous(series) != 1
+                    or np.shares_memory(output_series.value, series.value)
+                ):
+                    raise ValueError(
+                        "GWF part differs from preallocated merge contract"
+                    )
+                np.copyto(
+                    output_series.value[placed : placed + first_length],
+                    series.value,
+                    casting="no",
+                )
+                placed += first_length
             if getattr(out[key], "_gwexpy_io", None) is None:
                 provenance = getattr(series, "_gwexpy_io", None)
                 if isinstance(provenance, dict):
@@ -820,11 +863,12 @@ def _merge_bounded_gwf_parts(
             _copy_gwf_custom_attributes(series, out[key], only_missing=True)
     if leading_part is None:
         raise ValueError("No data found in any provided GWF source")
+    if output_series is None or placed != len(output_series):
+        raise ValueError("GWF preallocated result length differs from source count")
     result = dict_class((key, out[key]) for key in channels if key in out)
     if hasattr(out, "_gwexpy_io"):
         result._gwexpy_io = copy.deepcopy(out._gwexpy_io)
     _copy_gwf_custom_attributes(out, result, only_missing=False)
-    result = _coerce_gwf_timeseriesdict(result, dict_class, series_class)
     _copy_gwf_custom_attributes(leading_part, result, only_missing=False)
     for key, series in leading_series.items():
         if key in result:
@@ -872,6 +916,7 @@ def _try_bounded_gwf_serial(
                 channels,
                 dict_class,
                 series_class,
+                len(sources),
             )
             if (
                 fd_stderr is None
