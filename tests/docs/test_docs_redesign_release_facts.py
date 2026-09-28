@@ -22,7 +22,10 @@ PUBLISHED_V024_VERSION = "0.2.4"
 PUBLISHED_V024_DATE = "2026-09-26"
 PUBLISHED_V024_HISTORY_ENTRY = f"[{PUBLISHED_V024_VERSION}] - {PUBLISHED_V024_DATE}"
 CANDIDATE_V025_VERSION = "0.2.5"
-CANDIDATE_V025_HISTORY_ENTRY = f"[{CANDIDATE_V025_VERSION}] - TBD"
+CANDIDATE_V025_METADATA_DATE = "2026-09-28"
+CANDIDATE_V025_HISTORY_ENTRY = (
+    f"[{CANDIDATE_V025_VERSION}] - {CANDIDATE_V025_METADATA_DATE}"
+)
 HISTORICAL_V025_METADATA_DATE = "2026-09-27"
 RELEASE_DOI_URL = "https://doi.org/10.5281/zenodo.22228340"
 ACTIVITY_RELEASE_VERSION = "0.2.2"
@@ -223,20 +226,38 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
         citation,
         re.MULTILINE,
     )
-    # CITATION and Zenodo still carry the earlier S/R cycle's metadata date.
-    # The expanded S2 candidate gets a new UTC date only immediately before freeze.
+    # The S2 candidate date is frozen separately from the historical S/R date.
     release_plan = (
         REPO_ROOT / "docs/developers/plans/20260927_v0.2.5_release_plan.md"
     ).read_text(encoding="utf-8")
-    assert "The new candidate metadata date is **TBD**" in release_plan
-    assert "old 2026-09-27 date belongs" in release_plan
+    assert (
+        f"The candidate metadata date for S2 is **{CANDIDATE_V025_METADATA_DATE}**"
+        in release_plan
+    )
+    assert f"old {HISTORICAL_V025_METADATA_DATE} date" in release_plan
+    assert (
+        f"The {HISTORICAL_V025_METADATA_DATE} S/R cycle is historical and superseded"
+        in release_plan
+    )
     assert re.search(
-        rf"^date-released: {re.escape(HISTORICAL_V025_METADATA_DATE)}$",
+        rf"^date-released: {re.escape(CANDIDATE_V025_METADATA_DATE)}$",
         citation,
         re.MULTILINE,
     )
     assert zenodo["version"] == CANDIDATE_V025_VERSION
-    assert zenodo["publication_date"] == HISTORICAL_V025_METADATA_DATE
+    assert zenodo["publication_date"] == CANDIDATE_V025_METADATA_DATE
+    release_note = (REPO_ROOT / "release_notes/v0.2.5.md").read_text(encoding="utf-8")
+    assert f"candidate release date is {CANDIDATE_V025_METADATA_DATE} UTC" in (
+        release_note
+    )
+    historical_sr_note = (
+        f"The {HISTORICAL_V025_METADATA_DATE} S/R approvals and candidate runs are "
+        "historical evidence"
+    )
+    assert historical_sr_note in changelog
+    assert f"{HISTORICAL_V025_METADATA_DATE} S/R approvals are historical" in (
+        release_note
+    )
 
     assert release_status["latest_release"] == PUBLISHED_V024_VERSION
     assert release_status["intro_examples_release"] == PUBLISHED_V024_VERSION

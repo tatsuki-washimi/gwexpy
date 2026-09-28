@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.2.5] - TBD
+## [0.2.5] - 2026-09-28
 
 This patch fixes supported NetCDF4 and Zarr matrix value, axis, and unit
 handling; HDF5 manifest integrity; TDMS waveform-increment and GBD header
