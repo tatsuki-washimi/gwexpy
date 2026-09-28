@@ -61,6 +61,34 @@ ROUTES = (
     "f2_sdb_wal_snapshot",
     "f2_tdms_selected",
     "f2_tdms_all",
+    "c2_public_single_all",
+    "c2_public_single_first_channel",
+    "c2_direct_csv_all_channels",
+    "c2_requested_valid",
+    "c2_unselected_valid",
+    "c2_selected_malformed",
+    "c2_unselected_malformed",
+    "c2_headered_error",
+    "c2_csv_single_selected",
+    "c2_csv_single_unselected_malformed",
+    "c2_csv_single_selected_malformed",
+    "c2_large_csv_selected",
+    "c2_wav_interleaved_selection",
+    "c2_wav_no_selection_first",
+    "c2_wav_dict_selected",
+    "c2_wav_direct_selected",
+    "c2_wav_truncated_selected",
+    "c2_wav_truncated_no_selection",
+    "c2_large_wav_selected",
+    "c2_obspy_selected",
+    "c2_obspy_no_selection_first",
+    "c2_direct_obspy_reader_selected",
+    "c2_obspy_selected_malformed_payload",
+    "c2_obspy_unselected_malformed_payload",
+    "c2_large_obspy_selected",
+    "c2_obspy_dependency_missing",
+    "c2_generic_adapter_selected",
+    "c2_generic_adapter_first",
 )
 FAULTS = (
     "selected_invalid",
@@ -188,6 +216,12 @@ def _declared_counts(name: str, fixture: dict) -> dict[str, int]:
         return {"input_rows": fixture["formats"]["sdb"]["cases"]["valid_large"]["rows"]}
     if name.startswith("f2_tdms_"):
         return {"input_rows": fixture["formats"]["tdms"]["cases"]["valid_many"]["rows"]}
+    if name == "c2_large_csv_selected":
+        return {"input_rows": 65536, "input_channels": 2}
+    if name == "c2_large_wav_selected":
+        return {"input_rows": 1_048_576, "input_channels": 2}
+    if name == "c2_large_obspy_selected":
+        return {"input_rows_per_channel": 131072, "input_channels": 2}
     return {}
 
 
@@ -320,7 +354,136 @@ def _scenario(
             format="csv",
             channels=["ch1"] if selection == "selected" else None,
         )
+    if name.startswith("c2_"):
+        return _c2_scenario(name, paths, scenario_events)
     raise ValueError(f"unknown scenario {name}")
+
+
+def _c2_scenario(
+    name: str, paths: dict[str, Path], scenario_events: dict[str, Any] | None
+) -> Any:
+    """Exercise public single reads and their direct multi-channel backends."""
+    from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+
+    def source(filename: str) -> Path:
+        return paths[f"c2_{filename}"]
+
+    if name in ("c2_generic_adapter_selected", "c2_generic_adapter_first"):
+        from gwexpy.timeseries.io._registration import register_timeseries_format
+
+        def synthetic_reader(
+            _source: Any, *, channels: list[str] | None = None, **_kwargs: Any
+        ) -> Any:
+            wanted = set(channels) if channels is not None else {"first", "second"}
+            selected = {}
+            for channel, values in (("first", [1.0, 2.0]), ("second", [3.0, 4.0])):
+                if channel not in wanted:
+                    continue
+                if scenario_events is not None:
+                    key = f"generic_backend_reads_{channel}"
+                    scenario_events[key] = scenario_events.get(key, 0) + 1
+                selected[channel] = TimeSeries(
+                    values, t0=0, dt=1, name=channel, channel=channel
+                )
+            return TimeSeriesDict(selected)
+
+        register_timeseries_format(
+            "c2synthetic", reader_dict=synthetic_reader, auto_adapt=True
+        )
+        return TimeSeries.read(
+            source("channels.csv"),
+            format="c2synthetic",
+            **(
+                {"channels": ["second"]}
+                if name == "c2_generic_adapter_selected"
+                else {}
+            ),
+        )
+
+    if name in ("c2_public_single_all", "c2_public_single_first_channel"):
+        return TimeSeries.read(source("channels.csv"), format="csv")
+    if name == "c2_direct_csv_all_channels":
+        from gwexpy.timeseries.io.csv_enhanced import read_timeseriesdict_csv
+
+        return read_timeseriesdict_csv(source("channels.csv"))
+    if name in ("c2_requested_valid", "c2_unselected_valid"):
+        return TimeSeriesDict.read(
+            source("channels.csv"), format="csv", channels=["ch1"]
+        )
+    if name in ("c2_selected_malformed", "c2_unselected_malformed"):
+        filename = name.removeprefix("c2_") + ".csv"
+        return TimeSeriesDict.read(source(filename), format="csv", channels=["ch1"])
+    if name == "c2_headered_error":
+        return TimeSeries.read(source("headered.csv"), format="csv")
+    if name == "c2_csv_single_selected":
+        return TimeSeries.read(source("channels.csv"), format="csv", channels=["ch2"])
+    if name in (
+        "c2_csv_single_unselected_malformed",
+        "c2_csv_single_selected_malformed",
+    ):
+        filename = (
+            "unselected_malformed.csv"
+            if "unselected" in name
+            else "selected_malformed.csv"
+        )
+        return TimeSeries.read(source(filename), format="csv", channels=["ch1"])
+    if name == "c2_large_csv_selected":
+        return TimeSeries.read(
+            source("channels_large.csv"), format="csv", channels=["ch1"]
+        )
+    if name in ("c2_wav_interleaved_selection", "c2_wav_dict_selected"):
+        reader = TimeSeriesDict if name.endswith("dict_selected") else TimeSeries
+        return reader.read(source("stereo.wav"), format="wav", channels=["channel_1"])
+    if name == "c2_wav_direct_selected":
+        from gwexpy.timeseries.io.wav import read_timeseriesdict_wav
+
+        return read_timeseriesdict_wav(source("stereo.wav"), channels=["channel_1"])
+    if name == "c2_wav_truncated_selected":
+        return TimeSeries.read(
+            source("stereo_truncated.wav"), format="wav", channels=["channel_1"]
+        )
+    if name == "c2_wav_truncated_no_selection":
+        return TimeSeries.read(source("stereo_truncated.wav"), format="wav")
+    if name == "c2_wav_no_selection_first":
+        return TimeSeries.read(source("stereo.wav"), format="wav")
+    if name == "c2_large_wav_selected":
+        return TimeSeries.read(
+            source("stereo_large.wav"), format="wav", channels=["channel_1"]
+        )
+    if name == "c2_direct_obspy_reader_selected":
+        from gwexpy.timeseries.io.seismic import read_miniseed_timeseriesdict
+
+        return read_miniseed_timeseriesdict(
+            source("two_channels.mseed"), channels=["XX.FIX.00.BHN"]
+        )
+    if name == "c2_obspy_no_selection_first":
+        return TimeSeries.read(source("two_channels.mseed"), format="mseed")
+    if name == "c2_obspy_dependency_missing":
+        from gwexpy.timeseries.io import seismic
+
+        original = seismic.ensure_dependency
+
+        def missing(*_args: Any, **_kwargs: Any) -> Any:
+            raise ImportError("synthetic optional dependency unavailable")
+
+        seismic.ensure_dependency = missing
+        try:
+            return TimeSeries.read(source("two_channels.mseed"), format="mseed")
+        finally:
+            seismic.ensure_dependency = original
+    if name.startswith("c2_obspy_") or name == "c2_large_obspy_selected":
+        filename = (
+            "malformed.mseed"
+            if "malformed" in name
+            else "two_channels_large.mseed"
+            if name == "c2_large_obspy_selected"
+            else "two_channels.mseed"
+        )
+        selected = (
+            "XX.FIX.00.BHZ" if "unselected_malformed" in name else "XX.FIX.00.BHN"
+        )
+        return TimeSeries.read(source(filename), format="mseed", channels=[selected])
+    raise ValueError(f"unknown C2 scenario {name}")
 
 
 def _read_sdb_wal_snapshot(
@@ -598,6 +761,80 @@ def _install_tdms_structure_probe(counters: dict[str, Any]) -> None:
     TdmsChannel.read_data = read_data
 
 
+def _install_c2_wav_structure_probe(counters: dict[str, Any]) -> None:
+    """Count full interleaved WAV reads and per-channel series construction."""
+    from gwexpy.timeseries.io import wav
+
+    original_read = wav.wavfile.read
+    original_series = wav.TimeSeries
+    counters.update(
+        {
+            "wav_probe_covered": True,
+            "wav_backend_read_calls": 0,
+            "wav_selected_series_constructed": 0,
+            "wav_unselected_series_constructed": 0,
+        }
+    )
+
+    def measured_read(*args: Any, **kwargs: Any) -> Any:
+        rate, data = original_read(*args, **kwargs)
+        counters["wav_backend_read_calls"] += 1
+        counters["wav_backend_interleaved_values"] = int(data.size)
+        counters["wav_backend_channel_count"] = (
+            int(data.shape[1]) if data.ndim == 2 else 1
+        )
+        return rate, data
+
+    def measured_series(*args: Any, **kwargs: Any) -> Any:
+        key = (
+            "wav_selected_series_constructed"
+            if kwargs.get("name") == "channel_1"
+            else "wav_unselected_series_constructed"
+        )
+        counters[key] += 1
+        return original_series(*args, **kwargs)
+
+    wav.wavfile.read = measured_read
+    wav.TimeSeries = measured_series
+
+
+def _install_c2_obspy_structure_probe(counters: dict[str, Any]) -> None:
+    """Count ObsPy stream reads separately from selected trace conversions."""
+    import obspy
+
+    from gwexpy.timeseries.io import seismic
+
+    original_read = obspy.read
+    original_convert = seismic._trace_to_timeseries
+    counters.update(
+        {
+            "obspy_probe_covered": True,
+            "obspy_backend_read_calls": 0,
+            "obspy_backend_returned_traces": 0,
+            "obspy_selected_trace_conversions": 0,
+            "obspy_unselected_trace_conversions": 0,
+        }
+    )
+
+    def measured_read(*args: Any, **kwargs: Any) -> Any:
+        stream = original_read(*args, **kwargs)
+        counters["obspy_backend_read_calls"] += 1
+        counters["obspy_backend_returned_traces"] += len(stream)
+        return stream
+
+    def measured_convert(trace: Any, **kwargs: Any) -> Any:
+        key = (
+            "obspy_selected_trace_conversions"
+            if str(trace.id) == "XX.FIX.00.BHN"
+            else "obspy_unselected_trace_conversions"
+        )
+        counters[key] += 1
+        return original_convert(trace, **kwargs)
+
+    obspy.read = measured_read
+    seismic._trace_to_timeseries = measured_convert
+
+
 def _worker_audit(wheel: Path, expected_version: str, *, full: bool) -> dict:
     import gwexpy
 
@@ -681,12 +918,22 @@ def _worker(args: argparse.Namespace) -> None:
 
         TimeSeries.append = measured_append
     if args.mode == "structure":
-        if args.scenario in ("f2_2", "f2_3"):
+        if args.scenario in ("f2_2", "f2_3", "c2_large_csv_selected"):
             _install_csv_structure_probe(counters)
         elif args.scenario.startswith("f2_sdb_"):
             _install_sdb_structure_probe(counters)
         elif args.scenario.startswith("f2_tdms_"):
             _install_tdms_structure_probe(counters)
+        elif (
+            args.scenario.startswith("c2_wav_")
+            or args.scenario == "c2_large_wav_selected"
+        ):
+            _install_c2_wav_structure_probe(counters)
+        elif args.scenario.startswith("c2_obspy_") or args.scenario in (
+            "c2_large_obspy_selected",
+            "c2_direct_obspy_reader_selected",
+        ):
+            _install_c2_obspy_structure_probe(counters)
     fixture = json.loads(
         (Path(args.fixtures) / "fixtures.json").read_text(encoding="utf-8")
     )
@@ -752,7 +999,11 @@ def _worker(args: argparse.Namespace) -> None:
                 )
                 cpu_ns = time.process_time_ns() - cpu_start
                 wall_ns = time.perf_counter_ns() - wall_start
-                if args.mode == "structure" and args.scenario in ("f2_2", "f2_3"):
+                if args.mode == "structure" and args.scenario in (
+                    "f2_2",
+                    "f2_3",
+                    "c2_large_csv_selected",
+                ):
                     sys.setprofile(None)
                 if writer_sink is not None:
                     counters.update(writer_sink.counters())
@@ -770,6 +1021,14 @@ def _worker(args: argparse.Namespace) -> None:
                     "outcome": "error",
                     "error_type": f"{type(exc).__module__}.{type(exc).__qualname__}",
                     "error_message": str(exc),
+                    "error_cause_type": (
+                        f"{type(exc.__cause__).__module__}.{type(exc.__cause__).__qualname__}"
+                        if exc.__cause__ is not None
+                        else None
+                    ),
+                    "error_cause_message": (
+                        str(exc.__cause__) if exc.__cause__ is not None else None
+                    ),
                     "traceback": traceback.format_exc(),
                     "counters": counters,
                 }
@@ -1221,6 +1480,7 @@ def main() -> None:
     fixture_parser.add_argument("destination")
     fixture_parser.add_argument("--large-rows", type=int, default=65536)
     fixture_parser.add_argument("--with-formats", action="store_true")
+    fixture_parser.add_argument("--with-c2", action="store_true")
     run = sub.add_parser("capture")
     run.add_argument("--fixtures", required=True)
     run.add_argument("--output", required=True)
@@ -1275,6 +1535,7 @@ def main() -> None:
             Path(args.destination),
             large_rows=args.large_rows,
             include_formats=args.with_formats,
+            include_c2=args.with_c2,
         )
     elif args.action == "_worker":
         _worker(args)

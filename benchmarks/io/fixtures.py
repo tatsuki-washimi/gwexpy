@@ -7,8 +7,10 @@ import json
 from pathlib import Path
 
 try:
+    from .c2_dispatch_fixtures import write_fixtures as make_c2_fixtures
     from .format_fixtures import make_sdb_fixtures, make_tdms_fixtures
 except ImportError:  # Direct execution under python -I.
+    from c2_dispatch_fixtures import write_fixtures as make_c2_fixtures
     from format_fixtures import make_sdb_fixtures, make_tdms_fixtures
 
 
@@ -22,7 +24,11 @@ def sha256(path: Path) -> str:
 
 
 def make_fixtures(
-    destination: Path, *, large_rows: int = 65536, include_formats: bool = False
+    destination: Path,
+    *,
+    large_rows: int = 65536,
+    include_formats: bool = False,
+    include_c2: bool = False,
 ) -> dict:
     """Create repeatable CSV fixtures without importing either candidate wheel."""
     if large_rows < 4096:
@@ -113,6 +119,21 @@ def make_fixtures(
                     "sha256": case["sha256"],
                     "bytes": case["bytes"],
                 }
+    if include_c2:
+        c2 = make_c2_fixtures(destination / "c2")
+        manifest["c2"] = c2
+        for name, case in c2["files"].items():
+            manifest["files"][f"c2_{name}"] = {
+                "name": f"c2/{name}",
+                "sha256": case["sha256"],
+                "bytes": case["size_bytes"],
+            }
+        c2_manifest = destination / "c2" / "manifest.json"
+        manifest["files"]["c2_manifest"] = {
+            "name": "c2/manifest.json",
+            "sha256": sha256(c2_manifest),
+            "bytes": c2_manifest.stat().st_size,
+        }
     manifest_path = destination / "fixtures.json"
     encoded = json.dumps(manifest, sort_keys=True, indent=2) + "\n"
     if manifest_path.exists() and manifest_path.read_text(encoding="utf-8") != encoded:

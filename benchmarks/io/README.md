@@ -24,6 +24,8 @@ Example:
 python benchmarks/io/run.py fixtures /tmp/v025-fixtures
 # For F2, generate CSV plus package-independent SDB/TDMS fixtures:
 python benchmarks/io/run.py fixtures /tmp/v025-f2-fixtures --with-formats
+# For C2, add deterministic CSV, WAV, and optional miniSEED dispatch fixtures:
+python benchmarks/io/run.py fixtures /tmp/v025-c2-fixtures --with-c2
 python -m build --wheel --no-isolation --outdir /tmp/v025-wheels
 python -m pip download --no-deps --only-binary=:all: gwexpy==0.2.4 -d /tmp/v025-wheels
 python -m venv --system-site-packages /tmp/v025-b0
@@ -43,6 +45,8 @@ For a later C1 candidate comparison, run the **C1 freeze commit's exact
 edits may change this directory and its harness digest. S2 must compare the
 C1 baseline git blob hashes with that frozen commit before accepting a
 candidate comparison.
+Use the analogous C2 freeze commit's exact `benchmarks/io/*.py` bytes for a
+later C2 candidate comparison; F2's earlier harness digest is immutable.
 
 ```sh
 python benchmarks/io/run.py capture \
@@ -147,6 +151,33 @@ Correctness fingerprints include Python warnings and backend logging records
 with exact logger, level, and message. The truncated-payload fixture may be
 detected at file open by npTDMS, before per-channel selection; interpret its
 captured B1 behavior directly rather than assuming a channel-local fault.
+
+For C2, `--with-c2` adds numeric-only CSV files, interleaved stereo WAV, and
+miniSEED when ObsPy is available. Headered CSV is a separate B1 error case:
+the public native CSV reader does not treat its first row as a header. Public
+single-series and direct multi-series calls are fingerprinted separately,
+including no-selection first-channel order, requested/unselected malformed
+values, a three-byte-truncated stereo WAV under selected/no-selection reads,
+and a deterministic simulated missing-ObsPy dependency. The larger
+65,536-row CSV, 1,048,576-frame WAV, and 131,072-sample-per-channel miniSEED
+fixtures support warm/cold and Linux RSS/PSS measurements.
+
+C2 structural probes count the actual SciPy WAV backend call and its returned
+interleaved values, then count selected and unselected `TimeSeries`
+constructions. SciPy WAV cannot read only one interleaved channel, so a zero
+unselected backend-read gate does not apply; removing the unselected series
+construction is a separate candidate gate. The ObsPy probe counts full-stream
+backend calls/returned traces and trace-to-series conversions. B1 already
+converts no unselected trace for selected reads, so that zero baseline cannot
+support a selection improvement claim. The large CSV probe exposes B1 enhanced
+parser materialization as context for the F2-owned parser; C2 does not claim
+to optimize that parser. A synthetic registered dict-to-single adapter probe
+shows that B1 already forwards an explicit `channels=['second']` selector to
+its backend (zero unselected reads); without selection it reads both entries
+and returns the first in stable order. This synthetic probe characterizes
+dispatch behavior, not a disk I/O speed claim. Candidate implementations that
+replace these call sites need equivalent exact spies before any avoided-work
+claim.
 
 Structural, timing, and memory modes are separate processes. Do not treat a
 baseline as frozen until each required B1 scenario has a public fingerprint,
