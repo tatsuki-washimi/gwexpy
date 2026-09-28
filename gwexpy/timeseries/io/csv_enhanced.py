@@ -48,7 +48,9 @@ _MAX_RESAMPLED_VALUES = 10_000_000
 _RESAMPLE_METHODS = frozenset({"interpolate", "asfreq"})
 _RESAMPLE_BUDGET_SENTINEL = object()
 _MAX_CSV_MATRIX_CHUNK_BYTES = 64 * 1024 * 1024
-_ASCII_FLOAT = r"[+-]?(?:(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?|inf(?:inity)?|nan)"
+_ASCII_FLOAT = (
+    r"[+-]?(?:(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?|inf(?:inity)?|nan)"
+)
 _ASCII_FLOATS = re.compile(rf"{_ASCII_FLOAT}(?:,{_ASCII_FLOAT})*", re.IGNORECASE)
 
 
@@ -513,7 +515,17 @@ def _convert_wide_numeric_row(row: list[str], line_number: int) -> np.ndarray:
 
 def _try_plain_numeric_file(
     stream: Any, cfg: CSVFormatConfig
-) -> tuple[dict[str, str], np.ndarray, dict[int, np.ndarray], dict[int, list[str]], list[int], int] | None:
+) -> (
+    tuple[
+        dict[str, str],
+        np.ndarray,
+        dict[int, np.ndarray],
+        dict[int, list[str]],
+        list[int],
+        int,
+    ]
+    | None
+):
     """Use NumPy's streaming numeric reader for an unambiguous plain CSV.
 
     A failed or ambiguous attempt rewinds the stream so the compatibility
@@ -562,9 +574,7 @@ def _try_plain_numeric_file(
     try:
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always")
-            matrix = np.loadtxt(
-                plain_lines(), delimiter=",", dtype=np.float64, ndmin=2
-            )
+            matrix = np.loadtxt(plain_lines(), delimiter=",", dtype=np.float64, ndmin=2)
         if (
             caught
             or matrix.ndim != 2
@@ -797,7 +807,10 @@ def _read_numeric_rows(
                     or chunk_text_bytes + row_bytes > _MAX_CSV_MATRIX_CHUNK_BYTES
                 ):
                     flush_chunk()
-                if width * 8 > _MAX_CSV_MATRIX_CHUNK_BYTES or row_bytes > _MAX_CSV_MATRIX_CHUNK_BYTES:
+                if (
+                    width * 8 > _MAX_CSV_MATRIX_CHUNK_BYTES
+                    or row_bytes > _MAX_CSV_MATRIX_CHUNK_BYTES
+                ):
                     # The output row itself can exceed the chunk cap. Only
                     # conversion temporaries are capped in that case.
                     matrix_chunks.append(_convert_wide_numeric_row(tokens, line_number))
