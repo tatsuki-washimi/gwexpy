@@ -5,6 +5,7 @@ from __future__ import annotations
 import ast
 import inspect
 import io
+from collections.abc import Iterator
 from pathlib import Path
 
 import numpy as np
@@ -70,6 +71,36 @@ def test_plain_numeric_file_uses_numpy_reader_and_keeps_axis(
     assert calls == 1
     np.testing.assert_array_equal(result["ch3"].value, np.arange(32) + 2)
     np.testing.assert_array_equal(result["ch3"].times.value, np.arange(32))
+
+
+def test_plain_numeric_file_scans_successful_input_once() -> None:
+    class CountingStream:
+        def __init__(self) -> None:
+            self.source = io.StringIO("0,1\n1,2\n2,3\n")
+            self.iterations = 0
+
+        def seekable(self) -> bool:
+            return True
+
+        def tell(self) -> int:
+            return self.source.tell()
+
+        def seek(self, *args: int) -> int:
+            return self.source.seek(*args)
+
+        def __iter__(self) -> Iterator[str]:
+            self.iterations += 1
+            return iter(self.source)
+
+    stream = CountingStream()
+    parsed = csv_enhanced._try_plain_numeric_file(stream, CSVFormatConfig())
+    assert parsed is not None
+    _, matrix, _, times, lines, width = parsed
+    assert stream.iterations == 1
+    assert width == 2
+    assert lines == [1, 2, 3]
+    assert times == {0: ["0", "1", "2"]}
+    np.testing.assert_array_equal(matrix, [[0, 1], [1, 2], [2, 3]])
 
 
 def test_selected_parser_retains_only_requested_values(tmp_path: Path) -> None:

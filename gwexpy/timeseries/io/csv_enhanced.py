@@ -532,44 +532,46 @@ def _try_plain_numeric_file(
         # the 64 MiB temporary-chunk budget; larger files use bounded chunks.
         if remaining_bytes < 0 or remaining_bytes > 16 * 1024 * 1024:
             return None
-        first_line = stream.readline(_MAX_CSV_MATRIX_CHUNK_BYTES + 1)
-        stream.seek(position)
-        if (
-            not first_line.strip()
-            or len(first_line) > _MAX_CSV_MATRIX_CHUNK_BYTES
-            or first_line.count(b"," if isinstance(first_line, bytes) else ",")
-            >= _MAX_CSV_MATRIX_CHUNK_BYTES // 8
-        ):
-            return None
-    except (AttributeError, OSError, io.UnsupportedOperation):
+    except (AttributeError, OSError, TypeError, io.UnsupportedOperation):
         return None
 
-    matrix: np.ndarray | None = None
     succeeded = False
-    try:
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            matrix = np.loadtxt(stream, delimiter=",", dtype=np.float64, ndmin=2)
-        if caught or matrix.ndim != 2 or not matrix.size:
-            return None
-        stream.seek(position)
-        width = matrix.shape[1]
-        time_lexemes: list[str] = []
-        line_numbers: list[int] = []
+    time_lexemes: list[str] = []
+    line_numbers: list[int] = []
+    width: int | None = None
+
+    def plain_lines() -> Any:
+        nonlocal width
         for line_number, line in enumerate(stream, start=1):
             if isinstance(line, bytes):
                 line = line.decode(cfg.encoding or "utf-8")
             stripped = line.strip()
-            if (
-                not stripped
-                or "#" in line
-                or '"' in line
-                or line.count(",") != width - 1
-            ):
-                return None
+            if not stripped or "#" in line or '"' in line:
+                raise ValueError("ambiguous plain numeric CSV")
+            row_width = line.count(",") + 1
+            if width is None:
+                width = row_width
+                if width * 8 > _MAX_CSV_MATRIX_CHUNK_BYTES:
+                    raise ValueError("plain numeric CSV row exceeds chunk budget")
+            elif row_width != width:
+                raise ValueError("inconsistent plain numeric CSV row width")
             time_lexemes.append(line.partition(",")[0].strip())
             line_numbers.append(line_number)
-        if len(line_numbers) != matrix.shape[0]:
+            yield line
+
+    try:
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            matrix = np.loadtxt(
+                plain_lines(), delimiter=",", dtype=np.float64, ndmin=2
+            )
+        if (
+            caught
+            or matrix.ndim != 2
+            or not matrix.size
+            or width is None
+            or matrix.shape != (len(line_numbers), width)
+        ):
             return None
         succeeded = True
         return {}, matrix, {}, {0: time_lexemes}, line_numbers, width
