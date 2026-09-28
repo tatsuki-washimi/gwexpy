@@ -5,6 +5,7 @@ from __future__ import annotations
 import ast
 import inspect
 import io
+import sys
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -124,6 +125,41 @@ def test_selected_parser_retains_only_requested_values(tmp_path: Path) -> None:
     result = csv_enhanced.read_timeseriesdict_csv(path, channels=["ch7"])
     assert list(result) == ["ch7"]
     np.testing.assert_array_equal(result["ch7"].value, np.arange(100) + 6)
+
+
+def test_large_selected_parser_materializes_one_payload_column(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "large-selected.csv"
+    _numeric_csv(path, rows=65536, channels=16)
+    parser_code = csv_enhanced._read_numeric_rows.__code__
+    observed: dict[str, int | bool] = {}
+
+    def inspect_return(frame: object, event: str, _arg: object) -> None:
+        if event != "return" or getattr(frame, "f_code", None) is not parser_code:
+            return
+        locals_ = frame.f_locals  # type: ignore[attr-defined]
+        observed.update(
+            selected_columns=len(locals_["selected_values"]),
+            selected_values=sum(len(v) for v in locals_["selected_values"].values()),
+            buffered_full_rows=len(locals_["chunk_rows"]),
+            buffered_matrices=len(locals_["matrix_chunks"]),
+            full_matrix=locals_["matrix"] is not None,
+        )
+
+    sys.setprofile(inspect_return)
+    try:
+        result = csv_enhanced.read_timeseriesdict_csv(path, channels=["ch1"])
+    finally:
+        sys.setprofile(None)
+    assert observed == {
+        "selected_columns": 1,
+        "selected_values": 65536,
+        "buffered_full_rows": 0,
+        "buffered_matrices": 0,
+        "full_matrix": False,
+    }
+    assert list(result) == ["ch1"]
 
 
 @pytest.mark.parametrize("selected", [None, ["ch1"]])
