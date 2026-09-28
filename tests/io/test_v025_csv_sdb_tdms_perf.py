@@ -140,6 +140,15 @@ def test_read_only_text_stream_preserves_old_reader_contract() -> None:
     np.testing.assert_array_equal(result["ch1"].value, [1, 2])
 
 
+def test_unbuffered_registry_style_file_keeps_caller_ownership(tmp_path: Path) -> None:
+    path = tmp_path / "raw.csv"
+    path.write_text("0,1\n1,2\n", encoding="utf-8")
+    with path.open("rb", buffering=0) as raw:
+        result = csv_enhanced.read_timeseriesdict_csv(raw)
+        assert not raw.closed
+        np.testing.assert_array_equal(result["ch1"].value, [1, 2])
+
+
 def test_negative_configured_data_index_keeps_last_column() -> None:
     config = CSVFormatConfig(columns=[ColumnSpec("last", -1)])
     result = csv_enhanced.read_timeseriesdict_csv(

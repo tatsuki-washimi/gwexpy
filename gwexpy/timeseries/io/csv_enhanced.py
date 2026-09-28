@@ -13,7 +13,7 @@ import io
 import math
 import re
 import warnings
-from contextlib import AbstractContextManager, nullcontext
+from contextlib import AbstractContextManager, ExitStack, nullcontext
 from decimal import ROUND_FLOOR, ROUND_HALF_EVEN, Decimal, InvalidOperation
 from functools import partial
 from itertools import chain, islice
@@ -535,7 +535,14 @@ def _read_numeric_rows(
     else:
         stream_context = Path(source).open(encoding=cfg.encoding, newline=None)
 
-    with stream_context as stream:
+    with stream_context as stream, ExitStack() as cleanup:
+        if isinstance(stream, io.FileIO):
+            # GWpy's registry passes a raw, unbuffered binary FileIO. Iterating
+            # it issues tiny reads for every line; buffer it while retaining
+            # ownership of the underlying stream with the registry.
+            buffered = io.BufferedReader(stream, buffer_size=1024 * 1024)
+            cleanup.callback(buffered.detach)
+            stream = buffered
         if hasattr(stream, "__iter__") and not (
             isinstance(stream, io.TextIOBase)
             and type(stream).readline is io.TextIOBase.readline
