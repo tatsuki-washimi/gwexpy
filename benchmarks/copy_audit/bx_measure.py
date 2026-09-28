@@ -395,6 +395,11 @@ def _capture(args: argparse.Namespace) -> None:
         if metric
         else {}
     )
+    cpu_summary = (
+        {arm: _summary(samples, "cpu_ns_parent") for arm, samples in records.items()}
+        if args.mode == "wall"
+        else {}
+    )
     manifest = {
         "schema": SCHEMA,
         "status": "RAW_UNQUALIFIED",
@@ -425,6 +430,7 @@ def _capture(args: argparse.Namespace) -> None:
         else None,
         "pss_sample_ms": args.sample_ms if args.mode == "pss" else None,
         "summary": summary,
+        "cpu_summary": cpu_summary,
     }
     (args.output / "manifest.json").write_text(
         json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
