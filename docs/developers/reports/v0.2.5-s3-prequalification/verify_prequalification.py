@@ -413,7 +413,11 @@ proposal = (ROOT / "disposition-proposal.md").read_text()
 proposed_ids = re.findall(r"^\| `([A-Z0-9-]+)` \|", proposal, re.MULTILINE)
 assert len(proposed_ids) == 12 and set(proposed_ids) == set(BLOCKED)
 out = {
-    "schema": "gwexpy-v025-audit-prequalification-v1",
+    "schema": (
+        "gwexpy-v025-audit-prequalification-v1"
+        if args.candidate_summary == DEFAULT_SUMMARY
+        else "gwexpy-v025-audit-qualification-v1"
+    ),
     "source_sha": SOURCE_SHA,
     "historical_matrix_sha256": hashlib.sha256(MATRIX.read_bytes()).hexdigest(),
     "artifact_sha256": {
