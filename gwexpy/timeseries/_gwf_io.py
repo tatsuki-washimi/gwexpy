@@ -763,29 +763,18 @@ def _validate_gwf_parallel_source(source: Any, gwf_kwargs: dict[str, Any]) -> An
     return source
 
 
-def _bounded_gwf_spans(
-    sources: list[Any], channels: list[str], backend: str | None
-) -> list[tuple[int, int]] | None:
-    """Resolve adjacent local frame spans, or decline the speculative route."""
+def _bounded_gwf_local_paths(sources: list[Any]) -> bool:
+    """Accept only concrete local frame paths for speculative reads."""
     if len(sources) < _GWF_BOUNDED_MIN_SOURCES:
-        return None
-    previous_end = None
-    spans = []
+        return False
     concrete_path_type = type(Path())
     for item in sources:
         if type(item) not in {str, concrete_path_type}:
-            return None
+            return False
         path = Path(item)
         if path.is_symlink() or not path.is_file() or path.suffix.lower() != ".gwf":
-            return None
-        span_start, span_end = _resolve_gwf_path_span(item, channels, backend)
-        current_start = _gwf_time_to_ns(span_start)
-        current_end = _gwf_time_to_ns(span_end)
-        if previous_end is not None and current_start != previous_end:
-            return None
-        spans.append((current_start, current_end))
-        previous_end = current_end
-    return spans
+            return False
+    return True
 
 
 def _merge_bounded_gwf_parts(
@@ -899,16 +888,21 @@ def _try_bounded_gwf_serial(
             _capture_gwf_fd_stderr() as fd_stderr,
         ):
             warnings.simplefilter("always")
-            spans = _bounded_gwf_spans(sources, channels, backend)
-            if spans is None:
+            if not _bounded_gwf_local_paths(sources):
                 return _GWF_BOUNDED_FALLBACK
 
             def checked_parts() -> Any:
-                for item, expected_span in zip(sources, spans, strict=True):
+                previous_end = None
+                for item in sources:
                     part = read_one(item)
-                    actual_span = tuple(_gwf_time_to_ns(value) for value in part.span)
-                    if actual_span != expected_span:
-                        raise ValueError("GWF preflight span differs from decoded span")
+                    span_start, span_end = part.span
+                    current_start = _gwf_time_to_ns(span_start)
+                    current_end = _gwf_time_to_ns(span_end)
+                    if current_start >= current_end or (
+                        previous_end is not None and current_start != previous_end
+                    ):
+                        raise ValueError("GWF decoded spans are not adjacent")
+                    previous_end = current_end
                     yield part
 
             result = _merge_bounded_gwf_parts(

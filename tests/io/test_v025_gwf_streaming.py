@@ -153,6 +153,23 @@ def test_preallocated_result_avoids_final_full_array_copy(
     assert coercions == len(sources)
 
 
+def test_large_sorted_serial_skips_backend_span_probe(tmp_path, monkeypatch) -> None:
+    """A successful fast read derives spans from decoded parts only."""
+    sources = _frames(tmp_path, 16)
+    original = gwf_io._resolve_gwf_path_span
+    span_calls = 0
+
+    def counted_span(*args, **kwargs):
+        nonlocal span_calls
+        span_calls += 1
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(gwf_io, "_resolve_gwf_path_span", counted_span)
+    result = TimeSeriesDict.read(sources, [CHANNEL], format="gwf", parallel=False)
+    assert result[CHANNEL].value.tolist() == list(range(16 * 8))
+    assert span_calls == 0
+
+
 def test_later_dtype_mismatch_replays_old_merge(tmp_path, monkeypatch) -> None:
     """A part requiring GWpy's casting semantics returns to the old route."""
     sources = _frames(tmp_path, 16)
@@ -185,18 +202,22 @@ def test_later_dtype_mismatch_replays_old_merge(tmp_path, monkeypatch) -> None:
 def test_speculative_diagnostics_are_not_published(
     tmp_path, monkeypatch, capfd, caplog
 ) -> None:
-    """A noisy preflight replays old R without leaking its own diagnostics."""
+    """A noisy speculative decode replays old R without duplicate diagnostics."""
     sources = _frames(tmp_path, 16)
-    original = gwf_io._resolve_gwf_path_span
+    original = gwf_io._read_gwf_timeseriesdict_serial
+    emitted = False
 
-    def noisy_resolve(*args, **kwargs):
-        warnings.warn("speculative warning", UserWarning, stacklevel=1)
-        logging.getLogger("gwexpy.test.f4").warning("speculative log")
-        print("speculative stderr", file=sys.stderr)
-        os.write(2, b"speculative native stderr\n")
-        return original(*args, **kwargs)
+    def noisy_read(source, *args, **kwargs):
+        nonlocal emitted
+        if Path(source) == sources[4] and not emitted:
+            emitted = True
+            warnings.warn("speculative warning", UserWarning, stacklevel=1)
+            logging.getLogger("gwexpy.test.f4").warning("speculative log")
+            print("speculative stderr", file=sys.stderr)
+            os.write(2, b"speculative native stderr\n")
+        return original(source, *args, **kwargs)
 
-    monkeypatch.setattr(gwf_io, "_resolve_gwf_path_span", noisy_resolve)
+    monkeypatch.setattr(gwf_io, "_read_gwf_timeseriesdict_serial", noisy_read)
     caplog.set_level(logging.WARNING)
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter("always")
@@ -308,27 +329,24 @@ def test_gap_pad_keeps_old_values(tmp_path, monkeypatch) -> None:
     np.testing.assert_array_equal(candidate[CHANNEL].value, old[CHANNEL].value)
 
 
-def test_preflight_span_disagreement_replays_old_route(tmp_path, monkeypatch) -> None:
-    """A misleading span hint cannot change the B1 merge ordering."""
+def test_decoded_span_disagreement_replays_old_route(tmp_path, monkeypatch) -> None:
+    """A transient decoded gap cannot change the B1 merge result."""
     sources = _frames(tmp_path, 16)
-    original = gwf_io._resolve_gwf_path_span
     read_count = 0
     original_read = gwf_io._read_gwf_timeseriesdict_serial
 
-    def shifted_span(*args, **kwargs):
-        start, end = original(*args, **kwargs)
-        return start + 1, end + 1
-
-    def counted_read(*args, **kwargs):
+    def shifted_read(*args, **kwargs):
         nonlocal read_count
         read_count += 1
-        return original_read(*args, **kwargs)
+        part = original_read(*args, **kwargs)
+        if read_count == 2:
+            part[CHANNEL].t0 = float(part[CHANNEL].t0.value) + 1
+        return part
 
-    monkeypatch.setattr(gwf_io, "_resolve_gwf_path_span", shifted_span)
-    monkeypatch.setattr(gwf_io, "_read_gwf_timeseriesdict_serial", counted_read)
+    monkeypatch.setattr(gwf_io, "_read_gwf_timeseriesdict_serial", shifted_read)
     result = TimeSeriesDict.read(sources, [CHANNEL], format="gwf", parallel=False)
     assert result[CHANNEL].value.tolist() == list(range(16 * 8))
-    assert read_count == 17  # one speculative decode, then all 16 old-R reads
+    assert read_count == 18  # two speculative decodes, then all 16 old-R reads
 
 
 def test_multithreaded_calls_use_old_route(tmp_path, monkeypatch) -> None:
@@ -336,10 +354,10 @@ def test_multithreaded_calls_use_old_route(tmp_path, monkeypatch) -> None:
     sources = _frames(tmp_path, 16)
     monkeypatch.setattr(gwf_io.threading, "active_count", lambda: 2)
 
-    def unexpected_preflight(*args, **kwargs):
-        raise AssertionError("speculative preflight must be skipped")
+    def unexpected_capture():
+        raise AssertionError("speculative diagnostics must be skipped")
 
-    monkeypatch.setattr(gwf_io, "_resolve_gwf_path_span", unexpected_preflight)
+    monkeypatch.setattr(gwf_io, "_capture_gwf_logs", unexpected_capture)
     result = TimeSeriesDict.read(sources, [CHANNEL], format="gwf", parallel=False)
     assert result[CHANNEL].value.tolist() == list(range(16 * 8))
 
