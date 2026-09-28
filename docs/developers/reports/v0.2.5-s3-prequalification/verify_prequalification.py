@@ -1,5 +1,6 @@
 import hashlib
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -373,6 +374,9 @@ for f in FINDINGS:
     entries.append(entry)
 assert len(entries) == 38 and len({x["finding_id"] for x in entries}) == 38
 assert set(BLOCKED_REFS) == set(BLOCKED)
+proposal = (ROOT / "disposition-proposal.md").read_text()
+proposed_ids = re.findall(r"^\| `([A-Z0-9-]+)` \|", proposal, re.MULTILINE)
+assert len(proposed_ids) == 12 and set(proposed_ids) == set(BLOCKED)
 out = {
     "schema": "gwexpy-v025-audit-prequalification-v1",
     "source_sha": "159a338081e1fca2c77030cabe160a458217563b",
