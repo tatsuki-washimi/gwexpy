@@ -833,7 +833,6 @@ def _merge_bounded_gwf_parts(
                     or series.dtype != output_series.dtype
                     or series.unit != output_series.unit
                     or series.dt != output_series.dt
-                    or output_series[:placed].is_contiguous(series) != 1
                     or np.shares_memory(output_series.value, series.value)
                 ):
                     raise ValueError(

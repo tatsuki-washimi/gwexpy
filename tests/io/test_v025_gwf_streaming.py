@@ -170,6 +170,20 @@ def test_large_sorted_serial_skips_backend_span_probe(tmp_path, monkeypatch) -> 
     assert span_calls == 0
 
 
+def test_adjacent_decoded_spans_skip_redundant_contiguity_view(
+    tmp_path, monkeypatch
+) -> None:
+    """Already checked frame spans need no growing output slice per part."""
+    sources = _frames(tmp_path, 16)
+
+    def unexpected_contiguity(*args, **kwargs):
+        raise AssertionError("decoded span adjacency already checked")
+
+    monkeypatch.setattr(TimeSeries, "is_contiguous", unexpected_contiguity)
+    result = TimeSeriesDict.read(sources, [CHANNEL], format="gwf", parallel=False)
+    assert result[CHANNEL].value.tolist() == list(range(16 * 8))
+
+
 def test_later_dtype_mismatch_replays_old_merge(tmp_path, monkeypatch) -> None:
     """A part requiring GWpy's casting semantics returns to the old route."""
     sources = _frames(tmp_path, 16)
@@ -327,6 +341,52 @@ def test_gap_pad_keeps_old_values(tmp_path, monkeypatch) -> None:
         sources, [CHANNEL], format="gwf", parallel=False, gap="pad"
     )
     np.testing.assert_array_equal(candidate[CHANNEL].value, old[CHANNEL].value)
+
+
+@pytest.mark.parametrize("shift", [-0.125, 0.125])
+def test_one_sample_boundary_fault_replays_old_public_result(
+    tmp_path, monkeypatch, shift: float
+) -> None:
+    """A one-sample overlap or gap preserves old outcome and warnings."""
+    sources = _frames(tmp_path, 16)
+    changed = GwpyTimeSeries(
+        np.arange(8 * 8, 9 * 8, dtype=np.float64),
+        sample_rate=8,
+        t0=1_000_000_008 + shift,
+        unit="m",
+        channel=CHANNEL,
+        name=CHANNEL,
+    )
+    sources[8].unlink()
+    GwpyTimeSeriesDict({CHANNEL: changed}).write(sources[8], format="gwf")
+
+    def capture():
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            try:
+                result = TimeSeriesDict.read(
+                    sources, [CHANNEL], format="gwf", parallel=False
+                )
+            except Exception as error:
+                outcome = ("error", type(error).__qualname__, str(error))
+            else:
+                series = result[CHANNEL]
+                outcome = (
+                    "return",
+                    series.value.tolist(),
+                    series.dtype.str,
+                    str(series.unit),
+                    float(series.t0.value),
+                    float(series.dt.value),
+                )
+        return outcome, [
+            (item.category.__qualname__, str(item.message)) for item in caught
+        ]
+
+    monkeypatch.setattr(gwf_io, "_GWF_BOUNDED_MIN_SOURCES", 17)
+    old = capture()
+    monkeypatch.setattr(gwf_io, "_GWF_BOUNDED_MIN_SOURCES", 16)
+    assert capture() == old
 
 
 def test_decoded_span_disagreement_replays_old_route(tmp_path, monkeypatch) -> None:
