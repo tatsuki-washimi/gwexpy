@@ -18,7 +18,7 @@ from decimal import ROUND_FLOOR, ROUND_HALF_EVEN, Decimal, InvalidOperation
 from functools import partial
 from itertools import chain, islice
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -605,13 +605,21 @@ def _read_numeric_rows(
         stream_context = Path(source).open(encoding=cfg.encoding, newline=None)
 
     with stream_context as stream, ExitStack() as cleanup:
-        if isinstance(stream, io.FileIO):
+        if isinstance(stream, io.RawIOBase):
             # GWpy's registry passes a raw, unbuffered binary FileIO. Iterating
             # it issues tiny reads for every line; buffer it while retaining
             # ownership of the underlying stream with the registry.
             buffered = io.BufferedReader(stream, buffer_size=1024 * 1024)
             cleanup.callback(buffered.detach)
             stream = buffered
+        if isinstance(stream, io.BufferedIOBase):
+            # read().decode().splitlines() accepted CR-only files as well as
+            # LF/CRLF. TextIOWrapper restores universal-newline iteration.
+            text_stream = io.TextIOWrapper(
+                cast(Any, stream), encoding=cfg.encoding or "utf-8", newline=None
+            )
+            cleanup.callback(text_stream.detach)
+            stream = text_stream
         if channels is None and start is None and end is None and not cfg.columns:
             fast = _try_plain_numeric_file(stream, cfg)
             if fast is not None:

@@ -11,7 +11,7 @@ import numpy as np
 import pytest
 
 from gwexpy.frequencyseries import FrequencySeries
-from gwexpy.timeseries import TimeSeries
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 from gwexpy.timeseries.io import csv_enhanced
 from gwexpy.timeseries.io.csv_config import ColumnSpec, CSVFormatConfig
 
@@ -176,6 +176,14 @@ def test_unbuffered_registry_style_file_keeps_caller_ownership(tmp_path: Path) -
         assert not raw.closed
         assert raw.tell() == path.stat().st_size
         np.testing.assert_array_equal(result["ch1"].value, [1, 2])
+
+
+def test_public_csv_read_keeps_cr_only_newlines(tmp_path: Path) -> None:
+    path = tmp_path / "cr-only.csv"
+    path.write_bytes(b"0,1\r1,2\r2,3\r")
+    result = TimeSeriesDict.read(path, format="csv")
+    np.testing.assert_array_equal(result["ch1"].value, [1, 2, 3])
+    np.testing.assert_array_equal(result["ch1"].times.value, [0, 1, 2])
 
 
 def test_negative_configured_data_index_keeps_last_column() -> None:
