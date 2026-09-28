@@ -263,6 +263,7 @@
                 "Public HDF5 direct I/O covers documented time-series, frequency-series, spectrogram, histogram, and event-table families.",
                 "GWpy segment classes remain part of the broader registry-backed implementation surface, but they are not part of the published HDF5 direct-I/O contract in this slice.",
                 "FrequencySeriesMatrix and SpectrogramMatrix remain outside the published HDF5 contract until matrix-axis serialization is hardened.",
+                "HistogramDict and HistogramList currently write physical entry groups even when layout=dataset is requested, while the manifest labels that layout dataset-per-entry. A physical histogram dataset-per-entry schema is not qualified; this known mismatch is retained for v0.2.5.",
                 "Field classes remain intentionally outside this schema slice pending a dedicated direct-I/O audit."
             ],
             "optional_dependencies": [],
@@ -976,6 +977,23 @@
             "time_semantics": "absolute",
             "epoch_arg": "override",
             "timezone_arg": "epoch_localize_only",
+            "time_routes": [
+                {
+                    "route": "channel_timestamp",
+                    "time_semantics": "absolute",
+                    "timezone_behavior": "source_preserved"
+                },
+                {
+                    "route": "root_DateTime_fallback",
+                    "time_semantics": "absolute",
+                    "timezone_behavior": "assumed_utc"
+                },
+                {
+                    "route": "missing_timestamp_fallback",
+                    "time_semantics": "relative",
+                    "timezone_behavior": "not_applicable"
+                }
+            ],
             "aliases": [],
             "public_api": {
                 "read": [
@@ -1005,11 +1023,13 @@
             },
             "trusted_only": false,
             "metadata_requirements": [
-                "Published TDMS reads must preserve group/channel naming and waveform timing from wf_increment or TDMS timestamp properties."
+                "Published TDMS reads must preserve group/channel naming and positive finite wf_increment timing. Absolute channel timestamps are used when present; absent timestamps retain the legacy root DateTime or relative-zero fallback."
             ],
             "notes": [
                 "Published TDMS direct I/O is read-only for the TimeSeries family.",
-                "The implementation depends on nptdms and should raise ImportError with installation guidance when that dependency is unavailable."
+                "The implementation depends on nptdms and should raise ImportError with installation guidance when that dependency is unavailable.",
+                "A custom root DateTime is treated as an absolute timestamp without device-level authority; callers requiring an authoritative epoch should pass epoch explicitly.",
+                "The reader currently ignores channel unit_string unless unit is explicitly provided. The legacy provenance marker unit_source=tdms does not prove that a physical unit was imported."
             ],
             "optional_dependencies": [
                 "nptdms"

@@ -316,6 +316,15 @@ audio = TimeSeriesDict.read("sound.flac", format="flac")
 
 - **GBD** requires `timezone`.
 - **TDMS** requires the optional `nptdms` dependency.
+  With no channel timestamp, the current reader uses a custom root `DateTime`
+  as an assumed UTC start or returns relative `t0=0` if no timestamp exists.
+  Use `epoch=` when the acquisition epoch must be authoritative. Channel
+  `unit_string` is not imported automatically; pass `unit=` when known.
+  The legacy `unit_source=tdms` provenance marker does not certify unit import.
+- For **HDF5 histogram collections**, `layout="dataset"` currently creates
+  physical entry groups despite a `dataset-per-entry` manifest label. Treat
+  this as a known layout mismatch; the physical dataset-per-entry histogram
+  schema is not qualified in v0.2.5.
 - **MP3 / FLAC / OGG / M4A** require the optional `pydub` dependency. MP3/M4A commonly also need `ffmpeg`.
 - **SDB** accepts only `format="sdb"` and `.sdb` auto-identification. If its `usUnits` column exists, every row must be integer `1`; archives without that column retain the legacy US customary unit assumption. Its integer Unix-second `dateTime` values must have regular cadence in database storage order; duplicate, backward, missing, or overlarge gaps raise `ValueError`.
 - **WAV / compressed-audio formats** do not preserve absolute timestamps. Reading with `t0=0.0` is a convenience convention, not a claim that the source had an absolute epoch.

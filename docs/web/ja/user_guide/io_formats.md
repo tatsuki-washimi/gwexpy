@@ -309,6 +309,15 @@ audio = TimeSeriesDict.read("sound.flac", format="flac")
 
 - **GBD** は `timezone` を省略できません。
 - **TDMS** は optional dependency の `nptdms` が必要です。
+  チャネル時刻がない場合、現在の reader は root の独自 `DateTime` を UTC の開始時刻と
+  仮定して使い、それもなければ相対時刻 `t0=0` を返します。取得時刻の根拠が必要な
+  場合は `epoch=` を指定してください。チャネルの `unit_string` は自動で単位に
+  反映されないため、既知の単位は `unit=` で指定してください。従来の provenance
+  `unit_source=tdms` は単位をファイルから読み取った証拠にはなりません。
+- **HDF5 histogram collection** の `layout="dataset"` は、manifest に
+  `dataset-per-entry` と記録される一方で、現在の実体は entry group です。
+  v0.2.5 ではこの既知の不整合を維持し、物理的な dataset-per-entry histogram
+  schema は認定対象に含めません。
 - **MP3 / FLAC / OGG / M4A** は optional dependency の `pydub` が必要で、MP3/M4A は `ffmpeg` も必要になることが多いです。
 - **SDB** は `format="sdb"` と `.sdb` の自動判定だけを受け付けます。
 - `usUnits` 列がある場合は全行が整数 `1` でなければならず、列が無い archive は従来どおり US customary 単位を仮定します。

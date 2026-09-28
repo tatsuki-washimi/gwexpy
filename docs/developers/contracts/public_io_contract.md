@@ -45,8 +45,9 @@ Each on-disk format entry contains these fields:
   `t0_override`
 - `timezone_arg`: timezone policy; `rejected`, `required`,
   `epoch_localize_only`, `component_localize`, or `not_accepted`
-- `time_routes`: optional route-level timing policy. CSV uses this because its
-  component, numeric, and generated-index inputs have different semantics.
+- `time_routes`: optional route-level timing policy. CSV distinguishes its
+  component, numeric, and generated-index inputs; TDMS records the legacy
+  timestamp fallbacks separately from its normal absolute-timestamp route.
 
 ### Normalized v3 Fields
 
@@ -129,6 +130,13 @@ CSV route details are machine-readable under `time_routes`:
 | component columns | naive civil | localize |
 | numeric time column | absolute | ignore with one warning per top-level read |
 | generated sample index | relative | ignore with one warning per top-level read |
+
+TDMS normally uses an absolute channel timestamp. If it is absent, the
+current reader uses a custom root `DateTime` as an assumed UTC timestamp, or
+relative `t0=0` if neither property exists. The top-level `absolute` entry
+therefore describes the normal timestamp route; `time_routes` records the
+fallbacks. A root `DateTime` is not guaranteed to be the channel acquisition
+epoch. Callers who need an authoritative epoch should pass `epoch=`.
 
 Configured component columns fail closed when a naive civil timestamp is an
 ambiguous daylight-saving fold or a nonexistent gap; the resulting
@@ -257,6 +265,9 @@ not add `time_scale=` or `time_unit=`.
   should raise a format-specific `ImportError`.
 - Reason: TDMS is a read-only instrument format in the current user guide, and
   its direct-I/O surface is entirely registry-backed.
+- Existing unit behavior: channel `unit_string` is not imported automatically.
+  Pass `unit=` when the physical unit is known. The legacy provenance value
+  `unit_source=tdms` does not establish that a unit was read from the file.
 
 ### `mseed` / `sac` / `gse2`
 
@@ -346,6 +357,11 @@ not add `time_scale=` or `time_unit=`.
   it. This does not broaden `TimeSeriesList` or matrix-only direct-I/O routes.
 - `FrequencySeriesMatrix` and `SpectrogramMatrix` stay outside the published
   HDF5 contract until matrix-axis serialization is hardened.
+- `HistogramDict` and `HistogramList` currently create entry groups containing
+  `values` and `edges` even when `layout="dataset"` is requested; the manifest
+  still labels this layout `dataset-per-entry`. This retained mismatch does
+  not establish a supported physical dataset-per-entry histogram schema.
+  Histogram collection reads are qualified for the groups actually written.
 - Field classes stay outside this schema slice until their direct-I/O story is
   audited separately.
 
