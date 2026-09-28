@@ -1,0 +1,67 @@
+[
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-b-env-b/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "prefix": "/tmp/gwexpy-v025-b-env-b",
+      "python": "3.12.12"
+    },
+    "controller_elapsed_ns": 2769851802,
+    "sample": {
+      "counters": {},
+      "cpu_ns": 263670476,
+      "fingerprint": {
+        "class": "gwexpy.timeseries.timeseries.TimeSeries",
+        "dt": "<Quantity 0.1 s>",
+        "epoch": "<Time object: scale='utc' format='gps' value=0.0>",
+        "name": "channel_1",
+        "sample_rate": "<Quantity 10. Hz>",
+        "t0": "<Quantity 0. s>",
+        "times": {
+          "unit": "s",
+          "values": {
+            "dtype": "<f8",
+            "selected": [
+              "0.0",
+              "0.1"
+            ],
+            "sha256": "dc5d8ca6769d45f247e793baa229054a7604d96280472306d23f3a233a2472d2",
+            "shape": [
+              2
+            ]
+          }
+        },
+        "unit": "",
+        "values": {
+          "dtype": "<i2",
+          "selected": [
+            "1000",
+            "2000"
+          ],
+          "sha256": "e5d38d33907da9af77186861f11c4624b5f131b05d2f953fd69ae05c7a2c0939",
+          "shape": [
+            2
+          ]
+        }
+      },
+      "fixture_counts": {},
+      "logs": [],
+      "logs_recorded": true,
+      "outcome": "return",
+      "wall_ns": 267006453,
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        },
+        {
+          "category": "scipy.io.wavfile.WavFileWarning",
+          "message": "Reached EOF prematurely; finished at 53 bytes, expected 56 bytes from header."
+        }
+      ],
+      "warnings_recorded": true
+    },
+    "stderr": ""
+  }
+]

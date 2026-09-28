@@ -1,0 +1,129 @@
+{
+  "baseline": "candidate-v7",
+  "cases": {
+    "invalid_text_at_chunk_boundary_outside_window": {
+      "column": "outTemp",
+      "fixture_sha256": "838503ccaa03d5bd9791bba02c9dcb60e9b3f885c4fecc5e82500ceb5ddfdd8a",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 4,
+          "outcome": "return",
+          "t0_gps": 1384185218.0,
+          "times_gps": [
+            1384185218.0,
+            1384185518.0,
+            1384185818.0,
+            1384186118.0
+          ],
+          "values": [
+            15.555555555555555,
+            16.11111111111111,
+            16.666666666666668,
+            17.22222222222222
+          ],
+          "warnings": [
+            {
+              "category": "UserWarning",
+              "message": "SDB column 'outTemp': 1 non-numeric value(s) could not be parsed and were set to NaN."
+            }
+          ]
+        }
+      },
+      "storage_class_counts": {
+        "null": 2,
+        "real": 3,
+        "text": 595
+      },
+      "window_unix": {
+        "end": 1700151200,
+        "start": 1700150000
+      }
+    },
+    "mixed_text_real_null_near_chunk_boundary": {
+      "column": "outTemp",
+      "fixture_sha256": "d9ac66f6507162b34fe7f625ae710c29d12944ae40e308ee43b34401d1f62789",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 6,
+          "outcome": "return",
+          "t0_gps": 1384111418.0,
+          "times_gps": [
+            1384111418.0,
+            1384111718.0,
+            1384112018.0,
+            1384112318.0,
+            1384112618.0,
+            1384112918.0
+          ],
+          "values": [
+            23.333333333333332,
+            37.916666666666664,
+            "NaN",
+            25.0,
+            25.555555555555554,
+            26.11111111111111
+          ],
+          "warnings": []
+        }
+      },
+      "storage_class_counts": {
+        "null": 3,
+        "real": 3,
+        "text": 594
+      },
+      "window_unix": {
+        "end": 1700078000,
+        "start": 1700076200
+      }
+    },
+    "trailing_newline_integer_text_at_chunk_boundary": {
+      "column": "outTemp",
+      "fixture_sha256": "6382b82372baedeb0006353d2477ce06a27c67586b679e6978382d0744741174",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 5,
+          "outcome": "return",
+          "t0_gps": 1384111118.0,
+          "times_gps": [
+            1384111118.0,
+            1384111418.0,
+            1384111718.0,
+            1384112018.0,
+            1384112318.0
+          ],
+          "values": [
+            22.77777777777778,
+            23.333333333333332,
+            16.11111111111111,
+            "NaN",
+            25.0
+          ],
+          "warnings": []
+        }
+      },
+      "storage_class_counts": {
+        "null": 2,
+        "real": 1,
+        "text": 597
+      },
+      "window_unix": {
+        "end": 1700077400,
+        "start": 1700075900
+      }
+    }
+  },
+  "fixture_manifest_sha256": "4992086e5d267dcd52e0b00977d21cc5b65f3f8d92f4fdf78d1c6581b3f882f9",
+  "gwexpy_module_path": "/tmp/gwexpy-v025-sdb-candidate-v7-installed/gwexpy/__init__.py",
+  "installed_sdb_path": "/tmp/gwexpy-v025-sdb-candidate-v7-installed/gwexpy/timeseries/io/sdb.py",
+  "installed_sdb_sha256": "0358f7924241c105ac39f94eaa177d647fa885b768451632ea56b4fed4a628a0",
+  "installed_sdb_sha256_expected": "0358f7924241c105ac39f94eaa177d647fa885b768451632ea56b4fed4a628a0",
+  "numpy": "1.26.4",
+  "platform": "Linux-6.17.0-1032-oem-x86_64-with-glibc2.39",
+  "python": "3.12.12",
+  "schema": 1,
+  "source_sha": "74cba639fb71234a1e7f326a597557488d39db5c",
+  "wheel_sha256": "692b8c48a7f8439b2a5d82cf0cb9c1e262711fbce7822c7ca590c230afab65c0"
+}

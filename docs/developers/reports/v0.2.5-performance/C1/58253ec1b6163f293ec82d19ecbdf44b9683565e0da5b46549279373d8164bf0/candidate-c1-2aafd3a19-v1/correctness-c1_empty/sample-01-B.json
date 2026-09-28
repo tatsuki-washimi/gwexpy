@@ -1,0 +1,25 @@
+{
+  "audit": {
+    "executable": "/tmp/gwexpy-v025-c1-env/bin/python",
+    "gwexpy_path": "/tmp/gwexpy-v025-c1-env/lib/python3.12/site-packages/gwexpy/__init__.py",
+    "gwexpy_version": "0.2.5",
+    "prefix": "/tmp/gwexpy-v025-c1-env",
+    "python": "3.12.12"
+  },
+  "controller_elapsed_ns": 2474721472,
+  "sample": {
+    "counters": {},
+    "error_message": "no csv files provided",
+    "error_type": "builtins.ValueError",
+    "outcome": "error",
+    "traceback": "Traceback (most recent call last):\n  File \"/tmp/gwexpy-v025-c1-frozen-harness/benchmarks/io/run.py\", line 442, in _worker\n    result = _scenario(\n             ^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-c1-frozen-harness/benchmarks/io/run.py\", line 220, in _scenario\n    return reader([])\n           ^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-c1-env/lib/python3.12/site-packages/gwexpy/timeseries/io/csv_enhanced.py\", line 511, in read_timeseriesdict_csv\n    merged = read_multi_dict(\n             ^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-c1-env/lib/python3.12/site-packages/gwexpy/timeseries/io/_multi.py\", line 201, in read_multi_dict\n    raise ValueError(f\"no {format_name} files provided\")\nValueError: no csv files provided\n",
+    "warnings": [
+      {
+        "category": "builtins.DeprecationWarning",
+        "message": "Compatibility support for python2 has been dropped"
+      }
+    ],
+    "warnings_recorded": true
+  },
+  "stderr": ""
+}

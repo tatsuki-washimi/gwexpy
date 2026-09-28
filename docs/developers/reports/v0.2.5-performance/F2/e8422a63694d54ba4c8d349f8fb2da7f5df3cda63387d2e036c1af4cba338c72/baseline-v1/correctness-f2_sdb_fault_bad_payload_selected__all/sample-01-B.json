@@ -1,0 +1,152 @@
+{
+  "audit": {
+    "executable": "/tmp/gwexpy-v025-b-env-b/bin/python",
+    "gwexpy_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+    "gwexpy_version": "0.2.5",
+    "prefix": "/tmp/gwexpy-v025-b-env-b",
+    "python": "3.12.12"
+  },
+  "controller_elapsed_ns": 2996328817,
+  "sample": {
+    "counters": {},
+    "cpu_ns": 295437043,
+    "fingerprint": {
+      "attrs": "None",
+      "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+      "members": {
+        "barometer": {
+          "class": "gwexpy.timeseries.timeseries.TimeSeries",
+          "dt": "<Quantity 300. s>",
+          "epoch": "<Time object: scale='utc' format='gps' value=1384035218.0>",
+          "name": "barometer",
+          "sample_rate": "<Quantity 0.00333333 Hz>",
+          "t0": "<Quantity 1.38403522e+09 s>",
+          "times": {
+            "unit": "s",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "1384035218.0",
+                "1384649618.0",
+                "1385263718.0"
+              ],
+              "sha256": "8243c8ae6e41a77a3df3600e6edae120243f7916eeff71c6f7b6472b4c7ec824",
+              "shape": [
+                4096
+              ]
+            }
+          },
+          "unit": "hPa",
+          "values": {
+            "dtype": "<f8",
+            "selected": [
+              "982.0531000000001",
+              "984.762212",
+              "983.746295"
+            ],
+            "sha256": "2e446da638917094f2a9ce7e3d6900a4daa701f3f9ca7593bd936edfb65278ed",
+            "shape": [
+              4096
+            ]
+          }
+        },
+        "outHumidity": {
+          "class": "gwexpy.timeseries.timeseries.TimeSeries",
+          "dt": "<Quantity 300. s>",
+          "epoch": "<Time object: scale='utc' format='gps' value=1384035218.0>",
+          "name": "outHumidity",
+          "sample_rate": "<Quantity 0.00333333 Hz>",
+          "t0": "<Quantity 1.38403522e+09 s>",
+          "times": {
+            "unit": "s",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "1384035218.0",
+                "1384649618.0",
+                "1385263718.0"
+              ],
+              "sha256": "8243c8ae6e41a77a3df3600e6edae120243f7916eeff71c6f7b6472b4c7ec824",
+              "shape": [
+                4096
+              ]
+            }
+          },
+          "unit": "%",
+          "values": {
+            "dtype": "<f8",
+            "selected": [
+              "40.0",
+              "48.0",
+              "55.0"
+            ],
+            "sha256": "7a168c021b472b452b01072c562ab68cd4c4a584d43115bf8cc311caa406e2e0",
+            "shape": [
+              4096
+            ]
+          }
+        },
+        "outTemp": {
+          "class": "gwexpy.timeseries.timeseries.TimeSeries",
+          "dt": "<Quantity 300. s>",
+          "epoch": "<Time object: scale='utc' format='gps' value=1384035218.0>",
+          "name": "outTemp",
+          "sample_rate": "<Quantity 0.00333333 Hz>",
+          "t0": "<Quantity 1.38403522e+09 s>",
+          "times": {
+            "unit": "s",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "1384035218.0",
+                "1384649618.0",
+                "1385263718.0"
+              ],
+              "sha256": "8243c8ae6e41a77a3df3600e6edae120243f7916eeff71c6f7b6472b4c7ec824",
+              "shape": [
+                4096
+              ]
+            }
+          },
+          "unit": "deg_C",
+          "values": {
+            "dtype": "<f8",
+            "selected": [
+              "15.555555555555555",
+              "28.333333333333332",
+              "nan"
+            ],
+            "sha256": "f9ca37ab230aaefd6da10127a95f8d2d7aed23c0a9d04229ac4e30c267f50653",
+            "shape": [
+              4096
+            ]
+          }
+        }
+      },
+      "order": [
+        "outTemp",
+        "outHumidity",
+        "barometer"
+      ]
+    },
+    "fixture_counts": {
+      "input_rows": 4096
+    },
+    "logs": [],
+    "logs_recorded": true,
+    "outcome": "return",
+    "wall_ns": 297881599,
+    "warnings": [
+      {
+        "category": "builtins.DeprecationWarning",
+        "message": "Compatibility support for python2 has been dropped"
+      },
+      {
+        "category": "builtins.UserWarning",
+        "message": "SDB column 'outTemp': 1 non-numeric value(s) could not be parsed and were set to NaN."
+      }
+    ],
+    "warnings_recorded": true
+  },
+  "stderr": ""
+}

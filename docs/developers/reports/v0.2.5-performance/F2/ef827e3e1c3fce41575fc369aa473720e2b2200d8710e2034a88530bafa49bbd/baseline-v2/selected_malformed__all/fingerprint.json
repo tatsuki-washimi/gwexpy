@@ -1,0 +1,369 @@
+{
+  "A": {
+    "events": {
+      "mutation": "selected_malformed",
+      "reader_sql_before_trigger": [
+        "PRAGMA table_info(\"archive\")",
+        "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+        "PRAGMA table_info(\"archive\")",
+        "PRAGMA table_list(\"archive\")",
+        "PRAGMA table_info(\"archive\")"
+      ],
+      "row_after": [
+        1700000000,
+        "not-a-number",
+        "40",
+        1
+      ],
+      "row_before": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "schema_after": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "schema_before": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "selection": "all",
+      "trigger_sql": "SELECT \"dateTime\", \"outTemp\", \"outHumidity\", \"barometer\" FROM \"archive\" ORDER BY \"rowid\"",
+      "triggered": true,
+      "wal_mode": "wal",
+      "writer_committed": true,
+      "writer_parameters": [
+        "not-a-number"
+      ],
+      "writer_sql": [
+        "BEGIN IMMEDIATE",
+        "UPDATE archive SET outTemp = ? WHERE rowid = 1",
+        "COMMIT"
+      ]
+    },
+    "fingerprint": {
+      "attrs": "None",
+      "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+      "members": {
+        "barometer": {
+          "class": "gwexpy.timeseries.timeseries.TimeSeries",
+          "dt": "<Quantity 300. s>",
+          "epoch": "<Time object: scale='utc' format='gps' value=1384035218.0>",
+          "name": "barometer",
+          "sample_rate": "<Quantity 0.00333333 Hz>",
+          "t0": "<Quantity 1.38403522e+09 s>",
+          "times": {
+            "unit": "s",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "1384035218.0",
+                "1384044818.0",
+                "1384054118.0"
+              ],
+              "sha256": "9a5daa6c685135b563cb765aa868a01b58dc78289a3581d77de9f93233ebe0b4",
+              "shape": [
+                64
+              ]
+            }
+          },
+          "unit": "hPa",
+          "values": {
+            "dtype": "<f8",
+            "selected": [
+              "982.0531000000001",
+              "982.730378",
+              "983.069017"
+            ],
+            "sha256": "b6c535514c51bb99824480855371772bf2e7ea457f94b03cb45b10d9076a776d",
+            "shape": [
+              64
+            ]
+          }
+        },
+        "outHumidity": {
+          "class": "gwexpy.timeseries.timeseries.TimeSeries",
+          "dt": "<Quantity 300. s>",
+          "epoch": "<Time object: scale='utc' format='gps' value=1384035218.0>",
+          "name": "outHumidity",
+          "sample_rate": "<Quantity 0.00333333 Hz>",
+          "t0": "<Quantity 1.38403522e+09 s>",
+          "times": {
+            "unit": "s",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "1384035218.0",
+                "1384044818.0",
+                "1384054118.0"
+              ],
+              "sha256": "9a5daa6c685135b563cb765aa868a01b58dc78289a3581d77de9f93233ebe0b4",
+              "shape": [
+                64
+              ]
+            }
+          },
+          "unit": "%",
+          "values": {
+            "dtype": "<f8",
+            "selected": [
+              "40.0",
+              "72.0",
+              "63.0"
+            ],
+            "sha256": "c6472d6e71ccf58baf78515ff3a1f80bff839d8869107d6e5509194fb2f62c96",
+            "shape": [
+              64
+            ]
+          }
+        },
+        "outTemp": {
+          "class": "gwexpy.timeseries.timeseries.TimeSeries",
+          "dt": "<Quantity 300. s>",
+          "epoch": "<Time object: scale='utc' format='gps' value=1384035218.0>",
+          "name": "outTemp",
+          "sample_rate": "<Quantity 0.00333333 Hz>",
+          "t0": "<Quantity 1.38403522e+09 s>",
+          "times": {
+            "unit": "s",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "1384035218.0",
+                "1384044818.0",
+                "1384054118.0"
+              ],
+              "sha256": "9a5daa6c685135b563cb765aa868a01b58dc78289a3581d77de9f93233ebe0b4",
+              "shape": [
+                64
+              ]
+            }
+          },
+          "unit": "deg_C",
+          "values": {
+            "dtype": "<f8",
+            "selected": [
+              "nan",
+              "19.444444444444443",
+              "22.77777777777778"
+            ],
+            "sha256": "0f0c81e6ae2c6743ef3feacbdc4af02f187b3a1fbf36440fb7821e04d629f3c0",
+            "shape": [
+              64
+            ]
+          }
+        }
+      },
+      "order": [
+        "outTemp",
+        "outHumidity",
+        "barometer"
+      ]
+    },
+    "logs": [],
+    "outcome": "return",
+    "warnings": [
+      {
+        "category": "builtins.DeprecationWarning",
+        "message": "Compatibility support for python2 has been dropped"
+      },
+      {
+        "category": "builtins.UserWarning",
+        "message": "SDB column 'outTemp': 1 non-numeric value(s) could not be parsed and were set to NaN."
+      }
+    ]
+  },
+  "B": {
+    "events": {
+      "mutation": "selected_malformed",
+      "reader_sql_before_trigger": [
+        "PRAGMA table_info(\"archive\")",
+        "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+        "PRAGMA table_info(\"archive\")",
+        "PRAGMA table_list(\"archive\")",
+        "PRAGMA table_info(\"archive\")"
+      ],
+      "row_after": [
+        1700000000,
+        "not-a-number",
+        "40",
+        1
+      ],
+      "row_before": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "schema_after": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "schema_before": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "selection": "all",
+      "trigger_sql": "SELECT \"dateTime\", \"outTemp\", \"outHumidity\", \"barometer\" FROM \"archive\" ORDER BY \"rowid\"",
+      "triggered": true,
+      "wal_mode": "wal",
+      "writer_committed": true,
+      "writer_parameters": [
+        "not-a-number"
+      ],
+      "writer_sql": [
+        "BEGIN IMMEDIATE",
+        "UPDATE archive SET outTemp = ? WHERE rowid = 1",
+        "COMMIT"
+      ]
+    },
+    "fingerprint": {
+      "attrs": "None",
+      "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+      "members": {
+        "barometer": {
+          "class": "gwexpy.timeseries.timeseries.TimeSeries",
+          "dt": "<Quantity 300. s>",
+          "epoch": "<Time object: scale='utc' format='gps' value=1384035218.0>",
+          "name": "barometer",
+          "sample_rate": "<Quantity 0.00333333 Hz>",
+          "t0": "<Quantity 1.38403522e+09 s>",
+          "times": {
+            "unit": "s",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "1384035218.0",
+                "1384044818.0",
+                "1384054118.0"
+              ],
+              "sha256": "9a5daa6c685135b563cb765aa868a01b58dc78289a3581d77de9f93233ebe0b4",
+              "shape": [
+                64
+              ]
+            }
+          },
+          "unit": "hPa",
+          "values": {
+            "dtype": "<f8",
+            "selected": [
+              "982.0531000000001",
+              "982.730378",
+              "983.069017"
+            ],
+            "sha256": "b6c535514c51bb99824480855371772bf2e7ea457f94b03cb45b10d9076a776d",
+            "shape": [
+              64
+            ]
+          }
+        },
+        "outHumidity": {
+          "class": "gwexpy.timeseries.timeseries.TimeSeries",
+          "dt": "<Quantity 300. s>",
+          "epoch": "<Time object: scale='utc' format='gps' value=1384035218.0>",
+          "name": "outHumidity",
+          "sample_rate": "<Quantity 0.00333333 Hz>",
+          "t0": "<Quantity 1.38403522e+09 s>",
+          "times": {
+            "unit": "s",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "1384035218.0",
+                "1384044818.0",
+                "1384054118.0"
+              ],
+              "sha256": "9a5daa6c685135b563cb765aa868a01b58dc78289a3581d77de9f93233ebe0b4",
+              "shape": [
+                64
+              ]
+            }
+          },
+          "unit": "%",
+          "values": {
+            "dtype": "<f8",
+            "selected": [
+              "40.0",
+              "72.0",
+              "63.0"
+            ],
+            "sha256": "c6472d6e71ccf58baf78515ff3a1f80bff839d8869107d6e5509194fb2f62c96",
+            "shape": [
+              64
+            ]
+          }
+        },
+        "outTemp": {
+          "class": "gwexpy.timeseries.timeseries.TimeSeries",
+          "dt": "<Quantity 300. s>",
+          "epoch": "<Time object: scale='utc' format='gps' value=1384035218.0>",
+          "name": "outTemp",
+          "sample_rate": "<Quantity 0.00333333 Hz>",
+          "t0": "<Quantity 1.38403522e+09 s>",
+          "times": {
+            "unit": "s",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "1384035218.0",
+                "1384044818.0",
+                "1384054118.0"
+              ],
+              "sha256": "9a5daa6c685135b563cb765aa868a01b58dc78289a3581d77de9f93233ebe0b4",
+              "shape": [
+                64
+              ]
+            }
+          },
+          "unit": "deg_C",
+          "values": {
+            "dtype": "<f8",
+            "selected": [
+              "nan",
+              "19.444444444444443",
+              "22.77777777777778"
+            ],
+            "sha256": "0f0c81e6ae2c6743ef3feacbdc4af02f187b3a1fbf36440fb7821e04d629f3c0",
+            "shape": [
+              64
+            ]
+          }
+        }
+      },
+      "order": [
+        "outTemp",
+        "outHumidity",
+        "barometer"
+      ]
+    },
+    "logs": [],
+    "outcome": "return",
+    "warnings": [
+      {
+        "category": "builtins.DeprecationWarning",
+        "message": "Compatibility support for python2 has been dropped"
+      },
+      {
+        "category": "builtins.UserWarning",
+        "message": "SDB column 'outTemp': 1 non-numeric value(s) could not be parsed and were set to NaN."
+      }
+    ]
+  },
+  "equal": true,
+  "stable_A": true,
+  "stable_B": true
+}

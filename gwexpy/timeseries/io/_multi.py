@@ -18,6 +18,8 @@ added to the result.
 
 from __future__ import annotations
 
+from math import floor
+
 import numpy as np
 
 __all__ = [
@@ -75,6 +77,96 @@ def reject_multi_source(source, format_name):
         )
 
 
+def _regular_placement_plan(series, gap, pad):
+    """Plan GWpy-compatible placements for simple, regular TimeSeries.
+
+    Return ``None`` for cases that need the original append semantics.  In
+    particular, an explicit/cached xindex needs GWpy's index update rules.
+    """
+    from .. import TimeSeries
+
+    first = series[0]
+    if (
+        (gap == "pad" and not np.isscalar(pad))
+        or type(first) is not TimeSeries
+        or any(
+            type(ts) is not TimeSeries
+            or getattr(ts, "_xindex", None) is not None
+            or not ts.size
+            or ts.xunit != first.xunit
+            for ts in series
+        )
+    ):
+        return None
+
+    try:
+        origin = first.xspan[0]
+        step = first.dx.value
+        if not np.isfinite(step) or step <= 0:
+            return None
+        length = len(first)
+        placements = [(first, 0, 0)]
+        for ts in series[1:]:
+            # An append keeps the first series' unit, dtype and cadence.
+            first.is_compatible(ts)
+            other_span = ts.xspan
+            end = origin + length * step
+            contiguous = abs(float(end - other_span[0])) < 2**-18
+            if not contiguous:
+                # The anti-contiguous check in GWpy also leads to this branch;
+                # only a positive pad or gap='ignore' can complete normally.
+                if gap == "pad":
+                    padding = floor((other_span[0] - end) / step + 0.5)
+                    if padding < 1:
+                        return None
+                elif gap == "ignore":
+                    padding = 0
+                else:
+                    return None
+            else:
+                padding = 0
+            placements.append((ts, length + padding, padding))
+            length += padding + len(ts)
+    except (AttributeError, TypeError, ValueError, ZeroDivisionError, OverflowError):
+        return None
+    return length, placements
+
+
+def _place_segment(destination, start, source):
+    """Copy one input segment into its final slot, converting units as GWpy does."""
+    stop = start + len(source)
+    if source.unit == destination.unit:
+        destination.value[start:stop] = source.value
+    else:
+        destination[start:stop] = source
+
+
+def _merge_series(series, gap, pad):
+    """Merge regular segments with one placement each; defer other cases to GWpy."""
+    if len(series) == 1:
+        return series[0]
+
+    plan = _regular_placement_plan(series, gap, pad)
+    if plan is None:
+        merged = series[0]
+        for ts in series[1:]:
+            merged = merged.append(ts, inplace=False, gap=gap, pad=pad)
+        return merged
+
+    total, placements = plan
+    first = series[0]
+    merged = np.empty(total, dtype=first.dtype).view(type(first))
+    merged.__array_finalize__(first)
+    for ts, start, padding in placements:
+        if padding:
+            # Keep GWpy's cast (including integer/NaN warnings) exactly.
+            merged.value[start - padding : start] = (np.ones(padding) * pad).astype(
+                first.dtype
+            )
+        _place_segment(merged, start, ts)
+    return merged
+
+
 def read_multi_dict(reader_func, sources, format_name, *, pad=None, gap=None, **kwargs):
     """Read several single-file sources and merge them into one dict.
 
@@ -127,15 +219,15 @@ def read_multi_dict(reader_func, sources, format_name, *, pad=None, gap=None, **
 
     out = TimeSeriesDict()
     for key in order:
-        series = sorted(segments[key], key=lambda ts: float(ts.t0.value))
-        merged = series[0]
-        for ts in series[1:]:
-            try:
-                merged = merged.append(ts, inplace=False, gap=gap, pad=pad)
-            except ValueError as exc:
-                raise ValueError(
-                    f"failed to merge channel '{key}' across {format_name} files: {exc}"
-                ) from exc
+        # No later channel needs these parts; release the input list as soon as
+        # this channel has its final output allocation.
+        series = sorted(segments.pop(key), key=lambda ts: float(ts.t0.value))
+        try:
+            merged = _merge_series(series, gap, pad)
+        except ValueError as exc:
+            raise ValueError(
+                f"failed to merge channel '{key}' across {format_name} files: {exc}"
+            ) from exc
         out[key] = merged
 
     # Propagate provenance from the first file (if any) so merged reads

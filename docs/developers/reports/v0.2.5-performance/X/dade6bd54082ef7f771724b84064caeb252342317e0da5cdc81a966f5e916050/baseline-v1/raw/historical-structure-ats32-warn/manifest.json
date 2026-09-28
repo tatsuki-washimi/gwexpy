@@ -1,0 +1,172 @@
+{
+  "arms": {
+    "A": {
+      "audit": {
+        "distributions": {
+          "astropy": "7.2.0",
+          "gwpy": "4.0.1",
+          "netCDF4": "1.7.4",
+          "numpy": "1.26.4",
+          "xarray": "2026.2.0"
+        },
+        "gwexpy_path": "/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy",
+        "gwexpy_version": "0.2.4",
+        "install_mode": "wheel-no-deps",
+        "prefix": "/tmp/gwexpy-v025-b-env-a",
+        "python": "3.12.12",
+        "wheel_files_verified": 369,
+        "wheel_sha256": "34afe8188c753cd9da0b182a5d2a88cce2f7ec36633730fe0bee15e2506df56d"
+      },
+      "source_sha": "522e52a082925da4dd37966d82a7616bdd2a5248",
+      "wheel_sha256": "34afe8188c753cd9da0b182a5d2a88cce2f7ec36633730fe0bee15e2506df56d"
+    },
+    "B": {
+      "audit": {
+        "distributions": {
+          "astropy": "7.2.0",
+          "gwpy": "4.0.1",
+          "netCDF4": "1.7.4",
+          "numpy": "1.26.4",
+          "xarray": "2026.2.0"
+        },
+        "gwexpy_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy",
+        "gwexpy_version": "0.2.5",
+        "install_mode": "wheel-no-deps",
+        "prefix": "/tmp/gwexpy-v025-b-env-b",
+        "python": "3.12.12",
+        "wheel_files_verified": 369,
+        "wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498"
+      },
+      "source_sha": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+      "wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498"
+    }
+  },
+  "baseline_arm_oracle_sha256": "57fdb80b33f10a41d7ea6ac6ac5e55891e6ae967421764470f0416849b041729",
+  "cpu_summary": {},
+  "cross_arm_parity": true,
+  "fixture": {
+    "file_sha256": "cb83bc9be6933dbc1eb23fb67eca631e6be5d4b126095e42a630eb6f8602e81f",
+    "manifest_entry": {
+      "bytes": 16778240,
+      "lsb_millivolt_per_count": 123.456,
+      "name": "ats_int32.ats",
+      "raw_dtype": "<i4",
+      "raw_values_sha256": "51b62a37c568f840f0a8dfe3f33ff1daf0152992cd0012d7a3d7002aae904de1",
+      "samples": 4194304,
+      "sha256": "cb83bc9be6933dbc1eb23fb67eca631e6be5d4b126095e42a630eb6f8602e81f"
+    },
+    "manifest_sha256": "dade6bd54082ef7f771724b84064caeb252342317e0da5cdc81a966f5e916050",
+    "path": "/tmp/gwexpy-v025-bx-fixtures-v1/ats_int32.ats"
+  },
+  "fixture_generator_sha256": "0a49b9c57ebfa671f749f5903ed65a30e1913c06eb01d1f5664054b85f01c09d",
+  "harness_sha256": "6c5cfca1239616a143237272fea9e679fa715e4e7e5f3118ab9f1a0ed3771eed",
+  "historical_public_delta_reason": null,
+  "historical_public_oracle_sha256": null,
+  "mode": "structure",
+  "numpy_seterr": "warn",
+  "order": [
+    "A",
+    "B",
+    "B",
+    "A",
+    "B",
+    "A",
+    "A",
+    "B",
+    "A",
+    "B"
+  ],
+  "phase": "historical",
+  "pre_x_integrated_sha": "7f13c4423addab4f92eafc2740da05faa4a444fa",
+  "pss_definition": null,
+  "pss_sample_ms": null,
+  "public_fingerprints_by_arm": {
+    "A": {
+      "outcome": {
+        "channel": "Metronix_ADU08E_007_Ex_MFS06_0019",
+        "dt_float_hex": "0x1.0000000000000p-8",
+        "dtype": "<f8",
+        "first_values": [
+          "-0x1.f9acffa7eb6bfp+11",
+          "-0x1.f969d6adf71ecp+11",
+          "-0x1.f926adb402d17p+11",
+          "-0x1.f8e384ba0e843p+11"
+        ],
+        "kind": "return",
+        "last_values": [
+          "0x1.f8a05bc01a36fp+11",
+          "0x1.f8e384ba0e843p+11",
+          "0x1.f926adb402d17p+11",
+          "0x1.f969d6adf71ecp+11"
+        ],
+        "name": "Metronix_ADU08E_007_Ex_MFS06_0019",
+        "provenance": {
+          "epoch_source": "ats_header",
+          "format": "ats",
+          "timezone": null,
+          "unit_source": "ats_header"
+        },
+        "shape": [
+          4194304
+        ],
+        "t0_float_hex": "0x1.32234a4800000p+30",
+        "unit": "V",
+        "values_encoding": "native_bytes_c_order",
+        "values_sha256": "1e12ebef43798bcb787a05bd78087957934e2dce5f4716d8aed675e3fc7ea5f9"
+      },
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ]
+    },
+    "B": {
+      "outcome": {
+        "channel": "Metronix_ADU08E_007_Ex_MFS06_0019",
+        "dt_float_hex": "0x1.0000000000000p-8",
+        "dtype": "<f8",
+        "first_values": [
+          "-0x1.f9acffa7eb6bfp+11",
+          "-0x1.f969d6adf71ecp+11",
+          "-0x1.f926adb402d17p+11",
+          "-0x1.f8e384ba0e843p+11"
+        ],
+        "kind": "return",
+        "last_values": [
+          "0x1.f8a05bc01a36fp+11",
+          "0x1.f8e384ba0e843p+11",
+          "0x1.f926adb402d17p+11",
+          "0x1.f969d6adf71ecp+11"
+        ],
+        "name": "Metronix_ADU08E_007_Ex_MFS06_0019",
+        "provenance": {
+          "epoch_source": "ats_header",
+          "format": "ats",
+          "timezone": null,
+          "unit_source": "ats_header"
+        },
+        "shape": [
+          4194304
+        ],
+        "t0_float_hex": "0x1.32234a4800000p+30",
+        "unit": "V",
+        "values_encoding": "native_bytes_c_order",
+        "values_sha256": "1e12ebef43798bcb787a05bd78087957934e2dce5f4716d8aed675e3fc7ea5f9"
+      },
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ]
+    }
+  },
+  "public_parity": true,
+  "samples_per_arm": 5,
+  "scenario": "ats32",
+  "schema": "gwexpy-v025-bx-capture-v3",
+  "status": "RAW_UNQUALIFIED",
+  "summary": {},
+  "within_arm_parity": true
+}

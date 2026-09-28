@@ -1,0 +1,2882 @@
+{
+  "audit": {
+    "gwexpy_path": "/tmp/gwexpy-v025-f4-candidate-env-v2/lib/python3.12/site-packages/gwexpy/__init__.py",
+    "gwexpy_version": "0.2.5",
+    "gwpy_version": "4.0.1",
+    "python": "3.12.12"
+  },
+  "controller_elapsed_ns": 3061966364,
+  "memory": {
+    "cmdline_by_pid": {
+      "1732608": "/tmp/gwexpy-v025-f4-candidate-env-v2/bin/python -I /home/washimi/work/gwexpy-v025-b-f4-gwf/benchmarks/io/f4_gwf_measure.py _worker --wheel /tmp/gwexpy-v025-f4-candidate-wheels-v2/gwexpy-0.2.5-py3-none-any.whl --version 0.2.5 --fixtures-small /tmp/gwexpy-v025-f4-fixtures-b1 --fixtures-stress /tmp/gwexpy-v025-f4-stress --fixtures-pss /tmp/gwexpy-v025-f4-pss64 --scenario stress64_serial --mode memory ",
+      "1732714": null,
+      "1732721": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --version ",
+      "1732729": null,
+      "1732734": "/bin/sh -c PKG_CONFIG_ALLOW_SYSTEM_LIBS=1 pkg-config --libs-only-L  ",
+      "1732735": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --libs-only-L ",
+      "1732736": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --libs-only-L ",
+      "1732737": null,
+      "1732738": null,
+      "1732745": null,
+      "1732752": null,
+      "1732753": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --version ",
+      "1732760": null,
+      "1732766": "sh -c -- pkg-config --exists fftw3 2>/dev/null ",
+      "1732767": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --exists fftw3 ",
+      "1732768": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --exists fftw3 ",
+      "1732769": null,
+      "1732770": null,
+      "1732778": null,
+      "1732780": "/bin/sh -c PKG_CONFIG_ALLOW_SYSTEM_LIBS=1 pkg-config --libs-only-L fftw3 ",
+      "1732781": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --libs-only-L fftw3 ",
+      "1732782": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --libs-only-L fftw3 ",
+      "1732786": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --libs-only-L fftw3 ",
+      "1732794": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --version ",
+      "1732795": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --version ",
+      "1732799": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --version ",
+      "1732800": "dirname /home/washimi/miniforge3/envs/main/bin/pkg-config ",
+      "1732807": "sh -c -- pkg-config --exists fftw3f 2>/dev/null ",
+      "1732808": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --exists fftw3f ",
+      "1732816": null,
+      "1732821": "/bin/sh -c PKG_CONFIG_ALLOW_SYSTEM_LIBS=1 pkg-config --libs-only-L fftw3f ",
+      "1732822": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --libs-only-L fftw3f ",
+      "1732823": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --libs-only-L fftw3f ",
+      "1732824": null,
+      "1732825": null,
+      "1732831": null,
+      "1732835": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --version ",
+      "1732836": null,
+      "1732840": null,
+      "1732841": null,
+      "1732848": "/bin/sh -c PKG_CONFIG_ALLOW_SYSTEM_LIBS=1 pkg-config --libs-only-L  ",
+      "1732849": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --libs-only-L ",
+      "1732863": "/usr/bin/gcc -Wl,-t -o /tmp/tmpfy8b9487 -lmkl_rt ",
+      "1732864": "/usr/libexec/gcc/x86_64-linux-gnu/13/collect2 -plugin /usr/libexec/gcc/x86_64-linux-gnu/13/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-linux-gnu/13/lto-wrapper -plugin-opt=-fresolution=/tmp/ccj2vBLz.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o /tmp/tmpfy8b9487 /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/13 -L/usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/13/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/13/../../.. -t -lmkl_rt -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/crtn.o ",
+      "1732865": "/usr/bin/ld -plugin /usr/libexec/gcc/x86_64-linux-gnu/13/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-linux-gnu/13/lto-wrapper -plugin-opt=-fresolution=/tmp/ccj2vBLz.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o /tmp/tmpfy8b9487 /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/13 -L/usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/13/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/13/../../.. -t -lmkl_rt -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/crtn.o ",
+      "1732867": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --version ",
+      "1732868": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --version ",
+      "1732871": null,
+      "1732879": null,
+      "1732880": "/bin/sh -c PKG_CONFIG_ALLOW_SYSTEM_LIBS=1 pkg-config --libs-only-L  ",
+      "1732881": "bash /home/washimi/miniforge3/envs/main/bin/pkg-config --libs-only-L ",
+      "1732882": null,
+      "1732886": null,
+      "1732894": null,
+      "1732901": null
+    },
+    "max_simultaneous_spawn_workers": 0,
+    "observed_spawn_worker_count": 0,
+    "observed_spawn_worker_pids": [],
+    "peak_tree_pss_kib": 441124,
+    "peak_tree_rss_kib": 452660,
+    "sampled_peak_limit": true,
+    "sampling_ms": 10,
+    "trace": [
+      {
+        "monotonic_ns": 594529882563098,
+        "pss_kib_by_pid": {
+          "1732608": 66
+        },
+        "rss_kib_by_pid": {
+          "1732608": 476
+        },
+        "tree_pss_kib": 66,
+        "tree_rss_kib": 476
+      },
+      {
+        "monotonic_ns": 594529893028365,
+        "pss_kib_by_pid": {
+          "1732608": 3416
+        },
+        "rss_kib_by_pid": {
+          "1732608": 9864
+        },
+        "tree_pss_kib": 3416,
+        "tree_rss_kib": 9864
+      },
+      {
+        "monotonic_ns": 594529903559352,
+        "pss_kib_by_pid": {
+          "1732608": 6289
+        },
+        "rss_kib_by_pid": {
+          "1732608": 12820
+        },
+        "tree_pss_kib": 6289,
+        "tree_rss_kib": 12820
+      },
+      {
+        "monotonic_ns": 594529914151822,
+        "pss_kib_by_pid": {
+          "1732608": 9597
+        },
+        "rss_kib_by_pid": {
+          "1732608": 19448
+        },
+        "tree_pss_kib": 9597,
+        "tree_rss_kib": 19448
+      },
+      {
+        "monotonic_ns": 594529924739939,
+        "pss_kib_by_pid": {
+          "1732608": 11412
+        },
+        "rss_kib_by_pid": {
+          "1732608": 21624
+        },
+        "tree_pss_kib": 11412,
+        "tree_rss_kib": 21624
+      },
+      {
+        "monotonic_ns": 594529935338497,
+        "pss_kib_by_pid": {
+          "1732608": 13121
+        },
+        "rss_kib_by_pid": {
+          "1732608": 23568
+        },
+        "tree_pss_kib": 13121,
+        "tree_rss_kib": 23568
+      },
+      {
+        "monotonic_ns": 594529946322357,
+        "pss_kib_by_pid": {
+          "1732608": 14870
+        },
+        "rss_kib_by_pid": {
+          "1732608": 25776
+        },
+        "tree_pss_kib": 14870,
+        "tree_rss_kib": 25776
+      },
+      {
+        "monotonic_ns": 594529957072430,
+        "pss_kib_by_pid": {
+          "1732608": 20991
+        },
+        "rss_kib_by_pid": {
+          "1732608": 31884
+        },
+        "tree_pss_kib": 20991,
+        "tree_rss_kib": 31884
+      },
+      {
+        "monotonic_ns": 594529968701694,
+        "pss_kib_by_pid": {
+          "1732608": 23367
+        },
+        "rss_kib_by_pid": {
+          "1732608": 34260
+        },
+        "tree_pss_kib": 23367,
+        "tree_rss_kib": 34260
+      },
+      {
+        "monotonic_ns": 594529979352058,
+        "pss_kib_by_pid": {
+          "1732608": 24463
+        },
+        "rss_kib_by_pid": {
+          "1732608": 35356
+        },
+        "tree_pss_kib": 24463,
+        "tree_rss_kib": 35356
+      },
+      {
+        "monotonic_ns": 594529990598446,
+        "pss_kib_by_pid": {
+          "1732608": 26163
+        },
+        "rss_kib_by_pid": {
+          "1732608": 37120
+        },
+        "tree_pss_kib": 26163,
+        "tree_rss_kib": 37120
+      },
+      {
+        "monotonic_ns": 594530001650838,
+        "pss_kib_by_pid": {
+          "1732608": 30355
+        },
+        "rss_kib_by_pid": {
+          "1732608": 41312
+        },
+        "tree_pss_kib": 30355,
+        "tree_rss_kib": 41312
+      },
+      {
+        "monotonic_ns": 594530012675242,
+        "pss_kib_by_pid": {
+          "1732608": 31656
+        },
+        "rss_kib_by_pid": {
+          "1732608": 42636
+        },
+        "tree_pss_kib": 31656,
+        "tree_rss_kib": 42636
+      },
+      {
+        "monotonic_ns": 594530023632527,
+        "pss_kib_by_pid": {
+          "1732608": 31780
+        },
+        "rss_kib_by_pid": {
+          "1732608": 42760
+        },
+        "tree_pss_kib": 31780,
+        "tree_rss_kib": 42760
+      },
+      {
+        "monotonic_ns": 594530034636618,
+        "pss_kib_by_pid": {
+          "1732608": 32360
+        },
+        "rss_kib_by_pid": {
+          "1732608": 43340
+        },
+        "tree_pss_kib": 32360,
+        "tree_rss_kib": 43340
+      },
+      {
+        "monotonic_ns": 594530045681462,
+        "pss_kib_by_pid": {
+          "1732608": 34432
+        },
+        "rss_kib_by_pid": {
+          "1732608": 45412
+        },
+        "tree_pss_kib": 34432,
+        "tree_rss_kib": 45412
+      },
+      {
+        "monotonic_ns": 594530056267394,
+        "pss_kib_by_pid": {
+          "1732608": 36868
+        },
+        "rss_kib_by_pid": {
+          "1732608": 47880
+        },
+        "tree_pss_kib": 36868,
+        "tree_rss_kib": 47880
+      },
+      {
+        "monotonic_ns": 594530066757477,
+        "pss_kib_by_pid": {
+          "1732608": 41820
+        },
+        "rss_kib_by_pid": {
+          "1732608": 52896
+        },
+        "tree_pss_kib": 41820,
+        "tree_rss_kib": 52896
+      },
+      {
+        "monotonic_ns": 594530077353691,
+        "pss_kib_by_pid": {
+          "1732608": 44780
+        },
+        "rss_kib_by_pid": {
+          "1732608": 55784
+        },
+        "tree_pss_kib": 44780,
+        "tree_rss_kib": 55784
+      },
+      {
+        "monotonic_ns": 594530088079659,
+        "pss_kib_by_pid": {
+          "1732608": 47196
+        },
+        "rss_kib_by_pid": {
+          "1732608": 58208
+        },
+        "tree_pss_kib": 47196,
+        "tree_rss_kib": 58208
+      },
+      {
+        "monotonic_ns": 594530099394071,
+        "pss_kib_by_pid": {
+          "1732608": 49320
+        },
+        "rss_kib_by_pid": {
+          "1732608": 60296
+        },
+        "tree_pss_kib": 49320,
+        "tree_rss_kib": 60296
+      },
+      {
+        "monotonic_ns": 594530111455077,
+        "pss_kib_by_pid": {
+          "1732608": 50448
+        },
+        "rss_kib_by_pid": {
+          "1732608": 61444
+        },
+        "tree_pss_kib": 50448,
+        "tree_rss_kib": 61444
+      },
+      {
+        "monotonic_ns": 594530122126563,
+        "pss_kib_by_pid": {
+          "1732608": 52084
+        },
+        "rss_kib_by_pid": {
+          "1732608": 63064
+        },
+        "tree_pss_kib": 52084,
+        "tree_rss_kib": 63064
+      },
+      {
+        "monotonic_ns": 594530132907180,
+        "pss_kib_by_pid": {
+          "1732608": 52812
+        },
+        "rss_kib_by_pid": {
+          "1732608": 63888
+        },
+        "tree_pss_kib": 52812,
+        "tree_rss_kib": 63888
+      },
+      {
+        "monotonic_ns": 594530143661485,
+        "pss_kib_by_pid": {
+          "1732608": 53928
+        },
+        "rss_kib_by_pid": {
+          "1732608": 64984
+        },
+        "tree_pss_kib": 53928,
+        "tree_rss_kib": 64984
+      },
+      {
+        "monotonic_ns": 594530154545431,
+        "pss_kib_by_pid": {
+          "1732608": 55232
+        },
+        "rss_kib_by_pid": {
+          "1732608": 66320
+        },
+        "tree_pss_kib": 55232,
+        "tree_rss_kib": 66320
+      },
+      {
+        "monotonic_ns": 594530165244420,
+        "pss_kib_by_pid": {
+          "1732608": 58304
+        },
+        "rss_kib_by_pid": {
+          "1732608": 69424
+        },
+        "tree_pss_kib": 58304,
+        "tree_rss_kib": 69424
+      },
+      {
+        "monotonic_ns": 594530176157423,
+        "pss_kib_by_pid": {
+          "1732608": 65314
+        },
+        "rss_kib_by_pid": {
+          "1732608": 76640
+        },
+        "tree_pss_kib": 65314,
+        "tree_rss_kib": 76640
+      },
+      {
+        "monotonic_ns": 594530186897365,
+        "pss_kib_by_pid": {
+          "1732608": 70854
+        },
+        "rss_kib_by_pid": {
+          "1732608": 82228
+        },
+        "tree_pss_kib": 70854,
+        "tree_rss_kib": 82228
+      },
+      {
+        "monotonic_ns": 594530198161340,
+        "pss_kib_by_pid": {
+          "1732608": 77254
+        },
+        "rss_kib_by_pid": {
+          "1732608": 88808
+        },
+        "tree_pss_kib": 77254,
+        "tree_rss_kib": 88808
+      },
+      {
+        "monotonic_ns": 594530211072257,
+        "pss_kib_by_pid": {
+          "1732608": 80066
+        },
+        "rss_kib_by_pid": {
+          "1732608": 91824
+        },
+        "tree_pss_kib": 80066,
+        "tree_rss_kib": 91824
+      },
+      {
+        "monotonic_ns": 594530224462655,
+        "pss_kib_by_pid": {
+          "1732608": 83126
+        },
+        "rss_kib_by_pid": {
+          "1732608": 94412
+        },
+        "tree_pss_kib": 83126,
+        "tree_rss_kib": 94412
+      },
+      {
+        "monotonic_ns": 594530235630944,
+        "pss_kib_by_pid": {
+          "1732608": 83786
+        },
+        "rss_kib_by_pid": {
+          "1732608": 95016
+        },
+        "tree_pss_kib": 83786,
+        "tree_rss_kib": 95016
+      },
+      {
+        "monotonic_ns": 594530246790942,
+        "pss_kib_by_pid": {
+          "1732608": 84822
+        },
+        "rss_kib_by_pid": {
+          "1732608": 96056
+        },
+        "tree_pss_kib": 84822,
+        "tree_rss_kib": 96056
+      },
+      {
+        "monotonic_ns": 594530257934591,
+        "pss_kib_by_pid": {
+          "1732608": 85602
+        },
+        "rss_kib_by_pid": {
+          "1732608": 96832
+        },
+        "tree_pss_kib": 85602,
+        "tree_rss_kib": 96832
+      },
+      {
+        "monotonic_ns": 594530269093432,
+        "pss_kib_by_pid": {
+          "1732608": 86326
+        },
+        "rss_kib_by_pid": {
+          "1732608": 97556
+        },
+        "tree_pss_kib": 86326,
+        "tree_rss_kib": 97556
+      },
+      {
+        "monotonic_ns": 594530281096232,
+        "pss_kib_by_pid": {
+          "1732608": 86406
+        },
+        "rss_kib_by_pid": {
+          "1732608": 97640
+        },
+        "tree_pss_kib": 86406,
+        "tree_rss_kib": 97640
+      },
+      {
+        "monotonic_ns": 594530293066977,
+        "pss_kib_by_pid": {
+          "1732608": 86470
+        },
+        "rss_kib_by_pid": {
+          "1732608": 97712
+        },
+        "tree_pss_kib": 86470,
+        "tree_rss_kib": 97712
+      },
+      {
+        "monotonic_ns": 594530304108989,
+        "pss_kib_by_pid": {
+          "1732608": 86982
+        },
+        "rss_kib_by_pid": {
+          "1732608": 98420
+        },
+        "tree_pss_kib": 86982,
+        "tree_rss_kib": 98420
+      },
+      {
+        "monotonic_ns": 594530315033884,
+        "pss_kib_by_pid": {
+          "1732608": 88630
+        },
+        "rss_kib_by_pid": {
+          "1732608": 99880
+        },
+        "tree_pss_kib": 88630,
+        "tree_rss_kib": 99880
+      },
+      {
+        "monotonic_ns": 594530326038310,
+        "pss_kib_by_pid": {
+          "1732608": 89854
+        },
+        "rss_kib_by_pid": {
+          "1732608": 101104
+        },
+        "tree_pss_kib": 89854,
+        "tree_rss_kib": 101104
+      },
+      {
+        "monotonic_ns": 594530336931506,
+        "pss_kib_by_pid": {
+          "1732608": 90498
+        },
+        "rss_kib_by_pid": {
+          "1732608": 101780
+        },
+        "tree_pss_kib": 90498,
+        "tree_rss_kib": 101780
+      },
+      {
+        "monotonic_ns": 594530349277145,
+        "pss_kib_by_pid": {
+          "1732608": 92254
+        },
+        "rss_kib_by_pid": {
+          "1732608": 103568
+        },
+        "tree_pss_kib": 92254,
+        "tree_rss_kib": 103568
+      },
+      {
+        "monotonic_ns": 594530361765252,
+        "pss_kib_by_pid": {
+          "1732608": 93490
+        },
+        "rss_kib_by_pid": {
+          "1732608": 104764
+        },
+        "tree_pss_kib": 93490,
+        "tree_rss_kib": 104764
+      },
+      {
+        "monotonic_ns": 594530372925164,
+        "pss_kib_by_pid": {
+          "1732608": 94438
+        },
+        "rss_kib_by_pid": {
+          "1732608": 105684
+        },
+        "tree_pss_kib": 94438,
+        "tree_rss_kib": 105684
+      },
+      {
+        "monotonic_ns": 594530384049165,
+        "pss_kib_by_pid": {
+          "1732608": 94726
+        },
+        "rss_kib_by_pid": {
+          "1732608": 106088
+        },
+        "tree_pss_kib": 94726,
+        "tree_rss_kib": 106088
+      },
+      {
+        "monotonic_ns": 594530395054173,
+        "pss_kib_by_pid": {
+          "1732608": 98690
+        },
+        "rss_kib_by_pid": {
+          "1732608": 109504
+        },
+        "tree_pss_kib": 98690,
+        "tree_rss_kib": 109504
+      },
+      {
+        "monotonic_ns": 594530406275366,
+        "pss_kib_by_pid": {
+          "1732608": 102238
+        },
+        "rss_kib_by_pid": {
+          "1732608": 113956
+        },
+        "tree_pss_kib": 102238,
+        "tree_rss_kib": 113956
+      },
+      {
+        "monotonic_ns": 594530417517242,
+        "pss_kib_by_pid": {
+          "1732608": 106882
+        },
+        "rss_kib_by_pid": {
+          "1732608": 118960
+        },
+        "tree_pss_kib": 106882,
+        "tree_rss_kib": 118960
+      },
+      {
+        "monotonic_ns": 594530428648001,
+        "pss_kib_by_pid": {
+          "1732608": 111838
+        },
+        "rss_kib_by_pid": {
+          "1732608": 123068
+        },
+        "tree_pss_kib": 111838,
+        "tree_rss_kib": 123068
+      },
+      {
+        "monotonic_ns": 594530440234676,
+        "pss_kib_by_pid": {
+          "1732608": 111838
+        },
+        "rss_kib_by_pid": {
+          "1732608": 123068
+        },
+        "tree_pss_kib": 111838,
+        "tree_rss_kib": 123068
+      },
+      {
+        "monotonic_ns": 594530451974619,
+        "pss_kib_by_pid": {
+          "1732608": 114078
+        },
+        "rss_kib_by_pid": {
+          "1732608": 125648
+        },
+        "tree_pss_kib": 114078,
+        "tree_rss_kib": 125648
+      },
+      {
+        "monotonic_ns": 594530463544835,
+        "pss_kib_by_pid": {
+          "1732608": 118902
+        },
+        "rss_kib_by_pid": {
+          "1732608": 130672
+        },
+        "tree_pss_kib": 118902,
+        "tree_rss_kib": 130672
+      },
+      {
+        "monotonic_ns": 594530476176422,
+        "pss_kib_by_pid": {
+          "1732608": 123226
+        },
+        "rss_kib_by_pid": {
+          "1732608": 135020
+        },
+        "tree_pss_kib": 123226,
+        "tree_rss_kib": 135020
+      },
+      {
+        "monotonic_ns": 594530490370760,
+        "pss_kib_by_pid": {
+          "1732608": 128850
+        },
+        "rss_kib_by_pid": {
+          "1732608": 141640
+        },
+        "tree_pss_kib": 128850,
+        "tree_rss_kib": 141640
+      },
+      {
+        "monotonic_ns": 594530501636359,
+        "pss_kib_by_pid": {
+          "1732608": 130954
+        },
+        "rss_kib_by_pid": {
+          "1732608": 142208
+        },
+        "tree_pss_kib": 130954,
+        "tree_rss_kib": 142208
+      },
+      {
+        "monotonic_ns": 594530512857963,
+        "pss_kib_by_pid": {
+          "1732608": 131558
+        },
+        "rss_kib_by_pid": {
+          "1732608": 142860
+        },
+        "tree_pss_kib": 131558,
+        "tree_rss_kib": 142860
+      },
+      {
+        "monotonic_ns": 594530523983437,
+        "pss_kib_by_pid": {
+          "1732608": 132474
+        },
+        "rss_kib_by_pid": {
+          "1732608": 143732
+        },
+        "tree_pss_kib": 132474,
+        "tree_rss_kib": 143732
+      },
+      {
+        "monotonic_ns": 594530535297069,
+        "pss_kib_by_pid": {
+          "1732608": 133622
+        },
+        "rss_kib_by_pid": {
+          "1732608": 145008
+        },
+        "tree_pss_kib": 133622,
+        "tree_rss_kib": 145008
+      },
+      {
+        "monotonic_ns": 594530547531857,
+        "pss_kib_by_pid": {
+          "1732608": 134590
+        },
+        "rss_kib_by_pid": {
+          "1732608": 145888
+        },
+        "tree_pss_kib": 134590,
+        "tree_rss_kib": 145888
+      },
+      {
+        "monotonic_ns": 594530558942669,
+        "pss_kib_by_pid": {
+          "1732608": 136574
+        },
+        "rss_kib_by_pid": {
+          "1732608": 147888
+        },
+        "tree_pss_kib": 136574,
+        "tree_rss_kib": 147888
+      },
+      {
+        "monotonic_ns": 594530570128858,
+        "pss_kib_by_pid": {
+          "1732608": 138754
+        },
+        "rss_kib_by_pid": {
+          "1732608": 150056
+        },
+        "tree_pss_kib": 138754,
+        "tree_rss_kib": 150056
+      },
+      {
+        "monotonic_ns": 594530581381105,
+        "pss_kib_by_pid": {
+          "1732608": 140222
+        },
+        "rss_kib_by_pid": {
+          "1732608": 151676
+        },
+        "tree_pss_kib": 140222,
+        "tree_rss_kib": 151676
+      },
+      {
+        "monotonic_ns": 594530593683697,
+        "pss_kib_by_pid": {
+          "1732608": 142628
+        },
+        "rss_kib_by_pid": {
+          "1732608": 154500
+        },
+        "tree_pss_kib": 142628,
+        "tree_rss_kib": 154500
+      },
+      {
+        "monotonic_ns": 594530605216797,
+        "pss_kib_by_pid": {
+          "1732608": 144416
+        },
+        "rss_kib_by_pid": {
+          "1732608": 155988
+        },
+        "tree_pss_kib": 144416,
+        "tree_rss_kib": 155988
+      },
+      {
+        "monotonic_ns": 594530616957439,
+        "pss_kib_by_pid": {
+          "1732608": 147580
+        },
+        "rss_kib_by_pid": {
+          "1732608": 159108
+        },
+        "tree_pss_kib": 147580,
+        "tree_rss_kib": 159108
+      },
+      {
+        "monotonic_ns": 594530628646472,
+        "pss_kib_by_pid": {
+          "1732608": 148992
+        },
+        "rss_kib_by_pid": {
+          "1732608": 160616
+        },
+        "tree_pss_kib": 148992,
+        "tree_rss_kib": 160616
+      },
+      {
+        "monotonic_ns": 594530641875254,
+        "pss_kib_by_pid": {
+          "1732608": 149636
+        },
+        "rss_kib_by_pid": {
+          "1732608": 161176
+        },
+        "tree_pss_kib": 149636,
+        "tree_rss_kib": 161176
+      },
+      {
+        "monotonic_ns": 594530654752763,
+        "pss_kib_by_pid": {
+          "1732608": 149976
+        },
+        "rss_kib_by_pid": {
+          "1732608": 162280
+        },
+        "tree_pss_kib": 149976,
+        "tree_rss_kib": 162280
+      },
+      {
+        "monotonic_ns": 594530666307012,
+        "pss_kib_by_pid": {
+          "1732608": 155484
+        },
+        "rss_kib_by_pid": {
+          "1732608": 167136
+        },
+        "tree_pss_kib": 155484,
+        "tree_rss_kib": 167136
+      },
+      {
+        "monotonic_ns": 594530677684095,
+        "pss_kib_by_pid": {
+          "1732608": 157416
+        },
+        "rss_kib_by_pid": {
+          "1732608": 169012
+        },
+        "tree_pss_kib": 157416,
+        "tree_rss_kib": 169012
+      },
+      {
+        "monotonic_ns": 594530689381287,
+        "pss_kib_by_pid": {
+          "1732608": 159376
+        },
+        "rss_kib_by_pid": {
+          "1732608": 170980
+        },
+        "tree_pss_kib": 159376,
+        "tree_rss_kib": 170980
+      },
+      {
+        "monotonic_ns": 594530700985278,
+        "pss_kib_by_pid": {
+          "1732608": 161440
+        },
+        "rss_kib_by_pid": {
+          "1732608": 173004
+        },
+        "tree_pss_kib": 161440,
+        "tree_rss_kib": 173004
+      },
+      {
+        "monotonic_ns": 594530712730695,
+        "pss_kib_by_pid": {
+          "1732608": 162804
+        },
+        "rss_kib_by_pid": {
+          "1732608": 174336
+        },
+        "tree_pss_kib": 162804,
+        "tree_rss_kib": 174336
+      },
+      {
+        "monotonic_ns": 594530724150165,
+        "pss_kib_by_pid": {
+          "1732608": 163520
+        },
+        "rss_kib_by_pid": {
+          "1732608": 177196
+        },
+        "tree_pss_kib": 163520,
+        "tree_rss_kib": 177196
+      },
+      {
+        "monotonic_ns": 594530735745252,
+        "pss_kib_by_pid": {
+          "1732608": 170328
+        },
+        "rss_kib_by_pid": {
+          "1732608": 181952
+        },
+        "tree_pss_kib": 170328,
+        "tree_rss_kib": 181952
+      },
+      {
+        "monotonic_ns": 594530749372754,
+        "pss_kib_by_pid": {
+          "1732608": 171448
+        },
+        "rss_kib_by_pid": {
+          "1732608": 183044
+        },
+        "tree_pss_kib": 171448,
+        "tree_rss_kib": 183044
+      },
+      {
+        "monotonic_ns": 594530762089397,
+        "pss_kib_by_pid": {
+          "1732608": 172304
+        },
+        "rss_kib_by_pid": {
+          "1732608": 183964
+        },
+        "tree_pss_kib": 172304,
+        "tree_rss_kib": 183964
+      },
+      {
+        "monotonic_ns": 594530775870535,
+        "pss_kib_by_pid": {
+          "1732608": 172448
+        },
+        "rss_kib_by_pid": {
+          "1732608": 183976
+        },
+        "tree_pss_kib": 172448,
+        "tree_rss_kib": 183976
+      },
+      {
+        "monotonic_ns": 594530790073151,
+        "pss_kib_by_pid": {
+          "1732608": 172448
+        },
+        "rss_kib_by_pid": {
+          "1732608": 183976
+        },
+        "tree_pss_kib": 172448,
+        "tree_rss_kib": 183976
+      },
+      {
+        "monotonic_ns": 594530804186700,
+        "pss_kib_by_pid": {
+          "1732608": 172768
+        },
+        "rss_kib_by_pid": {
+          "1732608": 184344
+        },
+        "tree_pss_kib": 172768,
+        "tree_rss_kib": 184344
+      },
+      {
+        "monotonic_ns": 594530816880914,
+        "pss_kib_by_pid": {
+          "1732608": 172864
+        },
+        "rss_kib_by_pid": {
+          "1732608": 184400
+        },
+        "tree_pss_kib": 172864,
+        "tree_rss_kib": 184400
+      },
+      {
+        "monotonic_ns": 594530830662691,
+        "pss_kib_by_pid": {
+          "1732608": 174600
+        },
+        "rss_kib_by_pid": {
+          "1732608": 186248
+        },
+        "tree_pss_kib": 174600,
+        "tree_rss_kib": 186248
+      },
+      {
+        "monotonic_ns": 594530842618220,
+        "pss_kib_by_pid": {
+          "1732608": 179816
+        },
+        "rss_kib_by_pid": {
+          "1732608": 192084
+        },
+        "tree_pss_kib": 179816,
+        "tree_rss_kib": 192084
+      },
+      {
+        "monotonic_ns": 594530854376992,
+        "pss_kib_by_pid": {
+          "1732608": 185256
+        },
+        "rss_kib_by_pid": {
+          "1732608": 197116
+        },
+        "tree_pss_kib": 185256,
+        "tree_rss_kib": 197116
+      },
+      {
+        "monotonic_ns": 594530865898058,
+        "pss_kib_by_pid": {
+          "1732608": 188060
+        },
+        "rss_kib_by_pid": {
+          "1732608": 199796
+        },
+        "tree_pss_kib": 188060,
+        "tree_rss_kib": 199796
+      },
+      {
+        "monotonic_ns": 594530877537295,
+        "pss_kib_by_pid": {
+          "1732608": 192752
+        },
+        "rss_kib_by_pid": {
+          "1732608": 204912
+        },
+        "tree_pss_kib": 192752,
+        "tree_rss_kib": 204912
+      },
+      {
+        "monotonic_ns": 594530889128748,
+        "pss_kib_by_pid": {
+          "1732608": 195896
+        },
+        "rss_kib_by_pid": {
+          "1732608": 207808
+        },
+        "tree_pss_kib": 195896,
+        "tree_rss_kib": 207808
+      },
+      {
+        "monotonic_ns": 594530900888178,
+        "pss_kib_by_pid": {
+          "1732608": 197684
+        },
+        "rss_kib_by_pid": {
+          "1732608": 209980
+        },
+        "tree_pss_kib": 197684,
+        "tree_rss_kib": 209980
+      },
+      {
+        "monotonic_ns": 594530914576607,
+        "pss_kib_by_pid": {
+          "1732608": 200464
+        },
+        "rss_kib_by_pid": {
+          "1732608": 212520
+        },
+        "tree_pss_kib": 200464,
+        "tree_rss_kib": 212520
+      },
+      {
+        "monotonic_ns": 594530926076301,
+        "pss_kib_by_pid": {
+          "1732608": 203292
+        },
+        "rss_kib_by_pid": {
+          "1732608": 215020
+        },
+        "tree_pss_kib": 203292,
+        "tree_rss_kib": 215020
+      },
+      {
+        "monotonic_ns": 594530939577399,
+        "pss_kib_by_pid": {
+          "1732608": 205792
+        },
+        "rss_kib_by_pid": {
+          "1732608": 217676
+        },
+        "tree_pss_kib": 205792,
+        "tree_rss_kib": 217676
+      },
+      {
+        "monotonic_ns": 594530953559814,
+        "pss_kib_by_pid": {
+          "1732608": 210804
+        },
+        "rss_kib_by_pid": {
+          "1732608": 222104
+        },
+        "tree_pss_kib": 210804,
+        "tree_rss_kib": 222104
+      },
+      {
+        "monotonic_ns": 594530965484835,
+        "pss_kib_by_pid": {
+          "1732608": 212532
+        },
+        "rss_kib_by_pid": {
+          "1732608": 224276
+        },
+        "tree_pss_kib": 212532,
+        "tree_rss_kib": 224276
+      },
+      {
+        "monotonic_ns": 594530977930414,
+        "pss_kib_by_pid": {
+          "1732608": 214080
+        },
+        "rss_kib_by_pid": {
+          "1732608": 225680
+        },
+        "tree_pss_kib": 214080,
+        "tree_rss_kib": 225680
+      },
+      {
+        "monotonic_ns": 594530989815022,
+        "pss_kib_by_pid": {
+          "1732608": 216920
+        },
+        "rss_kib_by_pid": {
+          "1732608": 228688
+        },
+        "tree_pss_kib": 216920,
+        "tree_rss_kib": 228688
+      },
+      {
+        "monotonic_ns": 594531001570767,
+        "pss_kib_by_pid": {
+          "1732608": 221040
+        },
+        "rss_kib_by_pid": {
+          "1732608": 232788
+        },
+        "tree_pss_kib": 221040,
+        "tree_rss_kib": 232788
+      },
+      {
+        "monotonic_ns": 594531013379062,
+        "pss_kib_by_pid": {
+          "1732608": 224112
+        },
+        "rss_kib_by_pid": {
+          "1732608": 235852
+        },
+        "tree_pss_kib": 224112,
+        "tree_rss_kib": 235852
+      },
+      {
+        "monotonic_ns": 594531024923568,
+        "pss_kib_by_pid": {
+          "1732608": 224716
+        },
+        "rss_kib_by_pid": {
+          "1732608": 236252
+        },
+        "tree_pss_kib": 224716,
+        "tree_rss_kib": 236252
+      },
+      {
+        "monotonic_ns": 594531036847352,
+        "pss_kib_by_pid": {
+          "1732608": 224716
+        },
+        "rss_kib_by_pid": {
+          "1732608": 236252
+        },
+        "tree_pss_kib": 224716,
+        "tree_rss_kib": 236252
+      },
+      {
+        "monotonic_ns": 594531048950866,
+        "pss_kib_by_pid": {
+          "1732608": 224716
+        },
+        "rss_kib_by_pid": {
+          "1732608": 236252
+        },
+        "tree_pss_kib": 224716,
+        "tree_rss_kib": 236252
+      },
+      {
+        "monotonic_ns": 594531061522065,
+        "pss_kib_by_pid": {
+          "1732608": 224716
+        },
+        "rss_kib_by_pid": {
+          "1732608": 236288
+        },
+        "tree_pss_kib": 224716,
+        "tree_rss_kib": 236288
+      },
+      {
+        "monotonic_ns": 594531073779288,
+        "pss_kib_by_pid": {
+          "1732608": 226456
+        },
+        "rss_kib_by_pid": {
+          "1732608": 238412
+        },
+        "tree_pss_kib": 226456,
+        "tree_rss_kib": 238412
+      },
+      {
+        "monotonic_ns": 594531085581289,
+        "pss_kib_by_pid": {
+          "1732608": 228268
+        },
+        "rss_kib_by_pid": {
+          "1732608": 239832
+        },
+        "tree_pss_kib": 228268,
+        "tree_rss_kib": 239832
+      },
+      {
+        "monotonic_ns": 594531099706486,
+        "pss_kib_by_pid": {
+          "1732608": 256992
+        },
+        "rss_kib_by_pid": {
+          "1732608": 269240
+        },
+        "tree_pss_kib": 256992,
+        "tree_rss_kib": 269240
+      },
+      {
+        "monotonic_ns": 594531111792092,
+        "pss_kib_by_pid": {
+          "1732608": 259892
+        },
+        "rss_kib_by_pid": {
+          "1732608": 271700
+        },
+        "tree_pss_kib": 259892,
+        "tree_rss_kib": 271700
+      },
+      {
+        "monotonic_ns": 594531125406899,
+        "pss_kib_by_pid": {
+          "1732608": 262324
+        },
+        "rss_kib_by_pid": {
+          "1732608": 274176
+        },
+        "tree_pss_kib": 262324,
+        "tree_rss_kib": 274176
+      },
+      {
+        "monotonic_ns": 594531138789875,
+        "pss_kib_by_pid": {
+          "1732608": 265864
+        },
+        "rss_kib_by_pid": {
+          "1732608": 277912
+        },
+        "tree_pss_kib": 265864,
+        "tree_rss_kib": 277912
+      },
+      {
+        "monotonic_ns": 594531150820893,
+        "pss_kib_by_pid": {
+          "1732608": 268316
+        },
+        "rss_kib_by_pid": {
+          "1732608": 280128
+        },
+        "tree_pss_kib": 268316,
+        "tree_rss_kib": 280128
+      },
+      {
+        "monotonic_ns": 594531162767578,
+        "pss_kib_by_pid": {
+          "1732608": 274572
+        },
+        "rss_kib_by_pid": {
+          "1732608": 286224
+        },
+        "tree_pss_kib": 274572,
+        "tree_rss_kib": 286224
+      },
+      {
+        "monotonic_ns": 594531174804155,
+        "pss_kib_by_pid": {
+          "1732608": 274732
+        },
+        "rss_kib_by_pid": {
+          "1732608": 286268
+        },
+        "tree_pss_kib": 274732,
+        "tree_rss_kib": 286268
+      },
+      {
+        "monotonic_ns": 594531186603725,
+        "pss_kib_by_pid": {
+          "1732608": 274788
+        },
+        "rss_kib_by_pid": {
+          "1732608": 286328
+        },
+        "tree_pss_kib": 274788,
+        "tree_rss_kib": 286328
+      },
+      {
+        "monotonic_ns": 594531200401282,
+        "pss_kib_by_pid": {
+          "1732608": 274824
+        },
+        "rss_kib_by_pid": {
+          "1732608": 286364
+        },
+        "tree_pss_kib": 274824,
+        "tree_rss_kib": 286364
+      },
+      {
+        "monotonic_ns": 594531214238685,
+        "pss_kib_by_pid": {
+          "1732608": 274856
+        },
+        "rss_kib_by_pid": {
+          "1732608": 286404
+        },
+        "tree_pss_kib": 274856,
+        "tree_rss_kib": 286404
+      },
+      {
+        "monotonic_ns": 594531226087751,
+        "pss_kib_by_pid": {
+          "1732608": 274920
+        },
+        "rss_kib_by_pid": {
+          "1732608": 286456
+        },
+        "tree_pss_kib": 274920,
+        "tree_rss_kib": 286456
+      },
+      {
+        "monotonic_ns": 594531238089528,
+        "pss_kib_by_pid": {
+          "1732608": 274932
+        },
+        "rss_kib_by_pid": {
+          "1732608": 286472
+        },
+        "tree_pss_kib": 274932,
+        "tree_rss_kib": 286472
+      },
+      {
+        "monotonic_ns": 594531250113060,
+        "pss_kib_by_pid": {
+          "1732608": 274948
+        },
+        "rss_kib_by_pid": {
+          "1732608": 286484
+        },
+        "tree_pss_kib": 274948,
+        "tree_rss_kib": 286484
+      },
+      {
+        "monotonic_ns": 594531262021184,
+        "pss_kib_by_pid": {
+          "1732608": 274976
+        },
+        "rss_kib_by_pid": {
+          "1732608": 286528
+        },
+        "tree_pss_kib": 274976,
+        "tree_rss_kib": 286528
+      },
+      {
+        "monotonic_ns": 594531273933179,
+        "pss_kib_by_pid": {
+          "1732608": 276200
+        },
+        "rss_kib_by_pid": {
+          "1732608": 287740
+        },
+        "tree_pss_kib": 276200,
+        "tree_rss_kib": 287740
+      },
+      {
+        "monotonic_ns": 594531285948887,
+        "pss_kib_by_pid": {
+          "1732608": 276304
+        },
+        "rss_kib_by_pid": {
+          "1732608": 287856
+        },
+        "tree_pss_kib": 276304,
+        "tree_rss_kib": 287856
+      },
+      {
+        "monotonic_ns": 594531297838244,
+        "pss_kib_by_pid": {
+          "1732608": 276560
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288096
+        },
+        "tree_pss_kib": 276560,
+        "tree_rss_kib": 288096
+      },
+      {
+        "monotonic_ns": 594531309833619,
+        "pss_kib_by_pid": {
+          "1732608": 276796,
+          "1732721": 496
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288332,
+          "1732721": 3736
+        },
+        "tree_pss_kib": 277292,
+        "tree_rss_kib": 292068
+      },
+      {
+        "monotonic_ns": 594531321921006,
+        "pss_kib_by_pid": {
+          "1732608": 276796,
+          "1732721": 922
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288332,
+          "1732721": 3776
+        },
+        "tree_pss_kib": 277718,
+        "tree_rss_kib": 292108
+      },
+      {
+        "monotonic_ns": 594531334328953,
+        "pss_kib_by_pid": {
+          "1732608": 276800,
+          "1732734": 134,
+          "1732735": 526,
+          "1732736": 420
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288336,
+          "1732734": 1996,
+          "1732735": 3664,
+          "1732736": 2340
+        },
+        "tree_pss_kib": 277880,
+        "tree_rss_kib": 296336
+      },
+      {
+        "monotonic_ns": 594531346362514,
+        "pss_kib_by_pid": {
+          "1732608": 276800,
+          "1732734": 134,
+          "1732735": 677
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288336,
+          "1732734": 1996,
+          "1732735": 3712
+        },
+        "tree_pss_kib": 277611,
+        "tree_rss_kib": 294044
+      },
+      {
+        "monotonic_ns": 594531358271223,
+        "pss_kib_by_pid": {
+          "1732608": 276964
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288500
+        },
+        "tree_pss_kib": 276964,
+        "tree_rss_kib": 288500
+      },
+      {
+        "monotonic_ns": 594531370361875,
+        "pss_kib_by_pid": {
+          "1732608": 276964,
+          "1732753": 667
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288500,
+          "1732753": 3744
+        },
+        "tree_pss_kib": 277631,
+        "tree_rss_kib": 292244
+      },
+      {
+        "monotonic_ns": 594531382591912,
+        "pss_kib_by_pid": {
+          "1732608": 276964,
+          "1732766": 134,
+          "1732767": 556,
+          "1732768": 538
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288500,
+          "1732766": 1996,
+          "1732767": 3736,
+          "1732768": 2412
+        },
+        "tree_pss_kib": 278192,
+        "tree_rss_kib": 296644
+      },
+      {
+        "monotonic_ns": 594531394651167,
+        "pss_kib_by_pid": {
+          "1732608": 276964
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288500
+        },
+        "tree_pss_kib": 276964,
+        "tree_rss_kib": 288500
+      },
+      {
+        "monotonic_ns": 594531406905422,
+        "pss_kib_by_pid": {
+          "1732608": 276964,
+          "1732780": 134,
+          "1732781": 539,
+          "1732782": 427,
+          "1732786": 402
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288500,
+          "1732780": 1992,
+          "1732781": 3700,
+          "1732782": 2380,
+          "1732786": 2104
+        },
+        "tree_pss_kib": 278466,
+        "tree_rss_kib": 298676
+      },
+      {
+        "monotonic_ns": 594531418991235,
+        "pss_kib_by_pid": {
+          "1732608": 277040
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288648
+        },
+        "tree_pss_kib": 277040,
+        "tree_rss_kib": 288648
+      },
+      {
+        "monotonic_ns": 594531431532677,
+        "pss_kib_by_pid": {
+          "1732608": 277112,
+          "1732794": 529,
+          "1732795": 418,
+          "1732799": 401,
+          "1732800": 153
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288648,
+          "1732794": 3664,
+          "1732795": 2348,
+          "1732799": 2096,
+          "1732800": 1756
+        },
+        "tree_pss_kib": 278613,
+        "tree_rss_kib": 298512
+      },
+      {
+        "monotonic_ns": 594531443481887,
+        "pss_kib_by_pid": {
+          "1732608": 277112,
+          "1732807": 134
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288648,
+          "1732807": 1996
+        },
+        "tree_pss_kib": 277246,
+        "tree_rss_kib": 290644
+      },
+      {
+        "monotonic_ns": 594531455817795,
+        "pss_kib_by_pid": {
+          "1732608": 277112,
+          "1732807": 134,
+          "1732808": 922
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288648,
+          "1732807": 1996,
+          "1732808": 3776
+        },
+        "tree_pss_kib": 278168,
+        "tree_rss_kib": 294420
+      },
+      {
+        "monotonic_ns": 594531467881600,
+        "pss_kib_by_pid": {
+          "1732608": 277112,
+          "1732821": 134,
+          "1732822": 557,
+          "1732823": 426
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288648,
+          "1732821": 1996,
+          "1732822": 3692,
+          "1732823": 2372
+        },
+        "tree_pss_kib": 278229,
+        "tree_rss_kib": 296708
+      },
+      {
+        "monotonic_ns": 594531480520791,
+        "pss_kib_by_pid": {
+          "1732608": 277112,
+          "1732821": 134,
+          "1732822": 895
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288648,
+          "1732821": 1996,
+          "1732822": 3736
+        },
+        "tree_pss_kib": 278141,
+        "tree_rss_kib": 294380
+      },
+      {
+        "monotonic_ns": 594531493161403,
+        "pss_kib_by_pid": {
+          "1732608": 277128
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288676
+        },
+        "tree_pss_kib": 277128,
+        "tree_rss_kib": 288676
+      },
+      {
+        "monotonic_ns": 594531505327678,
+        "pss_kib_by_pid": {
+          "1732608": 277140,
+          "1732835": 888
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288676,
+          "1732835": 3744
+        },
+        "tree_pss_kib": 278028,
+        "tree_rss_kib": 292420
+      },
+      {
+        "monotonic_ns": 594531517290818,
+        "pss_kib_by_pid": {
+          "1732608": 277140
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288676
+        },
+        "tree_pss_kib": 277140,
+        "tree_rss_kib": 288676
+      },
+      {
+        "monotonic_ns": 594531531340756,
+        "pss_kib_by_pid": {
+          "1732608": 277140,
+          "1732848": 134,
+          "1732849": 933
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288676,
+          "1732848": 1996,
+          "1732849": 3784
+        },
+        "tree_pss_kib": 278207,
+        "tree_rss_kib": 294456
+      },
+      {
+        "monotonic_ns": 594531543403002,
+        "pss_kib_by_pid": {
+          "1732608": 277188,
+          "1732863": 1051,
+          "1732864": 447,
+          "1732865": 2915
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288724,
+          "1732863": 2676,
+          "1732864": 2072,
+          "1732865": 4912
+        },
+        "tree_pss_kib": 281601,
+        "tree_rss_kib": 298384
+      },
+      {
+        "monotonic_ns": 594531555729190,
+        "pss_kib_by_pid": {
+          "1732608": 277196,
+          "1732867": 532,
+          "1732868": 396
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288732,
+          "1732867": 3668,
+          "1732868": 2352
+        },
+        "tree_pss_kib": 278124,
+        "tree_rss_kib": 294752
+      },
+      {
+        "monotonic_ns": 594531567913825,
+        "pss_kib_by_pid": {
+          "1732608": 277196
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288732
+        },
+        "tree_pss_kib": 277196,
+        "tree_rss_kib": 288732
+      },
+      {
+        "monotonic_ns": 594531580234947,
+        "pss_kib_by_pid": {
+          "1732608": 277196,
+          "1732880": 134,
+          "1732881": 892
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288732,
+          "1732880": 1996,
+          "1732881": 3736
+        },
+        "tree_pss_kib": 278222,
+        "tree_rss_kib": 294464
+      },
+      {
+        "monotonic_ns": 594531592227433,
+        "pss_kib_by_pid": {
+          "1732608": 277208
+        },
+        "rss_kib_by_pid": {
+          "1732608": 288744
+        },
+        "tree_pss_kib": 277208,
+        "tree_rss_kib": 288744
+      },
+      {
+        "monotonic_ns": 594531604333141,
+        "pss_kib_by_pid": {
+          "1732608": 277404
+        },
+        "rss_kib_by_pid": {
+          "1732608": 289212
+        },
+        "tree_pss_kib": 277404,
+        "tree_rss_kib": 289212
+      },
+      {
+        "monotonic_ns": 594531616293105,
+        "pss_kib_by_pid": {
+          "1732608": 278596
+        },
+        "rss_kib_by_pid": {
+          "1732608": 290140
+        },
+        "tree_pss_kib": 278596,
+        "tree_rss_kib": 290140
+      },
+      {
+        "monotonic_ns": 594531628105184,
+        "pss_kib_by_pid": {
+          "1732608": 278668
+        },
+        "rss_kib_by_pid": {
+          "1732608": 290216
+        },
+        "tree_pss_kib": 278668,
+        "tree_rss_kib": 290216
+      },
+      {
+        "monotonic_ns": 594531642851368,
+        "pss_kib_by_pid": {
+          "1732608": 278848
+        },
+        "rss_kib_by_pid": {
+          "1732608": 290516
+        },
+        "tree_pss_kib": 278848,
+        "tree_rss_kib": 290516
+      },
+      {
+        "monotonic_ns": 594531656581944,
+        "pss_kib_by_pid": {
+          "1732608": 279940
+        },
+        "rss_kib_by_pid": {
+          "1732608": 291536
+        },
+        "tree_pss_kib": 279940,
+        "tree_rss_kib": 291536
+      },
+      {
+        "monotonic_ns": 594531668561931,
+        "pss_kib_by_pid": {
+          "1732608": 283120
+        },
+        "rss_kib_by_pid": {
+          "1732608": 294664
+        },
+        "tree_pss_kib": 283120,
+        "tree_rss_kib": 294664
+      },
+      {
+        "monotonic_ns": 594531682153460,
+        "pss_kib_by_pid": {
+          "1732608": 284008
+        },
+        "rss_kib_by_pid": {
+          "1732608": 295664
+        },
+        "tree_pss_kib": 284008,
+        "tree_rss_kib": 295664
+      },
+      {
+        "monotonic_ns": 594531694126871,
+        "pss_kib_by_pid": {
+          "1732608": 284864
+        },
+        "rss_kib_by_pid": {
+          "1732608": 296508
+        },
+        "tree_pss_kib": 284864,
+        "tree_rss_kib": 296508
+      },
+      {
+        "monotonic_ns": 594531707768783,
+        "pss_kib_by_pid": {
+          "1732608": 287032
+        },
+        "rss_kib_by_pid": {
+          "1732608": 298644
+        },
+        "tree_pss_kib": 287032,
+        "tree_rss_kib": 298644
+      },
+      {
+        "monotonic_ns": 594531721688303,
+        "pss_kib_by_pid": {
+          "1732608": 288056
+        },
+        "rss_kib_by_pid": {
+          "1732608": 299844
+        },
+        "tree_pss_kib": 288056,
+        "tree_rss_kib": 299844
+      },
+      {
+        "monotonic_ns": 594531736276543,
+        "pss_kib_by_pid": {
+          "1732608": 288900
+        },
+        "rss_kib_by_pid": {
+          "1732608": 300656
+        },
+        "tree_pss_kib": 288900,
+        "tree_rss_kib": 300656
+      },
+      {
+        "monotonic_ns": 594531750645452,
+        "pss_kib_by_pid": {
+          "1732608": 290256
+        },
+        "rss_kib_by_pid": {
+          "1732608": 301792
+        },
+        "tree_pss_kib": 290256,
+        "tree_rss_kib": 301792
+      },
+      {
+        "monotonic_ns": 594531765784375,
+        "pss_kib_by_pid": {
+          "1732608": 290256
+        },
+        "rss_kib_by_pid": {
+          "1732608": 301792
+        },
+        "tree_pss_kib": 290256,
+        "tree_rss_kib": 301792
+      },
+      {
+        "monotonic_ns": 594531779625775,
+        "pss_kib_by_pid": {
+          "1732608": 290256
+        },
+        "rss_kib_by_pid": {
+          "1732608": 301792
+        },
+        "tree_pss_kib": 290256,
+        "tree_rss_kib": 301792
+      },
+      {
+        "monotonic_ns": 594531792336163,
+        "pss_kib_by_pid": {
+          "1732608": 290256
+        },
+        "rss_kib_by_pid": {
+          "1732608": 301792
+        },
+        "tree_pss_kib": 290256,
+        "tree_rss_kib": 301792
+      },
+      {
+        "monotonic_ns": 594531805706198,
+        "pss_kib_by_pid": {
+          "1732608": 290256
+        },
+        "rss_kib_by_pid": {
+          "1732608": 301792
+        },
+        "tree_pss_kib": 290256,
+        "tree_rss_kib": 301792
+      },
+      {
+        "monotonic_ns": 594531818622553,
+        "pss_kib_by_pid": {
+          "1732608": 290628
+        },
+        "rss_kib_by_pid": {
+          "1732608": 302160
+        },
+        "tree_pss_kib": 290628,
+        "tree_rss_kib": 302160
+      },
+      {
+        "monotonic_ns": 594531831368123,
+        "pss_kib_by_pid": {
+          "1732608": 291708
+        },
+        "rss_kib_by_pid": {
+          "1732608": 303244
+        },
+        "tree_pss_kib": 291708,
+        "tree_rss_kib": 303244
+      },
+      {
+        "monotonic_ns": 594531843567144,
+        "pss_kib_by_pid": {
+          "1732608": 291976
+        },
+        "rss_kib_by_pid": {
+          "1732608": 303584
+        },
+        "tree_pss_kib": 291976,
+        "tree_rss_kib": 303584
+      },
+      {
+        "monotonic_ns": 594531857888296,
+        "pss_kib_by_pid": {
+          "1732608": 292260
+        },
+        "rss_kib_by_pid": {
+          "1732608": 303800
+        },
+        "tree_pss_kib": 292260,
+        "tree_rss_kib": 303800
+      },
+      {
+        "monotonic_ns": 594531874500938,
+        "pss_kib_by_pid": {
+          "1732608": 292392
+        },
+        "rss_kib_by_pid": {
+          "1732608": 303968
+        },
+        "tree_pss_kib": 292392,
+        "tree_rss_kib": 303968
+      },
+      {
+        "monotonic_ns": 594531889165866,
+        "pss_kib_by_pid": {
+          "1732608": 292668
+        },
+        "rss_kib_by_pid": {
+          "1732608": 304260
+        },
+        "tree_pss_kib": 292668,
+        "tree_rss_kib": 304260
+      },
+      {
+        "monotonic_ns": 594531901244567,
+        "pss_kib_by_pid": {
+          "1732608": 292892
+        },
+        "rss_kib_by_pid": {
+          "1732608": 304428
+        },
+        "tree_pss_kib": 292892,
+        "tree_rss_kib": 304428
+      },
+      {
+        "monotonic_ns": 594531915269242,
+        "pss_kib_by_pid": {
+          "1732608": 292892
+        },
+        "rss_kib_by_pid": {
+          "1732608": 304428
+        },
+        "tree_pss_kib": 292892,
+        "tree_rss_kib": 304428
+      },
+      {
+        "monotonic_ns": 594531931943606,
+        "pss_kib_by_pid": {
+          "1732608": 292940
+        },
+        "rss_kib_by_pid": {
+          "1732608": 304548
+        },
+        "tree_pss_kib": 292940,
+        "tree_rss_kib": 304548
+      },
+      {
+        "monotonic_ns": 594531944595675,
+        "pss_kib_by_pid": {
+          "1732608": 293264
+        },
+        "rss_kib_by_pid": {
+          "1732608": 304836
+        },
+        "tree_pss_kib": 293264,
+        "tree_rss_kib": 304836
+      },
+      {
+        "monotonic_ns": 594531956764172,
+        "pss_kib_by_pid": {
+          "1732608": 294000
+        },
+        "rss_kib_by_pid": {
+          "1732608": 305560
+        },
+        "tree_pss_kib": 294000,
+        "tree_rss_kib": 305560
+      },
+      {
+        "monotonic_ns": 594531968604228,
+        "pss_kib_by_pid": {
+          "1732608": 294716
+        },
+        "rss_kib_by_pid": {
+          "1732608": 306252
+        },
+        "tree_pss_kib": 294716,
+        "tree_rss_kib": 306252
+      },
+      {
+        "monotonic_ns": 594531983047098,
+        "pss_kib_by_pid": {
+          "1732608": 294724
+        },
+        "rss_kib_by_pid": {
+          "1732608": 306312
+        },
+        "tree_pss_kib": 294724,
+        "tree_rss_kib": 306312
+      },
+      {
+        "monotonic_ns": 594531998178199,
+        "pss_kib_by_pid": {
+          "1732608": 294796
+        },
+        "rss_kib_by_pid": {
+          "1732608": 306512
+        },
+        "tree_pss_kib": 294796,
+        "tree_rss_kib": 306512
+      },
+      {
+        "monotonic_ns": 594532013425785,
+        "pss_kib_by_pid": {
+          "1732608": 295332
+        },
+        "rss_kib_by_pid": {
+          "1732608": 306888
+        },
+        "tree_pss_kib": 295332,
+        "tree_rss_kib": 306888
+      },
+      {
+        "monotonic_ns": 594532025640264,
+        "pss_kib_by_pid": {
+          "1732608": 295356
+        },
+        "rss_kib_by_pid": {
+          "1732608": 306940
+        },
+        "tree_pss_kib": 295356,
+        "tree_rss_kib": 306940
+      },
+      {
+        "monotonic_ns": 594532040005421,
+        "pss_kib_by_pid": {
+          "1732608": 295480
+        },
+        "rss_kib_by_pid": {
+          "1732608": 307032
+        },
+        "tree_pss_kib": 295480,
+        "tree_rss_kib": 307032
+      },
+      {
+        "monotonic_ns": 594532054378854,
+        "pss_kib_by_pid": {
+          "1732608": 295528
+        },
+        "rss_kib_by_pid": {
+          "1732608": 307068
+        },
+        "tree_pss_kib": 295528,
+        "tree_rss_kib": 307068
+      },
+      {
+        "monotonic_ns": 594532068550364,
+        "pss_kib_by_pid": {
+          "1732608": 295548
+        },
+        "rss_kib_by_pid": {
+          "1732608": 307104
+        },
+        "tree_pss_kib": 295548,
+        "tree_rss_kib": 307104
+      },
+      {
+        "monotonic_ns": 594532083172714,
+        "pss_kib_by_pid": {
+          "1732608": 297048
+        },
+        "rss_kib_by_pid": {
+          "1732608": 308936
+        },
+        "tree_pss_kib": 297048,
+        "tree_rss_kib": 308936
+      },
+      {
+        "monotonic_ns": 594532095225497,
+        "pss_kib_by_pid": {
+          "1732608": 297640
+        },
+        "rss_kib_by_pid": {
+          "1732608": 309220
+        },
+        "tree_pss_kib": 297640,
+        "tree_rss_kib": 309220
+      },
+      {
+        "monotonic_ns": 594532107325181,
+        "pss_kib_by_pid": {
+          "1732608": 297916
+        },
+        "rss_kib_by_pid": {
+          "1732608": 309576
+        },
+        "tree_pss_kib": 297916,
+        "tree_rss_kib": 309576
+      },
+      {
+        "monotonic_ns": 594532119272913,
+        "pss_kib_by_pid": {
+          "1732608": 298172
+        },
+        "rss_kib_by_pid": {
+          "1732608": 309788
+        },
+        "tree_pss_kib": 298172,
+        "tree_rss_kib": 309788
+      },
+      {
+        "monotonic_ns": 594532133231906,
+        "pss_kib_by_pid": {
+          "1732608": 299064
+        },
+        "rss_kib_by_pid": {
+          "1732608": 310628
+        },
+        "tree_pss_kib": 299064,
+        "tree_rss_kib": 310628
+      },
+      {
+        "monotonic_ns": 594532145898032,
+        "pss_kib_by_pid": {
+          "1732608": 300548
+        },
+        "rss_kib_by_pid": {
+          "1732608": 312088
+        },
+        "tree_pss_kib": 300548,
+        "tree_rss_kib": 312088
+      },
+      {
+        "monotonic_ns": 594532157923940,
+        "pss_kib_by_pid": {
+          "1732608": 300640
+        },
+        "rss_kib_by_pid": {
+          "1732608": 312192
+        },
+        "tree_pss_kib": 300640,
+        "tree_rss_kib": 312192
+      },
+      {
+        "monotonic_ns": 594532170102875,
+        "pss_kib_by_pid": {
+          "1732608": 300672
+        },
+        "rss_kib_by_pid": {
+          "1732608": 312216
+        },
+        "tree_pss_kib": 300672,
+        "tree_rss_kib": 312216
+      },
+      {
+        "monotonic_ns": 594532181980097,
+        "pss_kib_by_pid": {
+          "1732608": 300688
+        },
+        "rss_kib_by_pid": {
+          "1732608": 312228
+        },
+        "tree_pss_kib": 300688,
+        "tree_rss_kib": 312228
+      },
+      {
+        "monotonic_ns": 594532193945089,
+        "pss_kib_by_pid": {
+          "1732608": 302288
+        },
+        "rss_kib_by_pid": {
+          "1732608": 314256
+        },
+        "tree_pss_kib": 302288,
+        "tree_rss_kib": 314256
+      },
+      {
+        "monotonic_ns": 594532206031724,
+        "pss_kib_by_pid": {
+          "1732608": 308732
+        },
+        "rss_kib_by_pid": {
+          "1732608": 320272
+        },
+        "tree_pss_kib": 308732,
+        "tree_rss_kib": 320272
+      },
+      {
+        "monotonic_ns": 594532219293689,
+        "pss_kib_by_pid": {
+          "1732608": 308772
+        },
+        "rss_kib_by_pid": {
+          "1732608": 320320
+        },
+        "tree_pss_kib": 308772,
+        "tree_rss_kib": 320320
+      },
+      {
+        "monotonic_ns": 594532232887761,
+        "pss_kib_by_pid": {
+          "1732608": 309456
+        },
+        "rss_kib_by_pid": {
+          "1732608": 322648
+        },
+        "tree_pss_kib": 309456,
+        "tree_rss_kib": 322648
+      },
+      {
+        "monotonic_ns": 594532245040186,
+        "pss_kib_by_pid": {
+          "1732608": 314252
+        },
+        "rss_kib_by_pid": {
+          "1732608": 326248
+        },
+        "tree_pss_kib": 314252,
+        "tree_rss_kib": 326248
+      },
+      {
+        "monotonic_ns": 594532257537500,
+        "pss_kib_by_pid": {
+          "1732608": 316772
+        },
+        "rss_kib_by_pid": {
+          "1732608": 328820
+        },
+        "tree_pss_kib": 316772,
+        "tree_rss_kib": 328820
+      },
+      {
+        "monotonic_ns": 594532269844158,
+        "pss_kib_by_pid": {
+          "1732608": 319592
+        },
+        "rss_kib_by_pid": {
+          "1732608": 331388
+        },
+        "tree_pss_kib": 319592,
+        "tree_rss_kib": 331388
+      },
+      {
+        "monotonic_ns": 594532285201168,
+        "pss_kib_by_pid": {
+          "1732608": 322156
+        },
+        "rss_kib_by_pid": {
+          "1732608": 334464
+        },
+        "tree_pss_kib": 322156,
+        "tree_rss_kib": 334464
+      },
+      {
+        "monotonic_ns": 594532297593302,
+        "pss_kib_by_pid": {
+          "1732608": 324980
+        },
+        "rss_kib_by_pid": {
+          "1732608": 337032
+        },
+        "tree_pss_kib": 324980,
+        "tree_rss_kib": 337032
+      },
+      {
+        "monotonic_ns": 594532311142852,
+        "pss_kib_by_pid": {
+          "1732608": 327544
+        },
+        "rss_kib_by_pid": {
+          "1732608": 339596
+        },
+        "tree_pss_kib": 327544,
+        "tree_rss_kib": 339596
+      },
+      {
+        "monotonic_ns": 594532323565276,
+        "pss_kib_by_pid": {
+          "1732608": 329596
+        },
+        "rss_kib_by_pid": {
+          "1732608": 341644
+        },
+        "tree_pss_kib": 329596,
+        "tree_rss_kib": 341644
+      },
+      {
+        "monotonic_ns": 594532335797808,
+        "pss_kib_by_pid": {
+          "1732608": 331904
+        },
+        "rss_kib_by_pid": {
+          "1732608": 343696
+        },
+        "tree_pss_kib": 331904,
+        "tree_rss_kib": 343696
+      },
+      {
+        "monotonic_ns": 594532349823128,
+        "pss_kib_by_pid": {
+          "1732608": 334212
+        },
+        "rss_kib_by_pid": {
+          "1732608": 346400
+        },
+        "tree_pss_kib": 334212,
+        "tree_rss_kib": 346400
+      },
+      {
+        "monotonic_ns": 594532362282156,
+        "pss_kib_by_pid": {
+          "1732608": 336780
+        },
+        "rss_kib_by_pid": {
+          "1732608": 348828
+        },
+        "tree_pss_kib": 336780,
+        "tree_rss_kib": 348828
+      },
+      {
+        "monotonic_ns": 594532374694414,
+        "pss_kib_by_pid": {
+          "1732608": 339088
+        },
+        "rss_kib_by_pid": {
+          "1732608": 351136
+        },
+        "tree_pss_kib": 339088,
+        "tree_rss_kib": 351136
+      },
+      {
+        "monotonic_ns": 594532389085802,
+        "pss_kib_by_pid": {
+          "1732608": 341648
+        },
+        "rss_kib_by_pid": {
+          "1732608": 353952
+        },
+        "tree_pss_kib": 341648,
+        "tree_rss_kib": 353952
+      },
+      {
+        "monotonic_ns": 594532401319819,
+        "pss_kib_by_pid": {
+          "1732608": 344464
+        },
+        "rss_kib_by_pid": {
+          "1732608": 356256
+        },
+        "tree_pss_kib": 344464,
+        "tree_rss_kib": 356256
+      },
+      {
+        "monotonic_ns": 594532413672863,
+        "pss_kib_by_pid": {
+          "1732608": 346768
+        },
+        "rss_kib_by_pid": {
+          "1732608": 358816
+        },
+        "tree_pss_kib": 346768,
+        "tree_rss_kib": 358816
+      },
+      {
+        "monotonic_ns": 594532425885125,
+        "pss_kib_by_pid": {
+          "1732608": 349328
+        },
+        "rss_kib_by_pid": {
+          "1732608": 361120
+        },
+        "tree_pss_kib": 349328,
+        "tree_rss_kib": 361120
+      },
+      {
+        "monotonic_ns": 594532438330409,
+        "pss_kib_by_pid": {
+          "1732608": 351632
+        },
+        "rss_kib_by_pid": {
+          "1732608": 363680
+        },
+        "tree_pss_kib": 351632,
+        "tree_rss_kib": 363680
+      },
+      {
+        "monotonic_ns": 594532450772715,
+        "pss_kib_by_pid": {
+          "1732608": 354192
+        },
+        "rss_kib_by_pid": {
+          "1732608": 365984
+        },
+        "tree_pss_kib": 354192,
+        "tree_rss_kib": 365984
+      },
+      {
+        "monotonic_ns": 594532463157018,
+        "pss_kib_by_pid": {
+          "1732608": 356752
+        },
+        "rss_kib_by_pid": {
+          "1732608": 368800
+        },
+        "tree_pss_kib": 356752,
+        "tree_rss_kib": 368800
+      },
+      {
+        "monotonic_ns": 594532475627957,
+        "pss_kib_by_pid": {
+          "1732608": 359312
+        },
+        "rss_kib_by_pid": {
+          "1732608": 371280
+        },
+        "tree_pss_kib": 359312,
+        "tree_rss_kib": 371280
+      },
+      {
+        "monotonic_ns": 594532488023306,
+        "pss_kib_by_pid": {
+          "1732608": 361872
+        },
+        "rss_kib_by_pid": {
+          "1732608": 373664
+        },
+        "tree_pss_kib": 361872,
+        "tree_rss_kib": 373664
+      },
+      {
+        "monotonic_ns": 594532502104162,
+        "pss_kib_by_pid": {
+          "1732608": 364440
+        },
+        "rss_kib_by_pid": {
+          "1732608": 376488
+        },
+        "tree_pss_kib": 364440,
+        "tree_rss_kib": 376488
+      },
+      {
+        "monotonic_ns": 594532516292867,
+        "pss_kib_by_pid": {
+          "1732608": 367260
+        },
+        "rss_kib_by_pid": {
+          "1732608": 379308
+        },
+        "tree_pss_kib": 367260,
+        "tree_rss_kib": 379308
+      },
+      {
+        "monotonic_ns": 594532530280650,
+        "pss_kib_by_pid": {
+          "1732608": 370076
+        },
+        "rss_kib_by_pid": {
+          "1732608": 382124
+        },
+        "tree_pss_kib": 370076,
+        "tree_rss_kib": 382124
+      },
+      {
+        "monotonic_ns": 594532544320333,
+        "pss_kib_by_pid": {
+          "1732608": 372892
+        },
+        "rss_kib_by_pid": {
+          "1732608": 384940
+        },
+        "tree_pss_kib": 372892,
+        "tree_rss_kib": 384940
+      },
+      {
+        "monotonic_ns": 594532556929478,
+        "pss_kib_by_pid": {
+          "1732608": 375452
+        },
+        "rss_kib_by_pid": {
+          "1732608": 387500
+        },
+        "tree_pss_kib": 375452,
+        "tree_rss_kib": 387500
+      },
+      {
+        "monotonic_ns": 594532569550346,
+        "pss_kib_by_pid": {
+          "1732608": 385408
+        },
+        "rss_kib_by_pid": {
+          "1732608": 407184
+        },
+        "tree_pss_kib": 385408,
+        "tree_rss_kib": 407184
+      },
+      {
+        "monotonic_ns": 594532581947091,
+        "pss_kib_by_pid": {
+          "1732608": 375584
+        },
+        "rss_kib_by_pid": {
+          "1732608": 390404
+        },
+        "tree_pss_kib": 375584,
+        "tree_rss_kib": 390404
+      },
+      {
+        "monotonic_ns": 594532594519926,
+        "pss_kib_by_pid": {
+          "1732608": 404572
+        },
+        "rss_kib_by_pid": {
+          "1732608": 420832
+        },
+        "tree_pss_kib": 404572,
+        "tree_rss_kib": 420832
+      },
+      {
+        "monotonic_ns": 594532606730276,
+        "pss_kib_by_pid": {
+          "1732608": 434964
+        },
+        "rss_kib_by_pid": {
+          "1732608": 450188
+        },
+        "tree_pss_kib": 434964,
+        "tree_rss_kib": 450188
+      },
+      {
+        "monotonic_ns": 594532621158076,
+        "pss_kib_by_pid": {
+          "1732608": 441124
+        },
+        "rss_kib_by_pid": {
+          "1732608": 452660
+        },
+        "tree_pss_kib": 441124,
+        "tree_rss_kib": 452660
+      },
+      {
+        "monotonic_ns": 594532635335987,
+        "pss_kib_by_pid": {
+          "1732608": 441124
+        },
+        "rss_kib_by_pid": {
+          "1732608": 452660
+        },
+        "tree_pss_kib": 441124,
+        "tree_rss_kib": 452660
+      },
+      {
+        "monotonic_ns": 594532647549797,
+        "pss_kib_by_pid": {
+          "1732608": 310044
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321580
+        },
+        "tree_pss_kib": 310044,
+        "tree_rss_kib": 321580
+      },
+      {
+        "monotonic_ns": 594532659457333,
+        "pss_kib_by_pid": {
+          "1732608": 310044
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321580
+        },
+        "tree_pss_kib": 310044,
+        "tree_rss_kib": 321580
+      },
+      {
+        "monotonic_ns": 594532671881097,
+        "pss_kib_by_pid": {
+          "1732608": 310044
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321580
+        },
+        "tree_pss_kib": 310044,
+        "tree_rss_kib": 321580
+      },
+      {
+        "monotonic_ns": 594532684331215,
+        "pss_kib_by_pid": {
+          "1732608": 310044
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321580
+        },
+        "tree_pss_kib": 310044,
+        "tree_rss_kib": 321580
+      },
+      {
+        "monotonic_ns": 594532696983450,
+        "pss_kib_by_pid": {
+          "1732608": 310044
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321580
+        },
+        "tree_pss_kib": 310044,
+        "tree_rss_kib": 321580
+      },
+      {
+        "monotonic_ns": 594532709686461,
+        "pss_kib_by_pid": {
+          "1732608": 310044
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321580
+        },
+        "tree_pss_kib": 310044,
+        "tree_rss_kib": 321580
+      },
+      {
+        "monotonic_ns": 594532722436031,
+        "pss_kib_by_pid": {
+          "1732608": 310164
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321700
+        },
+        "tree_pss_kib": 310164,
+        "tree_rss_kib": 321700
+      },
+      {
+        "monotonic_ns": 594532736152995,
+        "pss_kib_by_pid": {
+          "1732608": 310164
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321700
+        },
+        "tree_pss_kib": 310164,
+        "tree_rss_kib": 321700
+      },
+      {
+        "monotonic_ns": 594532749914205,
+        "pss_kib_by_pid": {
+          "1732608": 310164
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321700
+        },
+        "tree_pss_kib": 310164,
+        "tree_rss_kib": 321700
+      },
+      {
+        "monotonic_ns": 594532763882164,
+        "pss_kib_by_pid": {
+          "1732608": 310164
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321700
+        },
+        "tree_pss_kib": 310164,
+        "tree_rss_kib": 321700
+      },
+      {
+        "monotonic_ns": 594532777809133,
+        "pss_kib_by_pid": {
+          "1732608": 310164
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321700
+        },
+        "tree_pss_kib": 310164,
+        "tree_rss_kib": 321700
+      },
+      {
+        "monotonic_ns": 594532791687296,
+        "pss_kib_by_pid": {
+          "1732608": 310164
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321700
+        },
+        "tree_pss_kib": 310164,
+        "tree_rss_kib": 321700
+      },
+      {
+        "monotonic_ns": 594532805272303,
+        "pss_kib_by_pid": {
+          "1732608": 310168
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321704
+        },
+        "tree_pss_kib": 310168,
+        "tree_rss_kib": 321704
+      },
+      {
+        "monotonic_ns": 594532820148287,
+        "pss_kib_by_pid": {
+          "1732608": 310168
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321704
+        },
+        "tree_pss_kib": 310168,
+        "tree_rss_kib": 321704
+      },
+      {
+        "monotonic_ns": 594532836488844,
+        "pss_kib_by_pid": {
+          "1732608": 310168
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321704
+        },
+        "tree_pss_kib": 310168,
+        "tree_rss_kib": 321704
+      },
+      {
+        "monotonic_ns": 594532850695997,
+        "pss_kib_by_pid": {
+          "1732608": 310168
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321704
+        },
+        "tree_pss_kib": 310168,
+        "tree_rss_kib": 321704
+      },
+      {
+        "monotonic_ns": 594532865117095,
+        "pss_kib_by_pid": {
+          "1732608": 310168
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321704
+        },
+        "tree_pss_kib": 310168,
+        "tree_rss_kib": 321704
+      },
+      {
+        "monotonic_ns": 594532880770967,
+        "pss_kib_by_pid": {
+          "1732608": 310168
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321704
+        },
+        "tree_pss_kib": 310168,
+        "tree_rss_kib": 321704
+      },
+      {
+        "monotonic_ns": 594532896517433,
+        "pss_kib_by_pid": {
+          "1732608": 310168
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321704
+        },
+        "tree_pss_kib": 310168,
+        "tree_rss_kib": 321704
+      },
+      {
+        "monotonic_ns": 594532910795971,
+        "pss_kib_by_pid": {
+          "1732608": 310168
+        },
+        "rss_kib_by_pid": {
+          "1732608": 321704
+        },
+        "tree_pss_kib": 310168,
+        "tree_rss_kib": 321704
+      },
+      {
+        "monotonic_ns": 594532925217445,
+        "pss_kib_by_pid": {
+          "1732608": 308782
+        },
+        "rss_kib_by_pid": {
+          "1732608": 322788
+        },
+        "tree_pss_kib": 308782,
+        "tree_rss_kib": 322788
+      },
+      {
+        "monotonic_ns": 594532935409880,
+        "pss_kib_by_pid": {},
+        "rss_kib_by_pid": {},
+        "tree_pss_kib": 0,
+        "tree_rss_kib": 0
+      }
+    ]
+  },
+  "sample": {
+    "cpu_ns_parent": 610543292,
+    "fingerprint": {
+      "channel_order": [
+        "K1:V025-F4-PRIMARY"
+      ],
+      "channels": {
+        "K1:V025-F4-PRIMARY": {
+          "dt_s": 0.125,
+          "dtype": "<f8",
+          "shape": [
+            8388608
+          ],
+          "t0_gps": 1000000000.0,
+          "unit": "m",
+          "values_sha256": "85b526ee732880999564637b7c16cb48d3afa1f5558d2ca11a45b734fdc05b42"
+        }
+      }
+    },
+    "outcome": "return",
+    "wall_ns": 622220662,
+    "warnings": [
+      {
+        "category": "builtins.DeprecationWarning",
+        "message": "Compatibility support for python2 has been dropped"
+      }
+    ]
+  },
+  "stderr": ""
+}

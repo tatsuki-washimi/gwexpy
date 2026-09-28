@@ -1,0 +1,571 @@
+{
+  "cases": [
+    {
+      "case": "schema__all",
+      "class": "declared-concurrent-snapshot-divergence",
+      "equal": false,
+      "error_B0": {
+        "message": null,
+        "type": null
+      },
+      "error_B1": {
+        "message": null,
+        "type": null
+      },
+      "keys_B0": [
+        "\"outTemp\"",
+        "outHumidity",
+        "barometer"
+      ],
+      "keys_B1": [
+        "outTemp",
+        "outHumidity",
+        "barometer"
+      ],
+      "member_value_sha256_differences": {
+        "\"outTemp\"": {
+          "B0": "b76c8aea636974cbb11147b967b787c869154bd7bad44980e10de88c54d41466",
+          "B1": null
+        },
+        "outTemp": {
+          "B0": null,
+          "B1": "065bade5244d2408908e2d7d4b0d36f06569b7c6585808ad007f9292b41a4b7d"
+        }
+      },
+      "mutation": "schema",
+      "outcome_B0": "return",
+      "outcome_B1": "return",
+      "selection": "all",
+      "stable_B0": true,
+      "stable_B1": true,
+      "warnings_B0": [
+        {
+          "category": "builtins.UserWarning",
+          "message": "SDB column '\"outTemp\"': 64 non-numeric value(s) could not be parsed and were set to NaN."
+        }
+      ],
+      "warnings_B1": [],
+      "writer_committed": true
+    },
+    {
+      "case": "schema__selected",
+      "class": "declared-concurrent-snapshot-divergence",
+      "equal": false,
+      "error_B0": {
+        "message": null,
+        "type": null
+      },
+      "error_B1": {
+        "message": null,
+        "type": null
+      },
+      "keys_B0": [
+        "\"outTemp\""
+      ],
+      "keys_B1": [
+        "outTemp"
+      ],
+      "member_value_sha256_differences": {
+        "\"outTemp\"": {
+          "B0": "b76c8aea636974cbb11147b967b787c869154bd7bad44980e10de88c54d41466",
+          "B1": null
+        },
+        "outTemp": {
+          "B0": null,
+          "B1": "065bade5244d2408908e2d7d4b0d36f06569b7c6585808ad007f9292b41a4b7d"
+        }
+      },
+      "mutation": "schema",
+      "outcome_B0": "return",
+      "outcome_B1": "return",
+      "selection": "selected",
+      "stable_B0": true,
+      "stable_B1": true,
+      "warnings_B0": [
+        {
+          "category": "builtins.UserWarning",
+          "message": "SDB column '\"outTemp\"': 64 non-numeric value(s) could not be parsed and were set to NaN."
+        }
+      ],
+      "warnings_B1": [],
+      "writer_committed": true
+    },
+    {
+      "case": "selected_malformed__all",
+      "class": "declared-concurrent-snapshot-divergence",
+      "equal": false,
+      "error_B0": {
+        "message": null,
+        "type": null
+      },
+      "error_B1": {
+        "message": null,
+        "type": null
+      },
+      "keys_B0": [
+        "outTemp",
+        "outHumidity",
+        "barometer"
+      ],
+      "keys_B1": [
+        "outTemp",
+        "outHumidity",
+        "barometer"
+      ],
+      "member_value_sha256_differences": {
+        "outTemp": {
+          "B0": "0f0c81e6ae2c6743ef3feacbdc4af02f187b3a1fbf36440fb7821e04d629f3c0",
+          "B1": "065bade5244d2408908e2d7d4b0d36f06569b7c6585808ad007f9292b41a4b7d"
+        }
+      },
+      "mutation": "selected_malformed",
+      "outcome_B0": "return",
+      "outcome_B1": "return",
+      "selection": "all",
+      "stable_B0": true,
+      "stable_B1": true,
+      "warnings_B0": [
+        {
+          "category": "builtins.UserWarning",
+          "message": "SDB column 'outTemp': 1 non-numeric value(s) could not be parsed and were set to NaN."
+        }
+      ],
+      "warnings_B1": [],
+      "writer_committed": true
+    },
+    {
+      "case": "selected_malformed__selected",
+      "class": "declared-concurrent-snapshot-divergence",
+      "equal": false,
+      "error_B0": {
+        "message": null,
+        "type": null
+      },
+      "error_B1": {
+        "message": null,
+        "type": null
+      },
+      "keys_B0": [
+        "outTemp"
+      ],
+      "keys_B1": [
+        "outTemp"
+      ],
+      "member_value_sha256_differences": {
+        "outTemp": {
+          "B0": "0f0c81e6ae2c6743ef3feacbdc4af02f187b3a1fbf36440fb7821e04d629f3c0",
+          "B1": "065bade5244d2408908e2d7d4b0d36f06569b7c6585808ad007f9292b41a4b7d"
+        }
+      },
+      "mutation": "selected_malformed",
+      "outcome_B0": "return",
+      "outcome_B1": "return",
+      "selection": "selected",
+      "stable_B0": true,
+      "stable_B1": true,
+      "warnings_B0": [
+        {
+          "category": "builtins.UserWarning",
+          "message": "SDB column 'outTemp': 1 non-numeric value(s) could not be parsed and were set to NaN."
+        }
+      ],
+      "warnings_B1": [],
+      "writer_committed": true
+    },
+    {
+      "case": "selected_value__all",
+      "class": "declared-concurrent-snapshot-divergence",
+      "equal": false,
+      "error_B0": {
+        "message": null,
+        "type": null
+      },
+      "error_B1": {
+        "message": null,
+        "type": null
+      },
+      "keys_B0": [
+        "outTemp",
+        "outHumidity",
+        "barometer"
+      ],
+      "keys_B1": [
+        "outTemp",
+        "outHumidity",
+        "barometer"
+      ],
+      "member_value_sha256_differences": {
+        "outTemp": {
+          "B0": "ba8c794ba812622158933219b164b308fe557929913fe3c15f1aa712ff60cb36",
+          "B1": "065bade5244d2408908e2d7d4b0d36f06569b7c6585808ad007f9292b41a4b7d"
+        }
+      },
+      "mutation": "selected_value",
+      "outcome_B0": "return",
+      "outcome_B1": "return",
+      "selection": "all",
+      "stable_B0": true,
+      "stable_B1": true,
+      "warnings_B0": [],
+      "warnings_B1": [],
+      "writer_committed": true
+    },
+    {
+      "case": "selected_value__selected",
+      "class": "declared-concurrent-snapshot-divergence",
+      "equal": false,
+      "error_B0": {
+        "message": null,
+        "type": null
+      },
+      "error_B1": {
+        "message": null,
+        "type": null
+      },
+      "keys_B0": [
+        "outTemp"
+      ],
+      "keys_B1": [
+        "outTemp"
+      ],
+      "member_value_sha256_differences": {
+        "outTemp": {
+          "B0": "ba8c794ba812622158933219b164b308fe557929913fe3c15f1aa712ff60cb36",
+          "B1": "065bade5244d2408908e2d7d4b0d36f06569b7c6585808ad007f9292b41a4b7d"
+        }
+      },
+      "mutation": "selected_value",
+      "outcome_B0": "return",
+      "outcome_B1": "return",
+      "selection": "selected",
+      "stable_B0": true,
+      "stable_B1": true,
+      "warnings_B0": [],
+      "warnings_B1": [],
+      "writer_committed": true
+    },
+    {
+      "case": "timestamp__all",
+      "class": "declared-concurrent-snapshot-divergence",
+      "equal": false,
+      "error_B0": {
+        "message": "SDB timestamp gap at index 1: expected cadence 300, got 299",
+        "type": "builtins.ValueError"
+      },
+      "error_B1": {
+        "message": null,
+        "type": null
+      },
+      "keys_B0": null,
+      "keys_B1": [
+        "outTemp",
+        "outHumidity",
+        "barometer"
+      ],
+      "member_value_sha256_differences": {
+        "barometer": {
+          "B0": null,
+          "B1": "b6c535514c51bb99824480855371772bf2e7ea457f94b03cb45b10d9076a776d"
+        },
+        "outHumidity": {
+          "B0": null,
+          "B1": "c6472d6e71ccf58baf78515ff3a1f80bff839d8869107d6e5509194fb2f62c96"
+        },
+        "outTemp": {
+          "B0": null,
+          "B1": "065bade5244d2408908e2d7d4b0d36f06569b7c6585808ad007f9292b41a4b7d"
+        }
+      },
+      "mutation": "timestamp",
+      "outcome_B0": "error",
+      "outcome_B1": "return",
+      "selection": "all",
+      "stable_B0": true,
+      "stable_B1": true,
+      "warnings_B0": [],
+      "warnings_B1": [],
+      "writer_committed": true
+    },
+    {
+      "case": "timestamp__selected",
+      "class": "declared-concurrent-snapshot-divergence",
+      "equal": false,
+      "error_B0": {
+        "message": "SDB timestamp gap at index 1: expected cadence 300, got 299",
+        "type": "builtins.ValueError"
+      },
+      "error_B1": {
+        "message": null,
+        "type": null
+      },
+      "keys_B0": null,
+      "keys_B1": [
+        "outTemp"
+      ],
+      "member_value_sha256_differences": {
+        "outTemp": {
+          "B0": null,
+          "B1": "065bade5244d2408908e2d7d4b0d36f06569b7c6585808ad007f9292b41a4b7d"
+        }
+      },
+      "mutation": "timestamp",
+      "outcome_B0": "error",
+      "outcome_B1": "return",
+      "selection": "selected",
+      "stable_B0": true,
+      "stable_B1": true,
+      "warnings_B0": [],
+      "warnings_B1": [],
+      "writer_committed": true
+    },
+    {
+      "case": "unselected_malformed__all",
+      "class": "declared-concurrent-snapshot-divergence",
+      "equal": false,
+      "error_B0": {
+        "message": null,
+        "type": null
+      },
+      "error_B1": {
+        "message": null,
+        "type": null
+      },
+      "keys_B0": [
+        "outTemp",
+        "outHumidity",
+        "barometer"
+      ],
+      "keys_B1": [
+        "outTemp",
+        "outHumidity",
+        "barometer"
+      ],
+      "member_value_sha256_differences": {
+        "outHumidity": {
+          "B0": "2ca71b777b9b4c7448589705195732ccb0a375a3709f2754566b628c136ab6ee",
+          "B1": "c6472d6e71ccf58baf78515ff3a1f80bff839d8869107d6e5509194fb2f62c96"
+        }
+      },
+      "mutation": "unselected_malformed",
+      "outcome_B0": "return",
+      "outcome_B1": "return",
+      "selection": "all",
+      "stable_B0": true,
+      "stable_B1": true,
+      "warnings_B0": [
+        {
+          "category": "builtins.UserWarning",
+          "message": "SDB column 'outHumidity': 1 non-numeric value(s) could not be parsed and were set to NaN."
+        }
+      ],
+      "warnings_B1": [],
+      "writer_committed": true
+    },
+    {
+      "case": "unselected_malformed__selected",
+      "class": "equal",
+      "equal": true,
+      "error_B0": {
+        "message": null,
+        "type": null
+      },
+      "error_B1": {
+        "message": null,
+        "type": null
+      },
+      "keys_B0": [
+        "outTemp"
+      ],
+      "keys_B1": [
+        "outTemp"
+      ],
+      "member_value_sha256_differences": {},
+      "mutation": "unselected_malformed",
+      "outcome_B0": "return",
+      "outcome_B1": "return",
+      "selection": "selected",
+      "stable_B0": true,
+      "stable_B1": true,
+      "warnings_B0": [],
+      "warnings_B1": [],
+      "writer_committed": true
+    },
+    {
+      "case": "unselected_value__all",
+      "class": "declared-concurrent-snapshot-divergence",
+      "equal": false,
+      "error_B0": {
+        "message": null,
+        "type": null
+      },
+      "error_B1": {
+        "message": null,
+        "type": null
+      },
+      "keys_B0": [
+        "outTemp",
+        "outHumidity",
+        "barometer"
+      ],
+      "keys_B1": [
+        "outTemp",
+        "outHumidity",
+        "barometer"
+      ],
+      "member_value_sha256_differences": {
+        "outHumidity": {
+          "B0": "79e2732d9ff2afeee3a7f75461a89ff9b1c498cfb509cec447da9c4b1eef2dc1",
+          "B1": "c6472d6e71ccf58baf78515ff3a1f80bff839d8869107d6e5509194fb2f62c96"
+        }
+      },
+      "mutation": "unselected_value",
+      "outcome_B0": "return",
+      "outcome_B1": "return",
+      "selection": "all",
+      "stable_B0": true,
+      "stable_B1": true,
+      "warnings_B0": [],
+      "warnings_B1": [],
+      "writer_committed": true
+    },
+    {
+      "case": "unselected_value__selected",
+      "class": "equal",
+      "equal": true,
+      "error_B0": {
+        "message": null,
+        "type": null
+      },
+      "error_B1": {
+        "message": null,
+        "type": null
+      },
+      "keys_B0": [
+        "outTemp"
+      ],
+      "keys_B1": [
+        "outTemp"
+      ],
+      "member_value_sha256_differences": {},
+      "mutation": "unselected_value",
+      "outcome_B0": "return",
+      "outcome_B1": "return",
+      "selection": "selected",
+      "stable_B0": true,
+      "stable_B1": true,
+      "warnings_B0": [],
+      "warnings_B1": [],
+      "writer_committed": true
+    },
+    {
+      "case": "usunits__all",
+      "class": "equal",
+      "equal": true,
+      "error_B0": {
+        "message": null,
+        "type": null
+      },
+      "error_B1": {
+        "message": null,
+        "type": null
+      },
+      "keys_B0": [
+        "outTemp",
+        "outHumidity",
+        "barometer"
+      ],
+      "keys_B1": [
+        "outTemp",
+        "outHumidity",
+        "barometer"
+      ],
+      "member_value_sha256_differences": {},
+      "mutation": "usunits",
+      "outcome_B0": "return",
+      "outcome_B1": "return",
+      "selection": "all",
+      "stable_B0": true,
+      "stable_B1": true,
+      "warnings_B0": [],
+      "warnings_B1": [],
+      "writer_committed": true
+    },
+    {
+      "case": "usunits__selected",
+      "class": "equal",
+      "equal": true,
+      "error_B0": {
+        "message": null,
+        "type": null
+      },
+      "error_B1": {
+        "message": null,
+        "type": null
+      },
+      "keys_B0": [
+        "outTemp"
+      ],
+      "keys_B1": [
+        "outTemp"
+      ],
+      "member_value_sha256_differences": {},
+      "mutation": "usunits",
+      "outcome_B0": "return",
+      "outcome_B1": "return",
+      "selection": "selected",
+      "stable_B0": true,
+      "stable_B1": true,
+      "warnings_B0": [],
+      "warnings_B1": [],
+      "writer_committed": true
+    }
+  ],
+  "concurrency_exception": "The old B0 reader validates before later payload queries and may observe committed WAL writes after validation; candidate B1 uses one SQLite read transaction snapshot for source validation and payload selection. The user-selected broad exception covers selected/unselected payload, timestamp/dateTime, usUnits, malformed values, and schema under concurrent writes. This capture records those public divergences for S2 review; it does not claim serializable equivalence to the old multi-query schedule.",
+  "counts": {
+    "cases": 14,
+    "declared_concurrent_snapshot_divergences": 10,
+    "equal": 4,
+    "unstable": 0
+  },
+  "created_utc": "2026-09-28T13:58:40.435638+00:00",
+  "protocol": {
+    "ab_order_per_case": [
+      "A",
+      "B",
+      "B",
+      "A",
+      "B",
+      "A",
+      "A",
+      "B",
+      "A",
+      "B"
+    ],
+    "arms": {
+      "B0_frozen_old_R": {
+        "source_sha": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+        "wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498"
+      },
+      "B1_candidate_v7": {
+        "source_sha": "74cba639fb71234a1e7f326a597557488d39db5c",
+        "wheel_sha256": "692b8c48a7f8439b2a5d82cf0cb9c1e262711fbce7822c7ca590c230afab65c0"
+      }
+    },
+    "controller_status": "All 14 case workers exited zero; each arm has five raw samples; stderr empty; triggers fired and writers committed; aggregate fingerprints stable for both arms.",
+    "fixture_content_sha256": "2713b73e3a715e7816c3d94023611ba9e2ac74911f0848f620d077218473b817",
+    "fixture_manifest_sha256": "a1995b43e921f7dd5664f05e69872d15ff9b8c974871f9f3d1deb3448e378837",
+    "harness_digest": "ef827e3e1c3fce41575fc369aa473720e2b2200d8710e2034a88530bafa49bbd",
+    "harness_source_commit": "02cb6b415",
+    "runtime": {
+      "gwexpy": "0.2.5",
+      "install_mode": "wheel-no-deps",
+      "python": "3.12.12",
+      "wheel_files_verified": 369
+    },
+    "samples_per_arm_per_case": 5,
+    "total_worker_samples": 140
+  },
+  "review_gate": "S2 scoped disclosure and human scientific/data-model approval required",
+  "schema": 1,
+  "status": "PASS_WITH_DECLARED_CONCURRENT_WAL_DIVERGENCE"
+}

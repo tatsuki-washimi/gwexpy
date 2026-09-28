@@ -477,7 +477,7 @@ def test_future_theme_headings_do_not_assign_specific_versions() -> None:
 
 def test_release_headings_do_not_preassign_future_minors() -> None:
     """Only currently recognized release sections may use v0.x.y headings."""
-    allowed = {"v0.1.13", "v0.1.14", "v0.2.0", "v0.2.3", "v0.2.4"}
+    allowed = {"v0.1.13", "v0.1.14", "v0.2.0", "v0.2.3", "v0.2.4", "v0.2.5"}
     actual = {match.casefold() for match in RELEASE_HEADING_RE.findall(ROADMAP)}
 
     assert actual <= allowed, f"Unexpected release headings: {sorted(actual - allowed)}"
@@ -539,7 +539,7 @@ def test_v0114_deferred_issues_are_recorded_in_its_changelog() -> None:
 
 def test_required_release_headings_are_present() -> None:
     """Required release sections must not disappear via an empty-subset pass."""
-    required = {"v0.1.13", "v0.1.14", "v0.2.0", "v0.2.3", "v0.2.4"}
+    required = {"v0.1.13", "v0.1.14", "v0.2.0", "v0.2.3", "v0.2.4", "v0.2.5"}
     actual = {match.casefold() for match in RELEASE_HEADING_RE.findall(ROADMAP)}
 
     assert required <= actual, (

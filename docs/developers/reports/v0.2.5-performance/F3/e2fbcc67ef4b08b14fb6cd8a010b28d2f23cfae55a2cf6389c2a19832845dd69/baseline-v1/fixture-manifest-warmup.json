@@ -1,0 +1,877 @@
+{
+  "cases": {
+    "fft_selected_short_payload_error": {
+      "bytes": 1041,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "FFT"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "FFT"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "selected_payload_semantic_error_preserve",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/fft-selected-short-payload-error.xml",
+      "sha256": "ad9aedc68cca51fa10f29b3c709f06624f6f91a48eb9428ea9895858379d6ab3",
+      "stream_roles": {
+        "df9f52a6c9c876100809a88a3e59e4a1a8a538e94c4a08255780a7e0aba3388a": "unselected",
+        "e6876e086df08226405c057fd68843ad3fa4b2ece2d50a9feb9c7ee6f1b28285": "selected"
+      }
+    },
+    "fft_unselected_nonreal_axis_error": {
+      "bytes": 1113,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "FFT"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "FFT"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "unselected_payload_semantic_error_hold",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/fft-unselected-nonreal-axis-error.xml",
+      "sha256": "0230cb1c37d16b3420242f4d1ed09f81e0df5c26d3d5a25e2a57766377cd9afc",
+      "stream_roles": {
+        "dd39b5e92327ed310549f8b095dcb2556ce2f6e8086912e6235e755346bfc2de": "unselected",
+        "e10f258d58b8cc922f2515264f85a2dd2b1a8828cfc396b5450c912fc25079e5": "selected"
+      }
+    },
+    "fft_unselected_short_payload_error": {
+      "bytes": 1041,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "FFT"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "FFT"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "unselected_payload_semantic_error_hold",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/fft-unselected-short-payload-error.xml",
+      "sha256": "a27b77773dffa69c05867895f402ccb3b0c089b225618b4b375558b029306229",
+      "stream_roles": {
+        "df9f52a6c9c876100809a88a3e59e4a1a8a538e94c4a08255780a7e0aba3388a": "selected",
+        "e6876e086df08226405c057fd68843ad3fa4b2ece2d50a9feb9c7ee6f1b28285": "unselected"
+      }
+    },
+    "late_xml_selected_payload_fault": {
+      "bytes": 1331,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "xml_parse_warning_supersedes_payload_fault",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/late-xml-selected-payload-fault.xml",
+      "sha256": "61340f8f0f9c6bee0045e1d6bffb54ea4f729121730657c6584e90467448f539",
+      "stream_roles": {
+        "11ccc3e535fcf0d62b989b94dcf41122b68763e43fad20da0204064586f59706": "selected",
+        "f3d6831cb062cc995086b5c43d3dbcd45e7da5b5df583a2553c8da92e63054a3": "unselected"
+      }
+    },
+    "late_xml_syntax_fault": {
+      "bytes": 2475,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "xml_parse_warning_empty",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/late-xml-syntax-fault.xml",
+      "sha256": "58e46fb3f5e27f5698a559ca7c1316cf935a01625900b8b3fa148aab6adb1835",
+      "stream_roles": {
+        "d0f3c08dd1d17d084bfd4c6ea3f185a276ec335a6e8dea7b88b14aa3880c7306": "unselected",
+        "f3d6831cb062cc995086b5c43d3dbcd45e7da5b5df583a2553c8da92e63054a3": "unselected",
+        "fe1535368d08bbce533945b7e74b7f77701b692918f70f19ddfc3076603e9488": "selected"
+      }
+    },
+    "late_xml_unselected_payload_fault": {
+      "bytes": 1331,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "xml_parse_warning_supersedes_payload_fault",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/late-xml-unselected-payload-fault.xml",
+      "sha256": "43d0a901eee4b61c625aedd8f10b706358e2ed8d385a6c276256a0657efcab27",
+      "stream_roles": {
+        "11ccc3e535fcf0d62b989b94dcf41122b68763e43fad20da0204064586f59706": "unselected",
+        "fe1535368d08bbce533945b7e74b7f77701b692918f70f19ddfc3076603e9488": "selected"
+      }
+    },
+    "many_valid": {
+      "bytes": 2467,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "selected_valid",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/many-valid.xml",
+      "sha256": "3b3e0f1e40dc7efe0e049aab7e54440ee0f7700e275fb2f606ae8f9bd3be9ae8",
+      "stream_roles": {
+        "d0f3c08dd1d17d084bfd4c6ea3f185a276ec335a6e8dea7b88b14aa3880c7306": "unselected",
+        "f3d6831cb062cc995086b5c43d3dbcd45e7da5b5df583a2553c8da92e63054a3": "unselected",
+        "fe1535368d08bbce533945b7e74b7f77701b692918f70f19ddfc3076603e9488": "selected"
+      }
+    },
+    "many_valid_all_channels": {
+      "bytes": 2467,
+      "call_kwargs": {
+        "channels": null,
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": null,
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "all_channels_source_order",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/many-valid.xml",
+      "sha256": "3b3e0f1e40dc7efe0e049aab7e54440ee0f7700e275fb2f606ae8f9bd3be9ae8",
+      "stream_roles": {
+        "d0f3c08dd1d17d084bfd4c6ea3f185a276ec335a6e8dea7b88b14aa3880c7306": "unselected",
+        "f3d6831cb062cc995086b5c43d3dbcd45e7da5b5df583a2553c8da92e63054a3": "unselected",
+        "fe1535368d08bbce533945b7e74b7f77701b692918f70f19ddfc3076603e9488": "selected"
+      }
+    },
+    "many_valid_empty_channels": {
+      "bytes": 2467,
+      "call_kwargs": {
+        "channels": [],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "empty_channels_returns_empty_dict",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/many-valid.xml",
+      "sha256": "3b3e0f1e40dc7efe0e049aab7e54440ee0f7700e275fb2f606ae8f9bd3be9ae8",
+      "stream_roles": {
+        "d0f3c08dd1d17d084bfd4c6ea3f185a276ec335a6e8dea7b88b14aa3880c7306": "unselected",
+        "f3d6831cb062cc995086b5c43d3dbcd45e7da5b5df583a2553c8da92e63054a3": "unselected",
+        "fe1535368d08bbce533945b7e74b7f77701b692918f70f19ddfc3076603e9488": "selected"
+      }
+    },
+    "many_valid_gzip": {
+      "bytes": 491,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "selected_valid",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/many-valid.xml.gz",
+      "sha256": "cb4e19e69c53c85526018f9bb8920875f77455251e799fbc7de805cd78c11d42",
+      "stream_roles": {
+        "d0f3c08dd1d17d084bfd4c6ea3f185a276ec335a6e8dea7b88b14aa3880c7306": "unselected",
+        "f3d6831cb062cc995086b5c43d3dbcd45e7da5b5df583a2553c8da92e63054a3": "unselected",
+        "fe1535368d08bbce533945b7e74b7f77701b692918f70f19ddfc3076603e9488": "selected"
+      }
+    },
+    "namespace_qualified_control": {
+      "bytes": 913,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "old_r_namespace_empty",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/namespace-qualified-control.xml",
+      "sha256": "a9d9e9079614998f3887602af863aa997719562a7764f0c49720d05c357e1ee6",
+      "stream_roles": {
+        "fe1535368d08bbce533945b7e74b7f77701b692918f70f19ddfc3076603e9488": "selected"
+      }
+    },
+    "psd_unselected_short_payload_warning": {
+      "bytes": 999,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": true,
+      "oracle_category": "unselected_payload_warning_may_disappear",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/psd-unselected-short-payload-warning.xml",
+      "sha256": "4b1890e4fc59e1c19d32ee1f5bc78e3e619d2356593f55b1cdba492466e1e2c1",
+      "stream_roles": {
+        "8d2ca52ee496df8da1cd21369680ae08a428ccbbcaf7011fad743210decd715c": "unselected",
+        "d21ed31163bd680adffabb857e74924131428573adc80a6ff704993bcdd2099e": "selected"
+      }
+    },
+    "selected_metadata_fault": {
+      "bytes": 1666,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "selected_structural_metadata_warning",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/selected-metadata-fault.xml",
+      "sha256": "a07b2d476dd6208b422f05d4eae27d94a32e52a59e72322cacc321ca493a36fa",
+      "stream_roles": {
+        "f3d6831cb062cc995086b5c43d3dbcd45e7da5b5df583a2553c8da92e63054a3": "unselected",
+        "fe1535368d08bbce533945b7e74b7f77701b692918f70f19ddfc3076603e9488": "selected"
+      }
+    },
+    "selected_payload_fault": {
+      "bytes": 1323,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "selected_payload_warning",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/selected-payload-fault.xml",
+      "sha256": "69ff0120ccd98c1ad54d000dae8039d73c1b36b13de18c11d60da7c41bcbbcbf",
+      "stream_roles": {
+        "11ccc3e535fcf0d62b989b94dcf41122b68763e43fad20da0204064586f59706": "selected",
+        "f3d6831cb062cc995086b5c43d3dbcd45e7da5b5df583a2553c8da92e63054a3": "unselected"
+      }
+    },
+    "stf_selected_short_payload_error": {
+      "bytes": 996,
+      "call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": true,
+        "products": "STF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "external_call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": false,
+        "products": "STF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "selected_payload_semantic_error_preserve",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/stf-selected-short-payload-error.xml",
+      "sha256": "c234a250f08ad5b0d289f651010b360ad4796abd14677f37d93ac39c34c0b52e",
+      "stream_roles": {
+        "74b830e1c05166c673a3fecde580be69834851ceb27c814816f5db062f1973f6": "selected",
+        "c9fdbd2646ae0fd8c6e6bd58522ab0310984c6af1879c8fbcf33a8fe40943d53": "unselected"
+      }
+    },
+    "stf_unselected_short_payload_error": {
+      "bytes": 996,
+      "call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": true,
+        "products": "STF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "external_call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": false,
+        "products": "STF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "unselected_payload_semantic_error_hold",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/stf-unselected-short-payload-error.xml",
+      "sha256": "fe7532374361277d85291f6f94e11c3e683f351b60c3bf70fc7075be397f3cbf",
+      "stream_roles": {
+        "1ad493f5efa307b76e3dc72d5bd9e7bc6067a35a90bab3acf513e071985c044d": "unselected",
+        "a96be12c43b8299416fe26535489d3a4bfa493d7b8271feac3efe5dfe167d4e6": "selected"
+      }
+    },
+    "tf6_raw_layout": {
+      "bytes": 552,
+      "call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": true,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "external_call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": false,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "tf6_complex_phase_valid",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/tf6-raw-layout.xml",
+      "sha256": "be6d52362e987e578b87729bcefd5eb37116bb4d9f64ee22fea8661ed517a303",
+      "stream_roles": {
+        "3915c78f516fb64bf2cccf04adaf11a1e8dc4a6011aa92beb955333123c7cc39": "selected"
+      }
+    },
+    "tf6_selected_payload_fault": {
+      "bytes": 998,
+      "call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": true,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "external_call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": false,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "selected_payload_decode_error",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/tf6-selected-payload-fault.xml",
+      "sha256": "a36085333af9325f6ea110a545acd3b2c1a0a416db865d5aced6709e7fda4d01",
+      "stream_roles": {
+        "11ccc3e535fcf0d62b989b94dcf41122b68763e43fad20da0204064586f59706": "selected",
+        "8c5f9dcf943cc8d6a05048812f172c54c97140c7f5d952d1a6d76081a216015c": "unselected"
+      }
+    },
+    "tf6_unselected_identity_fault": {
+      "bytes": 1058,
+      "call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": true,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "external_call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": false,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "unselected_structural_identity_error",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/tf6-unselected-identity-fault.xml",
+      "sha256": "821c64fed96fa3dbf15e99884d2934b5f60e8897cd147aa62c1e53a86511c6ac",
+      "stream_roles": {
+        "3915c78f516fb64bf2cccf04adaf11a1e8dc4a6011aa92beb955333123c7cc39": "selected",
+        "8c5f9dcf943cc8d6a05048812f172c54c97140c7f5d952d1a6d76081a216015c": "unselected"
+      }
+    },
+    "tf6_unselected_nonfinite_frequency_fault": {
+      "bytes": 1058,
+      "call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": true,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "external_call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": false,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "unselected_payload_semantic_error_hold",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/tf6-unselected-nonfinite-frequency-fault.xml",
+      "sha256": "121293048740b4d7e47a81ff3421558f6e2b9b777bb541fba5e1f78e22baa632",
+      "stream_roles": {
+        "3915c78f516fb64bf2cccf04adaf11a1e8dc4a6011aa92beb955333123c7cc39": "selected",
+        "664b082a25ed5c72acb64e15c68d1f47e2c550eee511b983ec29c41ddfbeaf1b": "unselected"
+      }
+    },
+    "tf6_unselected_payload_fault": {
+      "bytes": 998,
+      "call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": true,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "external_call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": false,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "native_parser_exception_applies": true,
+      "oracle_category": "unselected_payload_decode_error_may_disappear",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/tf6-unselected-payload-fault.xml",
+      "sha256": "3333239ba5145acdac8c5498e9581350fa08f28fb13c8d73c1073fcaeb1e036d",
+      "stream_roles": {
+        "11ccc3e535fcf0d62b989b94dcf41122b68763e43fad20da0204064586f59706": "unselected",
+        "3915c78f516fb64bf2cccf04adaf11a1e8dc4a6011aa92beb955333123c7cc39": "selected"
+      }
+    },
+    "ts_duplicate_channel_error": {
+      "bytes": 706,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "TS"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "TS"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "structural_identity_error_hold",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/ts-duplicate-channel-error.xml",
+      "sha256": "f1851e55048dbd9fdbf5c9d75f357bb88a0f941cda5c6104ddb1331161d2caa3",
+      "stream_roles": {
+        "d21ed31163bd680adffabb857e74924131428573adc80a6ff704993bcdd2099e": "selected",
+        "e24aba04f4ae587b441413cee27d1652ebba5eb8cbbeb30c842369cf77747fc4": "unselected"
+      }
+    },
+    "ts_selected_short_payload_warning": {
+      "bytes": 705,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "TS"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "TS"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "selected_payload_warning_preserve",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/ts-selected-short-payload-warning.xml",
+      "sha256": "bea7d5148437deae484c622e12c62ccd48730431fde8af790999383d0fe07f83",
+      "stream_roles": {
+        "794826840c75a99279f5e5d3e6b9ebee7bf83aba10aa01d40685aa536c3ba5d5": "selected",
+        "e24aba04f4ae587b441413cee27d1652ebba5eb8cbbeb30c842369cf77747fc4": "unselected"
+      }
+    },
+    "ts_two_valid": {
+      "bytes": 709,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "TS"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "TS"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "ts_public_native_arg_ignored",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/ts-two-valid.xml",
+      "sha256": "be5f9fc7c0da486b138f8c816a832d0898eb2ee13da6581d2ca33a297faf485a",
+      "stream_roles": {
+        "d21ed31163bd680adffabb857e74924131428573adc80a6ff704993bcdd2099e": "selected",
+        "e24aba04f4ae587b441413cee27d1652ebba5eb8cbbeb30c842369cf77747fc4": "unselected"
+      }
+    },
+    "ts_unselected_short_payload_warning": {
+      "bytes": 705,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "TS"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "TS"
+      },
+      "native_parser_exception_applies": true,
+      "oracle_category": "unselected_payload_warning_may_disappear_in_fallback_only",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/ts-unselected-short-payload-warning.xml",
+      "sha256": "0ba66e67d9ea3e11b644b714cadb6ab0ec0e1ad80278af015475f9b9da8acdf4",
+      "stream_roles": {
+        "8d2ca52ee496df8da1cd21369680ae08a428ccbbcaf7011fad743210decd715c": "unselected",
+        "d21ed31163bd680adffabb857e74924131428573adc80a6ff704993bcdd2099e": "selected"
+      }
+    },
+    "unselected_metadata_fault": {
+      "bytes": 1666,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "unselected_structural_metadata_warning",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/unselected-metadata-fault.xml",
+      "sha256": "4b8acad023a63b0e43dabeb8ab32f2c457b246dadb70604ec77d36a626de5b18",
+      "stream_roles": {
+        "f3d6831cb062cc995086b5c43d3dbcd45e7da5b5df583a2553c8da92e63054a3": "unselected",
+        "fe1535368d08bbce533945b7e74b7f77701b692918f70f19ddfc3076603e9488": "selected"
+      }
+    },
+    "unselected_payload_fault": {
+      "bytes": 1323,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": true,
+      "oracle_category": "unselected_payload_warning_may_disappear",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-warmup/unselected-payload-fault.xml",
+      "sha256": "d872bbe1a532b0b2ed14c73d9808ccf78098f67a4891b5948f17203e47234d77",
+      "stream_roles": {
+        "11ccc3e535fcf0d62b989b94dcf41122b68763e43fad20da0204064586f59706": "unselected",
+        "fe1535368d08bbce533945b7e74b7f77701b692918f70f19ddfc3076603e9488": "selected"
+      }
+    }
+  },
+  "epoch": 1234567890.25,
+  "external_route_note": "native=False may use optional dttxml; characterize its warnings and errors separately and exclude it from the #589 decode/memory gate.",
+  "frequency_axis": {
+    "count": 64,
+    "df": 2.5,
+    "f0": 17.5
+  },
+  "native_selection_scope": {
+    "FFT": {
+      "preserve": [
+        "unselected_invalid_length_ValueError",
+        "unselected_nonreal_axis_ValueError"
+      ],
+      "status": "HOLD"
+    },
+    "PSD": {
+      "allowed_unselected_payload_faults": [
+        "base64_decode_warning",
+        "decoded_length_warning"
+      ],
+      "preserve": [
+        "XML_parse_warning",
+        "metadata_warning",
+        "selected_payload_warning"
+      ],
+      "status": "eligible"
+    },
+    "STF": {
+      "preserve": [
+        "unselected_invalid_length_ValueError"
+      ],
+      "status": "HOLD"
+    },
+    "TF6": {
+      "preserve": [
+        "duplicate_identity_ValueError",
+        "unselected_nonfinite_frequency_ValueError"
+      ],
+      "status": "HOLD"
+    },
+    "TS": {
+      "allowed_unselected_payload_faults": [
+        "decoded_length_warning"
+      ],
+      "note": "Public TS native=True is ignored with dttxml installed.",
+      "preserve": [
+        "duplicate_channel_error",
+        "metadata_warning"
+      ],
+      "status": "fallback_only"
+    }
+  },
+  "old_r_many_valid_unselected_decoded_bytes": 512,
+  "points": 64,
+  "schema": "gwexpy-b-f3-fixtures-v1",
+  "selected_channel": "K1:F3-SELECTED",
+  "selected_raw_bytes": 256,
+  "selected_raw_sha256": "d7f2fedfd2eee93030481ef53753f41da75404b543d246ec0e7da77730460405",
+  "selected_values": [
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875
+  ],
+  "tf6_oracle": {
+    "dtype": "complex64",
+    "frequencies": [
+      17.5,
+      20.0,
+      22.5
+    ],
+    "imag": [
+      2.0,
+      0.25,
+      -4.0
+    ],
+    "pair": [
+      "K1:F3-TF-OUTPUT",
+      "K1:F3-TF-INPUT"
+    ],
+    "real": [
+      1.0,
+      -0.5,
+      3.0
+    ]
+  },
+  "tf6_raw_sha256": "8eb31d4380077dbe1b77f908d16663968230f6fc291274a11e71457876600420",
+  "ts_oracle": {
+    "dt": 0.125,
+    "selected_values": [
+      1.0,
+      1.125,
+      1.25
+    ],
+    "t0": 1234567890.25
+  },
+  "unselected_channels": [
+    "K1:F3-OTHER-00001",
+    "K1:F3-OTHER-00002"
+  ],
+  "unselected_results": 2
+}

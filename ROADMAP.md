@@ -17,8 +17,12 @@ release, v0.2.0, shipped on 2026-08-26. No next-minor theme is committed yet.
 
 ## Release policy
 
-- **Patch releases (v0.x.y)** contain bug fixes only — no new features, no new public
-  APIs, no new dependencies. Two clarifications, so that "bug fix" is not read more
+- **Patch releases (v0.x.y)** contain bug fixes and behavior-preserving internal
+  performance or scalability corrections — no new features, public APIs,
+  dependencies, or persistence schemas. The latter must preserve public numerical
+  results, dtype, metadata, warning/error behavior, and on-disk format. Any
+  intentional observable divergence needs separate review, approval, and
+  disclosure. Further clarifications, so that "bug fix" is not read more
   narrowly than intended:
   - Making an argument that is *already accepted but silently ignored* actually take
     effect — or raise — is a bug fix, not a new feature. The API surface does not grow;
@@ -293,6 +297,38 @@ published on 2026-09-26. Zenodo's archive matches release source
 Public distribution channels are verified. Documentation deployment readback
 remains pending, so this record does not mark publication closure complete.
 
+## v0.2.5 — Cross-format I/O hardening and internal performance (candidate; HOLD)
+
+The previously reviewed #751 I/O hardening is joined by measured internal I/O
+performance and scalability work under [#580](https://github.com/tatsuki-washimi/gwexpy/issues/580).
+The [v0.2.5 release plan](docs/developers/plans/20260927_v0.2.5_release_plan.md)
+governs the new S2/R2 candidate. Its date is TBD. The earlier S/R review and
+approval remain historical and do not authorize S2 or release GO.
+
+The selected work is the #581 benchmark harness; #582 merge, #583 dispatch,
+#584 range push-down, #585 CSV/SDB/TDMS, #589 native DTTXML, and #588 GWF
+scalability improvements; the NumPy-only portion of #518; and the
+dtype-preserving portion of #586. #587, #590, #519, Numba, and the remaining
+parts of #518 and #586 are outside this candidate.
+
+For #589 only, parser-level use of already accepted selectors may omit warnings
+and decode errors arising exclusively from fully unselected payloads on the
+native DTTXML route. XML structural errors and selected-payload behavior must
+retain their old-candidate behavior; the external `dttxml` route is unchanged.
+This proposed, narrowly scoped exception needs separate human scientific/data-model
+approval for S2. It does not extend #611's `non_intersecting_window_safety`
+exception beyond completely disjoint plain HDF5 read windows.
+
+For #585 SDB reads, one separately gated concurrency correction pins whole-table
+validation and the selected payload query to the same SQLite read snapshot.
+The proposed exception covers observable value, warning, and error differences
+caused by a WAL writer committing during the read after that snapshot is pinned.
+Its matrix must characterize selected and unselected payload updates, timestamp
+and `usUnits` changes, schema changes, and malformed values against old R before
+SDB runtime work. Static-source behavior remains old-R-equivalent. The exact
+concurrent scope requires separate review, human scientific/data-model approval,
+and release disclosure; it grants no skipped-payload exception to other formats.
+
 ## Future themes (not scheduled)
 
 No milestones exist for these yet, and the themes may be re-scoped. Each theme below
@@ -493,9 +529,9 @@ measurement of demand, and is deliberately kept out of the public documentation.
    design work has been done yet.
 5. **Trigger-table exchange with pyomicron and search pipelines.** Reading and writing the
    products, never the orchestration.
-6. **I/O performance** (`#580` umbrella): the shared benchmark harness (`#581`) comes
-   first; individual optimizations are prioritized from measurements, not assigned to
-   releases in advance.
+6. **I/O performance beyond v0.2.5** (`#580` umbrella): only the bounded work
+   listed in the v0.2.5 section is assigned to that candidate. Further
+   optimizations depend on measurements and are not assigned to a release.
 
 Explicitly not planned: a spicypy adapter module (GWpy objects are already the shared
 language), and any absorption of gwdetchar / gwsumm / gwvet / hveto workflows.

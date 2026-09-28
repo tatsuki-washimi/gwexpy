@@ -1,0 +1,38 @@
+{
+  "large_fault_approved_warning_differences": [
+    "psd_unselected_short_payload_warning",
+    "unselected_payload_fault"
+  ],
+  "large_fault_cases": 5,
+  "metadata_cases_exact": 15,
+  "peak_pss_gate": "PASS",
+  "peak_pss_kib": {
+    "B1_MAD": 238,
+    "B1_median": 363940,
+    "candidate_MAD": 419,
+    "candidate_median": 292491
+  },
+  "peak_pss_relative_improvement": 0.1963208221135352,
+  "peak_pss_relative_noise": 0.0020864766585535236,
+  "peak_pss_required_improvement": 0.05,
+  "public_routes_exact": 81,
+  "schema": "gwexpy-f3-candidate-verification-v2",
+  "small_warm_batches": [
+    {
+      "batch": 1,
+      "gate": "PASS",
+      "relative_limit": 0.3428907085170574,
+      "relative_regression": 0.058792033495132845
+    },
+    {
+      "batch": 2,
+      "gate": "PASS",
+      "relative_limit": 0.23144962846243503,
+      "relative_regression": -0.0330816216303248
+    }
+  ],
+  "source_commit": "ffba2e5e27472c098cc1fb45f47a21fffcf918a1",
+  "unknown_decode_calls": 0,
+  "unselected_decoded_bytes": 0,
+  "wheel_sha256": "b3a9ff1ceeda7353c3aea972a6f7c71e18413a6f7adebfbf5a99c809f2d7eab4"
+}

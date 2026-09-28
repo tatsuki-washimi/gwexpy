@@ -1,0 +1,104 @@
+{
+  "fixture_manifest_sha256": "dade6bd54082ef7f771724b84064caeb252342317e0da5cdc81a966f5e916050",
+  "harness_sha256": "6cf38b5c66e3383b6a92a0b349049754d378e53fa7f9faa41472aeec62f18df0",
+  "harness_source_commit": "d1cf9c4ce2c1093d47460f8295269d2965247263",
+  "performance_measured": false,
+  "pre_x_integrated_sha": null,
+  "raw_file_sha256": {
+    "README.md": "68cb0aaeb50df3ac111b9b924451599a92deb49e42e065f961d165dcd23a92ce",
+    "ats32-structure.json": "3f428449ad6fb0376cfda6fcab761eb44b763422bd513fb58d51264f151a9e66",
+    "ats32-structure.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ats64-structure.json": "05074291d322853f16fa6ce36a52954f93e750e49adf0a281bc8fc8a28d89889",
+    "ats64-structure.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ats_overflow-raise-public.json": "61d208aa14c0a0b39ec0d8ad2331556183b7a605816abc35f60b55a743034a28",
+    "ats_overflow-raise-public.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ats_overflow-warn-public.json": "4b70b53aba7db62546017799a49a31ca62a007289009a80ff42dd64e57dd5a25",
+    "ats_overflow-warn-public.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-structure.json": "9282f808073b01f45e13cc71f9b139cef44e5e64d9b200558e7fb74b38a368c8",
+    "matrix-structure.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix_int64_extrema-warn-public.json": "7458ace67f460cdce36dcb66b6efc1e558c1435e22b285fa33664e8875cc1364",
+    "matrix_int64_extrema-warn-public.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix_nan_inf-warn-public.json": "07a0d7b406e99ae0c5f45935b6f64c50a5d567bd7c18d0d059327626cfefae68",
+    "matrix_nan_inf-warn-public.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix_object_strings-warn-public.json": "034bfcca0e27f294d43a1f60d17ffe8b4bc680a08e1d3c66d85efbdcbc04de27",
+    "matrix_object_strings-warn-public.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "schema": "gwexpy-v025-bx-b1-structure-probe-v1",
+  "single_read_results": {
+    "ats32-structure": {
+      "fixture_file_sha256": "cb83bc9be6933dbc1eb23fb67eca631e6be5d4b126095e42a630eb6f8602e81f",
+      "full_payload_astype_calls": 1,
+      "outcome_kind": "return",
+      "outcome_type": null,
+      "warning_count": 1
+    },
+    "ats64-structure": {
+      "fixture_file_sha256": "bd928af98667230f1c840a7f3360828e26bcdc79b0724e1041ee824c08448fb9",
+      "full_payload_astype_calls": 1,
+      "outcome_kind": "return",
+      "outcome_type": null,
+      "warning_count": 1
+    },
+    "ats_overflow-raise-public": {
+      "fixture_file_sha256": "d5ad59c2a3776f9479ba137aeba32cce93c336b9c3f76a39ad7141bd11a23e3d",
+      "full_payload_astype_calls": null,
+      "outcome_kind": "error",
+      "outcome_type": "builtins.FloatingPointError",
+      "warning_count": 1
+    },
+    "ats_overflow-warn-public": {
+      "fixture_file_sha256": "d5ad59c2a3776f9479ba137aeba32cce93c336b9c3f76a39ad7141bd11a23e3d",
+      "full_payload_astype_calls": null,
+      "outcome_kind": "return",
+      "outcome_type": null,
+      "warning_count": 2
+    },
+    "matrix-structure": {
+      "fixture_file_sha256": "2347bae83f415c7ffa0c7c527c03787cd0c63b7b79baa3d1c8eeadd5ebfa7786",
+      "full_payload_astype_calls": 32,
+      "outcome_kind": "return",
+      "outcome_type": null,
+      "warning_count": 3
+    },
+    "matrix_int64_extrema-warn-public": {
+      "fixture_file_sha256": "733c7d523893ea17701d4d3591806d3cda417fd0a121aa0fa5400cf081d651e6",
+      "full_payload_astype_calls": null,
+      "outcome_kind": "return",
+      "outcome_type": null,
+      "warning_count": 3
+    },
+    "matrix_nan_inf-warn-public": {
+      "fixture_file_sha256": "bff7a66aa136934fa33e27d164f449b19e7c4d585bda3ade0c2b403efa969888",
+      "full_payload_astype_calls": null,
+      "outcome_kind": "return",
+      "outcome_type": null,
+      "warning_count": 3
+    },
+    "matrix_object_strings-warn-public": {
+      "fixture_file_sha256": "cb78e4b85a820d4c91b7cd118d6318af0d52ba3973a081aecfe2e55294486542",
+      "full_payload_astype_calls": null,
+      "outcome_kind": "error",
+      "outcome_type": "builtins.TypeError",
+      "warning_count": 3
+    }
+  },
+  "source_sha": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+  "status": "DIAGNOSTIC_ONLY_NOT_BASELINE_FROZEN",
+  "wheel_audit": {
+    "distributions": {
+      "astropy": "7.2.0",
+      "gwpy": "4.0.1",
+      "netCDF4": "1.7.4",
+      "numpy": "1.26.4",
+      "xarray": "2026.2.0"
+    },
+    "gwexpy_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy",
+    "gwexpy_version": "0.2.5",
+    "install_mode": "wheel-no-deps",
+    "prefix": "/tmp/gwexpy-v025-b-env-b",
+    "python": "3.12.12",
+    "wheel_files_verified": 369,
+    "wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498"
+  },
+  "wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498"
+}

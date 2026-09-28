@@ -1,0 +1,74 @@
+[
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-b-env-a/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.4",
+      "prefix": "/tmp/gwexpy-v025-b-env-a",
+      "python": "3.12.12"
+    },
+    "controller_elapsed_ns": 2555687262,
+    "sample": {
+      "counters": {},
+      "cpu_ns": 225137565,
+      "fingerprint": {
+        "attrs": "None",
+        "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+        "members": {
+          "channel_1": {
+            "class": "gwexpy.timeseries.timeseries.TimeSeries",
+            "dt": "<Quantity 0.1 s>",
+            "epoch": "<Time object: scale='utc' format='gps' value=0.0>",
+            "name": "channel_1",
+            "sample_rate": "<Quantity 10. Hz>",
+            "t0": "<Quantity 0. s>",
+            "times": {
+              "unit": "s",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "0.0",
+                  "0.1",
+                  "0.2"
+                ],
+                "sha256": "addd73f32f23c76a6532f87813b8bcfa5a5d781f1211d7d8c1fa86ba50df7ea6",
+                "shape": [
+                  3
+                ]
+              }
+            },
+            "unit": "",
+            "values": {
+              "dtype": "<i2",
+              "selected": [
+                "1000",
+                "2000",
+                "3000"
+              ],
+              "sha256": "31017f7f9619e1ee2eb0c416251cd4fedcc43f5d709aafe0b959703f0115584c",
+              "shape": [
+                3
+              ]
+            }
+          }
+        },
+        "order": [
+          "channel_1"
+        ]
+      },
+      "fixture_counts": {},
+      "logs": [],
+      "logs_recorded": true,
+      "outcome": "return",
+      "wall_ns": 228561347,
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "warnings_recorded": true
+    },
+    "stderr": ""
+  }
+]

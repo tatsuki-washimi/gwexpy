@@ -1,0 +1,1555 @@
+{
+  "channel": "K1:V025-F4-PRIMARY",
+  "decoded_sample_bytes": 16777216,
+  "expected_payload_fingerprints": {
+    "first_part_values_sha256": "16ab8528f22465cf87fa0572a38b4c343efbd824d1bc5d4a113e34e6e618cb66",
+    "last_part_values_sha256": "0383664a154bf391975ab342c410f8325a8986236b2214367705293ddab41c26",
+    "time_rule": "t0 = 1000000000 + part_index * 8192 / 8 GPS seconds; all parts are adjacent",
+    "value_rule": "float64 arange(part_index * 8192, (part_index + 1) * 8192)"
+  },
+  "files": [
+    {
+      "name": "stress_0000.gwf",
+      "sha256": "b9f6af674c122f12095adae0de2930cef0db3373c0921ef83ab1bd5bf8b4df2c",
+      "size_bytes": 26313
+    },
+    {
+      "name": "stress_0001.gwf",
+      "sha256": "4c7505b720666891de85bd7b2a47ebb5ec672534e630f32f0ea95070b3208949",
+      "size_bytes": 24350
+    },
+    {
+      "name": "stress_0002.gwf",
+      "sha256": "ea0e32a51b279e92cb42155ef81e855d7e405271ebc7d12e6105108f33ab130a",
+      "size_bytes": 23015
+    },
+    {
+      "name": "stress_0003.gwf",
+      "sha256": "94471f0bfcea7722518d4c4a8340861afafdec1710e1f1ee263a1d184156df19",
+      "size_bytes": 23015
+    },
+    {
+      "name": "stress_0004.gwf",
+      "sha256": "c9784c3edac4499c8070239622a23fe050ea1caa37ccff0f6d737c4e345d7dc9",
+      "size_bytes": 22730
+    },
+    {
+      "name": "stress_0005.gwf",
+      "sha256": "16277d32886d1ce473dffe86d714ddbee7c9257879acb09f6c88384714bb4436",
+      "size_bytes": 22731
+    },
+    {
+      "name": "stress_0006.gwf",
+      "sha256": "b43eac0c680cef4360a14b1db5791cc598fd6ecb9b60c520f164239f5c3dd431",
+      "size_bytes": 22731
+    },
+    {
+      "name": "stress_0007.gwf",
+      "sha256": "1d25f8a7e5430299e322a7d72a65d167c5610f6c01bb952d566836bfa1fc6dfe",
+      "size_bytes": 22731
+    },
+    {
+      "name": "stress_0008.gwf",
+      "sha256": "8cf5d286fb8aff67328306a59e9e0119d31f1892616b148cfb37fb961ea0e9d7",
+      "size_bytes": 23049
+    },
+    {
+      "name": "stress_0009.gwf",
+      "sha256": "51f0deea1b08e45caf8973fd918056d5fa32439ebeecd0905ad4f8c6d21c3b52",
+      "size_bytes": 23050
+    },
+    {
+      "name": "stress_0010.gwf",
+      "sha256": "ee2038eefd6edde09803b946471baed68865556018360e7e8b76631ff01f1a0f",
+      "size_bytes": 23051
+    },
+    {
+      "name": "stress_0011.gwf",
+      "sha256": "80a2a50861bc53e056f3d2c28cf6b30548393f770cbf6a0f0ba0ea71f70231cb",
+      "size_bytes": 23051
+    },
+    {
+      "name": "stress_0012.gwf",
+      "sha256": "338130778e3336eb530e6870fc871d1357d3ac9cca8d1cee88fd761ed71e88e8",
+      "size_bytes": 23051
+    },
+    {
+      "name": "stress_0013.gwf",
+      "sha256": "363e24f22f6809b8f1295d5820679898adbaf7ac5fe6c5ce5f0ff78b2aaac291",
+      "size_bytes": 23050
+    },
+    {
+      "name": "stress_0014.gwf",
+      "sha256": "5b93dea7a4485fe79d425635e53ab4131c265a57c8c468d2e30bf40dfbc9766b",
+      "size_bytes": 23050
+    },
+    {
+      "name": "stress_0015.gwf",
+      "sha256": "85c2b0084c3f1751b28a0e64af0be70b4ec172dfb5c883e9f989ba6c6d127df4",
+      "size_bytes": 23049
+    },
+    {
+      "name": "stress_0016.gwf",
+      "sha256": "c22fe3c6fdba3c186c88e59a474fe5a3b4b9bd11321fd07428faf1b2f0ee6af6",
+      "size_bytes": 23693
+    },
+    {
+      "name": "stress_0017.gwf",
+      "sha256": "3f486271d7d96c69661bca478c29ce79f367f40772813d120c18d06d3846afee",
+      "size_bytes": 23700
+    },
+    {
+      "name": "stress_0018.gwf",
+      "sha256": "73b37152d4b8afa33d6a04d4d917109c4050756a85b1d9ed09c8323c66afd14e",
+      "size_bytes": 23701
+    },
+    {
+      "name": "stress_0019.gwf",
+      "sha256": "553681ff342681d439ece7156d6a6405c2e74df66ed89fbe6e1e2f20f27d8197",
+      "size_bytes": 23701
+    },
+    {
+      "name": "stress_0020.gwf",
+      "sha256": "3bce6684c013ca17a2d5c96f47554c7d1c31ec7647c992a3f38e6bc78ea05ca5",
+      "size_bytes": 23700
+    },
+    {
+      "name": "stress_0021.gwf",
+      "sha256": "6dfb63c2443d19fc40e36312351ed74f0c22916fc9bdc36f0ab00537381cb0cd",
+      "size_bytes": 23701
+    },
+    {
+      "name": "stress_0022.gwf",
+      "sha256": "e3bffa104f56e8212b3df1dd9f124426eb3bb93f110ad51854bcbccdb2860598",
+      "size_bytes": 23700
+    },
+    {
+      "name": "stress_0023.gwf",
+      "sha256": "92f76d96b95360d7e23690f86c6afb65883132c233c625126f948f71cbaf1818",
+      "size_bytes": 23697
+    },
+    {
+      "name": "stress_0024.gwf",
+      "sha256": "232384cfb93557b64ccb09d6e73d0f1799a187328692ce1d3ba2c85b6b67e32b",
+      "size_bytes": 23693
+    },
+    {
+      "name": "stress_0025.gwf",
+      "sha256": "8aa94d02aac057fe52ccf46b75f7a4ed3722557dc3068a481ba8a9545902f099",
+      "size_bytes": 23699
+    },
+    {
+      "name": "stress_0026.gwf",
+      "sha256": "d9776dd0b7231b7de84841b0483b530a058b0a2f0d8293923689f7fa6d4c3c43",
+      "size_bytes": 23698
+    },
+    {
+      "name": "stress_0027.gwf",
+      "sha256": "b973d969a492a9ca749845841df59fb6180f99581865ea92879f47ed0984792b",
+      "size_bytes": 23700
+    },
+    {
+      "name": "stress_0028.gwf",
+      "sha256": "a69df2264abe9487462b83393b6c65196eeea1e85debebcf5a549b6415af5e8e",
+      "size_bytes": 23701
+    },
+    {
+      "name": "stress_0029.gwf",
+      "sha256": "671917d121b0bc7d42b93fb98e2ca306e43c9d26714b97c15ebf23cf5ec943f1",
+      "size_bytes": 23701
+    },
+    {
+      "name": "stress_0030.gwf",
+      "sha256": "dfdd3e232c8aae89fb6bc6fe50bc24e2cee632ebd49a54aa5aba6bfc61f51401",
+      "size_bytes": 23700
+    },
+    {
+      "name": "stress_0031.gwf",
+      "sha256": "5b141e6f3b4df5ff397469f517a0d410a504552aadec7e9426d24303682b49f7",
+      "size_bytes": 23698
+    },
+    {
+      "name": "stress_0032.gwf",
+      "sha256": "78b9fe2cd4ec248957705723fa5486c8de4e50f61d711b2575b813051d876f96",
+      "size_bytes": 24521
+    },
+    {
+      "name": "stress_0033.gwf",
+      "sha256": "a0a5342b82a4a77018e04b78ad3699b39050200d413fdfaaed2eed4c95af93d6",
+      "size_bytes": 24514
+    },
+    {
+      "name": "stress_0034.gwf",
+      "sha256": "225601340ab755365ee2efd9f9bdec1bc188fb0cdb71fea6c991645d488398b4",
+      "size_bytes": 24523
+    },
+    {
+      "name": "stress_0035.gwf",
+      "sha256": "e792c5512a7cfd5bb6a82ed1fe6ce6f0d33a6d5ddd9c6ff2f60885eec8b88a69",
+      "size_bytes": 24515
+    },
+    {
+      "name": "stress_0036.gwf",
+      "sha256": "479552c602086274a341ec9dca95ede25b235961737837c92b57cbe598c19801",
+      "size_bytes": 24522
+    },
+    {
+      "name": "stress_0037.gwf",
+      "sha256": "f3f830087b53072b757994a6ec11585a477e4433a83c0a67092c7424e9fd54c6",
+      "size_bytes": 24515
+    },
+    {
+      "name": "stress_0038.gwf",
+      "sha256": "06a6828fd30ba1866504def2b22e51399653dde125c5dc11c3baaf8c9dbb47ad",
+      "size_bytes": 24520
+    },
+    {
+      "name": "stress_0039.gwf",
+      "sha256": "640a23252ec491d7837ce47956aba628803770d8c28332629fb1057bbcfb3d91",
+      "size_bytes": 24515
+    },
+    {
+      "name": "stress_0040.gwf",
+      "sha256": "a1b478d81f0f19bdfa29403bb997bd1f5ac37ea3b1454656e570787a3f6e9da3",
+      "size_bytes": 24521
+    },
+    {
+      "name": "stress_0041.gwf",
+      "sha256": "58af4b4e7bf9b271e2fc02f45f3b371c631014faefdad400a144e2c1d8b85aed",
+      "size_bytes": 24514
+    },
+    {
+      "name": "stress_0042.gwf",
+      "sha256": "b72da175a1f94d482f6439d5a4483edaba60569cbf070b5986bf439ee6e5ef1b",
+      "size_bytes": 24523
+    },
+    {
+      "name": "stress_0043.gwf",
+      "sha256": "a60a90a5cc16f440fa08132bb25aaf6e5b66a1383ad38f825d54b06dde1230bc",
+      "size_bytes": 24515
+    },
+    {
+      "name": "stress_0044.gwf",
+      "sha256": "a3e922649fc175446fb309fa2e58a7fcb080c12a62894ca4cc7c7c2b1070793f",
+      "size_bytes": 24522
+    },
+    {
+      "name": "stress_0045.gwf",
+      "sha256": "8c3a6d9db838e6b8545a5affda1179d27f528404702916f82d91c104b9c712e7",
+      "size_bytes": 24515
+    },
+    {
+      "name": "stress_0046.gwf",
+      "sha256": "286dd8d466491711fbd3fd121146a4476e03d133f49593160ed728031bdcfaec",
+      "size_bytes": 24520
+    },
+    {
+      "name": "stress_0047.gwf",
+      "sha256": "571166b33f3adeaf3da45721d29c4cfdcde71283264718732784b1cade5618a1",
+      "size_bytes": 24515
+    },
+    {
+      "name": "stress_0048.gwf",
+      "sha256": "039eef9310262e64a8060c65fde06f1616a3909aa7e5310f578df63d7c472df4",
+      "size_bytes": 24521
+    },
+    {
+      "name": "stress_0049.gwf",
+      "sha256": "499d1ddbec5af5de80961af3beeb94be1740e3c576be942d3bbb4351d54bdba3",
+      "size_bytes": 24514
+    },
+    {
+      "name": "stress_0050.gwf",
+      "sha256": "40219afbbb7bb6d7ded1f66cc0fbc98db2229e14e6f0d7f8f5e746851a025937",
+      "size_bytes": 24523
+    },
+    {
+      "name": "stress_0051.gwf",
+      "sha256": "cd8f469dfe81b0b3d7dd75f3fae54a709fe5fc475c12463d3b8a38aae16d6736",
+      "size_bytes": 24515
+    },
+    {
+      "name": "stress_0052.gwf",
+      "sha256": "4d6bcd17a1daf5160f5cbece778419c4e7b8a1db0c2420dd73c3af9c9e2dd733",
+      "size_bytes": 24522
+    },
+    {
+      "name": "stress_0053.gwf",
+      "sha256": "78004cb30b9f74a6252de48fab36545ba71884ee1fed79789197dde0af1de02b",
+      "size_bytes": 24515
+    },
+    {
+      "name": "stress_0054.gwf",
+      "sha256": "7cf0122b4826d24b9e4d83965f3b3ea402361c30196ba3140b967a124610469d",
+      "size_bytes": 24520
+    },
+    {
+      "name": "stress_0055.gwf",
+      "sha256": "787ca800a2456550a46421b5d99513458c1d6be1666ca08f46a129551edb3869",
+      "size_bytes": 24515
+    },
+    {
+      "name": "stress_0056.gwf",
+      "sha256": "3ad24e308d6282e1621a12d9ec6b84fc79c22f6f453a2e0f0cf2bd05581d1f1d",
+      "size_bytes": 24521
+    },
+    {
+      "name": "stress_0057.gwf",
+      "sha256": "3b739710a73b6920b314aa0346e004821fbdde59c066e6336cd23857d573e629",
+      "size_bytes": 24514
+    },
+    {
+      "name": "stress_0058.gwf",
+      "sha256": "99e45cdbe78c5538412ae0b13577e7f0a6ac662027477832f6f5dd18d80bc06d",
+      "size_bytes": 24523
+    },
+    {
+      "name": "stress_0059.gwf",
+      "sha256": "8d5ed11e3a9ce0ce7f768ee5baefbd52977b43053f70970b05da9c48a58014b8",
+      "size_bytes": 24515
+    },
+    {
+      "name": "stress_0060.gwf",
+      "sha256": "8f2dc9b231f73d63d4a2c6c9ba1ca7c05d7fe815a1c04e461db20eeb6aae9547",
+      "size_bytes": 24522
+    },
+    {
+      "name": "stress_0061.gwf",
+      "sha256": "e23cfe63c3f40279fd27d5a2bb934ee29bc87e02fe60a0eba0da777fa4789ae6",
+      "size_bytes": 24515
+    },
+    {
+      "name": "stress_0062.gwf",
+      "sha256": "e8c81b2b3b3194a020facb810233e98ea92644a52370855e7d08963e3d4419a2",
+      "size_bytes": 24520
+    },
+    {
+      "name": "stress_0063.gwf",
+      "sha256": "05722a4e2e8e40159121720c5f748e18900a8bc0a275c7a7bf2bc57ab2d0f2ed",
+      "size_bytes": 24515
+    },
+    {
+      "name": "stress_0064.gwf",
+      "sha256": "d178e147bf84162f10358a1fc3b59bb47f09bae180f0755f08bad8030ba28ca1",
+      "size_bytes": 25436
+    },
+    {
+      "name": "stress_0065.gwf",
+      "sha256": "2f72a16f4cd4eb3be2d6f05cb9890ede1e5bca0f8399e4c6880765325b33df8c",
+      "size_bytes": 25428
+    },
+    {
+      "name": "stress_0066.gwf",
+      "sha256": "70f48c69c2b720713a15e2daee105366813043a43de06ad573a7fe3776fac5ec",
+      "size_bytes": 25428
+    },
+    {
+      "name": "stress_0067.gwf",
+      "sha256": "dcc22847e08180709faa8ae206632880ecbe91513d0676f7ca7c2a20e7840df3",
+      "size_bytes": 25428
+    },
+    {
+      "name": "stress_0068.gwf",
+      "sha256": "1abbe268dc574bc40589d48415cb247bc0ed1702f91ef124d40e31a0170b9c95",
+      "size_bytes": 25432
+    },
+    {
+      "name": "stress_0069.gwf",
+      "sha256": "1356f5c2c4c5919e8ddb965e6f652535feb2181d8745bc573ba1ec3ab7477120",
+      "size_bytes": 25426
+    },
+    {
+      "name": "stress_0070.gwf",
+      "sha256": "f790290fd1d7dcabeb67f671d36aac93c1989db4436fdbd685940cfed39be9b4",
+      "size_bytes": 25425
+    },
+    {
+      "name": "stress_0071.gwf",
+      "sha256": "673830109e09345030e44de3e98364462381a2a7a4e15e875e78a981866b6f12",
+      "size_bytes": 25425
+    },
+    {
+      "name": "stress_0072.gwf",
+      "sha256": "049dfd25136754ed1b72b111eace421fe475cb1762618f5e4ad13a32c360d4a9",
+      "size_bytes": 25527
+    },
+    {
+      "name": "stress_0073.gwf",
+      "sha256": "0921b00191c0fd8f8f0d04cd10abd77911e9374d02f2f12c9ae175da3e964552",
+      "size_bytes": 25520
+    },
+    {
+      "name": "stress_0074.gwf",
+      "sha256": "66429cf973b3a1f04275929b3c0bab8d06745942bdfec7b5440238d3f07d3493",
+      "size_bytes": 25519
+    },
+    {
+      "name": "stress_0075.gwf",
+      "sha256": "48a17320389e7de54468e0ec2958f576965cee248d4d2a3f12f5684e5d45e722",
+      "size_bytes": 25520
+    },
+    {
+      "name": "stress_0076.gwf",
+      "sha256": "a38566bbb51160b21768db70ad71ca022144613e25bc936a06dff17a172241dd",
+      "size_bytes": 25432
+    },
+    {
+      "name": "stress_0077.gwf",
+      "sha256": "e184ffe5843d25580156202fc00c903339c917abce5daba16588657d41cf681d",
+      "size_bytes": 25426
+    },
+    {
+      "name": "stress_0078.gwf",
+      "sha256": "f30f8a732ac2788fb20eca59aa9033b9406686202739f953f34330c44d2b078c",
+      "size_bytes": 25425
+    },
+    {
+      "name": "stress_0079.gwf",
+      "sha256": "a429f4d5f8af84a82d51e534c7b42589d005f83aba98e6fe2513c34554ae470d",
+      "size_bytes": 25425
+    },
+    {
+      "name": "stress_0080.gwf",
+      "sha256": "230b9b30e57add85db072f9c698f43cad0fcbb92cd3467c6ad4eaf0b5847522a",
+      "size_bytes": 25432
+    },
+    {
+      "name": "stress_0081.gwf",
+      "sha256": "9e646687708edbf181529a2eea03f8388b694a3973312b4ba886d705bb5c9fce",
+      "size_bytes": 25424
+    },
+    {
+      "name": "stress_0082.gwf",
+      "sha256": "5a1c890bde6be930aa0fb7f0b747b7c7ec6ba071f9cc8f951d9becf1a2b170be",
+      "size_bytes": 25424
+    },
+    {
+      "name": "stress_0083.gwf",
+      "sha256": "57ee1b7a76750977bacfc2eefa7b49536c983b572f21246ff789c7713a4c4c83",
+      "size_bytes": 25424
+    },
+    {
+      "name": "stress_0084.gwf",
+      "sha256": "071c83f8aac9255ead3aa7aee65637c379416652f77ea5eea4daed22ac88cf12",
+      "size_bytes": 25432
+    },
+    {
+      "name": "stress_0085.gwf",
+      "sha256": "f76718b663025ae42d807ffb0047910e7c9f63a93a4ddf9d065e450645aca383",
+      "size_bytes": 25426
+    },
+    {
+      "name": "stress_0086.gwf",
+      "sha256": "aba979dc96825303461effb8961578287d928a0ca32efe25e4d52bff7957fd59",
+      "size_bytes": 25425
+    },
+    {
+      "name": "stress_0087.gwf",
+      "sha256": "36e2882a263fa8cd9dc9cb7a23b262bb470bad6f6d6b5b6fd55b725792b0e8fd",
+      "size_bytes": 25425
+    },
+    {
+      "name": "stress_0088.gwf",
+      "sha256": "5fd6f54e89b5650d0bac30dc739b5086038a8a3dff4b62b929183e218786757d",
+      "size_bytes": 25432
+    },
+    {
+      "name": "stress_0089.gwf",
+      "sha256": "90ce2ed5e04523b38f76f5f0273cb0d9982c97a1fa3c4accf4c3ba5ec87181ff",
+      "size_bytes": 25424
+    },
+    {
+      "name": "stress_0090.gwf",
+      "sha256": "971c56b9fd1229d2ccef7a5e1aae52852298a3ff6ac0e07f822e19a9935178b6",
+      "size_bytes": 25424
+    },
+    {
+      "name": "stress_0091.gwf",
+      "sha256": "8ef48dfaed130f4192aa7212c43f21532ba9378cc91dfaed5a4fe50b48737301",
+      "size_bytes": 25424
+    },
+    {
+      "name": "stress_0092.gwf",
+      "sha256": "c389c6bb67cd6199e829ea05f0212f5179d3ef2d262aedd69ce824a6a4babb9e",
+      "size_bytes": 25432
+    },
+    {
+      "name": "stress_0093.gwf",
+      "sha256": "372b5765d7d0bd2fda41f09e40588071c85382ddf3bdc0270bbce556720c4b56",
+      "size_bytes": 25426
+    },
+    {
+      "name": "stress_0094.gwf",
+      "sha256": "024f588d41ff2836475e04f5164d955f68ed5823600dcbaf6ccb4e73e9dc71b3",
+      "size_bytes": 25425
+    },
+    {
+      "name": "stress_0095.gwf",
+      "sha256": "276c7dae89108532df87535e6114c38acb3d07c02a7c1a5c9414d541da642608",
+      "size_bytes": 25425
+    },
+    {
+      "name": "stress_0096.gwf",
+      "sha256": "a5cfe49fa5e5e4c8310796541baf4f0e32301d120c0482dff06efd86d7d13739",
+      "size_bytes": 25430
+    },
+    {
+      "name": "stress_0097.gwf",
+      "sha256": "f9498c0e1a22988a1215cea8347ab665174508ebfcd55c08d42c1c1e04aa49d2",
+      "size_bytes": 25420
+    },
+    {
+      "name": "stress_0098.gwf",
+      "sha256": "11c8f55fc60f6a5901dc34951448870da20eb8840ad099888cac7d65705d7e25",
+      "size_bytes": 25420
+    },
+    {
+      "name": "stress_0099.gwf",
+      "sha256": "b6873094597b5d37e05b8639ee02e0cb79386a68578fb522f444bf223d06da37",
+      "size_bytes": 25420
+    },
+    {
+      "name": "stress_0100.gwf",
+      "sha256": "10a05e150100a19f6fc03aefaf7a80a31f361e8975e8c1ae5ddd2c4576d0f18e",
+      "size_bytes": 25430
+    },
+    {
+      "name": "stress_0101.gwf",
+      "sha256": "a302da7fb772cb4b804e95718cce3a3e0d807ec616f6fdd49cdd1cc7763796e9",
+      "size_bytes": 25422
+    },
+    {
+      "name": "stress_0102.gwf",
+      "sha256": "6b3f8ac8be42270c311d440caf29e5af94abc28ccd7cc7b1ce42d409891eedc0",
+      "size_bytes": 25421
+    },
+    {
+      "name": "stress_0103.gwf",
+      "sha256": "b3b086cc74f0d1871db9bacee4e4ecf22583b008103707638e5b15c2d62339c2",
+      "size_bytes": 25421
+    },
+    {
+      "name": "stress_0104.gwf",
+      "sha256": "17ed9c5ae449e017df5b285ab82b9698aebf8c4591657bc1f7b275027f6773f0",
+      "size_bytes": 25430
+    },
+    {
+      "name": "stress_0105.gwf",
+      "sha256": "9363063e02b8bf5dcc865e6bd7711b6a12c7ccf8f1980dfb026780ea38219968",
+      "size_bytes": 25420
+    },
+    {
+      "name": "stress_0106.gwf",
+      "sha256": "e4e177b0914a4870e2766f8dff2f7cfc87b38e351b478f693204316c729b1591",
+      "size_bytes": 25420
+    },
+    {
+      "name": "stress_0107.gwf",
+      "sha256": "defdeea7427bf0148ef9c62a20e655576e82c91563db566c273844a41b453658",
+      "size_bytes": 25420
+    },
+    {
+      "name": "stress_0108.gwf",
+      "sha256": "b713e53612a8524d335a16cd2640b898f0ce0d60c3af09ba78c2b6fdbf657cdd",
+      "size_bytes": 25430
+    },
+    {
+      "name": "stress_0109.gwf",
+      "sha256": "408ab1d1be1de784ab9d4ed378f5bf44abb158cb7b2eef60dad9120c54c4c981",
+      "size_bytes": 25422
+    },
+    {
+      "name": "stress_0110.gwf",
+      "sha256": "b10d19b18730f025ea3eeb3b34c1cc8d01a25ca2bc358b44e9faa22c2173ef05",
+      "size_bytes": 25421
+    },
+    {
+      "name": "stress_0111.gwf",
+      "sha256": "fa413082ab494dc52894178e8c7b6fab10058a4091ae80e8eccc1838393fa9db",
+      "size_bytes": 25421
+    },
+    {
+      "name": "stress_0112.gwf",
+      "sha256": "f663284bf528d46cc3aa665f56919cbadf7f00ef8876c3b6746b3ec0d5fab97e",
+      "size_bytes": 25430
+    },
+    {
+      "name": "stress_0113.gwf",
+      "sha256": "ebb15b566716607a9adc8f8df7c71781dc246eb272abe6313e11980366298aa2",
+      "size_bytes": 25420
+    },
+    {
+      "name": "stress_0114.gwf",
+      "sha256": "d0895216289b1588bb4b1e1f446bc736b50e657317e83cc5c223335b259c9594",
+      "size_bytes": 25420
+    },
+    {
+      "name": "stress_0115.gwf",
+      "sha256": "93af424189fbf2bdd76c34a02a0fd7304b6fb6b6c95293205cfd27688afe343b",
+      "size_bytes": 25420
+    },
+    {
+      "name": "stress_0116.gwf",
+      "sha256": "77375ff648582763084c0341447abd2c1358fde7fdcbfa1d8eeb89bc2920b91b",
+      "size_bytes": 25430
+    },
+    {
+      "name": "stress_0117.gwf",
+      "sha256": "fe0033a62ee9df63f768a24a06f39b99bff046a01457687e496ad8365613a301",
+      "size_bytes": 25422
+    },
+    {
+      "name": "stress_0118.gwf",
+      "sha256": "e8816158261c4a323045bab66de22cb664cdae2ec20f46c3470ef06256e257c7",
+      "size_bytes": 25421
+    },
+    {
+      "name": "stress_0119.gwf",
+      "sha256": "a58d1977b8c600cab74c9eae155f7c870b3b35192c9c33548e78ea07e9e43739",
+      "size_bytes": 25421
+    },
+    {
+      "name": "stress_0120.gwf",
+      "sha256": "f88bb44c1f8de3344581beb20939ec93c96b7e1ea8a72bb5a42ac295a1634222",
+      "size_bytes": 25430
+    },
+    {
+      "name": "stress_0121.gwf",
+      "sha256": "dc963bcd9568a09ed7aed05ce0fb726db8c6021e93590483e32d80f9f3ed1f47",
+      "size_bytes": 25420
+    },
+    {
+      "name": "stress_0122.gwf",
+      "sha256": "d7eacc1af92e4d2ebb957e215549c5335a8e55a274b33e14834d6b23f220bbbb",
+      "size_bytes": 25420
+    },
+    {
+      "name": "stress_0123.gwf",
+      "sha256": "9525ecb5290e41de202fc888d45a3bd4af21e447d6242fc6a35a4738e1a59650",
+      "size_bytes": 25420
+    },
+    {
+      "name": "stress_0124.gwf",
+      "sha256": "8983bb9913a0e0a3dbc0a62a3c98c5c987963fdfc40a4ecd99b7b7eb57e03800",
+      "size_bytes": 25430
+    },
+    {
+      "name": "stress_0125.gwf",
+      "sha256": "156c8b83eb297a5afbefac5dca18b324880ba9cf7a369610a48f3210ffe1276e",
+      "size_bytes": 25422
+    },
+    {
+      "name": "stress_0126.gwf",
+      "sha256": "95a83ba73b3d99ef33297eb4ced6d0ab7318d4ce10add5839c3b745f2c410e3a",
+      "size_bytes": 25421
+    },
+    {
+      "name": "stress_0127.gwf",
+      "sha256": "c68337866ef6e70c5db641c026ad8d528afb170438649450b2f6230e617a897b",
+      "size_bytes": 25421
+    },
+    {
+      "name": "stress_0128.gwf",
+      "sha256": "7f5e2e05dd331c1dae7cfa161e194471562bf9307f610bff43a23d61deaddabd",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0129.gwf",
+      "sha256": "3344f864cd922a21f3af3a803815b8c18b8766d4eb55af147ad51af360b6619a",
+      "size_bytes": 26410
+    },
+    {
+      "name": "stress_0130.gwf",
+      "sha256": "0325cfe224f3296f6277333e1fdd83cebe2833cf7bb681ab9c6122e3d9dba656",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0131.gwf",
+      "sha256": "e415638e7c626900eb50f9869c6450e7d30c6f3e4a1a154492ed2f3f47681af0",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0132.gwf",
+      "sha256": "cccca9bb1b92d9037bc207b0ba730122a97ead624b8bde5b17dde58ce2522085",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0133.gwf",
+      "sha256": "291c36ddc54bc550d44ea6b09c090f129bc91a0006588944f06cc24643b1056f",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0134.gwf",
+      "sha256": "9439d5896fdd11c6e46a90c1e272096d5cf9e7d6351ef05f517abca4fe62e40d",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0135.gwf",
+      "sha256": "d06d21bdf8df43319f78e6b76cd0e1a64625f0035964d239c45f74c0f657f6f7",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0136.gwf",
+      "sha256": "f4e09386efa70748eaa6995667233b27fff1b1544bd10898648615da8908568c",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0137.gwf",
+      "sha256": "16600930e18b2dcfd244ed7337aa2882d1c638250d1c15e33d15fbb86b9df7cf",
+      "size_bytes": 26410
+    },
+    {
+      "name": "stress_0138.gwf",
+      "sha256": "336c968e6b84420b9d74115aa66220ed047d37de6de7542a5adf1982f4459fa5",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0139.gwf",
+      "sha256": "7aa2baa0582bffed4eb5c9243d63bc0e4d97aa3ee800431e67f043ded6eed354",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0140.gwf",
+      "sha256": "628c95bbb9ef147ec7d281f0d0d4aa122975cda8279527aee4ad69832e7d3df1",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0141.gwf",
+      "sha256": "0bdf2b6242ad86fd061aefd5cbb43066177790c65a51b70e4c8e01f829763c2c",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0142.gwf",
+      "sha256": "df6ba560cba4b0ad312cc5add21cbc1cd1dd534b9989cabfc5f434908dba729e",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0143.gwf",
+      "sha256": "ce212bd72dbcbadaba5c6dcd2982c9cf9edec1599e429ae1542864a78d538854",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0144.gwf",
+      "sha256": "46c4754c778c0d4e3ca27643ef8a3f358ce19daba8da626129b802cf74529e8b",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0145.gwf",
+      "sha256": "e2d768d938a8cca53f2f234a2345730bead398018ba029ef2c3b200f38c73432",
+      "size_bytes": 26410
+    },
+    {
+      "name": "stress_0146.gwf",
+      "sha256": "95616d01929ad2ce2bc9c5227b68a9c99f88b5e3fcb02866834af0dafb64407c",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0147.gwf",
+      "sha256": "d6a5a4fea94974dc1265c134035b1f263932f6c3a6e7a0514b1b695f88b4adf7",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0148.gwf",
+      "sha256": "6d9ab644cbdd1f619dd5f87d354b6aa3893b9f6a8de2c67d24e00e1c49788f4c",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0149.gwf",
+      "sha256": "e64336d4f027d3cd9bad7675cc3ba51426aa7624f58c707e115cf857cc223f39",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0150.gwf",
+      "sha256": "d2a781a3932a0cc902db5a82ff8c4f6fb965bc456ceb91886eb064ea8662b586",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0151.gwf",
+      "sha256": "bed9d7333474cf6cc785356cdce008ccbe3e9900016b98dbe2a65d71621ee726",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0152.gwf",
+      "sha256": "19f0564a04c6cdc3b11f116ee9047de78d2a4721520ce340c6d06ce2c9f2712e",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0153.gwf",
+      "sha256": "425dcc263109a0187c4546bf04ad04ac9724ae85670bbaec498e2b32eddf099b",
+      "size_bytes": 26410
+    },
+    {
+      "name": "stress_0154.gwf",
+      "sha256": "b44226b4248e59de7f40314335b6d4928917affff60f8846bb6fff234c9205ed",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0155.gwf",
+      "sha256": "7cabe51dd70add08b08ccc8dd0ce09c00af2c936fb4977c4a26d0548cf925898",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0156.gwf",
+      "sha256": "685f87f66489c30470a1a247167da46babee3616ae790831018566481506d3e0",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0157.gwf",
+      "sha256": "81d9601ca1bf4eb89c619976db1d83005715652ed7b8e8df58add64623b81eaa",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0158.gwf",
+      "sha256": "ec7a02eb343445f3dea6b29897a7ec75c582669c0f76a38126690197bc40d7c1",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0159.gwf",
+      "sha256": "6aac09b15ccde6c3696f32c686020fcd0d4274d9619a3de2787fe08bf69546a4",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0160.gwf",
+      "sha256": "bcc18993970986dcbda856948751b5f9105689504a0f69b1731408484cf58f59",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0161.gwf",
+      "sha256": "2566c4396a3b3a0bad4ec683844be18ce998de498c46f5b123426d937a360c23",
+      "size_bytes": 26410
+    },
+    {
+      "name": "stress_0162.gwf",
+      "sha256": "f7a6748aab3a8d2c6742295f595961b60aa4f693a23bcc86b04679c797038112",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0163.gwf",
+      "sha256": "9d883188d827402bec437b5cba2a09e62802e4003a7685d6f3030e3864362d2b",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0164.gwf",
+      "sha256": "299a8233f96e24aaa554a9abdf31148a4375cfec210e216807e834fd098c015e",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0165.gwf",
+      "sha256": "c09bc644d66b1d8ad0482ed40a84a784f2412a63bf286b641840efb0a5f2a2d1",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0166.gwf",
+      "sha256": "3a495e71bf5f584a09daab086b4960256085fff2c423d67604781146dd53988c",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0167.gwf",
+      "sha256": "e3827a90f0ce9335ec50eec674bfb8cea1f8fce4d64e82ec18c2ece88cba763f",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0168.gwf",
+      "sha256": "5e6b818b09ece5bad9a2d4bb98942fdd95021b3db065054c040ec1a13f0b8dd9",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0169.gwf",
+      "sha256": "fb28c8afe4153917f7e5521b70d00d079b23bbb063b2dec097f9a033cf84cc46",
+      "size_bytes": 26410
+    },
+    {
+      "name": "stress_0170.gwf",
+      "sha256": "8e444808c5ca85a26fa86d9f614dcaf7f7eba2302ff63a63ceb29ea18445b48b",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0171.gwf",
+      "sha256": "c4fe42417c8c3d8e56cb4968198c1d8204a94d79c6b2444732316456b720586c",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0172.gwf",
+      "sha256": "c409369df4390c6e3c0acdfda9c1a361d132767a82f213db758e73a05a68ec77",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0173.gwf",
+      "sha256": "6f83f3308a8c2d8b4bbc1222d38b743df666c9294c9facf3840e39b5c759fe5c",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0174.gwf",
+      "sha256": "d741cb5c1a2f958cf5615048ad3258b60a481c7da5e746e6a9d1f964be0b8cd0",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0175.gwf",
+      "sha256": "7bd03cc65ba638efa5bed2db3a35d6f0fc5e64b4f0843dd78693f190ffb0d9df",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0176.gwf",
+      "sha256": "55cef626b75ae9372c5d23ffd668b58ffabc05fb8d7c8ce355b3ffd70fb26cec",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0177.gwf",
+      "sha256": "647c2ce26475e4a7d268baf2f4d7cf1983b1d6fe6359717b462ffd3888646044",
+      "size_bytes": 26410
+    },
+    {
+      "name": "stress_0178.gwf",
+      "sha256": "122745fbad3d590af14fb8a5e53843ec3bfb25004d23601a8858d7bc4a2bd16c",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0179.gwf",
+      "sha256": "1c8e0e94500b8d2e07a7f1cf2ed048a8dedf2adb7f7c247a34cc700e62b635c1",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0180.gwf",
+      "sha256": "439cdfbc549a0e47cb02b369bf1c5644557981a663d2b3f3ed50692b74d4ef17",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0181.gwf",
+      "sha256": "7456ddb96085de48d99ebd41c839f854a7350e087ccdafe5613d1309a84d28fb",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0182.gwf",
+      "sha256": "3acad731cb8ff5a3f59071f5139855167dae967568ac4f0ab7e57b97550c8ba4",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0183.gwf",
+      "sha256": "7422b5c55aedbb527de3c724c5d936f8b423671ffd2146709563f7b3fdc072a8",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0184.gwf",
+      "sha256": "78b1b5c6f829e1da2dab59fee33c14d1751e68d768e513b1665a84ea6d58f22c",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0185.gwf",
+      "sha256": "b1c9d57ed72c1c9dd950a48f0638afe1b9c75dfca4869b8db625bd1d22502151",
+      "size_bytes": 26410
+    },
+    {
+      "name": "stress_0186.gwf",
+      "sha256": "d0157abf43dce715e94c996fe67587e63ae7a574b511f810c53ab07cb125ae54",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0187.gwf",
+      "sha256": "6fa7284fda727104e9b1d01fb11d246d2dbccc4fbd94ea177633641d17631c00",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0188.gwf",
+      "sha256": "ed3f4703d94586ff9594bc9575b2d9cf65590ad30735fa138f6497019da2b939",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0189.gwf",
+      "sha256": "d99a6379a253e7f7844468dcb709ab321923d11f4033be0a7c475da7c9f9f4cf",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0190.gwf",
+      "sha256": "8646fce72c63fbab43d077bffba143bad2e18268d0eb0d76fdcb254b11f6209c",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0191.gwf",
+      "sha256": "bb9448f0937f8eebe870ae926fb761436d9a6362dce33319acfc68e38de2616e",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0192.gwf",
+      "sha256": "5a5733faba53d289fa2f02af897f6e981514f917f6cff74e38a6143d4e6cfee8",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0193.gwf",
+      "sha256": "5a5fab5af29665b3291e6c2e0c24568aa09f3192de6750dab4231450261fc5e4",
+      "size_bytes": 26410
+    },
+    {
+      "name": "stress_0194.gwf",
+      "sha256": "7ad4ba6e7455f90f35d8f3002f8ca7a7a153234960162de9113fdca9effe5382",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0195.gwf",
+      "sha256": "02f4394146942f7b78c8b12239a2af2044c0e3be15e03a54576842613fcc8169",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0196.gwf",
+      "sha256": "261f9aecc995101d46393d1cf8c1bfbdde4d46c5ecefbaf889b801e4a7a57551",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0197.gwf",
+      "sha256": "53daffc1567b776dffd7ac59d606d58fc644b8d86e5a8a8e4a1d5ea7b748e6e3",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0198.gwf",
+      "sha256": "c77449e6b757110ae377d3b39fac9bc3eac03488163cf9e72481215567ba163b",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0199.gwf",
+      "sha256": "9824a0b4d1453834899458a0888ca3518dead68bb5b0cd014458345f4307bd9a",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0200.gwf",
+      "sha256": "ff50700ef0914f62689af83c34393cb668a520ef190d982159e287442272ec93",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0201.gwf",
+      "sha256": "5b89ba24d6ee03e0e82824a420d937239ef5836485146029c0752c68a8640033",
+      "size_bytes": 26410
+    },
+    {
+      "name": "stress_0202.gwf",
+      "sha256": "709e21592dcb88be4a7927ed2b7fc97d9357727b5264b37e2569fd3959545b68",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0203.gwf",
+      "sha256": "60e585cbc2800f1aefaf7ea47ebca7fb505f810d02cc0a757546e725e24e827d",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0204.gwf",
+      "sha256": "8373d9d1691b11a69e93eded6be959d782e3cce0510c0cbe7425972fc3676052",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0205.gwf",
+      "sha256": "60d8a554d20e3e379d08622aaa3d1cc159d1bb1f8ea9644c51bae98a69fc54d2",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0206.gwf",
+      "sha256": "c02b373121cc6afa62792a9381cdc77894e133780b95e1f2def72bee56c34301",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0207.gwf",
+      "sha256": "86219878fc84f2f14ac8439b54cd29479a2f16421561f7862f11308bdd14c4e2",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0208.gwf",
+      "sha256": "2027b179377dff50e93fd811e51343f9501f126eaa06ebf72b0faeccad5a6ba4",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0209.gwf",
+      "sha256": "b821015d160337ea6ec67da4eb2970bba3071fdf239cc428d0328d3f52cbd465",
+      "size_bytes": 26410
+    },
+    {
+      "name": "stress_0210.gwf",
+      "sha256": "977a365a412257699728ae6f261434be85950f0bebf4dc52c0807ca3bd1ef45f",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0211.gwf",
+      "sha256": "da93af76edc549b1f462b98ed2c9181ee980f21cc591ebc914384a221315c6e0",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0212.gwf",
+      "sha256": "1a40be99dd9406cd45b3434465367e5b8a3f97bc186bb19e858ded0dbde75967",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0213.gwf",
+      "sha256": "8ac94898238ba0e11788d2ab2abd1d881ef0b6ff259d54115474a2b915b2f8b3",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0214.gwf",
+      "sha256": "bf5e39a723c95846474823a93e40836ecdc7156c63a14e4d2f065c86a83928b6",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0215.gwf",
+      "sha256": "5844ac2e2849dc3a97c6bace05efd152e5eb7b2a4f3ae0444f95647ca9762301",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0216.gwf",
+      "sha256": "7a76aa4591c880953a1880cd29d35f8c55d8054a5874674809f2313c3940d2da",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0217.gwf",
+      "sha256": "05d0d5518f07f2226a3b534183994c0655ba96862060eb9c7ecbce03196ca429",
+      "size_bytes": 26410
+    },
+    {
+      "name": "stress_0218.gwf",
+      "sha256": "2eede1a5ab5e8f1f4b13d1034e522e54e98230f09b4b1a6bf2e19020c84b0c62",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0219.gwf",
+      "sha256": "9ce1d51e4d2b2781dd13a039bffe52d9912470b35dfb0b25e5f938f56937b863",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0220.gwf",
+      "sha256": "fd71c2b508cce7a1fc231f35e0f4bcecfebb997e12aeb7e137c57de2499ab354",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0221.gwf",
+      "sha256": "646701962433c05948fb2230061111ff8b9895a18004e1d0c029a4ea51b5cd38",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0222.gwf",
+      "sha256": "f296e736168870fc20d0ca2beebe5d8ca0b47da1f92f4c318ab4251e55d409d0",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0223.gwf",
+      "sha256": "3b9d352dda806d204e6d4fd06e26394ab4dfc604e4f993d3b1b1754956f251de",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0224.gwf",
+      "sha256": "dfbfda3036489b0daac51207a8651fc7e5d7eeb03ca10b43e829fd2f4603b41d",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0225.gwf",
+      "sha256": "59c529e5a2b68bc69e2276093373b7426a963ac9d3f4cef4a97bc9c363f7a4f8",
+      "size_bytes": 26410
+    },
+    {
+      "name": "stress_0226.gwf",
+      "sha256": "8ad3d0750ea565a64e66fc39a39a4d0062739a2ee3acafc3b4aaecb6855c926e",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0227.gwf",
+      "sha256": "9e02e0be543225db3219542ab402622a09b3afd53d86d4e7c303841c0cdf5e7a",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0228.gwf",
+      "sha256": "e68b64920a48390c01eba060fe148b8ccfa3107b73029beee2a142232c18ee8c",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0229.gwf",
+      "sha256": "80fce7e58209d4da917c285b8995537de9de087f749d73f7ea6224b74b764c42",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0230.gwf",
+      "sha256": "3cc92a90b0a1848bf8e109916b92b7b78b8ffe2bcb35ba35b0f7d4567584d2e0",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0231.gwf",
+      "sha256": "82c2de44576577ddab778c0fae3d5589a083973cd9cdbf75e34679a41d3bf84e",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0232.gwf",
+      "sha256": "b93024408867e32a826d404d318a65d34064eedb716187977411c92c994a1797",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0233.gwf",
+      "sha256": "914474e79438a425e3a0798c2396a05abc03984b14b186035a8506cd6c37c621",
+      "size_bytes": 26411
+    },
+    {
+      "name": "stress_0234.gwf",
+      "sha256": "707f096126f79b436fc1d22e568a8bdb05f733071e7a53e8ac2b50ee695053e6",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0235.gwf",
+      "sha256": "ed457fab448d8d6dae9a32b8ebd86b848bdf8012f97932567bd438a0e6db940d",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0236.gwf",
+      "sha256": "15ef131554d3e03bcb957355ee62bf4c4725ed0bb2b94c49a1d54387584d9c02",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0237.gwf",
+      "sha256": "84e05b9a49826287b5b94608ec8e5475ff506f0210e9e04d31d2c6ed1fa6c334",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0238.gwf",
+      "sha256": "4493c9f744d874bbafbb661dca1713424b70fcd13246c9e325f543439b6dfdf4",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0239.gwf",
+      "sha256": "5bbfd3863c9955b9256b78aee18172c0c7b16e21abaa397636185386c9f46759",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0240.gwf",
+      "sha256": "401efe7a53119e7e01f3fed953add0c27f5e4c67f06f6320fabe9135e1b289bb",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0241.gwf",
+      "sha256": "c0cdb4caeff8876dd09751846638f2c4523ca2feeb8ab60588dd9073c8bc2777",
+      "size_bytes": 26406
+    },
+    {
+      "name": "stress_0242.gwf",
+      "sha256": "f08d690cc44a75cc73c79abcbbd0e78942eca5bec26fa6e090482ea833103c29",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0243.gwf",
+      "sha256": "677759f8c210befb208076d0b73579a650715d67bcf708b3dc51b1866f9eec61",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0244.gwf",
+      "sha256": "0b04d2edf90a91c8c5a04354eb97375ff086f9eb296d4a482ec0d176484f2f3c",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0245.gwf",
+      "sha256": "53d8f3d209a8bb46c40999b8a053e5e38871ae061567dbe1d717a24a1ac55ce7",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0246.gwf",
+      "sha256": "a42da79c60fdc6516aa8cc9860cd729c910b61c1763cbd10c99c9a3203a75d38",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0247.gwf",
+      "sha256": "ee655ba0a7adf0e1029404488eaac206c1416b1211c3dfdf836c314706d92c62",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0248.gwf",
+      "sha256": "e474d1387bce606d3e0318fe0384fa2ddd92262ce4e6c2cc0665a58b08db7742",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0249.gwf",
+      "sha256": "335587b6d9ddc77ddd07ecbb4b734ea9914efe6c864f72f3b2bfc6bac82dfd0e",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0250.gwf",
+      "sha256": "5e3cb5b9f70c04b0abebd7793f8e2b18209353418df59a7ccfd5e6e9464887a9",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0251.gwf",
+      "sha256": "822b3b0679f90557e697157ee1dd0d8e8ff1e6e8aac35479e5d87ac2f9ffcd07",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0252.gwf",
+      "sha256": "0bbed9065dbeafe24d0ab4a6a200534bb5d502443b7a11d3007d3f3536e0be7a",
+      "size_bytes": 26405
+    },
+    {
+      "name": "stress_0253.gwf",
+      "sha256": "2a3e731d678c2c0cc66dcf1853d672509736a337ec562a88992a857d838bcb9c",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0254.gwf",
+      "sha256": "48e6fa0b8981c33a2b3e9bff05a90c25994f0134ebac51363b02e11b8b98c2da",
+      "size_bytes": 26404
+    },
+    {
+      "name": "stress_0255.gwf",
+      "sha256": "674f9fbf6c8a8e099ea1ef069c0a55fa030be4ed2fd5cc5cace9cfaf029f188e",
+      "size_bytes": 26405
+    }
+  ],
+  "generator": "benchmarks/io/f4_gwf_fixtures.py:write_stress_fixtures",
+  "parts": 256,
+  "sample_rate_hz": 8.0,
+  "samples_per_part": 8192,
+  "schema": "gwexpy-v025-b-f4-stress-fixtures-v1",
+  "source_order": [
+    "stress_0000.gwf",
+    "stress_0001.gwf",
+    "stress_0002.gwf",
+    "stress_0003.gwf",
+    "stress_0004.gwf",
+    "stress_0005.gwf",
+    "stress_0006.gwf",
+    "stress_0007.gwf",
+    "stress_0008.gwf",
+    "stress_0009.gwf",
+    "stress_0010.gwf",
+    "stress_0011.gwf",
+    "stress_0012.gwf",
+    "stress_0013.gwf",
+    "stress_0014.gwf",
+    "stress_0015.gwf",
+    "stress_0016.gwf",
+    "stress_0017.gwf",
+    "stress_0018.gwf",
+    "stress_0019.gwf",
+    "stress_0020.gwf",
+    "stress_0021.gwf",
+    "stress_0022.gwf",
+    "stress_0023.gwf",
+    "stress_0024.gwf",
+    "stress_0025.gwf",
+    "stress_0026.gwf",
+    "stress_0027.gwf",
+    "stress_0028.gwf",
+    "stress_0029.gwf",
+    "stress_0030.gwf",
+    "stress_0031.gwf",
+    "stress_0032.gwf",
+    "stress_0033.gwf",
+    "stress_0034.gwf",
+    "stress_0035.gwf",
+    "stress_0036.gwf",
+    "stress_0037.gwf",
+    "stress_0038.gwf",
+    "stress_0039.gwf",
+    "stress_0040.gwf",
+    "stress_0041.gwf",
+    "stress_0042.gwf",
+    "stress_0043.gwf",
+    "stress_0044.gwf",
+    "stress_0045.gwf",
+    "stress_0046.gwf",
+    "stress_0047.gwf",
+    "stress_0048.gwf",
+    "stress_0049.gwf",
+    "stress_0050.gwf",
+    "stress_0051.gwf",
+    "stress_0052.gwf",
+    "stress_0053.gwf",
+    "stress_0054.gwf",
+    "stress_0055.gwf",
+    "stress_0056.gwf",
+    "stress_0057.gwf",
+    "stress_0058.gwf",
+    "stress_0059.gwf",
+    "stress_0060.gwf",
+    "stress_0061.gwf",
+    "stress_0062.gwf",
+    "stress_0063.gwf",
+    "stress_0064.gwf",
+    "stress_0065.gwf",
+    "stress_0066.gwf",
+    "stress_0067.gwf",
+    "stress_0068.gwf",
+    "stress_0069.gwf",
+    "stress_0070.gwf",
+    "stress_0071.gwf",
+    "stress_0072.gwf",
+    "stress_0073.gwf",
+    "stress_0074.gwf",
+    "stress_0075.gwf",
+    "stress_0076.gwf",
+    "stress_0077.gwf",
+    "stress_0078.gwf",
+    "stress_0079.gwf",
+    "stress_0080.gwf",
+    "stress_0081.gwf",
+    "stress_0082.gwf",
+    "stress_0083.gwf",
+    "stress_0084.gwf",
+    "stress_0085.gwf",
+    "stress_0086.gwf",
+    "stress_0087.gwf",
+    "stress_0088.gwf",
+    "stress_0089.gwf",
+    "stress_0090.gwf",
+    "stress_0091.gwf",
+    "stress_0092.gwf",
+    "stress_0093.gwf",
+    "stress_0094.gwf",
+    "stress_0095.gwf",
+    "stress_0096.gwf",
+    "stress_0097.gwf",
+    "stress_0098.gwf",
+    "stress_0099.gwf",
+    "stress_0100.gwf",
+    "stress_0101.gwf",
+    "stress_0102.gwf",
+    "stress_0103.gwf",
+    "stress_0104.gwf",
+    "stress_0105.gwf",
+    "stress_0106.gwf",
+    "stress_0107.gwf",
+    "stress_0108.gwf",
+    "stress_0109.gwf",
+    "stress_0110.gwf",
+    "stress_0111.gwf",
+    "stress_0112.gwf",
+    "stress_0113.gwf",
+    "stress_0114.gwf",
+    "stress_0115.gwf",
+    "stress_0116.gwf",
+    "stress_0117.gwf",
+    "stress_0118.gwf",
+    "stress_0119.gwf",
+    "stress_0120.gwf",
+    "stress_0121.gwf",
+    "stress_0122.gwf",
+    "stress_0123.gwf",
+    "stress_0124.gwf",
+    "stress_0125.gwf",
+    "stress_0126.gwf",
+    "stress_0127.gwf",
+    "stress_0128.gwf",
+    "stress_0129.gwf",
+    "stress_0130.gwf",
+    "stress_0131.gwf",
+    "stress_0132.gwf",
+    "stress_0133.gwf",
+    "stress_0134.gwf",
+    "stress_0135.gwf",
+    "stress_0136.gwf",
+    "stress_0137.gwf",
+    "stress_0138.gwf",
+    "stress_0139.gwf",
+    "stress_0140.gwf",
+    "stress_0141.gwf",
+    "stress_0142.gwf",
+    "stress_0143.gwf",
+    "stress_0144.gwf",
+    "stress_0145.gwf",
+    "stress_0146.gwf",
+    "stress_0147.gwf",
+    "stress_0148.gwf",
+    "stress_0149.gwf",
+    "stress_0150.gwf",
+    "stress_0151.gwf",
+    "stress_0152.gwf",
+    "stress_0153.gwf",
+    "stress_0154.gwf",
+    "stress_0155.gwf",
+    "stress_0156.gwf",
+    "stress_0157.gwf",
+    "stress_0158.gwf",
+    "stress_0159.gwf",
+    "stress_0160.gwf",
+    "stress_0161.gwf",
+    "stress_0162.gwf",
+    "stress_0163.gwf",
+    "stress_0164.gwf",
+    "stress_0165.gwf",
+    "stress_0166.gwf",
+    "stress_0167.gwf",
+    "stress_0168.gwf",
+    "stress_0169.gwf",
+    "stress_0170.gwf",
+    "stress_0171.gwf",
+    "stress_0172.gwf",
+    "stress_0173.gwf",
+    "stress_0174.gwf",
+    "stress_0175.gwf",
+    "stress_0176.gwf",
+    "stress_0177.gwf",
+    "stress_0178.gwf",
+    "stress_0179.gwf",
+    "stress_0180.gwf",
+    "stress_0181.gwf",
+    "stress_0182.gwf",
+    "stress_0183.gwf",
+    "stress_0184.gwf",
+    "stress_0185.gwf",
+    "stress_0186.gwf",
+    "stress_0187.gwf",
+    "stress_0188.gwf",
+    "stress_0189.gwf",
+    "stress_0190.gwf",
+    "stress_0191.gwf",
+    "stress_0192.gwf",
+    "stress_0193.gwf",
+    "stress_0194.gwf",
+    "stress_0195.gwf",
+    "stress_0196.gwf",
+    "stress_0197.gwf",
+    "stress_0198.gwf",
+    "stress_0199.gwf",
+    "stress_0200.gwf",
+    "stress_0201.gwf",
+    "stress_0202.gwf",
+    "stress_0203.gwf",
+    "stress_0204.gwf",
+    "stress_0205.gwf",
+    "stress_0206.gwf",
+    "stress_0207.gwf",
+    "stress_0208.gwf",
+    "stress_0209.gwf",
+    "stress_0210.gwf",
+    "stress_0211.gwf",
+    "stress_0212.gwf",
+    "stress_0213.gwf",
+    "stress_0214.gwf",
+    "stress_0215.gwf",
+    "stress_0216.gwf",
+    "stress_0217.gwf",
+    "stress_0218.gwf",
+    "stress_0219.gwf",
+    "stress_0220.gwf",
+    "stress_0221.gwf",
+    "stress_0222.gwf",
+    "stress_0223.gwf",
+    "stress_0224.gwf",
+    "stress_0225.gwf",
+    "stress_0226.gwf",
+    "stress_0227.gwf",
+    "stress_0228.gwf",
+    "stress_0229.gwf",
+    "stress_0230.gwf",
+    "stress_0231.gwf",
+    "stress_0232.gwf",
+    "stress_0233.gwf",
+    "stress_0234.gwf",
+    "stress_0235.gwf",
+    "stress_0236.gwf",
+    "stress_0237.gwf",
+    "stress_0238.gwf",
+    "stress_0239.gwf",
+    "stress_0240.gwf",
+    "stress_0241.gwf",
+    "stress_0242.gwf",
+    "stress_0243.gwf",
+    "stress_0244.gwf",
+    "stress_0245.gwf",
+    "stress_0246.gwf",
+    "stress_0247.gwf",
+    "stress_0248.gwf",
+    "stress_0249.gwf",
+    "stress_0250.gwf",
+    "stress_0251.gwf",
+    "stress_0252.gwf",
+    "stress_0253.gwf",
+    "stress_0254.gwf",
+    "stress_0255.gwf"
+  ]
+}

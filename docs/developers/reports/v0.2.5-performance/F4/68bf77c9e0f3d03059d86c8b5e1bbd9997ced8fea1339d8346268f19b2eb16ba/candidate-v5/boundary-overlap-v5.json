@@ -1,0 +1,17 @@
+{
+  "case": "overlap",
+  "fixture_manifest_sha256": "ef39cd27b2393ccb45ff74b74a564b7e99aec491bedd2eb8169f1b46bc28337c",
+  "gwexpy_version": "0.2.5",
+  "outcome": {
+    "kind": "error",
+    "message": "Cannot append overlapping TimeSeriess:\n    TimeSeries 1 span: [1000000000.0 ... 1000000008.0)\n    TimeSeries 2 span: [1000000007.875 ... 1000000008.875)",
+    "type": "builtins.ValueError"
+  },
+  "python": "3.12.12",
+  "warnings": [
+    {
+      "category": "builtins.DeprecationWarning",
+      "message": "Compatibility support for python2 has been dropped"
+    }
+  ]
+}

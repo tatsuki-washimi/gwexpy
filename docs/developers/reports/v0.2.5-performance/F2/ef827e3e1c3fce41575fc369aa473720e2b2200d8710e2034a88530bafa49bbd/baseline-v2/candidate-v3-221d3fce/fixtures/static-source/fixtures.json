@@ -1,0 +1,471 @@
+{
+  "csv_routes": {
+    "f2_1a": "frequency",
+    "f2_1b": "frequency",
+    "f2_2": "general",
+    "f2_3": "large"
+  },
+  "files": {
+    "fault_early_selected_late_unselected": {
+      "bytes": 40,
+      "name": "fault-early_selected_late_unselected.csv",
+      "sha256": "562d1bba8b22b0c2ca123ebbdcce386b11755ab37c114623beabfa51b8c1a7d8"
+    },
+    "fault_early_unselected_late_selected": {
+      "bytes": 40,
+      "name": "fault-early_unselected_late_selected.csv",
+      "sha256": "ea5fde0b5af6d6ba3121a8e1dd253740b19f104374154df4f61b9be9823fe8cd"
+    },
+    "fault_row_extra": {
+      "bytes": 20,
+      "name": "fault-row_extra.csv",
+      "sha256": "0a7739b01c9e5221a41e7e1010c7b626453e08705edcc39b5858855081b72468"
+    },
+    "fault_row_short": {
+      "bytes": 16,
+      "name": "fault-row_short.csv",
+      "sha256": "557d20056450169d165342dc75ccfbc5ccb3c6d63ca641afdfdf2242ffd92ee1"
+    },
+    "fault_selected_invalid": {
+      "bytes": 29,
+      "name": "fault-selected_invalid.csv",
+      "sha256": "42c58a6f2f844bcd517190233afa1b7ea68b930f37be87138215e4864c41b1a4"
+    },
+    "fault_timestamp_invalid": {
+      "bytes": 29,
+      "name": "fault-timestamp_invalid.csv",
+      "sha256": "e5c8c9d491b1045afac175eeaf7ad17f84591cebcd10076f68bdbdb0a656233e"
+    },
+    "fault_timestamp_irregular": {
+      "bytes": 18,
+      "name": "fault-timestamp_irregular.csv",
+      "sha256": "d03af0e8f0ee9153b82a5d22d09c1b5aac07465f001d190f78af41557025f198"
+    },
+    "fault_unselected_invalid": {
+      "bytes": 29,
+      "name": "fault-unselected_invalid.csv",
+      "sha256": "d1017702788087f89576d4e933b9df461515325dd297d101fd2c314161f2ff42"
+    },
+    "frequency": {
+      "bytes": 107664,
+      "name": "frequency-nonuniform-4096.csv",
+      "sha256": "58443227fad52967f8f00ad58fd56c63eee05b1947e38f6144ed79895dccaa3b"
+    },
+    "general": {
+      "bytes": 937784,
+      "name": "general-8192-8.csv",
+      "sha256": "2f7bbbb9bea7b3096cf61aeb8da87a2e20a20ba40e1c2320f248d7f11a253ab1"
+    },
+    "large": {
+      "bytes": 14111355,
+      "name": "large-65536-16.csv",
+      "sha256": "897b98160b0135b21a681667aaab4dbd8fbdcdd5c89395bbfecbb77604c9e00e"
+    },
+    "sdb_fault_bad_payload_selected": {
+      "bytes": 106496,
+      "name": "sdb/sdb_fault_bad_payload_selected.sdb",
+      "sha256": "ac45277760cba38aaf59b63c0f08c778feaabe66ce6fa1c45322a6e3f535eff9"
+    },
+    "sdb_fault_bad_payload_unselected": {
+      "bytes": 106496,
+      "name": "sdb/sdb_fault_bad_payload_unselected.sdb",
+      "sha256": "b05a9d1460f80144d627898861c3a20dcb8409196d89d9bb67ffc8c1af791410"
+    },
+    "sdb_fault_irregular_time_unselected_window": {
+      "bytes": 106496,
+      "name": "sdb/sdb_fault_irregular_time_unselected_window.sdb",
+      "sha256": "1ff704a33d98c859c41086d4ac71f3c0a621691077ac0be29c96eec77d87517f"
+    },
+    "sdb_fault_usunits_unselected_window": {
+      "bytes": 106496,
+      "name": "sdb/sdb_fault_usunits_unselected_window.sdb",
+      "sha256": "304e6c13c792a20cfa968eeedf379a986ed9c5c08b80df2b9df4babb6ae936a1"
+    },
+    "sdb_valid_large": {
+      "bytes": 106496,
+      "name": "sdb/sdb_valid_large.sdb",
+      "sha256": "84579ec5191342a12b51f41f9779e413210de82c0fe7fa905c5e3772362f0a0b"
+    },
+    "sdb_wal_base": {
+      "bytes": 106496,
+      "name": "sdb/sdb_wal_base.sdb",
+      "sha256": "e67dce7da136cad8437ff1cda7779c10b0d8afdb818075631610bbd6af49025a"
+    },
+    "segment_00": {
+      "bytes": 56620,
+      "name": "segment-00.csv",
+      "sha256": "270b6e82fdfd237eb028757b4fb802775904d18569fba57ecfcca5e5eb86c52d"
+    },
+    "segment_01": {
+      "bytes": 57174,
+      "name": "segment-01.csv",
+      "sha256": "3b833d41507e9c7f9d021b86e65894a8e0860af05fd3174875276499c28265fe"
+    },
+    "segment_02": {
+      "bytes": 59172,
+      "name": "segment-02.csv",
+      "sha256": "3a57bb59f38ffde025510a43926c7236559dbb4ea1d094c86fc62be32a0b13c3"
+    },
+    "segment_03": {
+      "bytes": 59172,
+      "name": "segment-03.csv",
+      "sha256": "c5f63b4ef0fc54fe6e1d9852c74b2aec1ea13aa69e0ebd1ec441ef27875c679e"
+    },
+    "segment_04": {
+      "bytes": 59172,
+      "name": "segment-04.csv",
+      "sha256": "ff4e06079d8a82ab70d48509da16a19b23ebfb1eee5f3f1cb05c5838dc20fc45"
+    },
+    "segment_05": {
+      "bytes": 59172,
+      "name": "segment-05.csv",
+      "sha256": "7c8a737d5ac0ca21d90ad00b4645e477a429614d2d7a5666606e59e8cfa24f62"
+    },
+    "segment_06": {
+      "bytes": 59172,
+      "name": "segment-06.csv",
+      "sha256": "49e8dde94f4212220553a8d9a385fe0a1441565b2597df4cdc253ba5d6b62a55"
+    },
+    "segment_07": {
+      "bytes": 59172,
+      "name": "segment-07.csv",
+      "sha256": "bc5bfb6560db949174a4637d55889e44da68de8f4bc5affed740d293b1a18b7a"
+    },
+    "segment_08": {
+      "bytes": 59172,
+      "name": "segment-08.csv",
+      "sha256": "ff5a706d269806ca8c43cef2fff00a56103ff79adc99d29789a5942298736224"
+    },
+    "segment_09": {
+      "bytes": 59172,
+      "name": "segment-09.csv",
+      "sha256": "c098e14fb1a9609a036c91b7c99211730d47b078a1a7da6de21804a6ac019f69"
+    },
+    "segment_10": {
+      "bytes": 59172,
+      "name": "segment-10.csv",
+      "sha256": "2af96fb0236b90466c57f0e860d420cad4b493ec51f843dddfbd16549054a89c"
+    },
+    "segment_11": {
+      "bytes": 59172,
+      "name": "segment-11.csv",
+      "sha256": "2d8114957f16daced06dcb2ac6affeca51450c497779bdce940f6b0ef01bc242"
+    },
+    "tdms_fault_selected_increment": {
+      "bytes": 98647,
+      "name": "tdms/tdms_fault_selected_increment.tdms",
+      "sha256": "2574884085383622d40b34837de9a672cdda6292ca0b77c006a5943b2f3a1fd3"
+    },
+    "tdms_fault_selected_payload": {
+      "bytes": 98667,
+      "name": "tdms/tdms_fault_selected_payload.tdms",
+      "sha256": "09a4142ca25ca2a8a54d9f5b9985daa71b68ed65b380fffadeb53ca5abd349cd"
+    },
+    "tdms_fault_unselected_increment": {
+      "bytes": 98647,
+      "name": "tdms/tdms_fault_unselected_increment.tdms",
+      "sha256": "f3b2dbcc7303edb0710b944d46acc26f2dded0cd6e1d0f9ccfd998520740b0f8"
+    },
+    "tdms_fault_unselected_payload": {
+      "bytes": 98667,
+      "name": "tdms/tdms_fault_unselected_payload.tdms",
+      "sha256": "6b441a016fe28e5ed77ae87d76f390fdf8ec9ed23ba1abe902627941a913cdc6"
+    },
+    "tdms_valid_many": {
+      "bytes": 98675,
+      "name": "tdms/tdms_valid_many.tdms",
+      "sha256": "0c03e583aa09e04407df2301e38e71b86331cdaf68026f42de3caf25c80dc453"
+    }
+  },
+  "formats": {
+    "sdb": {
+      "cases": {
+        "fault_bad_payload_selected": {
+          "bytes": 106496,
+          "columns": [
+            "outTemp",
+            "outHumidity",
+            "barometer"
+          ],
+          "fault": "non_numeric_outTemp_last_row",
+          "name": "sdb_fault_bad_payload_selected.sdb",
+          "read_kwargs": {
+            "columns": [
+              "outTemp"
+            ]
+          },
+          "rows": 4096,
+          "selected_columns": [
+            "outTemp"
+          ],
+          "selected_rows": 4096,
+          "sha256": "ac45277760cba38aaf59b63c0f08c778feaabe66ce6fa1c45322a6e3f535eff9",
+          "window_selected_rows": 512,
+          "window_unix": {
+            "end": 1700153600,
+            "start": 1700000000
+          }
+        },
+        "fault_bad_payload_unselected": {
+          "bytes": 106496,
+          "columns": [
+            "outTemp",
+            "outHumidity",
+            "barometer"
+          ],
+          "fault": "non_numeric_outHumidity_last_row",
+          "name": "sdb_fault_bad_payload_unselected.sdb",
+          "read_kwargs": {
+            "columns": [
+              "outTemp"
+            ]
+          },
+          "rows": 4096,
+          "selected_columns": [
+            "outTemp"
+          ],
+          "selected_rows": 4096,
+          "sha256": "b05a9d1460f80144d627898861c3a20dcb8409196d89d9bb67ffc8c1af791410",
+          "window_selected_rows": 512,
+          "window_unix": {
+            "end": 1700153600,
+            "start": 1700000000
+          }
+        },
+        "fault_irregular_time_unselected_window": {
+          "bytes": 106496,
+          "columns": [
+            "outTemp",
+            "outHumidity",
+            "barometer"
+          ],
+          "fault": "irregular_dateTime_last_row",
+          "name": "sdb_fault_irregular_time_unselected_window.sdb",
+          "read_kwargs": {
+            "columns": [
+              "outTemp"
+            ]
+          },
+          "rows": 4096,
+          "selected_columns": [
+            "outTemp"
+          ],
+          "selected_rows": 4096,
+          "sha256": "1ff704a33d98c859c41086d4ac71f3c0a621691077ac0be29c96eec77d87517f",
+          "window_selected_rows": 512,
+          "window_unix": {
+            "end": 1700153600,
+            "start": 1700000000
+          }
+        },
+        "fault_usunits_unselected_window": {
+          "bytes": 106496,
+          "columns": [
+            "outTemp",
+            "outHumidity",
+            "barometer"
+          ],
+          "fault": "usUnits_last_row",
+          "name": "sdb_fault_usunits_unselected_window.sdb",
+          "read_kwargs": {
+            "columns": [
+              "outTemp"
+            ]
+          },
+          "rows": 4096,
+          "selected_columns": [
+            "outTemp"
+          ],
+          "selected_rows": 4096,
+          "sha256": "304e6c13c792a20cfa968eeedf379a986ed9c5c08b80df2b9df4babb6ae936a1",
+          "window_selected_rows": 512,
+          "window_unix": {
+            "end": 1700153600,
+            "start": 1700000000
+          }
+        },
+        "valid_large": {
+          "bytes": 106496,
+          "columns": [
+            "outTemp",
+            "outHumidity",
+            "barometer"
+          ],
+          "fault": null,
+          "name": "sdb_valid_large.sdb",
+          "read_kwargs": {
+            "columns": [
+              "outTemp"
+            ]
+          },
+          "rows": 4096,
+          "selected_columns": [
+            "outTemp"
+          ],
+          "selected_rows": 4096,
+          "sha256": "84579ec5191342a12b51f41f9779e413210de82c0fe7fa905c5e3772362f0a0b",
+          "window_selected_rows": 512,
+          "window_unix": {
+            "end": 1700153600,
+            "start": 1700000000
+          }
+        },
+        "wal_base": {
+          "bytes": 106496,
+          "columns": [
+            "outTemp",
+            "outHumidity",
+            "barometer"
+          ],
+          "fault": null,
+          "name": "sdb_wal_base.sdb",
+          "read_kwargs": {
+            "columns": [
+              "outTemp"
+            ]
+          },
+          "rows": 4096,
+          "selected_columns": [
+            "outTemp"
+          ],
+          "selected_rows": 4096,
+          "sha256": "e67dce7da136cad8437ff1cda7779c10b0d8afdb818075631610bbd6af49025a",
+          "window_selected_rows": 512,
+          "window_unix": {
+            "end": 1700153600,
+            "start": 1700000000
+          }
+        }
+      },
+      "format": "sdb",
+      "interval_seconds": 300,
+      "manifest_sha256": "323012f2eda708a47a8b49d5c70f97a283406f1910210bd8ce1a2399d28cf7a8",
+      "start_unix": 1700000000
+    },
+    "tdms": {
+      "cases": {
+        "fault_selected_increment": {
+          "bytes": 98647,
+          "channels": [
+            "Group/Selected",
+            "Group/Other",
+            "Group/Third"
+          ],
+          "fault": "missing_wf_increment_Selected",
+          "name": "tdms_fault_selected_increment.tdms",
+          "nominal_selected_rows": 4096,
+          "payload_fault_scope": null,
+          "read_kwargs": {
+            "channels": [
+              "Group/Selected"
+            ]
+          },
+          "rows": 4096,
+          "selected_channels": [
+            "Group/Selected"
+          ],
+          "selected_rows": 4096,
+          "sha256": "2574884085383622d40b34837de9a672cdda6292ca0b77c006a5943b2f3a1fd3"
+        },
+        "fault_selected_payload": {
+          "bytes": 98667,
+          "channels": [
+            "Group/Other",
+            "Group/Third",
+            "Group/Selected"
+          ],
+          "fault": "truncated_raw_payload_Selected",
+          "name": "tdms_fault_selected_payload.tdms",
+          "nominal_selected_rows": 4096,
+          "payload_fault_scope": "trailing-channel-intended; reader may fail at file open",
+          "read_kwargs": {
+            "channels": [
+              "Group/Selected"
+            ]
+          },
+          "rows": 4096,
+          "selected_channels": [
+            "Group/Selected"
+          ],
+          "selected_rows": null,
+          "sha256": "09a4142ca25ca2a8a54d9f5b9985daa71b68ed65b380fffadeb53ca5abd349cd"
+        },
+        "fault_unselected_increment": {
+          "bytes": 98647,
+          "channels": [
+            "Group/Selected",
+            "Group/Other",
+            "Group/Third"
+          ],
+          "fault": "missing_wf_increment_Other",
+          "name": "tdms_fault_unselected_increment.tdms",
+          "nominal_selected_rows": 4096,
+          "payload_fault_scope": null,
+          "read_kwargs": {
+            "channels": [
+              "Group/Selected"
+            ]
+          },
+          "rows": 4096,
+          "selected_channels": [
+            "Group/Selected"
+          ],
+          "selected_rows": 4096,
+          "sha256": "f3b2dbcc7303edb0710b944d46acc26f2dded0cd6e1d0f9ccfd998520740b0f8"
+        },
+        "fault_unselected_payload": {
+          "bytes": 98667,
+          "channels": [
+            "Group/Selected",
+            "Group/Third",
+            "Group/Other"
+          ],
+          "fault": "truncated_raw_payload_Other",
+          "name": "tdms_fault_unselected_payload.tdms",
+          "nominal_selected_rows": 4096,
+          "payload_fault_scope": "trailing-channel-intended; reader may fail at file open",
+          "read_kwargs": {
+            "channels": [
+              "Group/Selected"
+            ]
+          },
+          "rows": 4096,
+          "selected_channels": [
+            "Group/Selected"
+          ],
+          "selected_rows": 4096,
+          "sha256": "6b441a016fe28e5ed77ae87d76f390fdf8ec9ed23ba1abe902627941a913cdc6"
+        },
+        "valid_many": {
+          "bytes": 98675,
+          "channels": [
+            "Group/Selected",
+            "Group/Other",
+            "Group/Third"
+          ],
+          "fault": null,
+          "name": "tdms_valid_many.tdms",
+          "nominal_selected_rows": 4096,
+          "payload_fault_scope": null,
+          "read_kwargs": {
+            "channels": [
+              "Group/Selected"
+            ]
+          },
+          "rows": 4096,
+          "selected_channels": [
+            "Group/Selected"
+          ],
+          "selected_rows": 4096,
+          "sha256": "0c03e583aa09e04407df2301e38e71b86331cdaf68026f42de3caf25c80dc453"
+        }
+      },
+      "format": "tdms",
+      "manifest_sha256": "edb745e10e816526a0b006928db8d0f0558258779c0252391a771230724e61b5",
+      "sample_interval_seconds": 0.25
+    }
+  },
+  "generator": "benchmarks/io/fixtures.py",
+  "large_rows": 65536,
+  "schema": 1
+}

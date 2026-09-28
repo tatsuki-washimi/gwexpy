@@ -374,6 +374,11 @@ def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
     v025 = data["releases"]["v0.2.5"]
     assert v025["review_base_sha"] == "522e52a082925da4dd37966d82a7616bdd2a5248"
     assert v025["review_evidence_schema"] == "gwexpy-v025-review-evidence-v1"
+    assert v025["review_lanes"]["scientific-data-model"] == [
+        "benchmarks",
+        "gwexpy",
+        "tests/io",
+    ]
     assert v025["artifact_prefix"] == "v025-integration-evidence"
     assert v025["protected_refs"] == ["main", "maint/0.2"]
     release_validator = load_release_validator()

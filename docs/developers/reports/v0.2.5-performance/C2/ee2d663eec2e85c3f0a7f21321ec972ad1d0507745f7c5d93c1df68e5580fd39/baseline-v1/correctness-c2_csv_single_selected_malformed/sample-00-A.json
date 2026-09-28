@@ -1,0 +1,29 @@
+{
+  "audit": {
+    "executable": "/tmp/gwexpy-v025-b-env-a/bin/python",
+    "gwexpy_path": "/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/__init__.py",
+    "gwexpy_version": "0.2.4",
+    "prefix": "/tmp/gwexpy-v025-b-env-a",
+    "python": "3.12.12"
+  },
+  "controller_elapsed_ns": 2534083842,
+  "sample": {
+    "counters": {},
+    "error_cause_message": "could not convert string to float: 'BAD'",
+    "error_cause_type": "builtins.ValueError",
+    "error_message": "CSV line 2 contains non-numeric data",
+    "error_type": "builtins.ValueError",
+    "logs": [],
+    "logs_recorded": true,
+    "outcome": "error",
+    "traceback": "Traceback (most recent call last):\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/timeseries/io/csv_enhanced.py\", line 635, in read_timeseriesdict_csv\n    rows.append([float(v) for v in tokens])\n                 ^^^^^^^^\nValueError: could not convert string to float: 'BAD'\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-c2-dispatch/benchmarks/io/run.py\", line 990, in _worker\n    result = _scenario(\n             ^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-c2-dispatch/benchmarks/io/run.py\", line 358, in _scenario\n    return _c2_scenario(name, paths, scenario_events)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-c2-dispatch/benchmarks/io/run.py\", line 429, in _c2_scenario\n    return TimeSeries.read(source(filename), format=\"csv\", channels=[\"ch1\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/timeseries/timeseries.py\", line 246, in read\n    return read_timeseries_csv(source, **reader_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/timeseries/io/csv_enhanced.py\", line 865, in read_timeseries_csv\n    tsd = read_timeseriesdict_csv(source, **kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/timeseries/io/csv_enhanced.py\", line 639, in read_timeseriesdict_csv\n    raise ValueError(\nValueError: CSV line 2 contains non-numeric data\n",
+    "warnings": [
+      {
+        "category": "builtins.DeprecationWarning",
+        "message": "Compatibility support for python2 has been dropped"
+      }
+    ],
+    "warnings_recorded": true
+  },
+  "stderr": ""
+}

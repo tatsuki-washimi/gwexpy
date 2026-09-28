@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "status": "FROZEN_B1_CHARACTERIZATION",
+  "baseline_source_sha": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+  "baseline_wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498",
+  "baseline_installed_sdb_sha256": "714a7320810755c7479e5c35dc5e0344ba513fc01989b89586d77a4d6618fa6f",
+  "python": "3.12.12",
+  "numpy": "1.26.4",
+  "public_probe_sha256": "315cdeb462933fc2ed421e8bac8083bd854d19a1bc80b2978ce81458aea40a9b",
+  "fixture_generator_sha256": "9c10dec1fad72c943539d0f06ffa23cbded13c2b09482c5e71ea103a405a1640",
+  "fixture_manifest_sha256": "4992086e5d267dcd52e0b00977d21cc5b65f3f8d92f4fdf78d1c6581b3f882f9",
+  "public_signatures_sha256": "1f292e48a7f2af8d0018b415c6fa6931499b21d521391aa3d986c830c0e32478",
+  "cases": 3,
+  "rows_per_fixture": 600,
+  "validation_chunk_rows_under_test": 256,
+  "selected_unit_column": "outTemp",
+  "coverage": [
+    "TEXT and REAL storage mixed with NULL in one selected unit column across rows 255/256 and 511/512",
+    "invalid TEXT at row 256 outside the requested window",
+    "trailing-newline integer TEXT at row 255 inside the requested window"
+  ],
+  "v6_design_gate": {
+    "canonical_integer_regex_api": "re.fullmatch",
+    "any_unqualified_token": "fallback before warning emission; let B1 full-payload route own warnings/errors/order"
+  }
+}

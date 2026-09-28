@@ -1,0 +1,352 @@
+[
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-b-env-a/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.4",
+      "prefix": "/tmp/gwexpy-v025-b-env-a",
+      "python": "3.12.12"
+    },
+    "sample": {
+      "error_message": "SDB timestamp gap at index 1: expected cadence 300, got 299",
+      "error_type": "builtins.ValueError",
+      "events": {
+        "mutation": "timestamp",
+        "reader_sql_before_trigger": [
+          "PRAGMA table_info(\"archive\")",
+          "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+          "PRAGMA table_info(\"archive\")",
+          "PRAGMA table_list(\"archive\")",
+          "PRAGMA table_info(\"archive\")"
+        ],
+        "row_after": [
+          1700000001,
+          "60",
+          "40",
+          1
+        ],
+        "row_before": [
+          1700000000,
+          "60",
+          "40",
+          1
+        ],
+        "schema_after": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "schema_before": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "selection": "all",
+        "trigger_sql": "SELECT \"dateTime\", \"outTemp\", \"outHumidity\", \"barometer\" FROM \"archive\" ORDER BY \"rowid\"",
+        "triggered": true,
+        "wal_mode": "wal",
+        "writer_committed": true,
+        "writer_parameters": [],
+        "writer_sql": [
+          "BEGIN IMMEDIATE",
+          "UPDATE archive SET dateTime = dateTime + 1 WHERE rowid = 1",
+          "COMMIT"
+        ]
+      },
+      "logs": [],
+      "outcome": "error",
+      "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f2-sdb-v2/benchmarks/io/sdb_wal_v2.py\", line 147, in _read_scheduled\n    result = TimeSeriesDict.read(path, format=\"sdb\", **options)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 606, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 441, in __call__\n    outputs.append(_read(src))\n                   ^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 427, in _read\n    return self.registry.read(\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/astropy/io/registry/core.py\", line 221, in read\n    data = reader(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/timeseries/io/sdb.py\", line 291, in read_timeseriesdict_sdb\n    source_dt = _validate_regular_timestamps(raw_time_values, source=\"SDB\")\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/io/utils.py\", line 119, in _validate_regular_timestamps\n    raise ValueError(\nValueError: SDB timestamp gap at index 1: expected cadence 300, got 299\n",
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ]
+    },
+    "stderr": ""
+  },
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-b-env-a/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.4",
+      "prefix": "/tmp/gwexpy-v025-b-env-a",
+      "python": "3.12.12"
+    },
+    "sample": {
+      "error_message": "SDB timestamp gap at index 1: expected cadence 300, got 299",
+      "error_type": "builtins.ValueError",
+      "events": {
+        "mutation": "timestamp",
+        "reader_sql_before_trigger": [
+          "PRAGMA table_info(\"archive\")",
+          "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+          "PRAGMA table_info(\"archive\")",
+          "PRAGMA table_list(\"archive\")",
+          "PRAGMA table_info(\"archive\")"
+        ],
+        "row_after": [
+          1700000001,
+          "60",
+          "40",
+          1
+        ],
+        "row_before": [
+          1700000000,
+          "60",
+          "40",
+          1
+        ],
+        "schema_after": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "schema_before": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "selection": "all",
+        "trigger_sql": "SELECT \"dateTime\", \"outTemp\", \"outHumidity\", \"barometer\" FROM \"archive\" ORDER BY \"rowid\"",
+        "triggered": true,
+        "wal_mode": "wal",
+        "writer_committed": true,
+        "writer_parameters": [],
+        "writer_sql": [
+          "BEGIN IMMEDIATE",
+          "UPDATE archive SET dateTime = dateTime + 1 WHERE rowid = 1",
+          "COMMIT"
+        ]
+      },
+      "logs": [],
+      "outcome": "error",
+      "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f2-sdb-v2/benchmarks/io/sdb_wal_v2.py\", line 147, in _read_scheduled\n    result = TimeSeriesDict.read(path, format=\"sdb\", **options)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 606, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 441, in __call__\n    outputs.append(_read(src))\n                   ^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 427, in _read\n    return self.registry.read(\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/astropy/io/registry/core.py\", line 221, in read\n    data = reader(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/timeseries/io/sdb.py\", line 291, in read_timeseriesdict_sdb\n    source_dt = _validate_regular_timestamps(raw_time_values, source=\"SDB\")\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/io/utils.py\", line 119, in _validate_regular_timestamps\n    raise ValueError(\nValueError: SDB timestamp gap at index 1: expected cadence 300, got 299\n",
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ]
+    },
+    "stderr": ""
+  },
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-b-env-a/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.4",
+      "prefix": "/tmp/gwexpy-v025-b-env-a",
+      "python": "3.12.12"
+    },
+    "sample": {
+      "error_message": "SDB timestamp gap at index 1: expected cadence 300, got 299",
+      "error_type": "builtins.ValueError",
+      "events": {
+        "mutation": "timestamp",
+        "reader_sql_before_trigger": [
+          "PRAGMA table_info(\"archive\")",
+          "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+          "PRAGMA table_info(\"archive\")",
+          "PRAGMA table_list(\"archive\")",
+          "PRAGMA table_info(\"archive\")"
+        ],
+        "row_after": [
+          1700000001,
+          "60",
+          "40",
+          1
+        ],
+        "row_before": [
+          1700000000,
+          "60",
+          "40",
+          1
+        ],
+        "schema_after": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "schema_before": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "selection": "all",
+        "trigger_sql": "SELECT \"dateTime\", \"outTemp\", \"outHumidity\", \"barometer\" FROM \"archive\" ORDER BY \"rowid\"",
+        "triggered": true,
+        "wal_mode": "wal",
+        "writer_committed": true,
+        "writer_parameters": [],
+        "writer_sql": [
+          "BEGIN IMMEDIATE",
+          "UPDATE archive SET dateTime = dateTime + 1 WHERE rowid = 1",
+          "COMMIT"
+        ]
+      },
+      "logs": [],
+      "outcome": "error",
+      "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f2-sdb-v2/benchmarks/io/sdb_wal_v2.py\", line 147, in _read_scheduled\n    result = TimeSeriesDict.read(path, format=\"sdb\", **options)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 606, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 441, in __call__\n    outputs.append(_read(src))\n                   ^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 427, in _read\n    return self.registry.read(\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/astropy/io/registry/core.py\", line 221, in read\n    data = reader(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/timeseries/io/sdb.py\", line 291, in read_timeseriesdict_sdb\n    source_dt = _validate_regular_timestamps(raw_time_values, source=\"SDB\")\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/io/utils.py\", line 119, in _validate_regular_timestamps\n    raise ValueError(\nValueError: SDB timestamp gap at index 1: expected cadence 300, got 299\n",
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ]
+    },
+    "stderr": ""
+  },
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-b-env-a/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.4",
+      "prefix": "/tmp/gwexpy-v025-b-env-a",
+      "python": "3.12.12"
+    },
+    "sample": {
+      "error_message": "SDB timestamp gap at index 1: expected cadence 300, got 299",
+      "error_type": "builtins.ValueError",
+      "events": {
+        "mutation": "timestamp",
+        "reader_sql_before_trigger": [
+          "PRAGMA table_info(\"archive\")",
+          "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+          "PRAGMA table_info(\"archive\")",
+          "PRAGMA table_list(\"archive\")",
+          "PRAGMA table_info(\"archive\")"
+        ],
+        "row_after": [
+          1700000001,
+          "60",
+          "40",
+          1
+        ],
+        "row_before": [
+          1700000000,
+          "60",
+          "40",
+          1
+        ],
+        "schema_after": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "schema_before": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "selection": "all",
+        "trigger_sql": "SELECT \"dateTime\", \"outTemp\", \"outHumidity\", \"barometer\" FROM \"archive\" ORDER BY \"rowid\"",
+        "triggered": true,
+        "wal_mode": "wal",
+        "writer_committed": true,
+        "writer_parameters": [],
+        "writer_sql": [
+          "BEGIN IMMEDIATE",
+          "UPDATE archive SET dateTime = dateTime + 1 WHERE rowid = 1",
+          "COMMIT"
+        ]
+      },
+      "logs": [],
+      "outcome": "error",
+      "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f2-sdb-v2/benchmarks/io/sdb_wal_v2.py\", line 147, in _read_scheduled\n    result = TimeSeriesDict.read(path, format=\"sdb\", **options)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 606, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 441, in __call__\n    outputs.append(_read(src))\n                   ^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 427, in _read\n    return self.registry.read(\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/astropy/io/registry/core.py\", line 221, in read\n    data = reader(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/timeseries/io/sdb.py\", line 291, in read_timeseriesdict_sdb\n    source_dt = _validate_regular_timestamps(raw_time_values, source=\"SDB\")\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/io/utils.py\", line 119, in _validate_regular_timestamps\n    raise ValueError(\nValueError: SDB timestamp gap at index 1: expected cadence 300, got 299\n",
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ]
+    },
+    "stderr": ""
+  },
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-b-env-a/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.4",
+      "prefix": "/tmp/gwexpy-v025-b-env-a",
+      "python": "3.12.12"
+    },
+    "sample": {
+      "error_message": "SDB timestamp gap at index 1: expected cadence 300, got 299",
+      "error_type": "builtins.ValueError",
+      "events": {
+        "mutation": "timestamp",
+        "reader_sql_before_trigger": [
+          "PRAGMA table_info(\"archive\")",
+          "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+          "PRAGMA table_info(\"archive\")",
+          "PRAGMA table_list(\"archive\")",
+          "PRAGMA table_info(\"archive\")"
+        ],
+        "row_after": [
+          1700000001,
+          "60",
+          "40",
+          1
+        ],
+        "row_before": [
+          1700000000,
+          "60",
+          "40",
+          1
+        ],
+        "schema_after": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "schema_before": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "selection": "all",
+        "trigger_sql": "SELECT \"dateTime\", \"outTemp\", \"outHumidity\", \"barometer\" FROM \"archive\" ORDER BY \"rowid\"",
+        "triggered": true,
+        "wal_mode": "wal",
+        "writer_committed": true,
+        "writer_parameters": [],
+        "writer_sql": [
+          "BEGIN IMMEDIATE",
+          "UPDATE archive SET dateTime = dateTime + 1 WHERE rowid = 1",
+          "COMMIT"
+        ]
+      },
+      "logs": [],
+      "outcome": "error",
+      "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f2-sdb-v2/benchmarks/io/sdb_wal_v2.py\", line 147, in _read_scheduled\n    result = TimeSeriesDict.read(path, format=\"sdb\", **options)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 606, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 441, in __call__\n    outputs.append(_read(src))\n                   ^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 427, in _read\n    return self.registry.read(\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/astropy/io/registry/core.py\", line 221, in read\n    data = reader(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/timeseries/io/sdb.py\", line 291, in read_timeseriesdict_sdb\n    source_dt = _validate_regular_timestamps(raw_time_values, source=\"SDB\")\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/io/utils.py\", line 119, in _validate_regular_timestamps\n    raise ValueError(\nValueError: SDB timestamp gap at index 1: expected cadence 300, got 299\n",
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ]
+    },
+    "stderr": ""
+  }
+]

@@ -1,0 +1,29 @@
+[
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-b-env-b/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "prefix": "/tmp/gwexpy-v025-b-env-b",
+      "python": "3.12.12"
+    },
+    "controller_elapsed_ns": 2597321846,
+    "sample": {
+      "counters": {},
+      "error_message": "TDMS channel 'Group/Selected' has a missing or invalid 'wf_increment'; expected a positive, finite sample interval",
+      "error_type": "builtins.ValueError",
+      "logs": [],
+      "logs_recorded": true,
+      "outcome": "error",
+      "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-performance-b/benchmarks/io/run.py\", line 743, in _worker\n    result = _scenario(\n             ^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-performance-b/benchmarks/io/run.py\", line 313, in _scenario\n    return TimeSeriesDict.read(\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 459, in read\n    return _coerce_reader_result(cls, reader(source, *args, **reader_kwargs))\n                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/timeseries/io/tdms.py\", line 132, in read_timeseriesdict_tdms\n    raise ValueError(\nValueError: TDMS channel 'Group/Selected' has a missing or invalid 'wf_increment'; expected a positive, finite sample interval\n",
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "warnings_recorded": true
+    },
+    "stderr": ""
+  }
+]

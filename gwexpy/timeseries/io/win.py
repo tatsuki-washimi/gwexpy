@@ -88,6 +88,50 @@ def _apply_4bit_deltas(output: list[int], sdata: bytes, n_deltas: int) -> None:
             remaining -= 1
 
 
+def _decode_win_deltas(sdata: bytes, width_code: int, n_deltas: int) -> np.ndarray:
+    """Decode one bounded WIN channel payload into signed int64 deltas."""
+    if width_code == 0:
+        packed = np.frombuffer(sdata, dtype=np.uint8)
+        nibbles = np.empty(packed.size * 2, dtype=np.uint8)
+        nibbles[0::2] = packed >> 4
+        nibbles[1::2] = packed & 0x0F
+        values = nibbles[:n_deltas].astype(np.int64)
+        return (values ^ 8) - 8
+    if width_code == 1:
+        return np.frombuffer(sdata, dtype=np.int8).astype(np.int64)
+    if width_code == 2:
+        return np.frombuffer(sdata, dtype=">i2").astype(np.int64)
+    if width_code == 3:
+        octets = np.frombuffer(sdata, dtype=np.uint8).reshape(-1, 3)
+        high = octets[:, 0].astype(np.int64) << 16
+        middle = octets[:, 1].astype(np.int64) << 8
+        unsigned = high | middle | octets[:, 2].astype(np.int64)
+        return (unsigned ^ 0x800000) - 0x800000
+    return np.frombuffer(sdata, dtype=">i4").astype(np.int64)
+
+
+def _cumsum_win_samples(
+    absolute: int, deltas: np.ndarray, max_abs_delta: int
+) -> np.ndarray | list[int]:
+    """Reconstruct samples in int64, preserving Python integers if unsafe.
+
+    A real WIN channel has an int32 absolute, at most 4094 deltas, and at
+    most int32-sized deltas, so its conservative bound is well within int64.
+    The fallback protects that assumption if this helper receives larger data.
+    """
+    if abs(absolute) + deltas.size * max_abs_delta > np.iinfo(np.int64).max:
+        samples = [int(absolute)]
+        for delta in deltas:
+            samples.append(samples[-1] + int(delta))
+        return samples
+
+    samples_array = np.empty(deltas.size + 1, dtype=np.int64)
+    samples_array[0] = absolute
+    np.cumsum(deltas, dtype=np.int64, out=samples_array[1:])
+    samples_array[1:] += absolute
+    return samples_array
+
+
 def _read_win_fixed(filename: str | Path, century="20"):
     """Read a WIN file and return a ``Stream`` object.
 
@@ -197,26 +241,9 @@ def _read_win_fixed(filename: str | Path, century="20"):
                         f"WIN channel {chanum} reappears after an internal packet gap"
                     )
 
-                samples = [absolute]
-                if width_code == 0:
-                    _apply_4bit_deltas(samples, sdata, srate - 1)
-                elif width_code == 1:
-                    for raw in sdata:
-                        delta = int(np.frombuffer(bytes([raw]), np.int8)[0])
-                        samples.append(samples[-1] + delta)
-                elif width_code == 2:
-                    for i in range(srate - 1):
-                        delta = struct.unpack(">h", sdata[2 * i : 2 * (i + 1)])[0]
-                        samples.append(samples[-1] + delta)
-                elif width_code == 3:
-                    for i in range(srate - 1):
-                        chunk = sdata[3 * i : 3 * (i + 1)]
-                        delta = struct.unpack(">i", chunk + b"\x00")[0] >> 8
-                        samples.append(samples[-1] + delta)
-                else:
-                    for i in range(srate - 1):
-                        delta = struct.unpack(">i", sdata[4 * i : 4 * (i + 1)])[0]
-                        samples.append(samples[-1] + delta)
+                deltas = _decode_win_deltas(sdata, width_code, srate - 1)
+                max_abs_delta = 1 << (3 if width_code == 0 else width_code * 8 - 1)
+                samples = _cumsum_win_samples(absolute, deltas, max_abs_delta)
 
                 if len(samples) != srate:
                     raise ValueError(
@@ -228,7 +255,9 @@ def _read_win_fixed(filename: str | Path, century="20"):
                     output[chanum] = []
                     srates[chanum] = srate
                     starts[chanum] = date
-                output[chanum].extend(samples)
+                output[chanum].extend(
+                    samples.tolist() if isinstance(samples, np.ndarray) else samples
+                )
                 last_packet_by_channel[chanum] = packet_index
 
             packet_index += 1

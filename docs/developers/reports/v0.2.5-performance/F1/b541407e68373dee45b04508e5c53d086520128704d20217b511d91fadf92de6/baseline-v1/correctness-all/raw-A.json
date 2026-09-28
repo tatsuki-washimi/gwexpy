@@ -1,0 +1,3812 @@
+[
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-f1-env-a/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.4",
+      "prefix": "/tmp/gwexpy-v025-f1-env-a",
+      "python": "3.12.12"
+    },
+    "controller_elapsed_ns": 3904929790,
+    "sample": {
+      "hdf.ndscope:disjoint_after": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "cannot calculate span for empty TimeSeriesDict",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 606, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 564, in merge\n    for tsd in sorted(items, key=lambda x: x.span):\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 564, in <lambda>\n    for tsd in sorted(items, key=lambda x: x.span):\n                                           ^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/core.py\", line 1024, in span\n    return span.extent()\n           ^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/utils/decorators.py\", line 171, in wrapped\n    result = func(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^\nValueError: cannot calculate span for empty TimeSeriesDict\n",
+        "warnings": []
+      },
+      "hdf.ndscope:disjoint_before": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "cannot calculate span for empty TimeSeriesDict",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 606, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 564, in merge\n    for tsd in sorted(items, key=lambda x: x.span):\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 564, in <lambda>\n    for tsd in sorted(items, key=lambda x: x.span):\n                                           ^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/core.py\", line 1024, in span\n    return span.extent()\n           ^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/utils/decorators.py\", line 171, in wrapped\n    result = func(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^\nValueError: cannot calculate span for empty TimeSeriesDict\n",
+        "warnings": []
+      },
+      "hdf.ndscope:end_at_span_start": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "cannot calculate span for empty TimeSeriesDict",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 606, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 564, in merge\n    for tsd in sorted(items, key=lambda x: x.span):\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 564, in <lambda>\n    for tsd in sorted(items, key=lambda x: x.span):\n                                           ^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/core.py\", line 1024, in span\n    return span.extent()\n           ^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/utils/decorators.py\", line 171, in wrapped\n    result = func(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^\nValueError: cannot calculate span for empty TimeSeriesDict\n",
+        "warnings": []
+      },
+      "hdf.ndscope:end_only": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "TimeSeries with span [12345.125 ... 12396.425) does not cover requested interval [12345.125 ... 12396.525)",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 606, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 569, in merge\n    out[key] = _pad_series(\n               ^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 117, in _pad_series\n    raise ValueError(msg)\nValueError: TimeSeries with span [12345.125 ... 12396.425) does not cover requested interval [12345.125 ... 12396.525)\n",
+        "warnings": []
+      },
+      "hdf.ndscope:half_sample": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.325 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.325",
+                    "12396.425000000001"
+                  ],
+                  "sha256": "284e47ebc430c09beda1908357a3164a3137d193f52866260438c6dcc2fc4a9c",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-115.0",
+                  "-114.0"
+                ],
+                "sha256": "214546f12485f799bc00bd53e2b35e137161fda22c2c1096111e6600b274da55",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf.ndscope:left_exact": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "TimeSeries with span [12396.325 ... 12396.425000000001) does not cover requested interval [12396.325 ... 12396.525)",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 606, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 569, in merge\n    out[key] = _pad_series(\n               ^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 117, in _pad_series\n    raise ValueError(msg)\nValueError: TimeSeries with span [12396.325 ... 12396.425000000001) does not cover requested interval [12396.325 ... 12396.525)\n",
+        "warnings": []
+      },
+      "hdf.ndscope:left_minus_ulp": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "TimeSeries with span [12396.325 ... 12396.425000000001) does not cover requested interval [12396.325 ... 12396.525)",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 606, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 569, in merge\n    out[key] = _pad_series(\n               ^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 117, in _pad_series\n    raise ValueError(msg)\nValueError: TimeSeries with span [12396.325 ... 12396.425000000001) does not cover requested interval [12396.325 ... 12396.525)\n",
+        "warnings": []
+      },
+      "hdf.ndscope:left_plus_ulp": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "TimeSeries with span [12396.325 ... 12396.425000000001) does not cover requested interval [12396.325 ... 12396.525)",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 606, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 569, in merge\n    out[key] = _pad_series(\n               ^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 117, in _pad_series\n    raise ValueError(msg)\nValueError: TimeSeries with span [12396.325 ... 12396.425000000001) does not cover requested interval [12396.325 ... 12396.525)\n",
+        "warnings": []
+      },
+      "hdf.ndscope:one_sample": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "TimeSeries with span [12396.325 ... 12396.325) does not cover requested interval [12396.325 ... 12396.425)",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 606, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 569, in merge\n    out[key] = _pad_series(\n               ^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 117, in _pad_series\n    raise ValueError(msg)\nValueError: TimeSeries with span [12396.325 ... 12396.325) does not cover requested interval [12396.325 ... 12396.425)\n",
+        "warnings": []
+      },
+      "hdf.ndscope:out_of_range_corrupt_chunk": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "Can't synchronously read data (filter returned failure during read)",
+        "error_type": "builtins.OSError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 606, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 441, in __call__\n    outputs.append(_read(src))\n                   ^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 427, in _read\n    return self.registry.read(\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/astropy/io/registry/core.py\", line 221, in read\n    data = reader(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/io/ndscope_hdf5.py\", line 269, in read_timeseriesdict_ndscope_hdf5\n    data = np.asarray(item[ds_name])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"h5py/_objects.pyx\", line 54, in h5py._objects.with_phil.wrapper\n  File \"h5py/_objects.pyx\", line 55, in h5py._objects.with_phil.wrapper\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/h5py/_hl/dataset.py\", line 1150, in __array__\n    self.read_direct(arr)\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/h5py/_hl/dataset.py\", line 1106, in read_direct\n    self.id.read(mspace, fspace, dest, dxpl=self._dxpl)\n  File \"h5py/_objects.pyx\", line 54, in h5py._objects.with_phil.wrapper\n  File \"h5py/_objects.pyx\", line 55, in h5py._objects.with_phil.wrapper\n  File \"h5py/h5d.pyx\", line 260, in h5py.h5d.DatasetID.read\n  File \"h5py/_proxy.pyx\", line 117, in h5py._proxy.dset_rw\nOSError: Can't synchronously read data (filter returned failure during read)\n",
+        "warnings": []
+      },
+      "hdf.ndscope:partial_after": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "TimeSeries with span [12754.425 ... 12754.724999999999) does not cover requested interval [12754.525 ... 12754.925)",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 606, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 569, in merge\n    out[key] = _pad_series(\n               ^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 117, in _pad_series\n    raise ValueError(msg)\nValueError: TimeSeries with span [12754.425 ... 12754.724999999999) does not cover requested interval [12754.525 ... 12754.925)\n",
+        "warnings": []
+      },
+      "hdf.ndscope:partial_before": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "TimeSeries with span [12345.125 ... 12345.325) does not cover requested interval [12344.925 ... 12345.325)",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 606, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 569, in merge\n    out[key] = _pad_series(\n               ^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 117, in _pad_series\n    raise ValueError(msg)\nValueError: TimeSeries with span [12345.125 ... 12345.325) does not cover requested interval [12344.925 ... 12345.325)\n",
+        "warnings": []
+      },
+      "hdf.ndscope:right_exact": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.425",
+                    "12396.525",
+                    "12396.625"
+                  ],
+                  "sha256": "71c246d1cbd27e76daba28897ada857f3211f26a6bdfe1ea9d7e9e1508b45bd6",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-114.0",
+                  "-113.0",
+                  "-112.0"
+                ],
+                "sha256": "edfe76378e62c6d3a86dc9741d24f3c5c17370c146726f4f72b0d780b8501cdf",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf.ndscope:right_minus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.425",
+                    "12396.525",
+                    "12396.625"
+                  ],
+                  "sha256": "71c246d1cbd27e76daba28897ada857f3211f26a6bdfe1ea9d7e9e1508b45bd6",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-114.0",
+                  "-113.0",
+                  "-112.0"
+                ],
+                "sha256": "edfe76378e62c6d3a86dc9741d24f3c5c17370c146726f4f72b0d780b8501cdf",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf.ndscope:right_plus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.425",
+                    "12396.525",
+                    "12396.625"
+                  ],
+                  "sha256": "71c246d1cbd27e76daba28897ada857f3211f26a6bdfe1ea9d7e9e1508b45bd6",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-114.0",
+                  "-113.0",
+                  "-112.0"
+                ],
+                "sha256": "edfe76378e62c6d3a86dc9741d24f3c5c17370c146726f4f72b0d780b8501cdf",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf.ndscope:selected_corrupt_chunk": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "Can't synchronously read data (filter returned failure during read)",
+        "error_type": "builtins.OSError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 606, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 441, in __call__\n    outputs.append(_read(src))\n                   ^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 427, in _read\n    return self.registry.read(\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/astropy/io/registry/core.py\", line 221, in read\n    data = reader(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/io/ndscope_hdf5.py\", line 269, in read_timeseriesdict_ndscope_hdf5\n    data = np.asarray(item[ds_name])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"h5py/_objects.pyx\", line 54, in h5py._objects.with_phil.wrapper\n  File \"h5py/_objects.pyx\", line 55, in h5py._objects.with_phil.wrapper\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/h5py/_hl/dataset.py\", line 1150, in __array__\n    self.read_direct(arr)\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/h5py/_hl/dataset.py\", line 1106, in read_direct\n    self.id.read(mspace, fspace, dest, dxpl=self._dxpl)\n  File \"h5py/_objects.pyx\", line 54, in h5py._objects.with_phil.wrapper\n  File \"h5py/_objects.pyx\", line 55, in h5py._objects.with_phil.wrapper\n  File \"h5py/h5d.pyx\", line 260, in h5py.h5d.DatasetID.read\n  File \"h5py/_proxy.pyx\", line 117, in h5py._proxy.dset_rw\nOSError: Can't synchronously read data (filter returned failure during read)\n",
+        "warnings": []
+      },
+      "hdf.ndscope:short_intersecting": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.325 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.325",
+                    "12396.525000000001",
+                    "12396.625000000002"
+                  ],
+                  "sha256": "7d6498a57a44ee14cee905d9de8f1503274ee8a977ef309439ddc060fe14a8be",
+                  "shape": [
+                    4
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-115.0",
+                  "-113.0",
+                  "-112.0"
+                ],
+                "sha256": "a4ffdb01a4751b96fc8796bda9d145c8d4414a7de68df2292f97b0083430dd7b",
+                "shape": [
+                  4
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf.ndscope:span_end_exact": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12754.425",
+                    "12754.525",
+                    "12754.625"
+                  ],
+                  "sha256": "f648098c57f2743109e0c8a905bc3a055605cf590c13166b13a2369a171113bd",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-48.0",
+                  "-47.0",
+                  "-46.0"
+                ],
+                "sha256": "e6232d10d6c41e853ebdcad162aed315c287725e2c3d6cdbb0718ad11309dac9",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf.ndscope:span_end_minus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12754.425",
+                    "12754.525",
+                    "12754.625"
+                  ],
+                  "sha256": "f648098c57f2743109e0c8a905bc3a055605cf590c13166b13a2369a171113bd",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-48.0",
+                  "-47.0",
+                  "-46.0"
+                ],
+                "sha256": "e6232d10d6c41e853ebdcad162aed315c287725e2c3d6cdbb0718ad11309dac9",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf.ndscope:span_end_plus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12754.425",
+                    "12754.525",
+                    "12754.625"
+                  ],
+                  "sha256": "f648098c57f2743109e0c8a905bc3a055605cf590c13166b13a2369a171113bd",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-48.0",
+                  "-47.0",
+                  "-46.0"
+                ],
+                "sha256": "e6232d10d6c41e853ebdcad162aed315c287725e2c3d6cdbb0718ad11309dac9",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf.ndscope:span_start_exact": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12345.125",
+                    "12345.225"
+                  ],
+                  "sha256": "ac0b813b1e8fbfaedb37b21887a3273668ba27650894341f3c6cb9d9ccef73b9",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-125.0",
+                  "-124.0"
+                ],
+                "sha256": "eb82ecf47933c0851d38b8179a7746be3399827333a793171240daed3c50def7",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf.ndscope:span_start_minus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12345.125",
+                    "12345.225"
+                  ],
+                  "sha256": "ac0b813b1e8fbfaedb37b21887a3273668ba27650894341f3c6cb9d9ccef73b9",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-125.0",
+                  "-124.0"
+                ],
+                "sha256": "eb82ecf47933c0851d38b8179a7746be3399827333a793171240daed3c50def7",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf.ndscope:span_start_plus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12345.125",
+                    "12345.225"
+                  ],
+                  "sha256": "ac0b813b1e8fbfaedb37b21887a3273668ba27650894341f3c6cb9d9ccef73b9",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-125.0",
+                  "-124.0"
+                ],
+                "sha256": "eb82ecf47933c0851d38b8179a7746be3399827333a793171240daed3c50def7",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf.ndscope:start_at_span_end": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "cannot calculate span for empty TimeSeriesDict",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 606, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 564, in merge\n    for tsd in sorted(items, key=lambda x: x.span):\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 564, in <lambda>\n    for tsd in sorted(items, key=lambda x: x.span):\n                                           ^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/core.py\", line 1024, in span\n    return span.extent()\n           ^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/utils/decorators.py\", line 171, in wrapped\n    result = func(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^\nValueError: cannot calculate span for empty TimeSeriesDict\n",
+        "warnings": []
+      },
+      "hdf.ndscope:start_only": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.325 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.325",
+                    "12575.525000000653",
+                    "12754.625000001304"
+                  ],
+                  "sha256": "632f5824f01859ac45d23709b254402f88d86f8d69b9a25f146156cb1bd4d79a",
+                  "shape": [
+                    3584
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-115.0",
+                  "-80.0",
+                  "-46.0"
+                ],
+                "sha256": "898f6af7c3549d5ae4d550ff10988355b59c4663baab7a93da754cf0c58e5ab2",
+                "shape": [
+                  3584
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf5:disjoint_after": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "TimeSeries with span [12754.725 ... 12754.725) does not cover requested interval [12754.725 ... 12755.125)",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 554, in read\n    BaseTimeSeriesDict.read(source, *args, **kwargs),\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 569, in merge\n    out[key] = _pad_series(\n               ^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 117, in _pad_series\n    raise ValueError(msg)\nValueError: TimeSeries with span [12754.725 ... 12754.725) does not cover requested interval [12754.725 ... 12755.125)\n",
+        "warnings": []
+      },
+      "hdf5:disjoint_before": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "TimeSeries with span [12345.125 ... 12345.125) does not cover requested interval [12344.725 ... 12345.125)",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 554, in read\n    BaseTimeSeriesDict.read(source, *args, **kwargs),\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 569, in merge\n    out[key] = _pad_series(\n               ^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 117, in _pad_series\n    raise ValueError(msg)\nValueError: TimeSeries with span [12345.125 ... 12345.125) does not cover requested interval [12344.725 ... 12345.125)\n",
+        "warnings": []
+      },
+      "hdf5:disjoint_before_with_pad": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12344.725>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12344.725 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12344.725",
+                    "12344.925000000001",
+                    "12345.025000000001"
+                  ],
+                  "sha256": "e90801676ba478b8526cc631aaba74b0f807913c53eac7917eeafdb46fb4cdc2",
+                  "shape": [
+                    4
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "0.0",
+                  "0.0",
+                  "0.0"
+                ],
+                "sha256": "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "shape": [
+                  4
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf5:end_at_span_start": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "TimeSeries with span [12345.125 ... 12345.125) does not cover requested interval [12344.925 ... 12345.125)",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 554, in read\n    BaseTimeSeriesDict.read(source, *args, **kwargs),\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 569, in merge\n    out[key] = _pad_series(\n               ^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 117, in _pad_series\n    raise ValueError(msg)\nValueError: TimeSeries with span [12345.125 ... 12345.125) does not cover requested interval [12344.925 ... 12345.125)\n",
+        "warnings": []
+      },
+      "hdf5:end_only": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "TimeSeries with span [12345.125 ... 12396.425) does not cover requested interval [12345.125 ... 12396.525)",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 554, in read\n    BaseTimeSeriesDict.read(source, *args, **kwargs),\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 569, in merge\n    out[key] = _pad_series(\n               ^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 117, in _pad_series\n    raise ValueError(msg)\nValueError: TimeSeries with span [12345.125 ... 12396.425) does not cover requested interval [12345.125 ... 12396.525)\n",
+        "warnings": []
+      },
+      "hdf5:half_sample": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.325 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.325",
+                    "12396.425000000001"
+                  ],
+                  "sha256": "284e47ebc430c09beda1908357a3164a3137d193f52866260438c6dcc2fc4a9c",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-115.0",
+                  "-114.0"
+                ],
+                "sha256": "214546f12485f799bc00bd53e2b35e137161fda22c2c1096111e6600b274da55",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf5:left_exact": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "TimeSeries with span [12396.325 ... 12396.425000000001) does not cover requested interval [12396.325 ... 12396.525)",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 554, in read\n    BaseTimeSeriesDict.read(source, *args, **kwargs),\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 569, in merge\n    out[key] = _pad_series(\n               ^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 117, in _pad_series\n    raise ValueError(msg)\nValueError: TimeSeries with span [12396.325 ... 12396.425000000001) does not cover requested interval [12396.325 ... 12396.525)\n",
+        "warnings": []
+      },
+      "hdf5:left_minus_ulp": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "TimeSeries with span [12396.325 ... 12396.425000000001) does not cover requested interval [12396.325 ... 12396.525)",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 554, in read\n    BaseTimeSeriesDict.read(source, *args, **kwargs),\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 569, in merge\n    out[key] = _pad_series(\n               ^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 117, in _pad_series\n    raise ValueError(msg)\nValueError: TimeSeries with span [12396.325 ... 12396.425000000001) does not cover requested interval [12396.325 ... 12396.525)\n",
+        "warnings": []
+      },
+      "hdf5:left_plus_ulp": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "TimeSeries with span [12396.325 ... 12396.425000000001) does not cover requested interval [12396.325 ... 12396.525)",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 554, in read\n    BaseTimeSeriesDict.read(source, *args, **kwargs),\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 569, in merge\n    out[key] = _pad_series(\n               ^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 117, in _pad_series\n    raise ValueError(msg)\nValueError: TimeSeries with span [12396.325 ... 12396.425000000001) does not cover requested interval [12396.325 ... 12396.525)\n",
+        "warnings": []
+      },
+      "hdf5:mixed_disjoint_zero_length": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "covered": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "covered",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12345.125",
+                    "12345.225"
+                  ],
+                  "sha256": "ac0b813b1e8fbfaedb37b21887a3273668ba27650894341f3c6cb9d9ccef73b9",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-125.0",
+                  "-124.0"
+                ],
+                "sha256": "eb82ecf47933c0851d38b8179a7746be3399827333a793171240daed3c50def7",
+                "shape": [
+                  2
+                ]
+              }
+            },
+            "disjoint": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.825000000003>",
+              "name": "disjoint",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.825 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [],
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "shape": [
+                    0
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [],
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "shape": [
+                  0
+                ]
+              }
+            }
+          },
+          "order": [
+            "covered",
+            "disjoint"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf5:one_sample": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "TimeSeries with span [12396.325 ... 12396.325) does not cover requested interval [12396.325 ... 12396.425)",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 554, in read\n    BaseTimeSeriesDict.read(source, *args, **kwargs),\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 569, in merge\n    out[key] = _pad_series(\n               ^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 117, in _pad_series\n    raise ValueError(msg)\nValueError: TimeSeries with span [12396.325 ... 12396.325) does not cover requested interval [12396.325 ... 12396.425)\n",
+        "warnings": []
+      },
+      "hdf5:out_of_range_corrupt_chunk": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "Can't synchronously read data (filter returned failure during read)",
+        "error_type": "builtins.OSError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 554, in read\n    BaseTimeSeriesDict.read(source, *args, **kwargs),\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 441, in __call__\n    outputs.append(_read(src))\n                   ^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 427, in _read\n    return self.registry.read(\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/astropy/io/registry/core.py\", line 221, in read\n    data = reader(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/io/hdf5.py\", line 116, in read_\n    return read_hdf5_dict(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/hdf5.py\", line 164, in decorated_func\n    return func(h5f, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/io/hdf5.py\", line 106, in read_hdf5_dict\n    out[name] = read_hdf5_timeseries(h5g[name], **kwargs)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/io/hdf5.py\", line 68, in read_hdf5_timeseries\n    series = read_hdf5_array(h5f, path=path, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/hdf5.py\", line 162, in decorated_func\n    return func(fobj, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/types/io/hdf5.py\", line 103, in read_hdf5_array\n    return array_type(dataset[()], **attrs)\n                      ~~~~~~~^^^^\n  File \"h5py/_objects.pyx\", line 54, in h5py._objects.with_phil.wrapper\n  File \"h5py/_objects.pyx\", line 55, in h5py._objects.with_phil.wrapper\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/h5py/_hl/dataset.py\", line 840, in __getitem__\n    return self._fast_reader.read(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"h5py/_selector.pyx\", line 375, in h5py._selector.Reader.read\nOSError: Can't synchronously read data (filter returned failure during read)\n",
+        "warnings": []
+      },
+      "hdf5:partial_after": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "TimeSeries with span [12754.425 ... 12754.724999999999) does not cover requested interval [12754.525 ... 12754.925)",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 554, in read\n    BaseTimeSeriesDict.read(source, *args, **kwargs),\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 569, in merge\n    out[key] = _pad_series(\n               ^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 117, in _pad_series\n    raise ValueError(msg)\nValueError: TimeSeries with span [12754.425 ... 12754.724999999999) does not cover requested interval [12754.525 ... 12754.925)\n",
+        "warnings": []
+      },
+      "hdf5:partial_before": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "TimeSeries with span [12345.125 ... 12345.325) does not cover requested interval [12344.925 ... 12345.325)",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 554, in read\n    BaseTimeSeriesDict.read(source, *args, **kwargs),\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 569, in merge\n    out[key] = _pad_series(\n               ^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 117, in _pad_series\n    raise ValueError(msg)\nValueError: TimeSeries with span [12345.125 ... 12345.325) does not cover requested interval [12344.925 ... 12345.325)\n",
+        "warnings": []
+      },
+      "hdf5:right_exact": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.425",
+                    "12396.525",
+                    "12396.625"
+                  ],
+                  "sha256": "71c246d1cbd27e76daba28897ada857f3211f26a6bdfe1ea9d7e9e1508b45bd6",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-114.0",
+                  "-113.0",
+                  "-112.0"
+                ],
+                "sha256": "edfe76378e62c6d3a86dc9741d24f3c5c17370c146726f4f72b0d780b8501cdf",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf5:right_minus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.425",
+                    "12396.525",
+                    "12396.625"
+                  ],
+                  "sha256": "71c246d1cbd27e76daba28897ada857f3211f26a6bdfe1ea9d7e9e1508b45bd6",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-114.0",
+                  "-113.0",
+                  "-112.0"
+                ],
+                "sha256": "edfe76378e62c6d3a86dc9741d24f3c5c17370c146726f4f72b0d780b8501cdf",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf5:right_plus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.425",
+                    "12396.525",
+                    "12396.625"
+                  ],
+                  "sha256": "71c246d1cbd27e76daba28897ada857f3211f26a6bdfe1ea9d7e9e1508b45bd6",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-114.0",
+                  "-113.0",
+                  "-112.0"
+                ],
+                "sha256": "edfe76378e62c6d3a86dc9741d24f3c5c17370c146726f4f72b0d780b8501cdf",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf5:selected_corrupt_chunk": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "Can't synchronously read data (filter returned failure during read)",
+        "error_type": "builtins.OSError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 554, in read\n    BaseTimeSeriesDict.read(source, *args, **kwargs),\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 441, in __call__\n    outputs.append(_read(src))\n                   ^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 427, in _read\n    return self.registry.read(\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/astropy/io/registry/core.py\", line 221, in read\n    data = reader(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/io/hdf5.py\", line 116, in read_\n    return read_hdf5_dict(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/hdf5.py\", line 164, in decorated_func\n    return func(h5f, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/io/hdf5.py\", line 106, in read_hdf5_dict\n    out[name] = read_hdf5_timeseries(h5g[name], **kwargs)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/io/hdf5.py\", line 68, in read_hdf5_timeseries\n    series = read_hdf5_array(h5f, path=path, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/hdf5.py\", line 162, in decorated_func\n    return func(fobj, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/types/io/hdf5.py\", line 103, in read_hdf5_array\n    return array_type(dataset[()], **attrs)\n                      ~~~~~~~^^^^\n  File \"h5py/_objects.pyx\", line 54, in h5py._objects.with_phil.wrapper\n  File \"h5py/_objects.pyx\", line 55, in h5py._objects.with_phil.wrapper\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/h5py/_hl/dataset.py\", line 840, in __getitem__\n    return self._fast_reader.read(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"h5py/_selector.pyx\", line 375, in h5py._selector.Reader.read\nOSError: Can't synchronously read data (filter returned failure during read)\n",
+        "warnings": []
+      },
+      "hdf5:short_intersecting": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.325 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.325",
+                    "12396.525000000001",
+                    "12396.625000000002"
+                  ],
+                  "sha256": "7d6498a57a44ee14cee905d9de8f1503274ee8a977ef309439ddc060fe14a8be",
+                  "shape": [
+                    4
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-115.0",
+                  "-113.0",
+                  "-112.0"
+                ],
+                "sha256": "a4ffdb01a4751b96fc8796bda9d145c8d4414a7de68df2292f97b0083430dd7b",
+                "shape": [
+                  4
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": [
+          {
+            "category": "builtins.DeprecationWarning",
+            "message": "Compatibility support for python2 has been dropped"
+          }
+        ]
+      },
+      "hdf5:span_end_exact": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12754.425",
+                    "12754.525",
+                    "12754.625"
+                  ],
+                  "sha256": "f648098c57f2743109e0c8a905bc3a055605cf590c13166b13a2369a171113bd",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-48.0",
+                  "-47.0",
+                  "-46.0"
+                ],
+                "sha256": "e6232d10d6c41e853ebdcad162aed315c287725e2c3d6cdbb0718ad11309dac9",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf5:span_end_minus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12754.425",
+                    "12754.525",
+                    "12754.625"
+                  ],
+                  "sha256": "f648098c57f2743109e0c8a905bc3a055605cf590c13166b13a2369a171113bd",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-48.0",
+                  "-47.0",
+                  "-46.0"
+                ],
+                "sha256": "e6232d10d6c41e853ebdcad162aed315c287725e2c3d6cdbb0718ad11309dac9",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf5:span_end_plus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12754.425",
+                    "12754.525",
+                    "12754.625"
+                  ],
+                  "sha256": "f648098c57f2743109e0c8a905bc3a055605cf590c13166b13a2369a171113bd",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-48.0",
+                  "-47.0",
+                  "-46.0"
+                ],
+                "sha256": "e6232d10d6c41e853ebdcad162aed315c287725e2c3d6cdbb0718ad11309dac9",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf5:span_start_exact": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12345.125",
+                    "12345.225"
+                  ],
+                  "sha256": "ac0b813b1e8fbfaedb37b21887a3273668ba27650894341f3c6cb9d9ccef73b9",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-125.0",
+                  "-124.0"
+                ],
+                "sha256": "eb82ecf47933c0851d38b8179a7746be3399827333a793171240daed3c50def7",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf5:span_start_minus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12345.125",
+                    "12345.225"
+                  ],
+                  "sha256": "ac0b813b1e8fbfaedb37b21887a3273668ba27650894341f3c6cb9d9ccef73b9",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-125.0",
+                  "-124.0"
+                ],
+                "sha256": "eb82ecf47933c0851d38b8179a7746be3399827333a793171240daed3c50def7",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf5:span_start_plus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12345.125",
+                    "12345.225"
+                  ],
+                  "sha256": "ac0b813b1e8fbfaedb37b21887a3273668ba27650894341f3c6cb9d9ccef73b9",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-125.0",
+                  "-124.0"
+                ],
+                "sha256": "eb82ecf47933c0851d38b8179a7746be3399827333a793171240daed3c50def7",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "hdf5:start_at_span_end": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "TimeSeries with span [12754.725 ... 12754.725) does not cover requested interval [12754.725 ... 12754.925)",
+        "error_type": "builtins.ValueError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 554, in read\n    BaseTimeSeriesDict.read(source, *args, **kwargs),\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 456, in __call__\n    return merge_function(outputs, **merge_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 178, in merge\n    return self.merge(\n           ^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 569, in merge\n    out[key] = _pad_series(\n               ^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 117, in _pad_series\n    raise ValueError(msg)\nValueError: TimeSeries with span [12754.725 ... 12754.725) does not cover requested interval [12754.725 ... 12754.925)\n",
+        "warnings": []
+      },
+      "hdf5:start_only": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.325 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.325",
+                    "12575.525000000653",
+                    "12754.625000001304"
+                  ],
+                  "sha256": "632f5824f01859ac45d23709b254402f88d86f8d69b9a25f146156cb1bd4d79a",
+                  "shape": [
+                    3584
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-115.0",
+                  "-80.0",
+                  "-46.0"
+                ],
+                "sha256": "898f6af7c3549d5ae4d550ff10988355b59c4663baab7a93da754cf0c58e5ab2",
+                "shape": [
+                  3584
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:disjoint_after": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.725>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.725 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [],
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "shape": [
+                    0
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [],
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "shape": [
+                  0
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:disjoint_before": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [],
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "shape": [
+                    0
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [],
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "shape": [
+                  0
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:end_at_span_start": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [],
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "shape": [
+                    0
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [],
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "shape": [
+                  0
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:end_only": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12345.125",
+                    "12370.725000000093",
+                    "12396.325000000186"
+                  ],
+                  "sha256": "4985caa8de4581c733dfd02244de1e8326976ed67f3a93389102f1a376411fb4",
+                  "shape": [
+                    513
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-125.0",
+                  "-120.0",
+                  "-115.0"
+                ],
+                "sha256": "117573b91db9926717dcaa1ed4f743c9c3c28589bcb5c21d7929389f2b3148e4",
+                "shape": [
+                  513
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:half_sample": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.325 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.325",
+                    "12396.425000000001"
+                  ],
+                  "sha256": "284e47ebc430c09beda1908357a3164a3137d193f52866260438c6dcc2fc4a9c",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-115.0",
+                  "-114.0"
+                ],
+                "sha256": "214546f12485f799bc00bd53e2b35e137161fda22c2c1096111e6600b274da55",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:left_exact": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.325 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.325"
+                  ],
+                  "sha256": "9ee6a24633da13c815b840115a6397b0be8bd813828cf3cea3cd62ab1afb36c6",
+                  "shape": [
+                    1
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-115.0"
+                ],
+                "sha256": "756e1407e237aa7b7131d16187a0cdf907f2dd4f8ab5796a33eb9083659a810e",
+                "shape": [
+                  1
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:left_minus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.224999999999>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.225 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.225",
+                    "12396.325"
+                  ],
+                  "sha256": "a3e7167ce6e5c76c08ba40e0f69ac54a1ba030c3a709d46957a77bccf1ff0e81",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-116.0",
+                  "-115.0"
+                ],
+                "sha256": "fb0fb359013658032e25cf337c49b4fb6bf6319f47674f8e0dfb6a4460778cda",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:left_plus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.325 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.325"
+                  ],
+                  "sha256": "9ee6a24633da13c815b840115a6397b0be8bd813828cf3cea3cd62ab1afb36c6",
+                  "shape": [
+                    1
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-115.0"
+                ],
+                "sha256": "756e1407e237aa7b7131d16187a0cdf907f2dd4f8ab5796a33eb9083659a810e",
+                "shape": [
+                  1
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:one_sample": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.325 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [],
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "shape": [
+                    0
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [],
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "shape": [
+                  0
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:out_of_range_corrupt_chunk": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "NetCDF: HDF error",
+        "error_type": "builtins.RuntimeError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 396, in read\n    cls, read_timeseriesdict_netcdf4(source, **reader_kwargs)\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/io/netcdf4_.py\", line 382, in read_timeseriesdict_netcdf4\n    data = da.values\n           ^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/core/dataarray.py\", line 798, in values\n    return self.variable.values\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/core/variable.py\", line 556, in values\n    return _as_array_or_item(self._data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/core/variable.py\", line 336, in _as_array_or_item\n    data = np.asarray(data)\n           ^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/core/indexing.py\", line 606, in __array__\n    return np.asarray(self.get_duck_array(), dtype=dtype)\n                      ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/core/indexing.py\", line 970, in get_duck_array\n    duck_array = self.array.get_duck_array()\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/core/indexing.py\", line 924, in get_duck_array\n    return self.array.get_duck_array()\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/core/indexing.py\", line 764, in get_duck_array\n    array = self.array[self.key]\n            ~~~~~~~~~~^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/backends/netCDF4_.py\", line 117, in __getitem__\n    return indexing.explicit_indexing_adapter(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/core/indexing.py\", line 1156, in explicit_indexing_adapter\n    result = raw_indexing_method(raw_key.tuple)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/backends/netCDF4_.py\", line 130, in _getitem\n    array = getitem(original_array, key)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/netCDF4/_netCDF4.pyx\", line 5107, in netCDF4._netCDF4.Variable.__getitem__\n  File \"src/netCDF4/_netCDF4.pyx\", line 6081, in netCDF4._netCDF4.Variable._get\n  File \"src/netCDF4/_netCDF4.pyx\", line 2164, in netCDF4._netCDF4._ensure_nc_success\nRuntimeError: NetCDF: HDF error\n",
+        "warnings": []
+      },
+      "nc:partial_after": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12754.425",
+                    "12754.525",
+                    "12754.625"
+                  ],
+                  "sha256": "f648098c57f2743109e0c8a905bc3a055605cf590c13166b13a2369a171113bd",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-48.0",
+                  "-47.0",
+                  "-46.0"
+                ],
+                "sha256": "e6232d10d6c41e853ebdcad162aed315c287725e2c3d6cdbb0718ad11309dac9",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:partial_before": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12345.125",
+                    "12345.225"
+                  ],
+                  "sha256": "ac0b813b1e8fbfaedb37b21887a3273668ba27650894341f3c6cb9d9ccef73b9",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-125.0",
+                  "-124.0"
+                ],
+                "sha256": "eb82ecf47933c0851d38b8179a7746be3399827333a793171240daed3c50def7",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:right_exact": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.425",
+                    "12396.525",
+                    "12396.625"
+                  ],
+                  "sha256": "71c246d1cbd27e76daba28897ada857f3211f26a6bdfe1ea9d7e9e1508b45bd6",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-114.0",
+                  "-113.0",
+                  "-112.0"
+                ],
+                "sha256": "edfe76378e62c6d3a86dc9741d24f3c5c17370c146726f4f72b0d780b8501cdf",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:right_minus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.425",
+                    "12396.525"
+                  ],
+                  "sha256": "872590c885ba056e3b5d803fc609a8e3a40b1721b9ed40b90ae0cc258fa43128",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-114.0",
+                  "-113.0"
+                ],
+                "sha256": "a2071a73c80d357f3926676a93f8dbcea32c1c80566a9eec76979dbe23570cd1",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:right_plus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.425",
+                    "12396.525",
+                    "12396.625"
+                  ],
+                  "sha256": "71c246d1cbd27e76daba28897ada857f3211f26a6bdfe1ea9d7e9e1508b45bd6",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-114.0",
+                  "-113.0",
+                  "-112.0"
+                ],
+                "sha256": "edfe76378e62c6d3a86dc9741d24f3c5c17370c146726f4f72b0d780b8501cdf",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:selected_corrupt_chunk": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "NetCDF: HDF error",
+        "error_type": "builtins.RuntimeError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 396, in read\n    cls, read_timeseriesdict_netcdf4(source, **reader_kwargs)\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/io/netcdf4_.py\", line 382, in read_timeseriesdict_netcdf4\n    data = da.values\n           ^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/core/dataarray.py\", line 798, in values\n    return self.variable.values\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/core/variable.py\", line 556, in values\n    return _as_array_or_item(self._data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/core/variable.py\", line 336, in _as_array_or_item\n    data = np.asarray(data)\n           ^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/core/indexing.py\", line 606, in __array__\n    return np.asarray(self.get_duck_array(), dtype=dtype)\n                      ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/core/indexing.py\", line 970, in get_duck_array\n    duck_array = self.array.get_duck_array()\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/core/indexing.py\", line 924, in get_duck_array\n    return self.array.get_duck_array()\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/core/indexing.py\", line 764, in get_duck_array\n    array = self.array[self.key]\n            ~~~~~~~~~~^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/backends/netCDF4_.py\", line 117, in __getitem__\n    return indexing.explicit_indexing_adapter(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/core/indexing.py\", line 1156, in explicit_indexing_adapter\n    result = raw_indexing_method(raw_key.tuple)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/xarray/backends/netCDF4_.py\", line 130, in _getitem\n    array = getitem(original_array, key)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/netCDF4/_netCDF4.pyx\", line 5107, in netCDF4._netCDF4.Variable.__getitem__\n  File \"src/netCDF4/_netCDF4.pyx\", line 6081, in netCDF4._netCDF4.Variable._get\n  File \"src/netCDF4/_netCDF4.pyx\", line 2164, in netCDF4._netCDF4._ensure_nc_success\nRuntimeError: NetCDF: HDF error\n",
+        "warnings": []
+      },
+      "nc:short_intersecting": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.325 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.325",
+                    "12396.525000000001",
+                    "12396.625000000002"
+                  ],
+                  "sha256": "7d6498a57a44ee14cee905d9de8f1503274ee8a977ef309439ddc060fe14a8be",
+                  "shape": [
+                    4
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-115.0",
+                  "-113.0",
+                  "-112.0"
+                ],
+                "sha256": "a4ffdb01a4751b96fc8796bda9d145c8d4414a7de68df2292f97b0083430dd7b",
+                "shape": [
+                  4
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": [
+          {
+            "category": "builtins.RuntimeWarning",
+            "message": "Engine 'gmt' loading failed:\nError loading GMT shared library at 'libgmt.so'.\nlibgmt.so: cannot open shared object file: No such file or directory"
+          },
+          {
+            "category": "builtins.RuntimeWarning",
+            "message": "numpy.ndarray size changed, may indicate binary incompatibility. Expected 16 from C header, got 96 from PyObject"
+          }
+        ]
+      },
+      "nc:span_end_exact": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12754.425",
+                    "12754.525",
+                    "12754.625"
+                  ],
+                  "sha256": "f648098c57f2743109e0c8a905bc3a055605cf590c13166b13a2369a171113bd",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-48.0",
+                  "-47.0",
+                  "-46.0"
+                ],
+                "sha256": "e6232d10d6c41e853ebdcad162aed315c287725e2c3d6cdbb0718ad11309dac9",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:span_end_minus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12754.425",
+                    "12754.525"
+                  ],
+                  "sha256": "da34befbb61b7e0cbf74eb5476317cb3db3c46dd9f9d829e68c2ec70e3fe475a",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-48.0",
+                  "-47.0"
+                ],
+                "sha256": "cd554d6afc73b83ee7020bef1ef34d2a4f640e66ebf043eb48279a643dfa2bbc",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:span_end_plus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12754.425",
+                    "12754.525",
+                    "12754.625"
+                  ],
+                  "sha256": "f648098c57f2743109e0c8a905bc3a055605cf590c13166b13a2369a171113bd",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-48.0",
+                  "-47.0",
+                  "-46.0"
+                ],
+                "sha256": "e6232d10d6c41e853ebdcad162aed315c287725e2c3d6cdbb0718ad11309dac9",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:span_start_exact": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12345.125",
+                    "12345.225"
+                  ],
+                  "sha256": "ac0b813b1e8fbfaedb37b21887a3273668ba27650894341f3c6cb9d9ccef73b9",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-125.0",
+                  "-124.0"
+                ],
+                "sha256": "eb82ecf47933c0851d38b8179a7746be3399827333a793171240daed3c50def7",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:span_start_minus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12345.125",
+                    "12345.225"
+                  ],
+                  "sha256": "ac0b813b1e8fbfaedb37b21887a3273668ba27650894341f3c6cb9d9ccef73b9",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-125.0",
+                  "-124.0"
+                ],
+                "sha256": "eb82ecf47933c0851d38b8179a7746be3399827333a793171240daed3c50def7",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:span_start_plus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12345.125",
+                    "12345.225"
+                  ],
+                  "sha256": "ac0b813b1e8fbfaedb37b21887a3273668ba27650894341f3c6cb9d9ccef73b9",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-125.0",
+                  "-124.0"
+                ],
+                "sha256": "eb82ecf47933c0851d38b8179a7746be3399827333a793171240daed3c50def7",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:start_at_span_end": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.725>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.725 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [],
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "shape": [
+                    0
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [],
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "shape": [
+                  0
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "nc:start_only": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.325 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.325",
+                    "12575.525000000653",
+                    "12754.625000001304"
+                  ],
+                  "sha256": "632f5824f01859ac45d23709b254402f88d86f8d69b9a25f146156cb1bd4d79a",
+                  "shape": [
+                    3584
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f4",
+                "selected": [
+                  "-115.0",
+                  "-80.0",
+                  "-46.0"
+                ],
+                "sha256": "898f6af7c3549d5ae4d550ff10988355b59c4663baab7a93da754cf0c58e5ab2",
+                "shape": [
+                  3584
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:disjoint_after": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.725>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.725 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [],
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "shape": [
+                    0
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [],
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "shape": [
+                  0
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:disjoint_before": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [],
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "shape": [
+                    0
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [],
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "shape": [
+                  0
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:end_at_span_start": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [],
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "shape": [
+                    0
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [],
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "shape": [
+                  0
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:end_only": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12345.125",
+                    "12370.725000000093",
+                    "12396.325000000186"
+                  ],
+                  "sha256": "4985caa8de4581c733dfd02244de1e8326976ed67f3a93389102f1a376411fb4",
+                  "shape": [
+                    513
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "-125.0",
+                  "-120.0",
+                  "-115.0"
+                ],
+                "sha256": "7051c6bc3a6722a7b88909d89a11a0588d53e0c4155dac9299afa158f510c86b",
+                "shape": [
+                  513
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:half_sample": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.325 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.325",
+                    "12396.425000000001"
+                  ],
+                  "sha256": "284e47ebc430c09beda1908357a3164a3137d193f52866260438c6dcc2fc4a9c",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "-115.0",
+                  "-114.0"
+                ],
+                "sha256": "0ca830c50b51edfaa4efcfff0bdff9d30eaa22ce1d3796883bfe56bdbc3c8200",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:left_exact": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.325 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.325"
+                  ],
+                  "sha256": "9ee6a24633da13c815b840115a6397b0be8bd813828cf3cea3cd62ab1afb36c6",
+                  "shape": [
+                    1
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "-115.0"
+                ],
+                "sha256": "df6286662aa7d8f8f9202669d501407f3c02954329081c0f20f5e647a359d9f7",
+                "shape": [
+                  1
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:left_minus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.224999999999>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.225 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.225",
+                    "12396.325"
+                  ],
+                  "sha256": "a3e7167ce6e5c76c08ba40e0f69ac54a1ba030c3a709d46957a77bccf1ff0e81",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "-116.0",
+                  "-115.0"
+                ],
+                "sha256": "60776209327968086f1fd7bc31f7b1a1473ed7766f78d241440f75f16edf0091",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:left_plus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.325 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.325"
+                  ],
+                  "sha256": "9ee6a24633da13c815b840115a6397b0be8bd813828cf3cea3cd62ab1afb36c6",
+                  "shape": [
+                    1
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "-115.0"
+                ],
+                "sha256": "df6286662aa7d8f8f9202669d501407f3c02954329081c0f20f5e647a359d9f7",
+                "shape": [
+                  1
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:one_sample": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.325 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [],
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "shape": [
+                    0
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [],
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "shape": [
+                  0
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:out_of_range_corrupt_chunk": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "Zstd decompression error: invalid input data",
+        "error_type": "builtins.RuntimeError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"numcodecs/zstd.pyx\", line 224, in numcodecs.zstd.decompress\n  File \"numcodecs/zstd.pyx\", line 396, in numcodecs.zstd.findTotalContentSize\nRuntimeError: Could not set determine zstd frame size: b'Unknown frame descriptor'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 404, in read\n    cls, read_timeseriesdict_zarr(source, *args, **reader_kwargs)\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/io/zarr_.py\", line 293, in read_timeseriesdict_zarr\n    ts = _series_from_zarr_array(\n         ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/io/zarr_.py\", line 189, in _series_from_zarr_array\n    np.asarray(arr[:], dtype=np.float64),\n               ~~~^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/array.py\", line 2868, in __getitem__\n    return self.get_orthogonal_selection(pure_selection, fields=fields)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/array.py\", line 3339, in get_orthogonal_selection\n    return sync(\n           ^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/sync.py\", line 159, in sync\n    raise return_result\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/sync.py\", line 119, in _runner\n    return await coro\n           ^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/array.py\", line 1565, in _get_selection\n    await self.codec_pipeline.read(\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/codec_pipeline.py\", line 473, in read\n    await concurrent_map(\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/common.py\", line 116, in concurrent_map\n    return await asyncio.gather(*[asyncio.ensure_future(run(item)) for item in items])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/common.py\", line 114, in run\n    return await func(*item)\n           ^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/codec_pipeline.py\", line 275, in read_batch\n    chunk_array_batch = await self.decode_batch(\n                        ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/codec_pipeline.py\", line 190, in decode_batch\n    chunk_bytes_batch = await bb_codec.decode(\n                        ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/abc/codec.py\", line 159, in decode\n    return await _batching_helper(self._decode_single, chunks_and_specs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/abc/codec.py\", line 467, in _batching_helper\n    return await concurrent_map(\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/common.py\", line 116, in concurrent_map\n    return await asyncio.gather(*[asyncio.ensure_future(run(item)) for item in items])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/common.py\", line 114, in run\n    return await func(*item)\n           ^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/abc/codec.py\", line 480, in wrap\n    return await func(chunk, chunk_spec)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/codecs/zstd.py\", line 79, in _decode_single\n    return await asyncio.to_thread(\n           ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/asyncio/threads.py\", line 25, in to_thread\n    return await loop.run_in_executor(None, func_call)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/concurrent/futures/thread.py\", line 59, in run\n    result = self.fn(*self.args, **self.kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/buffer/cpu.py\", line 219, in as_numpy_array_wrapper\n    return prototype.buffer.from_bytes(func(buf.as_numpy_array()))\n                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"numcodecs/zstd.pyx\", line 443, in numcodecs.zstd.Zstd.decode\n  File \"numcodecs/zstd.pyx\", line 226, in numcodecs.zstd.decompress\nRuntimeError: Zstd decompression error: invalid input data\n",
+        "warnings": []
+      },
+      "zarr:partial_after": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12754.425",
+                    "12754.525",
+                    "12754.625"
+                  ],
+                  "sha256": "f648098c57f2743109e0c8a905bc3a055605cf590c13166b13a2369a171113bd",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "-48.0",
+                  "-47.0",
+                  "-46.0"
+                ],
+                "sha256": "510200946a6bd52df27afa360de68d5392035251ac18f6d341d057fba640106e",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:partial_before": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12345.125",
+                    "12345.225"
+                  ],
+                  "sha256": "ac0b813b1e8fbfaedb37b21887a3273668ba27650894341f3c6cb9d9ccef73b9",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "-125.0",
+                  "-124.0"
+                ],
+                "sha256": "2c6febebc65764167549fabc9329b969b9578da1fb15b25db4af26684d69b38e",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:right_exact": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.425",
+                    "12396.525",
+                    "12396.625"
+                  ],
+                  "sha256": "71c246d1cbd27e76daba28897ada857f3211f26a6bdfe1ea9d7e9e1508b45bd6",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "-114.0",
+                  "-113.0",
+                  "-112.0"
+                ],
+                "sha256": "ebe89fa590bbe5d7490ee231ead3cf99e14f508d7d749a6053763c998ea2deb1",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:right_minus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.425",
+                    "12396.525"
+                  ],
+                  "sha256": "872590c885ba056e3b5d803fc609a8e3a40b1721b9ed40b90ae0cc258fa43128",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "-114.0",
+                  "-113.0"
+                ],
+                "sha256": "d8a9e9379036bfbd48056288bacc0dac23f131d4558186489d1f2fad203ded56",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:right_plus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.425",
+                    "12396.525",
+                    "12396.625"
+                  ],
+                  "sha256": "71c246d1cbd27e76daba28897ada857f3211f26a6bdfe1ea9d7e9e1508b45bd6",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "-114.0",
+                  "-113.0",
+                  "-112.0"
+                ],
+                "sha256": "ebe89fa590bbe5d7490ee231ead3cf99e14f508d7d749a6053763c998ea2deb1",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:selected_corrupt_chunk": {
+        "error_cause_message": null,
+        "error_cause_type": null,
+        "error_message": "Zstd decompression error: invalid input data",
+        "error_type": "builtins.RuntimeError",
+        "logs": [],
+        "outcome": "error",
+        "traceback": "Traceback (most recent call last):\n  File \"numcodecs/zstd.pyx\", line 224, in numcodecs.zstd.decompress\n  File \"numcodecs/zstd.pyx\", line 396, in numcodecs.zstd.findTotalContentSize\nRuntimeError: Could not set determine zstd frame size: b'Unknown frame descriptor'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 77, in _correctness\n    result = _read(root, case)\n             ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-b-f1-ranges/benchmarks/io/f1_range_run.py\", line 65, in _read\n    return TimeSeriesDict.read(root / case[\"source\"], **case[\"kwargs\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 404, in read\n    cls, read_timeseriesdict_zarr(source, *args, **reader_kwargs)\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/io/zarr_.py\", line 293, in read_timeseriesdict_zarr\n    ts = _series_from_zarr_array(\n         ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/gwexpy/timeseries/io/zarr_.py\", line 189, in _series_from_zarr_array\n    np.asarray(arr[:], dtype=np.float64),\n               ~~~^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/array.py\", line 2868, in __getitem__\n    return self.get_orthogonal_selection(pure_selection, fields=fields)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/array.py\", line 3339, in get_orthogonal_selection\n    return sync(\n           ^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/sync.py\", line 159, in sync\n    raise return_result\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/sync.py\", line 119, in _runner\n    return await coro\n           ^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/array.py\", line 1565, in _get_selection\n    await self.codec_pipeline.read(\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/codec_pipeline.py\", line 473, in read\n    await concurrent_map(\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/common.py\", line 116, in concurrent_map\n    return await asyncio.gather(*[asyncio.ensure_future(run(item)) for item in items])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/common.py\", line 114, in run\n    return await func(*item)\n           ^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/codec_pipeline.py\", line 275, in read_batch\n    chunk_array_batch = await self.decode_batch(\n                        ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/codec_pipeline.py\", line 190, in decode_batch\n    chunk_bytes_batch = await bb_codec.decode(\n                        ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/abc/codec.py\", line 159, in decode\n    return await _batching_helper(self._decode_single, chunks_and_specs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/abc/codec.py\", line 467, in _batching_helper\n    return await concurrent_map(\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/common.py\", line 116, in concurrent_map\n    return await asyncio.gather(*[asyncio.ensure_future(run(item)) for item in items])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/common.py\", line 114, in run\n    return await func(*item)\n           ^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/abc/codec.py\", line 480, in wrap\n    return await func(chunk, chunk_spec)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/codecs/zstd.py\", line 79, in _decode_single\n    return await asyncio.to_thread(\n           ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/asyncio/threads.py\", line 25, in to_thread\n    return await loop.run_in_executor(None, func_call)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/concurrent/futures/thread.py\", line 59, in run\n    result = self.fn(*self.args, **self.kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f1-env-a/lib/python3.12/site-packages/zarr/core/buffer/cpu.py\", line 219, in as_numpy_array_wrapper\n    return prototype.buffer.from_bytes(func(buf.as_numpy_array()))\n                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"numcodecs/zstd.pyx\", line 443, in numcodecs.zstd.Zstd.decode\n  File \"numcodecs/zstd.pyx\", line 226, in numcodecs.zstd.decompress\nRuntimeError: Zstd decompression error: invalid input data\n",
+        "warnings": []
+      },
+      "zarr:short_intersecting": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.325 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.325",
+                    "12396.525000000001",
+                    "12396.625000000002"
+                  ],
+                  "sha256": "7d6498a57a44ee14cee905d9de8f1503274ee8a977ef309439ddc060fe14a8be",
+                  "shape": [
+                    4
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "-115.0",
+                  "-113.0",
+                  "-112.0"
+                ],
+                "sha256": "3b630a4c9cba9136b86585e92e889f668f35223a9f649503ac4bb20027640b16",
+                "shape": [
+                  4
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:span_end_exact": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12754.425",
+                    "12754.525",
+                    "12754.625"
+                  ],
+                  "sha256": "f648098c57f2743109e0c8a905bc3a055605cf590c13166b13a2369a171113bd",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "-48.0",
+                  "-47.0",
+                  "-46.0"
+                ],
+                "sha256": "510200946a6bd52df27afa360de68d5392035251ac18f6d341d057fba640106e",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:span_end_minus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12754.425",
+                    "12754.525"
+                  ],
+                  "sha256": "da34befbb61b7e0cbf74eb5476317cb3db3c46dd9f9d829e68c2ec70e3fe475a",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "-48.0",
+                  "-47.0"
+                ],
+                "sha256": "de28d92801dcaf91a1fddad6769180dabb60c7e92b3534e08b564c21636fd670",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:span_end_plus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.425>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.425 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12754.425",
+                    "12754.525",
+                    "12754.625"
+                  ],
+                  "sha256": "f648098c57f2743109e0c8a905bc3a055605cf590c13166b13a2369a171113bd",
+                  "shape": [
+                    3
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "-48.0",
+                  "-47.0",
+                  "-46.0"
+                ],
+                "sha256": "510200946a6bd52df27afa360de68d5392035251ac18f6d341d057fba640106e",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:span_start_exact": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12345.125",
+                    "12345.225"
+                  ],
+                  "sha256": "ac0b813b1e8fbfaedb37b21887a3273668ba27650894341f3c6cb9d9ccef73b9",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "-125.0",
+                  "-124.0"
+                ],
+                "sha256": "2c6febebc65764167549fabc9329b969b9578da1fb15b25db4af26684d69b38e",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:span_start_minus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12345.125",
+                    "12345.225"
+                  ],
+                  "sha256": "ac0b813b1e8fbfaedb37b21887a3273668ba27650894341f3c6cb9d9ccef73b9",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "-125.0",
+                  "-124.0"
+                ],
+                "sha256": "2c6febebc65764167549fabc9329b969b9578da1fb15b25db4af26684d69b38e",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:span_start_plus_ulp": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12345.124999999998>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12345.125 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12345.125",
+                    "12345.225"
+                  ],
+                  "sha256": "ac0b813b1e8fbfaedb37b21887a3273668ba27650894341f3c6cb9d9ccef73b9",
+                  "shape": [
+                    2
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "-125.0",
+                  "-124.0"
+                ],
+                "sha256": "2c6febebc65764167549fabc9329b969b9578da1fb15b25db4af26684d69b38e",
+                "shape": [
+                  2
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:start_at_span_end": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12754.725>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12754.725 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [],
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "shape": [
+                    0
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [],
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "shape": [
+                  0
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      },
+      "zarr:start_only": {
+        "fingerprint": {
+          "attrs": "None",
+          "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+          "members": {
+            "signal": {
+              "class": "gwexpy.timeseries.timeseries.TimeSeries",
+              "dt": "<Quantity 0.1 s>",
+              "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+              "name": "signal",
+              "sample_rate": "<Quantity 10. Hz>",
+              "t0": "<Quantity 12396.325 s>",
+              "times": {
+                "unit": "s",
+                "values": {
+                  "dtype": "<f8",
+                  "selected": [
+                    "12396.325",
+                    "12575.525000000653",
+                    "12754.625000001304"
+                  ],
+                  "sha256": "632f5824f01859ac45d23709b254402f88d86f8d69b9a25f146156cb1bd4d79a",
+                  "shape": [
+                    3584
+                  ]
+                }
+              },
+              "unit": "V",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "-115.0",
+                  "-80.0",
+                  "-46.0"
+                ],
+                "sha256": "1c570892504f8df1f4e18b4c3791384f71b6c8a050a253076dd430898e89b51d",
+                "shape": [
+                  3584
+                ]
+              }
+            }
+          },
+          "order": [
+            "signal"
+          ]
+        },
+        "logs": [],
+        "outcome": "return",
+        "warnings": []
+      }
+    },
+    "stderr": ""
+  }
+]

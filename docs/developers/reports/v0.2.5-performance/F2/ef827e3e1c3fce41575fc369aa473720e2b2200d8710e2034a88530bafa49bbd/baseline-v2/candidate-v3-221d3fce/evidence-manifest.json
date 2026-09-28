@@ -1,0 +1,270 @@
+{
+  "baseline_B1": {
+    "source_commit": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+    "wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498"
+  },
+  "candidate": {
+    "install_mode": "wheel-no-deps",
+    "name": "candidate-v3-221d3fce",
+    "source_commit": "221d3fce7349b35b26b0a50614d42a5790a7ea5f",
+    "source_sha256": "463d8313c4e6fa6a812485939b52481b739250bbd7a29bba5f61391999cfd4c5",
+    "test_path": "tests/io/test_v025_sdb_snapshot.py",
+    "test_sha256": "819f342ff297e6ef06cbde7ae0f679d0729fa3d35ca36ed20a0f3b23a11a6bc3",
+    "wheel_embedded_sdb_source_sha256": "463d8313c4e6fa6a812485939b52481b739250bbd7a29bba5f61391999cfd4c5",
+    "wheel_files_verified": 369,
+    "wheel_sha256": "f19581f56847c3c3b66143610569d180aa0cb9b4f62814dae05a6df2a149c1e7"
+  },
+  "cold_pss_supporting_only": {
+    "f2_sdb_all": {
+      "PSS_supporting_only_5_per_arm": {
+        "A": {
+          "peak_tree_PSS_MAD_KiB": 248,
+          "peak_tree_PSS_median_KiB": 303158,
+          "peak_tree_RSS_MAD_KiB": 128,
+          "peak_tree_RSS_median_KiB": 316476
+        },
+        "B": {
+          "peak_tree_PSS_MAD_KiB": 54,
+          "peak_tree_PSS_median_KiB": 302820,
+          "peak_tree_RSS_MAD_KiB": 44,
+          "peak_tree_RSS_median_KiB": 316112
+        }
+      },
+      "cold_baseline_smoke_5_per_arm": {
+        "A": {
+          "controller_elapsed_MAD_ns": 19956200,
+          "controller_elapsed_median_ns": 2523437161,
+          "cpu_MAD_ns": 3571336,
+          "cpu_median_ns": 246750277
+        },
+        "B": {
+          "controller_elapsed_MAD_ns": 24934546,
+          "controller_elapsed_median_ns": 2508754935,
+          "cpu_MAD_ns": 344016,
+          "cpu_median_ns": 247334319
+        }
+      }
+    },
+    "f2_sdb_selected": {
+      "PSS_supporting_only_5_per_arm": {
+        "A": {
+          "peak_tree_PSS_MAD_KiB": 89,
+          "peak_tree_PSS_median_KiB": 302803,
+          "peak_tree_RSS_MAD_KiB": 72,
+          "peak_tree_RSS_median_KiB": 316040
+        },
+        "B": {
+          "peak_tree_PSS_MAD_KiB": 154,
+          "peak_tree_PSS_median_KiB": 302212,
+          "peak_tree_RSS_MAD_KiB": 40,
+          "peak_tree_RSS_median_KiB": 315480
+        }
+      },
+      "cold_baseline_smoke_5_per_arm": {
+        "A": {
+          "controller_elapsed_MAD_ns": 26108577,
+          "controller_elapsed_median_ns": 2552222495,
+          "cpu_MAD_ns": 2271174,
+          "cpu_median_ns": 246072866
+        },
+        "B": {
+          "controller_elapsed_MAD_ns": 56506960,
+          "controller_elapsed_median_ns": 2564204953,
+          "cpu_MAD_ns": 9953139,
+          "cpu_median_ns": 251586474
+        }
+      }
+    },
+    "f2_sdb_window": {
+      "PSS_supporting_only_5_per_arm": {
+        "A": {
+          "peak_tree_PSS_MAD_KiB": 241,
+          "peak_tree_PSS_median_KiB": 303307,
+          "peak_tree_RSS_MAD_KiB": 460,
+          "peak_tree_RSS_median_KiB": 316652
+        },
+        "B": {
+          "peak_tree_PSS_MAD_KiB": 184,
+          "peak_tree_PSS_median_KiB": 302187,
+          "peak_tree_RSS_MAD_KiB": 144,
+          "peak_tree_RSS_median_KiB": 315444
+        }
+      },
+      "cold_baseline_smoke_5_per_arm": {
+        "A": {
+          "controller_elapsed_MAD_ns": 9631875,
+          "controller_elapsed_median_ns": 2496329320,
+          "cpu_MAD_ns": 1971577,
+          "cpu_median_ns": 236195048
+        },
+        "B": {
+          "controller_elapsed_MAD_ns": 10385204,
+          "controller_elapsed_median_ns": 2493342885,
+          "cpu_MAD_ns": 3335773,
+          "cpu_median_ns": 234735788
+        }
+      }
+    }
+  },
+  "fixtures": {
+    "int64_fixture_sha256": "1cf3a36fabb80952c15b04c728a4d5a5dc8de6b25579d819561446a9037d6776",
+    "structure_sdb_sha256": "84579ec5191342a12b51f41f9779e413210de82c0fe7fa905c5e3772362f0a0b",
+    "structure_timing_manifest_sha256": "2b29c7bccedfc8335beb5c59580b26aa1a211bd3959e142dcb2e99a7dbcab1f8",
+    "wal_database_sha256": "2713b73e3a715e7816c3d94023611ba9e2ac74911f0848f620d077218473b817",
+    "wal_manifest_sha256": "a1995b43e921f7dd5664f05e69872d15ff9b8c974871f9f3d1deb3448e378837"
+  },
+  "harnesses": {
+    "structure_timing": {
+      "digest": "e8422a63694d54ba4c8d349f8fb2da7f5df3cda63387d2e036c1af4cba338c72",
+      "freeze_commit": "6f0a3d4ea"
+    },
+    "wal_correctness": {
+      "digest": "ef827e3e1c3fce41575fc369aa473720e2b2200d8710e2034a88530bafa49bbd",
+      "freeze_commit": "02cb6b415a6c3c2cbad0a4ce82e506037409e360"
+    }
+  },
+  "review_hold_findings": [
+    "Fresh GWpy Series.crop with _xindex=None floors a half-sample selector; v3 SQL path currently selects the next sample interval for the reported repro.",
+    "Interior and post-source empty windows reconstructed through the candidate route do not preserve the t0 returned by a fresh B1 full_read().crop().",
+    "NaN and infinite selectors are not restricted from the SQL fast path; their B1 public behavior has not yet been recharacterized in this package."
+  ],
+  "schema": 1,
+  "scope": "Candidate v3 is diagnostic evidence only and is on HOLD. The 4096\u2192512 primary result is DataFrame materialization rows; validation remains O(N). No full scan elimination, wall-time improvement, or PSS improvement is claimed. The broad concurrent-WAL exception remains subject to S2 scientific/data-model approval and disclosure.",
+  "status": "HOLD",
+  "structure": {
+    "B1_dataframe_payload_rows_materialized": [
+      4096,
+      4096,
+      4096,
+      4096,
+      4096
+    ],
+    "candidate_v3_dataframe_payload_rows_materialized": [
+      512,
+      512,
+      512,
+      512,
+      512
+    ],
+    "input_rows": 4096,
+    "interpretation": "Counts only rows materialized by pandas.read_sql_query into the payload DataFrame. Timestamp validation remains a full-source O(N) scan. This is not a count of total rows visited by SQLite.",
+    "samples_per_arm": 5
+  },
+  "toolchain": {
+    "build": "1.3.0",
+    "python": "3.12.12",
+    "setuptools": "80.9.0",
+    "wheel": "0.45.1"
+  },
+  "verification": {
+    "focused_pytest_pre_review": "58 passed",
+    "int64_overflow_public_fingerprint_matches_B1": true,
+    "source_and_wheel_member_identical": true,
+    "static_source_routes": {
+      "B1_current_matches_frozen_all_routes": true,
+      "candidate_v3_matches_B1_all_routes": true,
+      "count": 12
+    }
+  },
+  "wal_concurrent_snapshot_matrix": {
+    "B1_current_matches_frozen_all_cases": true,
+    "broad_exception_scope": "A concurrent writer may commit between the legacy validation and payload read. Candidate v3 performs validation and requested payload fetch in one SQLite read snapshot; the selected/unselected value, malformed payload, dateTime, usUnits and schema cases in this matrix can therefore diverge from legacy B1. This is a broad, separately reviewed exception requiring scoped disclosure and human scientific/data-model approval at S2.",
+    "candidate_v3_matches_candidate_v2_all_cases": true,
+    "candidate_v3_stable_all_cases": true,
+    "case_count": 14,
+    "different_public_outcome_cases": [
+      "selected_value__selected",
+      "selected_value__all",
+      "unselected_value__all",
+      "selected_malformed__selected",
+      "selected_malformed__all",
+      "unselected_malformed__all",
+      "timestamp__selected",
+      "timestamp__all",
+      "schema__selected",
+      "schema__all"
+    ],
+    "equal_public_outcome_cases": [
+      "unselected_value__selected",
+      "unselected_malformed__selected",
+      "usunits__selected",
+      "usunits__all"
+    ],
+    "samples_per_arm_per_case": 5
+  },
+  "warm_timing": {
+    "claims": "No wall-time or PSS improvement claim. Warm window medians are +4.12% wall and +4.70% CPU; noise thresholds exceed these changes. All/selected medians are faster, but this evidence is not used to claim a release speedup.",
+    "noise_gate": "regression > max(10%, 3 \u00d7 summed relative MAD)",
+    "order": "ABBA",
+    "routes": {
+      "f2_sdb_all": {
+        "cpu_ns": {
+          "B1_MAD_ns": 108726,
+          "B1_median_ns": 11684426,
+          "candidate_MAD_ns": 219980,
+          "candidate_change_fraction": -0.027722457226396914,
+          "candidate_median_ns": 11360505,
+          "regression_threshold_fraction": 0.1,
+          "summed_relative_noise_fraction": 0.02866878260390738,
+          "threshold_exceeded": false
+        },
+        "wall_ns": {
+          "B1_MAD_ns": 108199,
+          "B1_median_ns": 11692594,
+          "candidate_MAD_ns": 220481,
+          "candidate_change_fraction": -0.02778947083940484,
+          "candidate_median_ns": 11367663,
+          "regression_threshold_fraction": 0.1,
+          "summed_relative_noise_fraction": 0.028649090586574145,
+          "threshold_exceeded": false
+        }
+      },
+      "f2_sdb_selected": {
+        "cpu_ns": {
+          "B1_MAD_ns": 128956,
+          "B1_median_ns": 8408753,
+          "candidate_MAD_ns": 42333,
+          "candidate_change_fraction": -0.04615535739960491,
+          "candidate_median_ns": 8020644,
+          "regression_threshold_fraction": 0.1,
+          "summed_relative_noise_fraction": 0.02061392947139613,
+          "threshold_exceeded": false
+        },
+        "wall_ns": {
+          "B1_MAD_ns": 130648,
+          "B1_median_ns": 8416666,
+          "candidate_MAD_ns": 42398,
+          "candidate_change_fraction": -0.0461573501906812,
+          "candidate_median_ns": 8028175,
+          "regression_threshold_fraction": 0.1,
+          "summed_relative_noise_fraction": 0.020803686331238157,
+          "threshold_exceeded": false
+        }
+      },
+      "f2_sdb_window": {
+        "cpu_ns": {
+          "B1_MAD_ns": 242981,
+          "B1_median_ns": 11175736,
+          "candidate_MAD_ns": 943773,
+          "candidate_change_fraction": 0.04698196163545739,
+          "candidate_median_ns": 11700794,
+          "regression_threshold_fraction": 0.3072021584227904,
+          "summed_relative_noise_fraction": 0.10240071947426346,
+          "threshold_exceeded": false
+        },
+        "wall_ns": {
+          "B1_MAD_ns": 190853,
+          "B1_median_ns": 11246846,
+          "candidate_MAD_ns": 943497,
+          "candidate_change_fraction": 0.04121591066508779,
+          "candidate_median_ns": 11710395,
+          "regression_threshold_fraction": 0.292615965609571,
+          "summed_relative_noise_fraction": 0.09753865520319033,
+          "threshold_exceeded": false
+        }
+      },
+      "window_gate_pass": true
+    },
+    "samples_per_arm": 9
+  }
+}

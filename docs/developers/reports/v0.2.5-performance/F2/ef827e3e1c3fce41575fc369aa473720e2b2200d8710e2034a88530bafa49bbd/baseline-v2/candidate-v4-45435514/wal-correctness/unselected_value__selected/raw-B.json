@@ -1,0 +1,567 @@
+[
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-sdb-candidate-v3-env/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-sdb-candidate-v3-env/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "prefix": "/tmp/gwexpy-v025-sdb-candidate-v3-env",
+      "python": "3.12.12"
+    },
+    "sample": {
+      "events": {
+        "mutation": "unselected_value",
+        "reader_sql_before_trigger": [
+          "PRAGMA table_info(\"archive\")",
+          "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+          "PRAGMA table_list(\"archive\")",
+          "PRAGMA table_info(\"archive\")"
+        ],
+        "row_after": [
+          1700000000,
+          "60",
+          "99",
+          1
+        ],
+        "row_before": [
+          1700000000,
+          "60",
+          "40",
+          1
+        ],
+        "schema_after": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "schema_before": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "selection": "selected",
+        "trigger_sql": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" ORDER BY \"rowid\"",
+        "triggered": true,
+        "wal_mode": "wal",
+        "writer_committed": true,
+        "writer_parameters": [
+          "99"
+        ],
+        "writer_sql": [
+          "BEGIN IMMEDIATE",
+          "UPDATE archive SET outHumidity = ? WHERE rowid = 1",
+          "COMMIT"
+        ]
+      },
+      "fingerprint": {
+        "attrs": "None",
+        "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+        "members": {
+          "outTemp": {
+            "class": "gwexpy.timeseries.timeseries.TimeSeries",
+            "dt": "<Quantity 300. s>",
+            "epoch": "<Time object: scale='utc' format='gps' value=1384035218.0>",
+            "name": "outTemp",
+            "sample_rate": "<Quantity 0.00333333 Hz>",
+            "t0": "<Quantity 1.38403522e+09 s>",
+            "times": {
+              "unit": "s",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "1384035218.0",
+                  "1384044818.0",
+                  "1384054118.0"
+                ],
+                "sha256": "9a5daa6c685135b563cb765aa868a01b58dc78289a3581d77de9f93233ebe0b4",
+                "shape": [
+                  64
+                ]
+              }
+            },
+            "unit": "deg_C",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "15.555555555555555",
+                "19.444444444444443",
+                "22.77777777777778"
+              ],
+              "sha256": "065bade5244d2408908e2d7d4b0d36f06569b7c6585808ad007f9292b41a4b7d",
+              "shape": [
+                64
+              ]
+            }
+          }
+        },
+        "order": [
+          "outTemp"
+        ]
+      },
+      "logs": [],
+      "outcome": "return",
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ]
+    },
+    "stderr": ""
+  },
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-sdb-candidate-v3-env/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-sdb-candidate-v3-env/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "prefix": "/tmp/gwexpy-v025-sdb-candidate-v3-env",
+      "python": "3.12.12"
+    },
+    "sample": {
+      "events": {
+        "mutation": "unselected_value",
+        "reader_sql_before_trigger": [
+          "PRAGMA table_info(\"archive\")",
+          "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+          "PRAGMA table_list(\"archive\")",
+          "PRAGMA table_info(\"archive\")"
+        ],
+        "row_after": [
+          1700000000,
+          "60",
+          "99",
+          1
+        ],
+        "row_before": [
+          1700000000,
+          "60",
+          "40",
+          1
+        ],
+        "schema_after": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "schema_before": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "selection": "selected",
+        "trigger_sql": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" ORDER BY \"rowid\"",
+        "triggered": true,
+        "wal_mode": "wal",
+        "writer_committed": true,
+        "writer_parameters": [
+          "99"
+        ],
+        "writer_sql": [
+          "BEGIN IMMEDIATE",
+          "UPDATE archive SET outHumidity = ? WHERE rowid = 1",
+          "COMMIT"
+        ]
+      },
+      "fingerprint": {
+        "attrs": "None",
+        "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+        "members": {
+          "outTemp": {
+            "class": "gwexpy.timeseries.timeseries.TimeSeries",
+            "dt": "<Quantity 300. s>",
+            "epoch": "<Time object: scale='utc' format='gps' value=1384035218.0>",
+            "name": "outTemp",
+            "sample_rate": "<Quantity 0.00333333 Hz>",
+            "t0": "<Quantity 1.38403522e+09 s>",
+            "times": {
+              "unit": "s",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "1384035218.0",
+                  "1384044818.0",
+                  "1384054118.0"
+                ],
+                "sha256": "9a5daa6c685135b563cb765aa868a01b58dc78289a3581d77de9f93233ebe0b4",
+                "shape": [
+                  64
+                ]
+              }
+            },
+            "unit": "deg_C",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "15.555555555555555",
+                "19.444444444444443",
+                "22.77777777777778"
+              ],
+              "sha256": "065bade5244d2408908e2d7d4b0d36f06569b7c6585808ad007f9292b41a4b7d",
+              "shape": [
+                64
+              ]
+            }
+          }
+        },
+        "order": [
+          "outTemp"
+        ]
+      },
+      "logs": [],
+      "outcome": "return",
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ]
+    },
+    "stderr": ""
+  },
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-sdb-candidate-v3-env/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-sdb-candidate-v3-env/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "prefix": "/tmp/gwexpy-v025-sdb-candidate-v3-env",
+      "python": "3.12.12"
+    },
+    "sample": {
+      "events": {
+        "mutation": "unselected_value",
+        "reader_sql_before_trigger": [
+          "PRAGMA table_info(\"archive\")",
+          "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+          "PRAGMA table_list(\"archive\")",
+          "PRAGMA table_info(\"archive\")"
+        ],
+        "row_after": [
+          1700000000,
+          "60",
+          "99",
+          1
+        ],
+        "row_before": [
+          1700000000,
+          "60",
+          "40",
+          1
+        ],
+        "schema_after": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "schema_before": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "selection": "selected",
+        "trigger_sql": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" ORDER BY \"rowid\"",
+        "triggered": true,
+        "wal_mode": "wal",
+        "writer_committed": true,
+        "writer_parameters": [
+          "99"
+        ],
+        "writer_sql": [
+          "BEGIN IMMEDIATE",
+          "UPDATE archive SET outHumidity = ? WHERE rowid = 1",
+          "COMMIT"
+        ]
+      },
+      "fingerprint": {
+        "attrs": "None",
+        "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+        "members": {
+          "outTemp": {
+            "class": "gwexpy.timeseries.timeseries.TimeSeries",
+            "dt": "<Quantity 300. s>",
+            "epoch": "<Time object: scale='utc' format='gps' value=1384035218.0>",
+            "name": "outTemp",
+            "sample_rate": "<Quantity 0.00333333 Hz>",
+            "t0": "<Quantity 1.38403522e+09 s>",
+            "times": {
+              "unit": "s",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "1384035218.0",
+                  "1384044818.0",
+                  "1384054118.0"
+                ],
+                "sha256": "9a5daa6c685135b563cb765aa868a01b58dc78289a3581d77de9f93233ebe0b4",
+                "shape": [
+                  64
+                ]
+              }
+            },
+            "unit": "deg_C",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "15.555555555555555",
+                "19.444444444444443",
+                "22.77777777777778"
+              ],
+              "sha256": "065bade5244d2408908e2d7d4b0d36f06569b7c6585808ad007f9292b41a4b7d",
+              "shape": [
+                64
+              ]
+            }
+          }
+        },
+        "order": [
+          "outTemp"
+        ]
+      },
+      "logs": [],
+      "outcome": "return",
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ]
+    },
+    "stderr": ""
+  },
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-sdb-candidate-v3-env/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-sdb-candidate-v3-env/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "prefix": "/tmp/gwexpy-v025-sdb-candidate-v3-env",
+      "python": "3.12.12"
+    },
+    "sample": {
+      "events": {
+        "mutation": "unselected_value",
+        "reader_sql_before_trigger": [
+          "PRAGMA table_info(\"archive\")",
+          "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+          "PRAGMA table_list(\"archive\")",
+          "PRAGMA table_info(\"archive\")"
+        ],
+        "row_after": [
+          1700000000,
+          "60",
+          "99",
+          1
+        ],
+        "row_before": [
+          1700000000,
+          "60",
+          "40",
+          1
+        ],
+        "schema_after": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "schema_before": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "selection": "selected",
+        "trigger_sql": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" ORDER BY \"rowid\"",
+        "triggered": true,
+        "wal_mode": "wal",
+        "writer_committed": true,
+        "writer_parameters": [
+          "99"
+        ],
+        "writer_sql": [
+          "BEGIN IMMEDIATE",
+          "UPDATE archive SET outHumidity = ? WHERE rowid = 1",
+          "COMMIT"
+        ]
+      },
+      "fingerprint": {
+        "attrs": "None",
+        "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+        "members": {
+          "outTemp": {
+            "class": "gwexpy.timeseries.timeseries.TimeSeries",
+            "dt": "<Quantity 300. s>",
+            "epoch": "<Time object: scale='utc' format='gps' value=1384035218.0>",
+            "name": "outTemp",
+            "sample_rate": "<Quantity 0.00333333 Hz>",
+            "t0": "<Quantity 1.38403522e+09 s>",
+            "times": {
+              "unit": "s",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "1384035218.0",
+                  "1384044818.0",
+                  "1384054118.0"
+                ],
+                "sha256": "9a5daa6c685135b563cb765aa868a01b58dc78289a3581d77de9f93233ebe0b4",
+                "shape": [
+                  64
+                ]
+              }
+            },
+            "unit": "deg_C",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "15.555555555555555",
+                "19.444444444444443",
+                "22.77777777777778"
+              ],
+              "sha256": "065bade5244d2408908e2d7d4b0d36f06569b7c6585808ad007f9292b41a4b7d",
+              "shape": [
+                64
+              ]
+            }
+          }
+        },
+        "order": [
+          "outTemp"
+        ]
+      },
+      "logs": [],
+      "outcome": "return",
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ]
+    },
+    "stderr": ""
+  },
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-sdb-candidate-v3-env/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-sdb-candidate-v3-env/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "prefix": "/tmp/gwexpy-v025-sdb-candidate-v3-env",
+      "python": "3.12.12"
+    },
+    "sample": {
+      "events": {
+        "mutation": "unselected_value",
+        "reader_sql_before_trigger": [
+          "PRAGMA table_info(\"archive\")",
+          "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+          "PRAGMA table_list(\"archive\")",
+          "PRAGMA table_info(\"archive\")"
+        ],
+        "row_after": [
+          1700000000,
+          "60",
+          "99",
+          1
+        ],
+        "row_before": [
+          1700000000,
+          "60",
+          "40",
+          1
+        ],
+        "schema_after": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "schema_before": [
+          "dateTime",
+          "outTemp",
+          "outHumidity",
+          "barometer",
+          "usUnits"
+        ],
+        "selection": "selected",
+        "trigger_sql": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" ORDER BY \"rowid\"",
+        "triggered": true,
+        "wal_mode": "wal",
+        "writer_committed": true,
+        "writer_parameters": [
+          "99"
+        ],
+        "writer_sql": [
+          "BEGIN IMMEDIATE",
+          "UPDATE archive SET outHumidity = ? WHERE rowid = 1",
+          "COMMIT"
+        ]
+      },
+      "fingerprint": {
+        "attrs": "None",
+        "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+        "members": {
+          "outTemp": {
+            "class": "gwexpy.timeseries.timeseries.TimeSeries",
+            "dt": "<Quantity 300. s>",
+            "epoch": "<Time object: scale='utc' format='gps' value=1384035218.0>",
+            "name": "outTemp",
+            "sample_rate": "<Quantity 0.00333333 Hz>",
+            "t0": "<Quantity 1.38403522e+09 s>",
+            "times": {
+              "unit": "s",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "1384035218.0",
+                  "1384044818.0",
+                  "1384054118.0"
+                ],
+                "sha256": "9a5daa6c685135b563cb765aa868a01b58dc78289a3581d77de9f93233ebe0b4",
+                "shape": [
+                  64
+                ]
+              }
+            },
+            "unit": "deg_C",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "15.555555555555555",
+                "19.444444444444443",
+                "22.77777777777778"
+              ],
+              "sha256": "065bade5244d2408908e2d7d4b0d36f06569b7c6585808ad007f9292b41a4b7d",
+              "shape": [
+                64
+              ]
+            }
+          }
+        },
+        "order": [
+          "outTemp"
+        ]
+      },
+      "logs": [],
+      "outcome": "return",
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ]
+    },
+    "stderr": ""
+  }
+]

@@ -1,0 +1,7 @@
+# B-X fixture preparation (not a frozen baseline)
+
+The seven B-X/#586 fixture files were generated once at `/tmp/gwexpy-v025-bx-fixtures-v1` from `benchmarks/copy_audit/bx_fixtures.py` at source commit `aebf542b83184a14ebee66a30588216b03fb3deb`. Generator SHA256 is `0a49b9c57ebfa671f749f5903ed65a30e1913c06eb01d1f5664054b85f01c09d`. The [fixture manifest](fixture-manifest.json) has SHA256 `dade6bd54082ef7f771724b84064caeb252342317e0da5cdc81a966f5e916050`. Total binary fixture bytes are 86,091,403; these files remain outside Git.
+
+The initial independent validation checked all seven file SHA256 values and sizes, ATS header and declared sample count against payload size, and every NetCDF cell's on-disk shape and stable value hash. [verification.json](verification.json) records the generation dependency versions and exact checks. No GWexpy wheel read or performance capture has run against these files. The X lane remains **UNBASELINED** until the final integrated pre-X SHA exists and B0/B1/pre-X raw captures are committed.
+
+To regenerate on another host, use the committed generator in a new empty output path, then compare its `manifest.json` SHA256 and every file SHA256 against this package before capturing a wheel. NetCDF container bytes may depend on its backend version; if the manifest differs, preserve the discrepancy as a new fixture package. Do not overwrite this package or the local files used for the first baseline.

@@ -1,0 +1,205 @@
+{
+  "cases": {
+    "late_xml_unselected_payload_fault": {
+      "actual_route": "native",
+      "gwexpy_import_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "logs": [],
+      "native_parser_exception_applies": false,
+      "optional_dttxml_version": "1.1.8",
+      "oracle_category": "xml_parse_warning_supersedes_payload_fault",
+      "outcome": {
+        "fingerprint": {
+          "entries": {},
+          "kind": "FrequencySeriesDict",
+          "order": []
+        },
+        "status": "ok"
+      },
+      "requested_route": "native",
+      "source_sha256": "5f803a508b4e426bcd76028e01b031e6a303963eadafc2090505a4acf715d67d",
+      "warnings": [
+        {
+          "category": "UserWarning",
+          "message": "Failed to parse DTT XML: junk after document element: line 2, column 1106419",
+          "qualified_category": "builtins.UserWarning"
+        }
+      ]
+    },
+    "psd_unselected_short_payload_warning": {
+      "actual_route": "native",
+      "gwexpy_import_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "logs": [],
+      "native_parser_exception_applies": true,
+      "optional_dttxml_version": "1.1.8",
+      "oracle_category": "unselected_payload_warning_may_disappear",
+      "outcome": {
+        "fingerprint": {
+          "entries": {
+            "K1:F3-SELECTED": {
+              "channel": "K1:F3-SELECTED",
+              "epoch": 1234567890.25,
+              "frequencies": {
+                "dtype": "<f8",
+                "sha256": "3033410c6a2679a528c1c96a8ae8350eec475ee1194233ceff749c577363cd5c",
+                "shape": [
+                  3
+                ]
+              },
+              "name": "K1:F3-SELECTED",
+              "unit": "",
+              "values": {
+                "dtype": "<f4",
+                "sha256": "82bab4fa00311b16ce344954796fd28ef6e9e5073993fb7fc9962efa37610e5c",
+                "shape": [
+                  3
+                ]
+              }
+            }
+          },
+          "kind": "FrequencySeriesDict",
+          "order": [
+            "K1:F3-SELECTED"
+          ]
+        },
+        "status": "ok"
+      },
+      "requested_route": "native",
+      "source_sha256": "15b37db973e72ee16d316c3690408aee4b4321e078374bf4e35624d1e861cf8f",
+      "warnings": [
+        {
+          "category": "UserWarning",
+          "message": "Invalid data length for Result[1]",
+          "qualified_category": "builtins.UserWarning"
+        }
+      ]
+    },
+    "selected_payload_fault": {
+      "actual_route": "native",
+      "gwexpy_import_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "logs": [],
+      "native_parser_exception_applies": false,
+      "optional_dttxml_version": "1.1.8",
+      "oracle_category": "selected_payload_warning",
+      "outcome": {
+        "fingerprint": {
+          "entries": {},
+          "kind": "FrequencySeriesDict",
+          "order": []
+        },
+        "status": "ok"
+      },
+      "requested_route": "native",
+      "source_sha256": "939c0ec264cdf646e3c0db846eb7515d2181a52374205f0d3c4b761edb5f6ade",
+      "warnings": [
+        {
+          "category": "UserWarning",
+          "message": "Failed to decode stream for Result[0]: Invalid base64-encoded string: number of data characters (1) cannot be 1 more than a multiple of 4",
+          "qualified_category": "builtins.UserWarning"
+        }
+      ]
+    },
+    "unselected_metadata_fault": {
+      "actual_route": "native",
+      "gwexpy_import_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "logs": [],
+      "native_parser_exception_applies": false,
+      "optional_dttxml_version": "1.1.8",
+      "oracle_category": "unselected_structural_metadata_warning",
+      "outcome": {
+        "fingerprint": {
+          "entries": {
+            "K1:F3-SELECTED": {
+              "channel": "K1:F3-SELECTED",
+              "epoch": 1234567890.25,
+              "frequencies": {
+                "dtype": "<f8",
+                "sha256": "053e12fdcb252cbd24671a0fd97aaa89ba526a22043a63e82930d957692057e9",
+                "shape": [
+                  1024
+                ]
+              },
+              "name": "K1:F3-SELECTED",
+              "unit": "",
+              "values": {
+                "dtype": "<f4",
+                "sha256": "0f7bdfbb57fe783e62fa4bc520ef4574d4d78183881d2830800bfec099c4dfd1",
+                "shape": [
+                  1024
+                ]
+              }
+            }
+          },
+          "kind": "FrequencySeriesDict",
+          "order": [
+            "K1:F3-SELECTED"
+          ]
+        },
+        "status": "ok"
+      },
+      "requested_route": "native",
+      "source_sha256": "1abc72738f43e6fbb3db487f626bbb720fcdd1194b219e6a0df6c3b81269c818",
+      "warnings": [
+        {
+          "category": "UserWarning",
+          "message": "Invalid frequency metadata for Result[1]: invalid literal for int() with base 10: 'bad-N'",
+          "qualified_category": "builtins.UserWarning"
+        }
+      ]
+    },
+    "unselected_payload_fault": {
+      "actual_route": "native",
+      "gwexpy_import_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "logs": [],
+      "native_parser_exception_applies": true,
+      "optional_dttxml_version": "1.1.8",
+      "oracle_category": "unselected_payload_warning_may_disappear",
+      "outcome": {
+        "fingerprint": {
+          "entries": {
+            "K1:F3-SELECTED": {
+              "channel": "K1:F3-SELECTED",
+              "epoch": 1234567890.25,
+              "frequencies": {
+                "dtype": "<f8",
+                "sha256": "053e12fdcb252cbd24671a0fd97aaa89ba526a22043a63e82930d957692057e9",
+                "shape": [
+                  1024
+                ]
+              },
+              "name": "K1:F3-SELECTED",
+              "unit": "",
+              "values": {
+                "dtype": "<f4",
+                "sha256": "0f7bdfbb57fe783e62fa4bc520ef4574d4d78183881d2830800bfec099c4dfd1",
+                "shape": [
+                  1024
+                ]
+              }
+            }
+          },
+          "kind": "FrequencySeriesDict",
+          "order": [
+            "K1:F3-SELECTED"
+          ]
+        },
+        "status": "ok"
+      },
+      "requested_route": "native",
+      "source_sha256": "68a91b8b6565e8558e756ba37c21f4edbb6b9d170e118772209f71febe976905",
+      "warnings": [
+        {
+          "category": "UserWarning",
+          "message": "Failed to decode stream for Result[1]: Invalid base64-encoded string: number of data characters (1) cannot be 1 more than a multiple of 4",
+          "qualified_category": "builtins.UserWarning"
+        }
+      ]
+    }
+  },
+  "fixture_manifest_sha256": "ccac15aa2d2f70780ff4f5afdcf8b8e7dc491ee955e573a4c178fecfdec93039",
+  "schema": "gwexpy-f3-large-fault-public-capture-v1"
+}

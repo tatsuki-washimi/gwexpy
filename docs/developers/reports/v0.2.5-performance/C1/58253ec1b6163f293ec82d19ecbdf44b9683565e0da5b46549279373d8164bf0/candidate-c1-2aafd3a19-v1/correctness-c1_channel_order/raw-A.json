@@ -1,0 +1,142 @@
+[
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-b-env-b/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "prefix": "/tmp/gwexpy-v025-b-env-b",
+      "python": "3.12.12"
+    },
+    "controller_elapsed_ns": 2469264722,
+    "sample": {
+      "counters": {},
+      "cpu_ns": 206285537,
+      "fingerprint": {
+        "attrs": "None",
+        "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+        "members": {
+          "a": {
+            "class": "gwexpy.timeseries.timeseries.TimeSeries",
+            "dt": "<Quantity 1. s>",
+            "epoch": "<Time object: scale='utc' format='gps' value=0.0>",
+            "name": null,
+            "sample_rate": "<Quantity 1. Hz>",
+            "t0": "<Quantity 0. s>",
+            "times": {
+              "unit": "s",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "0.0",
+                  "2.0",
+                  "3.0"
+                ],
+                "sha256": "9392b85eaba90b4aa6f39e1f269927b4bd6bec47cd2e34a80cf3ed914c26dc7e",
+                "shape": [
+                  4
+                ]
+              }
+            },
+            "unit": "m",
+            "values": {
+              "dtype": "<i8",
+              "selected": [
+                "3",
+                "5",
+                "6"
+              ],
+              "sha256": "6df0e128a82e6d8c332ed546fca7d48406970ea60531b4d64ee41bdffc3d5da4",
+              "shape": [
+                4
+              ]
+            }
+          },
+          "n": {
+            "class": "gwexpy.timeseries.timeseries.TimeSeries",
+            "dt": "<Quantity 1. s>",
+            "epoch": "<Time object: scale='utc' format='gps' value=1.999999999998714>",
+            "name": null,
+            "sample_rate": "<Quantity 1. Hz>",
+            "t0": "<Quantity 2. s>",
+            "times": {
+              "unit": "s",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "2.0",
+                  "3.0"
+                ],
+                "sha256": "cdf3a570f81118522792babee48c62a4b85b2630c58cf432da0c0e7ea965923d",
+                "shape": [
+                  2
+                ]
+              }
+            },
+            "unit": "m",
+            "values": {
+              "dtype": "<i8",
+              "selected": [
+                "7",
+                "8"
+              ],
+              "sha256": "1f281a4e0796fb60a61ac8465ede08be33c78f17d117b218255cec97679d556a",
+              "shape": [
+                2
+              ]
+            }
+          },
+          "z": {
+            "class": "gwexpy.timeseries.timeseries.TimeSeries",
+            "dt": "<Quantity 1. s>",
+            "epoch": "<Time object: scale='utc' format='gps' value=0.0>",
+            "name": null,
+            "sample_rate": "<Quantity 1. Hz>",
+            "t0": "<Quantity 0. s>",
+            "times": {
+              "unit": "s",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "0.0",
+                  "1.0"
+                ],
+                "sha256": "fc62429c3e69001d65972cdeb94fb9aa18a7d9c16bc449e1e474e7e41bb95a7d",
+                "shape": [
+                  2
+                ]
+              }
+            },
+            "unit": "m",
+            "values": {
+              "dtype": "<i8",
+              "selected": [
+                "1",
+                "2"
+              ],
+              "sha256": "0c730b69905c5ef7a4ca5269f72365400bde2dd2c04eaf9bbb3d1c4a265a0131",
+              "shape": [
+                2
+              ]
+            }
+          }
+        },
+        "order": [
+          "z",
+          "a",
+          "n"
+        ]
+      },
+      "fixture_counts": {},
+      "outcome": "return",
+      "wall_ns": 208026960,
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "warnings_recorded": true
+    },
+    "stderr": ""
+  }
+]

@@ -1,0 +1,27 @@
+{
+  "audit": {
+    "executable": "/tmp/gwexpy-v025-b-env-b/bin/python",
+    "gwexpy_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+    "gwexpy_version": "0.2.5",
+    "prefix": "/tmp/gwexpy-v025-b-env-b",
+    "python": "3.12.12"
+  },
+  "controller_elapsed_ns": 2666515274,
+  "sample": {
+    "counters": {},
+    "error_message": "CSV line 2 contains non-numeric data",
+    "error_type": "builtins.ValueError",
+    "logs": [],
+    "logs_recorded": true,
+    "outcome": "error",
+    "traceback": "Traceback (most recent call last):\n  File \"/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/timeseries/io/csv_enhanced.py\", line 635, in read_timeseriesdict_csv\n    rows.append([float(v) for v in tokens])\n                 ^^^^^^^^\nValueError: could not convert string to float: 'not-a-number'\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-performance-f2/benchmarks/io/run.py\", line 743, in _worker\n    result = _scenario(\n             ^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-performance-f2/benchmarks/io/run.py\", line 318, in _scenario\n    return TimeSeriesDict.read(\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 636, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 441, in __call__\n    outputs.append(_read(src))\n                   ^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 427, in _read\n    return self.registry.read(\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/astropy/io/registry/core.py\", line 221, in read\n    data = reader(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/timeseries/io/csv_enhanced.py\", line 639, in read_timeseriesdict_csv\n    raise ValueError(\nValueError: CSV line 2 contains non-numeric data\n",
+    "warnings": [
+      {
+        "category": "builtins.DeprecationWarning",
+        "message": "Compatibility support for python2 has been dropped"
+      }
+    ],
+    "warnings_recorded": true
+  },
+  "stderr": ""
+}

@@ -1,0 +1,80 @@
+{
+  "audit": {
+    "executable": "/tmp/gwexpy-v025-f1-env-b/bin/python",
+    "gwexpy_path": "/tmp/gwexpy-v025-f1-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+    "gwexpy_version": "0.2.5",
+    "prefix": "/tmp/gwexpy-v025-f1-env-b",
+    "python": "3.12.12"
+  },
+  "controller_elapsed_ns": 3723736599,
+  "sample": {
+    "counters": {
+      "full_dataset_read_calls": 1,
+      "payload_materialized_elements": 524288,
+      "payload_read_calls": 1,
+      "probe_covered": true,
+      "probes": [
+        {
+          "elements": 524288,
+          "index": "slice(None, None, None)",
+          "route": "zarr.Array.__getitem__"
+        }
+      ]
+    },
+    "cpu_ns": 1280852280,
+    "fingerprint": {
+      "attrs": "None",
+      "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+      "members": {
+        "signal": {
+          "class": "gwexpy.timeseries.timeseries.TimeSeries",
+          "dt": "<Quantity 0.1 s>",
+          "epoch": "<Time object: scale='utc' format='gps' value=12396.325000000003>",
+          "name": "signal",
+          "sample_rate": "<Quantity 10. Hz>",
+          "t0": "<Quantity 12396.325 s>",
+          "times": {
+            "unit": "s",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "12396.325",
+                "12396.525000000001",
+                "12396.625000000002"
+              ],
+              "sha256": "7d6498a57a44ee14cee905d9de8f1503274ee8a977ef309439ddc060fe14a8be",
+              "shape": [
+                4
+              ]
+            }
+          },
+          "unit": "V",
+          "values": {
+            "dtype": "<f8",
+            "selected": [
+              "-115.0",
+              "-113.0",
+              "-112.0"
+            ],
+            "sha256": "3b630a4c9cba9136b86585e92e889f668f35223a9f649503ac4bb20027640b16",
+            "shape": [
+              4
+            ]
+          }
+        }
+      },
+      "order": [
+        "signal"
+      ]
+    },
+    "outcome": "return",
+    "wall_ns": 1055592009,
+    "warnings": [
+      {
+        "category": "builtins.DeprecationWarning",
+        "message": "Compatibility support for python2 has been dropped"
+      }
+    ]
+  },
+  "stderr": ""
+}

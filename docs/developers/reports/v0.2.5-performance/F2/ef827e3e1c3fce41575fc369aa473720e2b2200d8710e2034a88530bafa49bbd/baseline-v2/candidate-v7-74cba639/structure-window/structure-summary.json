@@ -1,0 +1,55 @@
+{
+  "arms": {
+    "B0": {
+      "dataframe_payload_rows": [
+        4096,
+        4096,
+        4096,
+        4096,
+        4096
+      ],
+      "source_sha": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+      "wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498"
+    },
+    "candidate_v7": {
+      "dataframe_payload_rows": [
+        512,
+        512,
+        512,
+        512,
+        512
+      ],
+      "source_sha": "74cba639fb71234a1e7f326a597557488d39db5c",
+      "wheel_sha256": "692b8c48a7f8439b2a5d82cf0cb9c1e262711fbce7822c7ca590c230afab65c0"
+    }
+  },
+  "candidate_sql": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" WHERE \"dateTime\" >= ? AND \"dateTime\" < ? ORDER BY \"rowid\"",
+  "created_utc": "2026-09-28T14:02:50.466539+00:00",
+  "gate": "pandas.read_sql_query DataFrame payload materialization falls from 4096 full-source rows to the 512 requested-window rows in all five candidate samples.",
+  "harness": {
+    "digest": "e8422a63694d54ba4c8d349f8fb2da7f5df3cda63387d2e036c1af4cba338c72",
+    "fixture_manifest_sha256": "2b29c7bccedfc8335beb5c59580b26aa1a211bd3959e142dcb2e99a7dbcab1f8",
+    "run_py_sha256": "6a9001fbe1304bd325cab913ed15cee33a728e3fe8279207a8122a77a787c303",
+    "source_commit": "6f0a3d4ea14858f667abe4de2395f4359927c03d"
+  },
+  "input_rows": [
+    4096,
+    4096,
+    4096,
+    4096,
+    4096
+  ],
+  "mode": "structure",
+  "probe": "The frozen harness replaces pd.read_sql_query and sums len(DataFrame) for the payload SQL. sdb_dataframe_probe_covered is true in every sample. This is the payload DataFrame materialization count, not total SQLite rows traversed or fetched by cursors.",
+  "requested_window_rows": 512,
+  "sample_checks": {
+    "candidate_query_window_predicate_present": true,
+    "public_outcome_return": true,
+    "stderr_empty": true
+  },
+  "samples_per_arm": 5,
+  "scenario": "f2_sdb_window",
+  "schema": 1,
+  "status": "PASS",
+  "validation_scan": "Full-source timestamp and warning validation remains O(N) through a bounded cursor. The selected-unit TEXT preflight uses bounded numeric chunks (maximum 256 rows) and is not represented by this DataFrame row counter. No claim is made that the entire scan or all cursor rows were eliminated."
+}

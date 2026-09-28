@@ -612,7 +612,82 @@ def _tf6_raw_layouts(source: str) -> dict[tuple[str, str], dict[str, Any]]:
     return layouts
 
 
-def load_dttxml_native(source: str, *, products: str | None = None) -> dict:
+_NATIVE_PSD_STREAM_MAX_POINTS = 16_384
+# The two XML passes cost more than the original tree path on the frozen
+# 100,838-byte small-input fixture. Keep small files on that route.
+_NATIVE_PSD_STREAM_MIN_FILE_BYTES = 1_048_576
+
+
+def _native_psd_selected_channels(
+    source: Any, products: str | None, channels: Any
+) -> frozenset[str] | None:
+    """Limit the streaming route to stable paths and ordinary PSD selectors."""
+    if (
+        not isinstance(products, str)
+        or products.upper() != "PSD"
+        or type(source) not in (str, type(Path()))
+        or type(channels) not in (list, tuple, set, frozenset)
+        or not channels
+        or not all(type(channel) is str for channel in channels)
+    ):
+        return None
+    try:
+        path = Path(source)
+        if (
+            not path.is_file()
+            or path.stat().st_size < _NATIVE_PSD_STREAM_MIN_FILE_BYTES
+        ):
+            return None
+    except OSError:
+        return None
+    return frozenset(channels)
+
+
+def _preflight_native_psd_xml(source: str | Path) -> bool:
+    """Check the entire XML before decoding and reject non-flat layouts."""
+    root = None
+    depth = 0
+    flat = True
+    with _open_dttxml_source(str(source)) as handle:
+        for event, element in ET.iterparse(handle, events=("start", "end")):
+            if event == "start":
+                depth += 1
+                if depth == 1:
+                    root = element
+                    flat = element.tag == "LIGO_LW" and element.get("Type") is None
+                elif depth > 2 and element.tag == "LIGO_LW":
+                    flat = False
+            else:
+                element.clear()
+                if depth == 2 and root is not None:
+                    root.clear()
+                depth -= 1
+    return flat
+
+
+def _iter_native_psd_results(source: str | Path):
+    """Yield one complete top-level result, then release it from the tree."""
+    root = None
+    depth = 0
+    with _open_dttxml_source(str(source)) as handle:
+        for event, element in ET.iterparse(handle, events=("start", "end")):
+            if event == "start":
+                depth += 1
+                if depth == 1:
+                    root = element
+            else:
+                if depth == 2:
+                    if element.tag == "LIGO_LW":
+                        yield element
+                    element.clear()
+                    if root is not None:
+                        root.clear()
+                depth -= 1
+
+
+def load_dttxml_native(
+    source: str, *, products: str | None = None, channels: Any = None
+) -> dict:
     """Parse DTT XML file directly without using dttxml package.
 
     This function provides an alternative parser that correctly handles
@@ -625,6 +700,9 @@ def load_dttxml_native(source: str, *, products: str | None = None) -> dict:
         Path to the DTT XML file.
     products : str, optional
         Normalize only this product. If omitted, parse all supported products.
+    channels : sequence of str, optional
+        Select native PSD channels before decoding for a regular path. Other
+        inputs retain the established parser.
 
     Returns
     -------
@@ -649,13 +727,19 @@ def load_dttxml_native(source: str, *, products: str | None = None) -> dict:
     units, or normalization.
 
     """
+    selected_channels = _native_psd_selected_channels(source, products, channels)
     try:
-        tree = _parse_dttxml_xml(source)
+        stream_psd = selected_channels is not None and _preflight_native_psd_xml(source)
+        if stream_psd:
+            result_elements = _iter_native_psd_results(source)
+        else:
+            tree = _parse_dttxml_xml(source)
+            root = cast(Any, tree.getroot())
+            result_elements = root.iter("LIGO_LW")
     except (ET.ParseError, OSError) as exc:
         warnings.warn(f"Failed to parse DTT XML: {exc}")
         return {}
 
-    root = cast(Any, tree.getroot())
     normalized: dict = {}
     selected_products = {products.upper()} if products is not None else None
     if selected_products is None or "TF" in selected_products:
@@ -682,7 +766,7 @@ def load_dttxml_native(source: str, *, products: str | None = None) -> dict:
         6: ("TF", True, True, "pair"),
     }
 
-    for result_elem in root.iter("LIGO_LW"):
+    for result_elem in result_elements:
         result_type = result_elem.get("Type")
         if result_type == "TimeSeries":
             if selected_products is not None and "TS" not in selected_products:
@@ -865,6 +949,43 @@ def load_dttxml_native(source: str, *, products: str | None = None) -> dict:
             warnings.warn(f"Invalid dimensions for {result_name}: {dims}", stacklevel=2)
             continue
         encoding = stream_elem.get("Encoding", "LittleEndian,base64")
+        if (
+            stream_psd
+            and selected_channels is not None
+            and result_type == "Spectrum"
+            and subtype == 1
+            and n_points <= _NATIVE_PSD_STREAM_MAX_POINTS
+            and n_rows == 1
+            and dims == [1, n_points]
+            and np.isfinite(f0)
+            and f0 >= 0
+            and np.isfinite(df)
+            and df > 0
+            and df <= 0.5 * (np.finfo(float).max - f0) / max(n_points - 1, 1)
+            and encoding == "LittleEndian,base64"
+            and np.geterr()["under"] == "ignore"
+            and not params.get("BUnit")
+        ):
+            # Only the canonical PSD layout can skip a payload. Malformed or
+            # ambiguous metadata stays on the old route so its diagnostic
+            # order remains unchanged.
+            channel_a = params.get("ChannelA", "")
+            reference = re.fullmatch(r"Reference\[(\d+)\]", result_name)
+            if reference is not None:
+                channel_a = f"{channel_a}(REF{reference.group(1)})"
+            if channel_a and channel_a not in selected_channels:
+                time_elem = result_elem.find("Time[@Name='t0']")
+                try:
+                    epoch = (
+                        float(time_elem.text)
+                        if time_elem is not None and time_elem.text
+                        else 0.0
+                    )
+                except (TypeError, ValueError):
+                    pass
+                else:
+                    if np.isfinite(epoch):
+                        continue
         try:
             if result_type == "TransferFunction" and subtype == 6:
                 # The first N eight-byte words are float64 frequencies; the
