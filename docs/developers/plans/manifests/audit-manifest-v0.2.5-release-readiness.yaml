@@ -1,99 +1,15 @@
 review_evidence_json: |
   {
     "schema": "gwexpy-v025-review-evidence-v1",
-    "entries": [
-      {
-        "lane": "scientific-data-model",
-        "role": "reviewer",
-        "model": "gpt-6-sol",
-        "effort": "medium",
-        "reviewed_commit": "bc62b387cac3a261c62c188cdc8a5f01348f09ab",
-        "scope_paths": [
-          "benchmarks",
-          "gwexpy",
-          "tests/io"
-        ],
-        "scope_digest": "c673f4d1722bb9428709f3e96b4cb137277b18668b0870e18914593b3275d511",
-        "verdict": "APPROVED",
-        "timestamp_utc": "2026-09-28T17:00:50Z",
-        "raw_report_sha256": "28322168deae3f1d5c185c6d04f1a5b981dd454a38abb64f7b0fcad7de541820",
-        "finding_ids": []
-      },
-      {
-        "lane": "documentation",
-        "role": "reviewer",
-        "model": "gpt-6-sol",
-        "effort": "medium",
-        "reviewed_commit": "bc62b387cac3a261c62c188cdc8a5f01348f09ab",
-        "scope_paths": [
-          "CHANGELOG.md",
-          "ROADMAP.md",
-          "docs",
-          "docs_redesign",
-          "release_notes",
-          "tests/docs"
-        ],
-        "scope_digest": "9a8218cb6a7d2632d9c6bfef0c4c5ce725ea1beada8253d6a8439cafee6fe3c0",
-        "verdict": "APPROVED",
-        "timestamp_utc": "2026-09-28T17:00:46Z",
-        "raw_report_sha256": "21a7978f1f078aa8414f5f73218a9fa3a34f84b6ee7ddeceb65528d582f41b25",
-        "finding_ids": []
-      },
-      {
-        "lane": "release-security",
-        "role": "reviewer",
-        "model": "gpt-6-sol",
-        "effort": "high",
-        "reviewed_commit": "bc62b387cac3a261c62c188cdc8a5f01348f09ab",
-        "scope_paths": [
-          ".agent",
-          ".clinerules",
-          ".gitattributes",
-          ".github",
-          ".gitignore",
-          ".pre-commit-config.yaml",
-          ".zenodo.json",
-          "AGENTS.md",
-          "CITATION.cff",
-          "CONTRIBUTING.md",
-          "MAINTAINERS.md",
-          "RELEASING.md",
-          "SECURITY.md",
-          "pyproject.toml",
-          "requirements",
-          "requirements-dev.txt",
-          "scripts",
-          "scripts/ci/v025_cross_format_io_evidence.py",
-          "tests/test_check_release_metadata_script.py",
-          "tests/test_diaggui_qualification_evidence.py",
-          "tests/test_gen_release_notes.py",
-          "tests/test_publish_release_workflow.py",
-          "tests/test_qualification_skip_evidence.py",
-          "tests/test_release_contracts.py",
-          "tests/test_release_human_approval.py",
-          "tests/test_release_review_evidence.py",
-          "tests/test_v025_cross_format_io_evidence.py",
-          "tests/test_validate_release_script.py"
-        ],
-        "scope_digest": "918844381179a182a7fb36e34fab39435c47691c33d340bc994584c239093f23",
-        "verdict": "APPROVED",
-        "timestamp_utc": "2026-09-28T17:00:59Z",
-        "raw_report_sha256": "64aa5b2438475e7e3c5350dd33a89942f54318114fc2195965a41f742ea02c75",
-        "finding_ids": []
-      }
-    ],
+    "entries": [],
     "human_approval": {
-      "approver_login": "tatsuki-washimi",
-      "role": "release-owner",
-      "reviewed_commit": "bc62b387cac3a261c62c188cdc8a5f01348f09ab",
-      "scope_paths": [
-        "benchmarks",
-        "gwexpy",
-        "tests/io"
-      ],
-      "scope_digest": "c673f4d1722bb9428709f3e96b4cb137277b18668b0870e18914593b3275d511",
-      "timestamp_utc": "2026-09-28T17:06:12Z",
-      "verdict": "APPROVED",
-      "comment_id": 5874814353
+      "approver_login": "",
+      "role": "",
+      "reviewed_commit": "",
+      "scope_paths": [],
+      "scope_digest": "",
+      "timestamp_utc": "",
+      "verdict": "",
+      "comment_id": 0
     }
   }
