@@ -12,8 +12,10 @@ import datetime as _dt
 import io
 import math
 import warnings
+from contextlib import AbstractContextManager, nullcontext
 from decimal import ROUND_FLOOR, ROUND_HALF_EVEN, Decimal, InvalidOperation
 from functools import partial
+from itertools import chain, islice
 from pathlib import Path
 from typing import Any
 
@@ -44,6 +46,7 @@ _GPS_NANOSECOND = Decimal("1e-9")
 _MAX_RESAMPLED_VALUES = 10_000_000
 _RESAMPLE_METHODS = frozenset({"interpolate", "asfreq"})
 _RESAMPLE_BUDGET_SENTINEL = object()
+_MAX_CSV_MATRIX_CHUNK_BYTES = 64 * 1024 * 1024
 
 
 def _record_or_warn_timezone_ignored(marker: list[bool] | None) -> None:
@@ -79,16 +82,15 @@ def _consume_resample_budget_state(kwargs: dict[str, Any]) -> list[int] | None:
 
 
 def _parse_decimal_time_column(
-    raw_tokens: list[list[str]],
+    raw_tokens: list[str],
     line_numbers: list[int],
-    column_index: int,
 ) -> list[Decimal]:
     """Parse one numeric CSV time column with physical-line diagnostics."""
     times: list[Decimal] = []
-    for row, line_number in zip(raw_tokens, line_numbers, strict=True):
+    for token, line_number in zip(raw_tokens, line_numbers, strict=True):
         try:
-            value = Decimal(row[column_index])
-        except (InvalidOperation, IndexError) as exc:
+            value = Decimal(token)
+        except InvalidOperation as exc:
             raise ValueError(
                 f"CSV line {line_number}: timestamp is non-numeric"
             ) from exc
@@ -202,8 +204,7 @@ def _is_float_token(value: str) -> bool:
 
 
 def _reconstruct_timestamps(
-    raw_data: np.ndarray,
-    raw_tokens: list[list[str]],
+    raw_tokens: dict[int, list[str]],
     line_numbers: list[int],
     time_components: dict[str, int],
     timezone: _dt.tzinfo,
@@ -212,10 +213,8 @@ def _reconstruct_timestamps(
 
     Parameters
     ----------
-    raw_data : ndarray, shape (N, ncols)
-        Raw CSV data as floats.
-    raw_tokens : list of list of str
-        Original CSV tokens, retained for exact fractional seconds.
+    raw_tokens : dict of int to list of str
+        Original timestamp tokens, retained for exact fractional seconds.
     line_numbers : list of int
         Physical one-based CSV line numbers corresponding to the rows.
     time_components : dict
@@ -230,12 +229,12 @@ def _reconstruct_timestamps(
         instants.
 
     """
-    nrows = raw_data.shape[0]
+    nrows = len(line_numbers)
     component_values: dict[str, list[Decimal]] = {}
     for component, column_index in time_components.items():
         values = []
-        for row_index, row in enumerate(raw_tokens):
-            value = Decimal(row[column_index])
+        for row_index, token in enumerate(raw_tokens[column_index]):
+            value = Decimal(token)
             line_number = line_numbers[row_index]
             if not value.is_finite():
                 raise ValueError(
@@ -245,7 +244,7 @@ def _reconstruct_timestamps(
             if component != "second" and value != value.to_integral_value():
                 raise ValueError(
                     f"CSV line {line_number}: timestamp component "
-                    f"'{component}' must be an integer, got {row[column_index]!r}"
+                    f"'{component}' must be an integer, got {token!r}"
                 )
             values.append(value)
         component_values[component] = values
@@ -444,6 +443,257 @@ def _resample_uniform(
     return new_times, new_values
 
 
+def _convert_numeric_chunk(
+    rows: list[list[str]], line_numbers: list[int], width: int
+) -> np.ndarray:
+    """Convert a bounded set of already tokenized rows in one NumPy call.
+
+    Python's ``float`` accepts a few spellings that ``fromstring`` does not.
+    Fall back only for those uncommon chunks or to locate the first bad row.
+    """
+    numeric_text = ",".join(",".join(row) for row in rows)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        values = np.fromstring(numeric_text, sep=",", dtype=np.float64)
+    if values.size == len(rows) * width:
+        return values.reshape(len(rows), width)
+    converted: list[list[float]] = []
+    for row, line_number in zip(rows, line_numbers, strict=True):
+        try:
+            converted.append([float(token) for token in row])
+        except ValueError as exc:
+            raise ValueError(
+                f"CSV line {line_number} contains non-numeric data"
+            ) from exc
+    return np.asarray(converted, dtype=np.float64)
+
+
+def _read_numeric_rows(
+    source: Any,
+    cfg: CSVFormatConfig,
+    *,
+    channels: list[str] | None,
+    start: Any,
+    end: Any,
+) -> tuple[
+    dict[str, str],
+    np.ndarray | None,
+    dict[int, np.ndarray],
+    dict[int, list[str]],
+    list[int],
+    int,
+]:
+    """Stream CSV records, retaining only required values and time lexemes."""
+    stream_context: AbstractContextManager[Any]
+    if hasattr(source, "read"):
+        # Non-iterable streams retain the old read() contract. Ordinary file
+        # objects, including StringIO, take the streaming branch.
+        stream_context = nullcontext(source)
+    else:
+        stream_context = Path(source).open(encoding=cfg.encoding, newline=None)
+
+    with stream_context as stream:
+        if hasattr(stream, "__iter__"):
+            source_lines = iter(stream)
+        else:
+            contents = stream.read()
+            if isinstance(contents, bytes):
+                contents = contents.decode(cfg.encoding or "utf-8")
+            source_lines = iter(contents.splitlines())
+        first_lines = list(islice(source_lines, 20))
+        delimiter = cfg.delimiter
+        if not cfg.columns:
+            sample = "\n".join(
+                line.decode(cfg.encoding or "utf-8")
+                if isinstance(line, bytes)
+                else line
+                for line in first_lines
+            )
+            delimiter = _detect_delimiter(sample)
+
+        metadata: dict[str, str] = {}
+        metadata_active = True
+        skip = cfg.skip_rows
+        detected_data = skip is not None
+        first_candidate: tuple[int, str] | None = None
+        first_candidate_count = 0
+        expected_width: int | None = None
+        pending_textual_line: int | None = None
+        required_width = max(
+            (col.column_index + 1 for col in cfg.columns if col.role != "skip"),
+            default=0,
+        )
+        time_indices = (
+            {
+                col.column_index
+                for col in cfg.columns
+                if col.role in {"time", "time_component"}
+            }
+            if cfg.columns
+            else {0}
+        )
+        time_tokens: dict[int, list[str]] = {index: [] for index in time_indices}
+        line_numbers: list[int] = []
+        matrix_chunks: list[np.ndarray] = []
+        chunk_rows: list[list[str]] = []
+        chunk_lines: list[int] = []
+        chunk_text_bytes = 0
+        selected_values: dict[int, list[float]] = {}
+        bulk = channels is None and start is None and end is None and not cfg.columns
+
+        def flush_chunk() -> None:
+            nonlocal chunk_text_bytes
+            if chunk_rows:
+                assert expected_width is not None
+                matrix_chunks.append(
+                    _convert_numeric_chunk(chunk_rows, chunk_lines, expected_width)
+                )
+                chunk_rows.clear()
+                chunk_lines.clear()
+                chunk_text_bytes = 0
+
+        for line_number, source_line in enumerate(
+            chain(first_lines, source_lines), start=1
+        ):
+            if isinstance(source_line, bytes):
+                source_line = source_line.decode(cfg.encoding or "utf-8")
+            stripped = source_line.strip()
+            if metadata_active:
+                if stripped and not stripped.startswith(cfg.comment_char):
+                    metadata_active = False
+                else:
+                    metadata.update(
+                        _parse_comment_metadata([source_line], cfg.comment_char)
+                    )
+            if not detected_data:
+                if stripped and not stripped.startswith(cfg.comment_char):
+                    if first_candidate is None:
+                        first_candidate = (line_number, stripped)
+                    first_candidate_count += 1
+                    parts = next(csv.reader(io.StringIO(stripped), delimiter=delimiter))
+                    first_token = parts[0].strip().casefold() if parts else ""
+                    if (
+                        any(_is_float_token(token) for token in parts)
+                        or first_token == "nat"
+                    ):
+                        detected_data = True
+                    else:
+                        continue
+                else:
+                    continue
+            if skip is not None and line_number <= skip:
+                continue
+            if not stripped or stripped.startswith(cfg.comment_char):
+                continue
+            tokens = [
+                value.strip()
+                for value in next(
+                    csv.reader(io.StringIO(stripped), delimiter=delimiter)
+                )
+            ]
+            if pending_textual_line is not None:
+                raise ValueError(
+                    f"CSV line {pending_textual_line} contains non-numeric data"
+                )
+            if (
+                not cfg.columns
+                and expected_width is None
+                and all(not _is_float_token(token) for token in tokens)
+            ):
+                pending_textual_line = line_number
+                continue
+            width = len(tokens)
+            if expected_width is None:
+                expected_width = width
+                if not bulk:
+                    if cfg.columns:
+                        selected_values = {
+                            col.column_index: []
+                            for col in cfg.columns
+                            if col.role == "data"
+                            and (channels is None or col.name in channels)
+                        }
+                    else:
+                        selected_values = {
+                            index: []
+                            for index in range(1, width)
+                            if channels is None
+                            or (
+                                metadata.get("name", "ch1")
+                                if width == 2
+                                else f"ch{index}"
+                            )
+                            in channels
+                        }
+            elif width != expected_width:
+                flush_chunk()
+                raise ValueError(
+                    f"CSV line {line_number} has {width} columns; expected {expected_width}"
+                )
+            if width < required_width:
+                flush_chunk()
+                raise ValueError(
+                    f"CSV line {line_number} has {width} columns; configured "
+                    f"columns require at least {required_width}"
+                )
+            if bulk:
+                row_bytes = sum(len(token) for token in tokens) + width
+                if chunk_rows and (
+                    (len(chunk_rows) + 1) * width * 8 > _MAX_CSV_MATRIX_CHUNK_BYTES
+                    or chunk_text_bytes + row_bytes > _MAX_CSV_MATRIX_CHUNK_BYTES
+                ):
+                    flush_chunk()
+                chunk_rows.append(tokens)
+                chunk_lines.append(line_number)
+                chunk_text_bytes += row_bytes
+            else:
+                for index, token in enumerate(tokens):
+                    try:
+                        value = float(token)
+                    except ValueError as exc:
+                        raise ValueError(
+                            f"CSV line {line_number} contains non-numeric data"
+                        ) from exc
+                    if index in selected_values:
+                        selected_values[index].append(value)
+            line_numbers.append(line_number)
+            for index in time_tokens:
+                time_tokens[index].append(tokens[index])
+
+        if not detected_data and first_candidate is not None:
+            # Auto-detection's no-numeric case starts at line one. Its sole
+            # textual row is treated as a header-only empty source.
+            candidate_line, candidate = first_candidate
+            candidate_tokens = next(
+                csv.reader(io.StringIO(candidate), delimiter=delimiter)
+            )
+            if (
+                not cfg.columns
+                and first_candidate_count == 1
+                and all(not _is_float_token(token) for token in candidate_tokens)
+            ):
+                return metadata, None, {}, {}, [], 0
+            raise ValueError(f"CSV line {candidate_line} contains non-numeric data")
+
+        if pending_textual_line is not None:
+            return metadata, None, {}, {}, [], 0
+
+        flush_chunk()
+        matrix = np.concatenate(matrix_chunks) if matrix_chunks else None
+        selected = {
+            index: np.asarray(values, dtype=np.float64)
+            for index, values in selected_values.items()
+        }
+        return (
+            metadata,
+            matrix,
+            selected,
+            time_tokens,
+            line_numbers,
+            expected_width or 0,
+        )
+
+
 def read_timeseriesdict_csv(
     source: str | Path,
     config: CSVFormatConfig | str | Path | dict[str, Any] | None = None,
@@ -560,90 +810,18 @@ def read_timeseriesdict_csv(
     if tz_str is None and any(col.role == "time_component" for col in cfg.columns):
         raise ValueError("timezone is required when using time_component columns")
 
-    # --- Read raw file ---
-    if hasattr(source, "read"):
-        # Handle file-like objects (strings, buffers, etc.)
-        text = source.read()
-        if isinstance(text, bytes):
-            text = text.decode(cfg.encoding or "utf-8")
-    else:
-        # Handle paths
-        source = Path(source)
-        text = source.read_text(encoding=cfg.encoding)
-    lines = text.splitlines()
-    metadata = _parse_comment_metadata(lines, cfg.comment_char)
-
-    # Auto-detect delimiter if config is default
-    delimiter = cfg.delimiter
-    if cfg.columns and delimiter == ",":
-        pass  # trust config
-    elif not cfg.columns:
-        # Auto-detect from first data lines
-        sample = "\n".join(lines[:20])
-        delimiter = _detect_delimiter(sample)
-
-    # Determine rows to skip
-    skip = cfg.skip_rows
-    if skip is None:
-        skip = _detect_skip_rows(lines, delimiter, cfg.comment_char)
-
-    # Parse data lines
-    data_lines: list[tuple[int, str]] = []
-    for line_number, line in enumerate(lines[skip:], start=skip + 1):
-        stripped = line.strip()
-        if not stripped or stripped.startswith(cfg.comment_char):
-            continue
-        data_lines.append((line_number, stripped))
-
-    if not data_lines:
-        return TimeSeriesDict()
-
-    # With no numeric row, auto-detection cannot distinguish a sole textual
-    # header from data.  Preserve the established header-only empty result;
-    # any non-numeric row after a detected header still fails below.
-    if not cfg.columns and len(data_lines) == 1:
-        only_line = data_lines[0][1]
-        only_row = next(csv.reader(io.StringIO(only_line), delimiter=delimiter))
-        if all(not _is_float_token(value) for value in only_row):
-            return TimeSeriesDict()
-
-    # Parse into float array
-    rows: list[list[float]] = []
-    raw_tokens: list[list[str]] = []
-    row_line_numbers: list[int] = []
-    expected_width: int | None = None
-    required_width = max(
-        (column.column_index + 1 for column in cfg.columns if column.role != "skip"),
-        default=0,
+    metadata, raw, selected_values, raw_tokens, row_line_numbers, width = (
+        _read_numeric_rows(
+            source,
+            cfg,
+            channels=channels,
+            start=start,
+            end=end,
+        )
     )
-    for line_number, line in data_lines:
-        row = next(csv.reader(io.StringIO(line), delimiter=delimiter))
-        tokens = [value.strip() for value in row]
-        width = len(tokens)
-        if expected_width is None:
-            expected_width = width
-        elif width != expected_width:
-            raise ValueError(
-                f"CSV line {line_number} has {width} columns; expected {expected_width}"
-            )
-        if width < required_width:
-            raise ValueError(
-                f"CSV line {line_number} has {width} columns; configured "
-                f"columns require at least {required_width}"
-            )
-        try:
-            rows.append([float(v) for v in tokens])
-            raw_tokens.append(tokens)
-            row_line_numbers.append(line_number)
-        except ValueError as exc:
-            raise ValueError(
-                f"CSV line {line_number} contains non-numeric data"
-            ) from exc
-
-    if not rows:
+    if not row_line_numbers:
         return TimeSeriesDict()
-
-    raw = np.array(rows)
+    row_count = len(row_line_numbers)
 
     # --- Column mapping ---
     exact_time_origin = Decimal("0")
@@ -674,7 +852,7 @@ def read_timeseriesdict_csv(
                 )
             tz = _parse_timezone_for_format("csv", tz_str)
             _gps_origin, gps_times, exact_times = _reconstruct_timestamps(
-                raw, raw_tokens, row_line_numbers, time_columns, tz
+                raw_tokens, row_line_numbers, time_columns, tz
             )
             exact_time_origin = exact_times[0]
             has_serialized_time_axis = True
@@ -692,9 +870,8 @@ def read_timeseriesdict_csv(
                     timezone_warning_marker,
                 )
             exact_times = _parse_decimal_time_column(
-                raw_tokens,
+                raw_tokens[time_col_index],
                 row_line_numbers,
-                time_col_index,
             )
             source_dt = _validate_regular_timestamps(
                 exact_times,
@@ -717,9 +894,9 @@ def read_timeseriesdict_csv(
                 )
             if source_rate:
                 source_dt = 1.0 / source_rate
-                gps_times = np.arange(raw.shape[0]) / source_rate
+                gps_times = np.arange(row_count) / source_rate
             else:
-                gps_times = np.arange(raw.shape[0], dtype=float)
+                gps_times = np.arange(row_count, dtype=float)
     else:
         # Auto-detect: first column = time, rest = data
         if tz_str is not None:
@@ -727,7 +904,7 @@ def read_timeseriesdict_csv(
                 tz_str,
                 timezone_warning_marker,
             )
-        exact_times = _parse_decimal_time_column(raw_tokens, row_line_numbers, 0)
+        exact_times = _parse_decimal_time_column(raw_tokens[0], row_line_numbers)
         source_dt = _validate_regular_timestamps(
             exact_times,
             source="CSV",
@@ -740,12 +917,12 @@ def read_timeseriesdict_csv(
         gps_times = np.asarray(
             [float(value - exact_times[0]) for value in exact_times], dtype=float
         )
-        if raw.shape[1] == 2:
+        if width == 2:
             data_columns = [
                 (metadata.get("name", "ch1"), 1, metadata.get("unit"), 1.0),
             ]
         else:
-            data_columns = [(f"ch{i}", i, None, 1.0) for i in range(1, raw.shape[1])]
+            data_columns = [(f"ch{i}", i, None, 1.0) for i in range(1, width)]
 
     if has_serialized_time_axis:
         _validate_float_time_axis(
@@ -788,7 +965,9 @@ def read_timeseriesdict_csv(
         max_samples_per_channel = _MAX_RESAMPLED_VALUES
 
     for name, col_idx, unit_str, scale in data_columns:
-        values = raw[:, col_idx] * scale
+        values = (
+            raw[:, col_idx] if raw is not None else selected_values[col_idx]
+        ) * scale
 
         # Resample if requested
         if target_rate is not None and len(gps_times) > 1:
@@ -878,10 +1057,6 @@ def write_timeseries_csv(
     """Write a single ``TimeSeries`` to CSV with minimal metadata comments."""
     del kwargs
 
-    rows = [
-        f"{float(t):.18e}{delimiter}{float(v):.18e}"
-        for t, v in zip(ts.times.value, ts.value, strict=False)
-    ]
     header = [
         "# gwexpy.timeseries.csv v1",
         f"# name={ts.name}" if ts.name else "",
@@ -889,14 +1064,21 @@ def write_timeseries_csv(
         f"# t0={float(ts.t0.value):.18e}",
         f"# dt={float(ts.dt.value):.18e}",
     ]
-    content = "\n".join(line for line in header if line) + "\n" + "\n".join(rows) + "\n"
-
-    if hasattr(target, "write"):
-        target.write(content)
-        return target
-
-    path = Path(target)
-    path.write_text(content, encoding="utf-8")
+    stream_context = (
+        nullcontext(target)
+        if hasattr(target, "write")
+        else Path(target).open("w", encoding="utf-8", newline=None)
+    )
+    with stream_context as stream:
+        for line in header:
+            if line:
+                stream.write(line + "\n")
+        wrote_row = False
+        for timestamp, value in zip(ts.times.value, ts.value, strict=False):
+            stream.write(f"{float(timestamp):.18e}{delimiter}{float(value):.18e}\n")
+            wrote_row = True
+        if not wrote_row:
+            stream.write("\n")
     return target
 
 
