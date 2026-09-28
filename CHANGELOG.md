@@ -10,8 +10,8 @@ The candidate additionally targets measured, internal I/O performance and
 scalability improvements under #580. These improvements are planned, not yet
 qualified or released; public values, dtype, metadata, warning/error behavior,
 and on-disk format remain the acceptance contract except for the scoped #589
-native-parser exception below. The candidate adds no public API, dependency,
-or persistence schema.
+native-parser and #585 SDB snapshot exceptions below. The candidate adds no
+public API, dependency, or persistence schema.
 
 ### Fixed
 
@@ -27,6 +27,7 @@ or persistence schema.
 - **I/O measurement and fast paths (#581–#585, #588–#589)**: Freeze B1 baselines, then improve multi-file merge, single-channel dispatch, range reads, CSV/SDB/TDMS paths, native DTTXML parsing, and GWF merge scalability.
 - **WIN and copy reduction (#518, #586)**: Include only NumPy-based WIN decoding and copy reductions that preserve public dtype and saved values. Numba and the remaining #518/#586 work are deferred.
 - **Native DTTXML skipped-payload exception (#589)**: Parser-level use of already accepted selectors may suppress warnings and decode errors arising exclusively from fully unselected native-parser payloads. XML structural errors and selected-payload behavior must remain equivalent to the old candidate. The external `dttxml` route keeps its existing behavior and is outside the performance claim. This exception requires separate human scientific/data-model approval for S2 and does not expand #611's completely disjoint plain-HDF5-window safety exception.
+- **SDB concurrent-write snapshot correction (#585)**: Validation and the selected payload query will use one SQLite read snapshot. If a WAL writer commits between those steps, the selected values may reflect the earlier snapshot instead of the writer's later commit, as old R could. This narrow concurrency difference requires separate scientific/data-model review and human approval for S2; ordinary reads and malformed-data warnings/errors must retain old-R behavior. No other format gains a skipped-payload exception.
 - **Excluded**: #587, #590, and #519 are outside v0.2.5.
 
 The 2026-09-27 S/R approvals and candidate runs are historical evidence for the

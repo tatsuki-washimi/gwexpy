@@ -319,6 +319,15 @@ This proposed, narrowly scoped exception needs separate human scientific/data-mo
 approval for S2. It does not extend #611's `non_intersecting_window_safety`
 exception beyond completely disjoint plain HDF5 read windows.
 
+For #585 SDB reads, one separately gated concurrency correction pins whole-table
+validation and the selected payload query to the same SQLite read snapshot.
+If a WAL writer commits between those steps, the reader may return the earlier
+snapshot value where old R returned the later committed value. Ordinary reads,
+including warnings and errors for malformed data, must retain old-R behavior.
+This narrow observable difference requires its own review, human
+scientific/data-model approval, and release disclosure; it does not grant a
+general skipped-payload exception to other formats.
+
 ## Future themes (not scheduled)
 
 No milestones exist for these yet, and the themes may be re-scoped. Each theme below
