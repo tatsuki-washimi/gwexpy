@@ -18,6 +18,15 @@ indices. The original command and artifact summary is retained as
 `a5150ef1f8100133f7e78cab6f23fdbca5c104cb3a6d8995c07a24522f6e564d`),
 alongside the wheel and sdist run summaries. Run
 `python verify_prequalification.py` here to regenerate the matrix.
+For exact-R3 qualification, rerun the same audit commands into a new
+directory containing `qualification-summary.json`, `wheel/`, `sdist/`, and
+the two `nc-routes-*.jsonl` files. Invoke the verifier with
+`--candidate-summary`, a new `--output` path, and the exact expected source,
+wheel, and sdist SHA-256 arguments plus `--wheel-artifact` and
+`--sdist-artifact`. It checks the artifact files' hashes and refuses to overwrite an
+existing output. This reproduces the 26 per-scenario assertions and twelve
+characterized blocked observations on the exact installed R3 artifacts;
+the 36 fixed-defect cases use the separate JUnit gate below.
 
 The 26 previously non-blocked scenarios pass case-specific assertions on
 both installed artifacts. `NC-ROUTE-001` needed a supplemental public-read

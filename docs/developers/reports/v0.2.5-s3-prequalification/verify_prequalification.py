@@ -16,6 +16,8 @@ parser.add_argument("--output", type=Path, default=ROOT / "prequalification-38.j
 parser.add_argument("--expected-source-sha")
 parser.add_argument("--expected-wheel-sha256")
 parser.add_argument("--expected-sdist-sha256")
+parser.add_argument("--wheel-artifact", type=Path)
+parser.add_argument("--sdist-artifact", type=Path)
 args = parser.parse_args()
 SUMMARY = json.loads(args.candidate_summary.read_text())
 RAW_ROOT = args.candidate_summary.parent
@@ -38,9 +40,13 @@ else:
             args.expected_source_sha,
             args.expected_wheel_sha256,
             args.expected_sdist_sha256,
+            args.wheel_artifact,
+            args.sdist_artifact,
         )
     ):
-        parser.error("exact candidate source and both artifact hashes are required")
+        parser.error(
+            "exact source, both artifact hashes, and artifact files are required"
+        )
     if args.output.exists():
         parser.error("candidate output already exists; use a new append-only path")
 assert SOURCE_SHA == (args.expected_source_sha or SOURCE_SHA)
@@ -50,6 +56,15 @@ assert SUMMARY["wheel_sha256"] == (
 assert SUMMARY["sdist_sha256"] == (
     args.expected_sdist_sha256 or SUMMARY["sdist_sha256"]
 )
+for artifact, path in (
+    ("wheel", args.wheel_artifact),
+    ("sdist", args.sdist_artifact),
+):
+    if path is not None:
+        assert (
+            hashlib.sha256(path.read_bytes()).hexdigest()
+            == SUMMARY[f"{artifact}_sha256"]
+        )
 FINDINGS = [
     f
     for f in json.loads(MATRIX.read_text())["findings"]
