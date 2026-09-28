@@ -27,3 +27,9 @@ guide, and release note make the four questioned boundaries explicit without
 changing the R2 runtime tree. Exact-S3 scientific/data-model review must still
 decide each of the twelve findings individually. Exact-R3 artifact evidence
 and release-owner approval remain separate gates.
+
+A read-only follow-up on `373b6c0046bedc3326a092a0676a6adbf7530ead`
+accepted all four revised dispositions **as descriptions of retained behavior
+and known limits only**. It did not establish device-level timing authority,
+unit import, or a physical histogram dataset-per-entry schema. The twelve
+formal S3 dispositions remain pending.
