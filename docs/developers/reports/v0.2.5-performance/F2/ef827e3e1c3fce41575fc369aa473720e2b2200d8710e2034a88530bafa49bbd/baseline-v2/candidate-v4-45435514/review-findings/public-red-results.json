@@ -1,0 +1,42 @@
+{
+  "additional_review_finding": {
+    "case": "windSpeed=1e-320 outside the requested window with np.seterr(under=warn/raise)",
+    "required_v5_scope": "unit-conversion safety guard must detect underflow as well as overflow, invalid, and divide conditions.",
+    "source": "Independent F3/F4 static review; public characterization pending"
+  },
+  "baseline": "B1 / 1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+  "cadence_dx_roundtrip": {
+    "B1_crop_t0_gps": 1.801439819351717e+16,
+    "candidate_v4_t0_gps": 1.8014398193517172e+16,
+    "fixture": "fixtures/dx-roundtrip.sdb",
+    "interpretation": "HOLD: a non-exact sample-rate reciprocal changes the selected epoch despite matching values.",
+    "length_and_values_equal": true,
+    "series_dx_seconds": 9007199254740990.0,
+    "source": "8 rows; integer cadence 2**53 - 1 seconds; full-read fresh crop over indices 3:6",
+    "source_cadence_seconds": 9007199254740991
+  },
+  "candidate": "v4 / 45435514c5565e36e65a16b879fbe393553a2c4b",
+  "schema": 1,
+  "sqlite_exclusive_upper_int64": {
+    "B1": "returns 5 samples",
+    "candidate_v4": "DatabaseError: Python int too large to convert to SQLite INTEGER",
+    "fixture": "fixtures/sqlite-int64-upper.sdb",
+    "interpretation": "HOLD: computed exclusive SQL upper bound exceeds SQLite signed int64.",
+    "selection": "start at index 1020, end=None",
+    "source": "1025 rows; cadence 2**53 - 2 seconds; last stored timestamp fits signed int64"
+  },
+  "unit_conversion_outside_requested_window": {
+    "B1": {
+      "over_raise": "FloatingPointError: overflow encountered in multiply",
+      "over_warn": "returns 4 selected values; RuntimeWarning: overflow encountered in multiply"
+    },
+    "candidate_v4": {
+      "over_raise": "returns the same 4 selected values without exception",
+      "over_warn": "returns the same 4 selected values without warning"
+    },
+    "fixture": "fixtures/unit-overflow.sdb",
+    "interpretation": "HOLD: the bounded route skips legacy full-source unit-conversion side effects.",
+    "selection": "rows 20 through 23, end exclusive",
+    "source": "64 rows, dateTime = 1700000000 + row * 300, barometer=1e308 at row index 63"
+  }
+}
