@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version:  GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-27 16:50+0900\n"
-"PO-Revision-Date: 2026-09-27 00:00+0000\n"
+"PO-Revision-Date: 2026-09-28 00:00+0000\n"
 "Last-Translator: GWexpy Developers\n"
 "Language: ja\n"
 "Language-Team: Japanese\n"
@@ -51,70 +51,97 @@ msgstr ""
 "v0.2.2 リリースは [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2) から取得でき、"
 "[Zenodo DOI 10.5281/zenodo.22228340](https://doi.org/10.5281/zenodo.22228340) でアーカイブされています。"
 
-#: ../../../CHANGELOG.md:3
-msgid "[0.2.5] - 2026-09-27"
-msgstr "[0.2.5] - 2026年9月27日"
+#: ../../../CHANGELOG.md
+msgid "[0.2.5] - 2026-09-28"
+msgstr "[0.2.5] - 2026-09-28（候補）"
 
-#: ../../../CHANGELOG.md:5
-msgid ""
-"This patch fixes supported NetCDF4 and Zarr matrix value, axis, and unit "
-"handling; HDF5 manifest integrity; TDMS waveform-increment and GBD header "
-"validation; and audio registry tag provenance. The supported optional-backend "
-"routes report a backend-specific `ImportError` when their package is absent."
-msgstr ""
-"このパッチリリースでは、対応する NetCDF4 と Zarr の行列における値、軸、単位の処理、"
-"HDF5 のマニフェストの整合性、TDMS の波形間隔と GBD のヘッダー検証、"
-"音声形式のレジストリが取得したタグの出所を修正しました。"
-"対応するオプション依存の経路では、必要なパッケージがない場合、"
-"バックエンド固有の `ImportError` を返します。"
+#: ../../../CHANGELOG.md
+msgid "This patch fixes supported NetCDF4 and Zarr matrix value, axis, and unit handling; HDF5 manifest integrity; TDMS waveform-increment and GBD header validation; and audio registry tag provenance. The supported optional-backend routes report a backend-specific `ImportError` when their package is absent. The candidate includes internal I/O performance and scalability work under #580. Implementation of the included changes is complete. Range push-down (#584) and parallel GWF optimization remain on hold. Release qualification and publication remain pending; public values, dtype, metadata, warning/error behavior, and on-disk format remain the acceptance contract except for the scoped #589 native-parser and #585 SDB snapshot exceptions below. The candidate adds no public API, dependency, or persistence schema."
+msgstr "このパッチでは、対応する NetCDF4 と Zarr の行列の値・軸・単位、HDF5 マニフェストの整合性、TDMS の波形間隔と GBD ヘッダーの検証、音声レジストリのタグ来歴を修正します。必要なパッケージがない場合、対応するオプションバックエンドの経路はバックエンド固有の `ImportError` を返します。候補には #580 の内部 I/O 性能と拡張性に関する作業も含まれます。候補に含める変更の実装は完了しました。範囲の読み込み最適化（#584）と GWF の parallel 最適化は保留中です。リリース認定と公開は未完了です。以下で範囲を定めた #589 ネイティブパーサーと #585 SDB スナップショットの例外を除き、公開される値、dtype、メタデータ、警告・例外の挙動、および保存形式を受け入れ条件として維持します。公開 API、依存関係、永続化スキーマは追加しません。"
 
-#: ../../../CHANGELOG.md:12
-msgid ""
-"**NetCDF4 matrices and axes**: Reject malformed matrix topology, unsafe "
-"heterogeneous dtype conversion, and irregular legacy time axes; retain cell "
-"units in supported matrix writes and legacy reads."
-msgstr ""
-"**NetCDF4 の行列と軸**：不正な行列構造、値が失われる異種 dtype 変換、"
-"および旧形式の不規則な時間軸を拒否します。"
-"対応する行列の書き込みと旧形式の読み込みでは、セルの単位を保持します。"
+#: ../../../CHANGELOG.md
+msgid "**NetCDF4 matrices and axes**: Reject malformed matrix topology, unsafe heterogeneous dtype conversion, and irregular legacy time axes; retain cell units in supported matrix writes and legacy reads."
+msgstr "**NetCDF4 の行列と軸**：不正な行列構造、値が失われる異種 dtype 変換、および旧形式の不規則な時間軸を拒否します。対応する行列の書き込みと旧形式の読み込みでは、セルの単位を保持します。"
 
-#: ../../../CHANGELOG.md:13
-msgid ""
-"**Zarr values and metadata**: Retain tested integer and complex samples, "
-"axes, and units; reject unsafe mixed-dtype conversion and inconsistent axes "
-"in supported stores."
-msgstr ""
-"**Zarr の値とメタデータ**：検証済みの整数値と複素数値、軸、単位を保持します。"
-"対応するストアでは、値が失われる混合 dtype 変換と整合しない軸を拒否します。"
+#: ../../../CHANGELOG.md
+msgid "**Zarr values and metadata**: Retain tested integer and complex samples, axes, and units; reject unsafe mixed-dtype conversion and inconsistent axes in supported stores."
+msgstr "**Zarr の値とメタデータ**：検証済みの整数値と複素数値、軸、単位を保持します。対応するストアでは、値が失われる混合 dtype 変換と整合しない軸を拒否します。"
 
-#: ../../../CHANGELOG.md:14
-msgid ""
-"**HDF5 manifest-backed collections**: Reject unreadable, missing, or "
-"substituted payloads while preserving tolerant manifest-free discovery."
-msgstr ""
-"**HDF5 のマニフェスト付きコレクション**：読めない、欠落した、または差し替えられた"
-"ペイロードを拒否します。マニフェストのない場合の探索は従来どおり許容します。"
+#: ../../../CHANGELOG.md
+msgid "**HDF5 manifest-backed collections**: Reject unreadable, missing, or substituted payloads while preserving tolerant manifest-free discovery."
+msgstr "**HDF5 のマニフェスト付きコレクション**：読めない、欠落した、または差し替えられたペイロードを拒否します。マニフェストのない場合の探索は従来どおり許容します。"
 
-#: ../../../CHANGELOG.md:15
-msgid ""
-"**TDMS and GL500 GBD validation**: Reject absent or invalid waveform "
-"increments and malformed required GL500 header fields within the tested "
-"firmware scope."
-msgstr ""
-"**TDMS と GL500 GBD の検証**：波形間隔が欠落または不正な TDMS データと、"
-"検証済みファームウェアの範囲で必須ヘッダー項目が不正な GL500 データを拒否します。"
+#: ../../../CHANGELOG.md
+msgid "**TDMS and GL500 GBD validation**: Reject absent or invalid waveform increments and malformed required GL500 header fields within the tested firmware scope."
+msgstr "**TDMS と GL500 GBD の検証**：波形間隔が欠落または不正な TDMS データと、検証済みファームウェアの範囲で必須ヘッダー項目が不正な GL500 データを拒否します。"
 
-#: ../../../CHANGELOG.md:16
+#: ../../../CHANGELOG.md
 msgid "**Audio registry tags**: Retain available WAV and FLAC tag metadata in provenance."
 msgstr "**音声形式のレジストリのタグ**：取得できた WAV と FLAC のタグ情報を出所情報に保持します。"
 
-#: ../../../CHANGELOG.md:17
-msgid ""
-"**Optional backends**: Supported public Zarr and NetCDF4 routes raise a "
-"backend-specific `ImportError` when the required package is absent."
-msgstr ""
-"**オプションのバックエンド**：対応する公開 Zarr 経路と NetCDF4 経路では、"
-"必要なパッケージがない場合にバックエンド固有の `ImportError` を送出します。"
+#: ../../../CHANGELOG.md
+msgid "**Optional backends**: Supported public Zarr and NetCDF4 routes raise a backend-specific `ImportError` when the required package is absent."
+msgstr "**オプションのバックエンド**：対応する公開 Zarr 経路と NetCDF4 経路では、必要なパッケージがない場合にバックエンド固有の `ImportError` を送出します。"
+
+#: ../../../CHANGELOG.md
+msgid "Internal performance work (release qualification pending)"
+msgstr "内部性能作業（リリース認定待ち）"
+
+#: ../../../CHANGELOG.md
+msgid "**Multi-source merge (#582)**: Append each input once. The frozen wheel comparison preserves all 15 public result fingerprints and reduces non-inplace append calls from 63 to zero on the 64-input fixture; warm wall and CPU pass the predeclared noise-aware gate. No peak-memory improvement is claimed."
+msgstr "**複数ソースの結合（#582）**：各入力を1回ずつ追加します。凍結 wheel の比較では公開結果の fingerprint 15件を維持し、64入力の fixture における非 inplace の append 呼び出しを63回から0回に減らしました。warm wall と CPU は事前に定めたノイズを考慮した基準を満たします。ピークメモリの改善は主張しません。"
+
+#: ../../../CHANGELOG.md
+msgid "**Single-channel WAV dispatch (#583)**: Avoid constructing the unselected channel's `TimeSeries` after the backend read. All 28 public result fingerprints match the frozen baseline; the large fixture's unselected construction count falls from one to zero. The SciPy backend still reads the full interleaved payload."
+msgstr "**単一チャネル WAV の振り分け（#583）**：バックエンドでの読み込み後、未選択チャネルの `TimeSeries` を構築しません。公開結果の fingerprint 28件は凍結 baseline と一致し、大きい fixture での未選択チャネルの構築回数は1回から0回になりました。SciPy バックエンドはインターリーブされたペイロード全体を引き続き読み込みます。"
+
+#: ../../../CHANGELOG.md
+msgid "**CSV reader and internal writer (#585)**: Reduce general parser work, push down supported column selection while retaining full-file validation, and stream output from the internal enhanced `write_timeseries_csv` helper. Public `TimeSeries.write(format=\"csv\")` uses GWpy's writer and is outside this writer performance claim. Both explicit-format and `.csv` auto-detected two-column `FrequencySeries` fast paths remain covered, including the nonuniform-frequency-axis contract. Frozen wheel evidence preserves 21 public fingerprints, and the measured general and selected CSV fixtures improve in wall time; the internal writer preserves bytes under fixed encoding and newline conditions."
+msgstr "**CSV 読み込みと内部 writer（#585）**：一般のパーサー処理を減らし、全ファイルの検証を維持しつつ対応する列選択を読み込みへ反映し、内部の拡張 `write_timeseries_csv` helper の出力をストリーム化します。公開 `TimeSeries.write(format=\"csv\")` は GWpy の writer を使い、この書き込み性能の主張には含めません。明示的な形式指定と `.csv` 自動判別の両方で、2列の `FrequencySeries` 高速経路と不均一な周波数軸の契約を維持します。凍結 wheel の証拠では公開 fingerprint 21件を維持し、計測した一般および選択 CSV fixture の wall time が改善しました。固定の encoding と改行条件では内部 writer の書き込みバイト列を維持します。"
+
+#: ../../../CHANGELOG.md
+msgid "**WIN decoder (#518)**: Use NumPy integer intermediates while preserving 12 bit-exact public fingerprints. The measured per-sample append count falls from 4,116 to zero and warm CPU passes the noise-aware gate."
+msgstr "**WIN デコーダー（#518）**：NumPy の整数中間値を使い、公開 fingerprint 12件の bit 単位の一致を維持します。計測したサンプルごとの append 回数は4,116回から0回になり、warm CPU はノイズを考慮した基準を満たします。"
+
+#: ../../../CHANGELOG.md
+msgid "**Native DTTXML PSD selection (#589)**: Large native PSD reads skip fully unselected payload decode, reducing measured Linux peak PSS by 19.63% with zero unselected decoded bytes. Small files retain the old parser. Large warm wall time increases 12.46% on the measured fixture; cold time is comparable. The scoped warning exception below remains subject to human approval."
+msgstr "**ネイティブ DTTXML PSD 選択（#589）**：大きいネイティブ PSD の読み込みでは完全に未選択のペイロードの decode を省き、未選択の decode バイト数を0にして、計測した Linux のピーク PSS を19.63%削減します。小さいファイルは従来のパーサーを使います。計測した fixture では大きい入力の warm wall time が12.46%増加し、cold time は同程度です。以下の限定的な警告の例外には、人による承認がなお必要です。"
+
+#: ../../../CHANGELOG.md
+msgid "**Serial GWF merge (#588)**: Large, sorted, local serial reads retain at most three coerced parts across the measured source counts. Independent Linux peak tree-PSS batches improve 8.31–10.66%; large warm time improves 4.20%. Parallel optimization remains on hold after two primary PSS failures; the old parallel route remains in place."
+msgstr "**直列 GWF 結合（#588）**：大きく、時刻順に並んだローカル入力の直列読み込みでは、計測したソース数にわたり保持する変換済み part は最大3個です。独立した Linux ピーク tree-PSS の測定 batch では8.31～10.66%改善し、大きい入力の warm time は4.20%改善しました。並列最適化は主指標の PSS が2回失敗したため保留し、従来の並列経路を維持します。"
+
+#: ../../../CHANGELOG.md
+msgid "**SDB selected windows (#585)**: For an eligible 4,096-row SQLite source, full-source validation and the selected payload query share one read transaction while only 512 requested payload rows enter a DataFrame. Static-source public fingerprints match B1. The two small selected-read timing batches do not establish a regression under the frozen noise-aware gate, but are inconclusive for speed; no wall-time or PSS improvement is claimed. TDMS unselected payload reads are already zero in B1, so that subroute has no new performance claim."
+msgstr "**SDB の選択 window（#585）**：対象となる4,096行の SQLite ソースでは、全ソースの検証と選択ペイロードの query が1つの読み込み transaction を共有し、要求された512行のペイロードだけを DataFrame に格納します。静的ソースの公開 fingerprint は B1 と一致します。小さい選択読み込みの timing は独立した2 batch とも、凍結済みのノイズを考慮した基準で退行を立証しませんでしたが、高速化については結論を出せません。wall time や PSS の改善は主張しません。TDMS の未選択ペイロードの読み込みは B1 ですでに0回のため、この経路には新たな性能上の主張はありません。"
+
+#: ../../../CHANGELOG.md
+msgid "**Dtype-preserving copy reduction (#586)**: The frozen B-X comparison (baseline freeze commit `836e6f38`, candidate source `913ab6c77`, evidence commit `26ae634`, and append-only gate correction `bf258`) matches all 11/11 public fingerprints, with no dtype, value, or warning change. Audited source-site full-payload `ndarray.astype` calls fall from 1 to 0 for ATS32 and ATS64, and from 32 to 0 for the 16-cell NetCDF matrix. NetCDF warm wall and CPU medians improve 33.23% on the measured fixture; ATS wall/CPU and all PSS results remain evidence-only. Three supplementary small-input cases pass the non-regression check. Release qualification remains pending. Evidence: `docs/developers/reports/v0.2.5-performance/X/dade6bd54082ef7f771724b84064caeb252342317e0da5cdc81a966f5e916050/candidate-v1-913ab6c/README.md` and sibling `candidate-v1-913ab6c-interpretation-v2/README.md`."
+msgstr "**dtype を保つコピー削減（#586）**：凍結済み B-X 比較（baseline freeze commit `836e6f38`、candidate source `913ab6c77`、evidence commit `26ae634`、追記のみの判定補正 `bf258`）では、公開結果の11/11 fingerprint がすべて一致し、dtype、値、警告に変化はありません。監査対象の全 payload に対する source-site `ndarray.astype` 呼び出しは ATS32 と ATS64 で各1回から0回に、16セルの NetCDF matrix で32回から0回になりました。測定 fixture の NetCDF warm wall time と CPU time の中央値は33.23%改善しました。ATS の wall/CPU と全 PSS 測定値は参考証拠にとどまり、改善は主張しません。補足の小入力3件はすべて非退行基準を満たしました。リリース適格性確認は未完了です。証拠は `docs/developers/reports/v0.2.5-performance/X/dade6bd54082ef7f771724b84064caeb252342317e0da5cdc81a966f5e916050/candidate-v1-913ab6c/README.md` および同階層の `candidate-v1-913ab6c-interpretation-v2/README.md` にあります。"
+
+#: ../../../CHANGELOG.md
+msgid "**Range push-down (#584)**: B1 raises on corrupt chunks outside the requested window in HDF5, NDScope, NetCDF4, and Zarr. Skipping them would change an existing error, so #584 is held with no reader change in this patch."
+msgstr "**範囲の読み込み最適化（#584）**：B1 は、要求範囲外の破損 chunk に対しても HDF5、NDScope、NetCDF4、Zarr で例外を送出します。これを省くと既存のエラーが変わるため、#584 は保留し、このパッチでは reader を変更しません。"
+
+#: ../../../CHANGELOG.md
+msgid "**WIN and copy reduction (#518, #586)**: Include only NumPy-based WIN decoding and copy reductions that preserve public dtype and saved values. Numba and the remaining #518/#586 work are deferred."
+msgstr "**WIN とコピーの削減（#518、#586）**：公開 dtype と保存値を維持する NumPy ベースの WIN decode とコピー削減のみを含めます。Numba と残りの #518/#586 作業は延期します。"
+
+#: ../../../CHANGELOG.md
+msgid "**Native DTTXML skipped-payload exception (#589)**: Parser-level use of already accepted selectors may suppress warnings and decode errors arising exclusively from fully unselected native-parser payloads. XML structural errors and selected-payload behavior must remain equivalent to the old candidate. The external `dttxml` route keeps its existing behavior and is outside the performance claim. This exception requires separate human scientific/data-model approval for S2 and does not expand #611's completely disjoint plain-HDF5-window safety exception."
+msgstr "**ネイティブ DTTXML の未選択ペイロードに関する例外（#589）**：すでに受け入れている selector をパーサーで使うことで、完全に未選択のネイティブパーサーペイロードだけから生じる警告と decode error を抑制できます。XML 構造エラーと選択ペイロードの挙動は、旧候補と同等に保つ必要があります。外部 `dttxml` 経路は従来どおりで、性能上の主張の対象外です。この例外には S2 について人による別個の科学・データモデル承認が必要であり、#611 の完全に非交差な通常 HDF5 window に限る安全性例外を広げません。"
+
+#: ../../../CHANGELOG.md
+msgid "**SDB concurrent-write snapshot correction (#585)**: The reader validates and fetches selected rows from one SQLite snapshot. In the frozen 14-case WAL fault matrix, ten cases differ from old R when a writer commits between its validation and payload query: selected or unselected value and malformed-value updates, timestamp updates, and schema changes may alter returned values, keys, warnings, or errors. Four cases remain equal, including both `usUnits` updates. Static-source behavior remains old-R-equivalent. This exact concurrent scope needs separate human scientific/data-model approval for S2. No other format gains a skipped-payload exception."
+msgstr "**SDB 同時書き込みスナップショット修正（#585）**：reader は1つの SQLite スナップショットから選択行を検証・取得します。凍結された14件の WAL 故障 matrix では、writer が検証とペイロード query の間に commit する場合、10件で旧 R と異なります。選択・未選択の値と不正値の更新、timestamp 更新、schema 変更により、返す値、key、警告、エラーが変わる可能性があります。`usUnits` の両更新を含む4件は一致します。静的ソースの挙動は旧 R と同等です。この正確な同時実行の範囲には、S2 について人による別個の科学・データモデル承認が必要です。ほかの形式に未選択ペイロードを省く例外は認めません。"
+
+#: ../../../CHANGELOG.md
+msgid "**Excluded**: #587, #590, and #519 are outside v0.2.5."
+msgstr "**対象外**：#587、#590、#519 は v0.2.5 の対象外です。"
+
+#: ../../../CHANGELOG.md
+msgid "The 2026-09-27 S/R approvals and candidate runs are historical evidence for the earlier candidate only. The expanded S2/R2 candidate requires new same-S2 reviews, scoped human approval, and exact-R2 qualification before release GO."
+msgstr "2026-09-27 の S/R 承認と候補の実行結果は、以前の候補についての履歴証拠に限られます。拡張された S2/R2 候補のリリース GO には、同一 S2 に対する新たなレビュー、限定的な範囲についての人による承認、および正確な R2 の認定が必要です。"
 
 #: ../../../CHANGELOG.md
 msgid "[0.2.4] - 2026-09-26"

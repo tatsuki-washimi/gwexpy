@@ -1,0 +1,114 @@
+{
+  "cases": {
+    "invalid_text_at_chunk_boundary_outside_window": {
+      "boundary_values_254_258": [
+        "74",
+        100.25,
+        "not-a-number",
+        "77",
+        "78"
+      ],
+      "bytes": 20480,
+      "column": "outTemp",
+      "name": "invalid_text_at_chunk_boundary_outside_window.sdb",
+      "overrides": {
+        "17": null,
+        "255": 100.25,
+        "256": "not-a-number",
+        "3": 62.5,
+        "511": 70.75,
+        "512": null
+      },
+      "rows": 600,
+      "selected_window_rows_half_open": [
+        500,
+        504
+      ],
+      "sha256": "838503ccaa03d5bd9791bba02c9dcb60e9b3f885c4fecc5e82500ceb5ddfdd8a",
+      "source_sample_dt": 300,
+      "storage_class_counts": {
+        "null": 2,
+        "real": 3,
+        "text": 595
+      },
+      "window_unix": {
+        "end": 1700151200,
+        "start": 1700150000
+      }
+    },
+    "mixed_text_real_null_near_chunk_boundary": {
+      "boundary_values_254_258": [
+        "74",
+        100.25,
+        null,
+        "77",
+        "78"
+      ],
+      "bytes": 20480,
+      "column": "outTemp",
+      "name": "mixed_text_real_null_near_chunk_boundary.sdb",
+      "overrides": {
+        "17": null,
+        "255": 100.25,
+        "256": null,
+        "3": 62.5,
+        "511": 70.75,
+        "512": null
+      },
+      "rows": 600,
+      "selected_window_rows_half_open": [
+        254,
+        260
+      ],
+      "sha256": "d9ac66f6507162b34fe7f625ae710c29d12944ae40e308ee43b34401d1f62789",
+      "source_sample_dt": 300,
+      "storage_class_counts": {
+        "null": 3,
+        "real": 3,
+        "text": 594
+      },
+      "window_unix": {
+        "end": 1700078000,
+        "start": 1700076200
+      }
+    },
+    "trailing_newline_integer_text_at_chunk_boundary": {
+      "boundary_values_254_258": [
+        "74",
+        "61\n",
+        null,
+        "77",
+        "78"
+      ],
+      "bytes": 20480,
+      "column": "outTemp",
+      "name": "trailing_newline_integer_text_at_chunk_boundary.sdb",
+      "overrides": {
+        "17": null,
+        "255": "61\n",
+        "256": null,
+        "3": 62.5
+      },
+      "rows": 600,
+      "selected_window_rows_half_open": [
+        253,
+        258
+      ],
+      "sha256": "6382b82372baedeb0006353d2477ce06a27c67586b679e6978382d0744741174",
+      "source_sample_dt": 300,
+      "storage_class_counts": {
+        "null": 2,
+        "real": 1,
+        "text": 597
+      },
+      "window_unix": {
+        "end": 1700077400,
+        "start": 1700075900
+      }
+    }
+  },
+  "chunk_rows_under_review": 256,
+  "generator": "generate_fixtures.py",
+  "rows_per_fixture": 600,
+  "schema": 1
+}

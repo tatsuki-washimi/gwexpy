@@ -1,0 +1,27 @@
+[
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-c1-env/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-c1-env/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "prefix": "/tmp/gwexpy-v025-c1-env",
+      "python": "3.12.12"
+    },
+    "controller_elapsed_ns": 2480850247,
+    "sample": {
+      "counters": {},
+      "error_message": "failed to merge channel 'ch1' across csv files: Cannot append TimeSeries that starts before this one:\n    TimeSeries 1 span: [0.0 ... 512.0)\n    TimeSeries 2 span: [0.0 ... 512.0)",
+      "error_type": "builtins.ValueError",
+      "outcome": "error",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/gwexpy-v025-c1-env/lib/python3.12/site-packages/gwexpy/timeseries/io/_multi.py\", line 226, in read_multi_dict\n    merged = _merge_series(series, gap, pad)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-c1-env/lib/python3.12/site-packages/gwexpy/timeseries/io/_multi.py\", line 153, in _merge_series\n    merged = merged.append(ts, inplace=False, gap=gap, pad=pad)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-c1-env/lib/python3.12/site-packages/gwexpy/timeseries/_core.py\", line 170, in append\n    res = super().append(\n          ^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/types/series.py\", line 1029, in append\n    raise ValueError(\nValueError: Cannot append TimeSeries that starts before this one:\n    TimeSeries 1 span: [0.0 ... 512.0)\n    TimeSeries 2 span: [0.0 ... 512.0)\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/tmp/gwexpy-v025-c1-frozen-harness/benchmarks/io/run.py\", line 442, in _worker\n    result = _scenario(\n             ^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-c1-frozen-harness/benchmarks/io/run.py\", line 216, in _scenario\n    return reader([segments[0], segments[0]])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-c1-env/lib/python3.12/site-packages/gwexpy/timeseries/io/csv_enhanced.py\", line 511, in read_timeseriesdict_csv\n    merged = read_multi_dict(\n             ^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-c1-env/lib/python3.12/site-packages/gwexpy/timeseries/io/_multi.py\", line 228, in read_multi_dict\n    raise ValueError(\nValueError: failed to merge channel 'ch1' across csv files: Cannot append TimeSeries that starts before this one:\n    TimeSeries 1 span: [0.0 ... 512.0)\n    TimeSeries 2 span: [0.0 ... 512.0)\n",
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "warnings_recorded": true
+    },
+    "stderr": ""
+  }
+]

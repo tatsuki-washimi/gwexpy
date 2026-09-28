@@ -1,0 +1,159 @@
+{
+  "audit": {
+    "executable": "/tmp/gwexpy-v025-b-env-a/bin/python",
+    "gwexpy_path": "/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/__init__.py",
+    "gwexpy_version": "0.2.4",
+    "prefix": "/tmp/gwexpy-v025-b-env-a",
+    "python": "3.12.12"
+  },
+  "controller_elapsed_ns": 2619357284,
+  "sample": {
+    "counters": {},
+    "cpu_ns": 255867784,
+    "fingerprint": {
+      "attrs": "None",
+      "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+      "members": {
+        "Group/Other": {
+          "class": "gwexpy.timeseries.timeseries.TimeSeries",
+          "dt": "<Quantity 0.25 s>",
+          "epoch": "<Time object: scale='utc' format='gps' value=0.0>",
+          "name": "Group/Other",
+          "sample_rate": "<Quantity 4. Hz>",
+          "t0": "<Quantity 0. s>",
+          "times": {
+            "unit": "s",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "0.0",
+                "512.0",
+                "1023.75"
+              ],
+              "sha256": "6d25e3cfd16899ddf799fb9295b3dc083ad1c5d2dcf9f687028d7621291ecb45",
+              "shape": [
+                4096
+              ]
+            }
+          },
+          "unit": "",
+          "values": {
+            "dtype": "<f8",
+            "selected": [
+              "0.0",
+              "2048.0",
+              "4095.0"
+            ],
+            "sha256": "d5575075eb395216bf2ef800ba88d1fe5fa5aa2cb0f9d32e41c0ed0fe2104253",
+            "shape": [
+              4096
+            ]
+          }
+        },
+        "Group/Selected": {
+          "class": "gwexpy.timeseries.timeseries.TimeSeries",
+          "dt": "<Quantity 0.25 s>",
+          "epoch": "<Time object: scale='utc' format='gps' value=0.0>",
+          "name": "Group/Selected",
+          "sample_rate": "<Quantity 4. Hz>",
+          "t0": "<Quantity 0. s>",
+          "times": {
+            "unit": "s",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "0.0",
+                "511.75",
+                "1023.5"
+              ],
+              "sha256": "e88ba67cbcd73ce33cefcb9038c5eab5700378184b40278155d48dcf669710b7",
+              "shape": [
+                4095
+              ]
+            }
+          },
+          "unit": "",
+          "values": {
+            "dtype": "<f8",
+            "selected": [
+              "2000.0",
+              "4047.0",
+              "6094.0"
+            ],
+            "sha256": "5c70bcee5fe010f4b158e292bfa8484e69f61685b43a059ad7676900c5022205",
+            "shape": [
+              4095
+            ]
+          }
+        },
+        "Group/Third": {
+          "class": "gwexpy.timeseries.timeseries.TimeSeries",
+          "dt": "<Quantity 0.25 s>",
+          "epoch": "<Time object: scale='utc' format='gps' value=0.0>",
+          "name": "Group/Third",
+          "sample_rate": "<Quantity 4. Hz>",
+          "t0": "<Quantity 0. s>",
+          "times": {
+            "unit": "s",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "0.0",
+                "512.0",
+                "1023.75"
+              ],
+              "sha256": "6d25e3cfd16899ddf799fb9295b3dc083ad1c5d2dcf9f687028d7621291ecb45",
+              "shape": [
+                4096
+              ]
+            }
+          },
+          "unit": "",
+          "values": {
+            "dtype": "<f8",
+            "selected": [
+              "1000.0",
+              "3048.0",
+              "5095.0"
+            ],
+            "sha256": "e6257017e0fba89b1c5e19fa79f91c3a64311a74d4df77a3ba777dabd1ff4fe0",
+            "shape": [
+              4096
+            ]
+          }
+        }
+      },
+      "order": [
+        "Group/Other",
+        "Group/Third",
+        "Group/Selected"
+      ]
+    },
+    "fixture_counts": {
+      "input_rows": 4096
+    },
+    "logs": [
+      {
+        "level": "WARNING",
+        "logger": "nptdms.reader",
+        "message": "Last segment of file has less data than expected, will attempt to read to the end of the file"
+      },
+      {
+        "level": "WARNING",
+        "logger": "nptdms.tdms_segment",
+        "message": "Data size 98296 is not a multiple of the chunk size 98304. Will attempt to read last chunk"
+      }
+    ],
+    "logs_recorded": true,
+    "outcome": "return",
+    "wall_ns": 257470792,
+    "warnings": [
+      {
+        "category": "builtins.DeprecationWarning",
+        "message": "Compatibility support for python2 has been dropped"
+      }
+    ],
+    "warnings_recorded": true
+  },
+  "stderr": "[nptdms.reader WARNING] Last segment of file has less data than expected, will attempt to read to the end of the file\n[nptdms.tdms_segment WARNING] Data size 98296 is not a multiple of the chunk size 98304. Will attempt to read last chunk\n"
+}

@@ -1,11 +1,18 @@
 # Changelog
 
-## [0.2.5] - 2026-09-27
+## [0.2.5] - 2026-09-28
 
 This patch fixes supported NetCDF4 and Zarr matrix value, axis, and unit
 handling; HDF5 manifest integrity; TDMS waveform-increment and GBD header
 validation; and audio registry tag provenance. The supported optional-backend
 routes report a backend-specific `ImportError` when their package is absent.
+The candidate includes internal I/O performance and scalability work under
+#580. Implementation of the included changes is complete. Range push-down
+(#584) and parallel GWF optimization remain on hold. Release qualification and
+publication remain pending; public values, dtype, metadata, warning/error
+behavior, and on-disk format remain the acceptance contract except for the
+scoped #589 native-parser and #585 SDB snapshot exceptions below. The
+candidate adds no public API, dependency, or persistence schema.
 
 ### Fixed
 
@@ -15,6 +22,26 @@ routes report a backend-specific `ImportError` when their package is absent.
 - **TDMS and GL500 GBD validation**: Reject absent or invalid waveform increments and malformed required GL500 header fields within the tested firmware scope.
 - **Audio registry tags**: Retain available WAV and FLAC tag metadata in provenance.
 - **Optional backends**: Supported public Zarr and NetCDF4 routes raise a backend-specific `ImportError` when the required package is absent.
+
+### Internal performance work (release qualification pending)
+
+- **Multi-source merge (#582)**: Append each input once. The frozen wheel comparison preserves all 15 public result fingerprints and reduces non-inplace append calls from 63 to zero on the 64-input fixture; warm wall and CPU pass the predeclared noise-aware gate. No peak-memory improvement is claimed.
+- **Single-channel WAV dispatch (#583)**: Avoid constructing the unselected channel's `TimeSeries` after the backend read. All 28 public result fingerprints match the frozen baseline; the large fixture's unselected construction count falls from one to zero. The SciPy backend still reads the full interleaved payload.
+- **CSV reader and internal writer (#585)**: Reduce general parser work, push down supported column selection while retaining full-file validation, and stream output from the internal enhanced `write_timeseries_csv` helper. Public `TimeSeries.write(format="csv")` uses GWpy's writer and is outside this writer performance claim. Both explicit-format and `.csv` auto-detected two-column `FrequencySeries` fast paths remain covered, including the nonuniform-frequency-axis contract. Frozen wheel evidence preserves 21 public fingerprints, and the measured general and selected CSV fixtures improve in wall time; the internal writer preserves bytes under fixed encoding and newline conditions.
+- **WIN decoder (#518)**: Use NumPy integer intermediates while preserving 12 bit-exact public fingerprints. The measured per-sample append count falls from 4,116 to zero and warm CPU passes the noise-aware gate.
+- **Native DTTXML PSD selection (#589)**: Large native PSD reads skip fully unselected payload decode, reducing measured Linux peak PSS by 19.63% with zero unselected decoded bytes. Small files retain the old parser. Large warm wall time increases 12.46% on the measured fixture; cold time is comparable. The scoped warning exception below remains subject to human approval.
+- **Serial GWF merge (#588)**: Large, sorted, local serial reads retain at most three coerced parts across the measured source counts. Independent Linux peak tree-PSS batches improve 8.31–10.66%; large warm time improves 4.20%. Parallel optimization remains on hold after two primary PSS failures; the old parallel route remains in place.
+- **SDB selected windows (#585)**: For an eligible 4,096-row SQLite source, full-source validation and the selected payload query share one read transaction while only 512 requested payload rows enter a DataFrame. Static-source public fingerprints match B1. The two small selected-read timing batches do not establish a regression under the frozen noise-aware gate, but are inconclusive for speed; no wall-time or PSS improvement is claimed. TDMS unselected payload reads are already zero in B1, so that subroute has no new performance claim.
+- **Dtype-preserving copy reduction (#586)**: The frozen B-X comparison (baseline freeze commit `836e6f38`, candidate source `913ab6c77`, evidence commit `26ae634`, and append-only gate correction `bf258`) matches all 11/11 public fingerprints, with no dtype, value, or warning change. Audited source-site full-payload `ndarray.astype` calls fall from 1 to 0 for ATS32 and ATS64, and from 32 to 0 for the 16-cell NetCDF matrix. NetCDF warm wall and CPU medians improve 33.23% on the measured fixture; ATS wall/CPU and all PSS results remain evidence-only. Three supplementary small-input cases pass the non-regression check. Release qualification remains pending. Evidence: `docs/developers/reports/v0.2.5-performance/X/dade6bd54082ef7f771724b84064caeb252342317e0da5cdc81a966f5e916050/candidate-v1-913ab6c/README.md` and sibling `candidate-v1-913ab6c-interpretation-v2/README.md`.
+- **Range push-down (#584)**: B1 raises on corrupt chunks outside the requested window in HDF5, NDScope, NetCDF4, and Zarr. Skipping them would change an existing error, so #584 is held with no reader change in this patch.
+- **WIN and copy reduction (#518, #586)**: Include only NumPy-based WIN decoding and copy reductions that preserve public dtype and saved values. Numba and the remaining #518/#586 work are deferred.
+- **Native DTTXML skipped-payload exception (#589)**: Parser-level use of already accepted selectors may suppress warnings and decode errors arising exclusively from fully unselected native-parser payloads. XML structural errors and selected-payload behavior must remain equivalent to the old candidate. The external `dttxml` route keeps its existing behavior and is outside the performance claim. This exception requires separate human scientific/data-model approval for S2 and does not expand #611's completely disjoint plain-HDF5-window safety exception.
+- **SDB concurrent-write snapshot correction (#585)**: The reader validates and fetches selected rows from one SQLite snapshot. In the frozen 14-case WAL fault matrix, ten cases differ from old R when a writer commits between its validation and payload query: selected or unselected value and malformed-value updates, timestamp updates, and schema changes may alter returned values, keys, warnings, or errors. Four cases remain equal, including both `usUnits` updates. Static-source behavior remains old-R-equivalent. This exact concurrent scope needs separate human scientific/data-model approval for S2. No other format gains a skipped-payload exception.
+- **Excluded**: #587, #590, and #519 are outside v0.2.5.
+
+The 2026-09-27 S/R approvals and candidate runs are historical evidence for the
+earlier candidate only. The expanded S2/R2 candidate requires new same-S2
+reviews, scoped human approval, and exact-R2 qualification before release GO.
 
 
 ## [0.2.4] - 2026-09-26

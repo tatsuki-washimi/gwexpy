@@ -1,0 +1,111 @@
+[
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-b-env-a/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.4",
+      "prefix": "/tmp/gwexpy-v025-b-env-a",
+      "python": "3.12.12"
+    },
+    "controller_elapsed_ns": 2438270465,
+    "sample": {
+      "counters": {},
+      "cpu_ns": 202459689,
+      "fingerprint": {
+        "attrs": "None",
+        "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+        "members": {
+          "ch1": {
+            "class": "gwexpy.timeseries.timeseries.TimeSeries",
+            "dt": "<Quantity 0.1 s>",
+            "epoch": "<Time object: scale='utc' format='gps' value=0.0>",
+            "name": "ch1",
+            "sample_rate": "<Quantity 10. Hz>",
+            "t0": "<Quantity 0. s>",
+            "times": {
+              "unit": "s",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "0.0",
+                  "0.1",
+                  "0.2"
+                ],
+                "sha256": "addd73f32f23c76a6532f87813b8bcfa5a5d781f1211d7d8c1fa86ba50df7ea6",
+                "shape": [
+                  3
+                ]
+              }
+            },
+            "unit": "",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "1.0",
+                "2.0",
+                "3.0"
+              ],
+              "sha256": "a68de4b5e96a60c8ceb3c7b7ef93461725bdbbff3516b136585a743b5c0ec664",
+              "shape": [
+                3
+              ]
+            }
+          },
+          "ch2": {
+            "class": "gwexpy.timeseries.timeseries.TimeSeries",
+            "dt": "<Quantity 0.1 s>",
+            "epoch": "<Time object: scale='utc' format='gps' value=0.0>",
+            "name": "ch2",
+            "sample_rate": "<Quantity 10. Hz>",
+            "t0": "<Quantity 0. s>",
+            "times": {
+              "unit": "s",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "0.0",
+                  "0.1",
+                  "0.2"
+                ],
+                "sha256": "addd73f32f23c76a6532f87813b8bcfa5a5d781f1211d7d8c1fa86ba50df7ea6",
+                "shape": [
+                  3
+                ]
+              }
+            },
+            "unit": "",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "10.0",
+                "20.0",
+                "30.0"
+              ],
+              "sha256": "dacc3e6fa04b58efcd61bef0393827d52873f4ccfd8b1742498c25ca421da2c0",
+              "shape": [
+                3
+              ]
+            }
+          }
+        },
+        "order": [
+          "ch1",
+          "ch2"
+        ]
+      },
+      "fixture_counts": {},
+      "logs": [],
+      "logs_recorded": true,
+      "outcome": "return",
+      "wall_ns": 204086644,
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "warnings_recorded": true
+    },
+    "stderr": ""
+  }
+]

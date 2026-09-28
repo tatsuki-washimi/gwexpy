@@ -690,6 +690,15 @@ def read_timeseriesmatrix_netcdf4(
         def lossless(values) -> bool:
             if not np.can_cast(values.dtype, dtype, casting="safe"):
                 return False
+            if values.dtype == dtype:
+                if dtype == np.dtype("int64"):
+                    return True
+                if dtype == np.dtype("float64"):
+                    # Nonfinite values keep the B1 round-trip and warning
+                    # path, including equal_nan behavior and invalid values.
+                    with np.errstate(invalid="ignore"):
+                        if bool(np.isfinite(values).all()):
+                            return True
             # NumPy calls int64 -> float64 a "safe" dtype cast even when an
             # individual integer exceeds the float64 exact-integer range.
             with np.errstate(over="ignore", invalid="ignore"):

@@ -1,0 +1,183 @@
+{
+  "baseline_B1": {
+    "source_commit": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+    "wheel_files_verified_by_install_audit": 375,
+    "wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498"
+  },
+  "candidate": {
+    "install_mode": "wheel-no-deps",
+    "installed_source_matches_wheel_member": true,
+    "source_commit": "45435514c5565e36e65a16b879fbe393553a2c4b",
+    "source_sha256": "9e06815067bc42a8e22b0d808c04a8ab069c4919a55002b6d33c7ebd86addc49",
+    "test_path": "tests/io/test_v025_sdb_snapshot.py",
+    "test_sha256": "c249f5ff1fd344f30e4813874159252ef9e601af7aaa5bb3f1eb80e326c1f413",
+    "wheel_files_verified_by_install_audit": 375,
+    "wheel_sha256": "deeaab48146d0f486561fff6d0794b9de704da5592f0b8aefc66782901104ed8"
+  },
+  "captured_utc": "2026-09-28T12:25:49.052090+00:00",
+  "claims": {
+    "concurrent_WAL_exception": "Broad v2-scoped exception remains separately reviewed and requires S2 scientific/data-model approval and scoped disclosure.",
+    "dataframe_materialization_claim": "No v4 structure capture completed; no v4 structural claim is made.",
+    "full_source_validation": "Candidate validation scans remain O(N); no full-scan elimination claim.",
+    "performance": "No v4 timing or PSS claim.",
+    "status": "HOLD"
+  },
+  "completed_before_hold": {
+    "reason_stopped": "Independent review found non-WAL public parity defects in bounded unit conversion; no structure, timing, or PSS runs were started.",
+    "static_source_all_match_B1": true,
+    "static_source_case_count": 12,
+    "static_source_cases": [
+      {
+        "B1_v4_equal": true,
+        "case": "f2_sdb_fault_bad_payload_selected__all"
+      },
+      {
+        "B1_v4_equal": true,
+        "case": "f2_sdb_fault_bad_payload_selected__selected"
+      },
+      {
+        "B1_v4_equal": true,
+        "case": "f2_sdb_fault_bad_payload_selected__window"
+      },
+      {
+        "B1_v4_equal": true,
+        "case": "f2_sdb_fault_bad_payload_unselected__all"
+      },
+      {
+        "B1_v4_equal": true,
+        "case": "f2_sdb_fault_bad_payload_unselected__selected"
+      },
+      {
+        "B1_v4_equal": true,
+        "case": "f2_sdb_fault_bad_payload_unselected__window"
+      },
+      {
+        "B1_v4_equal": true,
+        "case": "f2_sdb_fault_irregular_time_unselected_window__all"
+      },
+      {
+        "B1_v4_equal": true,
+        "case": "f2_sdb_fault_irregular_time_unselected_window__selected"
+      },
+      {
+        "B1_v4_equal": true,
+        "case": "f2_sdb_fault_irregular_time_unselected_window__window"
+      },
+      {
+        "B1_v4_equal": true,
+        "case": "f2_sdb_fault_usunits_unselected_window__all"
+      },
+      {
+        "B1_v4_equal": true,
+        "case": "f2_sdb_fault_usunits_unselected_window__selected"
+      },
+      {
+        "B1_v4_equal": true,
+        "case": "f2_sdb_fault_usunits_unselected_window__window"
+      }
+    ],
+    "structure_timing_pss": "NOT_RUN",
+    "wal_capture_complete": false,
+    "wal_case_count": 11,
+    "wal_cases": [
+      {
+        "B1_v4_equal": false,
+        "candidate_stable": true,
+        "case": "selected_malformed__all",
+        "samples_per_arm": 5
+      },
+      {
+        "B1_v4_equal": false,
+        "candidate_stable": true,
+        "case": "selected_malformed__selected",
+        "samples_per_arm": 5
+      },
+      {
+        "B1_v4_equal": false,
+        "candidate_stable": true,
+        "case": "selected_value__all",
+        "samples_per_arm": 5
+      },
+      {
+        "B1_v4_equal": false,
+        "candidate_stable": true,
+        "case": "selected_value__selected",
+        "samples_per_arm": 5
+      },
+      {
+        "B1_v4_equal": false,
+        "candidate_stable": true,
+        "case": "timestamp__all",
+        "samples_per_arm": 5
+      },
+      {
+        "B1_v4_equal": false,
+        "candidate_stable": true,
+        "case": "timestamp__selected",
+        "samples_per_arm": 5
+      },
+      {
+        "B1_v4_equal": false,
+        "candidate_stable": true,
+        "case": "unselected_malformed__all",
+        "samples_per_arm": 5
+      },
+      {
+        "B1_v4_equal": true,
+        "candidate_stable": true,
+        "case": "unselected_malformed__selected",
+        "samples_per_arm": 5
+      },
+      {
+        "B1_v4_equal": false,
+        "candidate_stable": true,
+        "case": "unselected_value__all",
+        "samples_per_arm": 5
+      },
+      {
+        "B1_v4_equal": true,
+        "candidate_stable": true,
+        "case": "unselected_value__selected",
+        "samples_per_arm": 5
+      },
+      {
+        "B1_v4_equal": true,
+        "candidate_stable": true,
+        "case": "usunits__selected",
+        "samples_per_arm": 5
+      }
+    ],
+    "wal_expected_case_count": 14,
+    "wal_not_run": [
+      "usunits__all",
+      "schema__selected",
+      "schema__all"
+    ]
+  },
+  "environment": {
+    "baseline_installed_sdb_sha256": "714a7320810755c7479e5c35dc5e0344ba513fc01989b89586d77a4d6618fa6f",
+    "baseline_prefix": "/tmp/gwexpy-v025-b-env-b",
+    "candidate_installed_sdb_sha256": "9e06815067bc42a8e22b0d808c04a8ab069c4919a55002b6d33c7ebd86addc49",
+    "candidate_prefix": "/tmp/gwexpy-v025-sdb-candidate-v3-env",
+    "non_gwexpy_distributions_equal": true,
+    "python": "3.12.12"
+  },
+  "fixtures": {
+    "structure_timing_manifest_sha256": "2b29c7bccedfc8335beb5c59580b26aa1a211bd3959e142dcb2e99a7dbcab1f8",
+    "wal_base_sha256": "2713b73e3a715e7816c3d94023611ba9e2ac74911f0848f620d077218473b817",
+    "wal_manifest_sha256": "a1995b43e921f7dd5664f05e69872d15ff9b8c974871f9f3d1deb3448e378837"
+  },
+  "frozen_harnesses": {
+    "static_source": {
+      "digest": "e8422a63694d54ba4c8d349f8fb2da7f5df3cda63387d2e036c1af4cba338c72",
+      "freeze_commit": "6f0a3d4ea"
+    },
+    "wal_correctness": {
+      "digest": "ef827e3e1c3fce41575fc369aa473720e2b2200d8710e2034a88530bafa49bbd",
+      "freeze_commit": "02cb6b415a6c3c2cbad0a4ce82e506037409e360"
+    }
+  },
+  "review_reds": "review-findings/public-red-results.json",
+  "schema": 1,
+  "status": "HOLD_INCOMPLETE_CAPTURE"
+}

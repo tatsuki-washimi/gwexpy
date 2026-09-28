@@ -1,0 +1,186 @@
+{
+  "arms": {
+    "A": {
+      "public_by_seterr": {
+        "raise": {
+          "outcome": {
+            "col_keys": [
+              "'c0'",
+              "'c1'"
+            ],
+            "dt_float_hex": "0x1.0000000000000p-3",
+            "dtype": "<U9",
+            "first_values": [
+              "a",
+              "b",
+              "",
+              "unicode-λ"
+            ],
+            "kind": "return",
+            "last_values": [
+              "c",
+              "d",
+              "e",
+              "f"
+            ],
+            "row_keys": [
+              "'r0'",
+              "'r1'"
+            ],
+            "shape": [
+              2,
+              2,
+              8
+            ],
+            "t0_float_hex": "0x1.dcd6500100000p+29",
+            "units": [
+              [
+                "V",
+                "V"
+              ],
+              [
+                "V",
+                "V"
+              ]
+            ],
+            "values_encoding": "native_bytes_c_order",
+            "values_sha256": "afdfa6b4fffd58b52936c898fb3f287801f3977a9f502e7349ffbb82d83d403b"
+          },
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            },
+            {
+              "category": "builtins.RuntimeWarning",
+              "message": "Engine 'gmt' loading failed:\nError loading GMT shared library at 'libgmt.so'.\nlibgmt.so: cannot open shared object file: No such file or directory"
+            },
+            {
+              "category": "builtins.RuntimeWarning",
+              "message": "numpy.ndarray size changed, may indicate binary incompatibility. Expected 16 from C header, got 96 from PyObject"
+            }
+          ]
+        },
+        "warn": {
+          "outcome": {
+            "col_keys": [
+              "'c0'",
+              "'c1'"
+            ],
+            "dt_float_hex": "0x1.0000000000000p-3",
+            "dtype": "<U9",
+            "first_values": [
+              "a",
+              "b",
+              "",
+              "unicode-λ"
+            ],
+            "kind": "return",
+            "last_values": [
+              "c",
+              "d",
+              "e",
+              "f"
+            ],
+            "row_keys": [
+              "'r0'",
+              "'r1'"
+            ],
+            "shape": [
+              2,
+              2,
+              8
+            ],
+            "t0_float_hex": "0x1.dcd6500100000p+29",
+            "units": [
+              [
+                "V",
+                "V"
+              ],
+              [
+                "V",
+                "V"
+              ]
+            ],
+            "values_encoding": "native_bytes_c_order",
+            "values_sha256": "afdfa6b4fffd58b52936c898fb3f287801f3977a9f502e7349ffbb82d83d403b"
+          },
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            },
+            {
+              "category": "builtins.RuntimeWarning",
+              "message": "Engine 'gmt' loading failed:\nError loading GMT shared library at 'libgmt.so'.\nlibgmt.so: cannot open shared object file: No such file or directory"
+            },
+            {
+              "category": "builtins.RuntimeWarning",
+              "message": "numpy.ndarray size changed, may indicate binary incompatibility. Expected 16 from C header, got 96 from PyObject"
+            }
+          ]
+        }
+      },
+      "source_sha": "522e52a082925da4dd37966d82a7616bdd2a5248",
+      "wheel_sha256": "34afe8188c753cd9da0b182a5d2a88cce2f7ec36633730fe0bee15e2506df56d"
+    },
+    "B": {
+      "public_by_seterr": {
+        "raise": {
+          "outcome": {
+            "kind": "error",
+            "message": "ufunc 'isnan' not supported for the input types, and the inputs could not be safely coerced to any supported types according to the casting rule ''safe''",
+            "type": "builtins.TypeError"
+          },
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            },
+            {
+              "category": "builtins.RuntimeWarning",
+              "message": "Engine 'gmt' loading failed:\nError loading GMT shared library at 'libgmt.so'.\nlibgmt.so: cannot open shared object file: No such file or directory"
+            },
+            {
+              "category": "builtins.RuntimeWarning",
+              "message": "numpy.ndarray size changed, may indicate binary incompatibility. Expected 16 from C header, got 96 from PyObject"
+            }
+          ]
+        },
+        "warn": {
+          "outcome": {
+            "kind": "error",
+            "message": "ufunc 'isnan' not supported for the input types, and the inputs could not be safely coerced to any supported types according to the casting rule ''safe''",
+            "type": "builtins.TypeError"
+          },
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            },
+            {
+              "category": "builtins.RuntimeWarning",
+              "message": "Engine 'gmt' loading failed:\nError loading GMT shared library at 'libgmt.so'.\nlibgmt.so: cannot open shared object file: No such file or directory"
+            },
+            {
+              "category": "builtins.RuntimeWarning",
+              "message": "numpy.ndarray size changed, may indicate binary incompatibility. Expected 16 from C header, got 96 from PyObject"
+            }
+          ]
+        }
+      },
+      "source_sha": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+      "wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498"
+    }
+  },
+  "characterization": {
+    "B0_crosscheck": "v1 historical partial sample-00-A public fingerprint",
+    "B1_crosscheck": "earlier b1-probe-v1/matrix_object_strings-warn-public.json fingerprint",
+    "direct_installed_wheel_read": "B0/B1 warn and raise, exact installed wheel members verified"
+  },
+  "fixture_file_sha256": "cb78e4b85a820d4c91b7cd118d6318af0d52ba3973a081aecfe2e55294486542",
+  "fixture_manifest_sha256": "dade6bd54082ef7f771724b84064caeb252342317e0da5cdc81a966f5e916050",
+  "reason": "Published v0.2.4 returns a Unicode matrix; old-R v0.2.5 raises TypeError during NetCDF4 matrix lossless validation (#751).",
+  "scenario": "matrix_object_strings",
+  "schema": "gwexpy-v025-bx-historical-object-oracle-v1"
+}

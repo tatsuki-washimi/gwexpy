@@ -7,15 +7,16 @@ review_evidence_json: |
         "role": "reviewer",
         "model": "gpt-6-sol",
         "effort": "medium",
-        "reviewed_commit": "ef7d144fe5464ddc5ddc23cb29064f93edd7f06f",
+        "reviewed_commit": "bc62b387cac3a261c62c188cdc8a5f01348f09ab",
         "scope_paths": [
+          "benchmarks",
           "gwexpy",
           "tests/io"
         ],
-        "scope_digest": "bb1aa1b004cf486fee74a6f7a6500d93732439a6f2676b80363331bbd6f49f65",
+        "scope_digest": "c673f4d1722bb9428709f3e96b4cb137277b18668b0870e18914593b3275d511",
         "verdict": "APPROVED",
-        "timestamp_utc": "2026-09-27T14:55:12Z",
-        "raw_report_sha256": "a696ed7da4b6f64fe3eb60e09fab5143daaa22ed12e19de0036732686e38011e",
+        "timestamp_utc": "2026-09-28T17:00:50Z",
+        "raw_report_sha256": "28322168deae3f1d5c185c6d04f1a5b981dd454a38abb64f7b0fcad7de541820",
         "finding_ids": []
       },
       {
@@ -23,7 +24,7 @@ review_evidence_json: |
         "role": "reviewer",
         "model": "gpt-6-sol",
         "effort": "medium",
-        "reviewed_commit": "ef7d144fe5464ddc5ddc23cb29064f93edd7f06f",
+        "reviewed_commit": "bc62b387cac3a261c62c188cdc8a5f01348f09ab",
         "scope_paths": [
           "CHANGELOG.md",
           "ROADMAP.md",
@@ -32,10 +33,10 @@ review_evidence_json: |
           "release_notes",
           "tests/docs"
         ],
-        "scope_digest": "3df2bc6833d1d142b03f9cecfb859009b6ef54b50c9e65dd547db2a10c8391f5",
+        "scope_digest": "9a8218cb6a7d2632d9c6bfef0c4c5ce725ea1beada8253d6a8439cafee6fe3c0",
         "verdict": "APPROVED",
-        "timestamp_utc": "2026-09-27T14:55:44Z",
-        "raw_report_sha256": "e1ce70629e3eac7915550983506a9af00f821e26b21fd4451499e174402d5e35",
+        "timestamp_utc": "2026-09-28T17:00:46Z",
+        "raw_report_sha256": "21a7978f1f078aa8414f5f73218a9fa3a34f84b6ee7ddeceb65528d582f41b25",
         "finding_ids": []
       },
       {
@@ -43,7 +44,7 @@ review_evidence_json: |
         "role": "reviewer",
         "model": "gpt-6-sol",
         "effort": "high",
-        "reviewed_commit": "ef7d144fe5464ddc5ddc23cb29064f93edd7f06f",
+        "reviewed_commit": "bc62b387cac3a261c62c188cdc8a5f01348f09ab",
         "scope_paths": [
           ".agent",
           ".clinerules",
@@ -74,24 +75,25 @@ review_evidence_json: |
           "tests/test_v025_cross_format_io_evidence.py",
           "tests/test_validate_release_script.py"
         ],
-        "scope_digest": "7b1ba906373b61cbe5d2f8958e2c1864bdb66f5395a035b0e08ed331f3a011b5",
+        "scope_digest": "918844381179a182a7fb36e34fab39435c47691c33d340bc994584c239093f23",
         "verdict": "APPROVED",
-        "timestamp_utc": "2026-09-27T14:57:34Z",
-        "raw_report_sha256": "5dae6d43d8248aca0c5e0c78531af105ddc4f8d9dd9bfaebee74a8972a18aa00",
+        "timestamp_utc": "2026-09-28T17:00:59Z",
+        "raw_report_sha256": "64aa5b2438475e7e3c5350dd33a89942f54318114fc2195965a41f742ea02c75",
         "finding_ids": []
       }
     ],
     "human_approval": {
       "approver_login": "tatsuki-washimi",
       "role": "release-owner",
-      "reviewed_commit": "ef7d144fe5464ddc5ddc23cb29064f93edd7f06f",
+      "reviewed_commit": "bc62b387cac3a261c62c188cdc8a5f01348f09ab",
       "scope_paths": [
+        "benchmarks",
         "gwexpy",
         "tests/io"
       ],
-      "scope_digest": "bb1aa1b004cf486fee74a6f7a6500d93732439a6f2676b80363331bbd6f49f65",
-      "timestamp_utc": "2026-09-27T14:59:52Z",
+      "scope_digest": "c673f4d1722bb9428709f3e96b4cb137277b18668b0870e18914593b3275d511",
+      "timestamp_utc": "2026-09-28T17:06:12Z",
       "verdict": "APPROVED",
-      "comment_id": 5856981998
+      "comment_id": 5874814353
     }
   }

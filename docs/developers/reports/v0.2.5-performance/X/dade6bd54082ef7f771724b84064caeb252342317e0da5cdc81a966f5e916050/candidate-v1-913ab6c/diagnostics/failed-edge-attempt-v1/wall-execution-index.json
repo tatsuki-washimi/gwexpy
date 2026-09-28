@@ -1,0 +1,40 @@
+[
+  {
+    "label": "candidate-wall-ats_overflow-warn",
+    "status": "failed",
+    "returncode": 1,
+    "command": [
+      "/home/washimi/miniforge3/envs/main/bin/python3",
+      "/home/washimi/work/gwexpy-v025-performance-copy-implementation/benchmarks/copy_audit/bx_measure.py",
+      "capture",
+      "--fixtures",
+      "/tmp/gwexpy-v025-bx-fixtures-v1",
+      "--scenario",
+      "ats_overflow",
+      "--mode",
+      "wall",
+      "--numpy-seterr",
+      "warn",
+      "--output",
+      "/tmp/gwexpy-v025-bx-x913-small-v1/candidate-wall-ats_overflow-warn",
+      "--phase",
+      "candidate",
+      "--pre-x-sha",
+      "7f13c4423addab4f92eafc2740da05faa4a444fa",
+      "--samples",
+      "9",
+      "--python-a",
+      "/tmp/gwexpy-v025-bx-env-7f13/bin/python",
+      "--wheel-a",
+      "/tmp/gwexpy-v025-bx-prex-7f13-wheel/gwexpy-0.2.5-py3-none-any.whl",
+      "--source-a",
+      "7f13c4423addab4f92eafc2740da05faa4a444fa",
+      "--python-b",
+      "/tmp/gwexpy-v025-bx-env-x913/bin/python",
+      "--wheel-b",
+      "/tmp/gwexpy-v025-bx-x913-wheel/gwexpy-0.2.5-py3-none-any.whl",
+      "--source-b",
+      "913ab6c779d83ddde4952194a33e00a94c602ff4"
+    ]
+  }
+]

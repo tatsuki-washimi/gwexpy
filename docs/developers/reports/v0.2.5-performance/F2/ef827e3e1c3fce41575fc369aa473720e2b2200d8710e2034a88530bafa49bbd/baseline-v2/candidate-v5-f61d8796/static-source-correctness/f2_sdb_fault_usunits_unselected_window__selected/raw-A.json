@@ -1,0 +1,29 @@
+[
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-b-env-b/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "prefix": "/tmp/gwexpy-v025-b-env-b",
+      "python": "3.12.12"
+    },
+    "controller_elapsed_ns": 2653894632,
+    "sample": {
+      "counters": {},
+      "error_message": "SDB usUnits validation failed at dateTime 1701228500: value 2 must be integer 1.",
+      "error_type": "builtins.ValueError",
+      "logs": [],
+      "logs_recorded": true,
+      "outcome": "error",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/gwexpy-v025-f2-frozen-harness-6f0a3d4/benchmarks/io/run.py\", line 743, in _worker\n    result = _scenario(\n             ^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-f2-frozen-harness-6f0a3d4/benchmarks/io/run.py\", line 305, in _scenario\n    return TimeSeriesDict.read(\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/timeseries/collections.py\", line 636, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 441, in __call__\n    outputs.append(_read(src))\n                   ^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 427, in _read\n    return self.registry.read(\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/astropy/io/registry/core.py\", line 221, in read\n    data = reader(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/timeseries/io/sdb.py\", line 150, in read_timeseriesdict_sdb\n    _validate_us_units(conn, table)\n  File \"/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/timeseries/io/sdb.py\", line 88, in _validate_us_units\n    raise ValueError(\nValueError: SDB usUnits validation failed at dateTime 1701228500: value 2 must be integer 1.\n",
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "warnings_recorded": true
+    },
+    "stderr": ""
+  }
+]

@@ -1,0 +1,306 @@
+{
+  "arm_mapping": "A=B1, B=candidate; frozen harness historical B0/B1 labels are overridden by audited source and wheel hashes.",
+  "b1_source_sha": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+  "b1_wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498",
+  "capture_count": 3,
+  "capture_summaries": {
+    "pss-serial": {
+      "A": {
+        "peak_tree_pss_kib": {
+          "mad": 9950,
+          "median": 462637,
+          "samples": [
+            506845,
+            459993,
+            452687,
+            475267,
+            459971,
+            501038,
+            462618,
+            501653,
+            462637
+          ]
+        },
+        "peak_tree_rss_kib": {
+          "mad": 2636,
+          "median": 483760,
+          "samples": [
+            481284,
+            483760,
+            478540,
+            499072,
+            483752,
+            512116,
+            486408,
+            481768,
+            486396
+          ]
+        }
+      },
+      "B": {
+        "peak_tree_pss_kib": {
+          "mad": 571,
+          "median": 442000,
+          "samples": [
+            442571,
+            442224,
+            441318,
+            441190,
+            441916,
+            442624,
+            442131,
+            441390,
+            442000
+          ]
+        },
+        "peak_tree_rss_kib": {
+          "mad": 420,
+          "median": 453616,
+          "samples": [
+            454036,
+            453728,
+            452820,
+            452704,
+            453432,
+            454084,
+            453692,
+            452828,
+            453616
+          ]
+        }
+      }
+    },
+    "pss-serial-second": {
+      "A": {
+        "peak_tree_pss_kib": {
+          "mad": 21937,
+          "median": 483232,
+          "samples": [
+            444565,
+            508561,
+            483232,
+            448404,
+            463551,
+            505169,
+            494971,
+            484025,
+            457442
+          ]
+        },
+        "peak_tree_rss_kib": {
+          "mad": 23164,
+          "median": 481176,
+          "samples": [
+            468440,
+            458012,
+            515160,
+            470208,
+            487412,
+            457228,
+            516676,
+            509936,
+            481176
+          ]
+        }
+      },
+      "B": {
+        "peak_tree_pss_kib": {
+          "mad": 690,
+          "median": 441781,
+          "samples": [
+            442471,
+            441806,
+            440957,
+            441191,
+            441781,
+            440429,
+            441124,
+            442661,
+            442805
+          ]
+        },
+        "peak_tree_rss_kib": {
+          "mad": 596,
+          "median": 453244,
+          "samples": [
+            453904,
+            455240,
+            452468,
+            452648,
+            453244,
+            451952,
+            452660,
+            453256,
+            453536
+          ]
+        }
+      }
+    },
+    "timing-serial-warm": {
+      "A": {
+        "cpu_ns_parent": {
+          "mad": 844656,
+          "median": 188158888,
+          "samples": [
+            194866958,
+            187952285,
+            190554988,
+            193760044,
+            186657271,
+            188158888,
+            187739792,
+            187816693,
+            189003544
+          ]
+        },
+        "wall_ns": {
+          "mad": 840885,
+          "median": 188236500,
+          "samples": [
+            194951985,
+            188089800,
+            190606454,
+            193868850,
+            186695814,
+            188236500,
+            187790476,
+            187881623,
+            189077385
+          ]
+        }
+      },
+      "B": {
+        "cpu_ns_parent": {
+          "mad": 2467778,
+          "median": 219455482,
+          "samples": [
+            228895862,
+            221923260,
+            219455482,
+            220362513,
+            216011796,
+            211845152,
+            219664815,
+            215175952,
+            217870748
+          ]
+        },
+        "wall_ns": {
+          "mad": 2485506,
+          "median": 219494524,
+          "samples": [
+            229089457,
+            221980030,
+            219494524,
+            220423784,
+            216113198,
+            212072923,
+            219826769,
+            215301196,
+            217967939
+          ]
+        }
+      }
+    }
+  },
+  "frozen_measurement_harness_sha256": "b9a719d19f25eeff983cfef5d87762f3d55497404e369efb6c3be1ff403519c2",
+  "parallel_route": "No bounded parallel implementation in this candidate; separate route remains under design review.",
+  "primary_pss_gates": {
+    "pss-serial": {
+      "b1_mad_kib": 9950,
+      "b1_median_kib": 462637,
+      "candidate_mad_kib": 571,
+      "candidate_median_kib": 442000,
+      "improvement": 0.0446073271268835,
+      "pass": false,
+      "threshold": 0.05
+    },
+    "pss-serial-second": {
+      "b1_mad_kib": 21937,
+      "b1_median_kib": 483232,
+      "candidate_mad_kib": 690,
+      "candidate_median_kib": 441781,
+      "improvement": 0.08577867359777498,
+      "pass": false,
+      "threshold": 0.09391654796057598
+    }
+  },
+  "public_parity": "Frozen measurement harness verified B1/candidate fingerprint and warning parity for every 64 MiB stress PSS and 16 MiB warm timing sample.",
+  "raw_file_sha256": {
+    "measure/pss-serial-second/checksums.json": "3dd6d05f9a3de544e218169a72a9c759342cf6ca35efa4506ec58f0b3a249950",
+    "measure/pss-serial-second/manifest.json": "9182976b8614abfb9c419bd1b7fc5a9fd33e45b307a5a99a5b5fcaa0debc625d",
+    "measure/pss-serial-second/raw-A.json": "6bdb70ccb8250ed576508950423119c1976bd38cc8b39213a82405705a6421fc",
+    "measure/pss-serial-second/raw-B.json": "0b808f203ef2f70ab0711104ddb3553703d87fafeee988936998c1cb3b70f2f8",
+    "measure/pss-serial-second/sample-00-A.json": "bdcfded287ac95dae5cdfdffe60b83d68e883f5ad1a7b45cac333a78739b98c6",
+    "measure/pss-serial-second/sample-01-B.json": "8639ce0666bbda8a747cb8400fb49771f408ad92ffcb1e3add2f3dced299b6a8",
+    "measure/pss-serial-second/sample-02-B.json": "d2e43e4762324cc2573229d20a93d9209c7b5a85d63030972b905876bf67a0a8",
+    "measure/pss-serial-second/sample-03-A.json": "145684e9017376c172332552d714f9183f7a5bb11d4aa706890637c7d4aec111",
+    "measure/pss-serial-second/sample-04-B.json": "e7798bc1a69b8528404622b348b4a400371c65297fdd4e364aacbcb67bd0a885",
+    "measure/pss-serial-second/sample-05-A.json": "7045a15eb1aaa48b5a3b54aa04956f2885e511e5afb68d0d45d54d91bf4eb6f9",
+    "measure/pss-serial-second/sample-06-A.json": "e5d04e13642dcfe031760d22770a49520e4bdcb35649017f15ce80210f86db7e",
+    "measure/pss-serial-second/sample-07-B.json": "feff9bc2b02396fb26aa0064608fded298a777aa2061a5885b3de993dcbc05b7",
+    "measure/pss-serial-second/sample-08-A.json": "0ccffc202635272e26d5d20795cdad13f6d922a78fd07caaf0b9e8e0da85137a",
+    "measure/pss-serial-second/sample-09-B.json": "c77d5a35e23f399605c2df684ca5f104e06d0636f2e266875be93ada9a07a86e",
+    "measure/pss-serial-second/sample-10-B.json": "f884dc2280ab1dcd0a637697d31d85a82a914cafd5b90e618275271f4b9fda9c",
+    "measure/pss-serial-second/sample-11-A.json": "086a22f7bf7ecb9c552ac6853d1fe2497030253049ad277e23bdb623cdc3e0fe",
+    "measure/pss-serial-second/sample-12-B.json": "48f82a3f224c764155dd5dd4d2164edc80f8623f2f6d8e36f04cdfdf5e13ca4f",
+    "measure/pss-serial-second/sample-13-A.json": "ac3472c02c879a6f4affb96160050256a7e7adb767f0480259dda9756a4dba51",
+    "measure/pss-serial-second/sample-14-A.json": "811d6ad6250c44f53a75344331296ccd53ed878da71ddab7f27cf2a8f15fcb46",
+    "measure/pss-serial-second/sample-15-B.json": "4966d2656011c49c5a89ca404847fa14e715c0a3ac9847c6611c935d79619472",
+    "measure/pss-serial-second/sample-16-A.json": "401ed21473906be19d4f084ef9b6700225c82c63ef4a85c0d483d652f42a71ac",
+    "measure/pss-serial-second/sample-17-B.json": "ba74ae75c3a5f0145fd93a48e49888cf589135b7cb869b9e5519ae9ca744d50c",
+    "measure/pss-serial-second/summary.json": "54050b67ff1a6def5e90e3a5a1af4fbf9208c2365b805b00409c17190608c354",
+    "measure/pss-serial/checksums.json": "bacaa0e227e99df9a29df0b45f96fb7374761758132d1eac2595d10d6c1a3481",
+    "measure/pss-serial/manifest.json": "9182976b8614abfb9c419bd1b7fc5a9fd33e45b307a5a99a5b5fcaa0debc625d",
+    "measure/pss-serial/raw-A.json": "e733cd745c5d68faedf3d01ff6282fcd8dcb0fa2b9649c944237f9d4f8bfc456",
+    "measure/pss-serial/raw-B.json": "e9606e539638860dcaa445b19f597d61644fd7d4c9299a0af23ead51be6db187",
+    "measure/pss-serial/sample-00-A.json": "437b046788b8622b3d61f7be6b00d2750c5830e92af295b0159d1a584820f59e",
+    "measure/pss-serial/sample-01-B.json": "e8697033e708623dff57ad69079f34d3c2d317ddfd243f9cde525cc69a739620",
+    "measure/pss-serial/sample-02-B.json": "fb6aea4478ee391fd673396991922a6cbcf53c6b4f79030b891cab93f4aea67d",
+    "measure/pss-serial/sample-03-A.json": "aa0611999bf9f61ae42a1b0d53713e14131d7fe8c8c93188028b04284e4dabfc",
+    "measure/pss-serial/sample-04-B.json": "201aa8b358bda92b88686c4bf40b846f64066cd1fa0745023ace2a9d75875fc0",
+    "measure/pss-serial/sample-05-A.json": "331269ffb8630fc35f76e99bcd327f64fe6270d70e9a75d27540752df0c7e579",
+    "measure/pss-serial/sample-06-A.json": "566613c9b2bfc7f8d607304c71c1230a1f984d67014eb6a71f5ab603a8ab8046",
+    "measure/pss-serial/sample-07-B.json": "d048dede38e5ac150943c65eb64a22dcc2587a638c875187ace6d70096159839",
+    "measure/pss-serial/sample-08-A.json": "9537ce3cc40ea3ec2e029c57c99c78069e47a43b4f39ec084ea3fa171a8b3241",
+    "measure/pss-serial/sample-09-B.json": "457069d4c0a56f8594341463a9f336fa54e64254854ce6e16997a19081842984",
+    "measure/pss-serial/sample-10-B.json": "1593e47e9bc6c22941a5acbd435bbe87de0932007452bbb02b7cbe5488ac1860",
+    "measure/pss-serial/sample-11-A.json": "119c6328d75114335e52d8556978d0075ad29db08dcc10e54fb4e0aba9db2cba",
+    "measure/pss-serial/sample-12-B.json": "3349331b715cb680b103ac06507e4c102976364ffe5a11edab137ba7bc2238bc",
+    "measure/pss-serial/sample-13-A.json": "fc74963893bf57a6bdf559fff06878d58dfcdffd48366503b985aff786807678",
+    "measure/pss-serial/sample-14-A.json": "16e6c452ba9b673dcf1571fdfe7ff4a9ec8736760a6a88bd7080469c4f697ecc",
+    "measure/pss-serial/sample-15-B.json": "1d7e0152e6af8b5b4011f440d06bbb57b67af515968f48650887d61f6a092309",
+    "measure/pss-serial/sample-16-A.json": "32a305e9b5247a8682fa7c604a0c19784cb6fdeb6a51415c9151f5cc8a8e6181",
+    "measure/pss-serial/sample-17-B.json": "56e193a3d6355eb272a2d30981a05ecf0ee618e105f990943f7429ba88ec9d8a",
+    "measure/pss-serial/summary.json": "262dc74f832a1ed53be397c0b750dff60fbc87f2bced3dcff416835946181f40",
+    "measure/timing-serial-warm/checksums.json": "00d91c339502e013492dc1284d3b9ad68c3a4f1b4eeed18ba12e3589be2086b7",
+    "measure/timing-serial-warm/manifest.json": "b2458df529881722edcab058e67e89a637f232ce6ebe80a74fd7dcae7bbfb6b4",
+    "measure/timing-serial-warm/raw-A.json": "daab9df7f7f75dfc41a97648937d256c2520a1dc841a62afdd3132dc9a8bd9e5",
+    "measure/timing-serial-warm/raw-B.json": "ace4843d51182db31612ab4dacc832c3ed8d65b8e3beac2dc2d75b6a07344f02",
+    "measure/timing-serial-warm/sample-00-A.json": "504f36256de5bd306f00b9c7983c342f1ceda56d3767d6f830be698ce4bb67e8",
+    "measure/timing-serial-warm/sample-01-B.json": "dc9b16447b7fc2c199ee07795ef49ce840e9e5cde2fcd75ede28ef4e6cd6e39c",
+    "measure/timing-serial-warm/sample-02-B.json": "176467267d5d208846391d002eb7e662f63b2be02480030c14881c23015ec9bc",
+    "measure/timing-serial-warm/sample-03-A.json": "0e104f6145b6af8327bc693efe5c01c998ba3e6d251634b0a20988016bef5188",
+    "measure/timing-serial-warm/sample-04-B.json": "bdf38344066d3564901c2369163917a2953fb8dd7803bf9c1d452fc62da2ec11",
+    "measure/timing-serial-warm/sample-05-A.json": "481533a3b1cd62bdc59a3f4b7fa197df4acccbc490ebd3cfac42567614fd7aa2",
+    "measure/timing-serial-warm/sample-06-A.json": "30b9aad8c640b3603858bac79bbbaf836b84b22aaa7ec940546bdd3225483243",
+    "measure/timing-serial-warm/sample-07-B.json": "818adcf97fc4c7681f4c4e03c49d98d0ddeb1edfb03d7ef9b0cc8a852f145d54",
+    "measure/timing-serial-warm/sample-08-A.json": "5ed77a080b840bebada1b73bbbe534041f9869853a2d5f78843d421015f37a0e",
+    "measure/timing-serial-warm/sample-09-B.json": "50214cb3c05879090d07e5a16b9941cf9e15cb1d4aed1c6a7d95f16257fac8f3",
+    "measure/timing-serial-warm/sample-10-B.json": "cf4bfba9edb4a35d300d29bf734e8834194b532aac0acd0db8c5015cdac672c2",
+    "measure/timing-serial-warm/sample-11-A.json": "a3a1da7c17574f2e8b01deb97b25cc51bff9fed674df2c96a6fbc72b0b93c906",
+    "measure/timing-serial-warm/sample-12-B.json": "820bc27ff6ec2052fbd03ddbf04045d95e2aaf3fca23511ee596de7d145ffe84",
+    "measure/timing-serial-warm/sample-13-A.json": "bed46b5a7a9caff691e609103d3a6d92fe641c3c103411a1c5ae83d471c1bdbf",
+    "measure/timing-serial-warm/sample-14-A.json": "4c713a5dd706efdbce08d58411c7f2c7f43b148e60457d1df808a619f22b205a",
+    "measure/timing-serial-warm/sample-15-B.json": "c5a55ce794beb06845b829e2245c2439193f5851f4fd036eb899a1eaf4ba3817",
+    "measure/timing-serial-warm/sample-16-A.json": "ffd5b4afac8a990b8d704e00cf2735fa2014e5157db796907d8427bff32629b8",
+    "measure/timing-serial-warm/sample-17-B.json": "d7a15a2b9e5c6a7313811b0cd73f6a52708fab96d6209162575b04ba4e757bc6",
+    "measure/timing-serial-warm/summary.json": "d2e215eb569827b1a0cfb0638cefc21a18ded9676d1e35b47544b2230410926b",
+    "wheel-build.log": "ecc0beb7ae519044c37196c54a2e18a6178cdc7d44175e4698c474794d01ac12"
+  },
+  "schema": "gwexpy-v025-f4-candidate-v2",
+  "small_input_gate": "Not measured for candidate-v2 because primary PSS independently failed twice; source had a pre-capture short circuit and focused 13/13 unit tests passed.",
+  "source_sha": "6ab2e16e86b010675ca1ea927b48606a31326353",
+  "status": "HOLD_PRIMARY_PSS_TWO_INDEPENDENT_BATCHES",
+  "wheel_sha256": "b85acb3bcdd92b2997371b292dae5f67d3af3439bdda4a989a4323f60a7f69e6"
+}

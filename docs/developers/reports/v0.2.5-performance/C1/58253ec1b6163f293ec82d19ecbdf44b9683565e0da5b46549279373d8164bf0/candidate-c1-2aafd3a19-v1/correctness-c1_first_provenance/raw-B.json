@@ -1,0 +1,72 @@
+[
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-c1-env/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-c1-env/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "prefix": "/tmp/gwexpy-v025-c1-env",
+      "python": "3.12.12"
+    },
+    "controller_elapsed_ns": 2522480137,
+    "sample": {
+      "counters": {},
+      "cpu_ns": 217620507,
+      "fingerprint": {
+        "attrs": "None",
+        "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+        "members": {
+          "p": {
+            "class": "gwexpy.timeseries.timeseries.TimeSeries",
+            "dt": "<Quantity 1. s>",
+            "epoch": "<Time object: scale='utc' format='gps' value=0.0>",
+            "name": null,
+            "sample_rate": "<Quantity 1. Hz>",
+            "t0": "<Quantity 0. s>",
+            "times": {
+              "unit": "s",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "0.0",
+                  "2.0",
+                  "3.0"
+                ],
+                "sha256": "9392b85eaba90b4aa6f39e1f269927b4bd6bec47cd2e34a80cf3ed914c26dc7e",
+                "shape": [
+                  4
+                ]
+              }
+            },
+            "unit": "",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "1.0",
+                "3.0",
+                "4.0"
+              ],
+              "sha256": "6bab56d2f81d4b5a2dbf102bf6a6ff7d5211a475fc5f97813f977e8ba714b07d",
+              "shape": [
+                4
+              ]
+            }
+          }
+        },
+        "order": [
+          "p"
+        ]
+      },
+      "fixture_counts": {},
+      "outcome": "return",
+      "wall_ns": 219522852,
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "warnings_recorded": true
+    },
+    "stderr": ""
+  }
+]

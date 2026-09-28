@@ -1,0 +1,1118 @@
+{
+  "b0_published_url": "https://files.pythonhosted.org/packages/44/94/a90a792dc46d6e3d97ca3db7aaacbba801c2b6183f35676dc87e88f21b84/gwexpy-0.2.4-py3-none-any.whl",
+  "b0_pypi_json_url": "https://pypi.org/pypi/gwexpy/0.2.4/json",
+  "build": {
+    "build": "1.3.0",
+    "command": "python -m build --wheel --no-isolation --outdir /tmp/gwexpy-v025-b-wheels",
+    "current_git_status_porcelain": [
+      "?? benchmarks/",
+      "?? docs/developers/reports/v0.2.5-performance/"
+    ],
+    "package_and_build_config_status_porcelain": "",
+    "python": "3.12.12",
+    "setuptools": "80.9.0",
+    "source_identity_method": "For each gwexpy/* member in B1 wheel, SHA-256 of wheel bytes equals git show 1eb2cd62:<path> bytes; 369/369 match. Package/config git status is empty.",
+    "source_proof_reference": "C1 frozen baseline manifest at commit 5e8bfae1; identical B0/B1 wheel hashes and 369/369 B1 package bytes checked against old R",
+    "source_worktree": "/home/washimi/work/gwexpy-v025-performance-b",
+    "source_worktree_head": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+    "wheel": "0.45.1",
+    "wheel_package_files_compared_to_head": 369,
+    "wheel_package_files_mismatching_head": 0,
+    "wheel_package_files_missing_from_head": 0
+  },
+  "candidate_comparison_harness": "Use exact benchmarks/io/*.py bytes from the SDB-v2 freeze commit in a separate checkout. Later lane edits do not silently replace this harness. Adapt the trigger only with explicit review if candidate SQL differs.",
+  "capture_mode": "correctness only; F2 baseline-v1 remains timing/memory/static-source structural evidence",
+  "case_count": 14,
+  "cases": {
+    "schema__all": {
+      "b0_b1_equal": true,
+      "b1_error_message": null,
+      "b1_error_type": null,
+      "b1_logs": [],
+      "b1_outcome": "return",
+      "b1_warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        },
+        {
+          "category": "builtins.UserWarning",
+          "message": "SDB column '\"outTemp\"': 64 non-numeric value(s) could not be parsed and were set to NaN."
+        }
+      ],
+      "fingerprint": "schema__all/fingerprint.json",
+      "mutation": "schema",
+      "reader_sql_before_trigger": [
+        "PRAGMA table_info(\"archive\")",
+        "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+        "PRAGMA table_info(\"archive\")",
+        "PRAGMA table_list(\"archive\")",
+        "PRAGMA table_info(\"archive\")"
+      ],
+      "row_after": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "row_before": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "schema_after": [
+        "dateTime",
+        "outTempRenamed",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "schema_before": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "selection": "all",
+      "stable_B0": true,
+      "stable_B1": true,
+      "trigger_sql": "SELECT \"dateTime\", \"outTemp\", \"outHumidity\", \"barometer\" FROM \"archive\" ORDER BY \"rowid\"",
+      "writer_parameters": [],
+      "writer_sql": [
+        "BEGIN IMMEDIATE",
+        "ALTER TABLE archive RENAME COLUMN outTemp TO outTempRenamed",
+        "COMMIT"
+      ]
+    },
+    "schema__selected": {
+      "b0_b1_equal": true,
+      "b1_error_message": null,
+      "b1_error_type": null,
+      "b1_logs": [],
+      "b1_outcome": "return",
+      "b1_warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        },
+        {
+          "category": "builtins.UserWarning",
+          "message": "SDB column '\"outTemp\"': 64 non-numeric value(s) could not be parsed and were set to NaN."
+        }
+      ],
+      "fingerprint": "schema__selected/fingerprint.json",
+      "mutation": "schema",
+      "reader_sql_before_trigger": [
+        "PRAGMA table_info(\"archive\")",
+        "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+        "PRAGMA table_list(\"archive\")",
+        "PRAGMA table_info(\"archive\")"
+      ],
+      "row_after": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "row_before": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "schema_after": [
+        "dateTime",
+        "outTempRenamed",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "schema_before": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "selection": "selected",
+      "stable_B0": true,
+      "stable_B1": true,
+      "trigger_sql": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" ORDER BY \"rowid\"",
+      "writer_parameters": [],
+      "writer_sql": [
+        "BEGIN IMMEDIATE",
+        "ALTER TABLE archive RENAME COLUMN outTemp TO outTempRenamed",
+        "COMMIT"
+      ]
+    },
+    "selected_malformed__all": {
+      "b0_b1_equal": true,
+      "b1_error_message": null,
+      "b1_error_type": null,
+      "b1_logs": [],
+      "b1_outcome": "return",
+      "b1_warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        },
+        {
+          "category": "builtins.UserWarning",
+          "message": "SDB column 'outTemp': 1 non-numeric value(s) could not be parsed and were set to NaN."
+        }
+      ],
+      "fingerprint": "selected_malformed__all/fingerprint.json",
+      "mutation": "selected_malformed",
+      "reader_sql_before_trigger": [
+        "PRAGMA table_info(\"archive\")",
+        "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+        "PRAGMA table_info(\"archive\")",
+        "PRAGMA table_list(\"archive\")",
+        "PRAGMA table_info(\"archive\")"
+      ],
+      "row_after": [
+        1700000000,
+        "not-a-number",
+        "40",
+        1
+      ],
+      "row_before": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "schema_after": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "schema_before": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "selection": "all",
+      "stable_B0": true,
+      "stable_B1": true,
+      "trigger_sql": "SELECT \"dateTime\", \"outTemp\", \"outHumidity\", \"barometer\" FROM \"archive\" ORDER BY \"rowid\"",
+      "writer_parameters": [
+        "not-a-number"
+      ],
+      "writer_sql": [
+        "BEGIN IMMEDIATE",
+        "UPDATE archive SET outTemp = ? WHERE rowid = 1",
+        "COMMIT"
+      ]
+    },
+    "selected_malformed__selected": {
+      "b0_b1_equal": true,
+      "b1_error_message": null,
+      "b1_error_type": null,
+      "b1_logs": [],
+      "b1_outcome": "return",
+      "b1_warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        },
+        {
+          "category": "builtins.UserWarning",
+          "message": "SDB column 'outTemp': 1 non-numeric value(s) could not be parsed and were set to NaN."
+        }
+      ],
+      "fingerprint": "selected_malformed__selected/fingerprint.json",
+      "mutation": "selected_malformed",
+      "reader_sql_before_trigger": [
+        "PRAGMA table_info(\"archive\")",
+        "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+        "PRAGMA table_list(\"archive\")",
+        "PRAGMA table_info(\"archive\")"
+      ],
+      "row_after": [
+        1700000000,
+        "not-a-number",
+        "40",
+        1
+      ],
+      "row_before": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "schema_after": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "schema_before": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "selection": "selected",
+      "stable_B0": true,
+      "stable_B1": true,
+      "trigger_sql": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" ORDER BY \"rowid\"",
+      "writer_parameters": [
+        "not-a-number"
+      ],
+      "writer_sql": [
+        "BEGIN IMMEDIATE",
+        "UPDATE archive SET outTemp = ? WHERE rowid = 1",
+        "COMMIT"
+      ]
+    },
+    "selected_value__all": {
+      "b0_b1_equal": true,
+      "b1_error_message": null,
+      "b1_error_type": null,
+      "b1_logs": [],
+      "b1_outcome": "return",
+      "b1_warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "fingerprint": "selected_value__all/fingerprint.json",
+      "mutation": "selected_value",
+      "reader_sql_before_trigger": [
+        "PRAGMA table_info(\"archive\")",
+        "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+        "PRAGMA table_info(\"archive\")",
+        "PRAGMA table_list(\"archive\")",
+        "PRAGMA table_info(\"archive\")"
+      ],
+      "row_after": [
+        1700000000,
+        "99",
+        "40",
+        1
+      ],
+      "row_before": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "schema_after": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "schema_before": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "selection": "all",
+      "stable_B0": true,
+      "stable_B1": true,
+      "trigger_sql": "SELECT \"dateTime\", \"outTemp\", \"outHumidity\", \"barometer\" FROM \"archive\" ORDER BY \"rowid\"",
+      "writer_parameters": [
+        "99"
+      ],
+      "writer_sql": [
+        "BEGIN IMMEDIATE",
+        "UPDATE archive SET outTemp = ? WHERE rowid = 1",
+        "COMMIT"
+      ]
+    },
+    "selected_value__selected": {
+      "b0_b1_equal": true,
+      "b1_error_message": null,
+      "b1_error_type": null,
+      "b1_logs": [],
+      "b1_outcome": "return",
+      "b1_warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "fingerprint": "selected_value__selected/fingerprint.json",
+      "mutation": "selected_value",
+      "reader_sql_before_trigger": [
+        "PRAGMA table_info(\"archive\")",
+        "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+        "PRAGMA table_list(\"archive\")",
+        "PRAGMA table_info(\"archive\")"
+      ],
+      "row_after": [
+        1700000000,
+        "99",
+        "40",
+        1
+      ],
+      "row_before": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "schema_after": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "schema_before": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "selection": "selected",
+      "stable_B0": true,
+      "stable_B1": true,
+      "trigger_sql": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" ORDER BY \"rowid\"",
+      "writer_parameters": [
+        "99"
+      ],
+      "writer_sql": [
+        "BEGIN IMMEDIATE",
+        "UPDATE archive SET outTemp = ? WHERE rowid = 1",
+        "COMMIT"
+      ]
+    },
+    "timestamp__all": {
+      "b0_b1_equal": true,
+      "b1_error_message": "SDB timestamp gap at index 1: expected cadence 300, got 299",
+      "b1_error_type": "builtins.ValueError",
+      "b1_logs": [],
+      "b1_outcome": "error",
+      "b1_warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "fingerprint": "timestamp__all/fingerprint.json",
+      "mutation": "timestamp",
+      "reader_sql_before_trigger": [
+        "PRAGMA table_info(\"archive\")",
+        "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+        "PRAGMA table_info(\"archive\")",
+        "PRAGMA table_list(\"archive\")",
+        "PRAGMA table_info(\"archive\")"
+      ],
+      "row_after": [
+        1700000001,
+        "60",
+        "40",
+        1
+      ],
+      "row_before": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "schema_after": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "schema_before": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "selection": "all",
+      "stable_B0": true,
+      "stable_B1": true,
+      "trigger_sql": "SELECT \"dateTime\", \"outTemp\", \"outHumidity\", \"barometer\" FROM \"archive\" ORDER BY \"rowid\"",
+      "writer_parameters": [],
+      "writer_sql": [
+        "BEGIN IMMEDIATE",
+        "UPDATE archive SET dateTime = dateTime + 1 WHERE rowid = 1",
+        "COMMIT"
+      ]
+    },
+    "timestamp__selected": {
+      "b0_b1_equal": true,
+      "b1_error_message": "SDB timestamp gap at index 1: expected cadence 300, got 299",
+      "b1_error_type": "builtins.ValueError",
+      "b1_logs": [],
+      "b1_outcome": "error",
+      "b1_warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "fingerprint": "timestamp__selected/fingerprint.json",
+      "mutation": "timestamp",
+      "reader_sql_before_trigger": [
+        "PRAGMA table_info(\"archive\")",
+        "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+        "PRAGMA table_list(\"archive\")",
+        "PRAGMA table_info(\"archive\")"
+      ],
+      "row_after": [
+        1700000001,
+        "60",
+        "40",
+        1
+      ],
+      "row_before": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "schema_after": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "schema_before": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "selection": "selected",
+      "stable_B0": true,
+      "stable_B1": true,
+      "trigger_sql": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" ORDER BY \"rowid\"",
+      "writer_parameters": [],
+      "writer_sql": [
+        "BEGIN IMMEDIATE",
+        "UPDATE archive SET dateTime = dateTime + 1 WHERE rowid = 1",
+        "COMMIT"
+      ]
+    },
+    "unselected_malformed__all": {
+      "b0_b1_equal": true,
+      "b1_error_message": null,
+      "b1_error_type": null,
+      "b1_logs": [],
+      "b1_outcome": "return",
+      "b1_warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        },
+        {
+          "category": "builtins.UserWarning",
+          "message": "SDB column 'outHumidity': 1 non-numeric value(s) could not be parsed and were set to NaN."
+        }
+      ],
+      "fingerprint": "unselected_malformed__all/fingerprint.json",
+      "mutation": "unselected_malformed",
+      "reader_sql_before_trigger": [
+        "PRAGMA table_info(\"archive\")",
+        "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+        "PRAGMA table_info(\"archive\")",
+        "PRAGMA table_list(\"archive\")",
+        "PRAGMA table_info(\"archive\")"
+      ],
+      "row_after": [
+        1700000000,
+        "60",
+        "not-a-number",
+        1
+      ],
+      "row_before": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "schema_after": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "schema_before": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "selection": "all",
+      "stable_B0": true,
+      "stable_B1": true,
+      "trigger_sql": "SELECT \"dateTime\", \"outTemp\", \"outHumidity\", \"barometer\" FROM \"archive\" ORDER BY \"rowid\"",
+      "writer_parameters": [
+        "not-a-number"
+      ],
+      "writer_sql": [
+        "BEGIN IMMEDIATE",
+        "UPDATE archive SET outHumidity = ? WHERE rowid = 1",
+        "COMMIT"
+      ]
+    },
+    "unselected_malformed__selected": {
+      "b0_b1_equal": true,
+      "b1_error_message": null,
+      "b1_error_type": null,
+      "b1_logs": [],
+      "b1_outcome": "return",
+      "b1_warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "fingerprint": "unselected_malformed__selected/fingerprint.json",
+      "mutation": "unselected_malformed",
+      "reader_sql_before_trigger": [
+        "PRAGMA table_info(\"archive\")",
+        "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+        "PRAGMA table_list(\"archive\")",
+        "PRAGMA table_info(\"archive\")"
+      ],
+      "row_after": [
+        1700000000,
+        "60",
+        "not-a-number",
+        1
+      ],
+      "row_before": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "schema_after": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "schema_before": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "selection": "selected",
+      "stable_B0": true,
+      "stable_B1": true,
+      "trigger_sql": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" ORDER BY \"rowid\"",
+      "writer_parameters": [
+        "not-a-number"
+      ],
+      "writer_sql": [
+        "BEGIN IMMEDIATE",
+        "UPDATE archive SET outHumidity = ? WHERE rowid = 1",
+        "COMMIT"
+      ]
+    },
+    "unselected_value__all": {
+      "b0_b1_equal": true,
+      "b1_error_message": null,
+      "b1_error_type": null,
+      "b1_logs": [],
+      "b1_outcome": "return",
+      "b1_warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "fingerprint": "unselected_value__all/fingerprint.json",
+      "mutation": "unselected_value",
+      "reader_sql_before_trigger": [
+        "PRAGMA table_info(\"archive\")",
+        "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+        "PRAGMA table_info(\"archive\")",
+        "PRAGMA table_list(\"archive\")",
+        "PRAGMA table_info(\"archive\")"
+      ],
+      "row_after": [
+        1700000000,
+        "60",
+        "99",
+        1
+      ],
+      "row_before": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "schema_after": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "schema_before": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "selection": "all",
+      "stable_B0": true,
+      "stable_B1": true,
+      "trigger_sql": "SELECT \"dateTime\", \"outTemp\", \"outHumidity\", \"barometer\" FROM \"archive\" ORDER BY \"rowid\"",
+      "writer_parameters": [
+        "99"
+      ],
+      "writer_sql": [
+        "BEGIN IMMEDIATE",
+        "UPDATE archive SET outHumidity = ? WHERE rowid = 1",
+        "COMMIT"
+      ]
+    },
+    "unselected_value__selected": {
+      "b0_b1_equal": true,
+      "b1_error_message": null,
+      "b1_error_type": null,
+      "b1_logs": [],
+      "b1_outcome": "return",
+      "b1_warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "fingerprint": "unselected_value__selected/fingerprint.json",
+      "mutation": "unselected_value",
+      "reader_sql_before_trigger": [
+        "PRAGMA table_info(\"archive\")",
+        "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+        "PRAGMA table_list(\"archive\")",
+        "PRAGMA table_info(\"archive\")"
+      ],
+      "row_after": [
+        1700000000,
+        "60",
+        "99",
+        1
+      ],
+      "row_before": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "schema_after": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "schema_before": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "selection": "selected",
+      "stable_B0": true,
+      "stable_B1": true,
+      "trigger_sql": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" ORDER BY \"rowid\"",
+      "writer_parameters": [
+        "99"
+      ],
+      "writer_sql": [
+        "BEGIN IMMEDIATE",
+        "UPDATE archive SET outHumidity = ? WHERE rowid = 1",
+        "COMMIT"
+      ]
+    },
+    "usunits__all": {
+      "b0_b1_equal": true,
+      "b1_error_message": null,
+      "b1_error_type": null,
+      "b1_logs": [],
+      "b1_outcome": "return",
+      "b1_warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "fingerprint": "usunits__all/fingerprint.json",
+      "mutation": "usunits",
+      "reader_sql_before_trigger": [
+        "PRAGMA table_info(\"archive\")",
+        "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+        "PRAGMA table_info(\"archive\")",
+        "PRAGMA table_list(\"archive\")",
+        "PRAGMA table_info(\"archive\")"
+      ],
+      "row_after": [
+        1700000000,
+        "60",
+        "40",
+        2
+      ],
+      "row_before": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "schema_after": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "schema_before": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "selection": "all",
+      "stable_B0": true,
+      "stable_B1": true,
+      "trigger_sql": "SELECT \"dateTime\", \"outTemp\", \"outHumidity\", \"barometer\" FROM \"archive\" ORDER BY \"rowid\"",
+      "writer_parameters": [],
+      "writer_sql": [
+        "BEGIN IMMEDIATE",
+        "UPDATE archive SET usUnits = 2 WHERE rowid = 1",
+        "COMMIT"
+      ]
+    },
+    "usunits__selected": {
+      "b0_b1_equal": true,
+      "b1_error_message": null,
+      "b1_error_type": null,
+      "b1_logs": [],
+      "b1_outcome": "return",
+      "b1_warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "fingerprint": "usunits__selected/fingerprint.json",
+      "mutation": "usunits",
+      "reader_sql_before_trigger": [
+        "PRAGMA table_info(\"archive\")",
+        "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+        "PRAGMA table_list(\"archive\")",
+        "PRAGMA table_info(\"archive\")"
+      ],
+      "row_after": [
+        1700000000,
+        "60",
+        "40",
+        2
+      ],
+      "row_before": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "schema_after": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "schema_before": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "selection": "selected",
+      "stable_B0": true,
+      "stable_B1": true,
+      "trigger_sql": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" ORDER BY \"rowid\"",
+      "writer_parameters": [],
+      "writer_sql": [
+        "BEGIN IMMEDIATE",
+        "UPDATE archive SET usUnits = 2 WHERE rowid = 1",
+        "COMMIT"
+      ]
+    }
+  },
+  "checks": {
+    "all_cases_b0_b1_equal": true,
+    "all_cases_stable_b0_b1": true,
+    "all_wal_triggers_after_usunits_sql": true,
+    "all_writer_transactions_committed": true,
+    "fixture_regenerated_byte_identically_in_second_temp_root": true,
+    "wheel_sha256_verified": true
+  },
+  "created_utc": "2026-09-28T07:30:11.334727+00:00",
+  "exception_status": "User selected concurrent-WAL exception; technical review, disclosure, and human S2 scientific/data-model approval remain pending.",
+  "files_sha256": {
+    "README.md": "bdd93f49b70eaad76506ab5887f9c3f0de05c031ab3529994ab0c579a51abfd8",
+    "fixture-manifest.json": "a1995b43e921f7dd5664f05e69872d15ff9b8c974871f9f3d1deb3448e378837",
+    "schema__all/fingerprint.json": "766805798e15266a5cfc0e6240dcb705acc23b4b733c297b85a7571637d9a585",
+    "schema__all/manifest.json": "07f7a4069d216f889bc2b980e2643990a4b4b840f1eeb7ae93eeadc02898c2b3",
+    "schema__all/raw-A.json": "3b616a324406906663632460b14ab385666ecd26f2bd41462d9de82f20a97b08",
+    "schema__all/raw-B.json": "788615dccc0a83d0532d620618e7b7b248261dcdcf19ef1693798330f7a69dd5",
+    "schema__all/sample-00-A.json": "cdc815f27e3a8abd57b7756b2789c7b8ab2b4f30fd43c5e62ec96d98b694cfae",
+    "schema__all/sample-01-B.json": "42ac96ac7034196939680da4e4ccd2ff22d9f4bd1e679d2907c79bfcab24be0d",
+    "schema__all/sample-02-B.json": "42ac96ac7034196939680da4e4ccd2ff22d9f4bd1e679d2907c79bfcab24be0d",
+    "schema__all/sample-03-A.json": "cdc815f27e3a8abd57b7756b2789c7b8ab2b4f30fd43c5e62ec96d98b694cfae",
+    "schema__all/sample-04-B.json": "42ac96ac7034196939680da4e4ccd2ff22d9f4bd1e679d2907c79bfcab24be0d",
+    "schema__all/sample-05-A.json": "cdc815f27e3a8abd57b7756b2789c7b8ab2b4f30fd43c5e62ec96d98b694cfae",
+    "schema__all/sample-06-A.json": "cdc815f27e3a8abd57b7756b2789c7b8ab2b4f30fd43c5e62ec96d98b694cfae",
+    "schema__all/sample-07-B.json": "42ac96ac7034196939680da4e4ccd2ff22d9f4bd1e679d2907c79bfcab24be0d",
+    "schema__all/sample-08-A.json": "cdc815f27e3a8abd57b7756b2789c7b8ab2b4f30fd43c5e62ec96d98b694cfae",
+    "schema__all/sample-09-B.json": "42ac96ac7034196939680da4e4ccd2ff22d9f4bd1e679d2907c79bfcab24be0d",
+    "schema__selected/fingerprint.json": "ec916127be5c728c2da9e96134a0be99174891ca18c1181e2d1d3beccb0bc96c",
+    "schema__selected/manifest.json": "dab2df023dd0a7e5e68aea26c31c84b68bef515c6493d2273597e523a94988fe",
+    "schema__selected/raw-A.json": "7b74645b61bb62e6e97f260ea6a762c24ea47e4f69f1b8b8c08427eb6be23392",
+    "schema__selected/raw-B.json": "72c223ea2a2c9aee29bf961c5e7dc9fd44834a99e9ae5283e7915641dc12366f",
+    "schema__selected/sample-00-A.json": "7c7f7da72f71753a68e262a7bca061de1f9295da101f788bb6756813ef8089e5",
+    "schema__selected/sample-01-B.json": "24e0e6c7e7aaa745aac7ab3aab03fa0448ab073b95921e78516760515a70161d",
+    "schema__selected/sample-02-B.json": "24e0e6c7e7aaa745aac7ab3aab03fa0448ab073b95921e78516760515a70161d",
+    "schema__selected/sample-03-A.json": "7c7f7da72f71753a68e262a7bca061de1f9295da101f788bb6756813ef8089e5",
+    "schema__selected/sample-04-B.json": "24e0e6c7e7aaa745aac7ab3aab03fa0448ab073b95921e78516760515a70161d",
+    "schema__selected/sample-05-A.json": "7c7f7da72f71753a68e262a7bca061de1f9295da101f788bb6756813ef8089e5",
+    "schema__selected/sample-06-A.json": "7c7f7da72f71753a68e262a7bca061de1f9295da101f788bb6756813ef8089e5",
+    "schema__selected/sample-07-B.json": "24e0e6c7e7aaa745aac7ab3aab03fa0448ab073b95921e78516760515a70161d",
+    "schema__selected/sample-08-A.json": "7c7f7da72f71753a68e262a7bca061de1f9295da101f788bb6756813ef8089e5",
+    "schema__selected/sample-09-B.json": "24e0e6c7e7aaa745aac7ab3aab03fa0448ab073b95921e78516760515a70161d",
+    "sdb/sdb_wal_base.sdb": "2713b73e3a715e7816c3d94023611ba9e2ac74911f0848f620d077218473b817",
+    "selected_malformed__all/fingerprint.json": "39615094e7d0d8141192ea83850545f370196bb1b643bd56c89919fa2e08ac1d",
+    "selected_malformed__all/manifest.json": "5dcfd08b285a0f75af050a6ea7cc5d974123fe1b53810952862237c2d4862ec5",
+    "selected_malformed__all/raw-A.json": "20b77c4abe95afdebd6c17be3fbb763b62fda3de4ce2920e03cdba99cc47887c",
+    "selected_malformed__all/raw-B.json": "d8f541fae4f101d43a076d2baa44f31e3f7e8f27fea342248565c0d537040c19",
+    "selected_malformed__all/sample-00-A.json": "d89442805d7b672e61090792380e436ce665e4ee4e230cd190038812303acc8a",
+    "selected_malformed__all/sample-01-B.json": "a4c2f59e2727c8d342e6b82d47e490561a598cb3404b8327876c9b5b113d70f6",
+    "selected_malformed__all/sample-02-B.json": "a4c2f59e2727c8d342e6b82d47e490561a598cb3404b8327876c9b5b113d70f6",
+    "selected_malformed__all/sample-03-A.json": "d89442805d7b672e61090792380e436ce665e4ee4e230cd190038812303acc8a",
+    "selected_malformed__all/sample-04-B.json": "a4c2f59e2727c8d342e6b82d47e490561a598cb3404b8327876c9b5b113d70f6",
+    "selected_malformed__all/sample-05-A.json": "d89442805d7b672e61090792380e436ce665e4ee4e230cd190038812303acc8a",
+    "selected_malformed__all/sample-06-A.json": "d89442805d7b672e61090792380e436ce665e4ee4e230cd190038812303acc8a",
+    "selected_malformed__all/sample-07-B.json": "a4c2f59e2727c8d342e6b82d47e490561a598cb3404b8327876c9b5b113d70f6",
+    "selected_malformed__all/sample-08-A.json": "d89442805d7b672e61090792380e436ce665e4ee4e230cd190038812303acc8a",
+    "selected_malformed__all/sample-09-B.json": "a4c2f59e2727c8d342e6b82d47e490561a598cb3404b8327876c9b5b113d70f6",
+    "selected_malformed__selected/fingerprint.json": "027c233b3470f0884055e6b7996a77168e7cbe5285e6e044b9862b3ebec805bb",
+    "selected_malformed__selected/manifest.json": "b034b9bb0d0cc72d64289e2bb95996fc782f6deee5aa847dea68be97c73725f8",
+    "selected_malformed__selected/raw-A.json": "860ab8b32d1eb2e3661fd1e85d416e63b7b32461b9a67e7d456f0bd7d2bbb417",
+    "selected_malformed__selected/raw-B.json": "1b16494843bb00cc2b392cced66ce139599114c06d16cf3b094aca9c137f657d",
+    "selected_malformed__selected/sample-00-A.json": "a9c72e7aa4c5a194788af486059b882de11349ac951ea9479e65383224674f18",
+    "selected_malformed__selected/sample-01-B.json": "8fad83732d267f15f672b8350cd6331b3558ce667fbc17ad7237246dcc1acbb5",
+    "selected_malformed__selected/sample-02-B.json": "8fad83732d267f15f672b8350cd6331b3558ce667fbc17ad7237246dcc1acbb5",
+    "selected_malformed__selected/sample-03-A.json": "a9c72e7aa4c5a194788af486059b882de11349ac951ea9479e65383224674f18",
+    "selected_malformed__selected/sample-04-B.json": "8fad83732d267f15f672b8350cd6331b3558ce667fbc17ad7237246dcc1acbb5",
+    "selected_malformed__selected/sample-05-A.json": "a9c72e7aa4c5a194788af486059b882de11349ac951ea9479e65383224674f18",
+    "selected_malformed__selected/sample-06-A.json": "a9c72e7aa4c5a194788af486059b882de11349ac951ea9479e65383224674f18",
+    "selected_malformed__selected/sample-07-B.json": "8fad83732d267f15f672b8350cd6331b3558ce667fbc17ad7237246dcc1acbb5",
+    "selected_malformed__selected/sample-08-A.json": "a9c72e7aa4c5a194788af486059b882de11349ac951ea9479e65383224674f18",
+    "selected_malformed__selected/sample-09-B.json": "8fad83732d267f15f672b8350cd6331b3558ce667fbc17ad7237246dcc1acbb5",
+    "selected_value__all/fingerprint.json": "5a34c96c7a32dea2943df3813f0c30464ae95d19872741fdb8d5dc477ed36858",
+    "selected_value__all/manifest.json": "18dd9e2133c5442ac3df89a55977535c0a06853deb2913d58a10b3130a3f8b60",
+    "selected_value__all/raw-A.json": "e1e60cd2bf048d6459fd26fd5ba615a314e9f41b0bfd2177776a851a897d61f2",
+    "selected_value__all/raw-B.json": "ad9f04965cece332371124432ddab4cd98e86c2bfc65eda41efaf0c36f128129",
+    "selected_value__all/sample-00-A.json": "14e579198a5fd44cddf82964fc4386b891027c403c0a382a38aad88121187ae7",
+    "selected_value__all/sample-01-B.json": "cdf0c09dd04e508f3f9266f0f28bdb88cc2056a6479242fb2b5b566c8ee2fd11",
+    "selected_value__all/sample-02-B.json": "cdf0c09dd04e508f3f9266f0f28bdb88cc2056a6479242fb2b5b566c8ee2fd11",
+    "selected_value__all/sample-03-A.json": "14e579198a5fd44cddf82964fc4386b891027c403c0a382a38aad88121187ae7",
+    "selected_value__all/sample-04-B.json": "cdf0c09dd04e508f3f9266f0f28bdb88cc2056a6479242fb2b5b566c8ee2fd11",
+    "selected_value__all/sample-05-A.json": "14e579198a5fd44cddf82964fc4386b891027c403c0a382a38aad88121187ae7",
+    "selected_value__all/sample-06-A.json": "14e579198a5fd44cddf82964fc4386b891027c403c0a382a38aad88121187ae7",
+    "selected_value__all/sample-07-B.json": "cdf0c09dd04e508f3f9266f0f28bdb88cc2056a6479242fb2b5b566c8ee2fd11",
+    "selected_value__all/sample-08-A.json": "14e579198a5fd44cddf82964fc4386b891027c403c0a382a38aad88121187ae7",
+    "selected_value__all/sample-09-B.json": "cdf0c09dd04e508f3f9266f0f28bdb88cc2056a6479242fb2b5b566c8ee2fd11",
+    "selected_value__selected/fingerprint.json": "1174d870ae6105b13718137fcbcf88ddb33578293fa4790c51e689269c4d5f2f",
+    "selected_value__selected/manifest.json": "c506a5d4bdaa993fc27b48cfcc5e2e4f7c385518af115a4c2a285861a44cc176",
+    "selected_value__selected/raw-A.json": "05eddd807e0cee93a66b9076965f50f410fc0a1dcfc91d712919b5384980e17a",
+    "selected_value__selected/raw-B.json": "15c80a20d73b896798168efdad78295de5860b91e32ec423ea87c0badc48789b",
+    "selected_value__selected/sample-00-A.json": "560b89a5ba21eb2f607900f3d0ef52e7f3324f6ecddb8fcbe3664c969cfc7f17",
+    "selected_value__selected/sample-01-B.json": "45880002b3e4450839aa54214e3d6291aa97ac79ab0a2b532bfad76404c9029b",
+    "selected_value__selected/sample-02-B.json": "45880002b3e4450839aa54214e3d6291aa97ac79ab0a2b532bfad76404c9029b",
+    "selected_value__selected/sample-03-A.json": "560b89a5ba21eb2f607900f3d0ef52e7f3324f6ecddb8fcbe3664c969cfc7f17",
+    "selected_value__selected/sample-04-B.json": "45880002b3e4450839aa54214e3d6291aa97ac79ab0a2b532bfad76404c9029b",
+    "selected_value__selected/sample-05-A.json": "560b89a5ba21eb2f607900f3d0ef52e7f3324f6ecddb8fcbe3664c969cfc7f17",
+    "selected_value__selected/sample-06-A.json": "560b89a5ba21eb2f607900f3d0ef52e7f3324f6ecddb8fcbe3664c969cfc7f17",
+    "selected_value__selected/sample-07-B.json": "45880002b3e4450839aa54214e3d6291aa97ac79ab0a2b532bfad76404c9029b",
+    "selected_value__selected/sample-08-A.json": "560b89a5ba21eb2f607900f3d0ef52e7f3324f6ecddb8fcbe3664c969cfc7f17",
+    "selected_value__selected/sample-09-B.json": "45880002b3e4450839aa54214e3d6291aa97ac79ab0a2b532bfad76404c9029b",
+    "timestamp__all/fingerprint.json": "68578dc6f9805167a7e4b10939011df304da6922dac6aee74c0ac6eff9751520",
+    "timestamp__all/manifest.json": "9da638228ba4b203fe29cf9f148c9398381954f4ea02db635996ccf0e7e92061",
+    "timestamp__all/raw-A.json": "4ecd4367b4468173cba75cdcfe0db5dd0426a92e529db0cd2b6e51f900dacf9d",
+    "timestamp__all/raw-B.json": "8328a7e84fec8ac983d1e0a0500f6e1731e5161b89b014f2cc7a4261615d6f3e",
+    "timestamp__all/sample-00-A.json": "9998466c6df2d3ebbc1c8e42e7f7f56a7d5f16980acf43cdf867cd9f94c08a9b",
+    "timestamp__all/sample-01-B.json": "a6f11c05dd7fc690ab7d526d49ae411d0d15faee26b175a7aeaaea02d8da62c8",
+    "timestamp__all/sample-02-B.json": "a6f11c05dd7fc690ab7d526d49ae411d0d15faee26b175a7aeaaea02d8da62c8",
+    "timestamp__all/sample-03-A.json": "9998466c6df2d3ebbc1c8e42e7f7f56a7d5f16980acf43cdf867cd9f94c08a9b",
+    "timestamp__all/sample-04-B.json": "a6f11c05dd7fc690ab7d526d49ae411d0d15faee26b175a7aeaaea02d8da62c8",
+    "timestamp__all/sample-05-A.json": "9998466c6df2d3ebbc1c8e42e7f7f56a7d5f16980acf43cdf867cd9f94c08a9b",
+    "timestamp__all/sample-06-A.json": "9998466c6df2d3ebbc1c8e42e7f7f56a7d5f16980acf43cdf867cd9f94c08a9b",
+    "timestamp__all/sample-07-B.json": "a6f11c05dd7fc690ab7d526d49ae411d0d15faee26b175a7aeaaea02d8da62c8",
+    "timestamp__all/sample-08-A.json": "9998466c6df2d3ebbc1c8e42e7f7f56a7d5f16980acf43cdf867cd9f94c08a9b",
+    "timestamp__all/sample-09-B.json": "a6f11c05dd7fc690ab7d526d49ae411d0d15faee26b175a7aeaaea02d8da62c8",
+    "timestamp__selected/fingerprint.json": "0b973d335ea7f9a47c587f05e83f1fd07c59ce294ba2772ab2eae5819cea2fde",
+    "timestamp__selected/manifest.json": "e4c3ee1bb0943ccb4fddfae75be7a0449e52cdeefeab15eb0f0f5f6294434f58",
+    "timestamp__selected/raw-A.json": "a9d957d42c80ad65db4a5dd8f96bf22b66bee9856e163550e54f42177795cb6c",
+    "timestamp__selected/raw-B.json": "9de90f746e3adc5afa42542d81938cba1ca3a5b94a80fb0aa2110ecf8bede9fe",
+    "timestamp__selected/sample-00-A.json": "c8e851d1454fafcd2aecb1ee6a3054c1c9f5a8194ecfb2974cc382afb6f8490f",
+    "timestamp__selected/sample-01-B.json": "38b10c4b0f78e235bf61cbac9f74bd55f35b4ece4b51d45c9ed622cf3a617517",
+    "timestamp__selected/sample-02-B.json": "38b10c4b0f78e235bf61cbac9f74bd55f35b4ece4b51d45c9ed622cf3a617517",
+    "timestamp__selected/sample-03-A.json": "c8e851d1454fafcd2aecb1ee6a3054c1c9f5a8194ecfb2974cc382afb6f8490f",
+    "timestamp__selected/sample-04-B.json": "38b10c4b0f78e235bf61cbac9f74bd55f35b4ece4b51d45c9ed622cf3a617517",
+    "timestamp__selected/sample-05-A.json": "c8e851d1454fafcd2aecb1ee6a3054c1c9f5a8194ecfb2974cc382afb6f8490f",
+    "timestamp__selected/sample-06-A.json": "c8e851d1454fafcd2aecb1ee6a3054c1c9f5a8194ecfb2974cc382afb6f8490f",
+    "timestamp__selected/sample-07-B.json": "38b10c4b0f78e235bf61cbac9f74bd55f35b4ece4b51d45c9ed622cf3a617517",
+    "timestamp__selected/sample-08-A.json": "c8e851d1454fafcd2aecb1ee6a3054c1c9f5a8194ecfb2974cc382afb6f8490f",
+    "timestamp__selected/sample-09-B.json": "38b10c4b0f78e235bf61cbac9f74bd55f35b4ece4b51d45c9ed622cf3a617517",
+    "unselected_malformed__all/fingerprint.json": "6d6e14e68f6484da66e70b2cbc83fa8a602278f7a6f3f51b039d8361ce0ae9e2",
+    "unselected_malformed__all/manifest.json": "ba455dab37ddddf3fe318996513277d91de0858051fe9969e378be5dfdacc6ca",
+    "unselected_malformed__all/raw-A.json": "8818b3a46c7645de514ded4112bf6e2e2071181c322fb4c6f6d1661392185489",
+    "unselected_malformed__all/raw-B.json": "a4fe76461bed6fbcb86365c43c3bcac34a16db28d5a6dcb11636fe9e8c492eea",
+    "unselected_malformed__all/sample-00-A.json": "e02d047af3e7f6598a96a66d9976e6ed35480e6647d37e4d2a6b5681e8c46b29",
+    "unselected_malformed__all/sample-01-B.json": "4f24bc950e2b7c4879cc177325187bd52e900ec14b7d8a07548347dd7e0afd18",
+    "unselected_malformed__all/sample-02-B.json": "4f24bc950e2b7c4879cc177325187bd52e900ec14b7d8a07548347dd7e0afd18",
+    "unselected_malformed__all/sample-03-A.json": "e02d047af3e7f6598a96a66d9976e6ed35480e6647d37e4d2a6b5681e8c46b29",
+    "unselected_malformed__all/sample-04-B.json": "4f24bc950e2b7c4879cc177325187bd52e900ec14b7d8a07548347dd7e0afd18",
+    "unselected_malformed__all/sample-05-A.json": "e02d047af3e7f6598a96a66d9976e6ed35480e6647d37e4d2a6b5681e8c46b29",
+    "unselected_malformed__all/sample-06-A.json": "e02d047af3e7f6598a96a66d9976e6ed35480e6647d37e4d2a6b5681e8c46b29",
+    "unselected_malformed__all/sample-07-B.json": "4f24bc950e2b7c4879cc177325187bd52e900ec14b7d8a07548347dd7e0afd18",
+    "unselected_malformed__all/sample-08-A.json": "e02d047af3e7f6598a96a66d9976e6ed35480e6647d37e4d2a6b5681e8c46b29",
+    "unselected_malformed__all/sample-09-B.json": "4f24bc950e2b7c4879cc177325187bd52e900ec14b7d8a07548347dd7e0afd18",
+    "unselected_malformed__selected/fingerprint.json": "5dd1fbba87bcd559ccc6d90420de791cd3db9e50d74fed1aaadd114017c8df1a",
+    "unselected_malformed__selected/manifest.json": "3838435bfbf8c90030c0116438bca83ba8504cc45186c6cd237826d4ebca427d",
+    "unselected_malformed__selected/raw-A.json": "dead5cab4e2daee86ecb145541c84f3da6165acbecfb22f110d7711b09a59605",
+    "unselected_malformed__selected/raw-B.json": "03bac655fd200ae444b76164bee0d51451c09e62e136b7d8e96c2503541adad6",
+    "unselected_malformed__selected/sample-00-A.json": "c807048da5c6ba2d2059125465d2166733c619b221a9681054e03f72a4323cf2",
+    "unselected_malformed__selected/sample-01-B.json": "e5a6966efa0895d74cc4210313a9757d0a58cf7ad7b713062b09c80c6db1fb2e",
+    "unselected_malformed__selected/sample-02-B.json": "e5a6966efa0895d74cc4210313a9757d0a58cf7ad7b713062b09c80c6db1fb2e",
+    "unselected_malformed__selected/sample-03-A.json": "c807048da5c6ba2d2059125465d2166733c619b221a9681054e03f72a4323cf2",
+    "unselected_malformed__selected/sample-04-B.json": "e5a6966efa0895d74cc4210313a9757d0a58cf7ad7b713062b09c80c6db1fb2e",
+    "unselected_malformed__selected/sample-05-A.json": "c807048da5c6ba2d2059125465d2166733c619b221a9681054e03f72a4323cf2",
+    "unselected_malformed__selected/sample-06-A.json": "c807048da5c6ba2d2059125465d2166733c619b221a9681054e03f72a4323cf2",
+    "unselected_malformed__selected/sample-07-B.json": "e5a6966efa0895d74cc4210313a9757d0a58cf7ad7b713062b09c80c6db1fb2e",
+    "unselected_malformed__selected/sample-08-A.json": "c807048da5c6ba2d2059125465d2166733c619b221a9681054e03f72a4323cf2",
+    "unselected_malformed__selected/sample-09-B.json": "e5a6966efa0895d74cc4210313a9757d0a58cf7ad7b713062b09c80c6db1fb2e",
+    "unselected_value__all/fingerprint.json": "9fe03a4c13ce547d8d062534ec5f96b5a83a0068d1c4a9bf9b781ed2a058d1de",
+    "unselected_value__all/manifest.json": "e482fa9dbf04ab03495f0fd48daa427c6245a3071b086c42b16fb55f05410cac",
+    "unselected_value__all/raw-A.json": "abaa6889307e0ddefb168570a60a58e920c0f1839718e9fab2f26dc45521682c",
+    "unselected_value__all/raw-B.json": "2fdebaca3d99eadd31ecf7051d2dcbc26262552c99af8b5e0a90ff03b2d59c3c",
+    "unselected_value__all/sample-00-A.json": "3f18ee768d66683e837d0cc2a647dc7829ec117561fc68852f7f04a830c7ad8e",
+    "unselected_value__all/sample-01-B.json": "32a601d288b6e252765233aac415faa8217c8ac858b6f0524f8aa149a4d170fc",
+    "unselected_value__all/sample-02-B.json": "32a601d288b6e252765233aac415faa8217c8ac858b6f0524f8aa149a4d170fc",
+    "unselected_value__all/sample-03-A.json": "3f18ee768d66683e837d0cc2a647dc7829ec117561fc68852f7f04a830c7ad8e",
+    "unselected_value__all/sample-04-B.json": "32a601d288b6e252765233aac415faa8217c8ac858b6f0524f8aa149a4d170fc",
+    "unselected_value__all/sample-05-A.json": "3f18ee768d66683e837d0cc2a647dc7829ec117561fc68852f7f04a830c7ad8e",
+    "unselected_value__all/sample-06-A.json": "3f18ee768d66683e837d0cc2a647dc7829ec117561fc68852f7f04a830c7ad8e",
+    "unselected_value__all/sample-07-B.json": "32a601d288b6e252765233aac415faa8217c8ac858b6f0524f8aa149a4d170fc",
+    "unselected_value__all/sample-08-A.json": "3f18ee768d66683e837d0cc2a647dc7829ec117561fc68852f7f04a830c7ad8e",
+    "unselected_value__all/sample-09-B.json": "32a601d288b6e252765233aac415faa8217c8ac858b6f0524f8aa149a4d170fc",
+    "unselected_value__selected/fingerprint.json": "766b6d662a104a2ccba4a180f99b0a1b872b20f30f00b729f04879b2ac8d07ed",
+    "unselected_value__selected/manifest.json": "0b0bf9b6fa429f2ae431af2a9dc892349ee7213ea382dc7b0be1d4bec81e5b18",
+    "unselected_value__selected/raw-A.json": "ed3192e1b0369686cfcc4b721c6f65f632d200addeae4352ad625c6500be0449",
+    "unselected_value__selected/raw-B.json": "44269fd4d92fae5ae594be699e89b6b1b90f724df186b0575443614cafcc741d",
+    "unselected_value__selected/sample-00-A.json": "d73f6fcd7c0f03bfa4655661bb8bd9c9a120337fc56428a18548c51fc8f063a3",
+    "unselected_value__selected/sample-01-B.json": "d313cc442299702e4f75a408811ef9ea9a6e6a491a29403cc389a884a11f8e1e",
+    "unselected_value__selected/sample-02-B.json": "d313cc442299702e4f75a408811ef9ea9a6e6a491a29403cc389a884a11f8e1e",
+    "unselected_value__selected/sample-03-A.json": "d73f6fcd7c0f03bfa4655661bb8bd9c9a120337fc56428a18548c51fc8f063a3",
+    "unselected_value__selected/sample-04-B.json": "d313cc442299702e4f75a408811ef9ea9a6e6a491a29403cc389a884a11f8e1e",
+    "unselected_value__selected/sample-05-A.json": "d73f6fcd7c0f03bfa4655661bb8bd9c9a120337fc56428a18548c51fc8f063a3",
+    "unselected_value__selected/sample-06-A.json": "d73f6fcd7c0f03bfa4655661bb8bd9c9a120337fc56428a18548c51fc8f063a3",
+    "unselected_value__selected/sample-07-B.json": "d313cc442299702e4f75a408811ef9ea9a6e6a491a29403cc389a884a11f8e1e",
+    "unselected_value__selected/sample-08-A.json": "d73f6fcd7c0f03bfa4655661bb8bd9c9a120337fc56428a18548c51fc8f063a3",
+    "unselected_value__selected/sample-09-B.json": "d313cc442299702e4f75a408811ef9ea9a6e6a491a29403cc389a884a11f8e1e",
+    "usunits__all/fingerprint.json": "fea754b74fcbf685b3db3a1c7546d376d94cf3406513c75d57a9f96c14576822",
+    "usunits__all/manifest.json": "b694f6b05de1562889b378a921506ce03534482a020fb63f1c6e8df895c81d59",
+    "usunits__all/raw-A.json": "5d14238860a06ce9ee9a1d1fbb1e72c1ebf20dd1013fd16d95b0b366eb9e252b",
+    "usunits__all/raw-B.json": "c5c3006795780e64481cf54145b8b47f73fff900f34e0e7fb8027d82d16cd44c",
+    "usunits__all/sample-00-A.json": "ce4e25022ce3f8f3aa27c02eb92f2c5356d8d6acd800fdbc7edd92fa23ce0c72",
+    "usunits__all/sample-01-B.json": "03d8ec9e1bcba54e19535d62d5cdddec119a7d7f3632890666244a539177fa5b",
+    "usunits__all/sample-02-B.json": "03d8ec9e1bcba54e19535d62d5cdddec119a7d7f3632890666244a539177fa5b",
+    "usunits__all/sample-03-A.json": "ce4e25022ce3f8f3aa27c02eb92f2c5356d8d6acd800fdbc7edd92fa23ce0c72",
+    "usunits__all/sample-04-B.json": "03d8ec9e1bcba54e19535d62d5cdddec119a7d7f3632890666244a539177fa5b",
+    "usunits__all/sample-05-A.json": "ce4e25022ce3f8f3aa27c02eb92f2c5356d8d6acd800fdbc7edd92fa23ce0c72",
+    "usunits__all/sample-06-A.json": "ce4e25022ce3f8f3aa27c02eb92f2c5356d8d6acd800fdbc7edd92fa23ce0c72",
+    "usunits__all/sample-07-B.json": "03d8ec9e1bcba54e19535d62d5cdddec119a7d7f3632890666244a539177fa5b",
+    "usunits__all/sample-08-A.json": "ce4e25022ce3f8f3aa27c02eb92f2c5356d8d6acd800fdbc7edd92fa23ce0c72",
+    "usunits__all/sample-09-B.json": "03d8ec9e1bcba54e19535d62d5cdddec119a7d7f3632890666244a539177fa5b",
+    "usunits__selected/fingerprint.json": "737e1647eba461234c35c5729d2aae1ed8abb8458c049e78c64ced8a8b352895",
+    "usunits__selected/manifest.json": "cd0c09f4c983b9c09d540a39f5dcc490b59117e1c93f8e4a1db1e985df52cbb8",
+    "usunits__selected/raw-A.json": "60d7d596d5043163bd9a2a4b3c5fd39905f4086b7f4ef7269d68ad87b1b6c641",
+    "usunits__selected/raw-B.json": "12fdd5c0bd595ea9913aa4128da75ff291c222c65b07dc9c9f275d6ab1500475",
+    "usunits__selected/sample-00-A.json": "9802b3fc46df6c731f0ba61ef1e0d9d67daeedf02b0bd8777bbeb4df537665a6",
+    "usunits__selected/sample-01-B.json": "1fd12eba9664d563e5017f911a3cddecbfb00a3ccba050f2a9a7df656ca0df2e",
+    "usunits__selected/sample-02-B.json": "1fd12eba9664d563e5017f911a3cddecbfb00a3ccba050f2a9a7df656ca0df2e",
+    "usunits__selected/sample-03-A.json": "9802b3fc46df6c731f0ba61ef1e0d9d67daeedf02b0bd8777bbeb4df537665a6",
+    "usunits__selected/sample-04-B.json": "1fd12eba9664d563e5017f911a3cddecbfb00a3ccba050f2a9a7df656ca0df2e",
+    "usunits__selected/sample-05-A.json": "9802b3fc46df6c731f0ba61ef1e0d9d67daeedf02b0bd8777bbeb4df537665a6",
+    "usunits__selected/sample-06-A.json": "9802b3fc46df6c731f0ba61ef1e0d9d67daeedf02b0bd8777bbeb4df537665a6",
+    "usunits__selected/sample-07-B.json": "1fd12eba9664d563e5017f911a3cddecbfb00a3ccba050f2a9a7df656ca0df2e",
+    "usunits__selected/sample-08-A.json": "9802b3fc46df6c731f0ba61ef1e0d9d67daeedf02b0bd8777bbeb4df537665a6",
+    "usunits__selected/sample-09-B.json": "1fd12eba9664d563e5017f911a3cddecbfb00a3ccba050f2a9a7df656ca0df2e"
+  },
+  "fixture_manifest_sha256": "a1995b43e921f7dd5664f05e69872d15ff9b8c974871f9f3d1deb3448e378837",
+  "fixture_wal_sha256": "2713b73e3a715e7816c3d94023611ba9e2ac74911f0848f620d077218473b817",
+  "harness_digest": "ef827e3e1c3fce41575fc369aa473720e2b2200d8710e2034a88530bafa49bbd",
+  "install": {
+    "dependency_match": true,
+    "pip_command": "<venv>/bin/python -m pip install --no-deps --no-index --force-reinstall <wheel>",
+    "pip_version": "25.3",
+    "venv_command": "python -m venv --system-site-packages /tmp/gwexpy-v025-b-env-{a,b}"
+  },
+  "lane": "B-F2-SDB-v2",
+  "provenance_reference": {
+    "freeze_commit": "5e8bfae1e",
+    "path": "docs/developers/reports/v0.2.5-performance/C1/58253ec1b6163f293ec82d19ecbdf44b9683565e0da5b46549279373d8164bf0/baseline-v1/baseline-manifest.json",
+    "sha256": "15546f6c7044043fb707ed455d26ff26da6f3487e0e8f875970500a11367473b"
+  },
+  "python_version": "3.12.12",
+  "sample_count": 140,
+  "samples_per_arm": 5,
+  "schema": 2,
+  "scope": "Concurrent SQLite WAL commits after B1 metadata validation, before payload SELECT; selected and all-column public SDB reads",
+  "source_sha": {
+    "B0": "522e52a082925da4dd37966d82a7616bdd2a5248",
+    "B1": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c"
+  },
+  "sqlite_version": "3.51.0",
+  "status": "UNBASELINED",
+  "venv_python": {
+    "B0": "/tmp/gwexpy-v025-b-env-a/bin/python",
+    "B1": "/tmp/gwexpy-v025-b-env-b/bin/python"
+  },
+  "wheel_files": {
+    "B0": "/tmp/gwexpy-v025-b-wheels/gwexpy-0.2.4-py3-none-any.whl",
+    "B1": "/tmp/gwexpy-v025-b-wheels/gwexpy-0.2.5-py3-none-any.whl"
+  },
+  "wheel_sha256": {
+    "B0": "34afe8188c753cd9da0b182a5d2a88cce2f7ec36633730fe0bee15e2506df56d",
+    "B1": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498"
+  }
+}

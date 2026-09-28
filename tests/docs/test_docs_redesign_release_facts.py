@@ -22,8 +22,11 @@ PUBLISHED_V024_VERSION = "0.2.4"
 PUBLISHED_V024_DATE = "2026-09-26"
 PUBLISHED_V024_HISTORY_ENTRY = f"[{PUBLISHED_V024_VERSION}] - {PUBLISHED_V024_DATE}"
 CANDIDATE_V025_VERSION = "0.2.5"
-CANDIDATE_V025_DATE = "2026-09-27"
-CANDIDATE_V025_HISTORY_ENTRY = f"[{CANDIDATE_V025_VERSION}] - {CANDIDATE_V025_DATE}"
+CANDIDATE_V025_METADATA_DATE = "2026-09-28"
+CANDIDATE_V025_HISTORY_ENTRY = (
+    f"[{CANDIDATE_V025_VERSION}] - {CANDIDATE_V025_METADATA_DATE}"
+)
+HISTORICAL_V025_METADATA_DATE = "2026-09-27"
 RELEASE_DOI_URL = "https://doi.org/10.5281/zenodo.22228340"
 ACTIVITY_RELEASE_VERSION = "0.2.2"
 ACTIVITY_RELEASE_SHA = "2503743cf654606a5baa83c7b7e7c8b8e1e06596"
@@ -223,13 +226,38 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
         citation,
         re.MULTILINE,
     )
+    # The S2 candidate date is frozen separately from the historical S/R date.
+    release_plan = (
+        REPO_ROOT / "docs/developers/plans/20260927_v0.2.5_release_plan.md"
+    ).read_text(encoding="utf-8")
+    assert (
+        f"The candidate metadata date for S2 is **{CANDIDATE_V025_METADATA_DATE}**"
+        in release_plan
+    )
+    assert f"old {HISTORICAL_V025_METADATA_DATE} date" in release_plan
+    assert (
+        f"The {HISTORICAL_V025_METADATA_DATE} S/R cycle is historical and superseded"
+        in release_plan
+    )
     assert re.search(
-        rf"^date-released: {re.escape(CANDIDATE_V025_DATE)}$",
+        rf"^date-released: {re.escape(CANDIDATE_V025_METADATA_DATE)}$",
         citation,
         re.MULTILINE,
     )
     assert zenodo["version"] == CANDIDATE_V025_VERSION
-    assert zenodo["publication_date"] == CANDIDATE_V025_DATE
+    assert zenodo["publication_date"] == CANDIDATE_V025_METADATA_DATE
+    release_note = (REPO_ROOT / "release_notes/v0.2.5.md").read_text(encoding="utf-8")
+    assert f"candidate release date is {CANDIDATE_V025_METADATA_DATE} UTC" in (
+        release_note
+    )
+    historical_sr_note = (
+        f"The {HISTORICAL_V025_METADATA_DATE} S/R approvals and candidate runs are "
+        "historical evidence"
+    )
+    assert historical_sr_note in changelog
+    assert f"{HISTORICAL_V025_METADATA_DATE} S/R approvals are historical" in (
+        release_note
+    )
 
     assert release_status["latest_release"] == PUBLISHED_V024_VERSION
     assert release_status["intro_examples_release"] == PUBLISHED_V024_VERSION
@@ -387,7 +415,7 @@ def test_redesign_changelog_includes_the_published_release_history() -> None:
 
     rendered_history = canonical.split("# Changelog", 1)[1]
     rendered_headings = re.findall(
-        r"^## (\[[^\]]+\] - \d{4}-\d{2}-\d{2})$",
+        r"^## (\[[^\]]+\] - (?:TBD|\d{4}-\d{2}-\d{2}))$",
         rendered_history,
         re.MULTILINE,
     )
@@ -397,7 +425,9 @@ def test_redesign_changelog_includes_the_published_release_history() -> None:
         PUBLISHED_V023_HISTORY_ENTRY,
     ]
     canonical_releases = re.findall(
-        r"^## (\[[^\]]+\] - \d{4}-\d{2}-\d{2})$", canonical, re.MULTILINE
+        r"^## (\[[^\]]+\] - (?:TBD|\d{4}-\d{2}-\d{2}))$",
+        canonical,
+        re.MULTILINE,
     )
     assert canonical_releases[0] == CANDIDATE_V025_HISTORY_ENTRY
     assert canonical_releases[1:] == [
@@ -444,7 +474,7 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
     assert changelog_message is not None
     assert changelog_message.string == "更新履歴"
     release_entries = re.findall(
-        r"^## (\[[^\]]+\] - \d{4}-\d{2}-\d{2})$",
+        r"^## (\[[^\]]+\] - (?:TBD|\d{4}-\d{2}-\d{2}))$",
         (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8"),
         re.MULTILINE,
     )
@@ -490,10 +520,20 @@ def test_v025_changelog_gettext_compiles_and_translates_qualified_claims() -> No
         message_id = " ".join(content.split())
         if message_id:
             ids.append(message_id)
-    assert len(ids) == 8  # Lead, Fixed, and six scoped bullets.
+    assert len(ids) > 8  # The six #751 bullets plus current performance scope.
     assert ids[0].startswith("This patch fixes supported NetCDF4 and Zarr")
+    assert "internal I/O performance and scalability" in ids[0]
     assert ids[1] == "Fixed"
-    assert all(message_id in release_note for message_id in ids[2:])
+    assert all(message_id in release_note for message_id in ids[2:8])
+    assert ids[8] == "Internal performance work (release qualification pending)"
+    assert any("**Range push-down (#584)**" in item for item in ids[9:])
+    assert any(
+        "**Native DTTXML skipped-payload exception (#589)**" in item for item in ids[9:]
+    )
+    assert any(
+        "**SDB concurrent-write snapshot correction (#585)**" in item
+        for item in ids[9:]
+    )
     assert "preserve serialized values and metadata" not in release_note
 
     path = REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"

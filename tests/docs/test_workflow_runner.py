@@ -229,7 +229,9 @@ with open(os.path.join(out_dir, "validation-metrics.json"), "w") as f:
         "cell_timeout_seconds": 30,
         "required_outputs": ["validation-metrics.json"],
     }
-    res = verify_notebook(entry=entry, source_root=tmp_path, output_dir=tmp_path / "out")
+    res = verify_notebook(
+        entry=entry, source_root=tmp_path, output_dir=tmp_path / "out"
+    )
     assert res["numerical_checks_passed"] is False
 
 
@@ -251,7 +253,9 @@ with open(os.path.join(out_dir, "validation-metrics.json"), "w") as f:
         "cell_timeout_seconds": 30,
         "required_outputs": ["validation-metrics.json"],
     }
-    res = verify_notebook(entry=entry, source_root=tmp_path, output_dir=tmp_path / "out")
+    res = verify_notebook(
+        entry=entry, source_root=tmp_path, output_dir=tmp_path / "out"
+    )
     assert res["numerical_checks_passed"] is False
 
 
@@ -284,7 +288,9 @@ with open(os.path.join(out_dir, "validation-metrics.json"), "w") as f:
         "required_outputs": ["validation-metrics.json"],
         "required_checks": ["check_A", "check_B"],
     }
-    res = verify_notebook(entry=entry, source_root=tmp_path, output_dir=tmp_path / "out")
+    res = verify_notebook(
+        entry=entry, source_root=tmp_path, output_dir=tmp_path / "out"
+    )
     assert res["numerical_checks_passed"] is False
     assert "check_B" in res.get("missing_checks", [])
 
@@ -293,23 +299,34 @@ def test_runner_cli_unknown_id_and_empty_selection(tmp_path: Path) -> None:
     """CLI must exit non-zero when unknown ID is given or selection is empty."""
     manifest_file = tmp_path / "workflow_notebooks.json"
     manifest_file.write_text(
-        json.dumps({
-            "schema_version": 1,
-            "notebooks": [
-                {
-                    "id": "T1",
-                    "public": "dummy.ipynb",
-                    "group": "core",
-                    "cell_timeout_seconds": 30,
-                    "required_outputs": [],
-                }
-            ],
-        }),
+        json.dumps(
+            {
+                "schema_version": 1,
+                "notebooks": [
+                    {
+                        "id": "T1",
+                        "public": "dummy.ipynb",
+                        "group": "core",
+                        "cell_timeout_seconds": 30,
+                        "required_outputs": [],
+                    }
+                ],
+            }
+        ),
         encoding="utf-8",
     )
     # Unknown ID
     proc = subprocess.run(
-        [sys.executable, str(RUNNER_PATH), "--manifest", str(manifest_file), "--source", str(tmp_path), "--ids", "UNKNOWN"],
+        [
+            sys.executable,
+            str(RUNNER_PATH),
+            "--manifest",
+            str(manifest_file),
+            "--source",
+            str(tmp_path),
+            "--ids",
+            "UNKNOWN",
+        ],
         capture_output=True,
         text=True,
     )
@@ -321,13 +338,15 @@ def test_manifest_validation_duplicates(tmp_path: Path) -> None:
     """Manifest loader must reject duplicate IDs or public paths."""
     dup_manifest = tmp_path / "dup.json"
     dup_manifest.write_text(
-        json.dumps({
-            "schema_version": 1,
-            "notebooks": [
-                {"id": "T1", "public": "a.ipynb", "group": "core"},
-                {"id": "T1", "public": "b.ipynb", "group": "core"},
-            ],
-        }),
+        json.dumps(
+            {
+                "schema_version": 1,
+                "notebooks": [
+                    {"id": "T1", "public": "a.ipynb", "group": "core"},
+                    {"id": "T1", "public": "b.ipynb", "group": "core"},
+                ],
+            }
+        ),
         encoding="utf-8",
     )
     with pytest.raises(ValueError, match="Duplicate or empty notebook ID"):
@@ -441,7 +460,9 @@ def test_verify_kernel_environment_install_modes(tmp_path: Path) -> None:
     )
 
     # Mode 'installed' with foreign site-packages file (not in purelib/platlib) must be rejected
-    fake_foreign_site = tmp_path / "foreign" / "site-packages" / "gwexpy" / "__init__.py"
+    fake_foreign_site = (
+        tmp_path / "foreign" / "site-packages" / "gwexpy" / "__init__.py"
+    )
     fake_foreign_site.parent.mkdir(parents=True)
     fake_foreign_site.write_text("# foreign site gwexpy\n", encoding="utf-8")
     env_foreign = {
@@ -540,7 +561,9 @@ def test_runner_injected_cell_kernel_env_and_mode_rejection(tmp_path: Path) -> N
     assert "install_mode='editable' violated" in (res_editable_mismatch["error"] or "")
 
 
-def test_runner_injected_cell_expected_version_mismatch_rejected(tmp_path: Path) -> None:
+def test_runner_injected_cell_expected_version_mismatch_rejected(
+    tmp_path: Path,
+) -> None:
     """Injected setup cell must reject execution if imported version does not match expected_version."""
     code = "x = 100"
     nb_path = _create_fixture_notebook(tmp_path, code)
@@ -574,7 +597,9 @@ def test_runner_injected_cell_expected_version_mismatch_rejected(tmp_path: Path)
     assert res_ver_fail["kernel_environment"]["verification_passed"] is False
 
 
-def test_runner_injected_cell_expected_package_root_mismatch_rejected(tmp_path: Path) -> None:
+def test_runner_injected_cell_expected_package_root_mismatch_rejected(
+    tmp_path: Path,
+) -> None:
     """Injected setup cell must reject execution if imported package directory does not match expected_package_root."""
     code = "x = 100"
     nb_path = _create_fixture_notebook(tmp_path, code)
@@ -602,7 +627,9 @@ def test_runner_injected_cell_expected_package_root_mismatch_rejected(tmp_path: 
 def test_verify_kernel_environment_counterexample_matrix(tmp_path: Path) -> None:
     """Verify each condition in the reviewer counterexample matrix under install_mode='installed'."""
     target_prefix = str(tmp_path / "target_env")
-    target_purelib = str(tmp_path / "target_env" / "lib" / "python3.12" / "site-packages")
+    target_purelib = str(
+        tmp_path / "target_env" / "lib" / "python3.12" / "site-packages"
+    )
     target_platlib = target_purelib
     expected_ver = "0.2.3"
 
@@ -731,6 +758,3 @@ def test_verify_kernel_environment_counterexample_matrix(tmp_path: Path) -> None
         install_mode="installed",
         repo_root=repo_root,
     )
-
-
-

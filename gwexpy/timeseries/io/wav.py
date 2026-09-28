@@ -109,9 +109,24 @@ def read_timeseriesdict_wav(
 
     tsd = TimeSeriesDict()
     dt = 1.0 / rate
+    # scipy has already decoded every interleaved channel. For ordinary
+    # string selectors, avoid constructing TimeSeries objects that the
+    # existing final filter would discard. Keep the full construction path
+    # for unit overrides and arbitrary iterables, whose validation and
+    # iteration side effects belong to the old observable behavior.
+    selected_names = None
+    if (
+        unit is None
+        and channels is not None
+        and type(channels) in (list, tuple, set, frozenset)
+        and all(type(channel) is str for channel in channels)
+    ):
+        selected_names = set(channels)
 
     for i in range(n_channels):
         name = f"channel_{i}"
+        if selected_names is not None and name not in selected_names:
+            continue
 
         ts = TimeSeries(
             data[:, i],
@@ -126,7 +141,7 @@ def read_timeseriesdict_wav(
         tsd[name] = ts
 
     # Channel filtering
-    if channels is not None:
+    if channels is not None and selected_names is None:
         tsd = TimeSeriesDict(filter_by_channels(tsd, channels))
 
     # Build provenance metadata
@@ -152,6 +167,8 @@ def read_timeseries_wav(source, **kwargs):
 
     If multiple channels are present, returns the first one.
     """
+    if kwargs.get("channels") is None and kwargs.get("unit") is None:
+        kwargs = {**kwargs, "channels": ["channel_0"]}
     tsd = read_timeseriesdict_wav(source, **kwargs)
     if not tsd:
         raise ValueError("No data found in WAV file")

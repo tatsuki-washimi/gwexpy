@@ -1,0 +1,44 @@
+{
+  "B1": {
+    "gwexpy_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+    "message": "SDB timestamp gap at index 2: expected cadence 9223372036854775809, got 1",
+    "outcome": "error",
+    "type": "builtins.ValueError",
+    "warnings": [
+      {
+        "category": "builtins.DeprecationWarning",
+        "message": "Compatibility support for python2 has been dropped"
+      }
+    ]
+  },
+  "candidate-v2": {
+    "gwexpy_path": "/tmp/gwexpy-v025-sdb-candidate-env/lib/python3.12/site-packages/gwexpy/__init__.py",
+    "message": "SDB timestamp gap at index 2: expected cadence 9223372036854775809, got 1",
+    "outcome": "error",
+    "type": "builtins.ValueError",
+    "warnings": [
+      {
+        "category": "builtins.DeprecationWarning",
+        "message": "Compatibility support for python2 has been dropped"
+      }
+    ]
+  },
+  "fixture": {
+    "rows": [
+      [
+        -9223372036854775808,
+        60.0
+      ],
+      [
+        1,
+        61.0
+      ],
+      [
+        2,
+        62.0
+      ]
+    ],
+    "sha256": "1cf3a36fabb80952c15b04c728a4d5a5dc8de6b25579d819561446a9037d6776"
+  },
+  "public_result_matches_b1": true
+}

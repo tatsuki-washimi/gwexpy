@@ -1,0 +1,1921 @@
+{
+  "cases": {
+    "fft_selected_short_payload_error": {
+      "bytes": 1041,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "FFT"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "FFT"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "selected_payload_semantic_error_preserve",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/fft-selected-short-payload-error.xml",
+      "sha256": "ad9aedc68cca51fa10f29b3c709f06624f6f91a48eb9428ea9895858379d6ab3",
+      "stream_roles": {
+        "df9f52a6c9c876100809a88a3e59e4a1a8a538e94c4a08255780a7e0aba3388a": "unselected",
+        "e6876e086df08226405c057fd68843ad3fa4b2ece2d50a9feb9c7ee6f1b28285": "selected"
+      }
+    },
+    "fft_unselected_nonreal_axis_error": {
+      "bytes": 1113,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "FFT"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "FFT"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "unselected_payload_semantic_error_hold",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/fft-unselected-nonreal-axis-error.xml",
+      "sha256": "0230cb1c37d16b3420242f4d1ed09f81e0df5c26d3d5a25e2a57766377cd9afc",
+      "stream_roles": {
+        "dd39b5e92327ed310549f8b095dcb2556ce2f6e8086912e6235e755346bfc2de": "unselected",
+        "e10f258d58b8cc922f2515264f85a2dd2b1a8828cfc396b5450c912fc25079e5": "selected"
+      }
+    },
+    "fft_unselected_short_payload_error": {
+      "bytes": 1041,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "FFT"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "FFT"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "unselected_payload_semantic_error_hold",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/fft-unselected-short-payload-error.xml",
+      "sha256": "a27b77773dffa69c05867895f402ccb3b0c089b225618b4b375558b029306229",
+      "stream_roles": {
+        "df9f52a6c9c876100809a88a3e59e4a1a8a538e94c4a08255780a7e0aba3388a": "selected",
+        "e6876e086df08226405c057fd68843ad3fa4b2ece2d50a9feb9c7ee6f1b28285": "unselected"
+      }
+    },
+    "late_xml_selected_payload_fault": {
+      "bytes": 6459,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "xml_parse_warning_supersedes_payload_fault",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/late-xml-selected-payload-fault.xml",
+      "sha256": "0903ff52bb9977a403bfd02030e036313fdc9426c7862e9c0e75b2d7d17b4fb7",
+      "stream_roles": {
+        "11ccc3e535fcf0d62b989b94dcf41122b68763e43fad20da0204064586f59706": "selected",
+        "c10fb8781e598cbecfe6eb11008a26caa6b130c975687369fd4f3961d23bcdbc": "unselected"
+      }
+    },
+    "late_xml_syntax_fault": {
+      "bytes": 100846,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "xml_parse_warning_empty",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/late-xml-syntax-fault.xml",
+      "sha256": "43c730708a04a23fa3e698de2208f451030c9403a9bb5f40cdb10970fa159a64",
+      "stream_roles": {
+        "326e57dcc9cd456f878c6d37e3e32662b5b4e75450ea2e61c1c424abcb7bf7a1": "unselected",
+        "44ef09b472cc103b602281b678788899f8476377595ac3f396152cedcd14ff3c": "unselected",
+        "46d82dc076ade17a61933205fdd7aebbed5f4552b2be34434cd9fb86b9f3894a": "unselected",
+        "5d69bfd87cfd9e73b4316cd4d06bddbdbf30e5fee96e7572d7f68cade8233e9d": "unselected",
+        "60640c05dad3ba936c187d2f2a6c70f9bed1cfb57e478379d09c59d72fe14005": "unselected",
+        "7e44c23dcbaf268357064a94827ee8dc09448994e6b4310b93b3f02a645a1e51": "unselected",
+        "8790f34568534d366acb27527cadb31d628b657e357d47efe07ff76bd6b59682": "unselected",
+        "8a3cd462e2cf60b12a3ca357bd1d7fc0f646b8ba0dd6f52fc27375c07533e60d": "unselected",
+        "922de13e4abf7145278581c17efda14698cbb4f992e99f994665181542030570": "unselected",
+        "b37dd9424c10d058ca042c895343a4c080450d8f6757bb4e377dd7bcbeb20bc3": "unselected",
+        "bf41ca65d0c7b0eaec9fecf1674a22f6c597ee07d1ff693c3b8be54ab4c5f76b": "unselected",
+        "c0494c8c2323c93e12e2904464e2ff162ebdf2b785e242ab13b3d4c4472330c9": "unselected",
+        "c10fb8781e598cbecfe6eb11008a26caa6b130c975687369fd4f3961d23bcdbc": "unselected",
+        "c955e9664504354b4717e5c6dc0b97e7c66ba69cc505cc48d2e4bbb0669b9196": "unselected",
+        "e54fe52ca0907aa534ca35b675303c0952df61e6e267965b11dd61062ccc9c29": "unselected",
+        "e7189a6951daf4e8773667e4bd126dfa043275041e01cd11ed55879ad0cc1201": "unselected",
+        "fea0b77d45d4a4161ce24dcf4adf1a037d1f8761fe0c26f0743470b7346e77a8": "selected"
+      }
+    },
+    "late_xml_unselected_payload_fault": {
+      "bytes": 6459,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "xml_parse_warning_supersedes_payload_fault",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/late-xml-unselected-payload-fault.xml",
+      "sha256": "af48e0ab9b83a321e24339b82c81dddf7e8be7bfcbb7312dfc53fc79c8feb217",
+      "stream_roles": {
+        "11ccc3e535fcf0d62b989b94dcf41122b68763e43fad20da0204064586f59706": "unselected",
+        "fea0b77d45d4a4161ce24dcf4adf1a037d1f8761fe0c26f0743470b7346e77a8": "selected"
+      }
+    },
+    "many_valid": {
+      "bytes": 100838,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "selected_valid",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/many-valid.xml",
+      "sha256": "ffd7d058ef3faf408cfd825b2e0f02306229066fa3e8aa34c7bc29c44bb7e3cd",
+      "stream_roles": {
+        "326e57dcc9cd456f878c6d37e3e32662b5b4e75450ea2e61c1c424abcb7bf7a1": "unselected",
+        "44ef09b472cc103b602281b678788899f8476377595ac3f396152cedcd14ff3c": "unselected",
+        "46d82dc076ade17a61933205fdd7aebbed5f4552b2be34434cd9fb86b9f3894a": "unselected",
+        "5d69bfd87cfd9e73b4316cd4d06bddbdbf30e5fee96e7572d7f68cade8233e9d": "unselected",
+        "60640c05dad3ba936c187d2f2a6c70f9bed1cfb57e478379d09c59d72fe14005": "unselected",
+        "7e44c23dcbaf268357064a94827ee8dc09448994e6b4310b93b3f02a645a1e51": "unselected",
+        "8790f34568534d366acb27527cadb31d628b657e357d47efe07ff76bd6b59682": "unselected",
+        "8a3cd462e2cf60b12a3ca357bd1d7fc0f646b8ba0dd6f52fc27375c07533e60d": "unselected",
+        "922de13e4abf7145278581c17efda14698cbb4f992e99f994665181542030570": "unselected",
+        "b37dd9424c10d058ca042c895343a4c080450d8f6757bb4e377dd7bcbeb20bc3": "unselected",
+        "bf41ca65d0c7b0eaec9fecf1674a22f6c597ee07d1ff693c3b8be54ab4c5f76b": "unselected",
+        "c0494c8c2323c93e12e2904464e2ff162ebdf2b785e242ab13b3d4c4472330c9": "unselected",
+        "c10fb8781e598cbecfe6eb11008a26caa6b130c975687369fd4f3961d23bcdbc": "unselected",
+        "c955e9664504354b4717e5c6dc0b97e7c66ba69cc505cc48d2e4bbb0669b9196": "unselected",
+        "e54fe52ca0907aa534ca35b675303c0952df61e6e267965b11dd61062ccc9c29": "unselected",
+        "e7189a6951daf4e8773667e4bd126dfa043275041e01cd11ed55879ad0cc1201": "unselected",
+        "fea0b77d45d4a4161ce24dcf4adf1a037d1f8761fe0c26f0743470b7346e77a8": "selected"
+      }
+    },
+    "many_valid_all_channels": {
+      "bytes": 100838,
+      "call_kwargs": {
+        "channels": null,
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": null,
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "all_channels_source_order",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/many-valid.xml",
+      "sha256": "ffd7d058ef3faf408cfd825b2e0f02306229066fa3e8aa34c7bc29c44bb7e3cd",
+      "stream_roles": {
+        "326e57dcc9cd456f878c6d37e3e32662b5b4e75450ea2e61c1c424abcb7bf7a1": "unselected",
+        "44ef09b472cc103b602281b678788899f8476377595ac3f396152cedcd14ff3c": "unselected",
+        "46d82dc076ade17a61933205fdd7aebbed5f4552b2be34434cd9fb86b9f3894a": "unselected",
+        "5d69bfd87cfd9e73b4316cd4d06bddbdbf30e5fee96e7572d7f68cade8233e9d": "unselected",
+        "60640c05dad3ba936c187d2f2a6c70f9bed1cfb57e478379d09c59d72fe14005": "unselected",
+        "7e44c23dcbaf268357064a94827ee8dc09448994e6b4310b93b3f02a645a1e51": "unselected",
+        "8790f34568534d366acb27527cadb31d628b657e357d47efe07ff76bd6b59682": "unselected",
+        "8a3cd462e2cf60b12a3ca357bd1d7fc0f646b8ba0dd6f52fc27375c07533e60d": "unselected",
+        "922de13e4abf7145278581c17efda14698cbb4f992e99f994665181542030570": "unselected",
+        "b37dd9424c10d058ca042c895343a4c080450d8f6757bb4e377dd7bcbeb20bc3": "unselected",
+        "bf41ca65d0c7b0eaec9fecf1674a22f6c597ee07d1ff693c3b8be54ab4c5f76b": "unselected",
+        "c0494c8c2323c93e12e2904464e2ff162ebdf2b785e242ab13b3d4c4472330c9": "unselected",
+        "c10fb8781e598cbecfe6eb11008a26caa6b130c975687369fd4f3961d23bcdbc": "unselected",
+        "c955e9664504354b4717e5c6dc0b97e7c66ba69cc505cc48d2e4bbb0669b9196": "unselected",
+        "e54fe52ca0907aa534ca35b675303c0952df61e6e267965b11dd61062ccc9c29": "unselected",
+        "e7189a6951daf4e8773667e4bd126dfa043275041e01cd11ed55879ad0cc1201": "unselected",
+        "fea0b77d45d4a4161ce24dcf4adf1a037d1f8761fe0c26f0743470b7346e77a8": "selected"
+      }
+    },
+    "many_valid_empty_channels": {
+      "bytes": 100838,
+      "call_kwargs": {
+        "channels": [],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "empty_channels_returns_empty_dict",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/many-valid.xml",
+      "sha256": "ffd7d058ef3faf408cfd825b2e0f02306229066fa3e8aa34c7bc29c44bb7e3cd",
+      "stream_roles": {
+        "326e57dcc9cd456f878c6d37e3e32662b5b4e75450ea2e61c1c424abcb7bf7a1": "unselected",
+        "44ef09b472cc103b602281b678788899f8476377595ac3f396152cedcd14ff3c": "unselected",
+        "46d82dc076ade17a61933205fdd7aebbed5f4552b2be34434cd9fb86b9f3894a": "unselected",
+        "5d69bfd87cfd9e73b4316cd4d06bddbdbf30e5fee96e7572d7f68cade8233e9d": "unselected",
+        "60640c05dad3ba936c187d2f2a6c70f9bed1cfb57e478379d09c59d72fe14005": "unselected",
+        "7e44c23dcbaf268357064a94827ee8dc09448994e6b4310b93b3f02a645a1e51": "unselected",
+        "8790f34568534d366acb27527cadb31d628b657e357d47efe07ff76bd6b59682": "unselected",
+        "8a3cd462e2cf60b12a3ca357bd1d7fc0f646b8ba0dd6f52fc27375c07533e60d": "unselected",
+        "922de13e4abf7145278581c17efda14698cbb4f992e99f994665181542030570": "unselected",
+        "b37dd9424c10d058ca042c895343a4c080450d8f6757bb4e377dd7bcbeb20bc3": "unselected",
+        "bf41ca65d0c7b0eaec9fecf1674a22f6c597ee07d1ff693c3b8be54ab4c5f76b": "unselected",
+        "c0494c8c2323c93e12e2904464e2ff162ebdf2b785e242ab13b3d4c4472330c9": "unselected",
+        "c10fb8781e598cbecfe6eb11008a26caa6b130c975687369fd4f3961d23bcdbc": "unselected",
+        "c955e9664504354b4717e5c6dc0b97e7c66ba69cc505cc48d2e4bbb0669b9196": "unselected",
+        "e54fe52ca0907aa534ca35b675303c0952df61e6e267965b11dd61062ccc9c29": "unselected",
+        "e7189a6951daf4e8773667e4bd126dfa043275041e01cd11ed55879ad0cc1201": "unselected",
+        "fea0b77d45d4a4161ce24dcf4adf1a037d1f8761fe0c26f0743470b7346e77a8": "selected"
+      }
+    },
+    "many_valid_gzip": {
+      "bytes": 1868,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "selected_valid",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/many-valid.xml.gz",
+      "sha256": "67bf592ed0f3a3627966555ac4a90080b4fdde5dcfd00f4e120a3bc7ef818660",
+      "stream_roles": {
+        "326e57dcc9cd456f878c6d37e3e32662b5b4e75450ea2e61c1c424abcb7bf7a1": "unselected",
+        "44ef09b472cc103b602281b678788899f8476377595ac3f396152cedcd14ff3c": "unselected",
+        "46d82dc076ade17a61933205fdd7aebbed5f4552b2be34434cd9fb86b9f3894a": "unselected",
+        "5d69bfd87cfd9e73b4316cd4d06bddbdbf30e5fee96e7572d7f68cade8233e9d": "unselected",
+        "60640c05dad3ba936c187d2f2a6c70f9bed1cfb57e478379d09c59d72fe14005": "unselected",
+        "7e44c23dcbaf268357064a94827ee8dc09448994e6b4310b93b3f02a645a1e51": "unselected",
+        "8790f34568534d366acb27527cadb31d628b657e357d47efe07ff76bd6b59682": "unselected",
+        "8a3cd462e2cf60b12a3ca357bd1d7fc0f646b8ba0dd6f52fc27375c07533e60d": "unselected",
+        "922de13e4abf7145278581c17efda14698cbb4f992e99f994665181542030570": "unselected",
+        "b37dd9424c10d058ca042c895343a4c080450d8f6757bb4e377dd7bcbeb20bc3": "unselected",
+        "bf41ca65d0c7b0eaec9fecf1674a22f6c597ee07d1ff693c3b8be54ab4c5f76b": "unselected",
+        "c0494c8c2323c93e12e2904464e2ff162ebdf2b785e242ab13b3d4c4472330c9": "unselected",
+        "c10fb8781e598cbecfe6eb11008a26caa6b130c975687369fd4f3961d23bcdbc": "unselected",
+        "c955e9664504354b4717e5c6dc0b97e7c66ba69cc505cc48d2e4bbb0669b9196": "unselected",
+        "e54fe52ca0907aa534ca35b675303c0952df61e6e267965b11dd61062ccc9c29": "unselected",
+        "e7189a6951daf4e8773667e4bd126dfa043275041e01cd11ed55879ad0cc1201": "unselected",
+        "fea0b77d45d4a4161ce24dcf4adf1a037d1f8761fe0c26f0743470b7346e77a8": "selected"
+      }
+    },
+    "namespace_qualified_control": {
+      "bytes": 6037,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "old_r_namespace_empty",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/namespace-qualified-control.xml",
+      "sha256": "10f06728c34cf57f9ba29b61bc1b8ccd9d930b1783b011d0ae9a81fe26817555",
+      "stream_roles": {
+        "fea0b77d45d4a4161ce24dcf4adf1a037d1f8761fe0c26f0743470b7346e77a8": "selected"
+      }
+    },
+    "psd_unselected_short_payload_warning": {
+      "bytes": 999,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": true,
+      "oracle_category": "unselected_payload_warning_may_disappear",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/psd-unselected-short-payload-warning.xml",
+      "sha256": "4b1890e4fc59e1c19d32ee1f5bc78e3e619d2356593f55b1cdba492466e1e2c1",
+      "stream_roles": {
+        "8d2ca52ee496df8da1cd21369680ae08a428ccbbcaf7011fad743210decd715c": "unselected",
+        "d21ed31163bd680adffabb857e74924131428573adc80a6ff704993bcdd2099e": "selected"
+      }
+    },
+    "selected_metadata_fault": {
+      "bytes": 11912,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "selected_structural_metadata_warning",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/selected-metadata-fault.xml",
+      "sha256": "d3d7cfc15abb70d36ea77afd5c26deb5ceed141e91998b349789ee52636b04d4",
+      "stream_roles": {
+        "c10fb8781e598cbecfe6eb11008a26caa6b130c975687369fd4f3961d23bcdbc": "unselected",
+        "fea0b77d45d4a4161ce24dcf4adf1a037d1f8761fe0c26f0743470b7346e77a8": "selected"
+      }
+    },
+    "selected_payload_fault": {
+      "bytes": 6451,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "selected_payload_warning",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/selected-payload-fault.xml",
+      "sha256": "785056b60ecb872f0b11f268561bc2a198fef5788a820d6cebf1c27de6f291ff",
+      "stream_roles": {
+        "11ccc3e535fcf0d62b989b94dcf41122b68763e43fad20da0204064586f59706": "selected",
+        "c10fb8781e598cbecfe6eb11008a26caa6b130c975687369fd4f3961d23bcdbc": "unselected"
+      }
+    },
+    "stf_selected_short_payload_error": {
+      "bytes": 996,
+      "call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": true,
+        "products": "STF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "external_call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": false,
+        "products": "STF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "selected_payload_semantic_error_preserve",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/stf-selected-short-payload-error.xml",
+      "sha256": "c234a250f08ad5b0d289f651010b360ad4796abd14677f37d93ac39c34c0b52e",
+      "stream_roles": {
+        "74b830e1c05166c673a3fecde580be69834851ceb27c814816f5db062f1973f6": "selected",
+        "c9fdbd2646ae0fd8c6e6bd58522ab0310984c6af1879c8fbcf33a8fe40943d53": "unselected"
+      }
+    },
+    "stf_unselected_short_payload_error": {
+      "bytes": 996,
+      "call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": true,
+        "products": "STF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "external_call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": false,
+        "products": "STF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "unselected_payload_semantic_error_hold",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/stf-unselected-short-payload-error.xml",
+      "sha256": "fe7532374361277d85291f6f94e11c3e683f351b60c3bf70fc7075be397f3cbf",
+      "stream_roles": {
+        "1ad493f5efa307b76e3dc72d5bd9e7bc6067a35a90bab3acf513e071985c044d": "unselected",
+        "a96be12c43b8299416fe26535489d3a4bfa493d7b8271feac3efe5dfe167d4e6": "selected"
+      }
+    },
+    "tf6_raw_layout": {
+      "bytes": 552,
+      "call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": true,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "external_call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": false,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "tf6_complex_phase_valid",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/tf6-raw-layout.xml",
+      "sha256": "be6d52362e987e578b87729bcefd5eb37116bb4d9f64ee22fea8661ed517a303",
+      "stream_roles": {
+        "3915c78f516fb64bf2cccf04adaf11a1e8dc4a6011aa92beb955333123c7cc39": "selected"
+      }
+    },
+    "tf6_selected_payload_fault": {
+      "bytes": 998,
+      "call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": true,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "external_call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": false,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "selected_payload_decode_error",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/tf6-selected-payload-fault.xml",
+      "sha256": "a36085333af9325f6ea110a545acd3b2c1a0a416db865d5aced6709e7fda4d01",
+      "stream_roles": {
+        "11ccc3e535fcf0d62b989b94dcf41122b68763e43fad20da0204064586f59706": "selected",
+        "8c5f9dcf943cc8d6a05048812f172c54c97140c7f5d952d1a6d76081a216015c": "unselected"
+      }
+    },
+    "tf6_unselected_identity_fault": {
+      "bytes": 1058,
+      "call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": true,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "external_call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": false,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "unselected_structural_identity_error",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/tf6-unselected-identity-fault.xml",
+      "sha256": "821c64fed96fa3dbf15e99884d2934b5f60e8897cd147aa62c1e53a86511c6ac",
+      "stream_roles": {
+        "3915c78f516fb64bf2cccf04adaf11a1e8dc4a6011aa92beb955333123c7cc39": "selected",
+        "8c5f9dcf943cc8d6a05048812f172c54c97140c7f5d952d1a6d76081a216015c": "unselected"
+      }
+    },
+    "tf6_unselected_nonfinite_frequency_fault": {
+      "bytes": 1058,
+      "call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": true,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "external_call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": false,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "unselected_payload_semantic_error_hold",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/tf6-unselected-nonfinite-frequency-fault.xml",
+      "sha256": "121293048740b4d7e47a81ff3421558f6e2b9b777bb541fba5e1f78e22baa632",
+      "stream_roles": {
+        "3915c78f516fb64bf2cccf04adaf11a1e8dc4a6011aa92beb955333123c7cc39": "selected",
+        "664b082a25ed5c72acb64e15c68d1f47e2c550eee511b983ec29c41ddfbeaf1b": "unselected"
+      }
+    },
+    "tf6_unselected_payload_fault": {
+      "bytes": 998,
+      "call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": true,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "external_call_kwargs": {
+        "cols": [
+          "K1:F3-TF-INPUT"
+        ],
+        "native": false,
+        "products": "TF",
+        "rows": [
+          "K1:F3-TF-OUTPUT"
+        ]
+      },
+      "native_parser_exception_applies": true,
+      "oracle_category": "unselected_payload_decode_error_may_disappear",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/tf6-unselected-payload-fault.xml",
+      "sha256": "3333239ba5145acdac8c5498e9581350fa08f28fb13c8d73c1073fcaeb1e036d",
+      "stream_roles": {
+        "11ccc3e535fcf0d62b989b94dcf41122b68763e43fad20da0204064586f59706": "unselected",
+        "3915c78f516fb64bf2cccf04adaf11a1e8dc4a6011aa92beb955333123c7cc39": "selected"
+      }
+    },
+    "ts_duplicate_channel_error": {
+      "bytes": 706,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "TS"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "TS"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "structural_identity_error_hold",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/ts-duplicate-channel-error.xml",
+      "sha256": "f1851e55048dbd9fdbf5c9d75f357bb88a0f941cda5c6104ddb1331161d2caa3",
+      "stream_roles": {
+        "d21ed31163bd680adffabb857e74924131428573adc80a6ff704993bcdd2099e": "selected",
+        "e24aba04f4ae587b441413cee27d1652ebba5eb8cbbeb30c842369cf77747fc4": "unselected"
+      }
+    },
+    "ts_selected_short_payload_warning": {
+      "bytes": 705,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "TS"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "TS"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "selected_payload_warning_preserve",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/ts-selected-short-payload-warning.xml",
+      "sha256": "bea7d5148437deae484c622e12c62ccd48730431fde8af790999383d0fe07f83",
+      "stream_roles": {
+        "794826840c75a99279f5e5d3e6b9ebee7bf83aba10aa01d40685aa536c3ba5d5": "selected",
+        "e24aba04f4ae587b441413cee27d1652ebba5eb8cbbeb30c842369cf77747fc4": "unselected"
+      }
+    },
+    "ts_two_valid": {
+      "bytes": 709,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "TS"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "TS"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "ts_public_native_arg_ignored",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/ts-two-valid.xml",
+      "sha256": "be5f9fc7c0da486b138f8c816a832d0898eb2ee13da6581d2ca33a297faf485a",
+      "stream_roles": {
+        "d21ed31163bd680adffabb857e74924131428573adc80a6ff704993bcdd2099e": "selected",
+        "e24aba04f4ae587b441413cee27d1652ebba5eb8cbbeb30c842369cf77747fc4": "unselected"
+      }
+    },
+    "ts_unselected_short_payload_warning": {
+      "bytes": 705,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "TS"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "TS"
+      },
+      "native_parser_exception_applies": true,
+      "oracle_category": "unselected_payload_warning_may_disappear_in_fallback_only",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/ts-unselected-short-payload-warning.xml",
+      "sha256": "0ba66e67d9ea3e11b644b714cadb6ab0ec0e1ad80278af015475f9b9da8acdf4",
+      "stream_roles": {
+        "8d2ca52ee496df8da1cd21369680ae08a428ccbbcaf7011fad743210decd715c": "unselected",
+        "d21ed31163bd680adffabb857e74924131428573adc80a6ff704993bcdd2099e": "selected"
+      }
+    },
+    "unselected_metadata_fault": {
+      "bytes": 11912,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "unselected_structural_metadata_warning",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/unselected-metadata-fault.xml",
+      "sha256": "170c4b5005615eb67fdcf783c11791ca4d09e3d522f153d165d54a2d042ea790",
+      "stream_roles": {
+        "c10fb8781e598cbecfe6eb11008a26caa6b130c975687369fd4f3961d23bcdbc": "unselected",
+        "fea0b77d45d4a4161ce24dcf4adf1a037d1f8761fe0c26f0743470b7346e77a8": "selected"
+      }
+    },
+    "unselected_payload_fault": {
+      "bytes": 6451,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": true,
+      "oracle_category": "unselected_payload_warning_may_disappear",
+      "path": "/tmp/gwexpy-v025-f3-freeze-v2-small/unselected-payload-fault.xml",
+      "sha256": "d6f70a6221cae5550d19833514adc89b079d739413033871a298a775de07586d",
+      "stream_roles": {
+        "11ccc3e535fcf0d62b989b94dcf41122b68763e43fad20da0204064586f59706": "unselected",
+        "fea0b77d45d4a4161ce24dcf4adf1a037d1f8761fe0c26f0743470b7346e77a8": "selected"
+      }
+    }
+  },
+  "epoch": 1234567890.25,
+  "external_route_note": "native=False may use optional dttxml; characterize its warnings and errors separately and exclude it from the #589 decode/memory gate.",
+  "frequency_axis": {
+    "count": 1024,
+    "df": 2.5,
+    "f0": 17.5
+  },
+  "native_selection_scope": {
+    "FFT": {
+      "preserve": [
+        "unselected_invalid_length_ValueError",
+        "unselected_nonreal_axis_ValueError"
+      ],
+      "status": "HOLD"
+    },
+    "PSD": {
+      "allowed_unselected_payload_faults": [
+        "base64_decode_warning",
+        "decoded_length_warning"
+      ],
+      "preserve": [
+        "XML_parse_warning",
+        "metadata_warning",
+        "selected_payload_warning"
+      ],
+      "status": "eligible"
+    },
+    "STF": {
+      "preserve": [
+        "unselected_invalid_length_ValueError"
+      ],
+      "status": "HOLD"
+    },
+    "TF6": {
+      "preserve": [
+        "duplicate_identity_ValueError",
+        "unselected_nonfinite_frequency_ValueError"
+      ],
+      "status": "HOLD"
+    },
+    "TS": {
+      "allowed_unselected_payload_faults": [
+        "decoded_length_warning"
+      ],
+      "note": "Public TS native=True is ignored with dttxml installed.",
+      "preserve": [
+        "duplicate_channel_error",
+        "metadata_warning"
+      ],
+      "status": "fallback_only"
+    }
+  },
+  "old_r_many_valid_unselected_decoded_bytes": 65536,
+  "points": 1024,
+  "schema": "gwexpy-b-f3-fixtures-v1",
+  "selected_channel": "K1:F3-SELECTED",
+  "selected_raw_bytes": 4096,
+  "selected_raw_sha256": "0f7bdfbb57fe783e62fa4bc520ef4574d4d78183881d2830800bfec099c4dfd1",
+  "selected_values": [
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875,
+    1.0,
+    1.125,
+    1.25,
+    1.375,
+    1.5,
+    1.625,
+    1.75,
+    1.875
+  ],
+  "tf6_oracle": {
+    "dtype": "complex64",
+    "frequencies": [
+      17.5,
+      20.0,
+      22.5
+    ],
+    "imag": [
+      2.0,
+      0.25,
+      -4.0
+    ],
+    "pair": [
+      "K1:F3-TF-OUTPUT",
+      "K1:F3-TF-INPUT"
+    ],
+    "real": [
+      1.0,
+      -0.5,
+      3.0
+    ]
+  },
+  "tf6_raw_sha256": "8eb31d4380077dbe1b77f908d16663968230f6fc291274a11e71457876600420",
+  "ts_oracle": {
+    "dt": 0.125,
+    "selected_values": [
+      1.0,
+      1.125,
+      1.25
+    ],
+    "t0": 1234567890.25
+  },
+  "unselected_channels": [
+    "K1:F3-OTHER-00001",
+    "K1:F3-OTHER-00002",
+    "K1:F3-OTHER-00003",
+    "K1:F3-OTHER-00004",
+    "K1:F3-OTHER-00005",
+    "K1:F3-OTHER-00006",
+    "K1:F3-OTHER-00007",
+    "K1:F3-OTHER-00008",
+    "K1:F3-OTHER-00009",
+    "K1:F3-OTHER-00010",
+    "K1:F3-OTHER-00011",
+    "K1:F3-OTHER-00012",
+    "K1:F3-OTHER-00013",
+    "K1:F3-OTHER-00014",
+    "K1:F3-OTHER-00015",
+    "K1:F3-OTHER-00016"
+  ],
+  "unselected_results": 16
+}

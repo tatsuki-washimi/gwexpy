@@ -1,0 +1,31 @@
+[
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-b-env-b/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "prefix": "/tmp/gwexpy-v025-b-env-b",
+      "python": "3.12.12"
+    },
+    "controller_elapsed_ns": 2708909882,
+    "sample": {
+      "counters": {},
+      "error_cause_message": "synthetic optional dependency unavailable",
+      "error_cause_type": "builtins.ImportError",
+      "error_message": "ObsPy is required for reading seismic files. Install with `pip install 'gwexpy[seismic]'`.",
+      "error_type": "builtins.ImportError",
+      "logs": [],
+      "logs_recorded": true,
+      "outcome": "error",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/timeseries/io/seismic.py\", line 27, in _import_obspy\n    obspy = ensure_dependency(\"obspy\", extra=\"seismic\")\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-performance-c2/benchmarks/io/run.py\", line 467, in missing\n    raise ImportError(\"synthetic optional dependency unavailable\")\nImportError: synthetic optional dependency unavailable\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/home/washimi/work/gwexpy-v025-performance-c2/benchmarks/io/run.py\", line 990, in _worker\n    result = _scenario(\n             ^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-performance-c2/benchmarks/io/run.py\", line 358, in _scenario\n    return _c2_scenario(name, paths, scenario_events)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy-v025-performance-c2/benchmarks/io/run.py\", line 471, in _c2_scenario\n    return TimeSeries.read(source(\"two_channels.mseed\"), format=\"mseed\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/timeseries/timeseries.py\", line 310, in read\n    return super().read(source, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/timeseries/connect.py\", line 188, in __call__\n    return super().__call__(\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 441, in __call__\n    outputs.append(_read(src))\n                   ^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/gwpy/io/registry.py\", line 427, in _read\n    return self.registry.read(\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/astropy/io/registry/core.py\", line 221, in read\n    data = reader(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/timeseries/io/seismic.py\", line 277, in <lambda>\n    reader_single=lambda *a, **k: _adapt_timeseries(\n                                  ^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/timeseries/io/seismic.py\", line 209, in _adapt_timeseries\n    tsd = reader(*args, channels=channels, **kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/timeseries/io/seismic.py\", line 189, in read_miniseed_timeseriesdict\n    return _read_timeseriesdict(\"MSEED\", *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/timeseries/io/seismic.py\", line 163, in _read_timeseriesdict\n    stream = _read_obspy_stream(format_name, source, pad=pad, gap=gap, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/timeseries/io/seismic.py\", line 60, in _read_obspy_stream\n    obspy = _import_obspy()\n            ^^^^^^^^^^^^^^^\n  File \"/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/timeseries/io/seismic.py\", line 29, in _import_obspy\n    raise ImportError(\nImportError: ObsPy is required for reading seismic files. Install with `pip install 'gwexpy[seismic]'`.\n",
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "warnings_recorded": true
+    },
+    "stderr": ""
+  }
+]

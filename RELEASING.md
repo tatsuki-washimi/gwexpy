@@ -118,7 +118,8 @@ text) and emits a single allowlisted aggregate artifact whose name is selected f
 `v020-integration-evidence-<40-character-source-sha>`, or
 `v022-integration-evidence-<40-character-source-sha>`, or
 `v023-integration-evidence-<40-character-source-sha>`, or
-`v024-integration-evidence-<40-character-source-sha>`.  It is retained for
+`v024-integration-evidence-<40-character-source-sha>`, or
+`v025-integration-evidence-<40-character-source-sha>`.  It is retained for
 90 days.  Record its artifact ID, API digest, `created_at`, and
 `expires_at` in UTC; acceptance requires
 `expires_at - created_at >= 90 days - 5 minutes`.

@@ -1,0 +1,103 @@
+{
+  "approved_warning_differences": [
+    {
+      "case": "psd_unselected_short_payload_warning",
+      "route": "native"
+    },
+    {
+      "case": "unselected_payload_fault",
+      "route": "native"
+    }
+  ],
+  "baseline_digest": "e2fbcc67ef4b08b14fb6cd8a010b28d2f23cfae55a2cf6389c2a19832845dd69",
+  "metadata_extension_cases_exact": 15,
+  "native_unknown_decode_calls": 0,
+  "native_unselected_decoded_bytes": 0,
+  "native_unselected_series_constructed": 0,
+  "pss_gate": "PASS",
+  "pss_kib": {
+    "B1_MAD": 86,
+    "B1_median": 364173,
+    "candidate_MAD": 339,
+    "candidate_median": 292215
+  },
+  "pss_relative_improvement": 0.19759290227446846,
+  "pss_relative_noise": 0.0013962562168416944,
+  "pss_required_improvement": 0.05,
+  "public_cases": 27,
+  "public_routes": 81,
+  "runs": {
+    "cold": {
+      "order": [
+        "A",
+        "B",
+        "B",
+        "A",
+        "B",
+        "A",
+        "A",
+        "B",
+        "A",
+        "B",
+        "B",
+        "A",
+        "B",
+        "A",
+        "A",
+        "B",
+        "A",
+        "B"
+      ],
+      "samples_per_arm": 9
+    },
+    "memory": {
+      "order": [
+        "A",
+        "B",
+        "B",
+        "A",
+        "B",
+        "A",
+        "A",
+        "B",
+        "A",
+        "B",
+        "B",
+        "A",
+        "B",
+        "A",
+        "A",
+        "B",
+        "A",
+        "B"
+      ],
+      "samples_per_arm": 9
+    },
+    "warm": {
+      "order": [
+        "A",
+        "B",
+        "B",
+        "A",
+        "B",
+        "A",
+        "A",
+        "B",
+        "A",
+        "B",
+        "B",
+        "A",
+        "B",
+        "A",
+        "A",
+        "B",
+        "A",
+        "B"
+      ],
+      "samples_per_arm": 9
+    }
+  },
+  "schema": "gwexpy-f3-candidate-verification-v1",
+  "source_commit": "96f6c72f11ea318e8fc9f1ccddc32e29fc300d05",
+  "wheel_sha256": "22ed237cbaa158bae08267d158eb9bf91e8bb0fd0ea835ef39447ed1efb690c0"
+}

@@ -1,0 +1,68 @@
+[
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-c2-env-v1/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-c2-env-v1/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "prefix": "/tmp/gwexpy-v025-c2-env-v1",
+      "python": "3.12.12"
+    },
+    "controller_elapsed_ns": 2820174423,
+    "sample": {
+      "counters": {},
+      "cpu_ns": 251830427,
+      "fingerprint": {
+        "class": "gwexpy.timeseries.timeseries.TimeSeries",
+        "dt": "<Quantity 0.00097656 s>",
+        "epoch": "<Time object: scale='utc' format='gps' value=0.0>",
+        "name": "channel_1",
+        "sample_rate": "<Quantity 1024. Hz>",
+        "t0": "<Quantity 0. s>",
+        "times": {
+          "unit": "s",
+          "values": {
+            "dtype": "<f8",
+            "selected": [
+              "0.0",
+              "512.0",
+              "1023.9990234375"
+            ],
+            "sha256": "2676c6fa8faf034f32149a8aa5157581e300909bc32984ba9e5bd377a99a3ab8",
+            "shape": [
+              1048576
+            ]
+          }
+        },
+        "unit": "",
+        "values": {
+          "dtype": "<i2",
+          "selected": [
+            "0",
+            "10016",
+            "20025"
+          ],
+          "sha256": "4965ea5b78b9e8467aa303f4e4779d24439eaefa579c89afed03b90e581226d7",
+          "shape": [
+            1048576
+          ]
+        }
+      },
+      "fixture_counts": {
+        "input_channels": 2,
+        "input_rows": 1048576
+      },
+      "logs": [],
+      "logs_recorded": true,
+      "outcome": "return",
+      "wall_ns": 253804732,
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "warnings_recorded": true
+    },
+    "stderr": ""
+  }
+]
