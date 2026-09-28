@@ -28,6 +28,8 @@ sdist return identical exact int64 values. Its output is stored in
 These twelve cases remain **BLOCKED**. A successful probe process does not
 turn them into passing scenarios. The row indices and raw hashes in
 `prequalification-38.json` identify the current observations for each case.
+The verifier asserts each observed blocked condition on wheel and sdist;
+that characterization does not settle its fixture or contract authority.
 
 | Finding | Current observation | Required disposition before S3 freeze |
 | --- | --- | --- |

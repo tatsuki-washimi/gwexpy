@@ -36,6 +36,80 @@ def load(artifact, command):
     ], hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def characterize_blocked(artifact, finding):
+    fid = finding["finding_id"]
+    rows, digest = load(artifact, finding["baseline_command_id"])
+    refs = BLOCKED_REFS[fid]
+    try:
+        assert all(0 <= index < len(rows) for index in refs)
+        if fid == "NC-MATRIX-008":
+            assert rows[33]["status"] == "NO_VALID_FIXTURE"
+            assert "sharing the sample dimension" in rows[33]["reason"]
+        elif fid == "NC-MATRIX-009":
+            for index in refs:
+                assert rows[index]["result"]["shape"] == [2, 2, 3]
+                assert rows[index]["result"]["dt"] == 0.25
+        elif fid == "ZARR-DTYPE-003":
+            for index, values in (
+                (2, [123.0, -456.0, 789.0]),
+                (6, [1073741825.0, -1073741827.0, 17.0]),
+                (17, [1.25, -2.5, 3.75]),
+            ):
+                assert rows[index]["result"]["dtype"] == "float64"
+                assert rows[index]["result"]["real"] == values
+        elif fid == "TDMS-TIME-007":
+            assert rows[157]["actual"]["t0"] == 1388289924.0
+            assert rows[157]["actual"]["dt"] == 0.25
+        elif fid == "TDMS-TIME-008":
+            assert rows[163]["actual"]["t0"] == 0.0
+            assert rows[163]["actual"]["times"] == [0.0, 0.25, 0.5]
+        elif fid == "TDMS-UNIT-001":
+            assert rows[145]["oracle"]["properties"]["unit_string"] == "V"
+            assert rows[145]["actual"]["unit"] == ""
+        elif fid == "GBD-COUNT-001":
+            assert rows[43]["oracle"]["header_counts"] == 2
+            assert len(rows[43]["oracle"]["raw_rows"]) == 3
+            assert rows[43]["actual"]["value"] == [1.0, -2.0]
+            assert rows[43]["warnings"] == []
+        elif fid == "GBD-LEGACY-001":
+            assert any(
+                str(row.get("case", "")).startswith("GBD-CONTROL-001") for row in rows
+            )
+            assert not any("LEGACY" in str(row.get("case", "")) for row in rows)
+        elif fid == "ATS-TRUNC-001":
+            assert rows[5]["oracle"]["header_samples"] == 5
+            assert rows[5]["actual"]["value"] == [0.5, -1.0, 1.5]
+            assert "Using actual data size" in rows[5]["warnings"][0]
+        elif fid == "HDF5-DISCOVERY-TS-DICT-GROUP-001":
+            assert rows[4]["authority"] == "C2_discovery"
+            assert rows[4]["control"]["exception"] == "ValueError"
+            assert all(
+                entry["object_type"] == "Group"
+                for entry in rows[4]["seed_raw"]["entries"].values()
+            )
+        elif fid == "HDF5-HIST-DATASET-001":
+            for index in refs:
+                assert rows[index]["family"] == "HIST"
+                assert rows[index]["layout_requested"] == "dataset"
+                assert all(
+                    entry["object_type"] == "Group"
+                    for entry in rows[index]["seed_raw"]["entries"].values()
+                )
+        elif fid == "OBSPY-DUP-BASE-001":
+            assert rows[0]["deps"]["obspy"] is None
+            assert rows[1] == {"case": "OBSPY-DUP-001", "blocked": "NO_DEPENDENCY"}
+        else:
+            raise AssertionError(f"unhandled blocked case: {fid}")
+        return (
+            "CHARACTERIZED",
+            refs,
+            "Current observation matches the documented blocked condition; disposition remains pending.",
+            digest,
+        )
+    except (AssertionError, KeyError, IndexError, TypeError) as exc:
+        return "FAIL", refs, f"{type(exc).__name__}: {exc}", digest
+
+
 def result(artifact, finding):
     fid = finding["finding_id"]
     command = finding["baseline_command_id"]
@@ -252,14 +326,17 @@ for f in FINDINGS:
         entry["reason"] = f["baseline_expected"]
         entry["artifact_checks"] = {}
         for artifact in ("wheel", "sdist"):
-            rows, digest = load(artifact, f["baseline_command_id"])
-            indices = BLOCKED_REFS[fid]
-            assert all(0 <= index < len(rows) for index in indices)
+            status, indices, note, digest = characterize_blocked(artifact, f)
             entry["artifact_checks"][artifact] = {
-                "status": "BLOCKED",
+                "status": status,
                 "row_indices": indices,
+                "note": note,
                 "raw_sha256": digest,
             }
+        if any(
+            check["status"] == "FAIL" for check in entry["artifact_checks"].values()
+        ):
+            entry["status"] = "FAIL"
         entry["observations"] = (
             "The referenced rows characterize the current result; the historical fixture/authority gap remains open."
         )
