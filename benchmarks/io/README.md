@@ -207,6 +207,39 @@ equivalent trigger before comparing fingerprints. An approved concurrency
 exception still requires separate technical review, disclosure, and human S2
 scientific/data-model approval.
 
+## F1 bounded range-read baseline
+
+`f1_range_fixtures.py` creates 102 public `TimeSeriesDict.read` cases across
+plain HDF5, NDScope HDF5, NetCDF4, and Zarr. The 4096-sample fixture is the
+correctness oracle; a separate 524288-sample fixture is used only for four
+short-window structural, warm, cold, and Linux PSS/RSS routes. Both generators
+record every file hash and binary64 boundary. Correctness includes ±1 ULP,
+half-sample, one-sided, partial/disjoint windows, `pad=`, and selected versus
+out-of-range corrupt chunks. B1's public fingerprint is authoritative; an
+unbounded read followed by `crop` has not been promoted to an oracle.
+
+`f1_range_run.py` audits each installed wheel and matched dependency versions.
+It captures all 102 cases with exact result/metadata/array hashes, warning and
+log records, and error type/message/cause. The structural probe records one
+full 524288-element materialization per B1 short-window route, via h5py
+Dataset, xarray DataArray `values`, or Zarr Array access. The xarray counter
+measures full variable materialization, not exact NetCDF backend bytes; a
+candidate claiming fetched-byte bounds needs an equivalent backend probe.
+Warm timing uses one process per arm, one warm-up, then five interleaved
+function calls. Cold and Linux PSS use fresh workers, five samples per arm.
+
+The #611 exception is limited to a completely disjoint entry in a plain-HDF5
+mixed-channel read after the parent read succeeds. It does not apply to a
+single-channel parent coverage error or another format. B1 raises on
+out-of-range corrupt chunks in all four formats. A candidate that skips that
+error changes public behavior. The F1 runtime push-down claim is **HOLD**:
+preserving those errors requires reading the damaged out-of-range chunks,
+which conflicts with the predeclared backend-fetched-bytes bound to selected
+chunks. A full scan using bounded memory also fails that fetched-byte gate.
+Neither #589 nor #611 authorizes a broader exception. This baseline does not
+authorize F1 runtime work. Use the exact frozen `benchmarks/io/*.py` bytes
+from the F1 baseline commit for any later comparison.
+
 ## F5 WIN decoder baseline
 
 `f5_win_run.py` uses the same B0/B1 wheel audit and dependency identity checks
