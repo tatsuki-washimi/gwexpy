@@ -1,0 +1,434 @@
+{
+  "candidate_commit": "221d3fce7349b35b26b0a50614d42a5790a7ea5f",
+  "cases": [
+    {
+      "B1": {
+        "error": null,
+        "error_type": null,
+        "length": 4,
+        "outcome": "return",
+        "t0": 1384041218.0,
+        "warnings": []
+      },
+      "candidate_v3": {
+        "error": null,
+        "error_type": null,
+        "length": 4,
+        "outcome": "return",
+        "t0": 1384041518.0,
+        "warnings": []
+      },
+      "candidate_v3_payload_queries": [
+        {
+          "query": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" WHERE \"dateTime\" >= ? AND \"dateTime\" < ? ORDER BY \"rowid\"",
+          "rows": 4
+        }
+      ],
+      "case": "half_sample",
+      "differing_fields": [
+        "t0",
+        "values",
+        "times"
+      ],
+      "equal": false
+    },
+    {
+      "B1": {
+        "error": null,
+        "error_type": null,
+        "length": 5,
+        "outcome": "return",
+        "t0": 1384040918.0,
+        "warnings": []
+      },
+      "candidate_v3": {
+        "error": null,
+        "error_type": null,
+        "length": 4,
+        "outcome": "return",
+        "t0": 1384041218.0,
+        "warnings": []
+      },
+      "candidate_v3_payload_queries": [
+        {
+          "query": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" WHERE \"dateTime\" >= ? AND \"dateTime\" < ? ORDER BY \"rowid\"",
+          "rows": 4
+        }
+      ],
+      "case": "start_ulp_below",
+      "differing_fields": [
+        "length",
+        "t0",
+        "values",
+        "times"
+      ],
+      "equal": false
+    },
+    {
+      "B1": {
+        "error": null,
+        "error_type": null,
+        "length": 4,
+        "outcome": "return",
+        "t0": 1384041218.0,
+        "warnings": []
+      },
+      "candidate_v3": {
+        "error": null,
+        "error_type": null,
+        "length": 3,
+        "outcome": "return",
+        "t0": 1384041518.0,
+        "warnings": []
+      },
+      "candidate_v3_payload_queries": [
+        {
+          "query": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" WHERE \"dateTime\" >= ? AND \"dateTime\" < ? ORDER BY \"rowid\"",
+          "rows": 3
+        }
+      ],
+      "case": "start_ulp_above",
+      "differing_fields": [
+        "length",
+        "t0",
+        "values",
+        "times"
+      ],
+      "equal": false
+    },
+    {
+      "B1": {
+        "error": null,
+        "error_type": null,
+        "length": 3,
+        "outcome": "return",
+        "t0": 1384041218.0,
+        "warnings": []
+      },
+      "candidate_v3": {
+        "error": null,
+        "error_type": null,
+        "length": 4,
+        "outcome": "return",
+        "t0": 1384041218.0,
+        "warnings": []
+      },
+      "candidate_v3_payload_queries": [
+        {
+          "query": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" WHERE \"dateTime\" >= ? AND \"dateTime\" < ? ORDER BY \"rowid\"",
+          "rows": 4
+        }
+      ],
+      "case": "end_ulp_below",
+      "differing_fields": [
+        "length",
+        "values",
+        "times"
+      ],
+      "equal": false
+    },
+    {
+      "B1": {
+        "error": null,
+        "error_type": null,
+        "length": 4,
+        "outcome": "return",
+        "t0": 1384041218.0,
+        "warnings": []
+      },
+      "candidate_v3": {
+        "error": null,
+        "error_type": null,
+        "length": 5,
+        "outcome": "return",
+        "t0": 1384041218.0,
+        "warnings": []
+      },
+      "candidate_v3_payload_queries": [
+        {
+          "query": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" WHERE \"dateTime\" >= ? AND \"dateTime\" < ? ORDER BY \"rowid\"",
+          "rows": 5
+        }
+      ],
+      "case": "end_ulp_above",
+      "differing_fields": [
+        "length",
+        "values",
+        "times"
+      ],
+      "equal": false
+    },
+    {
+      "B1": {
+        "error": null,
+        "error_type": null,
+        "length": 0,
+        "outcome": "return",
+        "t0": 1384041218.0,
+        "warnings": []
+      },
+      "candidate_v3": {
+        "error": null,
+        "error_type": null,
+        "length": 0,
+        "outcome": "return",
+        "t0": 1384035218.0,
+        "warnings": []
+      },
+      "candidate_v3_payload_queries": [
+        {
+          "query": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" WHERE \"dateTime\" >= ? AND \"dateTime\" < ? ORDER BY \"rowid\"",
+          "rows": 0
+        }
+      ],
+      "case": "empty_inside",
+      "differing_fields": [
+        "t0"
+      ],
+      "equal": false
+    },
+    {
+      "B1": {
+        "error": null,
+        "error_type": null,
+        "length": 0,
+        "outcome": "return",
+        "t0": 1384054418.0,
+        "warnings": []
+      },
+      "candidate_v3": {
+        "error": null,
+        "error_type": null,
+        "length": 0,
+        "outcome": "return",
+        "t0": 1384035218.0,
+        "warnings": []
+      },
+      "candidate_v3_payload_queries": [
+        {
+          "query": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" WHERE \"dateTime\" >= ? AND \"dateTime\" < ? ORDER BY \"rowid\"",
+          "rows": 0
+        }
+      ],
+      "case": "empty_post_source",
+      "differing_fields": [
+        "t0"
+      ],
+      "equal": false
+    },
+    {
+      "B1": {
+        "error": "cannot convert float NaN to integer",
+        "error_type": "ValueError",
+        "length": null,
+        "outcome": "error",
+        "t0": null,
+        "warnings": []
+      },
+      "candidate_v3": {
+        "error": null,
+        "error_type": null,
+        "length": 24,
+        "outcome": "return",
+        "t0": 1384035218.0,
+        "warnings": []
+      },
+      "candidate_v3_payload_queries": [
+        {
+          "query": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" WHERE \"dateTime\" >= ? AND \"dateTime\" < ? ORDER BY \"rowid\"",
+          "rows": 24
+        }
+      ],
+      "case": "nan_start",
+      "differing_fields": [
+        "outcome",
+        "error_type",
+        "error",
+        "length",
+        "t0",
+        "dt",
+        "values",
+        "times"
+      ],
+      "equal": false
+    },
+    {
+      "B1": {
+        "error": null,
+        "error_type": null,
+        "length": 0,
+        "outcome": "return",
+        "t0": 1384054418.0,
+        "warnings": []
+      },
+      "candidate_v3": {
+        "error": null,
+        "error_type": null,
+        "length": 0,
+        "outcome": "return",
+        "t0": 1384054418.0,
+        "warnings": []
+      },
+      "candidate_v3_payload_queries": [
+        {
+          "query": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" ORDER BY \"rowid\"",
+          "rows": 64
+        }
+      ],
+      "case": "posinf_start",
+      "differing_fields": [],
+      "equal": true
+    },
+    {
+      "B1": {
+        "error": null,
+        "error_type": null,
+        "length": 24,
+        "outcome": "return",
+        "t0": 1384035218.0,
+        "warnings": []
+      },
+      "candidate_v3": {
+        "error": null,
+        "error_type": null,
+        "length": 24,
+        "outcome": "return",
+        "t0": 1384035218.0,
+        "warnings": []
+      },
+      "candidate_v3_payload_queries": [
+        {
+          "query": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" WHERE \"dateTime\" >= ? AND \"dateTime\" < ? ORDER BY \"rowid\"",
+          "rows": 24
+        }
+      ],
+      "case": "neginf_start",
+      "differing_fields": [],
+      "equal": true
+    },
+    {
+      "B1": {
+        "error": "cannot convert float NaN to integer",
+        "error_type": "ValueError",
+        "length": null,
+        "outcome": "error",
+        "t0": null,
+        "warnings": []
+      },
+      "candidate_v3": {
+        "error": "cannot convert float NaN to integer",
+        "error_type": "ValueError",
+        "length": null,
+        "outcome": "error",
+        "t0": null,
+        "warnings": []
+      },
+      "candidate_v3_payload_queries": [
+        {
+          "query": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" ORDER BY \"rowid\"",
+          "rows": 64
+        }
+      ],
+      "case": "nan_end",
+      "differing_fields": [],
+      "equal": true
+    },
+    {
+      "B1": {
+        "error": null,
+        "error_type": null,
+        "length": 44,
+        "outcome": "return",
+        "t0": 1384041218.0,
+        "warnings": []
+      },
+      "candidate_v3": {
+        "error": null,
+        "error_type": null,
+        "length": 44,
+        "outcome": "return",
+        "t0": 1384041218.0,
+        "warnings": []
+      },
+      "candidate_v3_payload_queries": [
+        {
+          "query": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" WHERE \"dateTime\" >= ? AND \"dateTime\" < ? ORDER BY \"rowid\"",
+          "rows": 44
+        }
+      ],
+      "case": "posinf_end",
+      "differing_fields": [],
+      "equal": true
+    },
+    {
+      "B1": {
+        "error": null,
+        "error_type": null,
+        "length": 0,
+        "outcome": "return",
+        "t0": 1384035218.0,
+        "warnings": []
+      },
+      "candidate_v3": {
+        "error": null,
+        "error_type": null,
+        "length": 0,
+        "outcome": "return",
+        "t0": 1384035218.0,
+        "warnings": []
+      },
+      "candidate_v3_payload_queries": [
+        {
+          "query": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" ORDER BY \"rowid\"",
+          "rows": 64
+        }
+      ],
+      "case": "neginf_end",
+      "differing_fields": [],
+      "equal": true
+    }
+  ],
+  "conclusions": [
+    "The current v3 searchsorted-style boundary lookup differs from fresh GWpy Series.crop floor semantics for half-sample and one-ULP selectors.",
+    "Candidate v3 empty-window reconstruction keeps the source t0 for an interior zero-width window and a post-source disjoint window; fresh B1 crop uses the selected index/edge t0.",
+    "NaN start returns a partial candidate series but fresh B1 raises ValueError: cannot convert float NaN to integer.",
+    "B1 and candidate-v3 warning lists matched for the characterized base fixture. The source test separately adds malformed-payload warning coverage for non-finite fallback.",
+    "Non-finite +Inf/-Inf cases with equal values/axis are still routed through the candidate SQL window in `-Inf start` and `+Inf end`; v4 will conservatively route all non-finite selectors through full payload."
+  ],
+  "difference_count": 8,
+  "different_cases": [
+    "half_sample",
+    "start_ulp_below",
+    "start_ulp_above",
+    "end_ulp_below",
+    "end_ulp_above",
+    "empty_inside",
+    "empty_post_source",
+    "nan_start"
+  ],
+  "equal_cases": [
+    "posinf_start",
+    "neginf_start",
+    "nan_end",
+    "posinf_end",
+    "neginf_end"
+  ],
+  "fixture_sha256": "2713b73e3a715e7816c3d94023611ba9e2ac74911f0848f620d077218473b817",
+  "focused_red_run": {
+    "candidate_v3_result": "21 failed, 9 passed, 28 deselected",
+    "command": "python -m pytest -q tests/io/test_v025_sdb_snapshot.py -k \"window_matches_crop_and_fetches_only_selected_rows or nonfinite_window_uses_full_payload_route_and_matches_crop\"",
+    "interpretation": "Expected RED against candidate v3: crop half/ULP and empty/disjoint structure mismatches plus NaN and non-finite SQL fallback qualification. No source fix had been applied at run time."
+  },
+  "fresh_full_read": {
+    "dt": 300.0,
+    "has_xindex": false,
+    "length": 64,
+    "t0": 1384035218.0
+  },
+  "oracle": "Frozen B1 wheel full read followed by apply_time_selection; `_xindex` was confirmed absent before crop.",
+  "schema": 1,
+  "wheels": {
+    "B1_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498",
+    "candidate_v3_sha256": "f19581f56847c3c3b66143610569d180aa0cb9b4f62814dae05a6df2a149c1e7"
+  }
+}
