@@ -12,6 +12,7 @@ import contextlib
 import hashlib
 import importlib.metadata
 import json
+import logging
 import os
 import platform
 import statistics
@@ -22,6 +23,7 @@ import time
 import traceback
 import warnings
 import zipfile
+from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
 
@@ -53,6 +55,12 @@ ROUTES = (
     "f2_2",
     "f2_3",
     "f2_writer",
+    "f2_sdb_selected",
+    "f2_sdb_all",
+    "f2_sdb_window",
+    "f2_sdb_wal_snapshot",
+    "f2_tdms_selected",
+    "f2_tdms_all",
 )
 FAULTS = (
     "selected_invalid",
@@ -64,6 +72,19 @@ FAULTS = (
     "early_unselected_late_selected",
     "early_selected_late_unselected",
 )
+SDB_FAULTS = (
+    "fault_usunits_unselected_window",
+    "fault_irregular_time_unselected_window",
+    "fault_bad_payload_unselected",
+    "fault_bad_payload_selected",
+)
+TDMS_FAULTS = (
+    "fault_selected_increment",
+    "fault_unselected_increment",
+    "fault_unselected_payload",
+    "fault_selected_payload",
+)
+WRITER_ROWS = 524_288
 ABBA = (
     "A",
     "B",
@@ -163,6 +184,33 @@ def _declared_counts(name: str, fixture: dict) -> dict[str, int]:
         return {"input_rows": rows, "input_tokens": rows * 17, "input_columns": 17}
     if name.startswith("f2_fault_"):
         return {"input_rows": 3, "input_columns": 3}
+    if name.startswith("f2_sdb_"):
+        return {"input_rows": fixture["formats"]["sdb"]["cases"]["valid_large"]["rows"]}
+    if name.startswith("f2_tdms_"):
+        return {"input_rows": fixture["formats"]["tdms"]["cases"]["valid_many"]["rows"]}
+    return {}
+
+
+def _route_options(name: str, fixture: dict) -> dict[str, Any]:
+    """Prepare selection and GPS window arguments before a timed call."""
+    if name.startswith("f2_sdb_"):
+        options: dict[str, Any] = {}
+        if name not in ("f2_sdb_all",) and not name.endswith("__all"):
+            options["columns"] = ["outTemp"]
+        if name == "f2_sdb_window" or name.endswith("__window"):
+            from astropy.time import Time
+
+            case = fixture["formats"]["sdb"]["cases"]["valid_large"]
+            window = case["window_unix"]
+            options["start"] = Time(window["start"], format="unix").gps
+            options["end"] = Time(window["end"], format="unix").gps
+        return options
+    if (
+        name.startswith("f2_tdms_")
+        and name != "f2_tdms_all"
+        and not name.endswith("__all")
+    ):
+        return {"channels": ["Group/Selected"]}
     return {}
 
 
@@ -172,6 +220,9 @@ def _scenario(
     work_dir: Path,
     writer_series: Any = None,
     merge_parts: Any = None,
+    route_options: dict[str, Any] | None = None,
+    writer_sink: Any = None,
+    scenario_events: dict[str, Any] | None = None,
 ) -> Any:
     from gwexpy.frequencyseries import FrequencySeries
     from gwexpy.timeseries import TimeSeriesDict
@@ -230,8 +281,38 @@ def _scenario(
         from gwexpy.timeseries.io.csv_enhanced import write_timeseries_csv
 
         target = work_dir / "written.csv"
-        write_timeseries_csv(writer_series, target)
+        write_timeseries_csv(
+            writer_series, writer_sink if writer_sink is not None else target
+        )
         return target
+    if name.startswith("f2_sdb_"):
+        if name in (
+            "f2_sdb_selected",
+            "f2_sdb_all",
+            "f2_sdb_window",
+            "f2_sdb_wal_snapshot",
+        ):
+            case_name = "wal_base" if name == "f2_sdb_wal_snapshot" else "valid_large"
+        else:
+            case_name = name.removeprefix("f2_sdb_").rsplit("__", 1)[0]
+        if name == "f2_sdb_wal_snapshot":
+            return _read_sdb_wal_snapshot(
+                paths[f"sdb_{case_name}"],
+                work_dir,
+                route_options or {},
+                scenario_events if scenario_events is not None else {},
+            )
+        return TimeSeriesDict.read(
+            paths[f"sdb_{case_name}"], format="sdb", **(route_options or {})
+        )
+    if name.startswith("f2_tdms_"):
+        if name in ("f2_tdms_selected", "f2_tdms_all"):
+            case_name = "valid_many"
+        else:
+            case_name = name.removeprefix("f2_tdms_").rsplit("__", 1)[0]
+        return TimeSeriesDict.read(
+            paths[f"tdms_{case_name}"], format="tdms", **(route_options or {})
+        )
     if name.startswith("f2_fault_"):
         kind, selection = name.removeprefix("f2_fault_").rsplit("__", 1)
         return TimeSeriesDict.read(
@@ -240,6 +321,69 @@ def _scenario(
             channels=["ch1"] if selection == "selected" else None,
         )
     raise ValueError(f"unknown scenario {name}")
+
+
+def _read_sdb_wal_snapshot(
+    source: Path, work_dir: Path, options: dict[str, Any], events: dict[str, Any]
+) -> Any:
+    """Commit a WAL update between SDB metadata validation and payload query."""
+    import shutil
+    import sqlite3
+
+    from gwexpy.timeseries import TimeSeriesDict
+
+    path = work_dir / "wal-snapshot.sdb"
+    shutil.copyfile(source, path)
+    original_connect = sqlite3.connect
+    events["wal_update_triggered"] = False
+
+    class TracedCursor(sqlite3.Cursor):
+        def execute(self, sql: str, *args: Any, **kwargs: Any) -> Any:
+            sql_text = str(sql).casefold()
+            if (
+                not events["wal_update_triggered"]
+                and "select" in sql_text
+                and "outtemp" in sql_text
+                and "datetime" in sql_text
+            ):
+                writer = original_connect(path)
+                try:
+                    writer.execute("PRAGMA journal_mode=WAL")
+                    before = writer.execute(
+                        "SELECT outTemp FROM archive ORDER BY rowid LIMIT 1"
+                    ).fetchone()
+                    writer.execute("BEGIN IMMEDIATE")
+                    writer.execute("UPDATE archive SET outTemp = '99' WHERE rowid = 1")
+                    writer.commit()
+                    after = writer.execute(
+                        "SELECT outTemp FROM archive ORDER BY rowid LIMIT 1"
+                    ).fetchone()
+                finally:
+                    writer.close()
+                events.update(
+                    {
+                        "wal_update_triggered": True,
+                        "wal_before_value": str(before[0]),
+                        "wal_after_value": str(after[0]),
+                        "wal_trigger_query": str(sql),
+                    }
+                )
+            return super().execute(sql, *args, **kwargs)
+
+    class TracedConnection(sqlite3.Connection):
+        def cursor(self, *args: Any, **kwargs: Any) -> Any:
+            kwargs.setdefault("factory", TracedCursor)
+            return super().cursor(*args, **kwargs)
+
+    def traced_connect(database: Any, *args: Any, **kwargs: Any) -> Any:
+        kwargs.setdefault("factory", TracedConnection)
+        return original_connect(database, *args, **kwargs)
+
+    sqlite3.connect = traced_connect
+    try:
+        return TimeSeriesDict.read(path, format="sdb", **options)
+    finally:
+        sqlite3.connect = original_connect
 
 
 def _make_merge_parts() -> tuple[Any, ...]:
@@ -316,6 +460,144 @@ def _synthetic_c1_case(name: str) -> Any:
     return read_multi_dict(lambda source: sources[source], [0, 1], "synthetic")
 
 
+class _WriteCounter:
+    """File-like structural sink that records each writer call without buffering."""
+
+    def __init__(self) -> None:
+        self.write_calls = 0
+        self.max_chunk_bytes = 0
+        self.total_bytes = 0
+
+    def write(self, value: str) -> int:
+        encoded_bytes = len(value.encode("utf-8"))
+        self.write_calls += 1
+        self.max_chunk_bytes = max(self.max_chunk_bytes, encoded_bytes)
+        self.total_bytes += encoded_bytes
+        return len(value)
+
+    def counters(self) -> dict[str, int]:
+        return {
+            "writer_write_calls": self.write_calls,
+            "writer_max_chunk_bytes": self.max_chunk_bytes,
+            "writer_total_bytes": self.total_bytes,
+            "writer_full_output_buffer_count": int(
+                self.total_bytes > 0 and self.max_chunk_bytes == self.total_bytes
+            ),
+        }
+
+
+@contextlib.contextmanager
+def _capture_route_logs(enabled: bool) -> Iterator[list[dict[str, str]]]:
+    """Capture backend logging warnings, including npTDMS warning records."""
+    entries: list[dict[str, str]] = []
+    if not enabled:
+        yield entries
+        return
+
+    class Collector(logging.Handler):
+        def __init__(self) -> None:
+            super().__init__(level=logging.WARNING)
+            self.seen: list[logging.LogRecord] = []
+
+        def emit(self, record: logging.LogRecord) -> None:
+            if any(item is record for item in self.seen):
+                return
+            self.seen.append(record)
+            entries.append(
+                {
+                    "logger": record.name,
+                    "level": record.levelname,
+                    "message": record.getMessage(),
+                }
+            )
+
+    handler = Collector()
+    loggers = [
+        logging.getLogger(name)
+        for name in ("", "nptdms", "nptdms.reader", "nptdms.tdms_segment")
+    ]
+    for logger in loggers:
+        logger.addHandler(handler)
+    try:
+        yield entries
+    finally:
+        for logger in loggers:
+            logger.removeHandler(handler)
+
+
+def _install_csv_structure_probe(counters: dict[str, Any]) -> None:
+    """Observe B1 parser locals at return without changing their values."""
+    from gwexpy.timeseries.io import csv_enhanced
+
+    target_code = csv_enhanced.read_timeseriesdict_csv.__code__
+
+    def profile(frame: Any, event: str, _arg: Any) -> None:
+        if event != "return" or frame.f_code is not target_code:
+            return
+        rows = frame.f_locals.get("rows")
+        raw_tokens = frame.f_locals.get("raw_tokens")
+        raw = frame.f_locals.get("raw")
+        counters["csv_parser_local_probe_covered"] = isinstance(
+            rows, list
+        ) and isinstance(raw_tokens, list)
+        if isinstance(rows, list):
+            counters["python_materialized_value_count"] = sum(len(row) for row in rows)
+            counters["materialized_column_count"] = max(
+                (len(row) for row in rows), default=0
+            )
+        if isinstance(raw_tokens, list):
+            counters["validated_token_count"] = sum(len(row) for row in raw_tokens)
+        if raw is not None and hasattr(raw, "shape"):
+            counters["numpy_materialized_value_count"] = int(raw.size)
+            counters["numpy_materialized_column_count"] = (
+                int(raw.shape[1]) if raw.ndim == 2 else 0
+            )
+
+    sys.setprofile(profile)
+
+
+def _install_sdb_structure_probe(counters: dict[str, Any]) -> None:
+    """Count B1's payload DataFrame rows independently from metadata scans."""
+    from gwexpy.timeseries.io import sdb
+
+    original = sdb.pd.read_sql_query
+    counters["sdb_dataframe_probe_covered"] = False
+
+    def read_sql_query(sql: str, connection: Any, *args: Any, **kwargs: Any) -> Any:
+        result = original(sql, connection, *args, **kwargs)
+        if "outtemp" in str(sql).casefold():
+            counters["sdb_dataframe_probe_covered"] = True
+            counters["sdb_payload_rows_fetched"] = counters.get(
+                "sdb_payload_rows_fetched", 0
+            ) + len(result)
+            counters["sdb_payload_query"] = str(sql)
+        return result
+
+    sdb.pd.read_sql_query = read_sql_query
+
+
+def _install_tdms_structure_probe(counters: dict[str, Any]) -> None:
+    """Count selected and unselected TDMS channel payload reads exactly."""
+    from nptdms.tdms import TdmsChannel
+
+    original = TdmsChannel.read_data
+    counters["tdms_read_data_probe_covered"] = True
+    counters["tdms_selected_read_data_calls"] = 0
+    counters["tdms_unselected_read_data_calls"] = 0
+
+    def read_data(channel: Any, *args: Any, **kwargs: Any) -> Any:
+        name = str(channel.name)
+        key = (
+            "tdms_selected_read_data_calls"
+            if name == "Selected"
+            else "tdms_unselected_read_data_calls"
+        )
+        counters[key] = counters.get(key, 0) + 1
+        return original(channel, *args, **kwargs)
+
+    TdmsChannel.read_data = read_data
+
+
 def _worker_audit(wheel: Path, expected_version: str, *, full: bool) -> dict:
     import gwexpy
 
@@ -378,7 +660,7 @@ def _worker(args: argparse.Namespace) -> None:
     if args.mode == "service":
         _warm_service(args, audit)
         return
-    counters: dict[str, int] = {}
+    counters: dict[str, Any] = {}
     if args.mode == "structure" and args.scenario in ("c1_many", "c1_merge_64"):
         from gwexpy.timeseries import TimeSeries
 
@@ -398,6 +680,13 @@ def _worker(args: argparse.Namespace) -> None:
             return result
 
         TimeSeries.append = measured_append
+    if args.mode == "structure":
+        if args.scenario in ("f2_2", "f2_3"):
+            _install_csv_structure_probe(counters)
+        elif args.scenario.startswith("f2_sdb_"):
+            _install_sdb_structure_probe(counters)
+        elif args.scenario.startswith("f2_tdms_"):
+            _install_tdms_structure_probe(counters)
     fixture = json.loads(
         (Path(args.fixtures) / "fixtures.json").read_text(encoding="utf-8")
     )
@@ -405,6 +694,7 @@ def _worker(args: argparse.Namespace) -> None:
         key: Path(args.fixtures) / entry["name"]
         for key, entry in fixture["files"].items()
     }
+    route_options = _route_options(args.scenario, fixture)
     writer_series = None
     merge_parts = _make_merge_parts() if args.scenario == "c1_merge_64" else None
     if args.scenario == "f2_writer":
@@ -413,19 +703,27 @@ def _worker(args: argparse.Namespace) -> None:
         from gwexpy.timeseries import TimeSeries
 
         writer_series = TimeSeries(
-            np.arange(32768, dtype=np.float64) / 8,
+            np.arange(WRITER_ROWS, dtype=np.float64) / 8,
             t0=1000,
             dt=0.25,
             name="writer",
             unit="m",
         )
     with tempfile.TemporaryDirectory(prefix="gwexpy-io-bench-") as directory:
+        writer_sink = (
+            _WriteCounter()
+            if args.mode == "structure" and args.scenario == "f2_writer"
+            else None
+        )
         warning_context = (
             warnings.catch_warnings(record=True)
             if args.mode == "correctness"
             else contextlib.nullcontext([])
         )
-        with warning_context as caught:
+        with (
+            warning_context as caught,
+            _capture_route_logs(args.mode == "correctness") as logs,
+        ):
             if args.mode == "correctness":
                 warnings.simplefilter("always")
             try:
@@ -436,14 +734,28 @@ def _worker(args: argparse.Namespace) -> None:
                         Path(directory),
                         writer_series,
                         merge_parts,
+                        route_options,
+                        writer_sink,
+                        counters,
                     )
                 wall_start = time.perf_counter_ns()
                 cpu_start = time.process_time_ns()
                 result = _scenario(
-                    args.scenario, paths, Path(directory), writer_series, merge_parts
+                    args.scenario,
+                    paths,
+                    Path(directory),
+                    writer_series,
+                    merge_parts,
+                    route_options,
+                    writer_sink,
+                    counters,
                 )
                 cpu_ns = time.process_time_ns() - cpu_start
                 wall_ns = time.perf_counter_ns() - wall_start
+                if args.mode == "structure" and args.scenario in ("f2_2", "f2_3"):
+                    sys.setprofile(None)
+                if writer_sink is not None:
+                    counters.update(writer_sink.counters())
                 payload: dict[str, Any] = {
                     "outcome": "return",
                     "fixture_counts": _declared_counts(args.scenario, fixture),
@@ -469,6 +781,8 @@ def _worker(args: argparse.Namespace) -> None:
                 for item in caught
             ]
             payload["warnings_recorded"] = args.mode == "correctness"
+            payload["logs"] = logs
+            payload["logs_recorded"] = args.mode == "correctness"
     print(json.dumps({"audit": audit, "sample": payload}, sort_keys=True))
 
 
@@ -483,6 +797,7 @@ def _warm_service(args: argparse.Namespace, audit: dict) -> None:
         key: Path(args.fixtures) / entry["name"]
         for key, entry in fixture["files"].items()
     }
+    route_options = _route_options(args.scenario, fixture)
     writer_series = None
     merge_parts = _make_merge_parts() if args.scenario == "c1_merge_64" else None
     if args.scenario == "f2_writer":
@@ -491,7 +806,7 @@ def _warm_service(args: argparse.Namespace, audit: dict) -> None:
         from gwexpy.timeseries import TimeSeries
 
         writer_series = TimeSeries(
-            np.arange(32768, dtype=np.float64) / 8,
+            np.arange(WRITER_ROWS, dtype=np.float64) / 8,
             t0=1000,
             dt=0.25,
             name="writer",
@@ -499,7 +814,9 @@ def _warm_service(args: argparse.Namespace, audit: dict) -> None:
         )
     with tempfile.TemporaryDirectory(prefix="gwexpy-io-warm-") as directory:
         work_dir = Path(directory)
-        _scenario(args.scenario, paths, work_dir, writer_series, merge_parts)
+        _scenario(
+            args.scenario, paths, work_dir, writer_series, merge_parts, route_options
+        )
         print(json.dumps({"ready": True, "audit": audit}), flush=True)
         for command in sys.stdin:
             if command.strip() == "quit":
@@ -510,7 +827,12 @@ def _warm_service(args: argparse.Namespace, audit: dict) -> None:
                 started_wall = time.perf_counter_ns()
                 started_cpu = time.process_time_ns()
                 result = _scenario(
-                    args.scenario, paths, work_dir, writer_series, merge_parts
+                    args.scenario,
+                    paths,
+                    work_dir,
+                    writer_series,
+                    merge_parts,
+                    route_options,
                 )
                 cpu_ns = time.process_time_ns() - started_cpu
                 wall_ns = time.perf_counter_ns() - started_wall
@@ -898,6 +1220,7 @@ def main() -> None:
     fixture_parser = sub.add_parser("fixtures")
     fixture_parser.add_argument("destination")
     fixture_parser.add_argument("--large-rows", type=int, default=65536)
+    fixture_parser.add_argument("--with-formats", action="store_true")
     run = sub.add_parser("capture")
     run.add_argument("--fixtures", required=True)
     run.add_argument("--output", required=True)
@@ -909,6 +1232,16 @@ def main() -> None:
         + tuple(
             f"f2_fault_{kind}__{selection}"
             for kind in FAULTS
+            for selection in ("selected", "all")
+        )
+        + tuple(
+            f"f2_sdb_{kind}__{selection}"
+            for kind in SDB_FAULTS
+            for selection in ("selected", "window", "all")
+        )
+        + tuple(
+            f"f2_tdms_{kind}__{selection}"
+            for kind in TDMS_FAULTS
             for selection in ("selected", "all")
         ),
     )
@@ -938,7 +1271,11 @@ def main() -> None:
     worker.add_argument("--temperature", required=True)
     args = parser.parse_args()
     if args.action == "fixtures":
-        make_fixtures(Path(args.destination), large_rows=args.large_rows)
+        make_fixtures(
+            Path(args.destination),
+            large_rows=args.large_rows,
+            include_formats=args.with_formats,
+        )
     elif args.action == "_worker":
         _worker(args)
     else:

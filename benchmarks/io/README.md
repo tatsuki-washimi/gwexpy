@@ -22,6 +22,8 @@ Example:
 
 ```sh
 python benchmarks/io/run.py fixtures /tmp/v025-fixtures
+# For F2, generate CSV plus package-independent SDB/TDMS fixtures:
+python benchmarks/io/run.py fixtures /tmp/v025-f2-fixtures --with-formats
 python -m build --wheel --no-isolation --outdir /tmp/v025-wheels
 python -m pip download --no-deps --only-binary=:all: gwexpy==0.2.4 -d /tmp/v025-wheels
 python -m venv --system-site-packages /tmp/v025-b0
@@ -104,6 +106,47 @@ gaps, overlap, one file, and empty input. Synthetic direct `_multi` cases add
 channel order, integer/NaN padding, unit conversion, nanosecond GPS placement,
 and first-source provenance; they generate series from deterministic constants
 inside the isolated wheel process.
+
+For F2, `f2_2` and `f2_3` structural runs inspect the enhanced parser's
+successful-return locals. They count validated tokens, Python row values,
+NumPy matrix values, and materialized columns exactly for the B1 parser;
+`csv_parser_local_probe_covered` must be true. A candidate that replaces these
+locals needs an equivalent structural probe bound to its parser before any
+materialization claim is accepted. Route ③'s declared input has 65,536 rows,
+17 columns, and 1,114,112 tokens; its target output is one selected value
+column plus time. Routes ①a/①b stay separate and must have identical full
+fingerprints, including the exact nonuniform frequency array.
+
+`f2_writer` calls the enhanced internal writer with 524,288 preconstructed
+float64 samples. Its structural run supplies a file-like counting sink that
+records the exact number and size of writes without retaining output bytes;
+the correctness run writes a real file and hashes every byte. Timing and
+memory use the real path. A full-output-buffer count of zero and lower Linux
+peak RSS are both required for an internal enhanced-writer improvement claim.
+The write-call counter observes only the string passed to `write()`; a
+candidate could still retain all rows and emit smaller writes. A candidate
+also needs an allocation probe at its row-buffer construction path, or a
+source-audited equivalent, to show that output-sized Python buffers are not
+retained. No public `TimeSeries.write(format="csv")` speed or memory claim
+follows from this route, because that registration uses GWpy's native writer.
+
+F2 SDB fixtures cover valid selected/all/window reads, malformed whole-source
+`usUnits` and timestamp rows outside the window, selected and unselected bad
+payloads, and a WAL update scheduled at the payload SELECT. The structural
+DataFrame probe records B1 fetched payload rows separately from the metadata
+validation scan. A candidate that stops using `pandas.read_sql_query` needs
+an equivalent query/fetch counter. The WAL case records the trigger SQL,
+before/after values, public result, warnings, and logs. A same-snapshot SDB
+optimization is **HOLD** if it changes B1's concurrent-update result until a
+separate W0 behavior exception and disclosure are approved.
+
+F2 TDMS fixtures cover selected/all reads, selected and unselected invalid
+increments, and truncated selected/unselected raw payloads. Structural runs
+count `TdmsChannel.read_data()` by selected versus unselected channel.
+Correctness fingerprints include Python warnings and backend logging records
+with exact logger, level, and message. The truncated-payload fixture may be
+detected at file open by npTDMS, before per-channel selection; interpret its
+captured B1 behavior directly rather than assuming a channel-local fault.
 
 Structural, timing, and memory modes are separate processes. Do not treat a
 baseline as frozen until each required B1 scenario has a public fingerprint,

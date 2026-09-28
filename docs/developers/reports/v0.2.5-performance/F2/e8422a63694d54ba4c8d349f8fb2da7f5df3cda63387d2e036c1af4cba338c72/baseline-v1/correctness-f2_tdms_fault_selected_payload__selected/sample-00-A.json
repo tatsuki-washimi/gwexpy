@@ -1,0 +1,85 @@
+{
+  "audit": {
+    "executable": "/tmp/gwexpy-v025-b-env-a/bin/python",
+    "gwexpy_path": "/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/__init__.py",
+    "gwexpy_version": "0.2.4",
+    "prefix": "/tmp/gwexpy-v025-b-env-a",
+    "python": "3.12.12"
+  },
+  "controller_elapsed_ns": 2556140729,
+  "sample": {
+    "counters": {},
+    "cpu_ns": 242969743,
+    "fingerprint": {
+      "attrs": "None",
+      "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+      "members": {
+        "Group/Selected": {
+          "class": "gwexpy.timeseries.timeseries.TimeSeries",
+          "dt": "<Quantity 0.25 s>",
+          "epoch": "<Time object: scale='utc' format='gps' value=0.0>",
+          "name": "Group/Selected",
+          "sample_rate": "<Quantity 4. Hz>",
+          "t0": "<Quantity 0. s>",
+          "times": {
+            "unit": "s",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "0.0",
+                "511.75",
+                "1023.5"
+              ],
+              "sha256": "e88ba67cbcd73ce33cefcb9038c5eab5700378184b40278155d48dcf669710b7",
+              "shape": [
+                4095
+              ]
+            }
+          },
+          "unit": "",
+          "values": {
+            "dtype": "<f8",
+            "selected": [
+              "2000.0",
+              "4047.0",
+              "6094.0"
+            ],
+            "sha256": "5c70bcee5fe010f4b158e292bfa8484e69f61685b43a059ad7676900c5022205",
+            "shape": [
+              4095
+            ]
+          }
+        }
+      },
+      "order": [
+        "Group/Selected"
+      ]
+    },
+    "fixture_counts": {
+      "input_rows": 4096
+    },
+    "logs": [
+      {
+        "level": "WARNING",
+        "logger": "nptdms.reader",
+        "message": "Last segment of file has less data than expected, will attempt to read to the end of the file"
+      },
+      {
+        "level": "WARNING",
+        "logger": "nptdms.tdms_segment",
+        "message": "Data size 98296 is not a multiple of the chunk size 98304. Will attempt to read last chunk"
+      }
+    ],
+    "logs_recorded": true,
+    "outcome": "return",
+    "wall_ns": 244231421,
+    "warnings": [
+      {
+        "category": "builtins.DeprecationWarning",
+        "message": "Compatibility support for python2 has been dropped"
+      }
+    ],
+    "warnings_recorded": true
+  },
+  "stderr": "[nptdms.reader WARNING] Last segment of file has less data than expected, will attempt to read to the end of the file\n[nptdms.tdms_segment WARNING] Data size 98296 is not a multiple of the chunk size 98304. Will attempt to read last chunk\n"
+}

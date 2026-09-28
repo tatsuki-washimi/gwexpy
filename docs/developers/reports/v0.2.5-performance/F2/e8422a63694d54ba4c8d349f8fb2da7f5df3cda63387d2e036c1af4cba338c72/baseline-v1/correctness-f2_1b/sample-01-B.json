@@ -1,0 +1,65 @@
+{
+  "audit": {
+    "executable": "/tmp/gwexpy-v025-b-env-b/bin/python",
+    "gwexpy_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+    "gwexpy_version": "0.2.5",
+    "prefix": "/tmp/gwexpy-v025-b-env-b",
+    "python": "3.12.12"
+  },
+  "controller_elapsed_ns": 2619655505,
+  "sample": {
+    "counters": {},
+    "cpu_ns": 273881451,
+    "fingerprint": {
+      "class": "gwexpy.frequencyseries.frequencyseries.FrequencySeries",
+      "epoch": "None",
+      "f0": "<Quantity 0. Hz>",
+      "frequencies": {
+        "unit": "Hz",
+        "values": {
+          "dtype": "<f8",
+          "selected": [
+            "0.0",
+            "256.000004",
+            "511.875"
+          ],
+          "sha256": "5a145aaa7d9f73fe7deaffef2c1729ccad042a5d29de78e4777d99674cad46d0",
+          "shape": [
+            4096
+          ]
+        }
+      },
+      "name": null,
+      "unit": "",
+      "values": {
+        "dtype": "<f8",
+        "selected": [
+          "-3.9375",
+          "-3.1484375",
+          "-2.6484375"
+        ],
+        "sha256": "fb6f5072010ed90737feabc1497c50d2659478456d919fcae01498737351bea3",
+        "shape": [
+          4096
+        ]
+      }
+    },
+    "fixture_counts": {
+      "input_columns": 2,
+      "input_rows": 4096,
+      "input_tokens": 8192
+    },
+    "logs": [],
+    "logs_recorded": true,
+    "outcome": "return",
+    "wall_ns": 276996398,
+    "warnings": [
+      {
+        "category": "builtins.DeprecationWarning",
+        "message": "Compatibility support for python2 has been dropped"
+      }
+    ],
+    "warnings_recorded": true
+  },
+  "stderr": ""
+}

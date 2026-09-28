@@ -1,0 +1,76 @@
+[
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-b-env-a/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.4",
+      "prefix": "/tmp/gwexpy-v025-b-env-a",
+      "python": "3.12.12"
+    },
+    "controller_elapsed_ns": 2637818973,
+    "sample": {
+      "counters": {},
+      "cpu_ns": 242621638,
+      "fingerprint": {
+        "attrs": "None",
+        "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+        "members": {
+          "Group/Selected": {
+            "class": "gwexpy.timeseries.timeseries.TimeSeries",
+            "dt": "<Quantity 1. s>",
+            "epoch": "<Time object: scale='utc' format='gps' value=0.0>",
+            "name": "Group/Selected",
+            "sample_rate": "<Quantity 1. Hz>",
+            "t0": "<Quantity 0. s>",
+            "times": {
+              "unit": "s",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "0.0",
+                  "2048.0",
+                  "4095.0"
+                ],
+                "sha256": "d5575075eb395216bf2ef800ba88d1fe5fa5aa2cb0f9d32e41c0ed0fe2104253",
+                "shape": [
+                  4096
+                ]
+              }
+            },
+            "unit": "",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "0.0",
+                "2048.0",
+                "4095.0"
+              ],
+              "sha256": "d5575075eb395216bf2ef800ba88d1fe5fa5aa2cb0f9d32e41c0ed0fe2104253",
+              "shape": [
+                4096
+              ]
+            }
+          }
+        },
+        "order": [
+          "Group/Selected"
+        ]
+      },
+      "fixture_counts": {
+        "input_rows": 4096
+      },
+      "logs": [],
+      "logs_recorded": true,
+      "outcome": "return",
+      "wall_ns": 245059306,
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "warnings_recorded": true
+    },
+    "stderr": ""
+  }
+]

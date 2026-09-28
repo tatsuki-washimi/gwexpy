@@ -6,6 +6,11 @@ import hashlib
 import json
 from pathlib import Path
 
+try:
+    from .format_fixtures import make_sdb_fixtures, make_tdms_fixtures
+except ImportError:  # Direct execution under python -I.
+    from format_fixtures import make_sdb_fixtures, make_tdms_fixtures
+
 
 def sha256(path: Path) -> str:
     """Hash a fixture or manifest as stored on disk."""
@@ -16,7 +21,9 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def make_fixtures(destination: Path, *, large_rows: int = 65536) -> dict:
+def make_fixtures(
+    destination: Path, *, large_rows: int = 65536, include_formats: bool = False
+) -> dict:
     """Create repeatable CSV fixtures without importing either candidate wheel."""
     if large_rows < 4096:
         raise ValueError("large_rows must be at least 4096")
@@ -93,6 +100,19 @@ def make_fixtures(destination: Path, *, large_rows: int = 65536) -> dict:
             "f2_3": "large",
         },
     }
+    if include_formats:
+        formats = {
+            "sdb": make_sdb_fixtures(destination / "sdb"),
+            "tdms": make_tdms_fixtures(destination / "tdms"),
+        }
+        manifest["formats"] = formats
+        for format_name, format_manifest in formats.items():
+            for case_name, case in format_manifest["cases"].items():
+                manifest["files"][f"{format_name}_{case_name}"] = {
+                    "name": f"{format_name}/{case['name']}",
+                    "sha256": case["sha256"],
+                    "bytes": case["bytes"],
+                }
     manifest_path = destination / "fixtures.json"
     encoded = json.dumps(manifest, sort_keys=True, indent=2) + "\n"
     if manifest_path.exists() and manifest_path.read_text(encoding="utf-8") != encoded:
