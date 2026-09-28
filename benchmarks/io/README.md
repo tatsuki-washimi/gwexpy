@@ -1,0 +1,113 @@
+# v0.2.5 I/O baseline harness
+
+`run.py` is independent of the package wheel under test. It creates deterministic
+CSV fixtures, verifies their hashes before sampling, and invokes each installed
+wheel in a fresh `python -I` process. It rejects an import outside that
+interpreter's prefix, a version mismatch, an installed file differing from the
+nominated wheel, or a dependency-version mismatch between arms. Full installed
+file verification runs before samples; sample workers check import identity.
+
+## Prepare the two arms
+
+Use the same Python, build frontend/backend versions, dependency environment,
+and `pip install --no-deps --no-index` mode for both wheels. B0 is the published
+v0.2.4 wheel. B1 must be built from old R
+`1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c`, with a clean runtime tree.
+Record the build command, toolchain versions, SHA-256 of each source/wheel, and
+the exact install commands with the evidence. A candidate wheel should be built
+with the same toolchain as B1. Do not install the source checkout in either
+benchmark interpreter.
+
+Example:
+
+```sh
+python benchmarks/io/run.py fixtures /tmp/v025-fixtures
+python -m build --wheel --no-isolation --outdir /tmp/v025-wheels
+python -m pip download --no-deps --only-binary=:all: gwexpy==0.2.4 -d /tmp/v025-wheels
+python -m venv --system-site-packages /tmp/v025-b0
+python -m venv --system-site-packages /tmp/v025-b1
+/tmp/v025-b0/bin/python -m pip install --no-deps --no-index /tmp/v025-wheels/gwexpy-0.2.4-py3-none-any.whl
+/tmp/v025-b1/bin/python -m pip install --no-deps --no-index /tmp/v025-wheels/gwexpy-0.2.5-py3-none-any.whl
+```
+
+System site packages are suitable only when their versions are controlled and
+the audit confirms identical distributions. Pass the two interpreter paths,
+wheel paths, versions, source SHAs, and B0/B1 labels to every `capture` call.
+The output directory must be new. Place final reviewed evidence under
+`docs/developers/reports/v0.2.5-performance/<lane>/<harness-digest>/baseline-v1/`.
+Corrections go in `baseline-v2/`; never edit an existing evidence directory.
+For a later C1 candidate comparison, run the **C1 freeze commit's exact
+`benchmarks/io/*.py` bytes** from a separate checkout. Later F2 or other lane
+edits may change this directory and its harness digest. S2 must compare the
+C1 baseline git blob hashes with that frozen commit before accepting a
+candidate comparison.
+
+```sh
+python benchmarks/io/run.py capture \
+  --fixtures /tmp/v025-fixtures --output /tmp/v025-c1-structure \
+  --lane C1 --scenario c1_many --mode structure --samples 5 \
+  --python-a /tmp/v025-b0/bin/python --wheel-a /tmp/v025-wheels/gwexpy-0.2.4-py3-none-any.whl \
+  --version-a 0.2.4 --source-sha-a 522e52a082925da4dd37966d82a7616bdd2a5248 --label-a B0 \
+  --python-b /tmp/v025-b1/bin/python --wheel-b /tmp/v025-wheels/gwexpy-0.2.5-py3-none-any.whl \
+  --version-b 0.2.5 --source-sha-b 1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c --label-b B1
+```
+
+## Runs and interpretation
+
+- `correctness` captures exact value and axis byte hashes, selected samples,
+  dtype, units, metadata, ordered collection keys, warning category/message,
+  and exception type/message. Compare a candidate with **B1**; B0 is historical.
+- `structure` instruments `TimeSeries.append` for regular C1 merge routes.
+  `c1_merge_64` preconstructs 64 contiguous 4096-sample float64 segments
+  before timing and calls `_multi.read_multi_dict` with a trivial reader; it is
+  C1's primary merge-only warm and structural benchmark. The 12-file
+  `c1_many` CSV route is end-to-end supporting evidence.
+  `append_result_sample_bytes` counts result-array sizes at observed
+  calls; it is a B1 proxy, not a claim about allocator traffic. The candidate
+  C1 gate additionally requires a structural placement/copy probe at the
+  implementation's final output write: each input segment's sample bytes may
+  be placed at most once, so the predeclared bound is the sum of input segment
+  `nbytes` (64 × 4096 × 8 = 2,097,152 bytes for `c1_merge_64`; 12 × 2048 ×
+  8 = 196,608 bytes for `c1_many`). The append spy alone
+  does not establish this bound; the C1 implementation test must instrument
+  its placement path or supply source-audited equivalent evidence. Irregular
+  C1 routes are correctness checks and do not carry the zero-append gate.
+  The C1 fast path excludes series requiring `_xindex` fallback; a candidate
+  implementation test must show they still use the unchanged append path.
+- `timing --temperature cold` measures controller spawn through worker exit,
+  including fresh-process import/backend setup. `--temperature warm` keeps one
+  process per arm, warms each once, then interleaves timed function-level
+  repeats between the two processes. The worker's `cpu_ns` covers the route
+  call in both modes. Each arm has five baseline or nine release
+  samples in `ABBA BAAB ABBA BAAB AB` prefix order.
+- `memory` samples Linux parent and child PSS/RSS together from process launch
+  through exit. The tree peak is the maximum of simultaneous sums, never a sum
+  of individual peaks. Each trace includes monotonic timestamps and PIDs. It
+  is a sampled lower bound. For a worker pool route, rerun memory only with
+  `--sample-ms 1` if the expected worker count was not observed.
+- `fixture_counts` are declared generator facts. They are **not** parser
+  validation/materialization counters. A lane must add exact structural probes
+  for those counters before claiming the corresponding structural gate.
+
+Routes `f2_1a` and `f2_1b` call `FrequencySeries.read` with explicit `csv`
+format and auto detection respectively, on the **same nonuniform-axis 4096-row
+file**. Keep their fingerprints and wall samples separate. `f2_2` reads all
+eight channels of an 8192-row CSV; `f2_3` selects `ch1` from a 16-channel,
+65,536-row CSV. `f2_writer` calls the internal enhanced CSV writer directly,
+because the public single-series CSV registration selects GWpy's writer.
+The `f2_fault_*` cases cover selected/unselected bad values, timestamp errors,
+row width, and first-malformed-row order under both one-channel and all-channel
+reads. `c1_*` cases call the format reader directly with a list so they reach
+`_multi.read_multi_dict`, the function changed in C1. `c1_public_many` records
+the separate GWpy registry list merge behavior. C1 cases cover input order,
+gaps, overlap, one file, and empty input. Synthetic direct `_multi` cases add
+channel order, integer/NaN padding, unit conversion, nanosecond GPS placement,
+and first-source provenance; they generate series from deterministic constants
+inside the isolated wheel process.
+
+Structural, timing, and memory modes are separate processes. Do not treat a
+baseline as frozen until each required B1 scenario has a public fingerprint,
+raw samples, fixture and harness hashes, installed-wheel audit, reviewed fault
+matrix, and an append-only committed manifest. The `capture` manifest always
+uses `UNBASELINED`; the release owner records freeze status after review and
+commit. No performance claim follows from the baseline alone.
