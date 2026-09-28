@@ -1,0 +1,84 @@
+{
+  "audit": {
+    "gwexpy_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+    "gwexpy_version": "0.2.5",
+    "wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498"
+  },
+  "controller_elapsed_ns": 2628659420,
+  "sample": {
+    "cases": {
+      "many_valid": {
+        "native": {
+          "actual_route": "native",
+          "base64_counter_scope": "gwexpy.io.dttxml_common.base64.b64decode lookup; exact for current native decoder only when selected bytes are positive and unknown calls are zero",
+          "base64_observation": {
+            "decode_calls": {
+              "selected": 1,
+              "unselected": 256
+            },
+            "decoded_bytes": {
+              "selected": 65536,
+              "unselected": 16777216
+            },
+            "selected_decoded_bytes": 65536,
+            "total_decoded_bytes": 16842752,
+            "unknown_decode_calls": 0,
+            "unselected_decoded_bytes": 16777216
+          },
+          "gwexpy_import_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+          "gwexpy_version": "0.2.5",
+          "logs": [],
+          "native_parser_exception_applies": false,
+          "optional_dttxml_version": "1.1.8",
+          "oracle_category": "selected_valid",
+          "outcome": {
+            "fingerprint": {
+              "entries": {
+                "K1:F3-SELECTED": {
+                  "channel": "K1:F3-SELECTED",
+                  "epoch": 1234567890.25,
+                  "frequencies": {
+                    "dtype": "<f8",
+                    "sha256": "d2721de79be58caa7ab89fbcdb981ff2d4b378771bd179cf354505fc43b764ba",
+                    "shape": [
+                      16384
+                    ]
+                  },
+                  "name": "K1:F3-SELECTED",
+                  "unit": "",
+                  "values": {
+                    "dtype": "<f4",
+                    "sha256": "3a5dfeb071063fb227006eb57adcfa68a3ca229a557717960135da5de1ac1c50",
+                    "shape": [
+                      16384
+                    ]
+                  }
+                }
+              },
+              "kind": "FrequencySeriesDict",
+              "order": [
+                "K1:F3-SELECTED"
+              ]
+            },
+            "status": "ok"
+          },
+          "requested_route": "native",
+          "series_materialization": {
+            "channels": [
+              "K1:F3-SELECTED"
+            ],
+            "series_constructed": 1,
+            "unselected_series_constructed": 0
+          },
+          "source_sha256": "46c3501cac957c228b85ae035e52bfeb1411b499923dad44ca5b3ae14761a4d0",
+          "warnings": []
+        }
+      }
+    },
+    "f3_dttxml_fixtures_sha256": "6bc593d33c4f122c4c4f1dad0dc536f7cee65a755cf70c6dc82a2120506a938f",
+    "f3_dttxml_harness_sha256": "82e2d6bbed3cbed9494de049afa999a9c4d06f4a678de145cc2102eda62b5c4c",
+    "fixture_manifest_sha256": "114a6d59e3c8919ab44765c77bff7e306faec82fddae848a2d839acbeec508d6",
+    "mode": "structure"
+  },
+  "stderr": ""
+}
