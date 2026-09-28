@@ -1,0 +1,123 @@
+{
+  "audit": {
+    "distributions": {
+      "astropy": "7.2.0",
+      "gwpy": "4.0.1",
+      "netCDF4": "1.7.4",
+      "numpy": "1.26.4",
+      "xarray": "2026.2.0"
+    },
+    "gwexpy_path": "/tmp/gwexpy-v025-bx-env-x913/lib/python3.12/site-packages/gwexpy",
+    "gwexpy_version": "0.2.5",
+    "install_mode": "wheel-no-deps",
+    "prefix": "/tmp/gwexpy-v025-bx-env-x913",
+    "python": "3.12.12",
+    "wheel_files_verified": 369,
+    "wheel_sha256": "be7f9d902fc8306a8bc1a0f76c4ba3d9370b752abb083a4ed81b52aef3c143ce"
+  },
+  "fixture": {
+    "file_sha256": "bff7a66aa136934fa33e27d164f449b19e7c4d585bda3ade0c2b403efa969888",
+    "manifest_entry": {
+      "bytes": 21894,
+      "cells": [
+        {
+          "column": 0,
+          "name": "cell_r0_c0",
+          "row": 0,
+          "values_sha256": "04f97eb3faff202e7699c84aadd22eb6e7638222b64491dcf0bdad9fa2d4b738"
+        },
+        {
+          "column": 1,
+          "name": "cell_r0_c1",
+          "row": 0,
+          "values_sha256": "04f97eb3faff202e7699c84aadd22eb6e7638222b64491dcf0bdad9fa2d4b738"
+        },
+        {
+          "column": 0,
+          "name": "cell_r1_c0",
+          "row": 1,
+          "values_sha256": "04f97eb3faff202e7699c84aadd22eb6e7638222b64491dcf0bdad9fa2d4b738"
+        },
+        {
+          "column": 1,
+          "name": "cell_r1_c1",
+          "row": 1,
+          "values_sha256": "04f97eb3faff202e7699c84aadd22eb6e7638222b64491dcf0bdad9fa2d4b738"
+        }
+      ],
+      "dt_float_hex": "0x1.0000000000000p-3",
+      "dtype": "<f8",
+      "name": "matrix_nan_inf.nc",
+      "sha256": "bff7a66aa136934fa33e27d164f449b19e7c4d585bda3ade0c2b403efa969888",
+      "shape": [
+        2,
+        2,
+        8
+      ],
+      "t0_float_hex": "0x1.dcd6500100000p+29",
+      "unit": "V",
+      "variant": "nan_inf"
+    },
+    "manifest_sha256": "dade6bd54082ef7f771724b84064caeb252342317e0da5cdc81a966f5e916050",
+    "path": "/tmp/gwexpy-v025-bx-fixtures-v1/matrix_nan_inf.nc"
+  },
+  "public": {
+    "outcome": {
+      "col_keys": [
+        "'c0'",
+        "'c1'"
+      ],
+      "dt_float_hex": "0x1.0000000000000p-3",
+      "dtype": "<f8",
+      "first_values": [
+        "0x0.0p+0",
+        "nan",
+        "inf",
+        "-inf"
+      ],
+      "kind": "return",
+      "last_values": [
+        "-0x0.0p+0",
+        "0x1.8000000000000p+0",
+        "-0x1.4000000000000p+1",
+        "0x1.0000000000000p+2"
+      ],
+      "row_keys": [
+        "'r0'",
+        "'r1'"
+      ],
+      "shape": [
+        2,
+        2,
+        8
+      ],
+      "t0_float_hex": "0x1.dcd6500100000p+29",
+      "units": [
+        [
+          "V",
+          "V"
+        ],
+        [
+          "V",
+          "V"
+        ]
+      ],
+      "values_encoding": "native_bytes_c_order",
+      "values_sha256": "d213b9ba8ea8c5f6c8c5d7d6925dbf89d1bf3b133abdc9cdbb258bdfb98a9c3e"
+    },
+    "warnings": [
+      {
+        "category": "builtins.DeprecationWarning",
+        "message": "Compatibility support for python2 has been dropped"
+      },
+      {
+        "category": "builtins.RuntimeWarning",
+        "message": "Engine 'gmt' loading failed:\nError loading GMT shared library at 'libgmt.so'.\nlibgmt.so: cannot open shared object file: No such file or directory"
+      },
+      {
+        "category": "builtins.RuntimeWarning",
+        "message": "numpy.ndarray size changed, may indicate binary incompatibility. Expected 16 from C header, got 96 from PyObject"
+      }
+    ]
+  }
+}

@@ -1,0 +1,1277 @@
+* Getting build dependencies for wheel...
+[09/29/26 00:30:45] WARNING  toml section missing       pyproject_reading.py:215
+                             PosixPath('pyproject.toml'                         
+                             ) does not contain a                               
+                             tool.setuptools_scm                                
+                             section                                            
+/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/setuptools/config/_apply_pyprojecttoml.py:82: SetuptoolsDeprecationWarning: `project.license` as a TOML table is deprecated
+!!
+
+        ********************************************************************************
+        Please use a simple string containing a SPDX expression for `project.license`. You can also use `project.license-files`. (Both options available on setuptools>=77.0.0).
+
+        This deprecation is overdue, please update your project and remove deprecated
+        calls to avoid build errors in the future.
+
+        See https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license for details.
+        ********************************************************************************
+
+!!
+  corresp(dist, value, root_dir)
+running egg_info
+creating gwexpy.egg-info
+writing gwexpy.egg-info/PKG-INFO
+writing dependency_links to gwexpy.egg-info/dependency_links.txt
+writing entry points to gwexpy.egg-info/entry_points.txt
+writing requirements to gwexpy.egg-info/requires.txt
+writing top-level names to gwexpy.egg-info/top_level.txt
+writing manifest file 'gwexpy.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+no previously-included directories found matching 'gwexpy/utils/sphinx'
+no previously-included directories found matching 'gwexpy/*/tests'
+no previously-included directories found matching '.harness'
+no previously-included directories found matching 'scratch'
+no previously-included directories found matching 'temp_logs'
+no previously-included directories found matching 'tmp'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+adding license file 'LICENSE.txt'
+writing manifest file 'gwexpy.egg-info/SOURCES.txt'
+* Building wheel...
+[09/29/26 00:30:47] WARNING  toml section missing       pyproject_reading.py:215
+                             PosixPath('pyproject.toml'                         
+                             ) does not contain a                               
+                             tool.setuptools_scm                                
+                             section                                            
+/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/setuptools/config/_apply_pyprojecttoml.py:82: SetuptoolsDeprecationWarning: `project.license` as a TOML table is deprecated
+!!
+
+        ********************************************************************************
+        Please use a simple string containing a SPDX expression for `project.license`. You can also use `project.license-files`. (Both options available on setuptools>=77.0.0).
+
+        This deprecation is overdue, please update your project and remove deprecated
+        calls to avoid build errors in the future.
+
+        See https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license for details.
+        ********************************************************************************
+
+!!
+  corresp(dist, value, root_dir)
+running bdist_wheel
+running build
+running build_py
+creating build/lib/gwexpy
+copying gwexpy/__init__.py -> build/lib/gwexpy
+copying gwexpy/_bootstrap.py -> build/lib/gwexpy
+copying gwexpy/_warnings.py -> build/lib/gwexpy
+copying gwexpy/_version.py -> build/lib/gwexpy
+creating build/lib/gwexpy/detector
+copying gwexpy/detector/__init__.py -> build/lib/gwexpy/detector
+copying gwexpy/detector/units.py -> build/lib/gwexpy/detector
+copying gwexpy/detector/channel.py -> build/lib/gwexpy/detector
+creating build/lib/gwexpy/spectrogram
+copying gwexpy/spectrogram/matrix.py -> build/lib/gwexpy/spectrogram
+copying gwexpy/spectrogram/matrix_core.py -> build/lib/gwexpy/spectrogram
+copying gwexpy/spectrogram/__init__.py -> build/lib/gwexpy/spectrogram
+copying gwexpy/spectrogram/collections.py -> build/lib/gwexpy/spectrogram
+copying gwexpy/spectrogram/spectrogram.py -> build/lib/gwexpy/spectrogram
+copying gwexpy/spectrogram/cleaning.py -> build/lib/gwexpy/spectrogram
+copying gwexpy/spectrogram/matrix_analysis.py -> build/lib/gwexpy/spectrogram
+copying gwexpy/spectrogram/coherence.py -> build/lib/gwexpy/spectrogram
+copying gwexpy/spectrogram/provenance.py -> build/lib/gwexpy/spectrogram
+creating build/lib/gwexpy/spectral
+copying gwexpy/spectral/__init__.py -> build/lib/gwexpy/spectral
+copying gwexpy/spectral/estimation.py -> build/lib/gwexpy/spectral
+creating build/lib/gwexpy/segments
+copying gwexpy/segments/__init__.py -> build/lib/gwexpy/segments
+copying gwexpy/segments/flag.py -> build/lib/gwexpy/segments
+copying gwexpy/segments/segments.py -> build/lib/gwexpy/segments
+creating build/lib/gwexpy/types
+copying gwexpy/types/seriesmatrix.py -> build/lib/gwexpy/types
+copying gwexpy/types/seriesmatrix_base.py -> build/lib/gwexpy/types
+copying gwexpy/types/plane2d.py -> build/lib/gwexpy/types
+copying gwexpy/types/series.py -> build/lib/gwexpy/types
+copying gwexpy/types/series_matrix_analysis.py -> build/lib/gwexpy/types
+copying gwexpy/types/__init__.py -> build/lib/gwexpy/types
+copying gwexpy/types/array2d.py -> build/lib/gwexpy/types
+copying gwexpy/types/series_matrix_indexing.py -> build/lib/gwexpy/types
+copying gwexpy/types/series_matrix_structure.py -> build/lib/gwexpy/types
+copying gwexpy/types/hht_spectrogram.py -> build/lib/gwexpy/types
+copying gwexpy/types/metadata.py -> build/lib/gwexpy/types
+copying gwexpy/types/array4d.py -> build/lib/gwexpy/types
+copying gwexpy/types/array3d.py -> build/lib/gwexpy/types
+copying gwexpy/types/seriesmatrix_validation.py -> build/lib/gwexpy/types
+copying gwexpy/types/series_matrix_visualization.py -> build/lib/gwexpy/types
+copying gwexpy/types/array.py -> build/lib/gwexpy/types
+copying gwexpy/types/index.py -> build/lib/gwexpy/types
+copying gwexpy/types/series_matrix_core.py -> build/lib/gwexpy/types
+copying gwexpy/types/axis.py -> build/lib/gwexpy/types
+copying gwexpy/types/typing.py -> build/lib/gwexpy/types
+copying gwexpy/types/series_matrix_io.py -> build/lib/gwexpy/types
+copying gwexpy/types/time_plane_transform.py -> build/lib/gwexpy/types
+copying gwexpy/types/series_matrix_validation_mixin.py -> build/lib/gwexpy/types
+copying gwexpy/types/series_matrix_math.py -> build/lib/gwexpy/types
+copying gwexpy/types/sliceutils.py -> build/lib/gwexpy/types
+copying gwexpy/types/series_creator.py -> build/lib/gwexpy/types
+copying gwexpy/types/_stats.py -> build/lib/gwexpy/types
+copying gwexpy/types/axis_api.py -> build/lib/gwexpy/types
+creating build/lib/gwexpy/statistics
+copying gwexpy/statistics/__init__.py -> build/lib/gwexpy/statistics
+copying gwexpy/statistics/gauch.py -> build/lib/gwexpy/statistics
+copying gwexpy/statistics/dq_flag.py -> build/lib/gwexpy/statistics
+copying gwexpy/statistics/student_t_indicator.py -> build/lib/gwexpy/statistics
+copying gwexpy/statistics/rayleigh_test.py -> build/lib/gwexpy/statistics
+copying gwexpy/statistics/roc.py -> build/lib/gwexpy/statistics
+creating build/lib/gwexpy/io
+copying gwexpy/io/utils.py -> build/lib/gwexpy/io
+copying gwexpy/io/datafind.py -> build/lib/gwexpy/io
+copying gwexpy/io/__init__.py -> build/lib/gwexpy/io
+copying gwexpy/io/hdf5_collection.py -> build/lib/gwexpy/io
+copying gwexpy/io/hdf5.py -> build/lib/gwexpy/io
+copying gwexpy/io/nds2.py -> build/lib/gwexpy/io
+copying gwexpy/io/collection_dir.py -> build/lib/gwexpy/io
+copying gwexpy/io/cache.py -> build/lib/gwexpy/io
+copying gwexpy/io/time_selection.py -> build/lib/gwexpy/io
+copying gwexpy/io/dttxml_common.py -> build/lib/gwexpy/io
+copying gwexpy/io/registry.py -> build/lib/gwexpy/io
+copying gwexpy/io/gwf.py -> build/lib/gwexpy/io
+copying gwexpy/io/ffldatafind.py -> build/lib/gwexpy/io
+copying gwexpy/io/kerberos.py -> build/lib/gwexpy/io
+copying gwexpy/io/pickle_compat.py -> build/lib/gwexpy/io
+copying gwexpy/io/ligolw.py -> build/lib/gwexpy/io
+copying gwexpy/io/_framecpp.py -> build/lib/gwexpy/io
+creating build/lib/gwexpy/noise
+copying gwexpy/noise/colored.py -> build/lib/gwexpy/noise
+copying gwexpy/noise/non_gaussian.py -> build/lib/gwexpy/noise
+copying gwexpy/noise/wave.py -> build/lib/gwexpy/noise
+copying gwexpy/noise/__init__.py -> build/lib/gwexpy/noise
+copying gwexpy/noise/field.py -> build/lib/gwexpy/noise
+copying gwexpy/noise/gwinc_.py -> build/lib/gwexpy/noise
+copying gwexpy/noise/obspy_.py -> build/lib/gwexpy/noise
+copying gwexpy/noise/peaks.py -> build/lib/gwexpy/noise
+copying gwexpy/noise/asd.py -> build/lib/gwexpy/noise
+copying gwexpy/noise/magnetic.py -> build/lib/gwexpy/noise
+copying gwexpy/noise/line_mask.py -> build/lib/gwexpy/noise
+creating build/lib/gwexpy/analysis
+copying gwexpy/analysis/__init__.py -> build/lib/gwexpy/analysis
+copying gwexpy/analysis/threshold.py -> build/lib/gwexpy/analysis
+copying gwexpy/analysis/stat_info.py -> build/lib/gwexpy/analysis
+copying gwexpy/analysis/coupling.py -> build/lib/gwexpy/analysis
+copying gwexpy/analysis/stats.py -> build/lib/gwexpy/analysis
+copying gwexpy/analysis/coupling_result.py -> build/lib/gwexpy/analysis
+copying gwexpy/analysis/bruco.py -> build/lib/gwexpy/analysis
+copying gwexpy/analysis/response.py -> build/lib/gwexpy/analysis
+creating build/lib/gwexpy/cli
+copying gwexpy/cli/__init__.py -> build/lib/gwexpy/cli
+copying gwexpy/cli/spectrum.py -> build/lib/gwexpy/cli
+copying gwexpy/cli/spectrogram.py -> build/lib/gwexpy/cli
+copying gwexpy/cli/gwpy_plot.py -> build/lib/gwexpy/cli
+copying gwexpy/cli/coherencegram.py -> build/lib/gwexpy/cli
+copying gwexpy/cli/timeseries.py -> build/lib/gwexpy/cli
+copying gwexpy/cli/transferfunction.py -> build/lib/gwexpy/cli
+copying gwexpy/cli/__main__.py -> build/lib/gwexpy/cli
+copying gwexpy/cli/coherence.py -> build/lib/gwexpy/cli
+copying gwexpy/cli/cliproduct.py -> build/lib/gwexpy/cli
+copying gwexpy/cli/qtransform.py -> build/lib/gwexpy/cli
+creating build/lib/gwexpy/plot
+copying gwexpy/plot/log.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/utils.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/__init__.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/plot.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/field.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/colorbar.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/colors.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/gps.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/axes.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/legend.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/units.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/bode.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/pairplot.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/segments.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/geomap.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/_coord.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/gauch_dashboard.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/tex.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/_init_helpers.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/_label_utils.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/defaults.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/text.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/rc.py -> build/lib/gwexpy/plot
+copying gwexpy/plot/skymap.py -> build/lib/gwexpy/plot
+creating build/lib/gwexpy/interop
+copying gwexpy/interop/cupy_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/pyroomacoustics_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/specutils_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/mne_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/pyoma_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/multitaper_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/frequency.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/skrf_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/_time.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/pycbc_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/pyspeckit_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/pyspice_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/base.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/root_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/neo_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/__init__.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/xarray_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/openems_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/zarr_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/gwinc_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/_modal_helpers.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/netcdf4_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/quantities_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/pandas_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/finesse_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/obspy_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/meshio_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/emg3d_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/mt_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/jax_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/tensorflow_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/_registry.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/torch_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/_optional.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/meep_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/astropy_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/harmonica_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/sqlite_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/json_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/opensees_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/torch_dataset.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/metpy_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/sdynpy_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/lal_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/sdypy_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/control_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/wrf_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/dask_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/errors.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/pydub_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/hdf5_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/polars_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/simpeg_.py -> build/lib/gwexpy/interop
+copying gwexpy/interop/exudyn_.py -> build/lib/gwexpy/interop
+creating build/lib/gwexpy/astro
+copying gwexpy/astro/__init__.py -> build/lib/gwexpy/astro
+copying gwexpy/astro/range.py -> build/lib/gwexpy/astro
+creating build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/_analysis.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/matrix.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/_core.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/_signal.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/utils.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/matrix_core.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/__init__.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/collections.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/arima.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/statevector.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/matrix_spectral.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/_gwf_io.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/rolling.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/pipeline.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/_interop.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/core.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/matrix_analysis.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/decomposition.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/timeseries.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/_spectral.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/_statistics.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/preprocess.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/_spectral_special.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/_timeseries_legacy.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/_typing.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/_resampling.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/_spectral_fourier.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/spectral.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/_epoch.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/hurst.py -> build/lib/gwexpy/timeseries
+copying gwexpy/timeseries/matrix_interop.py -> build/lib/gwexpy/timeseries
+creating build/lib/gwexpy/frequencyseries
+copying gwexpy/frequencyseries/matrix.py -> build/lib/gwexpy/frequencyseries
+copying gwexpy/frequencyseries/matrix_core.py -> build/lib/gwexpy/frequencyseries
+copying gwexpy/frequencyseries/__init__.py -> build/lib/gwexpy/frequencyseries
+copying gwexpy/frequencyseries/collections.py -> build/lib/gwexpy/frequencyseries
+copying gwexpy/frequencyseries/bifrequencymap.py -> build/lib/gwexpy/frequencyseries
+copying gwexpy/frequencyseries/hist.py -> build/lib/gwexpy/frequencyseries
+copying gwexpy/frequencyseries/matrix_analysis.py -> build/lib/gwexpy/frequencyseries
+copying gwexpy/frequencyseries/frequencyseries.py -> build/lib/gwexpy/frequencyseries
+copying gwexpy/frequencyseries/_fdcommon.py -> build/lib/gwexpy/frequencyseries
+creating build/lib/gwexpy/numerics
+copying gwexpy/numerics/scaling.py -> build/lib/gwexpy/numerics
+copying gwexpy/numerics/__init__.py -> build/lib/gwexpy/numerics
+copying gwexpy/numerics/constants.py -> build/lib/gwexpy/numerics
+creating build/lib/gwexpy/fields
+copying gwexpy/fields/scalar.py -> build/lib/gwexpy/fields
+copying gwexpy/fields/tensor.py -> build/lib/gwexpy/fields
+copying gwexpy/fields/base.py -> build/lib/gwexpy/fields
+copying gwexpy/fields/__init__.py -> build/lib/gwexpy/fields
+copying gwexpy/fields/collections.py -> build/lib/gwexpy/fields
+copying gwexpy/fields/demo.py -> build/lib/gwexpy/fields
+copying gwexpy/fields/signal.py -> build/lib/gwexpy/fields
+copying gwexpy/fields/vector.py -> build/lib/gwexpy/fields
+creating build/lib/gwexpy/signal
+copying gwexpy/signal/fft.py -> build/lib/gwexpy/signal
+copying gwexpy/signal/__init__.py -> build/lib/gwexpy/signal
+copying gwexpy/signal/filter_design.py -> build/lib/gwexpy/signal
+copying gwexpy/signal/window.py -> build/lib/gwexpy/signal
+copying gwexpy/signal/normalization.py -> build/lib/gwexpy/signal
+copying gwexpy/signal/qtransform.py -> build/lib/gwexpy/signal
+creating build/lib/gwexpy/utils
+copying gwexpy/utils/lal.py -> build/lib/gwexpy/utils
+copying gwexpy/utils/misc.py -> build/lib/gwexpy/utils
+copying gwexpy/utils/mp.py -> build/lib/gwexpy/utils
+copying gwexpy/utils/progress.py -> build/lib/gwexpy/utils
+copying gwexpy/utils/__init__.py -> build/lib/gwexpy/utils
+copying gwexpy/utils/env.py -> build/lib/gwexpy/utils
+copying gwexpy/utils/decorators.py -> build/lib/gwexpy/utils
+copying gwexpy/utils/logger.py -> build/lib/gwexpy/utils
+copying gwexpy/utils/enum.py -> build/lib/gwexpy/utils
+copying gwexpy/utils/units.py -> build/lib/gwexpy/utils
+copying gwexpy/utils/fft_args.py -> build/lib/gwexpy/utils
+creating build/lib/gwexpy/histogram
+copying gwexpy/histogram/_core.py -> build/lib/gwexpy/histogram
+copying gwexpy/histogram/histogram.py -> build/lib/gwexpy/histogram
+copying gwexpy/histogram/__init__.py -> build/lib/gwexpy/histogram
+copying gwexpy/histogram/collections.py -> build/lib/gwexpy/histogram
+copying gwexpy/histogram/_rebin.py -> build/lib/gwexpy/histogram
+copying gwexpy/histogram/_typing.py -> build/lib/gwexpy/histogram
+creating build/lib/gwexpy/fitting
+copying gwexpy/fitting/mixin.py -> build/lib/gwexpy/fitting
+copying gwexpy/fitting/__init__.py -> build/lib/gwexpy/fitting
+copying gwexpy/fitting/gls.py -> build/lib/gwexpy/fitting
+copying gwexpy/fitting/core.py -> build/lib/gwexpy/fitting
+copying gwexpy/fitting/models.py -> build/lib/gwexpy/fitting
+copying gwexpy/fitting/highlevel.py -> build/lib/gwexpy/fitting
+creating build/lib/gwexpy/time
+copying gwexpy/time/_tconvert.py -> build/lib/gwexpy/time
+copying gwexpy/time/__init__.py -> build/lib/gwexpy/time
+copying gwexpy/time/core.py -> build/lib/gwexpy/time
+copying gwexpy/time/__main__.py -> build/lib/gwexpy/time
+creating build/lib/gwexpy/coupling
+copying gwexpy/coupling/__init__.py -> build/lib/gwexpy/coupling
+copying gwexpy/coupling/segment.py -> build/lib/gwexpy/coupling
+creating build/lib/gwexpy/table
+copying gwexpy/table/table.py -> build/lib/gwexpy/table
+copying gwexpy/table/segment_cell.py -> build/lib/gwexpy/table
+copying gwexpy/table/segment_table.py -> build/lib/gwexpy/table
+copying gwexpy/table/__init__.py -> build/lib/gwexpy/table
+copying gwexpy/table/filters.py -> build/lib/gwexpy/table
+copying gwexpy/table/gravityspy.py -> build/lib/gwexpy/table
+copying gwexpy/table/filter.py -> build/lib/gwexpy/table
+copying gwexpy/table/segment_plot.py -> build/lib/gwexpy/table
+creating build/lib/gwexpy/detector/io
+copying gwexpy/detector/io/__init__.py -> build/lib/gwexpy/detector/io
+copying gwexpy/detector/io/clf.py -> build/lib/gwexpy/detector/io
+copying gwexpy/detector/io/omega.py -> build/lib/gwexpy/detector/io
+copying gwexpy/detector/io/cis.py -> build/lib/gwexpy/detector/io
+creating build/lib/gwexpy/spectrogram/io
+copying gwexpy/spectrogram/io/__init__.py -> build/lib/gwexpy/spectrogram/io
+copying gwexpy/spectrogram/io/hdf5.py -> build/lib/gwexpy/spectrogram/io
+copying gwexpy/spectrogram/io/provenance.py -> build/lib/gwexpy/spectrogram/io
+creating build/lib/gwexpy/segments/io
+copying gwexpy/segments/io/json.py -> build/lib/gwexpy/segments/io
+copying gwexpy/segments/io/__init__.py -> build/lib/gwexpy/segments/io
+copying gwexpy/segments/io/hdf5.py -> build/lib/gwexpy/segments/io
+copying gwexpy/segments/io/segwizard.py -> build/lib/gwexpy/segments/io
+copying gwexpy/segments/io/ligolw.py -> build/lib/gwexpy/segments/io
+creating build/lib/gwexpy/types/io
+copying gwexpy/types/io/__init__.py -> build/lib/gwexpy/types/io
+copying gwexpy/types/io/hdf5.py -> build/lib/gwexpy/types/io
+copying gwexpy/types/io/ascii.py -> build/lib/gwexpy/types/io
+copying gwexpy/types/io/ligolw.py -> build/lib/gwexpy/types/io
+creating build/lib/gwexpy/types/mixin
+copying gwexpy/types/mixin/_plot_mixin.py -> build/lib/gwexpy/types/mixin
+copying gwexpy/types/mixin/_protocols.py -> build/lib/gwexpy/types/mixin
+copying gwexpy/types/mixin/__init__.py -> build/lib/gwexpy/types/mixin
+copying gwexpy/types/mixin/signal_interop.py -> build/lib/gwexpy/types/mixin
+copying gwexpy/types/mixin/mixin_legacy.py -> build/lib/gwexpy/types/mixin
+copying gwexpy/types/mixin/_collection_mixin.py -> build/lib/gwexpy/types/mixin
+creating build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/sdb.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/win.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/stubs.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/_registration.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/ats.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/__init__.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/audio.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/_hdf5_exact_epoch.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/zarr_.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/netcdf4_.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/hdf5.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/ndscope_hdf5.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/gbd.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/tdms.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/nds2.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/core.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/cache.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/csv_config.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/dttxml.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/seismic.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/ascii.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/wav.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/csv_enhanced.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/losc.py -> build/lib/gwexpy/timeseries/io
+copying gwexpy/timeseries/io/_multi.py -> build/lib/gwexpy/timeseries/io
+creating build/lib/gwexpy/timeseries/io/gwf
+copying gwexpy/timeseries/io/gwf/__init__.py -> build/lib/gwexpy/timeseries/io/gwf
+copying gwexpy/timeseries/io/gwf/framecpp.py -> build/lib/gwexpy/timeseries/io/gwf
+copying gwexpy/timeseries/io/gwf/lalframe.py -> build/lib/gwexpy/timeseries/io/gwf
+copying gwexpy/timeseries/io/gwf/framel.py -> build/lib/gwexpy/timeseries/io/gwf
+creating build/lib/gwexpy/frequencyseries/io
+copying gwexpy/frequencyseries/io/stubs.py -> build/lib/gwexpy/frequencyseries/io
+copying gwexpy/frequencyseries/io/__init__.py -> build/lib/gwexpy/frequencyseries/io
+copying gwexpy/frequencyseries/io/hdf5.py -> build/lib/gwexpy/frequencyseries/io
+copying gwexpy/frequencyseries/io/dttxml.py -> build/lib/gwexpy/frequencyseries/io
+copying gwexpy/frequencyseries/io/ascii.py -> build/lib/gwexpy/frequencyseries/io
+copying gwexpy/frequencyseries/io/ligolw.py -> build/lib/gwexpy/frequencyseries/io
+creating build/lib/gwexpy/signal/spectral
+copying gwexpy/signal/spectral/_lal.py -> build/lib/gwexpy/signal/spectral
+copying gwexpy/signal/spectral/__init__.py -> build/lib/gwexpy/signal/spectral
+copying gwexpy/signal/spectral/_ui.py -> build/lib/gwexpy/signal/spectral
+copying gwexpy/signal/spectral/_median_bias.py -> build/lib/gwexpy/signal/spectral
+copying gwexpy/signal/spectral/_pycbc.py -> build/lib/gwexpy/signal/spectral
+copying gwexpy/signal/spectral/_utils.py -> build/lib/gwexpy/signal/spectral
+copying gwexpy/signal/spectral/_registry.py -> build/lib/gwexpy/signal/spectral
+copying gwexpy/signal/spectral/_scipy.py -> build/lib/gwexpy/signal/spectral
+copying gwexpy/signal/spectral/_median_mean.py -> build/lib/gwexpy/signal/spectral
+creating build/lib/gwexpy/signal/preprocessing
+copying gwexpy/signal/preprocessing/imputation.py -> build/lib/gwexpy/signal/preprocessing
+copying gwexpy/signal/preprocessing/__init__.py -> build/lib/gwexpy/signal/preprocessing
+copying gwexpy/signal/preprocessing/whitening.py -> build/lib/gwexpy/signal/preprocessing
+copying gwexpy/signal/preprocessing/ml.py -> build/lib/gwexpy/signal/preprocessing
+copying gwexpy/signal/preprocessing/standardization.py -> build/lib/gwexpy/signal/preprocessing
+creating build/lib/gwexpy/histogram/io
+copying gwexpy/histogram/io/_hdf5.py -> build/lib/gwexpy/histogram/io
+copying gwexpy/histogram/io/__init__.py -> build/lib/gwexpy/histogram/io
+creating build/lib/gwexpy/table/io
+copying gwexpy/table/io/cwb.py -> build/lib/gwexpy/table/io
+copying gwexpy/table/io/gstlal.py -> build/lib/gwexpy/table/io
+copying gwexpy/table/io/utils.py -> build/lib/gwexpy/table/io
+copying gwexpy/table/io/fetch.py -> build/lib/gwexpy/table/io
+copying gwexpy/table/io/__init__.py -> build/lib/gwexpy/table/io
+copying gwexpy/table/io/gwosc.py -> build/lib/gwexpy/table/io
+copying gwexpy/table/io/omega.py -> build/lib/gwexpy/table/io
+copying gwexpy/table/io/hacr.py -> build/lib/gwexpy/table/io
+copying gwexpy/table/io/gravityspy.py -> build/lib/gwexpy/table/io
+copying gwexpy/table/io/pycbc.py -> build/lib/gwexpy/table/io
+copying gwexpy/table/io/omicron.py -> build/lib/gwexpy/table/io
+copying gwexpy/table/io/snax.py -> build/lib/gwexpy/table/io
+copying gwexpy/table/io/_proxy.py -> build/lib/gwexpy/table/io
+copying gwexpy/table/io/root.py -> build/lib/gwexpy/table/io
+copying gwexpy/table/io/gwf.py -> build/lib/gwexpy/table/io
+copying gwexpy/table/io/reg.py -> build/lib/gwexpy/table/io
+copying gwexpy/table/io/losc.py -> build/lib/gwexpy/table/io
+copying gwexpy/table/io/sql.py -> build/lib/gwexpy/table/io
+copying gwexpy/table/io/ligolw.py -> build/lib/gwexpy/table/io
+copying gwexpy/py.typed -> build/lib/gwexpy
+installing to build/bdist.linux-x86_64/wheel
+running install
+running install_lib
+creating build/bdist.linux-x86_64/wheel
+creating build/bdist.linux-x86_64/wheel/gwexpy
+creating build/bdist.linux-x86_64/wheel/gwexpy/detector
+copying build/lib/gwexpy/detector/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/detector
+creating build/bdist.linux-x86_64/wheel/gwexpy/detector/io
+copying build/lib/gwexpy/detector/io/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/detector/io
+copying build/lib/gwexpy/detector/io/clf.py -> build/bdist.linux-x86_64/wheel/./gwexpy/detector/io
+copying build/lib/gwexpy/detector/io/omega.py -> build/bdist.linux-x86_64/wheel/./gwexpy/detector/io
+copying build/lib/gwexpy/detector/io/cis.py -> build/bdist.linux-x86_64/wheel/./gwexpy/detector/io
+copying build/lib/gwexpy/detector/units.py -> build/bdist.linux-x86_64/wheel/./gwexpy/detector
+copying build/lib/gwexpy/detector/channel.py -> build/bdist.linux-x86_64/wheel/./gwexpy/detector
+creating build/bdist.linux-x86_64/wheel/gwexpy/spectrogram
+copying build/lib/gwexpy/spectrogram/matrix.py -> build/bdist.linux-x86_64/wheel/./gwexpy/spectrogram
+copying build/lib/gwexpy/spectrogram/matrix_core.py -> build/bdist.linux-x86_64/wheel/./gwexpy/spectrogram
+copying build/lib/gwexpy/spectrogram/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/spectrogram
+copying build/lib/gwexpy/spectrogram/collections.py -> build/bdist.linux-x86_64/wheel/./gwexpy/spectrogram
+copying build/lib/gwexpy/spectrogram/spectrogram.py -> build/bdist.linux-x86_64/wheel/./gwexpy/spectrogram
+creating build/bdist.linux-x86_64/wheel/gwexpy/spectrogram/io
+copying build/lib/gwexpy/spectrogram/io/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/spectrogram/io
+copying build/lib/gwexpy/spectrogram/io/hdf5.py -> build/bdist.linux-x86_64/wheel/./gwexpy/spectrogram/io
+copying build/lib/gwexpy/spectrogram/io/provenance.py -> build/bdist.linux-x86_64/wheel/./gwexpy/spectrogram/io
+copying build/lib/gwexpy/spectrogram/cleaning.py -> build/bdist.linux-x86_64/wheel/./gwexpy/spectrogram
+copying build/lib/gwexpy/spectrogram/matrix_analysis.py -> build/bdist.linux-x86_64/wheel/./gwexpy/spectrogram
+copying build/lib/gwexpy/spectrogram/coherence.py -> build/bdist.linux-x86_64/wheel/./gwexpy/spectrogram
+copying build/lib/gwexpy/spectrogram/provenance.py -> build/bdist.linux-x86_64/wheel/./gwexpy/spectrogram
+creating build/bdist.linux-x86_64/wheel/gwexpy/spectral
+copying build/lib/gwexpy/spectral/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/spectral
+copying build/lib/gwexpy/spectral/estimation.py -> build/bdist.linux-x86_64/wheel/./gwexpy/spectral
+creating build/bdist.linux-x86_64/wheel/gwexpy/segments
+copying build/lib/gwexpy/segments/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/segments
+creating build/bdist.linux-x86_64/wheel/gwexpy/segments/io
+copying build/lib/gwexpy/segments/io/json.py -> build/bdist.linux-x86_64/wheel/./gwexpy/segments/io
+copying build/lib/gwexpy/segments/io/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/segments/io
+copying build/lib/gwexpy/segments/io/hdf5.py -> build/bdist.linux-x86_64/wheel/./gwexpy/segments/io
+copying build/lib/gwexpy/segments/io/segwizard.py -> build/bdist.linux-x86_64/wheel/./gwexpy/segments/io
+copying build/lib/gwexpy/segments/io/ligolw.py -> build/bdist.linux-x86_64/wheel/./gwexpy/segments/io
+copying build/lib/gwexpy/segments/flag.py -> build/bdist.linux-x86_64/wheel/./gwexpy/segments
+copying build/lib/gwexpy/segments/segments.py -> build/bdist.linux-x86_64/wheel/./gwexpy/segments
+creating build/bdist.linux-x86_64/wheel/gwexpy/types
+copying build/lib/gwexpy/types/seriesmatrix.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/seriesmatrix_base.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/plane2d.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/series.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/series_matrix_analysis.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/array2d.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/series_matrix_indexing.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/series_matrix_structure.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/hht_spectrogram.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+creating build/bdist.linux-x86_64/wheel/gwexpy/types/io
+copying build/lib/gwexpy/types/io/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types/io
+copying build/lib/gwexpy/types/io/hdf5.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types/io
+copying build/lib/gwexpy/types/io/ascii.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types/io
+copying build/lib/gwexpy/types/io/ligolw.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types/io
+copying build/lib/gwexpy/types/metadata.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/array4d.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/array3d.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/seriesmatrix_validation.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/series_matrix_visualization.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/array.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/index.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+creating build/bdist.linux-x86_64/wheel/gwexpy/types/mixin
+copying build/lib/gwexpy/types/mixin/_plot_mixin.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types/mixin
+copying build/lib/gwexpy/types/mixin/_protocols.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types/mixin
+copying build/lib/gwexpy/types/mixin/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types/mixin
+copying build/lib/gwexpy/types/mixin/signal_interop.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types/mixin
+copying build/lib/gwexpy/types/mixin/mixin_legacy.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types/mixin
+copying build/lib/gwexpy/types/mixin/_collection_mixin.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types/mixin
+copying build/lib/gwexpy/types/series_matrix_core.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/axis.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/typing.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/series_matrix_io.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/time_plane_transform.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/series_matrix_validation_mixin.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/series_matrix_math.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/sliceutils.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/series_creator.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/_stats.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/types/axis_api.py -> build/bdist.linux-x86_64/wheel/./gwexpy/types
+copying build/lib/gwexpy/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy
+creating build/bdist.linux-x86_64/wheel/gwexpy/statistics
+copying build/lib/gwexpy/statistics/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/statistics
+copying build/lib/gwexpy/statistics/gauch.py -> build/bdist.linux-x86_64/wheel/./gwexpy/statistics
+copying build/lib/gwexpy/statistics/dq_flag.py -> build/bdist.linux-x86_64/wheel/./gwexpy/statistics
+copying build/lib/gwexpy/statistics/student_t_indicator.py -> build/bdist.linux-x86_64/wheel/./gwexpy/statistics
+copying build/lib/gwexpy/statistics/rayleigh_test.py -> build/bdist.linux-x86_64/wheel/./gwexpy/statistics
+copying build/lib/gwexpy/statistics/roc.py -> build/bdist.linux-x86_64/wheel/./gwexpy/statistics
+creating build/bdist.linux-x86_64/wheel/gwexpy/io
+copying build/lib/gwexpy/io/utils.py -> build/bdist.linux-x86_64/wheel/./gwexpy/io
+copying build/lib/gwexpy/io/datafind.py -> build/bdist.linux-x86_64/wheel/./gwexpy/io
+copying build/lib/gwexpy/io/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/io
+copying build/lib/gwexpy/io/hdf5_collection.py -> build/bdist.linux-x86_64/wheel/./gwexpy/io
+copying build/lib/gwexpy/io/hdf5.py -> build/bdist.linux-x86_64/wheel/./gwexpy/io
+copying build/lib/gwexpy/io/nds2.py -> build/bdist.linux-x86_64/wheel/./gwexpy/io
+copying build/lib/gwexpy/io/collection_dir.py -> build/bdist.linux-x86_64/wheel/./gwexpy/io
+copying build/lib/gwexpy/io/cache.py -> build/bdist.linux-x86_64/wheel/./gwexpy/io
+copying build/lib/gwexpy/io/time_selection.py -> build/bdist.linux-x86_64/wheel/./gwexpy/io
+copying build/lib/gwexpy/io/dttxml_common.py -> build/bdist.linux-x86_64/wheel/./gwexpy/io
+copying build/lib/gwexpy/io/registry.py -> build/bdist.linux-x86_64/wheel/./gwexpy/io
+copying build/lib/gwexpy/io/gwf.py -> build/bdist.linux-x86_64/wheel/./gwexpy/io
+copying build/lib/gwexpy/io/ffldatafind.py -> build/bdist.linux-x86_64/wheel/./gwexpy/io
+copying build/lib/gwexpy/io/kerberos.py -> build/bdist.linux-x86_64/wheel/./gwexpy/io
+copying build/lib/gwexpy/io/pickle_compat.py -> build/bdist.linux-x86_64/wheel/./gwexpy/io
+copying build/lib/gwexpy/io/ligolw.py -> build/bdist.linux-x86_64/wheel/./gwexpy/io
+copying build/lib/gwexpy/io/_framecpp.py -> build/bdist.linux-x86_64/wheel/./gwexpy/io
+creating build/bdist.linux-x86_64/wheel/gwexpy/noise
+copying build/lib/gwexpy/noise/colored.py -> build/bdist.linux-x86_64/wheel/./gwexpy/noise
+copying build/lib/gwexpy/noise/non_gaussian.py -> build/bdist.linux-x86_64/wheel/./gwexpy/noise
+copying build/lib/gwexpy/noise/wave.py -> build/bdist.linux-x86_64/wheel/./gwexpy/noise
+copying build/lib/gwexpy/noise/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/noise
+copying build/lib/gwexpy/noise/field.py -> build/bdist.linux-x86_64/wheel/./gwexpy/noise
+copying build/lib/gwexpy/noise/gwinc_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/noise
+copying build/lib/gwexpy/noise/obspy_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/noise
+copying build/lib/gwexpy/noise/peaks.py -> build/bdist.linux-x86_64/wheel/./gwexpy/noise
+copying build/lib/gwexpy/noise/asd.py -> build/bdist.linux-x86_64/wheel/./gwexpy/noise
+copying build/lib/gwexpy/noise/magnetic.py -> build/bdist.linux-x86_64/wheel/./gwexpy/noise
+copying build/lib/gwexpy/noise/line_mask.py -> build/bdist.linux-x86_64/wheel/./gwexpy/noise
+creating build/bdist.linux-x86_64/wheel/gwexpy/analysis
+copying build/lib/gwexpy/analysis/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/analysis
+copying build/lib/gwexpy/analysis/threshold.py -> build/bdist.linux-x86_64/wheel/./gwexpy/analysis
+copying build/lib/gwexpy/analysis/stat_info.py -> build/bdist.linux-x86_64/wheel/./gwexpy/analysis
+copying build/lib/gwexpy/analysis/coupling.py -> build/bdist.linux-x86_64/wheel/./gwexpy/analysis
+copying build/lib/gwexpy/analysis/stats.py -> build/bdist.linux-x86_64/wheel/./gwexpy/analysis
+copying build/lib/gwexpy/analysis/coupling_result.py -> build/bdist.linux-x86_64/wheel/./gwexpy/analysis
+copying build/lib/gwexpy/analysis/bruco.py -> build/bdist.linux-x86_64/wheel/./gwexpy/analysis
+copying build/lib/gwexpy/analysis/response.py -> build/bdist.linux-x86_64/wheel/./gwexpy/analysis
+creating build/bdist.linux-x86_64/wheel/gwexpy/cli
+copying build/lib/gwexpy/cli/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/cli
+copying build/lib/gwexpy/cli/spectrum.py -> build/bdist.linux-x86_64/wheel/./gwexpy/cli
+copying build/lib/gwexpy/cli/spectrogram.py -> build/bdist.linux-x86_64/wheel/./gwexpy/cli
+copying build/lib/gwexpy/cli/gwpy_plot.py -> build/bdist.linux-x86_64/wheel/./gwexpy/cli
+copying build/lib/gwexpy/cli/coherencegram.py -> build/bdist.linux-x86_64/wheel/./gwexpy/cli
+copying build/lib/gwexpy/cli/timeseries.py -> build/bdist.linux-x86_64/wheel/./gwexpy/cli
+copying build/lib/gwexpy/cli/transferfunction.py -> build/bdist.linux-x86_64/wheel/./gwexpy/cli
+copying build/lib/gwexpy/cli/__main__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/cli
+copying build/lib/gwexpy/cli/coherence.py -> build/bdist.linux-x86_64/wheel/./gwexpy/cli
+copying build/lib/gwexpy/cli/cliproduct.py -> build/bdist.linux-x86_64/wheel/./gwexpy/cli
+copying build/lib/gwexpy/cli/qtransform.py -> build/bdist.linux-x86_64/wheel/./gwexpy/cli
+creating build/bdist.linux-x86_64/wheel/gwexpy/plot
+copying build/lib/gwexpy/plot/log.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/utils.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/plot.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/field.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/colorbar.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/colors.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/gps.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/axes.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/legend.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/units.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/bode.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/pairplot.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/segments.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/geomap.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/_coord.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/gauch_dashboard.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/tex.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/_init_helpers.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/_label_utils.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/defaults.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/text.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/rc.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/plot/skymap.py -> build/bdist.linux-x86_64/wheel/./gwexpy/plot
+copying build/lib/gwexpy/_bootstrap.py -> build/bdist.linux-x86_64/wheel/./gwexpy
+creating build/bdist.linux-x86_64/wheel/gwexpy/interop
+copying build/lib/gwexpy/interop/cupy_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/pyroomacoustics_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/specutils_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/mne_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/pyoma_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/multitaper_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/frequency.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/skrf_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/_time.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/pycbc_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/pyspeckit_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/pyspice_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/base.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/root_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/neo_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/xarray_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/openems_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/zarr_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/gwinc_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/_modal_helpers.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/netcdf4_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/quantities_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/pandas_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/finesse_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/obspy_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/meshio_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/emg3d_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/mt_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/jax_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/tensorflow_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/_registry.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/torch_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/_optional.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/meep_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/astropy_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/harmonica_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/sqlite_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/json_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/opensees_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/torch_dataset.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/metpy_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/sdynpy_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/lal_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/sdypy_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/control_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/wrf_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/dask_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/errors.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/pydub_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/hdf5_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/polars_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/simpeg_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+copying build/lib/gwexpy/interop/exudyn_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/interop
+creating build/bdist.linux-x86_64/wheel/gwexpy/astro
+copying build/lib/gwexpy/astro/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/astro
+copying build/lib/gwexpy/astro/range.py -> build/bdist.linux-x86_64/wheel/./gwexpy/astro
+creating build/bdist.linux-x86_64/wheel/gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/_analysis.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/matrix.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/_core.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/_signal.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/utils.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/matrix_core.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/collections.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/arima.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/statevector.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+creating build/bdist.linux-x86_64/wheel/gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/sdb.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/win.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/stubs.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/_registration.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+creating build/bdist.linux-x86_64/wheel/gwexpy/timeseries/io/gwf
+copying build/lib/gwexpy/timeseries/io/gwf/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io/gwf
+copying build/lib/gwexpy/timeseries/io/gwf/framecpp.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io/gwf
+copying build/lib/gwexpy/timeseries/io/gwf/lalframe.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io/gwf
+copying build/lib/gwexpy/timeseries/io/gwf/framel.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io/gwf
+copying build/lib/gwexpy/timeseries/io/ats.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/audio.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/_hdf5_exact_epoch.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/zarr_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/netcdf4_.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/hdf5.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/ndscope_hdf5.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/gbd.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/tdms.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/nds2.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/core.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/cache.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/csv_config.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/dttxml.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/seismic.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/ascii.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/wav.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/csv_enhanced.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/losc.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/io/_multi.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries/io
+copying build/lib/gwexpy/timeseries/matrix_spectral.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/_gwf_io.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/rolling.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/pipeline.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/_interop.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/core.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/matrix_analysis.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/decomposition.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/timeseries.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/_spectral.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/_statistics.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/preprocess.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/_spectral_special.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/_timeseries_legacy.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/_typing.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/_resampling.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/_spectral_fourier.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/spectral.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/_epoch.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/hurst.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+copying build/lib/gwexpy/timeseries/matrix_interop.py -> build/bdist.linux-x86_64/wheel/./gwexpy/timeseries
+creating build/bdist.linux-x86_64/wheel/gwexpy/frequencyseries
+copying build/lib/gwexpy/frequencyseries/matrix.py -> build/bdist.linux-x86_64/wheel/./gwexpy/frequencyseries
+copying build/lib/gwexpy/frequencyseries/matrix_core.py -> build/bdist.linux-x86_64/wheel/./gwexpy/frequencyseries
+copying build/lib/gwexpy/frequencyseries/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/frequencyseries
+copying build/lib/gwexpy/frequencyseries/collections.py -> build/bdist.linux-x86_64/wheel/./gwexpy/frequencyseries
+creating build/bdist.linux-x86_64/wheel/gwexpy/frequencyseries/io
+copying build/lib/gwexpy/frequencyseries/io/stubs.py -> build/bdist.linux-x86_64/wheel/./gwexpy/frequencyseries/io
+copying build/lib/gwexpy/frequencyseries/io/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/frequencyseries/io
+copying build/lib/gwexpy/frequencyseries/io/hdf5.py -> build/bdist.linux-x86_64/wheel/./gwexpy/frequencyseries/io
+copying build/lib/gwexpy/frequencyseries/io/dttxml.py -> build/bdist.linux-x86_64/wheel/./gwexpy/frequencyseries/io
+copying build/lib/gwexpy/frequencyseries/io/ascii.py -> build/bdist.linux-x86_64/wheel/./gwexpy/frequencyseries/io
+copying build/lib/gwexpy/frequencyseries/io/ligolw.py -> build/bdist.linux-x86_64/wheel/./gwexpy/frequencyseries/io
+copying build/lib/gwexpy/frequencyseries/bifrequencymap.py -> build/bdist.linux-x86_64/wheel/./gwexpy/frequencyseries
+copying build/lib/gwexpy/frequencyseries/hist.py -> build/bdist.linux-x86_64/wheel/./gwexpy/frequencyseries
+copying build/lib/gwexpy/frequencyseries/matrix_analysis.py -> build/bdist.linux-x86_64/wheel/./gwexpy/frequencyseries
+copying build/lib/gwexpy/frequencyseries/frequencyseries.py -> build/bdist.linux-x86_64/wheel/./gwexpy/frequencyseries
+copying build/lib/gwexpy/frequencyseries/_fdcommon.py -> build/bdist.linux-x86_64/wheel/./gwexpy/frequencyseries
+creating build/bdist.linux-x86_64/wheel/gwexpy/numerics
+copying build/lib/gwexpy/numerics/scaling.py -> build/bdist.linux-x86_64/wheel/./gwexpy/numerics
+copying build/lib/gwexpy/numerics/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/numerics
+copying build/lib/gwexpy/numerics/constants.py -> build/bdist.linux-x86_64/wheel/./gwexpy/numerics
+creating build/bdist.linux-x86_64/wheel/gwexpy/fields
+copying build/lib/gwexpy/fields/scalar.py -> build/bdist.linux-x86_64/wheel/./gwexpy/fields
+copying build/lib/gwexpy/fields/tensor.py -> build/bdist.linux-x86_64/wheel/./gwexpy/fields
+copying build/lib/gwexpy/fields/base.py -> build/bdist.linux-x86_64/wheel/./gwexpy/fields
+copying build/lib/gwexpy/fields/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/fields
+copying build/lib/gwexpy/fields/collections.py -> build/bdist.linux-x86_64/wheel/./gwexpy/fields
+copying build/lib/gwexpy/fields/demo.py -> build/bdist.linux-x86_64/wheel/./gwexpy/fields
+copying build/lib/gwexpy/fields/signal.py -> build/bdist.linux-x86_64/wheel/./gwexpy/fields
+copying build/lib/gwexpy/fields/vector.py -> build/bdist.linux-x86_64/wheel/./gwexpy/fields
+copying build/lib/gwexpy/_warnings.py -> build/bdist.linux-x86_64/wheel/./gwexpy
+creating build/bdist.linux-x86_64/wheel/gwexpy/signal
+creating build/bdist.linux-x86_64/wheel/gwexpy/signal/spectral
+copying build/lib/gwexpy/signal/spectral/_lal.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal/spectral
+copying build/lib/gwexpy/signal/spectral/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal/spectral
+copying build/lib/gwexpy/signal/spectral/_ui.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal/spectral
+copying build/lib/gwexpy/signal/spectral/_median_bias.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal/spectral
+copying build/lib/gwexpy/signal/spectral/_pycbc.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal/spectral
+copying build/lib/gwexpy/signal/spectral/_utils.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal/spectral
+copying build/lib/gwexpy/signal/spectral/_registry.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal/spectral
+copying build/lib/gwexpy/signal/spectral/_scipy.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal/spectral
+copying build/lib/gwexpy/signal/spectral/_median_mean.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal/spectral
+copying build/lib/gwexpy/signal/fft.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal
+copying build/lib/gwexpy/signal/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal
+creating build/bdist.linux-x86_64/wheel/gwexpy/signal/preprocessing
+copying build/lib/gwexpy/signal/preprocessing/imputation.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal/preprocessing
+copying build/lib/gwexpy/signal/preprocessing/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal/preprocessing
+copying build/lib/gwexpy/signal/preprocessing/whitening.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal/preprocessing
+copying build/lib/gwexpy/signal/preprocessing/ml.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal/preprocessing
+copying build/lib/gwexpy/signal/preprocessing/standardization.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal/preprocessing
+copying build/lib/gwexpy/signal/filter_design.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal
+copying build/lib/gwexpy/signal/window.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal
+copying build/lib/gwexpy/signal/normalization.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal
+copying build/lib/gwexpy/signal/qtransform.py -> build/bdist.linux-x86_64/wheel/./gwexpy/signal
+creating build/bdist.linux-x86_64/wheel/gwexpy/utils
+copying build/lib/gwexpy/utils/lal.py -> build/bdist.linux-x86_64/wheel/./gwexpy/utils
+copying build/lib/gwexpy/utils/misc.py -> build/bdist.linux-x86_64/wheel/./gwexpy/utils
+copying build/lib/gwexpy/utils/mp.py -> build/bdist.linux-x86_64/wheel/./gwexpy/utils
+copying build/lib/gwexpy/utils/progress.py -> build/bdist.linux-x86_64/wheel/./gwexpy/utils
+copying build/lib/gwexpy/utils/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/utils
+copying build/lib/gwexpy/utils/env.py -> build/bdist.linux-x86_64/wheel/./gwexpy/utils
+copying build/lib/gwexpy/utils/decorators.py -> build/bdist.linux-x86_64/wheel/./gwexpy/utils
+copying build/lib/gwexpy/utils/logger.py -> build/bdist.linux-x86_64/wheel/./gwexpy/utils
+copying build/lib/gwexpy/utils/enum.py -> build/bdist.linux-x86_64/wheel/./gwexpy/utils
+copying build/lib/gwexpy/utils/units.py -> build/bdist.linux-x86_64/wheel/./gwexpy/utils
+copying build/lib/gwexpy/utils/fft_args.py -> build/bdist.linux-x86_64/wheel/./gwexpy/utils
+copying build/lib/gwexpy/py.typed -> build/bdist.linux-x86_64/wheel/./gwexpy
+copying build/lib/gwexpy/_version.py -> build/bdist.linux-x86_64/wheel/./gwexpy
+creating build/bdist.linux-x86_64/wheel/gwexpy/histogram
+copying build/lib/gwexpy/histogram/_core.py -> build/bdist.linux-x86_64/wheel/./gwexpy/histogram
+copying build/lib/gwexpy/histogram/histogram.py -> build/bdist.linux-x86_64/wheel/./gwexpy/histogram
+copying build/lib/gwexpy/histogram/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/histogram
+copying build/lib/gwexpy/histogram/collections.py -> build/bdist.linux-x86_64/wheel/./gwexpy/histogram
+creating build/bdist.linux-x86_64/wheel/gwexpy/histogram/io
+copying build/lib/gwexpy/histogram/io/_hdf5.py -> build/bdist.linux-x86_64/wheel/./gwexpy/histogram/io
+copying build/lib/gwexpy/histogram/io/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/histogram/io
+copying build/lib/gwexpy/histogram/_rebin.py -> build/bdist.linux-x86_64/wheel/./gwexpy/histogram
+copying build/lib/gwexpy/histogram/_typing.py -> build/bdist.linux-x86_64/wheel/./gwexpy/histogram
+creating build/bdist.linux-x86_64/wheel/gwexpy/fitting
+copying build/lib/gwexpy/fitting/mixin.py -> build/bdist.linux-x86_64/wheel/./gwexpy/fitting
+copying build/lib/gwexpy/fitting/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/fitting
+copying build/lib/gwexpy/fitting/gls.py -> build/bdist.linux-x86_64/wheel/./gwexpy/fitting
+copying build/lib/gwexpy/fitting/core.py -> build/bdist.linux-x86_64/wheel/./gwexpy/fitting
+copying build/lib/gwexpy/fitting/models.py -> build/bdist.linux-x86_64/wheel/./gwexpy/fitting
+copying build/lib/gwexpy/fitting/highlevel.py -> build/bdist.linux-x86_64/wheel/./gwexpy/fitting
+creating build/bdist.linux-x86_64/wheel/gwexpy/time
+copying build/lib/gwexpy/time/_tconvert.py -> build/bdist.linux-x86_64/wheel/./gwexpy/time
+copying build/lib/gwexpy/time/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/time
+copying build/lib/gwexpy/time/core.py -> build/bdist.linux-x86_64/wheel/./gwexpy/time
+copying build/lib/gwexpy/time/__main__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/time
+creating build/bdist.linux-x86_64/wheel/gwexpy/coupling
+copying build/lib/gwexpy/coupling/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/coupling
+copying build/lib/gwexpy/coupling/segment.py -> build/bdist.linux-x86_64/wheel/./gwexpy/coupling
+creating build/bdist.linux-x86_64/wheel/gwexpy/table
+copying build/lib/gwexpy/table/table.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table
+copying build/lib/gwexpy/table/segment_cell.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table
+copying build/lib/gwexpy/table/segment_table.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table
+copying build/lib/gwexpy/table/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table
+copying build/lib/gwexpy/table/filters.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table
+creating build/bdist.linux-x86_64/wheel/gwexpy/table/io
+copying build/lib/gwexpy/table/io/cwb.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/io/gstlal.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/io/utils.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/io/fetch.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/io/__init__.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/io/gwosc.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/io/omega.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/io/hacr.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/io/gravityspy.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/io/pycbc.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/io/omicron.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/io/snax.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/io/_proxy.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/io/root.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/io/gwf.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/io/reg.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/io/losc.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/io/sql.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/io/ligolw.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table/io
+copying build/lib/gwexpy/table/gravityspy.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table
+copying build/lib/gwexpy/table/filter.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table
+copying build/lib/gwexpy/table/segment_plot.py -> build/bdist.linux-x86_64/wheel/./gwexpy/table
+running install_egg_info
+running egg_info
+writing gwexpy.egg-info/PKG-INFO
+writing dependency_links to gwexpy.egg-info/dependency_links.txt
+writing entry points to gwexpy.egg-info/entry_points.txt
+writing requirements to gwexpy.egg-info/requires.txt
+writing top-level names to gwexpy.egg-info/top_level.txt
+reading manifest template 'MANIFEST.in'
+no previously-included directories found matching 'gwexpy/utils/sphinx'
+no previously-included directories found matching 'gwexpy/*/tests'
+no previously-included directories found matching '.harness'
+no previously-included directories found matching 'scratch'
+no previously-included directories found matching 'temp_logs'
+no previously-included directories found matching 'tmp'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+adding license file 'LICENSE.txt'
+writing manifest file 'gwexpy.egg-info/SOURCES.txt'
+Copying gwexpy.egg-info to build/bdist.linux-x86_64/wheel/./gwexpy-0.2.5-py3.12.egg-info
+running install_scripts
+creating build/bdist.linux-x86_64/wheel/gwexpy-0.2.5.dist-info/WHEEL
+creating '/tmp/gwexpy-v025-bx-x913-wheel/.tmp-0x6qjsju/gwexpy-0.2.5-py3-none-any.whl' and adding 'build/bdist.linux-x86_64/wheel' to it
+adding 'gwexpy/__init__.py'
+adding 'gwexpy/_bootstrap.py'
+adding 'gwexpy/_version.py'
+adding 'gwexpy/_warnings.py'
+adding 'gwexpy/py.typed'
+adding 'gwexpy/analysis/__init__.py'
+adding 'gwexpy/analysis/bruco.py'
+adding 'gwexpy/analysis/coupling.py'
+adding 'gwexpy/analysis/coupling_result.py'
+adding 'gwexpy/analysis/response.py'
+adding 'gwexpy/analysis/stat_info.py'
+adding 'gwexpy/analysis/stats.py'
+adding 'gwexpy/analysis/threshold.py'
+adding 'gwexpy/astro/__init__.py'
+adding 'gwexpy/astro/range.py'
+adding 'gwexpy/cli/__init__.py'
+adding 'gwexpy/cli/__main__.py'
+adding 'gwexpy/cli/cliproduct.py'
+adding 'gwexpy/cli/coherence.py'
+adding 'gwexpy/cli/coherencegram.py'
+adding 'gwexpy/cli/gwpy_plot.py'
+adding 'gwexpy/cli/qtransform.py'
+adding 'gwexpy/cli/spectrogram.py'
+adding 'gwexpy/cli/spectrum.py'
+adding 'gwexpy/cli/timeseries.py'
+adding 'gwexpy/cli/transferfunction.py'
+adding 'gwexpy/coupling/__init__.py'
+adding 'gwexpy/coupling/segment.py'
+adding 'gwexpy/detector/__init__.py'
+adding 'gwexpy/detector/channel.py'
+adding 'gwexpy/detector/units.py'
+adding 'gwexpy/detector/io/__init__.py'
+adding 'gwexpy/detector/io/cis.py'
+adding 'gwexpy/detector/io/clf.py'
+adding 'gwexpy/detector/io/omega.py'
+adding 'gwexpy/fields/__init__.py'
+adding 'gwexpy/fields/base.py'
+adding 'gwexpy/fields/collections.py'
+adding 'gwexpy/fields/demo.py'
+adding 'gwexpy/fields/scalar.py'
+adding 'gwexpy/fields/signal.py'
+adding 'gwexpy/fields/tensor.py'
+adding 'gwexpy/fields/vector.py'
+adding 'gwexpy/fitting/__init__.py'
+adding 'gwexpy/fitting/core.py'
+adding 'gwexpy/fitting/gls.py'
+adding 'gwexpy/fitting/highlevel.py'
+adding 'gwexpy/fitting/mixin.py'
+adding 'gwexpy/fitting/models.py'
+adding 'gwexpy/frequencyseries/__init__.py'
+adding 'gwexpy/frequencyseries/_fdcommon.py'
+adding 'gwexpy/frequencyseries/bifrequencymap.py'
+adding 'gwexpy/frequencyseries/collections.py'
+adding 'gwexpy/frequencyseries/frequencyseries.py'
+adding 'gwexpy/frequencyseries/hist.py'
+adding 'gwexpy/frequencyseries/matrix.py'
+adding 'gwexpy/frequencyseries/matrix_analysis.py'
+adding 'gwexpy/frequencyseries/matrix_core.py'
+adding 'gwexpy/frequencyseries/io/__init__.py'
+adding 'gwexpy/frequencyseries/io/ascii.py'
+adding 'gwexpy/frequencyseries/io/dttxml.py'
+adding 'gwexpy/frequencyseries/io/hdf5.py'
+adding 'gwexpy/frequencyseries/io/ligolw.py'
+adding 'gwexpy/frequencyseries/io/stubs.py'
+adding 'gwexpy/histogram/__init__.py'
+adding 'gwexpy/histogram/_core.py'
+adding 'gwexpy/histogram/_rebin.py'
+adding 'gwexpy/histogram/_typing.py'
+adding 'gwexpy/histogram/collections.py'
+adding 'gwexpy/histogram/histogram.py'
+adding 'gwexpy/histogram/io/__init__.py'
+adding 'gwexpy/histogram/io/_hdf5.py'
+adding 'gwexpy/interop/__init__.py'
+adding 'gwexpy/interop/_modal_helpers.py'
+adding 'gwexpy/interop/_optional.py'
+adding 'gwexpy/interop/_registry.py'
+adding 'gwexpy/interop/_time.py'
+adding 'gwexpy/interop/astropy_.py'
+adding 'gwexpy/interop/base.py'
+adding 'gwexpy/interop/control_.py'
+adding 'gwexpy/interop/cupy_.py'
+adding 'gwexpy/interop/dask_.py'
+adding 'gwexpy/interop/emg3d_.py'
+adding 'gwexpy/interop/errors.py'
+adding 'gwexpy/interop/exudyn_.py'
+adding 'gwexpy/interop/finesse_.py'
+adding 'gwexpy/interop/frequency.py'
+adding 'gwexpy/interop/gwinc_.py'
+adding 'gwexpy/interop/harmonica_.py'
+adding 'gwexpy/interop/hdf5_.py'
+adding 'gwexpy/interop/jax_.py'
+adding 'gwexpy/interop/json_.py'
+adding 'gwexpy/interop/lal_.py'
+adding 'gwexpy/interop/meep_.py'
+adding 'gwexpy/interop/meshio_.py'
+adding 'gwexpy/interop/metpy_.py'
+adding 'gwexpy/interop/mne_.py'
+adding 'gwexpy/interop/mt_.py'
+adding 'gwexpy/interop/multitaper_.py'
+adding 'gwexpy/interop/neo_.py'
+adding 'gwexpy/interop/netcdf4_.py'
+adding 'gwexpy/interop/obspy_.py'
+adding 'gwexpy/interop/openems_.py'
+adding 'gwexpy/interop/opensees_.py'
+adding 'gwexpy/interop/pandas_.py'
+adding 'gwexpy/interop/polars_.py'
+adding 'gwexpy/interop/pycbc_.py'
+adding 'gwexpy/interop/pydub_.py'
+adding 'gwexpy/interop/pyoma_.py'
+adding 'gwexpy/interop/pyroomacoustics_.py'
+adding 'gwexpy/interop/pyspeckit_.py'
+adding 'gwexpy/interop/pyspice_.py'
+adding 'gwexpy/interop/quantities_.py'
+adding 'gwexpy/interop/root_.py'
+adding 'gwexpy/interop/sdynpy_.py'
+adding 'gwexpy/interop/sdypy_.py'
+adding 'gwexpy/interop/simpeg_.py'
+adding 'gwexpy/interop/skrf_.py'
+adding 'gwexpy/interop/specutils_.py'
+adding 'gwexpy/interop/sqlite_.py'
+adding 'gwexpy/interop/tensorflow_.py'
+adding 'gwexpy/interop/torch_.py'
+adding 'gwexpy/interop/torch_dataset.py'
+adding 'gwexpy/interop/wrf_.py'
+adding 'gwexpy/interop/xarray_.py'
+adding 'gwexpy/interop/zarr_.py'
+adding 'gwexpy/io/__init__.py'
+adding 'gwexpy/io/_framecpp.py'
+adding 'gwexpy/io/cache.py'
+adding 'gwexpy/io/collection_dir.py'
+adding 'gwexpy/io/datafind.py'
+adding 'gwexpy/io/dttxml_common.py'
+adding 'gwexpy/io/ffldatafind.py'
+adding 'gwexpy/io/gwf.py'
+adding 'gwexpy/io/hdf5.py'
+adding 'gwexpy/io/hdf5_collection.py'
+adding 'gwexpy/io/kerberos.py'
+adding 'gwexpy/io/ligolw.py'
+adding 'gwexpy/io/nds2.py'
+adding 'gwexpy/io/pickle_compat.py'
+adding 'gwexpy/io/registry.py'
+adding 'gwexpy/io/time_selection.py'
+adding 'gwexpy/io/utils.py'
+adding 'gwexpy/noise/__init__.py'
+adding 'gwexpy/noise/asd.py'
+adding 'gwexpy/noise/colored.py'
+adding 'gwexpy/noise/field.py'
+adding 'gwexpy/noise/gwinc_.py'
+adding 'gwexpy/noise/line_mask.py'
+adding 'gwexpy/noise/magnetic.py'
+adding 'gwexpy/noise/non_gaussian.py'
+adding 'gwexpy/noise/obspy_.py'
+adding 'gwexpy/noise/peaks.py'
+adding 'gwexpy/noise/wave.py'
+adding 'gwexpy/numerics/__init__.py'
+adding 'gwexpy/numerics/constants.py'
+adding 'gwexpy/numerics/scaling.py'
+adding 'gwexpy/plot/__init__.py'
+adding 'gwexpy/plot/_coord.py'
+adding 'gwexpy/plot/_init_helpers.py'
+adding 'gwexpy/plot/_label_utils.py'
+adding 'gwexpy/plot/axes.py'
+adding 'gwexpy/plot/bode.py'
+adding 'gwexpy/plot/colorbar.py'
+adding 'gwexpy/plot/colors.py'
+adding 'gwexpy/plot/defaults.py'
+adding 'gwexpy/plot/field.py'
+adding 'gwexpy/plot/gauch_dashboard.py'
+adding 'gwexpy/plot/geomap.py'
+adding 'gwexpy/plot/gps.py'
+adding 'gwexpy/plot/legend.py'
+adding 'gwexpy/plot/log.py'
+adding 'gwexpy/plot/pairplot.py'
+adding 'gwexpy/plot/plot.py'
+adding 'gwexpy/plot/rc.py'
+adding 'gwexpy/plot/segments.py'
+adding 'gwexpy/plot/skymap.py'
+adding 'gwexpy/plot/tex.py'
+adding 'gwexpy/plot/text.py'
+adding 'gwexpy/plot/units.py'
+adding 'gwexpy/plot/utils.py'
+adding 'gwexpy/segments/__init__.py'
+adding 'gwexpy/segments/flag.py'
+adding 'gwexpy/segments/segments.py'
+adding 'gwexpy/segments/io/__init__.py'
+adding 'gwexpy/segments/io/hdf5.py'
+adding 'gwexpy/segments/io/json.py'
+adding 'gwexpy/segments/io/ligolw.py'
+adding 'gwexpy/segments/io/segwizard.py'
+adding 'gwexpy/signal/__init__.py'
+adding 'gwexpy/signal/fft.py'
+adding 'gwexpy/signal/filter_design.py'
+adding 'gwexpy/signal/normalization.py'
+adding 'gwexpy/signal/qtransform.py'
+adding 'gwexpy/signal/window.py'
+adding 'gwexpy/signal/preprocessing/__init__.py'
+adding 'gwexpy/signal/preprocessing/imputation.py'
+adding 'gwexpy/signal/preprocessing/ml.py'
+adding 'gwexpy/signal/preprocessing/standardization.py'
+adding 'gwexpy/signal/preprocessing/whitening.py'
+adding 'gwexpy/signal/spectral/__init__.py'
+adding 'gwexpy/signal/spectral/_lal.py'
+adding 'gwexpy/signal/spectral/_median_bias.py'
+adding 'gwexpy/signal/spectral/_median_mean.py'
+adding 'gwexpy/signal/spectral/_pycbc.py'
+adding 'gwexpy/signal/spectral/_registry.py'
+adding 'gwexpy/signal/spectral/_scipy.py'
+adding 'gwexpy/signal/spectral/_ui.py'
+adding 'gwexpy/signal/spectral/_utils.py'
+adding 'gwexpy/spectral/__init__.py'
+adding 'gwexpy/spectral/estimation.py'
+adding 'gwexpy/spectrogram/__init__.py'
+adding 'gwexpy/spectrogram/cleaning.py'
+adding 'gwexpy/spectrogram/coherence.py'
+adding 'gwexpy/spectrogram/collections.py'
+adding 'gwexpy/spectrogram/matrix.py'
+adding 'gwexpy/spectrogram/matrix_analysis.py'
+adding 'gwexpy/spectrogram/matrix_core.py'
+adding 'gwexpy/spectrogram/provenance.py'
+adding 'gwexpy/spectrogram/spectrogram.py'
+adding 'gwexpy/spectrogram/io/__init__.py'
+adding 'gwexpy/spectrogram/io/hdf5.py'
+adding 'gwexpy/spectrogram/io/provenance.py'
+adding 'gwexpy/statistics/__init__.py'
+adding 'gwexpy/statistics/dq_flag.py'
+adding 'gwexpy/statistics/gauch.py'
+adding 'gwexpy/statistics/rayleigh_test.py'
+adding 'gwexpy/statistics/roc.py'
+adding 'gwexpy/statistics/student_t_indicator.py'
+adding 'gwexpy/table/__init__.py'
+adding 'gwexpy/table/filter.py'
+adding 'gwexpy/table/filters.py'
+adding 'gwexpy/table/gravityspy.py'
+adding 'gwexpy/table/segment_cell.py'
+adding 'gwexpy/table/segment_plot.py'
+adding 'gwexpy/table/segment_table.py'
+adding 'gwexpy/table/table.py'
+adding 'gwexpy/table/io/__init__.py'
+adding 'gwexpy/table/io/_proxy.py'
+adding 'gwexpy/table/io/cwb.py'
+adding 'gwexpy/table/io/fetch.py'
+adding 'gwexpy/table/io/gravityspy.py'
+adding 'gwexpy/table/io/gstlal.py'
+adding 'gwexpy/table/io/gwf.py'
+adding 'gwexpy/table/io/gwosc.py'
+adding 'gwexpy/table/io/hacr.py'
+adding 'gwexpy/table/io/ligolw.py'
+adding 'gwexpy/table/io/losc.py'
+adding 'gwexpy/table/io/omega.py'
+adding 'gwexpy/table/io/omicron.py'
+adding 'gwexpy/table/io/pycbc.py'
+adding 'gwexpy/table/io/reg.py'
+adding 'gwexpy/table/io/root.py'
+adding 'gwexpy/table/io/snax.py'
+adding 'gwexpy/table/io/sql.py'
+adding 'gwexpy/table/io/utils.py'
+adding 'gwexpy/time/__init__.py'
+adding 'gwexpy/time/__main__.py'
+adding 'gwexpy/time/_tconvert.py'
+adding 'gwexpy/time/core.py'
+adding 'gwexpy/timeseries/__init__.py'
+adding 'gwexpy/timeseries/_analysis.py'
+adding 'gwexpy/timeseries/_core.py'
+adding 'gwexpy/timeseries/_epoch.py'
+adding 'gwexpy/timeseries/_gwf_io.py'
+adding 'gwexpy/timeseries/_interop.py'
+adding 'gwexpy/timeseries/_resampling.py'
+adding 'gwexpy/timeseries/_signal.py'
+adding 'gwexpy/timeseries/_spectral.py'
+adding 'gwexpy/timeseries/_spectral_fourier.py'
+adding 'gwexpy/timeseries/_spectral_special.py'
+adding 'gwexpy/timeseries/_statistics.py'
+adding 'gwexpy/timeseries/_timeseries_legacy.py'
+adding 'gwexpy/timeseries/_typing.py'
+adding 'gwexpy/timeseries/arima.py'
+adding 'gwexpy/timeseries/collections.py'
+adding 'gwexpy/timeseries/core.py'
+adding 'gwexpy/timeseries/decomposition.py'
+adding 'gwexpy/timeseries/hurst.py'
+adding 'gwexpy/timeseries/matrix.py'
+adding 'gwexpy/timeseries/matrix_analysis.py'
+adding 'gwexpy/timeseries/matrix_core.py'
+adding 'gwexpy/timeseries/matrix_interop.py'
+adding 'gwexpy/timeseries/matrix_spectral.py'
+adding 'gwexpy/timeseries/pipeline.py'
+adding 'gwexpy/timeseries/preprocess.py'
+adding 'gwexpy/timeseries/rolling.py'
+adding 'gwexpy/timeseries/spectral.py'
+adding 'gwexpy/timeseries/statevector.py'
+adding 'gwexpy/timeseries/timeseries.py'
+adding 'gwexpy/timeseries/utils.py'
+adding 'gwexpy/timeseries/io/__init__.py'
+adding 'gwexpy/timeseries/io/_hdf5_exact_epoch.py'
+adding 'gwexpy/timeseries/io/_multi.py'
+adding 'gwexpy/timeseries/io/_registration.py'
+adding 'gwexpy/timeseries/io/ascii.py'
+adding 'gwexpy/timeseries/io/ats.py'
+adding 'gwexpy/timeseries/io/audio.py'
+adding 'gwexpy/timeseries/io/cache.py'
+adding 'gwexpy/timeseries/io/core.py'
+adding 'gwexpy/timeseries/io/csv_config.py'
+adding 'gwexpy/timeseries/io/csv_enhanced.py'
+adding 'gwexpy/timeseries/io/dttxml.py'
+adding 'gwexpy/timeseries/io/gbd.py'
+adding 'gwexpy/timeseries/io/hdf5.py'
+adding 'gwexpy/timeseries/io/losc.py'
+adding 'gwexpy/timeseries/io/nds2.py'
+adding 'gwexpy/timeseries/io/ndscope_hdf5.py'
+adding 'gwexpy/timeseries/io/netcdf4_.py'
+adding 'gwexpy/timeseries/io/sdb.py'
+adding 'gwexpy/timeseries/io/seismic.py'
+adding 'gwexpy/timeseries/io/stubs.py'
+adding 'gwexpy/timeseries/io/tdms.py'
+adding 'gwexpy/timeseries/io/wav.py'
+adding 'gwexpy/timeseries/io/win.py'
+adding 'gwexpy/timeseries/io/zarr_.py'
+adding 'gwexpy/timeseries/io/gwf/__init__.py'
+adding 'gwexpy/timeseries/io/gwf/framecpp.py'
+adding 'gwexpy/timeseries/io/gwf/framel.py'
+adding 'gwexpy/timeseries/io/gwf/lalframe.py'
+adding 'gwexpy/types/__init__.py'
+adding 'gwexpy/types/_stats.py'
+adding 'gwexpy/types/array.py'
+adding 'gwexpy/types/array2d.py'
+adding 'gwexpy/types/array3d.py'
+adding 'gwexpy/types/array4d.py'
+adding 'gwexpy/types/axis.py'
+adding 'gwexpy/types/axis_api.py'
+adding 'gwexpy/types/hht_spectrogram.py'
+adding 'gwexpy/types/index.py'
+adding 'gwexpy/types/metadata.py'
+adding 'gwexpy/types/plane2d.py'
+adding 'gwexpy/types/series.py'
+adding 'gwexpy/types/series_creator.py'
+adding 'gwexpy/types/series_matrix_analysis.py'
+adding 'gwexpy/types/series_matrix_core.py'
+adding 'gwexpy/types/series_matrix_indexing.py'
+adding 'gwexpy/types/series_matrix_io.py'
+adding 'gwexpy/types/series_matrix_math.py'
+adding 'gwexpy/types/series_matrix_structure.py'
+adding 'gwexpy/types/series_matrix_validation_mixin.py'
+adding 'gwexpy/types/series_matrix_visualization.py'
+adding 'gwexpy/types/seriesmatrix.py'
+adding 'gwexpy/types/seriesmatrix_base.py'
+adding 'gwexpy/types/seriesmatrix_validation.py'
+adding 'gwexpy/types/sliceutils.py'
+adding 'gwexpy/types/time_plane_transform.py'
+adding 'gwexpy/types/typing.py'
+adding 'gwexpy/types/io/__init__.py'
+adding 'gwexpy/types/io/ascii.py'
+adding 'gwexpy/types/io/hdf5.py'
+adding 'gwexpy/types/io/ligolw.py'
+adding 'gwexpy/types/mixin/__init__.py'
+adding 'gwexpy/types/mixin/_collection_mixin.py'
+adding 'gwexpy/types/mixin/_plot_mixin.py'
+adding 'gwexpy/types/mixin/_protocols.py'
+adding 'gwexpy/types/mixin/mixin_legacy.py'
+adding 'gwexpy/types/mixin/signal_interop.py'
+adding 'gwexpy/utils/__init__.py'
+adding 'gwexpy/utils/decorators.py'
+adding 'gwexpy/utils/enum.py'
+adding 'gwexpy/utils/env.py'
+adding 'gwexpy/utils/fft_args.py'
+adding 'gwexpy/utils/lal.py'
+adding 'gwexpy/utils/logger.py'
+adding 'gwexpy/utils/misc.py'
+adding 'gwexpy/utils/mp.py'
+adding 'gwexpy/utils/progress.py'
+adding 'gwexpy/utils/units.py'
+adding 'gwexpy-0.2.5.dist-info/licenses/LICENSE.txt'
+adding 'gwexpy-0.2.5.dist-info/METADATA'
+adding 'gwexpy-0.2.5.dist-info/WHEEL'
+adding 'gwexpy-0.2.5.dist-info/entry_points.txt'
+adding 'gwexpy-0.2.5.dist-info/top_level.txt'
+adding 'gwexpy-0.2.5.dist-info/RECORD'
+removing build/bdist.linux-x86_64/wheel
+Successfully built gwexpy-0.2.5-py3-none-any.whl
