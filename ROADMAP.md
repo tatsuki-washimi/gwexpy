@@ -321,13 +321,13 @@ exception beyond completely disjoint plain HDF5 read windows.
 
 For #585 SDB reads, one separately gated concurrency correction pins whole-table
 validation and the selected payload query to the same SQLite read snapshot.
-The demonstrated exception covers a concurrent valid update to selected
-payload values with schema, time, unit, and validation inputs unchanged: the
-reader may return the earlier snapshot value where old R returned the later
-committed value. Other concurrent mutations remain HOLD pending separate scope
-review; ordinary reads and malformed-data warnings/errors must retain old-R
-behavior. This proposal needs human scientific/data-model approval and release
-disclosure and grants no skipped-payload exception to other formats.
+The proposed exception covers observable value, warning, and error differences
+caused by a WAL writer committing during the read after that snapshot is pinned.
+Its matrix must characterize selected and unselected payload updates, timestamp
+and `usUnits` changes, schema changes, and malformed values against old R before
+SDB runtime work. Static-source behavior remains old-R-equivalent. The exact
+concurrent scope requires separate review, human scientific/data-model approval,
+and release disclosure; it grants no skipped-payload exception to other formats.
 
 ## Future themes (not scheduled)
 
