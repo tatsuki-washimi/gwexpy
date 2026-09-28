@@ -1,0 +1,121 @@
+{
+  "A": {
+    "error_message": "SDB timestamp gap at index 1: expected cadence 300, got 299",
+    "error_type": "builtins.ValueError",
+    "events": {
+      "mutation": "timestamp",
+      "reader_sql_before_trigger": [
+        "PRAGMA table_info(\"archive\")",
+        "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+        "PRAGMA table_list(\"archive\")",
+        "PRAGMA table_info(\"archive\")"
+      ],
+      "row_after": [
+        1700000001,
+        "60",
+        "40",
+        1
+      ],
+      "row_before": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "schema_after": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "schema_before": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "selection": "selected",
+      "trigger_sql": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" ORDER BY \"rowid\"",
+      "triggered": true,
+      "wal_mode": "wal",
+      "writer_committed": true,
+      "writer_parameters": [],
+      "writer_sql": [
+        "BEGIN IMMEDIATE",
+        "UPDATE archive SET dateTime = dateTime + 1 WHERE rowid = 1",
+        "COMMIT"
+      ]
+    },
+    "logs": [],
+    "outcome": "error",
+    "warnings": [
+      {
+        "category": "builtins.DeprecationWarning",
+        "message": "Compatibility support for python2 has been dropped"
+      }
+    ]
+  },
+  "B": {
+    "error_message": "SDB timestamp gap at index 1: expected cadence 300, got 299",
+    "error_type": "builtins.ValueError",
+    "events": {
+      "mutation": "timestamp",
+      "reader_sql_before_trigger": [
+        "PRAGMA table_info(\"archive\")",
+        "SELECT \"dateTime\", \"usUnits\" FROM \"archive\" ORDER BY \"dateTime\"",
+        "PRAGMA table_list(\"archive\")",
+        "PRAGMA table_info(\"archive\")"
+      ],
+      "row_after": [
+        1700000001,
+        "60",
+        "40",
+        1
+      ],
+      "row_before": [
+        1700000000,
+        "60",
+        "40",
+        1
+      ],
+      "schema_after": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "schema_before": [
+        "dateTime",
+        "outTemp",
+        "outHumidity",
+        "barometer",
+        "usUnits"
+      ],
+      "selection": "selected",
+      "trigger_sql": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" ORDER BY \"rowid\"",
+      "triggered": true,
+      "wal_mode": "wal",
+      "writer_committed": true,
+      "writer_parameters": [],
+      "writer_sql": [
+        "BEGIN IMMEDIATE",
+        "UPDATE archive SET dateTime = dateTime + 1 WHERE rowid = 1",
+        "COMMIT"
+      ]
+    },
+    "logs": [],
+    "outcome": "error",
+    "warnings": [
+      {
+        "category": "builtins.DeprecationWarning",
+        "message": "Compatibility support for python2 has been dropped"
+      }
+    ]
+  },
+  "equal": true,
+  "stable_A": true,
+  "stable_B": true
+}

@@ -186,6 +186,27 @@ matrix, and an append-only committed manifest. The `capture` manifest always
 uses `UNBASELINED`; the release owner records freeze status after review and
 commit. No performance claim follows from the baseline alone.
 
+### SDB concurrent WAL fault matrix (baseline-v2)
+
+`sdb_wal_v2.py` independently reproduces the SDB payload-query race after
+source metadata validation. It captures seven committed WAL mutation classes
+(selected and unselected values, selected and unselected malformed payloads,
+timestamp, `usUnits`, and schema) with both selected and all-column public
+reads. Each route has five B0 and five B1 samples in ABBA order. The runner
+records the exact trigger and writer SQL, commit, before/after row and schema,
+public fingerprint, warnings, logs, and errors. It asserts that the metadata
+query precedes the update and that WAL commit succeeds. The fixture is copied
+into a fresh scratch database for every worker. This route is a correctness
+matrix; use the F2 baseline-v1 harness for static-source timing, memory, and
+fetched-row structure. The v1 evidence and harness bytes remain immutable.
+
+The baseline-v2 evidence directory contains its own fixture manifest and exact
+SQLite source bytes. Candidate comparisons must run the frozen `*.py` harness
+from the baseline-v2 freeze commit. If candidate SQL changes, review an
+equivalent trigger before comparing fingerprints. An approved concurrency
+exception still requires separate technical review, disclosure, and human S2
+scientific/data-model approval.
+
 ## F5 WIN decoder baseline
 
 `f5_win_run.py` uses the same B0/B1 wheel audit and dependency identity checks

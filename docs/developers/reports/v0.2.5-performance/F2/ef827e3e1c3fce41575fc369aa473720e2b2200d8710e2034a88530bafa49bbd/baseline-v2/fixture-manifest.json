@@ -1,0 +1,32 @@
+{
+  "generator": "benchmarks/io/format_fixtures.py:make_sdb_fixtures",
+  "rows": 64,
+  "schema": 2,
+  "source_manifest_sha256": "a8e65b3143e77a3bf07ea743e301d17dbfb05deb5848ea8c5690ab1ab22a00e5",
+  "wal_base": {
+    "bytes": 8192,
+    "columns": [
+      "outTemp",
+      "outHumidity",
+      "barometer"
+    ],
+    "fault": null,
+    "name": "sdb/sdb_wal_base.sdb",
+    "read_kwargs": {
+      "columns": [
+        "outTemp"
+      ]
+    },
+    "rows": 64,
+    "selected_columns": [
+      "outTemp"
+    ],
+    "selected_rows": 64,
+    "sha256": "2713b73e3a715e7816c3d94023611ba9e2ac74911f0848f620d077218473b817",
+    "window_selected_rows": 8,
+    "window_unix": {
+      "end": 1700002400,
+      "start": 1700000000
+    }
+  }
+}
