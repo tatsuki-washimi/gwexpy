@@ -841,7 +841,11 @@ def _try_bounded_gwf_serial(
     series_class: type[Any],
 ) -> Any:
     """Speculate without publishing diagnostics; replay old R on uncertainty."""
-    if os.name != "posix" or threading.active_count() != 1:
+    if (
+        len(sources) < _GWF_BOUNDED_MIN_SOURCES
+        or os.name != "posix"
+        or threading.active_count() != 1
+    ):
         return _GWF_BOUNDED_FALLBACK
     try:
         with (

@@ -264,3 +264,15 @@ def test_log_capture_setup_failure_uses_old_route(tmp_path, monkeypatch) -> None
     result = TimeSeriesDict.read(sources, [CHANNEL], format="gwf", parallel=False)
     assert result[CHANNEL].value.tolist() == list(range(16 * 8))
     assert tuple(logging.getLogger().handlers) == root_handlers
+
+
+def test_small_read_skips_speculative_diagnostic_setup(tmp_path, monkeypatch) -> None:
+    """Two-frame reads pay no logging or descriptor-capture setup cost."""
+    sources = _frames(tmp_path, 2)
+
+    def unexpected_capture():
+        raise AssertionError("small read must not enter speculative capture")
+
+    monkeypatch.setattr(gwf_io, "_capture_gwf_logs", unexpected_capture)
+    result = TimeSeriesDict.read(sources, [CHANNEL], format="gwf", parallel=False)
+    assert result[CHANNEL].value.tolist() == list(range(16))
