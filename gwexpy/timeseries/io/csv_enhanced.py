@@ -11,6 +11,7 @@ import csv
 import datetime as _dt
 import io
 import math
+import re
 import warnings
 from contextlib import AbstractContextManager, nullcontext
 from decimal import ROUND_FLOOR, ROUND_HALF_EVEN, Decimal, InvalidOperation
@@ -47,6 +48,8 @@ _MAX_RESAMPLED_VALUES = 10_000_000
 _RESAMPLE_METHODS = frozenset({"interpolate", "asfreq"})
 _RESAMPLE_BUDGET_SENTINEL = object()
 _MAX_CSV_MATRIX_CHUNK_BYTES = 64 * 1024 * 1024
+_ASCII_FLOAT = r"[+-]?(?:(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?|inf(?:inity)?|nan)"
+_ASCII_FLOATS = re.compile(rf"{_ASCII_FLOAT}(?:,{_ASCII_FLOAT})*", re.IGNORECASE)
 
 
 def _record_or_warn_timezone_ignored(marker: list[bool] | None) -> None:
@@ -452,11 +455,16 @@ def _convert_numeric_chunk(
     Fall back only for those uncommon chunks or to locate the first bad row.
     """
     numeric_text = ",".join(",".join(row) for row in rows)
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", DeprecationWarning)
-        values = np.fromstring(numeric_text, sep=",", dtype=np.float64)
-    if values.size == len(rows) * width:
-        return values.reshape(len(rows), width)
+    # fromstring can accept a valid prefix (for example ``2bad``), and CSV
+    # quoting can put a delimiter inside one field. Require complete lexical
+    # consumption before using its bulk result. Unusual float() spellings take
+    # the exact per-field compatibility path below.
+    if _ASCII_FLOATS.fullmatch(numeric_text):
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            values = np.fromstring(numeric_text, sep=",", dtype=np.float64)
+        if values.size == len(rows) * width:
+            return values.reshape(len(rows), width)
     converted: list[list[float]] = []
     for row, line_number in zip(rows, line_numbers, strict=True):
         try:
@@ -466,6 +474,41 @@ def _convert_numeric_chunk(
                 f"CSV line {line_number} contains non-numeric data"
             ) from exc
     return np.asarray(converted, dtype=np.float64)
+
+
+def _convert_wide_numeric_row(row: list[str], line_number: int) -> np.ndarray:
+    """Parse an indivisible wide output row using bounded temporary chunks."""
+    output = np.empty((1, len(row)), dtype=np.float64)
+    start = 0
+    while start < len(row):
+        stop = start
+        text_bytes = 0
+        while stop < len(row):
+            token_bytes = len(row[stop]) + 1
+            if stop > start and (
+                (stop - start + 1) * 8 > _MAX_CSV_MATRIX_CHUNK_BYTES
+                or text_bytes + token_bytes > _MAX_CSV_MATRIX_CHUNK_BYTES
+            ):
+                break
+            if token_bytes > _MAX_CSV_MATRIX_CHUNK_BYTES:
+                if stop > start:
+                    break
+                try:
+                    output[0, stop] = float(row[stop])
+                except ValueError as exc:
+                    raise ValueError(
+                        f"CSV line {line_number} contains non-numeric data"
+                    ) from exc
+                stop += 1
+                break
+            text_bytes += token_bytes
+            stop += 1
+        if text_bytes:
+            output[:, start:stop] = _convert_numeric_chunk(
+                [row[start:stop]], [line_number], stop - start
+            )
+        start = stop
+    return output
 
 
 def _read_numeric_rows(
@@ -493,14 +536,27 @@ def _read_numeric_rows(
         stream_context = Path(source).open(encoding=cfg.encoding, newline=None)
 
     with stream_context as stream:
-        if hasattr(stream, "__iter__"):
+        if hasattr(stream, "__iter__") and not (
+            isinstance(stream, io.TextIOBase)
+            and type(stream).readline is io.TextIOBase.readline
+        ):
             source_lines = iter(stream)
+            try:
+                first_lines = list(islice(source_lines, 20))
+            except io.UnsupportedOperation:
+                # Some file-like objects inherit an unusable iterator while
+                # providing read(), which was the old reader's only contract.
+                contents = stream.read()
+                if isinstance(contents, bytes):
+                    contents = contents.decode(cfg.encoding or "utf-8")
+                source_lines = iter(contents.splitlines())
+                first_lines = list(islice(source_lines, 20))
         else:
             contents = stream.read()
             if isinstance(contents, bytes):
                 contents = contents.decode(cfg.encoding or "utf-8")
             source_lines = iter(contents.splitlines())
-        first_lines = list(islice(source_lines, 20))
+            first_lines = list(islice(source_lines, 20))
         delimiter = cfg.delimiter
         if not cfg.columns:
             sample = "\n".join(
@@ -539,6 +595,7 @@ def _read_numeric_rows(
         chunk_lines: list[int] = []
         chunk_text_bytes = 0
         selected_values: dict[int, list[float]] = {}
+        selected_positions: dict[int, list[int]] = {}
         bulk = channels is None and start is None and end is None and not cfg.columns
 
         def flush_chunk() -> None:
@@ -613,6 +670,10 @@ def _read_numeric_rows(
                             if col.role == "data"
                             and (channels is None or col.name in channels)
                         }
+                        for index in selected_values:
+                            selected_positions.setdefault(index % width, []).append(
+                                index
+                            )
                     else:
                         selected_values = {
                             index: []
@@ -624,6 +685,9 @@ def _read_numeric_rows(
                                 else f"ch{index}"
                             )
                             in channels
+                        }
+                        selected_positions = {
+                            index: [index] for index in selected_values
                         }
             elif width != expected_width:
                 flush_chunk()
@@ -643,9 +707,14 @@ def _read_numeric_rows(
                     or chunk_text_bytes + row_bytes > _MAX_CSV_MATRIX_CHUNK_BYTES
                 ):
                     flush_chunk()
-                chunk_rows.append(tokens)
-                chunk_lines.append(line_number)
-                chunk_text_bytes += row_bytes
+                if width * 8 > _MAX_CSV_MATRIX_CHUNK_BYTES or row_bytes > _MAX_CSV_MATRIX_CHUNK_BYTES:
+                    # The output row itself can exceed the chunk cap. Only
+                    # conversion temporaries are capped in that case.
+                    matrix_chunks.append(_convert_wide_numeric_row(tokens, line_number))
+                else:
+                    chunk_rows.append(tokens)
+                    chunk_lines.append(line_number)
+                    chunk_text_bytes += row_bytes
             else:
                 for index, token in enumerate(tokens):
                     try:
@@ -654,8 +723,8 @@ def _read_numeric_rows(
                         raise ValueError(
                             f"CSV line {line_number} contains non-numeric data"
                         ) from exc
-                    if index in selected_values:
-                        selected_values[index].append(value)
+                    for configured_index in selected_positions.get(index, ()):
+                        selected_values[configured_index].append(value)
             line_numbers.append(line_number)
             for index in time_tokens:
                 time_tokens[index].append(tokens[index])

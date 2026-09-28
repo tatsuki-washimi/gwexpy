@@ -13,6 +13,7 @@ import pytest
 from gwexpy.frequencyseries import FrequencySeries
 from gwexpy.timeseries import TimeSeries
 from gwexpy.timeseries.io import csv_enhanced
+from gwexpy.timeseries.io.csv_config import ColumnSpec, CSVFormatConfig
 
 
 def _numeric_csv(path: Path, *, rows: int, channels: int) -> None:
@@ -92,6 +93,59 @@ def test_selected_parser_reports_unselected_width_fault(tmp_path: Path) -> None:
     with pytest.raises(ValueError) as caught:
         csv_enhanced.read_timeseriesdict_csv(path, channels=["ch1"])
     assert str(caught.value) == "CSV line 3 has 2 columns; expected 3"
+
+
+@pytest.mark.parametrize(
+    "row",
+    ['0,"1,2",bad', "0,1,2bad", "0,1,2e", "0,1,1.2.3", "0,1,1nan"],
+)
+def test_bulk_parser_rejects_partial_numeric_fields(row: str) -> None:
+    with pytest.raises(ValueError, match="CSV line 1 contains non-numeric data"):
+        csv_enhanced.read_timeseriesdict_csv(io.StringIO(row + "\n"))
+
+
+def test_wide_row_converts_in_bounded_temporary_chunks(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(csv_enhanced, "_MAX_CSV_MATRIX_CHUNK_BYTES", 128)
+    converted_chunks: list[int] = []
+    original = csv_enhanced._convert_numeric_chunk
+
+    def record_chunk(rows: list[list[str]], lines: list[int], width: int) -> np.ndarray:
+        result = original(rows, lines, width)
+        converted_chunks.append(result.nbytes)
+        return result
+
+    monkeypatch.setattr(csv_enhanced, "_convert_numeric_chunk", record_chunk)
+    row = list(map(str, range(21)))
+    _, matrix, _, _, _, width = csv_enhanced._read_numeric_rows(
+        io.StringIO(",".join(row) + "\n"),
+        CSVFormatConfig(),
+        channels=None,
+        start=None,
+        end=None,
+    )
+    assert width == 21
+    assert matrix is not None
+    np.testing.assert_array_equal(matrix[0], np.arange(21))
+    assert converted_chunks and max(converted_chunks) <= 128
+
+
+def test_read_only_text_stream_preserves_old_reader_contract() -> None:
+    class ReadOnlyStream(io.TextIOBase):
+        def read(self, size: int = -1) -> str:
+            return "0,1\n1,2\n"
+
+    result = csv_enhanced.read_timeseriesdict_csv(ReadOnlyStream())
+    np.testing.assert_array_equal(result["ch1"].value, [1, 2])
+
+
+def test_negative_configured_data_index_keeps_last_column() -> None:
+    config = CSVFormatConfig(columns=[ColumnSpec("last", -1)])
+    result = csv_enhanced.read_timeseriesdict_csv(
+        io.StringIO("1,2,3\n4,5,6\n"), config=config
+    )
+    np.testing.assert_array_equal(result["last"].value, [3, 6])
 
 
 @pytest.mark.parametrize("selected", [None, ["ch1"]])
