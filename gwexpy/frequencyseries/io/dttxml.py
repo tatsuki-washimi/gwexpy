@@ -12,6 +12,7 @@ from gwpy.io.registry import default_registry as io_registry
 from gwexpy.io.dttxml_common import (
     SUPPORTED_FREQ,
     SUPPORTED_MATRIX,
+    load_dttxml_native,
     load_dttxml_products,
 )
 from gwexpy.io.utils import (
@@ -142,7 +143,11 @@ def read_frequencyseriesdict_dttxml(
             f"xml.diaggui products '{prod}' is not a frequency-series product"
         )
 
-    normalized = load_dttxml_products(source, native=native, products=prod)
+    normalized = (
+        load_dttxml_native(source, products=prod, channels=channels)
+        if native and prod == "PSD"
+        else load_dttxml_products(source, native=native, products=prod)
+    )
     payload = _frequency_payload_for_reader(normalized.get(prod, {}))
     fsd = FrequencySeriesDict()
     for ch, info in payload.items():
