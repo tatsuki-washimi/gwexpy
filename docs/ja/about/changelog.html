@@ -444,7 +444,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.5</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/ef7d144fe5464ddc5ddc23cb29064f93edd7f06f">ef7d144f</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7f614d65c92d88c1aa9f46ef7ba01e88de9bb5ae">7f614d65</a>
   · 入門例の検証対象 0.2.4
   · <a href="documentation_version.html">版情報</a>
   · <a href="known_limitations.html">既知の制限</a>
@@ -476,8 +476,8 @@
 <p>v0.2.2 リリースは <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2">GitHub Releases</a> から取得でき、<a class="reference external" href="https://doi.org/10.5281/zenodo.22228340">Zenodo DOI 10.5281/zenodo.22228340</a> でアーカイブされています。</p>
 </section>
 <section id="id1">
-<h2>[0.2.5] - 2026年9月27日<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
-<p>このパッチリリースでは、対応する NetCDF4 と Zarr の行列における値、軸、単位の処理、HDF5 のマニフェストの整合性、TDMS の波形間隔と GBD のヘッダー検証、音声形式のレジストリが取得したタグの出所を修正しました。対応するオプション依存の経路では、必要なパッケージがない場合、バックエンド固有の <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を返します。</p>
+<h2>[0.2.5] - 2026-09-28（候補）<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>このパッチでは、対応する NetCDF4 と Zarr の行列の値・軸・単位、HDF5 マニフェストの整合性、TDMS の波形間隔と GBD ヘッダーの検証、音声レジストリのタグ来歴を修正します。必要なパッケージがない場合、対応するオプションバックエンドの経路はバックエンド固有の <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を返します。候補には #580 の内部 I/O 性能と拡張性に関する作業も含まれます。候補に含める変更の実装は完了しました。範囲の読み込み最適化（#584）と GWF の parallel 最適化は保留中です。リリース認定と公開は未完了です。以下で範囲を定めた #589 ネイティブパーサーと #585 SDB スナップショットの例外を除き、公開される値、dtype、メタデータ、警告・例外の挙動、および保存形式を受け入れ条件として維持します。公開 API、依存関係、永続化スキーマは追加しません。</p>
 <section id="fixed">
 <h3>修正<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h3>
 <ul class="simple">
@@ -488,6 +488,25 @@
 <li><p><strong>音声形式のレジストリのタグ</strong>：取得できた WAV と FLAC のタグ情報を出所情報に保持します。</p></li>
 <li><p><strong>オプションのバックエンド</strong>：対応する公開 Zarr 経路と NetCDF4 経路では、必要なパッケージがない場合にバックエンド固有の <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。</p></li>
 </ul>
+</section>
+<section id="internal-performance-work-release-qualification-pending">
+<h3>内部性能作業（リリース認定待ち）<a class="headerlink" href="#internal-performance-work-release-qualification-pending" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>複数ソースの結合（#582）</strong>：各入力を1回ずつ追加します。凍結 wheel の比較では公開結果の fingerprint 15件を維持し、64入力の fixture における非 inplace の append 呼び出しを63回から0回に減らしました。warm wall と CPU は事前に定めたノイズを考慮した基準を満たします。ピークメモリの改善は主張しません。</p></li>
+<li><p><strong>単一チャネル WAV の振り分け（#583）</strong>：バックエンドでの読み込み後、未選択チャネルの <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を構築しません。公開結果の fingerprint 28件は凍結 baseline と一致し、大きい fixture での未選択チャネルの構築回数は1回から0回になりました。SciPy バックエンドはインターリーブされたペイロード全体を引き続き読み込みます。</p></li>
+<li><p><strong>CSV 読み込みと内部 writer（#585）</strong>：一般のパーサー処理を減らし、全ファイルの検証を維持しつつ対応する列選択を読み込みへ反映し、内部の拡張 <code class="docutils literal notranslate"><span class="pre">write_timeseries_csv</span></code> helper の出力をストリーム化します。公開 <code class="docutils literal notranslate"><span class="pre">TimeSeries.write(format=&quot;csv&quot;)</span></code> は GWpy の writer を使い、この書き込み性能の主張には含めません。明示的な形式指定と <code class="docutils literal notranslate"><span class="pre">.csv</span></code> 自動判別の両方で、2列の <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> 高速経路と不均一な周波数軸の契約を維持します。凍結 wheel の証拠では公開 fingerprint 21件を維持し、計測した一般および選択 CSV fixture の wall time が改善しました。固定の encoding と改行条件では内部 writer の書き込みバイト列を維持します。</p></li>
+<li><p><strong>WIN デコーダー（#518）</strong>：NumPy の整数中間値を使い、公開 fingerprint 12件の bit 単位の一致を維持します。計測したサンプルごとの append 回数は4,116回から0回になり、warm CPU はノイズを考慮した基準を満たします。</p></li>
+<li><p><strong>ネイティブ DTTXML PSD 選択（#589）</strong>：大きいネイティブ PSD の読み込みでは完全に未選択のペイロードの decode を省き、未選択の decode バイト数を0にして、計測した Linux のピーク PSS を19.63%削減します。小さいファイルは従来のパーサーを使います。計測した fixture では大きい入力の warm wall time が12.46%増加し、cold time は同程度です。以下の限定的な警告の例外には、人による承認がなお必要です。</p></li>
+<li><p><strong>直列 GWF 結合（#588）</strong>：大きく、時刻順に並んだローカル入力の直列読み込みでは、計測したソース数にわたり保持する変換済み part は最大3個です。独立した Linux ピーク tree-PSS の測定 batch では8.31～10.66%改善し、大きい入力の warm time は4.20%改善しました。並列最適化は主指標の PSS が2回失敗したため保留し、従来の並列経路を維持します。</p></li>
+<li><p><strong>SDB の選択 window（#585）</strong>：対象となる4,096行の SQLite ソースでは、全ソースの検証と選択ペイロードの query が1つの読み込み transaction を共有し、要求された512行のペイロードだけを DataFrame に格納します。静的ソースの公開 fingerprint は B1 と一致します。小さい選択読み込みの timing は独立した2 batch とも、凍結済みのノイズを考慮した基準で退行を立証しませんでしたが、高速化については結論を出せません。wall time や PSS の改善は主張しません。TDMS の未選択ペイロードの読み込みは B1 ですでに0回のため、この経路には新たな性能上の主張はありません。</p></li>
+<li><p><strong>dtype を保つコピー削減（#586）</strong>：凍結済み B-X 比較（baseline freeze commit <code class="docutils literal notranslate"><span class="pre">836e6f38</span></code>、candidate source <code class="docutils literal notranslate"><span class="pre">913ab6c77</span></code>、evidence commit <code class="docutils literal notranslate"><span class="pre">26ae634</span></code>、追記のみの判定補正 <code class="docutils literal notranslate"><span class="pre">bf258</span></code>）では、公開結果の11/11 fingerprint がすべて一致し、dtype、値、警告に変化はありません。監査対象の全 payload に対する source-site <code class="docutils literal notranslate"><span class="pre">ndarray.astype</span></code> 呼び出しは ATS32 と ATS64 で各1回から0回に、16セルの NetCDF matrix で32回から0回になりました。測定 fixture の NetCDF warm wall time と CPU time の中央値は33.23%改善しました。ATS の wall/CPU と全 PSS 測定値は参考証拠にとどまり、改善は主張しません。補足の小入力3件はすべて非退行基準を満たしました。リリース適格性確認は未完了です。証拠は <code class="docutils literal notranslate"><span class="pre">docs/developers/reports/v0.2.5-performance/X/dade6bd54082ef7f771724b84064caeb252342317e0da5cdc81a966f5e916050/candidate-v1-913ab6c/README.md</span></code> および同階層の <code class="docutils literal notranslate"><span class="pre">candidate-v1-913ab6c-interpretation-v2/README.md</span></code> にあります。</p></li>
+<li><p><strong>範囲の読み込み最適化（#584）</strong>：B1 は、要求範囲外の破損 chunk に対しても HDF5、NDScope、NetCDF4、Zarr で例外を送出します。これを省くと既存のエラーが変わるため、#584 は保留し、このパッチでは reader を変更しません。</p></li>
+<li><p><strong>WIN とコピーの削減（#518、#586）</strong>：公開 dtype と保存値を維持する NumPy ベースの WIN decode とコピー削減のみを含めます。Numba と残りの #518/#586 作業は延期します。</p></li>
+<li><p><strong>ネイティブ DTTXML の未選択ペイロードに関する例外（#589）</strong>：すでに受け入れている selector をパーサーで使うことで、完全に未選択のネイティブパーサーペイロードだけから生じる警告と decode error を抑制できます。XML 構造エラーと選択ペイロードの挙動は、旧候補と同等に保つ必要があります。外部 <code class="docutils literal notranslate"><span class="pre">dttxml</span></code> 経路は従来どおりで、性能上の主張の対象外です。この例外には S2 について人による別個の科学・データモデル承認が必要であり、#611 の完全に非交差な通常 HDF5 window に限る安全性例外を広げません。</p></li>
+<li><p><strong>SDB 同時書き込みスナップショット修正（#585）</strong>：reader は1つの SQLite スナップショットから選択行を検証・取得します。凍結された14件の WAL 故障 matrix では、writer が検証とペイロード query の間に commit する場合、10件で旧 R と異なります。選択・未選択の値と不正値の更新、timestamp 更新、schema 変更により、返す値、key、警告、エラーが変わる可能性があります。<code class="docutils literal notranslate"><span class="pre">usUnits</span></code> の両更新を含む4件は一致します。静的ソースの挙動は旧 R と同等です。この正確な同時実行の範囲には、S2 について人による別個の科学・データモデル承認が必要です。ほかの形式に未選択ペイロードを省く例外は認めません。</p></li>
+<li><p><strong>対象外</strong>：#587、#590、#519 は v0.2.5 の対象外です。</p></li>
+</ul>
+<p>2026-09-27 の S/R 承認と候補の実行結果は、以前の候補についての履歴証拠に限られます。拡張された S2/R2 候補のリリース GO には、同一 S2 に対する新たなレビュー、限定的な範囲についての人による承認、および正確な R2 の認定が必要です。</p>
 </section>
 </section>
 <section id="id2">
@@ -1533,8 +1552,9 @@
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v0-2-4-weekly-development-activity">v0.2.4 の週次開発活動</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">[0.2.5] - 2026年9月27日</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">[0.2.5] - 2026-09-28（候補）</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">修正</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#internal-performance-work-release-qualification-pending">内部性能作業（リリース認定待ち）</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">0.2.4 - 2026-09-26</a><ul class="pst-show_toc_level nav section-nav flex-column">

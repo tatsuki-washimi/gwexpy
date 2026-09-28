@@ -443,7 +443,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="Documentation build information">
   <span>Development documentation · 0.2.5</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/ef7d144fe5464ddc5ddc23cb29064f93edd7f06f">ef7d144f</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7f614d65c92d88c1aa9f46ef7ba01e88de9bb5ae">7f614d65</a>
   · Intro examples tested with 0.2.4
   · <a href="documentation_version.html">Version details</a>
   · <a href="known_limitations.html">Known limitations</a>
@@ -475,11 +475,18 @@
 <p>The v0.2.2 release is available from <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2">GitHub Releases</a> and archived under <a class="reference external" href="https://doi.org/10.5281/zenodo.22228340">Zenodo DOI 10.5281/zenodo.22228340</a>.</p>
 </section>
 <section id="id1">
-<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.2.4...v0.2.5">0.2.5</a> - 2026-09-27<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.2.4...v0.2.5">0.2.5</a> - 2026-09-28<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
 <p>This patch fixes supported NetCDF4 and Zarr matrix value, axis, and unit
 handling; HDF5 manifest integrity; TDMS waveform-increment and GBD header
 validation; and audio registry tag provenance. The supported optional-backend
-routes report a backend-specific <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> when their package is absent.</p>
+routes report a backend-specific <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> when their package is absent.
+The candidate includes internal I/O performance and scalability work under
+#580. Implementation of the included changes is complete. Range push-down
+(#584) and parallel GWF optimization remain on hold. Release qualification and
+publication remain pending; public values, dtype, metadata, warning/error
+behavior, and on-disk format remain the acceptance contract except for the
+scoped #589 native-parser and #585 SDB snapshot exceptions below. The
+candidate adds no public API, dependency, or persistence schema.</p>
 <section id="fixed">
 <h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h3>
 <ul class="simple">
@@ -490,6 +497,27 @@ routes report a backend-specific <code class="docutils literal notranslate"><spa
 <li><p><strong>Audio registry tags</strong>: Retain available WAV and FLAC tag metadata in provenance.</p></li>
 <li><p><strong>Optional backends</strong>: Supported public Zarr and NetCDF4 routes raise a backend-specific <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> when the required package is absent.</p></li>
 </ul>
+</section>
+<section id="internal-performance-work-release-qualification-pending">
+<h3>Internal performance work (release qualification pending)<a class="headerlink" href="#internal-performance-work-release-qualification-pending" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Multi-source merge (#582)</strong>: Append each input once. The frozen wheel comparison preserves all 15 public result fingerprints and reduces non-inplace append calls from 63 to zero on the 64-input fixture; warm wall and CPU pass the predeclared noise-aware gate. No peak-memory improvement is claimed.</p></li>
+<li><p><strong>Single-channel WAV dispatch (#583)</strong>: Avoid constructing the unselected channel’s <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> after the backend read. All 28 public result fingerprints match the frozen baseline; the large fixture’s unselected construction count falls from one to zero. The SciPy backend still reads the full interleaved payload.</p></li>
+<li><p><strong>CSV reader and internal writer (#585)</strong>: Reduce general parser work, push down supported column selection while retaining full-file validation, and stream output from the internal enhanced <code class="docutils literal notranslate"><span class="pre">write_timeseries_csv</span></code> helper. Public <code class="docutils literal notranslate"><span class="pre">TimeSeries.write(format=&quot;csv&quot;)</span></code> uses GWpy’s writer and is outside this writer performance claim. Both explicit-format and <code class="docutils literal notranslate"><span class="pre">.csv</span></code> auto-detected two-column <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> fast paths remain covered, including the nonuniform-frequency-axis contract. Frozen wheel evidence preserves 21 public fingerprints, and the measured general and selected CSV fixtures improve in wall time; the internal writer preserves bytes under fixed encoding and newline conditions.</p></li>
+<li><p><strong>WIN decoder (#518)</strong>: Use NumPy integer intermediates while preserving 12 bit-exact public fingerprints. The measured per-sample append count falls from 4,116 to zero and warm CPU passes the noise-aware gate.</p></li>
+<li><p><strong>Native DTTXML PSD selection (#589)</strong>: Large native PSD reads skip fully unselected payload decode, reducing measured Linux peak PSS by 19.63% with zero unselected decoded bytes. Small files retain the old parser. Large warm wall time increases 12.46% on the measured fixture; cold time is comparable. The scoped warning exception below remains subject to human approval.</p></li>
+<li><p><strong>Serial GWF merge (#588)</strong>: Large, sorted, local serial reads retain at most three coerced parts across the measured source counts. Independent Linux peak tree-PSS batches improve 8.31–10.66%; large warm time improves 4.20%. Parallel optimization remains on hold after two primary PSS failures; the old parallel route remains in place.</p></li>
+<li><p><strong>SDB selected windows (#585)</strong>: For an eligible 4,096-row SQLite source, full-source validation and the selected payload query share one read transaction while only 512 requested payload rows enter a DataFrame. Static-source public fingerprints match B1. The two small selected-read timing batches do not establish a regression under the frozen noise-aware gate, but are inconclusive for speed; no wall-time or PSS improvement is claimed. TDMS unselected payload reads are already zero in B1, so that subroute has no new performance claim.</p></li>
+<li><p><strong>Dtype-preserving copy reduction (#586)</strong>: The frozen B-X comparison (baseline freeze commit <code class="docutils literal notranslate"><span class="pre">836e6f38</span></code>, candidate source <code class="docutils literal notranslate"><span class="pre">913ab6c77</span></code>, evidence commit <code class="docutils literal notranslate"><span class="pre">26ae634</span></code>, and append-only gate correction <code class="docutils literal notranslate"><span class="pre">bf258</span></code>) matches all 11/11 public fingerprints, with no dtype, value, or warning change. Audited source-site full-payload <code class="docutils literal notranslate"><span class="pre">ndarray.astype</span></code> calls fall from 1 to 0 for ATS32 and ATS64, and from 32 to 0 for the 16-cell NetCDF matrix. NetCDF warm wall and CPU medians improve 33.23% on the measured fixture; ATS wall/CPU and all PSS results remain evidence-only. Three supplementary small-input cases pass the non-regression check. Release qualification remains pending. Evidence: <code class="docutils literal notranslate"><span class="pre">docs/developers/reports/v0.2.5-performance/X/dade6bd54082ef7f771724b84064caeb252342317e0da5cdc81a966f5e916050/candidate-v1-913ab6c/README.md</span></code> and sibling <code class="docutils literal notranslate"><span class="pre">candidate-v1-913ab6c-interpretation-v2/README.md</span></code>.</p></li>
+<li><p><strong>Range push-down (#584)</strong>: B1 raises on corrupt chunks outside the requested window in HDF5, NDScope, NetCDF4, and Zarr. Skipping them would change an existing error, so #584 is held with no reader change in this patch.</p></li>
+<li><p><strong>WIN and copy reduction (#518, #586)</strong>: Include only NumPy-based WIN decoding and copy reductions that preserve public dtype and saved values. Numba and the remaining #518/#586 work are deferred.</p></li>
+<li><p><strong>Native DTTXML skipped-payload exception (#589)</strong>: Parser-level use of already accepted selectors may suppress warnings and decode errors arising exclusively from fully unselected native-parser payloads. XML structural errors and selected-payload behavior must remain equivalent to the old candidate. The external <code class="docutils literal notranslate"><span class="pre">dttxml</span></code> route keeps its existing behavior and is outside the performance claim. This exception requires separate human scientific/data-model approval for S2 and does not expand #611’s completely disjoint plain-HDF5-window safety exception.</p></li>
+<li><p><strong>SDB concurrent-write snapshot correction (#585)</strong>: The reader validates and fetches selected rows from one SQLite snapshot. In the frozen 14-case WAL fault matrix, ten cases differ from old R when a writer commits between its validation and payload query: selected or unselected value and malformed-value updates, timestamp updates, and schema changes may alter returned values, keys, warnings, or errors. Four cases remain equal, including both <code class="docutils literal notranslate"><span class="pre">usUnits</span></code> updates. Static-source behavior remains old-R-equivalent. This exact concurrent scope needs separate human scientific/data-model approval for S2. No other format gains a skipped-payload exception.</p></li>
+<li><p><strong>Excluded</strong>: #587, #590, and #519 are outside v0.2.5.</p></li>
+</ul>
+<p>The 2026-09-27 S/R approvals and candidate runs are historical evidence for the
+earlier candidate only. The expanded S2/R2 candidate requires new same-S2
+reviews, scoped human approval, and exact-R2 qualification before release GO.</p>
 </section>
 </section>
 <section id="id2">
@@ -2372,8 +2400,9 @@ their files expose an explicit time coordinate.</p></li>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v0-2-4-weekly-development-activity">v0.2.4 weekly development activity</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">0.2.5 - 2026-09-27</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">0.2.5 - 2026-09-28</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">Fixed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#internal-performance-work-release-qualification-pending">Internal performance work (release qualification pending)</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">0.2.4 - 2026-09-26</a><ul class="pst-show_toc_level nav section-nav flex-column">
