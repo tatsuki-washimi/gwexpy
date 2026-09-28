@@ -1,0 +1,372 @@
+{
+  "build": {
+    "b1_command": "python -m build --wheel --no-isolation --outdir /tmp/gwexpy-v025-b-wheels",
+    "build": "1.3.0",
+    "setuptools": "80.9.0",
+    "wheel": "0.45.1"
+  },
+  "checks": {
+    "all_12_wire_recipes_validated_by_capture": true,
+    "b0_b1_correctness_equal": true,
+    "b0_b1_structure_source_equal": true,
+    "b1_python_per_sample_accumulation_hits": 4116,
+    "git_diff_check": "passed",
+    "ruff_check": "passed",
+    "ruff_format_check": "passed"
+  },
+  "created_utc": "2026-09-28T06:29:36.948603+00:00",
+  "files_sha256": {
+    "README.md": "edd93f398f0c29ed0ac9a6fe517c39582918569438f8ecd1ddf7d15adc25dad6",
+    "correctness/fingerprint.json": "34854f170ec7e154be9571f232500c71de9bf22e3b21dce8c9c449f8a877330c",
+    "correctness/manifest.json": "d9cc493cb0e986d2f1470c8e2ae14315ff6ca5d213b8da411359695f84e919f9",
+    "correctness/raw-A.json": "a416ddec58439ef75da6ae8cccfbbcdca4601caaaed7b1dc652103e6227d9f31",
+    "correctness/raw-B.json": "4c149b67582fc01586844ef510b363f0ae54359f7d3ff6d4b72f1aa91f908b64",
+    "correctness/sample-00-A.json": "e82324b0424adf5a35cfd5933ad8b492d5936bbaec5be4f8ab4e8622cad8047b",
+    "correctness/sample-01-B.json": "07aa070acb4025c0a827104a09ee7d93b63332100eb7541f990120849b4ccf69",
+    "memory/manifest.json": "aa124f20f0b8bf546fedbd690f92db576d2b5b33c1ab96cf0f0d01f1eed11a49",
+    "memory/raw-A.json": "ee558441de32b0d703b785b168ab1994d041b751277adfb10c8f5e4c40251201",
+    "memory/raw-B.json": "0d1790fc8143458269763a0208c525d9bea837337ad9d153039da4143eef0fc4",
+    "memory/sample-00-A.json": "e0e30f1090de02a7fe25ff216d104fcd1b6444a6a9947eca76e18a2fb41b230f",
+    "memory/sample-01-B.json": "65e6a4216cff69de035c3acfb49a1b1f7651a42af108228a28c6e47ce56af1fd",
+    "memory/sample-02-B.json": "e5f98925638698869ab63b7be03527b803c0050040b308c8d4c07b80188b836c",
+    "memory/sample-03-A.json": "79c85cb0dc1689e7c1d3326a761786e115cacbf999859842f186794f9801f3f6",
+    "memory/sample-04-B.json": "ca3e8630baa52bcdd9ace8147d0228b31572a5c0b81d48a43da67f47c9d6e946",
+    "memory/sample-05-A.json": "8a9f773ae3cd7ff14d6193fa19d46c7e1b1b73997efff8ebbfadd81d08115287",
+    "memory/sample-06-A.json": "d21b83f20c146411dcb35fc4a7739eead65ab917768b57d349782569603848c5",
+    "memory/sample-07-B.json": "8bf5ebd7e2b9f459c867b174c930b1ab0d58716e0cbd90946b5b5e779c7a5b94",
+    "memory/sample-08-A.json": "e7f47707b7d8c9afbecc02004438829b7a3a15d2271dfc8967a02f3ce7d40410",
+    "memory/sample-09-B.json": "60c761dde8a0dd25da85ddb2bd55db84990ad99a2d7836d243d480ccd5604cac",
+    "memory/summary.json": "e8a992dce59fab5ff2ac0f1fd47b7bb19281f4813b9306af9f5d5b9cb3984ae3",
+    "structure/manifest.json": "1b6066091aefa4f598f8dcdc5b6b810143b5bf62aa27af420a38ad506e47e5aa",
+    "structure/raw-A.json": "745c50c3f36fe26ee0313853768d4d42004d9138e75053a66e67b2243062d816",
+    "structure/raw-B.json": "50b4b0fbf8706549b4aa05ae970441108dea46d4ef60ef3bac149e4d1bda37e4",
+    "structure/sample-00-A.json": "5e13f02067a2a4534d5cc3f26eafea6b7906c9cd32c42103e84dc572f2a17f1b",
+    "structure/sample-01-B.json": "1121aded8570f633c76440eba2045bf9c49124d7d2510735c66a81946aa801a5",
+    "timing-cold/manifest.json": "a31a09e22e58c37582301308de45a658c0fc26f8ae1279b2a5ae503ddeaf6471",
+    "timing-cold/raw-A.json": "30cdba6fb2de801f1230a6fa658529893cce5ffd94a867170e7f91088d251817",
+    "timing-cold/raw-B.json": "2b61eea873b2d84a35c2a417c0659f5a7c387d9335043280a169805aff33619e",
+    "timing-cold/sample-00-A.json": "9da8c7fc9184d5c90c59d90247fcd83c771eee2bb53774c45e6b01580f56c138",
+    "timing-cold/sample-01-B.json": "53e83134d6f3f9744755932d53d92dce344d76ff84be7b76a7cd80cf4441d3ff",
+    "timing-cold/sample-02-B.json": "1eadd50c570e0fae2927228785416be31d8657176552ca259f7790d081d7cdfe",
+    "timing-cold/sample-03-A.json": "776b03bc6b11926499268157c59f414208fe3c44fbf3d5b044d761d4abfb9c0a",
+    "timing-cold/sample-04-B.json": "85c0777cee2ca80ccdd88938b529f8670de8ddce65c4c2df1e5d2209de189737",
+    "timing-cold/sample-05-A.json": "a8dec995de70b78205b1b9a8b91c3d57e46b0b8156e1a24bbd88d305068e38a8",
+    "timing-cold/sample-06-A.json": "d5ecee7af89f37c47d3f6ee77615b5a0b4afd63689b7b6610faf86bfd9c88e2b",
+    "timing-cold/sample-07-B.json": "4d41a9203fb3c3aa09608660e47b1687f9b5ab35bcaf5f79259b95bc94d54895",
+    "timing-cold/sample-08-A.json": "964c101ccb71d3d15b97588cfa882d9cfae09c6e67b9ceddbb1425b43100e485",
+    "timing-cold/sample-09-B.json": "830ff62f8969b98f1c01c56c677adabf1e894eb462e0c68f91b80cfef8d9d618",
+    "timing-cold/summary.json": "677c8cf2abad49b9999b3c2c4d6f03e6a6ba9421d63387cf5b0bad2a0537238c",
+    "timing-warm/manifest.json": "1eff60e37109c8a2475b8774c30b4b80d8e383c5ae3900e84f0204941bc7fae8",
+    "timing-warm/raw-A.json": "828b13e951093f22dac879536b3cef5095944986fcef99b487372e1505a91926",
+    "timing-warm/raw-B.json": "a2a26f8a90748bc3cb0e2a7e5460df02ba86d6b6c909a421feffdd520e8ec7c2",
+    "timing-warm/sample-00-A.json": "0dbe182b6e9b5eada5fc5b1837c708f8f1aa788b63353b004596aa598b87e46a",
+    "timing-warm/sample-01-B.json": "faf8eeaa4ee19db267437635602e59e17aca25596758a6fcb74d62b3a3cfebc9",
+    "timing-warm/sample-02-B.json": "d1dd3a389dfcd76155d3fcd234a76af8cc3289d06e60c73affb23e814b6f2005",
+    "timing-warm/sample-03-A.json": "7ead51c5f66c64e39238d7d30b15fbf2a74b444450c6b8c0c5a9a2928172a50a",
+    "timing-warm/sample-04-B.json": "4cff7c5570eb5ff8bc1f081a4cb2c31fe7597bbabfbfb96f8e4b86aec677d091",
+    "timing-warm/sample-05-A.json": "4354cae47aa08e8aab1a8b74839e525c1b7e9d6ada61264e599684e9098d628c",
+    "timing-warm/sample-06-A.json": "2b89c1a27805c71d149ab4f9e2330b5b6c6c14d45d82e51cb8605647560eca98",
+    "timing-warm/sample-07-B.json": "d6da059147317119af651f986791837b3d52d238cd05e3107ab0ebd4a0d5aa93",
+    "timing-warm/sample-08-A.json": "979c8761043c04a3a61e5b0d324d8d7f1a5ff2052a37d5e67c8e9b397bfb2c6b",
+    "timing-warm/sample-09-B.json": "2a8741837d4009d7978c68e69aca99f5ec822ab5d2e7d79d9b28f92774820a56",
+    "timing-warm/sample-10-B.json": "b45708dcf674eebcb8ab5b3edbcad7a5fb76f62dd4716726aaa3e8132adafd1d",
+    "timing-warm/sample-11-A.json": "5a71931aa085e035cf7efbc1027111d8a003d4ad41f903972c77156b61f7549b",
+    "timing-warm/sample-12-B.json": "39f0a472611d1eef3d99c9058a702ae45c8aa50ba701e10b929e1dfc87e2b336",
+    "timing-warm/sample-13-A.json": "b1cbb4f7f3c2a97e8b90bc9ab96497cbdb8b5698d5e40a279505657762ccaec0",
+    "timing-warm/sample-14-A.json": "bc13e3aaa5d982d142bd32c51c8e4bb4733d112b3c02cf10a0ecace172a39179",
+    "timing-warm/sample-15-B.json": "5b74d57f12b8a6994170e60d5f566957f820f57e5887d672ac9cfcb44d7db2e4",
+    "timing-warm/sample-16-A.json": "ae1ba006a74072041510523ee9508958798f2412502b3e90bf16d9487a0735bc",
+    "timing-warm/sample-17-B.json": "dcd84fc0e9d5bfd8699374d69f253cdddfa90dc28af1d92974b0acbb6adb14e5",
+    "timing-warm/summary.json": "f329e240638ac1c681e403ac38793bf21e48a6c763d9a86ef98500918881ca4d",
+    "win-fixtures.json": "db9e32a69f36df9f68f29ef186114fb7be310f7cd80bba50ca3b8243c4cb02b9"
+  },
+  "fixture_file_count": 12,
+  "fixture_files": [
+    {
+      "file": "width-0-5-byte.win",
+      "name": "width-0-5-byte",
+      "sha256": "a54b39d668859d59dd862c9fe578ce14f6d1f021dfe17dd8869e47b3233faea9",
+      "size_bytes": 20
+    },
+    {
+      "file": "width-1-byte.win",
+      "name": "width-1-byte",
+      "sha256": "d9964123d0a0d9ebe9581be42c52045181b966473f4445ed5ab2cb560d33453b",
+      "size_bytes": 22
+    },
+    {
+      "file": "width-2-byte.win",
+      "name": "width-2-byte",
+      "sha256": "cd42fe9781a1e4299f04d866de4eb2246064622d7899b1f0256e03bf83fb0107",
+      "size_bytes": 26
+    },
+    {
+      "file": "width-3-byte.win",
+      "name": "width-3-byte",
+      "sha256": "a2d714f4ecc9acd3c3b315cafa75f8fc77d2f94ed582de61ff70f995c761fee9",
+      "size_bytes": 30
+    },
+    {
+      "file": "width-4-byte.win",
+      "name": "width-4-byte",
+      "sha256": "b1c9e6f962528e8469262cee19458bb5097cd8789b75457a152852f18c4f6b8b",
+      "size_bytes": 34
+    },
+    {
+      "file": "width-1-rate-4095.win",
+      "name": "width-1-rate-4095",
+      "sha256": "c3dce2cd0448ab287d472918e9fed0862feeb38202f439f80d5b7208b4aceeff",
+      "size_bytes": 4112
+    },
+    {
+      "file": "rate-one-width-4.win",
+      "name": "rate-one-width-4",
+      "sha256": "48c00df1987bfc04e445897fc961413505307e5503ff24b95e49dc546823eac3",
+      "size_bytes": 18
+    },
+    {
+      "file": "positive-int32-overflow.win",
+      "name": "positive-int32-overflow",
+      "sha256": "c7689c8793354bc7cb6895d2b09a945ebc8756bf74fd2a3c2a486361bc8f4354",
+      "size_bytes": 22
+    },
+    {
+      "file": "negative-int32-overflow.win",
+      "name": "negative-int32-overflow",
+      "sha256": "86587515200e6f1f00489087843714b899effa2562caa978c8781e635d86090d",
+      "size_bytes": 22
+    },
+    {
+      "file": "unsupported-width.win",
+      "name": "unsupported-width",
+      "sha256": "83b42366289f500c8bc8b43c622b02b30df8320a64a6d216821533408f454ad2",
+      "size_bytes": 18
+    },
+    {
+      "file": "truncated-packet.win",
+      "name": "truncated-packet",
+      "sha256": "ad8ca8af24c30fa599fd17cb219b525faa9af5453fb9617543bb85c1fda5baf3",
+      "size_bytes": 19
+    },
+    {
+      "file": "truncated-channel.win",
+      "name": "truncated-channel",
+      "sha256": "f662489140e13a1ee4f84e11d2d4e7513251ec8986440a1458b978770de35d7f",
+      "size_bytes": 19
+    }
+  ],
+  "fixture_generator_sha256": "5e254efd8d2678616313fb6095b2fdbf8ce308bab25865185c6ec5a29c45c7cd",
+  "fixture_manifest_sha256": "db9e32a69f36df9f68f29ef186114fb7be310f7cd80bba50ca3b8243c4cb02b9",
+  "harness_digest": "ceeac5017f626f57deecff50c1a3a32df0409b18e591161f9068b8b33ddb1e6e",
+  "install": {
+    "mode": "wheel-no-deps",
+    "pip_command": "<venv>/bin/python -m pip install --no-deps --no-index --force-reinstall <wheel>",
+    "python": "3.12.12",
+    "same_dependency_versions": true,
+    "venv_command": "python -m venv --system-site-packages /tmp/gwexpy-v025-b-env-{a,b}"
+  },
+  "known_gaps": [
+    "Primary warm timing covers 4095-sample 1-byte DATAWIDE only; other widths have exact correctness and structural coverage.",
+    "Linux PSS/RSS peaks sampled at 10 ms are lower bounds.",
+    "No candidate result or improvement claim is included."
+  ],
+  "lane": "F5",
+  "metrics": {
+    "memory": {
+      "A": {
+        "peak_tree_pss_kib": {
+          "mad": 479,
+          "median": 298452,
+          "raw": [
+            297973,
+            298452,
+            298150,
+            300369,
+            300191
+          ]
+        },
+        "peak_tree_rss_kib": {
+          "mad": 336,
+          "median": 311760,
+          "raw": [
+            311236,
+            311760,
+            311424,
+            311780,
+            313292
+          ]
+        }
+      },
+      "B": {
+        "peak_tree_pss_kib": {
+          "mad": 258,
+          "median": 298378,
+          "raw": [
+            297979,
+            298230,
+            299056,
+            298636,
+            298378
+          ]
+        },
+        "peak_tree_rss_kib": {
+          "mad": 108,
+          "median": 311676,
+          "raw": [
+            311308,
+            311568,
+            312356,
+            311716,
+            311676
+          ]
+        }
+      }
+    },
+    "timing-cold": {
+      "A": {
+        "controller_elapsed_ns": {
+          "mad": 8912626,
+          "median": 2708359847,
+          "raw": [
+            2719917292,
+            2717272473,
+            2707753114,
+            2653902789,
+            2708359847
+          ]
+        },
+        "cpu_ns": {
+          "mad": 184265,
+          "median": 2715977,
+          "raw": [
+            2715977,
+            2900242,
+            2901278,
+            2657893,
+            2052722
+          ]
+        }
+      },
+      "B": {
+        "controller_elapsed_ns": {
+          "mad": 24081277,
+          "median": 2682944830,
+          "raw": [
+            2682944830,
+            2651464275,
+            2678383091,
+            2707026107,
+            2738726477
+          ]
+        },
+        "cpu_ns": {
+          "mad": 197809,
+          "median": 2641852,
+          "raw": [
+            2303449,
+            2839661,
+            2641852,
+            2630818,
+            4157053
+          ]
+        }
+      }
+    },
+    "timing-warm": {
+      "A": {
+        "cpu_ns": {
+          "mad": 48466,
+          "median": 1652314,
+          "raw": [
+            1660898,
+            1531701,
+            1652314,
+            1586179,
+            1686927,
+            1700780,
+            1554049,
+            1670023,
+            1596573
+          ]
+        },
+        "wall_ns": {
+          "mad": 48302,
+          "median": 1655242,
+          "raw": [
+            1672720,
+            1535053,
+            1655242,
+            1588128,
+            1690084,
+            1703544,
+            1557217,
+            1672298,
+            1599356
+          ]
+        }
+      },
+      "B": {
+        "cpu_ns": {
+          "mad": 51029,
+          "median": 1600621,
+          "raw": [
+            1706978,
+            1600621,
+            1594797,
+            1549592,
+            1643853,
+            1725554,
+            1573051,
+            1667638,
+            1527934
+          ]
+        },
+        "wall_ns": {
+          "mad": 50844,
+          "median": 1603389,
+          "raw": [
+            1712522,
+            1603389,
+            1597755,
+            1552545,
+            1646872,
+            1728885,
+            1576044,
+            1670399,
+            1530790
+          ]
+        }
+      }
+    }
+  },
+  "preflight": {
+    "correctness_result": "pass",
+    "source_module_sha256": "eaa346f5d5d76733a3e15677f6e8de56b92ee6dd7cd9a21fece6e511d739af80",
+    "structure_result": "old R accumulation confirmed"
+  },
+  "runs": [
+    "correctness",
+    "structure",
+    "timing-warm",
+    "timing-cold",
+    "memory"
+  ],
+  "schema": 1,
+  "source_proof": {
+    "b1_package_files_compared_to_old_r": 369,
+    "mismatches": 0
+  },
+  "source_sha": {
+    "A": "522e52a082925da4dd37966d82a7616bdd2a5248",
+    "B": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c"
+  },
+  "status": "BASELINE_FROZEN_ON_COMMIT",
+  "wheel_files_verified": {
+    "A": 369,
+    "B": 369
+  },
+  "wheel_sha256": {
+    "A": "34afe8188c753cd9da0b182a5d2a88cce2f7ec36633730fe0bee15e2506df56d",
+    "B": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498"
+  }
+}

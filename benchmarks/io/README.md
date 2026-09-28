@@ -154,3 +154,39 @@ raw samples, fixture and harness hashes, installed-wheel audit, reviewed fault
 matrix, and an append-only committed manifest. The `capture` manifest always
 uses `UNBASELINED`; the release owner records freeze status after review and
 commit. No performance claim follows from the baseline alone.
+
+## F5 WIN decoder baseline
+
+`f5_win_run.py` uses the same B0/B1 wheel audit and dependency identity checks
+as `run.py`. It independently constructs 12 byte-level WIN fixtures with all
+five DATAWIDE codes, sample rates 1 and 4095, both int32 overflow directions,
+and unsupported-width/truncated-packet/truncated-channel faults. The WIN
+fixture manifest records each file hash and exact expected values. Correctness
+captures both `_read_win_fixed(path)` and public `read_win_file(path)` routes,
+including full value bytes, dtype, channel, rate, UTC warning, and exception
+category/message. The controller rejects a B0/B1 mismatch or deviation from
+the independent wire recipe.
+
+```sh
+python benchmarks/io/f5_win_run.py fixtures /tmp/v025-f5-fixtures
+python benchmarks/io/f5_win_run.py capture \
+  --fixtures /tmp/v025-f5-fixtures --output /tmp/v025-f5-correctness \
+  --mode correctness \
+  --python-a /tmp/v025-b0/bin/python --wheel-a /tmp/v025-wheels/gwexpy-0.2.4-py3-none-any.whl \
+  --version-a 0.2.4 --source-sha-a 522e52a082925da4dd37966d82a7616bdd2a5248 --label-a B0 \
+  --python-b /tmp/v025-b1/bin/python --wheel-b /tmp/v025-wheels/gwexpy-0.2.5-py3-none-any.whl \
+  --version-b 0.2.5 --source-sha-b 1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c --label-b B1
+```
+
+Use the same arm arguments with `--mode structure`, `--mode timing
+--temperature warm`, `--mode timing --temperature cold`, and `--mode memory`.
+The structural mode traces source lines that append one reconstructed sample;
+its old-R count characterizes work, while the candidate needs an independent
+source/AST assertion that no width reconstructs samples with a Python
+per-sample accumulation loop. The timing and memory route uses the 4095-sample
+1-byte fixture. Warm mode pre-reads the file and performs one decoder warm-up
+outside the measured call. CPU time of the decoder call is the primary metric;
+cold startup and sampled Linux PSS/RSS are supporting evidence. Use five
+samples per arm in `ABBA BAAB AB` order for baseline smoke, with timing and
+memory runs on a quiet host. Freeze the harness bytes and baseline evidence
+before editing WIN runtime code.
