@@ -6,12 +6,13 @@ This patch fixes supported NetCDF4 and Zarr matrix value, axis, and unit
 handling; HDF5 manifest integrity; TDMS waveform-increment and GBD header
 validation; and audio registry tag provenance. The supported optional-backend
 routes report a backend-specific `ImportError` when their package is absent.
-The candidate additionally targets measured, internal I/O performance and
-scalability improvements under #580. These improvements are planned, not yet
-qualified or released; public values, dtype, metadata, warning/error behavior,
-and on-disk format remain the acceptance contract except for the scoped #589
-native-parser and #585 SDB snapshot exceptions below. The candidate adds no
-public API, dependency, or persistence schema.
+The candidate includes internal I/O performance and scalability work under
+#580. Implementation of the included changes is complete. Range push-down
+(#584) and parallel GWF optimization remain on hold. Release qualification and
+publication remain pending; public values, dtype, metadata, warning/error
+behavior, and on-disk format remain the acceptance contract except for the
+scoped #589 native-parser and #585 SDB snapshot exceptions below. The
+candidate adds no public API, dependency, or persistence schema.
 
 ### Fixed
 
