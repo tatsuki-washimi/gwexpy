@@ -1,0 +1,21 @@
+{
+  "capture": {
+    "outcome": {
+      "kind": "error",
+      "message": "Cannot append overlapping TimeSeriess:\n    TimeSeries 1 span: [1000000002.25 ... 1000000003.25)\n    TimeSeries 2 span: [1000000003.0 ... 1000000004.0)",
+      "type": "builtins.ValueError"
+    },
+    "parallel": 2,
+    "warnings": [
+      {
+        "category": "builtins.DeprecationWarning",
+        "message": "Compatibility support for python2 has been dropped"
+      }
+    ]
+  },
+  "case": "overlap_default",
+  "fixture_manifest_sha256": "f24ae359fa5e0e2f6f52923fd945d9fc0a26b51999aa7e646b69ba307808c688",
+  "harness_sha256": "b4a431e40ed1f237aaff462c906194f6a49fc4f56251df029f424a37cca835f0",
+  "helper_sha256": "e01018185bae922cb582088bc30f62457d551b2951319dc4a4f37dbfc48c3dc7",
+  "route": "parallel"
+}
