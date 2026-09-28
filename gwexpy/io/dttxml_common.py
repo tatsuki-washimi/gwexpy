@@ -612,6 +612,9 @@ def _tf6_raw_layouts(source: str) -> dict[tuple[str, str], dict[str, Any]]:
     return layouts
 
 
+_NATIVE_PSD_STREAM_MAX_POINTS = 16_384
+
+
 def _native_psd_selected_channels(
     source: Any, products: str | None, channels: Any
 ) -> frozenset[str] | None:
@@ -944,12 +947,16 @@ def load_dttxml_native(
             and selected_channels is not None
             and result_type == "Spectrum"
             and subtype == 1
+            and n_points <= _NATIVE_PSD_STREAM_MAX_POINTS
             and n_rows == 1
             and dims == [1, n_points]
             and np.isfinite(f0)
             and f0 >= 0
             and np.isfinite(df)
             and df > 0
+            and df <= 0.5 * (np.finfo(float).max - f0) / max(n_points - 1, 1)
+            and encoding == "LittleEndian,base64"
+            and np.geterr()["under"] == "ignore"
             and not params.get("BUnit")
         ):
             # Only the canonical PSD layout can skip a payload. Malformed or

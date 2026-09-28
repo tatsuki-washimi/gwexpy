@@ -242,3 +242,96 @@ def test_unselected_nonfinite_df_keeps_old_runtime_warning(tmp_path):
         )
 
     assert list(result) == [SELECTED_CHANNEL]
+
+
+def test_unselected_frequency_overflow_keeps_old_runtime_warnings(tmp_path):
+    fixture = write_fixtures(tmp_path, unselected_results=1, points=8)
+    case = fixture["cases"]["many_valid"]
+    tree = ET.parse(case["path"])
+    unselected = tree.getroot().findall("LIGO_LW")[1]
+    for name in ("f0", "df"):
+        param = unselected.find(f"Param[@Name='{name}']")
+        assert param is not None
+        param.text = "1e308"
+    path = tmp_path / "unselected-frequency-overflow.xml"
+    tree.write(path, encoding="utf-8", xml_declaration=True)
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        result = FrequencySeriesDict.read(
+            path,
+            format="dttxml",
+            products="PSD",
+            native=True,
+            channels=[SELECTED_CHANNEL],
+        )
+
+    assert list(result) == [SELECTED_CHANNEL]
+    assert [str(w.message) for w in caught if w.category is RuntimeWarning] == [
+        "overflow encountered in multiply",
+        "overflow encountered in add",
+    ]
+
+
+def test_large_declared_n_uses_old_decoder_route(tmp_path):
+    fixture = write_fixtures(tmp_path, unselected_results=1, points=8)
+    case = fixture["cases"]["many_valid"]
+    tree = ET.parse(case["path"])
+    unselected = tree.getroot().findall("LIGO_LW")[1]
+    n = unselected.find("Param[@Name='N']")
+    dims = unselected.find("Array").findall("Dim")
+    assert n is not None
+    n.text = "65537"
+    dims[1].text = "65537"
+    path = tmp_path / "unselected-large-declared-n.xml"
+    tree.write(path, encoding="utf-8", xml_declaration=True)
+
+    with DecodedPayloadSpy(case["stream_roles"]) as decoded:
+        with pytest.warns(UserWarning, match=r"Invalid data length for Result\[1\]"):
+            result = FrequencySeriesDict.read(
+                path,
+                format="dttxml",
+                products="PSD",
+                native=True,
+                channels=[SELECTED_CHANNEL],
+            )
+
+    assert list(result) == [SELECTED_CHANNEL]
+    assert decoded.report()["unselected_decoded_bytes"] == 8 * 4
+
+
+def test_unselected_bad_encoding_header_keeps_old_warning(tmp_path):
+    fixture = write_fixtures(tmp_path, unselected_results=1, points=8)
+    case = fixture["cases"]["many_valid"]
+    tree = ET.parse(case["path"])
+    stream = tree.getroot().findall("LIGO_LW")[1].find("Array/Stream")
+    assert stream is not None
+    stream.set("Encoding", "NoEndian,base64")
+    path = tmp_path / "unselected-bad-encoding.xml"
+    tree.write(path, encoding="utf-8", xml_declaration=True)
+
+    with pytest.warns(UserWarning, match="Unsupported byte order in encoding"):
+        result = FrequencySeriesDict.read(
+            path,
+            format="dttxml",
+            products="PSD",
+            native=True,
+            channels=[SELECTED_CHANNEL],
+        )
+
+    assert list(result) == [SELECTED_CHANNEL]
+
+
+@pytest.mark.parametrize("underflow_mode", ["warn", "raise"])
+def test_nondefault_underflow_mode_uses_old_decoder_route(tmp_path, underflow_mode):
+    fixture = write_fixtures(tmp_path, unselected_results=1, points=8)
+    case = fixture["cases"]["many_valid"]
+
+    with np.errstate(under=underflow_mode):
+        with DecodedPayloadSpy(case["stream_roles"]) as decoded:
+            result = FrequencySeriesDict.read(
+                case["path"], format="dttxml", **case["call_kwargs"]
+            )
+
+    assert list(result) == [SELECTED_CHANNEL]
+    assert decoded.report()["unselected_decoded_bytes"] == 8 * 4
