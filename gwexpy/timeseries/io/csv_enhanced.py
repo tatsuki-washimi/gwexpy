@@ -748,7 +748,12 @@ def _read_numeric_rows(
             return metadata, None, {}, {}, [], 0
 
         flush_chunk()
-        matrix = np.concatenate(matrix_chunks) if matrix_chunks else None
+        if len(matrix_chunks) == 1:
+            matrix = matrix_chunks[0]
+        elif matrix_chunks:
+            matrix = np.concatenate(matrix_chunks)
+        else:
+            matrix = None
         selected = {
             index: np.asarray(values, dtype=np.float64)
             for index, values in selected_values.items()
