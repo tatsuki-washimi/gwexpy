@@ -16,6 +16,15 @@ edit runtime code before that freeze.
 B-X will freeze fixture bytes/hash, a harness digest independent of the
 candidate package, B0/B1 and immediate pre-X installed-wheel fingerprints and
 resource samples, and a structural count of avoidable output-sized arrays.
+For the NetCDF `lossless()` candidate, an independent pre-implementation review
+limits any same-dtype shortcut to native int64, or native float64 whose values
+are all finite. The finiteness eligibility probe must suppress its own invalid
+floating-point diagnostic and send every nonfinite value through the original
+round-trip check. Cross-dtype, complex, object/string, and other dtypes keep
+the original path. In particular, the B1 object/string fixture raises from
+`array_equal(equal_nan=True)`; a broad same-dtype shortcut would hide that
+error. Exact B1 value bytes, warning/error signatures, and the source-site
+`astype` count still gate any implementation.
 Run structural instrumentation separately from timing and memory. The X claim
 requires fewer unnecessary copied bytes, exact result/dtype/metadata/warning
 parity, and no confirmed small-input regression. If the primary counter is zero
