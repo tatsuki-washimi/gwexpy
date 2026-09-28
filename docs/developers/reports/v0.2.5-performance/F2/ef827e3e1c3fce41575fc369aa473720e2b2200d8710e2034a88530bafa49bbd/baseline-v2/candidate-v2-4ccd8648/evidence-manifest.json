@@ -1,0 +1,138 @@
+{
+  "B1": {
+    "source_sha": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+    "wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498"
+  },
+  "INT64_overflow_public_result_matches_B1": true,
+  "WAL": {
+    "B1_current_matches_frozen_all_samples": true,
+    "candidate_stable_all_samples": true,
+    "cases": 14,
+    "different": 10,
+    "equal": 4
+  },
+  "cold_PSS": "Not completed after the window regression was confirmed; one selected cold route completed before batch 3 but is excluded because all/window were not captured.",
+  "fixtures": {
+    "INT64_overflow": {
+      "fixture_sha256": "1cf3a36fabb80952c15b04c728a4d5a5dc8de6b25579d819561446a9037d6776",
+      "rows": 3
+    },
+    "WAL": {
+      "database_sha256": "2713b73e3a715e7816c3d94023611ba9e2ac74911f0848f620d077218473b817",
+      "manifest_sha256": "a1995b43e921f7dd5664f05e69872d15ff9b8c974871f9f3d1deb3448e378837"
+    },
+    "structure_timing": {
+      "database_sha256": "84579ec5191342a12b51f41f9779e413210de82c0fe7fa905c5e3772362f0a0b",
+      "input_rows": 4096,
+      "manifest_sha256": "2b29c7bccedfc8335beb5c59580b26aa1a211bd3959e142dcb2e99a7dbcab1f8",
+      "window_rows": 512
+    }
+  },
+  "harnesses": {
+    "WAL": {
+      "commit": "02cb6b415a6c3c2cbad0a4ce82e506037409e360",
+      "digest": "ef827e3e1c3fce41575fc369aa473720e2b2200d8710e2034a88530bafa49bbd"
+    },
+    "structure_timing": {
+      "commit": "6f0a3d4ea",
+      "digest": "e8422a63694d54ba4c8d349f8fb2da7f5df3cda63387d2e036c1af4cba338c72"
+    }
+  },
+  "hold_reason": "Independent window warm batches 1 and 3 exceed the max(10%,3x summed relative MAD) gate at low noise (+23.3%, +22.6%). Batch 2 is inconclusive: +18.2% median change and 53.3% noise threshold. Candidate v2 is HOLD.",
+  "install_mode": "wheel-no-deps",
+  "schema": 1,
+  "scope": "Exact constant-memory upper integer median selection is used only when SQLite timestamp subtraction is promoted to REAL; ordinary irregular cadence retains the SQL median path. Full-source timestamp and warning checks remain O(N). Broad WAL exception and human S2 approval/disclosure remain required.",
+  "source_commit": "4ccd8648668b966119d97e3c677be422a2d0a3ce",
+  "source_sha256": "565e5756e20a02c0e2e6255fd41aadbd3cb14d413687755f8e263012c4b6f83c",
+  "status": "HOLD",
+  "structure": {
+    "A": {
+      "dataframe_payload_rows_materialized": [
+        4096
+      ],
+      "input_rows": [
+        4096
+      ],
+      "probe_covered": true,
+      "sample_count": 5
+    },
+    "B": {
+      "dataframe_payload_rows_materialized": [
+        512
+      ],
+      "input_rows": [
+        4096
+      ],
+      "probe_covered": true,
+      "sample_count": 5
+    }
+  },
+  "test_path": "tests/io/test_v025_sdb_snapshot.py",
+  "test_sha256": "31930b0aede259281863e9c7e8ff31e38b375b962c868a318c6630d164cdcb5a",
+  "toolchain": {
+    "build": "1.3.0",
+    "python": "3.12.12",
+    "setuptools": "80.9.0",
+    "wheel": "0.45.1"
+  },
+  "verification": {
+    "focused_pytest": "72 passed",
+    "mypy": "passed",
+    "ruff_check": "passed",
+    "ruff_format_check": "passed"
+  },
+  "warm_timing_noise_aware": {
+    "f2_sdb_all": {
+      "B1_MAD_ns": 798311,
+      "B1_median_ns": 15080885,
+      "candidate_MAD_ns": 499533,
+      "candidate_change_fraction": -0.2277156148329491,
+      "candidate_median_ns": 11646732,
+      "regression_threshold_fraction": 0.28747706733711054,
+      "summed_relative_noise_fraction": 0.09582568911237019,
+      "threshold_exceeded": false
+    },
+    "f2_sdb_selected": {
+      "B1_MAD_ns": 508917,
+      "B1_median_ns": 9161687,
+      "candidate_MAD_ns": 247727,
+      "candidate_change_fraction": -0.10702013723018478,
+      "candidate_median_ns": 8181202,
+      "regression_threshold_fraction": 0.2574852568685724,
+      "summed_relative_noise_fraction": 0.0858284189561908,
+      "threshold_exceeded": false
+    },
+    "f2_sdb_window": {
+      "B1_MAD_ns": 35484,
+      "B1_median_ns": 8394853,
+      "candidate_MAD_ns": 128706,
+      "candidate_change_fraction": 0.2327311746852505,
+      "candidate_median_ns": 10348597,
+      "regression_threshold_fraction": 0.1,
+      "summed_relative_noise_fraction": 0.01666392391186278,
+      "threshold_exceeded": true
+    },
+    "f2_sdb_window-batch2": {
+      "B1_MAD_ns": 1078706,
+      "B1_median_ns": 10274242,
+      "candidate_MAD_ns": 882973,
+      "candidate_change_fraction": 0.1818194471183372,
+      "candidate_median_ns": 12142299,
+      "regression_threshold_fraction": 0.5331301910428741,
+      "summed_relative_noise_fraction": 0.17771006368095804,
+      "threshold_exceeded": false
+    },
+    "f2_sdb_window-batch3": {
+      "B1_MAD_ns": 80979,
+      "B1_median_ns": 8420498,
+      "candidate_MAD_ns": 44112,
+      "candidate_change_fraction": 0.22627687816088793,
+      "candidate_median_ns": 10325862,
+      "regression_threshold_fraction": 0.1,
+      "summed_relative_noise_fraction": 0.013888881656232723,
+      "threshold_exceeded": true
+    }
+  },
+  "wheel_path": "/tmp/gwexpy-v025-sdb-candidate-v2-wheel/gwexpy-0.2.5-py3-none-any.whl",
+  "wheel_sha256": "a71b1a48945d02e094d4068b4c752b812c5164b835c73cb6a893769a069e2fa1"
+}

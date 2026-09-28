@@ -1,0 +1,63 @@
+{
+  "candidate_4ccd_wheel_verified": false,
+  "expected_public_error": {
+    "message": "SDB timestamp gap at index 2: expected cadence 9223372036854775809, got 1",
+    "type": "builtins.ValueError"
+  },
+  "fixture": {
+    "exact_deltas": [
+      "9223372036854775809",
+      "1"
+    ],
+    "ordered_rows": [
+      [
+        -9223372036854775808,
+        60.0
+      ],
+      [
+        1,
+        61.0
+      ],
+      [
+        2,
+        62.0
+      ]
+    ],
+    "path": "/tmp/gwexpy-v025-sdb-candidate-v2-prep/sdb_int64_delta_overflow.sdb",
+    "schema": "archive(dateTime INTEGER, outTemp REAL)",
+    "sha256": "1cf3a36fabb80952c15b04c728a4d5a5dc8de6b25579d819561446a9037d6776",
+    "upper_median": "9223372036854775809"
+  },
+  "observed": [
+    {
+      "arm": "B1 old R",
+      "result": {
+        "message": "SDB timestamp gap at index 2: expected cadence 9223372036854775809, got 1",
+        "type": "builtins.ValueError"
+      },
+      "source_sha": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+      "wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498"
+    },
+    {
+      "arm": "candidate-084f139",
+      "result": {
+        "message": "SDB timestamp gap at index 1: expected cadence 9223372036854775808, got 9223372036854775809",
+        "type": "builtins.ValueError"
+      },
+      "source_sha": "084f139fea9e564f3dc0eff1a2218f7c23f1438c",
+      "wheel_sha256": "0ba5a3055df6dca518e5ad6ae15cd4213a47338cadd2fdb4830cc40d3800d398"
+    },
+    {
+      "arm": "candidate-4ccd8648 source checkout",
+      "result": {
+        "message": "SDB timestamp gap at index 2: expected cadence 9223372036854775809, got 1",
+        "type": "builtins.ValueError"
+      },
+      "source_sha": "4ccd8648668b966119d97e3c677be422a2d0a3ce",
+      "wheel_sha256": null
+    }
+  ],
+  "read_route": "TimeSeriesDict.read(path, format=\"sdb\", columns=[\"outTemp\"])",
+  "record_scope": "Static repro notes; candidate-v2 wheel verification pending F3 freeze and worker slot release.",
+  "source_checkout_invocation": "python from worktree root; imported gwexpy from /home/washimi/work/gwexpy-v025-performance-sdb/gwexpy/__init__.py"
+}
