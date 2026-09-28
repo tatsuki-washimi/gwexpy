@@ -1,13 +1,18 @@
 from __future__ import annotations
 
 import copy
+import logging
 import multiprocessing
 import os
 import pickle
 import re
+import sys
+import tempfile
+import threading
 import warnings
 from collections.abc import Callable
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from contextlib import contextmanager
 from inspect import Parameter, Signature, signature
 from numbers import Integral
 from pathlib import Path
@@ -279,6 +284,8 @@ def _normalize_gwf_gap_options(pad: Any, gap: Any) -> tuple[Any, Any]:
 
 
 _GWF_PARALLEL_WORKER_CAP = 8
+_GWF_BOUNDED_MIN_SOURCES = 16
+_GWF_BOUNDED_FALLBACK = object()
 _GWF_URI_SCHEME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 _GWF_URI_TOKEN_RE = re.compile(r"(?:^|[\s+|;@])[A-Za-z][A-Za-z0-9+.-]*:")
 _GWF_WINDOWS_DRIVE_RE = re.compile(r"^[A-Za-z]:[\\/]")
@@ -756,6 +763,216 @@ def _validate_gwf_parallel_source(source: Any, gwf_kwargs: dict[str, Any]) -> An
     return source
 
 
+def _bounded_gwf_spans(
+    sources: list[Any], channels: list[str], backend: str | None
+) -> list[tuple[int, int]] | None:
+    """Resolve adjacent local frame spans, or decline the speculative route."""
+    if len(sources) < _GWF_BOUNDED_MIN_SOURCES:
+        return None
+    previous_end = None
+    spans = []
+    concrete_path_type = type(Path())
+    for item in sources:
+        if type(item) not in {str, concrete_path_type}:
+            return None
+        path = Path(item)
+        if path.is_symlink() or not path.is_file() or path.suffix.lower() != ".gwf":
+            return None
+        span_start, span_end = _resolve_gwf_path_span(item, channels, backend)
+        current_start = _gwf_time_to_ns(span_start)
+        current_end = _gwf_time_to_ns(span_end)
+        if previous_end is not None and current_start != previous_end:
+            return None
+        spans.append((current_start, current_end))
+        previous_end = current_end
+    return spans
+
+
+def _merge_bounded_gwf_parts(
+    parts: Any,
+    channels: list[str],
+    dict_class: type[Any],
+    series_class: type[Any],
+) -> Any:
+    """Merge one part at a time while retaining only leading metadata."""
+    out = dict_class()
+    leading_part = None
+    leading_series: dict[str, Any] = {}
+    for part in parts:
+        if not part or any(
+            channel not in part or len(part[channel]) == 0 for channel in channels
+        ):
+            raise ValueError("Bounded GWF read returned a partial or empty result")
+        if leading_part is None:
+            leading_part = part
+        if not hasattr(out, "_gwexpy_io"):
+            provenance = getattr(part, "_gwexpy_io", None)
+            if isinstance(provenance, dict):
+                out._gwexpy_io = copy.deepcopy(provenance)
+        _copy_gwf_custom_attributes(part, out, only_missing=True)
+        out.append(part, gap="raise", pad=None)
+        for key, series in part.items():
+            leading_series.setdefault(key, series)
+            if getattr(out[key], "_gwexpy_io", None) is None:
+                provenance = getattr(series, "_gwexpy_io", None)
+                if isinstance(provenance, dict):
+                    out[key]._gwexpy_io = copy.deepcopy(provenance)
+            _copy_gwf_custom_attributes(series, out[key], only_missing=True)
+    if leading_part is None:
+        raise ValueError("No data found in any provided GWF source")
+    result = dict_class((key, out[key]) for key in channels if key in out)
+    if hasattr(out, "_gwexpy_io"):
+        result._gwexpy_io = copy.deepcopy(out._gwexpy_io)
+    _copy_gwf_custom_attributes(out, result, only_missing=False)
+    result = _coerce_gwf_timeseriesdict(result, dict_class, series_class)
+    _copy_gwf_custom_attributes(leading_part, result, only_missing=False)
+    for key, series in leading_series.items():
+        if key in result:
+            _copy_gwf_custom_attributes(series, result[key], only_missing=False)
+    return result
+
+
+def _try_bounded_gwf_serial(
+    sources: list[Any],
+    channels: list[str],
+    backend: str | None,
+    read_one: Callable[[Any], Any],
+    dict_class: type[Any],
+    series_class: type[Any],
+) -> Any:
+    """Speculate without publishing diagnostics; replay old R on uncertainty."""
+    if os.name != "posix" or threading.active_count() != 1:
+        return _GWF_BOUNDED_FALLBACK
+    with (
+        warnings.catch_warnings(record=True) as caught,
+        _capture_gwf_logs() as logs,
+        _capture_gwf_stderr() as stderr,
+        _capture_gwf_fd_stderr() as fd_stderr,
+    ):
+        warnings.simplefilter("always")
+        try:
+            spans = _bounded_gwf_spans(sources, channels, backend)
+            if spans is None:
+                return _GWF_BOUNDED_FALLBACK
+
+            def checked_parts() -> Any:
+                for item, expected_span in zip(sources, spans, strict=True):
+                    part = read_one(item)
+                    actual_span = tuple(_gwf_time_to_ns(value) for value in part.span)
+                    if actual_span != expected_span:
+                        raise ValueError("GWF preflight span differs from decoded span")
+                    yield part
+
+            result = _merge_bounded_gwf_parts(
+                checked_parts(),
+                channels,
+                dict_class,
+                series_class,
+            )
+        except Exception:
+            return _GWF_BOUNDED_FALLBACK
+        if (
+            fd_stderr is None
+            or caught
+            or logs
+            or stderr
+            or os.fstat(fd_stderr.fileno()).st_size
+        ):
+            return _GWF_BOUNDED_FALLBACK
+    return result
+
+
+@contextmanager
+def _capture_gwf_logs() -> Any:
+    """Suppress speculative logs from this thread, preserving other threads."""
+    current_thread = threading.get_ident()
+    records: list[logging.LogRecord] = []
+
+    class _CurrentThreadFilter(logging.Filter):
+        def filter(self, record: logging.LogRecord) -> bool:
+            if record.thread == current_thread:
+                records.append(record)
+                return False
+            return True
+
+    capture_filter = _CurrentThreadFilter()
+    handlers = set(logging.getLogger().handlers)
+    if logging.lastResort is not None:
+        handlers.add(logging.lastResort)
+    for logger in logging.root.manager.loggerDict.values():
+        if isinstance(logger, logging.Logger):
+            handlers.update(logger.handlers)
+    root = logging.getLogger()
+    probe = logging.NullHandler()
+    root.addHandler(probe)
+    handlers.add(probe)
+    try:
+        for handler in handlers:
+            handler.addFilter(capture_filter)
+        yield records
+    finally:
+        for handler in handlers:
+            handler.removeFilter(capture_filter)
+        root.removeHandler(probe)
+
+
+@contextmanager
+def _capture_gwf_stderr() -> Any:
+    """Capture Python stderr from this thread during speculative reads."""
+    current_thread = threading.get_ident()
+    original = sys.stderr
+    chunks: list[str] = []
+
+    class _ThreadStderr:
+        def write(self, value: str) -> int:
+            if threading.get_ident() == current_thread:
+                chunks.append(value)
+                return len(value)
+            return original.write(value)
+
+        def flush(self) -> None:
+            if threading.get_ident() != current_thread:
+                original.flush()
+
+        def __getattr__(self, name: str) -> Any:
+            return getattr(original, name)
+
+    proxy = _ThreadStderr()
+    sys.stderr = proxy  # type: ignore[assignment]
+    try:
+        yield chunks
+    finally:
+        sys.stderr = original
+
+
+@contextmanager
+def _capture_gwf_fd_stderr() -> Any:
+    """Capture native fd 2 writes from a single-threaded speculative read."""
+    try:
+        original_fd = os.dup(2)
+    except OSError:
+        yield None
+        return
+    try:
+        try:
+            stream = tempfile.TemporaryFile(mode="w+b")
+        except OSError:
+            yield None
+            return
+        with stream:
+            try:
+                os.dup2(stream.fileno(), 2)
+            except OSError:
+                yield None
+                return
+            try:
+                yield stream
+            finally:
+                os.dup2(original_fd, 2)
+    finally:
+        os.close(original_fd)
+
+
 def _read_gwf_dict(
     source: Any,
     channels: list[str],
@@ -808,6 +1025,22 @@ def _read_gwf_dict(
 
     if isinstance(source, (list, tuple)):
         sources = list(source)
+        if (
+            not requested_parallel
+            and start is None
+            and end is None
+            and backend is None
+            and not read_kwargs
+            and merge_gap == "raise"
+            and merge_pad is None
+            and len(channels) == 1
+            and worker is _read_gwf_timeseriesdict_worker
+        ):
+            bounded = _try_bounded_gwf_serial(
+                sources, channels, backend, read_one, dict_class, series_class
+            )
+            if bounded is not _GWF_BOUNDED_FALLBACK:
+                return bounded
         if requested_parallel and workers > 1:
             for item in sources:
                 _resolve_gwf_path_span(item, channels, backend)
