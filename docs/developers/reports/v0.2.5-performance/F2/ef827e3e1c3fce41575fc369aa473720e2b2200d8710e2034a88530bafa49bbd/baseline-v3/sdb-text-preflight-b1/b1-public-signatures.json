@@ -1,0 +1,548 @@
+{
+  "baseline": "B1",
+  "cases": {
+    "blob_outside": {
+      "column": "outTemp",
+      "fixture_sha256": "c1bd23028a4a0c0faa256fbdf86c283560143a2adfb65149a9c98162c8f5f7cb",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            16.11111111111111
+          ],
+          "warnings": [
+            {
+              "category": "UserWarning",
+              "message": "SDB column 'outTemp': 1 non-numeric value(s) could not be parsed and were set to NaN."
+            }
+          ]
+        }
+      },
+      "storage_classes": [
+        "blob",
+        "text",
+        "text"
+      ]
+    },
+    "blob_selected": {
+      "column": "outTemp",
+      "fixture_sha256": "cc00a75caf4670d8528e5c24ef3a0b2a4e891e8008cde26dd702dd1f754a5b0f",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            "NaN"
+          ],
+          "warnings": [
+            {
+              "category": "UserWarning",
+              "message": "SDB column 'outTemp': 1 non-numeric value(s) could not be parsed and were set to NaN."
+            }
+          ]
+        }
+      },
+      "storage_classes": [
+        "text",
+        "blob",
+        "text"
+      ]
+    },
+    "decimal_text": {
+      "column": "outTemp",
+      "fixture_sha256": "913a9ae102a316a0cdbb4fbeeb4c3bca1375839c18cf6e2b5a0f993a3840c742",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            16.38888888888889
+          ],
+          "warnings": []
+        }
+      },
+      "storage_classes": [
+        "text",
+        "text",
+        "text"
+      ]
+    },
+    "float64_integer_above_limit_text": {
+      "column": "outHumidity",
+      "fixture_sha256": "a38ede5eb689791f9182c50949116fee5d5ac3d72a53e8cd7f135b89d2ad15b6",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            9007199254740992.0
+          ],
+          "warnings": []
+        }
+      },
+      "storage_classes": [
+        "text",
+        "text",
+        "text"
+      ]
+    },
+    "float64_integer_limit_text": {
+      "column": "outHumidity",
+      "fixture_sha256": "e732c93bd1cfa3abc7a8b21798cbb2f1170224833d61a287774e2f2d28064d9f",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            9007199254740991.0
+          ],
+          "warnings": []
+        }
+      },
+      "storage_classes": [
+        "text",
+        "text",
+        "text"
+      ]
+    },
+    "int64_uint64_edges_text": {
+      "column": "outTemp",
+      "fixture_sha256": "8d5d48d05c16aa68540f6a9679f3cec344307f84d452cec011364859fa4a9b38",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            1.0248191152060862e+19
+          ],
+          "warnings": []
+        }
+      },
+      "storage_classes": [
+        "text",
+        "text",
+        "text"
+      ]
+    },
+    "integer_text_clean": {
+      "column": "outTemp",
+      "fixture_sha256": "a818251a3fed2c32b9daa443355ed42ee62bb9611c1a53d8cd078ed8b163f111",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            16.11111111111111
+          ],
+          "warnings": []
+        }
+      },
+      "storage_classes": [
+        "text",
+        "text",
+        "text"
+      ]
+    },
+    "invalid_outside_irregular_timestamp": {
+      "column": "outTemp",
+      "fixture_sha256": "0cabf792347b29649e84394064df97e6e30bed415c023a749eda5c74b9f9d796",
+      "signatures": {
+        "default": {
+          "exception_message": "SDB timestamp gap at index 1: expected cadence 301, got 300",
+          "exception_type": "ValueError",
+          "outcome": "raise",
+          "warnings": [
+            {
+              "category": "UserWarning",
+              "message": "SDB column 'outTemp': 1 non-numeric value(s) could not be parsed and were set to NaN."
+            }
+          ]
+        }
+      },
+      "storage_classes": [
+        "text",
+        "text",
+        "text"
+      ]
+    },
+    "invalid_outside_text": {
+      "column": "outTemp",
+      "fixture_sha256": "4a824137433292ee8b8e99ab89c78fbcf677c439a150e1e3797372803a1771a9",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            16.11111111111111
+          ],
+          "warnings": [
+            {
+              "category": "UserWarning",
+              "message": "SDB column 'outTemp': 1 non-numeric value(s) could not be parsed and were set to NaN."
+            }
+          ]
+        }
+      },
+      "storage_classes": [
+        "text",
+        "text",
+        "text"
+      ]
+    },
+    "invalid_selected_text": {
+      "column": "outTemp",
+      "fixture_sha256": "da5a982de80fe520a28bb9cd958d5c1fcad775d13b52f9508ceabde07e153e29",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            "NaN"
+          ],
+          "warnings": [
+            {
+              "category": "UserWarning",
+              "message": "SDB column 'outTemp': 1 non-numeric value(s) could not be parsed and were set to NaN."
+            }
+          ]
+        }
+      },
+      "storage_classes": [
+        "text",
+        "text",
+        "text"
+      ]
+    },
+    "mixed_integer_real_null": {
+      "column": "outTemp",
+      "fixture_sha256": "dbe0e93032110c771112c7928442d018c3aaeb0f94a647823c0e45f8490f27b3",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            16.38888888888889
+          ],
+          "warnings": []
+        }
+      },
+      "storage_classes": [
+        "integer",
+        "real",
+        "null"
+      ]
+    },
+    "null_outside": {
+      "column": "outTemp",
+      "fixture_sha256": "c12b003bf531771f66e4144eb52259e372e8e7390a4e82d3c9eac5973acd8c52",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            16.11111111111111
+          ],
+          "warnings": []
+        }
+      },
+      "storage_classes": [
+        "null",
+        "text",
+        "text"
+      ]
+    },
+    "overflow_outside_text": {
+      "column": "barometer",
+      "fixture_sha256": "db65473477cbedea81a28b8efc1db0aec4bb3e0c3dd5fec7d28e3ab188d66deb",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            2065.6979
+          ],
+          "warnings": [
+            {
+              "category": "RuntimeWarning",
+              "message": "overflow encountered in multiply"
+            }
+          ]
+        },
+        "over_raise": {
+          "exception_message": "overflow encountered in multiply",
+          "exception_type": "FloatingPointError",
+          "outcome": "raise",
+          "warnings": []
+        },
+        "over_warn": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            2065.6979
+          ],
+          "warnings": [
+            {
+              "category": "RuntimeWarning",
+              "message": "overflow encountered in multiply"
+            }
+          ]
+        }
+      },
+      "storage_classes": [
+        "text",
+        "text",
+        "text"
+      ]
+    },
+    "overflow_selected_text": {
+      "column": "barometer",
+      "fixture_sha256": "22c733fbbb3ee0c61d9f72cea3cd088118ca8e0cf138dbacc05467fcbf27e2b2",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            "+Inf"
+          ],
+          "warnings": [
+            {
+              "category": "RuntimeWarning",
+              "message": "overflow encountered in multiply"
+            }
+          ]
+        },
+        "over_raise": {
+          "exception_message": "overflow encountered in multiply",
+          "exception_type": "FloatingPointError",
+          "outcome": "raise",
+          "warnings": []
+        },
+        "over_warn": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            "+Inf"
+          ],
+          "warnings": [
+            {
+              "category": "RuntimeWarning",
+              "message": "overflow encountered in multiply"
+            }
+          ]
+        }
+      },
+      "storage_classes": [
+        "text",
+        "text",
+        "text"
+      ]
+    },
+    "underflow_outside_text": {
+      "column": "windSpeed",
+      "fixture_sha256": "05440676b0d906cb9154562f488b0dc2398511878d577fd85356b5b07c67ffd1",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            27.26944
+          ],
+          "warnings": []
+        },
+        "under_raise": {
+          "exception_message": "underflow encountered in multiply",
+          "exception_type": "FloatingPointError",
+          "outcome": "raise",
+          "warnings": []
+        },
+        "under_warn": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            27.26944
+          ],
+          "warnings": [
+            {
+              "category": "RuntimeWarning",
+              "message": "underflow encountered in multiply"
+            }
+          ]
+        }
+      },
+      "storage_classes": [
+        "text",
+        "text",
+        "text"
+      ]
+    },
+    "underflow_selected_text": {
+      "column": "windSpeed",
+      "fixture_sha256": "909fc97db4a8f1e77082f891529bfe8cad32567fea07454b9ca8089aa8cb528b",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            4.47e-321
+          ],
+          "warnings": []
+        },
+        "under_raise": {
+          "exception_message": "underflow encountered in multiply",
+          "exception_type": "FloatingPointError",
+          "outcome": "raise",
+          "warnings": []
+        },
+        "under_warn": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            4.47e-321
+          ],
+          "warnings": [
+            {
+              "category": "RuntimeWarning",
+              "message": "underflow encountered in multiply"
+            }
+          ]
+        }
+      },
+      "storage_classes": [
+        "text",
+        "text",
+        "text"
+      ]
+    },
+    "whitespace_integer_text": {
+      "column": "outTemp",
+      "fixture_sha256": "1c167a4d5866cebcdbdf28f8de838eee72064da975300359da7dd4b0fc061bc2",
+      "signatures": {
+        "default": {
+          "dtype": "float64",
+          "length": 1,
+          "outcome": "return",
+          "t0_gps": 1384035518.0,
+          "times_gps": [
+            1384035518.0
+          ],
+          "values": [
+            16.11111111111111
+          ],
+          "warnings": []
+        }
+      },
+      "storage_classes": [
+        "text",
+        "text",
+        "text"
+      ]
+    }
+  },
+  "fixture_manifest_sha256": "bd9025dd1da74514ac9645da1b05c12ed0cb87094b22b6556303b8d51c579716",
+  "gwexpy_module_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+  "installed_sdb_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/timeseries/io/sdb.py",
+  "installed_sdb_sha256": "714a7320810755c7479e5c35dc5e0344ba513fc01989b89586d77a4d6618fa6f",
+  "installed_sdb_sha256_expected": "714a7320810755c7479e5c35dc5e0344ba513fc01989b89586d77a4d6618fa6f",
+  "numpy": "1.26.4",
+  "platform": "Linux-6.17.0-1032-oem-x86_64-with-glibc2.39",
+  "python": "3.12.12",
+  "schema": 1,
+  "source_sha": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+  "wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498"
+}

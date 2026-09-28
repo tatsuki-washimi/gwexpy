@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "candidate_source_sha": "f61d8796e2367c8cbd1f7f596edda6eeadfd5f67",
+  "candidate_wheel_sha256": "4d526047a25f40d242237bb081412c52d897a84158feeff7be1d0d3bbe81007e",
+  "candidate_installed_sdb_sha256": "4b084eb9196d0f07f9d1018fc44b8e35dc997650df03802b04463374a6ed27c9",
+  "baseline_source_sha": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+  "baseline_wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498",
+  "harness_digest": "e8422a63694d54ba4c8d349f8fb2da7f5df3cda63387d2e036c1af4cba338c72",
+  "fixture_manifest_sha256": "2b29c7bccedfc8335beb5c59580b26aa1a211bd3959e142dcb2e99a7dbcab1f8",
+  "scenario": "f2_sdb_window",
+  "mode": "structure",
+  "samples_per_arm": 5,
+  "raw_directory": "structure-window",
+  "raw_observation": {
+    "baseline_dataframe_materialized_rows": [4096, 4096, 4096, 4096, 4096],
+    "candidate_dataframe_materialized_rows": [4096, 4096, 4096, 4096, 4096],
+    "requested_window_rows": 512,
+    "candidate_payload_query": "SELECT \"outTemp\", \"dateTime\" FROM \"archive\" ORDER BY \"rowid\""
+  },
+  "root_cause": {
+    "fixture": "sdb/sdb_valid_large.sdb",
+    "selected_column": "outTemp",
+    "rows": 4096,
+    "sqlite_storage_class_counts": {
+      "text": 4096
+    },
+    "behavior": "Candidate v5 intentionally routes any selected unit-conversion column containing TEXT/BLOB to B1 full-payload processing. The frozen fixture therefore does not enter the SQL window fast path.",
+    "validation_scan": "The reader still scans source rows through a bounded cursor for timestamp and warning validation. The frozen harness counter measures DataFrame materialization only; it does not measure total SQLite cursor rows."
+  },
+  "gate": "HOLD",
+  "gate_reason": "The canonical frozen fixture did not reduce DataFrame materialization from 4096 rows to the 512 requested rows. No v5 timing or PSS claim is made."
+}

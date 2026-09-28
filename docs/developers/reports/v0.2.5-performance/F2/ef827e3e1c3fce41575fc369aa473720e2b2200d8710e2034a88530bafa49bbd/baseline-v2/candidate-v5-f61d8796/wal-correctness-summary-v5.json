@@ -1,0 +1,140 @@
+{
+  "B1_different_cases": [
+    "schema__all",
+    "schema__selected",
+    "selected_malformed__all",
+    "selected_malformed__selected",
+    "selected_value__all",
+    "selected_value__selected",
+    "timestamp__all",
+    "timestamp__selected",
+    "unselected_malformed__all",
+    "unselected_value__all"
+  ],
+  "B1_equal_cases": [
+    "unselected_malformed__selected",
+    "unselected_value__selected",
+    "usunits__all",
+    "usunits__selected"
+  ],
+  "baseline_source_commit": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+  "candidate_source_commit": "f61d8796e2367c8cbd1f7f596edda6eeadfd5f67",
+  "capture_driver": {
+    "outer_wrapper_error": "NameError after all cases: final summary interpolated len(scenarios), which was not defined in the WAL-only wrapper. No capture command was skipped or failed.",
+    "outer_wrapper_exit_code": 1,
+    "per_case_captures_completed": 14,
+    "per_case_exit_code": 0,
+    "per_case_raws_complete": true,
+    "recovery": "Verified all 14 case manifests, fingerprints, raw-A/raw-B files, ten per-sample files, and stable arms; this JSON is the corrected append-only aggregate over those raws. Frozen harness and raw captures remain unchanged.",
+    "stable_arms": true
+  },
+  "case_count": 14,
+  "cases": [
+    {
+      "candidate_stable": true,
+      "case": "schema__all",
+      "public_outcome_equal_B1": false,
+      "sample_file_count": 10,
+      "samples_per_arm": 5
+    },
+    {
+      "candidate_stable": true,
+      "case": "schema__selected",
+      "public_outcome_equal_B1": false,
+      "sample_file_count": 10,
+      "samples_per_arm": 5
+    },
+    {
+      "candidate_stable": true,
+      "case": "selected_malformed__all",
+      "public_outcome_equal_B1": false,
+      "sample_file_count": 10,
+      "samples_per_arm": 5
+    },
+    {
+      "candidate_stable": true,
+      "case": "selected_malformed__selected",
+      "public_outcome_equal_B1": false,
+      "sample_file_count": 10,
+      "samples_per_arm": 5
+    },
+    {
+      "candidate_stable": true,
+      "case": "selected_value__all",
+      "public_outcome_equal_B1": false,
+      "sample_file_count": 10,
+      "samples_per_arm": 5
+    },
+    {
+      "candidate_stable": true,
+      "case": "selected_value__selected",
+      "public_outcome_equal_B1": false,
+      "sample_file_count": 10,
+      "samples_per_arm": 5
+    },
+    {
+      "candidate_stable": true,
+      "case": "timestamp__all",
+      "public_outcome_equal_B1": false,
+      "sample_file_count": 10,
+      "samples_per_arm": 5
+    },
+    {
+      "candidate_stable": true,
+      "case": "timestamp__selected",
+      "public_outcome_equal_B1": false,
+      "sample_file_count": 10,
+      "samples_per_arm": 5
+    },
+    {
+      "candidate_stable": true,
+      "case": "unselected_malformed__all",
+      "public_outcome_equal_B1": false,
+      "sample_file_count": 10,
+      "samples_per_arm": 5
+    },
+    {
+      "candidate_stable": true,
+      "case": "unselected_malformed__selected",
+      "public_outcome_equal_B1": true,
+      "sample_file_count": 10,
+      "samples_per_arm": 5
+    },
+    {
+      "candidate_stable": true,
+      "case": "unselected_value__all",
+      "public_outcome_equal_B1": false,
+      "sample_file_count": 10,
+      "samples_per_arm": 5
+    },
+    {
+      "candidate_stable": true,
+      "case": "unselected_value__selected",
+      "public_outcome_equal_B1": true,
+      "sample_file_count": 10,
+      "samples_per_arm": 5
+    },
+    {
+      "candidate_stable": true,
+      "case": "usunits__all",
+      "public_outcome_equal_B1": true,
+      "sample_file_count": 10,
+      "samples_per_arm": 5
+    },
+    {
+      "candidate_stable": true,
+      "case": "usunits__selected",
+      "public_outcome_equal_B1": true,
+      "sample_file_count": 10,
+      "samples_per_arm": 5
+    }
+  ],
+  "fixture_manifest_sha256": "a1995b43e921f7dd5664f05e69872d15ff9b8c974871f9f3d1deb3448e378837",
+  "frozen_harness": {
+    "digest": "ef827e3e1c3fce41575fc369aa473720e2b2200d8710e2034a88530bafa49bbd",
+    "freeze_commit": "02cb6b415a6c3c2cbad0a4ce82e506037409e360"
+  },
+  "schema": 1,
+  "scope_note": "Concurrent write between B1 legacy validation/payload reads may differ from the candidate one-snapshot route, including selected/unselected values, malformed payload, dateTime, usUnits, and schema. This broad exception requires S2 scientific/data-model approval and scoped disclosure.",
+  "status": "RAW_MATRIX_COMPLETE_CASES_GREEN_WRAPPER_FAULT_RECORDED"
+}
