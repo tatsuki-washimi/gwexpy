@@ -18,7 +18,7 @@ accepted that historical difference too broadly. Its paused public captures
 remain at `/tmp/gwexpy-v025-bx-baseline-036d9a-v2/` and are diagnostic only.
 Neither diagnostic series qualifies as a formal baseline.
 
-The v3 harness SHA-256 is
+The initial v3 diagnostic harness SHA-256 was
 `c58974c1ced060bcd1bb5a3a1ce0d5f5e17f29677c640336f866221fe5d0f2bc`.
 Its exact historical oracle SHA-256 is
 `57fdb80b33f10a41d7ea6ac6ac5e55891e6ae967421764470f0416849b041729`.
@@ -26,7 +26,7 @@ The oracle binds the fixture, B0/B1 source and wheel SHAs, and complete
 warn/raise public fingerprints, including output value hash, dtype, shape,
 axis, units, warning order, and error message. Other historical differences
 fail capture; B1/pre-X and pre-X/candidate remain strict cross-arm comparisons.
-The v3 self-check passes 27 tests, including wrong source/wheel, value hash,
+That diagnostic self-check passed 27 tests, including wrong source/wheel, value hash,
 unit, warning, error-message, and within-arm drift cases.
 
 Four direct installed-wheel public reads, their stderr, and the v1 B0 partial
@@ -43,3 +43,13 @@ completed with `within_arm_parity=true`, `cross_arm_parity=false`, and the
 pinned reason/oracle SHA. It remains outside the formal baseline at
 `/tmp/gwexpy-v025-bx-v3-diagnostic-object-warn/`, because its pre-X SHA
 precedes integration of the v3 harness.
+
+Before formal freeze, an additional arm-binding review found that equal
+historical results could still be mislabeled. The final v3 harness therefore
+pins B0/B1 source and wheel SHAs for **every** historical capture and pins
+old-R/B1 as the `prex` arm A. Unsupported `numpy-seterr=ignore` for the object
+oracle is an explicit validation error. Final v3 harness SHA-256:
+`6c5cfca1239616a143237272fea9e679fa715e4e7e5f3118ab9f1a0ed3771eed`.
+The oracle bytes remain unchanged. Focused tests pass 37 cases, including
+same-output mislabeled arms. Formal captures must use this final digest and a
+new integrated pre-X SHA; all preceding captures remain diagnostic.

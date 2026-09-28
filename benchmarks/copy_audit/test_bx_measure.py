@@ -130,8 +130,19 @@ def test_pss_worker_fingerprints_only_after_stop(monkeypatch, capsys) -> None:
         ("prex", "matrix_object_strings", None, False, "cross-arm"),
         ("candidate", "matrix_object_strings", None, False, "cross-arm"),
         ("historical", "matrix_nan_inf", None, False, "cross-arm"),
-        ("historical", "matrix_object_strings", "wrong_a_source", False, "cross-arm"),
-        ("historical", "matrix_object_strings", "wrong_b_wheel", False, "cross-arm"),
+        (
+            "historical",
+            "matrix_object_strings",
+            "wrong_a_source",
+            False,
+            "source/wheel",
+        ),
+        ("historical", "matrix_object_strings", "wrong_b_wheel", False, "source/wheel"),
+        ("historical", "ats32", "same_public_wrong_a_source", False, "source/wheel"),
+        ("historical", "ats32", "same_public_wrong_b_wheel", False, "source/wheel"),
+        ("prex", "ats32", "wrong_a_source", False, "source/wheel"),
+        ("prex", "ats32", "wrong_a_wheel", False, "source/wheel"),
+        ("historical", "matrix_object_strings", "ignore", False, "numpy-seterr"),
         ("historical", "matrix_object_strings", "a_hash", False, "cross-arm"),
         ("historical", "matrix_object_strings", "a_unit", False, "cross-arm"),
         ("historical", "matrix_object_strings", "a_warning", False, "cross-arm"),
@@ -164,12 +175,23 @@ def test_capture_allows_only_characterized_historical_delta(
             "distributions": {"numpy": "1.26.4"},
             "wheel_sha256": oracle["arms"][arm]["wheel_sha256"],
         }
-        if tamper == "wrong_b_wheel" and arm == "B":
+        if phase == "prex" and arm == "A":
+            audit["wheel_sha256"] = oracle["arms"]["B"]["wheel_sha256"]
+        if phase == "prex" and arm == "B":
+            audit["wheel_sha256"] = "c" * 64
+        if tamper in ("wrong_b_wheel", "same_public_wrong_b_wheel") and arm == "B":
             audit["wheel_sha256"] = "f" * 64
+        if tamper == "wrong_a_wheel" and arm == "A":
+            audit["wheel_sha256"] = "d" * 64
         if mode == "audit":
             return {"audit": audit}
         counts[arm] += 1
-        public = deepcopy(oracle["arms"][arm]["public_by_seterr"][args.numpy_seterr])
+        public_arm = (
+            "A"
+            if tamper in ("same_public_wrong_a_source", "same_public_wrong_b_wheel")
+            else arm
+        )
+        public = deepcopy(oracle["arms"][public_arm]["public_by_seterr"]["warn"])
         if tamper in ("a_hash", "within_arm") and arm == "A":
             if tamper == "a_hash" or counts[arm] > 1:
                 public["outcome"]["values_sha256"] = "f" * 64
@@ -188,10 +210,12 @@ def test_capture_allows_only_characterized_historical_delta(
         pre_x_sha=(
             oracle["arms"]["A"]["source_sha"]
             if phase == "candidate"
+            else "f" * 40
+            if phase == "prex"
             else oracle["arms"]["B"]["source_sha"]
         ),
-        source_a=oracle["arms"]["A"]["source_sha"],
-        source_b=oracle["arms"]["B"]["source_sha"],
+        source_a=oracle["arms"]["B" if phase == "prex" else "A"]["source_sha"],
+        source_b="f" * 40 if phase == "prex" else oracle["arms"]["B"]["source_sha"],
         samples=5,
         mode="public",
         scenario=scenario,
@@ -205,10 +229,15 @@ def test_capture_allows_only_characterized_historical_delta(
         output=tmp_path / "capture",
         numpy_seterr=numpy_seterr,
     )
-    if tamper == "wrong_a_source":
-        args.source_a = "f" * 40
+    if tamper in ("wrong_a_source", "same_public_wrong_a_source"):
+        args.source_a = "e" * 40
+    if tamper == "ignore":
+        args.numpy_seterr = "ignore"
     if not accepted:
-        with pytest.raises(RuntimeError, match=f"{error} public fingerprint"):
+        exception = (
+            ValueError if error in ("source/wheel", "numpy-seterr") else RuntimeError
+        )
+        with pytest.raises(exception, match=error):
             bx_measure._capture(args)
         return
     bx_measure._capture(args)

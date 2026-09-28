@@ -536,8 +536,36 @@ def _capture(args: argparse.Namespace) -> None:
         and args.source_a != args.source_b
     ):
         raise RuntimeError("Different source SHAs were assigned the same wheel bytes")
-    historical_oracle = (
+    baseline_oracle = (
         json.loads(HISTORICAL_OBJECT_ORACLE.read_text(encoding="utf-8"))
+        if args.phase in ("historical", "prex")
+        else None
+    )
+    if baseline_oracle is not None:
+        if (
+            baseline_oracle.get("schema")
+            != "gwexpy-v025-bx-historical-object-oracle-v1"
+        ):
+            raise ValueError("B-X baseline arm oracle schema differs")
+        expected_arms = (
+            {"A": "A", "B": "B"} if args.phase == "historical" else {"A": "B"}
+        )
+        for arm, oracle_arm in expected_arms.items():
+            expected = baseline_oracle["arms"][oracle_arm]
+            if (
+                getattr(args, f"source_{arm.lower()}") != expected["source_sha"]
+                or audits[arm]["wheel_sha256"] != expected["wheel_sha256"]
+            ):
+                raise ValueError(f"B-X {args.phase} arm {arm} source/wheel differs")
+        if (
+            args.phase == "historical"
+            and args.scenario == "matrix_object_strings"
+            and args.numpy_seterr
+            not in baseline_oracle["arms"]["A"]["public_by_seterr"]
+        ):
+            raise ValueError("B-X historical object oracle lacks numpy-seterr mode")
+    historical_oracle = (
+        baseline_oracle
         if args.phase == "historical" and args.scenario == "matrix_object_strings"
         else None
     )
@@ -612,6 +640,9 @@ def _capture(args: argparse.Namespace) -> None:
         ),
         "historical_public_oracle_sha256": (
             _sha256(HISTORICAL_OBJECT_ORACLE) if historical_oracle is not None else None
+        ),
+        "baseline_arm_oracle_sha256": (
+            _sha256(HISTORICAL_OBJECT_ORACLE) if baseline_oracle is not None else None
         ),
         "public_fingerprints_by_arm": public_by_arm,
         "pss_definition": f"max_t sum(PSS of parent and all live descendants at the same {args.sample_ms} ms sample time); sampled lower bound"
