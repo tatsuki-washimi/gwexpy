@@ -1,0 +1,1092 @@
+{
+  "adoption_status": "HOLD_PENDING_SMALL_SELECTED_ROUTE_DIAGNOSIS",
+  "created_utc": "2026-09-28T14:12:24.815235+00:00",
+  "harness": {
+    "digest": "e8422a63694d54ba4c8d349f8fb2da7f5df3cda63387d2e036c1af4cba338c72",
+    "fixture_manifest_sha256": "2b29c7bccedfc8335beb5c59580b26aa1a211bd3959e142dcb2e99a7dbcab1f8",
+    "run_py_sha256": "6a9001fbe1304bd325cab913ed15cee33a728e3fe8279207a8122a77a787c303",
+    "source_commit": "6f0a3d4ea14858f667abe4de2395f4359927c03d"
+  },
+  "interpretation": {
+    "claims": "No wall-time speed improvement and no PSS improvement claimed. The structural 4096\u2192512 DataFrame materialization gate remains primary.",
+    "formal_noise_gate": "No wall, CPU, or controller-elapsed route in these runs exceeds the threshold.",
+    "small_selected_route": "Candidate medians are slower in both independent selected batches: wall +10.44% and +12.62%; CPU +10.29% and +12.97%. Formal thresholds are higher because relative MAD is high, but the same direction in both batches warrants HOLD and diagnosis."
+  },
+  "memory": {
+    "arms": {
+      "B0": {
+        "observed_unique_pids": [
+          56,
+          57,
+          61,
+          58,
+          53
+        ],
+        "peak_tree_pss_kib": {
+          "mad_kib": 443,
+          "median_kib": 304095,
+          "values_kib": [
+            304946,
+            304730,
+            304095,
+            303937,
+            303652
+          ]
+        },
+        "peak_tree_rss_kib": {
+          "mad_kib": 332,
+          "median_kib": 317368,
+          "values_kib": [
+            318312,
+            318088,
+            317272,
+            317036,
+            317368
+          ]
+        },
+        "sampled_peak_limit": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "sampling_ms": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "candidate-v7": {
+        "observed_unique_pids": [
+          53,
+          58,
+          59,
+          64,
+          60
+        ],
+        "peak_tree_pss_kib": {
+          "mad_kib": 132,
+          "median_kib": 303617,
+          "values_kib": [
+            303774,
+            303749,
+            303617,
+            303214,
+            303566
+          ]
+        },
+        "peak_tree_rss_kib": {
+          "mad_kib": 156,
+          "median_kib": 316660,
+          "values_kib": [
+            317144,
+            316816,
+            315056,
+            316660,
+            316568
+          ]
+        },
+        "sampled_peak_limit": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "sampling_ms": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    "claim": "No PSS/RSS improvement claim; memory was measured separately from uninstrumented warm timing.",
+    "samples_per_arm": 5,
+    "sampling_interval_ms": 1,
+    "scenario": "f2_sdb_window",
+    "supporting_only": true,
+    "temperature": "cold"
+  },
+  "runtime": {
+    "baseline_source_sha": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+    "baseline_wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498",
+    "candidate_source_sha": "74cba639fb71234a1e7f326a597557488d39db5c",
+    "candidate_wheel_sha256": "692b8c48a7f8439b2a5d82cf0cb9c1e262711fbce7822c7ca590c230afab65c0",
+    "gwexpy": "0.2.5",
+    "install_mode": "wheel-no-deps",
+    "python": "3.12.12"
+  },
+  "schema": 1,
+  "timing": {
+    "all_batch1": {
+      "controller_elapsed": {
+        "A": {
+          "mad_ns": 196494,
+          "median_ns": 11944545,
+          "values_ns": [
+            13591980,
+            12141039,
+            11944545,
+            12322226,
+            11888487,
+            11578892,
+            11803697,
+            12084651,
+            11718710
+          ]
+        },
+        "B": {
+          "mad_ns": 220102,
+          "median_ns": 11832772,
+          "values_ns": [
+            12676075,
+            11635387,
+            12524994,
+            11942784,
+            12230075,
+            11302291,
+            11612670,
+            11669385,
+            11832772
+          ]
+        },
+        "comparison": {
+          "candidate_vs_B0_fraction": -0.009357660756437403,
+          "gate_exceeded": false,
+          "gate_fraction": 0.10515472007928267,
+          "summed_relative_mad": 0.03505157335976089
+        }
+      },
+      "paired_ABBA_cpu": {
+        "candidate_faster_pairs": 6,
+        "candidate_slower_pairs": 3,
+        "median_paired_fraction": -0.03534216799795531,
+        "method": "Within each frozen four-sample ABBA or BAAB block, pair each arm observation with the nearest observation from the other arm; final two-sample AB block is paired directly.",
+        "observations": [
+          {
+            "B0_ns": 13218875,
+            "candidate_ns": 12354017,
+            "candidate_vs_B0_fraction": -0.06542599124358162,
+            "pair": 1
+          },
+          {
+            "B0_ns": 11972568,
+            "candidate_ns": 11368752,
+            "candidate_vs_B0_fraction": -0.05043329050208778,
+            "pair": 2
+          },
+          {
+            "B0_ns": 11783236,
+            "candidate_ns": 12364566,
+            "candidate_vs_B0_fraction": 0.04933534387327887,
+            "pair": 3
+          },
+          {
+            "B0_ns": 12146478,
+            "candidate_ns": 11690306,
+            "candidate_vs_B0_fraction": -0.037555907152674206,
+            "pair": 4
+          },
+          {
+            "B0_ns": 11583743,
+            "candidate_ns": 11921212,
+            "candidate_vs_B0_fraction": 0.029132984044967225,
+            "pair": 5
+          },
+          {
+            "B0_ns": 11397603,
+            "candidate_ns": 10994787,
+            "candidate_vs_B0_fraction": -0.03534216799795531,
+            "pair": 6
+          },
+          {
+            "B0_ns": 11560026,
+            "candidate_ns": 11319525,
+            "candidate_vs_B0_fraction": -0.020804537982873073,
+            "pair": 7
+          },
+          {
+            "B0_ns": 11783815,
+            "candidate_ns": 11363024,
+            "candidate_vs_B0_fraction": -0.035709233384943695,
+            "pair": 8
+          },
+          {
+            "B0_ns": 11528256,
+            "candidate_ns": 11666465,
+            "candidate_vs_B0_fraction": 0.011988717113846192,
+            "pair": 9
+          }
+        ]
+      },
+      "paired_ABBA_wall": {
+        "candidate_faster_pairs": 6,
+        "candidate_slower_pairs": 3,
+        "median_paired_fraction": -0.03547724210378478,
+        "method": "Within each frozen four-sample ABBA or BAAB block, pair each arm observation with the nearest observation from the other arm; final two-sample AB block is paired directly.",
+        "observations": [
+          {
+            "B0_ns": 13234188,
+            "candidate_ns": 12362699,
+            "candidate_vs_B0_fraction": -0.0658513389714579,
+            "pair": 1
+          },
+          {
+            "B0_ns": 11981937,
+            "candidate_ns": 11465701,
+            "candidate_vs_B0_fraction": -0.0430845196398546,
+            "pair": 2
+          },
+          {
+            "B0_ns": 11791946,
+            "candidate_ns": 12371616,
+            "candidate_vs_B0_fraction": 0.04915812877704839,
+            "pair": 3
+          },
+          {
+            "B0_ns": 12155307,
+            "candidate_ns": 11709809,
+            "candidate_vs_B0_fraction": -0.03665049348403948,
+            "pair": 4
+          },
+          {
+            "B0_ns": 11592064,
+            "candidate_ns": 11937612,
+            "candidate_vs_B0_fraction": 0.0298090141669336,
+            "pair": 5
+          },
+          {
+            "B0_ns": 11406129,
+            "candidate_ns": 11001471,
+            "candidate_vs_B0_fraction": -0.03547724210378478,
+            "pair": 6
+          },
+          {
+            "B0_ns": 11587296,
+            "candidate_ns": 11326189,
+            "candidate_vs_B0_fraction": -0.022533902646484583,
+            "pair": 7
+          },
+          {
+            "B0_ns": 11791976,
+            "candidate_ns": 11369575,
+            "candidate_vs_B0_fraction": -0.03582105323145157,
+            "pair": 8
+          },
+          {
+            "B0_ns": 11537972,
+            "candidate_ns": 11673103,
+            "candidate_vs_B0_fraction": 0.011711850228099063,
+            "pair": 9
+          }
+        ]
+      },
+      "scenario": "f2_sdb_all",
+      "warm_cpu": {
+        "A": {
+          "mad_ns": 223210,
+          "median_ns": 11783236,
+          "values_ns": [
+            13218875,
+            11972568,
+            11783236,
+            12146478,
+            11583743,
+            11397603,
+            11560026,
+            11783815,
+            11528256
+          ]
+        },
+        "B": {
+          "mad_ns": 303441,
+          "median_ns": 11666465,
+          "values_ns": [
+            12354017,
+            11368752,
+            12364566,
+            11690306,
+            11921212,
+            10994787,
+            11319525,
+            11363024,
+            11666465
+          ]
+        },
+        "comparison": {
+          "candidate_vs_B0_fraction": -0.009909926271526759,
+          "gate_exceeded": false,
+          "gate_fraction": 0.13485807535279948,
+          "summed_relative_mad": 0.04495269178426649
+        }
+      },
+      "warm_wall": {
+        "A": {
+          "mad_ns": 204650,
+          "median_ns": 11791946,
+          "values_ns": [
+            13234188,
+            11981937,
+            11791946,
+            12155307,
+            11592064,
+            11406129,
+            11587296,
+            11791976,
+            11537972
+          ]
+        },
+        "B": {
+          "mad_ns": 303528,
+          "median_ns": 11673103,
+          "values_ns": [
+            12362699,
+            11465701,
+            12371616,
+            11709809,
+            11937612,
+            11001471,
+            11326189,
+            11369575,
+            11673103
+          ]
+        },
+        "comparison": {
+          "candidate_vs_B0_fraction": -0.010078319558112003,
+          "gate_exceeded": false,
+          "gate_fraction": 0.13007221950387118,
+          "summed_relative_mad": 0.04335740650129039
+        }
+      }
+    },
+    "selected_batch1": {
+      "controller_elapsed": {
+        "A": {
+          "mad_ns": 414828,
+          "median_ns": 8599638,
+          "values_ns": [
+            12070050,
+            12068637,
+            10609346,
+            8599638,
+            10765227,
+            8409695,
+            8406337,
+            8184810,
+            8261237
+          ]
+        },
+        "B": {
+          "mad_ns": 1389584,
+          "median_ns": 9451316,
+          "values_ns": [
+            11254150,
+            8607179,
+            10105532,
+            11141096,
+            10404913,
+            9451316,
+            7993892,
+            8061732,
+            7937224
+          ]
+        },
+        "comparison": {
+          "candidate_vs_B0_fraction": 0.09903649432685424,
+          "gate_exceeded": false,
+          "gate_fraction": 0.5857898871020566,
+          "summed_relative_mad": 0.1952632957006855
+        }
+      },
+      "paired_ABBA_cpu": {
+        "candidate_faster_pairs": 7,
+        "candidate_slower_pairs": 2,
+        "median_paired_fraction": -0.03901938961597862,
+        "method": "Within each frozen four-sample ABBA or BAAB block, pair each arm observation with the nearest observation from the other arm; final two-sample AB block is paired directly.",
+        "observations": [
+          {
+            "B0_ns": 11713959,
+            "candidate_ns": 10971513,
+            "candidate_vs_B0_fraction": -0.06338130430540179,
+            "pair": 1
+          },
+          {
+            "B0_ns": 11701877,
+            "candidate_ns": 8293122,
+            "candidate_vs_B0_fraction": -0.291299848733669,
+            "pair": 2
+          },
+          {
+            "B0_ns": 10344122,
+            "candidate_ns": 9861450,
+            "candidate_vs_B0_fraction": -0.04666147595707015,
+            "pair": 3
+          },
+          {
+            "B0_ns": 8403081,
+            "candidate_ns": 10770680,
+            "candidate_vs_B0_fraction": 0.281753680584538,
+            "pair": 4
+          },
+          {
+            "B0_ns": 10409429,
+            "candidate_ns": 10091510,
+            "candidate_vs_B0_fraction": -0.030541444684429875,
+            "pair": 5
+          },
+          {
+            "B0_ns": 8248835,
+            "candidate_ns": 9267531,
+            "candidate_vs_B0_fraction": 0.12349574212600922,
+            "pair": 6
+          },
+          {
+            "B0_ns": 8324474,
+            "candidate_ns": 7911257,
+            "candidate_vs_B0_fraction": -0.04963881201382814,
+            "pair": 7
+          },
+          {
+            "B0_ns": 8116732,
+            "candidate_ns": 7990700,
+            "candidate_vs_B0_fraction": -0.015527431483508436,
+            "pair": 8
+          },
+          {
+            "B0_ns": 8186289,
+            "candidate_ns": 7866865,
+            "candidate_vs_B0_fraction": -0.03901938961597862,
+            "pair": 9
+          }
+        ]
+      },
+      "paired_ABBA_wall": {
+        "candidate_faster_pairs": 7,
+        "candidate_slower_pairs": 2,
+        "median_paired_fraction": -0.03908413544770062,
+        "method": "Within each frozen four-sample ABBA or BAAB block, pair each arm observation with the nearest observation from the other arm; final two-sample AB block is paired directly.",
+        "observations": [
+          {
+            "B0_ns": 11735261,
+            "candidate_ns": 10983633,
+            "candidate_vs_B0_fraction": -0.06404868200204494,
+            "pair": 1
+          },
+          {
+            "B0_ns": 11712778,
+            "candidate_ns": 8300063,
+            "candidate_vs_B0_fraction": -0.29136683031130617,
+            "pair": 2
+          },
+          {
+            "B0_ns": 10354359,
+            "candidate_ns": 9887146,
+            "candidate_vs_B0_fraction": -0.04512234895467693,
+            "pair": 3
+          },
+          {
+            "B0_ns": 8411188,
+            "candidate_ns": 10779508,
+            "candidate_vs_B0_fraction": 0.28156783560181986,
+            "pair": 4
+          },
+          {
+            "B0_ns": 10419316,
+            "candidate_ns": 10100419,
+            "candidate_vs_B0_fraction": -0.03060632770903582,
+            "pair": 5
+          },
+          {
+            "B0_ns": 8256943,
+            "candidate_ns": 9289127,
+            "candidate_vs_B0_fraction": 0.1250080084118299,
+            "pair": 6
+          },
+          {
+            "B0_ns": 8331984,
+            "candidate_ns": 7917638,
+            "candidate_vs_B0_fraction": -0.04972957221233265,
+            "pair": 7
+          },
+          {
+            "B0_ns": 8123654,
+            "candidate_ns": 7997213,
+            "candidate_vs_B0_fraction": -0.015564547677683005,
+            "pair": 8
+          },
+          {
+            "B0_ns": 8193657,
+            "candidate_ns": 7873415,
+            "candidate_vs_B0_fraction": -0.03908413544770062,
+            "pair": 9
+          }
+        ]
+      },
+      "scenario": "f2_sdb_selected",
+      "warm_cpu": {
+        "A": {
+          "mad_ns": 286349,
+          "median_ns": 8403081,
+          "values_ns": [
+            11713959,
+            11701877,
+            10344122,
+            8403081,
+            10409429,
+            8248835,
+            8324474,
+            8116732,
+            8186289
+          ]
+        },
+        "B": {
+          "mad_ns": 1276831,
+          "median_ns": 9267531,
+          "values_ns": [
+            10971513,
+            8293122,
+            9861450,
+            10770680,
+            10091510,
+            9267531,
+            7911257,
+            7990700,
+            7866865
+          ]
+        },
+        "comparison": {
+          "candidate_vs_B0_fraction": 0.10287298194555072,
+          "gate_exceeded": false,
+          "gate_fraction": 0.5155540053247601,
+          "summed_relative_mad": 0.17185133510825337
+        }
+      },
+      "warm_wall": {
+        "A": {
+          "mad_ns": 287534,
+          "median_ns": 8411188,
+          "values_ns": [
+            11735261,
+            11712778,
+            10354359,
+            8411188,
+            10419316,
+            8256943,
+            8331984,
+            8123654,
+            8193657
+          ]
+        },
+        "B": {
+          "mad_ns": 1291914,
+          "median_ns": 9289127,
+          "values_ns": [
+            10983633,
+            8300063,
+            9887146,
+            10779508,
+            10100419,
+            9289127,
+            7917638,
+            7997213,
+            7873415
+          ]
+        },
+        "comparison": {
+          "candidate_vs_B0_fraction": 0.10437752669420775,
+          "gate_exceeded": false,
+          "gate_fraction": 0.5197883787444695,
+          "summed_relative_mad": 0.17326279291482316
+        }
+      }
+    },
+    "selected_batch2": {
+      "controller_elapsed": {
+        "A": {
+          "mad_ns": 891002,
+          "median_ns": 10240475,
+          "values_ns": [
+            10240475,
+            9349473,
+            9537281,
+            10319980,
+            11194026,
+            13057716,
+            9930078,
+            8513234,
+            11588335
+          ]
+        },
+        "B": {
+          "mad_ns": 499413,
+          "median_ns": 11253588,
+          "values_ns": [
+            8707151,
+            8284990,
+            9590051,
+            12323832,
+            11421546,
+            11253588,
+            11506124,
+            11312426,
+            10754175
+          ]
+        },
+        "comparison": {
+          "candidate_vs_B0_fraction": 0.09893222726484852,
+          "gate_exceeded": false,
+          "gate_fraction": 0.39415797317907,
+          "summed_relative_mad": 0.13138599105968998
+        }
+      },
+      "paired_ABBA_cpu": {
+        "candidate_faster_pairs": 4,
+        "candidate_slower_pairs": 5,
+        "median_paired_fraction": 0.012005263252685472,
+        "method": "Within each frozen four-sample ABBA or BAAB block, pair each arm observation with the nearest observation from the other arm; final two-sample AB block is paired directly.",
+        "observations": [
+          {
+            "B0_ns": 9775955,
+            "candidate_ns": 8586652,
+            "candidate_vs_B0_fraction": -0.12165594051936612,
+            "pair": 1
+          },
+          {
+            "B0_ns": 9270533,
+            "candidate_ns": 8107908,
+            "candidate_vs_B0_fraction": -0.12541080431944962,
+            "pair": 2
+          },
+          {
+            "B0_ns": 9383551,
+            "candidate_ns": 9496203,
+            "candidate_vs_B0_fraction": 0.012005263252685472,
+            "pair": 3
+          },
+          {
+            "B0_ns": 10127962,
+            "candidate_ns": 12036488,
+            "candidate_vs_B0_fraction": 0.1884412678483589,
+            "pair": 4
+          },
+          {
+            "B0_ns": 11027063,
+            "candidate_ns": 11268138,
+            "candidate_vs_B0_fraction": 0.0218621223076354,
+            "pair": 5
+          },
+          {
+            "B0_ns": 12886129,
+            "candidate_ns": 11043372,
+            "candidate_vs_B0_fraction": -0.1430031470273191,
+            "pair": 6
+          },
+          {
+            "B0_ns": 9681139,
+            "candidate_ns": 11260283,
+            "candidate_vs_B0_fraction": 0.16311551770922827,
+            "pair": 7
+          },
+          {
+            "B0_ns": 8420792,
+            "candidate_ns": 11062773,
+            "candidate_vs_B0_fraction": 0.3137449541563311,
+            "pair": 8
+          },
+          {
+            "B0_ns": 11463186,
+            "candidate_ns": 10630505,
+            "candidate_vs_B0_fraction": -0.07263957856044556,
+            "pair": 9
+          }
+        ]
+      },
+      "paired_ABBA_wall": {
+        "candidate_faster_pairs": 4,
+        "candidate_slower_pairs": 5,
+        "median_paired_fraction": 0.011813971762183018,
+        "method": "Within each frozen four-sample ABBA or BAAB block, pair each arm observation with the nearest observation from the other arm; final two-sample AB block is paired directly.",
+        "observations": [
+          {
+            "B0_ns": 9816144,
+            "candidate_ns": 8595139,
+            "candidate_vs_B0_fraction": -0.12438743767410099,
+            "pair": 1
+          },
+          {
+            "B0_ns": 9280720,
+            "candidate_ns": 8115054,
+            "candidate_vs_B0_fraction": -0.1256008154539734,
+            "pair": 2
+          },
+          {
+            "B0_ns": 9392015,
+            "candidate_ns": 9502972,
+            "candidate_vs_B0_fraction": 0.011813971762183018,
+            "pair": 3
+          },
+          {
+            "B0_ns": 10136280,
+            "candidate_ns": 12076647,
+            "candidate_vs_B0_fraction": 0.19142792030212274,
+            "pair": 4
+          },
+          {
+            "B0_ns": 11060417,
+            "candidate_ns": 11302989,
+            "candidate_vs_B0_fraction": 0.021931542002439963,
+            "pair": 5
+          },
+          {
+            "B0_ns": 12957846,
+            "candidate_ns": 11054801,
+            "candidate_vs_B0_fraction": -0.1468643013661376,
+            "pair": 6
+          },
+          {
+            "B0_ns": 9692535,
+            "candidate_ns": 11272216,
+            "candidate_vs_B0_fraction": 0.16297913806862696,
+            "pair": 7
+          },
+          {
+            "B0_ns": 8429695,
+            "candidate_ns": 11082328,
+            "candidate_vs_B0_fraction": 0.3146772214178568,
+            "pair": 8
+          },
+          {
+            "B0_ns": 11473447,
+            "candidate_ns": 10641706,
+            "candidate_vs_B0_fraction": -0.07249268680981402,
+            "pair": 9
+          }
+        ]
+      },
+      "scenario": "f2_sdb_selected",
+      "warm_cpu": {
+        "A": {
+          "mad_ns": 505422,
+          "median_ns": 9775955,
+          "values_ns": [
+            9775955,
+            9270533,
+            9383551,
+            10127962,
+            11027063,
+            12886129,
+            9681139,
+            8420792,
+            11463186
+          ]
+        },
+        "B": {
+          "mad_ns": 412867,
+          "median_ns": 11043372,
+          "values_ns": [
+            8586652,
+            8107908,
+            9496203,
+            12036488,
+            11268138,
+            11043372,
+            11260283,
+            11062773,
+            10630505
+          ]
+        },
+        "comparison": {
+          "candidate_vs_B0_fraction": 0.12964636191553658,
+          "gate_exceeded": false,
+          "gate_fraction": 0.2672594358495053,
+          "summed_relative_mad": 0.08908647861650176
+        }
+      },
+      "warm_wall": {
+        "A": {
+          "mad_ns": 535424,
+          "median_ns": 9816144,
+          "values_ns": [
+            9816144,
+            9280720,
+            9392015,
+            10136280,
+            11060417,
+            12957846,
+            9692535,
+            8429695,
+            11473447
+          ]
+        },
+        "B": {
+          "mad_ns": 413095,
+          "median_ns": 11054801,
+          "values_ns": [
+            8595139,
+            8115054,
+            9502972,
+            12076647,
+            11302989,
+            11054801,
+            11272216,
+            11082328,
+            10641706
+          ]
+        },
+        "comparison": {
+          "candidate_vs_B0_fraction": 0.12618569980228478,
+          "gate_exceeded": false,
+          "gate_fraction": 0.27573952316218225,
+          "summed_relative_mad": 0.09191317438739409
+        }
+      }
+    },
+    "window_batch1": {
+      "controller_elapsed": {
+        "A": {
+          "mad_ns": 258188,
+          "median_ns": 11586653,
+          "values_ns": [
+            13529147,
+            11911707,
+            11753771,
+            8880271,
+            11844841,
+            11510272,
+            11586653,
+            8793066,
+            11397622
+          ]
+        },
+        "B": {
+          "mad_ns": 426407,
+          "median_ns": 10168135,
+          "values_ns": [
+            11195366,
+            8121831,
+            9741728,
+            10985597,
+            9746793,
+            8201562,
+            10366023,
+            10168135,
+            10389217
+          ]
+        },
+        "comparison": {
+          "candidate_vs_B0_fraction": -0.12242689929524941,
+          "gate_exceeded": false,
+          "gate_fraction": 0.19265652267345723,
+          "summed_relative_mad": 0.06421884089115242
+        }
+      },
+      "paired_ABBA_cpu": {
+        "candidate_faster_pairs": 7,
+        "candidate_slower_pairs": 2,
+        "median_paired_fraction": -0.15162238285229024,
+        "method": "Within each frozen four-sample ABBA or BAAB block, pair each arm observation with the nearest observation from the other arm; final two-sample AB block is paired directly.",
+        "observations": [
+          {
+            "B0_ns": 12986084,
+            "candidate_ns": 11017103,
+            "candidate_vs_B0_fraction": -0.15162238285229024,
+            "pair": 1
+          },
+          {
+            "B0_ns": 11485874,
+            "candidate_ns": 8015476,
+            "candidate_vs_B0_fraction": -0.30214487813465485,
+            "pair": 2
+          },
+          {
+            "B0_ns": 11348311,
+            "candidate_ns": 9561394,
+            "candidate_vs_B0_fraction": -0.15746105301484947,
+            "pair": 3
+          },
+          {
+            "B0_ns": 8481631,
+            "candidate_ns": 10815103,
+            "candidate_vs_B0_fraction": 0.27512066959762804,
+            "pair": 4
+          },
+          {
+            "B0_ns": 11414481,
+            "candidate_ns": 9577900,
+            "candidate_vs_B0_fraction": -0.16089921214989977,
+            "pair": 5
+          },
+          {
+            "B0_ns": 11098811,
+            "candidate_ns": 8102054,
+            "candidate_vs_B0_fraction": -0.2700070304828148,
+            "pair": 6
+          },
+          {
+            "B0_ns": 11189821,
+            "candidate_ns": 10197303,
+            "candidate_vs_B0_fraction": -0.08869829106292226,
+            "pair": 7
+          },
+          {
+            "B0_ns": 8433379,
+            "candidate_ns": 10001537,
+            "candidate_vs_B0_fraction": 0.18594658202838987,
+            "pair": 8
+          },
+          {
+            "B0_ns": 10991564,
+            "candidate_ns": 10220824,
+            "candidate_vs_B0_fraction": -0.07012104919736628,
+            "pair": 9
+          }
+        ]
+      },
+      "paired_ABBA_wall": {
+        "candidate_faster_pairs": 7,
+        "candidate_slower_pairs": 2,
+        "median_paired_fraction": -0.15589627898360114,
+        "method": "Within each frozen four-sample ABBA or BAAB block, pair each arm observation with the nearest observation from the other arm; final two-sample AB block is paired directly.",
+        "observations": [
+          {
+            "B0_ns": 13073686,
+            "candidate_ns": 11035547,
+            "candidate_vs_B0_fraction": -0.15589627898360114,
+            "pair": 1
+          },
+          {
+            "B0_ns": 11505974,
+            "candidate_ns": 8029291,
+            "candidate_vs_B0_fraction": -0.30216329360730343,
+            "pair": 2
+          },
+          {
+            "B0_ns": 11368123,
+            "candidate_ns": 9578359,
+            "candidate_vs_B0_fraction": -0.15743707206545887,
+            "pair": 3
+          },
+          {
+            "B0_ns": 8498585,
+            "candidate_ns": 10831865,
+            "candidate_vs_B0_fraction": 0.27454923378421237,
+            "pair": 4
+          },
+          {
+            "B0_ns": 11434614,
+            "candidate_ns": 9594980,
+            "candidate_vs_B0_fraction": -0.16088291218225648,
+            "pair": 5
+          },
+          {
+            "B0_ns": 11118786,
+            "candidate_ns": 8115149,
+            "candidate_vs_B0_fraction": -0.27014073299009445,
+            "pair": 6
+          },
+          {
+            "B0_ns": 11209143,
+            "candidate_ns": 10213900,
+            "candidate_vs_B0_fraction": -0.0887885006016963,
+            "pair": 7
+          },
+          {
+            "B0_ns": 8450822,
+            "candidate_ns": 10017958,
+            "candidate_vs_B0_fraction": 0.1854418422255255,
+            "pair": 8
+          },
+          {
+            "B0_ns": 11011363,
+            "candidate_ns": 10237955,
+            "candidate_vs_B0_fraction": -0.07023726308904721,
+            "pair": 9
+          }
+        ]
+      },
+      "scenario": "f2_sdb_window",
+      "warm_cpu": {
+        "A": {
+          "mad_ns": 224660,
+          "median_ns": 11189821,
+          "values_ns": [
+            12986084,
+            11485874,
+            11348311,
+            8481631,
+            11414481,
+            11098811,
+            11189821,
+            8433379,
+            10991564
+          ]
+        },
+        "B": {
+          "mad_ns": 440143,
+          "median_ns": 10001537,
+          "values_ns": [
+            11017103,
+            8015476,
+            9561394,
+            10815103,
+            9577900,
+            8102054,
+            10197303,
+            10001537,
+            10220824
+          ]
+        },
+        "comparison": {
+          "candidate_vs_B0_fraction": -0.10619329835571101,
+          "gate_exceeded": false,
+          "gate_fraction": 0.1922541346169312,
+          "summed_relative_mad": 0.06408471153897706
+        }
+      },
+      "warm_wall": {
+        "A": {
+          "mad_ns": 225471,
+          "median_ns": 11209143,
+          "values_ns": [
+            13073686,
+            11505974,
+            11368123,
+            8498585,
+            11434614,
+            11118786,
+            11209143,
+            8450822,
+            11011363
+          ]
+        },
+        "B": {
+          "mad_ns": 439599,
+          "median_ns": 10017958,
+          "values_ns": [
+            11035547,
+            8029291,
+            9578359,
+            10831865,
+            9594980,
+            8115149,
+            10213900,
+            10017958,
+            10237955
+          ]
+        },
+        "comparison": {
+          "candidate_vs_B0_fraction": -0.10626905196945025,
+          "gate_exceeded": false,
+          "gate_fraction": 0.19198805103297378,
+          "summed_relative_mad": 0.06399601701099127
+        }
+      }
+    }
+  },
+  "timing_gate": "candidate regression > max(10%, 3 \u00d7 (B0 MAD/B0 median + candidate MAD/candidate median)); paired ABBA samples are included as a sensitivity check."
+}
