@@ -1,0 +1,54 @@
+{
+  "fixture_path": "/home/washimi/work/gwexpy-v025-performance-sdb/docs/developers/reports/v0.2.5-performance/F2/ef827e3e1c3fce41575fc369aa473720e2b2200d8710e2034a88530bafa49bbd/baseline-v2/candidate-v2-4ccd8648/extreme-timestamp/sdb_int64_delta_overflow.sdb",
+  "fixture_rows": [
+    [
+      -9223372036854775808,
+      60.0
+    ],
+    [
+      1,
+      61.0
+    ],
+    [
+      2,
+      62.0
+    ]
+  ],
+  "fixture_sha256": "1cf3a36fabb80952c15b04c728a4d5a5dc8de6b25579d819561446a9037d6776",
+  "public_result_matches_B1": true,
+  "read_route": "TimeSeriesDict.read(path, format=\"sdb\", columns=[\"outTemp\"])",
+  "results": {
+    "B1": {
+      "public_result": {
+        "gwexpy_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+        "message": "SDB timestamp gap at index 2: expected cadence 9223372036854775809, got 1",
+        "outcome": "error",
+        "type": "builtins.ValueError",
+        "warnings": [
+          {
+            "category": "builtins.DeprecationWarning",
+            "message": "Compatibility support for python2 has been dropped"
+          }
+        ]
+      },
+      "source_commit": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+      "wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498"
+    },
+    "candidate-v3": {
+      "public_result": {
+        "gwexpy_path": "/tmp/gwexpy-v025-sdb-candidate-v3-env/lib/python3.12/site-packages/gwexpy/__init__.py",
+        "message": "SDB timestamp gap at index 2: expected cadence 9223372036854775809, got 1",
+        "outcome": "error",
+        "type": "builtins.ValueError",
+        "warnings": [
+          {
+            "category": "builtins.DeprecationWarning",
+            "message": "Compatibility support for python2 has been dropped"
+          }
+        ]
+      },
+      "source_commit": "221d3fce7349b35b26b0a50614d42a5790a7ea5f",
+      "wheel_sha256": "f19581f56847c3c3b66143610569d180aa0cb9b4f62814dae05a6df2a149c1e7"
+    }
+  }
+}
