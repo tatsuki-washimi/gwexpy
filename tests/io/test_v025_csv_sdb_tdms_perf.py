@@ -29,6 +29,7 @@ def test_plain_all_column_parser_uses_bounded_numpy_chunks(
     path = tmp_path / "all.csv"
     _numeric_csv(path, rows=32, channels=3)
     monkeypatch.setattr(csv_enhanced, "_MAX_CSV_MATRIX_CHUNK_BYTES", 128)
+    monkeypatch.setattr(csv_enhanced, "_try_plain_numeric_file", lambda *_: None)
     monkeypatch.setattr(
         Path,
         "read_text",
@@ -49,6 +50,26 @@ def test_plain_all_column_parser_uses_bounded_numpy_chunks(
     assert max(converted_chunks) <= 128
     assert list(result) == ["ch1", "ch2", "ch3"]
     np.testing.assert_array_equal(result["ch3"].value, np.arange(32) + 2)
+
+
+def test_plain_numeric_file_uses_numpy_reader_and_keeps_axis(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    path = tmp_path / "plain.csv"
+    _numeric_csv(path, rows=32, channels=3)
+    calls = 0
+    original = csv_enhanced.np.loadtxt
+
+    def count_loadtxt(*args: object, **kwargs: object) -> np.ndarray:
+        nonlocal calls
+        calls += 1
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(csv_enhanced.np, "loadtxt", count_loadtxt)
+    result = csv_enhanced.read_timeseriesdict_csv(path)
+    assert calls == 1
+    np.testing.assert_array_equal(result["ch3"].value, np.arange(32) + 2)
+    np.testing.assert_array_equal(result["ch3"].times.value, np.arange(32))
 
 
 def test_selected_parser_retains_only_requested_values(tmp_path: Path) -> None:
@@ -97,7 +118,14 @@ def test_selected_parser_reports_unselected_width_fault(tmp_path: Path) -> None:
 
 @pytest.mark.parametrize(
     "row",
-    ['0,"1,2",bad', "0,1,2bad", "0,1,2e", "0,1,1.2.3", "0,1,1nan"],
+    [
+        '0,"1,2",bad',
+        "0,1,2bad",
+        "0,1,2e",
+        "0,1,1.2.3",
+        "0,1,1nan",
+        "0,1#not-a-comment",
+    ],
 )
 def test_bulk_parser_rejects_partial_numeric_fields(row: str) -> None:
     with pytest.raises(ValueError, match="CSV line 1 contains non-numeric data"):
@@ -146,6 +174,7 @@ def test_unbuffered_registry_style_file_keeps_caller_ownership(tmp_path: Path) -
     with path.open("rb", buffering=0) as raw:
         result = csv_enhanced.read_timeseriesdict_csv(raw)
         assert not raw.closed
+        assert raw.tell() == path.stat().st_size
         np.testing.assert_array_equal(result["ch1"].value, [1, 2])
 
 

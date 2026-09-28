@@ -511,6 +511,75 @@ def _convert_wide_numeric_row(row: list[str], line_number: int) -> np.ndarray:
     return output
 
 
+def _try_plain_numeric_file(
+    stream: Any, cfg: CSVFormatConfig
+) -> tuple[dict[str, str], np.ndarray, dict[int, np.ndarray], dict[int, list[str]], list[int], int] | None:
+    """Use NumPy's streaming numeric reader for an unambiguous plain CSV.
+
+    A failed or ambiguous attempt rewinds the stream so the compatibility
+    parser below still owns exact row, warning, and exception behavior.
+    """
+    if cfg.skip_rows is not None or cfg.comment_char != "#":
+        return None
+    try:
+        if not stream.seekable():
+            return None
+        position = stream.tell()
+        remaining_bytes = stream.seek(0, io.SEEK_END) - position
+        stream.seek(position)
+        # A valid numeric CSV needs at least one character per value plus a
+        # separator. This size bound keeps the fast path's final matrix below
+        # the 64 MiB temporary-chunk budget; larger files use bounded chunks.
+        if remaining_bytes < 0 or remaining_bytes > 16 * 1024 * 1024:
+            return None
+        first_line = stream.readline(_MAX_CSV_MATRIX_CHUNK_BYTES + 1)
+        stream.seek(position)
+        if (
+            not first_line.strip()
+            or len(first_line) > _MAX_CSV_MATRIX_CHUNK_BYTES
+            or first_line.count(b"," if isinstance(first_line, bytes) else ",")
+            >= _MAX_CSV_MATRIX_CHUNK_BYTES // 8
+        ):
+            return None
+    except (AttributeError, OSError, io.UnsupportedOperation):
+        return None
+
+    matrix: np.ndarray | None = None
+    succeeded = False
+    try:
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            matrix = np.loadtxt(stream, delimiter=",", dtype=np.float64, ndmin=2)
+        if caught or matrix.ndim != 2 or not matrix.size:
+            return None
+        stream.seek(position)
+        width = matrix.shape[1]
+        time_lexemes: list[str] = []
+        line_numbers: list[int] = []
+        for line_number, line in enumerate(stream, start=1):
+            if isinstance(line, bytes):
+                line = line.decode(cfg.encoding or "utf-8")
+            stripped = line.strip()
+            if (
+                not stripped
+                or "#" in line
+                or '"' in line
+                or line.count(",") != width - 1
+            ):
+                return None
+            time_lexemes.append(line.partition(",")[0].strip())
+            line_numbers.append(line_number)
+        if len(line_numbers) != matrix.shape[0]:
+            return None
+        succeeded = True
+        return {}, matrix, {}, {0: time_lexemes}, line_numbers, width
+    except (ValueError, TypeError, UnicodeError, OSError, io.UnsupportedOperation):
+        return None
+    finally:
+        if not succeeded:
+            stream.seek(position)
+
+
 def _read_numeric_rows(
     source: Any,
     cfg: CSVFormatConfig,
@@ -543,6 +612,10 @@ def _read_numeric_rows(
             buffered = io.BufferedReader(stream, buffer_size=1024 * 1024)
             cleanup.callback(buffered.detach)
             stream = buffered
+        if channels is None and start is None and end is None and not cfg.columns:
+            fast = _try_plain_numeric_file(stream, cfg)
+            if fast is not None:
+                return fast
         if hasattr(stream, "__iter__") and not (
             isinstance(stream, io.TextIOBase)
             and type(stream).readline is io.TextIOBase.readline
