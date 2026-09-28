@@ -69,3 +69,20 @@ def test_unit_override_retains_full_construction_contract(
     )
     assert list(result) == ["channel_1"]
     assert constructed == ["channel_0", "channel_1"]
+
+
+def test_generator_selector_retains_full_construction_contract(
+    stereo_wav: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    constructed: list[str] = []
+    original = wav_io.TimeSeries
+
+    def count_construction(*args: object, **kwargs: object) -> object:
+        constructed.append(str(kwargs["name"]))
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(wav_io, "TimeSeries", count_construction)
+    channels = (name for name in ["channel_1"])
+    result = wav_io.read_timeseriesdict_wav(stereo_wav, channels=channels)
+    assert list(result) == ["channel_1"]
+    assert constructed == ["channel_0", "channel_1"]
