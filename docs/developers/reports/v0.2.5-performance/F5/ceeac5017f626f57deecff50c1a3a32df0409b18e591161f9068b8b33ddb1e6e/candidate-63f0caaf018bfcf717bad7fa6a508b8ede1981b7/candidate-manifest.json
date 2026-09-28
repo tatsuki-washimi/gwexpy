@@ -1,0 +1,335 @@
+{
+  "arms": {
+    "A": {
+      "executable": "/tmp/gwexpy-v025-b-env-b/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "install_mode": "wheel-no-deps",
+      "label": "B1",
+      "python": "3.12.12",
+      "source_sha": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c",
+      "wheel_files_verified": 369,
+      "wheel_sha256": "473fa52f1f94d61f6b785220a082928b7a7bee4b5d215ced29b7d5d80692c498"
+    },
+    "B": {
+      "executable": "/tmp/gwexpy-v025-f5-env-b/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-f5-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "install_mode": "wheel-no-deps",
+      "label": "F5",
+      "python": "3.12.12",
+      "source_sha": "63f0caaf018bfcf717bad7fa6a508b8ede1981b7",
+      "wheel_files_verified": 369,
+      "wheel_sha256": "06dd14eebae496d1e1a3f6f27853fa642f17170ca4c6b3a47251ec06dcdd60ae"
+    }
+  },
+  "baseline_manifest_git_blob": "0c1b6c526045e0b0f2054e9dbb9edea2e70cfc70",
+  "candidate_wheel_source_proof": {
+    "build_command": "python -m build --wheel --no-isolation --outdir /tmp/gwexpy-v025-f5-wheels",
+    "install_command": "<venv>/bin/python -m pip install --no-deps --no-index --force-reinstall <wheel>",
+    "mismatches": 0,
+    "package_files_compared": 369
+  },
+  "checks": {
+    "b1_candidate_exact_fingerprint_equal": true,
+    "focused_win_tests_passed": 48,
+    "git_diff_check": "passed",
+    "mypy_win": "passed",
+    "python_per_sample_append_hits": {
+      "B1": 4116,
+      "F5": 0
+    },
+    "ruff_check": "passed",
+    "ruff_format_check": "passed",
+    "wire_cases": 12
+  },
+  "created_utc": "2026-09-28T07:13:39.709620+00:00",
+  "files_sha256": {
+    "README.md": "fbbe5e91a7e6c368aae7c6603a20d3f5c0aa2f677789c743455ecd729084d49f",
+    "correctness/fingerprint.json": "34854f170ec7e154be9571f232500c71de9bf22e3b21dce8c9c449f8a877330c",
+    "correctness/manifest.json": "7f8a3d739043a45bbb60d77e047c5624dce20bc7e383a049459ff83e19ba1315",
+    "correctness/raw-A.json": "ec6bf1773b25839a65166b74ca3fea6980713f56db7bd38511f906a072f342bc",
+    "correctness/raw-B.json": "3a5c88c9ff73018cc380e481d81933fc6bb247fc506d644d452cd6be197fdeab",
+    "correctness/sample-00-A.json": "6bc76bfcc528bf6dd8ad16bb48b0e377067b09172b6ffbfbfee576b85c27fd40",
+    "correctness/sample-01-B.json": "9d71d59496482af48598107532313ef23dd6a817f738ef45c3bad1a0225c5e5d",
+    "memory/manifest.json": "f47bca5d65b43a73f93a0fe59fd2fe9fab67f6be92ebc2e6542ace300bb7c5f4",
+    "memory/raw-A.json": "ec942a8c4990ef74357d9b2f420762836a9717b777650b23241b62cebd170aaa",
+    "memory/raw-B.json": "9c420fafd19224da6e262f921ff7a0c39dc1c2e501b3b19cd3c8c532f89d6928",
+    "memory/sample-00-A.json": "2366dcb2d32becb50266c480caef9dff6ec6b41b3d5aaba04712a3361bb40434",
+    "memory/sample-01-B.json": "979751b067f497952200c513aac085583a2871e503522ea5312fee2c53fb283d",
+    "memory/sample-02-B.json": "4ef1b7001e42d27a4e948f925d7f4afed78adf34333ac517fb8c0f0b6c2ba7a7",
+    "memory/sample-03-A.json": "18cddc8c2b2852ebce3de8b9308aa829b693fc4ab687c50444374105fbc9d7e5",
+    "memory/sample-04-B.json": "83df53216432b4a661d9313474d6201baebcd21809d03bb96f4095063ca73c67",
+    "memory/sample-05-A.json": "6643d12862afa389b3ade47dcc40c9d334dc7ac8bed609fa6201fa2655dcabc4",
+    "memory/sample-06-A.json": "b09c63c4e26827981ff3bd06d77bea70a2e98a3bc2ac6fd056d4c80adb9dcce8",
+    "memory/sample-07-B.json": "76cadef0853074db6ec13975a418728930404fee2ca6234bb6d42f5da9b5ea93",
+    "memory/sample-08-A.json": "d1c79ea5fc98bfacdc6a1a39ee77ed32f2e0d8bd699c97b420578c875a85c498",
+    "memory/sample-09-B.json": "0c0f6d8b05896454decf569dc322fd23ebe88f4bdd73522858e99fcb66ccd0ba",
+    "memory/summary.json": "b0d38285967ffd71f0656448ea10af9922cbb9e85f2f2cb9100d4ac2cde1d89d",
+    "structure/manifest.json": "827808d0eb122155791c7bc83775618b1d65d2519f9fe9dcabf4c0aa6ef9d141",
+    "structure/raw-A.json": "4da964d8095f6675427422a7432a34474698c88094da4a56b811694409b25015",
+    "structure/raw-B.json": "2d8ca37af714d3018d81e09f6d02a51e5c099a0f9410aa292a43823e1ff21d20",
+    "structure/sample-00-A.json": "365668961d6e9efafb52c0a931a1352b5f13e548f72e5eaca080337e2a5290b6",
+    "structure/sample-01-B.json": "dff6fc503e471a8cc58a58209d31b598e69c555de8714f375cb192352581c330",
+    "timing-cold/manifest.json": "497a072e4ac0430926d4427bfa5c51c0523c5c6082742db1b15d224c6e3883f6",
+    "timing-cold/raw-A.json": "7fc75ca26c74d900fb8cf225eb8ca23c3d4c979e47ddc77889105b0cbebcb430",
+    "timing-cold/raw-B.json": "3c7a8fcd31d350d47a1c8aacbaaa6ba128cf61b521aa2ec4cb3432e5a1e64839",
+    "timing-cold/sample-00-A.json": "a2e485d6d28810792dd2c75a12d56879731584af8f691f5554efdbd1f09b5712",
+    "timing-cold/sample-01-B.json": "ebb5e2431702121dd6a4aedc753574c677f18ce31f19fc72ac88a50fa5fe2350",
+    "timing-cold/sample-02-B.json": "9f7f60cb99ff151928b81fafc2e7d47334281ebe633dd80a19701faed45f067c",
+    "timing-cold/sample-03-A.json": "7843de28a6fdb049a00114ee544f89afd1ed1119e8ac3e34ec12ff85c7549eba",
+    "timing-cold/sample-04-B.json": "69f801f7f41f86d80e321fd7765a82d6d0ab927e80b9b532b413987f02ea1316",
+    "timing-cold/sample-05-A.json": "656294707470427bce0ec932a00f51c0e80dcb3977f3f20986e9f61609b53004",
+    "timing-cold/sample-06-A.json": "6900fb0693ed1305b627bed2442b4fed4e3acd6bd210b5d59e5760f06056aa9d",
+    "timing-cold/sample-07-B.json": "58aa2dc5b0ab9c51bb3b74d07256b2dc367e03f25c629f92c2092b2db496b7f1",
+    "timing-cold/sample-08-A.json": "7bf921dc44a713a38df361baaa9e76181309cec565ed52a66d9f20373f255009",
+    "timing-cold/sample-09-B.json": "198d21a98632306aa4c58b963dc6c2406318a10e14e74342c79151dea044344d",
+    "timing-cold/summary.json": "a7de94904b74bc74fb475bd0f3ef19e6eb5c9cbfa9715db3e88cfa9440caef01",
+    "timing-warm/manifest.json": "51d1e12b7c90dd11bae21fd60a7eacdf85092e2b3e119475ec5eb1f59a0661c6",
+    "timing-warm/raw-A.json": "17fe32bcb7bb90b513abef5a88cb2d5cb29aac384232a0bcc1e5061a80b5ebf6",
+    "timing-warm/raw-B.json": "32c1a506fcc7806c0a7528283a6bcce6ccfee8e86a5af31f6a8946f1ebbf1d36",
+    "timing-warm/sample-00-A.json": "2b653e03feb5967a436892d41f5906686805a902c432127904e0aa0571717ae9",
+    "timing-warm/sample-01-B.json": "6ea8854f3bdabd78c76cf02ee096b3c9ef3fa9f7103e3c66ad4c2bf1f2ae9468",
+    "timing-warm/sample-02-B.json": "267e28f9b84e7f401d4857b782a00a264c49d638191da495ca6bf978a029c2ca",
+    "timing-warm/sample-03-A.json": "e77a73510614f36c162fb86ee2b1ae392b32f5669420885540ed637f202193f7",
+    "timing-warm/sample-04-B.json": "404f8a5f8d8c98525254f4fcfeb0518632bd203438f3d3d8856e59557417682d",
+    "timing-warm/sample-05-A.json": "a12f73c85732b1c82f32510394d3b64da8ca6ae961b0af9bc2faed9b521de235",
+    "timing-warm/sample-06-A.json": "0a0c9fce88ba60e943a835e15423b4d98365d737bbd41faee8bc7d535948f502",
+    "timing-warm/sample-07-B.json": "54b5aeb91152b44bed218b988f6a1a71c3a31cb158225cf616aa97154b885e35",
+    "timing-warm/sample-08-A.json": "62ba23442d54b17cb16445945bb597d1e09376abef64d8c3ec0c4d9afd34b930",
+    "timing-warm/sample-09-B.json": "23fb55d4a917e159ca412701bec7d65258a451ac005fa6ccfe6605c9ca97374e",
+    "timing-warm/sample-10-B.json": "bf5efb937b54d66f945aa961d8276ef4e6f37c03b2a6abeb981c168319b522fc",
+    "timing-warm/sample-11-A.json": "62ad17f366f0ebd6b9fb749fb12f890c80a6e23f32f211dd272abe9939c3555e",
+    "timing-warm/sample-12-B.json": "8876e6597de4993236c31831e925f7fa44e4a1dbcb9756d864f193ea16462d06",
+    "timing-warm/sample-13-A.json": "9b3ad243bc0c8e7e93972ba726d204698d9e6ed9b6ba73143dcd8b5b9913ecd0",
+    "timing-warm/sample-14-A.json": "3aeb40e94137bfbfa687ac64d97db64a59c7187c085830bd40a184b250378cdc",
+    "timing-warm/sample-15-B.json": "4cbcd4d630a531a2d3a9af5d5e45e2b0dbad34b74760b0b2af4249f2a0d1907b",
+    "timing-warm/sample-16-A.json": "712a2d423faf0ab21d65fad725e195df5124a2af9651de763cf8700d144a8117",
+    "timing-warm/sample-17-B.json": "785e16c4a77dacd52dca8be652732433f6609a750d972a585970bfaf7fc6f3d9",
+    "timing-warm/summary.json": "653179d0e9082f04602a9d5cd2e4106db2e2bf69d44bd64d58fb7b4f56129c1f"
+  },
+  "fixture_manifest_sha256": "db9e32a69f36df9f68f29ef186114fb7be310f7cd80bba50ca3b8243c4cb02b9",
+  "harness_digest": "ceeac5017f626f57deecff50c1a3a32df0409b18e591161f9068b8b33ddb1e6e",
+  "integration_parent": "77bea5032f36c7eb2eb09168403c328ba03cbe15",
+  "known_limits": [
+    "Primary timing covers the 4095-sample 1-byte route; other widths have correctness and structure but no separate performance claim.",
+    "PSS/RSS peaks sampled at 10 ms are lower bounds.",
+    "An independent review follows before integration."
+  ],
+  "lane": "F5",
+  "primary_metric": {
+    "B1": {
+      "mad": 121073,
+      "median": 1789846,
+      "raw": [
+        5118013,
+        1833719,
+        1605201,
+        1538240,
+        1571406,
+        1668773,
+        1789846,
+        1798990,
+        1814308
+      ]
+    },
+    "F5": {
+      "mad": 22805,
+      "median": 264166,
+      "raw": [
+        364131,
+        262865,
+        224949,
+        234765,
+        276970,
+        266550,
+        264166,
+        215040,
+        286971
+      ]
+    },
+    "improvement": 0.8524085312367656,
+    "name": "warm_decoder_cpu_ns",
+    "noise": 0.1539726607419996,
+    "pass": true,
+    "required_improvement": 0.3079453214839992
+  },
+  "runs": [
+    "correctness",
+    "structure",
+    "timing-warm",
+    "timing-cold",
+    "memory"
+  ],
+  "schema": 1,
+  "source_commit": "63f0caaf018bfcf717bad7fa6a508b8ede1981b7",
+  "status": "PERFORMANCE_EVIDENCE_GREEN_ON_COMMIT",
+  "supporting_metrics": {
+    "memory": {
+      "A": {
+        "peak_tree_pss_kib": {
+          "mad": 153,
+          "median": 298430,
+          "raw": [
+            298544,
+            298845,
+            298430,
+            298273,
+            298277
+          ]
+        },
+        "peak_tree_rss_kib": {
+          "mad": 156,
+          "median": 311772,
+          "raw": [
+            311804,
+            312116,
+            311772,
+            311616,
+            311576
+          ]
+        }
+      },
+      "B": {
+        "peak_tree_pss_kib": {
+          "mad": 300,
+          "median": 298508,
+          "raw": [
+            299122,
+            298363,
+            298508,
+            298208,
+            299080
+          ]
+        },
+        "peak_tree_rss_kib": {
+          "mad": 416,
+          "median": 311864,
+          "raw": [
+            312460,
+            311588,
+            311864,
+            311448,
+            312304
+          ]
+        }
+      }
+    },
+    "timing-cold": {
+      "A": {
+        "controller_elapsed_ns": {
+          "mad": 7813205,
+          "median": 2890698689,
+          "raw": [
+            2735455835,
+            2882885484,
+            2890698689,
+            2897041136,
+            2903952530
+          ]
+        },
+        "cpu_ns": {
+          "mad": 300954,
+          "median": 2695773,
+          "raw": [
+            2287950,
+            2394819,
+            3151196,
+            2802863,
+            2695773
+          ]
+        }
+      },
+      "B": {
+        "controller_elapsed_ns": {
+          "mad": 49399914,
+          "median": 2871229534,
+          "raw": [
+            2624038209,
+            2757588874,
+            2871229534,
+            2920629448,
+            2900767926
+          ]
+        },
+        "cpu_ns": {
+          "mad": 240355,
+          "median": 1338561,
+          "raw": [
+            1210801,
+            914878,
+            1602745,
+            1578916,
+            1338561
+          ]
+        }
+      }
+    },
+    "timing-warm": {
+      "A": {
+        "cpu_ns": {
+          "mad": 121073,
+          "median": 1789846,
+          "raw": [
+            5118013,
+            1833719,
+            1605201,
+            1538240,
+            1571406,
+            1668773,
+            1789846,
+            1798990,
+            1814308
+          ]
+        },
+        "wall_ns": {
+          "mad": 121158,
+          "median": 1792159,
+          "raw": [
+            5130985,
+            1836872,
+            1607401,
+            1540275,
+            1573881,
+            1671001,
+            1792159,
+            1801339,
+            1816577
+          ]
+        }
+      },
+      "B": {
+        "cpu_ns": {
+          "mad": 22805,
+          "median": 264166,
+          "raw": [
+            364131,
+            262865,
+            224949,
+            234765,
+            276970,
+            266550,
+            264166,
+            215040,
+            286971
+          ]
+        },
+        "wall_ns": {
+          "mad": 23073,
+          "median": 267270,
+          "raw": [
+            371595,
+            267151,
+            228114,
+            238315,
+            280578,
+            269938,
+            267270,
+            217806,
+            290343
+          ]
+        }
+      }
+    }
+  }
+}
