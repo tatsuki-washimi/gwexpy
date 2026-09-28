@@ -27,10 +27,14 @@ reads the six written fixtures through explicit and auto routes; wheel and
 sdist return identical exact int64 values. Its output is stored in
 `raw/nc-routes-{wheel,sdist}.jsonl`.
 
-## Unresolved historical cases
+## Historical cases requiring individual disposition
 
-These twelve cases remain **BLOCKED**. A successful probe process does not
-turn them into passing scenarios. The row indices and raw hashes in
+The release owner selected a 74-scenario accounting gate: 36 fixed-defect
+scenarios and the 26 scenarios above require executable assertions on exact
+R3 wheel and sdist artifacts. These twelve cases require individual review
+of their applicability or retained behavior. They remain **BLOCKED** until
+that review; a successful probe process does not turn them into passing
+scenarios. The row indices and raw hashes in
 `prequalification-38.json` identify the current observations for each case.
 The verifier asserts each observed blocked condition on wheel and sdist;
 that characterization does not settle its fixture or contract authority.
@@ -51,7 +55,8 @@ that characterization does not settle its fixture or contract authority.
 | `OBSPY-DUP-BASE-001` | The base environment has no ObsPy, so the duplicate-ID reader cannot run. | Treat this as an expected dependency absence and qualify duplicate behavior in the optional cell, or define a different base-cell oracle. |
 
 No new runtime defect was established by the 26 passing checks. The twelve
-blocked dispositions still need explicit review. No release readiness checkbox
-is closed by this pre-qualification.
+blocked dispositions still need explicit review. They are never counted as
+passing runtime assertions. No release readiness checkbox is closed by this
+pre-qualification.
 The [disposition proposal](disposition-proposal.md) records a reviewable
 way to account for all twelve without labeling them as passing runtime tests.

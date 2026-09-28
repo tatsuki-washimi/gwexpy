@@ -1,10 +1,12 @@
 # Proposed disposition of twelve historical BLOCKED findings
 
-Status: **proposal; no finding is closed**. This accompanies the
-[pre-qualification record](README.md). The candidate tree has not changed
-runtime behavior for these findings. The S3 scientific/data-model review and
-release owner must decide whether the proposed applicability boundaries are
-acceptable. A probe's exit code is not acceptance evidence.
+Status: **accounting policy selected; individual dispositions pending**. This
+accompanies the [pre-qualification record](README.md). The release owner chose
+to measure the 62 executable scenarios and review these twelve individually
+as applicability or retained-behavior dispositions. The S3
+scientific/data-model review and release owner must still decide whether each
+proposed boundary is acceptable. A probe's exit code is not acceptance
+evidence.
 
 | Proposed disposition | Finding IDs | Basis | S3 acceptance evidence |
 | --- | --- | --- | --- |
@@ -17,10 +19,9 @@ acceptable. A probe's exit code is not acceptance evidence.
 | Unsupported histogram dataset-per-entry layout | `HDF5-HIST-DATASET-001` | The writer physically creates groups with `values`/`edges`; the histogram reader also requires a group. The requested dataset layout does not produce a dataset-per-entry histogram. | Confirm that no supported dataset-per-entry histogram schema is claimed. Retain the physical-layout inspection. |
 | Expected missing optional dependency | `OBSPY-DUP-BASE-001` | ObsPy is absent in the base cell, so the duplicate-ID reader cannot run there. The present cell exercises the four duplicate-ID variants. | Assert absence in base and qualify the variants in the optional cell. |
 
-If approved, the release gate should say **74 scenarios accounted for**:
+When all individual dispositions are approved, the release gate can say
+**74 scenarios accounted for**:
 36 previously fixed defect scenarios, 26 newly asserted behavior scenarios,
 and twelve reviewed dispositions with their applicability boundaries. The
-twelve must never be reported as passing runtime assertions. If the owner
-instead requires 74 executable passing cases, the scope must include new
-fixtures/contracts for these findings before S3 freeze; several attempted
-fixtures are invalid under the current formats.
+twelve must never be reported as passing runtime assertions. No current
+disposition is approved merely by selection of this accounting policy.
