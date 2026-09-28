@@ -411,7 +411,12 @@ def test_win_rejects_decoded_sample_count_mismatch(tmp_path, monkeypatch):
         "decoded-count.win",
         _packet(origin, _channel_block(1, rate=4, width_code=0)),
     )
-    monkeypatch.setattr(win_io, "_apply_4bit_deltas", lambda *args: None)
+    # The vectorized path decodes width-0 deltas through this bulk seam.
+    monkeypatch.setattr(
+        win_io,
+        "_decode_win_deltas",
+        lambda *args: np.empty(0, dtype=np.int64),
+    )
 
     with pytest.raises(ValueError, match="decoded sample count"):
         win_io._read_win_fixed(path)
