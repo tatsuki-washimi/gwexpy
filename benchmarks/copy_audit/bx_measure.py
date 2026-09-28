@@ -76,6 +76,12 @@ def _wheel_audit(wheel: Path) -> dict[str, Any]:
             if not target.is_file() or target.read_bytes() != archive.read(member):
                 raise RuntimeError(f"Installed wheel differs at {member}")
             checked += 1
+    distributions = {}
+    for name in ("numpy", "gwpy", "astropy", "xarray", "netCDF4"):
+        try:
+            distributions[name] = importlib.metadata.version(name)
+        except importlib.metadata.PackageNotFoundError:
+            distributions[name] = None
     return {
         "gwexpy_path": str(package),
         "gwexpy_version": importlib.metadata.version("gwexpy"),
@@ -83,6 +89,7 @@ def _wheel_audit(wheel: Path) -> dict[str, Any]:
         "prefix": sys.prefix,
         "wheel_sha256": _sha256(wheel),
         "wheel_files_verified": checked,
+        "distributions": distributions,
         "install_mode": "wheel-no-deps",
     }
 
@@ -358,6 +365,8 @@ def _capture(args: argparse.Namespace) -> None:
     }
     if audits["A"]["python"] != audits["B"]["python"]:
         raise RuntimeError("B-X wheel arms use different Python versions")
+    if audits["A"]["distributions"] != audits["B"]["distributions"]:
+        raise RuntimeError("B-X wheel arms use different dependency versions")
     if (
         audits["A"]["wheel_sha256"] == audits["B"]["wheel_sha256"]
         and args.source_a != args.source_b
