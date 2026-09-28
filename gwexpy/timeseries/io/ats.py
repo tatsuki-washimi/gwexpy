@@ -343,7 +343,12 @@ def _read_timeseries_ats_file(
     # Scale Data
     # Per Metronix programmer notes: dblLSBMV * counts -> mV (gains already included).
     # Convert to V.
-    data_scaled = data_raw.astype(np.float64) * lsb_mV / 1000.0
+    # The ATS payload is signed int32 or int64.  Place the cast-and-scale
+    # result directly into its final float64 buffer: the two ufuncs retain
+    # the original multiply-then-divide rounding and NumPy error order.
+    data_scaled = np.empty(data_raw.shape, dtype=np.float64)
+    np.multiply(data_raw, lsb_mV, out=data_scaled)
+    np.divide(data_scaled, 1000.0, out=data_scaled)
 
     ts = TimeSeries(
         data_scaled,
