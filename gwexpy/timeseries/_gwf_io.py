@@ -843,14 +843,14 @@ def _try_bounded_gwf_serial(
     """Speculate without publishing diagnostics; replay old R on uncertainty."""
     if os.name != "posix" or threading.active_count() != 1:
         return _GWF_BOUNDED_FALLBACK
-    with (
-        warnings.catch_warnings(record=True) as caught,
-        _capture_gwf_logs() as logs,
-        _capture_gwf_stderr() as stderr,
-        _capture_gwf_fd_stderr() as fd_stderr,
-    ):
-        warnings.simplefilter("always")
-        try:
+    try:
+        with (
+            warnings.catch_warnings(record=True) as caught,
+            _capture_gwf_logs() as logs,
+            _capture_gwf_stderr() as stderr,
+            _capture_gwf_fd_stderr() as fd_stderr,
+        ):
+            warnings.simplefilter("always")
             spans = _bounded_gwf_spans(sources, channels, backend)
             if spans is None:
                 return _GWF_BOUNDED_FALLBACK
@@ -869,16 +869,16 @@ def _try_bounded_gwf_serial(
                 dict_class,
                 series_class,
             )
-        except Exception:
-            return _GWF_BOUNDED_FALLBACK
-        if (
-            fd_stderr is None
-            or caught
-            or logs
-            or stderr
-            or os.fstat(fd_stderr.fileno()).st_size
-        ):
-            return _GWF_BOUNDED_FALLBACK
+            if (
+                fd_stderr is None
+                or caught
+                or logs
+                or stderr
+                or os.fstat(fd_stderr.fileno()).st_size
+            ):
+                return _GWF_BOUNDED_FALLBACK
+    except Exception:
+        return _GWF_BOUNDED_FALLBACK
     return result
 
 

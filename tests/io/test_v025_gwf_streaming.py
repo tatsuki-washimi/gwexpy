@@ -249,3 +249,18 @@ def test_multithreaded_calls_use_old_route(tmp_path, monkeypatch) -> None:
     monkeypatch.setattr(gwf_io, "_resolve_gwf_path_span", unexpected_preflight)
     result = TimeSeriesDict.read(sources, [CHANNEL], format="gwf", parallel=False)
     assert result[CHANNEL].value.tolist() == list(range(16 * 8))
+
+
+def test_log_capture_setup_failure_uses_old_route(tmp_path, monkeypatch) -> None:
+    """An unavailable logging capture cannot change the public read."""
+    sources = _frames(tmp_path, 16)
+    root_handlers = tuple(logging.getLogger().handlers)
+    monkeypatch.setattr(logging, "lastResort", None)
+
+    def cannot_install_filter(*args, **kwargs):
+        raise RuntimeError("filter setup unavailable")
+
+    monkeypatch.setattr(logging.Handler, "addFilter", cannot_install_filter)
+    result = TimeSeriesDict.read(sources, [CHANNEL], format="gwf", parallel=False)
+    assert result[CHANNEL].value.tolist() == list(range(16 * 8))
+    assert tuple(logging.getLogger().handlers) == root_handlers
