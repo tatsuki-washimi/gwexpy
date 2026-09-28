@@ -12,6 +12,8 @@ import argparse
 import hashlib
 import importlib.metadata
 import json
+import os
+import select
 import statistics
 import subprocess
 import sys
@@ -94,70 +96,137 @@ def _wheel_audit(wheel: Path) -> dict[str, Any]:
     }
 
 
-def _public_read(
-    scenario: str, path: Path, *, retain: bool = False
-) -> dict[str, Any] | tuple[dict[str, Any], Any]:
-    import numpy as np
-
+def _read_with_diagnostics(
+    scenario: str, path: Path, *, timed: bool = False
+) -> tuple[Any | None, dict[str, str] | None, list[dict[str, str]], dict[str, int]]:
+    """Capture only warnings and errors emitted by the public read call."""
     from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
 
     result = None
+    timing: dict[str, int] = {}
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter("always")
         try:
-            if scenario.startswith("matrix"):
-                result = TimeSeriesMatrix.read(path, format="nc")
-            else:
-                result = TimeSeries.read(path, format="ats")
+            if timed:
+                start_wall = time.perf_counter_ns()
+                start_cpu = time.process_time_ns()
+            try:
+                if scenario.startswith("matrix"):
+                    result = TimeSeriesMatrix.read(path, format="nc")
+                else:
+                    result = TimeSeries.read(path, format="ats")
+            finally:
+                if timed:
+                    timing = {
+                        "wall_ns": time.perf_counter_ns() - start_wall,
+                        "cpu_ns_parent": time.process_time_ns() - start_cpu,
+                    }
         except Exception as error:
-            outcome = {
-                "kind": "error",
+            failure = {
                 "type": f"{type(error).__module__}.{type(error).__qualname__}",
                 "message": str(error),
             }
         else:
-            values = np.ascontiguousarray(result.value)
-            if values.dtype.hasobject:
-                value_bytes = json.dumps(values.tolist(), ensure_ascii=False).encode()
-                values_encoding = "json"
-            else:
-                value_bytes = values.tobytes()
-                values_encoding = "native_bytes"
-            outcome = {
-                "kind": "return",
-                "dtype": values.dtype.str,
-                "shape": list(values.shape),
-                "values_sha256": hashlib.sha256(value_bytes).hexdigest(),
-                "values_encoding": values_encoding,
-                "first_values": values.flat[:4].tolist(),
-                "last_values": values.flat[-4:].tolist(),
-                "t0_float_hex": float(result.t0.value).hex(),
-                "dt_float_hex": float(result.dt.value).hex(),
-            }
-            if scenario.startswith("matrix"):
-                outcome.update(
-                    row_keys=[repr(key) for key in result.row_keys()],
-                    col_keys=[repr(key) for key in result.col_keys()],
-                    units=[[str(item) for item in row] for row in result.units],
-                )
-            else:
-                outcome.update(
-                    unit=str(result.unit),
-                    name=str(result.name),
-                    channel=str(result.channel),
-                    provenance=getattr(result, "_gwexpy_io", None),
-                )
-    public = {
-        "outcome": outcome,
-        "warnings": [
-            {
-                "category": f"{item.category.__module__}.{item.category.__qualname__}",
-                "message": str(item.message),
-            }
-            for item in caught
+            failure = None
+    diagnostics = [
+        {
+            "category": f"{item.category.__module__}.{item.category.__qualname__}",
+            "message": str(item.message),
+        }
+        for item in caught
+    ]
+    return result, failure, diagnostics, timing
+
+
+def _preview(value: Any) -> Any:
+    """Normalize preview scalars, including NaN, infinity, and signed zero."""
+    import numpy as np
+
+    if isinstance(value, np.generic):
+        value = value.item()
+    if isinstance(value, float):
+        return value.hex()
+    if isinstance(value, (str, int, bool)) or value is None:
+        return value
+    return repr(value)
+
+
+def _numeric_sha256(values: Any) -> str:
+    """Hash numeric array bytes in C order with bounded auxiliary storage."""
+    import numpy as np
+
+    digest = hashlib.sha256()
+    if values.flags.c_contiguous:
+        digest.update(memoryview(values).cast("B"))
+    else:
+        iterator = np.nditer(
+            values,
+            flags=["external_loop", "buffered", "zerosize_ok"],
+            op_flags=["readonly"],
+            order="C",
+            buffersize=262_144,
+        )
+        for chunk in iterator:
+            if not chunk.flags.c_contiguous:
+                chunk = np.ascontiguousarray(chunk)
+            digest.update(memoryview(chunk).cast("B"))
+    return digest.hexdigest()
+
+
+def _fingerprint_read(
+    scenario: str,
+    result: Any | None,
+    failure: dict[str, str] | None,
+    diagnostics: list[dict[str, str]],
+) -> dict[str, Any]:
+    """Fingerprint a completed read after timing and PSS sampling stop."""
+    import numpy as np
+
+    if failure is not None:
+        return {"outcome": {"kind": "error", **failure}, "warnings": diagnostics}
+    values = np.asarray(result.value)
+    if values.dtype.hasobject:
+        digest = hashlib.sha256(
+            json.dumps(values.tolist(), ensure_ascii=False).encode()
+        ).hexdigest()
+        values_encoding = "json"
+    else:
+        digest = _numeric_sha256(values)
+        values_encoding = "native_bytes_c_order"
+    flat = values.flat
+    count = values.size
+    outcome = {
+        "kind": "return",
+        "dtype": values.dtype.str,
+        "shape": list(values.shape),
+        "values_sha256": digest,
+        "values_encoding": values_encoding,
+        "first_values": [_preview(flat[index]) for index in range(min(4, count))],
+        "last_values": [
+            _preview(flat[index]) for index in range(max(0, count - 4), count)
         ],
+        "t0_float_hex": float(result.t0.value).hex(),
+        "dt_float_hex": float(result.dt.value).hex(),
     }
-    return (public, result) if retain else public
+    if scenario.startswith("matrix"):
+        outcome.update(
+            row_keys=[repr(key) for key in result.row_keys()],
+            col_keys=[repr(key) for key in result.col_keys()],
+            units=[[str(item) for item in row] for row in result.units],
+        )
+    else:
+        outcome.update(
+            unit=str(result.unit),
+            name=str(result.name),
+            channel=str(result.channel),
+            provenance=getattr(result, "_gwexpy_io", None),
+        )
+    return {"outcome": outcome, "warnings": diagnostics}
+
+
+def _public_read(scenario: str, path: Path) -> dict[str, Any]:
+    result, failure, diagnostics, _ = _read_with_diagnostics(scenario, path)
+    return _fingerprint_read(scenario, result, failure, diagnostics)
 
 
 def _structure_read(scenario: str, path: Path, samples: int) -> dict[str, Any]:
@@ -192,10 +261,21 @@ def _structure_read(scenario: str, path: Path, samples: int) -> dict[str, Any]:
     previous = sys.getprofile()
     sys.setprofile(profile)
     try:
-        public = _public_read(scenario, path)
+        read_result = _read_with_diagnostics(scenario, path)
     finally:
         sys.setprofile(previous)
+    public = _fingerprint_read(scenario, *read_result[:3])
     return {"public": public, "structure": counts}
+
+
+def _wall_read(scenario: str, path: Path) -> dict[str, Any]:
+    """Time only the second public read call; fingerprint after both clocks."""
+    _read_with_diagnostics(scenario, path)
+    read_result = _read_with_diagnostics(scenario, path, timed=True)
+    return {
+        "public": _fingerprint_read(scenario, *read_result[:3]),
+        **read_result[3],
+    }
 
 
 def _read_pss_kib(pid: int) -> int | None:
@@ -245,20 +325,17 @@ def _worker(args: argparse.Namespace) -> None:
             )
             result = _structure_read(args.scenario, path, samples)
         elif args.mode == "wall":
-            _public_read(args.scenario, path)
-            start_wall = time.perf_counter_ns()
-            start_cpu = time.process_time_ns()
-            public = _public_read(args.scenario, path)
-            result = {
-                "public": public,
-                "wall_ns": time.perf_counter_ns() - start_wall,
-                "cpu_ns_parent": time.process_time_ns() - start_cpu,
-            }
+            result = _wall_read(args.scenario, path)
         elif args.mode == "pss":
-            public, held_result = _public_read(args.scenario, path, retain=True)
-            result = {"public": public}
+            print("BX_READY", flush=True)
+            if sys.stdin.readline() != "BX_GO\n":
+                raise RuntimeError("B-X PSS worker did not receive GO")
+            read_result = _read_with_diagnostics(args.scenario, path)
             time.sleep(0.05)  # Include retained output in the sampled tree peak.
-            del held_result
+            print("BX_READ_HELD", flush=True)
+            if sys.stdin.readline() != "BX_STOP\n":
+                raise RuntimeError("B-X PSS worker did not receive STOP")
+            result = {"public": _fingerprint_read(args.scenario, *read_result[:3])}
         else:
             result = {"public": _public_read(args.scenario, path)}
     finally:
@@ -294,36 +371,94 @@ def _invoke(
             raise RuntimeError(f"B-X worker failed: {process.stderr}")
         return json.loads(process.stdout)
     process = subprocess.Popen(
-        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
-    trace = []
+    assert process.stdin is not None and process.stdout is not None
+    pending = bytearray()
     deadline = time.monotonic() + 180
-    while process.poll() is None:
-        if time.monotonic() > deadline:
-            process.kill()
-            raise TimeoutError("B-X PSS worker exceeded 180 seconds")
-        by_pid = {
-            str(pid): value
-            for pid in _descendants(process.pid)
-            if (value := _read_pss_kib(pid)) is not None
-        }
-        trace.append(
-            {
-                "monotonic_ns": time.monotonic_ns(),
-                "pss_kib_by_pid": by_pid,
-                "tree_pss_kib": sum(by_pid.values()),
+
+    def protocol_line() -> bytes:
+        while b"\n" not in pending:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError("B-X PSS worker exceeded 180 seconds")
+            readable, _, _ = select.select(
+                [process.stdout], [], [], min(remaining, 0.25)
+            )
+            if readable:
+                block = os.read(process.stdout.fileno(), 65_536)
+                if not block:
+                    raise RuntimeError("B-X PSS worker ended before a protocol marker")
+                pending.extend(block)
+        line, _, rest = pending.partition(b"\n")
+        pending[:] = rest
+        return bytes(line)
+
+    try:
+        if protocol_line() != b"BX_READY":
+            raise RuntimeError("B-X PSS worker emitted output before READY")
+        process.stdin.write(b"BX_GO\n")
+        process.stdin.flush()
+        interval_start_ns = time.monotonic_ns()
+        trace = []
+
+        def sample_tree() -> None:
+            by_pid = {
+                str(pid): value
+                for pid in _descendants(process.pid)
+                if (value := _read_pss_kib(pid)) is not None
             }
-        )
-        time.sleep(args.sample_ms / 1000)
-    stdout, stderr = process.communicate(timeout=10)
-    if process.returncode:
-        raise RuntimeError(f"B-X PSS worker failed: {stderr}")
+            trace.append(
+                {
+                    "monotonic_ns": time.monotonic_ns(),
+                    "pss_kib_by_pid": by_pid,
+                    "tree_pss_kib": sum(by_pid.values()),
+                }
+            )
+
+        while True:
+            sample_tree()
+            readable, _, _ = select.select(
+                [process.stdout], [], [], args.sample_ms / 1000
+            )
+            if readable:
+                block = os.read(process.stdout.fileno(), 65_536)
+                if not block:
+                    raise RuntimeError("B-X PSS worker ended before READ_HELD")
+                pending.extend(block)
+            if b"\n" in pending:
+                if protocol_line() != b"BX_READ_HELD":
+                    raise RuntimeError("B-X PSS worker emitted output before READ_HELD")
+                break
+            if time.monotonic() > deadline:
+                raise TimeoutError("B-X PSS worker exceeded 180 seconds")
+        # The worker holds the decoded result until STOP, so this sample
+        # observes its retained footprint even if the read finished quickly.
+        sample_tree()
+        interval_end_ns = time.monotonic_ns()
+        process.stdin.write(b"BX_STOP\n")
+        process.stdin.flush()
+        process.stdin.close()
+        process.stdin = None
+        stdout_rest, stderr = process.communicate(timeout=180)
+        if process.returncode:
+            raise RuntimeError(
+                f"B-X PSS worker failed: {stderr.decode(errors='replace')}"
+            )
+        stdout = bytes(pending) + stdout_rest
+    except BaseException:
+        process.kill()
+        process.communicate()
+        raise
     return {
         **json.loads(stdout),
         "peak_tree_pss_kib": max((row["tree_pss_kib"] for row in trace), default=0),
         "pss_trace": trace,
         "pss_sample_ms": args.sample_ms,
-        "worker_stderr": stderr,
+        "pss_interval_start_monotonic_ns": interval_start_ns,
+        "pss_interval_end_monotonic_ns": interval_end_ns,
+        "pss_interval": "after GO until READ_HELD; read result retained; fingerprint after STOP",
+        "worker_stderr": stderr.decode(errors="replace"),
     }
 
 
