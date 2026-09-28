@@ -4,6 +4,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 MATRIX = ROOT.parent / "2026-09-27-public-io-cross-format-post-fix-matrix.json"
+SUMMARY = json.loads((ROOT / "raw" / "qualification-summary.json").read_text())
+assert SUMMARY["candidate_R2"] == "159a338081e1fca2c77030cabe160a458217563b"
+assert (
+    SUMMARY["wheel_sha256"]
+    == "96e1f72e68404c718ad6f881119ede983782d469db6d146141659eac21bd469d"
+)
+assert (
+    SUMMARY["sdist_sha256"]
+    == "515bb91a960e6dfc6f85537bcf4775fa6cbf7e1c60c14141608593160f2d2f7d"
+)
 FINDINGS = [
     f
     for f in json.loads(MATRIX.read_text())["findings"]

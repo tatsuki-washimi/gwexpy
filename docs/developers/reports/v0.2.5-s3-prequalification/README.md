@@ -13,7 +13,11 @@ and sdist (`515bb91a960e6dfc6f85537bcf4775fa6cbf7e1c60c14141608593160f2d2f7d`)
 were installed separately. Both completed the original 17 audit probe
 commands. The relevant raw JSONL outputs for both artifacts are stored under
 `raw/`; `prequalification-38.json` binds each result to the raw SHA-256 and row
-indices. Run `python verify_prequalification.py` here to regenerate it.
+indices. The original command and artifact summary is retained as
+`raw/qualification-summary.json` (SHA-256
+`a5150ef1f8100133f7e78cab6f23fdbca5c104cb3a6d8995c07a24522f6e564d`),
+alongside the wheel and sdist run summaries. Run
+`python verify_prequalification.py` here to regenerate the matrix.
 
 The 26 previously non-blocked scenarios pass case-specific assertions on
 both installed artifacts. `NC-ROUTE-001` needed a supplemental public-read
