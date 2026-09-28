@@ -47,3 +47,5 @@ turn them into passing scenarios. The row indices and raw hashes in
 No new runtime defect was established by the 26 passing checks. The twelve
 blocked dispositions still need explicit review. No release readiness checkbox
 is closed by this pre-qualification.
+The [disposition proposal](disposition-proposal.md) records a reviewable
+way to account for all twelve without labeling them as passing runtime tests.
