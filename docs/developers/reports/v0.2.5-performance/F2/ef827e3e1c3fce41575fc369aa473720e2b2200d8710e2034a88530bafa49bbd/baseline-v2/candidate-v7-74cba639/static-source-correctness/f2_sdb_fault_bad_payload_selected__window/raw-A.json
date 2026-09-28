@@ -1,0 +1,80 @@
+[
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-b-env-b/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "prefix": "/tmp/gwexpy-v025-b-env-b",
+      "python": "3.12.12"
+    },
+    "controller_elapsed_ns": 2576062924,
+    "sample": {
+      "counters": {},
+      "cpu_ns": 246292393,
+      "fingerprint": {
+        "attrs": "None",
+        "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+        "members": {
+          "outTemp": {
+            "class": "gwexpy.timeseries.timeseries.TimeSeries",
+            "dt": "<Quantity 300. s>",
+            "epoch": "<Time object: scale='utc' format='gps' value=1384035218.0>",
+            "name": "outTemp",
+            "sample_rate": "<Quantity 0.00333333 Hz>",
+            "t0": "<Quantity 1.38403522e+09 s>",
+            "times": {
+              "unit": "s",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "1384035218.0",
+                  "1384112018.0",
+                  "1384188518.0"
+                ],
+                "sha256": "f60ab58fe06dda1f3ae4a2ec7ce680427dc0da79beb23f70b24ba3d79082b432",
+                "shape": [
+                  512
+                ]
+              }
+            },
+            "unit": "deg_C",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "15.555555555555555",
+                "18.88888888888889",
+                "21.666666666666668"
+              ],
+              "sha256": "2ec0a4f2dda24258a98d74aa9eeedce2f6847f245d4e10532ac518833bf5dcc2",
+              "shape": [
+                512
+              ]
+            }
+          }
+        },
+        "order": [
+          "outTemp"
+        ]
+      },
+      "fixture_counts": {
+        "input_rows": 4096
+      },
+      "logs": [],
+      "logs_recorded": true,
+      "outcome": "return",
+      "wall_ns": 249030858,
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        },
+        {
+          "category": "builtins.UserWarning",
+          "message": "SDB column 'outTemp': 1 non-numeric value(s) could not be parsed and were set to NaN."
+        }
+      ],
+      "warnings_recorded": true
+    },
+    "stderr": ""
+  }
+]
