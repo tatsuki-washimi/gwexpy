@@ -1,0 +1,72 @@
+[
+  {
+    "audit": {
+      "executable": "/tmp/gwexpy-v025-b-env-b/bin/python",
+      "gwexpy_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.5",
+      "prefix": "/tmp/gwexpy-v025-b-env-b",
+      "python": "3.12.12"
+    },
+    "controller_elapsed_ns": 3038728501,
+    "sample": {
+      "counters": {},
+      "cpu_ns": 263138067,
+      "fingerprint": {
+        "attrs": "None",
+        "class": "gwexpy.timeseries.collections.TimeSeriesDict",
+        "members": {
+          "merge": {
+            "class": "gwexpy.timeseries.timeseries.TimeSeries",
+            "dt": "<Quantity 0.25 s>",
+            "epoch": "<Time object: scale='utc' format='gps' value=0.0>",
+            "name": "merge",
+            "sample_rate": "<Quantity 4. Hz>",
+            "t0": "<Quantity 0. s>",
+            "times": {
+              "unit": "s",
+              "values": {
+                "dtype": "<f8",
+                "selected": [
+                  "0.0",
+                  "32768.0",
+                  "65535.75"
+                ],
+                "sha256": "4ec7a29a129b991e180d4ac22e8e2b3dd9ffcff051c0b4eb66ec90fd5340d842",
+                "shape": [
+                  262144
+                ]
+              }
+            },
+            "unit": "m",
+            "values": {
+              "dtype": "<f8",
+              "selected": [
+                "0.0",
+                "32.0",
+                "4158.0"
+              ],
+              "sha256": "6538558f8f11937ae97b703ad90cb190cc2c57ada4993f25694f9257fa2ca866",
+              "shape": [
+                262144
+              ]
+            }
+          }
+        },
+        "order": [
+          "merge"
+        ]
+      },
+      "fixture_counts": {},
+      "outcome": "return",
+      "wall_ns": 265465312,
+      "warnings": [
+        {
+          "category": "builtins.DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped"
+        }
+      ],
+      "warnings_recorded": true
+    },
+    "stderr": ""
+  }
+]
