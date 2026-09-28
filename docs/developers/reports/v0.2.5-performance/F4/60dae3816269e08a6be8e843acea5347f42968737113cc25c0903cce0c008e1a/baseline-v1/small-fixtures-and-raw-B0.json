@@ -1,0 +1,897 @@
+{
+  "b1_contract": {
+    "capture_status": {
+      "adjacent": {
+        "parallel": "captured",
+        "serial": "captured"
+      },
+      "gap_default": {
+        "parallel": "captured",
+        "serial": "captured"
+      },
+      "gap_pad": {
+        "parallel": "captured",
+        "serial": "captured"
+      },
+      "out_of_range_malformed": {
+        "parallel": "captured",
+        "serial": "captured"
+      },
+      "out_of_range_valid": {
+        "parallel": "captured",
+        "serial": "captured"
+      },
+      "overlap_default": {
+        "parallel": "captured",
+        "serial": "captured"
+      },
+      "selected_malformed": {
+        "parallel": "captured",
+        "serial": "captured"
+      },
+      "selected_valid": {
+        "parallel": "captured",
+        "serial": "captured"
+      },
+      "unselected_malformed": {
+        "parallel": "captured",
+        "serial": "captured"
+      },
+      "unselected_valid": {
+        "parallel": "captured",
+        "serial": "captured"
+      },
+      "unsorted_adjacent": {
+        "parallel": "captured",
+        "serial": "captured"
+      }
+    },
+    "comparison": "Each case stores serial and parallel=2 public B1 outcomes, including channel order and per-channel values hash, dtype, shape, t0, dt, span, warning category/message, or exact exception type/message.",
+    "gap_default": "B1 default merge mode is gap='raise'; discontiguous and overlapping spans should return captured errors. gap_pad separately captures padded gap output including NaN positions.",
+    "public_reads": {
+      "adjacent": {
+        "parallel": {
+          "outcome": {
+            "fingerprint": {
+              "channel_order": [
+                "K1:V025-F4-PRIMARY"
+              ],
+              "channels": {
+                "K1:V025-F4-PRIMARY": {
+                  "dt_s": 0.125,
+                  "dtype": "<f8",
+                  "first_values": [
+                    0.0,
+                    1.0,
+                    2.0,
+                    3.0
+                  ],
+                  "last_values": [
+                    104.0,
+                    105.0,
+                    106.0,
+                    107.0
+                  ],
+                  "shape": [
+                    16
+                  ],
+                  "span_gps": [
+                    1000000000.0,
+                    1000000002.0
+                  ],
+                  "t0_gps": 1000000000.0,
+                  "values_sha256": "c06ea67bf5b10416f0aebc4e8742e471c5e5112bc09eec88a181128358d8ed0a"
+                }
+              }
+            },
+            "kind": "normal-return"
+          },
+          "parallel": 2,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        },
+        "serial": {
+          "outcome": {
+            "fingerprint": {
+              "channel_order": [
+                "K1:V025-F4-PRIMARY"
+              ],
+              "channels": {
+                "K1:V025-F4-PRIMARY": {
+                  "dt_s": 0.125,
+                  "dtype": "<f8",
+                  "first_values": [
+                    0.0,
+                    1.0,
+                    2.0,
+                    3.0
+                  ],
+                  "last_values": [
+                    104.0,
+                    105.0,
+                    106.0,
+                    107.0
+                  ],
+                  "shape": [
+                    16
+                  ],
+                  "span_gps": [
+                    1000000000.0,
+                    1000000002.0
+                  ],
+                  "t0_gps": 1000000000.0,
+                  "values_sha256": "c06ea67bf5b10416f0aebc4e8742e471c5e5112bc09eec88a181128358d8ed0a"
+                }
+              }
+            },
+            "kind": "normal-return"
+          },
+          "parallel": false,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        }
+      },
+      "gap_default": {
+        "parallel": {
+          "outcome": {
+            "kind": "error",
+            "message": "Cannot append discontiguous TimeSeries\n    TimeSeries 1 span: [1000000001.0 ... 1000000002.0)\n    TimeSeries 2 span: [1000000002.25 ... 1000000003.25)",
+            "type": "builtins.ValueError"
+          },
+          "parallel": 2,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        },
+        "serial": {
+          "outcome": {
+            "kind": "error",
+            "message": "Cannot append discontiguous TimeSeries\n    TimeSeries 1 span: [1000000001.0 ... 1000000002.0)\n    TimeSeries 2 span: [1000000002.25 ... 1000000003.25)",
+            "type": "builtins.ValueError"
+          },
+          "parallel": false,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        }
+      },
+      "gap_pad": {
+        "parallel": {
+          "outcome": {
+            "fingerprint": {
+              "channel_order": [
+                "K1:V025-F4-PRIMARY"
+              ],
+              "channels": {
+                "K1:V025-F4-PRIMARY": {
+                  "dt_s": 0.125,
+                  "dtype": "<f8",
+                  "first_values": [
+                    100.0,
+                    101.0,
+                    102.0,
+                    103.0
+                  ],
+                  "last_values": [
+                    204.0,
+                    205.0,
+                    206.0,
+                    207.0
+                  ],
+                  "shape": [
+                    18
+                  ],
+                  "span_gps": [
+                    1000000001.0,
+                    1000000003.25
+                  ],
+                  "t0_gps": 1000000001.0,
+                  "values_sha256": "1f3cb6261671f74f2bfa363e90a23edbad94d2bbe15489bda0f52a685f23b6eb"
+                }
+              }
+            },
+            "kind": "normal-return"
+          },
+          "parallel": 2,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        },
+        "serial": {
+          "outcome": {
+            "fingerprint": {
+              "channel_order": [
+                "K1:V025-F4-PRIMARY"
+              ],
+              "channels": {
+                "K1:V025-F4-PRIMARY": {
+                  "dt_s": 0.125,
+                  "dtype": "<f8",
+                  "first_values": [
+                    100.0,
+                    101.0,
+                    102.0,
+                    103.0
+                  ],
+                  "last_values": [
+                    204.0,
+                    205.0,
+                    206.0,
+                    207.0
+                  ],
+                  "shape": [
+                    18
+                  ],
+                  "span_gps": [
+                    1000000001.0,
+                    1000000003.25
+                  ],
+                  "t0_gps": 1000000001.0,
+                  "values_sha256": "1f3cb6261671f74f2bfa363e90a23edbad94d2bbe15489bda0f52a685f23b6eb"
+                }
+              }
+            },
+            "kind": "normal-return"
+          },
+          "parallel": false,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        }
+      },
+      "out_of_range_malformed": {
+        "parallel": {
+          "outcome": {
+            "kind": "error",
+            "message": "Not a frame file (Invalid FrHeader).",
+            "type": "builtins.RuntimeError"
+          },
+          "parallel": 2,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        },
+        "serial": {
+          "outcome": {
+            "kind": "error",
+            "message": "Not a frame file (Invalid FrHeader).",
+            "type": "builtins.RuntimeError"
+          },
+          "parallel": false,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        }
+      },
+      "out_of_range_valid": {
+        "parallel": {
+          "outcome": {
+            "kind": "error",
+            "message": "failed to read 'K1:V025-F4-PRIMARY' from '/tmp/gwexpy-v025-f4-fixtures-b0/part_05.gwf' in interval [1000000000 ... 1000000001)",
+            "type": "builtins.ValueError"
+          },
+          "parallel": 2,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        },
+        "serial": {
+          "outcome": {
+            "kind": "error",
+            "message": "failed to read 'K1:V025-F4-PRIMARY' from '/tmp/gwexpy-v025-f4-fixtures-b0/part_05.gwf' in interval [1000000000 ... 1000000001)",
+            "type": "builtins.ValueError"
+          },
+          "parallel": false,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        }
+      },
+      "overlap_default": {
+        "parallel": {
+          "outcome": {
+            "kind": "error",
+            "message": "Cannot append overlapping TimeSeriess:\n    TimeSeries 1 span: [1000000002.25 ... 1000000003.25)\n    TimeSeries 2 span: [1000000003.0 ... 1000000004.0)",
+            "type": "builtins.ValueError"
+          },
+          "parallel": 2,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        },
+        "serial": {
+          "outcome": {
+            "kind": "error",
+            "message": "Cannot append overlapping TimeSeriess:\n    TimeSeries 1 span: [1000000002.25 ... 1000000003.25)\n    TimeSeries 2 span: [1000000003.0 ... 1000000004.0)",
+            "type": "builtins.ValueError"
+          },
+          "parallel": false,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        }
+      },
+      "selected_malformed": {
+        "parallel": {
+          "outcome": {
+            "kind": "error",
+            "message": "Not a frame file (Invalid FrHeader).",
+            "type": "builtins.RuntimeError"
+          },
+          "parallel": 2,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        },
+        "serial": {
+          "outcome": {
+            "kind": "error",
+            "message": "Not a frame file (Invalid FrHeader).",
+            "type": "builtins.RuntimeError"
+          },
+          "parallel": false,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        }
+      },
+      "selected_valid": {
+        "parallel": {
+          "outcome": {
+            "fingerprint": {
+              "channel_order": [
+                "K1:V025-F4-PRIMARY"
+              ],
+              "channels": {
+                "K1:V025-F4-PRIMARY": {
+                  "dt_s": 0.125,
+                  "dtype": "<f8",
+                  "first_values": [
+                    0.0,
+                    1.0,
+                    2.0,
+                    3.0
+                  ],
+                  "last_values": [
+                    4.0,
+                    5.0,
+                    6.0,
+                    7.0
+                  ],
+                  "shape": [
+                    8
+                  ],
+                  "span_gps": [
+                    1000000000.0,
+                    1000000001.0
+                  ],
+                  "t0_gps": 1000000000.0,
+                  "values_sha256": "e718add56286e18ff81450763e0c2f227a35a73195fe0ed038a3d155711599e9"
+                }
+              }
+            },
+            "kind": "normal-return"
+          },
+          "parallel": 2,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        },
+        "serial": {
+          "outcome": {
+            "fingerprint": {
+              "channel_order": [
+                "K1:V025-F4-PRIMARY"
+              ],
+              "channels": {
+                "K1:V025-F4-PRIMARY": {
+                  "dt_s": 0.125,
+                  "dtype": "<f8",
+                  "first_values": [
+                    0.0,
+                    1.0,
+                    2.0,
+                    3.0
+                  ],
+                  "last_values": [
+                    4.0,
+                    5.0,
+                    6.0,
+                    7.0
+                  ],
+                  "shape": [
+                    8
+                  ],
+                  "span_gps": [
+                    1000000000.0,
+                    1000000001.0
+                  ],
+                  "t0_gps": 1000000000.0,
+                  "values_sha256": "e718add56286e18ff81450763e0c2f227a35a73195fe0ed038a3d155711599e9"
+                }
+              }
+            },
+            "kind": "normal-return"
+          },
+          "parallel": false,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        }
+      },
+      "unselected_malformed": {
+        "parallel": {
+          "outcome": {
+            "kind": "error",
+            "message": "Not a frame file (Invalid FrHeader).",
+            "type": "builtins.RuntimeError"
+          },
+          "parallel": 2,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        },
+        "serial": {
+          "outcome": {
+            "kind": "error",
+            "message": "Not a frame file (Invalid FrHeader).",
+            "type": "builtins.RuntimeError"
+          },
+          "parallel": false,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        }
+      },
+      "unselected_valid": {
+        "parallel": {
+          "outcome": {
+            "kind": "error",
+            "message": "Could not resolve GWF frame span for '/tmp/gwexpy-v025-f4-fixtures-b0/unselected_valid.gwf'",
+            "type": "builtins.ValueError"
+          },
+          "parallel": 2,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        },
+        "serial": {
+          "outcome": {
+            "kind": "error",
+            "message": "channel 'K1:V025-F4-PRIMARY' not found",
+            "type": "builtins.ValueError"
+          },
+          "parallel": false,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        }
+      },
+      "unsorted_adjacent": {
+        "parallel": {
+          "outcome": {
+            "fingerprint": {
+              "channel_order": [
+                "K1:V025-F4-PRIMARY"
+              ],
+              "channels": {
+                "K1:V025-F4-PRIMARY": {
+                  "dt_s": 0.125,
+                  "dtype": "<f8",
+                  "first_values": [
+                    0.0,
+                    1.0,
+                    2.0,
+                    3.0
+                  ],
+                  "last_values": [
+                    104.0,
+                    105.0,
+                    106.0,
+                    107.0
+                  ],
+                  "shape": [
+                    16
+                  ],
+                  "span_gps": [
+                    1000000000.0,
+                    1000000002.0
+                  ],
+                  "t0_gps": 1000000000.0,
+                  "values_sha256": "c06ea67bf5b10416f0aebc4e8742e471c5e5112bc09eec88a181128358d8ed0a"
+                }
+              }
+            },
+            "kind": "normal-return"
+          },
+          "parallel": 2,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        },
+        "serial": {
+          "outcome": {
+            "fingerprint": {
+              "channel_order": [
+                "K1:V025-F4-PRIMARY"
+              ],
+              "channels": {
+                "K1:V025-F4-PRIMARY": {
+                  "dt_s": 0.125,
+                  "dtype": "<f8",
+                  "first_values": [
+                    0.0,
+                    1.0,
+                    2.0,
+                    3.0
+                  ],
+                  "last_values": [
+                    104.0,
+                    105.0,
+                    106.0,
+                    107.0
+                  ],
+                  "shape": [
+                    16
+                  ],
+                  "span_gps": [
+                    1000000000.0,
+                    1000000002.0
+                  ],
+                  "t0_gps": 1000000000.0,
+                  "values_sha256": "c06ea67bf5b10416f0aebc4e8742e471c5e5112bc09eec88a181128358d8ed0a"
+                }
+              }
+            },
+            "kind": "normal-return"
+          },
+          "parallel": false,
+          "warnings": [
+            {
+              "category": "builtins.DeprecationWarning",
+              "message": "Compatibility support for python2 has been dropped"
+            }
+          ]
+        }
+      }
+    },
+    "runtime_context": {
+      "gwexpy_file": "/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/__init__.py",
+      "gwexpy_version": "0.2.4",
+      "gwpy_version": "4.0.1",
+      "helper_sha256": "e01018185bae922cb582088bc30f62457d551b2951319dc4a4f37dbfc48c3dc7",
+      "loaded_package_source_hashes": {
+        "timeseries/_gwf_io.py": "f662a1f12e45fb06c0aed346317ad89e8709df59cde3b13ad6d03edb9c672207",
+        "timeseries/collections.py": "2063346667db0a2fd5e88409e053d345c180aa769d2498dd42acc97237d11448",
+        "timeseries/io/gwf/__init__.py": "c5a3086525bc79182638956cebbcd8018f1d8c0613ad87361478b15b617a57b6",
+        "timeseries/timeseries.py": "c951ab4135ae277159582fc2f72b8f878befa89b4f167f1c0de7e13527fe480e"
+      },
+      "platform": "Linux-6.17.0-1032-oem-x86_64-with-glibc2.39",
+      "python_executable": "/home/washimi/miniforge3/envs/main/bin/python3.12",
+      "python_version": "3.12.12 | packaged by conda-forge | (main, Oct 22 2025, 23:25:55) [GCC 14.3.0]",
+      "runtime_environment_sha256": "de592f73d4dc1fe18a22f0c97ba82439624b5ae660ddaa2115f254d31c0538bd",
+      "source_head": "1eb2cd62c365a7ed3252ed1b1fe82f9265c5ef1c"
+    },
+    "structural_instrumentation": "For serial, retain after each read_one result and release after merge consumes it. For parallel, retain worker materialization and parent unpickle as separate physical objects, then release each after its last owner drops it. A shared manager counter spans pool startup through worker exit.",
+    "structural_metric": "Instrument each unique materialized per-source TimeSeriesDict once at creation/receipt and release it when its last owning reference is discarded. SharedLivePartCounter reports max simultaneous object count across workers and parent. Do not count aliases (Future/completed_parts/parts references) twice or sum independent per-process peaks."
+  },
+  "backend": "gwpy GWF public writer/reader",
+  "capability_blocker": null,
+  "channel": "K1:V025-F4-PRIMARY",
+  "expected_fingerprints": {
+    "individual_parts": {
+      "part_00.gwf": {
+        "dt_s": 0.125,
+        "dtype": "<f8",
+        "first_values": [
+          0.0,
+          1.0,
+          2.0,
+          3.0
+        ],
+        "last_values": [
+          4.0,
+          5.0,
+          6.0,
+          7.0
+        ],
+        "shape": [
+          8
+        ],
+        "t0_gps": 1000000000.0,
+        "values_sha256": "e718add56286e18ff81450763e0c2f227a35a73195fe0ed038a3d155711599e9"
+      },
+      "part_01.gwf": {
+        "dt_s": 0.125,
+        "dtype": "<f8",
+        "first_values": [
+          100.0,
+          101.0,
+          102.0,
+          103.0
+        ],
+        "last_values": [
+          104.0,
+          105.0,
+          106.0,
+          107.0
+        ],
+        "shape": [
+          8
+        ],
+        "t0_gps": 1000000001.0,
+        "values_sha256": "f21771349f04d01bfaac91e0bf254e53685977832def6a6afc7ae73bef4fa3a0"
+      },
+      "part_02_gap.gwf": {
+        "dt_s": 0.125,
+        "dtype": "<f8",
+        "first_values": [
+          200.0,
+          201.0,
+          202.0,
+          203.0
+        ],
+        "last_values": [
+          204.0,
+          205.0,
+          206.0,
+          207.0
+        ],
+        "shape": [
+          8
+        ],
+        "t0_gps": 1000000002.25,
+        "values_sha256": "2a8be1e6a4ae46e892759c8b09acde06cb6dd53e9fb4422bffc23cfe66f11234"
+      },
+      "part_03_overlap.gwf": {
+        "dt_s": 0.125,
+        "dtype": "<f8",
+        "first_values": [
+          300.0,
+          301.0,
+          302.0,
+          303.0
+        ],
+        "last_values": [
+          304.0,
+          305.0,
+          306.0,
+          307.0
+        ],
+        "shape": [
+          8
+        ],
+        "t0_gps": 1000000003.0,
+        "values_sha256": "1adc453dca1afe8ba86eaadf077e766b50d9455535a27e4aecf4db79a6cf28eb"
+      },
+      "part_04.gwf": {
+        "dt_s": 0.125,
+        "dtype": "<f8",
+        "first_values": [
+          400.0,
+          401.0,
+          402.0,
+          403.0
+        ],
+        "last_values": [
+          404.0,
+          405.0,
+          406.0,
+          407.0
+        ],
+        "shape": [
+          8
+        ],
+        "t0_gps": 1000000004.0,
+        "values_sha256": "6553d79bd3d23925594d8baa9c890794a475442b0df5a7f655b618bb800e7e6e"
+      },
+      "part_05.gwf": {
+        "dt_s": 0.125,
+        "dtype": "<f8",
+        "first_values": [
+          500.0,
+          501.0,
+          502.0,
+          503.0
+        ],
+        "last_values": [
+          504.0,
+          505.0,
+          506.0,
+          507.0
+        ],
+        "shape": [
+          8
+        ],
+        "t0_gps": 1000000005.0,
+        "values_sha256": "2c674b612d1a93d5613e8fef403380eeb24702268d81c7c16c1b07ded0bf6f36"
+      }
+    },
+    "unselected_valid": {
+      "dt_s": 0.125,
+      "dtype": "<f8",
+      "first_values": [
+        9000.0,
+        9001.0,
+        9002.0,
+        9003.0
+      ],
+      "last_values": [
+        9004.0,
+        9005.0,
+        9006.0,
+        9007.0
+      ],
+      "shape": [
+        8
+      ],
+      "t0_gps": 1000000100.0,
+      "values_sha256": "b48aac6c1f3527e66eb3acf5315dcc5ca76e22385d13093bdfbd99f02e979e3d"
+    }
+  },
+  "fault_cases": {
+    "case_note": "Malformed GWF is source-level corruption. The unselected pair requests OTHER_CHANNEL from an OTHER_CHANNEL valid frame plus a malformed listed source; it tests whether B1 opens every source even when one cannot contribute selected samples.",
+    "out_of_range_malformed": "out_of_range_malformed.gwf",
+    "out_of_range_valid": "part_05.gwf",
+    "selected_malformed": "selected_malformed.gwf",
+    "selected_valid": "part_00.gwf",
+    "unselected_malformed": "unselected_malformed.gwf",
+    "unselected_valid": "unselected_valid.gwf"
+  },
+  "files": [
+    {
+      "name": "out_of_range_malformed.gwf",
+      "sha256": "d3590db76524dcd46ca8aaae4ab6cd224a98dc8f7275b0bbf8d1389cdbd15a87",
+      "size_bytes": 54
+    },
+    {
+      "name": "part_00.gwf",
+      "sha256": "f683a87cc48ee9ffe42106cb6cc5e6f7d0e2528ba72330240ce4d3c412473eb6",
+      "size_bytes": 14010
+    },
+    {
+      "name": "part_01.gwf",
+      "sha256": "e15cc73b6043d4cc3469a6c598e7160c2f1f8ac74b970dbd20389e61576c4857",
+      "size_bytes": 14014
+    },
+    {
+      "name": "part_02_gap.gwf",
+      "sha256": "b124001689874fb7dee2959b3a63f4884aa0b5fa10d2dc90c1f1d475c3ca172c",
+      "size_bytes": 14014
+    },
+    {
+      "name": "part_03_overlap.gwf",
+      "sha256": "41b79485687f513258615d38e925383fbc65ca3c6234046512b232476518a872",
+      "size_bytes": 14017
+    },
+    {
+      "name": "part_04.gwf",
+      "sha256": "a15876025a6ad2be479a01c188ea19716085601b1b14d00764e25512d1b8bcee",
+      "size_bytes": 14014
+    },
+    {
+      "name": "part_05.gwf",
+      "sha256": "7b334d78eeb63c6beb4960d2aac2aee60235c8cb60416d57a7cb53e04cbf3d11",
+      "size_bytes": 14016
+    },
+    {
+      "name": "selected_malformed.gwf",
+      "sha256": "bccaeee54c0f87be96285ad87c6a0d82266287d70bcea81b8b449d58f672b908",
+      "size_bytes": 39
+    },
+    {
+      "name": "unselected_malformed.gwf",
+      "sha256": "61a25b6ff6f26718912bb7f6304336433fc12f259e56dd24e0157ab62698a3c2",
+      "size_bytes": 66
+    },
+    {
+      "name": "unselected_valid.gwf",
+      "sha256": "d9d6990d0846887a2319be7e6cfc58d4c67a4468d005aa6136551309800ebbc9",
+      "size_bytes": 14007
+    }
+  ],
+  "generator": "benchmarks/io/f4_gwf_fixtures.py:write_fixtures",
+  "other_channel": "K1:V025-F4-OTHER",
+  "sample_rate_hz": 8.0,
+  "samples_per_part": 8,
+  "schema": "gwexpy-v025-b-f4-fixtures-v1",
+  "source_order": [
+    "part_00.gwf",
+    "part_01.gwf",
+    "part_02_gap.gwf",
+    "part_03_overlap.gwf",
+    "part_04.gwf",
+    "part_05.gwf"
+  ],
+  "stress_fixture_recipe": {
+    "decoded_sample_bytes": 16777216,
+    "parts": 256,
+    "purpose": "256 parts exceeds the maximum 8-worker queue by 32x while keeping decoded values fixed at 16 MiB.",
+    "samples_per_part": 8192,
+    "writer": "write_stress_fixtures(output_dir)"
+  },
+  "temporal_cases": {
+    "adjacent": [
+      "part_00.gwf",
+      "part_01.gwf"
+    ],
+    "deliberately_unsorted": [
+      "part_04.gwf",
+      "part_00.gwf",
+      "part_03_overlap.gwf"
+    ],
+    "gap": [
+      "part_01.gwf",
+      "part_02_gap.gwf"
+    ],
+    "overlap": [
+      "part_02_gap.gwf",
+      "part_03_overlap.gwf"
+    ]
+  }
+}

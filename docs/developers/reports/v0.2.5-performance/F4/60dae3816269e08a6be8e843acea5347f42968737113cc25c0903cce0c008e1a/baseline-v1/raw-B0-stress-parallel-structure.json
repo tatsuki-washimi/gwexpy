@@ -1,0 +1,1862 @@
+{
+  "concurrency_audit": "Old R waits for executor shutdown before building parts from completed_parts. The parent 512-object peak therefore occurs after workers exit. Before shutdown the parent retains at most 256 completed parts and two workers each execute one part task; the earlier concurrent count is at most 258. Aliases in ordered_parts do not add objects. This source bound is not a process-memory or PSS measurement.",
+  "fixture_manifest_sha256": "7c6234855cc36d7134f79232fd41edd245e4ab7377260f9fec009ef2cda72419",
+  "helper_sha256": "d8ef2672adfe2919025d73b64907b50ffc5df28bf352ffaf1df2c0c7dbb95daf",
+  "mode": "structure",
+  "outcome": {
+    "fingerprint": {
+      "channel_order": [
+        "K1:V025-F4-PRIMARY"
+      ],
+      "channels": {
+        "K1:V025-F4-PRIMARY": {
+          "dt_s": 0.125,
+          "dtype": "<f8",
+          "first_values": [
+            0.0,
+            1.0,
+            2.0,
+            3.0
+          ],
+          "last_values": [
+            2097148.0,
+            2097149.0,
+            2097150.0,
+            2097151.0
+          ],
+          "shape": [
+            2097152
+          ],
+          "span_gps": [
+            1000000000.0,
+            1000262144.0
+          ],
+          "t0_gps": 1000000000.0,
+          "unit": "m",
+          "values_sha256": "d27fdd803688978c1a5d86bcaad14ad4a49186bcb24e93010f5b4d517e517157"
+        }
+      }
+    },
+    "kind": "normal-return"
+  },
+  "parallel": 2,
+  "parent_part_snapshots": [
+    {
+      "completed_parts": 1,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 1
+    },
+    {
+      "completed_parts": 2,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 2
+    },
+    {
+      "completed_parts": 3,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 3
+    },
+    {
+      "completed_parts": 4,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 4
+    },
+    {
+      "completed_parts": 5,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 5
+    },
+    {
+      "completed_parts": 6,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 6
+    },
+    {
+      "completed_parts": 7,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 7
+    },
+    {
+      "completed_parts": 8,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 8
+    },
+    {
+      "completed_parts": 9,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 9
+    },
+    {
+      "completed_parts": 10,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 10
+    },
+    {
+      "completed_parts": 11,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 11
+    },
+    {
+      "completed_parts": 12,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 12
+    },
+    {
+      "completed_parts": 13,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 13
+    },
+    {
+      "completed_parts": 14,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 14
+    },
+    {
+      "completed_parts": 15,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 15
+    },
+    {
+      "completed_parts": 16,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 16
+    },
+    {
+      "completed_parts": 17,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 17
+    },
+    {
+      "completed_parts": 18,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 18
+    },
+    {
+      "completed_parts": 19,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 19
+    },
+    {
+      "completed_parts": 20,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 20
+    },
+    {
+      "completed_parts": 21,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 21
+    },
+    {
+      "completed_parts": 22,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 22
+    },
+    {
+      "completed_parts": 23,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 23
+    },
+    {
+      "completed_parts": 24,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 24
+    },
+    {
+      "completed_parts": 25,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 25
+    },
+    {
+      "completed_parts": 26,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 26
+    },
+    {
+      "completed_parts": 27,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 27
+    },
+    {
+      "completed_parts": 28,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 28
+    },
+    {
+      "completed_parts": 29,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 29
+    },
+    {
+      "completed_parts": 30,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 30
+    },
+    {
+      "completed_parts": 31,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 31
+    },
+    {
+      "completed_parts": 32,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 32
+    },
+    {
+      "completed_parts": 33,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 33
+    },
+    {
+      "completed_parts": 34,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 34
+    },
+    {
+      "completed_parts": 35,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 35
+    },
+    {
+      "completed_parts": 36,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 36
+    },
+    {
+      "completed_parts": 37,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 37
+    },
+    {
+      "completed_parts": 38,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 38
+    },
+    {
+      "completed_parts": 39,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 39
+    },
+    {
+      "completed_parts": 40,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 40
+    },
+    {
+      "completed_parts": 41,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 41
+    },
+    {
+      "completed_parts": 42,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 42
+    },
+    {
+      "completed_parts": 43,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 43
+    },
+    {
+      "completed_parts": 44,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 44
+    },
+    {
+      "completed_parts": 45,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 45
+    },
+    {
+      "completed_parts": 46,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 46
+    },
+    {
+      "completed_parts": 47,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 47
+    },
+    {
+      "completed_parts": 48,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 48
+    },
+    {
+      "completed_parts": 49,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 49
+    },
+    {
+      "completed_parts": 50,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 50
+    },
+    {
+      "completed_parts": 51,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 51
+    },
+    {
+      "completed_parts": 52,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 52
+    },
+    {
+      "completed_parts": 53,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 53
+    },
+    {
+      "completed_parts": 54,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 54
+    },
+    {
+      "completed_parts": 55,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 55
+    },
+    {
+      "completed_parts": 56,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 56
+    },
+    {
+      "completed_parts": 57,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 57
+    },
+    {
+      "completed_parts": 58,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 58
+    },
+    {
+      "completed_parts": 59,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 59
+    },
+    {
+      "completed_parts": 60,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 60
+    },
+    {
+      "completed_parts": 61,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 61
+    },
+    {
+      "completed_parts": 62,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 62
+    },
+    {
+      "completed_parts": 63,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 63
+    },
+    {
+      "completed_parts": 64,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 64
+    },
+    {
+      "completed_parts": 65,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 65
+    },
+    {
+      "completed_parts": 66,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 66
+    },
+    {
+      "completed_parts": 67,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 67
+    },
+    {
+      "completed_parts": 68,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 68
+    },
+    {
+      "completed_parts": 69,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 69
+    },
+    {
+      "completed_parts": 70,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 70
+    },
+    {
+      "completed_parts": 71,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 71
+    },
+    {
+      "completed_parts": 72,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 72
+    },
+    {
+      "completed_parts": 73,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 73
+    },
+    {
+      "completed_parts": 74,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 74
+    },
+    {
+      "completed_parts": 75,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 75
+    },
+    {
+      "completed_parts": 76,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 76
+    },
+    {
+      "completed_parts": 77,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 77
+    },
+    {
+      "completed_parts": 78,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 78
+    },
+    {
+      "completed_parts": 79,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 79
+    },
+    {
+      "completed_parts": 80,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 80
+    },
+    {
+      "completed_parts": 81,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 81
+    },
+    {
+      "completed_parts": 82,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 82
+    },
+    {
+      "completed_parts": 83,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 83
+    },
+    {
+      "completed_parts": 84,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 84
+    },
+    {
+      "completed_parts": 85,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 85
+    },
+    {
+      "completed_parts": 86,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 86
+    },
+    {
+      "completed_parts": 87,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 87
+    },
+    {
+      "completed_parts": 88,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 88
+    },
+    {
+      "completed_parts": 89,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 89
+    },
+    {
+      "completed_parts": 90,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 90
+    },
+    {
+      "completed_parts": 91,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 91
+    },
+    {
+      "completed_parts": 92,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 92
+    },
+    {
+      "completed_parts": 93,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 93
+    },
+    {
+      "completed_parts": 94,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 94
+    },
+    {
+      "completed_parts": 95,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 95
+    },
+    {
+      "completed_parts": 96,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 96
+    },
+    {
+      "completed_parts": 97,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 97
+    },
+    {
+      "completed_parts": 98,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 98
+    },
+    {
+      "completed_parts": 99,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 99
+    },
+    {
+      "completed_parts": 100,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 100
+    },
+    {
+      "completed_parts": 101,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 101
+    },
+    {
+      "completed_parts": 102,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 102
+    },
+    {
+      "completed_parts": 103,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 103
+    },
+    {
+      "completed_parts": 104,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 104
+    },
+    {
+      "completed_parts": 105,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 105
+    },
+    {
+      "completed_parts": 106,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 106
+    },
+    {
+      "completed_parts": 107,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 107
+    },
+    {
+      "completed_parts": 108,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 108
+    },
+    {
+      "completed_parts": 109,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 109
+    },
+    {
+      "completed_parts": 110,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 110
+    },
+    {
+      "completed_parts": 111,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 111
+    },
+    {
+      "completed_parts": 112,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 112
+    },
+    {
+      "completed_parts": 113,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 113
+    },
+    {
+      "completed_parts": 114,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 114
+    },
+    {
+      "completed_parts": 115,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 115
+    },
+    {
+      "completed_parts": 116,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 116
+    },
+    {
+      "completed_parts": 117,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 117
+    },
+    {
+      "completed_parts": 118,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 118
+    },
+    {
+      "completed_parts": 119,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 119
+    },
+    {
+      "completed_parts": 120,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 120
+    },
+    {
+      "completed_parts": 121,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 121
+    },
+    {
+      "completed_parts": 122,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 122
+    },
+    {
+      "completed_parts": 123,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 123
+    },
+    {
+      "completed_parts": 124,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 124
+    },
+    {
+      "completed_parts": 125,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 125
+    },
+    {
+      "completed_parts": 126,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 126
+    },
+    {
+      "completed_parts": 127,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 127
+    },
+    {
+      "completed_parts": 128,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 128
+    },
+    {
+      "completed_parts": 129,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 129
+    },
+    {
+      "completed_parts": 130,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 130
+    },
+    {
+      "completed_parts": 131,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 131
+    },
+    {
+      "completed_parts": 132,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 132
+    },
+    {
+      "completed_parts": 133,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 133
+    },
+    {
+      "completed_parts": 134,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 134
+    },
+    {
+      "completed_parts": 135,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 135
+    },
+    {
+      "completed_parts": 136,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 136
+    },
+    {
+      "completed_parts": 137,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 137
+    },
+    {
+      "completed_parts": 138,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 138
+    },
+    {
+      "completed_parts": 139,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 139
+    },
+    {
+      "completed_parts": 140,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 140
+    },
+    {
+      "completed_parts": 141,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 141
+    },
+    {
+      "completed_parts": 142,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 142
+    },
+    {
+      "completed_parts": 143,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 143
+    },
+    {
+      "completed_parts": 144,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 144
+    },
+    {
+      "completed_parts": 145,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 145
+    },
+    {
+      "completed_parts": 146,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 146
+    },
+    {
+      "completed_parts": 147,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 147
+    },
+    {
+      "completed_parts": 148,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 148
+    },
+    {
+      "completed_parts": 149,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 149
+    },
+    {
+      "completed_parts": 150,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 150
+    },
+    {
+      "completed_parts": 151,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 151
+    },
+    {
+      "completed_parts": 152,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 152
+    },
+    {
+      "completed_parts": 153,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 153
+    },
+    {
+      "completed_parts": 154,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 154
+    },
+    {
+      "completed_parts": 155,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 155
+    },
+    {
+      "completed_parts": 156,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 156
+    },
+    {
+      "completed_parts": 157,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 157
+    },
+    {
+      "completed_parts": 158,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 158
+    },
+    {
+      "completed_parts": 159,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 159
+    },
+    {
+      "completed_parts": 160,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 160
+    },
+    {
+      "completed_parts": 161,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 161
+    },
+    {
+      "completed_parts": 162,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 162
+    },
+    {
+      "completed_parts": 163,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 163
+    },
+    {
+      "completed_parts": 164,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 164
+    },
+    {
+      "completed_parts": 165,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 165
+    },
+    {
+      "completed_parts": 166,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 166
+    },
+    {
+      "completed_parts": 167,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 167
+    },
+    {
+      "completed_parts": 168,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 168
+    },
+    {
+      "completed_parts": 169,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 169
+    },
+    {
+      "completed_parts": 170,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 170
+    },
+    {
+      "completed_parts": 171,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 171
+    },
+    {
+      "completed_parts": 172,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 172
+    },
+    {
+      "completed_parts": 173,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 173
+    },
+    {
+      "completed_parts": 174,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 174
+    },
+    {
+      "completed_parts": 175,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 175
+    },
+    {
+      "completed_parts": 176,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 176
+    },
+    {
+      "completed_parts": 177,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 177
+    },
+    {
+      "completed_parts": 178,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 178
+    },
+    {
+      "completed_parts": 179,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 179
+    },
+    {
+      "completed_parts": 180,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 180
+    },
+    {
+      "completed_parts": 181,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 181
+    },
+    {
+      "completed_parts": 182,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 182
+    },
+    {
+      "completed_parts": 183,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 183
+    },
+    {
+      "completed_parts": 184,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 184
+    },
+    {
+      "completed_parts": 185,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 185
+    },
+    {
+      "completed_parts": 186,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 186
+    },
+    {
+      "completed_parts": 187,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 187
+    },
+    {
+      "completed_parts": 188,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 188
+    },
+    {
+      "completed_parts": 189,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 189
+    },
+    {
+      "completed_parts": 190,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 190
+    },
+    {
+      "completed_parts": 191,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 191
+    },
+    {
+      "completed_parts": 192,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 192
+    },
+    {
+      "completed_parts": 193,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 193
+    },
+    {
+      "completed_parts": 194,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 194
+    },
+    {
+      "completed_parts": 195,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 195
+    },
+    {
+      "completed_parts": 196,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 196
+    },
+    {
+      "completed_parts": 197,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 197
+    },
+    {
+      "completed_parts": 198,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 198
+    },
+    {
+      "completed_parts": 199,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 199
+    },
+    {
+      "completed_parts": 200,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 200
+    },
+    {
+      "completed_parts": 201,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 201
+    },
+    {
+      "completed_parts": 202,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 202
+    },
+    {
+      "completed_parts": 203,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 203
+    },
+    {
+      "completed_parts": 204,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 204
+    },
+    {
+      "completed_parts": 205,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 205
+    },
+    {
+      "completed_parts": 206,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 206
+    },
+    {
+      "completed_parts": 207,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 207
+    },
+    {
+      "completed_parts": 208,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 208
+    },
+    {
+      "completed_parts": 209,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 209
+    },
+    {
+      "completed_parts": 210,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 210
+    },
+    {
+      "completed_parts": 211,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 211
+    },
+    {
+      "completed_parts": 212,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 212
+    },
+    {
+      "completed_parts": 213,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 213
+    },
+    {
+      "completed_parts": 214,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 214
+    },
+    {
+      "completed_parts": 215,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 215
+    },
+    {
+      "completed_parts": 216,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 216
+    },
+    {
+      "completed_parts": 217,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 217
+    },
+    {
+      "completed_parts": 218,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 218
+    },
+    {
+      "completed_parts": 219,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 219
+    },
+    {
+      "completed_parts": 220,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 220
+    },
+    {
+      "completed_parts": 221,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 221
+    },
+    {
+      "completed_parts": 222,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 222
+    },
+    {
+      "completed_parts": 223,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 223
+    },
+    {
+      "completed_parts": 224,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 224
+    },
+    {
+      "completed_parts": 225,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 225
+    },
+    {
+      "completed_parts": 226,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 226
+    },
+    {
+      "completed_parts": 227,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 227
+    },
+    {
+      "completed_parts": 228,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 228
+    },
+    {
+      "completed_parts": 229,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 229
+    },
+    {
+      "completed_parts": 230,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 230
+    },
+    {
+      "completed_parts": 231,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 231
+    },
+    {
+      "completed_parts": 232,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 232
+    },
+    {
+      "completed_parts": 233,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 233
+    },
+    {
+      "completed_parts": 234,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 234
+    },
+    {
+      "completed_parts": 235,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 235
+    },
+    {
+      "completed_parts": 236,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 236
+    },
+    {
+      "completed_parts": 237,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 237
+    },
+    {
+      "completed_parts": 238,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 238
+    },
+    {
+      "completed_parts": 239,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 239
+    },
+    {
+      "completed_parts": 240,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 240
+    },
+    {
+      "completed_parts": 241,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 241
+    },
+    {
+      "completed_parts": 242,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 242
+    },
+    {
+      "completed_parts": 243,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 243
+    },
+    {
+      "completed_parts": 244,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 244
+    },
+    {
+      "completed_parts": 245,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 245
+    },
+    {
+      "completed_parts": 246,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 246
+    },
+    {
+      "completed_parts": 247,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 247
+    },
+    {
+      "completed_parts": 248,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 248
+    },
+    {
+      "completed_parts": 249,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 249
+    },
+    {
+      "completed_parts": 250,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 250
+    },
+    {
+      "completed_parts": 251,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 251
+    },
+    {
+      "completed_parts": 252,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 252
+    },
+    {
+      "completed_parts": 253,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 253
+    },
+    {
+      "completed_parts": 254,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 254
+    },
+    {
+      "completed_parts": 255,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 255
+    },
+    {
+      "completed_parts": 256,
+      "line": 842,
+      "ordered_aliases": 0,
+      "parts": 0,
+      "unique_parent_part_objects": 256
+    },
+    {
+      "completed_parts": 256,
+      "line": 857,
+      "ordered_aliases": 0,
+      "parts": 256,
+      "unique_parent_part_objects": 512
+    }
+  ],
+  "parent_unique_part_peak": 512,
+  "route": "parallel",
+  "runtime": {
+    "executable": "/home/washimi/miniforge3/envs/main/bin/python3.12",
+    "gwexpy_path": "/tmp/gwexpy-v025-b-env-a/lib/python3.12/site-packages/gwexpy/__init__.py",
+    "gwexpy_version": "0.2.4",
+    "gwpy_version": "4.0.1",
+    "pid": 1355430,
+    "prefix": "/tmp/gwexpy-v025-b-env-a",
+    "python": "3.12.12 | packaged by conda-forge | (main, Oct 22 2025, 23:25:55) [GCC 14.3.0]"
+  },
+  "schema": "gwexpy-v025-b-f4-stress-capture-v1",
+  "warnings": [
+    {
+      "category": "builtins.DeprecationWarning",
+      "message": "Compatibility support for python2 has been dropped"
+    }
+  ]
+}
