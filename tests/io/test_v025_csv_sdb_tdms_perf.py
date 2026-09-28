@@ -142,6 +142,7 @@ def test_large_selected_parser_materializes_one_payload_column(
         observed.update(
             selected_columns=len(locals_["selected_values"]),
             selected_values=sum(len(v) for v in locals_["selected_values"].values()),
+            converted_values=sum(v.size for v in locals_["selected"].values()),
             buffered_full_rows=len(locals_["chunk_rows"]),
             buffered_matrices=len(locals_["matrix_chunks"]),
             full_matrix=locals_["matrix"] is not None,
@@ -155,6 +156,7 @@ def test_large_selected_parser_materializes_one_payload_column(
     assert observed == {
         "selected_columns": 1,
         "selected_values": 65536,
+        "converted_values": 65536,
         "buffered_full_rows": 0,
         "buffered_matrices": 0,
         "full_matrix": False,
