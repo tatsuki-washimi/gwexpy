@@ -23,7 +23,7 @@ import zipfile
 from pathlib import Path
 from typing import Any
 
-SCHEMA = "gwexpy-v025-bx-capture-v1"
+SCHEMA = "gwexpy-v025-bx-capture-v3"
 FIXTURE_SCHEMA = "gwexpy-v025-bx-fixtures-v1"
 SCENARIOS = {
     "ats32": "ats_int32.ats",
@@ -35,7 +35,36 @@ SCENARIOS = {
     "matrix_object_strings": "matrix_object_strings.nc",
 }
 PRIMARY_SCENARIOS = {"ats32", "ats64", "matrix"}
+HISTORICAL_OBJECT_ORACLE = Path(__file__).with_name("bx_historical_object_oracle.json")
 ORDER = tuple("ABBABAABABBABAABAB")
+
+
+def _allowed_historical_public_delta(
+    args: argparse.Namespace,
+    fixture: dict[str, Any],
+    audits: dict[str, dict[str, Any]],
+    public_by_arm: dict[str, dict[str, Any]],
+    oracle: dict[str, Any] | None,
+) -> bool:
+    """Match every field of the one source- and wheel-bound historical delta."""
+    if (
+        oracle is None
+        or oracle.get("schema") != "gwexpy-v025-bx-historical-object-oracle-v1"
+    ):
+        return False
+    return (
+        args.phase == "historical"
+        and args.scenario == oracle["scenario"]
+        and fixture["manifest_sha256"] == oracle["fixture_manifest_sha256"]
+        and fixture["file_sha256"] == oracle["fixture_file_sha256"]
+        and all(
+            getattr(args, f"source_{arm.lower()}") == oracle["arms"][arm]["source_sha"]
+            and audits[arm]["wheel_sha256"] == oracle["arms"][arm]["wheel_sha256"]
+            and public_by_arm[arm]
+            == oracle["arms"][arm]["public_by_seterr"][args.numpy_seterr]
+            for arm in ("A", "B")
+        )
+    )
 
 
 def _sha256(path: Path) -> str:
@@ -507,19 +536,33 @@ def _capture(args: argparse.Namespace) -> None:
         and args.source_a != args.source_b
     ):
         raise RuntimeError("Different source SHAs were assigned the same wheel bytes")
+    historical_oracle = (
+        json.loads(HISTORICAL_OBJECT_ORACLE.read_text(encoding="utf-8"))
+        if args.phase == "historical" and args.scenario == "matrix_object_strings"
+        else None
+    )
     args.output.mkdir(parents=True, exist_ok=False)
     records: dict[str, list[dict[str, Any]]] = {"A": [], "B": []}
     order = ORDER[: 2 * args.samples]
-    public_oracle = None
+    public_by_arm: dict[str, dict[str, Any]] = {}
+    cross_arm_parity = True
     for index, arm in enumerate(order):
         python, wheel, _ = arms[arm]
         sample = _invoke(python, wheel, args, args.mode)
         public = sample.get("public", sample)
         if args.mode != "audit":
-            if public_oracle is None:
-                public_oracle = public
-            elif public != public_oracle:
-                raise RuntimeError("B-X sample public fingerprint/warnings differ")
+            if arm not in public_by_arm:
+                public_by_arm[arm] = public
+            elif public != public_by_arm[arm]:
+                raise RuntimeError("B-X within-arm public fingerprint/warnings differ")
+            if len(public_by_arm) == 2 and public_by_arm["A"] != public_by_arm["B"]:
+                cross_arm_parity = False
+                if not _allowed_historical_public_delta(
+                    args, fixture, audits, public_by_arm, historical_oracle
+                ):
+                    raise RuntimeError(
+                        "B-X cross-arm public fingerprint/warnings differ"
+                    )
         records[arm].append(sample)
         (args.output / f"sample-{index:02d}-{arm}.json").write_text(
             json.dumps(sample, indent=2, sort_keys=True) + "\n", encoding="utf-8"
@@ -559,7 +602,18 @@ def _capture(args: argparse.Namespace) -> None:
             for arm, (_, _, source) in arms.items()
             for audit in (audits[arm],)
         },
-        "public_parity": True,
+        "within_arm_parity": True,
+        "cross_arm_parity": cross_arm_parity,
+        "public_parity": cross_arm_parity,
+        "historical_public_delta_reason": (
+            historical_oracle["reason"]
+            if not cross_arm_parity and historical_oracle is not None
+            else None
+        ),
+        "historical_public_oracle_sha256": (
+            _sha256(HISTORICAL_OBJECT_ORACLE) if historical_oracle is not None else None
+        ),
+        "public_fingerprints_by_arm": public_by_arm,
         "pss_definition": f"max_t sum(PSS of parent and all live descendants at the same {args.sample_ms} ms sample time); sampled lower bound"
         if args.mode == "pss"
         else None,

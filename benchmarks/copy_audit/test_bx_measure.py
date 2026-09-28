@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import io
+import json
+from copy import deepcopy
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
 
 import numpy as np
+import pytest
 
 from benchmarks.copy_audit import bx_measure
 
@@ -117,3 +120,104 @@ def test_pss_worker_fingerprints_only_after_stop(monkeypatch, capsys) -> None:
     lines = capsys.readouterr().out.splitlines()
     assert lines[:2] == ["BX_READY", "BX_READ_HELD"]
     assert events == ["read", "held", "fingerprint"]
+
+
+@pytest.mark.parametrize("numpy_seterr", ["warn", "raise"])
+@pytest.mark.parametrize(
+    ("phase", "scenario", "tamper", "accepted", "error"),
+    [
+        ("historical", "matrix_object_strings", None, True, None),
+        ("prex", "matrix_object_strings", None, False, "cross-arm"),
+        ("candidate", "matrix_object_strings", None, False, "cross-arm"),
+        ("historical", "matrix_nan_inf", None, False, "cross-arm"),
+        ("historical", "matrix_object_strings", "wrong_a_source", False, "cross-arm"),
+        ("historical", "matrix_object_strings", "wrong_b_wheel", False, "cross-arm"),
+        ("historical", "matrix_object_strings", "a_hash", False, "cross-arm"),
+        ("historical", "matrix_object_strings", "a_unit", False, "cross-arm"),
+        ("historical", "matrix_object_strings", "a_warning", False, "cross-arm"),
+        ("historical", "matrix_object_strings", "b_warning", False, "cross-arm"),
+        ("historical", "matrix_object_strings", "b_message", False, "cross-arm"),
+        ("historical", "matrix_object_strings", "within_arm", False, "within-arm"),
+    ],
+)
+def test_capture_allows_only_characterized_historical_delta(
+    monkeypatch, tmp_path, phase, scenario, tamper, accepted, error, numpy_seterr
+) -> None:
+    """Only exact, source-bound B0/B1 results may differ across arms."""
+    oracle = json.loads(bx_measure.HISTORICAL_OBJECT_ORACLE.read_text())
+    (tmp_path / "manifest.json").write_text('{"generator_sha256": "fixture"}')
+    monkeypatch.setattr(
+        bx_measure,
+        "_fixture",
+        lambda *_: {
+            "path": "fixture",
+            "manifest_sha256": oracle["fixture_manifest_sha256"],
+            "file_sha256": oracle["fixture_file_sha256"],
+        },
+    )
+    counts = {"A": 0, "B": 0}
+
+    def invoke(python, wheel, args, mode):
+        arm = "A" if python == Path("python-a") else "B"
+        audit = {
+            "python": "3.12.12",
+            "distributions": {"numpy": "1.26.4"},
+            "wheel_sha256": oracle["arms"][arm]["wheel_sha256"],
+        }
+        if tamper == "wrong_b_wheel" and arm == "B":
+            audit["wheel_sha256"] = "f" * 64
+        if mode == "audit":
+            return {"audit": audit}
+        counts[arm] += 1
+        public = deepcopy(oracle["arms"][arm]["public_by_seterr"][args.numpy_seterr])
+        if tamper in ("a_hash", "within_arm") and arm == "A":
+            if tamper == "a_hash" or counts[arm] > 1:
+                public["outcome"]["values_sha256"] = "f" * 64
+        if tamper == "a_unit" and arm == "A":
+            public["outcome"]["units"][0][0] = "mV"
+        if tamper == "a_warning" and arm == "A":
+            public["warnings"][0]["message"] += " altered"
+        if tamper == "b_warning" and arm == "B":
+            public["warnings"][0]["message"] += " altered"
+        if tamper == "b_message" and arm == "B":
+            public["outcome"]["message"] += " altered"
+        return {"audit": audit, "public": public}
+
+    monkeypatch.setattr(bx_measure, "_invoke", invoke)
+    args = SimpleNamespace(
+        pre_x_sha=(
+            oracle["arms"]["A"]["source_sha"]
+            if phase == "candidate"
+            else oracle["arms"]["B"]["source_sha"]
+        ),
+        source_a=oracle["arms"]["A"]["source_sha"],
+        source_b=oracle["arms"]["B"]["source_sha"],
+        samples=5,
+        mode="public",
+        scenario=scenario,
+        sample_ms=10,
+        phase=phase,
+        fixtures=tmp_path,
+        python_a=Path("python-a"),
+        python_b=Path("python-b"),
+        wheel_a=Path("wheel-a"),
+        wheel_b=Path("wheel-b"),
+        output=tmp_path / "capture",
+        numpy_seterr=numpy_seterr,
+    )
+    if tamper == "wrong_a_source":
+        args.source_a = "f" * 40
+    if not accepted:
+        with pytest.raises(RuntimeError, match=f"{error} public fingerprint"):
+            bx_measure._capture(args)
+        return
+    bx_measure._capture(args)
+    manifest = json.loads((args.output / "manifest.json").read_text())
+    assert manifest["within_arm_parity"] is True
+    assert manifest["cross_arm_parity"] is False
+    assert manifest["historical_public_delta_reason"]
+    assert manifest["historical_public_oracle_sha256"] == bx_measure._sha256(
+        bx_measure.HISTORICAL_OBJECT_ORACLE
+    )
+    assert manifest["public_fingerprints_by_arm"]["A"]["outcome"]["kind"] == "return"
+    assert manifest["public_fingerprints_by_arm"]["B"]["outcome"]["kind"] == "error"
