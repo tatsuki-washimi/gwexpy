@@ -307,7 +307,7 @@ def _invoke(
                 "tree_pss_kib": sum(by_pid.values()),
             }
         )
-        time.sleep(0.001)
+        time.sleep(args.sample_ms / 1000)
     stdout, stderr = process.communicate(timeout=10)
     if process.returncode:
         raise RuntimeError(f"B-X PSS worker failed: {stderr}")
@@ -315,7 +315,7 @@ def _invoke(
         **json.loads(stdout),
         "peak_tree_pss_kib": max((row["tree_pss_kib"] for row in trace), default=0),
         "pss_trace": trace,
-        "pss_sample_ms": 1,
+        "pss_sample_ms": args.sample_ms,
         "worker_stderr": stderr,
     }
 
@@ -341,6 +341,8 @@ def _capture(args: argparse.Namespace) -> None:
         )
     if args.mode in ("wall", "pss") and args.scenario not in PRIMARY_SCENARIOS:
         raise ValueError("B-X performance capture is limited to primary fixtures")
+    if args.sample_ms not in (1, 10):
+        raise ValueError("B-X PSS uses 10 ms, or 1 ms only for an explicit retry")
     if args.phase == "prex" and args.source_b != args.pre_x_sha:
         raise ValueError("The pre-X arm must match the integrated pre-X SHA")
     if args.phase == "candidate" and args.source_a != args.pre_x_sha:
@@ -409,9 +411,10 @@ def _capture(args: argparse.Namespace) -> None:
             for audit in (audits[arm],)
         },
         "public_parity": True,
-        "pss_definition": "max_t sum(PSS of parent and all live descendants at the same 1 ms sample time); sampled lower bound"
+        "pss_definition": f"max_t sum(PSS of parent and all live descendants at the same {args.sample_ms} ms sample time); sampled lower bound"
         if args.mode == "pss"
         else None,
+        "pss_sample_ms": args.sample_ms if args.mode == "pss" else None,
         "summary": summary,
     }
     (args.output / "manifest.json").write_text(
@@ -443,6 +446,7 @@ def _parser() -> argparse.ArgumentParser:
             )
             item.add_argument("--pre-x-sha", required=True)
             item.add_argument("--samples", type=int, default=9)
+            item.add_argument("--sample-ms", type=int, default=10)
             for arm in ("a", "b"):
                 item.add_argument(f"--python-{arm}", type=Path, required=True)
                 item.add_argument(f"--wheel-{arm}", type=Path, required=True)
