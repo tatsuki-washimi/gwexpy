@@ -1,0 +1,62 @@
+{
+  "concurrency_audit": "Old R waits for executor shutdown before building parts from completed_parts. The parent 512-object peak therefore occurs after workers exit. Before shutdown the parent retains at most 256 completed parts and two workers each execute one part task; the earlier concurrent count is at most 258. Aliases in ordered_parts do not add objects. This source bound is not a process-memory or PSS measurement.",
+  "fixture_manifest_sha256": "7c6234855cc36d7134f79232fd41edd245e4ab7377260f9fec009ef2cda72419",
+  "helper_sha256": "d8ef2672adfe2919025d73b64907b50ffc5df28bf352ffaf1df2c0c7dbb95daf",
+  "mode": "correctness",
+  "outcome": {
+    "fingerprint": {
+      "channel_order": [
+        "K1:V025-F4-PRIMARY"
+      ],
+      "channels": {
+        "K1:V025-F4-PRIMARY": {
+          "dt_s": 0.125,
+          "dtype": "<f8",
+          "first_values": [
+            0.0,
+            1.0,
+            2.0,
+            3.0
+          ],
+          "last_values": [
+            2097148.0,
+            2097149.0,
+            2097150.0,
+            2097151.0
+          ],
+          "shape": [
+            2097152
+          ],
+          "span_gps": [
+            1000000000.0,
+            1000262144.0
+          ],
+          "t0_gps": 1000000000.0,
+          "unit": "m",
+          "values_sha256": "d27fdd803688978c1a5d86bcaad14ad4a49186bcb24e93010f5b4d517e517157"
+        }
+      }
+    },
+    "kind": "normal-return"
+  },
+  "parallel": 2,
+  "parent_part_snapshots": [],
+  "parent_unique_part_peak": null,
+  "route": "parallel",
+  "runtime": {
+    "executable": "/home/washimi/miniforge3/envs/main/bin/python3.12",
+    "gwexpy_path": "/tmp/gwexpy-v025-b-env-b/lib/python3.12/site-packages/gwexpy/__init__.py",
+    "gwexpy_version": "0.2.5",
+    "gwpy_version": "4.0.1",
+    "pid": 1356832,
+    "prefix": "/tmp/gwexpy-v025-b-env-b",
+    "python": "3.12.12 | packaged by conda-forge | (main, Oct 22 2025, 23:25:55) [GCC 14.3.0]"
+  },
+  "schema": "gwexpy-v025-b-f4-stress-capture-v1",
+  "warnings": [
+    {
+      "category": "builtins.DeprecationWarning",
+      "message": "Compatibility support for python2 has been dropped"
+    }
+  ]
+}
