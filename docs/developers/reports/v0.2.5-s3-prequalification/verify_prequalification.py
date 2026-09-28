@@ -1,3 +1,4 @@
+import argparse
 import hashlib
 import json
 import re
@@ -5,15 +6,49 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 MATRIX = ROOT.parent / "2026-09-27-public-io-cross-format-post-fix-matrix.json"
-SUMMARY = json.loads((ROOT / "raw" / "qualification-summary.json").read_text())
-assert SUMMARY["candidate_R2"] == "159a338081e1fca2c77030cabe160a458217563b"
-assert (
-    SUMMARY["wheel_sha256"]
-    == "96e1f72e68404c718ad6f881119ede983782d469db6d146141659eac21bd469d"
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--candidate-summary",
+    type=Path,
+    default=ROOT / "raw" / "qualification-summary.json",
 )
-assert (
-    SUMMARY["sdist_sha256"]
-    == "515bb91a960e6dfc6f85537bcf4775fa6cbf7e1c60c14141608593160f2d2f7d"
+parser.add_argument("--output", type=Path, default=ROOT / "prequalification-38.json")
+parser.add_argument("--expected-source-sha")
+parser.add_argument("--expected-wheel-sha256")
+parser.add_argument("--expected-sdist-sha256")
+args = parser.parse_args()
+SUMMARY = json.loads(args.candidate_summary.read_text())
+RAW_ROOT = args.candidate_summary.parent
+SOURCE_SHA = SUMMARY.get("source_sha", SUMMARY.get("candidate_R2"))
+assert SOURCE_SHA is not None and len(SOURCE_SHA) == 40
+DEFAULT_SUMMARY = ROOT / "raw" / "qualification-summary.json"
+if args.candidate_summary == DEFAULT_SUMMARY:
+    assert SOURCE_SHA == "159a338081e1fca2c77030cabe160a458217563b"
+    assert (
+        SUMMARY["wheel_sha256"]
+        == "96e1f72e68404c718ad6f881119ede983782d469db6d146141659eac21bd469d"
+    )
+    assert (
+        SUMMARY["sdist_sha256"]
+        == "515bb91a960e6dfc6f85537bcf4775fa6cbf7e1c60c14141608593160f2d2f7d"
+    )
+else:
+    if not all(
+        (
+            args.expected_source_sha,
+            args.expected_wheel_sha256,
+            args.expected_sdist_sha256,
+        )
+    ):
+        parser.error("exact candidate source and both artifact hashes are required")
+    if args.output.exists():
+        parser.error("candidate output already exists; use a new append-only path")
+assert SOURCE_SHA == (args.expected_source_sha or SOURCE_SHA)
+assert SUMMARY["wheel_sha256"] == (
+    args.expected_wheel_sha256 or SUMMARY["wheel_sha256"]
+)
+assert SUMMARY["sdist_sha256"] == (
+    args.expected_sdist_sha256 or SUMMARY["sdist_sha256"]
 )
 FINDINGS = [
     f
@@ -40,7 +75,7 @@ BLOCKED_REFS = {
 
 
 def load(artifact, command):
-    root = ROOT / "raw" / artifact
+    root = RAW_ROOT / artifact
     path = root / f"{command}.stdout.jsonl"
     return [
         json.loads(line) for line in path.read_text().splitlines() if line.strip()
@@ -144,7 +179,7 @@ def result(artifact, finding):
             # Supplement the historical probe with six public read routes.
             extra = [
                 json.loads(line)
-                for line in (ROOT / "raw" / f"nc-routes-{artifact}.jsonl")
+                for line in (RAW_ROOT / f"nc-routes-{artifact}.jsonl")
                 .read_text()
                 .splitlines()
                 if line.strip()
@@ -379,11 +414,11 @@ proposed_ids = re.findall(r"^\| `([A-Z0-9-]+)` \|", proposal, re.MULTILINE)
 assert len(proposed_ids) == 12 and set(proposed_ids) == set(BLOCKED)
 out = {
     "schema": "gwexpy-v025-audit-prequalification-v1",
-    "source_sha": "159a338081e1fca2c77030cabe160a458217563b",
+    "source_sha": SOURCE_SHA,
     "historical_matrix_sha256": hashlib.sha256(MATRIX.read_bytes()).hexdigest(),
     "artifact_sha256": {
-        "wheel": "96e1f72e68404c718ad6f881119ede983782d469db6d146141659eac21bd469d",
-        "sdist": "515bb91a960e6dfc6f85537bcf4775fa6cbf7e1c60c14141608593160f2d2f7d",
+        "wheel": SUMMARY["wheel_sha256"],
+        "sdist": SUMMARY["sdist_sha256"],
     },
     "status_counts": {
         s: sum(x["status"] == s for x in entries)
@@ -392,7 +427,7 @@ out = {
     "release_gate": "OPEN",
     "findings": entries,
 }
-path = ROOT / "prequalification-38.json"
+path = args.output
 path.write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n")
 print(json.dumps(out["status_counts"], sort_keys=True))
 print(path)
