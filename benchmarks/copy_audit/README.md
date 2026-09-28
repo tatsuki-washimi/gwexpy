@@ -16,7 +16,7 @@ Run `bx_fixtures.py OUTPUT` once in a new directory during an assigned host slot
 | `matrix_int64_extrema` | Homogeneous int64 cells with min/max and values beyond 2⁵³ | 2 × 2 × 8 samples |
 | `matrix_object_strings` | Encoded object/string cells to characterize the existing warning/error route | 2 × 2 × 8 samples |
 
-The generator writes an exclusive new directory and records its own SHA256, each file SHA256, content shape/dtype, and raw ATS/cell value hashes where stable. Copy the exact generated files and manifest to an append-only B-X evidence directory before wheel comparisons. Do not regenerate or modify them after the first baseline read.
+The generator writes an exclusive new directory and records its own SHA256, each file SHA256, content shape/dtype, and raw ATS/cell value hashes where stable. Commit the small manifest and verification report to an append-only B-X evidence directory; keep the approximately 90 MiB binary fixture files outside Git. Retain the exact generated files for local captures. On another host, regenerate into a new directory and verify every file against the committed hashes before any wheel comparison. Do not modify the local files after the first baseline read.
 
 ## Public and structural capture
 
