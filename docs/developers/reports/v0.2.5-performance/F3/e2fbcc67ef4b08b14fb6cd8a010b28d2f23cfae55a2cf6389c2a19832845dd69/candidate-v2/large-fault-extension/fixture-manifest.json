@@ -1,0 +1,138 @@
+{
+  "cases": {
+    "late_xml_unselected_payload_fault": {
+      "bytes": 1106466,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "xml_parse_warning_supersedes_payload_fault",
+      "path": "/tmp/gwexpy-v025-f3-large-fault-extension-v1/late_xml_unselected_payload_fault.xml",
+      "sha256": "5f803a508b4e426bcd76028e01b031e6a303963eadafc2090505a4acf715d67d",
+      "source_case_sha256": "af48e0ab9b83a321e24339b82c81dddf7e8be7bfcbb7312dfc53fc79c8feb217",
+      "stream_roles": {
+        "11ccc3e535fcf0d62b989b94dcf41122b68763e43fad20da0204064586f59706": "unselected",
+        "fea0b77d45d4a4161ce24dcf4adf1a037d1f8761fe0c26f0743470b7346e77a8": "selected"
+      }
+    },
+    "psd_unselected_short_payload_warning": {
+      "bytes": 1101006,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": true,
+      "oracle_category": "unselected_payload_warning_may_disappear",
+      "path": "/tmp/gwexpy-v025-f3-large-fault-extension-v1/psd_unselected_short_payload_warning.xml",
+      "sha256": "15b37db973e72ee16d316c3690408aee4b4321e078374bf4e35624d1e861cf8f",
+      "source_case_sha256": "4b1890e4fc59e1c19d32ee1f5bc78e3e619d2356593f55b1cdba492466e1e2c1",
+      "stream_roles": {
+        "8d2ca52ee496df8da1cd21369680ae08a428ccbbcaf7011fad743210decd715c": "unselected",
+        "d21ed31163bd680adffabb857e74924131428573adc80a6ff704993bcdd2099e": "selected"
+      }
+    },
+    "selected_payload_fault": {
+      "bytes": 1106458,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "selected_payload_warning",
+      "path": "/tmp/gwexpy-v025-f3-large-fault-extension-v1/selected_payload_fault.xml",
+      "sha256": "939c0ec264cdf646e3c0db846eb7515d2181a52374205f0d3c4b761edb5f6ade",
+      "source_case_sha256": "785056b60ecb872f0b11f268561bc2a198fef5788a820d6cebf1c27de6f291ff",
+      "stream_roles": {
+        "11ccc3e535fcf0d62b989b94dcf41122b68763e43fad20da0204064586f59706": "selected",
+        "c10fb8781e598cbecfe6eb11008a26caa6b130c975687369fd4f3961d23bcdbc": "unselected"
+      }
+    },
+    "unselected_metadata_fault": {
+      "bytes": 1111919,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": false,
+      "oracle_category": "unselected_structural_metadata_warning",
+      "path": "/tmp/gwexpy-v025-f3-large-fault-extension-v1/unselected_metadata_fault.xml",
+      "sha256": "1abc72738f43e6fbb3db487f626bbb720fcdd1194b219e6a0df6c3b81269c818",
+      "source_case_sha256": "170c4b5005615eb67fdcf783c11791ca4d09e3d522f153d165d54a2d042ea790",
+      "stream_roles": {
+        "c10fb8781e598cbecfe6eb11008a26caa6b130c975687369fd4f3961d23bcdbc": "unselected",
+        "fea0b77d45d4a4161ce24dcf4adf1a037d1f8761fe0c26f0743470b7346e77a8": "selected"
+      }
+    },
+    "unselected_payload_fault": {
+      "bytes": 1106458,
+      "call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": true,
+        "products": "PSD"
+      },
+      "external_call_kwargs": {
+        "channels": [
+          "K1:F3-SELECTED"
+        ],
+        "native": false,
+        "products": "PSD"
+      },
+      "native_parser_exception_applies": true,
+      "oracle_category": "unselected_payload_warning_may_disappear",
+      "path": "/tmp/gwexpy-v025-f3-large-fault-extension-v1/unselected_payload_fault.xml",
+      "sha256": "68a91b8b6565e8558e756ba37c21f4edbb6b9d170e118772209f71febe976905",
+      "source_case_sha256": "d6f70a6221cae5550d19833514adc89b079d739413033871a298a775de07586d",
+      "stream_roles": {
+        "11ccc3e535fcf0d62b989b94dcf41122b68763e43fad20da0204064586f59706": "unselected",
+        "fea0b77d45d4a4161ce24dcf4adf1a037d1f8761fe0c26f0743470b7346e77a8": "selected"
+      }
+    }
+  },
+  "frozen_small_manifest_sha256": "4d43eb6d571c9d4986d00f6cae6c0ee5f28d6b1b3d2e28235fcf15032c75d7b3",
+  "padding_kind": "XML comment before document root",
+  "padding_x_bytes": 1100000,
+  "schema": "gwexpy-f3-large-fault-extension-v1"
+}
