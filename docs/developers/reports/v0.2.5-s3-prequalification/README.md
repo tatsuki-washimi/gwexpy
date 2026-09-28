@@ -27,6 +27,18 @@ reads the six written fixtures through explicit and auto routes; wheel and
 sdist return identical exact int64 values. Its output is stored in
 `raw/nc-routes-{wheel,sdist}.jsonl`.
 
+The [fixed-defect summary](fixed-36-summary.json) maps the other 36 historical
+findings to their 23 public regression test nodes. In an isolated test root
+with no GWexpy source, R2's installed wheel and sdist each passed all 161
+parameterized testcases with zero skips. The per-artifact JUnit XML and logs
+are preserved under `raw/fixed-36-*`; the summary binds their hashes, the
+artifact hashes, imported package paths, and the copied test-source hashes.
+Run `verify_fixed_defects.py --wheel-junit raw/fixed-36-wheel.xml
+--sdist-junit raw/fixed-36-sdist.xml` here to check coverage and result status.
+The initial wheel attempt omitted `GWEXPY_ALLOW_ZARR=1` and was invalid; its
+log and JUnit XML are retained with the `-attempt1` suffix. These R2 results
+are pre-qualification and must be repeated on exact R3 artifacts.
+
 ## Historical cases requiring individual disposition
 
 The release owner selected a 74-scenario accounting gate: 36 fixed-defect
