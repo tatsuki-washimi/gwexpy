@@ -1,11 +1,17 @@
 # Changelog
 
-## [0.2.5] - 2026-09-27
+## [0.2.5] - TBD
 
 This patch fixes supported NetCDF4 and Zarr matrix value, axis, and unit
 handling; HDF5 manifest integrity; TDMS waveform-increment and GBD header
 validation; and audio registry tag provenance. The supported optional-backend
 routes report a backend-specific `ImportError` when their package is absent.
+The candidate additionally targets measured, internal I/O performance and
+scalability improvements under #580. These improvements are planned, not yet
+qualified or released; public values, dtype, metadata, warning/error behavior,
+and on-disk format remain the acceptance contract except for the scoped #589
+native-parser exception below. The candidate adds no public API, dependency,
+or persistence schema.
 
 ### Fixed
 
@@ -15,6 +21,17 @@ routes report a backend-specific `ImportError` when their package is absent.
 - **TDMS and GL500 GBD validation**: Reject absent or invalid waveform increments and malformed required GL500 header fields within the tested firmware scope.
 - **Audio registry tags**: Retain available WAV and FLAC tag metadata in provenance.
 - **Optional backends**: Supported public Zarr and NetCDF4 routes raise a backend-specific `ImportError` when the required package is absent.
+
+### Planned internal performance scope (pending implementation and qualification)
+
+- **I/O measurement and fast paths (#581–#585, #588–#589)**: Freeze B1 baselines, then improve multi-file merge, single-channel dispatch, range reads, CSV/SDB/TDMS paths, native DTTXML parsing, and GWF merge scalability.
+- **WIN and copy reduction (#518, #586)**: Include only NumPy-based WIN decoding and copy reductions that preserve public dtype and saved values. Numba and the remaining #518/#586 work are deferred.
+- **Native DTTXML skipped-payload exception (#589)**: Parser-level use of already accepted selectors may suppress warnings and decode errors arising exclusively from fully unselected native-parser payloads. XML structural errors and selected-payload behavior must remain equivalent to the old candidate. The external `dttxml` route keeps its existing behavior and is outside the performance claim. This exception requires separate human scientific/data-model approval for S2 and does not expand #611's completely disjoint plain-HDF5-window safety exception.
+- **Excluded**: #587, #590, and #519 are outside v0.2.5.
+
+The 2026-09-27 S/R approvals and candidate runs are historical evidence for the
+earlier candidate only. The expanded S2/R2 candidate requires new same-S2
+reviews, scoped human approval, and exact-R2 qualification before release GO.
 
 
 ## [0.2.4] - 2026-09-26
