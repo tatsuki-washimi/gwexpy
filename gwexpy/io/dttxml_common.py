@@ -613,6 +613,9 @@ def _tf6_raw_layouts(source: str) -> dict[tuple[str, str], dict[str, Any]]:
 
 
 _NATIVE_PSD_STREAM_MAX_POINTS = 16_384
+# The two XML passes cost more than the original tree path on the frozen
+# 100,838-byte small-input fixture. Keep small files on that route.
+_NATIVE_PSD_STREAM_MIN_FILE_BYTES = 1_048_576
 
 
 def _native_psd_selected_channels(
@@ -629,7 +632,11 @@ def _native_psd_selected_channels(
     ):
         return None
     try:
-        if not Path(source).is_file():
+        path = Path(source)
+        if (
+            not path.is_file()
+            or path.stat().st_size < _NATIVE_PSD_STREAM_MIN_FILE_BYTES
+        ):
             return None
     except OSError:
         return None

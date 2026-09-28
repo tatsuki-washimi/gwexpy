@@ -22,8 +22,9 @@ from gwexpy.frequencyseries import FrequencySeriesDict
 
 def test_native_selected_psd_does_not_decode_unselected_streams(tmp_path):
     """Public selection must reach the parser before base64 decoding."""
-    fixture = write_fixtures(tmp_path, unselected_results=3, points=8)
+    fixture = write_fixtures(tmp_path, unselected_results=64, points=4096)
     case = fixture["cases"]["many_valid"]
+    assert Path(case["path"]).stat().st_size > 1_048_576
 
     with DecodedPayloadSpy(case["stream_roles"]) as decoded:
         result = FrequencySeriesDict.read(
@@ -31,15 +32,16 @@ def test_native_selected_psd_does_not_decode_unselected_streams(tmp_path):
         )
 
     assert list(result) == [SELECTED_CHANNEL]
-    assert decoded.report()["selected_decoded_bytes"] == 8 * 4
+    assert decoded.report()["selected_decoded_bytes"] == 4096 * 4
     assert decoded.report()["unselected_decoded_bytes"] == 0
     assert decoded.report()["decode_calls"].get("unselected", 0) == 0
 
 
 def test_native_selected_psd_does_not_enter_unselected_decoder(tmp_path, monkeypatch):
     """The base64 byte counter cannot hide a replacement decoder path."""
-    fixture = write_fixtures(tmp_path, unselected_results=3, points=8)
+    fixture = write_fixtures(tmp_path, unselected_results=64, points=4096)
     case = fixture["cases"]["many_valid"]
+    assert Path(case["path"]).stat().st_size > 1_048_576
     original = dttxml_common._decode_dtt_stream
     calls: list[str] = []
 
@@ -57,6 +59,22 @@ def test_native_selected_psd_does_not_enter_unselected_decoder(tmp_path, monkeyp
 
     assert list(result) == [SELECTED_CHANNEL]
     assert calls == ["selected"]
+
+
+def test_small_native_psd_keeps_original_decode_route(tmp_path):
+    """The frozen small-input shape should avoid two-pass parser overhead."""
+    fixture = write_fixtures(tmp_path, unselected_results=16, points=1024)
+    case = fixture["cases"]["many_valid"]
+    assert Path(case["path"]).stat().st_size < 1_048_576
+
+    with DecodedPayloadSpy(case["stream_roles"]) as decoded:
+        result = FrequencySeriesDict.read(
+            case["path"], format="dttxml", **case["call_kwargs"]
+        )
+
+    assert list(result) == [SELECTED_CHANNEL]
+    assert decoded.report()["selected_decoded_bytes"] == 1024 * 4
+    assert decoded.report()["unselected_decoded_bytes"] == 16 * 1024 * 4
 
 
 @pytest.mark.parametrize("case_name", ["many_valid", "many_valid_gzip"])
