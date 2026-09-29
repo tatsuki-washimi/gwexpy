@@ -2,7 +2,7 @@
 
 Status: **pre-qualification only; release gate OPEN**. Source: R2
 `159a338081e1fca2c77030cabe160a458217563b` (the local convergence
-commit has the same tree). This record does not replace exact-S5/R5 artifact
+commit has the same tree). This record does not replace exact-S6/R6 artifact
 qualification.
 
 The [historical audit matrix](../2026-09-27-public-io-cross-format-audit/runtime-characterization-matrix.json)
@@ -18,14 +18,14 @@ indices. The original command and artifact summary is retained as
 `a5150ef1f8100133f7e78cab6f23fdbca5c104cb3a6d8995c07a24522f6e564d`),
 alongside the wheel and sdist run summaries. Run
 `python verify_prequalification.py` here to regenerate the matrix.
-For exact-R5 qualification, rerun the same audit commands into a new
+For exact-R6 qualification, rerun the same audit commands into a new
 directory containing `qualification-summary.json`, `wheel/`, `sdist/`, and
 the two `nc-routes-*.jsonl` files. Invoke the verifier with
 `--candidate-summary`, a new `--output` path, and the exact expected source,
 wheel, and sdist SHA-256 arguments plus `--wheel-artifact` and
 `--sdist-artifact`. It checks the artifact files' hashes and refuses to overwrite an
 existing output. This reproduces the 26 per-scenario assertions and twelve
-characterized blocked observations on the exact installed R5 artifacts;
+characterized blocked observations on the exact installed R6 artifacts;
 the 36 fixed-defect cases use the separate JUnit gate below.
 
 The 26 previously non-blocked scenarios pass case-specific assertions on
@@ -46,13 +46,13 @@ Run `verify_fixed_defects.py --wheel-junit raw/fixed-36-wheel.xml
 --sdist-junit raw/fixed-36-sdist.xml` here to check coverage and result status.
 The initial wheel attempt omitted `GWEXPY_ALLOW_ZARR=1` and was invalid; its
 log and JUnit XML are retained with the `-attempt1` suffix. These R2 results
-are pre-qualification and must be repeated on exact R5 artifacts.
+are pre-qualification and must be repeated on exact R6 artifacts.
 
 ## Historical cases requiring individual disposition
 
 The release owner selected a 74-scenario accounting gate: 36 fixed-defect
 scenarios and the 26 scenarios above require executable assertions on exact
-R5 wheel and sdist artifacts. These twelve cases require individual review
+R6 wheel and sdist artifacts. These twelve cases require individual review
 of their applicability or retained behavior. They remain **BLOCKED** until
 that review; a successful probe process does not turn them into passing
 scenarios. The row indices and raw hashes in
@@ -60,7 +60,7 @@ scenarios. The row indices and raw hashes in
 The verifier asserts each observed blocked condition on wheel and sdist;
 that characterization does not settle its fixture or contract authority.
 
-| Finding | Current observation | Required disposition before R5 evidence binding |
+| Finding | Current observation | Required disposition before R6 evidence binding |
 | --- | --- | --- |
 | `NC-MATRIX-008` | The attempted per-cell length mismatch cannot be represented on the shared NetCDF sample dimension. | Confirm that this fixture is inapplicable to the v2 schema, or provide a valid independent fixture. |
 | `NC-MATRIX-009` | Extra per-cell time attributes do not override the file-global v2 axis. | Confirm the file-global timing authority, or provide an independently authoritative cell axis. |

@@ -302,10 +302,11 @@ remains pending, so this record does not mark publication closure complete.
 The previously reviewed #751 I/O hardening is joined by measured internal I/O
 performance and scalability work under [#580](https://github.com/tatsuki-washimi/gwexpy/issues/580).
 The [v0.2.5 release plan](docs/developers/plans/20260927_v0.2.5_release_plan.md)
-governs the S5/R5 candidate cycle, dated 2026-09-29 UTC. The S/R and S2/R2
+governs the S6/R6 candidate cycle, dated 2026-09-29 UTC. The S/R and S2/R2
 cycles are historical. The S3 documentation review found release-scope drift,
-and the S4 documentation review found a broken evidence link. S4's scientific
-approval does not authorize S5 or release GO.
+the S4 documentation review found a broken evidence link, and the S5
+release-security review found an incomplete generated-evidence exception.
+Earlier scientific approvals do not authorize S6 or release GO.
 
 The selected work is the #581 benchmark harness; #582 merge, #583 dispatch,
 #585 CSV/SDB/TDMS, #589 native DTTXML, and serial #588 GWF scalability
@@ -319,7 +320,7 @@ and decode errors arising exclusively from fully unselected payloads on the
 native DTTXML route. XML structural errors and selected-payload behavior must
 retain their old-candidate behavior; the external `dttxml` route is unchanged.
 This proposed, narrowly scoped exception needs renewed human scientific/data-model
-approval for S5. It does not extend #611's `non_intersecting_window_safety`
+approval for S6. It does not extend #611's `non_intersecting_window_safety`
 exception beyond completely disjoint plain HDF5 read windows.
 
 For #585 SDB reads, one separately gated concurrency correction pins whole-table
@@ -333,9 +334,9 @@ concurrent scope requires separate review, human scientific/data-model approval,
 and release disclosure; it grants no skipped-payload exception to other formats.
 
 The historical 74-scenario audit will be accounted for through 62 executable
-assertions on exact R5 wheel and sdist artifacts and twelve proposed individual
+assertions on exact R6 wheel and sdist artifacts and twelve proposed individual
 applicability or retained-behavior dispositions. The twelve are not runtime
-passes. Both protected branch tips must equal the same R5 SHA before
+passes. Both protected branch tips must equal the same R6 SHA before
 the frozen-tip candidate workflow runs; release qualification and GO remain
 pending.
 
