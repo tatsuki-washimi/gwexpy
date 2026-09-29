@@ -231,13 +231,17 @@ The v0.2.5 review baseline is peeled v0.2.4 source
 S-to-R transition, empty placeholder, and human approval use the v0.2.4
 rules with v0.2.5 schemas and approval comment token
 `GWEXPY-RELEASE-APPROVAL v0.2.5`. The release workflow requires four
-independent aggregate gates for v0.2.5: four smoke cells, 19 qualification
+independent qualification aggregates for v0.2.5: four smoke cells, 19 qualification
 cells, four DiagGUI cells, and eight cross-format I/O cells. Each I/O cell
 validates the same-run two-file payload SHA-256 manifest and records
 `backend_presence` for `zarr`, `xarray`, and `netCDF4`: all absent in base
 cells and all present in optional cells. Candidate and tag runs may build
 different bytes, but each run must use exact source R and an internally
-consistent payload. The publish job depends on all four aggregates.
+consistent payload. A separate historical audit gate requires 62 executable
+scenario assertions on each exact installed artifact and twelve individually
+approved applicability or retained-behavior dispositions. Those twelve never
+count as runtime passes. The publish job depends on all four qualification
+aggregates and the historical gate.
 
 The selected evidence file must contain
 exactly one top-level `review_evidence_json: |` block whose content is the
