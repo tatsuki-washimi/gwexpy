@@ -903,7 +903,7 @@ def test_v025_s_to_r_accepts_only_evidence_and_existing_checkboxes(
     reviewed = git(repo, "rev-parse", "HEAD")
     plan.write_text("- [x] review\n", encoding="utf-8")
     evidence.write_text(
-        'review_evidence_json: |\n  {"schema":"gwexpy-v025-review-evidence-v1"}\n',
+        'review_evidence_json: |\n  {"schema":"gwexpy-v025-review-evidence-v2"}\n',
         encoding="utf-8",
     )
     git(repo, "add", ".")

@@ -302,32 +302,41 @@ remains pending, so this record does not mark publication closure complete.
 The previously reviewed #751 I/O hardening is joined by measured internal I/O
 performance and scalability work under [#580](https://github.com/tatsuki-washimi/gwexpy/issues/580).
 The [v0.2.5 release plan](docs/developers/plans/20260927_v0.2.5_release_plan.md)
-governs the new S2/R2 candidate. Its date is TBD. The earlier S/R review and
-approval remain historical and do not authorize S2 or release GO.
+governs the S4/R4 candidate cycle, dated 2026-09-29 UTC. The S/R and S2/R2
+cycles are historical. The S3 documentation review found release-scope drift,
+so its scientific approval does not authorize S4 or release GO.
 
 The selected work is the #581 benchmark harness; #582 merge, #583 dispatch,
-#584 range push-down, #585 CSV/SDB/TDMS, #589 native DTTXML, and #588 GWF
-scalability improvements; the NumPy-only portion of #518; and the
-dtype-preserving portion of #586. #587, #590, #519, Numba, and the remaining
-parts of #518 and #586 are outside this candidate.
+#585 CSV/SDB/TDMS, #589 native DTTXML, and serial #588 GWF scalability
+improvements; the NumPy-only portion of #518; and the dtype-preserving
+portion of #586. #584 range push-down and parallel #588 optimization remain
+on HOLD with no runtime change for those paths. #587, #590, #519, Numba, and
+the remaining parts of #518 and #586 are outside this candidate.
 
 For #589 only, parser-level use of already accepted selectors may omit warnings
 and decode errors arising exclusively from fully unselected payloads on the
 native DTTXML route. XML structural errors and selected-payload behavior must
 retain their old-candidate behavior; the external `dttxml` route is unchanged.
-This proposed, narrowly scoped exception needs separate human scientific/data-model
-approval for S2. It does not extend #611's `non_intersecting_window_safety`
+This proposed, narrowly scoped exception needs renewed human scientific/data-model
+approval for S4. It does not extend #611's `non_intersecting_window_safety`
 exception beyond completely disjoint plain HDF5 read windows.
 
 For #585 SDB reads, one separately gated concurrency correction pins whole-table
 validation and the selected payload query to the same SQLite read snapshot.
 The proposed exception covers observable value, warning, and error differences
 caused by a WAL writer committing during the read after that snapshot is pinned.
-Its matrix must characterize selected and unselected payload updates, timestamp
-and `usUnits` changes, schema changes, and malformed values against old R before
-SDB runtime work. Static-source behavior remains old-R-equivalent. The exact
+The frozen matrix characterizes selected and unselected payload updates,
+timestamp and `usUnits` changes, schema changes, and malformed values against
+old R. Static-source behavior remains old-R-equivalent. The exact
 concurrent scope requires separate review, human scientific/data-model approval,
 and release disclosure; it grants no skipped-payload exception to other formats.
+
+The historical 74-scenario audit will be accounted for through 62 executable
+assertions on exact R4 wheel and sdist artifacts and twelve proposed individual
+applicability or retained-behavior dispositions. The twelve are not runtime
+passes. Both protected branch tips must equal the same R4 SHA before
+the frozen-tip candidate workflow runs; release qualification and GO remain
+pending.
 
 ## Future themes (not scheduled)
 

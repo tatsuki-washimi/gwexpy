@@ -226,19 +226,23 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
         citation,
         re.MULTILINE,
     )
-    # S3 uses a new date; the S/R and S2/R2 candidate dates remain historical.
+    # S4 keeps the new UTC date; earlier candidate cycles remain historical.
     release_plan = (
         REPO_ROOT / "docs/developers/plans/20260927_v0.2.5_release_plan.md"
     ).read_text(encoding="utf-8")
     release_plan_text = " ".join(release_plan.split())
     assert (
-        f"The candidate metadata date for S3 is **{CANDIDATE_V025_METADATA_DATE}**"
+        f"The candidate metadata date for S4 is **{CANDIDATE_V025_METADATA_DATE}**"
         in release_plan_text
     )
     assert (
         "2026-09-28 date belongs only to the superseded S2/R2 cycle"
         in release_plan_text
     )
+    roadmap = (REPO_ROOT / "ROADMAP.md").read_text(encoding="utf-8")
+    assert "governs the S4/R4 candidate cycle" in roadmap
+    assert "#584 range push-down and parallel #588 optimization remain" in roadmap
+    assert "on HOLD with no runtime change for those paths" in roadmap
     assert (
         f"The {HISTORICAL_V025_METADATA_DATE} S/R cycle is historical and superseded"
         in release_plan

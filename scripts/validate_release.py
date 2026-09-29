@@ -43,9 +43,24 @@ review_evidence_json: |
     }
   }
 """
-V025_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER = V024_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER.replace(
-    b"v024", b"v025"
-)
+V025_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER = b"""\
+review_evidence_json: |
+  {
+    "schema": "gwexpy-v025-review-evidence-v2",
+    "entries": [],
+    "human_approval": {
+      "approver_login": "",
+      "role": "",
+      "reviewed_commit": "",
+      "scope_paths": [],
+      "scope_digest": "",
+      "disposition_digest": "",
+      "timestamp_utc": "",
+      "verdict": "",
+      "comment_id": 0
+    }
+  }
+"""
 
 
 class ReleaseValidationError(ValueError):

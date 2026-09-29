@@ -241,13 +241,127 @@ def test_human_verifier_accepts_exact_comment_and_rejects_edited_comments() -> N
 def test_v025_human_approval_requires_its_own_canonical_tag_token() -> None:
     verifier = load_module("v025_human_verifier_comment_test", HUMAN_VERIFIER)
     approval, historical, reviewed_commit = approval_fixture()
+    approval["disposition_digest"] = "c" * 64
+    approval_scope = load_module(
+        "v025_owner_approval_comment_test",
+        ROOT / "scripts/ci/v025_owner_approval.py",
+    )
     current = dict(
         historical,
-        body=historical["body"].replace("v0.2.4", "v0.2.5"),
+        body="\n".join(
+            approval_scope.canonical_comment_lines(
+                reviewed_commit,
+                approval["scope_digest"],
+                approval["disposition_digest"],
+            )
+        ),
     )
     verifier._validate_comment(current, approval, reviewed_commit, "v0.2.5")
     with pytest.raises(verifier.HumanApprovalError, match="canonical approval"):
         verifier._validate_comment(historical, approval, reviewed_commit, "v0.2.5")
+
+
+@pytest.mark.parametrize("line_index", [3, 4, 5, 6, 17, 18])
+def test_v025_human_approval_rejects_changed_scope_decisions_or_extra_text(
+    line_index: int,
+) -> None:
+    verifier = load_module("v025_human_verifier_decisions_test", HUMAN_VERIFIER)
+    approval, historical, reviewed_commit = approval_fixture()
+    approval["disposition_digest"] = "c" * 64
+    approval_scope = load_module(
+        "v025_owner_approval_decisions_test",
+        ROOT / "scripts/ci/v025_owner_approval.py",
+    )
+    lines = approval_scope.canonical_comment_lines(
+        reviewed_commit,
+        approval["scope_digest"],
+        approval["disposition_digest"],
+    )
+    assert len(lines) == 19
+    lines[line_index] = "EXTRA OR CHANGED APPROVAL"
+    historical["body"] = "\n".join(lines)
+    with pytest.raises(verifier.HumanApprovalError, match="canonical approval"):
+        verifier._validate_comment(historical, approval, reviewed_commit, "v0.2.5")
+
+
+@pytest.mark.parametrize("mutation", ["omit", "append"])
+def test_v025_human_approval_requires_exact_line_count(mutation: str) -> None:
+    verifier = load_module("v025_human_verifier_line_count_test", HUMAN_VERIFIER)
+    approval, comment, reviewed_commit = approval_fixture()
+    approval["disposition_digest"] = "c" * 64
+    approval_scope = load_module(
+        "v025_owner_approval_line_count_test",
+        ROOT / "scripts/ci/v025_owner_approval.py",
+    )
+    lines = approval_scope.canonical_comment_lines(
+        reviewed_commit, approval["scope_digest"], approval["disposition_digest"]
+    )
+    if mutation == "omit":
+        del lines[8]
+    else:
+        lines.append("EXTRA")
+    comment["body"] = "\n".join(lines)
+    with pytest.raises(verifier.HumanApprovalError, match="canonical approval"):
+        verifier._validate_comment(comment, approval, reviewed_commit, "v0.2.5")
+
+
+def test_v025_review_evidence_binds_dispositions_to_reviewed_source(
+    tmp_path: Path,
+) -> None:
+    validator = load_module("v025_disposition_validator_test", EVIDENCE_VALIDATOR)
+    approval_scope = load_module(
+        "v025_owner_approval_digest_test",
+        ROOT / "scripts/ci/v025_owner_approval.py",
+    )
+    repo = tmp_path / "v025-approval-source"
+    repo.mkdir()
+    git(repo, "init", "-b", "main")
+    git(repo, "config", "user.name", "Release Test")
+    git(repo, "config", "user.email", "release-test@example.invalid")
+    scope_paths = ["benchmarks", "gwexpy", "tests/io"]
+    for directory in scope_paths:
+        path = repo / directory / ".keep"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("", encoding="utf-8")
+    document = repo / approval_scope.DISPOSITION_PATH
+    document.parent.mkdir(parents=True, exist_ok=True)
+    document.write_text("Twelve individually proposed dispositions\n", encoding="utf-8")
+    git(repo, "add", ".")
+    git(repo, "commit", "-m", "reviewed source")
+    reviewed_commit = git(repo, "rev-parse", "HEAD")
+    digest = approval_scope.disposition_document_sha256(repo, reviewed_commit)
+    document.write_text("Unreviewed later edit\n", encoding="utf-8")
+    assert approval_scope.disposition_document_sha256(repo, reviewed_commit) == digest
+    approval = {
+        "approver_login": "tatsuki-washimi",
+        "role": "release-owner",
+        "reviewed_commit": reviewed_commit,
+        "scope_paths": scope_paths,
+        "scope_digest": scope_digest(repo, reviewed_commit, scope_paths),
+        "disposition_digest": digest,
+        "timestamp_utc": "2026-09-29T00:00:00Z",
+        "verdict": "APPROVED",
+        "comment_id": 987654321,
+    }
+    contract = {"review_lanes": {"scientific-data-model": scope_paths}}
+    validator._validate_human_approval(
+        repo, approval, reviewed_commit, contract, "v0.2.5"
+    )
+
+    wrong = dict(approval)
+    wrong["disposition_digest"] = "0" * 64
+    with pytest.raises(
+        validator.ReleaseReviewEvidenceError, match="disposition digest"
+    ):
+        validator._validate_human_approval(
+            repo, wrong, reviewed_commit, contract, "v0.2.5"
+        )
+    missing = dict(approval)
+    del missing["disposition_digest"]
+    with pytest.raises(validator.ReleaseReviewEvidenceError, match="approval keys"):
+        validator._validate_human_approval(
+            repo, missing, reviewed_commit, contract, "v0.2.5"
+        )
 
 
 @pytest.mark.parametrize(

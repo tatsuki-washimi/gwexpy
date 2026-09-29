@@ -47,6 +47,7 @@ V024_HUMAN_APPROVAL_KEYS = {
     "verdict",
     "comment_id",
 }
+V025_HUMAN_APPROVAL_KEYS = V024_HUMAN_APPROVAL_KEYS | {"disposition_digest"}
 V024_APPROVER_LOGIN = "tatsuki-washimi"
 
 
@@ -223,13 +224,30 @@ def _valid_utc_timestamp(value: object) -> bool:
     return True
 
 
-def _validate_v024_human_approval(
+def _v025_owner_approval_module() -> Any:
+    path = Path(__file__).with_name("v025_owner_approval.py")
+    spec = importlib.util.spec_from_file_location("v025_owner_approval", path)
+    if spec is None or spec.loader is None:
+        raise ReleaseReviewEvidenceError("v0.2.5 approval scope is unavailable")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def _validate_human_approval(
     repo_root: Path,
     approval: object,
     reviewed_commit: str,
     contract: dict[str, Any],
+    expected_tag: str,
 ) -> None:
-    if not isinstance(approval, dict) or set(approval) != V024_HUMAN_APPROVAL_KEYS:
+    keys = (
+        V025_HUMAN_APPROVAL_KEYS
+        if expected_tag == "v0.2.5"
+        else V024_HUMAN_APPROVAL_KEYS
+    )
+    if not isinstance(approval, dict) or set(approval) != keys:
         raise ReleaseReviewEvidenceError("invalid human approval keys")
     lane_paths = dict(contract["review_lanes"]).get("scientific-data-model")
     paths = approval["scope_paths"]
@@ -256,6 +274,20 @@ def _validate_v024_human_approval(
         raise ReleaseReviewEvidenceError(
             "human approval scope digest does not match the reviewed tree"
         )
+    if expected_tag == "v0.2.5":
+        digest = approval["disposition_digest"]
+        if not isinstance(digest, str) or SHA256.fullmatch(digest) is None:
+            raise ReleaseReviewEvidenceError("invalid disposition digest")
+        try:
+            expected_digest = _v025_owner_approval_module().disposition_document_sha256(
+                repo_root, reviewed_commit
+            )
+        except ValueError as exc:
+            raise ReleaseReviewEvidenceError(str(exc)) from exc
+        if digest != expected_digest:
+            raise ReleaseReviewEvidenceError(
+                "disposition digest does not match reviewed source"
+            )
 
 
 def validate_review_evidence(
@@ -367,8 +399,12 @@ def validate_review_evidence(
     if seen != required_lanes:
         raise ReleaseReviewEvidenceError("review evidence has missing or extra lanes")
     if expected_tag in STRICT_APPROVAL_TAGS:
-        _validate_v024_human_approval(
-            Path(repo_root), data["human_approval"], reviewed_commit, contract
+        _validate_human_approval(
+            Path(repo_root),
+            data["human_approval"],
+            reviewed_commit,
+            contract,
+            expected_tag,
         )
         validate_review_scope_coverage(Path(repo_root), reviewed_commit, contract)
     return data

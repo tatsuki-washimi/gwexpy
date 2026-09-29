@@ -141,12 +141,26 @@ def _validate_comment(
         or len(body.encode("utf-8")) > 16 * 1024
     ):
         raise HumanApprovalError("GitHub comment author or timestamp does not match")
-    expected_body = [
-        f"GWEXPY-RELEASE-APPROVAL {expected_tag}",
-        f"S: {reviewed_commit}",
-        f"SCOPE: {approval['scope_digest']}",
-        "VERDICT: APPROVED",
-    ]
+    if expected_tag == "v0.2.5":
+        approval_scope = _load_module(
+            "v025_owner_approval_for_comment",
+            Path(__file__).with_name("v025_owner_approval.py"),
+        )
+        try:
+            expected_body = approval_scope.canonical_comment_lines(
+                reviewed_commit,
+                approval["scope_digest"],
+                approval["disposition_digest"],
+            )
+        except (KeyError, ValueError) as exc:
+            raise HumanApprovalError("invalid v0.2.5 approval binding") from exc
+    else:
+        expected_body = [
+            f"GWEXPY-RELEASE-APPROVAL {expected_tag}",
+            f"S: {reviewed_commit}",
+            f"SCOPE: {approval['scope_digest']}",
+            "VERDICT: APPROVED",
+        ]
     if body.replace("\r\n", "\n").splitlines() != expected_body:
         raise HumanApprovalError(
             "GitHub comment does not contain canonical approval tokens"
