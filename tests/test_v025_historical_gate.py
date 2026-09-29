@@ -194,6 +194,101 @@ def test_aggregate_rejects_incomplete_or_unbound_evidence(tmp_path, change):
         module.aggregate(manifest, reports, approval, source, "f" * 64)
 
 
+def test_junit_skip_error_identifies_testcase_and_reason(tmp_path):
+    module = gate()
+    junit = tmp_path / "fixed.xml"
+    suite = ET.Element("testsuite", tests="1", errors="0", failures="0", skipped="1")
+    case = ET.SubElement(
+        suite,
+        "testcase",
+        classname="tests.io.test_audio_metadata",
+        name="test_public_audio_registry_preserves_available_metadata[flac]",
+    )
+    skipped = ET.SubElement(case, "skipped", message="ffmpeg unavailable")
+    skipped.text = "codec backend could not be loaded"
+    ET.ElementTree(suite).write(junit)
+
+    with pytest.raises(module.HistoricalGateError) as exc_info:
+        module._check_junit(tmp_path, junit, set())
+
+    message = str(exc_info.value)
+    assert (
+        "tests.io.test_audio_metadata::test_public_audio_registry_preserves_available_metadata[flac]"
+        in message
+    )
+    assert "ffmpeg unavailable" in message
+
+
+def test_failed_pytest_reports_skipped_junit_details(tmp_path, monkeypatch):
+    module = gate()
+    junit = tmp_path / "fixed.xml"
+    testcase_id = "tests.io.test_audio_metadata::test_audio[flac]"
+
+    def failed_pytest(command, *, cwd, env):
+        suite = ET.Element(
+            "testsuite", tests="1", errors="0", failures="0", skipped="1"
+        )
+        case = ET.SubElement(
+            suite,
+            "testcase",
+            classname="tests.io.test_audio_metadata",
+            name="test_audio[flac]",
+        )
+        ET.SubElement(case, "skipped", message="ffmpeg unavailable")
+        ET.ElementTree(suite).write(junit)
+        raise module.HistoricalGateError("pytest exited 1")
+
+    monkeypatch.setattr(module, "_run", failed_pytest)
+    with pytest.raises(module.HistoricalGateError) as exc_info:
+        module._run_fixed_regressions(
+            tmp_path,
+            tmp_path / "python",
+            tmp_path,
+            {},
+            junit,
+            set(),
+            ["io/test_audio_metadata.py::test_audio[flac]"],
+        )
+
+    assert testcase_id in str(exc_info.value)
+    assert "ffmpeg unavailable" in str(exc_info.value)
+    assert isinstance(exc_info.value.__cause__, module.HistoricalGateError)
+    assert str(exc_info.value.__cause__) == "pytest exited 1"
+
+
+def test_failed_pytest_preserves_original_error_when_junit_passes(
+    tmp_path, monkeypatch
+):
+    module = gate()
+    junit = tmp_path / "fixed.xml"
+    classname = "tests.io.test_audio_metadata"
+    test_name = "test_audio"
+    nodes = {"tests/io/test_audio_metadata.py::test_audio"}
+    original_error = module.HistoricalGateError("pytest exited 1")
+
+    def failed_pytest(command, *, cwd, env):
+        suite = ET.Element(
+            "testsuite", tests="1", errors="0", failures="0", skipped="0"
+        )
+        ET.SubElement(suite, "testcase", classname=classname, name=test_name)
+        ET.ElementTree(suite).write(junit)
+        raise original_error
+
+    monkeypatch.setattr(module, "_run", failed_pytest)
+    with pytest.raises(module.HistoricalGateError) as exc_info:
+        module._run_fixed_regressions(
+            tmp_path,
+            tmp_path / "python",
+            tmp_path,
+            {},
+            junit,
+            nodes,
+            ["io/test_audio_metadata.py::test_audio"],
+        )
+
+    assert exc_info.value is original_error
+
+
 def test_publish_workflow_requires_historical_gate_before_upload():
     import yaml
 

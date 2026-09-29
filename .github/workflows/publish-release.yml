@@ -307,6 +307,11 @@ jobs:
           - {cell: scientific-3.11-wheel, os: ubuntu-latest, python: "3.11", distribution: wheel, runtime: pip, extras: "pytest mne lalsuite"}
           - {cell: docs-en-ja-3.11-wheel, os: ubuntu-latest, python: "3.11", distribution: wheel, runtime: pip, extras: "pytest matplotlib"}
     steps:
+      - name: Enable long paths for Windows checkout
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: git config --global core.longpaths true
+
       - name: Check out verified qualification source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -975,6 +980,16 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install and verify ffmpeg for historical audio regressions
+        if: needs.verify.outputs.version == '0.2.5'
+        run: |
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install --yes ffmpeg
+          fi
+          command -v ffmpeg
+          ffmpeg -version
+
       - name: Download exact candidate payload
         if: needs.verify.outputs.version == '0.2.5'
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
@@ -1024,6 +1039,15 @@ jobs:
           path: ${{ runner.temp }}/historical-74/evidence
           if-no-files-found: error
           retention-days: 90
+
+      - name: Upload failed historical regression JUnit diagnostics
+        if: failure() && needs.verify.outputs.version == '0.2.5'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: v025-historical-74-fixed-junit-diagnostics-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/historical-74/*/fixed.xml
+          if-no-files-found: warn
+          retention-days: 30
 
   evidence:
     name: Collect same-run integration evidence

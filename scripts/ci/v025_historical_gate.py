@@ -325,20 +325,50 @@ def run_cell(
     )
     junit = work / "fixed.xml"
     test_nodes = sorted(node.removeprefix("tests/") for node in nodes)
-    _run(
-        [
-            str(work / "present-venv/bin/python"),
-            "-m",
-            "pytest",
-            "--import-mode=importlib",
-            "--junitxml",
-            str(junit),
-            "-q",
-            *["tests/" + node for node in test_nodes],
-        ],
-        cwd=work,
-        env=env,
+    _run_fixed_regressions(
+        source_root,
+        work / "present-venv/bin/python",
+        work,
+        env,
+        junit,
+        nodes,
+        test_nodes,
     )
+
+
+def _run_fixed_regressions(
+    source_root: Path,
+    python: Path,
+    work: Path,
+    env: dict[str, str],
+    junit: Path,
+    nodes: set[str],
+    test_nodes: list[str],
+) -> None:
+    command = [
+        str(python),
+        "-m",
+        "pytest",
+        "--import-mode=importlib",
+        "--junitxml",
+        str(junit),
+        "-q",
+        *["tests/" + node for node in test_nodes],
+    ]
+    try:
+        _run(command, cwd=work, env=env)
+    except HistoricalGateError as run_error:
+        if junit.is_file():
+            try:
+                _check_junit(source_root, junit, nodes)
+            except HistoricalGateError as junit_error:
+                raise junit_error from run_error
+            except Exception as junit_error:
+                raise HistoricalGateError(
+                    "pytest failed and fixed JUnit diagnostics could not be read: "
+                    f"{junit_error}"
+                ) from run_error
+        raise
     _check_junit(source_root, junit, nodes)
 
 
@@ -350,15 +380,25 @@ def _check_junit(source_root: Path, junit: Path, nodes: set[str]) -> None:
     if len(suites) != 1:
         raise HistoricalGateError("fixed JUnit needs one testsuite")
     suite = suites[0]
-    if any(int(suite.attrib[x]) != 0 for x in ("errors", "failures", "skipped")):
-        raise HistoricalGateError("fixed regression failed or skipped")
     cases = list(suite.iter("testcase"))
     if len(cases) != int(suite.attrib["tests"]):
         raise HistoricalGateError("fixed JUnit testcase count mismatch")
     observed = set()
+    problems = []
     for case in cases:
-        if any(case.find(tag) is not None for tag in ("error", "failure", "skipped")):
-            raise HistoricalGateError("fixed regression testcase did not pass")
+        testcase_id = (
+            f"{case.attrib.get('classname', '<unknown>')}::"
+            f"{case.attrib.get('name', '<unknown>')}"
+        )
+        for tag in ("error", "failure", "skipped"):
+            result = case.find(tag)
+            if result is not None:
+                reason = result.attrib.get("message") or " ".join(
+                    "".join(result.itertext()).split()
+                )
+                problems.append(
+                    f"{tag}: {testcase_id}" + (f" ({reason})" if reason else "")
+                )
         classname = case.attrib["classname"].split(".")
         if classname[:2] != ["tests", "io"] or len(classname) < 3:
             raise HistoricalGateError("unexpected fixed regression classname")
@@ -367,6 +407,14 @@ def _check_junit(source_root: Path, junit: Path, nodes: set[str]) -> None:
             + classname[2]
             + ".py::"
             + "::".join([*classname[3:], case.attrib["name"].split("[", 1)[0]])
+        )
+    if problems:
+        raise HistoricalGateError(
+            "fixed regression failed or skipped: " + "; ".join(problems)
+        )
+    if any(int(suite.attrib[x]) != 0 for x in ("errors", "failures", "skipped")):
+        raise HistoricalGateError(
+            "fixed regression failed or skipped without testcase details"
         )
     if observed != nodes:
         raise HistoricalGateError(
