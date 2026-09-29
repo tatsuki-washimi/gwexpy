@@ -231,9 +231,9 @@ The v0.2.5 review baseline is peeled v0.2.4 source
 S-to-R transition, empty placeholder, and human approval use the v0.2.4
 rules with v0.2.5 schemas and approval comment token
 `GWEXPY-RELEASE-APPROVAL v0.2.5`. The release workflow requires four
-independent qualification aggregates for v0.2.5: four smoke cells, 19 qualification
-cells, four DiagGUI cells, and eight cross-format I/O cells. Each I/O cell
-validates the same-run two-file payload SHA-256 manifest and records
+independent qualification aggregates for v0.2.5: four smoke cells, 19
+qualification cells, four DiagGUI cells, and eight cross-format I/O cells.
+Each I/O cell validates the same-run two-file payload SHA-256 manifest and records
 `backend_presence` for `zarr`, `xarray`, and `netCDF4`: all absent in base
 cells and all present in optional cells. Candidate and tag runs may build
 different bytes, but each run must use exact source R and an internally
