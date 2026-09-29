@@ -35,8 +35,8 @@ candidate adds no public API, dependency, or persistence schema.
 - **Dtype-preserving copy reduction (#586)**: The frozen B-X comparison (baseline freeze commit `836e6f38`, candidate source `913ab6c77`, evidence commit `26ae634`, and append-only gate correction `bf258`) matches all 11/11 public fingerprints, with no dtype, value, or warning change. Audited source-site full-payload `ndarray.astype` calls fall from 1 to 0 for ATS32 and ATS64, and from 32 to 0 for the 16-cell NetCDF matrix. NetCDF warm wall and CPU medians improve 33.23% on the measured fixture; ATS wall/CPU and all PSS results remain evidence-only. Three supplementary small-input cases pass the non-regression check. Release qualification remains pending. Evidence: `docs/developers/reports/v0.2.5-performance/X/dade6bd54082ef7f771724b84064caeb252342317e0da5cdc81a966f5e916050/candidate-v1-913ab6c/README.md` and sibling `candidate-v1-913ab6c-interpretation-v2/README.md`.
 - **Range push-down (#584)**: B1 raises on corrupt chunks outside the requested window in HDF5, NDScope, NetCDF4, and Zarr. Skipping them would change an existing error, so #584 is held with no reader change in this patch.
 - **WIN and copy reduction (#518, #586)**: Include only NumPy-based WIN decoding and copy reductions that preserve public dtype and saved values. Numba and the remaining #518/#586 work are deferred.
-- **Native DTTXML skipped-payload exception (#589)**: Parser-level use of already accepted selectors may suppress warnings and decode errors arising exclusively from fully unselected native-parser payloads. XML structural errors and selected-payload behavior must remain equivalent to the old candidate. The external `dttxml` route keeps its existing behavior and is outside the performance claim. This exception requires renewed human scientific/data-model approval for S6 and does not expand #611's completely disjoint plain-HDF5-window safety exception.
-- **SDB concurrent-write snapshot correction (#585)**: The reader validates and fetches selected rows from one SQLite snapshot. In the frozen 14-case WAL fault matrix, ten cases differ from old R when a writer commits between its validation and payload query: selected or unselected value and malformed-value updates, timestamp updates, and schema changes may alter returned values, keys, warnings, or errors. Four cases remain equal, including both `usUnits` updates. Static-source behavior remains old-R-equivalent. This exact concurrent scope needs renewed human scientific/data-model approval for S6. No other format gains a skipped-payload exception.
+- **Native DTTXML skipped-payload exception (#589)**: Parser-level use of already accepted selectors may suppress warnings and decode errors arising exclusively from fully unselected native-parser payloads. XML structural errors and selected-payload behavior must remain equivalent to the old candidate. The external `dttxml` route keeps its existing behavior and is outside the performance claim. This exception requires fresh S8-bound human scientific/data-model approval and does not expand #611's completely disjoint plain-HDF5-window safety exception.
+- **SDB concurrent-write snapshot correction (#585)**: The reader validates and fetches selected rows from one SQLite snapshot. In the frozen 14-case WAL fault matrix, ten cases differ from old R when a writer commits between its validation and payload query: selected or unselected value and malformed-value updates, timestamp updates, and schema changes may alter returned values, keys, warnings, or errors. Four cases remain equal, including both `usUnits` updates. Static-source behavior remains old-R-equivalent. This exact concurrent scope needs fresh S8-bound human scientific/data-model approval. No other format gains a skipped-payload exception.
 - **Excluded**: #587, #590, and #519 are outside v0.2.5.
 
 The 2026-09-27 S/R and 2026-09-28 S2/R2 approvals and candidate runs are
@@ -46,9 +46,11 @@ still described S2/R2 as current. S4's scientific review approved the bounded
 dispositions, but its documentation review held that source because the plan
 linked to a nonexistent pre-qualification path. S5's scientific and
 documentation reviews approved that source, but its release-security review
-held an incomplete generated-evidence whitespace exception. S6 requires new
-same-S6 reviews and scoped human approval, followed by exact-R6 qualification
-before release GO.
+held an incomplete generated-evidence whitespace exception. S7's scientific/data-model
+and documentation reviews are **HOLD** because active release authority still
+required S6/R6 approval and qualification. No R7 or S7 owner comment/approval was created; S6 approvals are
+historical. S8/R8 is the new planned cycle and requires three same-S8 reviews,
+separate S8-bound human approval, and exact-R8 qualification before release GO.
 
 
 ## [0.2.4] - 2026-09-26

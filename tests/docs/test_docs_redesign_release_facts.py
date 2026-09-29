@@ -226,13 +226,13 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
         citation,
         re.MULTILINE,
     )
-    # S6 keeps the new UTC date; earlier candidate cycles remain historical.
+    # S8 is the newly planned UTC-date cycle; earlier candidate cycles remain historical.
     release_plan = (
         REPO_ROOT / "docs/developers/plans/20260927_v0.2.5_release_plan.md"
     ).read_text(encoding="utf-8")
     release_plan_text = " ".join(release_plan.split())
     assert (
-        f"The candidate metadata date for S6 is **{CANDIDATE_V025_METADATA_DATE}**"
+        f"The planned S8 metadata date is **{CANDIDATE_V025_METADATA_DATE}**"
         in release_plan_text
     )
     assert (
@@ -240,7 +240,7 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
         in release_plan_text
     )
     roadmap = (REPO_ROOT / "ROADMAP.md").read_text(encoding="utf-8")
-    assert "governs the S6/R6 candidate cycle" in roadmap
+    assert "governs the planned S8/R8 corrective cycle" in roadmap
     assert "#584 range push-down and parallel #588 optimization remain" in roadmap
     assert "on HOLD with no runtime change for those paths" in roadmap
     assert (

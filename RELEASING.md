@@ -25,9 +25,10 @@ reviewed source `S`; validation binds S to R and permits only the evidence
 update and existing plan checkboxes transitioning from `[ ]` to `[x]`. A
 v0.2.4 candidate run must provide this evidence path.
 
-For v0.2.5, dispatch from `main` with R6's full SHA, `expected_tag=v0.2.5`,
+For v0.2.5, after S8 reviews and approval, dispatch from `main` with
+R8's full SHA, `expected_tag=v0.2.5`,
 and `review_evidence=docs/developers/plans/manifests/audit-manifest-v0.2.5-release-readiness.yaml`.
-The S6 candidate metadata date is 2026-09-29 UTC; the 2026-09-27 and
+The planned S8 candidate metadata date is 2026-09-29 UTC; the 2026-09-27 and
 2026-09-28 dates belong only to superseded candidates. S4 was held for a
 broken pre-qualification evidence link and did not produce R4. S5 was held
 for an incomplete generated-evidence whitespace exception and did not produce
@@ -35,11 +36,12 @@ R5. If publication moves to a later UTC date, update all release dates before
 a new S freeze and repeat review and qualification. Never backdate the tag.
 The v0.2.5 decision remains
 HOLD until all release gates pass, including the 62 executable historical
-scenarios on exact R6 artifacts and twelve individually approved dispositions.
+scenarios on exact R8 artifacts and twelve individually approved dispositions.
 The v0.2.5 owner comment is a strict, source-bound approval record: it names
 both scoped exceptions, all twelve disposition IDs and decisions, and the
-SHA-256 of the reviewed disposition document. The four-line S2 comment is
-historical and does not satisfy the S6 evidence schema.
+SHA-256 of the reviewed disposition document. S2 and S6 comments are
+historical and do not satisfy the S8 evidence schema. S7 reviews were held;
+no S7 owner comment or approval was created.
 
 The accepted tag-specific plan, evidence schema/path, review lanes, S-to-R
 paths, payload/integration schemas, artifact prefix, and protected refs are defined only in
