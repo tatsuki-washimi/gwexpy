@@ -15,7 +15,7 @@ on:
         required: true
         type: string
       review_evidence:
-        description: Repository-relative sanitized Terra evidence JSON at reviewed commit S
+        description: Repository-relative canonical review evidence at reviewed commit S
         required: true
         type: string
 
@@ -38,6 +38,7 @@ jobs:
       source_sha: ${{ steps.validate.outputs.source_sha }}
       version: ${{ steps.validate.outputs.version }}
       artifact_prefix: ${{ steps.validate.outputs.artifact_prefix }}
+      review_evidence: ${{ steps.validate.outputs.review_evidence }}
     steps:
       - name: Check out workflow revision for validator code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -954,6 +955,76 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
+  historical_74_gate:
+    name: Enforce v0.2.5 historical 62 passes and 12 owner dispositions
+    needs: [verify, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact release source and historical probes
+        if: needs.verify.outputs.version == '0.2.5'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.verify.outputs.source_sha }}
+          fetch-depth: 1
+          path: source
+
+      - name: Set up historical qualification Python
+        if: needs.verify.outputs.version == '0.2.5'
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+
+      - name: Download exact candidate payload
+        if: needs.verify.outputs.version == '0.2.5'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: release-payload-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/release-payload
+
+      - name: Download detached payload manifest
+        if: needs.verify.outputs.version == '0.2.5'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/release-sidecars
+
+      - name: Run historical probes and fixed regressions on both installed artifacts
+        if: needs.verify.outputs.version == '0.2.5'
+        env:
+          SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          REVIEW_EVIDENCE: ${{ needs.verify.outputs.review_evidence }}
+          PAYLOAD_DIR: ${{ runner.temp }}/release-payload
+          PAYLOAD_MANIFEST: ${{ runner.temp }}/release-sidecars/distribution-sha256.json
+          HISTORICAL_WORK: ${{ runner.temp }}/historical-74
+        run: |
+          for kind in wheel sdist; do
+            python source/scripts/ci/v025_historical_gate.py run \
+              --source-root "$GITHUB_WORKSPACE/source" \
+              --payload-dir "$PAYLOAD_DIR" \
+              --payload-manifest "$PAYLOAD_MANIFEST" \
+              --source-sha "$SOURCE_SHA" --kind "$kind" \
+              --work "$HISTORICAL_WORK/$kind"
+          done
+          python source/scripts/ci/v025_historical_gate.py finalize \
+            --source-root "$GITHUB_WORKSPACE/source" \
+            --payload-dir "$PAYLOAD_DIR" \
+            --payload-manifest "$PAYLOAD_MANIFEST" \
+            --source-sha "$SOURCE_SHA" \
+            --wheel-work "$HISTORICAL_WORK/wheel" \
+            --sdist-work "$HISTORICAL_WORK/sdist" \
+            --approval "$GITHUB_WORKSPACE/source/$REVIEW_EVIDENCE" \
+            --output-dir "$HISTORICAL_WORK/evidence"
+
+      - name: Upload exact-candidate historical gate evidence
+        if: needs.verify.outputs.version == '0.2.5'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: v025-historical-74-gate-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/historical-74/evidence
+          if-no-files-found: error
+          retention-days: 90
+
   evidence:
     name: Collect same-run integration evidence
     needs: [verify, build, smoke]
@@ -1010,7 +1081,7 @@ jobs:
 
   publish:
     name: Publish verified artifacts to PyPI
-    needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, cross_format_io_evidence, evidence]
+    needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, cross_format_io_evidence, historical_74_gate, evidence]
     if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15

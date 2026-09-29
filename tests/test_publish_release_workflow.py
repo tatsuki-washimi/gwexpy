@@ -462,7 +462,7 @@ def test_qualification_evidence_switch_is_fail_closed_and_versioned():
     publish = text.split("\n  publish:\n", maxsplit=1)[1]
     needs = publish.split("\n    if:", maxsplit=1)[0]
     assert (
-        "needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, cross_format_io_evidence, evidence]"
+        "needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, cross_format_io_evidence, historical_74_gate, evidence]"
         in needs
     )
 
