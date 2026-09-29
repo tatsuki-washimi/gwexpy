@@ -22,7 +22,7 @@ PUBLISHED_V024_VERSION = "0.2.4"
 PUBLISHED_V024_DATE = "2026-09-26"
 PUBLISHED_V024_HISTORY_ENTRY = f"[{PUBLISHED_V024_VERSION}] - {PUBLISHED_V024_DATE}"
 CANDIDATE_V025_VERSION = "0.2.5"
-CANDIDATE_V025_METADATA_DATE = "2026-09-28"
+CANDIDATE_V025_METADATA_DATE = "2026-09-29"
 CANDIDATE_V025_HISTORY_ENTRY = (
     f"[{CANDIDATE_V025_VERSION}] - {CANDIDATE_V025_METADATA_DATE}"
 )
@@ -226,15 +226,19 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
         citation,
         re.MULTILINE,
     )
-    # The S2 candidate date is frozen separately from the historical S/R date.
+    # S3 uses a new date; the S/R and S2/R2 candidate dates remain historical.
     release_plan = (
         REPO_ROOT / "docs/developers/plans/20260927_v0.2.5_release_plan.md"
     ).read_text(encoding="utf-8")
+    release_plan_text = " ".join(release_plan.split())
     assert (
-        f"The candidate metadata date for S2 is **{CANDIDATE_V025_METADATA_DATE}**"
-        in release_plan
+        f"The candidate metadata date for S3 is **{CANDIDATE_V025_METADATA_DATE}**"
+        in release_plan_text
     )
-    assert f"old {HISTORICAL_V025_METADATA_DATE} date" in release_plan
+    assert (
+        "2026-09-28 date belongs only to the superseded S2/R2 cycle"
+        in release_plan_text
+    )
     assert (
         f"The {HISTORICAL_V025_METADATA_DATE} S/R cycle is historical and superseded"
         in release_plan
@@ -251,12 +255,13 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
         release_note
     )
     historical_sr_note = (
-        f"The {HISTORICAL_V025_METADATA_DATE} S/R approvals and candidate runs are "
-        "historical evidence"
+        f"The {HISTORICAL_V025_METADATA_DATE} S/R and 2026-09-28 S2/R2 "
+        "approvals and candidate runs are historical evidence"
     )
-    assert historical_sr_note in changelog
-    assert f"{HISTORICAL_V025_METADATA_DATE} S/R approvals are historical" in (
-        release_note
+    assert historical_sr_note in " ".join(changelog.split())
+    assert (
+        f"{HISTORICAL_V025_METADATA_DATE} S/R and S2/R2 approvals are historical"
+        in " ".join(release_note.split())
     )
 
     assert release_status["latest_release"] == PUBLISHED_V024_VERSION

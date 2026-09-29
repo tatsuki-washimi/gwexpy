@@ -428,9 +428,9 @@ def test_repository_v025_release_identity_metadata_is_synchronized(monkeypatch, 
 
     assert module.get_version_from_py() == "0.2.5"
     assert module.get_version_from_cff() == "0.2.5"
-    assert module.get_date_from_cff() == "2026-09-28"
+    assert module.get_date_from_cff() == "2026-09-29"
     assert module.get_version_from_zenodo() == "0.2.5"
-    assert module.get_date_from_zenodo() == "2026-09-28"
+    assert module.get_date_from_zenodo() == "2026-09-29"
 
     module.main()
 
