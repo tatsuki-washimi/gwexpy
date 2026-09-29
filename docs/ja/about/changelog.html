@@ -444,7 +444,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.5</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/7f614d65c92d88c1aa9f46ef7ba01e88de9bb5ae">7f614d65</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/a93be21add7faf3af08f909a5cf667801a0df784">a93be21a</a>
   · 入門例の検証対象 0.2.4
   · <a href="documentation_version.html">版情報</a>
   · <a href="known_limitations.html">既知の制限</a>
@@ -476,7 +476,7 @@
 <p>v0.2.2 リリースは <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.2.2">GitHub Releases</a> から取得でき、<a class="reference external" href="https://doi.org/10.5281/zenodo.22228340">Zenodo DOI 10.5281/zenodo.22228340</a> でアーカイブされています。</p>
 </section>
 <section id="id1">
-<h2>[0.2.5] - 2026-09-28（候補）<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<h2>[0.2.5] - 2026-09-29（候補）<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
 <p>このパッチでは、対応する NetCDF4 と Zarr の行列の値・軸・単位、HDF5 マニフェストの整合性、TDMS の波形間隔と GBD ヘッダーの検証、音声レジストリのタグ来歴を修正します。必要なパッケージがない場合、対応するオプションバックエンドの経路はバックエンド固有の <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を返します。候補には #580 の内部 I/O 性能と拡張性に関する作業も含まれます。候補に含める変更の実装は完了しました。範囲の読み込み最適化（#584）と GWF の parallel 最適化は保留中です。リリース認定と公開は未完了です。以下で範囲を定めた #589 ネイティブパーサーと #585 SDB スナップショットの例外を除き、公開される値、dtype、メタデータ、警告・例外の挙動、および保存形式を受け入れ条件として維持します。公開 API、依存関係、永続化スキーマは追加しません。</p>
 <section id="fixed">
 <h3>修正<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h3>
@@ -502,11 +502,11 @@
 <li><p><strong>dtype を保つコピー削減（#586）</strong>：凍結済み B-X 比較（baseline freeze commit <code class="docutils literal notranslate"><span class="pre">836e6f38</span></code>、candidate source <code class="docutils literal notranslate"><span class="pre">913ab6c77</span></code>、evidence commit <code class="docutils literal notranslate"><span class="pre">26ae634</span></code>、追記のみの判定補正 <code class="docutils literal notranslate"><span class="pre">bf258</span></code>）では、公開結果の11/11 fingerprint がすべて一致し、dtype、値、警告に変化はありません。監査対象の全 payload に対する source-site <code class="docutils literal notranslate"><span class="pre">ndarray.astype</span></code> 呼び出しは ATS32 と ATS64 で各1回から0回に、16セルの NetCDF matrix で32回から0回になりました。測定 fixture の NetCDF warm wall time と CPU time の中央値は33.23%改善しました。ATS の wall/CPU と全 PSS 測定値は参考証拠にとどまり、改善は主張しません。補足の小入力3件はすべて非退行基準を満たしました。リリース適格性確認は未完了です。証拠は <code class="docutils literal notranslate"><span class="pre">docs/developers/reports/v0.2.5-performance/X/dade6bd54082ef7f771724b84064caeb252342317e0da5cdc81a966f5e916050/candidate-v1-913ab6c/README.md</span></code> および同階層の <code class="docutils literal notranslate"><span class="pre">candidate-v1-913ab6c-interpretation-v2/README.md</span></code> にあります。</p></li>
 <li><p><strong>範囲の読み込み最適化（#584）</strong>：B1 は、要求範囲外の破損 chunk に対しても HDF5、NDScope、NetCDF4、Zarr で例外を送出します。これを省くと既存のエラーが変わるため、#584 は保留し、このパッチでは reader を変更しません。</p></li>
 <li><p><strong>WIN とコピーの削減（#518、#586）</strong>：公開 dtype と保存値を維持する NumPy ベースの WIN decode とコピー削減のみを含めます。Numba と残りの #518/#586 作業は延期します。</p></li>
-<li><p><strong>ネイティブ DTTXML の未選択ペイロードに関する例外（#589）</strong>：すでに受け入れている selector をパーサーで使うことで、完全に未選択のネイティブパーサーペイロードだけから生じる警告と decode error を抑制できます。XML 構造エラーと選択ペイロードの挙動は、旧候補と同等に保つ必要があります。外部 <code class="docutils literal notranslate"><span class="pre">dttxml</span></code> 経路は従来どおりで、性能上の主張の対象外です。この例外には S2 について人による別個の科学・データモデル承認が必要であり、#611 の完全に非交差な通常 HDF5 window に限る安全性例外を広げません。</p></li>
-<li><p><strong>SDB 同時書き込みスナップショット修正（#585）</strong>：reader は1つの SQLite スナップショットから選択行を検証・取得します。凍結された14件の WAL 故障 matrix では、writer が検証とペイロード query の間に commit する場合、10件で旧 R と異なります。選択・未選択の値と不正値の更新、timestamp 更新、schema 変更により、返す値、key、警告、エラーが変わる可能性があります。<code class="docutils literal notranslate"><span class="pre">usUnits</span></code> の両更新を含む4件は一致します。静的ソースの挙動は旧 R と同等です。この正確な同時実行の範囲には、S2 について人による別個の科学・データモデル承認が必要です。ほかの形式に未選択ペイロードを省く例外は認めません。</p></li>
+<li><p><strong>ネイティブ DTTXML の未選択ペイロードに関する例外（#589）</strong>：すでに受け入れている selector をパーサーで使うことで、完全に未選択のネイティブパーサーペイロードだけから生じる警告と decode error を抑制できます。XML 構造エラーと選択ペイロードの挙動は、旧候補と同等に保つ必要があります。外部 <code class="docutils literal notranslate"><span class="pre">dttxml</span></code> 経路は従来どおりで、性能上の主張の対象外です。この例外には S6 について人による新たな科学・データモデル承認が必要であり、#611 の完全に非交差な通常 HDF5 window に限る安全性例外を広げません。</p></li>
+<li><p><strong>SDB 同時書き込みスナップショット修正（#585）</strong>：reader は1つの SQLite スナップショットから選択行を検証・取得します。凍結された14件の WAL 故障 matrix では、writer が検証とペイロード query の間に commit する場合、10件で旧 R と異なります。選択・未選択の値と不正値の更新、timestamp 更新、schema 変更により、返す値、key、警告、エラーが変わる可能性があります。<code class="docutils literal notranslate"><span class="pre">usUnits</span></code> の両更新を含む4件は一致します。静的ソースの挙動は旧 R と同等です。この正確な同時実行の範囲には、S6 について人による新たな科学・データモデル承認が必要です。ほかの形式に未選択ペイロードを省く例外は認めません。</p></li>
 <li><p><strong>対象外</strong>：#587、#590、#519 は v0.2.5 の対象外です。</p></li>
 </ul>
-<p>2026-09-27 の S/R 承認と候補の実行結果は、以前の候補についての履歴証拠に限られます。拡張された S2/R2 候補のリリース GO には、同一 S2 に対する新たなレビュー、限定的な範囲についての人による承認、および正確な R2 の認定が必要です。</p>
+<p>2026-09-27 の S/R と 2026-09-28 の S2/R2 の承認・候補実行結果は履歴証拠に限られます。S3 の科学・データモデルレビューは限定された処置を承認しましたが、文書レビューは ROADMAP が S2/R2 を現行候補として記していたため保留としました。S4 の科学・データモデルレビューは限定された12件の処置を承認しましたが、文書レビューは計画書の事前認定証拠へのリンクが存在しないパスを指していたため保留としました。S5 の科学・データモデルおよび文書レビューは同じソースを承認しましたが、release-security レビューは生成済み証拠の空白例外の範囲が不完全なため保留としました。S6 には同一 S6 に対する新たなレビューと限定的な範囲についての人による承認が必要です。その後、リリース GO の前に正確な R6 の認定を行います。</p>
 </section>
 </section>
 <section id="id2">
@@ -1552,7 +1552,7 @@
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v0-2-4-weekly-development-activity">v0.2.4 の週次開発活動</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">[0.2.5] - 2026-09-28（候補）</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">[0.2.5] - 2026-09-29（候補）</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">修正</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#internal-performance-work-release-qualification-pending">内部性能作業（リリース認定待ち）</a></li>
 </ul>
