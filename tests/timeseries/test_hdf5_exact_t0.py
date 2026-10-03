@@ -5295,7 +5295,7 @@ with h5py.File(sys.argv[1], "r") as h5file:
     )
 
     result = subprocess.run(
-        [sys.executable, "-I", "-c", code, str(path), str(repository)],
+        [sys.executable, "-I", "-B", "-c", code, str(path), str(repository)],
         check=False,
         capture_output=True,
         text=True,
@@ -5417,6 +5417,7 @@ assert np.array_equal(dict_result["A"].value, series.value)
         [
             sys.executable,
             "-I",
+            "-B",
             "-c",
             code,
             str(path),
@@ -5509,7 +5510,7 @@ else:
 """
 
     result = subprocess.run(
-        [sys.executable, "-I", "-c", code, registry_state, str(repository)],
+        [sys.executable, "-I", "-B", "-c", code, registry_state, str(repository)],
         check=False,
         capture_output=True,
         text=True,

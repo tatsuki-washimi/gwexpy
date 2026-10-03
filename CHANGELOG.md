@@ -1,18 +1,20 @@
 # Changelog
 
-## [0.2.5] - 2026-09-29
+## [0.2.5] - 2026-10-04
 
 This patch fixes supported NetCDF4 and Zarr matrix value, axis, and unit
 handling; HDF5 manifest integrity; TDMS waveform-increment and GBD header
 validation; and audio registry tag provenance. The supported optional-backend
 routes report a backend-specific `ImportError` when their package is absent.
-The candidate includes internal I/O performance and scalability work under
-#580. Implementation of the included changes is complete. Range push-down
-(#584) and parallel GWF optimization remain on hold. Release qualification and
-publication remain pending; public values, dtype, metadata, warning/error
+The current candidate base includes internal I/O performance and scalability
+work under #580. The #584 overlay and optional parallel #588 patch are deferred;
+the R8 serial #588 implementation is retained unchanged. Final-source review
+and release qualification remain pending; public values, dtype, metadata, warning/error
 behavior, and on-disk format remain the acceptance contract except for the
 scoped #589 native-parser and #585 SDB snapshot exceptions below. The
-candidate adds no public API, dependency, or persistence schema.
+candidate adds no public API, dependency, or persistence schema. The reviewed
+source `S` must receive fresh approval before publishing source `R` is qualified.
+See the current v0.2.5 release plan for the independent four-case decision.
 
 ### Fixed
 
@@ -30,27 +32,28 @@ candidate adds no public API, dependency, or persistence schema.
 - **CSV reader and internal writer (#585)**: Reduce general parser work, push down supported column selection while retaining full-file validation, and stream output from the internal enhanced `write_timeseries_csv` helper. Public `TimeSeries.write(format="csv")` uses GWpy's writer and is outside this writer performance claim. Both explicit-format and `.csv` auto-detected two-column `FrequencySeries` fast paths remain covered, including the nonuniform-frequency-axis contract. Frozen wheel evidence preserves 21 public fingerprints, and the measured general and selected CSV fixtures improve in wall time; the internal writer preserves bytes under fixed encoding and newline conditions.
 - **WIN decoder (#518)**: Use NumPy integer intermediates while preserving 12 bit-exact public fingerprints. The measured per-sample append count falls from 4,116 to zero and warm CPU passes the noise-aware gate.
 - **Native DTTXML PSD selection (#589)**: Large native PSD reads skip fully unselected payload decode, reducing measured Linux peak PSS by 19.63% with zero unselected decoded bytes. Small files retain the old parser. Large warm wall time increases 12.46% on the measured fixture; cold time is comparable. The scoped warning exception below remains subject to human approval.
-- **Serial GWF merge (#588)**: Large, sorted, local serial reads retain at most three coerced parts across the measured source counts. Independent Linux peak tree-PSS batches improve 8.31–10.66%; large warm time improves 4.20%. Parallel optimization remains on hold after two primary PSS failures; the old parallel route remains in place.
+- **GWF scalability (#588)**: Retain the R8 serial optimization. The optional parallel patch is deferred because its broad structural and valid process-tree PSS inclusion gates remain unmet. Earlier measurements and the single spawn-import diagnostic do not qualify the final source.
 - **SDB selected windows (#585)**: For an eligible 4,096-row SQLite source, full-source validation and the selected payload query share one read transaction while only 512 requested payload rows enter a DataFrame. Static-source public fingerprints match B1. The two small selected-read timing batches do not establish a regression under the frozen noise-aware gate, but are inconclusive for speed; no wall-time or PSS improvement is claimed. TDMS unselected payload reads are already zero in B1, so that subroute has no new performance claim.
 - **Dtype-preserving copy reduction (#586)**: The frozen B-X comparison (baseline freeze commit `836e6f38`, candidate source `913ab6c77`, evidence commit `26ae634`, and append-only gate correction `bf258`) matches all 11/11 public fingerprints, with no dtype, value, or warning change. Audited source-site full-payload `ndarray.astype` calls fall from 1 to 0 for ATS32 and ATS64, and from 32 to 0 for the 16-cell NetCDF matrix. NetCDF warm wall and CPU medians improve 33.23% on the measured fixture; ATS wall/CPU and all PSS results remain evidence-only. Three supplementary small-input cases pass the non-regression check. Release qualification remains pending. Evidence: `docs/developers/reports/v0.2.5-performance/X/dade6bd54082ef7f771724b84064caeb252342317e0da5cdc81a966f5e916050/candidate-v1-913ab6c/README.md` and sibling `candidate-v1-913ab6c-interpretation-v2/README.md`.
-- **Range push-down (#584)**: B1 raises on corrupt chunks outside the requested window in HDF5, NDScope, NetCDF4, and Zarr. Skipping them would change an existing error, so #584 is held with no reader change in this patch.
+- **Range push-down (#584)**: The nine-path candidate-A overlay is deferred. Its primary performance gate remains unmet, and the new full 72-command campaign was not launched. Accepted physical-fetch and scoped remote Zarr results do not replace that gate.
 - **WIN and copy reduction (#518, #586)**: Include only NumPy-based WIN decoding and copy reductions that preserve public dtype and saved values. Numba and the remaining #518/#586 work are deferred.
-- **Native DTTXML skipped-payload exception (#589)**: Parser-level use of already accepted selectors may suppress warnings and decode errors arising exclusively from fully unselected native-parser payloads. XML structural errors and selected-payload behavior must remain equivalent to the old candidate. The external `dttxml` route keeps its existing behavior and is outside the performance claim. This exception requires fresh S8-bound human scientific/data-model approval and does not expand #611's completely disjoint plain-HDF5-window safety exception.
-- **SDB concurrent-write snapshot correction (#585)**: The reader validates and fetches selected rows from one SQLite snapshot. In the frozen 14-case WAL fault matrix, ten cases differ from old R when a writer commits between its validation and payload query: selected or unselected value and malformed-value updates, timestamp updates, and schema changes may alter returned values, keys, warnings, or errors. Four cases remain equal, including both `usUnits` updates. Static-source behavior remains old-R-equivalent. This exact concurrent scope needs fresh S8-bound human scientific/data-model approval. No other format gains a skipped-payload exception.
+- **Native DTTXML skipped-payload exception (#589)**: Parser-level use of already accepted selectors may suppress warnings and decode errors arising exclusively from fully unselected native-parser payloads. XML structural errors and selected-payload behavior must remain equivalent to the reviewed baseline. The external `dttxml` route keeps its existing behavior and is outside the performance claim. This proposed exception requires fresh human scientific/data-model approval bound to final `S` and does not expand #611's completely disjoint plain-HDF5-window safety exception.
+- **SDB concurrent-write snapshot correction (#585)**: The proposed exception is limited to differences caused when a WAL writer commits after the reader pins one snapshot for validation and payload retrieval. It requires fresh human scientific/data-model approval bound to final `S`. The canonical release plan retains the historical matrix and required evidence; this changelog does not grant exception authority or claim final-source qualification. No other format gains a skipped-payload exception.
 - **Excluded**: #587, #590, and #519 are outside v0.2.5.
 
-The 2026-09-27 S/R and 2026-09-28 S2/R2 approvals and candidate runs are
-historical evidence only. S3's scientific review approved its scoped
+The 2026-09-27 S/R, 2026-09-28 S2/R2, and later September candidate records
+are historical evidence only. S3's scientific review approved its scoped
 dispositions, but its documentation review held that source because ROADMAP
 still described S2/R2 as current. S4's scientific review approved the bounded
 dispositions, but its documentation review held that source because the plan
 linked to a nonexistent pre-qualification path. S5's scientific and
 documentation reviews approved that source, but its release-security review
-held an incomplete generated-evidence whitespace exception. S7's scientific/data-model
-and documentation reviews are **HOLD** because active release authority still
-required S6/R6 approval and qualification. No R7 or S7 owner comment/approval was created; S6 approvals are
-historical. S8/R8 is the new planned cycle and requires three same-S8 reviews,
-separate S8-bound human approval, and exact-R8 qualification before release GO.
+held an incomplete generated-evidence whitespace exception. S7 had no R7 or
+owner approval. The September 29 record for reviewed source
+`9db47fe283052f0a8e45f94fb548f59b596bcfb9` and its approval are historical.
+The current cycle requires three fresh reviews and separate human approval
+bound to its own final `S`, followed by qualification of exact `R` before
+release GO.
 
 
 ## [0.2.4] - 2026-09-26

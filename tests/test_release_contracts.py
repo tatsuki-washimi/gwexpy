@@ -378,6 +378,11 @@ def test_release_contracts_cover_frozen_releases_and_v023_lane() -> None:
         "benchmarks",
         "gwexpy",
         "tests/io",
+        "tests/test_gwpy4_proxy_contract.py",
+        "tests/test_gwpy_override_inventory.py",
+        "tests/test_verify_spectrogram_extra.py",
+        "tests/timeseries/test_gwf_parallel_contract.py",
+        "tests/timeseries/test_hdf5_exact_t0.py",
     ]
     assert v025["artifact_prefix"] == "v025-integration-evidence"
     assert v025["protected_refs"] == ["main", "maint/0.2"]

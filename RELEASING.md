@@ -25,23 +25,52 @@ reviewed source `S`; validation binds S to R and permits only the evidence
 update and existing plan checkboxes transitioning from `[ ]` to `[x]`. A
 v0.2.4 candidate run must provide this evidence path.
 
-For v0.2.5, after S8 reviews and approval, dispatch from `main` with
-R8's full SHA, `expected_tag=v0.2.5`,
-and `review_evidence=docs/developers/plans/manifests/audit-manifest-v0.2.5-release-readiness.yaml`.
-The planned S8 candidate metadata date is 2026-09-29 UTC; the 2026-09-27 and
-2026-09-28 dates belong only to superseded candidates. S4 was held for a
-broken pre-qualification evidence link and did not produce R4. S5 was held
-for an incomplete generated-evidence whitespace exception and did not produce
-R5. If publication moves to a later UTC date, update all release dates before
-a new S freeze and repeat review and qualification. Never backdate the tag.
-The v0.2.5 decision remains
-HOLD until all release gates pass, including the 62 executable historical
-scenarios on exact R8 artifacts and twelve individually approved dispositions.
-The v0.2.5 owner comment is a strict, source-bound approval record: it names
-both scoped exceptions, all twelve disposition IDs and decisions, and the
-SHA-256 of the reviewed disposition document. S2 and S6 comments are
-historical and do not satisfy the S8 evidence schema. S7 reviews were held;
-no S7 owner comment or approval was created.
+For v0.2.5, the current planned release date is 2026-10-04 UTC. The new
+source scope is selected; fresh reviewed-source `S` approval and exact-`R`
+qualification remain pending.
+Release metadata may be prepared before the UTC release date; do not create or
+push the final tag before 2026-10-04 00:00 UTC (09:00 JST). Close the pre-tag
+gates by the 09:00 JST target where possible; that target is not a 23:00
+cutoff. If the release moves to a later UTC date, update every release date
+before freezing a new `S` and repeat review and qualification. Never backdate
+the tag.
+
+The v0.2.5 decision remains **HOLD**. The review source must include the
+release code, metadata, and workflow changes that will be reviewed. Require
+fresh independent scientific/data-model, documentation, and release-security
+reviews of the same `S`, plus separate human scientific/data-model approval
+covering the scoped #589 and #585 SDB exceptions and all twelve individually
+reviewed historical dispositions. The owner approval must bind the final `S`,
+its scope digest, disposition digest, and canonical comment tokens. Existing
+review records and comments from the prior September cycle are historical and
+cannot authorize this cycle.
+
+The readiness file at `S` must be the byte-exact v0.2.5 empty placeholder
+defined by `V025_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER` in
+`scripts/validate_release.py`. Only after fresh same-`S` reviews and approval
+may `R` differ from `S`, and then only by filling that manifest and changing
+existing release-plan checklist items from `[ ]` to `[x]`. Qualification and
+all publication gates run on exact `R` artifacts.
+
+Two separate pre-tag facts still need closure. The PyPI environment currently
+has no configured manual-approval requirement, and the Trusted Publisher tuple
+has not been confirmed. The new workflow orders GitHub Release creation before
+PyPI; that order and the official same-`S` qualification must be reviewed in
+the final source. Do not treat these external settings as confirmed until they
+are read back.
+
+The historical 74-scenario gate remains required: 62 executable historical
+scenarios must pass on exact `R` artifacts and twelve dispositions must be
+approved individually. The 12 dispositions remain in the canonical proposal;
+they are never counted as passing runtime assertions.
+
+Task 6 selected case 1 independently: defer the nine-path #584 candidate
+overlay and the optional parallel #588 patch because their inclusion gates
+remain unmet. Retain the R8 serial #588 implementation and all five neutral v9
+corrections unchanged. Only the post-selection final `S` may authorize review;
+the physical-fetch, remote Zarr, and single spawn-import diagnostic results
+do not replace the missing performance, broad structural, or process-tree PSS
+gates. The canonical release plan records all four cases and the decision.
 
 The accepted tag-specific plan, evidence schema/path, review lanes, S-to-R
 paths, payload/integration schemas, artifact prefix, and protected refs are defined only in
@@ -62,9 +91,15 @@ and UTC tagger date against the release metadata.  Signed tags are recommended.
 Push the tag only after the candidate result, target-SHA CI, physics sign-off,
 PyPI publisher, environment, and ruleset readbacks are all approved.
 
-After a tag push, the strict workflow must pass verify, build, smoke, and
-publish.  Confirm the PyPI distribution/version, GitHub Release, Zenodo, and
-conda follow-up state before declaring release acceptance.
+After a tag push, the strict workflow must pass verify, build, smoke, all
+version-specific qualification and evidence gates, then create and read back
+the GitHub Release before PyPI publication can start. The Release uses the
+same-run checksum-validated wheel, sdist, and detached sidecars, and the exact
+annotated tag must still resolve to the validated source SHA. A pre-existing
+Release for that tag fails closed. Manual workflow dispatch remains a
+candidate-only dry-run and cannot create a GitHub Release or publish to PyPI.
+Confirm the PyPI distribution/version, GitHub Release, Zenodo, and conda
+follow-up state before declaring release acceptance.
 
 ## Partial PyPI upload recovery
 

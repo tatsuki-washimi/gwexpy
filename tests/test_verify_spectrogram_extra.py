@@ -9,7 +9,7 @@ from gwpy.spectrogram import Spectrogram
 from gwexpy.spectrogram import SpectrogramDict, SpectrogramList
 
 
-def test_spectrogram_extra_features():
+def test_spectrogram_extra_features(tmp_path):
     # Dummy Data (Time=10, Freq=5)
     data1 = np.ones((10, 5))
     data2 = np.ones((10, 5)) * 2
@@ -32,7 +32,7 @@ def test_spectrogram_extra_features():
     p2.close()
 
     # 2. IO
-    filename = "test_spec_io.h5"
+    filename = tmp_path / "test_spec_io.h5"
     if os.path.exists(filename):
         os.remove(filename)
 

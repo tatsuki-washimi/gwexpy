@@ -39,6 +39,7 @@ jobs:
       version: ${{ steps.validate.outputs.version }}
       artifact_prefix: ${{ steps.validate.outputs.artifact_prefix }}
       review_evidence: ${{ steps.validate.outputs.review_evidence }}
+      tag_object_sha: ${{ steps.validate.outputs.tag_object_sha }}
     steps:
       - name: Check out workflow revision for validator code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -112,6 +113,11 @@ jobs:
             /^version=/ {print "version=" $2}
             /^artifact_prefix=/ {print "artifact_prefix=" $2}
           ' >> "$GITHUB_OUTPUT"
+          tag_object_sha=""
+          if git -C source cat-file -e "refs/tags/$EXPECTED_TAG^{tag}" 2>/dev/null; then
+            tag_object_sha="$(git -C source rev-parse "refs/tags/$EXPECTED_TAG")"
+          fi
+          printf 'tag_object_sha=%s\n' "$tag_object_sha" >> "$GITHUB_OUTPUT"
           printf 'review_evidence=%s\n' "$canonical_review_evidence" >> "$GITHUB_OUTPUT"
 
       - name: Verify GitHub human approval for the reviewed source
@@ -1103,9 +1109,151 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
+  github_release:
+    name: Create verified GitHub Release
+    needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, cross_format_io_evidence, historical_74_gate, evidence]
+    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - name: Check out verified release source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.verify.outputs.source_sha }}
+          fetch-depth: 0
+          path: source
+
+      - name: Confirm pushed annotated tag still resolves to verified source
+        id: tag_identity
+        working-directory: source
+        env:
+          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          EXPECTED_TAG_OBJECT_SHA: ${{ needs.verify.outputs.tag_object_sha }}
+        run: |
+          git fetch --no-tags origin "refs/tags/$EXPECTED_TAG:refs/tags/$EXPECTED_TAG"
+          if [[ "$(git cat-file -t "refs/tags/$EXPECTED_TAG")" != tag ]]; then
+            echo "release tag must be annotated" >&2
+            exit 1
+          fi
+          actual_source_sha="$(git rev-parse "refs/tags/$EXPECTED_TAG^{commit}")"
+          if [[ "$actual_source_sha" != "$EXPECTED_SOURCE_SHA" ]]; then
+            echo "pushed tag no longer resolves to verified source" >&2
+            exit 1
+          fi
+          actual_tag_object_sha="$(git rev-parse "refs/tags/$EXPECTED_TAG")"
+          if [[ "$actual_tag_object_sha" != "$EXPECTED_TAG_OBJECT_SHA" ]]; then
+            echo "pushed annotated tag object changed after verification" >&2
+            exit 1
+          fi
+          printf 'tag_object_sha=%s\n' "$actual_tag_object_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Download same-run payload and sidecars
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: release-payload-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/release-payload
+
+      - name: Download same-run sidecars
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/release-sidecars
+
+      - name: Validate exact same-run assets and generate CHANGELOG notes
+        working-directory: source
+        env:
+          EXPECTED_VERSION: ${{ needs.verify.outputs.version }}
+          EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          RELEASE_PAYLOAD: ${{ runner.temp }}/release-payload
+          RELEASE_SIDECARS: ${{ runner.temp }}/release-sidecars
+        run: |
+          python scripts/ci/validate_release_payload.py \
+            --payload-dir "$RELEASE_PAYLOAD" \
+            --manifest "$RELEASE_SIDECARS/distribution-sha256.json" \
+            --expected-version "$EXPECTED_VERSION"
+          python - "$RELEASE_SIDECARS/distribution-sha256.json" "$EXPECTED_VERSION" "$EXPECTED_SOURCE_SHA" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          manifest = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          if manifest.get("version") != sys.argv[2] or manifest.get("source_sha") != sys.argv[3]:
+              raise SystemExit("release sidecar does not match the verified source/version")
+          PY
+          python tools/gen_release_notes.py --version "$EXPECTED_VERSION"
+          cp "release_notes/v$EXPECTED_VERSION.md" "$RUNNER_TEMP/release-notes.md"
+
+      - name: Create Release and verify GitHub readback
+        working-directory: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          EXPECTED_VERSION: ${{ needs.verify.outputs.version }}
+          RELEASE_PAYLOAD: ${{ runner.temp }}/release-payload
+          RELEASE_SIDECARS: ${{ runner.temp }}/release-sidecars
+          RELEASE_NOTES: ${{ runner.temp }}/release-notes.md
+        run: |
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases" > "$RUNNER_TEMP/releases-before.json"
+          python - "$RUNNER_TEMP/releases-before.json" "$EXPECTED_TAG" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, "scripts/ci")
+          from validate_github_release_readback import validate_no_conflicting_release
+
+          validate_no_conflicting_release(json.loads(Path(sys.argv[1]).read_text(encoding="utf-8")), sys.argv[2])
+          PY
+          gh release create "$EXPECTED_TAG" \
+            "$RELEASE_PAYLOAD"/*.whl \
+            "$RELEASE_PAYLOAD"/*.tar.gz \
+            "$RELEASE_SIDECARS/distribution-sha256.json" \
+            "$RELEASE_SIDECARS/LICENSE.sha256" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$EXPECTED_TAG" \
+            --notes-file "$RELEASE_NOTES" \
+            --target "$EXPECTED_SOURCE_SHA" \
+            --verify-tag
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$EXPECTED_TAG" > "$RUNNER_TEMP/release-readback.json"
+          gh release download "$EXPECTED_TAG" --repo "$GITHUB_REPOSITORY" --dir "$RUNNER_TEMP/release-download"
+          git ls-remote origin "refs/tags/$EXPECTED_TAG" "refs/tags/$EXPECTED_TAG^{}" > "$RUNNER_TEMP/tag-readback.txt"
+          python - "$RUNNER_TEMP/release-readback.json" "$EXPECTED_TAG" "$EXPECTED_SOURCE_SHA" "$RELEASE_PAYLOAD" "$RELEASE_SIDECARS" "$RUNNER_TEMP/release-download" "$RELEASE_NOTES" "$RUNNER_TEMP/tag-readback.txt" "${{ steps.tag_identity.outputs.tag_object_sha }}" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, "scripts/ci")
+          from validate_github_release_readback import validate_release_readback, validate_tag_identity
+
+          release = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          tag_refs = {}
+          for line in Path(sys.argv[8]).read_text(encoding="utf-8").splitlines():
+              object_sha, ref = line.split("\t", 1)
+              tag_refs[ref] = object_sha
+          tag = sys.argv[2]
+          validate_tag_identity(
+              tag_object_sha=tag_refs.get(f"refs/tags/{tag}", ""),
+              peeled_sha=tag_refs.get(f"refs/tags/{tag}^{{}}", ""),
+              expected_tag_object_sha=sys.argv[9],
+              expected_source_sha=sys.argv[3],
+          )
+          validate_release_readback(
+              release=release,
+              expected_tag=tag,
+              expected_source_sha=sys.argv[3],
+              notes=Path(sys.argv[7]).read_text(encoding="utf-8"),
+              payload_dir=Path(sys.argv[4]),
+              sidecars_dir=Path(sys.argv[5]),
+              downloaded_dir=Path(sys.argv[6]),
+          )
+          PY
+
   publish:
     name: Publish verified artifacts to PyPI
-    needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, cross_format_io_evidence, historical_74_gate, evidence]
+    needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, cross_format_io_evidence, historical_74_gate, evidence, github_release]
     if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15

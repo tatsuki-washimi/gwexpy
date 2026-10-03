@@ -7,6 +7,7 @@ import copy
 import importlib
 import importlib.util
 import inspect
+import io
 import json
 import os
 import re
@@ -1533,6 +1534,45 @@ def test_live_worker_proves_isolation_and_exact_current_version() -> None:
         "isolated_flag": True,
         "no_user_site": True,
     }
+
+
+def test_worker_cwd_identity_accepts_descriptor_path_alias(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    audit = _load_audit_module()
+    physical = tmp_path / "physical"
+    physical.mkdir()
+    descriptor_path = tmp_path / "descriptor-path"
+    descriptor_path.symlink_to(physical, target_is_directory=True)
+    monkeypatch.chdir(descriptor_path)
+    assert Path.cwd() == physical.resolve()
+
+    monkeypatch.setattr(
+        audit,
+        "build_oracle_projection",
+        lambda *_: {
+            "isolation": {
+                "cwd_matches_expected": True,
+                "gwexpy_absent_at_end": True,
+                "gwexpy_absent_at_start": True,
+                "isolated_flag": True,
+                "no_user_site": True,
+            }
+        },
+    )
+    payload = {
+        "expected_cwd": str(descriptor_path),
+        "expected_version": "4.0.2",
+        "queries": [],
+        "schema": audit.WORKER_SCHEMA,
+    }
+    monkeypatch.setattr(audit.sys, "stdin", io.StringIO(json.dumps(payload)))
+    output = io.StringIO()
+    monkeypatch.setattr(audit.sys, "stdout", output)
+
+    assert audit._worker_main() == 0
+    projection = json.loads(output.getvalue())
+    assert projection["isolation"]["cwd_matches_expected"] is True
 
 
 def test_oracle_first_non_callable_binding_masks_callable_base(

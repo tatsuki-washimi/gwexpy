@@ -99,6 +99,214 @@ def test_releasing_doc_separates_enforced_controls_from_operational_rules():
     assert "not a guarantee the platform provides" in releasing[operational:]
 
 
+def test_tag_push_creates_verified_github_release_before_pypi_but_dispatch_stays_dry_run():
+    workflow = read_workflow()
+    jobs = workflow.split("\njobs:\n", maxsplit=1)[1]
+    release = jobs.split("\n  github_release:\n", maxsplit=1)[1].split(
+        "\n  publish:\n", maxsplit=1
+    )[0]
+    publish = jobs.split("\n  publish:\n", maxsplit=1)[1]
+
+    required_gates = {
+        "verify",
+        "build",
+        "smoke",
+        "qualify",
+        "qualification_evidence",
+        "diaggui_qualification_evidence",
+        "cross_format_io_evidence",
+        "historical_74_gate",
+        "evidence",
+    }
+    release_needs = release.split("    needs: ", maxsplit=1)[1].splitlines()[0]
+    assert all(name in release_needs for name in required_gates)
+    assert (
+        "github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')"
+        in release
+    )
+    assert "contents: write" in release
+    assert "EXPECTED_SOURCE_SHA" in release
+    assert "refs/tags/$EXPECTED_TAG^{}" in release
+    assert "git cat-file -t" in release
+    assert "gh release create" in release
+    assert "--verify-tag" in release
+    assert '--target "$EXPECTED_SOURCE_SHA"' in release
+    assert "gh api --paginate --slurp" in release
+    assert "gh release download" in release
+    assert "validate_github_release_readback" in release
+    assert "validate_tag_identity" in release
+    assert "release-readback.json" in release
+    assert "distribution-sha256.json" in release
+    assert "LICENSE.sha256" in release
+    assert "tools/gen_release_notes.py --version" in release
+
+    publish_needs = publish.split("    needs: ", maxsplit=1)[1].splitlines()[0]
+    assert "github_release" in publish_needs
+    assert (
+        "github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')"
+        in publish
+    )
+    assert "id-token: write" in publish
+    assert "contents: read" in publish
+    assert "contents: write" not in publish
+    assert "workflow_dispatch" not in publish
+
+    import yaml
+
+    parsed = yaml.safe_load(workflow)
+    exact_needs = {
+        "verify",
+        "build",
+        "smoke",
+        "qualify",
+        "qualification_evidence",
+        "diaggui_qualification_evidence",
+        "cross_format_io_evidence",
+        "historical_74_gate",
+        "evidence",
+    }
+    assert set(parsed["jobs"]["github_release"]["needs"]) == exact_needs
+    assert set(parsed["jobs"]["publish"]["needs"]) == exact_needs | {"github_release"}
+
+
+def test_release_and_pypi_jobs_have_separate_least_permissions():
+    workflow = read_workflow()
+    jobs = workflow.split("\njobs:\n", maxsplit=1)[1]
+    release = jobs.split("\n  github_release:\n", maxsplit=1)[1].split(
+        "\n  publish:\n", maxsplit=1
+    )[0]
+    publish = jobs.split("\n  publish:\n", maxsplit=1)[1]
+    assert "    permissions:\n      contents: write" in release
+    assert "id-token: write" not in release
+    assert "    permissions:\n      contents: read\n      id-token: write" in publish
+    assert "contents: write" not in publish
+
+
+def _load_release_readback_validator():
+    path = (
+        WORKFLOW.parents[2] / "scripts" / "ci" / "validate_github_release_readback.py"
+    )
+    spec = importlib.util.spec_from_file_location("release_readback_validator", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_release_readback_validator_accepts_only_exact_uploaded_same_run_assets(
+    tmp_path,
+):
+    validator = _load_release_readback_validator()
+    payload = tmp_path / "payload"
+    sidecars = tmp_path / "sidecars"
+    downloaded = tmp_path / "downloaded"
+    for directory in (payload, sidecars, downloaded):
+        directory.mkdir()
+    source_files = {
+        payload / "gwexpy-0.2.5-py3-none-any.whl": b"wheel bytes",
+        payload / "gwexpy-0.2.5.tar.gz": b"sdist bytes",
+        sidecars / "distribution-sha256.json": b'{"source_sha":"abc"}\n',
+        sidecars / "LICENSE.sha256": b"license digest\n",
+    }
+    for source, data in source_files.items():
+        source.write_bytes(data)
+        (downloaded / source.name).write_bytes(data)
+    assets = [
+        {
+            "id": index,
+            "name": path.name,
+            "state": "uploaded",
+            "size": path.stat().st_size,
+            "digest": f"sha256:{hashlib.sha256(path.read_bytes()).hexdigest()}",
+        }
+        for index, path in enumerate(source_files, start=1)
+    ]
+    release = {
+        "id": 17,
+        "tag_name": "v0.2.5",
+        "name": "v0.2.5",
+        "draft": False,
+        "prerelease": False,
+        "body": "Generated CHANGELOG notes\n",
+        "assets": assets,
+    }
+    kwargs = dict(
+        release=release,
+        expected_tag="v0.2.5",
+        expected_source_sha="a" * 40,
+        notes="Generated CHANGELOG notes\n",
+        payload_dir=payload,
+        sidecars_dir=sidecars,
+        downloaded_dir=downloaded,
+    )
+    validator.validate_release_readback(**kwargs)
+
+    wrong_notes = dict(kwargs, release={**release, "body": "different notes"})
+    wrong_tag = dict(kwargs, release={**release, "tag_name": "v0.2.4"})
+    wrong_state = dict(
+        kwargs,
+        release={**release, "assets": [{**assets[0], "state": "starter"}, *assets[1:]]},
+    )
+    wrong_size = dict(
+        kwargs, release={**release, "assets": [{**assets[0], "size": 0}, *assets[1:]]}
+    )
+    wrong_digest = dict(
+        kwargs,
+        release={
+            **release,
+            "assets": [{**assets[0], "digest": "sha256:" + "0" * 64}, *assets[1:]],
+        },
+    )
+    wrong_bytes = dict(kwargs)
+    for invalid in (wrong_notes, wrong_tag, wrong_state, wrong_size, wrong_digest):
+        with pytest.raises(validator.ReleaseReadbackError):
+            validator.validate_release_readback(**invalid)
+
+    (downloaded / "gwexpy-0.2.5-py3-none-any.whl").write_bytes(b"wrong wheel")
+    with pytest.raises(validator.ReleaseReadbackError):
+        validator.validate_release_readback(**wrong_bytes)
+
+    (downloaded / "gwexpy-0.2.5-py3-none-any.whl").write_bytes(b"wheel bytes")
+    duplicate = dict(kwargs, release={**release, "assets": [*assets, assets[0]]})
+    missing = dict(kwargs, release={**release, "assets": assets[:-1]})
+    with pytest.raises(validator.ReleaseReadbackError):
+        validator.validate_release_readback(**duplicate)
+    with pytest.raises(validator.ReleaseReadbackError):
+        validator.validate_release_readback(**missing)
+    with pytest.raises(validator.ReleaseReadbackError):
+        validator.validate_release_readback(**kwargs, existing_release=True)
+
+
+def test_release_readback_validator_rejects_conflict_api_errors_and_changed_annotated_tag():
+    validator = _load_release_readback_validator()
+    with pytest.raises(validator.ReleaseReadbackError):
+        validator.validate_no_conflicting_release([[{"tag_name": "v0.2.5"}]], "v0.2.5")
+    with pytest.raises(validator.ReleaseReadbackError):
+        validator.validate_no_conflicting_release(
+            {"message": "API unavailable"}, "v0.2.5"
+        )
+    validator.validate_no_conflicting_release([[{"tag_name": "v0.2.4"}]], "v0.2.5")
+    validator.validate_tag_identity(
+        tag_object_sha="b" * 40,
+        peeled_sha="a" * 40,
+        expected_tag_object_sha="b" * 40,
+        expected_source_sha="a" * 40,
+    )
+    for tag_object_sha, peeled_sha in (
+        ("", "a" * 40),
+        ("c" * 40, "a" * 40),
+        ("b" * 40, "d" * 40),
+    ):
+        with pytest.raises(validator.ReleaseReadbackError):
+            validator.validate_tag_identity(
+                tag_object_sha=tag_object_sha,
+                peeled_sha=peeled_sha,
+                expected_tag_object_sha="b" * 40,
+                expected_source_sha="a" * 40,
+            )
+
+
 def test_releasing_documents_strict_v023_source_to_evidence_transition():
     releasing = re.sub(
         r"\s+", " ", (WORKFLOW.parents[2] / "RELEASING.md").read_text(encoding="utf-8")
@@ -462,7 +670,7 @@ def test_qualification_evidence_switch_is_fail_closed_and_versioned():
     publish = text.split("\n  publish:\n", maxsplit=1)[1]
     needs = publish.split("\n    if:", maxsplit=1)[0]
     assert (
-        "needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, cross_format_io_evidence, historical_74_gate, evidence]"
+        "needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, cross_format_io_evidence, historical_74_gate, evidence, github_release]"
         in needs
     )
 

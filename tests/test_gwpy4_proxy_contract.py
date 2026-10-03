@@ -399,6 +399,8 @@ def test_required_framel_subprocess_contract() -> None:
             sys.executable,
             "-m",
             "pytest",
+            "-p",
+            "no:cacheprovider",
             "-q",
             "tests/timeseries/test_io_gwf_timeseriesdict.py::test_read_gwf_timeseries_with_single_channel_by_format_gwf",
         ],

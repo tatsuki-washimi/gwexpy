@@ -1780,9 +1780,14 @@ def _worker_main() -> int:
         projection = build_oracle_projection(
             str(payload.get("expected_version")), queries
         )
-        projection["isolation"]["cwd_matches_expected"] = (
-            isinstance(expected_cwd, str) and os.getcwd() == expected_cwd
-        )
+        try:
+            # Compare directory identity rather than path spelling: a caller
+            # may pin cwd through /proc/<pid>/fd/<n>, while getcwd() returns
+            # the canonical pathname for the same directory.
+            cwd_matches_expected = os.path.samefile(".", expected_cwd)
+        except OSError:
+            cwd_matches_expected = False
+        projection["isolation"]["cwd_matches_expected"] = cwd_matches_expected
         unsigned = {key: value for key, value in projection.items() if key != "digest"}
         projection["digest"] = digest_json(unsigned)
         sys.stdout.write(canonical_compact_json(projection) + "\n")

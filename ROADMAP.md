@@ -299,49 +299,41 @@ remains pending, so this record does not mark publication closure complete.
 
 ## v0.2.5 — Cross-format I/O hardening and internal performance (candidate; HOLD)
 
-The previously reviewed #751 I/O hardening is joined by measured internal I/O
-performance and scalability work under [#580](https://github.com/tatsuki-washimi/gwexpy/issues/580).
-The [v0.2.5 release plan](docs/developers/plans/20260927_v0.2.5_release_plan.md)
-governs the planned S8/R8 corrective cycle, dated 2026-09-29 UTC. S7's
-scientific/data-model and documentation reviews are held because active release
-instructions still required S6/R6 approval and qualification. No R7 or S7 owner
-comment/approval was created; S6 approvals are historical. The S3 documentation
-review found release-scope drift, the S4 documentation review found a broken
-evidence link, and the S5 release-security review found an incomplete
-generated-evidence exception.
-Earlier reviews and scientific approvals do not authorize S8 or release GO.
+The v0.2.5 candidate combines the #751 I/O hardening with internal I/O
+performance and scalability work under
+[#580](https://github.com/tatsuki-washimi/gwexpy/issues/580). Its planned
+release date is 2026-10-04 UTC. Fresh final-source `S` reviews and exact-`R`
+qualification remain pending. Prior September reviews, approvals, and
+candidate results are historical only. The
+[v0.2.5 release plan](docs/developers/plans/20260927_v0.2.5_release_plan.md)
+is the active authority for scope, evidence, review, and release gates.
 
-The selected work is the #581 benchmark harness; #582 merge, #583 dispatch,
-#585 CSV/SDB/TDMS, #589 native DTTXML, and serial #588 GWF scalability
-improvements; the NumPy-only portion of #518; and the dtype-preserving
-portion of #586. #584 range push-down and parallel #588 optimization remain
-on HOLD with no runtime change for those paths. #587, #590, #519, Numba, and
-the remaining parts of #518 and #586 are outside this candidate.
+Task 6 selected case 1: the nine-path #584 candidate-A overlay and optional
+parallel #588 patch are both deferred independently. Retain the R8 serial
+#588 implementation and all five neutral v9 corrections unchanged. The #584
+physical-fetch acceptance and scoped remote Zarr pass do not close its
+historical 31/32 performance HOLD; the new full 72-command campaign was not
+launched. The optional #588 broad structural and valid process-tree PSS gates
+remain unmet; a single spawn-import diagnostic does not replace them. The
+release plan retains all four combinations and their selection status.
+The selected source still requires fresh same-source review and exact-artifact
+qualification; no historical evidence grants release GO.
 
-For #589 only, parser-level use of already accepted selectors may omit warnings
-and decode errors arising exclusively from fully unselected payloads on the
-native DTTXML route. XML structural errors and selected-payload behavior must
-retain their old-candidate behavior; the external `dttxml` route is unchanged.
-This proposed, narrowly scoped exception needs fresh S8-bound human
-scientific/data-model approval. It does not extend #611's
-`non_intersecting_window_safety`
-exception beyond completely disjoint plain HDF5 read windows.
+The proposed #589 native DTTXML exception is limited to warnings and decode
+errors from fully unselected payloads after an accepted selector is applied.
+The proposed #585 SDB exception is limited to differences caused by a WAL
+writer committing after one read snapshot is pinned for validation and payload
+retrieval. Both require fresh human scientific/data-model approval bound to
+final `S`; neither expands #611's
+`non_intersecting_window_safety` exception. The canonical twelve-disposition
+proposal remains unchanged and requires twelve fresh individual decisions.
 
-For #585 SDB reads, one separately gated concurrency correction pins whole-table
-validation and the selected payload query to the same SQLite read snapshot.
-The proposed exception covers observable value, warning, and error differences
-caused by a WAL writer committing during the read after that snapshot is pinned.
-The frozen matrix characterizes selected and unselected payload updates,
-timestamp and `usUnits` changes, schema changes, and malformed values against
-old R. Static-source behavior remains old-R-equivalent. The exact
-concurrent scope requires separate review, human scientific/data-model approval,
-and release disclosure; it grants no skipped-payload exception to other formats.
-
-The historical 74-scenario audit will be accounted for through 62 executable
-assertions on exact R8 wheel and sdist artifacts and twelve individually
-approved applicability or retained-behavior dispositions. The twelve are not
-runtime passes. Both fetched protected tips and the checkout must equal exact
-R8 before dispatch; release qualification and GO remain pending.
+The historical 74-scenario audit remains a gate: 62 executable assertions
+must pass on exact `R` wheel and sdist artifacts, and twelve dispositions must
+be approved individually. The official same-`S` qualification and review of
+the GitHub Release-before-PyPI workflow must complete before the release owner
+can record GO. The PyPI environment has no manual approval requirement, and
+the Trusted Publisher tuple remains unconfirmed until its external readback.
 
 ## Future themes (not scheduled)
 

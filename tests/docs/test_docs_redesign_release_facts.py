@@ -3,9 +3,11 @@ from __future__ import annotations
 import csv
 import gettext
 import hashlib
+import importlib.util
 import io
 import json
 import re
+import sys
 from pathlib import Path
 
 import yaml
@@ -22,11 +24,10 @@ PUBLISHED_V024_VERSION = "0.2.4"
 PUBLISHED_V024_DATE = "2026-09-26"
 PUBLISHED_V024_HISTORY_ENTRY = f"[{PUBLISHED_V024_VERSION}] - {PUBLISHED_V024_DATE}"
 CANDIDATE_V025_VERSION = "0.2.5"
-CANDIDATE_V025_METADATA_DATE = "2026-09-29"
+CANDIDATE_V025_METADATA_DATE = "2026-10-04"
 CANDIDATE_V025_HISTORY_ENTRY = (
     f"[{CANDIDATE_V025_VERSION}] - {CANDIDATE_V025_METADATA_DATE}"
 )
-HISTORICAL_V025_METADATA_DATE = "2026-09-27"
 RELEASE_DOI_URL = "https://doi.org/10.5281/zenodo.22228340"
 ACTIVITY_RELEASE_VERSION = "0.2.2"
 ACTIVITY_RELEASE_SHA = "2503743cf654606a5baa83c7b7e7c8b8e1e06596"
@@ -201,7 +202,7 @@ def test_v022_activity_snapshot_has_japanese_public_copy() -> None:
 
 
 def test_published_v022_v023_and_v024_history_remains_distinct():
-    """Keep v0.2.3 history and the newly published v0.2.4 entry explicit."""
+    """Keep published history and the current v0.2.5 planning date explicit."""
     changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     citation = (REPO_ROOT / "CITATION.cff").read_text(encoding="utf-8")
     zenodo = json.loads((REPO_ROOT / ".zenodo.json").read_text(encoding="utf-8"))
@@ -226,27 +227,81 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
         citation,
         re.MULTILINE,
     )
-    # S8 is the newly planned UTC-date cycle; earlier candidate cycles remain historical.
     release_plan = (
         REPO_ROOT / "docs/developers/plans/20260927_v0.2.5_release_plan.md"
     ).read_text(encoding="utf-8")
     release_plan_text = " ".join(release_plan.split())
+    assert f"Release date: **{CANDIDATE_V025_METADATA_DATE} UTC**" in release_plan_text
+    assert "source scope selected" in release_plan_text
+    assert "final `S` approval and exact-`R` qualification pending" in release_plan_text
+    assert "Release decision: **HOLD**" in release_plan_text
+    assert "before 2026-10-04 00:00 UTC (09:00 JST)" in release_plan_text
+    assert "not a 23:00 cutoff" in release_plan_text
+    assert release_plan_text.count("| SELECTED |") == 1
+    assert release_plan_text.count("| NOT SELECTED |") == 3
     assert (
-        f"The planned S8 metadata date is **{CANDIDATE_V025_METADATA_DATE}**"
+        "#584 nine-path candidate-A overlay has not been applied" in release_plan_text
+    )
+    assert (
+        "serial #588 optimization is already present in the current base"
+        in release_plan_text
+    )
+    assert "#588 patch is a separate selection and is deferred" in release_plan_text
+    assert (
+        "The valid historical primary performance result remains 31/32 HOLD"
+        in release_plan_text
+    )
+    assert "Cold timing cannot replace valid live-process PSS" in release_plan_text
+    checkboxes = re.findall(r"^- \[([ xX])\]", release_plan, re.MULTILINE)
+    assert checkboxes and set(checkboxes) == {" "}
+
+    validator_path = REPO_ROOT / "scripts/validate_release.py"
+    spec = importlib.util.spec_from_file_location(
+        "release_validator_for_docs", validator_path
+    )
+    assert spec is not None and spec.loader is not None
+    validator = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = validator
+    spec.loader.exec_module(validator)
+    readiness = (
+        REPO_ROOT
+        / "docs/developers/plans/manifests/audit-manifest-v0.2.5-release-readiness.yaml"
+    )
+    assert readiness.read_bytes() == validator.V025_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER
+
+    assert "Three independent reviews—" in release_plan_text
+    assert "fresh human approval bound to final `S`" in release_plan_text
+    assert "the exact disposition-document SHA-256" in release_plan_text
+    assert "both scoped exceptions" in release_plan_text
+    assert "twelve historical disposition IDs" in release_plan_text
+    assert (
+        "Only after all reviews and human approval pass may a distinct `R` be created"
         in release_plan_text
     )
     assert (
-        "2026-09-28 date belongs only to the superseded S2/R2 cycle"
+        "The `S`-to-`R` diff is limited to filling that readiness manifest"
         in release_plan_text
     )
+    assert "exact final-`R` installed artifacts" in release_plan_text
+
     roadmap = (REPO_ROOT / "ROADMAP.md").read_text(encoding="utf-8")
-    assert "governs the planned S8/R8 corrective cycle" in roadmap
-    assert "#584 range push-down and parallel #588 optimization remain" in roadmap
-    assert "on HOLD with no runtime change for those paths" in roadmap
+    roadmap_text = " ".join(roadmap.split())
+    assert "planned release date is 2026-10-04 UTC" in roadmap_text
+    assert "Task 6 selected case 1" in roadmap_text
+    assert "both deferred independently" in roadmap_text
+    assert "Retain the R8 serial #588 implementation" in roadmap_text
+    assert "The PyPI environment has no manual approval requirement" in roadmap_text
+    assert "Trusted Publisher tuple remains unconfirmed" in roadmap_text
+
     assert (
-        f"The {HISTORICAL_V025_METADATA_DATE} S/R cycle is historical and superseded"
-        in release_plan
+        "The prior September 29 readiness record named reviewed source"
+        in release_plan_text
     )
+    assert (
+        "Its reviews, owner comment, date, candidate results, and any R8 state are historical"
+        in release_plan_text
+    )
+    assert "none identifies or approves the current `S` or `R`" in release_plan_text
     assert re.search(
         rf"^date-released: {re.escape(CANDIDATE_V025_METADATA_DATE)}$",
         citation,
@@ -255,17 +310,19 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
     assert zenodo["version"] == CANDIDATE_V025_VERSION
     assert zenodo["publication_date"] == CANDIDATE_V025_METADATA_DATE
     release_note = (REPO_ROOT / "release_notes/v0.2.5.md").read_text(encoding="utf-8")
-    assert f"candidate release date is {CANDIDATE_V025_METADATA_DATE} UTC" in (
-        release_note
+    assert f"release date is {CANDIDATE_V025_METADATA_DATE} UTC" in release_note
+    assert "Final-source review and release qualification remain pending" in " ".join(
+        release_note.split()
     )
-    historical_sr_note = (
-        f"The {HISTORICAL_V025_METADATA_DATE} S/R and 2026-09-28 S2/R2 "
-        "approvals and candidate runs are historical evidence"
-    )
-    assert historical_sr_note in " ".join(changelog.split())
     assert (
-        f"{HISTORICAL_V025_METADATA_DATE} S/R and S2/R2 approvals are historical"
-        in " ".join(release_note.split())
+        "and later September candidate records are historical evidence only"
+        in " ".join(changelog.split())
+    )
+    assert "The current cycle requires three fresh reviews" in " ".join(
+        changelog.split()
+    )
+    assert "later September candidate records are historical" in " ".join(
+        release_note.split()
     )
 
     assert release_status["latest_release"] == PUBLISHED_V024_VERSION
