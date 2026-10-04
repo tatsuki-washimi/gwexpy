@@ -1,16 +1,111 @@
 review_evidence_json: |
   {
     "schema": "gwexpy-v025-review-evidence-v2",
-    "entries": [],
+    "entries": [
+      {
+        "lane": "scientific-data-model",
+        "role": "reviewer",
+        "model": "gpt-6.1-sol",
+        "effort": "medium",
+        "reviewed_commit": "5c5b9c239084cc6bc6dfaac50f592cb64de79c22",
+        "scope_paths": [
+          "benchmarks",
+          "gwexpy",
+          "tests/io",
+          "tests/test_gwpy4_proxy_contract.py",
+          "tests/test_gwpy_override_inventory.py",
+          "tests/test_verify_spectrogram_extra.py",
+          "tests/timeseries/test_gwf_parallel_contract.py",
+          "tests/timeseries/test_hdf5_exact_t0.py"
+        ],
+        "scope_digest": "89e3175eb2ea1b281111914497412bd3e72e13609788f5e4afabaccb1514233c",
+        "verdict": "APPROVED",
+        "timestamp_utc": "2026-10-04T07:05:36Z",
+        "raw_report_sha256": "31bc9b261060a76b9b2b562128433adc9535dfcb0fd3e402d11e56a78b52fe90",
+        "finding_ids": []
+      },
+      {
+        "lane": "documentation",
+        "role": "reviewer",
+        "model": "gpt-6.1-sol",
+        "effort": "medium",
+        "reviewed_commit": "5c5b9c239084cc6bc6dfaac50f592cb64de79c22",
+        "scope_paths": [
+          "CHANGELOG.md",
+          "ROADMAP.md",
+          "docs",
+          "docs_redesign",
+          "release_notes",
+          "tests/docs"
+        ],
+        "scope_digest": "0006cd84e99e333bf3d9bd1754771f80ceb85915acb56a57530bd763f2319e45",
+        "verdict": "APPROVED",
+        "timestamp_utc": "2026-10-04T07:01:41Z",
+        "raw_report_sha256": "164a87f65b24d41da22ac779748739159df4ca9973d9b6fb051170cd12bd702c",
+        "finding_ids": []
+      },
+      {
+        "lane": "release-security",
+        "role": "reviewer",
+        "model": "gpt-6.1-sol",
+        "effort": "medium",
+        "reviewed_commit": "5c5b9c239084cc6bc6dfaac50f592cb64de79c22",
+        "scope_paths": [
+          ".agent",
+          ".clinerules",
+          ".gitattributes",
+          ".github",
+          ".gitignore",
+          ".pre-commit-config.yaml",
+          ".zenodo.json",
+          "AGENTS.md",
+          "CITATION.cff",
+          "CONTRIBUTING.md",
+          "MAINTAINERS.md",
+          "RELEASING.md",
+          "SECURITY.md",
+          "pyproject.toml",
+          "requirements",
+          "requirements-dev.txt",
+          "scripts",
+          "scripts/ci/v025_cross_format_io_evidence.py",
+          "tests/test_check_release_metadata_script.py",
+          "tests/test_diaggui_qualification_evidence.py",
+          "tests/test_gen_release_notes.py",
+          "tests/test_publish_release_workflow.py",
+          "tests/test_qualification_skip_evidence.py",
+          "tests/test_release_contracts.py",
+          "tests/test_release_human_approval.py",
+          "tests/test_release_review_evidence.py",
+          "tests/test_v025_cross_format_io_evidence.py",
+          "tests/test_v025_historical_gate.py",
+          "tests/test_validate_release_script.py"
+        ],
+        "scope_digest": "82b76ed252b95aa7455eae895c45325d02101e1231d77af439164c788af856b4",
+        "verdict": "APPROVED",
+        "timestamp_utc": "2026-10-04T07:02:51Z",
+        "raw_report_sha256": "6b12823bbe04a2dd5a8d17c85d9fdc2a97ae2dcd21e908a646a898dd6c48a1dd",
+        "finding_ids": []
+      }
+    ],
     "human_approval": {
-      "approver_login": "",
-      "role": "",
-      "reviewed_commit": "",
-      "scope_paths": [],
-      "scope_digest": "",
-      "disposition_digest": "",
-      "timestamp_utc": "",
-      "verdict": "",
-      "comment_id": 0
+      "approver_login": "tatsuki-washimi",
+      "role": "release-owner",
+      "reviewed_commit": "5c5b9c239084cc6bc6dfaac50f592cb64de79c22",
+      "scope_paths": [
+        "benchmarks",
+        "gwexpy",
+        "tests/io",
+        "tests/test_gwpy4_proxy_contract.py",
+        "tests/test_gwpy_override_inventory.py",
+        "tests/test_verify_spectrogram_extra.py",
+        "tests/timeseries/test_gwf_parallel_contract.py",
+        "tests/timeseries/test_hdf5_exact_t0.py"
+      ],
+      "scope_digest": "89e3175eb2ea1b281111914497412bd3e72e13609788f5e4afabaccb1514233c",
+      "disposition_digest": "57302cf82faff9c67dbb40d17b44d292520517fd44d1f81ad81c1bda32649312",
+      "timestamp_utc": "2026-10-04T11:55:24Z",
+      "verdict": "APPROVED",
+      "comment_id": 5979662661
     }
   }
