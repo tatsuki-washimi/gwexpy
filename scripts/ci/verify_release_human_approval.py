@@ -183,7 +183,7 @@ def verify_human_approval(
         root, Path(evidence) if evidence is not None else None, contract
     )
     evidence_data = _load_and_validate_evidence(root, evidence_path, expected_tag)
-    if expected_tag not in {"v0.2.4", "v0.2.5"}:
+    if expected_tag not in {"v0.2.4", "v0.2.5"} and "promotion" not in contract:
         raise HumanApprovalError(
             "human approval verification is not configured for this tag"
         )
@@ -199,7 +199,41 @@ def verify_human_approval(
         credential,
         base_url,
     )
-    _validate_comment(comment, approval, reviewed_commit, expected_tag)
+    if "promotion" in contract:
+        authority = contract["promotion"]["source_approval"]
+        if (
+            authority["format"] != "GWEXPY-SOURCE-APPROVAL-v1"
+            or approval["approver_login"] != authority["approver"]
+        ):
+            raise HumanApprovalError(
+                "unsupported source approval format or wrong approver"
+            )
+        expected_body = "\n".join(
+            [
+                authority["format"],
+                f"version={expected_tag}",
+                f"source_sha={reviewed_commit}",
+                f"scope_sha256={approval['scope_digest']}",
+                "decision=APPROVED",
+            ]
+        )
+        if comment.get("body") != expected_body:
+            raise HumanApprovalError("source approval body is not canonical")
+        # Reuse legacy author, immutable timestamp, and comment size validation.
+        canonical = {
+            **comment,
+            "body": "\n".join(
+                [
+                    f"GWEXPY-RELEASE-APPROVAL {expected_tag}",
+                    f"S: {reviewed_commit}",
+                    f"SCOPE: {approval['scope_digest']}",
+                    "VERDICT: APPROVED",
+                ]
+            ),
+        }
+        _validate_comment(canonical, approval, reviewed_commit, expected_tag)
+    else:
+        _validate_comment(comment, approval, reviewed_commit, expected_tag)
     return reviewed_commit
 
 

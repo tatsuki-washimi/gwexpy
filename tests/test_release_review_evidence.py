@@ -69,6 +69,28 @@ def review_evidence() -> dict[str, object]:
     }
 
 
+def test_promotion_contract_requires_source_approval_for_synthetic_future(
+    tmp_path, monkeypatch
+):
+    validator = load_validator()
+    contract = dict(CONTRACTS["v0.1.13"])
+    contract["promotion"] = {
+        "source_approval": {
+            "format": "GWEXPY-SOURCE-APPROVAL-v1",
+            "approver": "future-approver",
+        }
+    }
+    monkeypatch.setattr(validator, "_release_contract", lambda tag: contract)
+    path = tmp_path / "review.json"
+    path.write_text(json.dumps(review_evidence()))
+    with pytest.raises(
+        validator.ReleaseReviewEvidenceError, match="unknown or missing"
+    ):
+        validator.validate_review_evidence(
+            path, SOURCE_SHA, {"A"}, tmp_path, expected_tag="v99.88.77"
+        )
+
+
 def test_review_evidence_rejects_unknown_and_duplicate_lanes(tmp_path: Path):
     validator = load_validator()
     path = tmp_path / "review.json"

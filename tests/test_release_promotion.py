@@ -164,6 +164,207 @@ def test_release_go_rejects_noncanonical_bodies(promotion, suffix: str) -> None:
         module.parse_release_go(body + suffix)
 
 
+def synthetic_aggregate(
+    schema, actual, contract, version, source, files, license_digest
+):
+    evidence = {
+        "schema": actual,
+        "source_sha": source,
+        "version": version,
+        "files": files,
+    }
+    if schema == "gwexpy-qualification-evidence-v1":
+        qualification = load_module(
+            SCRIPT.parent / "qualification_evidence.py", "future_qualification_fixture"
+        )
+        evidence["baseline_sha256"] = qualification._no_skips_baseline(version).sha256
+        evidence["cells"] = [
+            {
+                "cell": cell,
+                "observed_optional_skips": [],
+                "observed_required_skips": [],
+                "observed_skips": [],
+                "testcase_count": 1,
+            }
+            for cell in qualification.QUALIFICATION_CELLS
+        ]
+    elif schema == "gwexpy-diaggui-qualification-evidence-v1":
+        evidence["cells"] = []
+        for cell in ("base-wheel", "base-sdist", "dttxml-wheel", "dttxml-sdist"):
+            kind = cell.rsplit("-", 1)[1]
+            present = cell.startswith("dttxml-")
+            evidence["cells"].append(
+                {
+                    "cell": cell,
+                    "artifact": {
+                        "filename": files[kind]["name"],
+                        "kind": kind,
+                        "sha256": files[kind]["sha256"],
+                    },
+                    "environment": {
+                        "candidate_installed_from_payload": True,
+                        "dttxml_present": present,
+                        "dttxml_version": "1.1.8" if present else None,
+                        "gwexpy_module_in_site_packages": True,
+                        "gwexpy_version": version,
+                    },
+                    "observed_skips": [],
+                    "test_status": "passed",
+                    "testcase_count": 1,
+                }
+            )
+    elif schema == "gwexpy-cross-format-io-evidence-v1":
+        evidence["cells"] = []
+        for mode in ("base", "optional"):
+            for python in ("3.11", "3.12"):
+                for kind in ("wheel", "sdist"):
+                    evidence["cells"].append(
+                        {
+                            "schema": "gwexpy-cross-format-io-cell-v1",
+                            "source_sha": source,
+                            "version": version,
+                            "cell": f"{mode}-{python}-{kind}",
+                            "artifact": {
+                                "filename": files[kind]["name"],
+                                "kind": kind,
+                                "sha256": files[kind]["sha256"],
+                            },
+                            "backend_presence": dict.fromkeys(
+                                ("zarr", "xarray", "netCDF4"), mode == "optional"
+                            ),
+                            "candidate_installed_from_payload": True,
+                            "test_status": "passed",
+                            "testcase_count": 1,
+                            "observed_skips": [],
+                        }
+                    )
+    else:
+        evidence.pop("files")
+        evidence.update(
+            artifact_name=contract["artifact_prefix"] + "-" + source,
+            repository="example/gwexpy",
+            run_id="987",
+            workflow_sha=source,
+            workflow_ref="example/gwexpy/.github/workflows/publish-release.yml@refs/heads/main",
+            expected_tag="v" + version,
+            payload=files,
+            license_sha256=license_digest,
+            smoke={},
+        )
+        for python in ("3.11", "3.12"):
+            for kind in ("wheel", "sdist"):
+                evidence["smoke"][f"python-{python}-{kind}"] = {
+                    "source_sha": source,
+                    "python": python,
+                    "distribution": {
+                        "kind": kind,
+                        "file": files[kind]["name"],
+                        "sha256": files[kind]["sha256"],
+                    },
+                    "repository_license_sha256": license_digest,
+                    "embedded_license_sha256": license_digest,
+                    "installed_version": version,
+                    "import_ok": True,
+                    "register_all_ok": True,
+                    "smoke_ok": True,
+                }
+    if "cells" in evidence:
+        evidence["cells"].sort(key=lambda cell: cell["cell"])
+    return evidence
+
+
+@pytest.mark.parametrize(
+    "schema",
+    [
+        "gwexpy-qualification-evidence-v1",
+        "gwexpy-diaggui-qualification-evidence-v1",
+        "gwexpy-cross-format-io-evidence-v1",
+    ],
+)
+@pytest.mark.parametrize("mutation", ["missing", "extra", "failed", "skip"])
+def test_each_aggregate_reuses_cell_contracts(promotion, schema, mutation):
+    module, _, contract = promotion
+    version, source = "99.88.77", "a" * 40
+    files = {
+        "wheel": {"name": f"gwexpy-{version}-py3-none-any.whl", "sha256": "b" * 64},
+        "sdist": {"name": f"gwexpy-{version}.tar.gz", "sha256": "c" * 64},
+    }
+    payload = {
+        "schema": contract["payload_schema"],
+        "version": version,
+        "source_sha": source,
+        "files": files,
+    }
+    evidence = synthetic_aggregate(
+        schema,
+        contract["promotion"]["evidence_schemas"][schema],
+        contract,
+        version,
+        source,
+        files,
+        "d" * 64,
+    )
+    if mutation == "missing":
+        evidence["cells"].pop()
+    elif mutation == "extra":
+        evidence["cells"].append(dict(evidence["cells"][0]))
+    elif mutation == "failed":
+        evidence["cells"][0]["testcase_count"] = 0
+    else:
+        evidence["cells"][0]["observed_skips"] = [["test", "case", "reason"]]
+    with pytest.raises(module.PromotionManifestError):
+        module.validate_candidate_aggregate(
+            evidence,
+            schema,
+            contract,
+            {"version": version, "source_sha": source},
+            payload,
+            "d" * 64,
+        )
+
+
+@pytest.mark.parametrize("mutation", ["missing", "extra", "failed", "identity"])
+def test_integration_aggregate_reuses_smoke_contract(promotion, mutation):
+    module, _, contract = promotion
+    version, source = "99.88.77", "a" * 40
+    schema = "gwexpy-integration-evidence-v1"
+    files = {
+        "wheel": {"name": f"gwexpy-{version}-py3-none-any.whl", "sha256": "b" * 64},
+        "sdist": {"name": f"gwexpy-{version}.tar.gz", "sha256": "c" * 64},
+    }
+    payload = {
+        "schema": contract["payload_schema"],
+        "version": version,
+        "source_sha": source,
+        "files": files,
+    }
+    evidence = synthetic_aggregate(
+        schema, schema, contract, version, source, files, "d" * 64
+    )
+    evidence["review_evidence"] = {"path": "synthetic.json"}
+    metadata = {
+        "version": version,
+        "source_sha": source,
+        "repository": "example/gwexpy",
+        "run_id": 987,
+        "workflow_sha": source,
+        "workflow_ref": evidence["workflow_ref"],
+        "tag": "v" + version,
+    }
+    if mutation == "missing":
+        evidence["smoke"].pop("python-3.11-wheel")
+    elif mutation == "extra":
+        evidence["smoke"]["extra"] = dict(evidence["smoke"]["python-3.11-wheel"])
+    elif mutation == "failed":
+        evidence["smoke"]["python-3.11-wheel"]["smoke_ok"] = False
+    else:
+        evidence["workflow_sha"] = "f" * 40
+    with pytest.raises(module.PromotionManifestError):
+        module.validate_candidate_aggregate(
+            evidence, schema, contract, metadata, payload, "d" * 64
+        )
+
+
 @pytest.mark.parametrize(
     "mutation",
     ["missing", "extra", "duplicate", "unknown", "wrong_sha", "bad_id"],
@@ -569,7 +770,7 @@ def test_manifest_artifact_uses_archive_metadata_and_separate_manifest_hash(
 ) -> None:
     module, manifest, _ = promotion
     manifest_raw = module.serialize_manifest(manifest)
-    archive_raw = b"independent zip archive bytes are longer than the JSON file"
+    archive_raw = manifest_archive({"promotion-manifest.json": manifest_raw})
     assert len(archive_raw) != len(manifest_raw)
     assert module.sha256(archive_raw) != module.sha256(manifest_raw)
     api = {
@@ -631,6 +832,48 @@ def test_manifest_artifact_uses_archive_metadata_and_separate_manifest_hash(
                 manifest["run_id"],
                 expected_hash,
             )
+
+
+def manifest_archive(members):
+    import io
+    import zipfile
+
+    stream = io.BytesIO()
+    with zipfile.ZipFile(stream, "w") as archive:
+        for name, raw in members.items():
+            archive.writestr(name, raw)
+    return stream.getvalue()
+
+
+@pytest.mark.parametrize("mutation", ["missing", "extra", "different"])
+def test_manifest_artifact_rejects_unrelated_member_bytes(promotion, mutation):
+    module, manifest, _ = promotion
+    raw = module.serialize_manifest(manifest)
+    members = {"promotion-manifest.json": raw}
+    if mutation == "missing":
+        members = {"unrelated.json": raw}
+    elif mutation == "extra":
+        members["extra.json"] = b"{}\n"
+    else:
+        members["promotion-manifest.json"] = raw + b"\n"
+    archive = manifest_archive(members)
+    api = {
+        "artifact_id": 501,
+        "name": f"release-promotion-manifest-{manifest['release_sha']}",
+        "run_id": manifest["run_id"],
+        "expired": False,
+        "size_in_bytes": len(archive),
+        "digest": "sha256:" + module.sha256(archive),
+    }
+    with pytest.raises(module.PromotionManifestError):
+        module.validate_manifest_artifact(
+            api,
+            archive,
+            raw,
+            manifest["release_sha"],
+            manifest["run_id"],
+            module.sha256(raw),
+        )
 
 
 @pytest.mark.parametrize(("archive_bytes", "api_size"), [(b"", 0), (b"x", True)])
@@ -737,3 +980,255 @@ def test_manifest_builder_only_reads_existing_artifacts(
         "notes.md",
         "review.yaml",
     ]
+
+
+def test_future_profile_selects_every_required_gate_and_schema(promotion):
+    module, _, contract = promotion
+    selected = module.candidate_profile(contract)
+    assert selected["required_jobs"] == contract["promotion"]["required_jobs"]
+    assert selected["evidence_schemas"] == contract["promotion"]["evidence_schemas"]
+    broken = copy.deepcopy(contract)
+    broken["promotion"]["required_jobs"].append("unknown_lane")
+    with pytest.raises(module.PromotionManifestError):
+        module.candidate_profile(broken)
+    broken = copy.deepcopy(contract)
+    broken["promotion"]["evidence_schemas"].pop("gwexpy-cross-format-io-evidence-v1")
+    with pytest.raises(module.PromotionManifestError):
+        module.candidate_profile(broken)
+
+
+def test_archive_observation_binds_member_bytes_to_exact_archive(promotion):
+    import io
+    import zipfile
+
+    module, _, _ = promotion
+    stream = io.BytesIO()
+    with zipfile.ZipFile(stream, "w") as archive:
+        archive.writestr("aggregate.json", b'{"ok":true}\n')
+    raw = stream.getvalue()
+    api = {
+        "artifact_id": 123,
+        "name": "evidence-abc",
+        "run_id": 99,
+        "expired": False,
+        "size_in_bytes": len(raw),
+        "digest": "sha256:" + module.sha256(raw),
+    }
+    assert module.observe_archive(api, raw, 99)["aggregate.json"] == b'{"ok":true}\n'
+    with pytest.raises(module.PromotionManifestError):
+        module.observe_archive(api, raw + b"x", 99)
+    with pytest.raises(module.PromotionManifestError):
+        module.observe_archive(api, raw, 100)
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        None,
+        "retention",
+        "digest",
+        "skipped",
+        "rerun",
+        "duplicate",
+        "schema",
+        "approval_binding",
+        "payload_binding",
+        "license_syntax",
+        "license_repository",
+        "license_evidence",
+        "missing_cells",
+        "extra_cells",
+        "failed_cells",
+        "required_skip",
+        "smoke_identity",
+    ],
+)
+def test_finalizer_reads_original_ids_before_run_completion(
+    promotion, tmp_path, monkeypatch, mutation
+):
+    import io
+    import urllib.request
+    import zipfile
+
+    module, _, contract = promotion
+    version = "99.88.77"
+    source = "a" * 40
+    (tmp_path / "LICENSE.txt").write_bytes(b"Synthetic repository license\n")
+    license_digest = module.sha256((tmp_path / "LICENSE.txt").read_bytes())
+    contract["review_evidence_path"] = "review.json"
+    (tmp_path / "review.json").write_text('{"human_approval":{"comment_id":123}}\n')
+    (tmp_path / "release_notes").mkdir()
+    (tmp_path / "release_notes" / f"v{version}.md").write_text(
+        "Synthetic future notes\n"
+    )
+    monkeypatch.setattr(module, "configured_contract", lambda v: contract)
+    for key, value in {
+        "GITHUB_REPOSITORY": "example/gwexpy",
+        "GITHUB_TOKEN": "fake",
+        "GITHUB_RUN_ID": "987",
+        "GITHUB_RUN_ATTEMPT": "2" if mutation == "rerun" else "1",
+        "SOURCE_SHA": source,
+        "GITHUB_WORKFLOW_SHA": source,
+        "GITHUB_WORKFLOW_REF": "example/gwexpy/.github/workflows/publish-release.yml@refs/heads/main",
+    }.items():
+        monkeypatch.setenv(key, value)
+    needs = {
+        job: {"result": "success"} for job in contract["promotion"]["required_jobs"]
+    }
+    if mutation == "skipped":
+        needs["cross_format_io"]["result"] = "skipped"
+    monkeypatch.setenv("GATE_RESULTS", json.dumps(needs))
+    prefixes = {
+        "verify": "Verify immutable release source",
+        "build": "Build and check release artifacts",
+        "smoke": "Smoke-test ",
+        "qualify": "Qualify ",
+        "qualification_evidence": "Aggregate nineteen qualification cells",
+        "diaggui_qualification": "Qualify installed DiagGUI ",
+        "diaggui_qualification_evidence": "Aggregate four DiagGUI qualification cells",
+        "cross_format_io": "Qualify installed cross-format I/O ",
+        "cross_format_io_evidence": "Aggregate eight cross-format I/O cells",
+        "evidence": "Collect same-run integration evidence",
+    }
+    counts = {
+        "smoke": 4,
+        "qualify": 19,
+        "diaggui_qualification": 4,
+        "cross_format_io": 8,
+    }
+    jobs = [
+        {"name": prefix + str(index), "status": "completed", "conclusion": "success"}
+        for job, prefix in prefixes.items()
+        for index in range(counts.get(job, 1))
+    ]
+    run = {
+        "workflow_id": 42,
+        "head_sha": source,
+        "event": "workflow_dispatch",
+        "run_attempt": 1,
+        "status": "in_progress",
+        "conclusion": None,
+    }
+    monkeypatch.setattr(module, "_api_json", lambda *args: run)
+    payload = {
+        f"gwexpy-{version}-py3-none-any.whl": b"synthetic wheel",
+        f"gwexpy-{version}.tar.gz": b"synthetic sdist",
+    }
+    files = {
+        kind: {"name": name, "sha256": module.sha256(payload[name])}
+        for kind, name in zip(("wheel", "sdist"), payload, strict=True)
+    }
+    sidecar = {
+        "schema": contract["payload_schema"],
+        "version": version,
+        "source_sha": source,
+        "files": files,
+    }
+    required = {
+        "release-payload-" + source: payload,
+        "release-sidecar-distribution-sha256.json-" + source: {
+            "distribution-sha256.json": json.dumps(sidecar).encode()
+        },
+        "release-sidecar-LICENSE.sha256-" + source: {
+            "LICENSE.sha256": license_digest.encode() + b"\n"
+        },
+    }
+    if mutation == "license_syntax":
+        required["release-sidecar-LICENSE.sha256-" + source]["LICENSE.sha256"] = (
+            b"garbage\n"
+        )
+    if mutation == "license_repository":
+        required["release-sidecar-LICENSE.sha256-" + source]["LICENSE.sha256"] = (
+            b"0" * 64 + b"\n"
+        )
+    for schema, actual in contract["promotion"]["evidence_schemas"].items():
+        evidence = synthetic_aggregate(
+            schema, actual, contract, version, source, files, license_digest
+        )
+        if "cells" in evidence and mutation == "missing_cells":
+            evidence["cells"].pop()
+        if "cells" in evidence and mutation == "extra_cells":
+            evidence["cells"].append(dict(evidence["cells"][0]))
+        if "cells" in evidence and mutation == "failed_cells":
+            evidence["cells"][0]["testcase_count"] = 0
+        if schema == "gwexpy-qualification-evidence-v1" and mutation == "required_skip":
+            evidence["cells"][0]["observed_required_skips"] = [
+                ["test", "case", "reason"]
+            ]
+        if schema == "gwexpy-integration-evidence-v1" and mutation == "smoke_identity":
+            evidence["run_id"] = "other-run"
+        if (
+            schema == "gwexpy-integration-evidence-v1"
+            and mutation == "license_evidence"
+        ):
+            evidence["license_sha256"] = "0" * 64
+        if schema == "gwexpy-integration-evidence-v1":
+            evidence["review_evidence"] = {
+                "path": "review.json",
+                "sha256": module.sha256((tmp_path / "review.json").read_bytes()),
+                "human_approval": {"comment_id": 123},
+            }
+            if mutation == "approval_binding":
+                evidence["review_evidence"]["human_approval"]["comment_id"] = 456
+        if mutation == "payload_binding":
+            evidence["payload" if "payload" in evidence else "files"] = {}
+        if mutation == "schema":
+            evidence["schema"] = "wrong"
+        required[schema + "-" + source] = {
+            "aggregate.json": json.dumps(evidence).encode()
+        }
+    archives = {}
+    artifacts = []
+    for artifact_id, (name, members) in enumerate(required.items(), 100):
+        stream = io.BytesIO()
+        with zipfile.ZipFile(stream, "w") as archive:
+            for filename, content in members.items():
+                archive.writestr(filename, content)
+        raw = stream.getvalue()
+        archives[artifact_id] = raw
+        artifacts.append(
+            {
+                "id": artifact_id,
+                "name": name,
+                "workflow_run": {"id": 987},
+                "expired": False,
+                "digest": "sha256:" + module.sha256(raw),
+                "size_in_bytes": len(raw),
+                "created_at": "2026-10-01T00:00:00Z",
+                "expires_at": "2026-12-31T00:00:00Z",
+            }
+        )
+    if mutation == "retention":
+        artifacts[-1]["expires_at"] = "2026-10-31T00:00:00Z"
+    if mutation == "digest":
+        artifacts[0]["digest"] = "sha256:" + "0" * 64
+    if mutation == "duplicate":
+        artifacts.append(dict(artifacts[0]))
+    monkeypatch.setattr(
+        module,
+        "_api_pages",
+        lambda repository, token, path, key: artifacts if key == "artifacts" else jobs,
+    )
+    downloads = []
+
+    def download(request, timeout):
+        artifact_id = int(request.full_url.split("/")[-2])
+        downloads.append(artifact_id)
+        return io.BytesIO(archives[artifact_id])
+
+    monkeypatch.setattr(urllib.request, "urlopen", download)
+    output = tmp_path / "promotion-manifest.json"
+    if mutation:
+        with pytest.raises(module.PromotionManifestError):
+            module.finalize_candidate(tmp_path, version, output)
+        assert not output.exists()
+    else:
+        module.finalize_candidate(tmp_path, version, output)
+        manifest = module.load_manifest(output.read_bytes())
+        assert set(downloads) == set(archives)
+        assert len(downloads) == len(archives)
+        assert {a["artifact_id"] for a in manifest["artifacts"]} == set(archives)
+        assert all(
+            a["name"] != "release-promotion-manifest-" + source
+            for a in manifest["artifacts"]
+        )

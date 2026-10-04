@@ -23,6 +23,16 @@ def load_module():
     return module
 
 
+def manifest_zip(raw: bytes) -> bytes:
+    import io
+    import zipfile
+
+    stream = io.BytesIO()
+    with zipfile.ZipFile(stream, "w") as archive:
+        archive.writestr("promotion-manifest.json", raw)
+    return stream.getvalue()
+
+
 @pytest.fixture
 def inputs():
     release_sha = "a" * 40
@@ -76,7 +86,8 @@ def inputs():
         "run_attempt": 1,
         "completed_at": "2026-10-05T10:04:00Z",
     }
-    archive = b"synthetic-manifest-archive"
+    raw = (json.dumps(manifest, sort_keys=True, indent=2) + "\n").encode("utf-8")
+    archive = manifest_zip(raw)
     artifact = {
         "artifact_id": 445566,
         "name": f"release-promotion-manifest-{release_sha}",
@@ -86,7 +97,6 @@ def inputs():
         "digest": f"sha256:{hashlib.sha256(archive).hexdigest()}",
         "created_at": "2026-10-05T10:02:00Z",
     }
-    raw = (json.dumps(manifest, sort_keys=True, indent=2) + "\n").encode("utf-8")
     manifest_hash = hashlib.sha256(raw).hexdigest()
     comment["body"] = comment["body"].replace("b" * 64, manifest_hash)
     return contract, manifest, comment, run, manifest_hash, artifact, raw, archive
@@ -333,6 +343,11 @@ def test_go_rejects_distribution_digest_mismatch(inputs, kind):
     raw = (json.dumps(manifest, sort_keys=True, indent=2) + "\n").encode("utf-8")
     manifest_hash = hashlib.sha256(raw).hexdigest()
     comment["body"] = comment["body"].replace(inputs[4], manifest_hash)
+    archive = manifest_zip(raw)
+    artifact.update(
+        size_in_bytes=len(archive),
+        digest="sha256:" + hashlib.sha256(archive).hexdigest(),
+    )
     with pytest.raises(module.ReleaseGoError, match="distribution hashes"):
         module.verify_release_go(
             contract=contract,

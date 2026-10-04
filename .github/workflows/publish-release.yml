@@ -40,6 +40,10 @@ jobs:
       artifact_prefix: ${{ steps.validate.outputs.artifact_prefix }}
       review_evidence: ${{ steps.validate.outputs.review_evidence }}
       tag_object_sha: ${{ steps.validate.outputs.tag_object_sha }}
+      promotion_enabled: ${{ steps.profile.outputs.promotion_enabled }}
+      qualify: ${{ steps.profile.outputs.qualify }}
+      diaggui_qualification: ${{ steps.profile.outputs.diaggui_qualification }}
+      cross_format_io: ${{ steps.profile.outputs.cross_format_io }}
     steps:
       - name: Check out workflow revision for validator code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -120,8 +124,14 @@ jobs:
           printf 'tag_object_sha=%s\n' "$tag_object_sha" >> "$GITHUB_OUTPUT"
           printf 'review_evidence=%s\n' "$canonical_review_evidence" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve contract-selected candidate qualification profile
+        id: profile
+        env:
+          VERSION: ${{ steps.validate.outputs.version }}
+        run: python control/scripts/ci/release_promotion.py profile --version "$VERSION" >> "$GITHUB_OUTPUT"
+
       - name: Verify GitHub human approval for the reviewed source
-        if: steps.validate.outputs.version == '0.2.4' || steps.validate.outputs.version == '0.2.5'
+        if: steps.validate.outputs.version == '0.2.4' || steps.validate.outputs.version == '0.2.5' || steps.profile.outputs.promotion_enabled == 'true'
         env:
           EXPECTED_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_tag || github.ref_name }}
           REVIEW_EVIDENCE: ${{ steps.validate.outputs.review_evidence }}
@@ -137,6 +147,7 @@ jobs:
   build:
     name: Build and check release artifacts
     needs: verify
+    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -186,14 +197,23 @@ jobs:
       - name: Upload release sidecars separately
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
-          path: source/release-sidecars
+          name: release-sidecar-distribution-sha256.json-${{ needs.verify.outputs.source_sha }}
+          path: source/release-sidecars/distribution-sha256.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Upload license sidecar separately
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: release-sidecar-LICENSE.sha256-${{ needs.verify.outputs.source_sha }}
+          path: source/release-sidecars/LICENSE.sha256
           if-no-files-found: error
           retention-days: 90
 
   smoke:
     name: Smoke-test ${{ matrix.distribution }} on Python ${{ matrix.python-version }}
     needs: [verify, build]
+    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -223,7 +243,8 @@ jobs:
       - name: Download detached sidecars
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
       - name: Install and attest the exact selected distribution
@@ -286,7 +307,7 @@ jobs:
   qualify:
     name: Qualify ${{ matrix.cell }}
     needs: [verify, build]
-    if: ${{ needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' }}
+    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && (needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.qualify == 'true') }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
@@ -349,7 +370,8 @@ jobs:
       - name: Download detached sidecars
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
       - name: Verify qualification payload digest
@@ -410,8 +432,13 @@ jobs:
               "${runner[@]}" -m pytest --junitxml="$JUNIT" --import-mode=importlib -q "${tests[@]}"
               ;;
             *)
-              echo "unsupported qualification version: $EXPECTED_VERSION" >&2
-              exit 1
+              profile="$(python source/scripts/ci/release_promotion.py profile --version "$EXPECTED_VERSION")"
+              if ! grep -Fxq 'qualification_profile=gwexpy-standard-v1' <<< "$profile" || ! grep -Fxq 'qualify=true' <<< "$profile"; then
+                echo "unsupported qualification profile for $EXPECTED_VERSION" >&2
+                exit 1
+              fi
+              python -c 'import os; from pathlib import Path; Path(os.environ["JUNIT"]).parent.mkdir(parents=True, exist_ok=True)'
+              "${runner[@]}" -m pytest --junitxml="$JUNIT" --import-mode=importlib -q "${tests[@]}"
               ;;
           esac
 
@@ -498,6 +525,25 @@ jobs:
             --junit "$JUNIT" \
             --expected-skips "$EXPECTED_SKIPS"
 
+      - name: Record contract-selected future qualification evidence
+        if: needs.verify.outputs.promotion_enabled == 'true'
+        shell: bash
+        env:
+          CELL: ${{ matrix.cell }}
+          SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          VERSION: ${{ needs.verify.outputs.version }}
+          REPORT: ${{ runner.temp }}/qualification-report/qualification.json
+          JUNIT: ${{ runner.temp }}/qualification-report/pytest.xml
+          PAYLOAD_MANIFEST: ${{ runner.temp }}/release-sidecars/distribution-sha256.json
+        run: |
+          python source/scripts/ci/qualification_evidence.py record \
+            --version "$VERSION" \
+            --cell "$CELL" \
+            --source-sha "$SOURCE_SHA" \
+            --payload-manifest "$PAYLOAD_MANIFEST" \
+            --report "$REPORT" \
+            --junit "$JUNIT"
+
       - name: Upload qualification cell evidence
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
@@ -509,12 +555,12 @@ jobs:
   qualification_evidence:
     name: Aggregate nineteen qualification cells
     needs: [verify, build, qualify]
-    if: ${{ needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' }}
+    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && (needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.qualify == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Check out verified qualification source
-        if: needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5'
+        if: needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.promotion_enabled == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ needs.verify.outputs.source_sha }}
@@ -522,7 +568,7 @@ jobs:
           path: source
 
       - name: Set up Python
-        if: needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5'
+        if: needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.promotion_enabled == 'true'
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.11"
@@ -536,7 +582,8 @@ jobs:
       - name: Download detached sidecars
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
       - name: Select qualification evidence contract
@@ -557,8 +604,7 @@ jobs:
                 --version "$VERSION" >> "$GITHUB_OUTPUT"
               ;;
             *)
-              echo "unsupported qualification version: $VERSION" >&2
-              exit 1
+              python source/scripts/ci/qualification_evidence.py contract --version "$VERSION" >> "$GITHUB_OUTPUT"
               ;;
           esac
 
@@ -640,6 +686,22 @@ jobs:
             --output "$OUTPUT" \
             --expected-skips "$EXPECTED_SKIPS"
 
+      - name: Assert contract-selected future qualification ledger
+        if: needs.verify.outputs.promotion_enabled == 'true'
+        env:
+          CELLS: ${{ runner.temp }}/qualification-cells
+          SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          VERSION: ${{ needs.verify.outputs.version }}
+          PAYLOAD_MANIFEST: ${{ runner.temp }}/release-sidecars/distribution-sha256.json
+          OUTPUT: ${{ runner.temp }}/qualification-manifest.json
+        run: |
+          python source/scripts/ci/qualification_evidence.py aggregate \
+            --version "$VERSION" \
+            --source-sha "$SOURCE_SHA" \
+            --payload-manifest "$PAYLOAD_MANIFEST" \
+            --reports-dir "$CELLS" \
+            --output "$OUTPUT"
+
       - name: Upload qualification manifest
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
@@ -651,7 +713,7 @@ jobs:
   diaggui_qualification:
     name: Qualify installed DiagGUI routes (${{ matrix.cell }})
     needs: [verify, build]
-    if: ${{ (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5') }}
+    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && ((needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.diaggui_qualification == 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
@@ -684,7 +746,8 @@ jobs:
       - name: Download detached candidate manifest
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
       - name: Create an isolated candidate environment
@@ -768,16 +831,16 @@ jobs:
   diaggui_qualification_evidence:
     name: Aggregate four DiagGUI qualification cells
     needs: [verify, build, diaggui_qualification]
-    if: ${{ !cancelled() && needs.verify.result == 'success' && needs.build.result == 'success' && ((needs.verify.outputs.version != '0.2.4' && needs.verify.outputs.version != '0.2.5') || needs.diaggui_qualification.result == 'success') }}
+    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && (!cancelled() && needs.verify.result == 'success' && needs.build.result == 'success' && ((needs.verify.outputs.version != '0.2.4' && needs.verify.outputs.version != '0.2.5' && needs.verify.outputs.diaggui_qualification != 'true') || needs.diaggui_qualification.result == 'success')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Mark historical release as having no DiagGUI lane
-        if: (needs.verify.outputs.version != '0.2.4' && needs.verify.outputs.version != '0.2.5')
+        if: (needs.verify.outputs.version != '0.2.4' && needs.verify.outputs.version != '0.2.5' && needs.verify.outputs.diaggui_qualification != 'true')
         run: echo "DiagGUI qualification applies to v0.2.4 and v0.2.5 only"
 
       - name: Check out verified DiagGUI aggregate source
-        if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5')
+        if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.diaggui_qualification == 'true')
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ needs.verify.outputs.source_sha }}
@@ -785,27 +848,28 @@ jobs:
           path: source
 
       - name: Set up Python for DiagGUI aggregate
-        if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5')
+        if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.diaggui_qualification == 'true')
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.11"
 
       - name: Download all DiagGUI cell evidence
-        if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5')
+        if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.diaggui_qualification == 'true')
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           pattern: release-diaggui-qualification-${{ needs.verify.outputs.source_sha }}-*
           path: ${{ runner.temp }}/diaggui-cells
 
       - name: Download detached DiagGUI candidate manifest
-        if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5')
+        if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.diaggui_qualification == 'true')
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
       - name: Assert four candidate-bound DiagGUI reports
-        if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5')
+        if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.diaggui_qualification == 'true')
         env:
           SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
           PAYLOAD_MANIFEST: ${{ runner.temp }}/release-sidecars/distribution-sha256.json
@@ -820,10 +884,10 @@ jobs:
             --output "$OUTPUT"
 
       - name: Upload DiagGUI qualification manifest
-        if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5')
+        if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.diaggui_qualification == 'true')
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: v${{ needs.verify.outputs.version == '0.2.4' && '024' || '025' }}-diaggui-qualification-evidence-${{ needs.verify.outputs.source_sha }}
+          name: ${{ needs.verify.outputs.promotion_enabled == 'true' && 'gwexpy-diaggui-qualification-evidence-v1' || (needs.verify.outputs.version == '0.2.4' && 'v024-diaggui-qualification-evidence' || 'v025-diaggui-qualification-evidence') }}-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/diaggui-qualification-manifest.json
           if-no-files-found: error
           retention-days: 90
@@ -831,7 +895,7 @@ jobs:
   cross_format_io:
     name: Qualify installed cross-format I/O (${{ matrix.cell }})
     needs: [verify, build]
-    if: ${{ needs.verify.outputs.version == '0.2.5' }}
+    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && ((needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.cross_format_io == 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
@@ -868,7 +932,8 @@ jobs:
       - name: Download detached candidate manifest
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
       - name: Install digest-checked candidate and run selected public regressions
@@ -886,7 +951,7 @@ jobs:
           python="${{ runner.temp }}/cross-format-io-venv/bin/python"
           artifact_name="$(python source/scripts/ci/validate_release_payload.py \
             --payload-dir "$PAYLOAD_DIR" --manifest "$PAYLOAD_MANIFEST" \
-            --expected-version 0.2.5 --source-sha "$SOURCE_SHA" --kind "$DISTRIBUTION")"
+            --expected-version "${{ needs.verify.outputs.version }}" --source-sha "$SOURCE_SHA" --kind "$DISTRIBUTION")"
           artifact="$PAYLOAD_DIR/$artifact_name"
           if [[ "$MODE" == optional ]]; then
             "$python" -m pip install --disable-pip-version-check --no-cache-dir "${artifact}[io,netcdf4,zarr]" pytest
@@ -900,10 +965,10 @@ jobs:
             source/tests/io/test_netcdf4_matrix_validation.py source/tests/io/test_zarr_reader.py \
             source/tests/io/test_tdms_invalid_increment_contract.py \
             "${{ runner.temp }}/cross-format-io-tests/io/"
-          mapfile -t tests < <(python source/scripts/ci/v025_cross_format_io_evidence.py test-nodes --mode "$MODE" | sed "s#^#cross-format-io-tests/#")
+          mapfile -t tests < <(python source/scripts/ci/v025_cross_format_io_evidence.py --version "${{ needs.verify.outputs.version }}" test-nodes --mode "$MODE" | sed "s#^#cross-format-io-tests/#")
           cd "${{ runner.temp }}"
           GWEXPY_ALLOW_ZARR=1 "$python" -m pytest --import-mode=importlib --junitxml="$JUNIT" -q "${tests[@]}"
-          "$python" "$GITHUB_WORKSPACE/source/scripts/ci/v025_cross_format_io_evidence.py" record \
+          "$python" "$GITHUB_WORKSPACE/source/scripts/ci/v025_cross_format_io_evidence.py" --version "${{ needs.verify.outputs.version }}" record \
             --cell "$CELL" --source-sha "$SOURCE_SHA" --payload-manifest "$PAYLOAD_MANIFEST" \
             --artifact "$artifact" --junit "$JUNIT" --report "$REPORT"
 
@@ -918,16 +983,16 @@ jobs:
   cross_format_io_evidence:
     name: Aggregate eight cross-format I/O cells
     needs: [verify, build, cross_format_io]
-    if: ${{ !cancelled() && needs.verify.result == 'success' && needs.build.result == 'success' && (needs.verify.outputs.version != '0.2.5' || needs.cross_format_io.result == 'success') }}
+    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && (!cancelled() && needs.verify.result == 'success' && needs.build.result == 'success' && ((needs.verify.outputs.version != '0.2.5' && needs.verify.outputs.cross_format_io != 'true') || needs.cross_format_io.result == 'success')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Mark historical release as having no cross-format I/O lane
-        if: needs.verify.outputs.version != '0.2.5'
+        if: (needs.verify.outputs.version != '0.2.5' && needs.verify.outputs.cross_format_io != 'true')
         run: echo "Cross-format I/O qualification applies to v0.2.5 only"
 
       - name: Check out verified I/O aggregate source
-        if: needs.verify.outputs.version == '0.2.5'
+        if: (needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.cross_format_io == 'true')
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ needs.verify.outputs.source_sha }}
@@ -935,33 +1000,34 @@ jobs:
           path: source
 
       - name: Download all I/O cell reports
-        if: needs.verify.outputs.version == '0.2.5'
+        if: (needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.cross_format_io == 'true')
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           pattern: release-cross-format-io-${{ needs.verify.outputs.source_sha }}-*
           path: ${{ runner.temp }}/cross-format-io-cells
 
       - name: Download detached candidate manifest
-        if: needs.verify.outputs.version == '0.2.5'
+        if: (needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.cross_format_io == 'true')
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
       - name: Assert eight candidate-bound I/O reports
-        if: needs.verify.outputs.version == '0.2.5'
+        if: (needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.cross_format_io == 'true')
         run: |
-          python source/scripts/ci/v025_cross_format_io_evidence.py aggregate \
+          python source/scripts/ci/v025_cross_format_io_evidence.py --version "${{ needs.verify.outputs.version }}" aggregate \
             --source-sha "${{ needs.verify.outputs.source_sha }}" \
             --payload-manifest "${{ runner.temp }}/release-sidecars/distribution-sha256.json" \
             --reports-dir "${{ runner.temp }}/cross-format-io-cells" \
             --output "${{ runner.temp }}/cross-format-io-manifest.json"
 
       - name: Upload I/O qualification manifest
-        if: needs.verify.outputs.version == '0.2.5'
+        if: (needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.cross_format_io == 'true')
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: v025-cross-format-io-evidence-${{ needs.verify.outputs.source_sha }}
+          name: ${{ needs.verify.outputs.promotion_enabled == 'true' && 'gwexpy-cross-format-io-evidence-v1' || 'v025-cross-format-io-evidence' }}-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/cross-format-io-manifest.json
           if-no-files-found: error
           retention-days: 90
@@ -969,6 +1035,7 @@ jobs:
   historical_74_gate:
     name: Enforce v0.2.5 historical 62 passes and 12 owner dispositions
     needs: [verify, build]
+    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
@@ -1007,7 +1074,8 @@ jobs:
         if: needs.verify.outputs.version == '0.2.5'
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
       - name: Run historical probes and fixed regressions on both installed artifacts
@@ -1058,8 +1126,12 @@ jobs:
   evidence:
     name: Collect same-run integration evidence
     needs: [verify, build, smoke]
+    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: read
     steps:
       - name: Check out verified collector revision
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -1076,7 +1148,8 @@ jobs:
       - name: Download detached sidecars from this run
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
       - name: Download smoke reports from this run
@@ -1085,6 +1158,15 @@ jobs:
           pattern: release-smoke-${{ needs.verify.outputs.source_sha }}-*
           path: ${{ runner.temp }}/release-smoke
           merge-multiple: true
+
+      - name: Validate source review evidence again for aggregate binding
+        if: needs.verify.outputs.promotion_enabled == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python source/scripts/ci/verify_release_human_approval.py \
+            --repo-root source --evidence "${{ needs.verify.outputs.review_evidence }}" \
+            --expected-tag "v${{ needs.verify.outputs.version }}" --repository "${{ github.repository }}"
 
       - name: Assemble allowlisted aggregate
         run: |
@@ -1098,14 +1180,80 @@ jobs:
             --run-id "${{ github.run_id }}" \
             --workflow-sha "${{ github.workflow_sha }}" \
             --workflow-ref "${{ github.workflow_ref }}" \
-            --expected-tag "${{ github.event_name == 'workflow_dispatch' && inputs.expected_tag || github.ref_name }}" \
+            --expected-tag "${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && inputs.expected_tag || github.ref_name }}" \
             --output "${{ runner.temp }}/release-evidence/aggregate.json"
+
+      - name: Bind future aggregate to contract and approved review identity
+        if: needs.verify.outputs.promotion_enabled == 'true'
+        env:
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          python - "$VERSION" "${{ runner.temp }}/release-evidence/aggregate.json" <<'PYCODE'
+          import hashlib
+          import json
+          from pathlib import Path
+          import sys
+          sys.path.insert(0, "source/scripts/ci")
+          from release_promotion import configured_contract, candidate_profile
+          contract = configured_contract(sys.argv[1])
+          profile = candidate_profile(contract)
+          path = Path(sys.argv[2])
+          aggregate = json.loads(path.read_bytes())
+          review_path = contract["review_evidence_path"]
+          raw = (Path("source") / review_path).read_bytes()
+          review = json.loads(raw)
+          aggregate["schema"] = profile["evidence_schemas"]["gwexpy-integration-evidence-v1"]
+          aggregate["review_evidence"] = {"path": review_path, "sha256": hashlib.sha256(raw).hexdigest(), "human_approval": review["human_approval"]}
+          path.write_text(json.dumps(aggregate, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+          PYCODE
 
       - name: Upload 90-day integration evidence
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: ${{ needs.verify.outputs.artifact_prefix }}-${{ needs.verify.outputs.source_sha }}
+          name: ${{ needs.verify.outputs.promotion_enabled == 'true' && 'gwexpy-integration-evidence-v1' || needs.verify.outputs.artifact_prefix }}-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-evidence/aggregate.json
+          if-no-files-found: error
+          retention-days: 90
+
+  promotion_manifest:
+    name: Finalize immutable candidate promotion manifest
+    needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification, diaggui_qualification_evidence, cross_format_io, cross_format_io_evidence, evidence]
+    if: ${{ github.event_name == 'workflow_dispatch' && !cancelled() && needs.verify.outputs.promotion_enabled == 'true' && needs.verify.result == 'success' && needs.build.result == 'success' && needs.smoke.result == 'success' && needs.qualify.result == 'success' && needs.qualification_evidence.result == 'success' && needs.diaggui_qualification.result == 'success' && needs.diaggui_qualification_evidence.result == 'success' && needs.cross_format_io.result == 'success' && needs.cross_format_io_evidence.result == 'success' && needs.evidence.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Check out frozen finalizer code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: control
+      - name: Check out candidate review and release notes
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.verify.outputs.source_sha }}
+          path: source
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+      - name: Observe original immutable artifact IDs and verify their API archives
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_WORKFLOW_SHA: ${{ github.workflow_sha }}
+          SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          GATE_RESULTS: ${{ toJSON(needs) }}
+        run: |
+          python control/scripts/ci/release_promotion.py finalize \
+            --version "${{ needs.verify.outputs.version }}" --repo-root source \
+            --output "${{ runner.temp }}/promotion-manifest/promotion-manifest.json"
+      - name: Upload the sole new manifest artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: release-promotion-manifest-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/promotion-manifest/promotion-manifest.json
           if-no-files-found: error
           retention-days: 90
 
@@ -1159,7 +1307,8 @@ jobs:
       - name: Download same-run sidecars
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
       - name: Validate exact same-run assets and generate CHANGELOG notes

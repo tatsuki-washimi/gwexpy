@@ -1125,3 +1125,26 @@ def test_record_rejects_payload_filename_for_a_different_version(
             junit_path=write_junit(tmp_path / "pytest.xml", []),
             expected_skips_path=write_baseline(tmp_path / "baseline.json"),
         )
+
+
+def test_synthetic_future_resolves_schemas_from_contract(monkeypatch):
+    from types import SimpleNamespace
+
+    evidence = load_module()
+    selected = {
+        "evidence_schemas": {"gwexpy-qualification-evidence-v1": "synthetic-schema-v7"}
+    }
+    helper = SimpleNamespace(
+        configured_contract=lambda version: {"payload_schema": "synthetic-payload-v7"},
+        candidate_profile=lambda contract: selected,
+    )
+    monkeypatch.setattr(evidence, "_promotion_module", lambda: helper)
+    result = evidence.qualification_contract("99.88.77")
+    assert result["evidence_schema"] == "synthetic-schema-v7"
+    assert evidence._PAYLOAD_SCHEMAS["99.88.77"] == "synthetic-payload-v7"
+
+
+def test_synthetic_future_unknown_contract_fails_closed():
+    evidence = load_module()
+    with pytest.raises(ValueError):
+        evidence.qualification_contract("99.88.77")

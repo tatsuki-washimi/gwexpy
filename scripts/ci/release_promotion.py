@@ -553,7 +553,7 @@ def validate_manifest_artifact(
     run_id: int,
     expected_manifest_sha256: str,
 ) -> None:
-    """Validate archive API metadata and contained manifest bytes independently."""
+    """Validate API archive metadata and bind the sole member to manifest bytes."""
     _require(
         api.get("name") == f"release-promotion-manifest-{release_sha}",
         "promotion manifest artifact name mismatch",
@@ -577,6 +577,15 @@ def validate_manifest_artifact(
     _require(
         api.get("digest") == f"sha256:{sha256(archive_bytes)}",
         "promotion manifest artifact digest mismatch",
+    )
+    members = observe_archive(api, archive_bytes, run_id)
+    _require(
+        set(members) == {"promotion-manifest.json"},
+        "promotion manifest archive must contain exactly promotion-manifest.json",
+    )
+    _require(
+        members["promotion-manifest.json"] == manifest_bytes,
+        "promotion manifest bytes differ from archive member",
     )
     _require(
         isinstance(expected_manifest_sha256, str)
@@ -666,3 +675,507 @@ def build_manifest(
         "artifacts": artifacts,
     }
     return result
+
+
+def _local_module(name: str) -> Any:
+    import importlib.util
+    import sys
+
+    spec = importlib.util.spec_from_file_location(
+        name, Path(__file__).with_name(name + ".py")
+    )
+    _require(spec is not None and spec.loader is not None, "release helper unavailable")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def validate_candidate_aggregate(
+    evidence: Mapping[str, Any],
+    schema: str,
+    contract: Mapping[str, Any],
+    metadata: Mapping[str, Any],
+    payload: Mapping[str, Any],
+    license_digest: str,
+) -> None:
+    """Re-run existing cell aggregators and require their exact allowlisted output."""
+    import tempfile
+    from types import SimpleNamespace
+
+    profile = candidate_profile(contract)
+    version = metadata["version"]
+    source = metadata["source_sha"]
+    try:
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            sidecars = directory / "sidecars"
+            sidecars.mkdir()
+            manifest = sidecars / "distribution-sha256.json"
+            manifest.write_bytes(serialize_manifest(payload))
+            reports = directory / "reports"
+            reports.mkdir()
+            output = directory / "aggregate.json"
+            if schema == "gwexpy-integration-evidence-v1":
+                module = _local_module("assemble_release_evidence")
+                module._release_contract = lambda tag: dict(contract)
+                (sidecars / "LICENSE.sha256").write_text(
+                    license_digest + "\n", encoding="ascii"
+                )
+                for name, report in evidence["smoke"].items():
+                    _require(_safe_filename(name), "unsafe smoke evidence cell")
+                    (reports / (name + ".json")).write_bytes(serialize_manifest(report))
+                rebuilt = module.assemble_evidence(
+                    manifest,
+                    sidecars,
+                    reports,
+                    source,
+                    metadata["repository"],
+                    str(metadata["run_id"]),
+                    metadata["workflow_sha"],
+                    metadata["workflow_ref"],
+                    metadata["tag"],
+                )
+                rebuilt["schema"] = profile["evidence_schemas"][schema]
+                rebuilt["review_evidence"] = evidence["review_evidence"]
+            else:
+                names = {
+                    "gwexpy-qualification-evidence-v1": (
+                        "qualification_evidence",
+                        "qualification.json",
+                    ),
+                    "gwexpy-diaggui-qualification-evidence-v1": (
+                        "diaggui_qualification_evidence",
+                        "diaggui-qualification.json",
+                    ),
+                    "gwexpy-cross-format-io-evidence-v1": (
+                        "v025_cross_format_io_evidence",
+                        "cross-format-io.json",
+                    ),
+                }
+                module_name, filename = names[schema]
+                module = _local_module(module_name)
+                module._promotion_module = lambda: SimpleNamespace(
+                    configured_contract=lambda value: contract,
+                    candidate_profile=lambda value: profile,
+                )
+                if schema != "gwexpy-qualification-evidence-v1":
+                    module._select_version(version)
+                for index, cell in enumerate(evidence["cells"]):
+                    _require(isinstance(cell, Mapping), "invalid aggregate cell")
+                    if schema == "gwexpy-qualification-evidence-v1":
+                        report = {
+                            **cell,
+                            "baseline_sha256": evidence["baseline_sha256"],
+                            "files": payload["files"],
+                            "source_sha": source,
+                            "status": "passed",
+                            "version": version,
+                        }
+                    elif schema == "gwexpy-diaggui-qualification-evidence-v1":
+                        report = {
+                            **cell,
+                            "schema": module.CELL_SCHEMA,
+                            "source_sha": source,
+                            "version": version,
+                        }
+                    else:
+                        report = cell
+                    cell_dir = reports / str(index)
+                    cell_dir.mkdir()
+                    if schema == "gwexpy-qualification-evidence-v1":
+                        raw = module._canonical_json_bytes(report)
+                    elif schema == "gwexpy-diaggui-qualification-evidence-v1":
+                        raw = module._canonical_json(report)
+                    else:
+                        raw = serialize_manifest(report)
+                    (cell_dir / filename).write_bytes(raw)
+                if schema == "gwexpy-qualification-evidence-v1":
+                    rebuilt = module.aggregate_reports(
+                        version=version,
+                        source_sha=source,
+                        payload_manifest=manifest,
+                        reports_dir=reports,
+                        output_path=output,
+                    )
+                elif schema == "gwexpy-diaggui-qualification-evidence-v1":
+                    rebuilt = module.aggregate_reports(
+                        source_sha=source,
+                        payload_manifest=manifest,
+                        reports_dir=reports,
+                        output_path=output,
+                    )
+                else:
+                    rebuilt = module.aggregate(source, manifest, reports, output)
+            _require(
+                rebuilt == evidence,
+                "aggregate differs from validated evidence contract",
+            )
+    except (ValueError, KeyError, TypeError, AttributeError) as exc:
+        raise PromotionManifestError(
+            f"invalid aggregate evidence {schema}: {exc}"
+        ) from exc
+
+
+def configured_contract(version: str) -> dict[str, Any]:
+    """Load the frozen control registry, including its strict profile validation."""
+    try:
+        return _local_module("release_contract").release_contract("v" + version)
+    except ValueError as exc:
+        raise PromotionManifestError(str(exc)) from exc
+
+
+def candidate_profile(contract: Mapping[str, Any]) -> dict[str, Any]:
+    """Resolve the complete supported future profile; unknown lanes fail closed."""
+    registry = _local_module("release_contract")
+    promotion = contract.get("promotion")
+    try:
+        registry._validate_promotion("synthetic", promotion)
+    except ValueError as exc:
+        raise PromotionManifestError(str(exc)) from exc
+    return {
+        **promotion["qualification_profiles"][promotion["qualification_profile"]],
+        "evidence_schemas": dict(promotion["evidence_schemas"]),
+    }
+
+
+def observe_archive(
+    api: Mapping[str, Any], raw: bytes, run_id: int
+) -> dict[str, bytes]:
+    """Verify the exact API archive before reading its flat regular members.
+
+    The returned bytes all come from this archive. Callers must use this same
+    operation for a later manifest download, avoiding unrelated member bytes.
+    """
+    import io
+    import stat
+    import zipfile
+
+    _require(_positive_int(api.get("artifact_id")), "invalid artifact ID")
+    _require(api.get("run_id") == run_id, "artifact run ID mismatch")
+    _require(api.get("expired") is False, "artifact is expired")
+    _require(api.get("size_in_bytes") == len(raw), "artifact archive size mismatch")
+    _require(
+        api.get("digest") == "sha256:" + sha256(raw), "artifact archive digest mismatch"
+    )
+    result = {}
+    try:
+        with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+            for member in archive.infolist():
+                mode = member.external_attr >> 16
+                _require(
+                    _safe_filename(member.filename)
+                    and not member.is_dir()
+                    and not stat.S_ISLNK(mode),
+                    "unsafe archive member",
+                )
+                _require(member.filename not in result, "duplicate archive member")
+                _require(
+                    0 < member.file_size <= 100 * 1024 * 1024,
+                    "invalid archive member size",
+                )
+                result[member.filename] = archive.read(member)
+    except (zipfile.BadZipFile, RuntimeError, OSError) as exc:
+        raise PromotionManifestError("invalid artifact archive") from exc
+    _require(bool(result), "empty artifact archive")
+    return result
+
+
+def _api_json(repository: str, token: str, path: str) -> Any:
+    import urllib.request
+
+    url = "https://api.github.com/repos/" + repository + "/" + path
+    request = urllib.request.Request(
+        url,
+        headers={
+            "Authorization": "Bearer " + token,
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+        },
+    )
+    with urllib.request.urlopen(request, timeout=60) as response:
+        return json.load(response)
+
+
+def _api_pages(
+    repository: str, token: str, path: str, key: str
+) -> list[dict[str, Any]]:
+    result = []
+    page = 1
+    while True:
+        data = _api_json(repository, token, f"{path}?per_page=100&page={page}")
+        entries = data[key]
+        result.extend(entries)
+        if len(entries) < 100:
+            return result
+        page += 1
+
+
+def finalize_candidate(root: Path, version: str, output: Path) -> None:
+    """Read existing current-run artifacts by ID and emit one validated manifest."""
+    import datetime
+    import os
+    import tempfile
+    import urllib.request
+
+    contract = configured_contract(version)
+    profile = candidate_profile(contract)
+    repository = os.environ["GITHUB_REPOSITORY"]
+    token = os.environ["GITHUB_TOKEN"]
+    run_id = int(os.environ["GITHUB_RUN_ID"])
+    attempt = int(os.environ["GITHUB_RUN_ATTEMPT"])
+    _require(attempt == 1, "promotion manifest requires run attempt 1")
+    source = os.environ["SOURCE_SHA"]
+    run = _api_json(repository, token, f"actions/runs/{run_id}")
+    _require(
+        run["event"] == "workflow_dispatch" and run["run_attempt"] == 1,
+        "candidate must be a first-attempt dispatch",
+    )
+    _require(
+        run["head_sha"] == os.environ["GITHUB_WORKFLOW_SHA"], "workflow SHA mismatch"
+    )
+    needs = json.loads(os.environ["GATE_RESULTS"])
+    _require(
+        all(
+            needs.get(job, {}).get("result") == "success"
+            for job in profile["required_jobs"]
+        ),
+        "required lane failed or skipped",
+    )
+    actual_jobs = _api_pages(
+        repository, token, f"actions/runs/{run_id}/attempts/1/jobs", "jobs"
+    )
+    prefixes = {
+        "verify": "Verify immutable release source",
+        "build": "Build and check release artifacts",
+        "smoke": "Smoke-test ",
+        "qualify": "Qualify ",
+        "qualification_evidence": "Aggregate nineteen qualification cells",
+        "diaggui_qualification": "Qualify installed DiagGUI ",
+        "diaggui_qualification_evidence": "Aggregate four DiagGUI qualification cells",
+        "cross_format_io": "Qualify installed cross-format I/O ",
+        "cross_format_io_evidence": "Aggregate eight cross-format I/O cells",
+        "evidence": "Collect same-run integration evidence",
+    }
+    jobs = []
+    for job in profile["required_jobs"]:
+        matches = [
+            j
+            for j in actual_jobs
+            if j["name"].startswith(prefixes[job])
+            and (job != "qualify" or not j["name"].startswith("Qualify installed "))
+        ]
+        counts = {
+            "smoke": 4,
+            "qualify": 19,
+            "diaggui_qualification": 4,
+            "cross_format_io": 8,
+        }
+        _require(
+            len(matches) == counts.get(job, 1)
+            and all(
+                j["status"] == "completed" and j["conclusion"] == "success"
+                for j in matches
+            ),
+            f"required gate {job} did not succeed",
+        )
+        jobs.append({"name": job, "status": "completed", "conclusion": "success"})
+    available = _api_pages(
+        repository, token, f"actions/runs/{run_id}/artifacts", "artifacts"
+    )
+    naming = contract["promotion"]["artifact_naming"]
+    required = {"payload": naming["payload_prefix"] + source}
+    required.update(
+        {
+            f"sidecar:{name}": f"release-sidecar-{name}-{source}"
+            for name in naming["sidecar_names"]
+        }
+    )
+    required.update(
+        {
+            f"evidence:{schema}": schema + "-" + source
+            for schema in profile["evidence_schema_ids"]
+        }
+    )
+    observations = []
+    inputs = []
+    observed = {}
+    declared = None
+    aggregates = []
+    sidecar = None
+    license_digest = None
+    with tempfile.TemporaryDirectory() as temporary:
+        for role, name in required.items():
+            matches = [a for a in available if a["name"] == name]
+            _require(
+                len(matches) == 1, "missing or ambiguous candidate artifact: " + name
+            )
+            record = matches[0]
+            api = {
+                key: record[key]
+                for key in ("name", "digest", "size_in_bytes", "expired")
+            }
+            api.update(artifact_id=record["id"], run_id=record["workflow_run"]["id"])
+            _require(api["run_id"] == run_id, "artifact belongs to another run")
+            if role.startswith("evidence:"):
+                created = datetime.datetime.fromisoformat(
+                    record["created_at"].replace("Z", "+00:00")
+                )
+                expires = datetime.datetime.fromisoformat(
+                    record["expires_at"].replace("Z", "+00:00")
+                )
+                _require(
+                    expires - created >= datetime.timedelta(days=90),
+                    "evidence retention must be 90 days",
+                )
+            request = urllib.request.Request(
+                f"https://api.github.com/repos/{repository}/actions/artifacts/{record['id']}/zip",
+                headers={"Authorization": "Bearer " + token},
+            )
+            with urllib.request.urlopen(request, timeout=60) as response:
+                raw = response.read()
+            members = observe_archive(api, raw, run_id)
+            if role.startswith("sidecar:"):
+                _require(
+                    set(members) == {role.split(":", 1)[1]},
+                    "unexpected sidecar members",
+                )
+            if role == "sidecar:distribution-sha256.json":
+                sidecar = json.loads(
+                    members["distribution-sha256.json"], object_pairs_hook=_pairs
+                )
+                _require(
+                    sidecar["version"] == version
+                    and sidecar["source_sha"] == source
+                    and sidecar["schema"] == contract["payload_schema"],
+                    "payload sidecar binding mismatch",
+                )
+                declared = {
+                    item["name"]: item["sha256"] for item in sidecar["files"].values()
+                }
+            if role == "sidecar:LICENSE.sha256":
+                raw_license = members["LICENSE.sha256"]
+                _require(
+                    re.fullmatch(rb"[0-9a-f]{64}\n", raw_license) is not None,
+                    "LICENSE.sha256 must be one lowercase SHA-256 and LF",
+                )
+                license_digest = raw_license[:-1].decode("ascii")
+                _require(
+                    license_digest == sha256((root / "LICENSE.txt").read_bytes()),
+                    "LICENSE.sha256 differs from repository license",
+                )
+            if role.startswith("evidence:"):
+                _require(len(members) == 1, "evidence must have one aggregate member")
+                evidence = json.loads(
+                    next(iter(members.values())), object_pairs_hook=_pairs
+                )
+                schema = role.split(":", 1)[1]
+                _require(
+                    evidence.get("schema") == profile["evidence_schemas"][schema]
+                    and evidence.get("source_sha") == source
+                    and evidence.get("version") == version,
+                    "aggregate evidence binding mismatch",
+                )
+                aggregates.append((schema, evidence))
+            files = {}
+            directory = Path(temporary) / str(record["id"])
+            directory.mkdir()
+            for filename, content in members.items():
+                path = directory / filename
+                path.write_bytes(content)
+                files[filename] = path
+            inputs.append((role, api, files))
+            observations.append(api)
+            observed[api["artifact_id"]] = describe_existing_artifact(api, files)[
+                "files"
+            ]
+        metadata = {
+            "repository": repository,
+            "version": version,
+            "tag": "v" + version,
+            "workflow_id": run["workflow_id"],
+            "workflow_path": contract["promotion"]["workflow_path"],
+            "event": "workflow_dispatch",
+            "dispatch_ref": source,
+            "workflow_ref": os.environ["GITHUB_WORKFLOW_REF"],
+            "workflow_sha": os.environ["GITHUB_WORKFLOW_SHA"],
+            "source_sha": source,
+            "release_sha": source,
+            "run_id": run_id,
+            "run_attempt": attempt,
+            "gates": [
+                {"job": job, "conclusion": "success"}
+                for job in profile["required_jobs"]
+            ],
+        }
+        review = root / contract["review_evidence_path"]
+        notes = root / f"release_notes/v{version}.md"
+        review_raw = review.read_bytes()
+        review_data = json.loads(review_raw, object_pairs_hook=_pairs)
+        for schema, evidence in aggregates:
+            _require(
+                evidence.get("payload", evidence.get("files")) == sidecar["files"],
+                "aggregate payload hash binding mismatch",
+            )
+            if schema == "gwexpy-integration-evidence-v1":
+                _require(
+                    evidence.get("review_evidence")
+                    == {
+                        "path": contract["review_evidence_path"],
+                        "sha256": sha256(review_raw),
+                        "human_approval": review_data["human_approval"],
+                    },
+                    "aggregate source approval identity mismatch",
+                )
+            validate_candidate_aggregate(
+                evidence, schema, contract, metadata, sidecar, license_digest
+            )
+        manifest = build_manifest(metadata, contract, inputs, review, notes)
+        expected = {key: metadata[key] for key in EXPECTED_FIELDS if key in metadata}
+        expected.update(
+            review_evidence_sha256=sha256(review.read_bytes()),
+            release_notes_sha256=sha256(notes.read_bytes()),
+        )
+        validate_manifest(
+            manifest,
+            contract,
+            expected,
+            run_attempt=attempt,
+            jobs=jobs,
+            artifact_api=observations,
+            observed_files=observed,
+            declared_package_hashes=declared,
+        )
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_bytes(serialize_manifest(manifest))
+
+
+def main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("command", choices=("profile", "finalize"))
+    parser.add_argument("--version", required=True)
+    parser.add_argument("--repo-root", type=Path)
+    parser.add_argument("--output", type=Path)
+    args = parser.parse_args()
+    contract = configured_contract(args.version)
+    if args.command == "profile":
+        enabled = "promotion" in contract
+        print("promotion_enabled=" + str(enabled).lower())
+        if enabled:
+            profile = candidate_profile(contract)
+            print(
+                "qualification_profile="
+                + contract["promotion"]["qualification_profile"]
+            )
+            for job in profile["required_jobs"]:
+                print(job + "=true")
+            for schema, value in profile["evidence_schemas"].items():
+                print(schema.replace("-", "_") + "=" + value)
+    else:
+        finalize_candidate(args.repo_root, args.version, args.output)
+
+
+if __name__ == "__main__":
+    main()

@@ -105,11 +105,13 @@ def _payload(path: Path, source_sha: str) -> dict[str, dict[str, str]]:
             raise CrossFormatEvidenceError(f"invalid {kind} payload entry")
         if (
             kind == "wheel"
-            and re.fullmatch(r"gwexpy-0\.2\.5-[^-]+-[^-]+-[^-]+\.whl", entry["name"])
+            and re.fullmatch(
+                rf"gwexpy-{re.escape(VERSION)}-[^-]+-[^-]+-[^-]+\.whl", entry["name"]
+            )
             is None
         ):
             raise CrossFormatEvidenceError("wrong wheel filename")
-        if kind == "sdist" and entry["name"] != "gwexpy-0.2.5.tar.gz":
+        if kind == "sdist" and entry["name"] != f"gwexpy-{VERSION}.tar.gz":
             raise CrossFormatEvidenceError("wrong sdist filename")
     return files
 
@@ -294,7 +296,9 @@ def main() -> None:
     agg.add_argument("--payload-manifest", type=Path, required=True)
     agg.add_argument("--reports-dir", type=Path, required=True)
     agg.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--version", default="0.2.5")
     args = parser.parse_args()
+    _select_version(args.version)
     try:
         if args.command == "test-nodes":
             print(
@@ -316,6 +320,36 @@ def main() -> None:
             )
     except CrossFormatEvidenceError as exc:
         parser.error(str(exc))
+
+
+def _promotion_module() -> Any:
+    import importlib.util
+
+    path = Path(__file__).with_name("release_promotion.py")
+    spec = importlib.util.spec_from_file_location("release_promotion_profile", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _select_version(version: str) -> None:
+    global VERSION, CELL_SCHEMA, AGGREGATE_SCHEMA, PAYLOAD_SCHEMA
+    if version == "0.2.5":
+        VERSION = version
+        CELL_SCHEMA = "gwexpy-v025-cross-format-io-cell-v1"
+        AGGREGATE_SCHEMA = "gwexpy-v025-cross-format-io-evidence-v1"
+        PAYLOAD_SCHEMA = "gwexpy-v025-release-payload-v1"
+        return
+    try:
+        module = _promotion_module()
+        contract = module.configured_contract(version)
+        profile = module.candidate_profile(contract)
+    except ValueError as exc:
+        raise CrossFormatEvidenceError(str(exc)) from exc
+    VERSION = version
+    PAYLOAD_SCHEMA = contract["payload_schema"]
+    CELL_SCHEMA = "gwexpy-cross-format-io-cell-v1"
+    AGGREGATE_SCHEMA = profile["evidence_schemas"]["gwexpy-cross-format-io-evidence-v1"]
 
 
 if __name__ == "__main__":

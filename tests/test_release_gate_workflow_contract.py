@@ -29,3 +29,39 @@ def test_setup_action_accepts_job_scoped_conda_packages() -> None:
 
     assert "conda-packages:" in action
     assert "${{ inputs.conda-packages }}" in action
+
+
+def test_candidate_lanes_consume_one_build_and_original_sidecars() -> None:
+    import yaml
+
+    jobs = yaml.safe_load(
+        (REPO_ROOT / ".github/workflows/publish-release.yml").read_text()
+    )["jobs"]
+    for name in ("smoke", "qualify", "diaggui_qualification", "cross_format_io"):
+        job = jobs[name]
+        assert {"verify", "build"} <= set(job["needs"])
+        downloads = [
+            step["with"]
+            for step in job["steps"]
+            if step.get("uses", "").startswith("actions/download-artifact@")
+        ]
+        assert any(
+            download.get("name")
+            == "release-payload-${{ needs.verify.outputs.source_sha }}"
+            for download in downloads
+        )
+        assert any(
+            download.get("pattern")
+            == "release-sidecar-*-${{ needs.verify.outputs.source_sha }}"
+            and download.get("merge-multiple") is True
+            for download in downloads
+        )
+        assert not any(
+            "python -m build" in step.get("run", "") for step in job["steps"]
+        )
+    finalizer = jobs["promotion_manifest"]
+    assert all(
+        "needs." + gate + ".result == 'success'" in finalizer["if"]
+        for gate in finalizer["needs"]
+    )
+    assert "historical_74_gate" not in finalizer["needs"]

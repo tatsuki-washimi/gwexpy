@@ -253,7 +253,10 @@ def _validate_human_approval(
     paths = approval["scope_paths"]
     comment_id = approval["comment_id"]
     if (
-        approval["approver_login"] != V024_APPROVER_LOGIN
+        approval["approver_login"]
+        != contract.get("promotion", {})
+        .get("source_approval", {})
+        .get("approver", V024_APPROVER_LOGIN)
         or approval["role"] != "release-owner"
         or approval["reviewed_commit"] != reviewed_commit
         or not isinstance(paths, list)
@@ -313,7 +316,7 @@ def validate_review_evidence(
     }
     data = _load_review_document(evidence_path)
     expected_top_level = {"schema", "entries"}
-    if expected_tag in STRICT_APPROVAL_TAGS:
+    if expected_tag in STRICT_APPROVAL_TAGS or "promotion" in contract:
         expected_top_level.add("human_approval")
     if (
         not isinstance(data, dict)
@@ -398,7 +401,7 @@ def validate_review_evidence(
         seen.add(lane)
     if seen != required_lanes:
         raise ReleaseReviewEvidenceError("review evidence has missing or extra lanes")
-    if expected_tag in STRICT_APPROVAL_TAGS:
+    if expected_tag in STRICT_APPROVAL_TAGS or "promotion" in contract:
         _validate_human_approval(
             Path(repo_root),
             data["human_approval"],

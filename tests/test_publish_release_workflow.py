@@ -465,7 +465,7 @@ def test_v022_through_v024_release_qualification_share_exact_nineteen_cells():
     matrix = workflow["jobs"]["qualify"]["strategy"]["matrix"]["include"]
 
     assert len(matrix) == 19
-    allowlist = "${{ needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' }}"
+    allowlist = "${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && (needs.verify.outputs.version == '0.2.2' || needs.verify.outputs.version == '0.2.3' || needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.qualify == 'true') }}"
     assert workflow["jobs"]["qualify"]["if"] == allowlist
     assert workflow["jobs"]["qualification_evidence"]["if"] == allowlist
     assert matrix == [
@@ -761,7 +761,7 @@ def test_v024_human_approval_verifier_uses_github_read_permission_and_canonical_
     assert '--review-evidence "$canonical_review_evidence"' in validate["run"]
     assert (
         verifier["if"]
-        == "steps.validate.outputs.version == '0.2.4' || steps.validate.outputs.version == '0.2.5'"
+        == "steps.validate.outputs.version == '0.2.4' || steps.validate.outputs.version == '0.2.5' || steps.profile.outputs.promotion_enabled == 'true'"
     )
     assert "verify_release_human_approval.py" in verifier["run"]
     assert verifier["env"]["GITHUB_TOKEN"] == "${{ secrets.GITHUB_TOKEN }}"
@@ -890,7 +890,7 @@ def test_v022_historical_evidence_does_not_require_v023_candidate_files():
     assert checkout["if"] == (
         "needs.verify.outputs.version == '0.2.3' || "
         "needs.verify.outputs.version == '0.2.4' || "
-        "needs.verify.outputs.version == '0.2.5'"
+        "needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.promotion_enabled == 'true'"
     )
     assert setup_python["if"] == checkout["if"]
 
@@ -1005,7 +1005,14 @@ def test_workflow_is_payload_only_locked_and_collects_same_run_evidence():
     assert "python -m build --no-isolation" in workflow
     assert "pip install --upgrade pip build twine" not in workflow
     assert "release-payload-${{ needs.verify.outputs.source_sha }}" in workflow
-    assert "release-sidecars-${{ needs.verify.outputs.source_sha }}" in workflow
+    assert (
+        "release-sidecar-distribution-sha256.json-${{ needs.verify.outputs.source_sha }}"
+        in workflow
+    )
+    assert (
+        "release-sidecar-LICENSE.sha256-${{ needs.verify.outputs.source_sha }}"
+        in workflow
+    )
     publish = workflow.split("\n  publish:\n", maxsplit=1)[1]
     assert "release-payload-${{ needs.verify.outputs.source_sha }}" in publish
     assert "release-sidecars-${{ needs.verify.outputs.source_sha }}" not in publish
@@ -1020,7 +1027,7 @@ def test_workflow_is_payload_only_locked_and_collects_same_run_evidence():
     assert 'print "artifact_prefix=" $2' in workflow
     assert "assemble_release_evidence.py" in workflow
     assert (
-        "name: ${{ needs.verify.outputs.artifact_prefix }}-"
+        "|| needs.verify.outputs.artifact_prefix }}-"
         "${{ needs.verify.outputs.source_sha }}"
     ) in workflow
     assert "audit-manifest-v0.1.13-sol-followup.yaml" not in workflow
@@ -1192,7 +1199,7 @@ def test_v025_cross_format_io_gate_is_candidate_bound_and_required_for_publish()
     }
     assert (
         jobs["cross_format_io"]["if"]
-        == "${{ needs.verify.outputs.version == '0.2.5' }}"
+        == "${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.verify.outputs.promotion_enabled != 'true')) && ((needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.cross_format_io == 'true')) }}"
     )
     install = next(
         step
@@ -1204,9 +1211,10 @@ def test_v025_cross_format_io_gate_is_candidate_bound_and_required_for_publish()
     assert '--source-sha "$SOURCE_SHA"' in install["run"]
     assert '"${artifact}[io,netcdf4,zarr]"' in install["run"]
     assert "test_tdms_invalid_increment_contract.py" in install["run"]
-    assert 'v025_cross_format_io_evidence.py" record' in install["run"]
+    assert 'v025_cross_format_io_evidence.py" --version' in install["run"]
+    assert " record" in install["run"]
     assert (
-        "v025_cross_format_io_evidence.py aggregate"
+        "v025_cross_format_io_evidence.py --version"
         in jobs["cross_format_io_evidence"]["steps"][-2]["run"]
     )
     assert "cross_format_io_evidence" in jobs["publish"]["needs"]
@@ -1216,3 +1224,214 @@ def test_v025_cross_format_io_gate_is_candidate_bound_and_required_for_publish()
         "diaggui_qualification_evidence",
         "cross_format_io_evidence",
     } <= set(jobs["publish"]["needs"])
+
+
+def test_candidate_graph_is_dispatch_only_and_finalizer_is_read_only():
+    import yaml
+
+    jobs = yaml.safe_load(read_workflow())["jobs"]
+    for name in (
+        "build",
+        "smoke",
+        "qualify",
+        "qualification_evidence",
+        "diaggui_qualification",
+        "diaggui_qualification_evidence",
+        "cross_format_io",
+        "cross_format_io_evidence",
+        "historical_74_gate",
+        "evidence",
+    ):
+        assert "github.event_name == 'workflow_dispatch'" in jobs[name]["if"]
+        assert "github.event_name == 'push'" in jobs[name]["if"]
+        assert "needs.verify.outputs.promotion_enabled != 'true'" in jobs[name]["if"]
+    finalizer = jobs["promotion_manifest"]
+    assert finalizer["permissions"] == {"contents": "read", "actions": "read"}
+    assert set(finalizer["needs"]) == {
+        "verify",
+        "build",
+        "smoke",
+        "qualify",
+        "qualification_evidence",
+        "diaggui_qualification",
+        "diaggui_qualification_evidence",
+        "cross_format_io",
+        "cross_format_io_evidence",
+        "evidence",
+    }
+    uploads = [
+        step
+        for step in finalizer["steps"]
+        if step.get("uses", "").startswith("actions/upload-artifact@")
+    ]
+    assert len(uploads) == 1
+    assert (
+        uploads[0]["with"]["name"]
+        == "release-promotion-manifest-${{ needs.verify.outputs.source_sha }}"
+    )
+    verify = jobs["verify"]
+    approval = next(
+        s
+        for s in verify["steps"]
+        if s["name"] == "Verify GitHub human approval for the reviewed source"
+    )
+    assert "promotion_enabled" in approval["if"]
+    assert jobs["build"]["needs"] == "verify"
+
+
+@pytest.mark.parametrize(
+    ("version", "promotion_enabled"),
+    [("0.2.4", "false"), ("0.2.5", "false"), ("99.88.77", "true")],
+)
+def test_tag_graph_preserves_historical_jobs_and_excludes_future_candidate(
+    version, promotion_enabled
+):
+    import yaml
+
+    jobs = yaml.safe_load(read_workflow())["jobs"]
+    for name in (
+        "build",
+        "smoke",
+        "qualify",
+        "qualification_evidence",
+        "diaggui_qualification",
+        "diaggui_qualification_evidence",
+        "cross_format_io",
+        "cross_format_io_evidence",
+        "historical_74_gate",
+        "evidence",
+    ):
+        expression = jobs[name]["if"].removeprefix("${{").removesuffix("}}").strip()
+        values = {
+            "github.event_name": "push",
+            "needs.verify.outputs.version": version,
+            "needs.verify.outputs.promotion_enabled": promotion_enabled,
+            "needs.verify.outputs.qualify": "true"
+            if promotion_enabled == "true"
+            else "",
+            "needs.verify.outputs.diaggui_qualification": "true"
+            if promotion_enabled == "true"
+            else "",
+            "needs.verify.outputs.cross_format_io": "true"
+            if promotion_enabled == "true"
+            else "",
+            "needs.verify.result": "success",
+            "needs.build.result": "success",
+            "needs.diaggui_qualification.result": "success",
+            "needs.cross_format_io.result": "success",
+        }
+        for key, value in sorted(values.items(), key=lambda item: -len(item[0])):
+            expression = expression.replace(key, repr(value))
+        expression = (
+            expression.replace("!cancelled()", "True")
+            .replace("&&", " and ")
+            .replace("||", " or ")
+        )
+        applies = eval(expression, {"__builtins__": {}}, {})
+        expected = promotion_enabled != "true" and not (
+            version == "0.2.4" and name == "cross_format_io"
+        )
+        assert applies is expected, (name, expression)
+
+
+def test_synthetic_future_compatibility_path_runs_junit_and_records_evidence(tmp_path):
+    import yaml
+
+    version = "99.88.77"
+    scripts = tmp_path / "source/scripts/ci"
+    scripts.mkdir(parents=True)
+    root = WORKFLOW.parents[2]
+    for name in (
+        "release_promotion.py",
+        "release_contract.py",
+        "qualification_evidence.py",
+    ):
+        shutil.copy2(root / "scripts/ci" / name, scripts / name)
+    registry = json.loads((root / "scripts/ci/release_contracts.json").read_text())
+    contract = dict(registry["releases"]["v0.2.5"])
+    contract.pop("review_base_sha", None)
+    contract["promotion"] = json.loads(
+        (root / "tests/fixtures/release/promotion-contract-v1.json").read_text()
+    )["promotion"]
+    registry["releases"]["v" + version] = contract
+    (scripts / "release_contracts.json").write_text(json.dumps(registry))
+    testcase = tmp_path / "test_synthetic.py"
+    testcase.write_text("def test_required_contract():\n    assert True\n")
+    junit = tmp_path / "report/pytest.xml"
+    jobs = yaml.safe_load(read_workflow())["jobs"]
+    compatibility = next(
+        step
+        for step in jobs["qualify"]["steps"]
+        if step["name"] == "Run installed candidate compatibility contracts"
+    )
+    case = (
+        compatibility["run"]
+        .split('case "$EXPECTED_VERSION" in', 1)[1]
+        .split("esac", 1)[0]
+    )
+    program = (
+        'runner=("'
+        + sys.executable
+        + '")\ntests=("'
+        + str(testcase)
+        + '")\ncase "$EXPECTED_VERSION" in'
+        + case
+        + "esac\n"
+    )
+    result = subprocess.run(
+        ["bash", "-c", program],
+        cwd=tmp_path,
+        env={**os.environ, "EXPECTED_VERSION": version, "JUNIT": str(junit)},
+        text=True,
+        capture_output=True,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert junit.is_file()
+    payload = tmp_path / "distribution-sha256.json"
+    payload.write_text(
+        json.dumps(
+            {
+                "schema": contract["payload_schema"],
+                "source_sha": "a" * 40,
+                "version": version,
+                "files": {
+                    "wheel": {
+                        "name": f"gwexpy-{version}-py3-none-any.whl",
+                        "sha256": "b" * 64,
+                    },
+                    "sdist": {"name": f"gwexpy-{version}.tar.gz", "sha256": "c" * 64},
+                },
+            }
+        )
+    )
+    record = tmp_path / "record.json"
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(scripts / "qualification_evidence.py"),
+            "record",
+            "--version",
+            version,
+            "--cell",
+            "install-ubuntu-3.11-wheel",
+            "--source-sha",
+            "a" * 40,
+            "--payload-manifest",
+            str(payload),
+            "--junit",
+            str(junit),
+            "--report",
+            str(record),
+        ],
+        text=True,
+        capture_output=True,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert json.loads(record.read_bytes())["testcase_count"] == 1
+    finalizer = jobs["promotion_manifest"]
+    upload = next(
+        step
+        for step in finalizer["steps"]
+        if step.get("uses", "").startswith("actions/upload-artifact@")
+    )
+    assert upload["with"]["path"].endswith("/promotion-manifest.json")
