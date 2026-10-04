@@ -1,6 +1,6 @@
 # リリース成果物を一度だけbuildして昇格する設計
 
-Status: 方針承認済み、spec review approved、ユーザーレビュー待ち、実装未着手。
+Status: architecture approved、指摘3点を反映してdiff review済み、実装計画作成中。
 
 対象読者は、GWexpyのリリース担当者とrelease workflowの保守担当者である。
 
@@ -51,11 +51,17 @@ qualification jobはcheckoutしたsourceをtest harnessとして使い、イン�
 
 すべてのrequired gateがsuccessし、各aggregate evidenceを検証した後にmanifest jobを実行する。
 
-manifest jobはcandidate artifactとsidecarを再hashし、既存の`distribution-sha256.json`の内容とも照合してからpromotion manifestを作る。
+manifest jobはbuild jobが既にuploadしたpayloadとsidecar、およびgate jobがuploadしたrequired evidence artifactをread-onlyで取得し、各fileを再hashする。
 
-manifest jobはpackage、sidecar、promotion manifest、およびmanifestが列挙するrequired gate evidenceをrun IDに結び付けてuploadする。
+manifest jobは既存の`distribution-sha256.json`の内容とも照合する。
 
-manifest jobはartifact IDを記録するためにcurrent runのActions artifact一覧をread-onlyで取得する。
+manifest jobが新規uploadするartifactはpromotion manifestだけとする。
+
+payload、sidecar、evidenceは元のcandidate artifact自体をpublication authorityとして保持し、別artifactとして再uploadしない。
+
+各Actions artifactはcandidate run内で一度だけuploadし、upload完了後は上書きまたは同名再uploadを行わない。
+
+manifest jobはcurrent runのActions artifact metadataをread-onlyで取得し、対象artifactのID、name、GitHub artifact digest、`size_in_bytes`、`run_id`を記録する。
 
 payloadとsidecarのretentionは現行の90日を維持する。
 
@@ -75,10 +81,16 @@ manifestには`schema=gwexpy-release-promotion-v1`を含め、少なくとも次
 - SとRのfull commit SHA、candidate run IDとattempt番号、event、dispatch ref、workflow ID、canonical workflow path、workflow ref、workflow SHA。
 - review evidenceのpathとSHA-256、release noteのpathとSHA-256。
 - release contractの識別子とSHA-256、およびversionに適用されるrequired gate一覧。
-- 各required jobの結論と、各required aggregate evidence artifactの名前およびSHA-256。
+- 各required jobの結論と、各required evidence artifactのID、name、GitHub artifact digest、`size_in_bytes`、`run_id`、展開後のevidence file名およびSHA-256。
 - sdistとwheelの名前、kind、byte size、SHA-256。
 - `distribution-sha256.json`と`LICENSE.sha256`の名前およびSHA-256。
-- candidate artifactのActions artifact nameとartifact ID。
+- payload artifactとsidecar artifactそれぞれのID、name、GitHub artifact digest、`size_in_bytes`、`run_id`。
+
+GitHub artifact digestはActions artifact archiveのdigestであり、sdistとwheelのdigestは展開後の各package fileのdigestとして別に記録する。
+
+promotion manifest artifact自身のIDは自己参照になるためmanifestに含めない。
+
+そのartifact nameは`release-promotion-manifest-<R SHA>`に固定し、tag-runはcandidate run IDとこのnameから一意に選んでmanifest SHA-256とartifact metadataを検証する。
 
 manifest jobはrequired gateが欠落、skipped、またはsuccess以外の場合にmanifestを作らない。
 
@@ -113,7 +125,11 @@ commentのissueはrelease contractで指定されたrelease tracking issueと一
 
 commentのauthorはrelease contractで指定されたrelease ownerと一致し、`updated_at`は`created_at`と同じでなければならない。
 
-commentはcandidate runの全required gateがsuccessした時刻より後に作成されていなければならない。
+candidate runはGitHub Actions API上で`status=completed`、`conclusion=success`でなければならない。
+
+commentの`created_at`はcandidate runの`completed_at`とpromotion manifest artifactの`created_at`の両方より後でなければならない。
+
+この条件によりrelease GOは、gate job成功だけでなくcandidate runとpromotion manifestの完成を確認した後にのみ作成できる。
 
 GO recordのissue番号はrelease contractでversionごとに指定する。
 
@@ -153,7 +169,7 @@ candidate manifest jobは`contents: read`と`actions: read`だけを持つ。
 
 promotion verification jobは`contents: read`、`actions: read`、およびGO record取得に必要な`issues: read`だけを持つ。
 
-promotion verification jobはtag recordのrun IDを使ってcandidate run metadataとそのrunに属するartifactを取得する。
+promotion verification jobはtag recordのrun IDを使ってcandidate run metadataとpromotion manifest artifactを取得する。
 
 candidate runは同じrepositoryの成功済み`workflow_dispatch`であり、dispatch refが`refs/heads/main`、source SHAがtag peel SHA、versionとtagがmanifestに記録された値と一致しなければならない。
 
@@ -163,13 +179,21 @@ GitHub Actions run APIの`workflow_id`と`path`は、release contractで固定�
 
 runの`run_attempt`とmanifestのattempt番号は1で一致しなければならない。
 
-promotion verification jobはcandidate runの全required job status、manifest hash、aggregate evidence hash、package hash、sidecar hash、release note hashを照合する。
+promotion verification jobはcandidate runの全required job status、manifest hash、evidence artifact metadataとhash、package hash、sidecar hash、release note hashを照合する。
+
+payload、sidecar、evidence artifactはmanifestに記録されたexact `artifact_id`を指定してdownloadする。
+
+download前にGitHub Actions API metadataの`run_id`、name、expired状態、GitHub artifact digest、`size_in_bytes`をmanifestと照合する。
+
+downloadした各fileもmanifestに記録されたSHA-256およびsizeと照合する。
+
+promotion manifest artifactはcandidate run内の固定nameから一つだけ選び、API metadataとraw-byte SHA-256を照合する。
 
 candidate runのartifactを別のrun、branch、tag、workflowから補完しない。
 
-GitHub Release jobとPyPI jobはそれぞれ`actions: read`を持ち、candidate run IDからartifactをdownloadしてmanifestに対してpackageとsidecarを再検証する。
+GitHub Release jobとPyPI jobはそれぞれ`actions: read`を持ち、manifestのexact payloadおよびsidecar `artifact_id`を指定してdownloadし、packageとsidecarを再検証する。
 
-GitHub Actionsのjob間でrunner filesystemを共有せず、各publisher jobが同じcandidate run IDを指定してartifactを取得する。
+GitHub Actionsのjob間でrunner filesystemを共有せず、各publisher jobがcandidate run内の同じartifact IDを指定して元artifactを取得する。
 
 すべてのidentity checkとhash checkが通った後に、GitHub Release jobが検証済みcandidate bytesを使ってReleaseを作成する。
 
@@ -177,13 +201,21 @@ GitHub Releaseにはsdist、wheel、`distribution-sha256.json`、`LICENSE.sha256
 
 Release notesはR内の検証済みrelease note bytesを使用し、そのSHA-256もmanifestとの一致を確認する。
 
-GitHub Release readbackはtag target、notes、添付asset名、各assetのbytesおよびSHA-256を検証する。
+GitHub Release readbackはtag targetとnotesを検証し、添付asset集合が次の5件と完全一致することを確認する。
+
+期待するassetはsdist、wheel、`distribution-sha256.json`、`LICENSE.sha256`、promotion manifestである。
+
+同名assetの重複、未知asset、余分なasset、欠落asset、またはbytesとSHA-256の不一致を拒否する。
 
 PyPI jobはGitHub Release readback成功後にのみ実行し、同じcandidate run IDから取得したsdistとwheelを再検証して公開する。
 
-PyPI readback jobはpublish job成功後に実行し、PyPI JSON APIからrelease versionのfilenameとSHA-256を取得する。
+PyPI readback jobはpublish job成功後に実行し、PyPI JSON APIからrelease versionのfile一覧とSHA-256を取得する。
 
-readback jobはAPIに記録されたURLからsdistとwheelのbytesをdownloadしてSHA-256を再計算し、promotion manifestおよびGitHub Release assetの値と照合する。
+通常closureではPyPI file集合がmanifestに記録されたsdistとwheelの2件と完全一致しなければならない。
+
+readback jobはAPIに記録されたURLから両fileのbytesをdownloadしてSHA-256を再計算し、promotion manifestおよびGitHub Release assetの値と照合する。
+
+余分なfile、未知のfilename、欠落file、またはhash不一致があれば通常closureをfailする。
 
 readback jobは一時的な404、5xx、network errorを最大15分間retryする。
 
@@ -231,11 +263,19 @@ contract testsは、全qualification jobがcandidate artifactの同じdistributi
 
 validatorのテストは、誤ったrepository、event、ref、workflow SHA、source SHA、version、run ID、manifest SHA、distribution SHA、missing artifact、expired artifact、欠落gate、失敗gate、skipped gate、GO不一致を拒否することを確認する。
 
+approval testsは、gate jobがsuccessしていてもmanifest job完了前のGO、およびcandidate run完了前のGOを拒否することを確認する。
+
+artifact testsは、manifestに記録されたIDと異なるartifact、別runのartifact、name、expired状態、GitHub artifact digest、sizeのいずれかが不一致のartifactを拒否することを確認する。
+
 workflow contract testsは、拒否ケースでGitHub Release作成とPyPI publishが実行されないことを確認する。
 
 workflow contract testsは、別workflow IDまたはpath、run attemptが1以外のcandidate runを拒否することも確認する。
 
-readback testsは、GitHub Release assetとPyPI API metadataおよびdownloaded package bytesのSHA-256がpromotion manifest内のcandidate package SHA-256と一致することを確認する。
+readback testsは、GitHub Release asset集合が期待する5件と完全一致し、余分なassetを拒否することを確認する。
+
+readback testsは通常closureのPyPI file集合がsdistとwheelの2件だけであることを確認し、余分なfileまたは欠落fileを拒否する。
+
+PyPI API metadataとdownloaded package bytesのSHA-256は、promotion manifest内のcandidate package SHA-256と一致しなければならない。
 
 権限contract testsは、promotion verificationとpublisher jobsがcross-run artifact取得に必要な`actions: read`だけを持ち、GitHub Releaseの作成とPyPI OIDC publishが別jobに分離されていることを確認する。
 
@@ -243,7 +283,7 @@ readback testsは、GitHub Release assetとPyPI API metadataおよびdownloaded 
 
 ## 完了条件
 
-promotion manifest、annotated tag、GitHub Release、PyPI metadata、PyPI downloaded bytesの各readbackが同じR、candidate run ID、sdist SHA-256、wheel SHA-256に結び付く。
+promotion manifest、annotated tag、GitHub Release、PyPI metadata、PyPI downloaded bytesの各readbackが同じR、candidate run ID、exact payload/sidecar artifact ID、sdist SHA-256、wheel SHA-256に結び付く。
 
 tag-runはcandidate artifactを取得して公開し、package buildを実行しない。
 
