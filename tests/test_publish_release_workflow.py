@@ -105,6 +105,101 @@ def test_releasing_doc_separates_enforced_controls_from_operational_rules():
     assert "not a guarantee the platform provides" in releasing[operational:]
 
 
+def test_releasing_documents_future_build_once_promotion_contract():
+    path = WORKFLOW.parents[2] / "RELEASING.md"
+    releasing = path.read_text(encoding="utf-8")
+    normalized = re.sub(r"\s+", " ", releasing)
+    assert (
+        "A promotion release applies only when a future release contract opts into "
+        "the promotion schema"
+    ) in normalized
+    assert "v0.2.5 is published and immutable" in normalized
+    assert "No future release version has been selected or contracted" in normalized
+    assert "The workflow does not add a speculative v0.2.6 contract" in normalized
+    assert "gh workflow run publish-release.yml --ref main" in releasing
+    assert "R='<40-character-SHA>'" in releasing
+    assert 'release_ref="$R"' in releasing
+    assert (
+        "The configured human approval must bind that exact `S`; it is separate "
+        "from the later release-owner GO"
+    ) in normalized
+    assert (
+        "`R` may differ from reviewed `S` only for the contract-allowed approval "
+        "and evidence updates and existing release-plan checkbox transitions"
+    ) in normalized
+    assert (
+        "freeze package source at exact `R` and the committed "
+        "`release_notes/vX.Y.Z.md` before candidate dispatch"
+    ) in normalized
+    assert "candidate run is completed with conclusion success" in normalized
+    assert "`run_attempt: 1`" in normalized
+    assert "promotion manifest artifact has been uploaded" in normalized
+    assert normalized.index("promotion manifest artifact has been uploaded") < (
+        normalized.index("issue the release-owner GO")
+    )
+    assert "All three conditions must hold" in normalized
+    assert "canonical `promotion-manifest.json` bytes" in normalized
+    assert (
+        "GitHub artifact ZIP's API digest is a separate artifact-metadata check"
+        in normalized
+    )
+
+    go_record = "\n".join(
+        [
+            "GWEXPY-RELEASE-GO-v1",
+            "version=<vX.Y.Z>",
+            "source_sha=<R-full-SHA>",
+            "candidate_run_id=<run-id>",
+            "promotion_manifest_sha256=<promotion-manifest-SHA-256>",
+            "sdist_sha256=<sdist-SHA-256>",
+            "wheel_sha256=<wheel-SHA-256>",
+            "decision=GO",
+        ]
+    )
+    tag_record = "\n".join(
+        [
+            "GWEXPY-PROMOTION-v1",
+            "repository=tatsuki-washimi/gwexpy",
+            "tag=<vX.Y.Z>",
+            "source_sha=<R-full-SHA>",
+            "candidate_run_id=<run-id>",
+            "promotion_manifest_sha256=<promotion-manifest-SHA-256>",
+            "release_go_comment_id=<comment-id>",
+        ]
+    )
+    assert go_record in releasing
+    assert tag_record in releasing
+    assert 'git tag -a "$TAG" "$R" -F /tmp/promotion-tag.txt' in releasing
+    assert 'git push origin "refs/tags/$TAG"' in releasing
+    assert (
+        "promotion manifest by its artifact ID from the original candidate run "
+        "(attempt one)"
+    ) in normalized
+    assert (
+        "API metadata for every manifest-bound payload, sidecar, and gate-evidence "
+        "artifact"
+    ) in normalized
+
+    for required in (
+        "manifest-bound payload and sidecars by their exact artifact IDs from that "
+        "same candidate run",
+        "without rebuilding",
+        "check the exact tag and target `R`, committed release notes, exact five "
+        "assets, and downloaded bytes",
+        "the manifest's sdist filename, wheel filename",
+        "`distribution-sha256.json`",
+        "`LICENSE.sha256`",
+        "`promotion-manifest.json`",
+        "Release is idempotent only when its target, notes, exact assets, and bytes "
+        "all match",
+        "exactly two PyPI files",
+        "without a publishing credential",
+        "bounded retry window",
+        "identity or hash mismatch fails immediately",
+    ):
+        assert required in normalized
+
+
 def test_tag_push_creates_verified_github_release_before_pypi_but_dispatch_stays_dry_run():
     workflow = read_workflow()
     jobs = workflow.split("\njobs:\n", maxsplit=1)[1]

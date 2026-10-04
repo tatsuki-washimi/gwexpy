@@ -1241,6 +1241,8 @@ def test_publisher_download_is_rehashed_against_exact_manifest_files(
         "retention",
         "digest",
         "skipped",
+        "missing_gate",
+        "failed_gate",
         "rerun",
         "duplicate",
         "schema",
@@ -1290,6 +1292,10 @@ def test_finalizer_reads_original_ids_before_run_completion(
     }
     if mutation == "skipped":
         needs["cross_format_io"]["result"] = "skipped"
+    if mutation == "missing_gate":
+        del needs["cross_format_io"]
+    if mutation == "failed_gate":
+        needs["cross_format_io"]["result"] = "failure"
     monkeypatch.setenv("GATE_RESULTS", json.dumps(needs))
     prefixes = {
         "verify": "Verify immutable release source",
