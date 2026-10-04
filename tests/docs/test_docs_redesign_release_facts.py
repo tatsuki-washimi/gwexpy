@@ -7,6 +7,7 @@ import importlib.util
 import io
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -253,7 +254,7 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
     )
     assert "Cold timing cannot replace valid live-process PSS" in release_plan_text
     checkboxes = re.findall(r"^- \[([ xX])\]", release_plan, re.MULTILINE)
-    assert checkboxes and set(checkboxes) == {" "}
+    assert checkboxes
 
     validator_path = REPO_ROOT / "scripts/validate_release.py"
     spec = importlib.util.spec_from_file_location(
@@ -267,7 +268,35 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
         REPO_ROOT
         / "docs/developers/plans/manifests/audit-manifest-v0.2.5-release-readiness.yaml"
     )
-    assert readiness.read_bytes() == validator.V025_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER
+    readiness_bytes = readiness.read_bytes()
+    if readiness_bytes == validator.V025_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER:
+        # Source S must remain an exact empty-evidence placeholder with no
+        # completed release gates.
+        assert set(checkboxes) == {" "}
+    else:
+        # An evidence-filled descendant R is accepted only through the official
+        # validator, which binds its evidence and permits only S-to-R checkbox
+        # transitions on this plan.
+        source_sha = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, text=True
+        ).strip()
+        reviewed_commit = validator.validate_review_evidence(
+            REPO_ROOT,
+            readiness,
+            source_sha=source_sha,
+            expected_tag="v0.2.5",
+        )
+        source_plan = subprocess.check_output(
+            [
+                "git",
+                "show",
+                f"{reviewed_commit}:docs/developers/plans/20260927_v0.2.5_release_plan.md",
+            ],
+            cwd=REPO_ROOT,
+            text=True,
+        )
+        source_checkboxes = re.findall(r"^- \[([ xX])\]", source_plan, re.MULTILINE)
+        assert source_checkboxes and set(source_checkboxes) == {" "}
 
     assert "Three independent reviews—" in release_plan_text
     assert "fresh human approval bound to final `S`" in release_plan_text
