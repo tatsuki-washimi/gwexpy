@@ -44,14 +44,20 @@ def test_all_actions_are_full_sha_pinned_and_publish_job_is_minimal():
     assert uses
     assert all(re.search(r"@[0-9a-f]{40}$", action) for action in uses)
 
-    publish = workflow.split("\n  publish:\n", maxsplit=1)[1]
+    publish = workflow.split("\n  publish:\n", maxsplit=1)[1].split(
+        "\n  github_release_legacy:\n", maxsplit=1
+    )[0]
     publish_uses = re.findall(r"^\s*uses:\s*([^\s]+)$", publish, flags=re.MULTILINE)
     assert publish_uses == [
+        "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+        "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
+        "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
+        "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
         "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
         "pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33",
     ]
     assert "id-token: write" in publish
-    assert workflow.count("id-token: write") == 1
+    assert workflow.count("id-token: write") == 2
 
 
 def test_verify_separates_validator_and_source_trees_and_publish_requires_tag_push():
@@ -105,7 +111,13 @@ def test_tag_push_creates_verified_github_release_before_pypi_but_dispatch_stays
     release = jobs.split("\n  github_release:\n", maxsplit=1)[1].split(
         "\n  publish:\n", maxsplit=1
     )[0]
-    publish = jobs.split("\n  publish:\n", maxsplit=1)[1]
+    legacy = jobs.split("\n  github_release_legacy:\n", maxsplit=1)[1].split(
+        "\n  publish_legacy:\n", maxsplit=1
+    )[0]
+    publish = jobs.split("\n  publish:\n", maxsplit=1)[1].split(
+        "\n  github_release_legacy:\n", maxsplit=1
+    )[0]
+    legacy_publish = jobs.split("\n  publish_legacy:\n", maxsplit=1)[1]
 
     required_gates = {
         "verify",
@@ -118,8 +130,9 @@ def test_tag_push_creates_verified_github_release_before_pypi_but_dispatch_stays
         "historical_74_gate",
         "evidence",
     }
-    release_needs = release.split("    needs: ", maxsplit=1)[1].splitlines()[0]
-    assert all(name in release_needs for name in required_gates)
+    assert "needs: [verify, promotion_verify]" in release
+    legacy_needs = legacy.split("    needs: ", maxsplit=1)[1].splitlines()[0]
+    assert all(name in legacy_needs for name in required_gates)
     assert (
         "github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')"
         in release
@@ -127,21 +140,25 @@ def test_tag_push_creates_verified_github_release_before_pypi_but_dispatch_stays
     assert "contents: write" in release
     assert "EXPECTED_SOURCE_SHA" in release
     assert "refs/tags/$EXPECTED_TAG^{}" in release
-    assert "git cat-file -t" in release
+    assert "git cat-file -t" in legacy
     assert "gh release create" in release
     assert "--verify-tag" in release
     assert '--target "$EXPECTED_SOURCE_SHA"' in release
-    assert "gh api --paginate --slurp" in release
+    assert "gh api --paginate --slurp" in legacy
     assert "gh release download" in release
     assert "validate_github_release_readback" in release
     assert "validate_tag_identity" in release
     assert "release-readback.json" in release
     assert "distribution-sha256.json" in release
     assert "LICENSE.sha256" in release
-    assert "tools/gen_release_notes.py --version" in release
+    assert 'cp "release_notes/v$EXPECTED_VERSION.md"' in release
+    assert "tools/gen_release_notes.py --version" not in release
 
-    publish_needs = publish.split("    needs: ", maxsplit=1)[1].splitlines()[0]
-    assert "github_release" in publish_needs
+    assert "needs: [verify, promotion_verify, github_release]" in publish
+    legacy_publish_needs = legacy_publish.split("    needs: ", maxsplit=1)[
+        1
+    ].splitlines()[0]
+    assert "github_release_legacy" in legacy_publish_needs
     assert (
         "github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')"
         in publish
@@ -165,8 +182,19 @@ def test_tag_push_creates_verified_github_release_before_pypi_but_dispatch_stays
         "historical_74_gate",
         "evidence",
     }
-    assert set(parsed["jobs"]["github_release"]["needs"]) == exact_needs
-    assert set(parsed["jobs"]["publish"]["needs"]) == exact_needs | {"github_release"}
+    assert set(parsed["jobs"]["github_release"]["needs"]) == {
+        "verify",
+        "promotion_verify",
+    }
+    assert set(parsed["jobs"]["publish"]["needs"]) == {
+        "verify",
+        "promotion_verify",
+        "github_release",
+    }
+    assert set(parsed["jobs"]["github_release_legacy"]["needs"]) == exact_needs
+    assert set(parsed["jobs"]["publish_legacy"]["needs"]) == exact_needs | {
+        "github_release_legacy"
+    }
 
 
 def test_release_and_pypi_jobs_have_separate_least_permissions():
@@ -175,10 +203,15 @@ def test_release_and_pypi_jobs_have_separate_least_permissions():
     release = jobs.split("\n  github_release:\n", maxsplit=1)[1].split(
         "\n  publish:\n", maxsplit=1
     )[0]
-    publish = jobs.split("\n  publish:\n", maxsplit=1)[1]
+    publish = jobs.split("\n  publish:\n", maxsplit=1)[1].split(
+        "\n  github_release_legacy:\n", maxsplit=1
+    )[0]
     assert "    permissions:\n      contents: write" in release
     assert "id-token: write" not in release
-    assert "    permissions:\n      contents: read\n      id-token: write" in publish
+    assert (
+        "    permissions:\n      contents: read\n      actions: read\n      id-token: write"
+        in publish
+    )
     assert "contents: write" not in publish
 
 
@@ -192,6 +225,17 @@ def _load_release_readback_validator():
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
+
+
+def test_existing_release_lookup_requires_one_well_formed_exact_tag():
+    validator = _load_release_readback_validator()
+    release = {"id": 12, "tag_name": "v0.2.6"}
+    assert validator.find_release([[release]], "v0.2.6") == release
+    assert validator.find_release([[{"tag_name": "v0.2.5"}]], "v0.2.6") is None
+    with pytest.raises(validator.ReleaseReadbackError, match="multiple"):
+        validator.find_release([[release], [release]], "v0.2.6")
+    with pytest.raises(validator.ReleaseReadbackError, match="malformed"):
+        validator.find_release([[{"name": "missing tag name"}]], "v0.2.6")
 
 
 def test_release_readback_validator_accepts_only_exact_uploaded_same_run_assets(
@@ -208,6 +252,7 @@ def test_release_readback_validator_accepts_only_exact_uploaded_same_run_assets(
         payload / "gwexpy-0.2.5.tar.gz": b"sdist bytes",
         sidecars / "distribution-sha256.json": b'{"source_sha":"abc"}\n',
         sidecars / "LICENSE.sha256": b"license digest\n",
+        sidecars / "promotion-manifest.json": b'{"schema":"synthetic"}\n',
     }
     for source, data in source_files.items():
         source.write_bytes(data)
@@ -226,6 +271,7 @@ def test_release_readback_validator_accepts_only_exact_uploaded_same_run_assets(
         "id": 17,
         "tag_name": "v0.2.5",
         "name": "v0.2.5",
+        "target_commitish": "a" * 40,
         "draft": False,
         "prerelease": False,
         "body": "Generated CHANGELOG notes\n",
@@ -244,6 +290,7 @@ def test_release_readback_validator_accepts_only_exact_uploaded_same_run_assets(
 
     wrong_notes = dict(kwargs, release={**release, "body": "different notes"})
     wrong_tag = dict(kwargs, release={**release, "tag_name": "v0.2.4"})
+    wrong_target = dict(kwargs, release={**release, "target_commitish": "b" * 40})
     wrong_state = dict(
         kwargs,
         release={**release, "assets": [{**assets[0], "state": "starter"}, *assets[1:]]},
@@ -259,7 +306,14 @@ def test_release_readback_validator_accepts_only_exact_uploaded_same_run_assets(
         },
     )
     wrong_bytes = dict(kwargs)
-    for invalid in (wrong_notes, wrong_tag, wrong_state, wrong_size, wrong_digest):
+    for invalid in (
+        wrong_notes,
+        wrong_tag,
+        wrong_target,
+        wrong_state,
+        wrong_size,
+        wrong_digest,
+    ):
         with pytest.raises(validator.ReleaseReadbackError):
             validator.validate_release_readback(**invalid)
 
@@ -270,12 +324,33 @@ def test_release_readback_validator_accepts_only_exact_uploaded_same_run_assets(
     (downloaded / "gwexpy-0.2.5-py3-none-any.whl").write_bytes(b"wheel bytes")
     duplicate = dict(kwargs, release={**release, "assets": [*assets, assets[0]]})
     missing = dict(kwargs, release={**release, "assets": assets[:-1]})
+    extra = dict(
+        kwargs,
+        release={
+            **release,
+            "assets": [*assets, {**assets[0], "id": 99, "name": "unexpected.txt"}],
+        },
+    )
     with pytest.raises(validator.ReleaseReadbackError):
         validator.validate_release_readback(**duplicate)
     with pytest.raises(validator.ReleaseReadbackError):
         validator.validate_release_readback(**missing)
     with pytest.raises(validator.ReleaseReadbackError):
-        validator.validate_release_readback(**kwargs, existing_release=True)
+        validator.validate_release_readback(**extra)
+    validator.validate_release_readback(**kwargs, existing_release=True)
+    for conflict in (wrong_notes, wrong_target, duplicate):
+        with pytest.raises(validator.ReleaseReadbackError):
+            validator.validate_release_readback(**conflict, existing_release=True)
+
+    (sidecars / "promotion-manifest.json").unlink()
+    (downloaded / "promotion-manifest.json").unlink()
+    legacy_assets = [
+        asset for asset in assets if asset["name"] != "promotion-manifest.json"
+    ]
+    legacy_release = {**release, "assets": legacy_assets}
+    validator.validate_release_readback(
+        **{**kwargs, "release": legacy_release}, existing_release=True
+    )
 
 
 def test_release_readback_validator_rejects_conflict_api_errors_and_changed_annotated_tag():
@@ -305,6 +380,99 @@ def test_release_readback_validator_rejects_conflict_api_errors_and_changed_anno
                 expected_tag_object_sha="b" * 40,
                 expected_source_sha="a" * 40,
             )
+
+
+def test_promotion_tag_graph_verifies_candidate_before_release_and_uses_exact_ids():
+    import yaml
+
+    jobs = yaml.safe_load(read_workflow())["jobs"]
+    verification = jobs["promotion_verify"]
+    assert verification["if"] == (
+        "${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') "
+        "&& needs.verify.outputs.promotion_enabled == 'true' }}"
+    )
+    assert verification["permissions"] == {
+        "contents": "read",
+        "actions": "read",
+        "issues": "read",
+    }
+    assert "verify" in verification["needs"]
+    verify_run = "\n".join(step.get("run", "") for step in verification["steps"])
+    assert "release_promotion.py verify-tag" in verify_run
+    assert "verify_release_human_approval.py" in verify_run
+    promotion_source = (
+        WORKFLOW.parents[2] / "scripts/ci/release_promotion.py"
+    ).read_text()
+    assert "parse_promotion_tag" in promotion_source
+    assert "validate_candidate_run" in promotion_source
+    assert "verify_release_go" in promotion_source
+
+    release = jobs["github_release"]
+    assert "promotion_verify" in release["needs"]
+    assert not {
+        "build",
+        "smoke",
+        "qualify",
+        "qualification_evidence",
+        "diaggui_qualification_evidence",
+        "cross_format_io_evidence",
+        "historical_74_gate",
+        "evidence",
+    } & set(release["needs"])
+    release_downloads = [
+        step
+        for step in release["steps"]
+        if step.get("uses", "").startswith("actions/download-artifact@")
+    ]
+    assert len(release_downloads) == 4
+    assert all("artifact-ids" in step.get("with", {}) for step in release_downloads)
+    assert all("run-id" in step.get("with", {}) for step in release_downloads)
+
+    publish = jobs["publish"]
+    assert "promotion_verify" in publish["needs"]
+    publish_downloads = [
+        step
+        for step in publish["steps"]
+        if step.get("uses", "").startswith("actions/download-artifact@")
+    ]
+    assert len(publish_downloads) == 4
+    assert all("artifact-ids" in step.get("with", {}) for step in publish_downloads)
+    assert all("run-id" in step.get("with", {}) for step in publish_downloads)
+
+
+def test_promoted_release_uses_manifest_bound_committed_notes():
+    import yaml
+
+    release = yaml.safe_load(read_workflow())["jobs"]["github_release"]
+    notes_step = next(
+        step
+        for step in release["steps"]
+        if step.get("name")
+        == "Use committed notes and check for an existing exact Release"
+    )
+    run = notes_step["run"]
+    assert 'cp "release_notes/v$EXPECTED_VERSION.md"' in run
+    assert "gen_release_notes.py" not in run
+
+
+def test_tag_promotion_path_retains_legacy_historical_release_behavior():
+    import yaml
+
+    jobs = yaml.safe_load(read_workflow())["jobs"]
+    legacy = jobs["github_release_legacy"]
+    assert "promotion_enabled != 'true'" in legacy["if"]
+    assert {
+        "verify",
+        "build",
+        "smoke",
+        "qualify",
+        "qualification_evidence",
+        "diaggui_qualification_evidence",
+        "cross_format_io_evidence",
+        "historical_74_gate",
+        "evidence",
+    } <= set(legacy["needs"])
+    assert "github_release_legacy" in jobs["publish_legacy"]["needs"]
 
 
 def test_releasing_documents_strict_v023_source_to_evidence_transition():
@@ -635,7 +803,7 @@ def test_v022_through_v024_release_qualification_share_exact_nineteen_cells():
     assert "v024_qualification_expected_skips.json" in qualify
     assert "qualification_evidence.py record" in qualify
     assert "needs.verify.outputs.version == '0.2.3'" in qualify
-    publish = text.split("\n  publish:\n", maxsplit=1)[1]
+    publish = text.split("\n  publish_legacy:\n", maxsplit=1)[1]
     assert "qualification_evidence" in publish.split("\n    if:", maxsplit=1)[0]
 
 
@@ -667,10 +835,10 @@ def test_qualification_evidence_switch_is_fail_closed_and_versioned():
     assert "continue-on-error" not in aggregate
     assert "always()" not in aggregate
 
-    publish = text.split("\n  publish:\n", maxsplit=1)[1]
+    publish = text.split("\n  publish_legacy:\n", maxsplit=1)[1]
     needs = publish.split("\n    if:", maxsplit=1)[0]
     assert (
-        "needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, cross_format_io_evidence, historical_74_gate, evidence, github_release]"
+        "needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, cross_format_io_evidence, historical_74_gate, evidence, github_release_legacy]"
         in needs
     )
 
@@ -694,7 +862,7 @@ def test_v024_diaggui_lane_is_four_cell_digest_bound_and_required_for_publish():
         "build",
         "diaggui_qualification",
     ]
-    assert "diaggui_qualification_evidence" in jobs["publish"]["needs"]
+    assert "diaggui_qualification_evidence" in jobs["publish_legacy"]["needs"]
     assert (
         "needs.diaggui_qualification.result == 'success'"
         in jobs["diaggui_qualification_evidence"]["if"]
@@ -1013,7 +1181,7 @@ def test_workflow_is_payload_only_locked_and_collects_same_run_evidence():
         "release-sidecar-LICENSE.sha256-${{ needs.verify.outputs.source_sha }}"
         in workflow
     )
-    publish = workflow.split("\n  publish:\n", maxsplit=1)[1]
+    publish = workflow.split("\n  publish_legacy:\n", maxsplit=1)[1]
     assert "release-payload-${{ needs.verify.outputs.source_sha }}" in publish
     assert "release-sidecars-${{ needs.verify.outputs.source_sha }}" not in publish
     assert 'find "$artifact_dir"' not in workflow
@@ -1217,13 +1385,13 @@ def test_v025_cross_format_io_gate_is_candidate_bound_and_required_for_publish()
         "v025_cross_format_io_evidence.py --version"
         in jobs["cross_format_io_evidence"]["steps"][-2]["run"]
     )
-    assert "cross_format_io_evidence" in jobs["publish"]["needs"]
+    assert "cross_format_io_evidence" in jobs["publish_legacy"]["needs"]
     assert {
         "smoke",
         "qualification_evidence",
         "diaggui_qualification_evidence",
         "cross_format_io_evidence",
-    } <= set(jobs["publish"]["needs"])
+    } <= set(jobs["publish_legacy"]["needs"])
 
 
 def test_candidate_graph_is_dispatch_only_and_finalizer_is_read_only():

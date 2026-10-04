@@ -84,7 +84,8 @@ def inputs():
         "status": "completed",
         "conclusion": "success",
         "run_attempt": 1,
-        "completed_at": "2026-10-05T10:04:00Z",
+        "run_started_at": "2026-10-05T10:00:00Z",
+        "updated_at": "2026-10-05T10:04:00Z",
     }
     raw = (json.dumps(manifest, sort_keys=True, indent=2) + "\n").encode("utf-8")
     archive = manifest_zip(raw)
@@ -113,6 +114,25 @@ def test_valid_comment_and_candidate_timing(inputs):
         comment_id=12345,
         comment=comment,
         candidate_run=run,
+        manifest_artifact=artifact,
+        manifest_archive=archive,
+    )
+    assert parsed["source_sha"] == "a" * 40
+
+
+def test_official_workflow_run_api_record_needs_no_completed_at(inputs):
+    module = load_module()
+    contract, manifest, comment, run, manifest_hash, artifact, raw, archive = inputs
+    assert "completed_at" not in run
+    api_run = dict(run)
+    parsed = module.verify_release_go(
+        contract=contract,
+        manifest=manifest,
+        manifest_raw=raw,
+        manifest_sha256=manifest_hash,
+        comment_id=12345,
+        comment=comment,
+        candidate_run=api_run,
         manifest_artifact=artifact,
         manifest_archive=archive,
     )
@@ -202,6 +222,8 @@ def test_go_rejects_contradictory_issue_number_and_url(inputs):
         "attempt",
         "attempt_float",
         "attempt_bool",
+        "updated_at_missing",
+        "updated_at_invalid",
         "in_progress",
         "null_conclusion",
         "manifest_hash",
@@ -232,6 +254,10 @@ def test_invalid_go_or_candidate_is_rejected(inputs, mutation):
         run["run_attempt"] = 1.0
     if mutation == "attempt_bool":
         run["run_attempt"] = True
+    if mutation == "updated_at_missing":
+        run.pop("updated_at")
+    if mutation == "updated_at_invalid":
+        run["updated_at"] = "not-a-time"
     if mutation == "in_progress":
         run["status"] = "in_progress"
     if mutation == "null_conclusion":
@@ -253,7 +279,7 @@ def test_invalid_go_or_candidate_is_rejected(inputs, mutation):
 
 
 @pytest.mark.parametrize(
-    ("completed_at", "artifact_created", "comment_at", "error"),
+    ("updated_at", "artifact_created", "comment_at", "error"),
     [
         (
             "2026-10-05T10:02:00Z",
@@ -282,11 +308,11 @@ def test_invalid_go_or_candidate_is_rejected(inputs, mutation):
     ],
 )
 def test_go_timestamp_must_be_strictly_after_each_boundary(
-    inputs, completed_at, artifact_created, comment_at, error
+    inputs, updated_at, artifact_created, comment_at, error
 ):
     module = load_module()
     contract, manifest, comment, run, digest, artifact, raw, archive = inputs
-    run["completed_at"] = completed_at
+    run["updated_at"] = updated_at
     artifact["created_at"] = artifact_created
     comment["created_at"] = comment_at
     comment["updated_at"] = comment_at

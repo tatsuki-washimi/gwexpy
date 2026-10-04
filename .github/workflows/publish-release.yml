@@ -1257,10 +1257,311 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
+  promotion_verify:
+    name: Verify exact candidate promotion before Release creation
+    needs: verify
+    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && needs.verify.outputs.promotion_enabled == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+      issues: read
+    outputs:
+      candidate_run_id: ${{ steps.verify.outputs.candidate_run_id }}
+      manifest_artifact_id: ${{ steps.verify.outputs.manifest_artifact_id }}
+      manifest_sha256: ${{ steps.verify.outputs.manifest_sha256 }}
+      payload_artifact_id: ${{ steps.verify.outputs.payload_artifact_id }}
+      distribution_sidecar_artifact_id: ${{ steps.verify.outputs.distribution_sidecar_artifact_id }}
+      license_sidecar_artifact_id: ${{ steps.verify.outputs.license_sidecar_artifact_id }}
+      sdist_sha256: ${{ steps.verify.outputs.sdist_sha256 }}
+      wheel_sha256: ${{ steps.verify.outputs.wheel_sha256 }}
+    steps:
+      - name: Check out exact release source and annotated tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.verify.outputs.source_sha }}
+          fetch-depth: 0
+          path: source
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+      - name: Read the exact annotated tag record
+        working-directory: source
+        env:
+          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          EXPECTED_TAG_OBJECT_SHA: ${{ needs.verify.outputs.tag_object_sha }}
+          TAG_BODY: ${{ runner.temp }}/promotion-tag-body.txt
+        run: |
+          git fetch --no-tags origin "refs/tags/$EXPECTED_TAG:refs/tags/$EXPECTED_TAG"
+          python - "$EXPECTED_TAG" "$EXPECTED_SOURCE_SHA" "$EXPECTED_TAG_OBJECT_SHA" "$TAG_BODY" <<'PY'
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          tag, expected_source, expected_object, output = sys.argv[1:]
+          object_sha = subprocess.check_output(
+              ["git", "rev-parse", f"refs/tags/{tag}"], text=True
+          ).strip()
+          if object_sha != expected_object:
+              raise SystemExit("annotated tag object changed after source verification")
+          raw = subprocess.check_output(["git", "cat-file", "tag", object_sha])
+          header, body = raw.split(b"\n\n", 1)
+          fields = dict(line.decode("utf-8").split(" ", 1) for line in header.splitlines())
+          if (
+              fields.get("type") != "commit"
+              or fields.get("object") != expected_source
+              or fields.get("tag") != tag
+          ):
+              raise SystemExit("annotated tag target or name differs from source verification")
+          Path(output).write_bytes(body)
+          PY
+      - name: Verify tag record, completed candidate, exact artifacts, GO, and evidence
+        id: verify
+        env:
+          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python source/scripts/ci/release_promotion.py verify-tag \
+            --repo-root source \
+            --tag "$EXPECTED_TAG" \
+            --source-sha "$EXPECTED_SOURCE_SHA" \
+            --tag-body "${{ runner.temp }}/promotion-tag-body.txt" \
+            --repository "$GITHUB_REPOSITORY" \
+            --output "${{ runner.temp }}/tag-promotion"
+      - name: Recheck exact configured S approval comment through GitHub
+        env:
+          EXPECTED_TAG: ${{ github.ref_name }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python source/scripts/ci/verify_release_human_approval.py \
+            --repo-root source \
+            --expected-tag "$EXPECTED_TAG" \
+            --repository "$GITHUB_REPOSITORY"
+
   github_release:
-    name: Create verified GitHub Release
+    name: Create or read back promoted GitHub Release
+    needs: [verify, promotion_verify]
+    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && needs.verify.outputs.promotion_enabled == 'true' && needs.verify.result == 'success' && needs.promotion_verify.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Check out verified release source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.verify.outputs.source_sha }}
+          fetch-depth: 0
+          path: source
+      - name: Download exact candidate artifacts by ID
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          artifact-ids: ${{ needs.promotion_verify.outputs.payload_artifact_id }}
+          run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ runner.temp }}/release-payload
+      - name: Download exact distribution sidecar by ID
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          artifact-ids: ${{ needs.promotion_verify.outputs.distribution_sidecar_artifact_id }}
+          run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ runner.temp }}/release-distribution-sidecar
+      - name: Download exact license sidecar by ID
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          artifact-ids: ${{ needs.promotion_verify.outputs.license_sidecar_artifact_id }}
+          run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ runner.temp }}/release-license-sidecar
+      - name: Download exact promotion manifest artifact by ID
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          artifact-ids: ${{ needs.promotion_verify.outputs.manifest_artifact_id }}
+          run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ runner.temp }}/release-manifest
+      - name: Rehash exact downloaded candidate bytes
+        working-directory: source
+        env:
+          MANIFEST: ${{ runner.temp }}/release-manifest/promotion-manifest.json
+        run: |
+          python scripts/ci/release_promotion.py validate-download --manifest "$MANIFEST" --role payload --directory "${{ runner.temp }}/release-payload"
+          python scripts/ci/release_promotion.py validate-download --manifest "$MANIFEST" --role sidecar:distribution-sha256.json --directory "${{ runner.temp }}/release-distribution-sidecar"
+          python scripts/ci/release_promotion.py validate-download --manifest "$MANIFEST" --role sidecar:LICENSE.sha256 --directory "${{ runner.temp }}/release-license-sidecar"
+          python scripts/ci/release_promotion.py validate-download --manifest "$MANIFEST" --role promotion-manifest --directory "${{ runner.temp }}/release-manifest" --manifest-sha256 "${{ needs.promotion_verify.outputs.manifest_sha256 }}"
+          mkdir "${{ runner.temp }}/release-sidecars"
+          cp "${{ runner.temp }}/release-distribution-sidecar/distribution-sha256.json" "${{ runner.temp }}/release-sidecars/"
+          cp "${{ runner.temp }}/release-license-sidecar/LICENSE.sha256" "${{ runner.temp }}/release-sidecars/"
+          cp "$MANIFEST" "${{ runner.temp }}/release-sidecars/promotion-manifest.json"
+      - name: Use committed notes and check for an existing exact Release
+        id: existing
+        working-directory: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          EXPECTED_VERSION: ${{ needs.verify.outputs.version }}
+          EXISTING_RELEASE_PATH: ${{ runner.temp }}/existing-release.json
+        run: |
+          cp "release_notes/v$EXPECTED_VERSION.md" "${{ runner.temp }}/release-notes.md"
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases" > "${{ runner.temp }}/releases-before.json"
+          python - "${{ runner.temp }}/releases-before.json" "$EXPECTED_TAG" <<'PY'
+          import json
+          import os
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, "scripts/ci")
+          from validate_github_release_readback import find_release
+
+          releases = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          match = find_release(releases, sys.argv[2])
+          if match is not None:
+              Path(os.environ["EXISTING_RELEASE_PATH"]).write_text(
+                  json.dumps(match, sort_keys=True), encoding="utf-8"
+              )
+              value = "true"
+          else:
+              value = "false"
+          with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as output:
+              output.write(f"existing={value}\n")
+          PY
+      - name: Create Release when none exists
+        if: steps.existing.outputs.existing != 'true'
+        working-directory: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+        run: |
+          gh release create "$EXPECTED_TAG" \
+            "${{ runner.temp }}/release-payload"/*.whl \
+            "${{ runner.temp }}/release-payload"/*.tar.gz \
+            "${{ runner.temp }}/release-sidecars/distribution-sha256.json" \
+            "${{ runner.temp }}/release-sidecars/LICENSE.sha256" \
+            "${{ runner.temp }}/release-sidecars/promotion-manifest.json" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$EXPECTED_TAG" \
+            --notes-file "${{ runner.temp }}/release-notes.md" \
+            --target "$EXPECTED_SOURCE_SHA" \
+            --verify-tag
+      - name: Verify exact five Release assets and annotated tag readback
+        working-directory: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          EXPECTED_TAG: ${{ github.ref_name }}
+          EXPECTED_SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+          EXISTING_RELEASE: ${{ steps.existing.outputs.existing }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$EXPECTED_TAG" > "${{ runner.temp }}/release-readback.json"
+          gh release download "$EXPECTED_TAG" --repo "$GITHUB_REPOSITORY" --dir "${{ runner.temp }}/release-download"
+          git ls-remote origin "refs/tags/$EXPECTED_TAG" "refs/tags/$EXPECTED_TAG^{}" > "${{ runner.temp }}/tag-readback.txt"
+          python - "${{ runner.temp }}/release-readback.json" "$EXPECTED_TAG" "$EXPECTED_SOURCE_SHA" "${{ runner.temp }}/release-payload" "${{ runner.temp }}/release-sidecars" "${{ runner.temp }}/release-download" "${{ runner.temp }}/release-notes.md" "${{ runner.temp }}/tag-readback.txt" "${{ needs.verify.outputs.tag_object_sha }}" "$EXISTING_RELEASE" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, "scripts/ci")
+          from validate_github_release_readback import validate_release_readback, validate_tag_identity
+
+          release = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          tag_refs = {}
+          for line in Path(sys.argv[8]).read_text(encoding="utf-8").splitlines():
+              object_sha, ref = line.split("\t", 1)
+              tag_refs[ref] = object_sha
+          tag = sys.argv[2]
+          validate_tag_identity(
+              tag_object_sha=tag_refs.get(f"refs/tags/{tag}", ""),
+              peeled_sha=tag_refs.get(f"refs/tags/{tag}^{{}}", ""),
+              expected_tag_object_sha=sys.argv[9],
+              expected_source_sha=sys.argv[3],
+          )
+          validate_release_readback(
+              release=release,
+              expected_tag=tag,
+              expected_source_sha=sys.argv[3],
+              notes=Path(sys.argv[7]).read_text(encoding="utf-8"),
+              payload_dir=Path(sys.argv[4]),
+              sidecars_dir=Path(sys.argv[5]),
+              downloaded_dir=Path(sys.argv[6]),
+              existing_release=sys.argv[10] == "true",
+          )
+          PY
+
+  publish:
+    name: Publish exact promoted payload to PyPI
+    needs: [verify, promotion_verify, github_release]
+    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && needs.verify.outputs.promotion_enabled == 'true' && needs.verify.result == 'success' && needs.promotion_verify.result == 'success' && needs.github_release.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: pypi
+      url: https://pypi.org/project/gwexpy/
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    steps:
+      - name: Check out release validator
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.verify.outputs.source_sha }}
+          path: source
+      - name: Download exact candidate payload by ID
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          artifact-ids: ${{ needs.promotion_verify.outputs.payload_artifact_id }}
+          run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ runner.temp }}/release-payload
+      - name: Download exact distribution sidecar by ID
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          artifact-ids: ${{ needs.promotion_verify.outputs.distribution_sidecar_artifact_id }}
+          run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ runner.temp }}/release-distribution-sidecar
+      - name: Download exact license sidecar by ID
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          artifact-ids: ${{ needs.promotion_verify.outputs.license_sidecar_artifact_id }}
+          run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ runner.temp }}/release-license-sidecar
+      - name: Download exact promotion manifest artifact by ID
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          artifact-ids: ${{ needs.promotion_verify.outputs.manifest_artifact_id }}
+          run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ runner.temp }}/release-manifest
+      - name: Rehash the same candidate files before PyPI upload
+        working-directory: source
+        env:
+          MANIFEST: ${{ runner.temp }}/release-manifest/promotion-manifest.json
+        run: |
+          python scripts/ci/release_promotion.py validate-download --manifest "$MANIFEST" --role payload --directory "${{ runner.temp }}/release-payload"
+          python scripts/ci/release_promotion.py validate-download --manifest "$MANIFEST" --role sidecar:distribution-sha256.json --directory "${{ runner.temp }}/release-distribution-sidecar"
+          python scripts/ci/release_promotion.py validate-download --manifest "$MANIFEST" --role sidecar:LICENSE.sha256 --directory "${{ runner.temp }}/release-license-sidecar"
+          python scripts/ci/release_promotion.py validate-download --manifest "$MANIFEST" --role promotion-manifest --directory "${{ runner.temp }}/release-manifest" --manifest-sha256 "${{ needs.promotion_verify.outputs.manifest_sha256 }}"
+      - name: Publish distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33
+        with:
+          packages-dir: ${{ runner.temp }}/release-payload
+
+  github_release_legacy:
+    name: Create verified GitHub Release for frozen legacy contract
     needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, cross_format_io_evidence, historical_74_gate, evidence]
-    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
+    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && needs.verify.outputs.promotion_enabled != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -1400,10 +1701,10 @@ jobs:
           )
           PY
 
-  publish:
-    name: Publish verified artifacts to PyPI
-    needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, cross_format_io_evidence, historical_74_gate, evidence, github_release]
-    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
+  publish_legacy:
+    name: Publish verified frozen legacy artifacts to PyPI
+    needs: [verify, build, smoke, qualify, qualification_evidence, diaggui_qualification_evidence, cross_format_io_evidence, historical_74_gate, evidence, github_release_legacy]
+    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && needs.verify.outputs.promotion_enabled != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:

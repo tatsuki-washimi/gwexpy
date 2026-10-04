@@ -195,6 +195,21 @@ def verify_release_go(
         raise ReleaseGoError(
             "raw manifest content does not match supplied manifest mapping"
         )
+    if any(
+        key in candidate_run
+        for key in ("workflow_id", "path", "event", "head_branch", "head_sha")
+    ):
+        try:
+            parser.validate_candidate_run(
+                manifest,
+                contract,
+                candidate_run,
+                repository=repository,
+                tag=f"v{manifest.get('version')}",
+                source_sha=manifest.get("release_sha"),
+            )
+        except parser.PromotionManifestError as exc:
+            raise ReleaseGoError(f"candidate run identity is invalid: {exc}") from exc
     try:
         parser.validate_manifest_artifact(
             manifest_artifact,
@@ -248,7 +263,10 @@ def verify_release_go(
         )
     if candidate_run.get("conclusion") not in (None, "success"):
         raise ReleaseGoError("candidate gate/run conclusion is not successful")
-    completed = _time(candidate_run.get("completed_at"), "candidate completed_at")
+    # The workflow-runs REST record has no completed_at field. For a run that
+    # GitHub reports as completed, updated_at is a server-observed timestamp
+    # at or after completion, so requiring GO after it is a conservative bound.
+    completed = _time(candidate_run.get("updated_at"), "candidate updated_at")
     artifact_created = _time(
         manifest_artifact.get("created_at"), "manifest artifact created_at"
     )

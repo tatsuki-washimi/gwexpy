@@ -715,6 +715,7 @@ def test_artifact_api_metadata_mismatches_are_checked_independently(promotion) -
     module.validate_artifact_records(
         manifest["artifacts"], [api_record], {101: record["files"]}, manifest["run_id"]
     )
+    module.validate_artifact_api_metadata(record, api_record, manifest["run_id"])
     for field, wrong in (
         ("artifact_id", 102),
         ("name", "wrong"),
@@ -781,6 +782,21 @@ def test_manifest_artifact_uses_archive_metadata_and_separate_manifest_hash(
         "run_id": manifest["run_id"],
         "expired": False,
     }
+    module.validate_manifest_artifact_metadata(
+        api, manifest["release_sha"], manifest["run_id"]
+    )
+    for field, value in (
+        ("name", "unexpected-name"),
+        ("run_id", manifest["run_id"] + 1),
+        ("expired", True),
+        ("artifact_id", 0),
+        ("digest", "malformed"),
+        ("size_in_bytes", 0),
+    ):
+        with pytest.raises(module.PromotionManifestError):
+            module.validate_manifest_artifact_metadata(
+                {**api, field: value}, manifest["release_sha"], manifest["run_id"]
+            )
     module.validate_manifest_artifact(
         api,
         archive_raw,
@@ -1019,6 +1035,203 @@ def test_archive_observation_binds_member_bytes_to_exact_archive(promotion):
         module.observe_archive(api, raw + b"x", 99)
     with pytest.raises(module.PromotionManifestError):
         module.observe_archive(api, raw, 100)
+
+
+def test_candidate_run_is_bound_to_tag_contract_and_manifest(promotion):
+    module, manifest, contract = promotion
+    run = {
+        "id": manifest["run_id"],
+        "workflow_id": manifest["workflow_id"],
+        "path": manifest["workflow_path"] + "@main",
+        "event": "workflow_dispatch",
+        "head_branch": "main",
+        "head_sha": manifest["workflow_sha"],
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+    }
+    module.validate_candidate_run(
+        manifest,
+        contract,
+        run,
+        repository=manifest["repository"],
+        tag=manifest["tag"],
+        source_sha=manifest["source_sha"],
+    )
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("id", 987655),
+        ("workflow_id", 123457),
+        ("path", ".github/workflows/other.yml"),
+        ("event", "push"),
+        ("head_branch", "release"),
+        ("head_sha", "f" * 40),
+        ("status", "in_progress"),
+        ("conclusion", "failure"),
+        ("run_attempt", 2),
+    ],
+)
+def test_candidate_run_rejects_wrong_api_identity_or_state(promotion, field, value):
+    module, manifest, contract = promotion
+    run = {
+        "id": manifest["run_id"],
+        "workflow_id": manifest["workflow_id"],
+        "path": manifest["workflow_path"] + "@main",
+        "event": "workflow_dispatch",
+        "head_branch": "main",
+        "head_sha": manifest["workflow_sha"],
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+    }
+    run[field] = value
+    with pytest.raises(module.PromotionManifestError):
+        module.validate_candidate_run(
+            manifest,
+            contract,
+            run,
+            repository=manifest["repository"],
+            tag=manifest["tag"],
+            source_sha=manifest["source_sha"],
+        )
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("repository", "other/repo"),
+        ("tag", "v0.2.4"),
+        ("source_sha", "f" * 40),
+    ],
+)
+def test_candidate_run_rejects_tag_and_source_mismatches(promotion, field, value):
+    module, manifest, contract = promotion
+    expected = {
+        "repository": manifest["repository"],
+        "tag": manifest["tag"],
+        "source_sha": manifest["source_sha"],
+    }
+    expected[field] = value
+    run = {
+        "id": manifest["run_id"],
+        "workflow_id": manifest["workflow_id"],
+        "path": manifest["workflow_path"] + "@main",
+        "event": "workflow_dispatch",
+        "head_branch": "main",
+        "head_sha": manifest["workflow_sha"],
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+    }
+    with pytest.raises(module.PromotionManifestError):
+        module.validate_candidate_run(manifest, contract, run, **expected)
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("workflow_id", 123457),
+        ("workflow_path", ".github/workflows/other.yml"),
+        ("event", "push"),
+        ("dispatch_ref", "f" * 40),
+        ("workflow_ref", "example/gwexpy/.github/workflows/other.yml@refs/heads/main"),
+        ("workflow_sha", "f" * 40),
+        ("source_sha", "f" * 40),
+        ("release_sha", "f" * 40),
+        ("version", "0.2.4"),
+        ("run_attempt", 2),
+    ],
+)
+def test_candidate_run_rejects_manifest_contract_or_tag_field_mismatch(
+    promotion, field, value
+):
+    module, manifest, contract = promotion
+    changed = {**manifest, field: value}
+    run = {
+        "id": manifest["run_id"],
+        "workflow_id": manifest["workflow_id"],
+        "path": manifest["workflow_path"] + "@main",
+        "event": "workflow_dispatch",
+        "head_branch": "main",
+        "head_sha": manifest["workflow_sha"],
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+    }
+    with pytest.raises(module.PromotionManifestError):
+        module.validate_candidate_run(
+            changed,
+            contract,
+            run,
+            repository=manifest["repository"],
+            tag=manifest["tag"],
+            source_sha=manifest["source_sha"],
+        )
+
+
+@pytest.mark.parametrize(
+    "field", ["artifact_id", "name", "run_id", "expired", "digest", "size_in_bytes"]
+)
+def test_tag_verification_rechecks_exact_artifact_api_metadata(promotion, field):
+    module, manifest, _ = promotion
+    artifact = manifest["artifacts"][0]
+    expected_api = {
+        key: artifact[key]
+        for key in (
+            "artifact_id",
+            "name",
+            "run_id",
+            "expired",
+            "digest",
+            "size_in_bytes",
+        )
+    }
+    wrong = dict(expected_api)
+    replacements = {
+        "artifact_id": artifact["artifact_id"] + 1,
+        "name": "wrong-name",
+        "run_id": artifact["run_id"] + 1,
+        "expired": True,
+        "digest": "sha256:" + "f" * 64,
+        "size_in_bytes": artifact["size_in_bytes"] + 1,
+    }
+    wrong[field] = replacements[field]
+    with pytest.raises(module.PromotionManifestError):
+        module.validate_artifact_records(
+            [artifact],
+            [wrong],
+            {artifact["artifact_id"]: artifact["files"]},
+            manifest["run_id"],
+        )
+
+
+def test_publisher_download_is_rehashed_against_exact_manifest_files(
+    promotion, tmp_path: Path
+) -> None:
+    module, manifest, _ = promotion
+    payload_dir = tmp_path / "payload"
+    payload_dir.mkdir()
+    payload_record = next(
+        artifact for artifact in manifest["artifacts"] if artifact["role"] == "payload"
+    )
+    for entry in payload_record["files"]:
+        path = payload_dir / entry["name"]
+        path.write_bytes(b"x" * entry["size_in_bytes"])
+        entry["sha256"] = module.sha256(path.read_bytes())
+    module.validate_downloaded_artifact(manifest, "payload", payload_dir)
+
+    first = payload_dir / payload_record["files"][0]["name"]
+    first.write_bytes(b"tampered")
+    with pytest.raises(module.PromotionManifestError, match="hashes"):
+        module.validate_downloaded_artifact(manifest, "payload", payload_dir)
+
+    first.write_bytes(b"x" * payload_record["files"][0]["size_in_bytes"])
+    (payload_dir / "extra.whl").write_bytes(b"unexpected")
+    with pytest.raises(module.PromotionManifestError, match="members"):
+        module.validate_downloaded_artifact(manifest, "payload", payload_dir)
 
 
 @pytest.mark.parametrize(

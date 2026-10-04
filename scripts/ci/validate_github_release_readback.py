@@ -20,6 +20,27 @@ class ReleaseReadbackError(ValueError):
     """Raised when a tag, release, or public asset fails readback checks."""
 
 
+def find_release(releases: Any, expected_tag: str) -> dict[str, Any] | None:
+    """Return the unique Release for a tag while rejecting malformed listings."""
+    if not isinstance(releases, list):
+        raise ReleaseReadbackError("GitHub Releases API readback is not a list")
+    flattened: list[Any] = []
+    for page in releases:
+        if isinstance(page, list):
+            flattened.extend(page)
+        else:
+            flattened.append(page)
+    if any(
+        not isinstance(release, dict) or not isinstance(release.get("tag_name"), str)
+        for release in flattened
+    ):
+        raise ReleaseReadbackError("GitHub Releases API contains a malformed entry")
+    matches = [release for release in flattened if release["tag_name"] == expected_tag]
+    if len(matches) > 1:
+        raise ReleaseReadbackError("multiple Releases exist for the requested tag")
+    return matches[0] if matches else None
+
+
 def validate_no_conflicting_release(releases: Any, expected_tag: str) -> None:
     """Reject malformed API results and every pre-existing Release for the tag."""
     if not isinstance(releases, list):
@@ -91,9 +112,7 @@ def validate_release_readback(
     downloaded_dir: Path,
     existing_release: bool = False,
 ) -> None:
-    """Check final Release metadata and byte identity of all four public assets."""
-    if existing_release:
-        raise ReleaseReadbackError("a Release already exists for the requested tag")
+    """Check final Release metadata and the exact historical or promoted asset set."""
     if not isinstance(release, dict):
         raise ReleaseReadbackError("GitHub Release API readback is not an object")
     release_id = release.get("id")
@@ -116,20 +135,34 @@ def validate_release_readback(
 
     payload = _regular_files(payload_dir)
     sidecars = _regular_files(sidecars_dir)
+    promotion_enabled = "promotion-manifest.json" in sidecars
+    expected_sidecars = {"distribution-sha256.json", "LICENSE.sha256"}
+    if promotion_enabled:
+        expected_sidecars.add("promotion-manifest.json")
     expected_names = {
         *(name for name in payload if name.endswith(".whl")),
         *(name for name in payload if name.endswith(".tar.gz")),
-        "distribution-sha256.json",
-        "LICENSE.sha256",
+        *expected_sidecars,
     }
-    if len(payload) != 2 or len(sidecars) != 2 or len(expected_names) != 4:
+    expected_count = 5 if promotion_enabled else 4
+    if (
+        len(payload) != 2
+        or set(sidecars) != expected_sidecars
+        or len(expected_names) != expected_count
+    ):
         raise ReleaseReadbackError("local same-run payload or sidecars are incomplete")
     if not FULL_SHA.fullmatch(expected_source_sha):
         raise ReleaseReadbackError("expected source SHA is malformed")
+    if promotion_enabled and release.get("target_commitish") != expected_source_sha:
+        raise ReleaseReadbackError(
+            "GitHub Release target does not match candidate source"
+        )
 
     assets = release.get("assets")
-    if not isinstance(assets, list) or len(assets) != 4:
-        raise ReleaseReadbackError("GitHub Release must contain exactly four assets")
+    if not isinstance(assets, list) or len(assets) != expected_count:
+        raise ReleaseReadbackError(
+            f"GitHub Release must contain exactly {expected_count} assets"
+        )
     by_name: dict[str, dict[str, Any]] = {}
     for asset in assets:
         if not isinstance(asset, dict):
@@ -167,6 +200,8 @@ def validate_release_readback(
             )
         expected_hash = _sha256(local)
         digest = asset.get("digest")
+        if promotion_enabled and digest != f"sha256:{expected_hash}":
+            raise ReleaseReadbackError(f"GitHub Release API digest mismatch: {name}")
         if digest is not None and digest != f"sha256:{expected_hash}":
             raise ReleaseReadbackError(f"GitHub Release API digest mismatch: {name}")
         if _sha256(downloaded[name]) != expected_hash:
