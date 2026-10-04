@@ -17,6 +17,11 @@ DTTXML payloads and concurrent SDB writes.
   axes, and units. Reject unsafe mixed-dtype conversion and inconsistent axes.
 - **HDF5 collections**: Manifest-backed reads reject missing, unreadable, or
   substituted payloads. Manifest-free discovery remains tolerant.
+- **HDF5 histogram collections**: `HistogramDict` and `HistogramList` still
+  write each entry as a group containing `values` and `edges`, even when
+  `layout="dataset"` is requested. A true dataset-per-entry histogram format
+  is not established; the group-based layout is the one covered for these
+  collections.
 - **TDMS and GL500 GBD files**: Reject missing or invalid waveform increments
   and malformed required GL500 header fields for the characterized firmware.
 - **WAV and FLAC metadata**: Retain available audio tags in provenance.
