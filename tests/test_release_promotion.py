@@ -104,6 +104,187 @@ def test_canonical_json_is_sorted_utf8_and_has_one_final_newline(promotion) -> N
     assert module.load_manifest(raw) == {"a": 1, "z": "é"}
 
 
+def test_release_go_and_tag_records_are_canonical(promotion) -> None:
+    module, _, _ = promotion
+    go = "\n".join(
+        [
+            "GWEXPY-RELEASE-GO-v1",
+            "version=v0.2.6",
+            f"source_sha={'a' * 40}",
+            "candidate_run_id=987654",
+            f"promotion_manifest_sha256={'b' * 64}",
+            f"sdist_sha256={'c' * 64}",
+            f"wheel_sha256={'d' * 64}",
+            "decision=GO",
+        ]
+    )
+    tag = "\n".join(
+        [
+            "GWEXPY-PROMOTION-v1",
+            "repository=tatsuki-washimi/gwexpy",
+            "tag=v0.2.6",
+            f"source_sha={'a' * 40}",
+            "candidate_run_id=987654",
+            f"promotion_manifest_sha256={'b' * 64}",
+            "release_go_comment_id=12345",
+        ]
+    )
+    assert module.parse_release_go(go)["source_sha"] == "a" * 40
+    parsed = module.parse_promotion_tag(tag)
+    module.validate_promotion_tag(
+        parsed,
+        annotated=True,
+        tag_name="v0.2.6",
+        target_sha="a" * 40,
+        repository="tatsuki-washimi/gwexpy",
+        candidate_run_id=987654,
+        manifest_sha256="b" * 64,
+        release_go_comment_id=12345,
+    )
+
+
+@pytest.mark.parametrize(
+    "suffix", ["\nextra=x", "\nversion=v0.2.6", "\nunknown=x", "\r\nlast"]
+)
+def test_release_go_rejects_noncanonical_bodies(promotion, suffix: str) -> None:
+    module, _, _ = promotion
+    body = "\n".join(
+        [
+            "GWEXPY-RELEASE-GO-v1",
+            "version=v0.2.6",
+            f"source_sha={'a' * 40}",
+            "candidate_run_id=987654",
+            f"promotion_manifest_sha256={'b' * 64}",
+            f"sdist_sha256={'c' * 64}",
+            f"wheel_sha256={'d' * 64}",
+            "decision=GO",
+        ]
+    )
+    with pytest.raises(module.PromotionManifestError):
+        module.parse_release_go(body + suffix)
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    ["missing", "extra", "duplicate", "unknown", "wrong_sha", "bad_id"],
+)
+def test_promotion_tag_parser_rejects_malformed_records(
+    promotion, mutation: str
+) -> None:
+    module, _, _ = promotion
+    lines = [
+        "GWEXPY-PROMOTION-v1",
+        "repository=tatsuki-washimi/gwexpy",
+        "tag=v0.2.6",
+        f"source_sha={'a' * 40}",
+        "candidate_run_id=987654",
+        f"promotion_manifest_sha256={'b' * 64}",
+        "release_go_comment_id=12345",
+    ]
+    if mutation == "missing":
+        lines.pop()
+    elif mutation == "extra":
+        lines.append("unexpected=x")
+    elif mutation == "duplicate":
+        lines.append("tag=v0.2.6")
+    elif mutation == "unknown":
+        lines[1] = "repo=tatsuki-washimi/gwexpy"
+    elif mutation == "wrong_sha":
+        lines[3] = f"source_sha={'A' * 40}"
+    else:
+        lines[4] = "candidate_run_id=01"
+    with pytest.raises(module.PromotionManifestError):
+        module.parse_promotion_tag("\n".join(lines))
+
+
+@pytest.mark.parametrize(
+    "observation",
+    [
+        {
+            "annotated": False,
+            "tag_name": "v0.2.6",
+            "target_sha": "a" * 40,
+            "repository": "tatsuki-washimi/gwexpy",
+            "candidate_run_id": 987654,
+            "manifest_sha256": "b" * 64,
+            "release_go_comment_id": 12345,
+        },
+        {
+            "annotated": True,
+            "tag_name": "v0.2.7",
+            "target_sha": "a" * 40,
+            "repository": "tatsuki-washimi/gwexpy",
+            "candidate_run_id": 987654,
+            "manifest_sha256": "b" * 64,
+            "release_go_comment_id": 12345,
+        },
+        {
+            "annotated": True,
+            "tag_name": "v0.2.6",
+            "target_sha": "b" * 40,
+            "repository": "tatsuki-washimi/gwexpy",
+            "candidate_run_id": 987654,
+            "manifest_sha256": "b" * 64,
+            "release_go_comment_id": 12345,
+        },
+        {
+            "annotated": True,
+            "tag_name": "v0.2.6",
+            "target_sha": "a" * 40,
+            "repository": "example/gwexpy",
+            "candidate_run_id": 987654,
+            "manifest_sha256": "b" * 64,
+            "release_go_comment_id": 12345,
+        },
+        {
+            "annotated": True,
+            "tag_name": "v0.2.6",
+            "target_sha": "a" * 40,
+            "repository": "tatsuki-washimi/gwexpy",
+            "candidate_run_id": 1,
+            "manifest_sha256": "b" * 64,
+            "release_go_comment_id": 12345,
+        },
+        {
+            "annotated": True,
+            "tag_name": "v0.2.6",
+            "target_sha": "a" * 40,
+            "repository": "tatsuki-washimi/gwexpy",
+            "candidate_run_id": 987654,
+            "manifest_sha256": "e" * 64,
+            "release_go_comment_id": 12345,
+        },
+        {
+            "annotated": True,
+            "tag_name": "v0.2.6",
+            "target_sha": "a" * 40,
+            "repository": "tatsuki-washimi/gwexpy",
+            "candidate_run_id": 987654,
+            "manifest_sha256": "b" * 64,
+            "release_go_comment_id": 1,
+        },
+    ],
+)
+def test_promotion_tag_requires_annotated_correct_identity_and_release_sha(
+    promotion, observation: dict[str, object]
+) -> None:
+    module, _, _ = promotion
+    body = "\n".join(
+        [
+            "GWEXPY-PROMOTION-v1",
+            "repository=tatsuki-washimi/gwexpy",
+            "tag=v0.2.6",
+            f"source_sha={'a' * 40}",
+            "candidate_run_id=987654",
+            f"promotion_manifest_sha256={'b' * 64}",
+            "release_go_comment_id=12345",
+        ]
+    )
+    record = module.parse_promotion_tag(body)
+    with pytest.raises(module.PromotionManifestError):
+        module.validate_promotion_tag(record, **observation)
+
+
 def test_load_manifest_enforces_canonicality_for_string_input(promotion) -> None:
     module, _, _ = promotion
     with pytest.raises(module.PromotionManifestError, match="canonical"):

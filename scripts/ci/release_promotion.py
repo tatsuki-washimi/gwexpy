@@ -94,6 +94,120 @@ def sha256(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+def _parse_fixed_record(
+    body: str | bytes, header: str, fields: Sequence[str]
+) -> dict[str, str]:
+    """Parse a fixed UTF-8/LF record, rejecting all noncanonical forms."""
+    if isinstance(body, bytes):
+        try:
+            body = body.decode("utf-8", errors="strict")
+        except UnicodeDecodeError as exc:
+            raise PromotionManifestError("record body is not valid UTF-8") from exc
+    if not isinstance(body, str):
+        raise PromotionManifestError("record body must be UTF-8 text")
+    try:
+        body.encode("utf-8", errors="strict")
+    except UnicodeEncodeError as exc:
+        raise PromotionManifestError("record body is not valid UTF-8") from exc
+    lines = body.split("\n")
+    if "\r" in body or len(lines) != len(fields) + 1 or lines[0] != header:
+        raise PromotionManifestError("record body is not canonical")
+    result: dict[str, str] = {}
+    for line, expected_key in zip(lines[1:], fields, strict=True):
+        if "=" not in line:
+            raise PromotionManifestError("record field is malformed")
+        key, value = line.split("=", 1)
+        if key != expected_key or key in result or not value:
+            raise PromotionManifestError("record field order or set is invalid")
+        result[key] = value
+    return result
+
+
+def _record_value(
+    record: Mapping[str, str], key: str, pattern: re.Pattern[str]
+) -> None:
+    if pattern.fullmatch(record[key]) is None:
+        raise PromotionManifestError(f"invalid {key} in record")
+
+
+def parse_release_go(body: str) -> dict[str, str]:
+    """Parse the canonical release-owner GO body."""
+    fields = (
+        "version",
+        "source_sha",
+        "candidate_run_id",
+        "promotion_manifest_sha256",
+        "sdist_sha256",
+        "wheel_sha256",
+        "decision",
+    )
+    record = _parse_fixed_record(body, "GWEXPY-RELEASE-GO-v1", fields)
+    if re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+", record["version"]) is None:
+        raise PromotionManifestError("invalid GO version")
+    _record_value(record, "source_sha", SHA40)
+    _record_value(record, "candidate_run_id", re.compile(r"[1-9][0-9]*"))
+    for key in ("promotion_manifest_sha256", "sdist_sha256", "wheel_sha256"):
+        _record_value(record, key, SHA256)
+    if record["decision"] != "GO":
+        raise PromotionManifestError("release decision must be GO")
+    return record
+
+
+def parse_promotion_tag(body: str) -> dict[str, str]:
+    """Parse the canonical annotated promotion tag body."""
+    fields = (
+        "repository",
+        "tag",
+        "source_sha",
+        "candidate_run_id",
+        "promotion_manifest_sha256",
+        "release_go_comment_id",
+    )
+    record = _parse_fixed_record(body, "GWEXPY-PROMOTION-v1", fields)
+    if record["repository"] != "tatsuki-washimi/gwexpy":
+        raise PromotionManifestError("promotion tag repository mismatch")
+    if re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+", record["tag"]) is None:
+        raise PromotionManifestError("invalid promotion tag name")
+    _record_value(record, "source_sha", SHA40)
+    _record_value(record, "candidate_run_id", re.compile(r"[1-9][0-9]*"))
+    _record_value(record, "promotion_manifest_sha256", SHA256)
+    _record_value(record, "release_go_comment_id", re.compile(r"[1-9][0-9]*"))
+    return record
+
+
+def validate_promotion_tag(
+    record: Mapping[str, str],
+    *,
+    annotated: bool,
+    tag_name: str,
+    target_sha: str,
+    repository: str,
+    candidate_run_id: int,
+    manifest_sha256: str,
+    release_go_comment_id: int,
+) -> None:
+    """Bind parsed tag metadata to an annotated object and its peeled commit."""
+    if not annotated:
+        raise PromotionManifestError("promotion requires an annotated tag")
+    if (
+        not _positive_int(candidate_run_id)
+        or not _positive_int(release_go_comment_id)
+        or not isinstance(manifest_sha256, str)
+        or SHA256.fullmatch(manifest_sha256) is None
+    ):
+        raise PromotionManifestError("invalid expected tag binding")
+    if (
+        record.get("tag") != tag_name
+        or record.get("repository") != repository
+        or record.get("source_sha") != target_sha
+        or record.get("candidate_run_id") != str(candidate_run_id)
+        or record.get("promotion_manifest_sha256") != manifest_sha256
+        or record.get("release_go_comment_id") != str(release_go_comment_id)
+    ):
+        raise PromotionManifestError("annotated tag binding or target mismatch")
+    _record_value(record, "source_sha", SHA40)
+
+
 def _positive_int(value: object) -> bool:
     return isinstance(value, int) and not isinstance(value, bool) and value > 0
 
