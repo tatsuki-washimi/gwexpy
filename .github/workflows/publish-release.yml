@@ -1724,3 +1724,56 @@ jobs:
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33
         with:
           packages-dir: ${{ runner.temp }}/release-payload
+
+  pypi_readback:
+    name: Read back exact published PyPI files
+    needs: [verify, promotion_verify, github_release, publish]
+    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && needs.verify.outputs.promotion_enabled == 'true' && needs.verify.result == 'success' && needs.promotion_verify.result == 'success' && needs.github_release.result == 'success' && needs.publish.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Check out readback validator
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.verify.outputs.source_sha }}
+          path: source
+      - name: Download exact candidate payload by ID
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          artifact-ids: ${{ needs.promotion_verify.outputs.payload_artifact_id }}
+          run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ runner.temp }}/release-payload
+      - name: Download exact promotion manifest artifact by ID
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          artifact-ids: ${{ needs.promotion_verify.outputs.manifest_artifact_id }}
+          run-id: ${{ needs.promotion_verify.outputs.candidate_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ runner.temp }}/release-manifest
+      - name: Download GitHub Release assets and verify exact PyPI readback
+        working-directory: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          EXPECTED_TAG: ${{ github.ref_name }}
+          MANIFEST: ${{ runner.temp }}/release-manifest/promotion-manifest.json
+          MANIFEST_SHA256: ${{ needs.promotion_verify.outputs.manifest_sha256 }}
+          PAYLOAD_DIR: ${{ runner.temp }}/release-payload
+          RELEASE_DIR: ${{ runner.temp }}/release-assets
+          OUTPUT_DIR: ${{ runner.temp }}/pypi-readback
+        run: |
+          gh release download "$EXPECTED_TAG" --repo "$GITHUB_REPOSITORY" --dir "$RELEASE_DIR"
+          python scripts/ci/release_promotion.py validate-download \
+            --manifest "$MANIFEST" \
+            --role promotion-manifest \
+            --directory "${{ runner.temp }}/release-manifest" \
+            --manifest-sha256 "$MANIFEST_SHA256"
+          python scripts/ci/validate_pypi_readback.py \
+            --manifest "$MANIFEST" \
+            --payload-dir "$PAYLOAD_DIR" \
+            --github-release-dir "$RELEASE_DIR" \
+            --output-dir "$OUTPUT_DIR"

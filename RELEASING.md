@@ -108,32 +108,52 @@ accepts the files individually. If that job fails after either file appears
 on PyPI, stop release acceptance and keep the decision on HOLD. A failed job
 is not proof that neither file was published.
 
-1. Record the failed strict run ID, source `R`, final tag and peeled SHA, and
-   the IDs and digests of its `release-payload-<R>` and
-   `release-sidecars-<R>` artifacts. Preserve those same-run artifacts,
+1. Record the failed PyPI publisher run ID separately from the original
+   `workflow_dispatch` candidate run ID. Record source `R`, the final tag and
+   peeled SHA. The failed publisher run does not create payload or sidecar
+   artifacts; do not attribute candidate files to that publisher run.
+2. From the original candidate run, record the promotion manifest SHA-256 and
+   artifact ID, name, and GitHub digest. Use the manifest's artifact records
+   to identify the `release-payload-<R>`,
+   `release-sidecar-distribution-sha256.json-<R>`, and
+   `release-sidecar-LICENSE.sha256-<R>` artifacts. Record the manifest-bound
+   payload and sidecar artifact IDs, names, GitHub digests, and sizes, plus
+   their run IDs; every one must belong to the original candidate run and
+   remain unexpired. Preserve those original candidate artifacts, the detached
    `distribution-sha256.json`, and all gate reports and aggregate evidence.
    Do not move or replace `R` or its tag.
-2. Read the PyPI file list for the exact version, including each filename and
+3. Read the PyPI file list for the exact version, including each filename and
    SHA-256 digest (`urls[].filename` and `urls[].digests.sha256` in the PyPI
    version JSON). Compare it with both `files.wheel` and `files.sdist` in the
-   failed run's detached `distribution-sha256.json`. Verify the manifest's
-   source SHA is `R` and its hashes match the preserved same-run payload.
-   Record the PyPI response and comparison as recovery evidence. Any unknown
-   file, mismatched hash, or uncertain artifact identity keeps the release on
-   HOLD for investigation.
-3. If exactly one distribution is present with the expected hash, require an
+   original candidate's detached `distribution-sha256.json`, including the
+   exact filenames and SHA-256 values. Verify the manifest's source SHA is `R`
+   and its hashes match the preserved original candidate payload. Record the
+   PyPI response and comparison as recovery evidence. Any unknown file,
+   mismatched hash, or uncertain artifact identity keeps the release on HOLD
+   for investigation.
+4. If exactly one distribution is present with the expected hash, require an
    explicit reviewed release-owner decision before any attempt to upload the
    missing distribution. A completion, if approved, may use only the missing
-   file from that failed run's verified payload; record the approval, upload
-   method, and resulting PyPI filename/hash readback. Keep acceptance on HOLD
-   until both expected files and hashes are present and the remaining release
-   checks are complete. If those bytes cannot be recovered and verified, keep
-   the version on HOLD and decide the next release path with the release owner.
+   file from that verified original candidate payload; record the approval,
+   upload method, and resulting PyPI filename/hash readback. Keep acceptance on
+   HOLD until both expected files and hashes are present and the remaining
+   release checks are complete. If those bytes cannot be recovered and
+   verified, keep the version on HOLD and decide the next release path with the
+   release owner.
 
-Do not blindly rerun the strict publish job: PyPI will not replace an existing
-filename, and a new run builds a new payload. Do not rebuild the missing file
-or use `skip-existing` to substitute a fresh distribution. Neither action
-proves that the published wheel and sdist came from the same qualified run.
+Normal successful closure requires exactly two PyPI files: the manifest's
+wheel and sdist with their exact filenames and SHA-256 values. This remains
+the closure rule after an approved partial-upload recovery; a missing final
+file or any extra file keeps acceptance on HOLD.
+
+Do not blindly rerun the strict publish job: the tag publisher reuses the same
+manifest-bound candidate payload bytes and does not build a new payload. PyPI
+will reject an already-published filename, so a rerun is not a substitute for
+the explicit missing-file recovery above. A new candidate dispatch builds a
+different payload and cannot repair a partial publication for this candidate.
+Do not rebuild the missing file or use `skip-existing` to substitute a fresh
+distribution. Neither action proves that the published wheel and sdist came
+from the same qualified run.
 
 ## Frozen source, payload, and evidence
 

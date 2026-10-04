@@ -215,6 +215,120 @@ def test_release_and_pypi_jobs_have_separate_least_permissions():
     assert "contents: write" not in publish
 
 
+def test_pypi_readback_runs_after_publish_with_read_only_access_and_exact_inputs():
+    import yaml
+
+    jobs = yaml.safe_load(read_workflow())["jobs"]
+    readback = jobs["pypi_readback"]
+
+    assert set(readback["needs"]) == {
+        "verify",
+        "promotion_verify",
+        "github_release",
+        "publish",
+    }
+    assert "needs.publish.result == 'success'" in readback["if"]
+    assert "needs.verify.outputs.promotion_enabled == 'true'" in readback["if"]
+    assert readback["permissions"] == {"contents": "read", "actions": "read"}
+    assert readback.get("environment") is None
+    assert readback.get("continue-on-error") is not True
+
+    steps = readback["steps"]
+    downloads = [
+        step
+        for step in steps
+        if step.get("uses", "").startswith("actions/download-artifact@")
+    ]
+    assert {step["with"]["artifact-ids"] for step in downloads} >= {
+        "${{ needs.promotion_verify.outputs.payload_artifact_id }}",
+        "${{ needs.promotion_verify.outputs.manifest_artifact_id }}",
+    }
+    release_download = next(
+        step for step in steps if "gh release download" in step.get("run", "")
+    )
+    assert "$EXPECTED_TAG" in release_download["run"]
+    validator_step = next(
+        step for step in steps if "validate_pypi_readback.py" in step.get("run", "")
+    )
+    assert "--manifest" in validator_step["run"]
+    assert "--github-release-dir" in validator_step["run"]
+    assert "--payload-dir" in validator_step["run"]
+    assert "--output-dir" in validator_step["run"]
+    assert validator_step.get("continue-on-error") is not True
+    assert "--role promotion-manifest" in validator_step["run"]
+    assert '--manifest-sha256 "$MANIFEST_SHA256"' in validator_step["run"]
+
+
+def test_pypi_readback_workflow_keeps_missing_or_extra_file_a_closure_failure():
+    import yaml
+
+    validator_path = WORKFLOW.parents[2] / "scripts/ci/validate_pypi_readback.py"
+    spec = importlib.util.spec_from_file_location(
+        "workflow_pypi_readback", validator_path
+    )
+    assert spec is not None and spec.loader is not None
+    validator = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = validator
+    spec.loader.exec_module(validator)
+
+    jobs = yaml.safe_load(read_workflow())["jobs"]
+    readback = jobs["pypi_readback"]
+    step = next(
+        item
+        for item in readback["steps"]
+        if "validate_pypi_readback.py" in item.get("run", "")
+    )
+    assert "validate_pypi_readback.py" in step["run"]
+    assert step.get("continue-on-error") is not True
+    assert "needs.publish.result == 'success'" in readback["if"]
+
+    version = "99.88.77"
+    payload = {
+        f"gwexpy-{version}-py3-none-any.whl": b"synthetic wheel",
+        f"gwexpy-{version}.tar.gz": b"synthetic sdist",
+    }
+    manifest = {
+        "schema": "gwexpy-release-promotion-manifest-v1",
+        "version": version,
+        "artifacts": [
+            {
+                "role": "payload",
+                "files": [
+                    {
+                        "name": name,
+                        "sha256": hashlib.sha256(data).hexdigest(),
+                        "size_in_bytes": len(data),
+                    }
+                    for name, data in payload.items()
+                ],
+            }
+        ],
+    }
+    metadata = {
+        "info": {"name": "gwexpy", "version": version},
+        "urls": [
+            {
+                "filename": name,
+                "digests": {"sha256": hashlib.sha256(data).hexdigest()},
+                "url": f"https://files.pythonhosted.org/packages/test/{name}",
+            }
+            for name, data in payload.items()
+        ],
+    }
+    for invalid_files in (
+        {name: data for name, data in payload.items() if name.endswith(".whl")},
+        {**payload, "gwexpy-99.88.77-extra.tar.gz": b"extra"},
+    ):
+        with pytest.raises(validator.PypiReadbackError):
+            validator.validate_pypi_readback(
+                metadata=metadata,
+                manifest=manifest,
+                payload_files=payload,
+                downloaded_files=invalid_files,
+                github_release_files=payload,
+            )
+
+
 def _load_release_readback_validator():
     path = (
         WORKFLOW.parents[2] / "scripts" / "ci" / "validate_github_release_readback.py"
@@ -1144,24 +1258,33 @@ def test_partial_pypi_upload_recovery_requires_same_run_bytes_and_review():
     for required in (
         "stop release acceptance",
         "decision on HOLD",
-        "failed strict run ID",
+        "failed PyPI publisher run ID separately from the original `workflow_dispatch` candidate run ID",
         "source `R`",
         "final tag and peeled SHA",
         "`release-payload-<R>`",
-        "`release-sidecars-<R>`",
+        "`release-sidecar-distribution-sha256.json-<R>`",
+        "`release-sidecar-LICENSE.sha256-<R>`",
+        "promotion manifest SHA-256 and artifact ID",
+        "manifest-bound payload and sidecar artifact IDs, names, GitHub digests, and sizes",
+        "failed publisher run does not create payload or sidecar artifacts",
         "all gate reports and aggregate evidence",
         "`urls[].filename` and `urls[].digests.sha256`",
         "`files.wheel` and `files.sdist`",
         "manifest's source SHA is `R`",
-        "preserved same-run payload",
+        "preserved original candidate payload",
         "explicit reviewed release-owner decision",
-        "only the missing file from that failed run's verified payload",
+        "only the missing file from that verified original candidate payload",
         "both expected files and hashes are present",
+        "Normal successful closure requires exactly two PyPI files",
         "Do not blindly rerun the strict publish job",
+        "the tag publisher reuses the same manifest-bound candidate payload bytes",
+        "does not build a new payload",
+        "A new candidate dispatch builds a different payload",
         "Do not rebuild the missing file",
         "`skip-existing`",
     ):
         assert required in normalized
+    assert "a new run builds a new payload" not in normalized
     assert normalized.index("Compare it with both") < normalized.index(
         "explicit reviewed release-owner decision"
     )
