@@ -15,6 +15,30 @@ CONTRACT_SCHEMA = "gwexpy-release-contracts-v1"
 RELEASE_TAG = re.compile(r"^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
 ARTIFACT_PREFIX = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
+PROMOTION_SCHEMA = "gwexpy-release-promotion-contract-v1"
+LOGIN = re.compile(r"^(?!-)(?!.*--)[A-Za-z0-9-]{1,39}(?<!-)$")
+IDENTIFIER = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+JOB_IDENTIFIER = re.compile(r"^[a-z0-9]+(?:[-_][a-z0-9]+)*$")
+SCHEMA_IDENTIFIER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+PROMOTION_PROFILE_ID = "gwexpy-standard-v1"
+PROMOTION_PROFILE_JOBS = (
+    "build",
+    "cross_format_io",
+    "cross_format_io_evidence",
+    "diaggui_qualification",
+    "diaggui_qualification_evidence",
+    "evidence",
+    "qualification_evidence",
+    "qualify",
+    "smoke",
+    "verify",
+)
+PROMOTION_PROFILE_EVIDENCE_IDS = (
+    "gwexpy-cross-format-io-evidence-v1",
+    "gwexpy-diaggui-qualification-evidence-v1",
+    "gwexpy-integration-evidence-v1",
+    "gwexpy-qualification-evidence-v1",
+)
 CONTRACT_KEYS = {
     "plan_path",
     "review_evidence_path",
@@ -63,6 +87,115 @@ def _sorted_unique(values: object) -> bool:
     )
 
 
+def _sorted_identifiers(values: object, pattern: re.Pattern[str] = IDENTIFIER) -> bool:
+    return (
+        isinstance(values, list)
+        and bool(values)
+        and all(isinstance(value, str) and pattern.fullmatch(value) for value in values)
+        and values == sorted(set(values), key=lambda item: item.encode("utf-8"))
+    )
+
+
+def _validate_promotion(tag: str, value: object) -> dict[str, Any]:
+    required = {
+        "schema",
+        "workflow_path",
+        "release_go",
+        "source_approval",
+        "artifact_naming",
+        "qualification_profile",
+        "qualification_profiles",
+        "evidence_schemas",
+        "required_jobs",
+        "evidence_schema_ids",
+    }
+    if not isinstance(value, dict) or set(value) != required:
+        raise ReleaseContractError(f"invalid promotion contract for {tag}")
+    if (
+        value["schema"] != PROMOTION_SCHEMA
+        or value["workflow_path"] != ".github/workflows/publish-release.yml"
+    ):
+        raise ReleaseContractError(
+            f"invalid promotion schema or workflow path for {tag}"
+        )
+    go = value["release_go"]
+    if (
+        not isinstance(go, dict)
+        or set(go) != {"issue_number", "owner_login"}
+        or isinstance(go["issue_number"], bool)
+        or not isinstance(go["issue_number"], int)
+        or go["issue_number"] <= 0
+        or not isinstance(go["owner_login"], str)
+        or LOGIN.fullmatch(go["owner_login"]) is None
+    ):
+        raise ReleaseContractError(f"invalid release GO authority for {tag}")
+    source = value["source_approval"]
+    if (
+        not isinstance(source, dict)
+        or set(source) != {"format", "approver"}
+        or not isinstance(source["format"], str)
+        or SCHEMA_IDENTIFIER.fullmatch(source["format"]) is None
+        or not isinstance(source["approver"], str)
+        or LOGIN.fullmatch(source["approver"]) is None
+    ):
+        raise ReleaseContractError(f"invalid source approval authority for {tag}")
+    naming = value["artifact_naming"]
+    if (
+        not isinstance(naming, dict)
+        or set(naming) != {"manifest_prefix", "payload_prefix", "sidecar_names"}
+        or any(
+            not isinstance(naming.get(key), str)
+            or not naming[key].endswith("-")
+            or ARTIFACT_PREFIX.fullmatch(naming[key][:-1]) is None
+            for key in ("manifest_prefix", "payload_prefix")
+        )
+        or naming["manifest_prefix"] == naming["payload_prefix"]
+        or not isinstance(naming["sidecar_names"], list)
+        or len(naming["sidecar_names"]) != 2
+        or not all(isinstance(name, str) for name in naming["sidecar_names"])
+        or set(naming["sidecar_names"])
+        != {"LICENSE.sha256", "distribution-sha256.json"}
+    ):
+        raise ReleaseContractError(f"invalid artifact naming rules for {tag}")
+    selected = value["qualification_profile"]
+    profiles = value["qualification_profiles"]
+    schemas = value["evidence_schemas"]
+    jobs = value["required_jobs"]
+    evidence_ids = value["evidence_schema_ids"]
+    if (
+        not isinstance(selected, str)
+        or not IDENTIFIER.fullmatch(selected)
+        or not isinstance(profiles, dict)
+        or set(profiles) != {selected}
+        or not isinstance(schemas, dict)
+        or not schemas
+        or not _sorted_identifiers(jobs, JOB_IDENTIFIER)
+        or not _sorted_identifiers(evidence_ids)
+    ):
+        raise ReleaseContractError(
+            f"invalid qualification or evidence profile for {tag}"
+        )
+    profile = profiles[selected]
+    if (
+        selected != PROMOTION_PROFILE_ID
+        or tuple(jobs) != PROMOTION_PROFILE_JOBS
+        or tuple(evidence_ids) != PROMOTION_PROFILE_EVIDENCE_IDS
+        or not isinstance(profile, dict)
+        or set(profile) != {"required_jobs", "evidence_schema_ids"}
+        or profile["required_jobs"] != jobs
+        or profile["evidence_schema_ids"] != evidence_ids
+        or set(schemas) != set(evidence_ids)
+        or any(
+            not isinstance(schema, str) or SCHEMA_IDENTIFIER.fullmatch(schema) is None
+            for schema in schemas.values()
+        )
+    ):
+        raise ReleaseContractError(
+            f"incomplete qualification or evidence mapping for {tag}"
+        )
+    return value
+
+
 def _protected_refs(values: object) -> bool:
     if (
         not isinstance(values, list)
@@ -98,6 +231,8 @@ def _validate_contract(tag: str, contract: object) -> dict[str, Any]:
     if not isinstance(contract, dict) or frozenset(contract) not in {
         frozenset(CONTRACT_KEYS),
         frozenset(CONTRACT_KEYS | {"review_base_sha"}),
+        frozenset(CONTRACT_KEYS | {"promotion"}),
+        frozenset(CONTRACT_KEYS | {"review_base_sha", "promotion"}),
     }:
         raise ReleaseContractError(f"invalid release contract for {tag}")
     review_base_sha = contract.get("review_base_sha")
@@ -140,6 +275,8 @@ def _validate_contract(tag: str, contract: object) -> dict[str, Any]:
         raise ReleaseContractError(f"S-to-R paths omit review evidence for {tag}")
     if not _protected_refs(contract["protected_refs"]):
         raise ReleaseContractError(f"invalid protected refs for {tag}")
+    if "promotion" in contract:
+        _validate_promotion(tag, contract["promotion"])
     return contract
 
 
