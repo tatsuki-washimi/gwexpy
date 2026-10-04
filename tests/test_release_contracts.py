@@ -783,6 +783,10 @@ def test_existing_release_contracts_remain_legacy_and_unchanged() -> None:
         lambda p: p.update(required_jobs=["build", "qualification", "evidence"]),
         lambda p: p.update(required_jobs=["build", "build", "evidence"]),
         lambda p: p.update(workflow_path=".github/workflows/other.yml"),
+        lambda p: p["artifact_naming"].update(
+            manifest_prefix="alternate-promotion-manifest-"
+        ),
+        lambda p: p["artifact_naming"].update(payload_prefix="candidate-payload-"),
         lambda p: p.update(qualification_profile="unknown-profile"),
         lambda p: p.update(evidence_schema_ids=[]),
         lambda p: p.update(evidence_schema_ids=["unknown-schema"]),

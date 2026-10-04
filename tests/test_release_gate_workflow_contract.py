@@ -52,7 +52,7 @@ def test_candidate_lanes_consume_one_build_and_original_sidecars() -> None:
         )
         assert any(
             download.get("pattern")
-            == "release-sidecar-*-${{ needs.verify.outputs.source_sha }}"
+            == "release-sidecar*-${{ needs.verify.outputs.source_sha }}"
             and download.get("merge-multiple") is True
             for download in downloads
         )

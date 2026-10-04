@@ -1446,6 +1446,57 @@ def test_workflow_is_payload_only_locked_and_collects_same_run_evidence():
     assert "v0113-integration-evidence-" not in workflow
 
 
+def test_legacy_candidates_keep_combined_sidecars_while_promotion_splits_them():
+    import yaml
+
+    jobs = yaml.safe_load(read_workflow())["jobs"]
+    build_uploads = [
+        step
+        for step in jobs["build"]["steps"]
+        if step.get("uses", "").startswith("actions/upload-artifact@")
+    ]
+    legacy = next(
+        step for step in build_uploads if step.get("name") == "Upload legacy sidecars"
+    )
+    assert legacy["if"] == "needs.verify.outputs.promotion_enabled != 'true'"
+    assert (
+        legacy["with"]["name"]
+        == "release-sidecars-${{ needs.verify.outputs.source_sha }}"
+    )
+    assert legacy["with"]["path"] == "source/release-sidecars"
+
+    promotion_uploads = [
+        step
+        for step in build_uploads
+        if step.get("name")
+        in {
+            "Upload promotion distribution sidecar",
+            "Upload promotion license sidecar",
+        }
+    ]
+    assert len(promotion_uploads) == 2
+    assert all(
+        step["if"] == "needs.verify.outputs.promotion_enabled == 'true'"
+        for step in promotion_uploads
+    )
+    assert {step["with"]["name"] for step in promotion_uploads} == {
+        "release-sidecar-distribution-sha256.json-${{ needs.verify.outputs.source_sha }}",
+        "release-sidecar-LICENSE.sha256-${{ needs.verify.outputs.source_sha }}",
+    }
+
+    sidecar_download_patterns = [
+        step["with"]["pattern"]
+        for job in jobs.values()
+        for step in job.get("steps", [])
+        if step.get("uses", "").startswith("actions/download-artifact@")
+        and "release-sidecar" in step.get("with", {}).get("pattern", "")
+    ]
+    assert sidecar_download_patterns
+    assert set(sidecar_download_patterns) == {
+        "release-sidecar*-${{ needs.verify.outputs.source_sha }}"
+    }
+
+
 def test_workflow_dispatch_inputs_are_preserved_for_manual_candidates():
     workflow = read_workflow()
     dispatch = workflow.split("  workflow_dispatch:\n", maxsplit=1)[1].split(

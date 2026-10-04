@@ -14,6 +14,8 @@ CONTRACT_PATH = Path(__file__).with_name("release_contracts.json")
 CONTRACT_SCHEMA = "gwexpy-release-contracts-v1"
 RELEASE_TAG = re.compile(r"^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
 ARTIFACT_PREFIX = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+PROMOTION_MANIFEST_PREFIX = "release-promotion-manifest-"
+PROMOTION_PAYLOAD_PREFIX = "release-payload-"
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 PROMOTION_SCHEMA = "gwexpy-release-promotion-contract-v1"
 LOGIN = re.compile(r"^(?!-)(?!.*--)[A-Za-z0-9-]{1,39}(?<!-)$")
@@ -143,13 +145,14 @@ def _validate_promotion(tag: str, value: object) -> dict[str, Any]:
     if (
         not isinstance(naming, dict)
         or set(naming) != {"manifest_prefix", "payload_prefix", "sidecar_names"}
+        or naming.get("manifest_prefix") != PROMOTION_MANIFEST_PREFIX
+        or naming.get("payload_prefix") != PROMOTION_PAYLOAD_PREFIX
         or any(
             not isinstance(naming.get(key), str)
             or not naming[key].endswith("-")
             or ARTIFACT_PREFIX.fullmatch(naming[key][:-1]) is None
             for key in ("manifest_prefix", "payload_prefix")
         )
-        or naming["manifest_prefix"] == naming["payload_prefix"]
         or not isinstance(naming["sidecar_names"], list)
         or len(naming["sidecar_names"]) != 2
         or not all(isinstance(name, str) for name in naming["sidecar_names"])

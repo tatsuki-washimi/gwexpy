@@ -398,6 +398,63 @@ def test_promotion_tag_parser_rejects_malformed_records(
         module.parse_promotion_tag("\n".join(lines))
 
 
+@pytest.mark.parametrize("separator", [b"\r\n", b"\r"])
+def test_verify_tag_cli_rejects_non_lf_tag_body_before_api_calls(
+    promotion, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, separator: bytes
+) -> None:
+    module, _, _ = promotion
+    tag_body = tmp_path / "tag-body.txt"
+    tag_body.write_bytes(
+        separator.join(
+            [
+                b"GWEXPY-PROMOTION-v1",
+                b"repository=tatsuki-washimi/gwexpy",
+                b"tag=v0.2.6",
+                b"source_sha=" + b"a" * 40,
+                b"candidate_run_id=987654",
+                b"promotion_manifest_sha256=" + b"b" * 64,
+                b"release_go_comment_id=12345",
+            ]
+        )
+    )
+    monkeypatch.setenv("GITHUB_TOKEN", "synthetic-token")
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            str(SCRIPT),
+            "verify-tag",
+            "--repo-root",
+            str(ROOT),
+            "--tag",
+            "v0.2.6",
+            "--source-sha",
+            "a" * 40,
+            "--tag-body",
+            str(tag_body),
+            "--repository",
+            "tatsuki-washimi/gwexpy",
+            "--output",
+            str(tmp_path / "output"),
+        ],
+    )
+    api_calls = []
+
+    def unexpected_api_call(*args, **kwargs):
+        api_calls.append((args, kwargs))
+        raise AssertionError("API call occurred before canonical tag parsing")
+
+    monkeypatch.setattr(module, "_api_json", unexpected_api_call)
+    monkeypatch.setattr(module, "_api_pages", unexpected_api_call)
+    monkeypatch.setattr(module, "_download_artifact_archive", unexpected_api_call)
+    monkeypatch.setattr(module, "configured_contract", lambda version: {})
+    monkeypatch.setattr(module, "candidate_profile", lambda contract: {})
+
+    with pytest.raises(SystemExit, match="record body is not canonical"):
+        module.main()
+    assert not api_calls
+
+
 @pytest.mark.parametrize(
     "observation",
     [

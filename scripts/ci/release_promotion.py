@@ -155,7 +155,7 @@ def parse_release_go(body: str) -> dict[str, str]:
     return record
 
 
-def parse_promotion_tag(body: str) -> dict[str, str]:
+def parse_promotion_tag(body: str | bytes) -> dict[str, str]:
     """Parse the canonical annotated promotion tag body."""
     fields = (
         "repository",
@@ -1155,7 +1155,7 @@ def verify_tag_candidate(
     source_root: Path,
     tag: str,
     source_sha: str,
-    tag_body: str,
+    tag_body: str | bytes,
     repository: str,
     token: str,
     output: Path,
@@ -1720,7 +1720,7 @@ def main() -> None:
                 source_root=args.repo_root,
                 tag=args.tag,
                 source_sha=args.source_sha,
-                tag_body=args.tag_body.read_text(encoding="utf-8"),
+                tag_body=args.tag_body.read_bytes(),
                 repository=args.repository,
                 token=token,
                 output=args.output,

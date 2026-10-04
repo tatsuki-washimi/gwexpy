@@ -194,7 +194,17 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
-      - name: Upload release sidecars separately
+      - name: Upload legacy sidecars
+        if: needs.verify.outputs.promotion_enabled != 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: release-sidecars-${{ needs.verify.outputs.source_sha }}
+          path: source/release-sidecars
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Upload promotion distribution sidecar
+        if: needs.verify.outputs.promotion_enabled == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: release-sidecar-distribution-sha256.json-${{ needs.verify.outputs.source_sha }}
@@ -202,7 +212,8 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
-      - name: Upload license sidecar separately
+      - name: Upload promotion license sidecar
+        if: needs.verify.outputs.promotion_enabled == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: release-sidecar-LICENSE.sha256-${{ needs.verify.outputs.source_sha }}
@@ -243,7 +254,7 @@ jobs:
       - name: Download detached sidecars
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
@@ -370,7 +381,7 @@ jobs:
       - name: Download detached sidecars
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
@@ -582,7 +593,7 @@ jobs:
       - name: Download detached sidecars
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
@@ -746,7 +757,7 @@ jobs:
       - name: Download detached candidate manifest
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
@@ -864,7 +875,7 @@ jobs:
         if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.diaggui_qualification == 'true')
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
@@ -932,7 +943,7 @@ jobs:
       - name: Download detached candidate manifest
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
@@ -1010,7 +1021,7 @@ jobs:
         if: (needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.cross_format_io == 'true')
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
@@ -1074,7 +1085,7 @@ jobs:
         if: needs.verify.outputs.version == '0.2.5'
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
@@ -1148,7 +1159,7 @@ jobs:
       - name: Download detached sidecars from this run
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
@@ -1608,7 +1619,7 @@ jobs:
       - name: Download same-run sidecars
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          pattern: release-sidecar-*-${{ needs.verify.outputs.source_sha }}
+          pattern: release-sidecar*-${{ needs.verify.outputs.source_sha }}
           merge-multiple: true
           path: ${{ runner.temp }}/release-sidecars
 
