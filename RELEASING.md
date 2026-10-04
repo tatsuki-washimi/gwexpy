@@ -117,6 +117,16 @@ sidecars by their exact artifact IDs from that same candidate run and rehashes
 those bytes. It promotes those same candidate bytes without rebuilding or
 rerunning candidate qualification.
 
+The candidate workflow uploads the payload, sidecars, aggregate gate evidence,
+and promotion manifest with `retention-days: 90`. The finalizer also requires
+each required aggregate evidence artifact's measured `expires_at - created_at`
+to be at least 90 days. At tag time, any required candidate artifact that is
+expired, unavailable, or not downloadable by its recorded ID fails promotion;
+an artifact from another run cannot replace it. If a required artifact is lost
+before tagging, complete a new candidate qualification and obtain a new
+exact-candidate GO bound to that candidate run, manifest, and distribution
+hashes before creating a tag.
+
 Before accepting the GitHub Release, check the exact tag and target `R`,
 committed release notes, exact five assets, and downloaded bytes. The asset set is
 exactly the manifest's sdist filename, wheel filename,
@@ -325,14 +335,15 @@ text) and emits a single allowlisted aggregate artifact whose name is selected f
 Repository retention policy may cap the configured duration, and run/artifact
 deletion or expiry invalidates the evidence.
 
-The measured `90 days - 5 minutes` threshold above applies to the integration
-aggregate. All release artifact uploads request `retention-days: 90`, but the
-current contract specifies no corresponding measured minimum for the payload,
-sidecars, individual cell reports, or qualification aggregate. Record each
-artifact's actual API timestamps and expiry separately; do not claim that the
-integration threshold was verified for every artifact. The source validator
-and evidence collectors do not read GitHub artifact expiry, so this acceptance
-check is an external API readback before publication.
+For legacy contract runs, the measured `90 days - 5 minutes` threshold above
+applies to the legacy integration aggregate. Legacy artifact uploads request
+`retention-days: 90`, but the legacy contracts specify no corresponding
+measured minimum for the payload, sidecars, individual cell reports, or
+qualification aggregate. Record each legacy artifact's actual API timestamps
+and expiry separately; do not claim that the integration threshold was
+verified for every legacy artifact. These historical legacy checks do not
+change the separate 90-day retention and tag-time availability requirements
+for future promotion contracts described above.
 
 For v0.2.2, the historical same-build qualification also used a 19-cell
 matrix. Every cell verified `distribution-sha256.json` before installation

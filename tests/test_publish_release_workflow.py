@@ -179,6 +179,32 @@ def test_releasing_documents_future_build_once_promotion_contract():
         "API metadata for every manifest-bound payload, sidecar, and gate-evidence "
         "artifact"
     ) in normalized
+    assert (
+        "candidate workflow uploads the payload, sidecars, aggregate gate evidence, "
+        "and promotion manifest with `retention-days: 90`"
+    ) in normalized
+    assert (
+        "each required aggregate evidence artifact's measured `expires_at - "
+        "created_at` to be at least 90 days"
+    ) in normalized
+    assert (
+        "any required candidate artifact that is expired, unavailable, or not "
+        "downloadable by its recorded ID fails promotion"
+    ) in normalized
+    assert "an artifact from another run cannot replace it" in normalized
+    assert (
+        "complete a new candidate qualification and obtain a new exact-candidate "
+        "GO bound to that candidate run, manifest, and distribution hashes"
+    ) in normalized
+    assert (
+        "For legacy contract runs, the measured `90 days - 5 minutes` threshold "
+        "above applies to the legacy integration aggregate"
+    ) in normalized
+    assert (
+        "These historical legacy checks do not change the separate 90-day "
+        "retention and tag-time availability requirements for future promotion "
+        "contracts"
+    ) in normalized
 
     for required in (
         "manifest-bound payload and sidecars by their exact artifact IDs from that "
