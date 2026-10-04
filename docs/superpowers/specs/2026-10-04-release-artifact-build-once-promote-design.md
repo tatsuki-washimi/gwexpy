@@ -1,6 +1,6 @@
 # リリース成果物を一度だけbuildして昇格する設計
 
-Status: architecture approved、指摘3点を反映してdiff review済み、実装計画作成中。
+Status: architecture approved、指摘3点を反映してdiff review済み、実装計画review済み、実装待ち。
 
 対象読者は、GWexpyのリリース担当者とrelease workflowの保守担当者である。
 
