@@ -1,0 +1,189 @@
+{
+  "artifacts": [
+    {
+      "artifact_id": 1001,
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000001",
+      "expired": false,
+      "files": [
+        {
+          "name": "gwexpy-0.2.5-py3-none-any.whl",
+          "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "size_in_bytes": 40
+        },
+        {
+          "name": "gwexpy-0.2.5.tar.gz",
+          "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "size_in_bytes": 60
+        }
+      ],
+      "name": "release-payload-3439fba41dcc644af12870d91bee794524098fb4",
+      "role": "payload",
+      "run_id": 987654,
+      "size_in_bytes": 100
+    },
+    {
+      "artifact_id": 1002,
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000002",
+      "expired": false,
+      "files": [
+        {
+          "name": "distribution-sha256.json.json",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000002",
+          "size_in_bytes": 200
+        }
+      ],
+      "name": "sidecar-distribution-sha256.json-3439fba41dcc644af12870d91bee794524098fb4",
+      "role": "sidecar:distribution-sha256.json",
+      "run_id": 987654,
+      "size_in_bytes": 200
+    },
+    {
+      "artifact_id": 1003,
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000003",
+      "expired": false,
+      "files": [
+        {
+          "name": "LICENSE.sha256.json",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000003",
+          "size_in_bytes": 300
+        }
+      ],
+      "name": "sidecar-LICENSE.sha256-3439fba41dcc644af12870d91bee794524098fb4",
+      "role": "sidecar:LICENSE.sha256",
+      "run_id": 987654,
+      "size_in_bytes": 300
+    },
+    {
+      "artifact_id": 1004,
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000004",
+      "expired": false,
+      "files": [
+        {
+          "name": "gwexpy-cross-format-io-evidence-v1.json",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000004",
+          "size_in_bytes": 400
+        }
+      ],
+      "name": "evidence-gwexpy-cross-format-io-evidence-v1-3439fba41dcc644af12870d91bee794524098fb4",
+      "role": "evidence:gwexpy-cross-format-io-evidence-v1",
+      "run_id": 987654,
+      "size_in_bytes": 400
+    },
+    {
+      "artifact_id": 1005,
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000005",
+      "expired": false,
+      "files": [
+        {
+          "name": "gwexpy-diaggui-qualification-evidence-v1.json",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000005",
+          "size_in_bytes": 500
+        }
+      ],
+      "name": "evidence-gwexpy-diaggui-qualification-evidence-v1-3439fba41dcc644af12870d91bee794524098fb4",
+      "role": "evidence:gwexpy-diaggui-qualification-evidence-v1",
+      "run_id": 987654,
+      "size_in_bytes": 500
+    },
+    {
+      "artifact_id": 1006,
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000006",
+      "expired": false,
+      "files": [
+        {
+          "name": "gwexpy-integration-evidence-v1.json",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000006",
+          "size_in_bytes": 600
+        }
+      ],
+      "name": "evidence-gwexpy-integration-evidence-v1-3439fba41dcc644af12870d91bee794524098fb4",
+      "role": "evidence:gwexpy-integration-evidence-v1",
+      "run_id": 987654,
+      "size_in_bytes": 600
+    },
+    {
+      "artifact_id": 1007,
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000007",
+      "expired": false,
+      "files": [
+        {
+          "name": "gwexpy-qualification-evidence-v1.json",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000007",
+          "size_in_bytes": 700
+        }
+      ],
+      "name": "evidence-gwexpy-qualification-evidence-v1-3439fba41dcc644af12870d91bee794524098fb4",
+      "role": "evidence:gwexpy-qualification-evidence-v1",
+      "run_id": 987654,
+      "size_in_bytes": 700
+    }
+  ],
+  "dispatch_ref": "3439fba41dcc644af12870d91bee794524098fb4",
+  "event": "workflow_dispatch",
+  "gates": [
+    {
+      "conclusion": "success",
+      "job": "build"
+    },
+    {
+      "conclusion": "success",
+      "job": "cross_format_io"
+    },
+    {
+      "conclusion": "success",
+      "job": "cross_format_io_evidence"
+    },
+    {
+      "conclusion": "success",
+      "job": "diaggui_qualification"
+    },
+    {
+      "conclusion": "success",
+      "job": "diaggui_qualification_evidence"
+    },
+    {
+      "conclusion": "success",
+      "job": "evidence"
+    },
+    {
+      "conclusion": "success",
+      "job": "qualification_evidence"
+    },
+    {
+      "conclusion": "success",
+      "job": "qualify"
+    },
+    {
+      "conclusion": "success",
+      "job": "smoke"
+    },
+    {
+      "conclusion": "success",
+      "job": "verify"
+    }
+  ],
+  "promotion_contract": {
+    "id": "gwexpy-release-promotion-contract-v1",
+    "sha256": "c6d71ed52e81736ee7cfbf8afbe6deea9e11a91a78a2b669e4d06f069f7cb3cd"
+  },
+  "release_notes": {
+    "path": "release_notes/v0.2.5.md",
+    "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  },
+  "release_sha": "3439fba41dcc644af12870d91bee794524098fb4",
+  "repository": "example/gwexpy",
+  "review_evidence": {
+    "path": "docs/developers/plans/manifests/audit-manifest-v0.2.5-release-readiness.yaml",
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "run_attempt": 1,
+  "run_id": 987654,
+  "schema": "gwexpy-release-promotion-manifest-v1",
+  "source_sha": "3439fba41dcc644af12870d91bee794524098fb4",
+  "tag": "v0.2.5",
+  "version": "0.2.5",
+  "workflow_id": 123456,
+  "workflow_path": ".github/workflows/publish-release.yml",
+  "workflow_ref": "example/gwexpy/.github/workflows/publish-release.yml@refs/heads/main",
+  "workflow_sha": "3439fba41dcc644af12870d91bee794524098fb4"
+}

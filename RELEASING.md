@@ -1,5 +1,154 @@
 # Releasing GWexpy
 
+## Current scope
+
+The only release workflow is `publish-release.yml`. Manual candidate runs must
+be dispatched from `main`, which the workflow enforces. The release contract
+in `scripts/ci/release_contracts.json` determines whether a version uses the
+historical release path or build-once promotion.
+
+v0.2.5 is published and immutable. No future release version has been selected
+or contracted. A promotion release applies only when a future release contract
+opts into the promotion schema. The workflow does not add a speculative
+v0.2.6 contract. Existing contract entries and their legacy behavior remain
+unchanged as release history.
+
+## Future build-once candidate and promotion procedure
+
+Use this procedure only after a real future release contract has selected the
+version, tracking issue, release owner, review evidence, approval rules, and
+qualification profile, and has opted into the promotion schema. Complete the
+configured independent reviews on one source commit `S`. The configured human
+approval must bind that exact `S`; it is separate from the later release-owner
+GO and cannot authorize publication.
+
+The contract's `S`-to-`R` allowlist is exact: `R` may differ from reviewed `S`
+only for the contract-allowed approval and evidence updates and existing
+release-plan checkbox transitions. Any other source change fails validation.
+After `S` approval, freeze package source at exact `R` and the committed
+`release_notes/vX.Y.Z.md` before candidate dispatch; the candidate builds that
+source, binds the notes digest in its manifest, and tag promotion uses the same
+committed notes.
+
+Dispatch the candidate from `main` with the exact full source SHA `R`, expected
+tag, and the review evidence path configured by that contract:
+
+```bash
+R='<40-character-SHA>'
+TAG='vX.Y.Z'
+REVIEW_EVIDENCE='path-from-the-selected-contract'
+gh workflow run publish-release.yml --ref main \
+  -f release_ref="$R" \
+  -f expected_tag="$TAG" \
+  -f review_evidence="$REVIEW_EVIDENCE"
+```
+
+The candidate `verify` job validates the configured `S` approval before build.
+The candidate run builds the distributions once, qualifies those bytes, and
+uploads a promotion manifest after every required gate succeeds. Wait until
+the candidate run is completed with conclusion success, with
+`run_attempt: 1`, and the promotion manifest artifact has been uploaded. All
+three conditions must hold before you issue the release-owner GO.
+
+The release owner posts the GO to the contract's tracking issue only after
+reviewing the completed candidate and manifest. Its exact body binds the
+version, source SHA, candidate run ID, promotion manifest SHA-256, and both
+distribution SHA-256 values. `promotion_manifest_sha256` is the SHA-256 of the
+canonical `promotion-manifest.json` bytes; the GitHub artifact ZIP's API digest
+is a separate artifact-metadata check:
+
+```text
+GWEXPY-RELEASE-GO-v1
+version=<vX.Y.Z>
+source_sha=<R-full-SHA>
+candidate_run_id=<run-id>
+promotion_manifest_sha256=<promotion-manifest-SHA-256>
+sdist_sha256=<sdist-SHA-256>
+wheel_sha256=<wheel-SHA-256>
+decision=GO
+```
+
+The GO comment must be authored by the configured release owner, remain
+unchanged after creation, and be timestamped after both candidate completion
+and manifest artifact upload. Preserve its comment ID.
+
+After GO, create an annotated tag targeting exactly `R`. Its message body must
+match the canonical record parsed by `scripts/ci/release_promotion.py`
+byte-for-byte in header, field names, order, and values:
+
+```text
+GWEXPY-PROMOTION-v1
+repository=tatsuki-washimi/gwexpy
+tag=<vX.Y.Z>
+source_sha=<R-full-SHA>
+candidate_run_id=<run-id>
+promotion_manifest_sha256=<promotion-manifest-SHA-256>
+release_go_comment_id=<comment-id>
+```
+
+After substituting the recorded values, create and push the annotated tag only
+after the GO has been accepted:
+
+```bash
+TAG='vX.Y.Z'
+R='<40-character-SHA>'
+RUN_ID='<candidate-run-id>'
+MANIFEST_SHA256='<promotion-manifest-file-SHA-256>'
+GO_COMMENT_ID='<release-GO-comment-id>'
+cat > /tmp/promotion-tag.txt <<EOF
+GWEXPY-PROMOTION-v1
+repository=tatsuki-washimi/gwexpy
+tag=$TAG
+source_sha=$R
+candidate_run_id=$RUN_ID
+promotion_manifest_sha256=$MANIFEST_SHA256
+release_go_comment_id=$GO_COMMENT_ID
+EOF
+git tag -a "$TAG" "$R" -F /tmp/promotion-tag.txt
+git push origin "refs/tags/$TAG"
+```
+
+The tag-push workflow verifies the annotation, target, GO, original candidate
+run, and exact workflow ID and path. It downloads the promotion manifest by
+its artifact ID from the original candidate run (attempt one) and checks the
+API metadata for every manifest-bound payload, sidecar, and gate-evidence
+artifact. The GitHub Release job then downloads the manifest-bound payload and
+sidecars by their exact artifact IDs from that same candidate run and rehashes
+those bytes. It promotes those same candidate bytes without rebuilding or
+rerunning candidate qualification.
+
+The candidate workflow uploads the payload, sidecars, aggregate gate evidence,
+and promotion manifest with `retention-days: 90`. The finalizer also requires
+each required aggregate evidence artifact's measured `expires_at - created_at`
+to be at least 90 days. At tag time, any required candidate artifact that is
+expired, unavailable, or not downloadable by its recorded ID fails promotion;
+an artifact from another run cannot replace it. If a required artifact is lost
+before tagging, complete a new candidate qualification and obtain a new
+exact-candidate GO bound to that candidate run, manifest, and distribution
+hashes before creating a tag.
+
+Before accepting the GitHub Release, check the exact tag and target `R`,
+committed release notes, exact five assets, and downloaded bytes. The asset set is
+exactly the manifest's sdist filename, wheel filename,
+`distribution-sha256.json`, `LICENSE.sha256`, and `promotion-manifest.json`;
+extra, missing, substituted, or hash-mismatched assets fail. An existing
+Release is idempotent only when its target, notes, exact assets, and bytes all
+match; any conflict or extra asset fails.
+
+The publish job starts only after GitHub Release verification succeeds.
+After that job succeeds, the readback job checks exactly two PyPI files: the
+manifest's wheel and sdist filenames with their exact SHA-256 values. PyPI
+readback runs after publishing without a publishing credential. Transient
+lookup and network failures use a bounded retry window; identity or hash
+mismatch fails immediately. Do not accept the release until both GitHub and
+PyPI readbacks pass.
+
+## Legacy contract behavior and historical planning records
+
+Contracts without the promotion schema retain their frozen historical
+workflow and evidence behavior. Do not use the legacy commands below to run a
+future promotion-enabled version.
+
 The only release workflow is `publish-release.yml`.  Manual dispatches are
 dry-runs and must be launched with `--ref main`, which the workflow enforces:
 
@@ -25,52 +174,46 @@ reviewed source `S`; validation binds S to R and permits only the evidence
 update and existing plan checkboxes transitioning from `[ ]` to `[x]`. A
 v0.2.4 candidate run must provide this evidence path.
 
-For v0.2.5, the current planned release date is 2026-10-04 UTC. The new
-source scope is selected; fresh reviewed-source `S` approval and exact-`R`
-qualification remain pending.
-Release metadata may be prepared before the UTC release date; do not create or
-push the final tag before 2026-10-04 00:00 UTC (09:00 JST). Close the pre-tag
-gates by the 09:00 JST target where possible; that target is not a 23:00
-cutoff. If the release moves to a later UTC date, update every release date
-before freezing a new `S` and repeat review and qualification. Never backdate
-the tag.
+The former v0.2.5 release plan recorded a planned date and pre-publication
+review gates. That planning state was superseded by publication: v0.2.5 is
+published and immutable. The earlier date and release-preparation notes are
+historical, not active deadlines or instructions for the next release.
 
-The v0.2.5 decision remains **HOLD**. The review source must include the
-release code, metadata, and workflow changes that will be reviewed. Require
-fresh independent scientific/data-model, documentation, and release-security
-reviews of the same `S`, plus separate human scientific/data-model approval
-covering the scoped #589 and #585 SDB exceptions and all twelve individually
-reviewed historical dispositions. The owner approval must bind the final `S`,
-its scope digest, disposition digest, and canonical comment tokens. Existing
-review records and comments from the prior September cycle are historical and
-cannot authorize this cycle.
+The earlier v0.2.5 plan recorded a pre-publication **HOLD**. That status was
+superseded by publication. The review source included the release code,
+metadata, and workflow changes. The configured scientific/data-model,
+documentation, and release-security reviews and separate owner approval were
+completed for that version. The approval bound the final `S`, its scope and
+disposition digests, and canonical comment tokens. Earlier September review
+records did not authorize the published cycle.
 
-The readiness file at `S` must be the byte-exact v0.2.5 empty placeholder
-defined by `V025_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER` in
-`scripts/validate_release.py`. Only after fresh same-`S` reviews and approval
-may `R` differ from `S`, and then only by filling that manifest and changing
-existing release-plan checklist items from `[ ]` to `[x]`. Qualification and
-all publication gates run on exact `R` artifacts.
+The published v0.2.5 source review used the byte-exact empty readiness
+placeholder defined by `V025_EMPTY_REVIEW_EVIDENCE_PLACEHOLDER` in
+`scripts/validate_release.py`; the coordinator then filled the evidence and
+updated existing plan checkboxes in `R`. The source-to-release and publication
+checks ran against exact `R` artifacts. These describe completed v0.2.5
+history, not open gates for a future version.
 
-Two separate pre-tag facts still need closure. The PyPI environment currently
-has no configured manual-approval requirement, and the Trusted Publisher tuple
-has not been confirmed. The new workflow orders GitHub Release creation before
-PyPI; that order and the official same-`S` qualification must be reviewed in
-the final source. Do not treat these external settings as confirmed until they
-are read back.
+The pre-tag environment and Trusted Publisher readbacks recorded in the v0.2.5
+plan were completed before its publication. The GitHub-before-PyPI order and
+same-`S` qualification are part of that version's history, not open checks for
+a future release.
 
-The historical 74-scenario gate remains required: 62 executable historical
-scenarios must pass on exact `R` artifacts and twelve dispositions must be
-approved individually. The 12 dispositions remain in the canonical proposal;
-they are never counted as passing runtime assertions.
+The v0.2.5 contract recorded the historical 74-scenario gate: 62 executable
+assertions on exact `R` artifacts and twelve individually approved
+dispositions. The dispositions were never counted as runtime passes. This is
+release-specific history, not a direction for selecting or qualifying a
+future version.
 
-Task 6 selected case 1 independently: defer the nine-path #584 candidate
-overlay and the optional parallel #588 patch because their inclusion gates
-remain unmet. Retain the R8 serial #588 implementation and all five neutral v9
-corrections unchanged. Only the post-selection final `S` may authorize review;
-the physical-fetch, remote Zarr, and single spawn-import diagnostic results
-do not replace the missing performance, broad structural, or process-tree PSS
-gates. The canonical release plan records all four cases and the decision.
+The v0.2.5 scope-selection record documented a decision to defer the
+nine-path #584 candidate overlay and optional parallel #588 patch because
+their inclusion gates were unmet at the time. The selected plan retained the
+R8 serial #588 implementation and all five neutral v9
+corrections. The post-selection final `S` authorized review; the recorded
+diagnostics did not replace the then-missing performance, broad structural,
+and process-tree PSS gates. The canonical release plan records the completed
+selection and decision. This record is historical, not guidance for future
+versions.
 
 The accepted tag-specific plan, evidence schema/path, review lanes, S-to-R
 paths, payload/integration schemas, artifact prefix, and protected refs are defined only in
@@ -108,32 +251,52 @@ accepts the files individually. If that job fails after either file appears
 on PyPI, stop release acceptance and keep the decision on HOLD. A failed job
 is not proof that neither file was published.
 
-1. Record the failed strict run ID, source `R`, final tag and peeled SHA, and
-   the IDs and digests of its `release-payload-<R>` and
-   `release-sidecars-<R>` artifacts. Preserve those same-run artifacts,
+1. Record the failed PyPI publisher run ID separately from the original
+   `workflow_dispatch` candidate run ID. Record source `R`, the final tag and
+   peeled SHA. The failed publisher run does not create payload or sidecar
+   artifacts; do not attribute candidate files to that publisher run.
+2. From the original candidate run, record the promotion manifest SHA-256 and
+   artifact ID, name, and GitHub digest. Use the manifest's artifact records
+   to identify the `release-payload-<R>`,
+   `release-sidecar-distribution-sha256.json-<R>`, and
+   `release-sidecar-LICENSE.sha256-<R>` artifacts. Record the manifest-bound
+   payload and sidecar artifact IDs, names, GitHub digests, and sizes, plus
+   their run IDs; every one must belong to the original candidate run and
+   remain unexpired. Preserve those original candidate artifacts, the detached
    `distribution-sha256.json`, and all gate reports and aggregate evidence.
    Do not move or replace `R` or its tag.
-2. Read the PyPI file list for the exact version, including each filename and
+3. Read the PyPI file list for the exact version, including each filename and
    SHA-256 digest (`urls[].filename` and `urls[].digests.sha256` in the PyPI
    version JSON). Compare it with both `files.wheel` and `files.sdist` in the
-   failed run's detached `distribution-sha256.json`. Verify the manifest's
-   source SHA is `R` and its hashes match the preserved same-run payload.
-   Record the PyPI response and comparison as recovery evidence. Any unknown
-   file, mismatched hash, or uncertain artifact identity keeps the release on
-   HOLD for investigation.
-3. If exactly one distribution is present with the expected hash, require an
+   original candidate's detached `distribution-sha256.json`, including the
+   exact filenames and SHA-256 values. Verify the manifest's source SHA is `R`
+   and its hashes match the preserved original candidate payload. Record the
+   PyPI response and comparison as recovery evidence. Any unknown file,
+   mismatched hash, or uncertain artifact identity keeps the release on HOLD
+   for investigation.
+4. If exactly one distribution is present with the expected hash, require an
    explicit reviewed release-owner decision before any attempt to upload the
    missing distribution. A completion, if approved, may use only the missing
-   file from that failed run's verified payload; record the approval, upload
-   method, and resulting PyPI filename/hash readback. Keep acceptance on HOLD
-   until both expected files and hashes are present and the remaining release
-   checks are complete. If those bytes cannot be recovered and verified, keep
-   the version on HOLD and decide the next release path with the release owner.
+   file from that verified original candidate payload; record the approval,
+   upload method, and resulting PyPI filename/hash readback. Keep acceptance on
+   HOLD until both expected files and hashes are present and the remaining
+   release checks are complete. If those bytes cannot be recovered and
+   verified, keep the version on HOLD and decide the next release path with the
+   release owner.
 
-Do not blindly rerun the strict publish job: PyPI will not replace an existing
-filename, and a new run builds a new payload. Do not rebuild the missing file
-or use `skip-existing` to substitute a fresh distribution. Neither action
-proves that the published wheel and sdist came from the same qualified run.
+Normal successful closure requires exactly two PyPI files: the manifest's
+wheel and sdist with their exact filenames and SHA-256 values. This remains
+the closure rule after an approved partial-upload recovery; a missing final
+file or any extra file keeps acceptance on HOLD.
+
+Do not blindly rerun the strict publish job: the tag publisher reuses the same
+manifest-bound candidate payload bytes and does not build a new payload. PyPI
+will reject an already-published filename, so a rerun is not a substitute for
+the explicit missing-file recovery above. A new candidate dispatch builds a
+different payload and cannot repair a partial publication for this candidate.
+Do not rebuild the missing file or use `skip-existing` to substitute a fresh
+distribution. Neither action proves that the published wheel and sdist came
+from the same qualified run.
 
 ## Frozen source, payload, and evidence
 
@@ -172,14 +335,15 @@ text) and emits a single allowlisted aggregate artifact whose name is selected f
 Repository retention policy may cap the configured duration, and run/artifact
 deletion or expiry invalidates the evidence.
 
-The measured `90 days - 5 minutes` threshold above applies to the integration
-aggregate. All release artifact uploads request `retention-days: 90`, but the
-current contract specifies no corresponding measured minimum for the payload,
-sidecars, individual cell reports, or qualification aggregate. Record each
-artifact's actual API timestamps and expiry separately; do not claim that the
-integration threshold was verified for every artifact. The source validator
-and evidence collectors do not read GitHub artifact expiry, so this acceptance
-check is an external API readback before publication.
+For legacy contract runs, the measured `90 days - 5 minutes` threshold above
+applies to the legacy integration aggregate. Legacy artifact uploads request
+`retention-days: 90`, but the legacy contracts specify no corresponding
+measured minimum for the payload, sidecars, individual cell reports, or
+qualification aggregate. Record each legacy artifact's actual API timestamps
+and expiry separately; do not claim that the integration threshold was
+verified for every legacy artifact. These historical legacy checks do not
+change the separate 90-day retention and tag-time availability requirements
+for future promotion contracts described above.
 
 For v0.2.2, the historical same-build qualification also used a 19-cell
 matrix. Every cell verified `distribution-sha256.json` before installation

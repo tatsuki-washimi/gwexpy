@@ -140,3 +140,29 @@ def test_record_rejects_substituted_artifact_and_wrong_backend(
             tmp_path / "pytest.xml",
             tmp_path / "report.json",
         )
+
+
+def test_synthetic_future_resolves_schemas_from_contract(monkeypatch):
+    from types import SimpleNamespace
+
+    evidence = load_module()
+    selected = {
+        "evidence_schemas": {
+            "gwexpy-cross-format-io-evidence-v1": "synthetic-schema-v7"
+        }
+    }
+    helper = SimpleNamespace(
+        configured_contract=lambda version: {"payload_schema": "synthetic-payload-v7"},
+        candidate_profile=lambda contract: selected,
+    )
+    monkeypatch.setattr(evidence, "_promotion_module", lambda: helper)
+    evidence._select_version("99.88.77")
+    assert evidence.AGGREGATE_SCHEMA == "synthetic-schema-v7"
+    assert evidence.PAYLOAD_SCHEMA == "synthetic-payload-v7"
+    assert evidence.VERSION == "99.88.77"
+
+
+def test_synthetic_future_unknown_contract_fails_closed():
+    evidence = load_module()
+    with pytest.raises(ValueError):
+        evidence._select_version("99.88.77")

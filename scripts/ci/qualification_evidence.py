@@ -238,12 +238,23 @@ def _sorted_skip_lists(values: set[SkipCase] | tuple[SkipCase, ...]) -> list[lis
 
 def qualification_contract(version: str) -> dict[str, str | None]:
     """Return the exact evidence contract for an allowed release version."""
-    try:
+    if version in _CONTRACTS:
         return dict(_CONTRACTS[version])
-    except KeyError as exc:
-        raise QualificationEvidenceError(
-            f"unsupported qualification version: {version}"
-        ) from exc
+    try:
+        module = _promotion_module()
+        contract = module.configured_contract(version)
+        profile = module.candidate_profile(contract)
+    except ValueError as exc:
+        raise QualificationEvidenceError(str(exc)) from exc
+    schema = profile["evidence_schemas"]["gwexpy-qualification-evidence-v1"]
+    _PAYLOAD_SCHEMAS[version] = contract["payload_schema"]
+    result = {
+        "artifact_prefix": "gwexpy-qualification-evidence-v1",
+        "evidence_schema": schema,
+        "expected_skips_schema": None,
+    }
+    _CONTRACTS[version] = result
+    return dict(result)
 
 
 def load_expected_skips(path: Path | str, *, version: str = "0.2.3") -> ExpectedSkips:
@@ -576,11 +587,17 @@ def record_cell(
         _write_json(Path(report_path), report, canonical=False)
         return report
 
-    if junit_path is None or expected_skips_path is None:
+    if junit_path is None or (
+        expected_skips_path is None and version in {"0.2.3", "0.2.4", "0.2.5"}
+    ):
         raise QualificationEvidenceError(
             f"v{version} evidence requires JUnit and expected-skip baseline"
         )
-    baseline = load_expected_skips(expected_skips_path, version=version)
+    baseline = (
+        load_expected_skips(expected_skips_path, version=version)
+        if expected_skips_path is not None
+        else _no_skips_baseline(version)
+    )
     testcase_count, observed = _parse_junit(Path(junit_path))
     approved = set(baseline.cells[cell])
     required = set(observed) - approved
@@ -658,7 +675,7 @@ def aggregate_reports(
         Path(payload_manifest), version=version, source_sha=source_sha
     )
     reports = _load_cell_reports(
-        Path(reports_dir), require_canonical=version in {"0.2.3", "0.2.4", "0.2.5"}
+        Path(reports_dir), require_canonical=version != "0.2.2"
     )
     observed_cells: set[str] = set()
 
@@ -699,11 +716,15 @@ def aggregate_reports(
         _write_json(Path(output_path), aggregate, canonical=False)
         return aggregate
 
-    if expected_skips_path is None:
+    if expected_skips_path is None and version in {"0.2.3", "0.2.4", "0.2.5"}:
         raise QualificationEvidenceError(
             f"v{version} aggregate requires expected-skip baseline"
         )
-    baseline = load_expected_skips(expected_skips_path, version=version)
+    baseline = (
+        load_expected_skips(expected_skips_path, version=version)
+        if expected_skips_path is not None
+        else _no_skips_baseline(version)
+    )
     summaries: list[dict[str, Any]] = []
     expected_keys = {
         "baseline_sha256",
@@ -836,6 +857,26 @@ def main(argv: list[str] | None = None) -> int:
     except QualificationEvidenceError as exc:
         parser.error(str(exc))
     return 0
+
+
+def _promotion_module() -> Any:
+    import importlib.util
+
+    path = Path(__file__).with_name("release_promotion.py")
+    spec = importlib.util.spec_from_file_location("release_promotion_profile", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _no_skips_baseline(version: str) -> ExpectedSkips:
+    """The standard future profile permits no skipped required tests."""
+    raw = _canonical_json_bytes(
+        {"profile": "gwexpy-standard-v1", "version": version, "optional_skips": []}
+    )
+    return ExpectedSkips(
+        {cell: () for cell in QUALIFICATION_CELLS}, hashlib.sha256(raw).hexdigest()
+    )
 
 
 if __name__ == "__main__":

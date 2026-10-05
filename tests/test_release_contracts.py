@@ -20,6 +20,7 @@ RELEASE_VALIDATOR_PATH = ROOT / "scripts" / "validate_release.py"
 V023_IMPLEMENTATION_BASE = "a8085b71446d3ef3417a7e5b5ac8efb156368eac"
 V023_RELEASE_SOURCE = "75d3d1a89ebc8942af1f3228152fea99d2d3420e"
 V024_RELEASE_SOURCE = "522e52a082925da4dd37966d82a7616bdd2a5248"
+V025_RELEASE_SOURCE = "3439fba41dcc644af12870d91bee794524098fb4"
 V024_MANIFEST = (
     ROOT
     / "docs"
@@ -43,6 +44,9 @@ V0114_MANIFEST = (
     / "plans"
     / "manifests"
     / "audit-manifest-v0.1.14-release-readiness.yaml"
+)
+PROMOTION_FIXTURE = (
+    ROOT / "tests" / "fixtures" / "release" / "promotion-contract-v1.json"
 )
 V023_MANIFEST = (
     ROOT
@@ -509,9 +513,13 @@ def test_v025_review_lanes_cover_every_change_since_peeled_v024_source() -> None
     source = V024_RELEASE_SOURCE
     if not _git_commit_available(source):
         pytest.fail("peeled v0.2.4 source is unavailable; full history is required")
-    candidate = _candidate_revision()
+    candidate = V025_RELEASE_SOURCE
+    if not _git_commit_available(candidate):
+        pytest.fail("peeled v0.2.5 source is unavailable; full history is required")
     changed_paths = _changed_paths_between(ROOT, source, candidate)
-    contracts = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))
+    contracts = json.loads(
+        _git_file_at_revision(candidate, "scripts/ci/release_contracts.json")
+    )
     lanes = contracts["releases"]["v0.2.5"]["review_lanes"]
     scope = {path for paths in lanes.values() for path in paths}
     assert (
@@ -676,6 +684,133 @@ def test_release_contract_loader_rejects_unknown_tags() -> None:
 
     with pytest.raises(contracts.ReleaseContractError, match="unsupported release tag"):
         contracts.release_contract("v0.1.15")
+
+
+def _synthetic_promotion_document() -> dict[str, object]:
+    base = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))["releases"]["v0.2.5"]
+    base.pop("review_base_sha", None)
+    return {
+        "schema": "gwexpy-release-contracts-v1",
+        "releases": {
+            "v0.2.6": {
+                **base,
+                "promotion": json.loads(PROMOTION_FIXTURE.read_text(encoding="utf-8"))[
+                    "promotion"
+                ],
+            }
+        },
+    }
+
+
+def _load_synthetic_promotion(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, promotion: object
+):
+    contracts = load_contract_module()
+    data = _synthetic_promotion_document()
+    data["releases"]["v0.2.6"]["promotion"] = promotion
+    modified = tmp_path / "release_contracts.json"
+    modified.write_text(json.dumps(data), encoding="utf-8")
+    monkeypatch.setattr(contracts, "CONTRACT_PATH", modified)
+    return contracts
+
+
+def test_optional_promotion_contract_is_valid_and_fully_mapped(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    contracts = _load_synthetic_promotion(
+        monkeypatch,
+        tmp_path,
+        json.loads(PROMOTION_FIXTURE.read_text(encoding="utf-8"))["promotion"],
+    )
+
+    promotion = contracts.release_contract("v0.2.6")["promotion"]
+    assert promotion["schema"] == "gwexpy-release-promotion-contract-v1"
+    assert promotion["workflow_path"] == ".github/workflows/publish-release.yml"
+    assert promotion["release_go"]["issue_number"] > 0
+    assert promotion["release_go"]["owner_login"] == "release-owner"
+    assert promotion["source_approval"] == {
+        "format": "GWEXPY-SOURCE-APPROVAL-v1",
+        "approver": "source-approver",
+    }
+    assert promotion["qualification_profile"] == "gwexpy-standard-v1"
+    assert promotion["required_jobs"] == [
+        "build",
+        "cross_format_io",
+        "cross_format_io_evidence",
+        "diaggui_qualification",
+        "diaggui_qualification_evidence",
+        "evidence",
+        "qualification_evidence",
+        "qualify",
+        "smoke",
+        "verify",
+    ]
+    assert promotion["evidence_schema_ids"] == [
+        "gwexpy-cross-format-io-evidence-v1",
+        "gwexpy-diaggui-qualification-evidence-v1",
+        "gwexpy-integration-evidence-v1",
+        "gwexpy-qualification-evidence-v1",
+    ]
+
+
+def test_existing_release_contracts_remain_legacy_and_unchanged() -> None:
+    contracts = load_contract_module()
+    values = contracts._load_contracts()
+    expected = json.loads(CONTRACTS_PATH.read_text(encoding="utf-8"))["releases"]
+    assert values == expected
+    assert set(values) == {
+        "v0.1.13",
+        "v0.1.14",
+        "v0.2.0",
+        "v0.2.2",
+        "v0.2.3",
+        "v0.2.4",
+        "v0.2.5",
+    }
+    assert all("promotion" not in contract for contract in values.values())
+    assert (
+        values["v0.2.5"]["review_evidence_schema"] == "gwexpy-v025-review-evidence-v2"
+    )
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        lambda p: p.pop("workflow_path"),
+        lambda p: p["release_go"].update(issue_number=0),
+        lambda p: p["release_go"].update(issue_number="42"),
+        lambda p: p["release_go"].update(owner_login="Bad Login"),
+        lambda p: p.update(required_jobs=["build", "qualification", "evidence"]),
+        lambda p: p.update(required_jobs=["build", "build", "evidence"]),
+        lambda p: p.update(workflow_path=".github/workflows/other.yml"),
+        lambda p: p["artifact_naming"].update(
+            manifest_prefix="alternate-promotion-manifest-"
+        ),
+        lambda p: p["artifact_naming"].update(payload_prefix="candidate-payload-"),
+        lambda p: p.update(qualification_profile="unknown-profile"),
+        lambda p: p.update(evidence_schema_ids=[]),
+        lambda p: p.update(evidence_schema_ids=["unknown-schema"]),
+        lambda p: p.update(qualification_profiles={}),
+        lambda p: p["qualification_profiles"]["gwexpy-standard-v1"].update(
+            required_jobs=["build", "evidence"]
+        ),
+        lambda p: (
+            p.update(required_jobs=["build", "evidence"]),
+            p["qualification_profiles"]["gwexpy-standard-v1"].update(
+                required_jobs=["build", "evidence"]
+            ),
+        ),
+        lambda p: p["evidence_schemas"].update({"unexpected": "schema-v1"}),
+    ],
+)
+def test_promotion_contract_rejects_invalid_or_incomplete_mapping(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, mutate
+) -> None:
+    promotion = json.loads(PROMOTION_FIXTURE.read_text(encoding="utf-8"))["promotion"]
+    mutate(promotion)
+    contracts = _load_synthetic_promotion(monkeypatch, tmp_path, promotion)
+    with pytest.raises(contracts.ReleaseContractError):
+        contracts.release_contract("v0.2.6")
 
 
 def test_release_contract_loader_rejects_unknown_schema(

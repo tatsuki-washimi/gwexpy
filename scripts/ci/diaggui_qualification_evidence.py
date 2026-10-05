@@ -23,9 +23,21 @@ AGGREGATE_SCHEMA = "gwexpy-v024-diaggui-qualification-evidence-v1"
 
 def _select_version(version: str) -> None:
     """Select the release-specific evidence schema while preserving v0.2.4 defaults."""
-    if version not in {"0.2.4", "0.2.5"}:
-        raise DiagGUIQualificationError(f"unsupported DiagGUI release: {version}")
     global VERSION, PAYLOAD_SCHEMA, CELL_SCHEMA, AGGREGATE_SCHEMA
+    if version not in {"0.2.4", "0.2.5"}:
+        try:
+            module = _promotion_module()
+            contract = module.configured_contract(version)
+            profile = module.candidate_profile(contract)
+        except ValueError as exc:
+            raise DiagGUIQualificationError(str(exc)) from exc
+        VERSION = version
+        PAYLOAD_SCHEMA = contract["payload_schema"]
+        AGGREGATE_SCHEMA = profile["evidence_schemas"][
+            "gwexpy-diaggui-qualification-evidence-v1"
+        ]
+        CELL_SCHEMA = "gwexpy-diaggui-qualification-cell-v1"
+        return
     VERSION = version
     code = "v024" if version == "0.2.4" else "v025"
     PAYLOAD_SCHEMA = f"gwexpy-{code}-release-payload-v1"
@@ -578,13 +590,13 @@ def _parser() -> argparse.ArgumentParser:
     record.add_argument("--artifact", type=Path, required=True)
     record.add_argument("--junit", type=Path, required=True)
     record.add_argument("--report", type=Path, required=True)
-    record.add_argument("--version", choices=("0.2.4", "0.2.5"), default="0.2.4")
+    record.add_argument("--version", default="0.2.4")
     aggregate = commands.add_parser("aggregate")
     aggregate.add_argument("--source-sha", required=True)
     aggregate.add_argument("--payload-manifest", type=Path, required=True)
     aggregate.add_argument("--reports-dir", type=Path, required=True)
     aggregate.add_argument("--output", type=Path, required=True)
-    aggregate.add_argument("--version", choices=("0.2.4", "0.2.5"), default="0.2.4")
+    aggregate.add_argument("--version", default="0.2.4")
     return parser
 
 
@@ -616,6 +628,16 @@ def main(argv: list[str] | None = None) -> int:
     except DiagGUIQualificationError as exc:
         parser.error(str(exc))
     return 0
+
+
+def _promotion_module() -> Any:
+    import importlib.util
+
+    path = Path(__file__).with_name("release_promotion.py")
+    spec = importlib.util.spec_from_file_location("release_promotion_profile", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 if __name__ == "__main__":

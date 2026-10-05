@@ -490,3 +490,100 @@ def test_human_verifier_derives_s_and_uses_configured_evidence_path(
     assert observed["expected_tag"] == "v0.2.4"
     assert observed["comment_id"] == 987654321
     assert observed["repository"] == "tatsuki-washimi/gwexpy"
+
+
+@pytest.mark.parametrize("mutation", [None, "author", "body", "fetch"])
+def test_synthetic_future_source_approval_is_contract_selected(
+    tmp_path, monkeypatch, mutation
+):
+    verifier = load_module("future_human_verifier", HUMAN_VERIFIER)
+    approval, comment, source = approval_fixture()
+    approval["approver_login"] = "source-approver"
+    comment["user"] = {"login": "source-approver"}
+    comment["body"] = "\n".join(
+        [
+            "GWEXPY-SOURCE-APPROVAL-v1",
+            "version=v99.88.77",
+            f"source_sha={source}",
+            f"scope_sha256={approval['scope_digest']}",
+            "decision=APPROVED",
+        ]
+    )
+    contract = {
+        "review_evidence_path": "review.json",
+        "promotion": {
+            "source_approval": {
+                "format": "GWEXPY-SOURCE-APPROVAL-v1",
+                "approver": "source-approver",
+            }
+        },
+    }
+    monkeypatch.setattr(verifier, "_contract", lambda tag: contract)
+    monkeypatch.setattr(
+        verifier, "_canonical_evidence_path", lambda *args: tmp_path / "review.json"
+    )
+    monkeypatch.setattr(
+        verifier,
+        "_load_and_validate_evidence",
+        lambda *args: {"human_approval": approval},
+    )
+    if mutation == "author":
+        comment["user"] = {"login": "wrong-author"}
+    if mutation == "body":
+        comment["body"] += "\nextra"
+
+    def fetch(*args):
+        if mutation == "fetch":
+            raise verifier.HumanApprovalError("approval API failed")
+        return comment
+
+    monkeypatch.setattr(verifier, "_fetch_comment", fetch)
+    if mutation:
+        with pytest.raises(verifier.HumanApprovalError):
+            verifier.verify_human_approval(
+                repo_root=tmp_path,
+                expected_tag="v99.88.77",
+                repository="example/gwexpy",
+                token="fake",
+            )
+    else:
+        assert (
+            verifier.verify_human_approval(
+                repo_root=tmp_path,
+                expected_tag="v99.88.77",
+                repository="example/gwexpy",
+                token="fake",
+            )
+            == source
+        )
+
+
+def test_future_review_evidence_requires_configured_approver(tmp_path, monkeypatch):
+    validator = load_module("future_review_validator", EVIDENCE_VALIDATOR)
+    repo, path, contract, source = make_review_evidence_repo(tmp_path)
+    contract["promotion"] = {
+        "source_approval": {
+            "approver": "source-approver",
+            "format": "GWEXPY-SOURCE-APPROVAL-v1",
+        }
+    }
+    monkeypatch.setattr(validator, "_release_contract", lambda tag: contract)
+    with pytest.raises(validator.ReleaseReviewEvidenceError):
+        validator.validate_review_evidence(
+            path, None, None, repo, expected_tag="v99.88.77"
+        )
+    data = json.loads(path.read_bytes())
+    data["human_approval"]["approver_login"] = "source-approver"
+    path.write_text(json.dumps(data))
+    assert (
+        validator.validate_review_evidence(
+            path, None, None, repo, expected_tag="v99.88.77"
+        )["human_approval"]["reviewed_commit"]
+        == source
+    )
+    del data["human_approval"]
+    path.write_text(json.dumps(data))
+    with pytest.raises(validator.ReleaseReviewEvidenceError):
+        validator.validate_review_evidence(
+            path, None, None, repo, expected_tag="v99.88.77"
+        )
