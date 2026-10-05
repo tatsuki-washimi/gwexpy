@@ -302,7 +302,7 @@ def test_publish_workflow_requires_historical_gate_before_upload():
         == "${{ steps.validate.outputs.review_evidence }}"
     )
     assert set(gate_job["needs"]) == {"verify", "build"}
-    assert "historical_74_gate" in jobs["publish"]["needs"]
+    assert "historical_74_gate" in jobs["publish_legacy"]["needs"]
     run = next(
         step["run"]
         for step in gate_job["steps"]
