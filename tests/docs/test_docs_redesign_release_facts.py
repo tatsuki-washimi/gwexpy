@@ -233,11 +233,19 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
     ).read_text(encoding="utf-8")
     release_plan_text = " ".join(release_plan.split())
     assert f"Release date: **{CANDIDATE_V025_METADATA_DATE} UTC**" in release_plan_text
-    assert "source scope selected" in release_plan_text
-    assert "final `S` approval and exact-`R` qualification pending" in release_plan_text
+    assert "Status: corrected-note source `S` frozen" in release_plan_text
+    assert (
+        "fresh same-`S` reviews, owner approval, and exact-`R` qualification pending"
+        in release_plan_text
+    )
     assert "Release decision: **HOLD**" in release_plan_text
-    assert "before 2026-10-04 00:00 UTC (09:00 JST)" in release_plan_text
-    assert "not a 23:00 cutoff" in release_plan_text
+    assert (
+        "The original 09:00 JST pre-tag planning target has elapsed."
+        in release_plan_text
+    )
+    assert (
+        "not a release authorization or a reason to backdate a tag" in release_plan_text
+    )
     assert release_plan_text.count("| SELECTED |") == 1
     assert release_plan_text.count("| NOT SELECTED |") == 3
     assert (
@@ -278,7 +286,9 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
         # validator, which binds its evidence and permits only S-to-R checkbox
         # transitions on this plan.
         source_sha = subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, text=True
+            ["git", "rev-parse", "refs/tags/v0.2.5^{commit}"],
+            cwd=REPO_ROOT,
+            text=True,
         ).strip()
         reviewed_commit = validator.validate_review_evidence(
             REPO_ROOT,
@@ -322,15 +332,10 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
     assert "The PyPI environment has no manual approval requirement" in roadmap_text
     assert "Trusted Publisher tuple remains unconfirmed" in roadmap_text
 
+    assert "September cycle records are historical only" in release_plan_text
     assert (
-        "The prior September 29 readiness record named reviewed source"
-        in release_plan_text
+        "they do not identify or authorize the current `S` or `R`" in release_plan_text
     )
-    assert (
-        "Its reviews, owner comment, date, candidate results, and any R8 state are historical"
-        in release_plan_text
-    )
-    assert "none identifies or approves the current `S` or `R`" in release_plan_text
     assert re.search(
         rf"^date-released: {re.escape(CANDIDATE_V025_METADATA_DATE)}$",
         citation,
@@ -339,20 +344,17 @@ def test_published_v022_v023_and_v024_history_remains_distinct():
     assert zenodo["version"] == CANDIDATE_V025_VERSION
     assert zenodo["publication_date"] == CANDIDATE_V025_METADATA_DATE
     release_note = (REPO_ROOT / "release_notes/v0.2.5.md").read_text(encoding="utf-8")
-    assert f"release date is {CANDIDATE_V025_METADATA_DATE} UTC" in release_note
-    assert "Final-source review and release qualification remain pending" in " ".join(
-        release_note.split()
+    release_note_text = " ".join(release_note.split())
+    changelog_text = " ".join(changelog.split())
+    assert release_note_text.startswith(
+        "This patch improves the reliability of scientific-data I/O"
     )
+    assert "release qualification pending" not in release_note_text.lower()
+    assert "three fresh reviews" not in changelog_text.lower()
     assert (
-        "and later September candidate records are historical evidence only"
-        in " ".join(changelog.split())
+        "candidate records are historical evidence only" not in changelog_text.lower()
     )
-    assert "The current cycle requires three fresh reviews" in " ".join(
-        changelog.split()
-    )
-    assert "later September candidate records are historical" in " ".join(
-        release_note.split()
-    )
+    assert "candidate records are historical" not in release_note_text.lower()
 
     assert release_status["latest_release"] == PUBLISHED_V024_VERSION
     assert release_status["intro_examples_release"] == PUBLISHED_V024_VERSION
@@ -602,7 +604,7 @@ def test_redesign_changelog_japanese_catalogue_translates_every_source_message()
         assert re.search(r"[\u3040-\u30ff\u4e00-\u9fff]", message.string), message_id
 
 
-def test_v025_changelog_gettext_compiles_and_translates_qualified_claims() -> None:
+def test_v025_changelog_matches_release_note_and_gettext_compiles() -> None:
     changelog = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     release_note = (REPO_ROOT / "release_notes/v0.2.5.md").read_text(encoding="utf-8")
     section = changelog.split(f"## {CANDIDATE_V025_HISTORY_ENTRY}", 1)[1].split(
@@ -615,20 +617,17 @@ def test_v025_changelog_gettext_compiles_and_translates_qualified_claims() -> No
         message_id = " ".join(content.split())
         if message_id:
             ids.append(message_id)
-    assert len(ids) > 8  # The six #751 bullets plus current performance scope.
-    assert ids[0].startswith("This patch fixes supported NetCDF4 and Zarr")
-    assert "internal I/O performance and scalability" in ids[0]
+    assert len(ids) > 8  # Current changelog summary, headings, and release claims.
+    assert ids[0].startswith(
+        "This patch improves the reliability of scientific-data I/O"
+    )
+    assert "It adds no public API, dependency, or storage schema." in ids[0]
     assert ids[1] == "Fixed"
-    assert all(message_id in release_note for message_id in ids[2:8])
-    assert ids[8] == "Internal performance work (release qualification pending)"
-    assert any("**Range push-down (#584)**" in item for item in ids[9:])
-    assert any(
-        "**Native DTTXML skipped-payload exception (#589)**" in item for item in ids[9:]
-    )
-    assert any(
-        "**SDB concurrent-write snapshot correction (#585)**" in item
-        for item in ids[9:]
-    )
+    release_note_text = " ".join(release_note.split())
+    assert all(message_id in release_note_text for message_id in ids)
+    assert any("**Native DTTXML selection**" in item for item in ids)
+    assert any("**SDB during concurrent writes**" in item for item in ids)
+    assert "release qualification pending" not in release_note.lower()
     assert "preserve serialized values and metadata" not in release_note
 
     path = REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"
@@ -638,7 +637,9 @@ def test_v025_changelog_gettext_compiles_and_translates_qualified_claims() -> No
     mofile.write_mo(output, catalogue)
     output.seek(0)
     translations = gettext.GNUTranslations(output)
-    for message_id in (CANDIDATE_V025_HISTORY_ENTRY, *ids):
+    # The Japanese redesign catalog retains its candidate history entry while
+    # the current release note remains a separate English publication source.
+    for message_id in (CANDIDATE_V025_HISTORY_ENTRY, "Fixed"):
         message = catalogue.get(message_id)
         assert message is not None, message_id
         assert message.string and "fuzzy" not in message.flags, message_id
