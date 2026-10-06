@@ -50,6 +50,11 @@ def verify(source: Path, expected_version: str | None = None) -> None:
                     r"^```python\n(.*?)^```", lesson.read_text(), re.M | re.S
                 ):
                     exec(compile(code, str(lesson), "exec"), namespace)
+                if name == "first_analysis":
+                    shutil.copy2(
+                        "timeseries.png",
+                        source / "_static/images/first-analysis-timeseries.png",
+                    )
                 if name == "scientific_python":
                     for channel, spectrum in namespace["spectra"].items():
                         expected_frequency, expected_asd = namespace["numpy_spectra"][
@@ -61,6 +66,10 @@ def verify(source: Path, expected_version: str | None = None) -> None:
                         np.testing.assert_allclose(
                             spectrum.value, expected_asd, rtol=1e-12
                         )
+                    shutil.copy2(
+                        "channels-asd.png",
+                        source / "_static/images/scientific-python-asd.png",
+                    )
 
             commissioner = runpy.run_path(
                 str(source / "_static/downloads/commissioner.py")
@@ -73,6 +82,14 @@ def verify(source: Path, expected_version: str | None = None) -> None:
             coherence = commissioner["coherence"]
             assert (
                 coherence.value[np.argmin(abs(coherence.frequencies.value - 40))] > 0.95
+            )
+            shutil.copy2(
+                "commissioner-output/asd.png",
+                source / "_static/images/commissioner-asd.png",
+            )
+            shutil.copy2(
+                "commissioner-output/coherence.png",
+                source / "_static/images/commissioner-coherence.png",
             )
 
             if importlib.util.find_spec("dttxml") is not None:

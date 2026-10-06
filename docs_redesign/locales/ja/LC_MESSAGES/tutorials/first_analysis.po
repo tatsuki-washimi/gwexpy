@@ -152,13 +152,28 @@ msgstr "次のコードを `quickstart.py` の末尾に追加し、`python quick
 msgid ""
 "Open `timeseries.png`. Its horizontal axis represents time and its vertical axis "
 "shows voltage. You should see an oscillation mixed with noise, with larger "
-"fluctuations in Sensor B. `.crop(0, 1)` selects the interval from zero up to, but not"
-" including, one second. `.crop()` updates the collection it acts on. Here `.copy()` "
-"first creates another collection, so `channels` keeps the complete data."
+"fluctuations in Sensor B."
 msgstr ""
 "`timeseries.png` を開いてください。\n"
 "横軸は時間、縦軸は電圧です。\n"
-"振動にノイズが重なり、Sensor B の変動が大きくなるはずです。\n"
+"振動にノイズが重なり、Sensor B の変動が大きくなるはずです。"
+
+#: ../../tutorials/first_analysis.md:73
+msgid "Simulated time series of Sensor A and Sensor B over the first second."
+msgstr "最初の 1 秒間における Sensor A と Sensor B の模擬時間波形。"
+
+#: ../../tutorials/first_analysis.md:75
+msgid ""
+"Expected output: oscillation mixed with random noise, with larger fluctuations "
+"visible in Sensor B."
+msgstr "期待される出力：ランダムノイズが混ざった振動波形で、Sensor B の変動がより大きく現れます。"
+
+#: ../../tutorials/first_analysis.md:78
+msgid ""
+"`.crop(0, 1)` selects the interval from zero up to, but not including, one second. "
+"`.crop()` updates the collection it acts on. Here `.copy()` first creates another "
+"collection, so `channels` keeps the complete data."
+msgstr ""
 "`.crop(0, 1)` は 0 秒以上 1 秒未満の区間を選びます。\n"
 "`.crop()` は対象のコレクションを更新します。\n"
 "ここでは先に `.copy()` で別のコレクションを作るため、`channels` に全データが残ります。"

@@ -210,7 +210,16 @@ msgstr ""
 "単位は V/√Hz です。\n"
 "Hann 窓、2 秒の FFT 区間、1 秒のオーバーラップ、Welch 平均を使い、周波数ビンの間隔は 0.5 Hz になります。"
 
-#: ../../tutorials/commissioner.md:65
+#: ../../tutorials/commissioner.md:67
+msgid "ASD comparison between X1:REFERENCE and X1:SENSOR showing the 40 Hz peak."
+msgstr "40 Hz のピークを示す X1:REFERENCE と X1:SENSOR の ASD 比較。"
+
+#: ../../tutorials/commissioner.md:69
+msgid ""
+"ASD of the two channels: both show the 40 Hz line, with a higher broadband noise floor in X1:SENSOR."
+msgstr "2 つのチャンネルの ASD：両方に 40 Hz の線が現れ、X1:SENSOR の広帯域ノイズフロアが高くなっています。"
+
+#: ../../tutorials/commissioner.md:72
 msgid ""
 "The second figure shows magnitude-squared coherence, a dimensionless measure between "
 "zero and one of linear association at each frequency. Coherence should rise near the "
@@ -224,6 +233,15 @@ msgstr ""
 "共通の 40 Hz の正弦波付近で高くなるはずです。\n"
 "その周囲では独立ノイズにより小さく変動する推定値になり、有限回の平均では正確にゼロにはなりません。\n"
 "高い値は共通のスペクトル成分を示しますが、それだけで物理的な結合の方向は判断できません。"
+
+#: ../../tutorials/commissioner.md:78
+msgid "Magnitude-squared coherence between X1:REFERENCE and X1:SENSOR."
+msgstr "X1:REFERENCE と X1:SENSOR の二乗コヒーレンス。"
+
+#: ../../tutorials/commissioner.md:80
+msgid ""
+"Magnitude-squared coherence: high coherence near 40 Hz indicates the shared tone between reference and sensor."
+msgstr "二乗コヒーレンス：40 Hz 付近の高いコヒーレンスは、参照とセンサ間の共通トーンを示しています。"
 
 #: ../../tutorials/commissioner.md:70
 msgid ""

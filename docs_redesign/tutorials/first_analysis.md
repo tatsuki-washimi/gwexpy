@@ -69,6 +69,14 @@ print(channels["Sensor A"].unit)
 
 Open `timeseries.png`. Its horizontal axis represents time and its vertical axis shows voltage.
 You should see an oscillation mixed with noise, with larger fluctuations in Sensor B.
+
+```{figure} ../_static/images/first-analysis-timeseries.png
+:alt: Simulated time series of Sensor A and Sensor B over the first second.
+:width: 720px
+
+Expected output: oscillation mixed with random noise, with larger fluctuations visible in Sensor B.
+```
+
 `.crop(0, 1)` selects the interval from zero up to, but not including, one second.
 `.crop()` updates the collection it acts on. Here `.copy()` first creates another collection, so `channels` keeps the complete data.
 
