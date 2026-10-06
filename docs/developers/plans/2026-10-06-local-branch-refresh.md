@@ -43,7 +43,8 @@ PR #717の最新remote headへローカルbranchを同期した後、2つの計�
 
 Status: completed (verified: python3 -B <local-recovery>/probes.py)
 
-旧lazy import案はimport後のregistry登録契約を失うため、この形では採用しない。
+旧lazy import案はimport後のconstructor登録に差が出るため、現mainのon-demand登録実装との再評価候補として保管し、今回採用しない。
+現mainはplain importでregistry全体をbootstrapすることを要求しない。この差だけで現行の公開契約違反とは断定しない。
 rolling案はforced Bottleneckのsilent fallbackを修正する独立候補として保管した。今回の作業基盤へは混入させない。
 文書、Notebook、翻訳と依存条件の旧変更は保管済み、採用未判定とする。
 FFL修正は現mainに未統合であり、現行GWF処理とparallel/cache契約への再適合が必要である。
