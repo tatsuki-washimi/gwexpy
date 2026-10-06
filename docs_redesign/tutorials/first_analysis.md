@@ -60,7 +60,7 @@ Append this code to the end of `quickstart.py`, then run `python quickstart.py` 
 
 ```python
 first_second = channels.copy().crop(0, 1)
-time_plot = first_second.plot(ylabel="Voltage [V]")
+time_plot = first_second.plot(separate=False, ylabel="Voltage [V]")
 time_plot.gca().legend()
 time_plot.savefig("timeseries.png")
 print(channels["Sensor A"].sample_rate)
