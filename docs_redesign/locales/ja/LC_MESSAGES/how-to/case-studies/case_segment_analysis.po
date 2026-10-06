@@ -3,7 +3,6 @@
 # This file is distributed under the same license as the GWexpy package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
@@ -27,25 +26,32 @@ msgstr "ケーススタディ: イベント同期解析"
 #: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_segment_analysis.ipynb:10004
 #: 13ea03d74a064b6bbcabbbb325b19a3e
 msgid ""
-"This tutorial shows a real-world workflow: matching events from two "
-"different logs, applying clock corrections, and generating event-by-event "
-"summary plots."
+"This case study demonstrates an event-synchronized analysis workflow using "
+"synthetic data: defining analysis windows around candidate trigger "
+"timestamps, associating raw time series with each segment, and generating "
+"summary inspection plots via `SegmentTable.apply()`."
 msgstr ""
-"このチュートリアルでは、実務でのワークフローに即した例を紹介します。ログからのイベント抽出、時刻補正（模した例）、そしてイベントごとの解析・プロット生成までの一連の流れを"
-" `SegmentTable` で管理します。"
+"このケーススタディでは、合成データを用いてイベント同期解析のワークフローを実演します。候補トリガー時刻の周囲に解析窓（セグメント）を定義し、各セグメントに時系列データを紐付けて、`SegmentTable.apply()` による検査プロットの一括生成を行います。"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_segment_analysis.ipynb:10005
+msgid ""
+"Candidate triggers are represented by simulated event metadata (GPS trigger "
+"time and detection SNR from an upstream search pipeline). Note that the SNR "
+"column here represents pre-computed trigger metadata rather than an online "
+"matched-filter SNR computed from the raw waveform."
+msgstr ""
+"候補トリガーは、上流の探索パイプラインから得られた模擬イベントメタデータ（GPS トリガー時刻および検出 SNR）として定義しています。ここでの SNR 列は事前に付与されたトリガーメタデータであり、波形から算出されたマッチドフィルタ SNR ではない点に注意してください。"
 
 #: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_segment_analysis.ipynb:10006
 #: bfc8a1e8ac9148638051915e508f96dc
 msgid ""
-"The event windows are still represented by `gwpy.segments.Segment`, while "
-"gwexpy provides the table-management and `apply()`-driven batch workflow "
-"through `SegmentTable`. The division between GWpy base classes and gwexpy "
-"extensions is the same as in [SegmentTable: "
+"The event windows are represented by `gwpy.segments.Segment`, while "
+"gwexpy provides table management, series-column association, and batch "
+"processing through `SegmentTable`. The division between GWpy base classes "
+"and gwexpy extensions is the same as in [SegmentTable: "
 "Basics](../segments/intro_segment_table.ipynb)."
 msgstr ""
-"イベント窓は引き続き `gwpy.segments.Segment` で表され、gwexpy は `SegmentTable` を通じてテーブル管理と "
-"`apply()` 駆動のバッチワークフローを提供します。GWpy の基本クラスと gwexpy 拡張の役割分担は、[SegmentTable: "
-"基本](../segments/intro_segment_table.ipynb) と同じです。"
+"イベント窓は `gwpy.segments.Segment` で表され、gwexpy は `SegmentTable` を通じてテーブル管理、系列列（series column）の紐付け、およびバッチ処理を提供します。GWpy の基本クラスと gwexpy 拡張の役割分担は、[SegmentTable: 基本](../segments/intro_segment_table.ipynb) と同じです。"
 
 #: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_segment_analysis.ipynb:30002
 #: 9207bc2946fa465197572a5425cedef8
