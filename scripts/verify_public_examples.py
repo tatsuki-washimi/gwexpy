@@ -14,14 +14,16 @@ import tempfile
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
 
 os.environ.setdefault("MPLBACKEND", "Agg")
 
 
 def verify(source: Path, expected_version: str | None = None) -> None:
     """Run examples in a disposable directory, checking numerical and I/O results."""
+    # When testing against an installed package with --expected-version, do not
+    # prepend the local repository checkout to sys.path.
+    if expected_version is None and str(REPO_ROOT) not in sys.path:
+        sys.path.insert(0, str(REPO_ROOT))
     import matplotlib.pyplot as plt
     import numpy as np
     from astropy import units as u

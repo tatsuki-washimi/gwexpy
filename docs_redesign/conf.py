@@ -12,6 +12,12 @@ import sys
 from importlib.metadata import distributions
 from pathlib import Path
 
+# Unconditionally enforce headless and safe execution environment for Sphinx / MyST-NB
+# Must be set before importing gwexpy or matplotlib.pyplot.
+os.environ["MPLBACKEND"] = "module://matplotlib_inline.backend_inline"
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+os.environ["GWEXPY_DOCS_BUILD"] = "1"
+
 from gwexpy import __file__ as _gwexpy_module_path
 from gwexpy._version import __version__
 
@@ -98,18 +104,70 @@ myst_heading_anchors = 3
 # ``cache`` also lets the JA build reuse the executed EN notebooks instead of
 # running the same code a second time.
 nb_execution_mode = "cache"
+# Fitting and file-I/O examples exceed MyST-NB's 30-second default on the
+# GitHub Pages runner. Seasonal auto-ARIMA search (m=50) and per-bin
+# Student-t MLE spectrogram fits measured at ~170-225s locally, right at
+# the previous 180s ceiling and prone to timing out under CI load
+# variance; 600s gives real headroom without approaching the 60-minute
+# job timeout.
+nb_execution_timeout = int(os.environ.get("GWEXPY_NB_TIMEOUT", "600"))
+nb_execution_allow_errors = False
+nb_execution_raise_on_error = True
+nb_execution_show_tb = True
+
 # Never reuse numerical outputs across a different interpreter, dependency set,
-# or package source revision merely because notebook cell text is unchanged.
+# package source code, test data files, or execution configurations merely because
+# notebook cell text is unchanged.
 _runtime_source_hash = hashlib.sha256()
 for _source_path in sorted(Path(_gwexpy_module_path).parent.rglob("*.py")):
     _runtime_source_hash.update(
         str(_source_path.relative_to(Path(_gwexpy_module_path).parent)).encode()
     )
     _runtime_source_hash.update(_source_path.read_bytes())
+
+_repo_data_hash = hashlib.sha256()
+for _candidate_root in (_docs_root.parent, Path(_gwexpy_module_path).parent.parent):
+    if (_candidate_root / "tests").is_dir() or (_candidate_root / "docs").is_dir():
+        for _rel in (
+            "tests/data",
+            "tests/fixtures/data",
+            "tests/sample-data",
+            "docs/_static/samples",
+            "docs_redesign/_static/samples",
+        ):
+            _p = _candidate_root / _rel
+            if _p.is_dir():
+                for _f in sorted(_p.rglob("*")):
+                    if _f.is_file():
+                        _repo_data_hash.update(str(_f.relative_to(_candidate_root)).encode())
+                        _repo_data_hash.update(_f.read_bytes())
+        break
+
+_conf_execution_settings = {
+    "nb_execution_mode": nb_execution_mode,
+    "nb_execution_timeout": nb_execution_timeout,
+    "nb_execution_allow_errors": nb_execution_allow_errors,
+    "nb_execution_raise_on_error": nb_execution_raise_on_error,
+    "nb_execution_show_tb": nb_execution_show_tb,
+}
+_conf_execution_sha256 = hashlib.sha256(
+    json.dumps(_conf_execution_settings, sort_keys=True).encode()
+).hexdigest()
+
 _execution_environment = {
     "runtime_source_sha256": _runtime_source_hash.hexdigest(),
+    "repo_data_sha256": _repo_data_hash.hexdigest(),
+    "conf_execution_sha256": _conf_execution_sha256,
+    "conf_execution_settings": _conf_execution_settings,
+    "env_execution": {
+        "MPLBACKEND": os.environ.get("MPLBACKEND", ""),
+        "CUDA_VISIBLE_DEVICES": os.environ.get("CUDA_VISIBLE_DEVICES", ""),
+        "GWEXPY_DOCS_BUILD": os.environ.get("GWEXPY_DOCS_BUILD", ""),
+        "OPENBLAS_NUM_THREADS": os.environ.get("OPENBLAS_NUM_THREADS", ""),
+        "OMP_NUM_THREADS": os.environ.get("OMP_NUM_THREADS", ""),
+        "MKL_NUM_THREADS": os.environ.get("MKL_NUM_THREADS", ""),
+    },
     "python": sys.version,
-    "source_revision": _build_identity["source_revision"],
     "packages": sorted(
         (d.metadata["Name"], d.version) for d in distributions() if d.metadata["Name"]
     ),
@@ -120,16 +178,6 @@ _execution_fingerprint = hashlib.sha256(
 nb_execution_cache_path = str(
     _docs_root / "_build/jupyter-cache" / _execution_fingerprint
 )
-# Fitting and file-I/O examples exceed MyST-NB's 30-second default on the
-# GitHub Pages runner. Seasonal auto-ARIMA search (m=50) and per-bin
-# Student-t MLE spectrogram fits measured at ~170-225s locally, right at
-# the previous 180s ceiling and prone to timing out under CI load
-# variance; 600s gives real headroom without approaching the 60-minute
-# job timeout.
-nb_execution_timeout = 600
-nb_execution_allow_errors = False
-nb_execution_raise_on_error = True
-nb_execution_show_tb = True
 
 # -- Internationalization (gettext single-source) ----------------------------
 # English is the single source; Japanese is delivered via gettext catalogs in

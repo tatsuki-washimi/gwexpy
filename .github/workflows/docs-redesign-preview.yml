@@ -33,6 +33,9 @@ env:
   OPENBLAS_NUM_THREADS: "1"
   OMP_NUM_THREADS: "1"
   MKL_NUM_THREADS: "1"
+  MPLBACKEND: "module://matplotlib_inline.backend_inline"
+  CUDA_VISIBLE_DEVICES: ""
+  GWEXPY_DOCS_BUILD: "1"
 
 jobs:
   publish-preview:
