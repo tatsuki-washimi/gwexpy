@@ -110,7 +110,7 @@ nb_execution_mode = "cache"
 # the previous 180s ceiling and prone to timing out under CI load
 # variance; 600s gives real headroom without approaching the 60-minute
 # job timeout.
-nb_execution_timeout = 600
+nb_execution_timeout = int(os.environ.get("GWEXPY_NB_TIMEOUT", "600"))
 nb_execution_allow_errors = False
 nb_execution_raise_on_error = True
 nb_execution_show_tb = True
