@@ -91,7 +91,7 @@ def test_docs_redesign_cache_fingerprint_invalidation_contract(monkeypatch):
     monkeypatch.undo()
 
     # 2. Modifying Python source code invalidates runtime_source_sha256 and fingerprint
-    probe_source = Path("gwexpy/_test_fingerprint_probe.py")
+    probe_source = ROOT / "gwexpy" / "_test_fingerprint_probe.py"
     try:
         probe_source.write_text("# probe for fingerprint invalidation\n")
         env_source_changed = runpy.run_path(str(REDESIGN_CONF_PATH))
@@ -105,7 +105,7 @@ def test_docs_redesign_cache_fingerprint_invalidation_contract(monkeypatch):
             probe_source.unlink()
 
     # 3. Modifying sample data invalidates repo_data_sha256 and fingerprint
-    probe_data = Path("docs/_static/samples/_test_fingerprint_probe.csv")
+    probe_data = ROOT / "docs" / "_static" / "samples" / "_test_fingerprint_probe.csv"
     try:
         probe_data.write_text("x,y\n1,2\n")
         env_data_changed = runpy.run_path(str(REDESIGN_CONF_PATH))
