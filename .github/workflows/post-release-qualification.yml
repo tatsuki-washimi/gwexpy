@@ -464,7 +464,7 @@ jobs:
           PY
 
       - name: Upload exact public payload
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: post-release-public-payload-${{ steps.inputs.outputs.expected_source_sha }}
           path: ${{ runner.temp }}/public-payload
@@ -472,7 +472,7 @@ jobs:
           retention-days: 30
 
       - name: Upload identity evidence separately
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: post-release-identity-evidence-${{ steps.inputs.outputs.expected_source_sha }}
           path: ${{ runner.temp }}/identity-evidence
@@ -616,7 +616,7 @@ jobs:
 
       - name: Upload qualification cell report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: post-release-report-${{ matrix.cell }}
           path: |
@@ -699,7 +699,7 @@ jobs:
 
       - name: Upload qualification cell report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: post-release-report-${{ matrix.cell }}
           path: |
@@ -771,7 +771,7 @@ jobs:
 
       - name: Upload qualification cell report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: post-release-report-sdist-3.12-claims
           path: |
@@ -852,7 +852,7 @@ jobs:
 
       - name: Upload qualification cell report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: post-release-report-${{ matrix.cell }}
           path: |
@@ -941,7 +941,7 @@ jobs:
 
       - name: Upload qualification cell report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: post-release-report-scientific-3.11-wheel
           path: |
@@ -1015,7 +1015,7 @@ jobs:
 
       - name: Upload qualification cell report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: post-release-report-docs-en-ja-3.11-wheel
           path: |
@@ -1113,7 +1113,7 @@ jobs:
 
       - name: Upload aggregate qualification evidence
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: post-release-qualification-aggregate
           path: |

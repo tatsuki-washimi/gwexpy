@@ -187,7 +187,7 @@ jobs:
           sha256sum LICENSE.txt | awk '{print $1}' > release-sidecars/LICENSE.sha256
 
       - name: Upload PyPI payload only
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: release-payload-${{ needs.verify.outputs.source_sha }}
           path: source/release-payload
@@ -196,7 +196,7 @@ jobs:
 
       - name: Upload legacy sidecars
         if: needs.verify.outputs.promotion_enabled != 'true'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: release-sidecars-${{ needs.verify.outputs.source_sha }}
           path: source/release-sidecars
@@ -205,7 +205,7 @@ jobs:
 
       - name: Upload promotion distribution sidecar
         if: needs.verify.outputs.promotion_enabled == 'true'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: release-sidecar-distribution-sha256.json-${{ needs.verify.outputs.source_sha }}
           path: source/release-sidecars/distribution-sha256.json
@@ -214,7 +214,7 @@ jobs:
 
       - name: Upload promotion license sidecar
         if: needs.verify.outputs.promotion_enabled == 'true'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: release-sidecar-LICENSE.sha256-${{ needs.verify.outputs.source_sha }}
           path: source/release-sidecars/LICENSE.sha256
@@ -308,7 +308,7 @@ jobs:
           PY
 
       - name: Upload fixed-name smoke report
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: release-smoke-${{ needs.verify.outputs.source_sha }}-python-${{ matrix.python-version }}-${{ matrix.distribution }}
           path: ${{ runner.temp }}/python-${{ matrix.python-version }}-${{ matrix.distribution }}.json
@@ -556,7 +556,7 @@ jobs:
             --junit "$JUNIT"
 
       - name: Upload qualification cell evidence
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: release-qualification-${{ needs.verify.outputs.source_sha }}-${{ matrix.cell }}
           path: ${{ runner.temp }}/qualification-report/qualification.json
@@ -714,7 +714,7 @@ jobs:
             --output "$OUTPUT"
 
       - name: Upload qualification manifest
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: ${{ steps.qualification_contract.outputs.artifact_prefix }}-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/qualification-manifest.json
@@ -832,7 +832,7 @@ jobs:
             --report "$REPORT"
 
       - name: Upload DiagGUI cell evidence
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: release-diaggui-qualification-${{ needs.verify.outputs.source_sha }}-${{ matrix.cell }}
           path: ${{ runner.temp }}/diaggui-report/diaggui-qualification.json
@@ -896,7 +896,7 @@ jobs:
 
       - name: Upload DiagGUI qualification manifest
         if: (needs.verify.outputs.version == '0.2.4' || needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.diaggui_qualification == 'true')
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: ${{ needs.verify.outputs.promotion_enabled == 'true' && 'gwexpy-diaggui-qualification-evidence-v1' || (needs.verify.outputs.version == '0.2.4' && 'v024-diaggui-qualification-evidence' || 'v025-diaggui-qualification-evidence') }}-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/diaggui-qualification-manifest.json
@@ -984,7 +984,7 @@ jobs:
             --artifact "$artifact" --junit "$JUNIT" --report "$REPORT"
 
       - name: Upload cross-format I/O cell evidence
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: release-cross-format-io-${{ needs.verify.outputs.source_sha }}-${{ matrix.cell }}
           path: ${{ runner.temp }}/cross-format-io-report/cross-format-io.json
@@ -1036,7 +1036,7 @@ jobs:
 
       - name: Upload I/O qualification manifest
         if: (needs.verify.outputs.version == '0.2.5' || needs.verify.outputs.cross_format_io == 'true')
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: ${{ needs.verify.outputs.promotion_enabled == 'true' && 'gwexpy-cross-format-io-evidence-v1' || 'v025-cross-format-io-evidence' }}-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/cross-format-io-manifest.json
@@ -1118,7 +1118,7 @@ jobs:
 
       - name: Upload exact-candidate historical gate evidence
         if: needs.verify.outputs.version == '0.2.5'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: v025-historical-74-gate-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/historical-74/evidence
@@ -1127,7 +1127,7 @@ jobs:
 
       - name: Upload failed historical regression JUnit diagnostics
         if: failure() && needs.verify.outputs.version == '0.2.5'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: v025-historical-74-fixed-junit-diagnostics-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/historical-74/*/fixed.xml
@@ -1219,7 +1219,7 @@ jobs:
           PYCODE
 
       - name: Upload 90-day integration evidence
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: ${{ needs.verify.outputs.promotion_enabled == 'true' && 'gwexpy-integration-evidence-v1' || needs.verify.outputs.artifact_prefix }}-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/release-evidence/aggregate.json
@@ -1261,7 +1261,7 @@ jobs:
             --version "${{ needs.verify.outputs.version }}" --repo-root source \
             --output "${{ runner.temp }}/promotion-manifest/promotion-manifest.json"
       - name: Upload the sole new manifest artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: release-promotion-manifest-${{ needs.verify.outputs.source_sha }}
           path: ${{ runner.temp }}/promotion-manifest/promotion-manifest.json
