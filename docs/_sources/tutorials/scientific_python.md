@@ -101,6 +101,13 @@ first_channel = channels["Sensor A"]
 plain_values = first_channel.value
 ```
 
+```{figure} ../_static/images/scientific-python-asd.png
+:alt: Multi-channel ASD produced from a TimeSeriesDict.
+:width: 720px
+
+Multi-channel ASD calculated directly from a TimeSeriesDict, preserving units and channel names.
+```
+
 `channels["Sensor A"]` selects a `TimeSeries`; `spectra["Sensor A"]` selects its `FrequencySeries`.
 The ASD figure should show the shared 40 Hz tone and the higher noise floor in Sensor B.
 All channels in this example have the same sample rate, start time, duration, and unit.

@@ -455,7 +455,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.5</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/3439fba41dcc644af12870d91bee794524098fb4">3439fba4</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/c2898762ca68e20a1a241fffb3c3262b0a27290b">c2898762</a>
   · 入門例の検証対象 0.2.4
   · <a href="../about/documentation_version.html">版情報</a>
   · <a href="../about/known_limitations.html">既知の制限</a>
@@ -638,11 +638,25 @@ PNG は画像ビューア、JSON はテキストエディタで開いてくだ�
 <p>ASD の図では、両チャンネルの 40 Hz 付近に線が現れ、<code class="docutils literal notranslate"><span class="pre">X1:SENSOR</span></code> の広帯域ノイズフロアが高くなります。
 単位は V/√Hz です。
 Hann 窓、2 秒の FFT 区間、1 秒のオーバーラップ、Welch 平均を使い、周波数ビンの間隔は 0.5 Hz になります。</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../_images/commissioner-asd.png"><img alt="40 Hz のピークを示す X1:REFERENCE と X1:SENSOR の ASD 比較。" src="../_images/commissioner-asd.png" style="width: 720px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">2 つのチャンネルの ASD：両方に 40 Hz の線が現れ、X1:SENSOR の広帯域ノイズフロアが高くなっています。</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 <p>2 枚目は二乗コヒーレンスです。
 各周波数での線形な関連を 0 から 1 の無次元量で示します。
 共通の 40 Hz の正弦波付近で高くなるはずです。
 その周囲では独立ノイズにより小さく変動する推定値になり、有限回の平均では正確にゼロにはなりません。
 高い値は共通のスペクトル成分を示しますが、それだけで物理的な結合の方向は判断できません。</p>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="../_images/commissioner-coherence.png"><img alt="X1:REFERENCE と X1:SENSOR の二乗コヒーレンス。" src="../_images/commissioner-coherence.png" style="width: 720px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">二乗コヒーレンス：40 Hz 付近の高いコヒーレンスは、参照とセンサ間の共通トーンを示しています。</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 <p><code class="docutils literal notranslate"><span class="pre">analysis-parameters.json</span></code> は入力ファイル、チャンネル選択、絶対時刻の切出し範囲、FFT 設定、合成データのシード、Python とパッケージのバージョンを記録します。
 計算を再実行できるように、図とともに保存してください。</p>
 </section>

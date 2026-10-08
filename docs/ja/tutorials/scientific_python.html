@@ -455,7 +455,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.5</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/3439fba41dcc644af12870d91bee794524098fb4">3439fba4</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/c2898762ca68e20a1a241fffb3c3262b0a27290b">c2898762</a>
   · 入門例の検証対象 0.2.4
   · <a href="../about/documentation_version.html">版情報</a>
   · <a href="../about/known_limitations.html">既知の制限</a>
@@ -566,6 +566,13 @@ GWexpy の <code class="docutils literal notranslate"><span class="pre">fftlengt
 <span class="n">plain_values</span> <span class="o">=</span> <span class="n">first_channel</span><span class="o">.</span><span class="n">value</span>
 </pre></div>
 </div>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../_images/scientific-python-asd.png"><img alt="TimeSeriesDict から生成されたマルチチャンネル ASD。" src="../_images/scientific-python-asd.png" style="width: 720px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">単位とチャンネル名を保持したまま TimeSeriesDict から直接計算されたマルチチャンネル ASD。</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 <p><code class="docutils literal notranslate"><span class="pre">channels[&quot;Sensor</span> <span class="pre">A&quot;]</span></code> は <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>、<code class="docutils literal notranslate"><span class="pre">spectra[&quot;Sensor</span> <span class="pre">A&quot;]</span></code> はその <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> を選択します。
 ASD の図には共通の 40 Hz の線が現れ、Sensor B のノイズフロアが高くなるはずです。
 この例の全チャンネルはサンプルレート、開始時刻、長さ、単位が共通です。

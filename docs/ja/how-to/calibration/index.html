@@ -549,7 +549,7 @@
               
   <div class="gwexpy-build-status" role="note" aria-label="ドキュメントの版情報">
   <span>開発版ドキュメント · 0.2.5</span>
-  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/3439fba41dcc644af12870d91bee794524098fb4">3439fba4</a>
+  <a href="https://github.com/tatsuki-washimi/gwexpy/commit/c2898762ca68e20a1a241fffb3c3262b0a27290b">c2898762</a>
   · 入門例の検証対象 0.2.4
   · <a href="../../about/documentation_version.html">版情報</a>
   · <a href="../../about/known_limitations.html">既知の制限</a>
@@ -573,7 +573,7 @@
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-pulse sd-mr-1" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.002 2.5a.75.75 0 0 1 .691.464l6.302 15.305 2.56-6.301a.75.75 0 0 1 .695-.468h4a.75.75 0 0 1 0 1.5h-3.495l-3.06 7.532a.75.75 0 0 1-1.389.004L8.997 5.21l-3.054 7.329A.75.75 0 0 1 5.25 13H.75a.75.75 0 0 1 0-1.5h4l3.558-8.538a.75.75 0 0 1 .694-.462Z"></path></svg> Calibration Units Contract</div>
-<p class="sd-card-text">Core tutorial: Apply frequency response <span class="math notranslate nohighlight">\(C(f)\)</span> [count / m] to complex spectra and spectral densities while enforcing Astropy physical unit contracts and defensive exception guards.</p>
+<p class="sd-card-text">コアチュートリアル：Astropy の物理単位契約と防御的例外ガードを強制しながら、周波数応答 <span class="math notranslate nohighlight">\(C(f)\)</span> [count / m] を複素スペクトルやスペクトル密度へ適用します。</p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="calibration_units_contract.html"><span class="doc">校正伝達関数と物理単位契約</span></a></div>
 </div>
@@ -591,7 +591,7 @@
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-file-code sd-mr-1" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3a2 2 0 0 1 2-2h9.982a2 2 0 0 1 1.414.586l4.018 4.018A2 2 0 0 1 21 7.018V21a2 2 0 0 1-2 2H4.75a.75.75 0 0 1 0-1.5H19a.5.5 0 0 0 .5-.5V8.5h-4a2 2 0 0 1-2-2v-4H5a.5.5 0 0 0-.5.5v6.25a.75.75 0 0 1-1.5 0Zm12-.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 0-.146-.336l-4.018-4.018A.5.5 0 0 0 15 2.5Z"></path><path d="M4.53 12.24a.75.75 0 0 1-.039 1.06l-2.639 2.45 2.64 2.45a.75.75 0 1 1-1.022 1.1l-3.23-3a.75.75 0 0 1 0-1.1l3.23-3a.75.75 0 0 1 1.06.04Zm3.979 1.06a.75.75 0 1 1 1.02-1.1l3.231 3a.75.75 0 0 1 0 1.1l-3.23 3a.75.75 0 1 1-1.021-1.1l2.639-2.45-2.64-2.45Z"></path></svg> DTT XML Calibration</div>
-<p class="sd-card-text">Case study: Ingest and reuse pre-measured calibration transfer function products directly from LIGO Diagnostic Test Tool (DTT) XML files.</p>
+<p class="sd-card-text">ケーススタディ：LIGO Diagnostic Test Tool (DTT) XML ファイルから事前測定された校正伝達関数プロダクトを直接読み込んで再利用します。</p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="../case-studies/case_dttxml_calibration.html"><span class="doc">gwexpy で DTT XML ファイルを読み込む</span></a></div>
 </div>
@@ -618,32 +618,32 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>Calibration Units Contract</strong> (Tutorial)</p></td>
+<tr class="row-even"><td><p><strong>校正単位契約</strong> (チュートリアル)</p></td>
 <td><p>インメモリ系列の校正</p></td>
 <td><p>日常のスクリプト解析</p></td>
 <td><p>単位安全性、逆方向ガード、グリッド不一致エラー</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>Calibration Pipeline</strong> (Case Study)</p></td>
+<tr class="row-odd"><td><p><strong>校正パイプライン</strong> (ケーススタディ)</p></td>
 <td><p>実験的測定</p></td>
 <td><p>ハードウェアコミッショニング</p></td>
 <td><p>スウェプト正弦波解析、アクチュエータ校正、伝達関数モデル化</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>DTT XML Calibration</strong> (Case Study)</p></td>
+<tr class="row-even"><td><p><strong>DTT XML 校正</strong> (ケーススタディ)</p></td>
 <td><p>ファイルI/O・レガシー相互運用</p></td>
 <td><p>コミッショニングデータの再利用</p></td>
 <td><p>XML伝達関数をGWexpyコンテナへパース</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>Physics Validation</strong> (Case Study)</p></td>
+<tr class="row-odd"><td><p><strong>物理妥当性検証</strong> (ケーススタディ)</p></td>
 <td><p>コンテナテストスイート</p></td>
 <td><p>品質保証</p></td>
-<td><p>Broad physics invariant assertions</p></td>
+<td><p>広範な物理不変量のアサーション</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </section>
 <section id="core-mathematical-conventions">
-<h2>Core Mathematical Conventions<a class="headerlink" href="#core-mathematical-conventions" title="Link to this heading">#</a></h2>
+<h2>主要な数学的規約<a class="headerlink" href="#core-mathematical-conventions" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><strong>結合応答</strong>: 物理単位 <span class="math notranslate nohighlight">\(\text{ct}/\text{m}\)</span> を持つ結合応答関数 <span class="math notranslate nohighlight">\(C(f) = Y_{\text{count}}(f) / X_{\text{m}}(f)\)</span>。</p></li>
 <li><p><strong>複素スペクトル校正</strong>: 物理変位（メートル）を復元する <span class="math notranslate nohighlight">\(X(f) = Y(f) / C(f)\)</span>。</p></li>
@@ -706,7 +706,7 @@
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analysis-pathways">解析パス</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#role-separation-and-scope">役割分担とスコープ</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core-mathematical-conventions">Core Mathematical Conventions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core-mathematical-conventions">主要な数学的規約</a></li>
 </ul>
   </nav></div>
 

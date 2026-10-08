@@ -60,8 +60,8 @@ Append this code to the end of `quickstart.py`, then run `python quickstart.py` 
 
 ```python
 first_second = channels.copy().crop(0, 1)
-time_plot = first_second.plot(ylabel="Voltage [V]")
-time_plot.gca().legend()
+time_plot = first_second.plot(separate=False, ylabel="Voltage [V]")
+time_plot.gca().legend(["Sensor A", "Sensor B"])
 time_plot.savefig("timeseries.png")
 print(channels["Sensor A"].sample_rate)
 print(channels["Sensor A"].unit)
@@ -69,6 +69,14 @@ print(channels["Sensor A"].unit)
 
 Open `timeseries.png`. Its horizontal axis represents time and its vertical axis shows voltage.
 You should see an oscillation mixed with noise, with larger fluctuations in Sensor B.
+
+```{figure} ../_static/images/first-analysis-timeseries.png
+:alt: Simulated time series of Sensor A and Sensor B over the first second.
+:width: 720px
+
+Expected output: oscillation mixed with random noise, with larger fluctuations visible in Sensor B.
+```
+
 `.crop(0, 1)` selects the interval from zero up to, but not including, one second.
 `.crop()` updates the collection it acts on. Here `.copy()` first creates another collection, so `channels` keeps the complete data.
 

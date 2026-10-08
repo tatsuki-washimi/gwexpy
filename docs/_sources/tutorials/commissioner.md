@@ -62,10 +62,24 @@ The ASD figure shows a line near 40 Hz in both channels and a higher broadband f
 Its unit is V per square root Hz.
 The script uses a Hann window, 2-second FFT segments, 1-second overlap, and Welch averaging; the frequency-bin spacing is 0.5 Hz.
 
+```{figure} ../_static/images/commissioner-asd.png
+:alt: ASD comparison between X1:REFERENCE and X1:SENSOR showing the 40 Hz peak.
+:width: 720px
+
+ASD of the two channels: both show the 40 Hz line, with a higher broadband noise floor in X1:SENSOR.
+```
+
 The second figure shows magnitude-squared coherence, a dimensionless measure between zero and one of linear association at each frequency.
 Coherence should rise near the shared 40 Hz tone.
 Away from that tone, the independent noise produces a smaller, fluctuating estimate; finite averaging does not give exactly zero.
 A high value identifies shared spectral content, but does not by itself establish the direction of a physical coupling.
+
+```{figure} ../_static/images/commissioner-coherence.png
+:alt: Magnitude-squared coherence between X1:REFERENCE and X1:SENSOR.
+:width: 720px
+
+Magnitude-squared coherence: high coherence near 40 Hz indicates the shared tone between reference and sensor.
+```
 
 `analysis-parameters.json` records the source file, channel choices, absolute crop bounds, FFT settings, the seeds used for the synthetic data, and the Python and package versions.
 Keep this file with the figures so that the calculation can be repeated.
