@@ -234,7 +234,12 @@ def resolve_member_kind(mod_path: str, cls_name: str, attr: str) -> dict[str, An
         except AttributeError:
             out["error"] = "AttributeError: missing on class"
             return out
-        if isinstance(static, property):
+        static_type = type(static).__name__
+        if static_type == "UnifiedReadWriteMethod":
+            out["member_kind"] = "unified_io_method"
+            out["member_kind_detail"] = "astropy.io.registry.UnifiedReadWriteMethod"
+            out["callable"] = True
+        elif isinstance(static, property):
             out["member_kind"] = "property"
             out["callable"] = False
         elif isinstance(static, classmethod):
