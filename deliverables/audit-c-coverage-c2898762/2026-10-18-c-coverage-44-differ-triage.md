@@ -157,7 +157,7 @@ GWexpy C監査母集団521件（並列バッチ508件＋事前13件）におい�
 
 1. **実在するコミットでの是正（23件）**:
    - コミット [`1fcc72d25f750f6eab69d62778034699cffbf2ff`](https://github.com/tatsuki-washimi/gwexpy/commit/1fcc72d25f750f6eab69d62778034699cffbf2ff) にて、`shift` (5件), `value_at` (6件), `is_contiguous` (6件), `crop` (3件), 2D `diff` (3件) のハーネス偽陽性を解消し、`verified` (269件) へ移行済み。
-2. **製品不具合・改善の今後起票候補（3件、親Issue #765 配下）**:
+2. **製品不具合・改善の今後起票候補（4候補・対象5 API、親Issue #765 配下）**:
    - **候補1（`normalize_series` 辞書真偽値曖昧性およびゼロ値フォールバック）**:
      `gwexpy/gui/plotting/normalize.py` L27 `data = val.get("data") or val.get("value")` において：
      - 複数要素配列 `np.array([1., 2., 3.])` で `ValueError: The truth value of an array with more than one element is ambiguous` が発生。
@@ -171,5 +171,5 @@ GWexpy C監査母集団521件（並列バッチ508件＋事前13件）におい�
      画像系列における `step()` 呼出しに対し、`NotImplementedError` または適切な非推奨警告を送出する（GWpy互換ポリシーに基づく検討）。
    - **候補4（`TimeSeries.q_gram` 短データ時の境界保護）**:
      短データ（1024点）における上流由来の `IndexError` に対し、入力長事前検証と明確な診断メッセージの提供を検討する。
-3. **監査ハーネスの次期改善候補（残余17件）**:
+3. **監査ハーネスの次期改善候補（残余16 API）**:
    - `Plane2D.append`、`get_model`、HDF5コレクションヘルパー、音声行列読込のフィクスチャ・期待値をAPI契約に即して補正し、次期PRで `verified` へ移行する。
