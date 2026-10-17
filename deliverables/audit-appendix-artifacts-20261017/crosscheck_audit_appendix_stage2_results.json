@@ -1,0 +1,221 @@
+{
+  "pin_commit": "c2898762ca68e20a1a241fffb3c3262b0a27290b",
+  "artifact_dir": ".",
+  "sha256": {
+    "pass2_population": "7c3dfb460632080399866ca033e59cd742b49254a71a8569ea281877f7fb74bc",
+    "pass1_population": "d08cae94bb1ddef548d77881301db3510948e1ebb8a042383f5e49d4bb73995f",
+    "pass2_api_status": "cbce96adc07ec8e8b2dfd4d3706b8ccf5fb71310b8d90212c617af87d8626b84",
+    "pass2_module_functions": "86c0969bdf260670a4e1835def2d58ecdcdfcca11462f0ab64a19225887ca99c"
+  },
+  "checks": {
+    "b_handlers": {
+      "count": 155,
+      "expected_count": 155,
+      "disposition_counts": {
+        "no_change": 141,
+        "confirmed_issue": 10,
+        "further_verification": 4
+      },
+      "expected_disposition_counts": {
+        "no_change": 141,
+        "confirmed_issue": 10,
+        "further_verification": 4
+      },
+      "handler_ids_complete": true,
+      "missing_handler_ids": [],
+      "extra_handler_ids": []
+    },
+    "b_c1_handler_locations": {
+      "b_count": 155,
+      "c1_count": 155,
+      "sequence_identical": true,
+      "first_mismatch_index": null
+    },
+    "b_flagged_handler_tracking": {
+      "flagged_count": 14,
+      "expected_flagged_count": 14,
+      "unallocated_handler_ids": [],
+      "wrong_candidate_id": [],
+      "handlers": [
+        {
+          "handler_id": "H002",
+          "location": "gwexpy/analysis/threshold.py:372",
+          "disposition": "confirmed_issue",
+          "candidate_id": "C6",
+          "tracking": "#767",
+          "expected_candidate_id": "C6"
+        },
+        {
+          "handler_id": "H018",
+          "location": "gwexpy/gui/streaming.py:325",
+          "disposition": "further_verification",
+          "candidate_id": "C13",
+          "tracking": "#788",
+          "expected_candidate_id": "C13"
+        },
+        {
+          "handler_id": "H019",
+          "location": "gwexpy/gui/streaming.py:312",
+          "disposition": "further_verification",
+          "candidate_id": "C13",
+          "tracking": "#788",
+          "expected_candidate_id": "C13"
+        },
+        {
+          "handler_id": "H026",
+          "location": "gwexpy/interop/frequency.py:187",
+          "disposition": "confirmed_issue",
+          "candidate_id": "C3",
+          "tracking": "#774",
+          "expected_candidate_id": "C3"
+        },
+        {
+          "handler_id": "H027",
+          "location": "gwexpy/interop/gwinc_.py:223",
+          "disposition": "confirmed_issue",
+          "candidate_id": "C5",
+          "tracking": "#780",
+          "expected_candidate_id": "C5"
+        },
+        {
+          "handler_id": "H028",
+          "location": "gwexpy/interop/metpy_.py:73",
+          "disposition": "further_verification",
+          "candidate_id": "C14",
+          "tracking": "#792",
+          "expected_candidate_id": "C14"
+        },
+        {
+          "handler_id": "H029",
+          "location": "gwexpy/interop/metpy_.py:88",
+          "disposition": "further_verification",
+          "candidate_id": "C14",
+          "tracking": "#792",
+          "expected_candidate_id": "C14"
+        },
+        {
+          "handler_id": "H038",
+          "location": "gwexpy/interop/root_.py:74",
+          "disposition": "confirmed_issue",
+          "candidate_id": "C2",
+          "tracking": "#773",
+          "expected_candidate_id": "C2"
+        },
+        {
+          "handler_id": "H063",
+          "location": "gwexpy/spectrogram/collections.py:256",
+          "disposition": "confirmed_issue",
+          "candidate_id": "C7",
+          "tracking": "#771",
+          "expected_candidate_id": "C7"
+        },
+        {
+          "handler_id": "H064",
+          "location": "gwexpy/spectrogram/collections.py:675",
+          "disposition": "confirmed_issue",
+          "candidate_id": "C7",
+          "tracking": "#771",
+          "expected_candidate_id": "C7"
+        },
+        {
+          "handler_id": "H140",
+          "location": "gwexpy/timeseries/pipeline.py:286",
+          "disposition": "confirmed_issue",
+          "candidate_id": "C8",
+          "tracking": "#769",
+          "expected_candidate_id": "C8"
+        },
+        {
+          "handler_id": "H143",
+          "location": "gwexpy/timeseries/preprocess.py:1288",
+          "disposition": "confirmed_issue",
+          "candidate_id": "C4",
+          "tracking": "#768",
+          "expected_candidate_id": "C4"
+        },
+        {
+          "handler_id": "H149",
+          "location": "gwexpy/types/series_matrix_io.py:173",
+          "disposition": "confirmed_issue",
+          "candidate_id": "C10",
+          "tracking": "#775",
+          "expected_candidate_id": "C10"
+        },
+        {
+          "handler_id": "H151",
+          "location": "gwexpy/types/series_matrix_io.py:363",
+          "disposition": "confirmed_issue",
+          "candidate_id": "C10",
+          "tracking": "#775",
+          "expected_candidate_id": "C10"
+        }
+      ]
+    },
+    "b_no_change_note_buckets": {
+      "distinct_note_texts": 3,
+      "counts_by_note": [
+        {
+          "count": 77,
+          "note_prefix": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+        },
+        {
+          "count": 53,
+          "note_prefix": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or"
+        },
+        {
+          "count": 11,
+          "note_prefix": "Optional dependency or fallback import guard at module/helper level; downstream usage checks availability or uses requir"
+        }
+      ],
+      "interpretation": "Disposition labels verified; repeated generic notes do not prove per-handler runtime correctness."
+    },
+    "c_api_pass2": {
+      "pass2_jsonl_total_rows": 3046,
+      "expected_total_rows": 3046,
+      "kind_counts": {
+        "api": 2357,
+        "dynamic": 16,
+        "io": 277,
+        "file": 396
+      },
+      "pass1_api_rows": 2357,
+      "unique_member_ids": 2219,
+      "expected_unique_member_ids": 2219,
+      "missing_member_ids_in_pass2": [],
+      "status_per_unique_member_id": {
+        "pass2_static_pattern_recheck": 1850,
+        "pass2_not_evaluated": 361,
+        "pass1_evidence_reused": 2,
+        "pass2_executed": 6
+      },
+      "pass2_executed_member_ids": [
+        "gwexpy.timeseries.collections.TimeSeriesDict/to_matrix",
+        "gwexpy.timeseries.collections.TimeSeriesList/to_matrix",
+        "gwexpy.timeseries.pipeline.Pipeline/fit_transform",
+        "gwexpy.timeseries.pipeline.StandardizeTransform/fit",
+        "gwexpy.timeseries.pipeline.StandardizeTransform/fit_transform",
+        "gwexpy.timeseries.pipeline.StandardizeTransform/transform"
+      ],
+      "pass1_evidence_reused_member_ids": [
+        "gwexpy.timeseries.matrix.TimeSeriesMatrix/spectrogram2",
+        "gwexpy.timeseries.timeseries.TimeSeries/spectrogram2"
+      ],
+      "pass2_not_evaluated_only_member_ids_count": 361
+    },
+    "c_conventional_module_functions": {
+      "count": 162,
+      "expected_count": 162,
+      "note": "Listed in pass2-module-functions.txt; not rows in pass2-api-status.jsonl."
+    },
+    "b_d_surface_2650": {
+      "b_row_count": 2650,
+      "d_row_count": 2650,
+      "expected_row_count": 2650,
+      "id_order_identical": true,
+      "field_mismatch_count": 0,
+      "first_mismatches": [],
+      "interpretation": "Record consistency between B embedded ledger and D export; not independent behavioral reproduction."
+    }
+  },
+  "passed": true
+}
