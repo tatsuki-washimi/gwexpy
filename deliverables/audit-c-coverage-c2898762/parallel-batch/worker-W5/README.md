@@ -6,14 +6,14 @@
 - **Attribute Access / Weak**: 9
 - **Smoke Only**: 4
 - **Environment Blocked**: 0
-- **Verified APIs**: 29
-- **Differ APIs**: 5
+- **Verified APIs**: 34
+- **Differ APIs**: 0
 - **Contract Pending APIs**: 15
 - **GWpy Value Parity**: 31
 - **GWpy Exception Parity**: 18
 - **GWpy Differs**: 0
 - **Incomparable / Extension**: 0
-- **Execution Duration**: 1.27s
+- **Execution Duration**: 1.31s
 
 ## Deliverable Files
 - `assigned-identifiers.jsonl`: Original input manifest (49 lines)

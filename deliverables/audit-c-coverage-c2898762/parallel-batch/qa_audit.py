@@ -182,7 +182,7 @@ def main() -> int:
         "gwexpy.signal.fft_args.check_deprecated_kwargs",
     }
     verified_rows = [r for r in ledger if r.get("disposition") == "verified"]
-    assert len(verified_rows) == 246, f"Assertion 14 Failed: Expected 246 verified rows (233 new + 13 prior), got {len(verified_rows)}"
+    assert len(verified_rows) == 269, f"Assertion 14 Failed: Expected 269 verified rows (256 new + 13 prior), got {len(verified_rows)}"
     for r in verified_rows:
         ident = r["identifier"]
         assert ident not in weak_general, f"Assertion 14 Failed: weak general function {ident} in verified"

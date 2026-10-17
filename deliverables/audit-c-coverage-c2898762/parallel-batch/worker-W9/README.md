@@ -13,7 +13,7 @@
 - **GWpy Exception Parity**: 0
 - **GWpy Differs**: 0
 - **Incomparable / Extension**: 65
-- **Execution Duration**: 0.41s
+- **Execution Duration**: 0.6s
 
 ## Deliverable Files
 - `assigned-identifiers.jsonl`: Original input manifest (65 lines)

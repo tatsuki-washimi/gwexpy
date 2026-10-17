@@ -19,8 +19,8 @@
     "fixture_setup_failed": 40,
     "environment_blocked": 19
   },
-  "total_verified": 233,
-  "total_differ": 44,
+  "total_verified": 256,
+  "total_differ": 21,
   "total_contract_pending": 212,
   "total_environment_blocked": 19,
   "total_not_tested": 0,
@@ -45,8 +45,44 @@
     "incomparable": 270,
     "not_applicable": 1
   },
-  "duration_seconds": 2.83,
+  "duration_seconds": 2.62,
   "worker_results": {
+    "worker-W7": {
+      "worker_id": "worker-W7",
+      "assigned_count": 42,
+      "trials_total": 126,
+      "execution_status": {
+        "actual_call": 32,
+        "attribute_access": 0,
+        "smoke_only": 9,
+        "contract_pending": 1,
+        "environment_blocked": 0
+      },
+      "reachability_status": {
+        "smoke_signature_only": 9,
+        "reached_and_returned": 32,
+        "reachability_unresolved": 1
+      },
+      "verified_api_count": 26,
+      "differ_api_count": 6,
+      "contract_pending_count": 10,
+      "environment_blocked_count": 0,
+      "not_tested_count": 0,
+      "gwpy_comparison": {
+        "numeric_value_parity": 0,
+        "metadata_property_parity": 0,
+        "value_parity": 0,
+        "exception_parity": 0,
+        "visual_comparison_pending": 0,
+        "differ": 0,
+        "trial_error": 0,
+        "incomparable": 42
+      },
+      "comparison_modes": {
+        "incomparable": 42
+      },
+      "duration_seconds": 0.55
+    },
     "worker-W9": {
       "worker_id": "worker-W9",
       "assigned_count": 65,
@@ -84,43 +120,7 @@
         "incomparable": 64,
         "not_applicable": 1
       },
-      "duration_seconds": 0.41
-    },
-    "worker-W7": {
-      "worker_id": "worker-W7",
-      "assigned_count": 42,
-      "trials_total": 126,
-      "execution_status": {
-        "actual_call": 32,
-        "attribute_access": 0,
-        "smoke_only": 9,
-        "contract_pending": 1,
-        "environment_blocked": 0
-      },
-      "reachability_status": {
-        "smoke_signature_only": 9,
-        "reached_and_returned": 32,
-        "reachability_unresolved": 1
-      },
-      "verified_api_count": 26,
-      "differ_api_count": 6,
-      "contract_pending_count": 10,
-      "environment_blocked_count": 0,
-      "not_tested_count": 0,
-      "gwpy_comparison": {
-        "numeric_value_parity": 0,
-        "metadata_property_parity": 0,
-        "value_parity": 0,
-        "exception_parity": 0,
-        "visual_comparison_pending": 0,
-        "differ": 0,
-        "trial_error": 0,
-        "incomparable": 42
-      },
-      "comparison_modes": {
-        "incomparable": 42
-      },
-      "duration_seconds": 0.53
+      "duration_seconds": 0.6
     },
     "worker-W8": {
       "worker_id": "worker-W8",
@@ -157,7 +157,46 @@
       "comparison_modes": {
         "incomparable": 41
       },
-      "duration_seconds": 0.91
+      "duration_seconds": 0.98
+    },
+    "worker-W5": {
+      "worker_id": "worker-W5",
+      "assigned_count": 49,
+      "trials_total": 147,
+      "execution_status": {
+        "actual_call": 34,
+        "attribute_access": 9,
+        "smoke_only": 4,
+        "contract_pending": 2,
+        "environment_blocked": 0
+      },
+      "reachability_status": {
+        "attribute_accessed": 9,
+        "reached_and_returned": 34,
+        "reachability_unresolved": 2,
+        "smoke_signature_only": 4
+      },
+      "verified_api_count": 34,
+      "differ_api_count": 0,
+      "contract_pending_count": 15,
+      "environment_blocked_count": 0,
+      "not_tested_count": 0,
+      "gwpy_comparison": {
+        "numeric_value_parity": 22,
+        "metadata_property_parity": 9,
+        "value_parity": 31,
+        "exception_parity": 18,
+        "visual_comparison_pending": 0,
+        "differ": 0,
+        "trial_error": 0,
+        "incomparable": 0
+      },
+      "comparison_modes": {
+        "numeric_allclose": 22,
+        "exception_equality": 18,
+        "metadata_equality": 9
+      },
+      "duration_seconds": 1.31
     },
     "worker-W4": {
       "worker_id": "worker-W4",
@@ -178,8 +217,8 @@
         "environment_blocked": 4,
         "smoke_signature_only": 3
       },
-      "verified_api_count": 20,
-      "differ_api_count": 3,
+      "verified_api_count": 23,
+      "differ_api_count": 0,
       "contract_pending_count": 45,
       "environment_blocked_count": 4,
       "not_tested_count": 0,
@@ -202,46 +241,7 @@
         "swig_lal_object_numeric": 1,
         "pycbc_object_numeric": 1
       },
-      "duration_seconds": 1.27
-    },
-    "worker-W5": {
-      "worker_id": "worker-W5",
-      "assigned_count": 49,
-      "trials_total": 147,
-      "execution_status": {
-        "actual_call": 34,
-        "attribute_access": 9,
-        "smoke_only": 4,
-        "contract_pending": 2,
-        "environment_blocked": 0
-      },
-      "reachability_status": {
-        "attribute_accessed": 9,
-        "reached_and_returned": 34,
-        "reachability_unresolved": 2,
-        "smoke_signature_only": 4
-      },
-      "verified_api_count": 29,
-      "differ_api_count": 5,
-      "contract_pending_count": 15,
-      "environment_blocked_count": 0,
-      "not_tested_count": 0,
-      "gwpy_comparison": {
-        "numeric_value_parity": 22,
-        "metadata_property_parity": 9,
-        "value_parity": 31,
-        "exception_parity": 18,
-        "visual_comparison_pending": 0,
-        "differ": 0,
-        "trial_error": 0,
-        "incomparable": 0
-      },
-      "comparison_modes": {
-        "numeric_allclose": 22,
-        "exception_equality": 18,
-        "metadata_equality": 9
-      },
-      "duration_seconds": 1.27
+      "duration_seconds": 1.32
     },
     "worker-W3": {
       "worker_id": "worker-W3",
@@ -262,8 +262,8 @@
         "reached_and_returned": 22,
         "reached_with_observed_exception": 6
       },
-      "verified_api_count": 19,
-      "differ_api_count": 9,
+      "verified_api_count": 21,
+      "differ_api_count": 7,
       "contract_pending_count": 33,
       "environment_blocked_count": 14,
       "not_tested_count": 0,
@@ -286,7 +286,7 @@
         "swig_lal_object_numeric": 1,
         "pycbc_object_numeric": 1
       },
-      "duration_seconds": 1.38
+      "duration_seconds": 1.42
     },
     "worker-W1": {
       "worker_id": "worker-W1",
@@ -305,8 +305,8 @@
         "smoke_signature_only": 2,
         "reached_with_observed_exception": 2
       },
-      "verified_api_count": 36,
-      "differ_api_count": 8,
+      "verified_api_count": 41,
+      "differ_api_count": 3,
       "contract_pending_count": 17,
       "environment_blocked_count": 0,
       "not_tested_count": 0,
@@ -327,7 +327,7 @@
         "visual_artist_data": 1,
         "incomparable": 19
       },
-      "duration_seconds": 1.5
+      "duration_seconds": 1.46
     },
     "worker-W2": {
       "worker_id": "worker-W2",
@@ -347,8 +347,8 @@
         "fixture_setup_failed": 2,
         "reached_with_observed_exception": 1
       },
-      "verified_api_count": 34,
-      "differ_api_count": 10,
+      "verified_api_count": 42,
+      "differ_api_count": 2,
       "contract_pending_count": 16,
       "environment_blocked_count": 0,
       "not_tested_count": 0,
@@ -369,7 +369,7 @@
         "metadata_equality": 6,
         "visual_artist_data": 2
       },
-      "duration_seconds": 1.51
+      "duration_seconds": 1.48
     },
     "worker-W6": {
       "worker_id": "worker-W6",
@@ -407,7 +407,7 @@
         "exception_equality": 3,
         "metadata_equality": 3
       },
-      "duration_seconds": 2.66
+      "duration_seconds": 2.5
     }
   }
 }

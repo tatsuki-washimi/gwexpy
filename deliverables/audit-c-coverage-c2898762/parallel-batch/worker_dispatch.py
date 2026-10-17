@@ -430,17 +430,29 @@ def dispatch_inherited_api_trials(
                 diff_val = float(getattr(new_x0 - orig_x0, "value", new_x0 - orig_x0))
                 return {
                     "contract": "shift",
-                    "shift_applied": np.isclose(diff_val, 1.0),
+                    "shift_applied": bool(np.isclose(diff_val, 1.0)),
                     "invoke_context": capture_invoke_context(obj),
                 }
 
             elif attr_name in ("crop", "band", "crop_frequencies"):
-                res = attr_val(0.2, 0.8)
-                span = getattr(res, "span", getattr(res, "xspan", (0.2, 0.8)))
+                x0 = getattr(obj, "x0", getattr(obj, "t0", 0.0))
+                dx = getattr(obj, "dx", getattr(obj, "dt", 1.0))
+                x0_val = float(getattr(x0, "value", x0))
+                dx_val = float(getattr(dx, "value", dx))
+                unit = getattr(x0, "unit", getattr(dx, "unit", None))
+                start = (x0_val + dx_val) * unit if unit else (x0_val + dx_val)
+                end = (x0_val + 2 * dx_val) * unit if unit else (x0_val + 2 * dx_val)
+                res = attr_val(start, end)
+                span = getattr(res, "span", getattr(res, "xspan", None))
+                exp_start = float(start.value if hasattr(start, "value") else start)
+                exp_end = float(end.value if hasattr(end, "value") else end)
+                act_start = float(span[0].value if hasattr(span[0], "value") else span[0])
+                act_end = float(span[1].value if hasattr(span[1], "value") else span[1])
                 return {
                     "contract": "crop",
-                    "bounds_valid": span[0] >= 0.2 and span[1] <= 0.8,
-                    "unit_preserved": res.unit == obj.unit,
+                    "bounds_valid": bool(np.isclose(act_start, exp_start) and np.isclose(act_end, exp_end)),
+                    "unit_preserved": bool(res.unit == obj.unit),
+                    "length_valid": len(res) == 1,
                     "invoke_context": capture_invoke_context(obj),
                 }
 
@@ -474,10 +486,13 @@ def dispatch_inherited_api_trials(
 
             elif attr_name in ("diff",):
                 res = attr_val()
+                expected_shape = list(obj.shape)
+                expected_shape[-1] -= 1
                 return {
                     "contract": "diff",
-                    "shape_decreased": res.shape[0] == obj.shape[0] - 1,
+                    "shape_decreased": res.shape == tuple(expected_shape),
                     "unit_preserved": res.unit == obj.unit,
+                    "values_matched": bool(np.allclose(res.value, np.diff(obj.value, axis=-1))),
                     "invoke_context": capture_invoke_context(obj),
                 }
 
@@ -511,13 +526,30 @@ def dispatch_inherited_api_trials(
                     "invoke_context": capture_invoke_context(obj),
                 }
 
-            elif attr_name in ("check_compatible", "is_compatible", "is_contiguous"):
+            elif attr_name in ("check_compatible", "is_compatible"):
                 other = obj.copy()
                 res = attr_val(other)
                 is_ok = res is True or res is None
                 return {
                     "contract": "compatibility",
                     "is_compatible_result": is_ok,
+                    "invoke_context": capture_invoke_context(obj),
+                }
+
+            elif attr_name in ("is_contiguous",):
+                span = getattr(obj, "xspan", getattr(obj, "span", None))
+                shift_amt = span[1] - span[0]
+                following = obj.copy()
+                if hasattr(following, "shift"):
+                    following.shift(shift_amt)
+                else:
+                    following.x0 = span[1]
+                res_following = obj.is_contiguous(following)
+                res_overlap = obj.is_contiguous(obj.copy())
+                return {
+                    "contract": "is_contiguous",
+                    "contiguous_following": res_following == 1,
+                    "overlapping_not_contiguous": res_overlap == 0,
                     "invoke_context": capture_invoke_context(obj),
                 }
 
@@ -531,7 +563,7 @@ def dispatch_inherited_api_trials(
                     exp_val = obj.value[0]
                 return {
                     "contract": "value_at",
-                    "value_matched": np.isclose(float(getattr(res, "value", res)), float(exp_val)),
+                    "value_matched": bool(np.isclose(float(getattr(res, "value", res)), float(exp_val))),
                     "invoke_context": capture_invoke_context(obj),
                 }
 
@@ -767,6 +799,7 @@ def dispatch_inherited_api_trials(
         elif contract == "crop":
             checks.append({"check": "bounds_valid", "passed": r.get("bounds_valid") is True})
             checks.append({"check": "unit_preserved", "passed": r.get("unit_preserved") is True})
+            checks.append({"check": "length_valid", "passed": r.get("length_valid") is True})
         elif contract == "abs":
             checks.append({"check": "all_non_negative", "passed": r.get("all_non_negative") is True})
             checks.append({"check": "unit_preserved", "passed": r.get("unit_preserved") is True})
@@ -778,10 +811,15 @@ def dispatch_inherited_api_trials(
             checks.append({"check": "size_preserved", "passed": r.get("size_preserved") is True})
         elif contract == "diff":
             checks.append({"check": "shape_decreased", "passed": r.get("shape_decreased") is True})
+            checks.append({"check": "unit_preserved", "passed": r.get("unit_preserved") is True})
+            checks.append({"check": "values_matched", "passed": r.get("values_matched") is True})
         elif contract == "append_prepend":
             checks.append({"check": "length_increased", "passed": r.get("length_increased") is True})
         elif contract == "compatibility":
             checks.append({"check": "is_compatible_result", "passed": r.get("is_compatible_result") is True})
+        elif contract == "is_contiguous":
+            checks.append({"check": "contiguous_following", "passed": r.get("contiguous_following") is True})
+            checks.append({"check": "overlapping_not_contiguous", "passed": r.get("overlapping_not_contiguous") is True})
         elif contract == "value_at":
             checks.append({"check": "value_matched", "passed": r.get("value_matched") is True})
         elif contract in ("write_csv", "write_hdf5"):
