@@ -45,12 +45,20 @@ Baseline pin: `c2898762ca68e20a1a241fffb3c3262b0a27290b`. Runtime uses checkout 
 
 ## Parallel Execution & Audit Provenance Notes
 
-1. **Commit Provenance (`source_commit`) & Two-stage Reproduction**:
-   - The 1,522 runtime trial records in `c-coverage-521-all-trials.jsonl` record `source_commit: f7265d425619...` because the parallel worker test harness was executed on the local working tree before creating the final wrapper commits. Reproducing results with the published harness guarantees observational consistency (the same verification procedures and observed contract/parity outcomes), rather than byte-for-byte JSON identity of timestamps or commit SHAs.
-   - Reproduction follows a clear two-stage process:
+1. **Commit Provenance (`source_commit`), Reproduction & Population Scope**:
+   - **Commit Provenance & Environment-dependent Reproducibility**:
+     The 1,522 runtime trial records in `c-coverage-521-all-trials.jsonl` record `source_commit: f7265d425619...` because the parallel worker test harness was executed on the local working tree before creating the final wrapper commits. The published harness enables users to re-evaluate the verification procedures; confirmation of identical observational contract and parity outcomes depends on running within an appropriately configured runtime environment with matching library dependencies (NumPy, SciPy, Astropy, GWpy, LALSuite, PyCBC), distinct from assuming bit-for-bit identity of JSON metadata strings.
+   - **Two-stage Reproduction**:
      - **Stage 1 (Worker Execution)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/run_all_workers_parallel.py` (executes 9 parallel workers to generate 1,522 runtime trials across 508 APIs).
      - **Stage 2 (Evidence Integration)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/integrate_all.py` (merges the 1,522 worker trials with the existing 50 trials for 13 pre-verified APIs to produce the unified 521-row ledger and 1,572-trial dataset).
      - **Stage 3 (QA Audit)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/qa_audit.py` (independently verifies all 17 QA integrity assertions).
+   - **Trial Record Breakdown (1,572 vs 1,559)**:
+     - 1,522 trials: 508 APIs executed by the 9 parallel workers.
+     - 31 trials: 10 pre-verified inherited APIs from batch 1 runtime.
+     - 6 trials: 3 pre-verified conventional module functions from probes.
+     - **Subtotal (Target Population)**: Exactly **1,559** trial records directly evaluate the 521 APIs in the target population.
+     - 13 trials: Retained reference probes from earlier issue investigations outside the 521 population (e.g. `standardize_matrix`, `TimeSeries.spectrogram2`, `MetaData.unit`).
+     - **Total**: $1,522 + 31 + 6 = 1,559$ (target population trials) $+ 13$ (external reference probes) $= 1,572$ total records in `c-coverage-521-all-trials.jsonl`.
 
 2. **Issue C Reclassification Breakdown**:
    - From the earlier 16 APIs categorized as `collection_elementwise_numeric`, exactly 13 non-array attribute comparisons were reclassified to `metadata_equality` (`metadata_property_parity`):
