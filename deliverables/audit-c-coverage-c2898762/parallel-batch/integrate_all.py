@@ -349,6 +349,19 @@ def main() -> int:
 4. **LAL SWIGオブジェクト直接数値比較による完全パリティ実証**:
    - `TimeSeries.to_lal` および `FrequencySeries.to_lal` について、SWIGポインタ文字列の比較を廃止し、`data.data` (NumPy配列)、`deltaT`/`deltaF`、`epoch`、`sampleUnits` を直接数値比較（`swig_lal_object_numeric`）することで、GWpyとの偽陽性 `differ` を解消し完全パリティ（`numeric_value_parity`）を実証。
 
+### 3.2 比較モード細分化とコレクション再分類の内訳 (Issue C補足)
+旧集計の `collection_elementwise_numeric`（16件）から、ndarray配列要素を持たない非配列オブジェクト**13件**（`xspan` 5件, `span` 3件, `yspan` 2件, `band` 1件, `segments` 1件, `get_axes` 1件）を属性メタデータ比較（`metadata_equality` / `metadata_property_parity`）へ適正再分類。真のコレクションAPI **3件**（`TimeSeriesDict.copy`, `TimeSeriesList.copy`, `TimeSeriesList.coalesce`）のみを `collection_elementwise_numeric` として維持。
+
+### 3.3 試行レコードのコミット来歴 (source_commit) について
+全1,572試行中の1,522試行レコードに記録されている `source_commit: f7265d425619...` は、改修後のハーネスをローカル作業ツリー上で実行した時点の HEAD コミットです。改修済みハーネス、比較器、QA監査コード、統合台帳を含む公開リポジトリのコミットは `ffb3529bea79c21e0bd8eed88b513ab40d53e2bd`（`audit/c-coverage-508-parallel` ブランチ）です。同コミットをチェックアウトして `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/run_all_workers_parallel.py` を実行することで全試行の再現が可能です。
+
+### 3.4 契約検証 (verified 246件) の保証範囲
+本監査における `verified`（246件）は、各APIに対してハーネスで定義された具体的な契約アサーション（有限性チェック、単位一貫性、形状・次元チェック、戻り値型契約など）を通過したことを保証するものです。あらゆる入力ドメインにわたる包括的な物理的・数学的正当性の全数証明とは区別され、今後の深層物理レビューの対象となります。
+
+### 3.5 disposition=differ (44件) と GWpyパリティ differ (0件) の整合性
+- **`disposition=differ` (44件)**: GWexpy内部の契約検証（MRO不整合や未実装の機能など）で観測された差異。
+- **GWpyパリティ `differ` (0件)**: 同一引数に対するGWpyとの振る舞い比較における予期せぬ差異（偽陽性差分は完全解消）。
+
 ---
 
 ## 4. 成果物一覧
