@@ -264,14 +264,17 @@ def main() -> int:
 | ├── 数値・配列完全一致 (`numeric_value_parity`) | {gwpy_comparison_counts['numeric_value_parity']} | {gwpy_comparison_counts['numeric_value_parity']/521*100:.1f}% |
 | ├── メタデータ・属性一致 (`metadata_property_parity`) | {gwpy_comparison_counts['metadata_property_parity']} | {gwpy_comparison_counts['metadata_property_parity']/521*100:.1f}% |
 | ├── 例外挙動一致 (`exception_parity`) | {gwpy_comparison_counts['exception_parity']} | {gwpy_comparison_counts['exception_parity']/521*100:.1f}% |
+| ├── 描画データ照合済・視覚比較保留 (`visual_comparison_pending`) | {gwpy_comparison_counts['visual_comparison_pending']} | {gwpy_comparison_counts['visual_comparison_pending']/521*100:.1f}% |
 | ├── パリティ差異あり (`differ`) | {gwpy_comparison_counts['differ']} | {gwpy_comparison_counts['differ']/521*100:.1f}% |
 | ├── 比較対象なし/独自拡張 (`incomparable`) | {gwpy_comparison_counts['incomparable']} | {gwpy_comparison_counts['incomparable']/521*100:.1f}% |
 | └── 該当なし (`not_applicable`) | {gwpy_comparison_counts['not_applicable']} | {gwpy_comparison_counts['not_applicable']/521*100:.1f}% |
 | **比較判定モード (Comparison Mode)** | | |
 | ├── 配列・スカラー数値比較 (`numeric_allclose`) | {comparison_mode_counts['numeric_allclose']} | {comparison_mode_counts['numeric_allclose']/521*100:.1f}% |
-| ├── コレクション要素全件比較 (`collection_elementwise_numeric`) | {comparison_mode_counts['collection_elementwise_numeric']} | {comparison_mode_counts['collection_elementwise_numeric']/521*100:.1f}% |
+| ├── コレクション要素配列比較 (`collection_elementwise_numeric`) | {comparison_mode_counts['collection_elementwise_numeric']} | {comparison_mode_counts['collection_elementwise_numeric']/521*100:.1f}% |
 | ├── LAL SWIGオブジェクト直接数値比較 (`swig_lal_object_numeric`) | {comparison_mode_counts['swig_lal_object_numeric']} | {comparison_mode_counts['swig_lal_object_numeric']/521*100:.1f}% |
+| ├── PyCBCオブジェクト直接数値比較 (`pycbc_object_numeric`) | {comparison_mode_counts['pycbc_object_numeric']} | {comparison_mode_counts['pycbc_object_numeric']/521*100:.1f}% |
 | ├── メタデータ・属性等価比較 (`metadata_equality`) | {comparison_mode_counts['metadata_equality']} | {comparison_mode_counts['metadata_equality']/521*100:.1f}% |
+| ├── 描画アーティストデータ比較 (`visual_artist_data`) | {comparison_mode_counts['visual_artist_data']} | {comparison_mode_counts['visual_artist_data']/521*100:.1f}% |
 | ├── 同一例外送出判定 (`exception_equality`) | {comparison_mode_counts['exception_equality']} | {comparison_mode_counts['exception_equality']/521*100:.1f}% |
 | ├── 比較対象なし/独自拡張 (`incomparable`) | {comparison_mode_counts['incomparable']} | {comparison_mode_counts['incomparable']/521*100:.1f}% |
 | └── 該当なし (`not_applicable`) | {comparison_mode_counts['not_applicable']} | {comparison_mode_counts['not_applicable']/521*100:.1f}% |

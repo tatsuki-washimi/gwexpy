@@ -165,6 +165,12 @@ def finalize_gwpy_comparison(rec: dict[str, Any], *, notes: str = "") -> None:
                 "comparison_mode": "exception_equality",
                 "notes": notes or "Exception behavior identical to gwpy",
             }
+        elif parity_kind == "visual_comparison_pending" or "visual_comparison_pending" in checks:
+            rec["gwpy_comparison"] = {
+                "status": "visual_comparison_pending",
+                "comparison_mode": cmp_mode or "visual_artist_data",
+                "notes": notes or "Figure/Axes visual artist data parity verified; visual comparison pending",
+            }
         elif parity_kind == "numeric_value_parity" or "numeric_value_parity" in checks:
             rec["gwpy_comparison"] = {
                 "status": "numeric_value_parity",

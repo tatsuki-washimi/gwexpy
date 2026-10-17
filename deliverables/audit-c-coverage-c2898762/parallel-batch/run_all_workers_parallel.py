@@ -72,6 +72,7 @@ def main() -> int:
     gwpy_val_par = gwpy_num_val_par + gwpy_meta_prop_par
     gwpy_exc_par = sum(s.get("gwpy_comparison", {}).get("exception_parity", 0) for s in results.values())
     gwpy_diff = sum(s.get("gwpy_comparison", {}).get("differ", 0) for s in results.values())
+    gwpy_vis_pend = sum(s.get("gwpy_comparison", {}).get("visual_comparison_pending", 0) for s in results.values())
     gwpy_err = sum(s.get("gwpy_comparison", {}).get("trial_error", 0) for s in results.values())
     gwpy_incomp = sum(s.get("gwpy_comparison", {}).get("incomparable", 0) for s in results.values())
 
@@ -101,13 +102,14 @@ def main() -> int:
             "metadata_property_parity": gwpy_meta_prop_par,
             "value_parity": gwpy_val_par,
             "exception_parity": gwpy_exc_par,
+            "visual_comparison_pending": gwpy_vis_pend,
             "differ": gwpy_diff,
             "trial_error": gwpy_err,
             "incomparable": gwpy_incomp,
         },
         "comparison_modes": {
             k: sum(s.get("comparison_modes", {}).get(k, 0) for s in results.values())
-            for k in ["numeric_allclose", "collection_elementwise_numeric", "swig_lal_object_numeric", "metadata_equality", "exception_equality", "incomparable", "not_applicable"]
+            for k in ["numeric_allclose", "collection_elementwise_numeric", "swig_lal_object_numeric", "pycbc_object_numeric", "metadata_equality", "visual_artist_data", "exception_equality", "incomparable", "not_applicable"]
         },
         "duration_seconds": total_time,
         "worker_results": results,

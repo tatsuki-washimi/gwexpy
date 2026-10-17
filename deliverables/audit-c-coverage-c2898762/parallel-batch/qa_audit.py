@@ -128,7 +128,7 @@ def main() -> int:
             cmp_stat = t.get("gwpy_comparison", {}).get("status")
             asrt = t.get("assertions", {}).get("passed")
             if asrt is True:
-                assert cmp_stat in ("numeric_value_parity", "metadata_property_parity", "value_parity", "exception_parity", "match", "trial_error"), f"Assertion 8 Failed: passed assertion but status {cmp_stat}"
+                assert cmp_stat in ("numeric_value_parity", "metadata_property_parity", "value_parity", "visual_comparison_pending", "exception_parity", "match", "trial_error"), f"Assertion 8 Failed: passed assertion but status {cmp_stat}"
             elif asrt is False:
                 assert cmp_stat in ("differ", "trial_error"), f"Assertion 8 Failed: failed assertion but status {cmp_stat}"
     print("  [PASS] 8. GWpy comparison labels strictly match assertion results.")
@@ -211,13 +211,18 @@ def main() -> int:
         assert pos.get("assertions", {}).get("passed") is True, f"Assertion 14 Failed: assertions failed for {ident}"
     print(f"  [PASS] 14. Contract verification depth confirmed across all {len(verified_rows)} verified APIs (all 5 reinforced APIs have concrete contract assertions, all 72 weak assertions strictly excluded).")
 
-    # 15. GWpy比較における numeric_value_parity (75件), metadata_property_parity (33件) と exception_parity (106件) の厳格分離。
+    # 15. GWpy比較における numeric_value_parity (85件), metadata_property_parity (49件), visual_comparison_pending (6件), exception_parity (106件) と differ (0件) の厳格分離。
     num_val_rows = [r for r in ledger if r.get("gwpy_comparison") == "numeric_value_parity"]
     meta_prop_rows = [r for r in ledger if r.get("gwpy_comparison") == "metadata_property_parity"]
     exc_parity_rows = [r for r in ledger if r.get("gwpy_comparison") == "exception_parity"]
-    assert len(num_val_rows) == 75, f"Assertion 15 Failed: Expected 75 numeric_value_parity rows (67 new + 8 batch1), got {len(num_val_rows)}"
-    assert len(meta_prop_rows) == 33, f"Assertion 15 Failed: Expected 33 metadata_property_parity rows (32 new + 1 batch1), got {len(meta_prop_rows)}"
+    vis_pend_rows = [r for r in ledger if r.get("gwpy_comparison") == "visual_comparison_pending"]
+    diff_rows = [r for r in ledger if r.get("gwpy_comparison") == "differ"]
+
+    assert len(num_val_rows) == 85, f"Assertion 15 Failed: Expected 85 numeric_value_parity rows (77 new + 8 batch1), got {len(num_val_rows)}"
+    assert len(meta_prop_rows) == 49, f"Assertion 15 Failed: Expected 49 metadata_property_parity rows (48 new + 1 batch1), got {len(meta_prop_rows)}"
     assert len(exc_parity_rows) == 106, f"Assertion 15 Failed: Expected 106 exception_parity rows, got {len(exc_parity_rows)}"
+    assert len(vis_pend_rows) == 6, f"Assertion 15 Failed: Expected 6 visual_comparison_pending rows, got {len(vis_pend_rows)}"
+    assert len(diff_rows) == 0, f"Assertion 15 Failed: Expected 0 differ rows in GWpy comparison, got {len(diff_rows)}"
 
     for r in num_val_rows:
         ident = r["identifier"]
@@ -244,7 +249,16 @@ def main() -> int:
         if cmp_t:
             checks = [c.get("check") for c in cmp_t.get("assertions", {}).get("checks", [])]
             assert "exception_parity" in checks, f"Assertion 15 Failed: exception_parity check missing in {ident}"
-    print(f"  [PASS] 15. GWpy parity strictly separated: numeric_value_parity ({len(num_val_rows)}) + metadata_property_parity ({len(meta_prop_rows)}) vs exception_parity ({len(exc_parity_rows)}) verified.")
+
+    for r in vis_pend_rows:
+        ident = r["identifier"]
+        t_list = trials_by_id.get(ident, [])
+        cmp_t = next((t for t in t_list if t.get("trial_kind") == "gwpy_comparison"), None)
+        if cmp_t:
+            assert cmp_t.get("actual", {}).get("comparison_mode") == "visual_artist_data"
+            assert cmp_t.get("actual", {}).get("val_match") is True, f"Assertion 15 Failed: visual artist data mismatch for {ident}"
+
+    print(f"  [PASS] 15. GWpy parity strictly separated: numeric_value_parity ({len(num_val_rows)}) + metadata_property_parity ({len(meta_prop_rows)}) + visual_comparison_pending ({len(vis_pend_rows)}) vs exception_parity ({len(exc_parity_rows)}), differ={len(diff_rows)}.")
 
     # 16. Reachability Status 7区分の完全整合（全521件の網羅性と正確性）。
     valid_reachabilities = {
@@ -281,12 +295,14 @@ def main() -> int:
     assert reach_counts["environment_blocked"] == 19, f"Assertion 16 Failed: environment_blocked {reach_counts['environment_blocked']} != 19"
     print(f"  [PASS] 16. Reachability status strictly verified across all 521 rows (reached_and_returned=281, observed_exception=9, attribute_accessed=79, smoke_only=74, unresolved=19, fixture_failed=40, env_blocked=19).")
 
-    # 17. Comparison Mode 7区分の完全整合と数値パリティ実証（LAL SWIGおよびコレクション比較含む）。
+    # 17. Comparison Mode 9区分の完全整合と数値パリティ実証（LAL SWIG/PyCBC直接数値照合および描画アーティスト照合含む）。
     valid_comparison_modes = {
         "numeric_allclose",
         "collection_elementwise_numeric",
         "swig_lal_object_numeric",
+        "pycbc_object_numeric",
         "metadata_equality",
+        "visual_artist_data",
         "exception_equality",
         "incomparable",
         "not_applicable",
@@ -296,18 +312,24 @@ def main() -> int:
         cmode = r.get("comparison_mode")
         assert cmode in valid_comparison_modes, f"Assertion 17 Failed: invalid comparison_mode {cmode} for {r['identifier']}"
         gw_cmp = r.get("gwpy_comparison")
-        if cmode in ("numeric_allclose", "collection_elementwise_numeric", "swig_lal_object_numeric"):
+        if cmode in ("numeric_allclose", "collection_elementwise_numeric", "swig_lal_object_numeric", "pycbc_object_numeric"):
             assert gw_cmp == "numeric_value_parity", f"Assertion 17 Failed: {r['identifier']} mode={cmode} but gwpy_comparison={gw_cmp}"
+        elif cmode == "visual_artist_data":
+            assert gw_cmp == "visual_comparison_pending", f"Assertion 17 Failed: {r['identifier']} mode={cmode} but gwpy_comparison={gw_cmp}"
+        elif cmode == "metadata_equality":
+            assert gw_cmp == "metadata_property_parity", f"Assertion 17 Failed: {r['identifier']} mode={cmode} but gwpy_comparison={gw_cmp}"
 
-    assert mode_counts["numeric_allclose"] == 55, f"Assertion 17 Failed: numeric_allclose {mode_counts['numeric_allclose']} != 55"
-    assert mode_counts["collection_elementwise_numeric"] == 16, f"Assertion 17 Failed: collection_elementwise_numeric {mode_counts['collection_elementwise_numeric']} != 16"
-    assert mode_counts["swig_lal_object_numeric"] == 4, f"Assertion 17 Failed: swig_lal_object_numeric {mode_counts['swig_lal_object_numeric']} != 4"
-    assert mode_counts["metadata_equality"] == 39, f"Assertion 17 Failed: metadata_equality {mode_counts['metadata_equality']} != 39"
+    assert mode_counts["numeric_allclose"] == 78, f"Assertion 17 Failed: numeric_allclose {mode_counts['numeric_allclose']} != 78"
+    assert mode_counts["collection_elementwise_numeric"] == 3, f"Assertion 17 Failed: collection_elementwise_numeric {mode_counts['collection_elementwise_numeric']} != 3"
+    assert mode_counts["swig_lal_object_numeric"] == 2, f"Assertion 17 Failed: swig_lal_object_numeric {mode_counts['swig_lal_object_numeric']} != 2"
+    assert mode_counts["pycbc_object_numeric"] == 2, f"Assertion 17 Failed: pycbc_object_numeric {mode_counts['pycbc_object_numeric']} != 2"
+    assert mode_counts["metadata_equality"] == 49, f"Assertion 17 Failed: metadata_equality {mode_counts['metadata_equality']} != 49"
+    assert mode_counts["visual_artist_data"] == 6, f"Assertion 17 Failed: visual_artist_data {mode_counts['visual_artist_data']} != 6"
     assert mode_counts["exception_equality"] == 106, f"Assertion 17 Failed: exception_equality {mode_counts['exception_equality']} != 106"
     assert mode_counts["incomparable"] == 274, f"Assertion 17 Failed: incomparable {mode_counts['incomparable']} != 274"
-    assert mode_counts["not_applicable"] == 27, f"Assertion 17 Failed: not_applicable {mode_counts['not_applicable']} != 27"
+    assert mode_counts["not_applicable"] == 1, f"Assertion 17 Failed: not_applicable {mode_counts['not_applicable']} != 1"
 
-    # Confirm to_lal SWIG direct numerical comparison eliminated false differ
+    # Confirm to_lal SWIG direct numerical comparison
     lal_items = [
         "gwexpy.timeseries.timeseries.TimeSeries/to_lal",
         "gwexpy.frequencyseries.frequencyseries.FrequencySeries/to_lal",
@@ -318,7 +340,33 @@ def main() -> int:
         assert r["comparison_mode"] == "swig_lal_object_numeric", f"Assertion 17 Failed: {l_id} comparison_mode != swig_lal_object_numeric"
         assert r["gwpy_comparison"] == "numeric_value_parity", f"Assertion 17 Failed: {l_id} gwpy_comparison != numeric_value_parity"
 
-    print(f"  [PASS] 17. Comparison modes strictly validated across all 521 rows (numeric_allclose=55, collection_numeric=16, swig_lal_numeric=4, metadata_equality=39, exception_equality=106, incomparable=274, not_applicable=27). LAL SWIG numerical parity confirmed.")
+    # Confirm to_pycbc direct numerical comparison
+    pycbc_items = [
+        "gwexpy.timeseries.timeseries.TimeSeries/to_pycbc",
+        "gwexpy.frequencyseries.frequencyseries.FrequencySeries/to_pycbc",
+    ]
+    for p_id in pycbc_items:
+        r = next((row for row in ledger if row["identifier"] == p_id), None)
+        assert r is not None, f"Assertion 17 Failed: missing {p_id} in ledger"
+        assert r["comparison_mode"] == "pycbc_object_numeric", f"Assertion 17 Failed: {p_id} comparison_mode != pycbc_object_numeric"
+        assert r["gwpy_comparison"] == "numeric_value_parity", f"Assertion 17 Failed: {p_id} gwpy_comparison != numeric_value_parity"
+
+    # Confirm visual plotting methods
+    visual_items = [
+        "gwexpy.types.array2d.Array2D/plot",
+        "gwexpy.types.series.Series/plot",
+        "gwexpy.types.series.Series/step",
+        "gwexpy.timeseries.collections.TimeSeriesDict/step",
+        "gwexpy.timeseries.timeseries.TimeSeries/step",
+        "gwexpy.frequencyseries.frequencyseries.FrequencySeries/step",
+    ]
+    for v_id in visual_items:
+        r = next((row for row in ledger if row["identifier"] == v_id), None)
+        assert r is not None, f"Assertion 17 Failed: missing {v_id} in ledger"
+        assert r["comparison_mode"] == "visual_artist_data", f"Assertion 17 Failed: {v_id} comparison_mode != visual_artist_data"
+        assert r["gwpy_comparison"] == "visual_comparison_pending", f"Assertion 17 Failed: {v_id} gwpy_comparison != visual_comparison_pending"
+
+    print(f"  [PASS] 17. Comparison modes strictly validated across all 521 rows (numeric_allclose=78, collection_numeric=3, swig_lal_numeric=2, pycbc_numeric=2, metadata_equality=49, visual_artist_data=6, exception_equality=106, incomparable=274, not_applicable=1). Zero false differ.")
 
     print("=" * 60)
     print("ALL 17 QA ASSERTIONS PASSED! RIGOROUS INTEGRITY VERIFIED.")

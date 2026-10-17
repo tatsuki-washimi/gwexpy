@@ -35,20 +35,23 @@
 | ├── 契約検証保留/フィクスチャ・強アサーション待ち (`contract_pending`) | 212 | 40.7% |
 | └── 環境依存制約 (`environment_blocked`) | 19 | 3.6% |
 | **GWpyパリティ比較 (Parity Status)** | | |
-| ├── 数値・配列完全一致 (`numeric_value_parity`) | 75 | 14.4% |
-| ├── メタデータ・属性一致 (`metadata_property_parity`) | 33 | 6.3% |
+| ├── 数値・配列完全一致 (`numeric_value_parity`) | 85 | 16.3% |
+| ├── メタデータ・属性一致 (`metadata_property_parity`) | 49 | 9.4% |
 | ├── 例外挙動一致 (`exception_parity`) | 106 | 20.3% |
-| ├── パリティ差異あり (`differ`) | 6 | 1.2% |
+| ├── 描画データ照合済・視覚比較保留 (`visual_comparison_pending`) | 6 | 1.2% |
+| ├── パリティ差異あり (`differ`) | 0 | 0.0% |
 | ├── 比較対象なし/独自拡張 (`incomparable`) | 274 | 52.6% |
-| └── 該当なし (`not_applicable`) | 27 | 5.2% |
+| └── 該当なし (`not_applicable`) | 1 | 0.2% |
 | **比較判定モード (Comparison Mode)** | | |
-| ├── 配列・スカラー数値比較 (`numeric_allclose`) | 55 | 10.6% |
-| ├── コレクション要素全件比較 (`collection_elementwise_numeric`) | 16 | 3.1% |
-| ├── LAL SWIGオブジェクト直接数値比較 (`swig_lal_object_numeric`) | 4 | 0.8% |
-| ├── メタデータ・属性等価比較 (`metadata_equality`) | 39 | 7.5% |
+| ├── 配列・スカラー数値比較 (`numeric_allclose`) | 78 | 15.0% |
+| ├── コレクション要素配列比較 (`collection_elementwise_numeric`) | 3 | 0.6% |
+| ├── LAL SWIGオブジェクト直接数値比較 (`swig_lal_object_numeric`) | 2 | 0.4% |
+| ├── PyCBCオブジェクト直接数値比較 (`pycbc_object_numeric`) | 2 | 0.4% |
+| ├── メタデータ・属性等価比較 (`metadata_equality`) | 49 | 9.4% |
+| ├── 描画アーティストデータ比較 (`visual_artist_data`) | 6 | 1.2% |
 | ├── 同一例外送出判定 (`exception_equality`) | 106 | 20.3% |
 | ├── 比較対象なし/独自拡張 (`incomparable`) | 274 | 52.6% |
-| └── 該当なし (`not_applicable`) | 27 | 5.2% |
+| └── 該当なし (`not_applicable`) | 1 | 0.2% |
 
 総試行試験数（Recorded Trials）: **1,572件**
 

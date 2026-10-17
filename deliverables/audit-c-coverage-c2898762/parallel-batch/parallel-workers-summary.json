@@ -25,24 +25,27 @@
   "total_environment_blocked": 19,
   "total_not_tested": 0,
   "gwpy_comparison": {
-    "numeric_value_parity": 67,
-    "metadata_property_parity": 32,
-    "value_parity": 99,
+    "numeric_value_parity": 77,
+    "metadata_property_parity": 48,
+    "value_parity": 125,
     "exception_parity": 106,
-    "differ": 6,
+    "visual_comparison_pending": 6,
+    "differ": 0,
     "trial_error": 0,
-    "incomparable": 297
+    "incomparable": 271
   },
   "comparison_modes": {
-    "numeric_allclose": 47,
-    "collection_elementwise_numeric": 16,
-    "swig_lal_object_numeric": 4,
-    "metadata_equality": 38,
+    "numeric_allclose": 70,
+    "collection_elementwise_numeric": 3,
+    "swig_lal_object_numeric": 2,
+    "pycbc_object_numeric": 2,
+    "metadata_equality": 48,
+    "visual_artist_data": 6,
     "exception_equality": 106,
     "incomparable": 270,
-    "not_applicable": 27
+    "not_applicable": 1
   },
-  "duration_seconds": 2.74,
+  "duration_seconds": 2.83,
   "worker_results": {
     "worker-W9": {
       "worker_id": "worker-W9",
@@ -72,6 +75,7 @@
         "metadata_property_parity": 0,
         "value_parity": 0,
         "exception_parity": 0,
+        "visual_comparison_pending": 0,
         "differ": 0,
         "trial_error": 0,
         "incomparable": 65
@@ -80,7 +84,7 @@
         "incomparable": 64,
         "not_applicable": 1
       },
-      "duration_seconds": 0.55
+      "duration_seconds": 0.41
     },
     "worker-W7": {
       "worker_id": "worker-W7",
@@ -108,6 +112,7 @@
         "metadata_property_parity": 0,
         "value_parity": 0,
         "exception_parity": 0,
+        "visual_comparison_pending": 0,
         "differ": 0,
         "trial_error": 0,
         "incomparable": 42
@@ -115,7 +120,7 @@
       "comparison_modes": {
         "incomparable": 42
       },
-      "duration_seconds": 0.6
+      "duration_seconds": 0.53
     },
     "worker-W8": {
       "worker_id": "worker-W8",
@@ -144,6 +149,7 @@
         "metadata_property_parity": 0,
         "value_parity": 0,
         "exception_parity": 0,
+        "visual_comparison_pending": 0,
         "differ": 0,
         "trial_error": 0,
         "incomparable": 41
@@ -151,47 +157,7 @@
       "comparison_modes": {
         "incomparable": 41
       },
-      "duration_seconds": 0.93
-    },
-    "worker-W5": {
-      "worker_id": "worker-W5",
-      "assigned_count": 49,
-      "trials_total": 147,
-      "execution_status": {
-        "actual_call": 34,
-        "attribute_access": 9,
-        "smoke_only": 4,
-        "contract_pending": 2,
-        "environment_blocked": 0
-      },
-      "reachability_status": {
-        "attribute_accessed": 9,
-        "reached_and_returned": 34,
-        "reachability_unresolved": 2,
-        "smoke_signature_only": 4
-      },
-      "verified_api_count": 29,
-      "differ_api_count": 5,
-      "contract_pending_count": 15,
-      "environment_blocked_count": 0,
-      "not_tested_count": 0,
-      "gwpy_comparison": {
-        "numeric_value_parity": 16,
-        "metadata_property_parity": 5,
-        "value_parity": 21,
-        "exception_parity": 18,
-        "differ": 0,
-        "trial_error": 0,
-        "incomparable": 10
-      },
-      "comparison_modes": {
-        "numeric_allclose": 12,
-        "exception_equality": 18,
-        "collection_elementwise_numeric": 4,
-        "metadata_equality": 5,
-        "not_applicable": 10
-      },
-      "duration_seconds": 1.29
+      "duration_seconds": 0.91
     },
     "worker-W4": {
       "worker_id": "worker-W4",
@@ -218,24 +184,64 @@
       "environment_blocked_count": 4,
       "not_tested_count": 0,
       "gwpy_comparison": {
-        "numeric_value_parity": 10,
-        "metadata_property_parity": 5,
-        "value_parity": 15,
+        "numeric_value_parity": 13,
+        "metadata_property_parity": 6,
+        "value_parity": 19,
         "exception_parity": 16,
-        "differ": 1,
+        "visual_comparison_pending": 1,
+        "differ": 0,
         "trial_error": 0,
-        "incomparable": 40
+        "incomparable": 36
       },
       "comparison_modes": {
         "incomparable": 36,
-        "numeric_allclose": 7,
+        "numeric_allclose": 11,
         "exception_equality": 16,
         "metadata_equality": 6,
-        "not_applicable": 4,
-        "swig_lal_object_numeric": 2,
-        "collection_elementwise_numeric": 1
+        "visual_artist_data": 1,
+        "swig_lal_object_numeric": 1,
+        "pycbc_object_numeric": 1
       },
-      "duration_seconds": 1.32
+      "duration_seconds": 1.27
+    },
+    "worker-W5": {
+      "worker_id": "worker-W5",
+      "assigned_count": 49,
+      "trials_total": 147,
+      "execution_status": {
+        "actual_call": 34,
+        "attribute_access": 9,
+        "smoke_only": 4,
+        "contract_pending": 2,
+        "environment_blocked": 0
+      },
+      "reachability_status": {
+        "attribute_accessed": 9,
+        "reached_and_returned": 34,
+        "reachability_unresolved": 2,
+        "smoke_signature_only": 4
+      },
+      "verified_api_count": 29,
+      "differ_api_count": 5,
+      "contract_pending_count": 15,
+      "environment_blocked_count": 0,
+      "not_tested_count": 0,
+      "gwpy_comparison": {
+        "numeric_value_parity": 22,
+        "metadata_property_parity": 9,
+        "value_parity": 31,
+        "exception_parity": 18,
+        "visual_comparison_pending": 0,
+        "differ": 0,
+        "trial_error": 0,
+        "incomparable": 0
+      },
+      "comparison_modes": {
+        "numeric_allclose": 22,
+        "exception_equality": 18,
+        "metadata_equality": 9
+      },
+      "duration_seconds": 1.27
     },
     "worker-W3": {
       "worker_id": "worker-W3",
@@ -262,23 +268,66 @@
       "environment_blocked_count": 14,
       "not_tested_count": 0,
       "gwpy_comparison": {
-        "numeric_value_parity": 20,
-        "metadata_property_parity": 5,
-        "value_parity": 25,
+        "numeric_value_parity": 19,
+        "metadata_property_parity": 12,
+        "value_parity": 31,
         "exception_parity": 42,
-        "differ": 2,
+        "visual_comparison_pending": 2,
+        "differ": 0,
         "trial_error": 0,
-        "incomparable": 6
+        "incomparable": 0
       },
       "comparison_modes": {
-        "not_applicable": 6,
-        "collection_elementwise_numeric": 7,
+        "metadata_equality": 12,
+        "collection_elementwise_numeric": 3,
         "exception_equality": 42,
-        "metadata_equality": 7,
-        "numeric_allclose": 11,
-        "swig_lal_object_numeric": 2
+        "visual_artist_data": 2,
+        "numeric_allclose": 14,
+        "swig_lal_object_numeric": 1,
+        "pycbc_object_numeric": 1
       },
-      "duration_seconds": 1.42
+      "duration_seconds": 1.38
+    },
+    "worker-W1": {
+      "worker_id": "worker-W1",
+      "assigned_count": 61,
+      "trials_total": 183,
+      "execution_status": {
+        "actual_call": 44,
+        "attribute_access": 15,
+        "smoke_only": 2,
+        "contract_pending": 0,
+        "environment_blocked": 0
+      },
+      "reachability_status": {
+        "reached_and_returned": 42,
+        "attribute_accessed": 15,
+        "smoke_signature_only": 2,
+        "reached_with_observed_exception": 2
+      },
+      "verified_api_count": 36,
+      "differ_api_count": 8,
+      "contract_pending_count": 17,
+      "environment_blocked_count": 0,
+      "not_tested_count": 0,
+      "gwpy_comparison": {
+        "numeric_value_parity": 14,
+        "metadata_property_parity": 12,
+        "value_parity": 26,
+        "exception_parity": 15,
+        "visual_comparison_pending": 1,
+        "differ": 0,
+        "trial_error": 0,
+        "incomparable": 19
+      },
+      "comparison_modes": {
+        "numeric_allclose": 14,
+        "metadata_equality": 12,
+        "exception_equality": 15,
+        "visual_artist_data": 1,
+        "incomparable": 19
+      },
+      "duration_seconds": 1.5
     },
     "worker-W2": {
       "worker_id": "worker-W2",
@@ -304,64 +353,23 @@
       "environment_blocked_count": 0,
       "not_tested_count": 0,
       "gwpy_comparison": {
-        "numeric_value_parity": 8,
-        "metadata_property_parity": 5,
-        "value_parity": 13,
+        "numeric_value_parity": 9,
+        "metadata_property_parity": 6,
+        "value_parity": 15,
         "exception_parity": 12,
-        "differ": 2,
+        "visual_comparison_pending": 2,
+        "differ": 0,
         "trial_error": 0,
-        "incomparable": 33
+        "incomparable": 31
       },
       "comparison_modes": {
         "incomparable": 31,
-        "numeric_allclose": 7,
+        "numeric_allclose": 9,
         "exception_equality": 12,
-        "metadata_equality": 7,
-        "not_applicable": 2,
-        "collection_elementwise_numeric": 1
+        "metadata_equality": 6,
+        "visual_artist_data": 2
       },
-      "duration_seconds": 1.46
-    },
-    "worker-W1": {
-      "worker_id": "worker-W1",
-      "assigned_count": 61,
-      "trials_total": 183,
-      "execution_status": {
-        "actual_call": 44,
-        "attribute_access": 15,
-        "smoke_only": 2,
-        "contract_pending": 0,
-        "environment_blocked": 0
-      },
-      "reachability_status": {
-        "reached_and_returned": 42,
-        "attribute_accessed": 15,
-        "smoke_signature_only": 2,
-        "reached_with_observed_exception": 2
-      },
-      "verified_api_count": 36,
-      "differ_api_count": 8,
-      "contract_pending_count": 17,
-      "environment_blocked_count": 0,
-      "not_tested_count": 0,
-      "gwpy_comparison": {
-        "numeric_value_parity": 12,
-        "metadata_property_parity": 10,
-        "value_parity": 22,
-        "exception_parity": 15,
-        "differ": 1,
-        "trial_error": 0,
-        "incomparable": 23
-      },
-      "comparison_modes": {
-        "numeric_allclose": 10,
-        "metadata_equality": 11,
-        "exception_equality": 15,
-        "not_applicable": 4,
-        "collection_elementwise_numeric": 2,
-        "incomparable": 19
-      },
-      "duration_seconds": 1.48
+      "duration_seconds": 1.51
     },
     "worker-W6": {
       "worker_id": "worker-W6",
@@ -385,10 +393,11 @@
       "environment_blocked_count": 0,
       "not_tested_count": 0,
       "gwpy_comparison": {
-        "numeric_value_parity": 1,
-        "metadata_property_parity": 2,
+        "numeric_value_parity": 0,
+        "metadata_property_parity": 3,
         "value_parity": 3,
         "exception_parity": 3,
+        "visual_comparison_pending": 0,
         "differ": 0,
         "trial_error": 0,
         "incomparable": 37
@@ -396,10 +405,9 @@
       "comparison_modes": {
         "incomparable": 37,
         "exception_equality": 3,
-        "metadata_equality": 2,
-        "collection_elementwise_numeric": 1
+        "metadata_equality": 3
       },
-      "duration_seconds": 2.63
+      "duration_seconds": 2.66
     }
   }
 }

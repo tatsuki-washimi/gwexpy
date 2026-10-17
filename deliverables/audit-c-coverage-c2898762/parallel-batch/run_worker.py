@@ -111,6 +111,7 @@ def run_worker(worker_id: str) -> int:
     gwpy_metadata_property_parity = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "metadata_property_parity")
     gwpy_value_parity = gwpy_numeric_value_parity + gwpy_metadata_property_parity
     gwpy_exception_parity = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "exception_parity")
+    gwpy_visual_comparison_pending = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "visual_comparison_pending")
     gwpy_differ = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "differ")
     gwpy_trial_error = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "trial_error")
     gwpy_incomparable = sum(1 for d in all_dispositions if d.get("gwpy_comparison") in ("incomparable", "not_applicable"))
@@ -140,6 +141,7 @@ def run_worker(worker_id: str) -> int:
             "metadata_property_parity": gwpy_metadata_property_parity,
             "value_parity": gwpy_value_parity,
             "exception_parity": gwpy_exception_parity,
+            "visual_comparison_pending": gwpy_visual_comparison_pending,
             "differ": gwpy_differ,
             "trial_error": gwpy_trial_error,
             "incomparable": gwpy_incomparable,

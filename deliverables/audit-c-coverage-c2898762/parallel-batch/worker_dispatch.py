@@ -211,6 +211,7 @@ def execute_api_trials(worker_id: str, rec: dict[str, Any]) -> tuple[list[dict[s
                 "verification_status": "environment_blocked",
                 "disposition": "environment_blocked",
                 "gwpy_comparison": "not_applicable",
+                "comparison_mode": "not_applicable",
                 "trials_count": 1,
                 "positive_control_status": "failed",
                 "abnormal_input_status": "not_run",
@@ -896,8 +897,58 @@ def dispatch_inherited_api_trials(
                     "parity_kind": "exception_parity",
                 }
 
-            # LAL object comparison (TimeSeries.to_lal, FrequencySeries.to_lal)
-            if hasattr(gw_val, "data") and hasattr(gw_val.data, "data") and hasattr(ex_val, "data") and hasattr(ex_val.data, "data"):
+            # Visual / Plotting objects comparison (Figure, Axes, Plot)
+            is_gw_plot = isinstance(gw_val, matplotlib.figure.Figure) or hasattr(gw_val, "axes")
+            is_ex_plot = isinstance(ex_val, matplotlib.figure.Figure) or hasattr(ex_val, "axes")
+            if is_gw_plot and is_ex_plot:
+                axes_gw = getattr(gw_val, "axes", [])
+                axes_ex = getattr(ex_val, "axes", [])
+                axes_match = len(axes_gw) == len(axes_ex)
+                data_match = True
+                if axes_match:
+                    for ax_g, ax_e in zip(axes_gw, axes_ex):
+                        # lines data
+                        lines_g = getattr(ax_g, "lines", [])
+                        lines_e = getattr(ax_e, "lines", [])
+                        if len(lines_g) != len(lines_e):
+                            data_match = False
+                            break
+                        for l_g, l_e in zip(lines_g, lines_e):
+                            if not np.allclose(l_g.get_xdata(), l_e.get_xdata(), equal_nan=True):
+                                data_match = False
+                                break
+                            if not np.allclose(l_g.get_ydata(), l_e.get_ydata(), equal_nan=True):
+                                data_match = False
+                                break
+                        # images data
+                        imgs_g = getattr(ax_g, "images", [])
+                        imgs_e = getattr(ax_e, "images", [])
+                        if len(imgs_g) != len(imgs_e):
+                            data_match = False
+                            break
+                        for im_g, im_e in zip(imgs_g, imgs_e):
+                            arr_g = getattr(im_g, "get_array", lambda: None)()
+                            arr_e = getattr(im_e, "get_array", lambda: None)()
+                            if arr_g is not None and arr_e is not None:
+                                if not np.allclose(arr_g, arr_e, equal_nan=True):
+                                    data_match = False
+                                    break
+                all_match = axes_match and data_match
+                if isinstance(gw_val, matplotlib.figure.Figure):
+                    matplotlib.pyplot.close(gw_val)
+                if isinstance(ex_val, matplotlib.figure.Figure):
+                    matplotlib.pyplot.close(ex_val)
+                return {
+                    "match": all_match,
+                    "unit_match": True,
+                    "shape_match": axes_match,
+                    "val_match": data_match,
+                    "comparison_mode": "visual_artist_data",
+                    "parity_kind": "visual_comparison_pending",
+                }
+
+            # LAL SWIG object comparison (TimeSeries.to_lal, FrequencySeries.to_lal)
+            if (attr_name == "to_lal" or hasattr(gw_val, "deltaT") or hasattr(gw_val, "deltaF")) and hasattr(gw_val, "data") and hasattr(gw_val.data, "data"):
                 data_match = bool(np.allclose(gw_val.data.data, ex_val.data.data, equal_nan=True))
                 delta_gw = getattr(gw_val, "deltaT", getattr(gw_val, "deltaF", None))
                 delta_ex = getattr(ex_val, "deltaT", getattr(ex_val, "deltaF", None))
@@ -916,10 +967,30 @@ def dispatch_inherited_api_trials(
                     "parity_kind": "numeric_value_parity",
                 }
 
+            # PyCBC object comparison (TimeSeries.to_pycbc, FrequencySeries.to_pycbc)
+            if (attr_name == "to_pycbc" or type(gw_val).__module__.startswith("pycbc")) and hasattr(gw_val, "data"):
+                data_match = bool(np.allclose(gw_val.data, ex_val.data, equal_nan=True))
+                delta_gw = getattr(gw_val, "delta_t", getattr(gw_val, "delta_f", None))
+                delta_ex = getattr(ex_val, "delta_t", getattr(ex_val, "delta_f", None))
+                delta_match = delta_gw == delta_ex
+                epoch_gw = getattr(gw_val, "start_time", None)
+                epoch_ex = getattr(ex_val, "start_time", None)
+                epoch_match = epoch_gw == epoch_ex
+                all_match = data_match and delta_match and epoch_match
+                return {
+                    "match": all_match,
+                    "unit_match": True,
+                    "shape_match": True,
+                    "val_match": data_match,
+                    "comparison_mode": "pycbc_object_numeric",
+                    "parity_kind": "numeric_value_parity",
+                }
+
             # Collection objects (TimeSeriesDict, TimeSeriesList, etc.)
             if isinstance(gw_val, (dict, collections.abc.Mapping)) and isinstance(ex_val, (dict, collections.abc.Mapping)):
                 keys_match = set(gw_val.keys()) == set(ex_val.keys())
                 elems_match = True
+                is_numeric_coll = True
                 if keys_match:
                     for k in gw_val:
                         v_gw = gw_val[k]
@@ -930,22 +1001,35 @@ def dispatch_inherited_api_trials(
                             if not np.allclose(arr_gw, arr_ex, equal_nan=True):
                                 elems_match = False
                                 break
-                        elif arr_gw != arr_ex:
-                            elems_match = False
-                            break
+                        elif isinstance(arr_gw, (int, float, np.number)) and isinstance(arr_ex, (int, float, np.number)):
+                            if not np.isclose(arr_gw, arr_ex, equal_nan=True):
+                                elems_match = False
+                                break
+                        else:
+                            is_numeric_coll = False
+                            if arr_gw != arr_ex:
+                                elems_match = False
+                                break
                 all_match = keys_match and elems_match
+                cmp_mode = "collection_elementwise_numeric" if is_numeric_coll else "metadata_equality"
+                par_kind = "numeric_value_parity" if is_numeric_coll else "metadata_property_parity"
                 return {
                     "match": all_match,
                     "unit_match": True,
                     "shape_match": keys_match,
                     "val_match": all_match,
-                    "comparison_mode": "collection_elementwise_numeric",
-                    "parity_kind": "numeric_value_parity",
+                    "comparison_mode": cmp_mode,
+                    "parity_kind": par_kind,
                 }
 
             if isinstance(gw_val, (list, tuple)) and isinstance(ex_val, (list, tuple)):
                 len_match = len(gw_val) == len(ex_val)
                 elems_match = True
+                is_array_collection = (
+                    len(gw_val) > 0 and
+                    all(isinstance(getattr(x, "value", x), np.ndarray) for x in gw_val) and
+                    all(isinstance(getattr(x, "value", x), np.ndarray) for x in ex_val)
+                )
                 if len_match:
                     for i in range(len(gw_val)):
                         v_gw = gw_val[i]
@@ -956,17 +1040,23 @@ def dispatch_inherited_api_trials(
                             if not np.allclose(arr_gw, arr_ex, equal_nan=True):
                                 elems_match = False
                                 break
+                        elif isinstance(arr_gw, (int, float, np.number)) and isinstance(arr_ex, (int, float, np.number)):
+                            if not np.isclose(arr_gw, arr_ex, equal_nan=True):
+                                elems_match = False
+                                break
                         elif arr_gw != arr_ex:
                             elems_match = False
                             break
                 all_match = len_match and elems_match
+                cmp_mode = "collection_elementwise_numeric" if is_array_collection else "metadata_equality"
+                par_kind = "numeric_value_parity" if is_array_collection else "metadata_property_parity"
                 return {
                     "match": all_match,
                     "unit_match": True,
                     "shape_match": len_match,
                     "val_match": all_match,
-                    "comparison_mode": "collection_elementwise_numeric",
-                    "parity_kind": "numeric_value_parity",
+                    "comparison_mode": cmp_mode,
+                    "parity_kind": par_kind,
                 }
 
             # Standard Array / Series / Quantity numerical comparison
@@ -974,24 +1064,35 @@ def dispatch_inherited_api_trials(
             ex_u = str(getattr(ex_val, "unit", ""))
             unit_match = gw_u == ex_u
 
-            gw_shp = getattr(gw_val, "shape", len(gw_val) if hasattr(gw_val, "__len__") else None)
-            ex_shp = getattr(ex_val, "shape", len(ex_val) if hasattr(ex_val, "__len__") else None)
+            gw_shp = getattr(gw_val, "shape", None)
+            if gw_shp is None and hasattr(gw_val, "__len__"):
+                try:
+                    gw_shp = len(gw_val)
+                except TypeError:
+                    gw_shp = None
+
+            ex_shp = getattr(ex_val, "shape", None)
+            if ex_shp is None and hasattr(ex_val, "__len__"):
+                try:
+                    ex_shp = len(ex_val)
+                except TypeError:
+                    ex_shp = None
+
             shape_match = gw_shp == ex_shp
 
-            if hasattr(gw_val, "value") and hasattr(ex_val, "value"):
-                val_match = bool(np.allclose(gw_val.value, ex_val.value, equal_nan=True))
+            val_gw = getattr(gw_val, "value", gw_val)
+            val_ex = getattr(ex_val, "value", ex_val)
+
+            if isinstance(val_gw, np.ndarray) and isinstance(val_ex, np.ndarray):
+                val_match = bool(np.allclose(val_gw, val_ex, equal_nan=True))
                 comparison_mode = "numeric_allclose"
                 parity_kind = "numeric_value_parity"
-            elif isinstance(gw_val, np.ndarray) and isinstance(ex_val, np.ndarray):
-                val_match = bool(np.allclose(gw_val, ex_val, equal_nan=True))
-                comparison_mode = "numeric_allclose"
-                parity_kind = "numeric_value_parity"
-            elif isinstance(gw_val, (int, float, np.number)) and isinstance(ex_val, (int, float, np.number)):
-                val_match = bool(np.isclose(gw_val, ex_val, equal_nan=True))
+            elif isinstance(val_gw, (int, float, np.number)) and isinstance(val_ex, (int, float, np.number)):
+                val_match = bool(np.isclose(val_gw, val_ex, equal_nan=True))
                 comparison_mode = "numeric_allclose"
                 parity_kind = "numeric_value_parity"
             else:
-                val_match = (gw_val == ex_val) if not isinstance(gw_val, np.ndarray) else bool(np.all(gw_val == ex_val))
+                val_match = (val_gw == val_ex) if not isinstance(val_gw, np.ndarray) else bool(np.all(val_gw == val_ex))
                 comparison_mode = "metadata_equality"
                 parity_kind = "metadata_property_parity"
 

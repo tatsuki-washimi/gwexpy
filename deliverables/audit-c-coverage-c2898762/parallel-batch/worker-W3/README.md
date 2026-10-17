@@ -9,11 +9,11 @@
 - **Verified APIs**: 19
 - **Differ APIs**: 9
 - **Contract Pending APIs**: 33
-- **GWpy Value Parity**: 25
+- **GWpy Value Parity**: 31
 - **GWpy Exception Parity**: 42
-- **GWpy Differs**: 2
-- **Incomparable / Extension**: 6
-- **Execution Duration**: 1.42s
+- **GWpy Differs**: 0
+- **Incomparable / Extension**: 0
+- **Execution Duration**: 1.38s
 
 ## Deliverable Files
 - `assigned-identifiers.jsonl`: Original input manifest (75 lines)
