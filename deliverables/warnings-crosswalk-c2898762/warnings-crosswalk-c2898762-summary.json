@@ -1,0 +1,47 @@
+{
+  "counts": {
+    "A_text_calls": 99,
+    "B_ast_warnings_warn_calls": 99,
+    "B_ast_imported_warn_calls": 0,
+    "naive_line_grep_hits": 100,
+    "A_text_only_keys": 0,
+    "B_ast_only_keys": 0,
+    "A_no_stacklevel_text": 24,
+    "B_no_stacklevel_kw": 24
+  },
+  "A_audit_bucket_replica": {
+    "no_category_no_stacklevel": 16,
+    "no_category_has_stacklevel": 29,
+    "has_category_no_stacklevel": 8,
+    "has_category_has_stacklevel": 46
+  },
+  "A_only_keys": [],
+  "B_only_keys": [],
+  "A_only_details": [],
+  "B_only_details": [],
+  "stacklevel_definition_mismatch": [],
+  "ghost_non_code_hits": [],
+  "A_classify_warn_line_window_replica": {
+    "line_hits_total": 100,
+    "no_stacklevel_line_window": 59,
+    "buckets": {
+      "no_category_no_stacklevel": 39,
+      "no_category_has_stacklevel": 33,
+      "has_category_no_stacklevel": 20,
+      "has_category_has_stacklevel": 8
+    },
+    "docstring_only_hits": [
+      {
+        "path": "gwexpy/interop/base.py",
+        "line": 66,
+        "text": "Forwarded to :func:`warnings.warn`."
+      }
+    ]
+  },
+  "reconciliation_notes": {
+    "count_100_vs_99": "A/classify_warn counts lines containing the substring warnings.warn (100). One hit is a Sphinx docstring reference, not a live call.",
+    "count_59_vs_24": "A 'missing stacklevel' uses stacklevel anywhere in a 4-line window from the hit line; it over-counts multiline calls whose stacklevel= appears later than three continuation lines. B/AST uses the full call and finds 24 sites without a stacklevel keyword."
+  },
+  "pin_commit": "c2898762ca68e20a1a241fffb3c3262b0a27290b",
+  "file_count": 396
+}
