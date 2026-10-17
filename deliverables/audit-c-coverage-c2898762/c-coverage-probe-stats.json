@@ -1,13 +1,22 @@
 {
-  "probes_total": 16,
-  "executed": 10,
+  "probes_total": 19,
+  "executed": 13,
   "not_run": 6,
-  "in_521_backlog_probes": 3,
+  "in_521_backlog_probes": 6,
   "new_coverage_probes": 3,
+  "control_probes": 3,
   "new_coverage_backlog_ids": [
     "gwexpy.io.dttxml_common.load_dttxml_native",
     "gwexpy.signal.normalization.get_enbw",
     "gwexpy.timeseries.decomposition.pca_transform"
   ],
-  "existing_issue_replay_probes": 13
+  "new_coverage_abnormal_input_probes": 3,
+  "new_coverage_positive_control_probes": 3,
+  "existing_issue_replay_probes": 13,
+  "probe_intent_counts": {
+    "issue_reproduction": 7,
+    "abnormal_input": 3,
+    "deferred": 6,
+    "positive_control": 3
+  }
 }

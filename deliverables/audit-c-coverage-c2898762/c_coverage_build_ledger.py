@@ -276,7 +276,9 @@ def main() -> int:
         "population_counts": dict(Counter(r["population"] for r in records)),
         "api_classification_counts": dict(Counter(r["api_classification"] for r in records)),
         "contract_status_counts": dict(Counter(r["contract_status"] for r in records)),
-        "runtime_status_counts": dict(Counter(r["runtime_status"] for r in records)),
+        "ledger_runtime_status_before_probe_merge": dict(
+            Counter(r["runtime_status"] for r in records)
+        ),
         "with_related_issue": sum(1 for r in records if r.get("related_issue")),
         "inherited_by_top_module": dict(
             Counter(top_module_group(r["identifier"]) for r in records if r["population"] == "inherited_api_361")

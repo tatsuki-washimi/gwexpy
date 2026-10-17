@@ -17,7 +17,7 @@ python3 deliverables/audit-c-coverage-c2898762/c_coverage_merge_runtime.py
 | --- | --- |
 | `c-coverage-c2898762.jsonl` | 521-row ledger |
 | `c-coverage-c2898762-summary.json` | Aggregates + probe summary |
-| `c-coverage-runtime-probes.jsonl` | 16 probe rows (10 executed, 6 deferred) |
+| `c-coverage-runtime-probes.jsonl` | Runtime probes (16 baseline + 3 positive controls on 521 backlog APIs) |
 | `c_coverage_build_ledger.py` | Static classifier |
 | `c_coverage_runtime_probes.py` | Runtime probes |
 | `c_coverage_merge_runtime.py` | Attach probe notes to ledger |
