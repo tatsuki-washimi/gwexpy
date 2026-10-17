@@ -10,6 +10,7 @@ PYTHONPATH=. python3 deliverables/audit-c-coverage-c2898762/c_coverage_build_led
 PYTHONPATH=. python3 deliverables/audit-c-coverage-c2898762/c_coverage_runtime_probes.py
 python3 deliverables/audit-c-coverage-c2898762/c_coverage_merge_runtime.py
 PYTHONPATH=. python3 deliverables/audit-c-coverage-c2898762/c_coverage_build_inherited_priority_slice.py
+PYTHONPATH=. python3 deliverables/audit-c-coverage-c2898762/c_inherited_batch1_runtime.py
 ```
 
 ## Outputs
@@ -25,6 +26,10 @@ PYTHONPATH=. python3 deliverables/audit-c-coverage-c2898762/c_coverage_build_inh
 | `c_coverage_runtime_probes.py` | Runtime probes |
 | `c_coverage_merge_runtime.py` | Attach probe notes to ledger |
 | `c_coverage_build_inherited_priority_slice.py` | Build inherited priority slice from ledger |
+| `c-inherited-batch1-runtime.jsonl` | Inherited API batch 1 runtime trials (30 rows) |
+| `c-inherited-batch1-runtime-summary.json` | Batch 1 aggregates |
+| `2026-10-17-c-inherited-batch1-runtime.md` | Batch 1 short report |
+| `c_inherited_batch1_runtime.py` | Execute batch 1 trials |
 
 ## Inputs
 

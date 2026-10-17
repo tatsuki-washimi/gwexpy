@@ -1,0 +1,31 @@
+{
+  "batch": "inherited_api_batch_1",
+  "audit_baseline_pin": "c2898762ca68e20a1a241fffb3c3262b0a27290b",
+  "source_commit": "f1a2ff845df2927e73423c9323130b8fd85e1983",
+  "planned_api_count": 10,
+  "planned_identifiers": [
+    "gwexpy.timeseries.timeseries.TimeSeries/override_unit",
+    "gwexpy.timeseries.timeseries.TimeSeries/shift",
+    "gwexpy.timeseries.timeseries.TimeSeries/pad",
+    "gwexpy.frequencyseries.frequencyseries.FrequencySeries/crop",
+    "gwexpy.spectrogram.spectrogram.Spectrogram/crop_frequencies",
+    "gwexpy.types.plane2d.Plane2D/crop",
+    "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/copy",
+    "gwexpy.types.array2d.Array2D/copy",
+    "gwexpy.spectrogram.spectrogram.Spectrogram/read",
+    "gwexpy.types.series.Series/write"
+  ],
+  "trials_total": 30,
+  "executed_unique_api_count": 10,
+  "positive_assertions_passed": 10,
+  "positive_assertions_total": 10,
+  "abnormal_paths_observed": 7,
+  "abnormal_trials_total": 10,
+  "gwpy_comparison_counts": {
+    "match": 9,
+    "incomparable": 1
+  },
+  "contract_pending_or_not_run": 1,
+  "ledger_merge": "deferred_until_batch_review",
+  "note": "Counts are contract observations, not product pass/fail scores."
+}
