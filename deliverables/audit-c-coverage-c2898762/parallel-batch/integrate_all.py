@@ -366,11 +366,11 @@ def main() -> int:
   2. **第2段階 (台帳・証拠統合)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/integrate_all.py`（既存13 APIの37試行と母集団外の参照13試行［計50試行］を統合し、全521 API台帳および1,572試行の統合成果物を生成）
   3. **第3段階 (QA整合性検査)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/qa_audit.py`（全17項目のQAアサーションを自動検証）
 
-### 3.4 契約検証 (verified 246件) の保証範囲
-本監査における `verified`（246件）は、各APIに対してハーネスで定義された具体的な契約アサーション（有限性チェック、単位一貫性、形状・次元チェック、戻り値型契約など）を通過したことを保証するものです。あらゆる入力ドメインにわたる包括的な物理的・数学的正当性の全数証明とは区別され、今後の深層物理レビューの対象となります。
+### 3.4 契約検証 (verified {disposition_counts['verified']}件) の保証範囲
+本監査における `verified`（{disposition_counts['verified']}件）は、各APIに対してハーネスで定義された具体的な契約アサーション（有限性チェック、単位一貫性、形状・次元チェック、戻り値型契約など）を通過したことを保証するものです。あらゆる入力ドメインにわたる包括的な物理的・数学的正当性の全数証明とは区別され、今後の深層物理レビューの対象となります。
 
-### 3.5 disposition=differ (44件) と GWpyパリティ differ (0件) の整合性
-- **`disposition=differ` (44件)**: GWexpy内部の契約検証（MRO不整合や未実装の機能など）で観測された差異。
+### 3.5 disposition=differ ({disposition_counts['differ']}件) と GWpyパリティ differ (0件) の整合性
+- **`disposition=differ` ({disposition_counts['differ']}件)**: GWexpy内部の契約検証（MRO不整合や未実装の機能など）で観測された差異。
 - **GWpyパリティ `differ` (0件)**: 同一引数に対するGWpyとの振る舞い比較における予期せぬ差異（偽陽性差分は完全解消）。
 
 ---
