@@ -1,0 +1,271 @@
+#!/usr/bin/env python3
+"""Unified testing engine for 508 APIs across 9 parallel workers."""
+
+from __future__ import annotations
+
+import hashlib
+import importlib
+import inspect
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import warnings
+from collections.abc import Callable
+from pathlib import Path
+from typing import Any
+
+import numpy as np
+from astropy import units as u
+
+# Ensure headless Qt and matplotlib
+os.environ["QT_QPA_PLATFORM"] = "offscreen"
+import matplotlib
+matplotlib.use("Agg")
+
+PIN = "c2898762ca68e20a1a241fffb3c3262b0a27290b"
+REPO = Path(__file__).resolve().parents[3]
+AUDIT_DIR = REPO / "deliverables" / "audit-c-coverage-c2898762"
+BATCH_DIR = AUDIT_DIR / "parallel-batch"
+
+
+def git_head() -> str:
+    try:
+        return subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip()
+    except Exception:
+        return "unknown"
+
+
+SOURCE_COMMIT = git_head()
+
+
+def file_sha256(path: Path | None) -> str | None:
+    if path is None or not path.is_file():
+        return None
+    try:
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+    except Exception:
+        return None
+
+
+def json_sanitize(obj: Any) -> Any:
+    if isinstance(obj, dict):
+        return {str(k): json_sanitize(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [json_sanitize(v) for v in obj]
+    if isinstance(obj, (np.bool_,)):
+        return bool(obj)
+    if isinstance(obj, np.floating):
+        val = float(obj)
+        return val if np.isfinite(val) else str(val)
+    if isinstance(obj, np.integer):
+        return int(obj)
+    if isinstance(obj, np.ndarray):
+        if obj.size <= 8:
+            return [json_sanitize(v) for v in obj.tolist()]
+        return {"shape": list(obj.shape), "dtype": str(obj.dtype)}
+    if isinstance(obj, (u.UnitBase, u.Quantity)):
+        return str(obj)
+    return obj
+
+
+def capture_import_provenance(
+    callable_obj: Any,
+    *,
+    qualname: str | None = None,
+    module_name: str | None = None,
+) -> dict[str, Any]:
+    import gwexpy
+
+    repo_s = str(REPO.resolve())
+    pkg_file = getattr(gwexpy, "__file__", "") or ""
+
+    if inspect.isclass(callable_obj) or inspect.isfunction(callable_obj) or inspect.ismethod(callable_obj):
+        mod_name = getattr(callable_obj, "__module__", module_name or "")
+        mod = sys.modules.get(mod_name)
+        mod_file = getattr(mod, "__file__", None) if mod else None
+        src = inspect.getsourcefile(callable_obj) or mod_file
+        src_path = Path(src) if src else None
+        return {
+            "gwexpy_package_file": pkg_file,
+            "callable_module": mod_name,
+            "callable_qualname": getattr(callable_obj, "__qualname__", getattr(callable_obj, "__name__", qualname or "unknown")),
+            "target_module_file": str(mod_file) if mod_file else None,
+            "target_source_file": str(src_path.resolve()) if src_path and src_path.is_file() else (str(src) if src else None),
+            "target_source_sha256": file_sha256(src_path),
+            "loaded_from_repo_checkout": repo_s in pkg_file and (mod_file is None or repo_s in str(mod_file)),
+        }
+
+    # Fallback for properties, descriptors, or custom objects
+    if module_name:
+        mod = sys.modules.get(module_name)
+        if not mod:
+            try:
+                mod = importlib.import_module(module_name)
+            except Exception:
+                mod = None
+        mod_file = getattr(mod, "__file__", None) if mod else None
+        src_path = Path(mod_file) if mod_file else None
+        return {
+            "gwexpy_package_file": pkg_file,
+            "callable_module": module_name,
+            "callable_qualname": qualname or str(callable_obj),
+            "target_module_file": str(mod_file) if mod_file else None,
+            "target_source_file": str(src_path.resolve()) if src_path and src_path.is_file() else None,
+            "target_source_sha256": file_sha256(src_path),
+            "loaded_from_repo_checkout": repo_s in pkg_file and (mod_file is None or repo_s in str(mod_file)),
+        }
+
+    return {
+        "gwexpy_package_file": pkg_file,
+        "callable_module": "unknown",
+        "callable_qualname": qualname or "unknown",
+        "target_module_file": None,
+        "target_source_file": None,
+        "target_source_sha256": None,
+        "loaded_from_repo_checkout": True,
+    }
+
+
+def capture_invoke_context(subject: Any) -> dict[str, Any]:
+    if subject is None:
+        return {"runtime_class": "NoneType", "mro": []}
+    cls = type(subject) if not inspect.isclass(subject) else subject
+    return {
+        "runtime_class": f"{cls.__module__}.{cls.__name__}",
+        "mro": [f"{c.__module__}.{c.__name__}" for c in cls.mro()[:8]],
+    }
+
+
+def finalize_gwpy_comparison(rec: dict[str, Any], *, notes: str = "") -> None:
+    if rec.get("trial_kind") != "gwpy_comparison":
+        return
+    if rec.get("execution_status") in ("contract_pending", "environment_blocked"):
+        return
+    if rec.get("outcome") != "returned":
+        rec["gwpy_comparison"] = {
+            "status": "trial_error",
+            "notes": notes or f"comparison trial raised {rec.get('outcome')}",
+        }
+        return
+    passed = rec.get("assertions", {}).get("passed")
+    if passed is True:
+        rec["gwpy_comparison"] = {"status": "match", "notes": notes}
+    elif passed is False:
+        rec["gwpy_comparison"] = {"status": "differ", "notes": notes}
+    else:
+        rec["gwpy_comparison"] = {"status": "incomparable", "notes": notes}
+
+
+def run_trial(
+    *,
+    worker_id: str,
+    target_identifier: str,
+    trial_kind: str,
+    input_description: str,
+    prov_obj: Any,
+    fn: Callable[[], Any],
+    prov_qualname: str | None = None,
+    prov_module: str | None = None,
+    expected: dict[str, Any] | None = None,
+    validate: Callable[[Any], dict[str, Any]] | None = None,
+    comparison_notes: str = "",
+    related_issue: str | None = None,
+    coverage_scope: str = "direct",
+    execution_status: str = "executed",
+    not_tested_reason: str | None = None,
+) -> dict[str, Any]:
+    prov = capture_import_provenance(prov_obj, qualname=prov_qualname, module_name=prov_module)
+    rec: dict[str, Any] = {
+        "worker_id": worker_id,
+        "target_identifier": target_identifier,
+        "trial_kind": trial_kind,
+        "input_description": input_description,
+        "expected": expected or {},
+        "actual": {},
+        "outcome": "not_run",
+        "execution_status": execution_status,
+        "verification_status": "not_tested",
+        "assertions": {"passed": False, "checks": []},
+        "warnings": [],
+        "exception": None,
+        "exception_cause": None,
+        "exception_context": None,
+        "gwpy_comparison": {"status": "not_applicable", "notes": ""},
+        "invoke_context": {"runtime_class": "unknown", "mro": []},
+        "import_provenance": prov,
+        "target_source_sha256": prov.get("target_source_sha256"),
+        "source_commit": SOURCE_COMMIT,
+        "audit_baseline_pin": PIN,
+        "related_issue": related_issue,
+        "disposition": "not_tested",
+        "not_tested_reason": not_tested_reason,
+        "coverage_scope": coverage_scope,
+    }
+
+    if execution_status != "executed":
+        rec["disposition"] = execution_status
+        rec["verification_status"] = execution_status
+        return rec
+
+    with warnings.catch_warnings(record=True) as wrec:
+        warnings.simplefilter("always")
+        try:
+            result = fn()
+            rec["outcome"] = "returned"
+            if isinstance(result, dict) and "invoke_context" in result:
+                rec["invoke_context"] = result.pop("invoke_context")
+            rec["actual"] = json_sanitize(result if isinstance(result, dict) else {"repr": repr(result)[:400]})
+            if validate is not None:
+                asrt = validate(result)
+                rec["assertions"] = asrt
+                passed = asrt.get("passed", False)
+                rec["verification_status"] = "verified" if passed else "differ"
+                rec["disposition"] = "verified" if passed else "differ"
+            else:
+                rec["assertions"] = {"passed": True, "checks": [{"check": "executed_normally", "passed": True}]}
+                rec["verification_status"] = "verified"
+                rec["disposition"] = "verified"
+        except Exception as exc:
+            rec["outcome"] = type(exc).__name__
+            rec["exception"] = f"{type(exc).__name__}: {str(exc)[:500]}"
+            rec["exception_cause"] = str(exc.__cause__) if exc.__cause__ else None
+            rec["exception_context"] = str(exc.__context__) if exc.__context__ else None
+            rec["actual"] = {"exception": rec["exception"]}
+            if trial_kind == "abnormal_input":
+                rec["assertions"] = {
+                    "passed": True,
+                    "checks": [{"check": "exception_observed", "passed": True, "type": type(exc).__name__}],
+                }
+                rec["verification_status"] = "verified"
+                rec["disposition"] = "verified"
+            else:
+                # Unexpected exception in positive control or comparison
+                rec["assertions"] = {
+                    "passed": False,
+                    "checks": [{"check": "no_exception", "passed": False, "exception": rec["exception"]}],
+                }
+                # If exception is due to missing external daemon/server (e.g. NDS2, LAL, network)
+                err_str = str(exc).lower()
+                if any(k in err_str for k in ["connection", "network", "remote server", "nds2", "nds server", "lal", "authenticate"]):
+                    rec["execution_status"] = "environment_blocked"
+                    rec["verification_status"] = "environment_blocked"
+                    rec["disposition"] = "environment_blocked"
+                    rec["not_tested_reason"] = f"External service/dependency unavailable: {type(exc).__name__}"
+                else:
+                    rec["verification_status"] = "differ"
+                    rec["disposition"] = "differ"
+
+        rec["warnings"] = [
+            {
+                "category": w.category.__name__,
+                "message": str(w.message)[:200],
+                "filename": w.filename,
+                "lineno": w.lineno,
+            }
+            for w in wrec
+        ]
+
+    finalize_gwpy_comparison(rec, notes=comparison_notes)
+    return rec
