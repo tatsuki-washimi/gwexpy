@@ -352,8 +352,12 @@ def main() -> int:
 ### 3.2 比較モード細分化とコレクション再分類の内訳 (Issue C補足)
 旧集計の `collection_elementwise_numeric`（16件）から、ndarray配列要素を持たない非配列オブジェクト**13件**（`xspan` 5件, `span` 3件, `yspan` 2件, `band` 1件, `segments` 1件, `get_axes` 1件）を属性メタデータ比較（`metadata_equality` / `metadata_property_parity`）へ適正再分類。真のコレクションAPI **3件**（`TimeSeriesDict.copy`, `TimeSeriesList.copy`, `TimeSeriesList.coalesce`）のみを `collection_elementwise_numeric` として維持。
 
-### 3.3 試行レコードのコミット来歴 (source_commit) について
-全1,572試行中の1,522試行レコードに記録されている `source_commit: f7265d425619...` は、改修後のハーネスをローカル作業ツリー上で実行した時点の HEAD コミットです。改修済みハーネス、比較器、QA監査コード、統合台帳を含む公開リポジトリのコミットは `ffb3529bea79c21e0bd8eed88b513ab40d53e2bd`（`audit/c-coverage-508-parallel` ブランチ）です。同コミットをチェックアウトして `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/run_all_workers_parallel.py` を実行することで全試行の再現が可能です。
+### 3.3 試行レコードのコミット来歴 (source_commit) と2段階再現手順について
+- **コミット来歴と再現性の前提**: 全1,572試行中の1,522試行レコードに記録されている `source_commit: f7265d425619...` は、改修後のハーネスをローカル作業ツリー上で実行した時点の HEAD コミットです。公開リポジトリの最新コミットを用いて再実行した場合、同一の検証手順と観測結果（同一の契約判定・パリティステータス）が再評価されます（実行タイムスタンプやコミットSHAのバイト単位一致とは区別されます）。
+- **2段階の再現手順**:
+  1. **第1段階 (9ワーカー並列実行)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/run_all_workers_parallel.py`（508 API、1,522試行の個別レコードを生成）
+  2. **第2段階 (台帳・証拠統合)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/integrate_all.py`（既存13 APIの50試行と統合し、全521 API台帳および1,572試行の統合成果物を生成）
+  3. **第3段階 (QA整合性検査)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/qa_audit.py`（全17項目のQAアサーションを自動検証）
 
 ### 3.4 契約検証 (verified 246件) の保証範囲
 本監査における `verified`（246件）は、各APIに対してハーネスで定義された具体的な契約アサーション（有限性チェック、単位一貫性、形状・次元チェック、戻り値型契約など）を通過したことを保証するものです。あらゆる入力ドメインにわたる包括的な物理的・数学的正当性の全数証明とは区別され、今後の深層物理レビューの対象となります。

@@ -45,10 +45,12 @@ Baseline pin: `c2898762ca68e20a1a241fffb3c3262b0a27290b`. Runtime uses checkout 
 
 ## Parallel Execution & Audit Provenance Notes
 
-1. **Commit Provenance (`source_commit`)**:
-   - The 1,522 runtime trial records in `c-coverage-521-all-trials.jsonl` record `source_commit: f7265d425619...` because the parallel worker test harness was executed on the local working tree before creating the final wrapper commit `ffb3529bea79...`.
-   - The public repository commit providing the complete fixed harness, comparator, ledger, and QA scripts is `ffb3529bea79c21e0bd8eed88b513ab40d53e2bd` (on branch `audit/c-coverage-508-parallel`).
-   - Checking out `ffb3529bea79...` and running `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/run_all_workers_parallel.py` reproduces the trial records.
+1. **Commit Provenance (`source_commit`) & Two-stage Reproduction**:
+   - The 1,522 runtime trial records in `c-coverage-521-all-trials.jsonl` record `source_commit: f7265d425619...` because the parallel worker test harness was executed on the local working tree before creating the final wrapper commits. Reproducing results with the published harness guarantees observational consistency (the same verification procedures and observed contract/parity outcomes), rather than byte-for-byte JSON identity of timestamps or commit SHAs.
+   - Reproduction follows a clear two-stage process:
+     - **Stage 1 (Worker Execution)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/run_all_workers_parallel.py` (executes 9 parallel workers to generate 1,522 runtime trials across 508 APIs).
+     - **Stage 2 (Evidence Integration)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/integrate_all.py` (merges the 1,522 worker trials with the existing 50 trials for 13 pre-verified APIs to produce the unified 521-row ledger and 1,572-trial dataset).
+     - **Stage 3 (QA Audit)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/qa_audit.py` (independently verifies all 17 QA integrity assertions).
 
 2. **Issue C Reclassification Breakdown**:
    - From the earlier 16 APIs categorized as `collection_elementwise_numeric`, exactly 13 non-array attribute comparisons were reclassified to `metadata_equality` (`metadata_property_parity`):
