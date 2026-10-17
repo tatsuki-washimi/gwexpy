@@ -1,0 +1,167 @@
+{
+  "environment": {
+    "gwexpy_source_commit": "941d0500f0633f43d80a16d159eba29ee3308f39",
+    "audit_baseline_pin": "c2898762ca68e20a1a241fffb3c3262b0a27290b",
+    "python": "3.12.12",
+    "platform": "Linux-6.17.0-1032-oem-x86_64-with-glibc2.39",
+    "gwpy": "4.0.1",
+    "astropy": "8.0.1",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "pythonpath": ".",
+    "command": "PYTHONPATH=<repo> python3 deliverables/audit-b-n01-n02-probes/b_n01_n02_runtime_probe.py",
+    "mocks_used": [],
+    "note": "No mocks in this script; coupling probe is separate under warnings-crosswalk."
+  },
+  "scope": "initial_runtime_observation_not_contract_signoff",
+  "B-N01": {
+    "probe": "B-N01",
+    "source_confirmed": {
+      "disposition": "source_confirmed",
+      "detail": "HistogramDict/List.read uses internal HDF5 for fmt in hdf5/h5/hdf; otherwise astropy.io.registry.read (collections.py). No Histogram-named row in GWexpy I/O registration inventory (D audit)."
+    },
+    "cases": [
+      {
+        "label": "HistogramDict.read missing csv",
+        "warnings": [],
+        "outcome": "raised",
+        "exception": {
+          "type": "FileNotFoundError",
+          "message": "[Errno 2] No such file or directory: '/tmp/gwexpy_audit_missing_histogram.csv'",
+          "cause_type": null,
+          "cause_message": null,
+          "context_type": null,
+          "context_message": null,
+          "traceback_tail": "12/site-packages/astropy/io/registry/compat.py\", line 52, in wrapper\n    return getattr(registry, method_name)(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/.local/lib/python3.12/site-packages/astropy/io/registry/core.py\", line 211, in read\n    fileobj = ctx.__enter__()\n              ^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/contextlib.py\", line 137, in __enter__\n    return next(self.gen)\n           ^^^^^^^^^^^^^^\n  File \"/home/washimi/.local/lib/python3.12/site-packages/astropy/utils/data.py\", line 389, in get_readable_fileobj\n    fileobj = io.FileIO(name_or_obj, \"r\")\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/gwexpy_audit_missing_histogram.csv'\n"
+        },
+        "event_order": [
+          {
+            "kind": "exception",
+            "type": "FileNotFoundError"
+          }
+        ],
+        "disposition": "observed",
+        "interpretation": "Negative control only: FileNotFoundError does not prove registration health."
+      },
+      {
+        "label": "HistogramList.read missing csv",
+        "warnings": [],
+        "outcome": "raised",
+        "exception": {
+          "type": "FileNotFoundError",
+          "message": "[Errno 2] No such file or directory: '/tmp/gwexpy_audit_missing_histogram.csv'",
+          "cause_type": null,
+          "cause_message": null,
+          "context_type": null,
+          "context_message": null,
+          "traceback_tail": "12/site-packages/astropy/io/registry/compat.py\", line 52, in wrapper\n    return getattr(registry, method_name)(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/.local/lib/python3.12/site-packages/astropy/io/registry/core.py\", line 211, in read\n    fileobj = ctx.__enter__()\n              ^^^^^^^^^^^^^^^\n  File \"/home/washimi/miniforge3/envs/main/lib/python3.12/contextlib.py\", line 137, in __enter__\n    return next(self.gen)\n           ^^^^^^^^^^^^^^\n  File \"/home/washimi/.local/lib/python3.12/site-packages/astropy/utils/data.py\", line 389, in get_readable_fileobj\n    fileobj = io.FileIO(name_or_obj, \"r\")\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/gwexpy_audit_missing_histogram.csv'\n"
+        },
+        "event_order": [
+          {
+            "kind": "exception",
+            "type": "FileNotFoundError"
+          }
+        ],
+        "disposition": "observed",
+        "interpretation": "Negative control only: FileNotFoundError does not prove registration health."
+      },
+      {
+        "label": "HistogramDict.read hdf5 roundtrip",
+        "warnings": [],
+        "return_value_type": "HistogramDict",
+        "outcome": "returned",
+        "event_order": [],
+        "disposition": "observed",
+        "interpretation": "Positive control: explicit HDF5 path documented in read()."
+      },
+      {
+        "label": "HistogramList.read hdf5 roundtrip",
+        "warnings": [],
+        "return_value_type": "HistogramList",
+        "outcome": "returned",
+        "event_order": [],
+        "disposition": "observed"
+      },
+      {
+        "label": "non-HDF5 real-file matrix",
+        "disposition": "contract_pending",
+        "interpretation": "Public read() docstring names HDF5 explicitly; non-HDF5 delegates to Astropy without a pinned format list in this probe. No contract-confirmed non-HDF5 format was selected for real-file trial.",
+        "not_tested_reason": "Await supported-format contract before real-file non-HDF5 tests."
+      }
+    ],
+    "registration_judgement": {
+      "disposition": "observed",
+      "delayed_registration_defect": "not_observed",
+      "detail": "Missing CSV reaches FileNotFoundError with zero warnings (fresh import path not re-isolated in subprocess here)."
+    }
+  },
+  "B-N02": {
+    "probe": "B-N02",
+    "case": {
+      "label": "TimeSeriesMatrix.read(\"/tmp/gwexpy_audit_missing_matrix.csv\")",
+      "warnings": [
+        {
+          "order": 1,
+          "category": "DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped",
+          "filename": "/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/declarative/utilities/representations.py",
+          "lineno": 8
+        },
+        {
+          "order": 2,
+          "category": "UserWarning",
+          "message": "Reading a matrix from CSV/Parquet is a value import only: row/column keys, per-element metadata, units and attrs are NOT preserved (synthetic keys are generated). Use HDF5, NetCDF4 or Zarr for a metadata-preserving round-trip.",
+          "filename": "/home/washimi/work/gwexpy/gwexpy/timeseries/matrix.py",
+          "lineno": 202
+        }
+      ],
+      "outcome": "raised",
+      "exception": {
+        "type": "ValueError",
+        "message": "Could not identify format for /tmp/gwexpy_audit_missing_matrix.csv. Please specify 'format' argument.",
+        "cause_type": null,
+        "cause_message": null,
+        "context_type": "FileNotFoundError",
+        "context_message": "[Errno 2] No such file or directory: '/tmp/gwexpy_audit_missing_matrix.csv'",
+        "traceback_tail": "n01-n02-probes/b_n01_n02_runtime_probe.py\", line 75, in run_call\n    rec[\"return_value_type\"] = type(fn()).__name__\n                                    ^^^^\n  File \"/home/washimi/work/gwexpy/deliverables/audit-b-n01-n02-probes/b_n01_n02_runtime_probe.py\", line 188, in <lambda>\n    lambda: TimeSeriesMatrix.read(missing),\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy/gwexpy/timeseries/matrix.py\", line 202, in read\n    return super().read(source, *super_read_args, **read_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/washimi/work/gwexpy/gwexpy/types/series_matrix_io.py\", line 371, in read\n    raise ValueError(\nValueError: Could not identify format for /tmp/gwexpy_audit_missing_matrix.csv. Please specify 'format' argument.\n"
+      },
+      "event_order": [
+        {
+          "kind": "warning",
+          "order": 1,
+          "category": "DeprecationWarning",
+          "message": "Compatibility support for python2 has been dropped",
+          "filename": "/home/washimi/miniforge3/envs/main/lib/python3.12/site-packages/declarative/utilities/representations.py",
+          "lineno": 8
+        },
+        {
+          "kind": "warning",
+          "order": 2,
+          "category": "UserWarning",
+          "message": "Reading a matrix from CSV/Parquet is a value import only: row/column keys, per-element metadata, units and attrs are NOT preserved (synthetic keys are generated). Use HDF5, NetCDF4 or Zarr for a metadata-preserving round-trip.",
+          "filename": "/home/washimi/work/gwexpy/gwexpy/timeseries/matrix.py",
+          "lineno": 202
+        },
+        {
+          "kind": "exception",
+          "type": "ValueError"
+        }
+      ],
+      "disposition": "observed",
+      "source_confirmed": {
+        "disposition": "source_confirmed",
+        "detail": "series_matrix_io.py emits CSV/Parquet loss UserWarning before io_registry.read; TimeSeriesMatrix.read wraps super().read (matrix.py ~202 stacklevel frame)."
+      },
+      "warning_before_exception": true,
+      "format_misidentification_valueerror": true,
+      "related_issues": [
+        "#775 format-inference diagnostic",
+        "#781 warning attribution"
+      ],
+      "diagnostic_split": {
+        "early_warning_vs_missing_file": "observed (warning precedes exception)",
+        "public_caller_line_expectation": "contract_pending"
+      }
+    }
+  }
+}
