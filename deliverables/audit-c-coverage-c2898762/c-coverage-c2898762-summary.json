@@ -1,0 +1,54 @@
+{
+  "pin_commit": "c2898762ca68e20a1a241fffb3c3262b0a27290b",
+  "runtime_source_commit": "adb85a617505a1510a30fcbf4e17e6764ad0a739",
+  "python": "3.12.12",
+  "platform": "Linux-6.17.0-1032-oem-x86_64-with-glibc2.39",
+  "total_records": 521,
+  "population_counts": {
+    "inherited_api_361": 361,
+    "conventional_module_160": 160
+  },
+  "api_classification_counts": {
+    "pure_gwpy_mro_delegation": 360,
+    "gwexpy_adjacent_inherited_surface": 1,
+    "conventional_fitting_helper": 10,
+    "conventional_module_function": 57,
+    "conventional_io_helper": 84,
+    "module_internal_helper": 9
+  },
+  "contract_status_counts": {
+    "gwpy_parity_expected": 361,
+    "conventional_undocumented": 67,
+    "contract_pending": 84,
+    "internal_or_gui": 9
+  },
+  "runtime_status_counts": {
+    "not_run": 521
+  },
+  "with_related_issue": 11,
+  "inherited_by_top_module": {
+    "gwexpy.fields": 16,
+    "gwexpy.frequencyseries": 74,
+    "gwexpy.plot": 18,
+    "gwexpy.spectrogram": 51,
+    "gwexpy.timeseries": 78,
+    "gwexpy.types": 124
+  },
+  "runtime_probes": {
+    "probes_total": 16,
+    "executed": 10,
+    "not_run": 6,
+    "in_521_backlog_probes": 3,
+    "new_coverage_probes": 3,
+    "new_coverage_backlog_ids": [
+      "gwexpy.io.dttxml_common.load_dttxml_native",
+      "gwexpy.signal.normalization.get_enbw",
+      "gwexpy.timeseries.decomposition.pca_transform"
+    ],
+    "existing_issue_replay_probes": 13
+  },
+  "ledger_runtime_status_after_merge": {
+    "not_run": 518,
+    "executed_this_pass": 3
+  }
+}
