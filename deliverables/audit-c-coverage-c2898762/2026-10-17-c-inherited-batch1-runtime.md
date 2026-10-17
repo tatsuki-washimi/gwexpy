@@ -1,10 +1,10 @@
 # Inherited API batch 1 — runtime verification
 
-Pin: `c2898762ca68e20a1a241fffb3c3262b0a27290b` · Source commit: `f1a2ff845df2927e73423c9323130b8fd85e1983`
+Pin: `c2898762ca68e20a1a241fffb3c3262b0a27290b` · Source commit: `03df898055bc7e269ffa803fbd4924bb07571cb7`
 
 ## Scope
 
-10 planned inherited APIs (30 trials: positive / abnormal / GWpy compare each).
+10 planned inherited APIs (30 core trials + optional reference rows).
 
 **Not merged** into `c-coverage-c2898762.jsonl` in this step.
 

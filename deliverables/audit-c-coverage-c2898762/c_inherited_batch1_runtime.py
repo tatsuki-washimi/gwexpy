@@ -36,6 +36,20 @@ BATCH_APIS: list[str] = [
 ]
 
 
+def json_sanitize(obj: Any) -> Any:
+    if isinstance(obj, dict):
+        return {key: json_sanitize(value) for key, value in obj.items()}
+    if isinstance(obj, list):
+        return [json_sanitize(value) for value in obj]
+    if isinstance(obj, (np.bool_,)):
+        return bool(obj)
+    if isinstance(obj, np.floating):
+        return float(obj)
+    if isinstance(obj, np.integer):
+        return int(obj)
+    return obj
+
+
 def git_head() -> str:
     return subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip()
 
@@ -91,6 +105,51 @@ def capture_import_provenance(
     }
 
 
+def capture_invoke_context(subject: Any) -> dict[str, Any]:
+    cls = type(subject) if not inspect.isclass(subject) else subject
+    return {
+        "runtime_class": f"{cls.__module__}.{cls.__name__}",
+        "mro": [f"{c.__module__}.{c.__name__}" for c in cls.mro()[:8]],
+    }
+
+
+def series_write_format_text(series_mod: Any) -> str:
+    import io
+    from contextlib import redirect_stdout
+
+    buf = io.StringIO()
+    with redirect_stdout(buf):
+        series_mod.Series.write.list_formats()
+    return buf.getvalue()
+
+
+def format_registered(format_text: str, fmt: str) -> bool:
+    for line in format_text.splitlines():
+        if line.strip().startswith(fmt):
+            return "Yes" in line
+    return False
+
+
+def finalize_gwpy_comparison(rec: dict[str, Any], *, notes: str = "") -> None:
+    if rec.get("trial_kind") != "gwpy_comparison":
+        return
+    if rec.get("execution_status") == "contract_pending":
+        return
+    if rec.get("outcome") != "returned":
+        rec["gwpy_comparison"] = {
+            "status": "trial_error",
+            "notes": notes or f"comparison trial raised {rec.get('outcome')}",
+        }
+        return
+    passed = rec.get("assertions", {}).get("passed")
+    if passed is True:
+        rec["gwpy_comparison"] = {"status": "match", "notes": notes}
+    elif passed is False:
+        rec["gwpy_comparison"] = {"status": "differ", "notes": notes}
+    else:
+        rec["gwpy_comparison"] = {"status": "incomparable", "notes": notes}
+
+
 def run_trial(
     *,
     target_identifier: str,
@@ -102,10 +161,10 @@ def run_trial(
     prov_module: str | None = None,
     expected: dict[str, Any] | None = None,
     validate: Callable[[Any], dict[str, Any]] | None = None,
-    gwpy_status: str | None = None,
-    gwpy_notes: str | None = None,
+    comparison_notes: str = "",
     related_issue: str | None = None,
     invoke_path: str | None = None,
+    coverage_scope: str = "direct",
 ) -> dict[str, Any]:
     rec: dict[str, Any] = {
         "batch": "inherited_api_batch_1",
@@ -118,19 +177,20 @@ def run_trial(
         "audit_baseline_pin": PIN,
         "related_issue": related_issue,
         "invoke_path": invoke_path,
+        "coverage_scope": coverage_scope,
         "import_provenance": capture_import_provenance(
             prov_fn, qualname=prov_qualname, module_name=prov_module
         ),
         "evidence": "runtime_observation_not_defect_confirmation",
     }
-    if gwpy_status:
-        rec["gwpy_comparison"] = {"status": gwpy_status, "notes": gwpy_notes or ""}
     with warnings.catch_warnings(record=True) as wrec:
         warnings.simplefilter("always")
         try:
             result = fn()
             rec["outcome"] = "returned"
             rec["actual"] = result if isinstance(result, dict) else {"repr": repr(result)[:400]}
+            if isinstance(result, dict) and "invoke_context" in result:
+                rec["invoke_context"] = result["invoke_context"]
             if validate is not None:
                 rec["assertions"] = validate(result)
         except Exception as exc:
@@ -152,6 +212,7 @@ def run_trial(
             }
             for w in wrec
         ]
+    finalize_gwpy_comparison(rec, notes=comparison_notes)
     return rec
 
 
@@ -159,7 +220,8 @@ def main() -> int:
     from gwexpy.frequencyseries import BifrequencyMap, FrequencySeries
     from gwexpy.spectrogram import Spectrogram
     from gwexpy.timeseries import TimeSeries
-    from gwexpy.types import series as gwexpy_series
+    import gwexpy.types.series as gwexpy_series_mod
+    import gwpy.types.series as gwpy_series_mod
     from gwexpy.types.array2d import Array2D
     from gwexpy.types.plane2d import Plane2D
     import gwpy.frequencyseries as gwpy_fs
@@ -226,8 +288,7 @@ def main() -> int:
                 "passed": r["gwpy_unit"] == r["gwexpy_unit"] == "cm",
                 "checks": [{"check": "units_match", "passed": r["gwpy_unit"] == r["gwexpy_unit"]}],
             },
-            gwpy_status="match",
-            gwpy_notes="Unit metadata string matches; numeric values not re-scaled in either stack.",
+            comparison_notes="Unit metadata string matches; numeric values not re-scaled in either stack.",
         )
     )
 
@@ -284,7 +345,6 @@ def main() -> int:
                 "passed": r["gwpy_t0"] == r["gwexpy_t0"],
                 "checks": [{"check": "t0_match", "passed": r["gwpy_t0"] == r["gwexpy_t0"]}],
             },
-            gwpy_status="match",
         )
     )
 
@@ -341,7 +401,6 @@ def main() -> int:
                 "passed": r["gwpy_len"] == r["gwexpy_len"] == 7,
                 "checks": [{"check": "length_match", "passed": r["gwpy_len"] == r["gwexpy_len"]}],
             },
-            gwpy_status="match",
         )
     )
 
@@ -404,7 +463,6 @@ def main() -> int:
                 "passed": r["gwpy_len"] == r["gwexpy_len"] == 2,
                 "checks": [{"check": "len_match", "passed": r["gwpy_len"] == r["gwexpy_len"]}],
             },
-            gwpy_status="match",
         )
     )
 
@@ -464,7 +522,6 @@ def main() -> int:
                 "passed": r["gwpy_shape"] == r["gwexpy_shape"],
                 "checks": [{"check": "shape_match", "passed": r["gwpy_shape"] == r["gwexpy_shape"]}],
             },
-            gwpy_status="match",
         )
     )
 
@@ -585,8 +642,7 @@ def main() -> int:
             input_description="copy buffer sharing GWexpy BifrequencyMap vs GWpy Array2D analogue",
             prov_fn=BifrequencyMap.copy,
             fn=gwpy_bfm_copy,
-            gwpy_status="match",
-            gwpy_notes="Both observe copy independence semantics via shares_memory flag (not defect verdict).",
+            comparison_notes="Both observe copy independence semantics via shares_memory flag (not defect verdict).",
             validate=lambda r: {
                 "passed": r["gwexpy_shares"] == r["gwpy_shares"],
                 "checks": [{"check": "sharing_flag_match", "passed": r["gwexpy_shares"] == r["gwpy_shares"]}],
@@ -653,7 +709,6 @@ def main() -> int:
             input_description="Array2D.copy vs GWpy Array2D.copy sharing observation",
             prov_fn=Array2D.copy,
             fn=gwpy_a2_copy,
-            gwpy_status="match",
             validate=lambda r: {
                 "passed": r["gwexpy_shares"] == r["gwpy_shares"],
                 "checks": [{"check": "sharing_match", "passed": r["gwexpy_shares"] == r["gwpy_shares"]}],
@@ -670,10 +725,14 @@ def main() -> int:
             path = Path(td) / "sg.hdf5"
             sg_template.write(str(path), format="hdf5", path="spectrogram")
             out = Spectrogram.read(str(path), format="hdf5", path="spectrogram")
+            values_match = bool(np.allclose(out.value, sg_template.value))
             return {
+                "invoke_context": capture_invoke_context(out),
                 "type": type(out).__name__,
                 "shape": list(out.shape),
-                "hdf5_roundtrip": True,
+                "values_match": values_match,
+                "unit_match": str(out.unit) == str(sg_template.unit),
+                "dt_match": bool(out.dt == sg_template.dt),
                 "path": str(path),
             }
 
@@ -687,11 +746,17 @@ def main() -> int:
             prov_qualname="Spectrogram.read",
             fn=pos_sg_read,
             validate=lambda r: {
-                "passed": r["type"] == "Spectrogram" and r["shape"] == [4, 6] and r["hdf5_roundtrip"],
+                "passed": r["type"] == "Spectrogram"
+                and r["shape"] == [4, 6]
+                and r["values_match"]
+                and r["unit_match"]
+                and r["dt_match"],
                 "checks": [
                     {"check": "return_type", "passed": r["type"] == "Spectrogram"},
                     {"check": "shape_match", "passed": r["shape"] == [4, 6]},
-                    {"check": "hdf5_roundtrip", "passed": r["hdf5_roundtrip"]},
+                    {"check": "values_match", "passed": r["values_match"]},
+                    {"check": "unit_match", "passed": r["unit_match"]},
+                    {"check": "dt_match", "passed": r["dt_match"]},
                 ],
             },
         )
@@ -726,7 +791,6 @@ def main() -> int:
             prov_module="gwexpy.spectrogram.spectrogram",
             prov_qualname="Spectrogram.read",
             fn=gwpy_sg_read,
-            gwpy_status="match",
             validate=lambda r: {
                 "passed": r["gwpy_shape"] == r["gwexpy_shape"],
                 "checks": [{"check": "shape_match", "passed": r["gwpy_shape"] == r["gwexpy_shape"]}],
@@ -734,38 +798,64 @@ def main() -> int:
         )
     )
 
-    # 10 Series/write — FrequencySeries instance, Series unified write
+    # 10 Series/write — gwexpy.types.series.Series instance (not FrequencySeries)
     ident = BATCH_APIS[9]
-    fs_write = FrequencySeries([1.0, 2.0, 3.0], frequencies=[0, 1, 2], unit="m")
+    series_write_fmt_text = series_write_format_text(gwexpy_series_mod)
+    hdf5_on_series = format_registered(series_write_fmt_text, "hdf5")
+    csv_on_series = format_registered(series_write_fmt_text, "csv")
+    series_base = gwexpy_series_mod.Series([1.0, 2.0, 3.0], xindex=[0.0, 1.0, 2.0], unit="m")
 
     def pos_series_write():
+        subject = gwexpy_series_mod.Series([1.0, 2.0, 3.0], xindex=[0.0, 1.0, 2.0], unit="m")
         with tempfile.TemporaryDirectory() as td:
-            path = Path(td) / "series.hdf5"
-            fs_write.write(str(path), format="hdf5", path="data")
-            back = FrequencySeries.read(str(path), format="hdf5", path="data")
+            path = Path(td) / "series.csv"
+            subject.write(str(path), format="csv")
+            back = gwexpy_series_mod.Series.read(str(path), format="csv")
+            values_match = bool(np.allclose(back.value, subject.value))
+            unit_match = str(back.unit) == str(subject.unit)
+            x0_match = float(back.x0.value) == float(subject.x0.value)
+            dx_match = float(back.dx.value) == float(subject.dx.value)
             return {
-                "hdf5_roundtrip": True,
-                "len": len(back),
-                "unit": str(back.unit),
-                "values_match": bool(np.allclose(back.value, fs_write.value)),
+                "invoke_context": capture_invoke_context(subject),
+                "writer_registration": {
+                    "csv_registered": csv_on_series,
+                    "hdf5_registered": hdf5_on_series,
+                },
+                "format_used": "csv",
+                "values_match": values_match,
+                "unit_match": unit_match,
+                "x0_match": x0_match,
+                "dx_match": dx_match,
+                "csv_roundtrip_ok": values_match and unit_match and x0_match and dx_match,
             }
 
     trials.append(
         run_trial(
             target_identifier=ident,
             trial_kind="positive_control",
-            input_description="FrequencySeries.write(format=hdf5) via Series unified I/O; read back",
-            prov_fn=gwexpy_series.Series.write,
+            input_description="gwexpy.types.series.Series.write/read csv round-trip (hdf5 not registered on Series)",
+            prov_fn=gwexpy_series_mod.Series.write,
             prov_module="gwexpy.types.series",
             prov_qualname="Series.write",
             fn=pos_series_write,
-            invoke_path="gwexpy.frequencyseries.FrequencySeries.write -> gwexpy.types.series.Series.write",
+            invoke_path="gwexpy.types.series.Series.write on gwexpy.types.series.Series instance",
             validate=lambda r: {
-                "passed": r["hdf5_roundtrip"] and r["len"] == 3 and r["values_match"],
+                "passed": r["writer_registration"]["csv_registered"]
+                and r["values_match"]
+                and r["x0_match"]
+                and r["dx_match"],
                 "checks": [
-                    {"check": "hdf5_roundtrip", "passed": r["hdf5_roundtrip"]},
-                    {"check": "roundtrip_len", "passed": r["len"] == 3},
+                    {"check": "csv_writer_registered", "passed": r["writer_registration"]["csv_registered"]},
                     {"check": "values_match", "passed": r["values_match"]},
+                    {"check": "x0_dx_match", "passed": r["x0_match"] and r["dx_match"]},
+                    {
+                        "check": "unit_preserved_after_csv_roundtrip",
+                        "passed": r["unit_match"],
+                    },
+                    {
+                        "check": "hdf5_not_on_series_documented",
+                        "passed": not r["writer_registration"]["hdf5_registered"],
+                    },
                 ],
             },
         )
@@ -774,45 +864,87 @@ def main() -> int:
         run_trial(
             target_identifier=ident,
             trial_kind="abnormal_input",
-            input_description="write with unknown format identifier",
-            prov_fn=gwexpy_series.Series.write,
+            input_description="Series.write with unknown format identifier",
+            prov_fn=gwexpy_series_mod.Series.write,
             prov_module="gwexpy.types.series",
             prov_qualname="Series.write",
-            fn=lambda: fs_write.write("/tmp/out.xyz", format="no_such_format_xyz"),
-            invoke_path="gwexpy.frequencyseries.FrequencySeries.write -> Series.write",
+            fn=lambda: series_base.write("/tmp/out.xyz", format="no_such_format_xyz"),
+            invoke_path="gwexpy.types.series.Series.write",
             expected={"exception": "IORegistryError"},
         )
     )
 
     def gwpy_series_write():
-        gfs = gwpy_fs.FrequencySeries([1.0, 2.0, 3.0], frequencies=[0, 1, 2], unit="m")
-        with tempfile.TemporaryDirectory() as td:
-            path = Path(td) / "series.hdf5"
-            gfs.write(str(path), format="hdf5", path="data")
-            gback = gwpy_fs.FrequencySeries.read(str(path), format="hdf5", path="data")
-            fs_write.write(str(path), format="hdf5", path="data")
-            back = FrequencySeries.read(str(path), format="hdf5", path="data")
-            return {"gwpy_len": len(gback), "gwexpy_len": len(back)}
+        gwex = gwexpy_series_mod.Series([1.0, 2.0, 3.0], xindex=[0.0, 1.0, 2.0], unit="m")
+        gwpy = gwpy_series_mod.Series([1.0, 2.0, 3.0], xindex=[0.0, 1.0, 2.0], unit="m")
+        with tempfile.TemporaryDirectory() as td_g, tempfile.TemporaryDirectory() as td_e:
+            pg = Path(td_g) / "gwpy.csv"
+            pe = Path(td_e) / "gwexpy.csv"
+            gwpy.write(str(pg), format="csv")
+            gwex.write(str(pe), format="csv")
+            gr = gwpy_series_mod.Series.read(str(pg), format="csv")
+            er = gwexpy_series_mod.Series.read(str(pe), format="csv")
+            return {
+                "invoke_context": capture_invoke_context(gwex),
+                "gwpy_values": gr.value.tolist(),
+                "gwexpy_values": er.value.tolist(),
+                "gwpy_unit": str(gr.unit),
+                "gwexpy_unit": str(er.unit),
+                "values_match": bool(np.allclose(gr.value, er.value)),
+                "unit_match": str(gr.unit) == str(er.unit),
+            }
 
     trials.append(
         run_trial(
             target_identifier=ident,
             trial_kind="gwpy_comparison",
-            input_description="hdf5 round-trip length GWpy vs GWexpy FrequencySeries via Series.write",
-            prov_fn=gwexpy_series.Series.write,
+            input_description="csv round-trip GWpy.types.series.Series vs gwexpy.types.series.Series (separate temp files)",
+            prov_fn=gwexpy_series_mod.Series.write,
             prov_module="gwexpy.types.series",
             prov_qualname="Series.write",
             fn=gwpy_series_write,
-            invoke_path="Series.write unified I/O on FrequencySeries",
-            gwpy_status="match",
+            invoke_path="gwexpy.types.series.Series.write",
+            comparison_notes="Separate output paths; csv format because Series writer lacks hdf5.",
             validate=lambda r: {
-                "passed": r["gwpy_len"] == r["gwexpy_len"] == 3,
-                "checks": [{"check": "len_match", "passed": r["gwpy_len"] == r["gwexpy_len"]}],
+                "passed": r["values_match"] and r["unit_match"],
+                "checks": [
+                    {"check": "values_match", "passed": r["values_match"]},
+                    {"check": "unit_match", "passed": r["unit_match"]},
+                ],
+            },
+        )
+    )
+
+    def ref_frequencyseries_hdf5():
+        fs_ref = FrequencySeries([1.0, 2.0, 3.0], frequencies=[0, 1, 2], unit="m")
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "fs.hdf5"
+            fs_ref.write(str(path), format="hdf5", path="data")
+            back = FrequencySeries.read(str(path), format="hdf5", path="data")
+            return {
+                "invoke_context": capture_invoke_context(fs_ref),
+                "values_match": bool(np.allclose(back.value, fs_ref.value)),
+                "len": len(back),
+            }
+
+    trials.append(
+        run_trial(
+            target_identifier=ident,
+            trial_kind="reference_subclass_io",
+            coverage_scope="reference_only",
+            input_description="Reference only: FrequencySeries hdf5 I/O (not Series/write direct evidence)",
+            prov_fn=FrequencySeries.write,
+            fn=ref_frequencyseries_hdf5,
+            invoke_path="gwexpy.frequencyseries.FrequencySeries.write (reference)",
+            validate=lambda r: {
+                "passed": r["values_match"] and r["len"] == 3,
+                "checks": [{"check": "reference_hdf5_roundtrip", "passed": r["values_match"]}],
             },
         )
     )
 
     jsonl_path = OUT_DIR / "c-inherited-batch1-runtime.jsonl"
+    trials = [json_sanitize(t) for t in trials]
     jsonl_path.write_text("".join(json.dumps(t, ensure_ascii=False) + "\n" for t in trials), encoding="utf-8")
 
     from collections import Counter
@@ -823,6 +955,20 @@ def main() -> int:
         if t.get("trial_kind") == "gwpy_comparison" and t.get("gwpy_comparison")
     ]
     contract_pending = sum(1 for t in trials if t.get("execution_status") == "contract_pending")
+    direct_positive = [
+        t
+        for t in trials
+        if t.get("trial_kind") == "positive_control"
+        and t.get("coverage_scope", "direct") == "direct"
+        and t.get("assertions", {}).get("passed")
+    ]
+    direct_verified_ids = {t["target_identifier"] for t in direct_positive}
+    gwpy_assertion_pass = sum(
+        1
+        for t in trials
+        if t.get("trial_kind") == "gwpy_comparison"
+        and t.get("assertions", {}).get("passed") is True
+    )
     summary = {
         "batch": "inherited_api_batch_1",
         "audit_baseline_pin": PIN,
@@ -830,7 +976,15 @@ def main() -> int:
         "planned_api_count": len(BATCH_APIS),
         "planned_identifiers": BATCH_APIS,
         "trials_total": len(trials),
+        "trials_core_batch": sum(1 for t in trials if t.get("coverage_scope", "direct") == "direct"),
+        "reference_only_trials": sum(1 for t in trials if t.get("coverage_scope") == "reference_only"),
         "executed_unique_api_count": len({t["target_identifier"] for t in trials}),
+        "direct_api_verified_count": len(direct_verified_ids),
+        "direct_api_verified_identifiers": sorted(direct_verified_ids),
+        "gwpy_comparison_assertions_passed": gwpy_assertion_pass,
+        "gwpy_comparison_assertions_total": sum(
+            1 for t in trials if t.get("trial_kind") == "gwpy_comparison"
+        ),
         "positive_assertions_passed": sum(
             1
             for t in trials
@@ -859,7 +1013,7 @@ Pin: `{PIN}` · Source commit: `{summary['source_commit']}`
 
 ## Scope
 
-10 planned inherited APIs (30 trials: positive / abnormal / GWpy compare each).
+10 planned inherited APIs (30 core trials + optional reference rows).
 
 **Not merged** into `c-coverage-c2898762.jsonl` in this step.
 
@@ -871,13 +1025,18 @@ Pin: `{PIN}` · Source commit: `{summary['source_commit']}`
 | Executed unique APIs | {summary['executed_unique_api_count']} |
 | Positive assertions passed | {summary['positive_assertions_passed']} / {summary['positive_assertions_total']} |
 | Abnormal paths observed | {summary['abnormal_paths_observed']} / {summary['abnormal_trials_total']} |
-| GWpy comparison | {json.dumps(summary['gwpy_comparison_counts'])} |
+| GWpy comparison (status labels) | {json.dumps(summary['gwpy_comparison_counts'])} |
+| GWpy comparison (assertions passed) | {summary['gwpy_comparison_assertions_passed']} / {summary['gwpy_comparison_assertions_total']} |
+| Direct API verified (positive) | {summary['direct_api_verified_count']} / {summary['planned_api_count']} |
+| Reference-only trials | {summary['reference_only_trials']} |
 
 ## Interpretation
 
 - `override_unit` trials distinguish metadata unit assignment from physical value rescaling.
+- `Series/write` uses `gwexpy.types.series.Series` instances; csv round-trip verified on values/axes; unit preservation recorded separately.
 - `copy` trials record buffer sharing; no pre-judged correct deep-copy contract.
-- Unified I/O trials confirm format registration before round-trip claims.
+- GWpy comparison status is derived from trial outcome and assertions (not preset).
+- Unified I/O uses measured read-back checks, not fixed `roundtrip=True` flags.
 
 Artifacts: `c-inherited-batch1-runtime.jsonl`, `c-inherited-batch1-runtime-summary.json`.
 """
