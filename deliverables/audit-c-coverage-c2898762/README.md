@@ -1,6 +1,6 @@
 # C audit coverage ledger (521 items) — `c2898762ca68`
 
-**Not product QA completion.** Static classification of 361 `pass2_not_evaluated` inherited APIs + 160 conventional module functions, plus 16 limited runtime probes.
+**Not product QA completion.** Static classification of 361 `pass2_not_evaluated` inherited APIs + 160 conventional module functions, plus 19 runtime probes (521-backlog conventional APIs).
 
 ## Reproduce
 
@@ -9,6 +9,7 @@ cd /path/to/gwexpy
 PYTHONPATH=. python3 deliverables/audit-c-coverage-c2898762/c_coverage_build_ledger.py
 PYTHONPATH=. python3 deliverables/audit-c-coverage-c2898762/c_coverage_runtime_probes.py
 python3 deliverables/audit-c-coverage-c2898762/c_coverage_merge_runtime.py
+PYTHONPATH=. python3 deliverables/audit-c-coverage-c2898762/c_coverage_build_inherited_priority_slice.py
 ```
 
 ## Outputs
@@ -17,10 +18,13 @@ python3 deliverables/audit-c-coverage-c2898762/c_coverage_merge_runtime.py
 | --- | --- |
 | `c-coverage-c2898762.jsonl` | 521-row ledger |
 | `c-coverage-c2898762-summary.json` | Aggregates + probe summary |
-| `c-coverage-runtime-probes.jsonl` | Runtime probes (16 baseline + 3 positive controls on 521 backlog APIs) |
+| `c-coverage-runtime-probes.jsonl` | 19 runtime probes (13 executed + 6 deferred) |
+| `c-inherited-priority-slice-c2898762.jsonl` | First 16-ID inherited API priority slice (planning only) |
+| `c-inherited-priority-slice-c2898762-summary.json` | Slice aggregates |
 | `c_coverage_build_ledger.py` | Static classifier |
 | `c_coverage_runtime_probes.py` | Runtime probes |
 | `c_coverage_merge_runtime.py` | Attach probe notes to ledger |
+| `c_coverage_build_inherited_priority_slice.py` | Build inherited priority slice from ledger |
 
 ## Inputs
 
