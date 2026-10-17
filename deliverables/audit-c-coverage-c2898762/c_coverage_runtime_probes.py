@@ -88,6 +88,7 @@ def probe_record(
     prov_fn: Callable[..., Any] | None = None,
     defer_reason: str | None = None,
     input_description: str | None = None,
+    validate_result: Callable[[Any], dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     in_backlog = target_identifier in BACKLOG
     rec: dict[str, Any] = {
@@ -112,6 +113,7 @@ def probe_record(
         rec["import_provenance"] = capture_import_provenance(prov_target)
     with warnings.catch_warnings(record=True) as wrec:
         warnings.simplefilter("always")
+        result: Any = None
         try:
             result = fn()
             rec["outcome"] = "returned"
@@ -123,6 +125,8 @@ def probe_record(
                 }
             elif hasattr(result, "shape"):
                 rec["result_summary"] = {"shape": list(getattr(result, "shape", ()))}
+            if validate_result is not None and rec["outcome"] == "returned":
+                rec["control_assertions"] = validate_result(result)
         except Exception as exc:
             rec["outcome"] = type(exc).__name__
             rec["exception"] = str(exc)[:500]
@@ -156,11 +160,69 @@ def main() -> int:
 
     fs = FrequencySeries([1.0, 2.0], frequencies=[1, 2], unit="m")
     ts = TimeSeries(np.random.randn(256), sample_rate=256, unit="m")
-    tsm = TimeSeriesMatrix(np.ones((2, 8)), sample_rate=8, unit="m")
+    tsm_degenerate = TimeSeriesMatrix(np.ones((2, 8)), sample_rate=8, unit="m")
+    rng = np.random.default_rng(0)
+    tsm_pca = TimeSeriesMatrix(rng.normal(size=(2, 8)), sample_rate=8, unit="m")
     st = StandardizeTransform(method="no_such_method_xyz")
-    st.fit(tsm)
-    dtt_fixture = REPO / "tests/fixtures/data/test.xml"
+    st.fit(tsm_degenerate)
+    dtt_fixture = REPO / "tests/sample-data/diaggui_TS.xml"
     hanning = np.hanning(1024)
+    enbw_fs = 1024.0
+    enbw_expected = enbw_fs * float(np.sum(hanning**2)) / float(np.sum(hanning) ** 2)
+
+    def validate_dtt_products(payload: dict[str, Any]) -> dict[str, Any]:
+        checks: list[dict[str, Any]] = []
+        ok = True
+        for product in ("PSD", "ASD"):
+            present = isinstance(payload.get(product), dict) and len(payload[product]) > 0
+            checks.append({"check": f"has_nonempty_{product}", "passed": present})
+            ok &= present
+        asd_entry = next(iter(payload.get("ASD", {}).values()), None) if ok else None
+        if asd_entry is not None:
+            data = asd_entry.get("data")
+            finite = bool(np.all(np.isfinite(data)))
+            shape_ok = getattr(data, "shape", None) == (901,)
+            checks.extend(
+                [
+                    {"check": "asd_data_all_finite", "passed": finite},
+                    {"check": "asd_data_shape_901", "passed": shape_ok},
+                    {"check": "asd_df_is_1hz", "passed": asd_entry.get("df") == 1.0},
+                ]
+            )
+            ok &= finite and shape_ok and asd_entry.get("df") == 1.0
+        return {
+            "passed": ok,
+            "checks": checks,
+            "product_keys": sorted(payload.keys()),
+        }
+
+    def validate_pca_matrix(matrix: Any) -> dict[str, Any]:
+        values = matrix.value
+        finite = bool(np.all(np.isfinite(values)))
+        shape = list(values.shape)
+        return {
+            "passed": finite and shape == [2, 1, 8],
+            "checks": [
+                {"check": "transform_values_all_finite", "passed": finite},
+                {"check": "transform_shape_2_1_8", "passed": shape == [2, 1, 8]},
+            ],
+            "shape": shape,
+        }
+
+    def validate_enbw_value(value: Any) -> dict[str, Any]:
+        got = float(value)
+        rel = abs(got - enbw_expected) / enbw_expected if enbw_expected else float("inf")
+        passed = np.isfinite(got) and rel <= 1.0e-12
+        return {
+            "passed": passed,
+            "expected_enbw_hz": enbw_expected,
+            "got_enbw_hz": got,
+            "relative_error": rel,
+            "checks": [
+                {"check": "enbw_is_finite", "passed": bool(np.isfinite(got))},
+                {"check": "enbw_matches_standard_formula", "passed": rel <= 1.0e-12},
+            ],
+        }
 
     probes = [
         probe_record(
@@ -203,7 +265,7 @@ def main() -> int:
             "issue_reproduction",
             "#768",
             "executed",
-            lambda: standardize_matrix(tsm),
+            lambda: standardize_matrix(tsm_degenerate),
             prov_fn=standardize_matrix,
             input_description="constant matrix (degenerate stats)",
         ),
@@ -214,7 +276,7 @@ def main() -> int:
             "issue_reproduction",
             "#769",
             "executed",
-            lambda: st.transform(tsm),
+            lambda: st.transform(tsm_degenerate),
             prov_fn=StandardizeTransform.transform,
             input_description="invalid fitted method name",
         ),
@@ -258,7 +320,7 @@ def main() -> int:
             "abnormal_input",
             None,
             "executed",
-            lambda: pca_transform(None, tsm),
+            lambda: pca_transform(None, tsm_pca),
             prov_fn=pca_transform,
             input_description="pca_res=None",
         ),
@@ -269,7 +331,7 @@ def main() -> int:
             "abnormal_input",
             None,
             "executed",
-            lambda: get_enbw("not_a_window", 1024.0),
+            lambda: get_enbw("not_a_window", enbw_fs),
             prov_fn=get_enbw,
             input_description="string window coefficients",
         ),
@@ -336,7 +398,8 @@ def main() -> int:
             "executed",
             lambda: load_dttxml_native(str(dtt_fixture)),
             prov_fn=load_dttxml_native,
-            input_description=f"repo fixture file {dtt_fixture.name}",
+            input_description=f"repo sample-data fixture {dtt_fixture.name} (DiagGUI TS export)",
+            validate_result=validate_dtt_products,
         ),
         probe_record(
             "P18",
@@ -345,9 +408,10 @@ def main() -> int:
             "positive_control",
             None,
             "executed",
-            lambda: pca_transform(pca_fit(tsm, n_components=2), tsm),
+            lambda: pca_transform(pca_fit(tsm_pca, n_components=2, random_state=0), tsm_pca),
             prov_fn=pca_transform,
-            input_description="pca_fit(tsm) then transform same matrix",
+            input_description="rng(0) normal matrix; pca_fit n=2 random_state=0; finiteness checks",
+            validate_result=validate_pca_matrix,
         ),
         probe_record(
             "P19",
@@ -356,9 +420,10 @@ def main() -> int:
             "positive_control",
             None,
             "executed",
-            lambda: get_enbw(hanning, 1024.0),
+            lambda: get_enbw(hanning, enbw_fs),
             prov_fn=get_enbw,
-            input_description="1024-sample Hann window, fs=1024 Hz, standard mode",
+            input_description="1024-sample Hann; compare to fs*sum(w^2)/sum(w)^2",
+            validate_result=validate_enbw_value,
         ),
     ]
 
@@ -401,6 +466,14 @@ def main() -> int:
         ),
         "probe_intent_counts": dict(
             __import__("collections").Counter(probe.get("probe_intent") for probe in probes)
+        ),
+        "control_assertions_passed": sum(
+            1
+            for probe in probes
+            if probe.get("control_assertions", {}).get("passed") is True
+        ),
+        "control_assertions_probes": sum(
+            1 for probe in probes if "control_assertions" in probe
         ),
     }
     (out_dir / "c-coverage-probe-stats.json").write_text(
