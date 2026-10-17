@@ -30,6 +30,7 @@ GWexpy C監査母集団521件（並列バッチ508件＋事前13件）におい�
      - `incomparable`: 4件（`Plane2D` の `shift`, `value_at`, `is_contiguous`, `diff`）
    - **14件が `exception_parity` と記録されている理由**: 並列バッチのGWpy比較試行において、引数必須メソッドに対し比較器が引数なしで呼出しを行ったため、GWexpy・GWpy双方が同一の `TypeError: missing required positional argument` を送出したことによります。
    - したがって、公的台帳上の記録としては厳密に `exception_parity` です。GWexpy内部での契約検証（`positive_control`）は有効引数で実呼出しに成功（`verified`）しており、また手動のオフライン検証では有効引数による完全な数値・戻り値一致を確認していますが、台帳の試行記録と混同しないよう本台帳では `exception_parity` として正確に記録します。
+   - **残余21件中の `Array2D/read` および `Series/read` の位置付け**: 台帳（`c-coverage-c2898762.jsonl`）の試行記録では、両者ともに引数なし呼出し時の `TypeError: read() missing 1 required positional argument` 送出一致により `exception_parity` と記録されています。手動検証ではCSV往復時の単位非保存契約（無単位復帰）を特定していますが、公的台帳の証拠記録との完全な整合を期すため、トリアージ台帳でも `exception_parity (引数なし呼出し時のTypeError一致。CSVラウンドトリップについてはGWpyとの有効入力パリティ未実証)` として表記を統一しています。
 
 3. **ステップ2（残余21件の契約・入力条件確定と完全トリアージ）**:
    - **上流由来の既知挙動 (`upstream_behavior` / 3件)**:
@@ -129,15 +130,15 @@ GWexpy C監査母集団521件（並列バッチ508件＋事前13件）におい�
 | 24 | `Array2D/step` | A | 1D階段プロット（非推奨） | AttributeError | Series.step()がAxesImageにdrawstyleを渡し例外 | 親クラスからの不整合継承。GWpyでも完全同一例外送出 | exception_parity (AttributeError一致) | **upstream_behavior** | 低（2D画像プロットでstepは非推奨） | 今後起票候補（親Issue #765 配下） |
 | 25 | `Plane2D/step` | A | 1D階段プロット（非推奨） | AttributeError | 同上 | 同上 | incomparable (GWpyなし) | **upstream_behavior** | 低（同上） | 今後起票候補（親Issue #765 配下） |
 | 26 | `Plane2D/append` | A | 同種Plane2Dの接合 | ValueError: discontiguous | ハーネスが `other` に `Array2D` を生成したため接合拒否 | ハーネスフィクスチャ誤り（`Plane2D` 同士であれば正常接合） | incomparable (GWpyなし) | **contract_pending** | 低（同種間では正常動作） | 次期ハーネス改善候補 |
-| 27 | `Array2D/read` | C | CSVからの読み込み | unit_matches=False | CSVフォーマットは単位をシリアライズしないため無単位復帰 | CSV契約の誤認（CSV読込で単位一致を期待したハーネスの誤り） | incomparable (GWpyはregistry経由) | **contract_pending** | 低（CSV仕様上の既知挙動） | 仕様契約明文化候補 |
-| 28 | `Series/read` | C | CSVからの読み込み | unit_matches=False | 同上 | 同上 | incomparable (同上) | **contract_pending** | 低（同上） | 仕様契約明文化候補 |
+| 27 | `Array2D/read` | C | CSVからの読み込み | unit_matches=False | CSVフォーマットは単位をシリアライズしないため無単位復帰 | CSV契約の誤認（CSV読込で単位一致を期待したハーネスの誤り） | exception_parity (引数なし呼出し時のTypeError一致。CSVラウンドトリップについてはGWpyとの有効入力パリティ未実証) | **contract_pending** | 低（CSV仕様上の既知挙動） | 仕様契約明文化候補 |
+| 28 | `Series/read` | C | CSVからの読み込み | unit_matches=False | 同上 | 同上 | exception_parity (引数なし呼出し時のTypeError一致。CSVラウンドトリップについてはGWpyとの有効入力パリティ未実証) | **contract_pending** | 低（同上） | 仕様契約明文化候補 |
 | 29 | `TimeSeries/find_gates` | B | 信号ゲーティング区間検出 | ValueError: Invalid Parameter | 1024点データに対し窓パラメータが超過 | 入力長・パラメータ不整合（長時間データまたは適切な閾値が必要） | exception_parity | **contract_pending** | 中（物理信号パラメータ適合要） | 契約テスト拡張候補 |
 | 30 | `TimeSeries/gate` | B | 信号ゲーティング適用 | ValueError: Invalid Parameter | 同上 | 同上（`tzero, tpad` 等の明示指定が必要） | exception_parity | **contract_pending** | 中（同上） | 契約テスト拡張候補 |
 | 31 | `TimeSeries/mask` | B | フラグ/デッドタイムマスク | ValueError: deadtime or flag | `deadtime` 引数が未指定 | ハーネス引数不足（`deadtime: SegmentList` 必須） | exception_parity | **contract_pending** | 低（必須引数未指定） | 契約テスト拡張候補 |
 | 32 | `TimeSeries/q_gram` | B | Q変換イベント探索 | IndexError: index 513 out of bounds | 短データ（1024点）ではQプレーンのタイル探索がFFT長超過 | GWpy由来の短データ制限。8秒以上では両者とも正常出力 | exception_parity (IndexError一致) | **upstream_behavior** | 中（短データ時の境界ガード検討） | 今後起票候補（親Issue #765 配下） |
 | 33 | `TimeSeries/q_transform` | B | 時間-周波数Q変換 | ValueError: Invalid Parameter | 1024点データに対しデフォルトQレンジ探索が超過 | 長時間データ（4秒以上）または `qrange` 明示指定が必要 | exception_parity | **contract_pending** | 中（解析パラメータ依存） | 契約テスト拡張候補 |
 | 34 | `TimeSeries/whiten` | B | 白色化フィルタ適用 | ValueError: Invalid Parameter | 1024点データに対し `fftlength` 境界条件不成立 | GWpy共通。十分な長さ（4秒以上）または `fftlength` 指定が必要 | exception_parity | **contract_pending** | 中（PSD推定長依存） | 契約テスト拡張候補 |
-| 35 | `TimeSeries/zpk` | B | 零点・極・ゲインフィルタ | finite_values=False (NaN) | ハーネスが渡した極 `[100]` が離散時間極として扱われ発散 | ハーネス引数誤り（連続時間 `analog=True` または安定極 $|p|<1$ で正常） | exception_parity | **contract_pending** | 高（不安定フィルタ時の挙動保護） | 契約テスト拡張候補 |
+| 35 | `TimeSeries/zpk` | B | 零点・極・ゲインフィルタ | finite_values=False (NaN) | ハーネスが渡した極 `[100]` が離散時間極として扱われ発散 | ハーネス引数誤り（連続時間 `analog=True` または安定極 $\|p\| < 1$ で正常） | exception_parity | **contract_pending** | 高（不安定フィルタ時の挙動保護） | 契約テスト拡張候補 |
 | 36 | `get_model` | D | フィッティングモデル関数取得 | checks: finite_values=False | 関数（callable）を返すファクトリに対し配列有限性検証を要求 | ハーネス検証器のロジック不整合（関数評価ステップの欠落） | incomparable | **contract_pending** | 低（ファクトリは正常返却） | 次期ハーネス改善候補 |
 | 37 | `normalize_series` | D | 系列入力の (x, y) 正規化 | is_tuple=False (None復帰) | ハーネスが素の `np.array` を渡し None 復帰。なお辞書入力時NumPy配列で `ValueError` 潜在バグ特定 | ハーネス入力誤り＋製品潜在バグ（L27 `or` 評価のNumPy曖昧性） | incomparable | **contract_pending / gwexpy_defect (潜在)** | 中（GUIプロット辞書入力時エラー） | 今後起票候補（親Issue #765 配下） |
 | 38 | `unique_hdf5_key` | D | 一意なHDF5キー名生成 | success=False | ハーネスが `"key_1"` を期待したが実装は `"key__1"` を返却 | ハーネス期待値誤認（アンダースコア仕様の不一致） | incomparable | **contract_pending** | 低（一意性は担保） | 次期ハーネス改善候補 |
