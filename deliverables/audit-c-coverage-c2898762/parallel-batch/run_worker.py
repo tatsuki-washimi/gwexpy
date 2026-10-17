@@ -24,7 +24,8 @@ except ImportError:
 
 def run_worker(worker_id: str) -> int:
     t0 = time.time()
-    worker_dir = BATCH_DIR / worker_id
+    folder_name = worker_id if worker_id.startswith("worker-") else f"worker-{worker_id}"
+    worker_dir = BATCH_DIR / folder_name
     if not worker_dir.exists():
         print(f"Error: {worker_dir} does not exist", file=sys.stderr)
         return 1
@@ -93,10 +94,10 @@ def run_worker(worker_id: str) -> int:
     duration_s = round(time.time() - t0, 2)
     executed_count = sum(1 for d in all_dispositions if d["execution_status"] == "executed")
     verified_count = sum(1 for d in all_dispositions if d["verification_status"] == "verified")
-    env_blocked_count = sum(1 for d in all_dispositions if d["execution_status"] == "environment_blocked")
+    env_blocked_count = sum(1 for d in all_dispositions if d["verification_status"] == "environment_blocked")
     differ_count = sum(1 for d in all_dispositions if d["verification_status"] == "differ")
-    contract_pending_count = sum(1 for d in all_dispositions if d["execution_status"] == "contract_pending")
-    not_tested_count = sum(1 for d in all_dispositions if d["execution_status"] == "not_run")
+    contract_pending_count = sum(1 for d in all_dispositions if d["verification_status"] == "contract_pending")
+    not_tested_count = sum(1 for d in all_dispositions if d["verification_status"] == "not_run")
 
     gwpy_match = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "match")
     gwpy_differ = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "differ")

@@ -3,8 +3,8 @@
 - **Assigned Count**: 65 APIs
 - **Trials Run**: 193
 - **Executed APIs**: 64
-- **Verified APIs**: 27
-- **Differ APIs**: 37
+- **Verified APIs**: 21
+- **Differ APIs**: 20
 - **Environment Blocked**: 1
 - **GWpy Parity Matches**: 0
 - **GWpy Parity Differs**: 0

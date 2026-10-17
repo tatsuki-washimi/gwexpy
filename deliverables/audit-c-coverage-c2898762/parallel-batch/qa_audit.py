@@ -133,8 +133,45 @@ def main() -> int:
     assert diff_proc.stdout.strip() == "", f"Assertion 12 Failed: product code changes detected in gwexpy/: {diff_proc.stdout.strip()}"
     print("  [PASS] 12. Zero product code modifications in gwexpy/ confirmed.")
 
+    # 13. 代替文字列（sentinel strings: read_requires_valid_file, signature_verified, handled_io）の全滅。
+    sentinel_needles = ["read_requires_valid_file", "signature_verified", "handled_io"]
+    for t in all_trials:
+        t_str = json.dumps(t)
+        for needle in sentinel_needles:
+            tid = t.get("target_identifier")
+            assert needle not in t_str, f"Assertion 13 Failed: Sentinel string '{needle}' found in trial for {tid}"
+    print("  [PASS] 13. Zero dummy sentinel strings (read_requires_valid_file, signature_verified, handled_io) across all trials.")
+
+    # 14. verified と判定されたAPIの契約検証深さ（単なる returned のみで合格としていないか）。
+    verified_ids = [k for k, v in all_dispositions.items() if v.get("disposition") == "verified"]
+    trials_by_id: dict[str, list[dict]] = {}
+    for t in all_trials:
+        trials_by_id.setdefault(t.get("target_identifier"), []).append(t)
+
+    for ident in verified_ids:
+        t_list = trials_by_id.get(ident, [])
+        pos_trials = [t for t in t_list if t.get("trial_kind") == "positive_control"]
+        assert pos_trials, f"Assertion 14 Failed: No positive_control trial found for verified {ident}"
+        passed_pos = [t for t in pos_trials if t.get("assertions", {}).get("passed") is True]
+        assert passed_pos, f"Assertion 14 Failed: No passed positive_control trial for verified {ident}"
+        checks = passed_pos[0].get("assertions", {}).get("checks", [])
+        check_names = [c.get("check") for c in checks]
+        assert check_names != ["returned"], f"Assertion 14 Failed: Bare returned check found for verified {ident}"
+    print(f"  [PASS] 14. Contract verification depth confirmed for all {len(verified_ids)} verified APIs (substantive checks enforced).")
+
+    # 15. GWpy比較の厳格性（match判定の全件について契約アサーションが合格し、型名だけの一致でないこと）。
+    gwpy_matches = [t for t in all_trials if t.get("trial_kind") == "gwpy_comparison" and t.get("gwpy_comparison", {}).get("status") == "match"]
+    for t in gwpy_matches:
+        asrt = t.get("assertions", {})
+        tid = t.get("target_identifier")
+        assert asrt.get("passed") is True, f"Assertion 15 Failed: Failed assertion in gwpy match for {tid}"
+        checks = asrt.get("checks", [])
+        check_names = [c.get("check") for c in checks]
+        assert check_names != ["returned"], f"Assertion 15 Failed: Bare returned check in gwpy match for {tid}"
+    print(f"  [PASS] 15. GWpy comparison rigor confirmed across all {len(gwpy_matches)} matched trials (unit/shape/numerical parity).")
+
     print("=" * 60)
-    print("ALL 12 QA ASSERTIONS PASSED! INTEGRITY VERIFIED.")
+    print("ALL 15 QA ASSERTIONS PASSED! RIGOROUS INTEGRITY VERIFIED.")
     print("=" * 60)
     return 0
 

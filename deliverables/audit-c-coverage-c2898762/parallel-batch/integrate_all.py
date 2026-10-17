@@ -223,11 +223,13 @@ def main() -> int:
 | **最終Disposition** | | |
 | ├── 契約検証成功 (`verified`) | {disposition_counts['verified']} | {disposition_counts['verified']/521*100:.1f}% |
 | ├── 契約差異/不整合観測 (`differ`) | {disposition_counts['differ']} | {disposition_counts['differ']/521*100:.1f}% |
+| ├── 契約検証保留/実機フィクスチャ待ち (`contract_pending`) | {disposition_counts['contract_pending']} | {disposition_counts['contract_pending']/521*100:.1f}% |
 | └── 環境依存制約 (`environment_blocked`) | {disposition_counts['environment_blocked']} | {disposition_counts['environment_blocked']/521*100:.1f}% |
 | **GWpyパリティ比較** | | |
 | ├── 完全一致 (`match`) | {gwpy_comparison_counts['match']} | {gwpy_comparison_counts['match']/521*100:.1f}% |
 | ├── 差異あり (`differ`) | {gwpy_comparison_counts['differ']} | {gwpy_comparison_counts['differ']/521*100:.1f}% |
 | └── 比較対象なし/拡張機能 (`incomparable`) | {gwpy_comparison_counts['incomparable']} | {gwpy_comparison_counts['incomparable']/521*100:.1f}% |
+| └── 試行エラー/例外観測 (`trial_error`) | {gwpy_comparison_counts['trial_error']} | {gwpy_comparison_counts['trial_error']/521*100:.1f}% |
 | └── 該当なし (`not_applicable`) | {gwpy_comparison_counts['not_applicable']} | {gwpy_comparison_counts['not_applicable']/521*100:.1f}% |
 
 総試行試験数（Recorded Trials）: **{len(integrated_all_trials)}件**
@@ -236,21 +238,50 @@ def main() -> int:
 
 ## 2. 9ワーカー並列実行の詳細実績
 
-| Worker | 担当領域 | 割当件数 | 実行数 | 検証成功 | 差異/不整合 | 環境制約 | 試行数 |
-|---|---|---:|---:|---:|---:|---:|---:|
-| W1 | `types` 継承API 前半 | 61 | 61 | 56 | 5 | 0 | 183 |
-| W2 | `types` 継承API 後半 | 60 | 60 | 54 | 6 | 0 | 180 |
-| W3 | `timeseries` 継承API | 75 | 75 | 52 | 23 | 0 | 225 |
-| W4 | `frequencyseries` 継承API | 72 | 72 | 30 | 42 | 0 | 216 |
-| W5 | `spectrogram` 継承API | 49 | 49 | 41 | 8 | 0 | 147 |
-| W6 | `fields` 16 + `plot` 18 + GUI 9 | 43 | 43 | 39 | 4 | 0 | 129 |
-| W7 | 慣例I/O関数 前半 | 42 | 42 | 42 | 0 | 0 | 126 |
-| W8 | 慣例I/O関数 後半 | 41 | 41 | 41 | 0 | 0 | 123 |
-| W9 | 一般関数 55 + fitting 10 | 65 | 64 | 27 | 37 | 1 | 193 |
-| **合計** | | **508** | **507** | **382** | **125** | **1** | **1,522** |
+| Worker | 担当領域 | 割当件数 | 実行数 | 検証成功 | 差異/不整合 | 保留(pending) | 環境制約 | 試行数 |
+|---|---|---:|---:|---:|---:|---:|---:|---:|"""
 
----
+    worker_descs = {
+        "worker-W1": "`types` 継承API 前半",
+        "worker-W2": "`types` 継承API 後半",
+        "worker-W3": "`timeseries` 継承API",
+        "worker-W4": "`frequencyseries` 継承API",
+        "worker-W5": "`spectrogram` 継承API",
+        "worker-W6": "`fields` 16 + `plot` 18 + GUI 9",
+        "worker-W7": "慣例I/O関数 前半",
+        "worker-W8": "慣例I/O関数 後半",
+        "worker-W9": "一般関数 55 + fitting 10",
+    }
+    w_rows = []
+    tot_assign = tot_exec = tot_ver = tot_diff = tot_pend = tot_env = tot_trials = 0
+    for w_idx in range(1, 10):
+        wid = f"worker-W{w_idx}"
+        s_file = BATCH_DIR / wid / "summary.json"
+        s = json.loads(s_file.read_text(encoding="utf-8")) if s_file.is_file() else {}
+        w_assigned = s.get("assigned_count", 0)
+        w_exec = s.get("executed_api_count", 0)
+        w_ver = s.get("verified_api_count", 0)
+        w_diff = s.get("differ_api_count", 0)
+        w_pend = s.get("contract_pending_count", 0)
+        w_env = s.get("environment_blocked_count", 0)
+        w_tr = s.get("trials_total", 0)
 
+        tot_assign += w_assigned
+        tot_exec += w_exec
+        tot_ver += w_ver
+        tot_diff += w_diff
+        tot_pend += w_pend
+        tot_env += w_env
+        tot_trials += w_tr
+
+        w_rows.append(
+            f"| W{w_idx} | {worker_descs[wid]} | {w_assigned} | {w_exec} | {w_ver} | {w_diff} | {w_pend} | {w_env} | {w_tr} |"
+        )
+    w_rows.append(
+        f"| **合計** | | **{tot_assign}** | **{tot_exec}** | **{tot_ver}** | **{tot_diff}** | **{tot_pend}** | **{tot_env}** | **{tot_trials:,}** |"
+    )
+
+    report_content += "\n" + "\n".join(w_rows) + f"""\n\n---\n
 ## 3. 主な観測事項および差異（differ）の分析
 
 ### 3.1 観測された差異の要因分類

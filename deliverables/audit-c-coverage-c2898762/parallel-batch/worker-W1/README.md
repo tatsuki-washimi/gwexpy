@@ -3,12 +3,12 @@
 - **Assigned Count**: 61 APIs
 - **Trials Run**: 183
 - **Executed APIs**: 61
-- **Verified APIs**: 56
-- **Differ APIs**: 5
+- **Verified APIs**: 48
+- **Differ APIs**: 11
 - **Environment Blocked**: 0
-- **GWpy Parity Matches**: 44
-- **GWpy Parity Differs**: 1
-- **Incomparable / Extension**: 16
+- **GWpy Parity Matches**: 38
+- **GWpy Parity Differs**: 0
+- **Incomparable / Extension**: 19
 - **Execution Duration**: 1.19s
 
 ## Deliverable Files

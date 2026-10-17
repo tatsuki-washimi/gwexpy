@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Unified testing engine for 508 APIs across 9 parallel workers."""
+"""Unified testing engine for 508 APIs across 9 parallel workers.
+
+Refactored to enforce strict contract verification, explicit check keys,
+and genuine GWpy value/unit/shape parity without sentinel string fallbacks.
+"""
 
 from __future__ import annotations
 
@@ -64,10 +68,10 @@ def json_sanitize(obj: Any) -> Any:
     if isinstance(obj, np.ndarray):
         if obj.size <= 8:
             return [json_sanitize(v) for v in obj.tolist()]
-        return {"shape": list(obj.shape), "dtype": str(obj.dtype)}
+        return {"shape": list(obj.shape), "dtype": str(obj.dtype), "finite": bool(np.all(np.isfinite(obj)))}
     if isinstance(obj, (u.UnitBase, u.Quantity)):
         return str(obj)
-    return obj
+    return str(obj) if not isinstance(obj, (str, int, float, bool, type(None))) else obj
 
 
 def capture_import_provenance(
@@ -97,7 +101,6 @@ def capture_import_provenance(
             "loaded_from_repo_checkout": repo_s in pkg_file and (mod_file is None or repo_s in str(mod_file)),
         }
 
-    # Fallback for properties, descriptors, or custom objects
     if module_name:
         mod = sys.modules.get(module_name)
         if not mod:
@@ -143,10 +146,10 @@ def finalize_gwpy_comparison(rec: dict[str, Any], *, notes: str = "") -> None:
         return
     if rec.get("execution_status") in ("contract_pending", "environment_blocked"):
         return
-    if rec.get("outcome") != "returned":
+    if rec.get("outcome") not in ("returned", "exception_observed"):
         rec["gwpy_comparison"] = {
             "status": "trial_error",
-            "notes": notes or f"comparison trial raised {rec.get('outcome')}",
+            "notes": notes or f"comparison trial raised unexpected {rec.get('outcome')}",
         }
         return
     passed = rec.get("assertions", {}).get("passed")
@@ -202,6 +205,7 @@ def run_trial(
         "disposition": "not_tested",
         "not_tested_reason": not_tested_reason,
         "coverage_scope": coverage_scope,
+        "actual_call_executed": False,
     }
 
     if execution_status != "executed":
@@ -213,27 +217,48 @@ def run_trial(
         warnings.simplefilter("always")
         try:
             result = fn()
+            rec["actual_call_executed"] = True
             rec["outcome"] = "returned"
             if isinstance(result, dict) and "invoke_context" in result:
                 rec["invoke_context"] = result.pop("invoke_context")
             rec["actual"] = json_sanitize(result if isinstance(result, dict) else {"repr": repr(result)[:400]})
+
             if validate is not None:
                 asrt = validate(result)
                 rec["assertions"] = asrt
                 passed = asrt.get("passed", False)
-                rec["verification_status"] = "verified" if passed else "differ"
-                rec["disposition"] = "verified" if passed else "differ"
+                # Check if marked as smoke only or contract pending
+                if asrt.get("is_smoke_only", False):
+                    rec["verification_status"] = "contract_pending"
+                    rec["disposition"] = "contract_pending"
+                    rec["not_tested_reason"] = asrt.get("smoke_reason", "smoke call executed; domain contract not verified")
+                elif passed is True:
+                    rec["verification_status"] = "verified"
+                    rec["disposition"] = "verified"
+                elif passed is False:
+                    rec["verification_status"] = "differ"
+                    rec["disposition"] = "differ"
+                else:
+                    rec["verification_status"] = "contract_pending"
+                    rec["disposition"] = "contract_pending"
             else:
-                rec["assertions"] = {"passed": True, "checks": [{"check": "executed_normally", "passed": True}]}
-                rec["verification_status"] = "verified"
-                rec["disposition"] = "verified"
+                # Without explicit validate function, cannot claim contract_verified!
+                rec["assertions"] = {"passed": None, "checks": [{"check": "unvalidated_return", "passed": None}]}
+                rec["verification_status"] = "contract_pending"
+                rec["disposition"] = "contract_pending"
+                rec["not_tested_reason"] = "returned without contract assertions"
+
         except Exception as exc:
+            rec["actual_call_executed"] = True
             rec["outcome"] = type(exc).__name__
             rec["exception"] = f"{type(exc).__name__}: {str(exc)[:500]}"
             rec["exception_cause"] = str(exc.__cause__) if exc.__cause__ else None
             rec["exception_context"] = str(exc.__context__) if exc.__context__ else None
             rec["actual"] = {"exception": rec["exception"]}
+
             if trial_kind == "abnormal_input":
+                # For abnormal inputs, observing expected exception is verification of error handling
+                rec["outcome"] = "exception_observed"
                 rec["assertions"] = {
                     "passed": True,
                     "checks": [{"check": "exception_observed", "passed": True, "type": type(exc).__name__}],
@@ -241,19 +266,19 @@ def run_trial(
                 rec["verification_status"] = "verified"
                 rec["disposition"] = "verified"
             else:
-                # Unexpected exception in positive control or comparison
-                rec["assertions"] = {
-                    "passed": False,
-                    "checks": [{"check": "no_exception", "passed": False, "exception": rec["exception"]}],
-                }
-                # If exception is due to missing external daemon/server (e.g. NDS2, LAL, network)
+                # Unexpected exception in positive control
                 err_str = str(exc).lower()
+                # Check for external service/daemon/uninstalled library
                 if any(k in err_str for k in ["connection", "network", "remote server", "nds2", "nds server", "lal", "authenticate"]):
                     rec["execution_status"] = "environment_blocked"
                     rec["verification_status"] = "environment_blocked"
                     rec["disposition"] = "environment_blocked"
                     rec["not_tested_reason"] = f"External service/dependency unavailable: {type(exc).__name__}"
                 else:
+                    rec["assertions"] = {
+                        "passed": False,
+                        "checks": [{"check": "no_unexpected_exception", "passed": False, "exception": rec["exception"]}],
+                    }
                     rec["verification_status"] = "differ"
                     rec["disposition"] = "differ"
 
