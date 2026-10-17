@@ -59,6 +59,7 @@ def main() -> int:
     total_actual_call = sum(s.get("execution_status", {}).get("actual_call", 0) for s in results.values())
     total_attr_access = sum(s.get("execution_status", {}).get("attribute_access", 0) for s in results.values())
     total_smoke_only = sum(s.get("execution_status", {}).get("smoke_only", 0) for s in results.values())
+    total_contract_pending_exec = sum(s.get("execution_status", {}).get("contract_pending", 0) for s in results.values())
     total_env_blocked = sum(s.get("environment_blocked_count", 0) for s in results.values())
 
     total_verified = sum(s.get("verified_api_count", 0) for s in results.values())
@@ -66,7 +67,9 @@ def main() -> int:
     total_contract_pending = sum(s.get("contract_pending_count", 0) for s in results.values())
     total_not_tested = sum(s.get("not_tested_count", 0) for s in results.values())
 
-    gwpy_val_par = sum(s.get("gwpy_comparison", {}).get("value_parity", 0) for s in results.values())
+    gwpy_num_val_par = sum(s.get("gwpy_comparison", {}).get("numeric_value_parity", 0) for s in results.values())
+    gwpy_meta_prop_par = sum(s.get("gwpy_comparison", {}).get("metadata_property_parity", 0) for s in results.values())
+    gwpy_val_par = gwpy_num_val_par + gwpy_meta_prop_par
     gwpy_exc_par = sum(s.get("gwpy_comparison", {}).get("exception_parity", 0) for s in results.values())
     gwpy_diff = sum(s.get("gwpy_comparison", {}).get("differ", 0) for s in results.values())
     gwpy_err = sum(s.get("gwpy_comparison", {}).get("trial_error", 0) for s in results.values())
@@ -81,6 +84,7 @@ def main() -> int:
             "actual_call": total_actual_call,
             "attribute_access": total_attr_access,
             "smoke_only": total_smoke_only,
+            "contract_pending": total_contract_pending_exec,
             "environment_blocked": total_env_blocked,
         },
         "total_verified": total_verified,
@@ -89,6 +93,8 @@ def main() -> int:
         "total_environment_blocked": total_env_blocked,
         "total_not_tested": total_not_tested,
         "gwpy_comparison": {
+            "numeric_value_parity": gwpy_num_val_par,
+            "metadata_property_parity": gwpy_meta_prop_par,
             "value_parity": gwpy_val_par,
             "exception_parity": gwpy_exc_par,
             "differ": gwpy_diff,

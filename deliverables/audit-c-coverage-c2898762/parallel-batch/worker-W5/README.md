@@ -2,18 +2,18 @@
 
 - **Assigned Count**: 49 APIs
 - **Trials Run**: 147
-- **Actual Calls**: 37
+- **Actual Calls**: 33
 - **Attribute Access / Weak**: 8
 - **Smoke Only**: 4
 - **Environment Blocked**: 0
 - **Verified APIs**: 26
-- **Differ APIs**: 11
-- **Contract Pending APIs**: 12
+- **Differ APIs**: 7
+- **Contract Pending APIs**: 16
 - **GWpy Value Parity**: 21
 - **GWpy Exception Parity**: 18
 - **GWpy Differs**: 0
-- **Incomparable / Extension**: 0
-- **Execution Duration**: 1.24s
+- **Incomparable / Extension**: 10
+- **Execution Duration**: 1.21s
 
 ## Deliverable Files
 - `assigned-identifiers.jsonl`: Original input manifest (49 lines)

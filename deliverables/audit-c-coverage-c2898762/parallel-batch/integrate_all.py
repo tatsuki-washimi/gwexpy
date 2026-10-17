@@ -100,11 +100,13 @@ def main() -> int:
             new_row["execution_status"] = "actual_call"
             new_row["runtime_status"] = "actual_call"
             new_row["disposition"] = "verified"
-            # GWpy comparison for batch1: plane2d is incomparable, others are value_parity
+            # GWpy comparison for batch1: plane2d is incomparable, override_unit is metadata_property_parity, others are numeric_value_parity
             if "plane2d" in ident:
                 gw_cmp = "incomparable"
+            elif "override_unit" in ident:
+                gw_cmp = "metadata_property_parity"
             else:
-                gw_cmp = "value_parity"
+                gw_cmp = "numeric_value_parity"
             new_row["gwpy_comparison"] = gw_cmp
             gwpy_comparison_counts[gw_cmp] += 1
             status_counts["actual_call"] += 1
@@ -217,6 +219,7 @@ def main() -> int:
 | ├── 実呼出し実行 (`actual_call`) | {status_counts['actual_call']} | {status_counts['actual_call']/521*100:.1f}% |
 | ├── 属性アクセス・存在確認 (`attribute_access`) | {status_counts['attribute_access']} | {status_counts['attribute_access']/521*100:.1f}% |
 | ├── スモーク確認のみ (`smoke_only`) | {status_counts['smoke_only']} | {status_counts['smoke_only']/521*100:.1f}% |
+| ├── ハーネス不備/フィクスチャ未整備 (`contract_pending`) | {status_counts['contract_pending']} | {status_counts['contract_pending']/521*100:.1f}% |
 | └── 環境要因で実行不能 (`environment_blocked`) | {status_counts['environment_blocked']} | {status_counts['environment_blocked']/521*100:.1f}% |
 | **最終Disposition** | | |
 | ├── 契約検証成功 (`verified`) | {disposition_counts['verified']} | {disposition_counts['verified']/521*100:.1f}% |
@@ -224,7 +227,8 @@ def main() -> int:
 | ├── 契約検証保留/フィクスチャ・強アサーション待ち (`contract_pending`) | {disposition_counts['contract_pending']} | {disposition_counts['contract_pending']/521*100:.1f}% |
 | └── 環境依存制約 (`environment_blocked`) | {disposition_counts['environment_blocked']} | {disposition_counts['environment_blocked']/521*100:.1f}% |
 | **GWpyパリティ比較** | | |
-| ├── 数値・単位・形状一致 (`value_parity`) | {gwpy_comparison_counts['value_parity']} | {gwpy_comparison_counts['value_parity']/521*100:.1f}% |
+| ├── 数値・配列完全一致 (`numeric_value_parity`) | {gwpy_comparison_counts['numeric_value_parity']} | {gwpy_comparison_counts['numeric_value_parity']/521*100:.1f}% |
+| ├── メタデータ・属性一致 (`metadata_property_parity`) | {gwpy_comparison_counts['metadata_property_parity']} | {gwpy_comparison_counts['metadata_property_parity']/521*100:.1f}% |
 | ├── 例外挙動一致 (`exception_parity`) | {gwpy_comparison_counts['exception_parity']} | {gwpy_comparison_counts['exception_parity']/521*100:.1f}% |
 | ├── パリティ差異あり (`differ`) | {gwpy_comparison_counts['differ']} | {gwpy_comparison_counts['differ']/521*100:.1f}% |
 | ├── 試行エラー/例外観測 (`trial_error`) | {gwpy_comparison_counts['trial_error']} | {gwpy_comparison_counts['trial_error']/521*100:.1f}% |

@@ -263,6 +263,23 @@ WEAK_GENERAL_IDENTS = {
     "gwexpy.signal.roc.compute_roc",
     "gwexpy.signal.fft_args.check_deprecated_kwargs",
 }
+NUMERIC_VALUE_ATTRS = {
+    "T",
+    "abs",
+    "average_fft",
+    "band",
+    "copy",
+    "crop",
+    "detrend",
+    "diff",
+    "flatten",
+    "rayleigh_spectrum",
+    "taper",
+    "to_pycbc",
+    "variance",
+    "coalesce",
+    "join",
+}
 
 
 def synthesize_api_disposition(worker_id: str, target_identifier: str, trials: list[dict[str, Any]]) -> dict[str, Any]:
@@ -284,6 +301,8 @@ def synthesize_api_disposition(worker_id: str, target_identifier: str, trials: l
             exec_status = "smoke_only"
         elif any(c in WEAK_CHECKS for c in pos_checks) or target_identifier in WEAK_GENERAL_IDENTS:
             exec_status = "attribute_access"
+        elif pos_trial.get("harness_failure"):
+            exec_status = "contract_pending"
         else:
             exec_status = "actual_call"
 
@@ -301,6 +320,11 @@ def synthesize_api_disposition(worker_id: str, target_identifier: str, trials: l
         verif_status = "contract_pending"
         if not not_tested_reason:
             not_tested_reason = "Attribute access/existence verified, substantive contract/value assertions pending"
+    elif exec_status == "contract_pending":
+        disp = "contract_pending"
+        verif_status = "contract_pending"
+        if not not_tested_reason:
+            not_tested_reason = "Test harness preparation failure or pending dedicated fixture"
     elif pos_status == "passed":
         disp = "verified"
         verif_status = "verified"
@@ -849,9 +873,12 @@ def dispatch_inherited_api_trials(
                     "checks": [{"check": "exception_parity", "passed": r["exception_match"]}],
                 }
             match = r.get("match", False)
+            parity_kind = "numeric_value_parity" if attr_name in NUMERIC_VALUE_ATTRS else "metadata_property_parity"
             return {
                 "passed": match,
+                "parity_kind": parity_kind,
                 "checks": [
+                    {"check": parity_kind, "passed": match},
                     {"check": "unit_match", "passed": r.get("unit_match", False)},
                     {"check": "shape_match", "passed": r.get("shape_match", False)},
                     {"check": "val_match", "passed": r.get("val_match", False)},
@@ -1421,15 +1448,41 @@ def dispatch_general_func_trials(
             res = func_obj(data)
             return {"contract": "decomposition", "success": res is not None}
         elif "roc" in mod_name:
-            res = func_obj(np.array([0, 1, 0, 1]), np.array([0.1, 0.9, 0.2, 0.8]))
-            return {"contract": "roc", "success": res is not None}
+            if func_name == "calculate_roc":
+                y_true = np.array([0, 0, 1, 1])
+                y_score = np.array([0.1, 0.4, 0.35, 0.8])
+                fpr, tpr, auc = func_obj(y_true, y_score, n_points=5)
+                return {
+                    "contract": "calculate_roc",
+                    "fpr_monotone": bool(np.all(np.diff(fpr) >= 0)),
+                    "tpr_in_range": bool(np.all((tpr >= 0.0) & (tpr <= 1.0))),
+                    "auc_valid": 0.0 <= float(auc) <= 1.0,
+                    "points_count": len(fpr) == 5,
+                }
+            else:
+                res = func_obj(np.array([0, 1, 0, 1]), np.array([0.1, 0.9, 0.2, 0.8]))
+                return {"contract": "roc", "success": res is not None}
         elif "fft_args" in mod_name:
             if func_name == "get_default_overlap":
-                res = func_obj(1024)
-                return {"contract": "fft_args", "val_is_512": res == 512}
+                ov_hann = func_obj(1024, "hann")
+                ov_boxcar = func_obj(1024, "boxcar")
+                ov_none = func_obj(None)
+                return {
+                    "contract": "get_default_overlap",
+                    "hann_overlap_matched": ov_hann == 512.0,
+                    "boxcar_zero": ov_boxcar == 0.0,
+                    "none_input_preserved": ov_none is None,
+                }
             elif func_name == "parse_fftlength_or_overlap":
-                res = func_obj(1024, 1.0)
-                return {"contract": "fft_args", "val_valid": res == 1024.0}
+                sec, n = func_obj(2.0, sample_rate=128)
+                sec_q, n_q = func_obj(1.5 * u.s, sample_rate=1024 * u.Hz)
+                sec_none, n_none = func_obj(None)
+                return {
+                    "contract": "parse_fftlength_or_overlap",
+                    "numeric_matched": sec == 2.0 and n == 256,
+                    "quantity_matched": sec_q == 1.5 and n_q == 1536,
+                    "none_handled": sec_none is None and n_none is None,
+                }
             elif func_name == "check_deprecated_kwargs":
                 func_obj({})
                 return {"contract": "fft_args", "success": True}
@@ -1446,8 +1499,29 @@ def dispatch_general_func_trials(
             res = func_obj(1024, 1024)
             return {"contract": "norm", "finite": float(getattr(res, "value", res)) > 0}
         elif "interop" in mod_name:
-            res = func_obj(np.array([1, 2, 3]))
-            return {"contract": "interop", "success": res is not None}
+            if func_name == "resolve_meta":
+                r1 = func_obj(10, 20)
+                r2 = func_obj(None, 20)
+                r3 = func_obj(0, 20)
+                return {
+                    "contract": "resolve_meta",
+                    "user_priority": r1 == 10,
+                    "source_fallback": r2 == 20,
+                    "falsy_zero_preserved": r3 == 0,
+                }
+            elif func_name == "to_plain_array":
+                q = np.array([1.0, 2.0, 3.0]) * u.m
+                res = func_obj(q, copy=True)
+                return {
+                    "contract": "to_plain_array",
+                    "is_plain_ndarray": type(res) is np.ndarray,
+                    "shape_matched": res.shape == (3,),
+                    "values_matched": bool(np.allclose(res, [1.0, 2.0, 3.0])),
+                    "copy_independent": res is not getattr(q, "value", q),
+                }
+            else:
+                res = func_obj(np.array([1, 2, 3]))
+                return {"contract": "interop", "success": res is not None}
         elif "preprocess" in mod_name:
             if func_name == "align_timeseries_collection":
                 res = func_obj({"A": ts, "B": ts})
@@ -1481,6 +1555,28 @@ def dispatch_general_func_trials(
             checks.append({"check": "finite", "passed": r.get("finite") is True})
         elif contract == "hurst":
             checks.append({"check": "valid_range", "passed": r.get("valid_range") is True})
+        elif contract == "calculate_roc":
+            checks.append({"check": "fpr_monotone", "passed": r.get("fpr_monotone") is True})
+            checks.append({"check": "tpr_in_range", "passed": r.get("tpr_in_range") is True})
+            checks.append({"check": "auc_valid", "passed": r.get("auc_valid") is True})
+            checks.append({"check": "points_count", "passed": r.get("points_count") is True})
+        elif contract == "get_default_overlap":
+            checks.append({"check": "hann_overlap_matched", "passed": r.get("hann_overlap_matched") is True})
+            checks.append({"check": "boxcar_zero", "passed": r.get("boxcar_zero") is True})
+            checks.append({"check": "none_input_preserved", "passed": r.get("none_input_preserved") is True})
+        elif contract == "parse_fftlength_or_overlap":
+            checks.append({"check": "numeric_matched", "passed": r.get("numeric_matched") is True})
+            checks.append({"check": "quantity_matched", "passed": r.get("quantity_matched") is True})
+            checks.append({"check": "none_handled", "passed": r.get("none_handled") is True})
+        elif contract == "resolve_meta":
+            checks.append({"check": "user_priority", "passed": r.get("user_priority") is True})
+            checks.append({"check": "source_fallback", "passed": r.get("source_fallback") is True})
+            checks.append({"check": "falsy_zero_preserved", "passed": r.get("falsy_zero_preserved") is True})
+        elif contract == "to_plain_array":
+            checks.append({"check": "is_plain_ndarray", "passed": r.get("is_plain_ndarray") is True})
+            checks.append({"check": "shape_matched", "passed": r.get("shape_matched") is True})
+            checks.append({"check": "values_matched", "passed": r.get("values_matched") is True})
+            checks.append({"check": "copy_independent", "passed": r.get("copy_independent") is True})
         elif contract == "fft_args":
             checks.append({"check": "fft_args_verified", "passed": True})
         elif contract == "logger":

@@ -95,6 +95,7 @@ def run_worker(worker_id: str) -> int:
     actual_call_count = sum(1 for d in all_dispositions if d["execution_status"] == "actual_call")
     attribute_access_count = sum(1 for d in all_dispositions if d["execution_status"] == "attribute_access")
     smoke_only_count = sum(1 for d in all_dispositions if d["execution_status"] == "smoke_only")
+    contract_pending_exec_count = sum(1 for d in all_dispositions if d["execution_status"] == "contract_pending")
     env_blocked_count = sum(1 for d in all_dispositions if d["execution_status"] == "environment_blocked")
     executed_count = actual_call_count + attribute_access_count + smoke_only_count
 
@@ -103,7 +104,9 @@ def run_worker(worker_id: str) -> int:
     contract_pending_count = sum(1 for d in all_dispositions if d["verification_status"] == "contract_pending")
     not_tested_count = sum(1 for d in all_dispositions if d["verification_status"] == "not_run")
 
-    gwpy_value_parity = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "value_parity")
+    gwpy_numeric_value_parity = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "numeric_value_parity")
+    gwpy_metadata_property_parity = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "metadata_property_parity")
+    gwpy_value_parity = gwpy_numeric_value_parity + gwpy_metadata_property_parity
     gwpy_exception_parity = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "exception_parity")
     gwpy_differ = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "differ")
     gwpy_trial_error = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "trial_error")
@@ -117,6 +120,7 @@ def run_worker(worker_id: str) -> int:
             "actual_call": actual_call_count,
             "attribute_access": attribute_access_count,
             "smoke_only": smoke_only_count,
+            "contract_pending": contract_pending_exec_count,
             "environment_blocked": env_blocked_count,
         },
         "verified_api_count": verified_count,
@@ -125,6 +129,8 @@ def run_worker(worker_id: str) -> int:
         "environment_blocked_count": env_blocked_count,
         "not_tested_count": not_tested_count,
         "gwpy_comparison": {
+            "numeric_value_parity": gwpy_numeric_value_parity,
+            "metadata_property_parity": gwpy_metadata_property_parity,
             "value_parity": gwpy_value_parity,
             "exception_parity": gwpy_exception_parity,
             "differ": gwpy_differ,

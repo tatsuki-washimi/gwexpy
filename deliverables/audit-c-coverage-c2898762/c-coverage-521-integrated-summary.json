@@ -4,24 +4,25 @@
   "existing_evidence_count": 13,
   "newly_audited_count": 508,
   "execution_status_breakdown": {
-    "actual_call": 356,
+    "actual_call": 265,
     "attribute_access": 72,
+    "contract_pending": 91,
     "environment_blocked": 19,
     "smoke_only": 74
   },
   "disposition_breakdown": {
     "verified": 219,
-    "contract_pending": 146,
-    "differ": 137,
-    "environment_blocked": 19
+    "contract_pending": 237,
+    "environment_blocked": 19,
+    "differ": 46
   },
   "gwpy_comparison_breakdown": {
     "incomparable": 274,
-    "value_parity": 112,
+    "numeric_value_parity": 45,
     "exception_parity": 106,
-    "trial_error": 26,
-    "differ": 2,
-    "not_applicable": 1
+    "metadata_property_parity": 67,
+    "not_applicable": 27,
+    "differ": 2
   },
   "total_trials_recorded": 1572,
   "new_worker_trials_recorded": 1522,

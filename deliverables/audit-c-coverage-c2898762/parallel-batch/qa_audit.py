@@ -79,14 +79,14 @@ def main() -> int:
         assert disp in ("verified", "differ", "environment_blocked", "contract_pending", "not_tested"), f"Invalid disposition {disp} for {ident}"
     print("  [PASS] 5. All 508 items have valid dispositions.")
 
-    # 6. 多段階実行レベル（actual_call, attribute_access, smoke_only, environment_blocked）の完全整合。
+    # 6. 多段階実行レベル（actual_call, attribute_access, smoke_only, contract_pending, environment_blocked）の完全整合。
     trials_path = AUDIT_DIR / "c-coverage-521-all-trials.jsonl"
     all_trials = [json.loads(l) for l in trials_path.read_text(encoding="utf-8").splitlines() if l.strip()]
     trials_by_id: dict[str, list[dict]] = {}
     for t in all_trials:
         trials_by_id.setdefault(t.get("target_identifier"), []).append(t)
 
-    valid_exec_statuses = {"actual_call", "attribute_access", "smoke_only", "environment_blocked"}
+    valid_exec_statuses = {"actual_call", "attribute_access", "smoke_only", "contract_pending", "environment_blocked"}
     for row in ledger:
         ident = row["identifier"]
         ex_stat = row.get("execution_status")
@@ -109,7 +109,11 @@ def main() -> int:
                 "gwexpy.signal.fft_args.check_deprecated_kwargs",
             }
             assert any(c in weak_c for c in checks) or ident in weak_gen
-    print("  [PASS] 6. Execution status categorization (actual_call, attribute_access, smoke_only, environment_blocked) strictly aligns with trial calls.")
+        elif ex_stat == "contract_pending":
+            assert pos.get("harness_failure") is True or pos.get("execution_status") == "contract_pending"
+        elif ex_stat == "actual_call":
+            assert pos.get("target_api_reached") is True or pos.get("outcome") == "returned" or ident in batch1_ids or ident in probe_ids
+    print("  [PASS] 6. Execution status categorization (actual_call, attribute_access, smoke_only, contract_pending, environment_blocked) strictly aligns with trial calls.")
 
     # 7. reference_onlyを実行カバレッジに算入していない。
     for t in all_trials:
@@ -123,7 +127,7 @@ def main() -> int:
             cmp_stat = t.get("gwpy_comparison", {}).get("status")
             asrt = t.get("assertions", {}).get("passed")
             if asrt is True:
-                assert cmp_stat in ("value_parity", "exception_parity", "match", "trial_error"), f"Assertion 8 Failed: passed assertion but status {cmp_stat}"
+                assert cmp_stat in ("numeric_value_parity", "metadata_property_parity", "value_parity", "exception_parity", "match", "trial_error"), f"Assertion 8 Failed: passed assertion but status {cmp_stat}"
             elif asrt is False:
                 assert cmp_stat in ("differ", "trial_error"), f"Assertion 8 Failed: failed assertion but status {cmp_stat}"
     print("  [PASS] 8. GWpy comparison labels strictly match assertion results.")
@@ -168,7 +172,7 @@ def main() -> int:
             assert needle not in t_str, f"Assertion 13 Failed: Sentinel string '{needle}' found in trial for {tid}"
     print("  [PASS] 13. Zero dummy sentinel strings (read_requires_valid_file, signature_verified, handled_io) across all trials.")
 
-    # 14. verified と判定されたAPIの契約検証深さ（弱い属性アクセス72件の全滅、実測と期待値の対応確認）。
+    # 14. verified と判定されたAPIの契約検証深さ（弱い属性アクセス72件の全滅、5件の厳格契約アサーション確認）。
     weak_checks = {"accessible", "valid_dimensions", "plot_method_success", "figure_created", "is_logger"}
     weak_general = {
         "gwexpy.signal.decomposition.decompose_pca",
@@ -187,21 +191,49 @@ def main() -> int:
         checks = [c.get("check") for c in pos.get("assertions", {}).get("checks", [])]
         assert not any(c in weak_checks for c in checks), f"Assertion 14 Failed: weak check {checks} found in verified {ident}"
         assert "smoke_only" not in checks, f"Assertion 14 Failed: smoke_only check found in verified {ident}"
-    print(f"  [PASS] 14. Contract verification depth confirmed across all {len(verified_rows)} verified APIs (all 72 weak assertions strictly excluded).")
 
-    # 15. GWpy比較における value_parity (112件) と exception_parity (106件) の厳格分離。
-    val_parity_rows = [r for r in ledger if r.get("gwpy_comparison") == "value_parity"]
+    # Verify the 5 reinforced APIs have concrete assertions checking actual values, shapes, types
+    five_reinforced = {
+        "gwexpy.interop.base.resolve_meta": ["user_priority", "source_fallback", "falsy_zero_preserved"],
+        "gwexpy.interop.base.to_plain_array": ["is_plain_ndarray", "shape_matched", "values_matched", "copy_independent"],
+        "gwexpy.statistics.roc.calculate_roc": ["fpr_monotone", "tpr_in_range", "auc_valid", "points_count"],
+        "gwexpy.utils.fft_args.get_default_overlap": ["hann_overlap_matched", "boxcar_zero", "none_input_preserved"],
+        "gwexpy.utils.fft_args.parse_fftlength_or_overlap": ["numeric_matched", "quantity_matched", "none_handled"],
+    }
+    for ident, req_checks in five_reinforced.items():
+        t_list = trials_by_id.get(ident, [])
+        pos = next((t for t in t_list if t.get("trial_kind") == "positive_control"), None)
+        assert pos is not None, f"Assertion 14 Failed: missing pos trial for {ident}"
+        pos_checks = [c.get("check") for c in pos.get("assertions", {}).get("checks", [])]
+        for rc in req_checks:
+            assert rc in pos_checks, f"Assertion 14 Failed: concrete check '{rc}' missing for {ident} (found: {pos_checks})"
+        assert pos.get("assertions", {}).get("passed") is True, f"Assertion 14 Failed: assertions failed for {ident}"
+    print(f"  [PASS] 14. Contract verification depth confirmed across all {len(verified_rows)} verified APIs (all 5 reinforced APIs have concrete contract assertions, all 72 weak assertions strictly excluded).")
+
+    # 15. GWpy比較における numeric_value_parity (45件), metadata_property_parity (67件) と exception_parity (106件) の厳格分離。
+    num_val_rows = [r for r in ledger if r.get("gwpy_comparison") == "numeric_value_parity"]
+    meta_prop_rows = [r for r in ledger if r.get("gwpy_comparison") == "metadata_property_parity"]
     exc_parity_rows = [r for r in ledger if r.get("gwpy_comparison") == "exception_parity"]
-    assert len(val_parity_rows) == 112, f"Assertion 15 Failed: Expected 112 value_parity rows (103 new + 9 batch1), got {len(val_parity_rows)}"
+    assert len(num_val_rows) == 45, f"Assertion 15 Failed: Expected 45 numeric_value_parity rows (37 new + 8 batch1), got {len(num_val_rows)}"
+    assert len(meta_prop_rows) == 67, f"Assertion 15 Failed: Expected 67 metadata_property_parity rows (66 new + 1 batch1), got {len(meta_prop_rows)}"
     assert len(exc_parity_rows) == 106, f"Assertion 15 Failed: Expected 106 exception_parity rows, got {len(exc_parity_rows)}"
 
-    for r in val_parity_rows:
+    for r in num_val_rows:
         ident = r["identifier"]
         t_list = trials_by_id.get(ident, [])
         cmp_t = next((t for t in t_list if t.get("trial_kind") == "gwpy_comparison"), None)
         if cmp_t:
             checks = [c.get("check") for c in cmp_t.get("assertions", {}).get("checks", [])]
-            assert "exception_parity" not in checks, f"Assertion 15 Failed: exception_parity check in value_parity for {ident}"
+            assert "exception_parity" not in checks, f"Assertion 15 Failed: exception_parity check in numeric_value_parity for {ident}"
+            assert cmp_t.get("assertions", {}).get("passed") is True
+
+    for r in meta_prop_rows:
+        ident = r["identifier"]
+        t_list = trials_by_id.get(ident, [])
+        cmp_t = next((t for t in t_list if t.get("trial_kind") == "gwpy_comparison"), None)
+        if cmp_t:
+            checks = [c.get("check") for c in cmp_t.get("assertions", {}).get("checks", [])]
+            assert "exception_parity" not in checks, f"Assertion 15 Failed: exception_parity check in metadata_property_parity for {ident}"
             assert cmp_t.get("assertions", {}).get("passed") is True
 
     for r in exc_parity_rows:
@@ -211,7 +243,7 @@ def main() -> int:
         if cmp_t:
             checks = [c.get("check") for c in cmp_t.get("assertions", {}).get("checks", [])]
             assert "exception_parity" in checks, f"Assertion 15 Failed: exception_parity check missing in {ident}"
-    print(f"  [PASS] 15. GWpy parity strictly separated: value_parity ({len(val_parity_rows)}) vs exception_parity ({len(exc_parity_rows)}) verified.")
+    print(f"  [PASS] 15. GWpy parity strictly separated: numeric_value_parity ({len(num_val_rows)}) + metadata_property_parity ({len(meta_prop_rows)}) vs exception_parity ({len(exc_parity_rows)}) verified.")
 
     print("=" * 60)
     print("ALL 15 QA ASSERTIONS PASSED! RIGOROUS INTEGRITY VERIFIED.")
