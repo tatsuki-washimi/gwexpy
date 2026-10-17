@@ -87,6 +87,10 @@ def main() -> int:
             "contract_pending": total_contract_pending_exec,
             "environment_blocked": total_env_blocked,
         },
+        "reachability_status": {
+            k: sum(s.get("reachability_status", {}).get(k, 0) for s in results.values())
+            for k in ["reached_and_returned", "reached_with_observed_exception", "attribute_accessed", "smoke_signature_only", "reachability_unresolved", "fixture_setup_failed", "environment_blocked"]
+        },
         "total_verified": total_verified,
         "total_differ": total_differ,
         "total_contract_pending": total_contract_pending,
@@ -100,6 +104,10 @@ def main() -> int:
             "differ": gwpy_diff,
             "trial_error": gwpy_err,
             "incomparable": gwpy_incomp,
+        },
+        "comparison_modes": {
+            k: sum(s.get("comparison_modes", {}).get(k, 0) for s in results.values())
+            for k in ["numeric_allclose", "collection_elementwise_numeric", "swig_lal_object_numeric", "metadata_equality", "exception_equality", "incomparable", "not_applicable"]
         },
         "duration_seconds": total_time,
         "worker_results": results,

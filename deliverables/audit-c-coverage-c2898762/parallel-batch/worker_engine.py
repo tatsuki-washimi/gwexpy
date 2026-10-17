@@ -149,25 +149,52 @@ def finalize_gwpy_comparison(rec: dict[str, Any], *, notes: str = "") -> None:
     if rec.get("outcome") not in ("returned", "exception_observed"):
         rec["gwpy_comparison"] = {
             "status": "trial_error",
+            "comparison_mode": "not_applicable",
             "notes": notes or f"comparison trial raised unexpected {rec.get('outcome')}",
         }
         return
     passed = rec.get("assertions", {}).get("passed")
+    asrt = rec.get("assertions", {})
+    cmp_mode = asrt.get("comparison_mode")
     if passed is True:
-        checks = [c.get("check") for c in rec.get("assertions", {}).get("checks", [])]
-        parity_kind = rec.get("assertions", {}).get("parity_kind")
-        if "exception_parity" in checks:
-            rec["gwpy_comparison"] = {"status": "exception_parity", "notes": notes or "Exception behavior identical to gwpy"}
+        checks = [c.get("check") for c in asrt.get("checks", [])]
+        parity_kind = asrt.get("parity_kind")
+        if "exception_parity" in checks or parity_kind == "exception_parity" or cmp_mode == "exception_equality":
+            rec["gwpy_comparison"] = {
+                "status": "exception_parity",
+                "comparison_mode": "exception_equality",
+                "notes": notes or "Exception behavior identical to gwpy",
+            }
         elif parity_kind == "numeric_value_parity" or "numeric_value_parity" in checks:
-            rec["gwpy_comparison"] = {"status": "numeric_value_parity", "notes": notes or "Numerical value, unit, and shape parity verified with gwpy"}
+            rec["gwpy_comparison"] = {
+                "status": "numeric_value_parity",
+                "comparison_mode": cmp_mode or "numeric_allclose",
+                "notes": notes or "Numerical value, unit, and shape parity verified with gwpy",
+            }
         elif parity_kind == "metadata_property_parity" or "metadata_property_parity" in checks:
-            rec["gwpy_comparison"] = {"status": "metadata_property_parity", "notes": notes or "Metadata/property parity verified with gwpy"}
+            rec["gwpy_comparison"] = {
+                "status": "metadata_property_parity",
+                "comparison_mode": cmp_mode or "metadata_equality",
+                "notes": notes or "Metadata/property parity verified with gwpy",
+            }
         else:
-            rec["gwpy_comparison"] = {"status": "numeric_value_parity", "notes": notes or "Value, unit, and shape parity verified with gwpy"}
+            rec["gwpy_comparison"] = {
+                "status": "numeric_value_parity",
+                "comparison_mode": cmp_mode or "numeric_allclose",
+                "notes": notes or "Value, unit, and shape parity verified with gwpy",
+            }
     elif passed is False:
-        rec["gwpy_comparison"] = {"status": "differ", "notes": notes}
+        rec["gwpy_comparison"] = {
+            "status": "differ",
+            "comparison_mode": cmp_mode or "differ",
+            "notes": notes,
+        }
     else:
-        rec["gwpy_comparison"] = {"status": "incomparable", "notes": notes}
+        rec["gwpy_comparison"] = {
+            "status": "incomparable",
+            "comparison_mode": "incomparable",
+            "notes": notes,
+        }
 
 
 def run_trial(
@@ -216,12 +243,14 @@ def run_trial(
         "coverage_scope": coverage_scope,
         "actual_call_executed": False,
         "target_api_reached": False,
+        "reachability_status": "not_run",
         "harness_failure": False,
     }
 
     if execution_status != "executed":
         rec["disposition"] = execution_status
         rec["verification_status"] = execution_status
+        rec["reachability_status"] = execution_status
         return rec
 
     with warnings.catch_warnings(record=True) as wrec:
@@ -230,6 +259,7 @@ def run_trial(
             result = fn()
             rec["actual_call_executed"] = True
             rec["target_api_reached"] = True
+            rec["reachability_status"] = "reached_and_returned"
             rec["harness_failure"] = False
             rec["outcome"] = "returned"
             if isinstance(result, dict) and "invoke_context" in result:
@@ -244,6 +274,7 @@ def run_trial(
                 if asrt.get("is_smoke_only", False):
                     rec["verification_status"] = "contract_pending"
                     rec["disposition"] = "contract_pending"
+                    rec["reachability_status"] = "smoke_signature_only"
                     rec["not_tested_reason"] = asrt.get("smoke_reason", "smoke call executed; domain contract not verified")
                 elif passed is True:
                     rec["verification_status"] = "verified"
@@ -293,37 +324,58 @@ def run_trial(
                 ]
             )
 
-            harness_call_failure = False
-            if not is_env_blocked:
-                if not gwexpy_internal_frames:
-                    harness_call_failure = True
-                if any(
-                    p in exc_str
-                    for p in [
-                        "read roundtrip not defined",
-                        "write format not defined",
-                        "not supported",
-                        "takes 2 positional arguments but 3 were given",
-                        "takes 1 positional argument but 2 were given",
-                        "takes 0 positional arguments but",
-                        "missing 1 required positional",
-                        "missing 3 required positional",
-                        "object has no attribute 'value'",
-                        "Array.__new__() got an unexpected keyword argument 'df'",
-                        "Unknown HDF5 layout",
-                        "NotADirectoryError",
-                        "has no 'row_keys' member",
-                        "len() of unsized object",
-                        "only 0-dimensional arrays can be converted",
-                        "'numpy.ndarray' object is not callable",
-                        "Cannot specify both fftlength and nfft",
-                    ]
-                ):
-                    harness_call_failure = True
+            is_fixture_failed = any(
+                p in exc_str
+                for p in [
+                    "Array.__new__() got an unexpected keyword argument 'df'",
+                    "read roundtrip not defined",
+                    "write format not defined",
+                    "GSE2 test fixture generation not supported",
+                ]
+            )
 
-            rec["harness_failure"] = harness_call_failure
-            rec["target_api_reached"] = (not harness_call_failure) and (not is_env_blocked)
-            rec["actual_call_executed"] = (not harness_call_failure) and (not is_env_blocked)
+            is_reached_exception = any(
+                p in exc_str
+                for p in [
+                    "Cannot append discontiguous",
+                    "AxesImage.set() got an unexpected keyword argument 'drawstyle'",
+                    "cannot determine mappable layer on any axes for this colorbar",
+                    "No writer defined for format",
+                    "either 'deadtime' or 'flag' must be given",
+                    "index 513 is out of bounds",
+                    "Cannot determine HDF5 path",
+                    "Invalid Parameter",
+                    "Unknown HDF5 layout",
+                    "Cannot specify both fftlength and nfft",
+                    "Cannot append type",
+                ]
+            )
+
+            if is_env_blocked:
+                reachability_status = "environment_blocked"
+                target_api_reached = False
+                actual_call_executed = False
+                harness_failure = False
+            elif is_fixture_failed:
+                reachability_status = "fixture_setup_failed"
+                target_api_reached = False
+                actual_call_executed = False
+                harness_failure = True
+            elif is_reached_exception:
+                reachability_status = "reached_with_observed_exception"
+                target_api_reached = True
+                actual_call_executed = True
+                harness_failure = False
+            else:
+                reachability_status = "reachability_unresolved"
+                target_api_reached = False
+                actual_call_executed = False
+                harness_failure = True
+
+            rec["harness_failure"] = harness_failure
+            rec["target_api_reached"] = target_api_reached
+            rec["actual_call_executed"] = actual_call_executed
+            rec["reachability_status"] = reachability_status
             rec["outcome"] = type(exc).__name__
             rec["exception"] = f"{type(exc).__name__}: {str(exc)[:500]}"
             rec["exception_cause"] = str(exc.__cause__) if exc.__cause__ else None
@@ -348,15 +400,33 @@ def run_trial(
                     "passed": None,
                     "checks": [{"check": "environment_blocked", "passed": None}],
                 }
-            elif harness_call_failure:
+            elif reachability_status == "fixture_setup_failed":
                 rec["execution_status"] = "contract_pending"
                 rec["verification_status"] = "contract_pending"
                 rec["disposition"] = "contract_pending"
-                rec["not_tested_reason"] = f"Harness preparation or call failure: {type(exc).__name__}: {str(exc)[:200]}"
+                rec["not_tested_reason"] = f"Fixture setup failed: {type(exc).__name__}: {str(exc)[:200]}"
                 rec["assertions"] = {
                     "passed": None,
-                    "checks": [{"check": "harness_failure", "passed": None, "exception": rec["exception"]}],
+                    "checks": [{"check": "fixture_setup_failed", "passed": None, "exception": rec["exception"]}],
                 }
+            elif reachability_status == "reachability_unresolved":
+                rec["execution_status"] = "contract_pending"
+                rec["verification_status"] = "contract_pending"
+                rec["disposition"] = "contract_pending"
+                rec["not_tested_reason"] = f"Harness parameter mismatch; reachability unresolved: {type(exc).__name__}: {str(exc)[:200]}"
+                rec["assertions"] = {
+                    "passed": None,
+                    "checks": [{"check": "reachability_unresolved", "passed": None, "exception": rec["exception"]}],
+                }
+            elif reachability_status == "reached_with_observed_exception":
+                rec["execution_status"] = "actual_call"
+                rec["assertions"] = {
+                    "passed": False,
+                    "checks": [{"check": "target_api_observed_exception", "passed": False, "exception": rec["exception"]}],
+                }
+                rec["verification_status"] = "differ"
+                rec["disposition"] = "differ"
+                rec["not_tested_reason"] = f"Target API reached and executed with exception: {type(exc).__name__}"
             else:
                 # Unexpected exception in positive control
                 rec["assertions"] = {

@@ -4,25 +4,43 @@
   "existing_evidence_count": 13,
   "newly_audited_count": 508,
   "execution_status_breakdown": {
-    "actual_call": 265,
-    "attribute_access": 72,
-    "contract_pending": 91,
+    "actual_call": 290,
+    "attribute_access": 79,
+    "contract_pending": 59,
     "environment_blocked": 19,
     "smoke_only": 74
   },
-  "disposition_breakdown": {
-    "verified": 219,
-    "contract_pending": 237,
+  "reachability_status_breakdown": {
+    "reached_and_returned": 281,
+    "attribute_accessed": 79,
+    "fixture_setup_failed": 40,
+    "reachability_unresolved": 19,
     "environment_blocked": 19,
-    "differ": 46
+    "smoke_signature_only": 74,
+    "reached_with_observed_exception": 9
+  },
+  "disposition_breakdown": {
+    "verified": 246,
+    "contract_pending": 212,
+    "environment_blocked": 19,
+    "differ": 44
   },
   "gwpy_comparison_breakdown": {
     "incomparable": 274,
-    "numeric_value_parity": 45,
+    "numeric_value_parity": 75,
     "exception_parity": 106,
-    "metadata_property_parity": 67,
+    "metadata_property_parity": 33,
     "not_applicable": 27,
-    "differ": 2
+    "differ": 6
+  },
+  "comparison_mode_breakdown": {
+    "incomparable": 274,
+    "numeric_allclose": 55,
+    "exception_equality": 106,
+    "metadata_equality": 39,
+    "not_applicable": 27,
+    "swig_lal_object_numeric": 4,
+    "collection_elementwise_numeric": 16
   },
   "total_trials_recorded": 1572,
   "new_worker_trials_recorded": 1522,

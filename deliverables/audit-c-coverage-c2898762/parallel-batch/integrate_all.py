@@ -85,8 +85,10 @@ def main() -> int:
     integrated_all_trials.extend(all_worker_trials)
 
     status_counts = collections.Counter()
+    reachability_counts = collections.Counter()
     disposition_counts = collections.Counter()
     gwpy_comparison_counts = collections.Counter()
+    comparison_mode_counts = collections.Counter()
 
     for row in ledger:
         ident = row["identifier"]
@@ -99,16 +101,23 @@ def main() -> int:
             ev["inherited_batch1_trials"] = b_trials
             new_row["execution_status"] = "actual_call"
             new_row["runtime_status"] = "actual_call"
+            new_row["reachability_status"] = "reached_and_returned"
             new_row["disposition"] = "verified"
             # GWpy comparison for batch1: plane2d is incomparable, override_unit is metadata_property_parity, others are numeric_value_parity
             if "plane2d" in ident:
                 gw_cmp = "incomparable"
+                cmp_mode = "incomparable"
             elif "override_unit" in ident:
                 gw_cmp = "metadata_property_parity"
+                cmp_mode = "metadata_equality"
             else:
                 gw_cmp = "numeric_value_parity"
+                cmp_mode = "numeric_allclose"
             new_row["gwpy_comparison"] = gw_cmp
+            new_row["comparison_mode"] = cmp_mode
             gwpy_comparison_counts[gw_cmp] += 1
+            comparison_mode_counts[cmp_mode] += 1
+            reachability_counts["reached_and_returned"] += 1
             status_counts["actual_call"] += 1
             disposition_counts["verified"] += 1
 
@@ -118,9 +127,13 @@ def main() -> int:
             ev["runtime_probes"] = p_trials
             new_row["execution_status"] = "actual_call"
             new_row["runtime_status"] = "actual_call"
+            new_row["reachability_status"] = "reached_and_returned"
             new_row["disposition"] = "verified"
             new_row["gwpy_comparison"] = "incomparable"
+            new_row["comparison_mode"] = "incomparable"
             gwpy_comparison_counts["incomparable"] += 1
+            comparison_mode_counts["incomparable"] += 1
+            reachability_counts["reached_and_returned"] += 1
             status_counts["actual_call"] += 1
             disposition_counts["verified"] += 1
 
@@ -132,18 +145,24 @@ def main() -> int:
             ev["worker_disposition"] = disp
 
             exec_status = disp["execution_status"]
+            reach_status = disp.get("reachability_status", "reachability_unresolved")
             final_disp = disp["disposition"]
             gw_cmp = disp.get("gwpy_comparison", "not_applicable")
+            cmp_mode = disp.get("comparison_mode", "not_applicable")
 
             new_row["execution_status"] = exec_status
             new_row["runtime_status"] = exec_status
+            new_row["reachability_status"] = reach_status
             status_counts[exec_status] += 1
+            reachability_counts[reach_status] += 1
 
             new_row["disposition"] = final_disp
             disposition_counts[final_disp] += 1
 
             new_row["gwpy_comparison"] = gw_cmp
+            new_row["comparison_mode"] = cmp_mode
             gwpy_comparison_counts[gw_cmp] += 1
+            comparison_mode_counts[cmp_mode] += 1
 
             if disp.get("not_tested_reason"):
                 new_row["not_tested_reason"] = disp["not_tested_reason"]
@@ -153,10 +172,15 @@ def main() -> int:
         else:
             new_row["execution_status"] = "not_run"
             new_row["runtime_status"] = "not_run"
+            new_row["reachability_status"] = "not_run"
             new_row["disposition"] = "not_tested"
             new_row["gwpy_comparison"] = "not_applicable"
+            new_row["comparison_mode"] = "not_applicable"
             status_counts["not_run"] += 1
+            reachability_counts["not_run"] += 1
             disposition_counts["not_tested"] += 1
+            gwpy_comparison_counts["not_applicable"] += 1
+            comparison_mode_counts["not_applicable"] += 1
 
         integrated_ledger.append(new_row)
 
@@ -184,8 +208,10 @@ def main() -> int:
         "existing_evidence_count": 13,
         "newly_audited_count": 508,
         "execution_status_breakdown": dict(status_counts),
+        "reachability_status_breakdown": dict(reachability_counts),
         "disposition_breakdown": dict(disposition_counts),
         "gwpy_comparison_breakdown": dict(gwpy_comparison_counts),
+        "comparison_mode_breakdown": dict(comparison_mode_counts),
         "total_trials_recorded": len(integrated_all_trials),
         "new_worker_trials_recorded": len(all_worker_trials),
         "workers_contributed": 9,
@@ -221,21 +247,36 @@ def main() -> int:
 | ├── スモーク確認のみ (`smoke_only`) | {status_counts['smoke_only']} | {status_counts['smoke_only']/521*100:.1f}% |
 | ├── ハーネス不備/フィクスチャ未整備 (`contract_pending`) | {status_counts['contract_pending']} | {status_counts['contract_pending']/521*100:.1f}% |
 | └── 環境要因で実行不能 (`environment_blocked`) | {status_counts['environment_blocked']} | {status_counts['environment_blocked']/521*100:.1f}% |
+| **到達性ステータス (Reachability Status)** | | |
+| ├── 呼出し成功・戻り値受領 (`reached_and_returned`) | {reachability_counts['reached_and_returned']} | {reachability_counts['reached_and_returned']/521*100:.1f}% |
+| ├── API本体到達例外観測 (`reached_with_observed_exception`) | {reachability_counts['reached_with_observed_exception']} | {reachability_counts['reached_with_observed_exception']/521*100:.1f}% |
+| ├── 属性アクセス・存在確認 (`attribute_accessed`) | {reachability_counts['attribute_accessed']} | {reachability_counts['attribute_accessed']/521*100:.1f}% |
+| ├── 引数スモーク確認のみ (`smoke_signature_only`) | {reachability_counts['smoke_signature_only']} | {reachability_counts['smoke_signature_only']/521*100:.1f}% |
+| ├── 到達性未判定・保留 (`reachability_unresolved`) | {reachability_counts['reachability_unresolved']} | {reachability_counts['reachability_unresolved']/521*100:.1f}% |
+| ├── フィクスチャ生成不能 (`fixture_setup_failed`) | {reachability_counts['fixture_setup_failed']} | {reachability_counts['fixture_setup_failed']/521*100:.1f}% |
+| └── 環境要因で実行不能 (`environment_blocked`) | {reachability_counts['environment_blocked']} | {reachability_counts['environment_blocked']/521*100:.1f}% |
 | **最終Disposition** | | |
 | ├── 契約検証成功 (`verified`) | {disposition_counts['verified']} | {disposition_counts['verified']/521*100:.1f}% |
 | ├── 契約差異/不整合観測 (`differ`) | {disposition_counts['differ']} | {disposition_counts['differ']/521*100:.1f}% |
 | ├── 契約検証保留/フィクスチャ・強アサーション待ち (`contract_pending`) | {disposition_counts['contract_pending']} | {disposition_counts['contract_pending']/521*100:.1f}% |
 | └── 環境依存制約 (`environment_blocked`) | {disposition_counts['environment_blocked']} | {disposition_counts['environment_blocked']/521*100:.1f}% |
-| **GWpyパリティ比較** | | |
+| **GWpyパリティ比較 (Parity Status)** | | |
 | ├── 数値・配列完全一致 (`numeric_value_parity`) | {gwpy_comparison_counts['numeric_value_parity']} | {gwpy_comparison_counts['numeric_value_parity']/521*100:.1f}% |
 | ├── メタデータ・属性一致 (`metadata_property_parity`) | {gwpy_comparison_counts['metadata_property_parity']} | {gwpy_comparison_counts['metadata_property_parity']/521*100:.1f}% |
 | ├── 例外挙動一致 (`exception_parity`) | {gwpy_comparison_counts['exception_parity']} | {gwpy_comparison_counts['exception_parity']/521*100:.1f}% |
 | ├── パリティ差異あり (`differ`) | {gwpy_comparison_counts['differ']} | {gwpy_comparison_counts['differ']/521*100:.1f}% |
-| ├── 試行エラー/例外観測 (`trial_error`) | {gwpy_comparison_counts['trial_error']} | {gwpy_comparison_counts['trial_error']/521*100:.1f}% |
 | ├── 比較対象なし/独自拡張 (`incomparable`) | {gwpy_comparison_counts['incomparable']} | {gwpy_comparison_counts['incomparable']/521*100:.1f}% |
 | └── 該当なし (`not_applicable`) | {gwpy_comparison_counts['not_applicable']} | {gwpy_comparison_counts['not_applicable']/521*100:.1f}% |
+| **比較判定モード (Comparison Mode)** | | |
+| ├── 配列・スカラー数値比較 (`numeric_allclose`) | {comparison_mode_counts['numeric_allclose']} | {comparison_mode_counts['numeric_allclose']/521*100:.1f}% |
+| ├── コレクション要素全件比較 (`collection_elementwise_numeric`) | {comparison_mode_counts['collection_elementwise_numeric']} | {comparison_mode_counts['collection_elementwise_numeric']/521*100:.1f}% |
+| ├── LAL SWIGオブジェクト直接数値比較 (`swig_lal_object_numeric`) | {comparison_mode_counts['swig_lal_object_numeric']} | {comparison_mode_counts['swig_lal_object_numeric']/521*100:.1f}% |
+| ├── メタデータ・属性等価比較 (`metadata_equality`) | {comparison_mode_counts['metadata_equality']} | {comparison_mode_counts['metadata_equality']/521*100:.1f}% |
+| ├── 同一例外送出判定 (`exception_equality`) | {comparison_mode_counts['exception_equality']} | {comparison_mode_counts['exception_equality']/521*100:.1f}% |
+| ├── 比較対象なし/独自拡張 (`incomparable`) | {comparison_mode_counts['incomparable']} | {comparison_mode_counts['incomparable']/521*100:.1f}% |
+| └── 該当なし (`not_applicable`) | {comparison_mode_counts['not_applicable']} | {comparison_mode_counts['not_applicable']/521*100:.1f}% |
 
-総試行試験数（Recorded Trials）: **{len(integrated_all_trials)}件**
+総試行試験数（Recorded Trials）: **{len(integrated_all_trials):,}件**
 
 ---
 
@@ -296,26 +337,45 @@ def main() -> int:
 ### 3.1 観測された差異の要因分類
 1. **多次元配列における1D専用メソッドのMRO継承問題 (GWpy互換要因)**:
    - 例: `Array2D.step`
-   - 原因: 1Dの `Series.step` が多次元 `Array2D` にそのまま継承され、`Array2D.plot` の `AxesImage` に対して `drawstyle` 引数が渡されて `AttributeError` となる。これはGWpy自身でも同様に発生する挙動。
+   - 原因: 1Dの `Series.step` が多次元 `Array2D` にそのまま継承され、`Array2D.plot` の `AxesImage` に対して `drawstyle` 引数が渡されて `AttributeError` となる。これはGWpy自身でも同様に発生する挙動（`reached_with_observed_exception`）。
 2. **外部依存パッケージのバイナリ非互換 (`environment_blocked`)**:
    - 例: `gwexpy.timeseries.arima.fit_arima`
    - 原因: `pmdarima` のC-拡張モジュールがNumPy 2.xに対してバイナリ不整合を起こし、モジュールインポート時に `ValueError` となる。
 3. **GWexpy独自拡張APIとGWpyの契約差異**:
    - `BifrequencyMap`, `ScalarField`, `FieldPlot` などの独自クラス群はGWpyに対応するクラスが存在しないため `incomparable` として記録。
+4. **LAL SWIGオブジェクト直接数値比較による完全パリティ実証**:
+   - `TimeSeries.to_lal` および `FrequencySeries.to_lal` について、SWIGポインタ文字列の比較を廃止し、`data.data` (NumPy配列)、`deltaT`/`deltaF`、`epoch`、`sampleUnits` を直接数値比較（`swig_lal_object_numeric`）することで、GWpyとの偽陽性 `differ` を解消し完全パリティ（`numeric_value_parity`）を実証。
 
 ---
 
 ## 4. 成果物一覧
 
 - 統合台帳（521行）: `deliverables/audit-c-coverage-c2898762/c-coverage-c2898762.jsonl`
-- 全試行証拠（{len(integrated_all_trials)}行）: `deliverables/audit-c-coverage-c2898762/c-coverage-521-all-trials.jsonl`
+- 全試行証拠（{len(integrated_all_trials):,}行）: `deliverables/audit-c-coverage-c2898762/c-coverage-521-all-trials.jsonl`
 - 集計サマリーJSON: `deliverables/audit-c-coverage-c2898762/c-coverage-521-integrated-summary.json`
+- エビデンスバンドルZIP: `deliverables/audit-c-coverage-c2898762/c-coverage-521-evidence-bundle.zip`
 - ワーカー別ディレクトリ: `deliverables/audit-c-coverage-c2898762/parallel-batch/worker-W[1-9]/`
 """
 
     report_path = AUDIT_DIR / "2026-10-17-c-coverage-521-integrated-report.md"
     report_path.write_text(report_content, encoding="utf-8")
     print(f"Wrote report Markdown: {report_path}")
+
+    # 9. Create complete evidence bundle ZIP
+    import zipfile
+    zip_path = AUDIT_DIR / "c-coverage-521-evidence-bundle.zip"
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+        zf.write(ledger_path, arcname=ledger_path.name)
+        zf.write(all_trials_path, arcname=all_trials_path.name)
+        zf.write(summary_path, arcname=summary_path.name)
+        zf.write(report_path, arcname=report_path.name)
+        for w_idx in range(1, 10):
+            wid = f"worker-W{w_idx}"
+            wdir = BATCH_DIR / wid
+            for f in wdir.iterdir():
+                if f.is_file():
+                    zf.write(f, arcname=f"parallel-batch/{wid}/{f.name}")
+    print(f"Wrote evidence bundle ZIP: {zip_path}")
     print("\nPhase 3: Integrator finished successfully!")
     return 0
 

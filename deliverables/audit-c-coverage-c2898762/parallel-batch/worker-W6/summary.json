@@ -4,10 +4,15 @@
   "trials_total": 129,
   "execution_status": {
     "actual_call": 14,
-    "attribute_access": 18,
+    "attribute_access": 24,
     "smoke_only": 5,
-    "contract_pending": 6,
+    "contract_pending": 0,
     "environment_blocked": 0
+  },
+  "reachability_status": {
+    "reached_and_returned": 14,
+    "attribute_accessed": 24,
+    "smoke_signature_only": 5
   },
   "verified_api_count": 13,
   "differ_api_count": 1,
@@ -15,13 +20,19 @@
   "environment_blocked_count": 0,
   "not_tested_count": 0,
   "gwpy_comparison": {
-    "numeric_value_parity": 0,
-    "metadata_property_parity": 3,
+    "numeric_value_parity": 1,
+    "metadata_property_parity": 2,
     "value_parity": 3,
     "exception_parity": 3,
     "differ": 0,
     "trial_error": 0,
     "incomparable": 37
   },
-  "duration_seconds": 2.1
+  "comparison_modes": {
+    "incomparable": 37,
+    "exception_equality": 3,
+    "metadata_equality": 2,
+    "collection_elementwise_numeric": 1
+  },
+  "duration_seconds": 2.63
 }

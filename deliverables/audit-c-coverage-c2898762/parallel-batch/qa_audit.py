@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import collections
 import hashlib
 import json
 import subprocess
@@ -181,7 +182,7 @@ def main() -> int:
         "gwexpy.signal.fft_args.check_deprecated_kwargs",
     }
     verified_rows = [r for r in ledger if r.get("disposition") == "verified"]
-    assert len(verified_rows) == 219, f"Assertion 14 Failed: Expected 219 verified rows (206 new + 13 prior), got {len(verified_rows)}"
+    assert len(verified_rows) == 246, f"Assertion 14 Failed: Expected 246 verified rows (233 new + 13 prior), got {len(verified_rows)}"
     for r in verified_rows:
         ident = r["identifier"]
         assert ident not in weak_general, f"Assertion 14 Failed: weak general function {ident} in verified"
@@ -210,12 +211,12 @@ def main() -> int:
         assert pos.get("assertions", {}).get("passed") is True, f"Assertion 14 Failed: assertions failed for {ident}"
     print(f"  [PASS] 14. Contract verification depth confirmed across all {len(verified_rows)} verified APIs (all 5 reinforced APIs have concrete contract assertions, all 72 weak assertions strictly excluded).")
 
-    # 15. GWpy比較における numeric_value_parity (45件), metadata_property_parity (67件) と exception_parity (106件) の厳格分離。
+    # 15. GWpy比較における numeric_value_parity (75件), metadata_property_parity (33件) と exception_parity (106件) の厳格分離。
     num_val_rows = [r for r in ledger if r.get("gwpy_comparison") == "numeric_value_parity"]
     meta_prop_rows = [r for r in ledger if r.get("gwpy_comparison") == "metadata_property_parity"]
     exc_parity_rows = [r for r in ledger if r.get("gwpy_comparison") == "exception_parity"]
-    assert len(num_val_rows) == 45, f"Assertion 15 Failed: Expected 45 numeric_value_parity rows (37 new + 8 batch1), got {len(num_val_rows)}"
-    assert len(meta_prop_rows) == 67, f"Assertion 15 Failed: Expected 67 metadata_property_parity rows (66 new + 1 batch1), got {len(meta_prop_rows)}"
+    assert len(num_val_rows) == 75, f"Assertion 15 Failed: Expected 75 numeric_value_parity rows (67 new + 8 batch1), got {len(num_val_rows)}"
+    assert len(meta_prop_rows) == 33, f"Assertion 15 Failed: Expected 33 metadata_property_parity rows (32 new + 1 batch1), got {len(meta_prop_rows)}"
     assert len(exc_parity_rows) == 106, f"Assertion 15 Failed: Expected 106 exception_parity rows, got {len(exc_parity_rows)}"
 
     for r in num_val_rows:
@@ -245,8 +246,82 @@ def main() -> int:
             assert "exception_parity" in checks, f"Assertion 15 Failed: exception_parity check missing in {ident}"
     print(f"  [PASS] 15. GWpy parity strictly separated: numeric_value_parity ({len(num_val_rows)}) + metadata_property_parity ({len(meta_prop_rows)}) vs exception_parity ({len(exc_parity_rows)}) verified.")
 
+    # 16. Reachability Status 7区分の完全整合（全521件の網羅性と正確性）。
+    valid_reachabilities = {
+        "reached_and_returned",
+        "reached_with_observed_exception",
+        "attribute_accessed",
+        "smoke_signature_only",
+        "reachability_unresolved",
+        "fixture_setup_failed",
+        "environment_blocked",
+    }
+    reach_counts = collections.Counter(r.get("reachability_status") for r in ledger)
+    for r in ledger:
+        rst = r.get("reachability_status")
+        assert rst in valid_reachabilities, f"Assertion 16 Failed: invalid reachability_status {rst} for {r['identifier']}"
+        ex_st = r.get("execution_status")
+        if rst in ("reached_and_returned", "reached_with_observed_exception"):
+            assert ex_st == "actual_call", f"Assertion 16 Failed: {r['identifier']} reach={rst} but exec={ex_st}"
+        elif rst == "attribute_accessed":
+            assert ex_st == "attribute_access", f"Assertion 16 Failed: {r['identifier']} reach={rst} but exec={ex_st}"
+        elif rst == "smoke_signature_only":
+            assert ex_st == "smoke_only", f"Assertion 16 Failed: {r['identifier']} reach={rst} but exec={ex_st}"
+        elif rst in ("reachability_unresolved", "fixture_setup_failed"):
+            assert ex_st == "contract_pending", f"Assertion 16 Failed: {r['identifier']} reach={rst} but exec={ex_st}"
+        elif rst == "environment_blocked":
+            assert ex_st == "environment_blocked", f"Assertion 16 Failed: {r['identifier']} reach={rst} but exec={ex_st}"
+
+    assert reach_counts["reached_and_returned"] == 281, f"Assertion 16 Failed: reached_and_returned {reach_counts['reached_and_returned']} != 281"
+    assert reach_counts["reached_with_observed_exception"] == 9, f"Assertion 16 Failed: reached_with_observed_exception {reach_counts['reached_with_observed_exception']} != 9"
+    assert reach_counts["attribute_accessed"] == 79, f"Assertion 16 Failed: attribute_accessed {reach_counts['attribute_accessed']} != 79"
+    assert reach_counts["smoke_signature_only"] == 74, f"Assertion 16 Failed: smoke_signature_only {reach_counts['smoke_signature_only']} != 74"
+    assert reach_counts["reachability_unresolved"] == 19, f"Assertion 16 Failed: reachability_unresolved {reach_counts['reachability_unresolved']} != 19"
+    assert reach_counts["fixture_setup_failed"] == 40, f"Assertion 16 Failed: fixture_setup_failed {reach_counts['fixture_setup_failed']} != 40"
+    assert reach_counts["environment_blocked"] == 19, f"Assertion 16 Failed: environment_blocked {reach_counts['environment_blocked']} != 19"
+    print(f"  [PASS] 16. Reachability status strictly verified across all 521 rows (reached_and_returned=281, observed_exception=9, attribute_accessed=79, smoke_only=74, unresolved=19, fixture_failed=40, env_blocked=19).")
+
+    # 17. Comparison Mode 7区分の完全整合と数値パリティ実証（LAL SWIGおよびコレクション比較含む）。
+    valid_comparison_modes = {
+        "numeric_allclose",
+        "collection_elementwise_numeric",
+        "swig_lal_object_numeric",
+        "metadata_equality",
+        "exception_equality",
+        "incomparable",
+        "not_applicable",
+    }
+    mode_counts = collections.Counter(r.get("comparison_mode") for r in ledger)
+    for r in ledger:
+        cmode = r.get("comparison_mode")
+        assert cmode in valid_comparison_modes, f"Assertion 17 Failed: invalid comparison_mode {cmode} for {r['identifier']}"
+        gw_cmp = r.get("gwpy_comparison")
+        if cmode in ("numeric_allclose", "collection_elementwise_numeric", "swig_lal_object_numeric"):
+            assert gw_cmp == "numeric_value_parity", f"Assertion 17 Failed: {r['identifier']} mode={cmode} but gwpy_comparison={gw_cmp}"
+
+    assert mode_counts["numeric_allclose"] == 55, f"Assertion 17 Failed: numeric_allclose {mode_counts['numeric_allclose']} != 55"
+    assert mode_counts["collection_elementwise_numeric"] == 16, f"Assertion 17 Failed: collection_elementwise_numeric {mode_counts['collection_elementwise_numeric']} != 16"
+    assert mode_counts["swig_lal_object_numeric"] == 4, f"Assertion 17 Failed: swig_lal_object_numeric {mode_counts['swig_lal_object_numeric']} != 4"
+    assert mode_counts["metadata_equality"] == 39, f"Assertion 17 Failed: metadata_equality {mode_counts['metadata_equality']} != 39"
+    assert mode_counts["exception_equality"] == 106, f"Assertion 17 Failed: exception_equality {mode_counts['exception_equality']} != 106"
+    assert mode_counts["incomparable"] == 274, f"Assertion 17 Failed: incomparable {mode_counts['incomparable']} != 274"
+    assert mode_counts["not_applicable"] == 27, f"Assertion 17 Failed: not_applicable {mode_counts['not_applicable']} != 27"
+
+    # Confirm to_lal SWIG direct numerical comparison eliminated false differ
+    lal_items = [
+        "gwexpy.timeseries.timeseries.TimeSeries/to_lal",
+        "gwexpy.frequencyseries.frequencyseries.FrequencySeries/to_lal",
+    ]
+    for l_id in lal_items:
+        r = next((row for row in ledger if row["identifier"] == l_id), None)
+        assert r is not None, f"Assertion 17 Failed: missing {l_id} in ledger"
+        assert r["comparison_mode"] == "swig_lal_object_numeric", f"Assertion 17 Failed: {l_id} comparison_mode != swig_lal_object_numeric"
+        assert r["gwpy_comparison"] == "numeric_value_parity", f"Assertion 17 Failed: {l_id} gwpy_comparison != numeric_value_parity"
+
+    print(f"  [PASS] 17. Comparison modes strictly validated across all 521 rows (numeric_allclose=55, collection_numeric=16, swig_lal_numeric=4, metadata_equality=39, exception_equality=106, incomparable=274, not_applicable=27). LAL SWIG numerical parity confirmed.")
+
     print("=" * 60)
-    print("ALL 15 QA ASSERTIONS PASSED! RIGOROUS INTEGRITY VERIFIED.")
+    print("ALL 17 QA ASSERTIONS PASSED! RIGOROUS INTEGRITY VERIFIED.")
     print("=" * 60)
     return 0
 

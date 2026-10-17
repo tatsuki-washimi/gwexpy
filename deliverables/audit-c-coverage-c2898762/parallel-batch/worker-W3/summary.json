@@ -3,25 +3,41 @@
   "assigned_count": 75,
   "trials_total": 225,
   "execution_status": {
-    "actual_call": 29,
+    "actual_call": 28,
     "attribute_access": 15,
     "smoke_only": 11,
-    "contract_pending": 6,
+    "contract_pending": 7,
     "environment_blocked": 14
   },
-  "verified_api_count": 18,
-  "differ_api_count": 11,
-  "contract_pending_count": 32,
+  "reachability_status": {
+    "attribute_accessed": 15,
+    "reachability_unresolved": 7,
+    "environment_blocked": 14,
+    "smoke_signature_only": 11,
+    "reached_and_returned": 22,
+    "reached_with_observed_exception": 6
+  },
+  "verified_api_count": 19,
+  "differ_api_count": 9,
+  "contract_pending_count": 33,
   "environment_blocked_count": 14,
   "not_tested_count": 0,
   "gwpy_comparison": {
-    "numeric_value_parity": 12,
-    "metadata_property_parity": 14,
-    "value_parity": 26,
+    "numeric_value_parity": 20,
+    "metadata_property_parity": 5,
+    "value_parity": 25,
     "exception_parity": 42,
-    "differ": 1,
+    "differ": 2,
     "trial_error": 0,
     "incomparable": 6
   },
-  "duration_seconds": 1.33
+  "comparison_modes": {
+    "not_applicable": 6,
+    "collection_elementwise_numeric": 7,
+    "exception_equality": 42,
+    "metadata_equality": 7,
+    "numeric_allclose": 11,
+    "swig_lal_object_numeric": 2
+  },
+  "duration_seconds": 1.42
 }

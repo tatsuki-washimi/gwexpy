@@ -3,25 +3,39 @@
   "assigned_count": 61,
   "trials_total": 183,
   "execution_status": {
-    "actual_call": 39,
+    "actual_call": 44,
     "attribute_access": 15,
     "smoke_only": 2,
-    "contract_pending": 5,
+    "contract_pending": 0,
     "environment_blocked": 0
   },
-  "verified_api_count": 33,
-  "differ_api_count": 6,
-  "contract_pending_count": 22,
+  "reachability_status": {
+    "reached_and_returned": 42,
+    "attribute_accessed": 15,
+    "smoke_signature_only": 2,
+    "reached_with_observed_exception": 2
+  },
+  "verified_api_count": 36,
+  "differ_api_count": 8,
+  "contract_pending_count": 17,
   "environment_blocked_count": 0,
   "not_tested_count": 0,
   "gwpy_comparison": {
-    "numeric_value_parity": 7,
-    "metadata_property_parity": 16,
-    "value_parity": 23,
+    "numeric_value_parity": 12,
+    "metadata_property_parity": 10,
+    "value_parity": 22,
     "exception_parity": 15,
-    "differ": 0,
+    "differ": 1,
     "trial_error": 0,
     "incomparable": 23
   },
-  "duration_seconds": 1.23
+  "comparison_modes": {
+    "numeric_allclose": 10,
+    "metadata_equality": 11,
+    "exception_equality": 15,
+    "not_applicable": 4,
+    "collection_elementwise_numeric": 2,
+    "incomparable": 19
+  },
+  "duration_seconds": 1.48
 }

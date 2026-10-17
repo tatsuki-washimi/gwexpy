@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import collections
 import json
 import os
 import sys
@@ -62,9 +63,11 @@ def run_worker(worker_id: str) -> int:
                 "target_identifier": ident,
                 "worker_id": worker_id,
                 "execution_status": "environment_blocked",
+                "reachability_status": "environment_blocked",
                 "verification_status": "environment_blocked",
                 "disposition": "environment_blocked",
                 "gwpy_comparison": "not_applicable",
+                "comparison_mode": "not_applicable",
                 "trials_count": 1,
                 "positive_control_status": "failed",
                 "abnormal_input_status": "not_run",
@@ -112,6 +115,9 @@ def run_worker(worker_id: str) -> int:
     gwpy_trial_error = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "trial_error")
     gwpy_incomparable = sum(1 for d in all_dispositions if d.get("gwpy_comparison") in ("incomparable", "not_applicable"))
 
+    reachability_status_counts = collections.Counter(d.get("reachability_status", "not_run") for d in all_dispositions)
+    comparison_mode_counts = collections.Counter(d.get("comparison_mode", "not_applicable") for d in all_dispositions)
+
     summary = {
         "worker_id": worker_id,
         "assigned_count": len(assigned_rows),
@@ -123,6 +129,7 @@ def run_worker(worker_id: str) -> int:
             "contract_pending": contract_pending_exec_count,
             "environment_blocked": env_blocked_count,
         },
+        "reachability_status": dict(reachability_status_counts),
         "verified_api_count": verified_count,
         "differ_api_count": differ_count,
         "contract_pending_count": contract_pending_count,
@@ -137,6 +144,7 @@ def run_worker(worker_id: str) -> int:
             "trial_error": gwpy_trial_error,
             "incomparable": gwpy_incomparable,
         },
+        "comparison_modes": dict(comparison_mode_counts),
         "duration_seconds": duration_s,
     }
 
