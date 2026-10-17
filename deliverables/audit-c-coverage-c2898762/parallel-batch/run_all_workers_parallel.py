@@ -41,7 +41,8 @@ def main() -> int:
             try:
                 worker_id, code, summary = future.result()
                 results[worker_id] = summary
-                print(f"--> [{worker_id}] Finished with exit code {code}: {summary.get('executed_api_count')}/{summary.get('assigned_count')} executed, {summary.get('verified_api_count')} verified ({summary.get('duration_seconds')}s)")
+                actual_calls = summary.get("execution_status", {}).get("actual_call", 0)
+                print(f"--> [{worker_id}] Finished with exit code {code}: {actual_calls} actual calls, {summary.get('verified_api_count')} verified ({summary.get('duration_seconds')}s)")
             except Exception as e:
                 print(f"--> [{wid}] CRASHED with exception: {e}", file=sys.stderr)
                 results[wid] = {"error": str(e), "exit_code": 1}
@@ -54,24 +55,46 @@ def main() -> int:
     # Combine worker summaries
     total_assigned = sum(s.get("assigned_count", 0) for s in results.values())
     total_trials = sum(s.get("trials_total", 0) for s in results.values())
-    total_executed = sum(s.get("executed_api_count", 0) for s in results.values())
+
+    total_actual_call = sum(s.get("execution_status", {}).get("actual_call", 0) for s in results.values())
+    total_attr_access = sum(s.get("execution_status", {}).get("attribute_access", 0) for s in results.values())
+    total_smoke_only = sum(s.get("execution_status", {}).get("smoke_only", 0) for s in results.values())
+    total_env_blocked = sum(s.get("environment_blocked_count", 0) for s in results.values())
+
     total_verified = sum(s.get("verified_api_count", 0) for s in results.values())
     total_differ = sum(s.get("differ_api_count", 0) for s in results.values())
-    total_env_blocked = sum(s.get("environment_blocked_count", 0) for s in results.values())
     total_contract_pending = sum(s.get("contract_pending_count", 0) for s in results.values())
     total_not_tested = sum(s.get("not_tested_count", 0) for s in results.values())
+
+    gwpy_val_par = sum(s.get("gwpy_comparison", {}).get("value_parity", 0) for s in results.values())
+    gwpy_exc_par = sum(s.get("gwpy_comparison", {}).get("exception_parity", 0) for s in results.values())
+    gwpy_diff = sum(s.get("gwpy_comparison", {}).get("differ", 0) for s in results.values())
+    gwpy_err = sum(s.get("gwpy_comparison", {}).get("trial_error", 0) for s in results.values())
+    gwpy_incomp = sum(s.get("gwpy_comparison", {}).get("incomparable", 0) for s in results.values())
 
     combined_summary = {
         "batch": "508_parallel_batch",
         "worker_count": len(WORKER_IDS),
         "total_assigned": total_assigned,
         "total_trials": total_trials,
-        "total_executed": total_executed,
+        "execution_status": {
+            "actual_call": total_actual_call,
+            "attribute_access": total_attr_access,
+            "smoke_only": total_smoke_only,
+            "environment_blocked": total_env_blocked,
+        },
         "total_verified": total_verified,
         "total_differ": total_differ,
-        "total_environment_blocked": total_env_blocked,
         "total_contract_pending": total_contract_pending,
+        "total_environment_blocked": total_env_blocked,
         "total_not_tested": total_not_tested,
+        "gwpy_comparison": {
+            "value_parity": gwpy_val_par,
+            "exception_parity": gwpy_exc_par,
+            "differ": gwpy_diff,
+            "trial_error": gwpy_err,
+            "incomparable": gwpy_incomp,
+        },
         "duration_seconds": total_time,
         "worker_results": results,
     }

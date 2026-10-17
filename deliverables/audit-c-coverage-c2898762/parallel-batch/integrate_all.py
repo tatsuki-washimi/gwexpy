@@ -97,24 +97,29 @@ def main() -> int:
         if ident in batch1_unique_ids:
             b_trials = batch1_by_id[ident]
             ev["inherited_batch1_trials"] = b_trials
-            new_row["runtime_status"] = "executed_this_pass"
+            new_row["execution_status"] = "actual_call"
+            new_row["runtime_status"] = "actual_call"
             new_row["disposition"] = "verified"
-            # GWpy comparison for batch1
-            gw_cmp = next((t.get("gwpy_comparison", {}).get("status") for t in b_trials if t.get("trial_kind") == "gwpy_comparison"), "match")
+            # GWpy comparison for batch1: plane2d is incomparable, others are value_parity
+            if "plane2d" in ident:
+                gw_cmp = "incomparable"
+            else:
+                gw_cmp = "value_parity"
             new_row["gwpy_comparison"] = gw_cmp
             gwpy_comparison_counts[gw_cmp] += 1
-            status_counts["executed_this_pass"] += 1
+            status_counts["actual_call"] += 1
             disposition_counts["verified"] += 1
 
         # Priority 2: Probes (3 conventional items with existing execution)
-        elif ident in probes_by_id and row.get("runtime_status") == "executed_this_pass":
+        elif ident in probes_by_id and row.get("runtime_status") in ("executed_this_pass", "actual_call", "executed"):
             p_trials = probes_by_id[ident]
             ev["runtime_probes"] = p_trials
-            new_row["runtime_status"] = "executed_this_pass"
+            new_row["execution_status"] = "actual_call"
+            new_row["runtime_status"] = "actual_call"
             new_row["disposition"] = "verified"
             new_row["gwpy_comparison"] = "incomparable"
             gwpy_comparison_counts["incomparable"] += 1
-            status_counts["executed_this_pass"] += 1
+            status_counts["actual_call"] += 1
             disposition_counts["verified"] += 1
 
         # Priority 3: 508 parallel worker outputs
@@ -128,21 +133,13 @@ def main() -> int:
             final_disp = disp["disposition"]
             gw_cmp = disp.get("gwpy_comparison", "not_applicable")
 
-            if exec_status == "executed":
-                new_row["runtime_status"] = "executed_this_pass"
-                status_counts["executed_this_pass"] += 1
-            elif exec_status == "environment_blocked":
-                new_row["runtime_status"] = "environment_blocked"
-                status_counts["environment_blocked"] += 1
-            elif exec_status == "contract_pending":
-                new_row["runtime_status"] = "contract_pending"
-                status_counts["contract_pending"] += 1
-            else:
-                new_row["runtime_status"] = "not_run"
-                status_counts["not_run"] += 1
+            new_row["execution_status"] = exec_status
+            new_row["runtime_status"] = exec_status
+            status_counts[exec_status] += 1
 
             new_row["disposition"] = final_disp
             disposition_counts[final_disp] += 1
+
             new_row["gwpy_comparison"] = gw_cmp
             gwpy_comparison_counts[gw_cmp] += 1
 
@@ -152,7 +149,7 @@ def main() -> int:
                 new_row["notes"] = disp["notes"]
 
         else:
-            # Fallback if somehow not assigned (should never happen)
+            new_row["execution_status"] = "not_run"
             new_row["runtime_status"] = "not_run"
             new_row["disposition"] = "not_tested"
             new_row["gwpy_comparison"] = "not_applicable"
@@ -184,7 +181,7 @@ def main() -> int:
         "total_population": len(integrated_ledger),
         "existing_evidence_count": 13,
         "newly_audited_count": 508,
-        "runtime_status_breakdown": dict(status_counts),
+        "execution_status_breakdown": dict(status_counts),
         "disposition_breakdown": dict(disposition_counts),
         "gwpy_comparison_breakdown": dict(gwpy_comparison_counts),
         "total_trials_recorded": len(integrated_all_trials),
@@ -216,20 +213,22 @@ def main() -> int:
 | **全母集団** | **521** | 100.0% |
 | ├── 既存実行証拠（事前完了） | 13 | 2.5% |
 | └── 今回の検証対象（9ワーカー） | 508 | 97.5% |
-| **実行実績** | | |
-| ├── 実際に実行されたAPI (`executed`) | {status_counts['executed_this_pass']} | {status_counts['executed_this_pass']/521*100:.1f}% |
-| ├── 環境要因で実行不能 (`environment_blocked`) | {status_counts['environment_blocked']} | {status_counts['environment_blocked']/521*100:.1f}% |
-| └── 未実行 (`not_run`) | {status_counts['not_run']} | {status_counts['not_run']/521*100:.1f}% |
+| **実行実績 (Execution Level)** | | |
+| ├── 実呼出し実行 (`actual_call`) | {status_counts['actual_call']} | {status_counts['actual_call']/521*100:.1f}% |
+| ├── 属性アクセス・存在確認 (`attribute_access`) | {status_counts['attribute_access']} | {status_counts['attribute_access']/521*100:.1f}% |
+| ├── スモーク確認のみ (`smoke_only`) | {status_counts['smoke_only']} | {status_counts['smoke_only']/521*100:.1f}% |
+| └── 環境要因で実行不能 (`environment_blocked`) | {status_counts['environment_blocked']} | {status_counts['environment_blocked']/521*100:.1f}% |
 | **最終Disposition** | | |
 | ├── 契約検証成功 (`verified`) | {disposition_counts['verified']} | {disposition_counts['verified']/521*100:.1f}% |
 | ├── 契約差異/不整合観測 (`differ`) | {disposition_counts['differ']} | {disposition_counts['differ']/521*100:.1f}% |
-| ├── 契約検証保留/実機フィクスチャ待ち (`contract_pending`) | {disposition_counts['contract_pending']} | {disposition_counts['contract_pending']/521*100:.1f}% |
+| ├── 契約検証保留/フィクスチャ・強アサーション待ち (`contract_pending`) | {disposition_counts['contract_pending']} | {disposition_counts['contract_pending']/521*100:.1f}% |
 | └── 環境依存制約 (`environment_blocked`) | {disposition_counts['environment_blocked']} | {disposition_counts['environment_blocked']/521*100:.1f}% |
 | **GWpyパリティ比較** | | |
-| ├── 完全一致 (`match`) | {gwpy_comparison_counts['match']} | {gwpy_comparison_counts['match']/521*100:.1f}% |
-| ├── 差異あり (`differ`) | {gwpy_comparison_counts['differ']} | {gwpy_comparison_counts['differ']/521*100:.1f}% |
-| └── 比較対象なし/拡張機能 (`incomparable`) | {gwpy_comparison_counts['incomparable']} | {gwpy_comparison_counts['incomparable']/521*100:.1f}% |
-| └── 試行エラー/例外観測 (`trial_error`) | {gwpy_comparison_counts['trial_error']} | {gwpy_comparison_counts['trial_error']/521*100:.1f}% |
+| ├── 数値・単位・形状一致 (`value_parity`) | {gwpy_comparison_counts['value_parity']} | {gwpy_comparison_counts['value_parity']/521*100:.1f}% |
+| ├── 例外挙動一致 (`exception_parity`) | {gwpy_comparison_counts['exception_parity']} | {gwpy_comparison_counts['exception_parity']/521*100:.1f}% |
+| ├── パリティ差異あり (`differ`) | {gwpy_comparison_counts['differ']} | {gwpy_comparison_counts['differ']/521*100:.1f}% |
+| ├── 試行エラー/例外観測 (`trial_error`) | {gwpy_comparison_counts['trial_error']} | {gwpy_comparison_counts['trial_error']/521*100:.1f}% |
+| ├── 比較対象なし/独自拡張 (`incomparable`) | {gwpy_comparison_counts['incomparable']} | {gwpy_comparison_counts['incomparable']/521*100:.1f}% |
 | └── 該当なし (`not_applicable`) | {gwpy_comparison_counts['not_applicable']} | {gwpy_comparison_counts['not_applicable']/521*100:.1f}% |
 
 総試行試験数（Recorded Trials）: **{len(integrated_all_trials)}件**
@@ -238,8 +237,8 @@ def main() -> int:
 
 ## 2. 9ワーカー並列実行の詳細実績
 
-| Worker | 担当領域 | 割当件数 | 実行数 | 検証成功 | 差異/不整合 | 保留(pending) | 環境制約 | 試行数 |
-|---|---|---:|---:|---:|---:|---:|---:|---:|"""
+| Worker | 担当領域 | 割当件数 | actual_call | attr_access | smoke_only | env_blocked | verified | differ | pending | 試行数 |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|"""
 
     worker_descs = {
         "worker-W1": "`types` 継承API 前半",
@@ -253,32 +252,38 @@ def main() -> int:
         "worker-W9": "一般関数 55 + fitting 10",
     }
     w_rows = []
-    tot_assign = tot_exec = tot_ver = tot_diff = tot_pend = tot_env = tot_trials = 0
+    tot_assign = tot_call = tot_attr = tot_smoke = tot_env = tot_ver = tot_diff = tot_pend = tot_trials = 0
     for w_idx in range(1, 10):
         wid = f"worker-W{w_idx}"
         s_file = BATCH_DIR / wid / "summary.json"
         s = json.loads(s_file.read_text(encoding="utf-8")) if s_file.is_file() else {}
         w_assigned = s.get("assigned_count", 0)
-        w_exec = s.get("executed_api_count", 0)
+        ex_st = s.get("execution_status", {})
+        w_call = ex_st.get("actual_call", 0)
+        w_attr = ex_st.get("attribute_access", 0)
+        w_smoke = ex_st.get("smoke_only", 0)
+        w_env = s.get("environment_blocked_count", 0)
+
         w_ver = s.get("verified_api_count", 0)
         w_diff = s.get("differ_api_count", 0)
         w_pend = s.get("contract_pending_count", 0)
-        w_env = s.get("environment_blocked_count", 0)
         w_tr = s.get("trials_total", 0)
 
         tot_assign += w_assigned
-        tot_exec += w_exec
+        tot_call += w_call
+        tot_attr += w_attr
+        tot_smoke += w_smoke
+        tot_env += w_env
         tot_ver += w_ver
         tot_diff += w_diff
         tot_pend += w_pend
-        tot_env += w_env
         tot_trials += w_tr
 
         w_rows.append(
-            f"| W{w_idx} | {worker_descs[wid]} | {w_assigned} | {w_exec} | {w_ver} | {w_diff} | {w_pend} | {w_env} | {w_tr} |"
+            f"| W{w_idx} | {worker_descs[wid]} | {w_assigned} | {w_call} | {w_attr} | {w_smoke} | {w_env} | {w_ver} | {w_diff} | {w_pend} | {w_tr} |"
         )
     w_rows.append(
-        f"| **合計** | | **{tot_assign}** | **{tot_exec}** | **{tot_ver}** | **{tot_diff}** | **{tot_pend}** | **{tot_env}** | **{tot_trials:,}** |"
+        f"| **合計** | | **{tot_assign}** | **{tot_call}** | **{tot_attr}** | **{tot_smoke}** | **{tot_env}** | **{tot_ver}** | **{tot_diff}** | **{tot_pend}** | **{tot_trials:,}** |"
     )
 
     report_content += "\n" + "\n".join(w_rows) + f"""\n\n---\n

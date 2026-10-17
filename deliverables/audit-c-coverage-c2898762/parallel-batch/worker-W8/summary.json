@@ -2,16 +2,23 @@
   "worker_id": "worker-W8",
   "assigned_count": 41,
   "trials_total": 123,
-  "executed_api_count": 41,
+  "execution_status": {
+    "actual_call": 28,
+    "attribute_access": 0,
+    "smoke_only": 13,
+    "environment_blocked": 0
+  },
   "verified_api_count": 23,
   "differ_api_count": 5,
-  "environment_blocked_count": 0,
   "contract_pending_count": 13,
+  "environment_blocked_count": 0,
   "not_tested_count": 0,
   "gwpy_comparison": {
-    "match": 0,
+    "value_parity": 0,
+    "exception_parity": 0,
     "differ": 0,
-    "incomparable_or_na": 41
+    "trial_error": 0,
+    "incomparable": 41
   },
-  "duration_seconds": 0.79
+  "duration_seconds": 0.81
 }

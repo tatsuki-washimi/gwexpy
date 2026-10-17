@@ -154,7 +154,11 @@ def finalize_gwpy_comparison(rec: dict[str, Any], *, notes: str = "") -> None:
         return
     passed = rec.get("assertions", {}).get("passed")
     if passed is True:
-        rec["gwpy_comparison"] = {"status": "match", "notes": notes}
+        checks = [c.get("check") for c in rec.get("assertions", {}).get("checks", [])]
+        if "exception_parity" in checks:
+            rec["gwpy_comparison"] = {"status": "exception_parity", "notes": notes or "Exception behavior identical to gwpy"}
+        else:
+            rec["gwpy_comparison"] = {"status": "value_parity", "notes": notes or "Value, unit, and shape parity verified with gwpy"}
     elif passed is False:
         rec["gwpy_comparison"] = {"status": "differ", "notes": notes}
     else:

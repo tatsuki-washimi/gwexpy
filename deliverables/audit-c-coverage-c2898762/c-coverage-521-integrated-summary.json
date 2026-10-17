@@ -3,19 +3,22 @@
   "total_population": 521,
   "existing_evidence_count": 13,
   "newly_audited_count": 508,
-  "runtime_status_breakdown": {
-    "executed_this_pass": 502,
-    "environment_blocked": 19
+  "execution_status_breakdown": {
+    "actual_call": 356,
+    "attribute_access": 72,
+    "environment_blocked": 19,
+    "smoke_only": 74
   },
   "disposition_breakdown": {
-    "verified": 291,
+    "verified": 219,
+    "contract_pending": 146,
     "differ": 137,
-    "environment_blocked": 19,
-    "contract_pending": 74
+    "environment_blocked": 19
   },
   "gwpy_comparison_breakdown": {
     "incomparable": 274,
-    "match": 218,
+    "value_parity": 112,
+    "exception_parity": 106,
     "trial_error": 26,
     "differ": 2,
     "not_applicable": 1

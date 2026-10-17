@@ -92,31 +92,44 @@ def run_worker(worker_id: str) -> int:
 
     # Compute summary metrics
     duration_s = round(time.time() - t0, 2)
-    executed_count = sum(1 for d in all_dispositions if d["execution_status"] == "executed")
+    actual_call_count = sum(1 for d in all_dispositions if d["execution_status"] == "actual_call")
+    attribute_access_count = sum(1 for d in all_dispositions if d["execution_status"] == "attribute_access")
+    smoke_only_count = sum(1 for d in all_dispositions if d["execution_status"] == "smoke_only")
+    env_blocked_count = sum(1 for d in all_dispositions if d["execution_status"] == "environment_blocked")
+    executed_count = actual_call_count + attribute_access_count + smoke_only_count
+
     verified_count = sum(1 for d in all_dispositions if d["verification_status"] == "verified")
-    env_blocked_count = sum(1 for d in all_dispositions if d["verification_status"] == "environment_blocked")
     differ_count = sum(1 for d in all_dispositions if d["verification_status"] == "differ")
     contract_pending_count = sum(1 for d in all_dispositions if d["verification_status"] == "contract_pending")
     not_tested_count = sum(1 for d in all_dispositions if d["verification_status"] == "not_run")
 
-    gwpy_match = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "match")
+    gwpy_value_parity = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "value_parity")
+    gwpy_exception_parity = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "exception_parity")
     gwpy_differ = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "differ")
+    gwpy_trial_error = sum(1 for d in all_dispositions if d.get("gwpy_comparison") == "trial_error")
     gwpy_incomparable = sum(1 for d in all_dispositions if d.get("gwpy_comparison") in ("incomparable", "not_applicable"))
 
     summary = {
         "worker_id": worker_id,
         "assigned_count": len(assigned_rows),
         "trials_total": len(all_trials),
-        "executed_api_count": executed_count,
+        "execution_status": {
+            "actual_call": actual_call_count,
+            "attribute_access": attribute_access_count,
+            "smoke_only": smoke_only_count,
+            "environment_blocked": env_blocked_count,
+        },
         "verified_api_count": verified_count,
         "differ_api_count": differ_count,
-        "environment_blocked_count": env_blocked_count,
         "contract_pending_count": contract_pending_count,
+        "environment_blocked_count": env_blocked_count,
         "not_tested_count": not_tested_count,
         "gwpy_comparison": {
-            "match": gwpy_match,
+            "value_parity": gwpy_value_parity,
+            "exception_parity": gwpy_exception_parity,
             "differ": gwpy_differ,
-            "incomparable_or_na": gwpy_incomparable,
+            "trial_error": gwpy_trial_error,
+            "incomparable": gwpy_incomparable,
         },
         "duration_seconds": duration_s,
     }
@@ -149,12 +162,16 @@ if __name__ == "__main__":
 
 - **Assigned Count**: {len(assigned_rows)} APIs
 - **Trials Run**: {len(all_trials)}
-- **Executed APIs**: {executed_count}
+- **Actual Calls**: {actual_call_count}
+- **Attribute Access / Weak**: {attribute_access_count}
+- **Smoke Only**: {smoke_only_count}
+- **Environment Blocked**: {env_blocked_count}
 - **Verified APIs**: {verified_count}
 - **Differ APIs**: {differ_count}
-- **Environment Blocked**: {env_blocked_count}
-- **GWpy Parity Matches**: {gwpy_match}
-- **GWpy Parity Differs**: {gwpy_differ}
+- **Contract Pending APIs**: {contract_pending_count}
+- **GWpy Value Parity**: {gwpy_value_parity}
+- **GWpy Exception Parity**: {gwpy_exception_parity}
+- **GWpy Differs**: {gwpy_differ}
 - **Incomparable / Extension**: {gwpy_incomparable}
 - **Execution Duration**: {duration_s}s
 

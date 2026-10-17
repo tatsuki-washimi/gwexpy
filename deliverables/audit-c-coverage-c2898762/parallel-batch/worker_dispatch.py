@@ -256,6 +256,15 @@ def execute_api_trials(worker_id: str, rec: dict[str, Any]) -> tuple[list[dict[s
     return trials, disposition_row
 
 
+WEAK_CHECKS = {"accessible", "valid_dimensions", "plot_method_success", "figure_created", "is_logger"}
+WEAK_GENERAL_IDENTS = {
+    "gwexpy.signal.decomposition.decompose_pca",
+    "gwexpy.signal.decomposition.decompose_ica",
+    "gwexpy.signal.roc.compute_roc",
+    "gwexpy.signal.fft_args.check_deprecated_kwargs",
+}
+
+
 def synthesize_api_disposition(worker_id: str, target_identifier: str, trials: list[dict[str, Any]]) -> dict[str, Any]:
     pos_trial = next((t for t in trials if t.get("trial_kind") == "positive_control"), None)
     abn_trial = next((t for t in trials if t.get("trial_kind") == "abnormal_input"), None)
@@ -263,25 +272,35 @@ def synthesize_api_disposition(worker_id: str, target_identifier: str, trials: l
 
     pos_status = "passed" if (pos_trial and pos_trial.get("assertions", {}).get("passed") is True) else ("failed" if pos_trial and pos_trial.get("assertions", {}).get("passed") is False else "skipped")
     abn_status = "passed" if (abn_trial and abn_trial.get("assertions", {}).get("passed") is True) else ("failed" if abn_trial else "not_run")
-    
-    cmp_status = "not_applicable"
-    gwpy_cmp_val = "not_applicable"
-    if cmp_trial:
-        gwpy_cmp_val = cmp_trial.get("gwpy_comparison", {}).get("status", "incomparable")
-        cmp_status = "passed" if cmp_trial.get("assertions", {}).get("passed") is True else ("incomparable" if gwpy_cmp_val == "incomparable" else "differ")
+    pos_checks = [c.get("check") for c in pos_trial.get("assertions", {}).get("checks", [])] if pos_trial else []
 
-    exec_status = "executed"
+    exec_status = "actual_call"
     not_tested_reason = None
     if pos_trial:
-        exec_status = pos_trial.get("execution_status", "executed")
         not_tested_reason = pos_trial.get("not_tested_reason")
+        if pos_trial.get("execution_status") == "environment_blocked":
+            exec_status = "environment_blocked"
+        elif "smoke_only" in pos_checks:
+            exec_status = "smoke_only"
+        elif any(c in WEAK_CHECKS for c in pos_checks) or target_identifier in WEAK_GENERAL_IDENTS:
+            exec_status = "attribute_access"
+        else:
+            exec_status = "actual_call"
 
+    # Multi-tiered disposition
     if exec_status == "environment_blocked":
         disp = "environment_blocked"
         verif_status = "environment_blocked"
-    elif pos_trial and pos_trial.get("disposition") == "contract_pending":
+    elif exec_status == "smoke_only":
         disp = "contract_pending"
         verif_status = "contract_pending"
+        if not not_tested_reason:
+            not_tested_reason = "Dedicated binary/telemetry fixture or contract harness pending"
+    elif exec_status == "attribute_access":
+        disp = "contract_pending"
+        verif_status = "contract_pending"
+        if not not_tested_reason:
+            not_tested_reason = "Attribute access/existence verified, substantive contract/value assertions pending"
     elif pos_status == "passed":
         disp = "verified"
         verif_status = "verified"
@@ -291,6 +310,12 @@ def synthesize_api_disposition(worker_id: str, target_identifier: str, trials: l
     else:
         disp = "contract_pending"
         verif_status = "contract_pending"
+
+    cmp_status = "not_applicable"
+    gwpy_cmp_val = "not_applicable"
+    if cmp_trial:
+        gwpy_cmp_val = cmp_trial.get("gwpy_comparison", {}).get("status", "incomparable")
+        cmp_status = gwpy_cmp_val
 
     notes = ""
     if not_tested_reason:
