@@ -53,7 +53,7 @@
 | ├── 比較対象なし/独自拡張 (`incomparable`) | 274 | 52.6% |
 | └── 該当なし (`not_applicable`) | 1 | 0.2% |
 
-総試行試験数（Recorded Trials）: **1,572件**
+総試行試験数（Recorded Trials）: **1,572件**（対象母集団521 API直結: 1,559件 ＋ 参照プローブ: 13件）
 
 ---
 
@@ -102,7 +102,7 @@
 - **コミット来歴と環境依存再現性**: 全1,572試行中の1,522試行レコードに記録されている `source_commit: f7265d425619...` は、改修後のハーネスをローカル作業ツリー上で実行した時点の HEAD コミットです。公開リポジトリの最新ハーネスは同一の検証処理の再実行を可能にしますが、同一判定結果の再現確認はNumPy, Astropy, GWpy, LALSuite等の依存ライブラリのバージョンが適合した実行環境において行われます（メタデータのバイト単位一致ではなく、観測結果の一貫性を確認）。
 - **2段階の再現手順**:
   1. **第1段階 (9ワーカー並列実行)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/run_all_workers_parallel.py`（508 API、1,522試行の個別レコードを生成）
-  2. **第2段階 (台帳・証拠統合)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/integrate_all.py`（既存13 APIの50試行と統合し、全521 API台帳および1,572試行の統合成果物を生成）
+  2. **第2段階 (台帳・証拠統合)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/integrate_all.py`（既存13 APIの37試行と母集団外の参照13試行［計50試行］を統合し、全521 API台帳および1,572試行の統合成果物を生成）
   3. **第3段階 (QA整合性検査)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/qa_audit.py`（全17項目のQAアサーションを自動検証）
 
 ### 3.4 契約検証 (verified 246件) の保証範囲

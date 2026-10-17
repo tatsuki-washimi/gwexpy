@@ -30,7 +30,7 @@ PYTHONPATH=. python3 deliverables/audit-c-coverage-c2898762/c_inherited_batch1_r
 | `c-inherited-batch1-runtime-summary.json` | Batch 1 aggregates |
 | `2026-10-17-c-inherited-batch1-runtime.md` | Batch 1 short report |
 | `c_inherited_batch1_runtime.py` | Execute batch 1 trials |
-| `c-coverage-521-all-trials.jsonl` | Full trial records across all 521 APIs (1,572 trials) |
+| `c-coverage-521-all-trials.jsonl` | Full trial records (1,572 records: 1,559 trials across 521 APIs + 13 reference probes) |
 | `c-coverage-521-integrated-summary.json` | Integrated audit summary across all 521 APIs |
 | `2026-10-17-c-coverage-521-integrated-report.md` | Integrated audit report for 521 APIs |
 | `c-coverage-521-evidence-bundle.zip` | Standalone evidence bundle containing ledger, trials, and 9-worker runs |
@@ -50,7 +50,7 @@ Baseline pin: `c2898762ca68e20a1a241fffb3c3262b0a27290b`. Runtime uses checkout 
      The 1,522 runtime trial records in `c-coverage-521-all-trials.jsonl` record `source_commit: f7265d425619...` because the parallel worker test harness was executed on the local working tree before creating the final wrapper commits. The published harness enables users to re-evaluate the verification procedures; confirmation of identical observational contract and parity outcomes depends on running within an appropriately configured runtime environment with matching library dependencies (NumPy, SciPy, Astropy, GWpy, LALSuite, PyCBC), distinct from assuming bit-for-bit identity of JSON metadata strings.
    - **Two-stage Reproduction**:
      - **Stage 1 (Worker Execution)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/run_all_workers_parallel.py` (executes 9 parallel workers to generate 1,522 runtime trials across 508 APIs).
-     - **Stage 2 (Evidence Integration)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/integrate_all.py` (merges the 1,522 worker trials with the existing 50 trials for 13 pre-verified APIs to produce the unified 521-row ledger and 1,572-trial dataset).
+     - **Stage 2 (Evidence Integration)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/integrate_all.py` (merges the 1,522 worker trials with existing trials: 37 for 13 pre-verified APIs plus 13 external reference probes [50 existing trials total], producing the unified 521-row ledger and 1,572-record dataset).
      - **Stage 3 (QA Audit)**: `python3 deliverables/audit-c-coverage-c2898762/parallel-batch/qa_audit.py` (independently verifies all 17 QA integrity assertions).
    - **Trial Record Breakdown (1,572 vs 1,559)**:
      - 1,522 trials: 508 APIs executed by the 9 parallel workers.
