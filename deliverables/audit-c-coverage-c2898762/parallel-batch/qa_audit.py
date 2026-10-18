@@ -430,8 +430,8 @@ def main() -> int:
     assert len(b1_trans) == 79, f"Assertion 20 Failed: transitions count {len(b1_trans)} != 79"
     assert len(b1_trials) == 79, f"Assertion 20 Failed: trials count {len(b1_trials)} != 79"
 
-    trials_map = {t["target_identifier"]: t for t in b1_trials}
-    assert len(trials_map) == 79, "Assertion 20 Failed: duplicate target_identifier in Batch 1 trials"
+    b1_trials_map = {t["target_identifier"]: t for t in b1_trials}
+    assert len(b1_trials_map) == 79, "Assertion 20 Failed: duplicate target_identifier in Batch 1 trials"
 
     b1_cmp_counts = collections.Counter((t["gwpy_comparison"], t["comparison_mode"]) for t in b1_trans)
     assert b1_cmp_counts[("numeric_value_parity", "numeric_allclose")] == 10, f"Assertion 20 Failed: numeric_value_parity != 10 ({b1_cmp_counts})"
@@ -442,7 +442,7 @@ def main() -> int:
 
     for trans in b1_trans:
         ident = trans["identifier"]
-        trial = trials_map.get(ident)
+        trial = b1_trials_map.get(ident)
         assert trial is not None, f"Assertion 20 Failed: missing trial for {ident}"
         assert trans["trial_id"] == trial["trial_id"], f"Assertion 20 Failed: trial_id mismatch for {ident}"
         assert trans["new_disposition"] == "verified", f"Assertion 20 Failed: disposition != verified for {ident}"
@@ -532,8 +532,68 @@ def main() -> int:
 
     print("  [PASS] 21. WP2 Batch 2 independent audit verified across all 74 APIs (1:1 trial-transition match, all concrete assertions passed, GWpy parity strictly separated: numeric=19, exception=2, metadata=2, incomparable=51).")
 
+    # 22. WP2第3バッチ（フィクスチャ・契約待ち59 API）試行記録・判定遷移・GWpy比較整合性の独立検証
+    b3_trans_file = AUDIT_DIR / "wp2-batch3-transitions.json"
+    b3_trials_file = AUDIT_DIR / "wp2-batch3-trials.jsonl"
+    assert b3_trans_file.exists(), f"Assertion 22 Failed: {b3_trans_file} does not exist"
+    assert b3_trials_file.exists(), f"Assertion 22 Failed: {b3_trials_file} does not exist"
+
+    b3_trans = json.loads(b3_trans_file.read_text(encoding="utf-8"))
+    b3_trials = [json.loads(l) for l in b3_trials_file.read_text(encoding="utf-8").splitlines() if l.strip()]
+
+    assert len(b3_trans) == 59, f"Assertion 22 Failed: transitions count {len(b3_trans)} != 59"
+    assert len(b3_trials) == 59, f"Assertion 22 Failed: trials count {len(b3_trials)} != 59"
+
+    b3_trials_map = {t["target_identifier"]: t for t in b3_trials}
+    assert len(b3_trials_map) == 59, "Assertion 22 Failed: duplicate target_identifier in Batch 3 trials"
+
+    b3_cmp_counts = collections.Counter((t["gwpy_comparison"], t["comparison_mode"]) for t in b3_trans)
+    assert b3_cmp_counts[("numeric_value_parity", "numeric_allclose")] == 6, f"Assertion 22 Failed: numeric_value_parity != 6 ({b3_cmp_counts})"
+    assert b3_cmp_counts[("exception_parity", "exception_equality")] == 1, f"Assertion 22 Failed: exception_parity != 1 ({b3_cmp_counts})"
+    assert b3_cmp_counts[("metadata_property_parity", "metadata_equality")] == 3, f"Assertion 22 Failed: metadata_property_parity != 3 ({b3_cmp_counts})"
+    assert b3_cmp_counts[("incomparable", "incomparable")] == 49, f"Assertion 22 Failed: incomparable != 49 ({b3_cmp_counts})"
+
+    reach_b3 = collections.Counter(t["new_reachability_status"] for t in b3_trans)
+    assert reach_b3["reached_and_returned"] == 57, f"Assertion 22 Failed: reached_and_returned {reach_b3['reached_and_returned']} != 57"
+    assert reach_b3["reached_with_observed_exception"] == 2, f"Assertion 22 Failed: reached_with_observed_exception {reach_b3['reached_with_observed_exception']} != 2"
+
+    for trans in b3_trans:
+        ident = trans["identifier"]
+        trial = b3_trials_map.get(ident)
+        assert trial is not None, f"Assertion 22 Failed: missing trial for {ident}"
+        assert trans["trial_id"] == trial["trial_id"], f"Assertion 22 Failed: trial_id mismatch for {ident}"
+        assert trans["new_disposition"] == "verified", f"Assertion 22 Failed: disposition != verified for {ident}"
+        assert trans["new_execution_status"] == "actual_call"
+        assert trial["assertions"]["passed"] is True, f"Assertion 22 Failed: trial assertions not passed for {ident}"
+
+        checks_dict = {c["check"]: c["passed"] for c in trial["assertions"]["checks"]}
+        cmp_st = trans["gwpy_comparison"]
+
+        if cmp_st == "numeric_value_parity":
+            assert checks_dict.get("gwpy_numeric_parity") is True, f"Assertion 22 Failed: gwpy_numeric_parity missing in {ident}"
+            assert checks_dict.get("finite_values") is True, f"Assertion 22 Failed: finite_values missing in {ident}"
+        elif cmp_st == "exception_parity":
+            assert checks_dict.get("gwpy_exception_parity") is True, f"Assertion 22 Failed: gwpy_exception_parity missing in {ident}"
+            assert checks_dict.get("observed_exception_match") is True, f"Assertion 22 Failed: observed_exception_match missing in {ident}"
+        elif cmp_st == "metadata_property_parity":
+            assert checks_dict.get("gwpy_metadata_parity") is True, f"Assertion 22 Failed: gwpy_metadata_parity missing in {ident}"
+        elif cmp_st == "incomparable":
+            assert "gwpy_numeric_parity" not in checks_dict
+            assert "gwpy_metadata_parity" not in checks_dict
+
+    # 3バッチ集合の完全分割検査 (79 + 74 + 59 = 212)
+    b1_set = set(b1_trials_map.keys())
+    b2_set = set(b2_trials_map.keys())
+    b3_set = set(b3_trials_map.keys())
+    assert len(b1_set & b2_set) == 0, "Assertion 22 Failed: overlap between Batch 1 and Batch 2"
+    assert len(b1_set & b3_set) == 0, "Assertion 22 Failed: overlap between Batch 1 and Batch 3"
+    assert len(b2_set & b3_set) == 0, "Assertion 22 Failed: overlap between Batch 2 and Batch 3"
+    assert len(b1_set | b2_set | b3_set) == 212, f"Assertion 22 Failed: union {len(b1_set | b2_set | b3_set)} != 212"
+
+    print("  [PASS] 22. WP2 Batch 3 independent audit verified across all 59 APIs (1:1 trial-transition match, all concrete assertions passed, GWpy parity strictly separated: numeric=6, exception=1, metadata=3, incomparable=49; Batch 1+2+3 partition of 212 pending APIs strictly disjoint and complete).")
+
     print("=" * 60)
-    print("ALL 21 QA ASSERTIONS PASSED! RIGOROUS INTEGRITY VERIFIED.")
+    print("ALL 22 QA ASSERTIONS PASSED! RIGOROUS INTEGRITY VERIFIED.")
     print("=" * 60)
     return 0
 

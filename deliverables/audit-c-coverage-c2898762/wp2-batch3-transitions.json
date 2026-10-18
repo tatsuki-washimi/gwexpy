@@ -1,0 +1,979 @@
+[
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/abs",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-001",
+    "checks": [
+      "shape_preserved",
+      "finite_values"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: shape_preserved, finite_values"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/append",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-002",
+    "checks": [
+      "concatenated_shape",
+      "axis_aligned"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: concatenated_shape, axis_aligned"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/channel",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-003",
+    "checks": [
+      "channel_none_default",
+      "channel_setter_verified"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: channel_none_default, channel_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/check_compatible",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-004",
+    "checks": [
+      "compatibility_asserted"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: compatibility_asserted"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/diff",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-005",
+    "checks": [
+      "diff_shape",
+      "finite_values"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: diff_shape, finite_values"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/dx",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-006",
+    "checks": [
+      "dx_value_matched"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: dx_value_matched"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/dy",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-007",
+    "checks": [
+      "dy_value_matched"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: dy_value_matched"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/epoch",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-008",
+    "checks": [
+      "epoch_none_default",
+      "epoch_setter_verified"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: epoch_none_default, epoch_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/flatten",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-009",
+    "checks": [
+      "flattened_shape"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: flattened_shape"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/imshow",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-010",
+    "checks": [
+      "figure_created",
+      "plot_rendered"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: figure_created, plot_rendered"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/inject",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-011",
+    "checks": [
+      "injected_shape",
+      "injected_values"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: injected_shape, injected_values"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/is_compatible",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-012",
+    "checks": [
+      "compatibility_returned_true"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: compatibility_returned_true"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/is_contiguous",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-013",
+    "checks": [
+      "contiguity_verified"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: contiguity_verified"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/median",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-014",
+    "checks": [
+      "median_scalar_value",
+      "unit_preserved"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: median_scalar_value, unit_preserved"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/name",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-015",
+    "checks": [
+      "name_getter_verified",
+      "name_setter_verified"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: name_getter_verified, name_setter_verified"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/override_unit",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-016",
+    "checks": [
+      "unit_overridden"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: unit_overridden"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/pad",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-017",
+    "checks": [
+      "padded_shape"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: padded_shape"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/pcolormesh",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-018",
+    "checks": [
+      "figure_created",
+      "plot_rendered"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: figure_created, plot_rendered"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/prepend",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-019",
+    "checks": [
+      "prepended_shape"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: prepended_shape"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/read",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-020",
+    "checks": [
+      "csv_read_shape",
+      "finite_values"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: csv_read_shape, finite_values"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/shift",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-021",
+    "checks": [
+      "shifted_origin"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: shifted_origin"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/step",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_with_observed_exception",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-022",
+    "checks": [
+      "upstream_matplotlib_drawstyle_exception_observed"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: upstream_matplotlib_drawstyle_exception_observed"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/T",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-023",
+    "checks": [
+      "transposed_shape"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: transposed_shape"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/unit",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-024",
+    "checks": [
+      "unit_matched"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: unit_matched"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/update",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-025",
+    "checks": [
+      "updated_shape"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: updated_shape"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/value_at",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-026",
+    "checks": [
+      "value_at_matched"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: value_at_matched"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/write",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-027",
+    "checks": [
+      "csv_written",
+      "nonempty_file"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: csv_written, nonempty_file"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/x0",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-028",
+    "checks": [
+      "x0_matched"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: x0_matched"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/xindex",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-029",
+    "checks": [
+      "xindex_shape"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: xindex_shape"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/xspan",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-030",
+    "checks": [
+      "xspan_bounds"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: xspan_bounds"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/xunit",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-031",
+    "checks": [
+      "xunit_matched"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: xunit_matched"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/y0",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-032",
+    "checks": [
+      "y0_matched"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: y0_matched"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/yindex",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-033",
+    "checks": [
+      "yindex_shape"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: yindex_shape"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/yspan",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-034",
+    "checks": [
+      "yspan_bounds"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: yspan_bounds"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/yunit",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-035",
+    "checks": [
+      "yunit_matched"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: yunit_matched"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.bifrequencymap.BifrequencyMap/zip",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-036",
+    "checks": [
+      "zipped_len"
+    ],
+    "reason": "Elevated from contract_pending to substantive contract assertions: zipped_len"
+  },
+  {
+    "identifier": "gwexpy.types.plane2d.Plane2D/write",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-037",
+    "checks": [
+      "csv_written",
+      "nonempty_file"
+    ],
+    "reason": "Elevated from fixture_setup_failed to substantive contract assertions: csv_written, nonempty_file"
+  },
+  {
+    "identifier": "gwexpy.types.plane2d.Plane2D/read",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-038",
+    "checks": [
+      "csv_read_shape",
+      "finite_values"
+    ],
+    "reason": "Elevated from fixture_setup_failed to substantive contract assertions: csv_read_shape, finite_values"
+  },
+  {
+    "identifier": "gwexpy.timeseries.collections.TimeSeriesDict/copy",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B3-039",
+    "checks": [
+      "keys_matched",
+      "gwpy_metadata_parity"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: keys_matched, gwpy_metadata_parity"
+  },
+  {
+    "identifier": "gwexpy.timeseries.collections.TimeSeriesList/append",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B3-040",
+    "checks": [
+      "length_matched",
+      "gwpy_metadata_parity"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: length_matched, gwpy_metadata_parity"
+  },
+  {
+    "identifier": "gwexpy.timeseries.collections.TimeSeriesList/copy",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "metadata_property_parity",
+    "comparison_mode": "metadata_equality",
+    "trial_id": "WP2-B3-041",
+    "checks": [
+      "length_matched",
+      "gwpy_metadata_parity"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: length_matched, gwpy_metadata_parity"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/filter",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B3-042",
+    "checks": [
+      "gwpy_numeric_parity",
+      "finite_values"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: gwpy_numeric_parity, finite_values"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/average_fft",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B3-043",
+    "checks": [
+      "gwpy_numeric_parity",
+      "finite_values"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: gwpy_numeric_parity, finite_values"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/fftgram",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B3-044",
+    "checks": [
+      "gwpy_numeric_parity",
+      "finite_values"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: gwpy_numeric_parity, finite_values"
+  },
+  {
+    "identifier": "gwexpy.timeseries.timeseries.TimeSeries/rayleigh_spectrum",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B3-045",
+    "checks": [
+      "gwpy_numeric_parity",
+      "finite_values"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: gwpy_numeric_parity, finite_values"
+  },
+  {
+    "identifier": "gwexpy.frequencyseries.frequencyseries.FrequencySeries/filter",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B3-046",
+    "checks": [
+      "gwpy_numeric_parity",
+      "finite_values"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: gwpy_numeric_parity, finite_values"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/filter",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "numeric_value_parity",
+    "comparison_mode": "numeric_allclose",
+    "trial_id": "WP2-B3-047",
+    "checks": [
+      "gwpy_numeric_parity",
+      "finite_values"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: gwpy_numeric_parity, finite_values"
+  },
+  {
+    "identifier": "gwexpy.spectrogram.spectrogram.Spectrogram/step",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_with_observed_exception",
+    "gwpy_comparison": "exception_parity",
+    "comparison_mode": "exception_equality",
+    "trial_id": "WP2-B3-048",
+    "checks": [
+      "gwpy_exception_parity",
+      "observed_exception_match"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: gwpy_exception_parity, observed_exception_match"
+  },
+  {
+    "identifier": "gwexpy.timeseries.decomposition.pca_inverse_transform",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-049",
+    "checks": [
+      "reconstructed_shape",
+      "finite_values"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: reconstructed_shape, finite_values"
+  },
+  {
+    "identifier": "gwexpy.timeseries.decomposition.ica_inverse_transform",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-050",
+    "checks": [
+      "reconstructed_shape",
+      "finite_values"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: reconstructed_shape, finite_values"
+  },
+  {
+    "identifier": "gwexpy.timeseries.hurst.hurst",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-051",
+    "checks": [
+      "hurst_range",
+      "finite_values"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: hurst_range, finite_values"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.ats.identify_ats",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-052",
+    "checks": [
+      "ats_identified_true"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: ats_identified_true"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.hdf5.register_hdf5_exact_t0_io",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-053",
+    "checks": [
+      "registration_idempotent"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: registration_idempotent"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.seismic.read_gse2_timeseriesdict",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-054",
+    "checks": [
+      "dict_length",
+      "finite_values"
+    ],
+    "reason": "Elevated from fixture_setup_failed to substantive contract assertions: dict_length, finite_values"
+  },
+  {
+    "identifier": "gwexpy.timeseries.io.seismic.read_knet_timeseriesdict",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "fixture_setup_failed",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-055",
+    "checks": [
+      "dict_length",
+      "finite_values"
+    ],
+    "reason": "Elevated from fixture_setup_failed to substantive contract assertions: dict_length, finite_values"
+  },
+  {
+    "identifier": "gwexpy.timeseries.preprocess.align_timeseries_collection",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-056",
+    "checks": [
+      "aligned_shape",
+      "finite_values"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: aligned_shape, finite_values"
+  },
+  {
+    "identifier": "gwexpy.timeseries.preprocess.impute_timeseries",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-057",
+    "checks": [
+      "imputed_values_matched",
+      "finite_values"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: imputed_values_matched, finite_values"
+  },
+  {
+    "identifier": "gwexpy.timeseries.preprocess.whiten_matrix",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-058",
+    "checks": [
+      "whitened_shape",
+      "finite_values"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: whitened_shape, finite_values"
+  },
+  {
+    "identifier": "gwexpy.utils.fft_args.validate_and_convert_fft_params",
+    "old_disposition": "contract_pending",
+    "new_disposition": "verified",
+    "old_execution_status": "contract_pending",
+    "new_execution_status": "actual_call",
+    "old_reachability_status": "reachability_unresolved",
+    "new_reachability_status": "reached_and_returned",
+    "gwpy_comparison": "incomparable",
+    "comparison_mode": "incomparable",
+    "trial_id": "WP2-B3-059",
+    "checks": [
+      "fftlength_matched",
+      "overlap_matched"
+    ],
+    "reason": "Elevated from reachability_unresolved to substantive contract assertions: fftlength_matched, overlap_matched"
+  }
+]
