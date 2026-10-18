@@ -407,7 +407,17 @@ def main() -> int:
         check=True,
     )
     assert git_diff_proc.stdout.strip() == "", f"Assertion 19 Failed: product code diff detected against baseline c2898762:\n{git_diff_proc.stdout}"
-    print("  [PASS] 19. Execution environment & product source provenance strictly verified (import from repo checkout, strict 0 diff on gwexpy/ against c2898762).")
+
+    git_status_proc = subprocess.run(
+        ["git", "status", "--porcelain", "--", "gwexpy/"],
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert git_status_proc.stdout.strip() == "", f"Assertion 19 Failed: uncommitted product code modifications detected in working tree:\n{git_status_proc.stdout}"
+
+    print("  [PASS] 19. Execution environment & product source provenance strictly verified (import from repo checkout, strict 0 diff on gwexpy/ against c2898762, strict 0 uncommitted changes in gwexpy/).")
 
     print("=" * 60)
     print("ALL 19 QA ASSERTIONS PASSED! RIGOROUS INTEGRITY VERIFIED.")
