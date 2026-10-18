@@ -1,0 +1,44 @@
+schema: gwexpy-agent-work-manifest-v1
+date_utc: "2026-10-18"
+agent: "ChatGPT GitHub connector"
+agent_tag: "AGENT:workflow"
+repository: tatsuki-washimi/gwexpy
+base:
+  branch: main
+  sha: "10311d8dcebd8938522a4e07d78fb8dfa73b3145"
+tracking_issue: 645
+release_candidate: "v0.2.6 (not yet approved)"
+scope:
+  - "Remove legacy gwexpy/gui source and tests; retain core DTTXML/DiagGUI scientific I/O evidence."
+  - "Delete obsolete GUI API reference pages and compiled translation; keep EN/JA and published how-to migration notices."
+  - "Remove obsolete Qt-only dev dependencies and conftest/CI GUI exclusions."
+  - "Retain core I/O tests while removing assertions against legacy GUI loader."
+  - "Add a repository split ADR and required GUI absence CI guard."
+separation_dependency:
+  pyaggui_repo: tatsuki-washimi/pyaggui
+  port_pr: "https://github.com/tatsuki-washimi/pyaggui/pull/2"
+  state: "Pending review/CI/merge at writing; GWexpy cleanup must remain unmerged until port is accepted."
+  extracted_from: "61fc5dc7453ae7165dc711f13951625552eca88d"
+  post_extraction_commits_inspected:
+    - "10311d8dcebd (normalize_series NumPy arrays)"
+    - "906940c0c3e9 (SDB sqlite alias narrowing)"
+    - "edebd5ec053f (FFL reader declaration)"
+    - "824c317b55c0 (style formatting only)"
+risk_boundaries:
+  - "Do not infer that GWexpy Studio shares code with pyaggui; it is independent."
+  - "Do not delete DTTXML readers or other core analysis/data-interop modules because they mention DiagGUI."
+  - "Keep historical audit/release provenance in Git history and archived docs."
+validation_observed:
+  - "GitHub recursive tree showed 32 old GUI source files and 22 GUI-test files on main."
+  - "Dedicated branch tree readback: no tracked gwexpy/gui or tests/gui files."
+  - "GitHub main-vs-branch compare: 62 removed files, with core I/O tests retained."
+  - "Post-extraction commit history examined and post-extraction fixes queued on pyaggui PR #2."
+verification_pending:
+  - "Required Repo Hygiene, PR Fast, GWpy compatibility, docs builds and wheel/sdist qualification at exact PR HEAD."
+  - "pyaggui PR #2 full review/CI and actual merge, followed by independent application smoke test."
+  - "Public package wheel/sdist contents contain no gwexpy.gui; installed editable package lacks gui module."
+  - "Docs live links/readback and any old references outside selected migration notes."
+local_commands_executed: []
+local_tests_executed: false
+publication_or_issue_closure: false
+merging_authorized: false
