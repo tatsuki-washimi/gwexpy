@@ -13,6 +13,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[3]
 AUDIT_DIR = REPO / "deliverables" / "audit-c-coverage-c2898762"
 BATCH_DIR = AUDIT_DIR / "parallel-batch"
+sys.path.insert(0, str(REPO))
 
 
 def main() -> int:
@@ -368,8 +369,48 @@ def main() -> int:
 
     print(f"  [PASS] 17. Comparison modes strictly validated across all 521 rows (numeric_allclose=78, collection_numeric=3, swig_lal_numeric=2, pycbc_numeric=2, metadata_equality=49, visual_artist_data=6, exception_equality=106, incomparable=274, not_applicable=1). Zero false differ.")
 
+    # 18. WP0拡張: 2,381全識別子の母集団照合・完全整合性（2,219 member + 162 慣例関数 = 521 C監査 + 1,860 その他）
+    appendix_dir = REPO / "deliverables" / "audit-appendix-artifacts-20261017"
+    pass2_api = [json.loads(line) for line in (appendix_dir / "pass2-api-status.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
+    member_ids_2219 = set(r["member_id"] for r in pass2_api if r.get("kind") == "api")
+    assert len(member_ids_2219) == 2219, f"Assertion 18 Failed: unique member IDs {len(member_ids_2219)} != 2219"
+
+    raw_func_lines = (appendix_dir / "pass2-module-functions.txt").read_text(encoding="utf-8").splitlines()
+    func_162 = set(l.split("\t")[-1].strip() for l in raw_func_lines if l.strip())
+    assert len(func_162) == 162, f"Assertion 18 Failed: unique module functions {len(func_162)} != 162"
+
+    pop_2381 = member_ids_2219 | func_162
+    assert len(pop_2381) == 2381, f"Assertion 18 Failed: overall population {len(pop_2381)} != 2381 (overlap={len(member_ids_2219 & func_162)})"
+
+    in_2219 = set(ledger_ids) & member_ids_2219
+    in_162 = set(ledger_ids) & func_162
+    not_in_2381 = set(ledger_ids) - pop_2381
+    assert len(not_in_2381) == 0, f"Assertion 18 Failed: {len(not_in_2381)} ledger IDs not in 2381 population"
+    assert len(in_2219) == 361, f"Assertion 18 Failed: ledger in 2219 members {len(in_2219)} != 361"
+    assert len(in_162) == 160, f"Assertion 18 Failed: ledger in 162 functions {len(in_162)} != 160"
+
+    other_1860 = pop_2381 - set(ledger_ids)
+    assert len(other_1860) == 1860, f"Assertion 18 Failed: remaining other population {len(other_1860)} != 1860"
+    print("  [PASS] 18. Overall population 2,381 strictly reconciled (2,219 members + 162 functions = 521 C-audit + 1,860 other).")
+
+    # 19. WP0拡張: 実行環境・製品ソースパス・固定コミット差分0行の検証
+    import gwexpy
+    gwexpy_init = Path(gwexpy.__file__).resolve()
+    expected_init = (REPO / "gwexpy" / "__init__.py").resolve()
+    assert gwexpy_init == expected_init, f"Assertion 19 Failed: imported gwexpy from {gwexpy_init}, expected {expected_init}"
+
+    git_diff_proc = subprocess.run(
+        ["git", "diff", "c2898762ca68e20a1a241fffb3c3262b0a27290b", "HEAD", "--", "gwexpy/"],
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert git_diff_proc.stdout.strip() == "", f"Assertion 19 Failed: product code diff detected against baseline c2898762:\n{git_diff_proc.stdout}"
+    print("  [PASS] 19. Execution environment & product source provenance strictly verified (import from repo checkout, strict 0 diff on gwexpy/ against c2898762).")
+
     print("=" * 60)
-    print("ALL 17 QA ASSERTIONS PASSED! RIGOROUS INTEGRITY VERIFIED.")
+    print("ALL 19 QA ASSERTIONS PASSED! RIGOROUS INTEGRITY VERIFIED.")
     print("=" * 60)
     return 0
 
