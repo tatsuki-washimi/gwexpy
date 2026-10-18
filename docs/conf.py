@@ -343,9 +343,6 @@ autodoc_mock_imports = getattr(globals(), "autodoc_mock_imports", []) + [
     "elephant",
     "cupy",
     "pygmt",
-    "PyQt5",
-    "qtpy",
-    "pyqtgraph",
 ]
 source_suffix = {
     ".rst": "restructuredtext",
