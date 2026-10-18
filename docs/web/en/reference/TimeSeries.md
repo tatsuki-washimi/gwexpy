@@ -69,6 +69,14 @@ Extended TimeSeries with full gwexpy functionality.
 - use `spectrogram()` or `q_transform()` when transient bursts or chirps matter
 - check [FFT_Conventions](FFT_Conventions.md) and the validation pages before comparing amplitudes across methods
 
+`TimeSeries.spectrogram2(fftlength, overlap=..., window=...)` builds a
+**non-averaged** spectrogram from periodograms. Unlike `spectrogram()`, it
+does not accept an FFT-averaging `method` option: additional keyword arguments
+are passed to `scipy.signal.periodogram`. For example, `method='mean'` or
+`method='welch'` raises an internal `TypeError` in the current GWpy path.
+To choose an averaging method, use `spectrogram(stride=..., method='welch')`
+(or `'median'`) instead.
+
 ### Meaning of preprocessing
 
 `detrend()`, `highpass()`, `whiten()`, `standardize()`, and `impute()` are not only cosmetic transformations. They decide **which physical components are preserved and which systematic effects are suppressed**.
