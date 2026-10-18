@@ -1,3 +1,11 @@
+> **Historical design record (pre-split).** This document describes the
+> former `gwexpy.gui` implementation, removed under
+> [#645](https://github.com/tatsuki-washimi/gwexpy/issues/645).
+> It does not describe GWexpy's current library architecture.
+> The extracted application is developed in
+> [pyaggui](https://github.com/tatsuki-washimi/pyaggui).
+> GWexpy Studio is an independent GUI project.
+>
 # Source Code Status Report: gwexpy/gui
 
 ## 1. 全体アーキテクチャ
