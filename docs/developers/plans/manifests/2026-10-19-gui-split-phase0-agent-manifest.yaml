@@ -1,0 +1,63 @@
+schema: gwexpy-agent-work-manifest-v1
+date_jst: "2026-10-19"
+agent: "ChatGPT / GitHub connector"
+agent_tag: "AGENT:audit"
+skills_used: []
+skills_note: "No repository-local .agent skill invoked; source-backed triage and GitHub operations only."
+repos:
+  gwexpy:
+    base_sha: "61fc5dc7453ae7165dc711f13951625552eca88d"
+    main_sha: "10311d8dcebd8938522a4e07d78fb8dfa73b3145"
+  pyaggui:
+    main_sha_at_audit: "cd715f72ed9ce75dd25fe0743bf3dd8f05c3601b"
+    transfer_pr_number: 3
+    transfer_pr_head: "331b28985f2d2f4472b62a518db91caddcae7e74"
+  studio:
+    repository: "tatsuki-washimi/gwexpy-studio"
+    dev_repository: "tatsuki-washimi/gwexpy-studio-dev"
+sources_checked:
+  - "GitHub full recursive trees for extraction commit and both current branches; no truncation."
+  - "Fourteen modified files compared via content; G1 extra normalization test reviewed."
+  - "pyaggui source, existing tests and loader behavior; GWexpy historical NDS live smoke."
+  - "GWexpy #645 and #797 tracking issues; pyaggui README, package declaration and GUI agent guidance."
+  - "Code search for literal gwexpy.gui in two GWexpy Studio repositories (no results found)."
+changed_files:
+  - "docs/developers/reports/2026-10-19-gui-split-phase0-transfer-audit.md"
+  - "docs/developers/plans/manifests/2026-10-19-gui-split-phase0-agent-manifest.yaml"
+observed:
+  mapped_paths: 56
+  unchanged_gw_since_extraction: 42
+  changed_gw_since_extraction: 14
+  identical_current_blob_cross_repo: 23
+  different_current_blob_cross_repo: 32
+  no_direct_target_path: 1
+  g0_in_scope_files: 57
+  g1_in_scope_files: 58
+  newly_added_test_in_g1: "tests/plot/test_gui_plotting_normalize_series.py"
+  test_not_matched_in_pyaggui: "tests/nds/test_gui_nds_smoke.py"
+pyaggui_ci:
+  run_ids: [39139826628, 39139855457]
+  python_3_11: success
+  python_3_12: success
+  scope: "Six targeted NumPy-only tests, not full GUI, NDS or package-install integration."
+validation:
+  performed:
+    - "Compared SHA maps from complete untruncated Git trees and generated 56-row crosswalk."
+    - "Reviewed changed-source content and distinguished source change from namespace/format drift."
+    - "Created pyaggui PR #3 for normalization fix, six headless regressions and FFL doc note."
+    - "Read GitHub Actions conclusions and job matrix for pyaggui PR #3."
+    - "Read Studio package declarations and performed scoped repository code searches."
+  omitted:
+    - "No local git clone or git diff --check; completed report is GitHub-connector-authored, review pending."
+    - "No standalone full pyaggui pytest / GUI smoke / live NDS test; GUI CI integration baseline is outstanding."
+    - "No clean wheel or sdist build in either repository."
+    - "No runtime import test for GWexpy Studio; search results are not an exhaustive import scan."
+  check_physics: "Not applicable: no GWexpy core numerical/physics code changed."
+gates_pending:
+  - "Human review and merge of pyaggui PR #3"
+  - "Decide transfer or explicit documented deferral of real-NDS GUI smoke"
+  - "Confirm current standalone GUI documentation and pyaggui/Studio boundary dependencies"
+  - "Full GUI test and clean package qualification before deletion PR review"
+deletions_performed: false
+release_operations_performed: false
+issue_closure_performed: false
