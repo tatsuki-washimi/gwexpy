@@ -1,0 +1,86 @@
+{
+  "pin_commit": "c2898762ca68e20a1a241fffb3c3262b0a27290b",
+  "date": "2026-10-18",
+  "parent_issue": "#765",
+  "categories": {
+    "defect_candidates": [
+      {
+        "identifier": "gwexpy.gui.plotting.normalize.normalize_series",
+        "file_location": "gwexpy/gui/plotting/normalize.py:27",
+        "candidate_id": "#765-C1",
+        "nature": "Array boolean ambiguity with multi-element numpy arrays on val.get('data') or val.get('value'); single-element zeros falsy fallback.",
+        "recommended_action": "Refactor to val.get('data') if val.get('data') is not None else val.get('value')."
+      },
+      {
+        "identifier": "gwexpy.timeseries.hurst.local_hurst",
+        "file_location": "gwexpy/timeseries/hurst.py",
+        "candidate_id": "#765-C2",
+        "nature": "R/S backend requires sample length >= 100, raising unhandled exception when window < 100.",
+        "recommended_action": "Add input length validation and clear diagnostic ValueError."
+      }
+    ],
+    "upstream_dependencies_known_issues": [
+      {
+        "identifiers": [
+          "gwexpy.types.array2d.Array2D/step",
+          "gwexpy.types.plane2d.Plane2D/step"
+        ],
+        "nature": "Inheritance of 1D Series.step on 2D image axes raises AttributeError; identical to GWpy behavior.",
+        "recommended_action": "Evaluate NotImplementedError or deprecation warning in v0.3.0."
+      },
+      {
+        "identifiers": [
+          "gwexpy.timeseries.timeseries.TimeSeries/q_gram"
+        ],
+        "nature": "GWpy tile search FFT overflow on data <4s raising IndexError; identical to GWpy.",
+        "recommended_action": "Consider length guard in GWexpy or upstream report."
+      }
+    ],
+    "harness_artifacts": [
+      {
+        "summary": "Zero-argument method invocation (gw_attr()) in worker harness",
+        "impacted_count": 94,
+        "nature": "Harness called parameter-requiring methods with 0 arguments, producing apparent exception_parity (TypeError: missing required argument).",
+        "resolution": "Documented as parameter-requiring APIs; GWexpy contracts verified on valid fixtures."
+      }
+    ],
+    "specification_review_pending": [
+      {
+        "topic": "TimeSeriesMatrix CSV warning stacklevel (B-N02)",
+        "file_location": "gwexpy/timeseries/matrix.py:202",
+        "nature": "Information loss warning emitted correctly before ValueError, but stacklevel points to matrix.py instead of caller frame.",
+        "recommended_action": "Increment stacklevel for caller frame targeting in v0.3.0."
+      },
+      {
+        "topic": "Warning call sites without stacklevel keyword",
+        "impacted_count": 24,
+        "nature": "24 AST-verified warning sites lack explicit stacklevel keyword.",
+        "recommended_action": "Add stacklevel=2 (or appropriate caller frame) across all 24 sites in v0.3.0 (#781)."
+      }
+    ],
+    "environmental_barriers": [
+      {
+        "topic": "NDS2 / DataFind server and credential requirement",
+        "impacted_apis": [
+          "gwexpy.timeseries.timeseries.TimeSeries/fetch",
+          "gwexpy.timeseries.timeseries.TimeSeries/find",
+          "gwexpy.timeseries.collections.TimeSeriesDict/fetch",
+          "gwexpy.timeseries.collections.TimeSeriesDict/find"
+        ],
+        "nature": "Live network connection and reachable server required; connection exceptions asserted."
+      },
+      {
+        "topic": "NumPy 2.x C-ABI incompatibility in statsmodels ARIMA",
+        "impacted_apis": [
+          "gwexpy.timeseries.timeseries.TimeSeries/fit_arima"
+        ],
+        "nature": "statsmodels binary compiled against NumPy 1.x ABI; raises ValueError on NumPy 2.x."
+      }
+    ],
+    "static_only_population_boundary": {
+      "member_count": 1850,
+      "module_function_count": 2,
+      "status": "AST pattern analysis confirms zero unmapped candidates; dynamic runtime testing deferred to v0.3.0."
+    }
+  }
+}

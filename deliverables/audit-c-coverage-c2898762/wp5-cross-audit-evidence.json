@@ -1,0 +1,1144 @@
+{
+  "pin_commit": "c2898762ca68e20a1a241fffb3c3262b0a27290b",
+  "evidence_provenance": {
+    "static_and_b_crosscheck": "/home/washimi/work/gwexpy/deliverables/audit-appendix-artifacts-20261017/crosscheck_audit_appendix_stage2_results.json",
+    "handler_registry": "/home/washimi/work/gwexpy/deliverables/audit-appendix-artifacts-20261017/pass2-population-and-dispositions.json",
+    "warning_crosswalk": "/home/washimi/work/gwexpy/deliverables/warnings-crosswalk-c2898762/warnings-crosswalk-c2898762-summary.json",
+    "reused_vs_wp5_recomputed": {
+      "b_handler_dispositions": "recomputed_from_pass2_population_handler_dispositions",
+      "warning_counts": "recomputed_from_warnings_crosswalk_summary",
+      "static_population_2381": "recomputed_from_pass2_api_status_and_module_functions"
+    }
+  },
+  "population_2381": {
+    "total": 2381,
+    "c_audit_ledger": 521,
+    "static_and_other": 1860,
+    "source": "/home/washimi/work/gwexpy/deliverables/audit-appendix-artifacts-20261017/pass2-api-status.jsonl"
+  },
+  "b_audit_handlers": {
+    "total_handlers": 155,
+    "disposition_counts": {
+      "no_change": 141,
+      "confirmed_issue": 10,
+      "further_verification": 4
+    },
+    "no_change_handlers": [
+      {
+        "handler_id": "H001",
+        "path": "gwexpy/__init__.py",
+        "line": 38,
+        "disposition": "no_change",
+        "note": "Optional dependency or fallback import guard at module/helper level; downstream usage checks availability or uses require_optional."
+      },
+      {
+        "handler_id": "H003",
+        "path": "gwexpy/coupling/segment.py",
+        "line": 117,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H004",
+        "path": "gwexpy/coupling/segment.py",
+        "line": 692,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H005",
+        "path": "gwexpy/fields/scalar.py",
+        "line": 87,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H006",
+        "path": "gwexpy/fitting/core.py",
+        "line": 327,
+        "disposition": "no_change",
+        "note": "Optional dependency or fallback import guard at module/helper level; downstream usage checks availability or uses require_optional."
+      },
+      {
+        "handler_id": "H007",
+        "path": "gwexpy/frequencyseries/frequencyseries.py",
+        "line": 31,
+        "disposition": "no_change",
+        "note": "Optional dependency or fallback import guard at module/helper level; downstream usage checks availability or uses require_optional."
+      },
+      {
+        "handler_id": "H008",
+        "path": "gwexpy/frequencyseries/frequencyseries.py",
+        "line": 152,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H009",
+        "path": "gwexpy/gui/__init__.py",
+        "line": 18,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H010",
+        "path": "gwexpy/gui/__init__.py",
+        "line": 30,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H011",
+        "path": "gwexpy/gui/loaders/loaders.py",
+        "line": 130,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H012",
+        "path": "gwexpy/gui/loaders/loaders.py",
+        "line": 152,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H013",
+        "path": "gwexpy/gui/loaders/loaders.py",
+        "line": 166,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H014",
+        "path": "gwexpy/gui/loaders/loaders.py",
+        "line": 180,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H015",
+        "path": "gwexpy/gui/loaders/loaders.py",
+        "line": 194,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H016",
+        "path": "gwexpy/gui/nds/audio_thread.py",
+        "line": 89,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H017",
+        "path": "gwexpy/gui/nds/audio_thread.py",
+        "line": 132,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H020",
+        "path": "gwexpy/gui/ui/_tab_builders.py",
+        "line": 735,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H021",
+        "path": "gwexpy/gui/ui/_tab_builders.py",
+        "line": 229,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H022",
+        "path": "gwexpy/gui/ui/tabs.py",
+        "line": 582,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H023",
+        "path": "gwexpy/gui/ui/tabs.py",
+        "line": 598,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H024",
+        "path": "gwexpy/histogram/histogram.py",
+        "line": 289,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H025",
+        "path": "gwexpy/interop/control_.py",
+        "line": 72,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H030",
+        "path": "gwexpy/interop/mne_.py",
+        "line": 76,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H031",
+        "path": "gwexpy/interop/mne_.py",
+        "line": 86,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H032",
+        "path": "gwexpy/interop/mne_.py",
+        "line": 544,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H033",
+        "path": "gwexpy/interop/mne_.py",
+        "line": 596,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H034",
+        "path": "gwexpy/interop/mne_.py",
+        "line": 599,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H035",
+        "path": "gwexpy/interop/mt_.py",
+        "line": 75,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H036",
+        "path": "gwexpy/interop/multitaper_.py",
+        "line": 122,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H037",
+        "path": "gwexpy/interop/pandas_.py",
+        "line": 126,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H039",
+        "path": "gwexpy/interop/xarray_.py",
+        "line": 192,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H040",
+        "path": "gwexpy/io/dttxml_common.py",
+        "line": 984,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H041",
+        "path": "gwexpy/io/hdf5_collection.py",
+        "line": 88,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H042",
+        "path": "gwexpy/io/hdf5_collection.py",
+        "line": 104,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H043",
+        "path": "gwexpy/io/utils.py",
+        "line": 541,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H044",
+        "path": "gwexpy/io/utils.py",
+        "line": 743,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H045",
+        "path": "gwexpy/io/utils.py",
+        "line": 459,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H046",
+        "path": "gwexpy/io/utils.py",
+        "line": 504,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H047",
+        "path": "gwexpy/plot/_init_helpers.py",
+        "line": 376,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H048",
+        "path": "gwexpy/plot/_init_helpers.py",
+        "line": 381,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H049",
+        "path": "gwexpy/plot/_init_helpers.py",
+        "line": 392,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H050",
+        "path": "gwexpy/plot/_init_helpers.py",
+        "line": 399,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H051",
+        "path": "gwexpy/plot/_init_helpers.py",
+        "line": 513,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H052",
+        "path": "gwexpy/plot/_init_helpers.py",
+        "line": 449,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H053",
+        "path": "gwexpy/plot/_init_helpers.py",
+        "line": 87,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H054",
+        "path": "gwexpy/plot/_init_helpers.py",
+        "line": 100,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H055",
+        "path": "gwexpy/plot/defaults.py",
+        "line": 144,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H056",
+        "path": "gwexpy/plot/defaults.py",
+        "line": 331,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H057",
+        "path": "gwexpy/plot/gauch_dashboard.py",
+        "line": 118,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H058",
+        "path": "gwexpy/plot/geomap.py",
+        "line": 19,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H059",
+        "path": "gwexpy/plot/plot.py",
+        "line": 451,
+        "disposition": "no_change",
+        "note": "Optional dependency or fallback import guard at module/helper level; downstream usage checks availability or uses require_optional."
+      },
+      {
+        "handler_id": "H060",
+        "path": "gwexpy/plot/plot.py",
+        "line": 535,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H061",
+        "path": "gwexpy/signal/fft.py",
+        "line": 5,
+        "disposition": "no_change",
+        "note": "Optional dependency or fallback import guard at module/helper level; downstream usage checks availability or uses require_optional."
+      },
+      {
+        "handler_id": "H062",
+        "path": "gwexpy/signal/preprocessing/imputation.py",
+        "line": 256,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H065",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 485,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H066",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 529,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H067",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 704,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H068",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 767,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H069",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 780,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H070",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 798,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H071",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 833,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H072",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 847,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H073",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 862,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H074",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 926,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H075",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 933,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H076",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 941,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H077",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 977,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H078",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 1033,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H079",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 882,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H080",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 890,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H081",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 917,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H082",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 922,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H083",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 489,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H084",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 1040,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H085",
+        "path": "gwexpy/spectrogram/io/provenance.py",
+        "line": 166,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H086",
+        "path": "gwexpy/spectrogram/matrix_core.py",
+        "line": 128,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H087",
+        "path": "gwexpy/statistics/student_t_indicator.py",
+        "line": 238,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H088",
+        "path": "gwexpy/table/segment_cell.py",
+        "line": 114,
+        "disposition": "no_change",
+        "note": "Optional dependency or fallback import guard at module/helper level; downstream usage checks availability or uses require_optional."
+      },
+      {
+        "handler_id": "H089",
+        "path": "gwexpy/timeseries/_gwf_io.py",
+        "line": 105,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H090",
+        "path": "gwexpy/timeseries/_gwf_io.py",
+        "line": 120,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H091",
+        "path": "gwexpy/timeseries/_gwf_io.py",
+        "line": 922,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H092",
+        "path": "gwexpy/timeseries/_gwf_io.py",
+        "line": 1103,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H093",
+        "path": "gwexpy/timeseries/_gwf_io.py",
+        "line": 1119,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H094",
+        "path": "gwexpy/timeseries/_resampling.py",
+        "line": 263,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H095",
+        "path": "gwexpy/timeseries/_signal.py",
+        "line": 498,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H096",
+        "path": "gwexpy/timeseries/_timeseries_legacy.py",
+        "line": 23,
+        "disposition": "no_change",
+        "note": "Optional dependency or fallback import guard at module/helper level; downstream usage checks availability or uses require_optional."
+      },
+      {
+        "handler_id": "H097",
+        "path": "gwexpy/timeseries/arima.py",
+        "line": 40,
+        "disposition": "no_change",
+        "note": "Optional dependency or fallback import guard at module/helper level; downstream usage checks availability or uses require_optional."
+      },
+      {
+        "handler_id": "H098",
+        "path": "gwexpy/timeseries/collections.py",
+        "line": 17,
+        "disposition": "no_change",
+        "note": "Optional dependency or fallback import guard at module/helper level; downstream usage checks availability or uses require_optional."
+      },
+      {
+        "handler_id": "H099",
+        "path": "gwexpy/timeseries/collections.py",
+        "line": 140,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H100",
+        "path": "gwexpy/timeseries/io/_registration.py",
+        "line": 291,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H101",
+        "path": "gwexpy/timeseries/io/csv_enhanced.py",
+        "line": 1298,
+        "disposition": "no_change",
+        "note": "Optional dependency or fallback import guard at module/helper level; downstream usage checks availability or uses require_optional."
+      },
+      {
+        "handler_id": "H102",
+        "path": "gwexpy/timeseries/io/csv_enhanced.py",
+        "line": 182,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H103",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 918,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H104",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 931,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H105",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 964,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H106",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 998,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H107",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1086,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H108",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1095,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H109",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1130,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H110",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1258,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H111",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1273,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H112",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1342,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H113",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1451,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H114",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1500,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H115",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1540,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H116",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 733,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H117",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1311,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H118",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1316,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H119",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1318,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H120",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1325,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H121",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1393,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H122",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 934,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H123",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 967,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H124",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1147,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H125",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1277,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H126",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1281,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H127",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1364,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H128",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1454,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H129",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1456,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H130",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1513,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H131",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1548,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H132",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1553,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H133",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1160,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H134",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 1397,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H135",
+        "path": "gwexpy/timeseries/io/hdf5.py",
+        "line": 938,
+        "disposition": "no_change",
+        "note": "Transactional HDF5 rollback/recovery handler: appends cleanup/preservation errors and raises composite rollback error or BaseExceptionGroup."
+      },
+      {
+        "handler_id": "H136",
+        "path": "gwexpy/timeseries/io/seismic.py",
+        "line": 101,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H137",
+        "path": "gwexpy/timeseries/matrix.py",
+        "line": 10,
+        "disposition": "no_change",
+        "note": "Optional dependency or fallback import guard at module/helper level; downstream usage checks availability or uses require_optional."
+      },
+      {
+        "handler_id": "H138",
+        "path": "gwexpy/timeseries/matrix.py",
+        "line": 257,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H139",
+        "path": "gwexpy/timeseries/matrix_analysis.py",
+        "line": 765,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H141",
+        "path": "gwexpy/timeseries/preprocess.py",
+        "line": 862,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H142",
+        "path": "gwexpy/timeseries/preprocess.py",
+        "line": 1139,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H144",
+        "path": "gwexpy/timeseries/timeseries.py",
+        "line": 472,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H145",
+        "path": "gwexpy/timeseries/timeseries.py",
+        "line": 421,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H146",
+        "path": "gwexpy/types/axis_api.py",
+        "line": 272,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H147",
+        "path": "gwexpy/types/hht_spectrogram.py",
+        "line": 67,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H148",
+        "path": "gwexpy/types/mixin/mixin_legacy.py",
+        "line": 22,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H150",
+        "path": "gwexpy/types/series_matrix_io.py",
+        "line": 195,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H152",
+        "path": "gwexpy/types/series_matrix_io.py",
+        "line": 201,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H153",
+        "path": "gwexpy/types/seriesmatrix_validation.py",
+        "line": 420,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H154",
+        "path": "gwexpy/types/seriesmatrix_validation.py",
+        "line": 425,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      },
+      {
+        "handler_id": "H155",
+        "path": "gwexpy/utils/units.py",
+        "line": 135,
+        "disposition": "no_change",
+        "note": "Benign fallback, re-raise with context, UI input validation guard, or warned metadata fallback."
+      }
+    ],
+    "flagged_handlers": [
+      {
+        "handler_id": "H002",
+        "location": "gwexpy/analysis/threshold.py:372",
+        "disposition": "confirmed_issue",
+        "candidate_id": "C6",
+        "tracking": "#767",
+        "expected_candidate_id": "C6"
+      },
+      {
+        "handler_id": "H018",
+        "location": "gwexpy/gui/streaming.py:325",
+        "disposition": "further_verification",
+        "candidate_id": "C13",
+        "tracking": "#788",
+        "expected_candidate_id": "C13"
+      },
+      {
+        "handler_id": "H019",
+        "location": "gwexpy/gui/streaming.py:312",
+        "disposition": "further_verification",
+        "candidate_id": "C13",
+        "tracking": "#788",
+        "expected_candidate_id": "C13"
+      },
+      {
+        "handler_id": "H026",
+        "location": "gwexpy/interop/frequency.py:187",
+        "disposition": "confirmed_issue",
+        "candidate_id": "C3",
+        "tracking": "#774",
+        "expected_candidate_id": "C3"
+      },
+      {
+        "handler_id": "H027",
+        "location": "gwexpy/interop/gwinc_.py:223",
+        "disposition": "confirmed_issue",
+        "candidate_id": "C5",
+        "tracking": "#780",
+        "expected_candidate_id": "C5"
+      },
+      {
+        "handler_id": "H028",
+        "location": "gwexpy/interop/metpy_.py:73",
+        "disposition": "further_verification",
+        "candidate_id": "C14",
+        "tracking": "#792",
+        "expected_candidate_id": "C14"
+      },
+      {
+        "handler_id": "H029",
+        "location": "gwexpy/interop/metpy_.py:88",
+        "disposition": "further_verification",
+        "candidate_id": "C14",
+        "tracking": "#792",
+        "expected_candidate_id": "C14"
+      },
+      {
+        "handler_id": "H038",
+        "location": "gwexpy/interop/root_.py:74",
+        "disposition": "confirmed_issue",
+        "candidate_id": "C2",
+        "tracking": "#773",
+        "expected_candidate_id": "C2"
+      },
+      {
+        "handler_id": "H063",
+        "location": "gwexpy/spectrogram/collections.py:256",
+        "disposition": "confirmed_issue",
+        "candidate_id": "C7",
+        "tracking": "#771",
+        "expected_candidate_id": "C7"
+      },
+      {
+        "handler_id": "H064",
+        "location": "gwexpy/spectrogram/collections.py:675",
+        "disposition": "confirmed_issue",
+        "candidate_id": "C7",
+        "tracking": "#771",
+        "expected_candidate_id": "C7"
+      },
+      {
+        "handler_id": "H140",
+        "location": "gwexpy/timeseries/pipeline.py:286",
+        "disposition": "confirmed_issue",
+        "candidate_id": "C8",
+        "tracking": "#769",
+        "expected_candidate_id": "C8"
+      },
+      {
+        "handler_id": "H143",
+        "location": "gwexpy/timeseries/preprocess.py:1288",
+        "disposition": "confirmed_issue",
+        "candidate_id": "C4",
+        "tracking": "#768",
+        "expected_candidate_id": "C4"
+      },
+      {
+        "handler_id": "H149",
+        "location": "gwexpy/types/series_matrix_io.py:173",
+        "disposition": "confirmed_issue",
+        "candidate_id": "C10",
+        "tracking": "#775",
+        "expected_candidate_id": "C10"
+      },
+      {
+        "handler_id": "H151",
+        "location": "gwexpy/types/series_matrix_io.py:363",
+        "disposition": "confirmed_issue",
+        "candidate_id": "C10",
+        "tracking": "#775",
+        "expected_candidate_id": "C10"
+      }
+    ],
+    "wp5_assertion_boundary": "Structural registry review; dynamic edge triggering not re-run in WP5."
+  },
+  "warning_audit": {
+    "ast_live_warn_calls": 99,
+    "naive_grep_hits": 100,
+    "missing_stacklevel_kw": 24,
+    "ghost_docstring_hits": [
+      {
+        "path": "gwexpy/interop/base.py",
+        "line": 66,
+        "text": "Forwarded to :func:`warnings.warn`."
+      }
+    ],
+    "wp5_runtime_verification": "not_rerun"
+  }
+}

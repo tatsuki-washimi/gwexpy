@@ -1,0 +1,53 @@
+{
+  "pin_commit": "c2898762ca68e20a1a241fffb3c3262b0a27290b",
+  "total_apis": 521,
+  "final_disposition_breakdown": {
+    "verified": 495,
+    "environment_blocked": 5,
+    "contract_pending": 18,
+    "upstream_parity": 3
+  },
+  "transition_phase_breakdown": {
+    "WP4": 269,
+    "WP2_batch1": 79,
+    "WP2_batch3": 59,
+    "WP3": 19,
+    "WP2_batch2": 74,
+    "WP1": 21
+  },
+  "evidence_strength_breakdown": {
+    "L2_substantive_contract": 403,
+    "L3_rigorous_numerical_parity": 95,
+    "environment_barrier": 5,
+    "contract_pending_parameter": 18
+  },
+  "gwpy_comparison_breakdown": {
+    "incomparable": 278,
+    "numeric_value_parity": 112,
+    "exception_parity": 63,
+    "metadata_property_parity": 55,
+    "comparison_pending": 12,
+    "collection_elementwise_numeric": 1
+  },
+  "reconciliation": {
+    "baseline_differ_21_resolution": {
+      "upstream_parity": 3,
+      "contract_pending_parameter": 16,
+      "contract_pending_defect_candidates": 2,
+      "residual_differ": 0
+    },
+    "baseline_pending_212_resolution": {
+      "batch1_attribute_access": 79,
+      "batch2_smoke": 74,
+      "batch3_fixtures": 59,
+      "elevated_to_verified": 212
+    },
+    "baseline_blocked_19_resolution": {
+      "elevated_to_verified": 14,
+      "retained_environment_blocked": 5
+    },
+    "baseline_verified_269_resolution": {
+      "retained_verified": 269
+    }
+  }
+}
