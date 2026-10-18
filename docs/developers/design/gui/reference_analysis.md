@@ -1,3 +1,9 @@
+> **Historical reference analysis.** This document was written for the
+> pre-split embedded `gwexpy.gui` prototype. The current GWexpy library
+> contains no GUI runtime. Application development belongs in the standalone
+> [pyaggui project](https://github.com/tatsuki-washimi/pyaggui)
+> or, independently, GWexpy Studio.
+>
 # DTT (diaggui) リファレンス解析レポート
 
 このレポートは、当時ローカル参照として利用していた C++ 版 DTT (Diagnostic Test Tools) 実装（旧 `gwexpy/gui/reference-dtt/dtt-master/src/dtt/diag`、現在は Git 管理外の外部参照）を解析したものです。Python による再実装版 (`gwexpy/gui`) の開発および検証のためのリファレンス情報を提供することを目的としています。
