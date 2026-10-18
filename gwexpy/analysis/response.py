@@ -884,7 +884,7 @@ class ResponseFunctionAnalysis:
                 ref_freqs = base_freqs
             elif not np.allclose(base_freqs, ref_freqs, rtol=1e-10, atol=1e-12):
                 warnings.warn(
-                    f"Skipping response row {row_index} due to incompatible target ASD frequency grids.",
+                    f"Skipping response row {row_index} because its target ASD frequency grid differs from the common reference grid.",
                     UserWarning,
                     stacklevel=2,
                 )
