@@ -126,6 +126,7 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
     if gate == "pr-fast":
         run_cmd(["ruff", "check", "gwexpy", "tests"])
         run_cmd(["python", "scripts/check_forbidden_artifacts.py"])
+        run_cmd(["python", "scripts/check_repository_boundaries.py"])
         run_cmd(
             [
                 "mypy",
@@ -143,7 +144,6 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
                 "-m",
                 "not network and not nds and not root",
                 "--ignore=tests/docs/test_docs_notebooks.py",
-                "--ignore=tests/gui/",
                 "--ignore=tests/nds/",
                 "--ignore=tests/io/",
                 "--ignore=tests/io_conformance/",

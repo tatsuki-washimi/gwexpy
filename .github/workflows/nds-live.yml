@@ -21,7 +21,7 @@ on:
         required: true
         default: "L1:GDS-CALIB_STRAIN"
       nds_channel_pattern:
-        description: "Channel search pattern for ChannelListWorker"
+        description: "Channel search pattern for NDS client"
         required: true
         default: "*"
       nds_timeout_ms:
@@ -55,11 +55,6 @@ jobs:
             python=3.11
             pip
 
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y xvfb
-
       - name: Install nds2 client
         shell: bash -l {0}
         run: |
@@ -72,7 +67,7 @@ jobs:
           micromamba run -n gwexpy-nds python -m pip install --upgrade pip
           micromamba run -n gwexpy-nds pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas matplotlib h5py "gwpy>=4.0.0,<5.0.0" scikit-learn
           micromamba run -n gwexpy-nds pip install -e . --no-deps
-          micromamba run -n gwexpy-nds pip install pytest pytest-qt qtpy PyQt5 pyqtgraph
+          micromamba run -n gwexpy-nds pip install pytest
 
       - name: Run NDS live tests
         shell: bash -l {0}
@@ -85,5 +80,4 @@ jobs:
           GWEXPY_NDS_TIMEOUT_MS: ${{ inputs.nds_timeout_ms }}
           PYTHONFAULTHANDLER: "1"
         run: |
-          micromamba run -n gwexpy-nds xvfb-run -a -s "-screen 0 1920x1080x24" \
-            pytest -q -m nds tests/nds -s --maxfail=1
+          micromamba run -n gwexpy-nds pytest -q -m nds tests/nds -s --maxfail=1

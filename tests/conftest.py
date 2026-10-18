@@ -15,38 +15,9 @@ from gwpy.conftest import *  # noqa: F401,F403
 from matplotlib import rcParams
 from matplotlib import use as mpl_use
 
-_PYTEST_QT_AVAILABLE = importlib.util.find_spec("pytestqt") is not None
-
-if not _PYTEST_QT_AVAILABLE:
-
-    @pytest.fixture
-    def qtbot():  # type: ignore[override]
-        pytest.skip("pytest-qt not installed")
-
-
 pytest_plugins = ["gwpy.testing.fixtures"]
 
 faulthandler.enable()
-
-_QT_QPA_PLATFORM = os.environ.get("QT_QPA_PLATFORM", "").lower()
-_HEADLESS = (
-    not os.environ.get("DISPLAY") and not os.environ.get("WAYLAND_DISPLAY")
-) or _QT_QPA_PLATFORM in {"offscreen", "minimal"}
-
-if _HEADLESS:
-    collect_ignore_glob = [
-        "tests/gui/*",
-        "tests/gui/**",
-        "tests/nds/test_gui_nds_smoke.py",
-        "tests/e2e/test_gui_smoke.py",
-    ]
-
-    _skip_gui = pytest.mark.skip(reason="GUI tests skipped (headless)")
-
-    def pytest_collection_modifyitems(config, items):
-        for item in items:
-            if "gui" in item.keywords:
-                item.add_marker(_skip_gui)
 
 # =============================================================================
 # Helper functions
@@ -145,11 +116,6 @@ try:
 except Exception:
     os.environ["HOME"] = str(_home_dir)
 
-# Keep Qt runtime warnings quiet by providing a private runtime dir.
-_runtime_dir = _ROOT / ".qt-runtime"
-_ensure_dir(_runtime_dir)
-os.environ["XDG_RUNTIME_DIR"] = str(_runtime_dir)
-
 # Provide a writable GMT user dir for pygmt tests.
 _gmt_dir = _ROOT / ".gmt"
 _ensure_dir(_gmt_dir)
@@ -161,8 +127,6 @@ if not os.environ.get("IPYTHONDIR"):
     _ensure_dir(_ipy_dir)
     os.environ["IPYTHONDIR"] = str(_ipy_dir)
 
-# Prefer offscreen Qt unless the user already configured a platform.
-os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 os.environ.setdefault("NUMBA_DISABLE_CACHE", "1")
 os.environ.setdefault("NUMBA_DISABLE_JIT", "1")
 if not os.environ.get("NUMBA_CACHE_DIR"):
@@ -218,12 +182,6 @@ def pytest_collection_modifyitems(config, items):
         skip_mp = None
     else:
         skip_mp = pytest.mark.skip(reason=_MP_REASON)
-    if os.environ.get("GWEXPY_RUN_GUI", "") == "1":
-        skip_gui = None
-    else:
-        skip_gui = pytest.mark.skip(
-            reason="GUI tests are opt-in; set GWEXPY_RUN_GUI=1 or use tests/run_gui_tests.sh"
-        )
     if os.environ.get("GWEXPY_RUN_ROOT", "") == "1":
         skip_root = None
     else:
@@ -233,13 +191,6 @@ def pytest_collection_modifyitems(config, items):
 
     for item in items:
         path = str(item.fspath)
-        if skip_gui and (
-            "tests/gui" in path
-            or path.endswith("tests/e2e/test_gui_smoke.py")
-            or path.endswith("tests/nds/test_gui_nds_smoke.py")
-            or "gui" in item.keywords
-        ):
-            item.add_marker(skip_gui)
         if skip_mp and path.endswith("test_mp.py"):
             item.add_marker(skip_mp)
         if skip_mp and hasattr(item, "callspec"):
@@ -277,53 +228,6 @@ def pytest_runtest_teardown(item, nextitem):
     if freezer is not None:
         freezer.stop()
         delattr(item, _FREEZE_ATTR)
-
-
-def _screenshot_dir() -> Path:
-    return Path(os.getenv("PYTEST_SCREENSHOT_DIR", "tests/.screenshots"))
-
-
-def _find_main_window():
-    try:
-        from qtpy import QtWidgets
-    except Exception:
-        return None
-
-    app = QtWidgets.QApplication.instance()
-    if app is None:
-        return None
-
-    active = app.activeWindow()
-    if active is not None:
-        return active
-
-    for widget in app.topLevelWidgets():
-        if widget.isVisible():
-            return widget
-    return None
-
-
-def pytest_runtest_makereport(item, call):
-    if call.when != "call" or call.excinfo is None:
-        return
-
-    path_str = str(item.fspath)
-    if "tests/gui" not in path_str and "tests/e2e" not in path_str:
-        return
-
-    window = _find_main_window()
-    if window is None:
-        return
-
-    try:
-        target_dir = _screenshot_dir()
-        target_dir.mkdir(parents=True, exist_ok=True)
-        safe_name = item.nodeid.replace("/", "_").replace("::", "_")
-        path = target_dir / f"{safe_name}.png"
-        pixmap = window.grab()
-        pixmap.save(str(path))
-    except Exception:
-        return
 
 
 # =============================================================================
@@ -424,31 +328,3 @@ def _freeze_time_marker(monkeypatch, request):
         }
     )
     monkeypatch.setattr(_tconvert, "DATE_STRINGS", date_strings, raising=False)
-
-
-@pytest.fixture(autouse=True)
-def _cleanup_qt_widgets(request):
-    yield
-
-    path_str = str(request.fspath)
-    if "tests/gui" not in path_str and "tests/e2e" not in path_str:
-        return
-
-    try:
-        from qtpy import QtCore, QtWidgets
-    except Exception:
-        return
-
-    app = QtWidgets.QApplication.instance()
-    if app is None:
-        return
-
-    for widget in app.topLevelWidgets():
-        try:
-            widget.close()
-        except Exception:
-            continue
-
-    app.processEvents()
-    QtCore.QCoreApplication.sendPostedEvents(None, QtCore.QEvent.DeferredDelete)
-    app.processEvents()

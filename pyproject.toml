@@ -139,8 +139,6 @@ dev = [
   "ruff",
   "mypy",
   "pytest",
-  "pytest-qt",
-  "pytest-xvfb",
   "pytest-forked",
   "pytest-cov",
   "nbmake",
@@ -216,7 +214,6 @@ gwexpy = [
 include = ["gwexpy*"]
 exclude = [
   "gwexpy*.tests*",
-  "gwexpy.gui*",
   "gwexpy.utils.sphinx*",
   "typings*",
   "tests*",
@@ -332,15 +329,13 @@ ignore = [
 python_version = "3.11"
 ignore_missing_imports = true
 check_untyped_defs = true
-exclude = "gwexpy/gui/reference-dtt/.*|gwexpy/gui/reference_ndscope/.*|tests/.*"
+exclude = "tests/.*"
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
 testpaths = ["tests"]
 pythonpath = ["."]
-norecursedirs = ["gwexpy/gui", "gwexpy/gui/reference-dtt"]
 markers = [
-    "gui: GUI integration tests",
     "nds: NDS server connection tests",
     "cvmfs: tests requiring CVMFS access (from gwpy)",
     "freeze_time: tests that use freezegun to mock time",
@@ -348,7 +343,6 @@ markers = [
     "flaky: mark test as flaky (used by gwpy)",
     "network: tests requiring external network access (GWOSC, DataFind, etc.)",
     "root: tests requiring optional PyROOT/ROOT native bindings",
-    "pyautogui: GUI tests that require PyAutoGUI pointer injection",
 ]
 filterwarnings = [
     "ignore:Module already imported so cannot be rewritten. gwpy.testing.fixtures:pytest.PytestAssertRewriteWarning",
