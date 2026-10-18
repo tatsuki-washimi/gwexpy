@@ -430,31 +430,9 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         window: WindowLike = "hann",
         **kwargs: Any,
     ) -> Spectrogram:
-        """Compute a non-averaged power spectrogram from periodograms.
+        """Compute a non-averaged spectrogram; use ``spectrogram`` for averaging.
 
-        Unlike :meth:`spectrogram`, this method does not support an
-        FFT-averaging ``method`` argument. Additional keyword arguments
-        are passed through GWpy to ``scipy.signal.periodogram``; passing
-        ``method='mean'`` or ``method='welch'`` raises ``TypeError``
-        in the supported GWpy/SciPy path. Use :meth:`spectrogram` for
-        selectable averaging methods such as ``'welch'`` or ``'median'``.
-
-        Parameters
-        ----------
-        fftlength : float
-            FFT duration in seconds.
-        overlap : float, optional
-            Overlap between successive FFTs in seconds.
-        window : str or array_like, optional
-            Window applied to each FFT segment.
-        **kwargs
-            Additional ``scipy.signal.periodogram`` keyword arguments,
-            such as ``scaling``; not an averaging ``method``.
-
-        Returns
-        -------
-        Spectrogram
-            GWexpy non-averaged power spectrogram.
+        ``**kwargs`` reach ``scipy.signal.periodogram``; ``method=`` raises ``TypeError``.
         """
         Spectrogram = ConverterRegistry.get_constructor("Spectrogram")
 
