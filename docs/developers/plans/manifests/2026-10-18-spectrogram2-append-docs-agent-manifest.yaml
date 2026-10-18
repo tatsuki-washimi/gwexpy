@@ -29,8 +29,11 @@ validation:
     - "GitHub connected source inspection and exact-one-occurrence docstring/reference replacements."
     - "Cross-checked English/Japanese reference page changes for both behaviors."
     - "Inspected changed file list against pinned main base."
+  failures_observed:
+    - "Initial GWpy 4.0.1/4.0.2 override-inventory check failed on long-docstring head 0b6dcd1619097c9c567443e1563b2353edae5923: public root population drift; no behavioral test ran."
+    - "The inventory source projection uses inspect.getsourcelines. Corrected both Python docstrings to retain precisely the original source line counts; latest CI still needs independent confirmation."
   pending:
-    - "GitHub Actions Repo Hygiene, Docs PR and any configured Python lint/test jobs at PR HEAD."
+    - "GitHub Actions Repo Hygiene, Docs PR, PR Fast and GWpy-compat checks at the corrected PR HEAD."
     - "Independent documentation review and acceptance of the narrow issue slices."
   omitted:
     - "Local git diff --check, Ruff, MyPy and pytest not executed in GitHub connector-only workflow; not claimed as passing."
