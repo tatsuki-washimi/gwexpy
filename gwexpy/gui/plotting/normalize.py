@@ -24,7 +24,9 @@ def normalize_series(val) -> Optional[tuple[np.ndarray, np.ndarray]]:
             x_axis = val.xindex.value
 
     elif isinstance(val, dict):  # Fallback Dictionary
-        data = val.get("data") or val.get("value")
+        data = val.get("data")
+        if data is None:
+            data = val.get("value")
         if data is None:
             return None
 
