@@ -1490,7 +1490,12 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         return self
 
     def append(self, other, *, copy=True, **kwargs) -> TimeSeriesDict:
-        """Append another mapping of `TimeSeries` or a single `TimeSeries` to each item."""
+        """Append a mapping or a single ``TimeSeries`` in place; return ``self``.
+
+        For a mapping, existing keys are extended and new keys are inserted.
+        ``copy=True`` copies only newly inserted series, not the dictionary.
+        A single ``TimeSeries`` is appended to every existing entry.
+        """
         if isinstance(other, BaseTimeSeries):
             for ts in self.values():
                 ts.append(other, **kwargs)
