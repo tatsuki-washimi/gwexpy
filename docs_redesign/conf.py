@@ -251,9 +251,6 @@ autodoc_mock_imports = [
     "elephant",
     "cupy",
     "pygmt",
-    "PyQt5",
-    "qtpy",
-    "pyqtgraph",
 ]
 
 # Keep the build signal meaningful: silence external cross-reference noise
