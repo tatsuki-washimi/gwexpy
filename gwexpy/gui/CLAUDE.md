@@ -1,1 +1,0 @@
-Please refer to [gwexpy/gui/AGENTS.md](gwexpy/gui/AGENTS.md) for all instructions and guidelines.
