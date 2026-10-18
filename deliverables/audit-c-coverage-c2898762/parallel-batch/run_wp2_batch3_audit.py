@@ -1065,7 +1065,7 @@ def run_batch3():
     pca_rec = pca_inverse_transform(pca_model, pca_scores)
     assert pca_rec.shape == decomp_mat.shape
     assert np.isfinite(pca_rec.value).all()
-    assert np.allclose(pca_rec.value, decomp_mat.value, atol=1e-12)
+    assert np.allclose(pca_rec.value, decomp_mat.value, rtol=1e-12, atol=1e-12)
     assert pca_rec.dt == decomp_mat.dt and pca_rec.x0 == decomp_mat.x0
     assert pca_rec.xunit == decomp_mat.xunit
     pca_max_diff = float(np.max(np.abs(pca_rec.value - decomp_mat.value)))
@@ -1095,7 +1095,7 @@ def run_batch3():
         "gwpy_comparison": {
             "status": "incomparable",
             "comparison_mode": "incomparable",
-            "notes": f"PCA inverse transform reconstructed TimeSeriesMatrix with machine epsilon accuracy (max diff={pca_max_diff:.2e}), finite values, and preserved axes/xunit",
+            "notes": f"PCA inverse transform reconstructed TimeSeriesMatrix with machine epsilon accuracy (rtol=1e-12, atol=1e-12, max diff={pca_max_diff:.2e}), finite values, and preserved axes/xunit",
         },
     })
     transitions.append({
@@ -1119,7 +1119,7 @@ def run_batch3():
     ica_rec = ica_inverse_transform(ica_model, ica_sources)
     assert ica_rec.shape == decomp_mat.shape
     assert np.isfinite(ica_rec.value).all()
-    assert np.allclose(ica_rec.value, decomp_mat.value, atol=1e-12)
+    assert np.allclose(ica_rec.value, decomp_mat.value, rtol=1e-12, atol=1e-12)
     assert ica_rec.dt == decomp_mat.dt and ica_rec.x0 == decomp_mat.x0
     assert ica_rec.xunit == decomp_mat.xunit
     ica_max_diff = float(np.max(np.abs(ica_rec.value - decomp_mat.value)))

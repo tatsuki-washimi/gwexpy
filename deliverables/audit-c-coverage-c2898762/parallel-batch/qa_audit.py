@@ -646,6 +646,7 @@ def main() -> int:
             assert checks_dict.get("subprocess_success") is True
             assert checks_dict.get("gwpy_numeric_parity") is True
             assert checks_dict.get("finite_values") is True
+            assert checks_dict.get("metadata_property_parity") is True
         elif group == "arrakis_nds2_buffer":
             assert trans["new_disposition"] == "verified"
             assert trans["gwpy_comparison"] == "numeric_value_parity"
@@ -657,14 +658,18 @@ def main() -> int:
                 assert trans["gwpy_comparison"] == "numeric_value_parity"
                 assert checks_dict.get("public_gwosc_connection") is True
                 assert checks_dict.get("data_received") is True
+                assert checks_dict.get("gwpy_numeric_parity") is True
+                assert checks_dict.get("finite_values") is True
             elif "/fetch" in ident:
                 assert trans["new_disposition"] == "environment_blocked"
                 assert trans["gwpy_comparison"] == "incomparable"
-                assert checks_dict.get("nds2_credential_barrier_confirmed") is True
+                assert checks_dict.get("nds2_connection_barrier_confirmed") is True
+                assert checks_dict.get("exception_observed") is True
             elif "/find" in ident:
                 assert trans["new_disposition"] == "environment_blocked"
                 assert trans["gwpy_comparison"] == "incomparable"
                 assert checks_dict.get("datafind_server_barrier_confirmed") is True
+                assert checks_dict.get("exception_observed") is True
         elif group == "arima_environment":
             assert trans["new_disposition"] == "environment_blocked"
             assert trans["gwpy_comparison"] == "incomparable"
@@ -679,8 +684,52 @@ def main() -> int:
 
     print("  [PASS] 23. WP3 environment-blocked 19 APIs independent audit verified (1:1 trial-transition match, exact set match with baseline blocked_19_set, 14 elevated to verified via native/synthetic GWpy parity, 5 strictly documented as environment_blocked across Kerberos NDS2, DataFind, and NumPy 2.x ABI barriers).")
 
+    # 24. WP4: 既存 Verified 269 API の検証深度・実証範囲の再評価整合性
+    v269_file = AUDIT_DIR / "wp4-269-verified-reevaluation.json"
+    v269_md = AUDIT_DIR / "2026-10-18-wp4-269-verified-reevaluation.md"
+    assert v269_file.exists(), f"Assertion 24 Failed: {v269_file} does not exist"
+    assert v269_md.exists(), f"Assertion 24 Failed: {v269_md} does not exist"
+
+    v269_data = json.loads(v269_file.read_text(encoding="utf-8"))
+    assert len(v269_data) == 269, f"Assertion 24 Failed: count {len(v269_data)} != 269"
+
+    verified_269_set = {r["identifier"] for r in ledger if r["disposition"] == "verified"}
+    v269_set = {r["identifier"] for r in v269_data}
+    assert v269_set == verified_269_set, f"Assertion 24 Failed: identifier set mismatch (diff: {v269_set ^ verified_269_set})"
+
+    depth_dist = collections.Counter(r["depth_level"] for r in v269_data)
+    assert depth_dist["L3_rigorous_numerical_parity"] == 63, f"Assertion 24 Failed: L3 != 63 ({depth_dist})"
+    assert depth_dist["L2_substantive_contract"] == 201, f"Assertion 24 Failed: L2 != 201 ({depth_dist})"
+    assert depth_dist["L1_basic_smoke_attribute"] == 5, f"Assertion 24 Failed: L1 != 5 ({depth_dist})"
+
+    for r in v269_data:
+        assert len(r["verified_scope"]) > 0, f"Assertion 24 Failed: empty verified_scope for {r['identifier']}"
+        assert len(r["unverified_scope"]) > 0, f"Assertion 24 Failed: empty unverified_scope for {r['identifier']}"
+
+    print("  [PASS] 24. WP4 269 verified APIs independent re-evaluation verified (exact set match with baseline verified_269_set, 1:1 depth categorization: L3=63, L2=201, L1=5, non-empty verified/unverified scopes defined across all 269 rows).")
+
+    # 25. WP4: 106件の Exception Parity 原因別分類・再評価整合性
+    exc106_file = AUDIT_DIR / "wp4-106-exception-parity-classification.json"
+    exc106_md = AUDIT_DIR / "2026-10-18-wp4-106-exception-parity-classification.md"
+    assert exc106_file.exists(), f"Assertion 25 Failed: {exc106_file} does not exist"
+    assert exc106_md.exists(), f"Assertion 25 Failed: {exc106_md} does not exist"
+
+    exc106_data = json.loads(exc106_file.read_text(encoding="utf-8"))
+    assert len(exc106_data) == 106, f"Assertion 25 Failed: count {len(exc106_data)} != 106"
+
+    exc106_set = {r["identifier"] for r in exc106_data}
+    baseline_exc106_set = {r["identifier"] for r in ledger if r.get("gwpy_comparison") == "exception_parity"}
+    assert exc106_set == baseline_exc106_set, f"Assertion 25 Failed: identifier set mismatch (diff: {exc106_set ^ baseline_exc106_set})"
+
+    cat_dist = collections.Counter(r["category"] for r in exc106_data)
+    assert cat_dist["trivial_argument_insufficiency"] == 94, f"Assertion 25 Failed: trivial != 94 ({cat_dist})"
+    assert cat_dist["abnormal_or_domain_boundary_input"] == 10, f"Assertion 25 Failed: abnormal != 10 ({cat_dist})"
+    assert cat_dist["upstream_matplotlib_behavior"] == 2, f"Assertion 25 Failed: matplotlib != 2 ({cat_dist})"
+
+    print("  [PASS] 25. WP4 106 exception_parity APIs independent classification verified (exact set match with baseline exception_parity 106 set, strict categorization: trivial_missing_arg=94, abnormal/boundary=10, upstream_matplotlib=2).")
+
     print("=" * 60)
-    print("ALL 23 QA ASSERTIONS PASSED! RIGOROUS INTEGRITY VERIFIED.")
+    print("ALL 25 QA ASSERTIONS PASSED! RIGOROUS INTEGRITY VERIFIED.")
     print("=" * 60)
     return 0
 
