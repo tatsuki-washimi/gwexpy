@@ -73,7 +73,10 @@ angle(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
 append(self, other, copy=True, **kwargs) -> 'TimeSeriesDict'
 ```
 
-TimeSeries のマッピングまたは単一の TimeSeries を各アイテムに追加します。
+TimeSeries のマッピングまたは単一の TimeSeries を **in-place** で追加し、
+`self` を返します。マッピングでは既存キーの系列を延長し、新しいキーを追加します。
+`copy=True` は新規キーに格納する系列をコピーする指定であり、辞書自体の
+コピーを返す指定ではありません。
 
 ### `asd` / `psd`
 
