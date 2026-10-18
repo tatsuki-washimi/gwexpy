@@ -91,9 +91,6 @@ This index groups the main modules by topic. If you're unsure where to start, be
    * - CLI
      - Experimental
      - Entry point, version reporting, and planned command-line workflows
-   * - GUI
-     - Experimental
-     - Graphical interface and interactive tools
 
 .. seealso::
    Cross-navigation:
@@ -130,4 +127,3 @@ This index groups the main modules by topic. If you're unsure where to start, be
    I/O <io>
    Compatibility / Extra <extra>
    CLI <cli>
-   GUI <gui>

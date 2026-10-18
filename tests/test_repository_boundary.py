@@ -7,8 +7,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import gwexpy
-
 ROOT = Path(__file__).resolve().parents[1]
 
 

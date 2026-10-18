@@ -1,6 +1,6 @@
 # GWexpy AI Agent Guidelines
 
-Last-updated: 2026-09-25
+Last-updated: 2026-10-18
 
 **Summary.**  
 This repository is optimized for collaboration with AI Coding Agents (Claude, Codex, Antigravity, Cursor, GitHub Copilot Workspace, etc.). Agents **must** read and follow these guidelines before performing any code changes, tests, or documentation updates.
@@ -93,7 +93,7 @@ configured; this local selection does not waive a required CI check.
 | Documentation or data files only | Check changed text, links, and structured-data invariants (for example CSV IDs, required fields, and counts). Build Sphinx when the change affects rendered documentation, its navigation, or its build configuration. Python tests, Ruff, and MyPy are not required unless the documentation executes or changes Python code. |
 | Python source or tests | Run focused tests for the affected behavior. Run `ruff check` and `ruff format --check` on changed Python files. Run the applicable MyPy check when production Python types or APIs change. Add compatibility and regression tests for changed functionality. |
 | Dependency, build, or CI configuration | Exercise the affected install, build, or workflow path. Run broader tests when the change can affect the wider package. |
-| GUI behavior | Run the relevant GUI test scripts in addition to focused tests, when the required display and services are available. |
+| External GUI behavior | Validate in the owning GUI repository (pyaggui / GWexpy Studio), not in the GWexpy library test suite. |
 | Physics or data-model behavior | Add the relevant numerical and metadata checks, run `check_physics`, and follow the human-review rules in Sections 1 and 6. |
 
 Use the project's actual commands and declared dependencies. For example,
@@ -118,7 +118,7 @@ failed or skipped check passed. Investigate required CI failures before merge.
 - `gwexpy/timeseries/`, `gwexpy/frequencyseries/`, `gwexpy/spectrogram/` — Time/frequency representations and matrix extensions.
 - `gwexpy/signal/` — Signal processing: filters, preprocessing.
 - `gwexpy/fitting/` — Curve fitting and parameter estimation.
-- `gwexpy/gui/` — Interactive visualization (`pyaggui` / PyQt/PySide).
+- GUI applications (`pyaggui`, GWexpy Studio) live in independent repositories; `gwexpy` owns only the analytical library.
 - `docs/developers/` — Technical specs, plans, physics reviews.
 
 ---
@@ -171,6 +171,7 @@ failed or skipped check passed. Investigate required CI failures before merge.
 
 ### Guideline changelog
 
+- **2026-10-18**: Removed the legacy in-tree GUI application after its separation into pyaggui; clarified that all GUI apps, tests and Qt tooling are external to the GWexpy analysis library (Issue #645).
 - **2026-09-25**: Made local PR verification proportional to changed files,
   corrected the declared install extras and Sphinx build command, and required
   baseline failures to be reported separately from new regressions.

@@ -13,12 +13,12 @@ Recommended (installs test tooling and all optional Python extras):
 pip install -e ".[dev,all]"
 ```
 
-Extras responsibilities: `dev` = test/lint/type tooling, `gui` = Qt runtime, `geophysics` = domain-specific deps.
+Extras responsibilities: `dev` = test/lint/type tooling, `geophysics` = domain-specific deps. GUI tooling is maintained by pyaggui and GWexpy Studio.
 
 If you prefer to install only the pieces you need, use the explicit extras:
 
 ```bash
-pip install -e ".[dev,gw,stats,fitting,astro,geophysics,audio,bio,interop,control,gui,plot,analysis]"
+pip install -e ".[dev,gw,stats,fitting,astro,geophysics,audio,bio,interop,control,plot,analysis]"
 ```
 
 ## System-Level Dependencies
@@ -67,14 +67,8 @@ Each gate runs the same command set as the corresponding workflow job, so use th
 
 The `NDS Live Tests` workflow is **manual-only** (`workflow_dispatch`): it connects to a live NDS server and needs network access plus Kerberos credentials that scheduled CI does not have, so it is never run automatically and an empty run history is expected. Trigger it on demand from the Actions tab to validate NDS connectivity.
 
-GUI tests are split into two buckets:
-
-- The default GUI suite is headless-safe and runs under the GUI runner with
-  Xvfb.
-- `pyautogui` tests require real pointer injection and should be run against a
-  real desktop/session display, not the default Xvfb path.
-
-In headless environments (no `DISPLAY`/`WAYLAND_DISPLAY` or
-`QT_QPA_PLATFORM=offscreen/minimal`), the harness skips GUI tests and disables
-pytest plugin autoloading to avoid Qt crashes. To run GUI tests in headless CI,
-use the GUI runner described in `docs/developers/guides/gui_testing.md`.
+The GWexpy library has no in-tree GUI tests, Qt harness, or GUI CLI.
+GUI application tests belong to the independent
+[pyaggui](https://github.com/tatsuki-washimi/pyaggui) and GWexpy Studio projects.
+The manual NDS Live Tests workflow remains available for non-GUI NDS backend
+connectivity and channel-discovery checks.
