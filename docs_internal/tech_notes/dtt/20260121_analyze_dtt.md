@@ -1,3 +1,11 @@
+> [!IMPORTANT]
+> **Historical technical note (pre-repository split).**
+> This document describes the former in-tree `gwexpy.gui` implementation
+> or external DTT reference material. It is not current GWexpy library
+> guidance. GUI application code and tests now belong to separate projects
+> (see [pyaggui](https://github.com/tatsuki-washimi/pyaggui) and GWexpy Studio).
+> The original record is retained for provenance; see [Issue #645](https://github.com/tatsuki-washimi/gwexpy/issues/645).
+
 # Implementation Plan: Analyzing Reference DTT (Diagnostic Test Tool)
 
 This plan outlines the steps to analyze the `gwexpy/gui/reference-dtt/` directory contents to understand the legacy DTT system's architecture, data processing logic, and UI map, in order to inform the development of `gwexpy`'s GUI and analysis pipelines.

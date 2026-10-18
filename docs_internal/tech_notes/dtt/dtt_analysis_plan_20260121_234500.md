@@ -1,3 +1,11 @@
+> [!IMPORTANT]
+> **Historical technical note (pre-repository split).**
+> This document describes the former in-tree `gwexpy.gui` implementation
+> or external DTT reference material. It is not current GWexpy library
+> guidance. GUI application code and tests now belong to separate projects
+> (see [pyaggui](https://github.com/tatsuki-washimi/pyaggui) and GWexpy Studio).
+> The original record is retained for provenance; see [Issue #645](https://github.com/tatsuki-washimi/gwexpy/issues/645).
+
 # DTT解析・gwexpyへの統合要件定義 計画書 (2026-01-21 23:45:00)
 
 この計画書は、`gwexpy/gui/reference-dtt/` に含まれるリファレンス資料を分析し、レガシーシステムである DTT (Diagnostic Test Tool) のアーキテクチャ、データ処理ロジック、UI構成を理解することで、`gwexpy` のGUIおよび解析パイプラインの開発に役立てるための手順を定義します。

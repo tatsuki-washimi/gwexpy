@@ -1,0 +1,38 @@
+schema: gwexpy-agent-work-manifest-v1
+date_utc: "2026-10-18"
+agent: "ChatGPT GitHub coordination"
+agent_tag: "AGENT:workflow"
+repository: tatsuki-washimi/gwexpy
+issue: 645
+baseline: "10311d8dcebd8938522a4e07d78fb8dfa73b3145"
+work_type: "Remove legacy source-only GUI application and its test/config/documentation footprint"
+skills_invoked: []
+actions:
+  - "Read .agent/AGENTS.md and Issue #645 with its mandatory pyaggui extraction audit"
+  - "Mapped 32 legacy application blobs, 21 tests, 2 design docs and E2E smoke to pyaggui paths"
+  - "Examined four post-extraction legacy GUI commits and ported meaningful fixes to external pyaggui PR #1"
+  - "Removed the GUI-only tree, dedicated GUI tests, stale API autodoc pages, old CLI guides and Qt dev tooling"
+  - "Preserved core library read/write I/O tests, core NDS manual workflow, and plotting library functionality"
+  - "Added CI repository-boundary checks and a non-GUI NDS discovery smoke test"
+  - "Annotated historical DTT/GUI internal technical notes and documented the ownership decision"
+validation:
+  completed:
+    - "GitHub tree path and counterpart-presence audit for the old GUI and design documents"
+    - "Post-extraction per-path commit audit since 2026-07-11"
+    - "Exact-text replacement checks for test/config edits"
+  required:
+    - "git diff --check main...HEAD"
+    - "ruff check gwexpy tests scripts/check_repository_boundaries.py"
+    - "ruff format --check changed Python files"
+    - "mypy gwexpy and targeted tests"
+    - "pytest PR Fast, I/O contract, NDS marked only on manual backend, and GWpy parity CI"
+    - "Wheel/sdist build and clean install; importlib.util.find_spec('gwexpy.gui') is None"
+    - "Sphinx EN/JA docs build and deployed-page readback"
+    - "Independent review and merge of pyaggui PR #1, including five regression tests"
+  omitted_at_creation:
+    - "No local Python test/lint/build execution possible in connector-only GitHub session"
+    - "No Qt GUI tests executed; they are owned by external application repositories"
+check_physics: "N/A: no physical data model, numeric kernel, or GWpy default behavior is changed"
+release_operations_performed: false
+issue_closed: false
+merge_approval: "Deferred until cross-repository handover and mandatory CI review"
